@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,22 +27,22 @@ class nobUsual;
 /// Klasse für den Eselzüchter
 class nofDonkeybreeder : public nofWorkman
 {
-    public:
-        nofDonkeybreeder(const MapPoint pt, unsigned char player, nobUsual* workplace);
-        nofDonkeybreeder(SerializedGameData& sgd, unsigned int obj_id);
+public:
+    nofDonkeybreeder(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id);
 
-        GO_Type GetGOT() const override { return GOT_NOF_DONKEYBREEDER; }
+    GO_Type GetGOT() const override { return GOT_NOF_DONKEYBREEDER; }
 
-    private:
-        /// Zeichnet ihn beim Arbeiten.
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Der Arbeiter erzeugt eine Ware.
-        GoodType ProduceWare() override;
-        /// Wird aufgerufen, wenn er fertig mit arbeiten ist
-        void WorkFinished() override;
+private:
+    /// Zeichnet ihn beim Arbeiten.
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Der Arbeiter erzeugt eine Ware.
+    GoodType ProduceWare() override;
+    /// Wird aufgerufen, wenn er fertig mit arbeiten ist
+    void WorkFinished() override;
 
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override { return 0; }
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override { return 0; }
 };
 
 #endif // !NOFDONKEYBREEDER_H_INCLUDED

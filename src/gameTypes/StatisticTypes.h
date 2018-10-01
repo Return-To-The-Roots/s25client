@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,7 +21,7 @@
 /// Statistic categories
 enum StatisticType
 {
-    STAT_COUNTRY = 0,
+    NUM_STATSRY = 0,
     STAT_BUILDINGS,
     STAT_INHABITANTS,
     STAT_MERCHANDISE,
@@ -33,10 +33,10 @@ enum StatisticType
 };
 
 /// Anzahl Statistikarten
-const unsigned STAT_TYPE_COUNT = 9;
+const unsigned NUM_STAT_TYPES = 9;
 
 /// Anzahl Warenstatistikarten
-const unsigned STAT_MERCHANDISE_TYPE_COUNT = 14;
+const unsigned NUM_STAT_MERCHANDISE_TYPES = 14;
 
 /// Update intervalls
 enum StatisticTime
@@ -48,13 +48,22 @@ enum StatisticTime
 };
 
 /// Number of update intervalls
-const unsigned STAT_TIME_COUNT = 4;
+const unsigned NUM_STAT_TIMES = 4;
 
 /// Anzahl der Statistikschritte, die gespeichert werden
-const unsigned STAT_STEP_COUNT = 30;
+const unsigned NUM_STAT_STEPS = 30;
 
-inline unsigned short incrStatIndex(unsigned short i) { return (i == STAT_STEP_COUNT - 1) ? 0 : ++i; }
-inline unsigned short decrStatIndex(unsigned short i) { return (i == 0) ? STAT_STEP_COUNT - 1 : --i; }
-inline unsigned short decrStatIndex(unsigned short i, unsigned short amount) { return (i < amount) ? STAT_STEP_COUNT - (amount - i) - 1 : i - amount; }
+inline unsigned short incrStatIndex(unsigned short i)
+{
+    return (i == NUM_STAT_STEPS - 1) ? 0 : ++i;
+}
+inline unsigned short decrStatIndex(unsigned short i)
+{
+    return (i == 0) ? NUM_STAT_STEPS - 1 : --i;
+}
+inline unsigned short decrStatIndex(unsigned short i, unsigned short amount)
+{
+    return (i < amount) ? NUM_STAT_STEPS - (amount - i) - 1 : i - amount;
+}
 
 #endif // StatisticTypes_h__

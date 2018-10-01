@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,29 +15,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Bob.h"
 
 #include "glArchivItem_Bitmap_Player.h"
-#include "colors.h"
+#include "libutil/colors.h"
 
 /**
  *  Zeichnet einen Animationsstep.
  */
-void glArchivItem_Bob::Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, DrawPoint drawPt, unsigned int color)
+void glArchivItem_Bob::Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color)
 {
-    unsigned int good = item * 96 + animationstep * 12 + ( (direction + 3) % 6 ) + fat * 6;
-    unsigned int body = fat * 48 + ( (direction + 3) % 6 ) * 8 + animationstep;
-    if(links[good] == 92)
+    // Correct dir to image dir
+    direction = (direction + 3) % 6;
+    // 8 Anim steps, 2 types (fat, not fat), 6 directions -->
+    // Array [item][animStep][fat][direction]: [35][8][2][6]
+    unsigned good = ((item * 8 + animationstep) * 2 + fat) * 6 + direction;
+    // Array: [fat][direction][animStep]: [2][6][8] = 96 entries
+    unsigned body = (fat * 6 + direction) * 8 + animationstep;
+    if(links[good] == 92 && fat)
     {
-        good -= fat * 6;
-        body -= fat * 48;
+        // No fat version(?)
+        good -= 6;
+        body -= 6 * 8; // 48
     }
 
     glArchivItem_Bitmap_Player* koerper = dynamic_cast<glArchivItem_Bitmap_Player*>(get(body));
     if(koerper)
-        koerper->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+        koerper->DrawFull(drawPt, COLOR_WHITE, color);
     glArchivItem_Bitmap_Player* ware = dynamic_cast<glArchivItem_Bitmap_Player*>(get(96 + links[good]));
     if(ware)
-        ware->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+        ware->DrawFull(drawPt, COLOR_WHITE, color);
 }

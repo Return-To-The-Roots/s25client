@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,20 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "main.h" // IWYU pragma: keep
+#include "driverDefines.h" // IWYU pragma: keep
 #include "AudioSDL.h"
-
+#include "AudioInterface.h"
+#include "IAudioDriverCallback.h"
 #include "SoundSDL_Effect.h"
 #include "SoundSDL_Music.h"
-#include "libutil/src/tmpFile.h"
-#include "AudioDriverLoaderInterface.h"
-
-#include <AudioInterface.h>
-
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <iostream>
-#include <fstream>
 
 static AudioSDL* nthis = NULL;
 
@@ -37,7 +32,7 @@ static AudioSDL* nthis = NULL;
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  */
-DRIVERDLLAPI IAudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* adli, void*  /*device_dependent*/)
+DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* adli, void* /*device_dependent*/)
 {
     nthis = new AudioSDL(adli);
     return nthis;
@@ -48,7 +43,7 @@ DRIVERDLLAPI void FreeAudioInstance(IAudioDriver* driver)
     delete driver;
 }
 
-DRIVERDLLAPI const char* GetDriverName(void)
+DRIVERDLLAPI const char* GetDriverName()
 {
     return "(SDL) Audio via SDL_mixer-Library";
 }
@@ -58,11 +53,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  Klasse für den SDL-Audiotreiber.
  */
 
-AudioSDL::AudioSDL(AudioDriverLoaderInterface* adli) : AudioDriver(adli), master_effects_volume(0xFF), master_music_volume(0xFF)
-{
-    for(unsigned i = 0; i < CHANNEL_COUNT; ++i)
-        channels[i] = 0xFFFFFFFF;
-}
+AudioSDL::AudioSDL(IAudioDriverCallback* adli) : AudioDriver(adli), master_effects_volume(255), master_music_volume(255) {}
 
 AudioSDL::~AudioSDL()
 {
@@ -86,9 +77,9 @@ const char* AudioSDL::GetName() const
  */
 bool AudioSDL::Initialize()
 {
-    if( SDL_InitSubSystem( SDL_INIT_AUDIO ) < 0 )
+    if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
     {
-        fprintf(stderr, "%s\n", SDL_GetError());
+        std::cerr << SDL_GetError() << std::endl;
         initialized = false;
         return false;
     }
@@ -97,18 +88,18 @@ bool AudioSDL::Initialize()
     // stereo audio, using 1024 byte chunks
     if(Mix_OpenAudio(44100, AUDIO_S16LSB, 2, 4096) < 0)
     {
-        fprintf(stderr, "%s\n", Mix_GetError());
+        std::cerr << Mix_GetError() << std::endl;
         initialized = false;
         return false;
     }
 
-    Mix_AllocateChannels(CHANNEL_COUNT);
+    SetNumChannels(Mix_AllocateChannels(MAX_NUM_CHANNELS));
     Mix_SetMusicCMD(NULL);
     Mix_HookMusicFinished(AudioSDL::MusicFinished);
 
     initialized = true;
 
-    return initialized;
+    return true;
 }
 
 /**
@@ -116,18 +107,12 @@ bool AudioSDL::Initialize()
  */
 void AudioSDL::CleanUp()
 {
-    // Sounddeskriptoren aufräumen
-    for(std::vector<Sound*>::iterator it = sounds.begin(); it != sounds.end(); ++it)
-        delete (*it);
-
-    sounds.clear();
+    // Unload sounds
+    AudioDriver::CleanUp();
 
     Mix_CloseAudio();
     Mix_HookMusicFinished(NULL);
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
-
-    // nun sind wir nicht mehr initalisiert
-    initialized = false;
 }
 
 /**
@@ -139,152 +124,66 @@ void AudioSDL::CleanUp()
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  */
-Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size)
+SoundHandle AudioSDL::LoadEffect(const std::string& filepath)
 {
-    std::ofstream dat;
-    std::string filePath = createTempFile(dat, ".wav");
-    
-    if (!dat)
-        return(NULL);
-
-    if (!dat.write(reinterpret_cast<const char*>(data), size))
-        return(NULL);
-
-    dat.close();
-
-    Mix_Chunk* sound;
-    switch(AudioType::Type(data_type))
-    {
-        default:
-            return(NULL);
-
-        case AudioType::AD_WAVE:
-        {
-            sound = Mix_LoadWAV(filePath.c_str());
-        } break;
-        /// @todo Alle Formate die SDL mit LoadWAV laden kann angeben
-    }
-
-    unlinkFile(filePath);
+    Mix_Chunk* sound = Mix_LoadWAV(filepath.c_str());
 
     if(sound == NULL)
     {
-        fprintf(stderr, "%s\n", Mix_GetError());
-        return(NULL);
+        std::cerr << Mix_GetError() << std::endl;
+        return SoundHandle();
     }
 
-    SoundSDL_Effect* sd = new SoundSDL_Effect();
-    sd->sound = sound;
-    sd->SetNr((int)sounds.size());
-    sounds.push_back(sd);
-
-    return sd;
+    SoundSDL_Effect* sd = new SoundSDL_Effect(sound);
+    return CreateSoundHandle(sd);
 }
 
 /**
  *  Läd ein Musikstück.
- *
- *  @param[in] type Typ der Daten
- *  @param[in] data Datenblock
- *  @param[in] size Größe des Datenblocks
- *
+
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  */
-Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size)
+SoundHandle AudioSDL::LoadMusic(const std::string& filepath)
 {
-    std::string extension;
-    switch(AudioType::Type(data_type))
-    {
-        default:
-            return(NULL);
-
-        case AudioType::AD_MIDI:
-        {
-            extension = ".mid";
-        } break;
-
-        case AudioType::AD_WAVE:
-        {
-            extension = ".wav";
-        } break;
-
-        case AudioType::AD_OTHER:
-        {
-            const char* header = reinterpret_cast<const char*>(data);
-            if(strncmp(header, "OggS", 4) == 0)
-                extension = ".ogg";
-            else if (strncmp(header, "ID3", 3) == 0 || ((unsigned char)header[0] == 0xFF && (unsigned char)header[1] == 0xFB) )
-                extension = ".mp3";
-            else
-                extension = ".tmp";
-        } break;
-
-        /// @todo Alle Formate die SDL mit LoadMUS laden kann angeben
-    }
-
-    std::ofstream dat;
-    std::string filePath = createTempFile(dat, extension);
-    if (!dat)
-        return(NULL);
-
-    if (!dat.write(reinterpret_cast<const char*>(data), size))
-        return(NULL);
-
-    dat.close();
-
-    Mix_Music* music = Mix_LoadMUS(filePath.c_str());
-
-    unlinkFile(filePath);
+    Mix_Music* music = Mix_LoadMUS(filepath.c_str());
 
     if(music == NULL)
     {
-        fprintf(stderr, "%s\n", Mix_GetError());
-        return(NULL);
+        std::cerr << Mix_GetError() << std::endl;
+        return SoundHandle();
     }
 
-    SoundSDL_Music* sd = new SoundSDL_Music;
-    sd->music = music;
-    sd->SetNr((int)sounds.size());
-    sounds.push_back(sd);
-
-    return sd;
+    SoundSDL_Music* sd = new SoundSDL_Music(music);
+    return CreateSoundHandle(sd);
 }
 
-/**
- *  Spielt einen Sound ab.
- */
-unsigned int AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
+EffectPlayId AudioSDL::PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop)
 {
-    if(sound == NULL)
-        return 0xFFFFFFFF;
+    if(!sound.isValid())
+        return -1;
+    RTTR_Assert(sound.isEffect());
+    if(!sound.isEffect())
+        return -1;
 
-    int channel = Mix_PlayChannel(-1, static_cast<SoundSDL_Effect*>(sound)->sound, (loop) ? -1 : 0);
-
-    if(channel == -1)
-    {
-        //fprintf(stderr, "%s\n", Mix_GetError());
-        return 0xFFFFFFFF;
-    }
-
-    unsigned play_id = GeneratePlayID();
-
-    // Channel reservieren
-    channels[channel] = play_id;
-
-    Mix_Volume(channel, (int(master_effects_volume)*volume / 255) / 2);
-
-    return play_id;
+    int channel = Mix_PlayChannel(-1, static_cast<SoundSDL_Effect&>(*sound.getDescriptor()).sound, (loop) ? -1 : 0);
+    if(channel < 0)
+        return -1;
+    Mix_Volume(channel, CalcEffectVolume(volume));
+    return AddPlayedEffect(channel);
 }
 
-/**
- *  Spielt die Musik ab.
- */
-void AudioSDL::PlayMusic(Sound* sound, const unsigned repeats)
+void AudioSDL::PlayMusic(const SoundHandle& sound, unsigned repeats)
 {
-    // Musik starten
-    Mix_PlayMusic(static_cast<SoundSDL_Music*>(sound)->music, repeats == 0 ? -1 : int(repeats));
+    if(!sound.isValid())
+        return;
+    RTTR_Assert(sound.isMusic());
+    if(!sound.isMusic())
+        return;
 
-    // Lautstärke neu setzen
+    int channel = Mix_PlayMusic(static_cast<SoundSDL_Music&>(*sound.getDescriptor()).music, repeats == 0 ? -1 : int(repeats));
+    if(channel < 0)
+        return;
+    // TODO: Can we actually use multiple channels? If yes we might want to store it. Also print error message?
     Mix_VolumeMusic(master_music_volume / 2);
 }
 
@@ -297,49 +196,40 @@ void AudioSDL::StopMusic()
     Mix_FadeOutMusic(1000);
 }
 
-void AudioSDL::StopEffect(const unsigned play_id)
+void AudioSDL::StopEffect(EffectPlayId play_id)
 {
-    // Alle Channels nach dieser ID abfragen und den jeweiligen zum Schweigen bringen
-    for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
+    int channel = GetEffectChannel(play_id);
+    if(channel >= 0)
     {
-        if(channels[i] == play_id)
-            Mix_HaltChannel(i);
+        Mix_HaltChannel(channel);
+        RemoveEffect(play_id);
     }
 }
 
-
-bool AudioSDL::IsEffectPlaying(const unsigned play_id)
+bool AudioSDL::IsEffectPlaying(EffectPlayId play_id)
 {
-    // Play-ID suchen
-    for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
-    {
-        if(channels[i] == play_id)
-            // und wird dieser Channel auch noch gespielt?
-            return (Mix_Playing(i) == 1);
-    }
-
+    int channel = GetEffectChannel(play_id);
+    if(channel < 0)
+        return false;
+    if(Mix_Playing(channel))
+        return true;
+    RemoveEffect(play_id);
     return false;
 }
 
-
-void AudioSDL::ChangeVolume(const unsigned play_id, const unsigned char volume)
+void AudioSDL::ChangeVolume(EffectPlayId play_id, uint8_t volume)
 {
-    // Play-ID suchen
-    for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
-    {
-        if(channels[i] == play_id)
-            // Lautstärke verändern
-            Mix_Volume(i, (int(master_effects_volume)*volume / 255) / 2);
-    }
+    int channel = GetEffectChannel(play_id);
+    if(channel >= 0)
+        Mix_Volume(channel, CalcEffectVolume(volume));
 }
 
-void AudioSDL::SetMasterEffectVolume(unsigned char volume)
+void AudioSDL::SetMasterEffectVolume(uint8_t volume)
 {
     master_effects_volume = volume;
-    //Mix_SetPanning(MIX_CHANNEL_POST, volume2, volume2);
 }
 
-void AudioSDL::SetMasterMusicVolume(unsigned char volume)
+void AudioSDL::SetMusicVolume(uint8_t volume)
 {
     master_music_volume = volume;
 
@@ -347,7 +237,29 @@ void AudioSDL::SetMasterMusicVolume(unsigned char volume)
     Mix_VolumeMusic(volume / 2);
 }
 
+uint8_t AudioSDL::CalcEffectVolume(uint8_t volume) const
+{
+    // Scale by master_effects_volume and scale down to SDL_Mixer range [0, 127]
+    return (static_cast<unsigned>(master_effects_volume) * volume) / 255 / 2;
+}
+
 void AudioSDL::MusicFinished()
 {
-    nthis->adli->Msg_MusicFinished();
+    nthis->driverCallback->Msg_MusicFinished();
+}
+
+void AudioSDL::DoUnloadSound(SoundDesc& sound)
+{
+    if(sound.type_ == SD_EFFECT)
+    {
+        SoundSDL_Effect& effect = static_cast<SoundSDL_Effect&>(sound);
+        Mix_FreeChunk(effect.sound);
+        effect.setInvalid();
+    } else if(sound.type_ == SD_MUSIC)
+    {
+        SoundSDL_Music& music = static_cast<SoundSDL_Music&>(sound);
+        Mix_FreeMusic(music.music);
+        music.setInvalid();
+    } else
+        RTTR_Assert(false && "Invalid type");
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,37 +25,40 @@ class SerializedGameData;
 
 class noGranite : public noBase
 {
-        GraniteType type; // Welcher Typ ( gibt 2 )
-        unsigned char state; // Status, 0 - 5, von sehr wenig bis sehr viel
+    GraniteType type;    // Welcher Typ ( gibt 2 )
+    unsigned char state; // Status, 0 - 5, von sehr wenig bis sehr viel
 
-    public:
+public:
+    noGranite(const GraniteType type, const unsigned char state);
+    noGranite(SerializedGameData& sgd, const unsigned obj_id);
 
-        noGranite(const GraniteType type, const unsigned char state);
-        noGranite(SerializedGameData& sgd, const unsigned obj_id);
+    /// Aufräummethoden
+protected:
+    void Destroy_noGranite() { Destroy_noBase(); }
 
-        /// Aufräummethoden
-    protected:  void Destroy_noGranite() { Destroy_noBase(); }
-    public:     void Destroy() override { Destroy_noGranite(); }
+public:
+    void Destroy() override { Destroy_noGranite(); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noGranite(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noGranite(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noGranite(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_GRANITE; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noGranite(sgd); }
 
-        void Draw(DrawPoint drawPt) override;
+    GO_Type GetGOT() const override { return GOT_GRANITE; }
 
-        BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
+    void Draw(DrawPoint drawPt) override;
 
-        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-        FOWObject* CreateFOWObject() const override;
+    BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
 
-        /// "Bearbeitet" den Granitglotz --> haut ein Stein ab
-        void Hew();
-        /// Gibt true zurück, falls der Granitblock nur noch 1 Stein groß ist und damit dann vernichtet werden kann
-        bool IsSmall() const { return (state == 0); }
+    /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+    FOWObject* CreateFOWObject() const override;
 
+    /// "Bearbeitet" den Granitglotz --> haut ein Stein ab
+    void Hew();
+    /// Gibt true zurück, falls der Granitblock nur noch 1 Stein groß ist und damit dann vernichtet werden kann
+    bool IsSmall() const { return (state == 0); }
 };
-
 
 #endif

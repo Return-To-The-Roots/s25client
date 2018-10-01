@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for refunding materials soon as a building gets destroyed and
@@ -28,16 +28,13 @@
  */
 class AddonRefundOnEmergency : public AddonBool
 {
-    public:
-        AddonRefundOnEmergency() : AddonBool(AddonId::REFUND_ON_EMERGENCY,
-                                                 ADDONGROUP_ECONOMY,
-                                                 _("Refund materials in emergency program"),
-                                                 _("Get building materials back when a building is destroyed "
-                                                         "and your emergency program is active."),
-                                                 0
-                                                )
-        {
-        }
+public:
+    AddonRefundOnEmergency()
+        : AddonBool(AddonId::REFUND_ON_EMERGENCY, ADDONGROUP_ECONOMY, _("Refund materials in emergency program"),
+                    _("Get building materials back when a building is destroyed "
+                      "and your emergency program is active."),
+                    0)
+    {}
 };
 
 #endif // !ADDONREFUNDONEMERGENCY_H_INCLUDED

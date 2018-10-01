@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,26 +20,22 @@
 #pragma once
 
 #include "Window.h"
+#include "controls/ctrlBaseImage.h"
+#include "controls/ctrlBaseTooltip.h"
+
 class MouseCoords;
-class glArchivItem_Bitmap;
+class ITexture;
 
-class ctrlImage : public Window
+class ctrlImage : public Window, public ctrlBaseTooltip, public ctrlBaseImage
 {
-    public:
-        ctrlImage(Window* parent, unsigned int id, unsigned short x, unsigned short y, glArchivItem_Bitmap* image, const std::string& tooltip);
-        ~ctrlImage() override;
+public:
+    ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip);
+    ~ctrlImage() override;
 
-        void SetImage(glArchivItem_Bitmap* image) { this->image = image; }
-        const glArchivItem_Bitmap* GetImage() const { return image; }
+    bool Msg_MouseMove(const MouseCoords& mc) override;
 
-        bool Msg_MouseMove(const MouseCoords& mc) override;
-
-    protected:
-        bool Draw_() override;
-
-    private:
-        glArchivItem_Bitmap* image;
-        std::string tooltip;
+protected:
+    void Draw_() override;
 };
 
 #endif // !CTRLIMAGE_H_INCLUDED

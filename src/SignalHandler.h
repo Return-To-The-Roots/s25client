@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,12 +20,13 @@
 
 #pragma once
 
-///////////////////////////////////////////////////////////////////////////////
-// externs
 #ifdef _WIN32
-BOOL WINAPI HandlerRoutine(DWORD dwCtrlType);
+#include <windows.h>
+BOOL WINAPI ConsoleSignalHandler(DWORD dwCtrlType);
 #else
-void HandlerRoutine(int sig);
+/// Kill instantly on CTRL-C or just terminate
+extern bool killme;
+void ConsoleSignalHandler(int sig);
 #endif // _WIN32
 
 #endif // SIGNAL_H_INCLUDED

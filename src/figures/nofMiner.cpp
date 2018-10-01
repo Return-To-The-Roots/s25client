@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,35 +15,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMiner.h"
 
+#include "GlobalGameSettings.h"
 #include "Loader.h"
-#include "GameClient.h"
-#include "buildings/nobUsual.h"
 #include "SoundManager.h"
+#include "addons/const_addons.h"
+#include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-class SerializedGameData;
+#include "world/GameWorldGame.h"
 
-nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MINER, pos, player, workplace)
-{
-}
+nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINER, pos, player, workplace) {}
 
-nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT][4] = //work animation offset per nation and (granite, coal, iron, gold)
-    {
-        {{5, 3},  {5, 3},  {5, 3},  {5, 3}},  //africans
-        {{4, 1},  {4, 1},  {4, 1},  {4, 1}},  //japanese
-        {{9, 4},  {9, 4},  {9, 4},  {9, 4}},  //romans
-        {{10, 3}, {10, 3}, {10, 3}, {10, 3}}, //vikings
-        {{8, 3},  {8, 3},  {8, 3},  {8, 3}}   //babylonians
-    };
+    const DrawPointInit offsets[NUM_NATS][4] = // work animation offset per nation and (granite, coal, iron, gold)
+      {
+        {{5, 3}, {5, 3}, {5, 3}, {5, 3}},     // africans
+        {{4, 1}, {4, 1}, {4, 1}, {4, 1}},     // japanese
+        {{9, 4}, {9, 4}, {9, 4}, {9, 4}},     // romans
+        {{10, 3}, {10, 3}, {10, 3}, {10, 3}}, // vikings
+        {{8, 3}, {8, 3}, {8, 3}, {8, 3}}      // babylonians
+      };
 
     unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
     unsigned texture;
@@ -51,7 +48,8 @@ void nofMiner::DrawWorking(DrawPoint drawPt)
         texture = 92 + now_id % 8;
     else
         texture = 1799 + now_id % 4;
-    LOADER.GetPlayerImage("rom_bobs", texture)->Draw(drawPt + offsets[workplace->GetNation()][(workplace->GetBuildingType() - BLD_GRANITEMINE) * 2]);
+    LOADER.GetPlayerImage("rom_bobs", texture)
+      ->DrawFull(drawPt + offsets[workplace->GetNation()][(workplace->GetBuildingType() - BLD_GRANITEMINE) * 2]);
 
     if(now_id % 8 == 3)
     {
@@ -82,8 +80,31 @@ GoodType nofMiner::ProduceWare()
     }
 }
 
-bool nofMiner::AreWaresAvailable()
+bool nofMiner::AreWaresAvailable() const
 {
-    return nofWorkman::AreWaresAvailable() &&
-        GetResources(workplace->GetBuildingType() - BLD_GRANITEMINE);
+    return nofWorkman::AreWaresAvailable() && FindPointWithResource(GetRequiredResType()).isValid();
+}
+
+bool nofMiner::StartWorking()
+{
+    MapPoint resPt = FindPointWithResource(GetRequiredResType());
+    if(!resPt.isValid())
+        return false;
+    const GlobalGameSettings& settings = gwg->GetGGS();
+    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
+                            || (workplace->GetBuildingType() == BLD_GRANITEMINE && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
+    if(!inexhaustibleRes)
+        gwg->ReduceResource(resPt);
+    return nofWorkman::StartWorking();
+}
+
+Resource::Type nofMiner::GetRequiredResType() const
+{
+    switch(workplace->GetBuildingType())
+    {
+        case BLD_GOLDMINE: return Resource::Gold;
+        case BLD_IRONMINE: return Resource::Iron;
+        case BLD_COALMINE: return Resource::Coal;
+        default: return Resource::Granite;
+    }
 }

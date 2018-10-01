@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,15 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ListDir.h"
 #include <boost/filesystem.hpp>
 #include <algorithm>
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // lists the files of a directory
-std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories, const std::vector<std::string>* const appendTo)
+std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories,
+                                 const std::vector<std::string>* const appendTo)
 {
     std::vector<std::string> result;
     if(appendTo)

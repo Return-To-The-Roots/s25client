@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,46 +15,36 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "BuildingFactory.h"
-#include "world/GameWorldGame.h"
-#include "buildings/nobStorehouse.h"
+#include "GamePlayer.h"
+#include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
+#include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
-#include "GamePlayer.h"
+#include "world/GameWorldBase.h"
 
-noBuilding* BuildingFactory::CreateBuilding(GameWorldGame& gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation){
+noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& gwg, const BuildingType type, const MapPoint pt, const unsigned char player,
+                                            const Nation nation)
+{
     noBuilding* bld;
-    switch (type)
+    switch(type)
     {
-    case BLD_STOREHOUSE:
-        bld =  new nobStorehouse(pt, player, nation);
-        break;
-    case BLD_HARBORBUILDING:
-        bld = new nobHarborBuilding(pt, player, nation);
-        break;
-    case BLD_BARRACKS:
-    case BLD_GUARDHOUSE:
-    case BLD_WATCHTOWER:
-    case BLD_FORTRESS:
-        bld = new nobMilitary(type, pt, player, nation);
-        break;
-    case BLD_SHIPYARD:
-        bld = new nobShipYard(pt, player, nation);
-        break;
-    default:
-        bld = new nobUsual(type, pt, player, nation);
-        break;
+        case BLD_HEADQUARTERS: bld = new nobHQ(pt, player, nation); break;
+        case BLD_STOREHOUSE: bld = new nobStorehouse(pt, player, nation); break;
+        case BLD_HARBORBUILDING: bld = new nobHarborBuilding(pt, player, nation); break;
+        case BLD_BARRACKS:
+        case BLD_GUARDHOUSE:
+        case BLD_WATCHTOWER:
+        case BLD_FORTRESS: bld = new nobMilitary(type, pt, player, nation); break;
+        case BLD_SHIPYARD: bld = new nobShipYard(pt, player, nation); break;
+        default: bld = new nobUsual(type, pt, player, nation); break;
     }
     gwg.SetNO(pt, bld);
-    if(type == BLD_HARBORBUILDING)
-    {
-        // For harbors tell the economics about the new harbor
-        // Attention: Must be used after the harbours is added to the world (setNO) so it cannot be done in the ctor
-        gwg.GetPlayer(player).AddHarbor(static_cast<nobHarborBuilding*>(bld));
-    }
+    // Don't do this in ctor as building might not be fully initialized yet
+    gwg.GetPlayer(player).AddBuilding(bld, type);
 
     return bld;
 }

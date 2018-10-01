@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for new race specific catapult graphics.
@@ -29,15 +29,11 @@
  */
 class AddonCatapultGraphics : public AddonBool
 {
-    public:
-        AddonCatapultGraphics() : AddonBool(AddonId::CATAPULT_GRAPHICS,
-                                                ADDONGROUP_GAMEPLAY,
-                                                _("Race specific catapult graphics"),
-                                                _("Adds new race-specific graphics for catapults to the game."),
-                                                0
-                                               )
-        {
-        }
+public:
+    AddonCatapultGraphics()
+        : AddonBool(AddonId::CATAPULT_GRAPHICS, ADDONGROUP_GAMEPLAY, _("Race specific catapult graphics"),
+                    _("Adds new race-specific graphics for catapults to the game."), 0)
+    {}
 };
 
 #endif // !ADDONCATAPULTGRAPHICS_H_INCLUDED

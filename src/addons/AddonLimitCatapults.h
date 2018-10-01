@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,35 +20,33 @@
 #pragma once
 
 #include "AddonList.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for limiting the count of catapults
  */
 class AddonLimitCatapults : public AddonList
 {
-    public:
-        AddonLimitCatapults() : AddonList(AddonId::LIMIT_CATAPULTS,
-                                              ADDONGROUP_MILITARY,
-                                              _("Limit number of catapults"),
-                                              _("Limits the number of catapults per player.\n\n"
-                                                      "Proportional uses the following ratios of military buildings to catapults:\n"
-                                                      "Barracks: 8\n"
-                                                      "Guardhouse: 4\n"
-                                                      "Watchtower: 2\n"
-                                                      "Fortress: 1"),
-                                              0
-                                             )
-        {
-            addOption(_("Unlimited"));
-            addOption(_("Proportional"));
-            addOption(_("No catapults"));
-            addOption(_("3 catapults"));
-            addOption(_("5 catapults"));
-            addOption(_("10 catapults"));
-            addOption(_("20 catapults"));
-            addOption(_("30 catapults"));
-        }
+public:
+    AddonLimitCatapults()
+        : AddonList(AddonId::LIMIT_CATAPULTS, ADDONGROUP_MILITARY, _("Limit number of catapults"),
+                    _("Limits the number of catapults per player.\n\n"
+                      "Proportional uses the following ratios of military buildings to catapults:\n"
+                      "Barracks: 8\n"
+                      "Guardhouse: 4\n"
+                      "Watchtower: 2\n"
+                      "Fortress: 1"),
+                    0)
+    {
+        addOption(_("Unlimited"));
+        addOption(_("Proportional"));
+        addOption(_("No catapults"));
+        addOption(_("3 catapults"));
+        addOption(_("5 catapults"));
+        addOption(_("10 catapults"));
+        addOption(_("20 catapults"));
+        addOption(_("30 catapults"));
+    }
 };
 
 #endif // !ADDONLIMITCATAPULTS_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,11 +22,11 @@
 class IDataChangedListener
 {
 protected:
-    ~IDataChangedListener(){}
+    ~IDataChangedListener() {}
+
 public:
     /// Handles a change, changeId is the type of the change (object dependent)
     virtual void OnChange(unsigned changeId) = 0;
 };
-
 
 #endif // IDataChangedListener_h__

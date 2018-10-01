@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,9 +18,9 @@
 #ifndef BuildingNote_h__
 #define BuildingNote_h__
 
-#include "gameTypes/BuildingTypes.h"
-#include "gameTypes/MapTypes.h"
 #include "notifications/notifications.h"
+#include "gameTypes/BuildingType.h"
+#include "gameTypes/MapCoordinates.h"
 
 struct BuildingNote
 {
@@ -37,8 +37,7 @@ struct BuildingNote
         LostLand      /// Lost land to another player's military building
     };
 
-    BuildingNote(Type type, unsigned player, const MapPoint& pos, BuildingType bld):
-        type(type), player(player), pos(pos), bld(bld){}
+    BuildingNote(Type type, unsigned player, const MapPoint& pos, BuildingType bld) : type(type), player(player), pos(pos), bld(bld) {}
 
     const Type type;
     const unsigned player;

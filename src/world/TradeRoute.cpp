@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,19 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/TradeRoute.h"
-#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 
-TradeRoute::TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal): gwg(gwg), player(player)
+TradeRoute::TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal)
+    : gwg(gwg), player(player)
 {
     AssignNewGoal(start, goal);
 }
 
-TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, const unsigned char player) :
-    gwg(gwg), player(player), path(sgd), curPos(sgd.PopMapPoint()), curRouteIdx(sgd.PopUnsignedInt())
+TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, const unsigned char player)
+    : gwg(gwg), player(player), path(sgd), curPos(sgd.PopMapPoint()), curRouteIdx(sgd.PopUnsignedInt())
 {}
 
 void TradeRoute::Serialize(SerializedGameData& sgd) const
@@ -49,7 +50,7 @@ unsigned char TradeRoute::GetNextDir()
     unsigned char nextDir;
     // Check if the route is still valid
     if(gwg.CheckTradeRoute(curPos, path.route, curRouteIdx, player))
-        nextDir = path.route[curRouteIdx];
+        nextDir = path.route[curRouteIdx].toUInt();
     else
     {
         // If not, recalc it
@@ -60,9 +61,9 @@ unsigned char TradeRoute::GetNextDir()
     }
 
     RTTR_Assert(nextDir < 6);
-    RTTR_Assert(nextDir == path.route[curRouteIdx]);
+    RTTR_Assert(nextDir == path.route[curRouteIdx].toUInt());
     curRouteIdx++;
-    curPos = gwg.GetNeighbour(curPos, nextDir);
+    curPos = gwg.GetNeighbour(curPos, Direction::fromInt(nextDir));
     return nextDir;
 }
 

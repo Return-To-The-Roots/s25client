@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noStaticObject.h"
 #include "noExtension.h"
 
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
-#include "GameClient.h"
+#include "world/GameWorldGame.h"
 #include <stdexcept>
 
 /**
@@ -43,7 +43,7 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapPoint nb = gwg->GetNeighbour(pos, i);
+            MapPoint nb = gwg->GetNeighbour(pos, Direction::fromInt(i));
             gwg->DestroyNO(nb, false);
             gwg->SetNO(nb, new noExtension(this));
         }
@@ -59,13 +59,9 @@ void noStaticObject::Serialize_noStaticObject(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(size);
 }
 
-noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    id(sgd.PopUnsignedShort()),
-    file(sgd.PopUnsignedShort()),
-    size(sgd.PopUnsignedChar())
-{
-}
-
+noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), id(sgd.PopUnsignedShort()), file(sgd.PopUnsignedShort()), size(sgd.PopUnsignedChar())
+{}
 
 BlockingManner noStaticObject::GetBM() const
 {
@@ -80,39 +76,34 @@ BlockingManner noStaticObject::GetBM() const
  */
 void noStaticObject::Draw(DrawPoint drawPt)
 {
-    glArchivItem_Bitmap* bitmap = NULL, *shadow = NULL;
+    glArchivItem_Bitmap *bitmap = NULL, *shadow = NULL;
 
-    if ((file == 0xFFFF) && (id == 561))
+    if((file == 0xFFFF) && (id == 561))
     {
         LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(drawPt);
         return;
-    }
-    else  if (file == 0xFFFF)
+    } else if(file == 0xFFFF)
     {
         bitmap = LOADER.GetMapImageN(id);
         shadow = LOADER.GetMapImageN(id + 100);
-    }
-    else if(file < 7)
+    } else if(file < 7)
     {
-        static const std::string files[7] =
-        {
-            "mis0bobs", "mis1bobs", "mis2bobs", "mis3bobs", "mis4bobs", "mis5bobs", "charburner_bobs"
-        };
+        static const std::string files[7] = {"mis0bobs", "mis1bobs", "mis2bobs", "mis3bobs", "mis4bobs", "mis5bobs", "charburner_bobs"};
         bitmap = LOADER.GetImageN(files[file], id);
         // Use only shadows where available
         if(file < 6)
             shadow = LOADER.GetImageN(files[file], id + 1);
-    }else
+    } else
         throw std::runtime_error("Invalid file number for static object");
 
     RTTR_Assert(bitmap);
 
     // Bild zeichnen
-    bitmap->Draw(drawPt);
+    bitmap->DrawFull(drawPt);
 
     // Schatten zeichnen
     if(shadow)
-        shadow->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        shadow->DrawFull(drawPt, COLOR_SHADOW);
 }
 
 /**
@@ -124,7 +115,7 @@ void noStaticObject::Destroy_noStaticObject()
     if(GetSize() == 2)
     {
         for(unsigned i = 0; i < 3; ++i)
-            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
+            gwg->DestroyNO(gwg->GetNeighbour(pos, Direction::fromInt(i)));
     }
 
     Destroy_noBase();

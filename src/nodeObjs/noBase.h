@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,58 +19,54 @@
 
 #pragma once
 
+#include "DrawPoint.h"
 #include "GameObject.h"
 #include "NodalObjectTypes.h"
-#include "DrawPoint.h"
 #include <boost/core/scoped_enum.hpp>
 
 class FOWObject;
 class SerializedGameData;
 
 /// How does an object influence other objects/Building quality
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(BlockingManner)
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(BlockingManner){
+  None,         /// Does not block and can be removed
+  Flag,         /// Is a flag (Block pt and no flags around)
+  Building,     /// Is a building (Like Single, but special handling in BQ calculation)
+  Single,       /// Blocks only the point this is on
+  Tree,         /// Is a tree. Passable by figures but allows only huts around
+  FlagsAround,  /// Allow only flags around
+  NothingAround /// Allow nothing around
+} BOOST_SCOPED_ENUM_DECLARE_END(BlockingManner)
+
+  class noBase : public GameObject
 {
-    None,         /// Does not block and can be removed
-    Flag,         /// Is a flag (Block pt and no flags around)
-    Building,     /// Is a building (Like Single, but special handling in BQ calculation)
-    Single,       /// Blocks only the point this is on
-    Tree,         /// Is a tree. Passable by figures but allows only huts around
-    FlagsAround,  /// Allow only flags around
-    NothingAround /// Allow nothing around
-}
-BOOST_SCOPED_ENUM_DECLARE_END(BlockingManner)
+public:
+    noBase(const NodalObjectType nop) : nop(nop) {}
+    noBase(SerializedGameData& sgd, const unsigned obj_id);
 
+    /// An x,y zeichnen.
+    virtual void Draw(DrawPoint drawPt) = 0;
 
-class noBase : public GameObject
-{
-    public:
-        noBase(const NodalObjectType nop) : nop(nop) {}
-        noBase(SerializedGameData& sgd, const unsigned obj_id);
+    /// Type zurückgeben.
+    NodalObjectType GetType() const { return nop; }
+    /// Serialisierungsfunktion.
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noBase(sgd); }
 
-        /// An x,y zeichnen.
-        virtual void Draw(DrawPoint drawPt) = 0;
+    /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+    virtual FOWObject* CreateFOWObject() const;
 
-        /// Type zurückgeben.
-        NodalObjectType GetType() const { return nop; }
-        /// Serialisierungsfunktion.
-        void Serialize(SerializedGameData& sgd) const override { Serialize_noBase(sgd); }
+    virtual BlockingManner GetBM() const;
+    /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
+    virtual bool IsMoving() const;
 
-        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-        virtual FOWObject* CreateFOWObject() const;
+protected:
+    /// Räumt das Basisobjekt auf.
+    void Destroy_noBase() {}
+    /// serialisiert das Basisobjekt.
+    void Serialize_noBase(SerializedGameData& sgd) const;
 
-        virtual BlockingManner GetBM() const;
-        /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
-        virtual bool IsMoving() const;
-
-
-    protected:
-        /// Räumt das Basisobjekt auf.
-        void Destroy_noBase() {}
-        /// serialisiert das Basisobjekt.
-        void Serialize_noBase(SerializedGameData& sgd) const;
-
-    protected:
-        NodalObjectType nop; /// Typ des NodeObjekt ( @see NodalObjectTypes.h )
+protected:
+    NodalObjectType nop; /// Typ des NodeObjekt ( @see NodalObjectTypes.h )
 };
 
 #endif // !NOBASE_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayerInfo.h"
 
-GamePlayerInfo::GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo):
-    PlayerInfo(playerInfo), id(playerId), isDefeated(false)
-{}
+GamePlayerInfo::GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo) : PlayerInfo(playerInfo), id(playerId), isDefeated(false) {}

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonList.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  limit max rank of soldiers
@@ -37,21 +37,15 @@
  */
 class AddonMaxRank : public AddonList
 {
-    public:
-        AddonMaxRank() : AddonList(AddonId::MAX_RANK,
-                                       ADDONGROUP_MILITARY,
-                                       _("Set max rank"),
-                                       _("Limit the rank for soldiers"),
-                                       0
-                                      )
-        {
-            addOption(_("General (4)"));
-            addOption(_("Officer (3)"));
-            addOption(_("Sergeant (2)"));
-            addOption(_("Privatefc (1)"));
-            addOption(_("Private (0)"));
-        }
+public:
+    AddonMaxRank() : AddonList(AddonId::MAX_RANK, ADDONGROUP_MILITARY, _("Set max rank"), _("Limit the rank for soldiers"), 0)
+    {
+        addOption(_("General (4)"));
+        addOption(_("Officer (3)"));
+        addOption(_("Sergeant (2)"));
+        addOption(_("Privatefc (1)"));
+        addOption(_("Private (0)"));
+    }
 };
 
 #endif
-

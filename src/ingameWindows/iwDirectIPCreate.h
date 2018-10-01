@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,38 +20,26 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "LobbyInterface.h"
 #include "gameTypes/ServerType.h"
 
-/// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
-struct CreateServerInfo
+class iwDirectIPCreate : public IngameWindow
 {
-    ServerType type;    /// Typ des Servers.
-    unsigned short port;   /// Port des Servers
-    std::string gamename;  /// Name des Servers.
-    std::string password;  /// Passwort des Servers.
-    bool ipv6;             /// Soll IPv6 verwendet werden?
-    bool use_upnp;
-};
+public:
+    iwDirectIPCreate(ServerType server_type);
 
-class iwDirectIPCreate : public IngameWindow, public LobbyInterface
-{
-    public:
-        iwDirectIPCreate(ServerType server_type);
+    void LC_Status_Error(const std::string& error);
 
-        void LC_Status_Error(const std::string& error) override;
+protected:
+    void Msg_EditChange(const unsigned ctrl_id) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
 
-    protected:
-        void Msg_EditChange(const unsigned int ctrl_id) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
+private:
+    void SetText(const std::string& text, unsigned color, bool button);
 
-    private:
-        void SetText(const std::string& text, unsigned int color, bool button);
-
-    private:
-        ServerType server_type;
+private:
+    ServerType server_type;
 };
 
 #endif // !iwDIRECTIPCREATE_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,30 +15,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofDefender.h"
 
-#include "nofAttacker.h"
-#include "buildings/nobMilitary.h"
-#include "GameClient.h"
-#include "Random.h"
-#include "nodeObjs/noFighting.h"
-#include "nofPassiveSoldier.h"
-#include "world/GameWorldGame.h"
+#include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
+#include "buildings/nobMilitary.h"
+#include "network/GameClient.h"
+#include "nofAttacker.h"
+#include "nofPassiveSoldier.h"
+#include "random/Random.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noFighting.h"
+#include "gameData/BuildingProperties.h"
 
-
-nofDefender::nofDefender(const MapPoint pos, const unsigned char player,
-                         nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)
+nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
+                         nofAttacker* const attacker)
     : nofActiveSoldier(pos, player, home, rank, STATE_DEFENDING_WALKINGTO), attacker(attacker)
-{
-}
+{}
 
 nofDefender::nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker)
     : nofActiveSoldier(*other, STATE_DEFENDING_WALKINGTO), attacker(attacker)
-{
-}
+{}
 
 void nofDefender::Serialize_nofDefender(SerializedGameData& sgd) const
 {
@@ -65,11 +64,11 @@ void nofDefender::Walked()
         case STATE_DEFENDING_WALKINGTO:
         {
             // Mit Angreifer den Kampf beginnen
-            gwg->AddFigure(new noFighting(attacker, this), pos);
+            gwg->AddFigure(pos, new noFighting(attacker, this));
             state = STATE_FIGHTING;
             attacker->FightVsDefenderStarted();
-
-        } break;
+        }
+        break;
         case STATE_DEFENDING_WALKINGFROM:
         {
             // Ist evtl. unser Heimatgebäude zerstört?
@@ -89,22 +88,20 @@ void nofDefender::Walked()
             {
                 // dann umdrehen und wieder rausgehen
                 state = STATE_DEFENDING_WALKINGTO;
-                StartWalking(4);
-            }
-            else
+                StartWalking(Direction::SOUTHEAST);
+            } else
             {
                 // mich von der Landkarte tilgen
-                gwg->RemoveFigure(this, pos);
+                gwg->RemoveFigure(pos, this);
                 nobBaseMilitary* bld = building;
                 // mich zum Gebäude wieder hinzufügen
                 RTTR_Assert(bld->GetDefender() == this); // I should be the defender
                 bld->AddActiveSoldier(this);
                 RTTR_Assert(!bld->GetDefender()); // No defender anymore
             }
-
-        } break;
-        default:
-            break;
+        }
+        break;
+        default: break;
     }
 }
 
@@ -123,7 +120,8 @@ void nofDefender::HomeDestroyed()
             state = STATE_FIGUREWORK;
             StartWandering();
             Wander();
-        } break;
+        }
+        break;
         case STATE_DEFENDING_WALKINGTO:
         case STATE_DEFENDING_WALKINGFROM:
         {
@@ -131,14 +129,15 @@ void nofDefender::HomeDestroyed()
             // Rumirren
             StartWandering();
             state = STATE_FIGUREWORK;
-        } break;
+        }
+        break;
         case STATE_FIGHTING:
         {
             // Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
             // wird er auch nicht mehr zurückgehen)
-        } break;
-        default:
-            break;
+        }
+        break;
+        default: break;
     }
 }
 
@@ -150,17 +149,15 @@ void nofDefender::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+    StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
 }
-
 
 /// Wenn ein Kampf gewonnen wurde
 void nofDefender::WonFighting()
 {
-	
-	//addon BattlefieldPromotion active? -> increase rank!
-	if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
-		IncreaseRank();
+    // addon BattlefieldPromotion active? -> increase rank!
+    if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+        IncreaseRank();
     // Angreifer tot
     attacker = NULL;
 
@@ -181,12 +178,11 @@ void nofDefender::WonFighting()
     {
         // Ein Angreifer gefunden, dann warten wir auf ihn, bis er kommt
         state = STATE_DEFENDING_WAITING;
-    }
-    else
+    } else
     {
         // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
         state = STATE_DEFENDING_WALKINGFROM;
-        StartWalking(1);
+        StartWalking(Direction::NORTHWEST);
     }
 }
 
@@ -200,17 +196,16 @@ void nofDefender::LostFighting()
     {
         building->NoDefender();
         // Ist das ein "normales" Militärgebäude?
-        if(building->GetBuildingType() >= BLD_BARRACKS && building->GetBuildingType() <= BLD_FORTRESS)
+        if(BuildingProperties::IsMilitary(building->GetBuildingType()))
         {
             // Wenn ich nicht der lezte Soldat da drinnen war, dann können noch neue kommen..
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(building));
-            if(static_cast<nobMilitary*>(building)->GetTroopsCount())
+            if(static_cast<nobMilitary*>(building)->GetNumTroops())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
         }
         building = NULL;
     }
 }
-
 
 void nofDefender::AttackerArrested()
 {
@@ -220,7 +215,7 @@ void nofDefender::AttackerArrested()
     {
         // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
         state = STATE_DEFENDING_WALKINGFROM;
-        StartWalking(1);
+        StartWalking(Direction::NORTHWEST);
     }
 }
 

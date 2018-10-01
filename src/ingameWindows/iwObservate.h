@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,8 +21,8 @@
 #define iwOBSERVATE_H_INCLUDED
 
 #include "IngameWindow.h"
-#include "gameTypes/MapTypes.h"
 #include "nodeObjs/noMovable.h"
+#include "gameTypes/MapCoordinates.h"
 
 class GameWorldView;
 class MouseCoords;
@@ -30,35 +30,35 @@ class MouseCoords;
 /// Observing window (shows a part of the world in an extra window)
 class iwObservate : public IngameWindow
 {
-        /// View of parent GUI element
-        GameWorldView& parentView;
-        /// View shown in this window
-        GameWorldView* view;
+    /// View of parent GUI element
+    GameWorldView& parentView;
+    /// View shown in this window
+    GameWorldView* view;
 
-        const MapPoint selectedPt;
-        DrawPoint lastWindowPos;
+    const MapPoint selectedPt;
+    DrawPoint lastWindowPos;
 
-        // Scrolling
-        bool isScrolling;
-        Point<int> scrollOrigin;
+    // Scrolling
+    bool isScrolling;
+    Position scrollOrigin;
 
-        unsigned zoomLvl;
+    unsigned zoomLvl;
 
-        /// id of object currently followed or INVALID_ID
-        unsigned followMovableId;
+    /// id of object currently followed or INVALID_ID
+    unsigned followMovableId;
 
-    public:
-        iwObservate(GameWorldView& gwv, const MapPoint selectedPt);
+public:
+    iwObservate(GameWorldView& gwv, const MapPoint selectedPt);
 
-    private:
-        bool Draw_() override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        bool Msg_MouseMove(const MouseCoords& mc) override;
-        bool Msg_RightDown(const MouseCoords& mc) override;
-        bool Msg_RightUp(const MouseCoords& mc) override;
-        /// Move view to the object we currently follow, return true if it can still be found
-        bool MoveToFollowedObj();
-        inline bool MoveToFollowedObj(const MapPoint ptToCheck);
+private:
+    void Draw_() override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    bool Msg_MouseMove(const MouseCoords& mc) override;
+    bool Msg_RightDown(const MouseCoords& mc) override;
+    bool Msg_RightUp(const MouseCoords& mc) override;
+    /// Move view to the object we currently follow, return true if it can still be found
+    bool MoveToFollowedObj();
+    inline bool MoveToFollowedObj(const MapPoint ptToCheck);
 };
 
 #endif // !iwOBSERVATE_H_INCLUDED

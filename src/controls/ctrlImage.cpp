@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,50 +15,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlImage.h"
 #include "CollisionDetection.h"
-#include "WindowManager.h"
-#include "ogl/glArchivItem_Bitmap.h"
+#include "driver/MouseCoords.h"
 
-ctrlImage::ctrlImage(Window* parent,
-                     unsigned int id,
-                     unsigned short x,
-                     unsigned short y,
-                     glArchivItem_Bitmap* image,
-                     const std::string& tooltip)
-    : Window(DrawPoint(x, y), id, parent),
-      image(image), tooltip(tooltip)
-{
-}
+ctrlImage::ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip)
+    : Window(parent, id, pos), ctrlBaseTooltip(tooltip), ctrlBaseImage(image)
+{}
 
-ctrlImage::~ctrlImage()
-{
-    WINDOWMANAGER.SetToolTip(this, "");
-}
+ctrlImage::~ctrlImage() {}
 
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlImage::Draw_()
+void ctrlImage::Draw_()
 {
-    // gültiges Bild?
-    if(image)
-        image->Draw(GetDrawPos());
-
-    return true;
+    DrawImage(GetDrawPos());
 }
 
 bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
 {
-    // gültiges Bildz?
-    if(image)
+    // gültiges Bild?
+    if(GetImage())
     {
         // Jeweils Tooltip ein- und ausblenden, wenn die Maus über dem Bild ist
-        if(Coll(mc.x, mc.y, GetX() - image->getNx(), GetY() - image->getNy(), image->getWidth(), image->getHeight()))
-            WINDOWMANAGER.SetToolTip(this, tooltip_);
+        if(IsPointInRect(mc.GetPos(), Rect::move(GetImageRect(), GetDrawPos())))
+            ShowTooltip();
         else
-            WINDOWMANAGER.SetToolTip(this, "");
+            HideTooltip();
     }
 
     return false;

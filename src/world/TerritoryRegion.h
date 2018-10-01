@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,72 +18,82 @@
 #ifndef TERRITORY_REGION_H_
 #define TERRITORY_REGION_H_
 
-#include "gameTypes/MapTypes.h"
 #include "Point.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
-
-/// TerritoryRegion ist ein Rechteck aus der Karte quasi "ausgeschnitten", die für die Berechnung bei Militärgebäuden-
-/// aktionen (Neubau, Übernahme, Abriss) benötigt wird von RecalcTerritory
 
 class noBaseBuilding;
 class GameWorldBase;
 
+/// TerritoryRegion describes a rectangular region used for the calculation of the territory of military buildings
+/// e.g. after build, capture or destruction
+/// Important: Positions are relative to the startPt -> (0,0) == startPt.
+/// Those can NOT be used for GetNeighbour etc. as startPt might be odd which would lead to wrong results in the GetNeighbour calculations
 class TerritoryRegion
 {
-    /// Beschreibung eines Knotenpunktes
-    struct TRNode
-    {
-        /// Spieler-index (+1, da 0 = besitzlos!)
-        unsigned char owner;
-        /// Entfernung vom Militärgebäude
-        unsigned char radius;
-
-        TRNode(): owner(0), radius(0){}
-    };
-
 public:
-    typedef Point<int> PointI;
-
-    /// Start position(inclusive) and end position(exclusive)
-    const PointI startPt, endPt;
-    /// Size of the region (calculated from x2-x1, y2-y1)
-    const PointI size;
-
-private:
-    const GameWorldBase& world;
-    std::vector<TRNode> nodes;
-
-    /// Check whether the point is part of the polygon
-    static bool IsPointInPolygon(const std::vector< Point<int> >& polygon, const Point<int> pt);
-    /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
-    void AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers);
-    TRNode& GetNode(const PointI& pt) { return nodes[GetIdx(pt)]; }
-    const TRNode& GetNode(const PointI& pt) const { return nodes[GetIdx(pt)]; }
-
-public:
-    TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb);
+    TerritoryRegion(const Position& startPt, const Extent& size, const GameWorldBase& gwb);
     ~TerritoryRegion();
 
-    static bool IsPointValid(const GameWorldBase& gwb, const std::vector<MapPoint>& polygon, const MapPoint pt);
+    static bool IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt);
 
-    /// Berechnet ein Militärgebäude mit ein
+    /// Adds the territory of the building
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);
 
-    inline unsigned GetIdx(const PointI& pt) const;
-    /// Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
-    unsigned char GetOwner(const PointI& pt) const { return GetNode(pt).owner; }
-    /// Liefert Radius mit dem der Punkt besetzt wurde
-    unsigned char GetRadius(const PointI& pt) const { return GetNode(pt).radius; }
+    unsigned GetIdx(const Position& pt) const;
+    Position GetPosFromMapPos(const MapPoint& pt) const;
+    /// Return the owner of the point from this region (pt is relative to startPt)
+    uint8_t GetOwner(const Position& pt) const { return GetNode(pt).owner; }
+    /// Return the owner. If the point is outside the region return owner from map
+    uint8_t SafeGetOwner(const Position& pt) const;
+    void SetOwner(const Position& pt, uint8_t owner) { GetNode(pt).owner = owner; }
+    /// Return true, if all points surrounding the given point (relative to map origin!!!) have the same owner
+    /// Direction exceptDir will not be checked
+    bool WillBePlayerTerritory(const Position& mapPos, uint8_t owner, unsigned exceptDir);
+
+    /// Start position (inclusive)
+    const Position startPt;
+    /// Size of the region
+    const Extent size;
+
+private:
+    /// A node in the region
+    struct TRNode
+    {
+        /// Owner (= player index + 1, 0 = no owner)
+        uint8_t owner;
+        /// Distance to next military bld
+        uint16_t radius;
+
+        TRNode() : owner(0), radius(0) {}
+    };
+
+    /// Check whether the point is part of the polygon
+    static bool IsPointInPolygon(const std::vector<Position>& polygon, const Position& pt);
+    /// Check and set if a point belongs to the player, when a military bld in the given radius is added
+    void AdjustNode(MapPoint pt, uint8_t player, uint16_t radius, const std::vector<MapPoint>* allowedArea);
+    TRNode& GetNode(const Position& pt) { return nodes[GetIdx(pt)]; }
+    const TRNode& GetNode(const Position& pt) const { return nodes[GetIdx(pt)]; }
+    /// Return a pointer to the node, if it is inside this region
+    TRNode* TryGetNode(const MapPoint& pt);
+    TRNode* TryGetNode(Position pt);
+    const TRNode* TryGetNode(Position pt) const;
+    bool AdjustCoords(Position& pt) const;
+
+    const GameWorldBase& world;
+    std::vector<TRNode> nodes;
 };
 
-inline unsigned TerritoryRegion::GetIdx(const PointI& pt) const
+inline unsigned TerritoryRegion::GetIdx(const Position& pt) const
 {
-    PointI offset(pt - startPt);
-    RTTR_Assert(offset.x >= 0 && offset.x < size.x);
-    RTTR_Assert(offset.y >= 0 && offset.y < size.y);
-    return offset.y * size.x + offset.x;
+    RTTR_Assert(pt.x >= 0 && static_cast<unsigned>(pt.x) < size.x);
+    RTTR_Assert(pt.y >= 0 && static_cast<unsigned>(pt.y) < size.y);
+    return pt.y * size.x + pt.x;
+}
+
+inline Position TerritoryRegion::GetPosFromMapPos(const MapPoint& pt) const
+{
+    return pt - startPt;
 }
 
 #endif
-
-

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,85 +27,90 @@ class SerializedGameData;
 /// Klasse für die Tiere (ausgenommen Esel und Schweine natürlich)
 class noAnimal : public noMovable
 {
-        /// Tierart
-        Species species;
+    /// Tierart
+    Species species;
 
-        /// Was macht das Tier gerade?
-        enum State
-        {
-            STATE_WALKING = 0, /// Läuft dumm in der Gegend rum
-            STATE_PAUSED, /// macht mal ne kurze Verschnaufpause ;)
-            STATE_WAITINGFORHUNTER, /// wartet auf den Jäger bis er es abknallt
-            STATE_WALKINGUNTILWAITINGFORHUNTER, /// läuft weiter, wartet aber dann auf den Jäger
-            STATE_DEAD, /// wurde erschossen und liegt tot rum
-            STATE_DISAPPEARING /// Leiche verschwindet langsam...
-        } state;
+    /// Was macht das Tier gerade?
+    enum State
+    {
+        STATE_WALKING = 0,                  /// Läuft dumm in der Gegend rum
+        STATE_PAUSED,                       /// macht mal ne kurze Verschnaufpause ;)
+        STATE_WAITINGFORHUNTER,             /// wartet auf den Jäger bis er es abknallt
+        STATE_WALKINGUNTILWAITINGFORHUNTER, /// läuft weiter, wartet aber dann auf den Jäger
+        STATE_DEAD,                         /// wurde erschossen und liegt tot rum
+        STATE_DISAPPEARING                  /// Leiche verschwindet langsam...
+    } state;
 
-        /// Wie weit kann es noch rumlaufen, bis es mal wieder eine Pause machen muss
-        unsigned short pause_way;
-        /// Jäger, der das Tier jagt (0, falls nicht gejagt)
-        nofHunter* hunter;
-        /// Nächster Zeitpunkt, ab wann der Sound gespielt werden soll (bei Enten und Schafen)
-        unsigned int sound_moment;
+    /// Wie weit kann es noch rumlaufen, bis es mal wieder eine Pause machen muss
+    unsigned short pause_way;
+    /// Jäger, der das Tier jagt (0, falls nicht gejagt)
+    nofHunter* hunter;
+    /// Nächster Zeitpunkt, ab wann der Sound gespielt werden soll (bei Enten und Schafen)
+    unsigned sound_moment;
 
-    private:
+private:
+    /// entscheidet, was nach einem gelaufenen Abschnitt weiter zu tun ist
+    void Walked();
+    /// Sucht eine Richtung, in die das Tier gehen kann
+    unsigned char FindDir();
+    /// Fängt an zu laufen
+    void StartWalking(const Direction dir);
+    /// Sucht eine neue Richtung und läuft in diese, ansonsten stirbt es
+    void StandardWalking();
 
-        /// entscheidet, was nach einem gelaufenen Abschnitt weiter zu tun ist
-        void Walked();
-        /// Sucht eine Richtung, in die das Tier gehen kann
-        unsigned char FindDir();
-        /// Fängt an zu laufen
-        void StartWalking(const unsigned char dir);
-        /// Sucht eine neue Richtung und läuft in diese, ansonsten stirbt es
-        void StandardWalking();
+public:
+    noAnimal(const Species species, const MapPoint pt);
+    noAnimal(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    ~noAnimal() override {}
 
-        noAnimal(const Species species, const MapPoint pt);
-        noAnimal(SerializedGameData& sgd, const unsigned obj_id);
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noAnimal(SerializedGameData& sgd) const;
 
-        ~noAnimal() override {}
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noAnimal(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noAnimal(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noAnimal(sgd); }
+    /// Aufräummethoden
+protected:
+    void Destroy_noAnimal()
+    {
+        RTTR_Assert(!hunter);
+        Destroy_noMovable();
+    }
 
-        /// Aufräummethoden
-    protected:  void Destroy_noAnimal() { RTTR_Assert(!hunter); Destroy_noMovable(); }
-    public:     void Destroy() override { Destroy_noAnimal(); }
+public:
+    void Destroy() override { Destroy_noAnimal(); }
 
-        GO_Type GetGOT() const override { return GOT_ANIMAL; }
-        Species GetSpecies() const { return species; }
+    GO_Type GetGOT() const override { return GOT_ANIMAL; }
+    Species GetSpecies() const { return species; }
 
-        // An x,y zeichnen
-        void Draw(DrawPoint drawPt) override;
-        // Benachrichtigen, wenn neuer gf erreicht wurde
-        void HandleEvent(const unsigned int id) override;
+    // An x,y zeichnen
+    void Draw(DrawPoint drawPt) override;
+    // Benachrichtigen, wenn neuer gf erreicht wurde
+    void HandleEvent(const unsigned id) override;
 
-        /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugefügt wurde
-        void StartLiving();
+    /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugefügt wurde
+    void StartLiving();
 
-        /// Kann das Tier noch vom Jäger gejagt werden?
-        bool CanHunted() const;
+    /// Kann das Tier noch vom Jäger gejagt werden?
+    bool CanHunted() const;
 
-        /// Ein Jäger geht das Tier jagen
-        void BeginHunting(nofHunter* hunter);
-        /// Ein Jäger ist in der Nähe vom Tier und will es abschießen --> Tier muss stillhalten
-        /// gibt die Koordinaten seines (späteren) Standorts zurück
-        MapPoint HunterIsNear();
-        /// Ein Jäger kann doch nicht mehr zum Tier kommen --> kann wieder normal weiterlaufen
-        void StopHunting();
+    /// Ein Jäger geht das Tier jagen
+    void BeginHunting(nofHunter* hunter);
+    /// Ein Jäger ist in der Nähe vom Tier und will es abschießen --> Tier muss stillhalten
+    /// gibt die Koordinaten seines (späteren) Standorts zurück
+    MapPoint HunterIsNear();
+    /// Ein Jäger kann doch nicht mehr zum Tier kommen --> kann wieder normal weiterlaufen
+    void StopHunting();
 
-
-        /// Steht das Tier schon schön ruhig, damit der Jäger es erschießen kann?
-        bool IsReadyForShooting() const { return (state == STATE_WAITINGFORHUNTER); }
-        bool IsGettingReadyForShooting() const { return (state == STATE_WALKINGUNTILWAITINGFORHUNTER); }
-        /// Tier soll sterben - erstmal nur Leiche liegen lassen
-        void Die();
-        /// Tier wurde vom Jäger ausgenommen und muss sofort verschwinden
-        void Eviscerated();
+    /// Steht das Tier schon schön ruhig, damit der Jäger es erschießen kann?
+    bool IsReadyForShooting() const { return (state == STATE_WAITINGFORHUNTER); }
+    bool IsGettingReadyForShooting() const { return (state == STATE_WALKINGUNTILWAITINGFORHUNTER); }
+    /// Tier soll sterben - erstmal nur Leiche liegen lassen
+    void Die();
+    /// Tier wurde vom Jäger ausgenommen und muss sofort verschwinden
+    void Eviscerated();
 };
 
-
 #endif
-

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,84 +15,77 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBuildingSite.h"
-
 #include "Loader.h"
 #include "WindowManager.h"
 #include "buildings/noBuildingSite.h"
-#include "world/GameWorldView.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
+#include "world/GameWorldView.h"
+#include "gameData/BuildingConsts.h"
 
 iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite)
-    : IngameWindow(buildingsite->CreateGUIID(), IngameWindow::posAtMouse,  226, 194, _(BUILDING_NAMES[buildingsite->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(buildingsite->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194),
+                   _(BUILDING_NAMES[buildingsite->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), buildingsite(buildingsite)
 {
     // Bild des Gebäudes
-    AddImage(0, 113, 130, buildingsite->GetBuildingImage());
+    AddImage(0, DrawPoint(113, 130), buildingsite->GetBuildingImage());
     // Gebäudename
-    AddText(1, 113, 44, _("Order of building site"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(1, DrawPoint(113, 44), _("Order of building site"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
     // Hilfe
-    AddImageButton( 2,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
+    AddImageButton(2, DrawPoint(16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
     // Gebäude abbrennen
-    AddImageButton( 3,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23));
+    AddImageButton(3, DrawPoint(50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", 23), _("Demolish house"));
 
     // "Gehe Zu Ort"
-    AddImageButton( 4, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(4, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 }
 
-void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 2: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP),
-                                                  _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()]) ) );
-        } break;
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()])));
+        }
+        break;
         case 3: // Gebäude abbrennen
         {
             // Abreißen?
             Close();
             WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, buildingsite));
-        } break;
+        }
+        break;
         case 4: // "Gehe Zu Ort"
         {
             gwv.MoveToMapPt(buildingsite->GetPos());
-        } break;
+        }
+        break;
     }
-}
-
-void iwBuildingSite::Msg_PaintBefore()
-{
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    glArchivItem_Bitmap* bitmap = buildingsite->GetBuildingImageShadow();
-
-    if(bitmap)
-        bitmap->Draw(GetDrawPos() + DrawPoint(113, 130), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
 
 void iwBuildingSite::Msg_PaintAfter()
 {
     // Baukosten zeichnen
-    DrawPoint curPos = GetDrawPos() + DrawPoint(width_ / 2, 60);
+    DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)
     {
-        unsigned int wares_count = 0;
-        unsigned int wares_delivered = 0;
-        unsigned int wares_used = 0;
+        unsigned wares_count = 0;
+        unsigned wares_delivered = 0;
+        unsigned wares_used = 0;
 
         if(i == 0)
         {
             wares_count = BUILDING_COSTS[buildingsite->GetNation()][buildingsite->GetBuildingType()].boards;
             wares_used = buildingsite->getUsedBoards();
             wares_delivered = buildingsite->getBoards() + wares_used;
-        }
-        else
+        } else
         {
             wares_count = BUILDING_COSTS[buildingsite->GetNation()][buildingsite->GetBuildingType()].stones;
             wares_used = buildingsite->getUsedStones();
@@ -104,18 +97,18 @@ void iwBuildingSite::Msg_PaintAfter()
 
         // "Schwarzer Rahmen"
         DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
-        DrawRectangle(waresPos, 24 * wares_count, 24, 0x80000000);
+        DrawRectangle(Rect(waresPos, Extent(24 * wares_count, 24)), 0x80000000);
         waresPos += DrawPoint(12, 12);
 
         // Die Waren
         for(unsigned char z = 0; z < wares_count; ++z)
         {
             glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + (i == 0 ? GD_BOARDS : GD_STONES));
-            bitmap->Draw(waresPos, 0, 0, 0, 0, 0, 0, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040) );
+            bitmap->DrawFull(waresPos, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040));
 
             // Hammer wenn Ware verbaut
             if(z < wares_used)
-                LOADER.GetMapImageN(2250 + GD_HAMMER)->Draw(waresPos);
+                LOADER.GetMapImageN(2250 + GD_HAMMER)->DrawFull(waresPos);
             waresPos.x += 24;
         }
         curPos.y += 29;

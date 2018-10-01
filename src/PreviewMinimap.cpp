@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "PreviewMinimap.h"
+#include "lua/GameDataLoader.h"
+#include "mygettext/mygettext.h"
 #include "ogl/glArchivItem_Map.h"
 #include "world/MapGeometry.h"
 #include "gameData/MinimapConsts.h"
-#include "gameData/TerrainData.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
+#include "gameData/TerrainDesc.h"
+#include "gameData/WorldDescription.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libutil/Log.h"
 
 PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
 {
@@ -32,12 +36,10 @@ PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
 void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
 {
     const libsiedler2::ArchivItem_Map_Header& header = s2map.getHeader();
-    map_width = header.getWidth();
-    map_height = header.getHeight();
+    mapSize.x = header.getWidth();
+    mapSize.y = header.getHeight();
 
     unsigned char gfxSet = header.getGfxSet();
-    RTTR_Assert(gfxSet < LT_COUNT);
-    lt = LandscapeType(gfxSet);
     objects = s2map.GetLayer(MAP_TYPE);
     terrain1 = s2map.GetLayer(MAP_TERRAIN1);
     terrain2 = s2map.GetLayer(MAP_TERRAIN2);
@@ -45,6 +47,26 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
         shadows = s2map.GetLayer(MAP_SHADOWS);
     else
         CalcShadows(s2map.GetLayer(MAP_ALTITUDE));
+
+    WorldDescription worldDesc;
+    GameDataLoader gdLoader(worldDesc);
+    if(!gdLoader.Load())
+        LOG.write(_("Failed to load game data!"));
+    else
+    {
+        DescIdx<LandscapeDesc> lt(0);
+        for(DescIdx<LandscapeDesc> i(0); i.value < worldDesc.landscapes.size(); i.value++)
+        {
+            if(worldDesc.get(i).s2Id == gfxSet)
+                lt = i;
+        }
+        for(DescIdx<TerrainDesc> i(0); i.value < worldDesc.terrain.size(); i.value++)
+        {
+            const TerrainDesc& ter = worldDesc.get(i);
+            if(ter.landscape == lt)
+                terrain2Clr[ter.s2Id] = ter.minimapColor;
+        }
+    }
 
     CreateMapTexture();
 }
@@ -62,7 +84,7 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     // Ansonsten die jeweilige Terrainfarbe nehmen
     else
     {
-        color = TerrainData::GetColor(lt, TerrainData::MapIdx2Terrain(t == 0 ? terrain1[GetMMIdx(pt)] : terrain2[GetMMIdx(pt)]));
+        color = terrain2Clr[t == 0 ? terrain1[GetMMIdx(pt)] : terrain2[GetMMIdx(pt)]];
 
         // Schattierung
         const int shading = shadows[GetMMIdx(pt)] - 0x40;
@@ -70,12 +92,18 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
         int g = GetGreen(color) + shading;
         int b = GetBlue(color) + shading;
 
-        if(r < 0) r = 0;
-        if(r > 255) r = 255;
-        if(g < 0) g = 0;
-        if(g > 255) g = 255;
-        if(b < 0) b = 0;
-        if(b > 255) b = 255;
+        if(r < 0)
+            r = 0;
+        if(r > 255)
+            r = 255;
+        if(g < 0)
+            g = 0;
+        if(g > 255)
+            g = 255;
+        if(b < 0)
+            b = 0;
+        if(b > 255)
+            b = 255;
 
         color = MakeColor(0xFF, unsigned(r), unsigned(g), unsigned(b));
     }
@@ -86,13 +114,13 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 unsigned char PreviewMinimap::CalcShading(const MapPoint pt, const std::vector<unsigned char>& altitudes) const
 {
     int altitude = altitudes[GetMMIdx(pt)];
-    MapPoint tmp = MakeMapPoint(GetNeighbour(Point<int>(pt), Direction::NORTHEAST), map_width, map_height);
+    MapPoint tmp = MakeMapPoint(GetNeighbour(Position(pt), Direction::NORTHEAST), GetMapSize());
     int A = altitudes[GetMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(GetNeighbour2(Point<int>(pt), 0), map_width, map_height);
+    tmp = MakeMapPoint(GetNeighbour2(Position(pt), 0), GetMapSize());
     int B = altitudes[GetMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(GetNeighbour(Point<int>(pt), Direction::WEST), map_width, map_height);
+    tmp = MakeMapPoint(GetNeighbour(Position(pt), Direction::WEST), GetMapSize());
     int C = altitudes[GetMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(GetNeighbour2(Point<int>(pt), 7), map_width, map_height);
+    tmp = MakeMapPoint(GetNeighbour2(Position(pt), 7), GetMapSize());
     int D = altitudes[GetMMIdx(tmp)] - altitude;
 
     int shadingS2 = 64 + 9 * A - 3 * B - 6 * C - 9 * D;
@@ -106,10 +134,7 @@ unsigned char PreviewMinimap::CalcShading(const MapPoint pt, const std::vector<u
 
 void PreviewMinimap::CalcShadows(const std::vector<unsigned char>& altitudes)
 {
-    shadows.resize(map_width * map_height);
-    for(MapPoint pt(0, 0); pt.y < map_height; ++pt.y)
-    {
-        for(pt.x = 0; pt.x < map_width; ++pt.x)
-            shadows[GetMMIdx(pt)] = CalcShading(pt, altitudes);
-    }
+    shadows.resize(altitudes.size());
+    RTTR_FOREACH_PT(MapPoint, GetMapSize())
+        shadows[GetMMIdx(pt)] = CalcShading(pt, altitudes);
 }

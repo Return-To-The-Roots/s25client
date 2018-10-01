@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,18 +20,18 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "driver/src/VideoInterface.h"
+#include "driver/VideoInterface.h"
 
 class iwSettings : public IngameWindow
 {
-    public:
-        iwSettings();
-        ~iwSettings() override;
+public:
+    iwSettings();
+    ~iwSettings() override;
 
-    private:
-        std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
-        void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked) override;
+private:
+    std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_CheckboxChange(const unsigned ctrl_id, const bool checked) override;
 };
 
 #endif // !iwSETTINGS_H_INCLUDED

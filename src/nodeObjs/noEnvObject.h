@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,12 +24,11 @@ class SerializedGameData;
 
 class noEnvObject : public noStaticObject
 {
-    public:
-        noEnvObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF);
-        noEnvObject(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    noEnvObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF);
+    noEnvObject(SerializedGameData& sgd, const unsigned obj_id);
 
-        GO_Type GetGOT() const override { return GOT_ENVOBJECT; }
-
+    GO_Type GetGOT() const override { return GOT_ENVOBJECT; }
 };
 
 #endif // !NOENVOBJECT_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlMultiSelectGroup.h"
 class MouseCoords;
 
-ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
-        unsigned int id,
-        int select_type,
-        bool scale)
-    : ctrlGroup(parent, id, scale),
-      selectedItems_(std::set<unsigned short>()), select_type(select_type)
-{
-}
+ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type)
+    : ctrlGroup(parent, id), selectedItems_(std::set<unsigned short>()), select_type(select_type)
+{}
 
 /**
  *  Zeichenmethode.
  */
-bool ctrlMultiSelectGroup::Draw_()
+void ctrlMultiSelectGroup::Draw_()
 {
     DrawControls();
-
-    return true;
 }
 
 /**
@@ -49,14 +42,14 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(true); break;
-        case CHECK:      button->SetCheck(true);       break;
-        case SHOW:       button->SetVisible(false);     break;
+        case CHECK: button->SetChecked(true); break;
+        case SHOW: button->SetVisible(false); break;
     }
 
     this->selectedItems_.insert(selection);
 
-    if(notify && parent_)
-        parent_->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && GetParent())
+        GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
 
 /**
@@ -70,23 +63,22 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(false); break;
-        case CHECK:      button->SetCheck(false);       break;
-        case SHOW:       button->SetVisible(true);        break;
+        case CHECK: button->SetChecked(false); break;
+        case SHOW: button->SetVisible(true); break;
     }
 
     this->selectedItems_.erase(selection);
 
-    if(notify && parent_)
-        parent_->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && GetParent())
+        GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
-
 
 /**
  *  Wechselt zwischen selektiert/nicht selektiert
  */
 void ctrlMultiSelectGroup::ToggleSelection(unsigned short selection, bool notify)
 {
-    if (IsSelected(selection))
+    if(IsSelected(selection))
         RemoveSelection(selection, notify);
     else
         AddSelection(selection, notify);
@@ -97,7 +89,7 @@ bool ctrlMultiSelectGroup::IsSelected(unsigned short selection) const
     return (this->selectedItems_.count(selection) == 1);
 }
 
-void ctrlMultiSelectGroup::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlMultiSelectGroup::Msg_ButtonClick(const unsigned ctrl_id)
 {
     ToggleSelection(ctrl_id, true);
 }

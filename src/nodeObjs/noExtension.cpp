@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noExtension.h"
 #include "SerializedGameData.h"
 
@@ -26,11 +26,6 @@ void noExtension::Serialize_noExtension(SerializedGameData& sgd) const
     sgd.PushObject(base, false);
 }
 
-noExtension::noExtension(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    base(sgd.PopObject<noBase>(GOT_UNKNOWN))
-{
-}
+noExtension::noExtension(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id), base(sgd.PopObject<noBase>(GOT_UNKNOWN)) {}
 
-noExtension::~noExtension()
-{}
-
+noExtension::~noExtension() {}

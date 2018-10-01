@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,32 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "PostMsg.h"
 #include "BasePlayerInfo.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 #include <boost/format.hpp>
 
-PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt, SoundEffect soundEffect):
-    sendFrame_(sendFrame), text_(text), cat_(cat), pt_(pt), soundEffect_(soundEffect)
+PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt, SoundEffect soundEffect)
+    : sendFrame_(sendFrame), text_(text), cat_(cat), pt_(pt), soundEffect_(soundEffect)
 {}
 
-PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, SoundEffect soundEffect) :
-    sendFrame_(sendFrame), text_(text), cat_(cat), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
+PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, SoundEffect soundEffect)
+    : sendFrame_(sendFrame), text_(text), cat_(cat), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
 {}
 
-PostMsg::PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled, SoundEffect soundEffect):
-    sendFrame_(sendFrame), cat_(PostCategory::Diplomacy), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
+PostMsg::PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled, SoundEffect soundEffect)
+    : sendFrame_(sendFrame), cat_(PostCategory::Diplomacy), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
 {
     if(acceptedOrCanceled)
     {
-        text_ = boost::str(
-            boost::format(_("The %s between player '%s' and you has been concluded.")) % PACT_NAMES[pt] % otherPlayer.name
-        );
+        text_ =
+          boost::str(boost::format(_("The %s between player '%s' and you has been concluded.")) % _(PACT_NAMES[pt]) % otherPlayer.name);
     } else
     {
-        text_ = boost::str(
-            boost::format(_("The %s between player '%s' and you has been cancelled.")) % PACT_NAMES[pt] % otherPlayer.name
-        );
+        text_ =
+          boost::str(boost::format(_("The %s between player '%s' and you has been cancelled.")) % _(PACT_NAMES[pt]) % otherPlayer.name);
     }
 }

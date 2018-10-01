@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,37 +15,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceSettings.h"
-#include "GameServerInterface.h"
-#include "LuaServerPlayer.h"
 #include "GlobalGameSettings.h"
-#include "lua/LuaHelpers.h"
-#include "gameTypes/GameSettingTypes.h"
+#include "LuaServerPlayer.h"
 #include "addons/Addon.h"
 #include "addons/const_addons.h"
-#include "libutil/src/Log.h"
+#include "lua/LuaHelpers.h"
+#include "network/IGameLobbyController.h"
+#include "gameTypes/GameSettingTypes.h"
+#include "libutil/Log.h"
 
-LuaInterfaceSettings::LuaInterfaceSettings(GameServerInterface& gameServer): gameServer_(gameServer)
+LuaInterfaceSettings::LuaInterfaceSettings(IGameLobbyController& lobbyServerController) : lobbyServerController_(lobbyServerController)
 {
     Register(lua);
     LuaServerPlayer::Register(lua);
     lua["rttr"] = this;
 }
 
-LuaInterfaceSettings::~LuaInterfaceSettings()
-{}
+LuaInterfaceSettings::~LuaInterfaceSettings() {}
 
 void LuaInterfaceSettings::Register(kaguya::State& state)
 {
-    state["RTTRSettings"].setClass(kaguya::UserdataMetatable<LuaInterfaceSettings, LuaInterfaceBase>()
-        .addFunction("GetPlayerCount", &LuaInterfaceSettings::GetPlayerCount)
+    state["RTTRSettings"].setClass(
+      kaguya::UserdataMetatable<LuaInterfaceSettings, LuaInterfaceGameBase>()
+        .addFunction("GetNumPlayers", &LuaInterfaceSettings::GetNumPlayers)
         .addFunction("GetPlayer", &LuaInterfaceSettings::GetPlayer)
         .addOverloadedFunctions("SetAddon", &LuaInterfaceSettings::SetAddon, &LuaInterfaceSettings::SetBoolAddon)
         .addFunction("ResetAddons", &LuaInterfaceSettings::ResetAddons)
         .addFunction("ResetGameSettings", &LuaInterfaceSettings::ResetGameSettings)
         .addFunction("SetGameSettings", &LuaInterfaceSettings::SetGameSettings)
-    );
+        // Old name
+        .addFunction("GetPlayerCount", &LuaInterfaceSettings::GetNumPlayers));
 
     state["AddonId"].setClass(kaguya::UserdataMetatable<AddonId>());
 
@@ -82,57 +83,46 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
 #pragma endregion ConstDefs
 }
 
-unsigned LuaInterfaceSettings::GetPlayerCount()
+unsigned LuaInterfaceSettings::GetNumPlayers() const
 {
-    RTTR_Assert(gameServer_.IsRunning());
-    return gameServer_.GetMaxPlayerCount();
+    return lobbyServerController_.GetMaxNumPlayers();
 }
 
 LuaServerPlayer LuaInterfaceSettings::GetPlayer(unsigned idx)
 {
-    RTTR_Assert(gameServer_.IsRunning());
-    lua::assertTrue(idx < GetPlayerCount(), "Invalid player idx");
-    return LuaServerPlayer(gameServer_, idx);
+    lua::assertTrue(idx < GetNumPlayers(), "Invalid player idx");
+    return LuaServerPlayer(lobbyServerController_, idx);
 }
 
 void LuaInterfaceSettings::SetAddon(AddonId id, unsigned value)
 {
-    RTTR_Assert(gameServer_.IsRunning());
-    GlobalGameSettings ggs = gameServer_.GetGGS();
+    GlobalGameSettings ggs = lobbyServerController_.GetGGS();
     ggs.setSelection(id, value);
-    gameServer_.ChangeGlobalGameSettings(ggs);
+    lobbyServerController_.ChangeGlobalGameSettings(ggs);
 }
 
 void LuaInterfaceSettings::SetBoolAddon(AddonId id, bool value)
 {
-    RTTR_Assert(gameServer_.IsRunning());
     SetAddon(id, value ? 1 : 0);
 }
 
 void LuaInterfaceSettings::ResetAddons()
 {
-    RTTR_Assert(gameServer_.IsRunning());
-    GlobalGameSettings ggs = gameServer_.GetGGS();
-    for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
-    {
-        const Addon* addon = ggs.getAddon(i);
-        ggs.setSelection(addon->getId(), addon->getDefaultStatus());
-    }
-    gameServer_.ChangeGlobalGameSettings(ggs);
+    GlobalGameSettings ggs = lobbyServerController_.GetGGS();
+    ggs.resetAddons();
+    lobbyServerController_.ChangeGlobalGameSettings(ggs);
 }
 
 void LuaInterfaceSettings::ResetGameSettings()
 {
-    RTTR_Assert(gameServer_.IsRunning());
     // Simply create a new instance
-    gameServer_.ChangeGlobalGameSettings(GlobalGameSettings());
+    lobbyServerController_.ChangeGlobalGameSettings(GlobalGameSettings());
 }
 
 void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
 {
-    RTTR_Assert(gameServer_.IsRunning());
-    GlobalGameSettings ggs = gameServer_.GetGGS();
-    std::vector<std::string>keys = settings.keys<std::string>();
+    GlobalGameSettings ggs = lobbyServerController_.GetGGS();
+    std::vector<std::string> keys = settings.keys<std::string>();
 
     if(std::find(keys.begin(), keys.end(), "speed") != keys.end())
     {
@@ -171,7 +161,7 @@ void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
     if(std::find(keys.begin(), keys.end(), "randomStartPosition") != keys.end())
         ggs.randomStartPosition = settings.getField("randomStartPosition");
 
-    gameServer_.ChangeGlobalGameSettings(ggs);
+    lobbyServerController_.ChangeGlobalGameSettings(ggs);
 }
 
 kaguya::LuaRef LuaInterfaceSettings::GetAllowedChanges()
@@ -197,7 +187,6 @@ bool LuaInterfaceSettings::EventSettingsInit(bool isSinglePlayer, bool isSavegam
 
 void LuaInterfaceSettings::EventSettingsReady()
 {
-    RTTR_Assert(gameServer_.IsRunning());
     kaguya::LuaRef func = lua["onSettingsReady"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>();
@@ -205,7 +194,6 @@ void LuaInterfaceSettings::EventSettingsReady()
 
 void LuaInterfaceSettings::EventPlayerJoined(unsigned playerIdx)
 {
-    RTTR_Assert(gameServer_.IsRunning());
     kaguya::LuaRef func = lua["onPlayerJoined"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>(playerIdx);
@@ -213,7 +201,6 @@ void LuaInterfaceSettings::EventPlayerJoined(unsigned playerIdx)
 
 void LuaInterfaceSettings::EventPlayerLeft(unsigned playerIdx)
 {
-    RTTR_Assert(gameServer_.IsRunning());
     kaguya::LuaRef func = lua["onPlayerLeft"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>(playerIdx);
@@ -221,13 +208,12 @@ void LuaInterfaceSettings::EventPlayerLeft(unsigned playerIdx)
 
 void LuaInterfaceSettings::EventPlayerReady(unsigned playerIdx)
 {
-    RTTR_Assert(gameServer_.IsRunning());
     kaguya::LuaRef func = lua["onPlayerReady"];
     if(func.type() == LUA_TFUNCTION)
         func.call<void>(playerIdx);
 }
 
-bool LuaInterfaceSettings::IsChangeAllowed(const std::string& name, const bool defaultVal/* = false*/)
+bool LuaInterfaceSettings::IsChangeAllowed(const std::string& name, const bool defaultVal /* = false*/)
 {
     kaguya::LuaRef cfg = GetAllowedChanges();
     if(cfg.isNilref())

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,14 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ListDir.h"
+#include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/iostreams/stream.hpp>
+#include <boost/nowide/fstream.hpp>
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(FileIOSuite)
 
@@ -40,24 +41,23 @@ struct FileOpenFixture
 #else
         // Use UTF8 (widestring not portable, either 16 or 32 bit)
         fileNormal = bfs::path("1Normal.txt");
-        fileUmlaut = bfs::path("2Um\xC3\xA4\xC3\xB6\xC3\xBC""Laut.txt");
-        fileSpecial = bfs::path("3Spe\xC4\xB9\xC3\x94""cial.txt");
+        fileUmlaut = bfs::path("2Um\xC3\xA4\xC3\xB6\xC3\xBC"
+                               "Laut.txt");
+        fileSpecial = bfs::path("3Spe\xC4\xB9\xC3\x94"
+                                "cial.txt");
 #endif
         BOOST_TEST_CHECKPOINT("Creating tmp path" << tmpPath);
         bfs::create_directories(tmpPath);
         BOOST_TEST_CHECKPOINT("Creating files");
-        bfs::ofstream fNormal(tmpPath / fileNormal);
-        bfs::ofstream fUmlaut(tmpPath / fileUmlaut);
-        bfs::ofstream fSpecial(tmpPath / fileSpecial);
+        bnw::ofstream fNormal(tmpPath / fileNormal);
+        bnw::ofstream fUmlaut(tmpPath / fileUmlaut);
+        bnw::ofstream fSpecial(tmpPath / fileSpecial);
         BOOST_TEST_CHECKPOINT("Filling files");
         fNormal << "OK";
         fUmlaut << "OK";
         fSpecial << "OK";
     }
-    virtual ~FileOpenFixture()
-    {
-        bfs::remove_all(tmpPath);
-    }
+    virtual ~FileOpenFixture() { bfs::remove_all(tmpPath); }
     bfs::path tmpPath, fileNormal, fileUmlaut, fileSpecial;
 };
 
@@ -70,12 +70,17 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
     {
         BOOST_REQUIRE(bfs::exists(file));
         BOOST_REQUIRE(bfs::path(file).is_absolute());
+        // Filepath must be utf8 encoded
+        BOOST_REQUIRE(isValidUTF8(file));
+
+        bfs::path filePath(file);
+        // String result must still be utf8
+        BOOST_REQUIRE(isValidUTF8(filePath.string()));
 
         // Scopes for auto-close
         {
             // path input
-            bfs::path filePath(file);
-            bfs::ifstream sFile(filePath);
+            bnw::ifstream sFile(filePath);
             BOOST_REQUIRE(sFile);
             std::string content;
             BOOST_REQUIRE(sFile >> content);
@@ -84,7 +89,7 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
 
         {
             // string input
-            bfs::ifstream sFile(file);
+            bnw::ifstream sFile(file);
             BOOST_REQUIRE(sFile);
             std::string content;
             BOOST_REQUIRE(sFile >> content);
@@ -97,14 +102,13 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
             try
             {
                 mmapFile.open(bfs::path(file));
-            } catch (std::exception& e)
+            } catch(std::exception& e)
             {
                 BOOST_FAIL(e.what());
             }
             typedef boost::iostreams::stream<boost::iostreams::mapped_file_source> MMStream;
             MMStream map(mmapFile);
         }
-
     }
 }
 

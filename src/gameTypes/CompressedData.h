@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,8 +24,12 @@
 /// Holds compressed data
 struct CompressedData
 {
-    CompressedData(): length(0){}
-    void Clear(){ length = 0; data.clear(); }
+    CompressedData() : length(0) {}
+    void Clear()
+    {
+        length = 0;
+        data.clear();
+    }
     bool DecompressToFile(const std::string& filePath, unsigned* checksum = NULL);
     bool CompressFromFile(const std::string& filePath, unsigned* checksum = NULL);
 

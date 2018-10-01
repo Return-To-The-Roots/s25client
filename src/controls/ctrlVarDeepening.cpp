@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,42 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlVarDeepening.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
-class Window;
 
-ctrlVarDeepening::ctrlVarDeepening(Window* parent,
-                                   unsigned int id,
-                                   unsigned short x,
-                                   unsigned short y,
-                                   unsigned short width,
-                                   unsigned short height,
-                                   TextureColor tc,
-                                   const std::string& text,
-                                   glArchivItem_Font* font,
-                                   unsigned int color,
-                                   unsigned int count,
-                                   va_list liste)
-    : ctrlVarText(parent, id, x, y, text, color, 0, font, count, liste),
-      tc(tc)
+ctrlVarDeepening::ctrlVarDeepening(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                   const std::string& fmtString, glArchivItem_Font* font, unsigned color, unsigned count, va_list fmtArgs)
+    : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseVarText(fmtString, color, font, count, fmtArgs)
+{}
+
+void ctrlVarDeepening::DrawContent() const
 {
-    // We don't want to pass these through all those constructors
-    // of only-text objects down to the Window class. This is a special
-    // situation, as we are a Deepening _and_ a VarText instead
-    // of owning the VarText.
-    this->width_  = width;
-    this->height_ = height;
-}
-
-/**
- *  zeichnet das Fenster.
- */
-bool ctrlVarDeepening::Draw_()
-{
-    Draw3D(GetDrawPos(), width_, height_, tc, 2);
-
-    font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
-
-    return true;
+    font->Draw(GetDrawPos() + GetSize() / 2, GetFormatedText(), FontStyle::CENTER | FontStyle::VCENTER, color_);
 }

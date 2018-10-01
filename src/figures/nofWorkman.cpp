@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,15 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofWorkman.h"
-
-#include "buildings/nobUsual.h"
-#include "gameData/JobConsts.h"
-#include "SoundManager.h"
 #include "EventManager.h"
-class SerializedGameData;
-class nobBaseWarehouse;
+#include "SoundManager.h"
+#include "buildings/nobUsual.h"
+#include "world/GameWorldGame.h"
+#include "gameData/GameConsts.h"
+#include "gameData/JobConsts.h"
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace)
@@ -38,56 +37,51 @@ void nofWorkman::Serialize_nofWorkman(SerializedGameData& sgd) const
     Serialize_nofBuildingWorker(sgd);
 }
 
-nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
-{}
+nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id) {}
 
-
-void nofWorkman::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofWorkman::HandleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
-        case STATE_WAITING1:
-        {
-            HandleStateWaiting1();
-        } break;
-        case STATE_WORK:
-        {
-            HandleStateWork();
-        } break;
-        case STATE_WAITING2:
-        {
-            HandleStateWaiting2();
-        } break;
-        default:
-            break;
+        case STATE_WAITING1: HandleStateWaiting1(); break;
+        case STATE_WORK: HandleStateWork(); break;
+        case STATE_WAITING2: HandleStateWaiting2(); break;
+        default: break;
     }
+}
+
+bool nofWorkman::StartWorking()
+{
+    current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
+    state = STATE_WORK;
+    workplace->is_working = true;
+    // Waren verbrauchen
+    workplace->ConsumeWares();
+    return true;
 }
 
 void nofWorkman::HandleStateWaiting1()
 {
-    // Nach 1. Warten wird gearbeitet
-    current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
-    state = STATE_WORK;
-    workplace->is_working = true;
-
-    // Waren verbrauchen
-    workplace->ConsumeWares();
+    current_ev = NULL;
+    if(!StartWorking())
+    {
+        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        workplace->StartNotWorking();
+    }
 }
 
 void nofWorkman::HandleStateWaiting2()
 {
-    current_ev = 0;
-
+    current_ev = NULL;
     // Ware erzeugen... (noch nicht "richtig"!, sondern nur viruell erstmal)
     if((ware = ProduceWare()) == GD_NOTHING)
     {
         // Soll keine erzeugt werden --> wieder anfangen zu arbeiten
         TryToWork();
-    }
-    else
+    } else
     {
         // und diese raustragen
-        StartWalking(4);
+        StartWalking(Direction::SOUTHEAST);
         state = STATE_CARRYOUTWARE;
     }
 
@@ -112,11 +106,25 @@ void nofWorkman::HandleStateWork()
     }
 }
 
-void nofWorkman::WalkedDerived()
+namespace {
+struct NodeHasResource
 {
-}
+    const GameWorldGame& gwg;
+    const Resource::Type res;
+    NodeHasResource(const GameWorldGame& gwg, const Resource::Type res) : gwg(gwg), res(res) {}
 
+    bool operator()(const MapPoint pt) { return gwg.GetNode(pt).resources.has(res); }
+};
+} // namespace
 
-void nofWorkman::WorkFinished()
+MapPoint nofWorkman::FindPointWithResource(Resource::Type type) const
 {
+    // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
+    std::vector<MapPoint> pts = gwg->GetPointsInRadius<1>(pos, MINER_RADIUS, Identity<MapPoint>(), NodeHasResource(*gwg, type), true);
+    if(!pts.empty())
+        return pts.front();
+
+    workplace->OnOutOfResources();
+
+    return MapPoint::Invalid();
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,9 +19,11 @@
 
 #pragma once
 
-#include "Singleton.h"
-#include <string>
+#include "Point.h"
+#include "libutil/ProxySettings.h"
+#include "libutil/Singleton.h"
 #include <map>
+#include <string>
 
 #undef interface
 
@@ -29,102 +31,94 @@
 // Klasse für die Konfiguration
 class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 {
-    public:
-        BOOST_STATIC_CONSTEXPR unsigned Longevity = 18;
+public:
+    BOOST_STATIC_CONSTEXPR unsigned Longevity = 18;
 
-        Settings();
+    Settings();
 
-        bool Load(); // Lädt Einstellungen
-        void Save(); // Speichert Einstellungen
+    bool Load(); // Lädt Einstellungen
+    void Save(); // Speichert Einstellungen
 
-    protected:
-        bool LoadDefaults();
+protected:
+    bool LoadDefaults();
 
-    public:
-        struct
-        {
-            unsigned int submit_debug_data;
-            unsigned int use_upnp;
-            bool smartCursor;
-            bool debugMode;
-        } global;
+public:
+    struct
+    {
+        unsigned submit_debug_data;
+        unsigned use_upnp;
+        bool smartCursor;
+        bool debugMode;
+    } global;
 
-        struct
-        {
-            unsigned short fullscreen_width;
-            unsigned short fullscreen_height;
-            unsigned short windowed_width;
-            unsigned short windowed_height;
-            bool fullscreen;
-            unsigned short vsync;
-            bool vbo;
-            bool shared_textures;
-        } video;
+    struct
+    {
+        Extent fullscreenSize, windowedSize;
+        bool fullscreen;
+        unsigned short vsync;
+        bool vbo;
+        bool shared_textures;
+    } video;
 
-        struct
-        {
-            std::string language;
-        } language;
+    struct
+    {
+        std::string language;
+    } language;
 
-        struct
-        {
-            std::string audio;
-            std::string video;
-        } driver;
+    struct
+    {
+        std::string audio;
+        std::string video;
+    } driver;
 
-        struct
-        {
-            bool musik;
-            unsigned char musik_volume;
-            bool effekte;
-            unsigned char effekte_volume;
-            std::string playlist; /// musicplayer playlist name
-        } sound;
+    struct
+    {
+        bool musik;
+        unsigned char musik_volume;
+        bool effekte;
+        unsigned char effekte_volume;
+        std::string playlist; /// musicplayer playlist name
+    } sound;
 
-        struct
-        {
-            std::string name;
-            std::string password;
-            std::string email;
-            bool save_password;
-        } lobby;
+    struct
+    {
+        std::string name;
+        std::string password;
+        std::string email;
+        bool save_password;
+    } lobby;
 
-        struct
-        {
-            std::string last_ip; /// last entered ip or hostname
-            bool ipv6;           /// listen/connect on ipv6 as default or not
-        } server;
+    struct
+    {
+        std::string last_ip; /// last entered ip or hostname
+        bool ipv6;           /// listen/connect on ipv6 as default or not
+    } server;
 
-        struct
-        {
-            std::string proxy; /// Serveradresse / Hostname
-            unsigned int port; /// Port
-            unsigned char typ; /// Socks 4 oder 5
-        } proxy;
+    ProxySettings proxy;
 
-        struct
-        {
-            unsigned int autosave_interval;
-            bool revert_mouse;
-        } interface;
+    struct
+    {
+        unsigned autosave_interval;
+        bool revert_mouse;
+    } interface;
 
-        struct
-        {
-            bool scale_statistics;
-        } ingame;
+    struct
+    {
+        bool scale_statistics;
+    } ingame;
 
-        struct
-        {
-            std::map<unsigned int, unsigned int> configuration;
-        } addons;
+    struct
+    {
+        std::map<unsigned, unsigned> configuration;
+    } addons;
 
-        static const unsigned char SCREEN_REFRESH_RATES_COUNT;
-        static const unsigned short SCREEN_REFRESH_RATES[];
+    static const unsigned char NUM_SCREEN_REFRESH_RATESS;
+    static const unsigned short SCREEN_REFRESH_RATES[];
 
-    private:
-        static const unsigned int SETTINGS_VERSION;
-        static const unsigned int SETTINGS_SECTIONS;
-        static const std::string SETTINGS_SECTION_NAMES[];
+private:
+    static const unsigned SETTINGS_VERSION;
+    static const unsigned SETTINGS_SECTIONS;
+    static const std::string SETTINGS_SECTION_NAMES[];
 };
 
 ///////////////////////////////////////////////////////////////////////////////

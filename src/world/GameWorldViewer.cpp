@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldViewer.h"
-#include "world/GameWorldBase.h"
-#include "world/BQCalculator.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "buildings/nobMilitary.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
-#include "gameTypes/MapTypes.h"
-#include "nodeObjs/noShip.h"
+#include "GlobalGameSettings.h"
+#include "buildings/nobMilitary.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "network/GameClient.h"
 #include "notifications/NodeNote.h"
-#include "notifications/RoadNote.h"
 #include "notifications/PlayerNodeNote.h"
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/if.hpp>
+#include "notifications/RoadNote.h"
+#include "world/BQCalculator.h"
+#include "world/GameWorldBase.h"
+#include "nodeObjs/noShip.h"
+#include "gameTypes/MapCoordinates.h"
+#include "gameData/BuildingProperties.h"
 #include <boost/lambda/bind.hpp>
+#include <boost/lambda/if.hpp>
+#include <boost/lambda/lambda.hpp>
 
-GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb): playerId_(playerId), gwb(gwb)
+GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb) : playerId_(playerId), gwb(gwb)
 {
     InitVisualData();
 }
@@ -40,26 +42,19 @@ GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb): playerI
 void GameWorldViewer::InitVisualData()
 {
     visualNodes.resize(gwb.GetWidth() * gwb.GetHeight());
-    for(MapPoint pt(0, 0); pt.y < gwb.GetHeight(); ++pt.y)
+    RTTR_FOREACH_PT(MapPoint, gwb.GetSize())
     {
-        for(pt.x = 0; pt.x < gwb.GetWidth(); ++pt.x)
-        {
-            VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
-            const MapNode& node = gwb.GetNode(pt);
-            vNode.bq = node.bq;
-            // Roads are only overlays. At first we don't have any -> 0=use real road
-            std::fill(vNode.roads.begin(), vNode.roads.end(), 0);
-        }
+        VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
+        const MapNode& node = gwb.GetNode(pt);
+        vNode.bq = node.bq;
+        // Roads are only overlays. At first we don't have any -> 0=use real road
+        std::fill(vNode.roads.begin(), vNode.roads.end(), 0);
     }
     namespace bl = boost::lambda;
     using bl::_1;
-    evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>(
-        bl::bind(&GameWorldViewer::RoadConstructionEnded, this, _1)
-        );
+    evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>(bl::bind(&GameWorldViewer::RoadConstructionEnded, this, _1));
     evBQChanged = gwb.GetNotifications().subscribe<NodeNote>(
-        bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)
-        [bl::bind(&GameWorldViewer::RecalcBQ, this, bl::bind(&NodeNote::pt, _1))]
-    );
+      bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&GameWorldViewer::RecalcBQ, this, bl::bind(&NodeNote::pos, _1))]);
 }
 
 void GameWorldViewer::InitTerrainRenderer()
@@ -69,14 +64,12 @@ void GameWorldViewer::InitTerrainRenderer()
     using bl::_1;
     // Notify renderer about altitude changes
     evAltitudeChanged = gwb.GetNotifications().subscribe<NodeNote>(
-        bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::Altitude)
-        [bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pt, _1), boost::cref(*this))]
-    );
+      bl::if_(bl::bind(&NodeNote::type, _1)
+              == NodeNote::Altitude)[bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pos, _1), boost::cref(*this))]);
     // And visibility changes
-    evVisibilityChanged = gwb.GetNotifications().subscribe<PlayerNodeNote>(
-        bl::if_(bl::bind(&PlayerNodeNote::type, _1) == PlayerNodeNote::Visibility)
-        [bl::bind(&GameWorldViewer::VisibilityChanged, this, bl::bind(&PlayerNodeNote::pt, _1), bl::bind(&PlayerNodeNote::player, _1))]
-    );
+    evVisibilityChanged =
+      gwb.GetNotifications().subscribe<PlayerNodeNote>(bl::if_(bl::bind(&PlayerNodeNote::type, _1) == PlayerNodeNote::Visibility)[bl::bind(
+        &GameWorldViewer::VisibilityChanged, this, bl::bind(&PlayerNodeNote::pt, _1), bl::bind(&PlayerNodeNote::player, _1))]);
 }
 
 const GamePlayer& GameWorldViewer::GetPlayer() const
@@ -84,9 +77,9 @@ const GamePlayer& GameWorldViewer::GetPlayer() const
     return GetWorld().GetPlayer(playerId_);
 }
 
-unsigned GameWorldViewer::GetPlayerCount() const
+unsigned GameWorldViewer::GetNumPlayers() const
 {
-    return GetWorld().GetPlayerCount();
+    return GetWorld().GetNumPlayers();
 }
 
 unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
@@ -103,7 +96,7 @@ unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if((*it)->GetPlayer() == playerId_ && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if((*it)->GetPlayer() == playerId_ && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt);
     }
 
@@ -131,6 +124,11 @@ Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
 bool GameWorldViewer::IsOwner(const MapPoint& pt) const
 {
     return GetWorld().GetNode(pt).owner == playerId_ + 1;
+}
+
+bool GameWorldViewer::IsPlayerTerritory(const MapPoint& pt) const
+{
+    return GetWorld().IsPlayerTerritory(pt, playerId_ + 1);
 }
 
 const MapNode& GameWorldViewer::GetNode(const MapPoint& pt) const
@@ -183,7 +181,7 @@ void GameWorldViewer::SetVisiblePointRoad(const MapPoint& pt, Direction dir, uns
     {
         nodePt = pt;
         dir = Direction::fromInt(dir.toUInt() - 3);
-    }else
+    } else
         nodePt = GetNeighbour(pt, dir);
     visualNodes[GetWorld().GetIdx(nodePt)].roads[dir.toUInt()] = type;
 }
@@ -204,14 +202,14 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
 {
     noShip* resultShip = NULL;
 
-    for (unsigned i = 0; i < 7; ++i)
+    for(unsigned i = 0; i < 7; ++i)
     {
         MapPoint curPt;
 
-        if (i == 6)
+        if(i == 6)
             curPt = pt;
         else
-            curPt = GetWorld().GetNeighbour(pt, i);
+            curPt = GetWorld().GetNeighbour(pt, Direction::fromInt(i));
 
         const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
         for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
@@ -220,7 +218,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
                 continue;
             noShip* curShip = static_cast<noShip*>(*it);
 
-            if (curShip->GetPlayerId() == playerId_ && (curShip->GetPos() == pt || curShip->GetDestinationForCurrentMove() == pt))
+            if(curShip->GetPlayerId() == playerId_ && (curShip->GetPos() == pt || curShip->GetDestinationForCurrentMove() == pt))
             {
                 if(curShip->IsWaitingForExpeditionInstructions())
                     return curShip;
@@ -238,7 +236,7 @@ unsigned GameWorldViewer::GetNumSoldiersForSeaAttack(const MapPoint pt) const
     return unsigned(GetWorld().GetSoldiersForSeaAttack(playerId_, pt).size());
 }
 
-void GameWorldViewer::ChangePlayer(unsigned player, bool updateVisualData/* = true*/)
+void GameWorldViewer::ChangePlayer(unsigned player, bool updateVisualData /* = true*/)
 {
     if(player == playerId_)
         return;
@@ -279,12 +277,12 @@ void GameWorldViewer::RecalcBQForRoad(const MapPoint& pt)
         RecalcBQ(GetNeighbour(pt, Direction::fromInt(i)));
 }
 
-void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<unsigned char>& route)
+void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<Direction>& route)
 {
     MapPoint curPt = start;
     for(unsigned i = 0; i < route.size(); ++i)
     {
-        SetVisiblePointRoad(curPt, Direction::fromInt(route[i]), 0);
+        SetVisiblePointRoad(curPt, route[i], 0);
         RecalcBQForRoad(curPt);
         curPt = GetWorld().GetNeighbour(curPt, route[i]);
     }
@@ -315,7 +313,7 @@ const FoWNode& GameWorldViewer::GetYoungestFOWNode(const MapPoint pos) const
     {
         const GamePlayer& player = GetWorld().GetPlayer(playerId_);
         // Then check if team members have a better (="younger", see our economy) fow object
-        for(unsigned i = 0; i <  GetWorld().GetPlayerCount(); ++i)
+        for(unsigned i = 0; i < GetWorld().GetNumPlayers(); ++i)
         {
             if(!player.IsAlly(i))
                 continue;

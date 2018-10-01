@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,7 +21,7 @@
 #include "BasePlayerInfo.h"
 
 /// Holds all information about a player (Not specific to game, match-making etc.)
-struct PlayerInfo: public BasePlayerInfo
+struct PlayerInfo : public BasePlayerInfo
 {
     bool isHost;
     unsigned ping;

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,40 +26,42 @@ class glArchivItem_Font;
 
 class ctrlComboBox : public Window
 {
-    public:
-        ctrlComboBox(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly);
+public:
+    ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                 unsigned short max_list_height, bool readonly);
 
-        void Resize(unsigned short width, unsigned short height) override;
+    void Resize(const Extent& newSize) override;
 
-        void AddString(const std::string& text);
-        void DeleteAllItems();
+    void AddString(const std::string& text);
+    void DeleteAllItems();
 
-        void SetSelection(unsigned short selection);
-        unsigned short GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
-        unsigned short GetCount() const { return GetCtrl<ctrlList>(0)->GetLineCount(); }
-        const std::string& GetText(unsigned short item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
+    void SetSelection(unsigned short selection);
+    int GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
+    unsigned short GetNumItems() const { return GetCtrl<ctrlList>(0)->GetNumLines(); }
+    const std::string& GetText(unsigned short item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
 
-        void Msg_PaintAfter() override;
-        bool Msg_MouseMove(const MouseCoords& mc) override;
-        bool Msg_LeftDown(const MouseCoords& mc) override;
-        bool Msg_LeftUp(const MouseCoords& mc) override;
-        bool Msg_RightDown(const MouseCoords& mc) override;
-        bool Msg_WheelUp(const MouseCoords& mc) override;
-        bool Msg_WheelDown(const MouseCoords& mc) override;
-        void Msg_ListSelectItem(const unsigned int ctrl_id, const int selection) override;
+    void Msg_PaintAfter() override;
+    bool Msg_MouseMove(const MouseCoords& mc) override;
+    bool Msg_LeftDown(const MouseCoords& mc) override;
+    bool Msg_LeftUp(const MouseCoords& mc) override;
+    bool Msg_RightDown(const MouseCoords& mc) override;
+    bool Msg_WheelUp(const MouseCoords& mc) override;
+    bool Msg_WheelDown(const MouseCoords& mc) override;
 
-    protected:
-        bool Draw_() override;
+    void Msg_ListSelectItem(const unsigned ctrl_id, const int selection) override;
 
-        void ShowList(bool show);
+protected:
+    void Draw_() override;
+    void ShowList(bool show);
+    Rect GetFullDrawRect(const ctrlList* list);
 
-    private:
-        TextureColor tc;
-        glArchivItem_Font* font;
-        unsigned short max_list_height;
-        unsigned short selectionOnListOpen; // What was selected when the combo was opened?
-        bool readonly;
-        bool last_show;
+private:
+    TextureColor tc;
+    glArchivItem_Font* font;
+    unsigned short max_list_height;
+    unsigned short selectionOnListOpen; // What was selected when the combo was opened?
+    bool readonly;
+    bool last_show;
 };
 
 #endif // CTRLCOMBOBOX_H_INCLUDED

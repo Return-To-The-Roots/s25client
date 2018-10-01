@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,26 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofPlaner.h"
 
-#include "Loader.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "world/GameWorldGame.h"
-#include "buildings/noBuildingSite.h"
-#include "Random.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
-#include "SoundManager.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
+#include "GamePlayer.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
+#include "SoundManager.h"
+#include "buildings/noBuildingSite.h"
+#include "network/GameClient.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "random/Random.h"
+#include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
 class RoadSegment;
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
     : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), pd(PD_NOTWORKING)
-{
-}
+{}
 
 void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
 {
@@ -45,22 +44,20 @@ void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(static_cast<unsigned char>(pd));
 }
 
-nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
-    state(PlanerState(sgd.PopUnsignedChar())),
-    building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
-    pd(PlaningDir(sgd.PopUnsignedChar()))
-{
-}
+nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id)
+    : noFigure(sgd, obj_id), state(PlanerState(sgd.PopUnsignedChar())), building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
+      pd(PlaningDir(sgd.PopUnsignedChar()))
+{}
 
 void nofPlaner::GoalReached()
 {
     state = STATE_WALKING;
 
     // Zufällig Uhrzeigersinn oder dagegen
-    pd = ( RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) == 0 ) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
+    pd = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) == 0) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
 
     // Je nachdem erst nach rechts oder links gehen
-    StartWalking((pd == PD_CLOCKWISE) ? 5 : 3);
+    StartWalking((pd == PD_CLOCKWISE) ? Direction::SOUTHWEST : Direction::EAST);
 }
 
 void nofPlaner::Walked()
@@ -76,13 +73,12 @@ void nofPlaner::Walked()
         // Nach Hause laufen bzw. auch rumirren
         rs_pos = 0;
         rs_dir = true;
-        cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->routes[4];
+        cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SOUTHEAST);
         building_site = 0;
 
         GoHome();
-        StartWalking(4);
-    }
-    else
+        StartWalking(Direction::SOUTHEAST);
+    } else
     {
         /// Anfangen zu arbeiten
         current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[JOB_PLANER].work_length, 1);
@@ -133,8 +129,9 @@ void nofPlaner::Draw(DrawPoint drawPt)
         case STATE_WALKING:
         {
             DrawWalkingBobJobs(drawPt, JOB_PLANER);
-//          DrawWalking(x,y,LOADER.GetBobN("jobs"),JOB_CONSTS[JOB_PLANER].jobs_bob_id,false);
-        } break;
+            //          DrawWalking(x,y,LOADER.GetBobN("jobs"),JOB_CONSTS[JOB_PLANER].jobs_bob_id,false);
+        }
+        break;
         case STATE_PLANING:
         {
             // 41
@@ -143,31 +140,8 @@ void nofPlaner::Draw(DrawPoint drawPt)
             unsigned now_id = GAMECLIENT.Interpolate(69, current_ev);
 
             // spezielle Animation am Ende
-            const unsigned ANIMATION[21] =
-            {
-                273,
-                273,
-                273,
-                273,
-                273,
-                274,
-                274,
-                275,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                277,
-                277,
-                278
-            };
-
+            const unsigned ANIMATION[21] = {273, 273, 273, 273, 273, 274, 274, 275, 276, 276, 276,
+                                            276, 276, 276, 276, 276, 276, 276, 277, 277, 278};
 
             unsigned bobId;
             if(now_id < 20)
@@ -178,7 +152,7 @@ void nofPlaner::Draw(DrawPoint drawPt)
                 bobId = 253 + now_id - 41;
             else
                 bobId = 253 + now_id - 55;
-            LOADER.GetPlayerImage("rom_bobs", bobId)->Draw(drawPt, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+            LOADER.GetPlayerImage("rom_bobs", bobId)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)
@@ -186,16 +160,12 @@ void nofPlaner::Draw(DrawPoint drawPt)
             // Tret-Sound
             else if(now_id == 20 || now_id == 28)
                 SOUNDMANAGER.PlayNOSound(66, this, now_id, 200);
-
-        } break;
-
-
-
+        }
+        break;
     }
 }
 
-
-void nofPlaner::HandleDerivedEvent(const unsigned int id)
+void nofPlaner::HandleDerivedEvent(const unsigned id)
 {
     if(id == 1)
     {
@@ -208,24 +178,24 @@ void nofPlaner::HandleDerivedEvent(const unsigned int id)
         state = STATE_WALKING;
 
         // Planierung fertig --> weiterlaufen
-        unsigned char curDir = GetCurMoveDir();
+        Direction curDir = GetCurMoveDir();
 
         // Das erste Mal gelaufen?
-        if(pd == PD_CLOCKWISE && curDir == 5)
-            StartWalking(1);
-        else if(pd == PD_COUNTERCLOCKWISE && curDir == 3)
-            StartWalking(1);
+        if(pd == PD_CLOCKWISE && curDir == Direction::SOUTHWEST)
+            StartWalking(Direction::NORTHWEST);
+        else if(pd == PD_COUNTERCLOCKWISE && curDir == Direction::EAST)
+            StartWalking(Direction::NORTHWEST);
 
         // Fertig -> zur Baustelle zurücklaufen
-        else if(pd == PD_CLOCKWISE && curDir == 4)
-            StartWalking(0);
-        else if(pd == PD_COUNTERCLOCKWISE && curDir == 4)
-            StartWalking(2);
+        else if(pd == PD_CLOCKWISE && curDir == Direction::SOUTHEAST)
+            StartWalking(Direction::WEST);
+        else if(pd == PD_COUNTERCLOCKWISE && curDir == Direction::SOUTHEAST)
+            StartWalking(Direction::NORTHEAST);
 
         // In nächste Richtung gehen
         else if(pd == PD_CLOCKWISE)
-            StartWalking((curDir + 1) % 6);
+            StartWalking(curDir + 1u);
         else
-            StartWalking((6 + curDir - 1) % 6);
+            StartWalking(curDir - 1u);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,28 +21,31 @@
 #include "IngameWindow.h"
 #include <vector>
 
-class AIBase;
-class AIPlayerJH;
+class AIPlayer;
 class ctrlText;
 class GameWorldView;
+namespace AIJH {
+class AIPlayerJH;
+}
 
 class iwAIDebug : public IngameWindow
 {
-    public:
-        iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais);
+public:
+    iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais);
+    ~iwAIDebug() override;
 
-    private:
-        void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
-        //void Msg_ButtonClick(const unsigned int ctrl_id);
-        //void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
-        void Msg_PaintBefore() override;
+private:
+    void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
+    // void Msg_ButtonClick(const unsigned ctrl_id);
+    // void Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position);
+    void Msg_PaintBefore() override;
 
-    private:
-        GameWorldView& gwv;
-        std::vector<AIPlayerJH*> ais_;
-        unsigned player_;
-        unsigned overlay_;
-        ctrlText* text;
+    class DebugPrinter;
+
+    GameWorldView& gwv;
+    std::vector<const AIJH::AIPlayerJH*> ais_;
+    ctrlText* text;
+    DebugPrinter* printer;
 };
 
 #endif

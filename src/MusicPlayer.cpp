@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,45 +15,46 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "MusicPlayer.h"
-#include "ingameWindows/iwMusicPlayer.h"
-#include "drivers/AudioDriverWrapper.h"
-
 #include "Loader.h"
-#include "Log.h"
-
-#include "../libsiedler2/src/prototypen.h"
-#include "ogl/glArchivItem_Music.h"
-#include <sstream>
+#include "drivers/AudioDriverWrapper.h"
+#include "ingameWindows/iwMusicPlayer.h"
+#include "ogl/MusicItem.h"
+#include "libsiedler2/Archiv.h"
+#include "libsiedler2/ArchivItem.h"
+#include "libsiedler2/ErrorCodes.h"
+#include "libsiedler2/prototypen.h"
+#include "libutil/Log.h"
+#include "libutil/StringConversion.h"
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/nowide/fstream.hpp>
 #include <algorithm>
-#include <fstream>
+#include <sstream>
 
-Playlist::Playlist() : repeats(1), random(false)
-{
-}
+Playlist::Playlist() : current(-1), repeats(1), random(false) {}
 
 /**
  *  startet das Abspielen der Playlist.
  */
 void Playlist::Prepare()
 {
-    if(!songs.empty())
-    {
-        order.clear();
+    // Add one entry per song repeated if required
+    order.resize(songs.size() * repeats);
 
-        // Abspielreihenfolge erstmal normal festlegen
-        order.resize(songs.size() * repeats);
+    for(unsigned i = 0; i < songs.size() * repeats; ++i)
+        order[i] = i % songs.size();
 
-        // normale Reihenfolge
-        for(unsigned int i = 0; i < songs.size() * repeats; ++i)
-            order[i] = i % songs.size();
+    // Shuffle if requested
+    if(random)
+        std::random_shuffle(order.begin(), order.end());
+}
 
-        // Bei Zufall nochmal mischen
-        if(random)
-            std::random_shuffle(order.begin(), order.end());
-
-    }
+const std::string Playlist::getCurrentSong() const
+{
+    if(order.empty() || order.front() >= songs.size())
+        return "";
+    return songs[order.front()];
 }
 
 /**
@@ -63,7 +64,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
 {
     if(!overwrite)
     {
-        std::ifstream in(filename.c_str());
+        bnw::ifstream in(filename.c_str());
         if(in.good())
         {
             // Datei existiert und wir sollen sie nicht überschreiben
@@ -72,7 +73,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
         }
     }
 
-    std::ofstream out(filename.c_str());
+    bnw::ofstream out(filename.c_str());
     if(!out.good())
         return false;
 
@@ -80,7 +81,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
     out << (random ? "random" : "ordered") << std::endl;
 
     // songs reinschreiben
-    for(unsigned int i = 0; i < songs.size(); ++i)
+    for(unsigned i = 0; i < songs.size(); ++i)
         out << songs[i] << "\n";
 
     out.close();
@@ -88,17 +89,26 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
     return true;
 }
 
+bool isNewline(char c)
+{
+    return c == '\r' || c == '\n';
+}
+
 /**
  *  Playlist laden
  */
 bool Playlist::Load(const std::string& filename)
 {
-    if(filename.length() == 0)
+    songs.clear();
+    if(filename.empty())
         return false;
 
-    LOG.write("lade \"%s\"\n") % filename;
+    LOG.write(_("Loading \"%s\"\n")) % filename;
 
-    std::ifstream in(filename.c_str());
+    bfs::path filepath(filename);
+    if(filepath.extension() != ".pll")
+        filepath.replace_extension("pll");
+    bnw::ifstream in(filepath);
 
     if(in.fail())
         return false;
@@ -108,45 +118,27 @@ bool Playlist::Load(const std::string& filename)
 
     if(!std::getline(in, line))
         return false;
-    printf("%s\n", line.c_str());
     sline.clear();
     sline << line;
-    sline >> repeats;
-    sline >> random_str;
+    if(!(sline >> repeats >> random_str))
+        return false;
 
     random = (random_str == "random_playback" || random_str == "random");
 
-    // Liste leeren von evtl vorherigen Stücken
-    /*songs.clear();
-    order.clear();*/
-
-    while(true)
+    while(std::getline(in, line))
     {
-        std::getline(in, line);
-
-        // Carriage returns & Line feeds aus der Zeile ggf. rausfiltern
-        std::string::size_type k = 0;
-        while((k = line.find('\r', k)) != std::string::npos)
-            line.erase(k, 1);
-        k = 0;
-        while((k = line.find('\n', k)) != std::string::npos)
-            line.erase(k, 1);
-
-        // bei leeren Zeilen oder bei eof aufhören
-        if(line.length() == 0 || in.eof())
-        {
-            in.close();
-
-            // geladen, also zum Abspielen vorbereiten
-            Prepare();
-
-            return true;
-        }
-
+        boost::algorithm::trim_if(line, &isNewline);
+        if(line.empty())
+            break;
         songs.push_back(line);
     }
 
-    return false;
+    if(in.bad())
+        return false;
+
+    // geladen, also zum Abspielen vorbereiten
+    Prepare();
+    return true;
 }
 
 /**
@@ -158,10 +150,8 @@ void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
     window->SetRepeats(repeats);
     window->SetRandomPlayback(random);
 
-    if (current != 0xFFFF)
-    {
+    if(current >= 0)
         window->SetCurrentSong(current);
-    }
 }
 
 /**
@@ -190,9 +180,17 @@ void Playlist::SetStartSong(const unsigned id)
     }
 }
 
-MusicPlayer::MusicPlayer() : playing(false)
+/// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
+const std::string Playlist::getNextSong()
 {
+    const std::string tmp = getCurrentSong();
+    current = tmp.empty() ? -1 : static_cast<int>(order.front());
+    if(!order.empty())
+        order.erase(order.begin());
+    return tmp;
 }
+
+MusicPlayer::MusicPlayer() : playing(false) {}
 
 /**
  *  Startet Abspielvorgang
@@ -200,7 +198,6 @@ MusicPlayer::MusicPlayer() : playing(false)
 void MusicPlayer::Play()
 {
     playing = true;
-
     PlayNext();
 }
 
@@ -228,14 +225,15 @@ void MusicPlayer::PlayNext()
     }
 
     // Evtl ein Siedlerstück ("sNN")?
-    if(song.length() == 3)
+    if(song.length() == 3 && song[0] == 's')
     {
-        unsigned int nr = atoi(song.substr(1).c_str());
-        if( nr <= 14)
+        unsigned nr = s25util::fromStringClassicDef(song.substr(1), 999u);
+        if(nr <= 14)
         {
             // Siedlerstück abspielen (falls es geladen wurde)
-            if(GetMusic(sng_lst, nr - 1))
-                GetMusic(sng_lst, nr - 1)->Play(1);
+            MusicItem* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[nr - 1]);
+            if(curSong)
+                curSong->Play(1);
         }
         return;
     }
@@ -244,26 +242,19 @@ void MusicPlayer::PlayNext()
     // in "sng" speichern, daher evtl. altes Stück erstmal löschen
     sng.clear();
 
-    LOG.write("lade \"%s\": ") % song;
+    LOG.write(_("Loading \"%s\": ")) % song;
 
     // Neues Stück laden
-    if(libsiedler2::loader::LoadSND(song, sng) != 0 )
+    if(int ec = libsiedler2::loader::LoadSND(song, sng))
     {
+        LOG.write(_("Error: %1%\n")) % libsiedler2::getErrorString(ec);
         Stop();
         return;
     }
+    LOG.write(_("OK\n"));
 
     // Und abspielen
-    dynamic_cast<glArchivItem_Music*>(sng.get(0))->Play(1);
-}
-
-
-/// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-const std::string Playlist::getNextSong()
-{
-    const std::string tmp(getCurrentSong());
-    current = !songs.empty() && !order.empty() ? order[0] : 0xFFFF;
-    if(!order.empty())
-        order.erase(order.begin());
-    return tmp;
+    MusicItem* curSong = dynamic_cast<MusicItem*>(sng[0]);
+    if(curSong)
+        curSong->Play(1);
 }

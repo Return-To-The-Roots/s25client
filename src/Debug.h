@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,32 +17,33 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
-#include "Random.h"
-#include "Socket.h"
+#include "random/Random.h"
+#include "libutil/Socket.h"
+#include <vector>
 
+class BinaryFile;
+
+// This is for catching crashes and reporting bugs, it does not slow down anything.
 class DebugInfo
 {
     Socket sock;
 
-    public:
-        DebugInfo();
-        ~DebugInfo();
+public:
+    DebugInfo();
+    ~DebugInfo();
 
-        bool Send(const void* buffer, int length);
-        bool SendSigned(signed i);
-        bool SendUnsigned(unsigned i);
-        bool SendString(const char* str, unsigned len = 0);
-        bool SendString(const std::string& str);
+    static std::vector<void*> GetStackTrace(void* ctx = NULL);
 
-#ifdef _MSC_VER
-        bool SendStackTrace(LPCONTEXT ctx = NULL);
-#else
-        bool SendStackTrace();
-#endif
-        bool SendReplay();
-        bool SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
-                          const std::vector<RandomEntry> &a, const std::vector<RandomEntry> &b, unsigned identical);
+    bool Send(const void* buffer, int length);
+    bool SendSigned(int32_t i);
+    bool SendUnsigned(uint32_t i);
+    bool SendString(const char* str, unsigned len = 0);
+    bool SendString(const std::string& str);
+
+    bool SendStackTrace(const std::vector<void*>& stacktrace);
+    bool SendReplay();
+    bool SendAsyncLog(const std::string& asyncLogFilepath);
+    bool SendFile(BinaryFile& file);
 };
 
 #endif
-

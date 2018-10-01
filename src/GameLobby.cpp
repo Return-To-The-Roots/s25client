@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameLobby.h"
 #include "JoinPlayerInfo.h"
 
-GameLobby::GameLobby(unsigned numPlayers): players(numPlayers){}
-GameLobby::~GameLobby(){}
+GameLobby::GameLobby(bool isSavegame, bool isHost, unsigned numPlayers) : isSavegame_(isSavegame), isHost_(isHost), players_(numPlayers) {}
+GameLobby::~GameLobby() {}
 
-JoinPlayerInfo& GameLobby::GetPlayer(unsigned playerId)
+JoinPlayerInfo& GameLobby::getPlayer(unsigned playerId)
 {
-    return players[playerId];
+    return players_.at(playerId);
 }
 
-const JoinPlayerInfo& GameLobby::GetPlayer(unsigned playerId) const
+const JoinPlayerInfo& GameLobby::getPlayer(unsigned playerId) const
 {
-    return players[playerId];
+    return players_.at(playerId);
 }
 
-unsigned GameLobby::GetPlayerCount() const
+unsigned GameLobby::getNumPlayers() const
 {
-    return players.size();
+    return players_.size();
 }

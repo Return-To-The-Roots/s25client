@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaPlayerBase.h"
 #include "BasePlayerInfo.h"
 #include <stdexcept>
@@ -23,16 +23,15 @@
 void LuaPlayerBase::Register(kaguya::State& state)
 {
     state["PlayerBase"].setClass(kaguya::UserdataMetatable<LuaPlayerBase>()
-        .addFunction("GetName", &LuaPlayerBase::GetName)
-        .addFunction("GetNation", &LuaPlayerBase::GetNation)
-        .addFunction("GetTeam", &LuaPlayerBase::GetTeam)
-        .addFunction("GetColor", &LuaPlayerBase::GetColor)
-        .addFunction("IsFree", &LuaPlayerBase::IsFree)
-        .addFunction("IsHuman", &LuaPlayerBase::IsHuman)
-        .addFunction("IsAI", &LuaPlayerBase::IsAI)
-        .addFunction("IsClosed", &LuaPlayerBase::IsClosed)
-        .addFunction("GetAILevel", &LuaPlayerBase::GetAILevel)
-        );
+                                   .addFunction("GetName", &LuaPlayerBase::GetName)
+                                   .addFunction("GetNation", &LuaPlayerBase::GetNation)
+                                   .addFunction("GetTeam", &LuaPlayerBase::GetTeam)
+                                   .addFunction("GetColor", &LuaPlayerBase::GetColor)
+                                   .addFunction("IsFree", &LuaPlayerBase::IsFree)
+                                   .addFunction("IsHuman", &LuaPlayerBase::IsHuman)
+                                   .addFunction("IsAI", &LuaPlayerBase::IsAI)
+                                   .addFunction("IsClosed", &LuaPlayerBase::IsClosed)
+                                   .addFunction("GetAILevel", &LuaPlayerBase::GetAILevel));
 
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) state[#name] = name
@@ -109,9 +108,9 @@ int LuaPlayerBase::GetAILevel() const
         return 0;
     switch(GetPlayer().aiInfo.level)
     {
-    case AI::EASY: return 1;
-    case AI::MEDIUM: return 2;
-    case AI::HARD: return 3;
+        case AI::EASY: return 1;
+        case AI::MEDIUM: return 2;
+        case AI::HARD: return 3;
     }
     RTTR_Assert(false);
     return -1;

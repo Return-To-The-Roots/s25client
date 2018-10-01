@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,52 +15,61 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskGameLoader.h"
 
+#include "Game.h"
+#include "GameManager.h"
+#include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "LobbyClient.h"
-#include "GameManager.h"
-#include "world/GameWorldBase.h"
-#include "dskGameInterface.h"
-#include "dskLobby.h"
-#include "dskDirectIP.h"
+#include "addons/const_addons.h"
+#include "boost/foreach.hpp"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
-#include "ingameWindows/iwMsgbox.h"
-#include "ogl/glArchivItem_Font.h"
-#include "addons/const_addons.h"
+#include "dskDirectIP.h"
+#include "dskGameInterface.h"
+#include "dskLobby.h"
+#include "dskSinglePlayer.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
+#include "ingameWindows/iwMsgbox.h"
+#include "network/GameClient.h"
+#include "ogl/FontStyle.h"
+#include "world/GameWorldBase.h"
+#include "liblobby/LobbyClient.h"
+#include <set>
+#include <vector>
 
 /**
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
  */
-dskGameLoader::dskGameLoader(GameWorldBase& world) : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % FILE_LOAD_IDS_COUNT], 0)),
-      position(0), world(world)
+dskGameLoader::dskGameLoader(boost::shared_ptr<Game> game)
+    : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % NUM_FILE_LOAD_IDS], 0)), position(0), game(game), nextDesktop(NULL)
 {
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 
     AddTimer(1, 50);
 
-    AddText(10, 800 / 2, 600 - 50, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
-    for(unsigned int i = 0; i < 8; ++i)
-        AddText(11 + i, 30, 30 + i * 20, "", COLOR_GREEN, 0, LargeFont);
+    for(unsigned i = 0; i < 8; ++i)
+        AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, 0, LargeFont);
 
-    LOBBYCLIENT.SetInterface(this);
+    LOBBYCLIENT.AddListener(this);
     GAMECLIENT.SetInterface(this);
 }
 
 dskGameLoader::~dskGameLoader()
 {
     GAMEMANAGER.SetCursor();
+    LOBBYCLIENT.RemoveListener(this);
+    GAMECLIENT.RemoveInterface(this);
+    delete nextDesktop;
 }
 
-void dskGameLoader::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult  /*mbr*/)
+void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     if(msgbox_id == 0) // Verbindung zu Server verloren?
     {
@@ -68,98 +77,130 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxR
 
         if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(new dskLobby);
+        else if(game->world.IsSinglePlayer())
+            WINDOWMANAGER.Switch(new dskSinglePlayer);
         else
             WINDOWMANAGER.Switch(new dskDirectIP);
     }
 }
 
-void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
+void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 {
-    static bool load_nations[NAT_COUNT];
+    static std::vector<bool> load_nations;
 
     ctrlTimer* timer = GetCtrl<ctrlTimer>(1);
     ctrlText* text = GetCtrl<ctrlText>(10 + position);
-    int interval = 500;
+    int interval = 50;
 
     timer->Stop();
 
     switch(position)
     {
         case 0: // Kartename anzeigen
-        {
             text->SetText(GAMECLIENT.GetMapTitle());
-            interval = 50;
-        } break;
+            break;
 
         case 1: // Karte geladen
-        {
             text->SetText(_("Map was loaded and pinned at the wall..."));
-            interval = 50;
-        } break;
+            break;
 
         case 2: // Nationen ermitteln
-        {
-            memset(load_nations, 0, sizeof(bool) * NAT_COUNT);
-            for(unsigned char i = 0; i < world.GetPlayerCount(); ++i)
-                load_nations[world.GetPlayer(i).nation] = true;
+            load_nations.clear();
+            load_nations.resize(NUM_NATS, false);
+            for(unsigned char i = 0; i < game->world.GetNumPlayers(); ++i)
+                load_nations[game->world.GetPlayer(i).nation] = true;
 
             text->SetText(_("Tribal chiefs assembled around the table..."));
-            interval = 50;
-        } break;
+            break;
 
         case 3: // Objekte laden
         {
-            if(!LOADER.LoadFilesAtGame(world.GetLandscapeType(), load_nations))
+            LOADER.ClearOverrideFolders();
+            LOADER.AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME");
+            LOADER.AddOverrideFolder("<RTTR_USERDATA>/LSTS/GAME");
+            if(game->world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
+                LOADER.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
+
+            const LandscapeDesc& lt = game->world.GetDescription().get(game->world.GetLandscapeType());
+            if(!LOADER.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, load_nations) || !LOADER.LoadFiles(GatherRequiredTexturePaths())
+               || !LOADER.LoadOverrideFiles())
             {
                 LC_Status_Error(_("Failed to load map objects."));
                 return;
             }
 
-            if(world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
-            {
-                if(!LOADER.LoadFilesFromAddon(AddonId::CATAPULT_GRAPHICS))
-                {
-                    LC_Status_Error(_("Failed to load addon objects."));
-                    return;
-                }
-            }
-
             LOADER.fillCaches();
 
             text->SetText(_("Game crate was picked and spread out..."));
-            interval = 50;
-        } break;
-
+            break;
+        }
         case 4: // Welt erstellen
-        {
-            if(!LOADER.CreateTerrainTextures())
+            try
             {
-                LC_Status_Error(_("Failed to load terrain data."));
+                // Do this here as it will init OGL
+                nextDesktop = new dskGameInterface(game);
+            } catch(std::runtime_error& e)
+            {
+                LC_Status_Error(std::string(_("Failed to init GUI: ")) + e.what());
                 return;
             }
-
             // TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
 
+            // We are done, wait for others
+            GAMECLIENT.GameLoaded();
+
             text->SetText(_("World was put together and glued..."));
-            interval = 50;
-        } break;
+            break;
 
         case 5: // nochmal text anzeigen
-        {
             text->SetText(_("And let's go!"));
-            text->SetColor(COLOR_RED);
-            interval = 50;
-        } break;
-
-        case 6: // zum Spiel wechseln
-        {
-            WINDOWMANAGER.Switch(new dskGameInterface(world));
+            text->SetTextColor(COLOR_RED);
             return;
-        } break;
     }
 
     ++position;
     timer->Start(interval);
+}
+
+std::vector<std::string> dskGameLoader::GatherRequiredTexturePaths() const
+{
+    std::vector<std::string> textures;
+    std::set<DescIdx<TerrainDesc> > usedTerrains;
+    RTTR_FOREACH_PT(MapPoint, game->world.GetSize())
+    {
+        const MapNode& node = game->world.GetNode(pt);
+        usedTerrains.insert(node.t1);
+        usedTerrains.insert(node.t2);
+    }
+    std::set<DescIdx<EdgeDesc> > usedEdges;
+    std::set<DescIdx<LandscapeDesc> > usedLandscapes;
+
+    BOOST_FOREACH(DescIdx<TerrainDesc> tIdx, usedTerrains)
+    {
+        const TerrainDesc& t = game->world.GetDescription().get(tIdx);
+        if(!helpers::contains(textures, t.texturePath))
+            textures.push_back(t.texturePath);
+        usedEdges.insert(t.edgeType);
+        usedLandscapes.insert(t.landscape);
+    }
+    BOOST_FOREACH(DescIdx<EdgeDesc> eIdx, usedEdges)
+    {
+        if(!eIdx)
+            continue;
+        const EdgeDesc& e = game->world.GetDescription().get(eIdx);
+        if(!helpers::contains(textures, e.texturePath))
+            textures.push_back(e.texturePath);
+    }
+    BOOST_FOREACH(DescIdx<LandscapeDesc> lIdx, usedLandscapes)
+    {
+        const LandscapeDesc& e = game->world.GetDescription().get(lIdx);
+        BOOST_FOREACH(const RoadTextureDesc& r, e.roadTexDesc)
+        {
+            if(!helpers::contains(textures, r.texturePath))
+                textures.push_back(r.texturePath);
+        }
+    }
+    return textures;
 }
 
 /**
@@ -168,4 +209,18 @@ void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {
     WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    GetCtrl<ctrlTimer>(1)->Stop();
+}
+
+void dskGameLoader::CI_GameStarted(boost::shared_ptr<Game> game)
+{
+    RTTR_Assert(nextDesktop);
+    WINDOWMANAGER.Switch(nextDesktop);
+    nextDesktop = NULL;
+}
+
+void dskGameLoader::CI_Error(const ClientError ce)
+{
+    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    GetCtrl<ctrlTimer>(1)->Stop();
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,44 +26,45 @@ class SerializedGameData;
 /// Leader of a trade caravane
 class nofTradeLeader : public noFigure
 {
-        /// Route of this caravane
-        TradeRoute tr;
-        /// Successor (NULL if there is none)
-        nofTradeDonkey* successor;
-        /// The start and home warehosue
-        MapPoint homePos, goalPos;
+    /// Route of this caravane
+    TradeRoute tr;
+    /// Successor (NULL if there is none)
+    nofTradeDonkey* successor;
+    /// The start and home warehosue
+    MapPoint homePos, goalPos;
 
-    private:
+private:
+    void GoalReached() override;
+    void Walked() override;
+    void HandleDerivedEvent(const unsigned id) override;
+    void AbrogateWorkplace() override;
 
-        void GoalReached() override;
-        void Walked() override;
-        void HandleDerivedEvent(const unsigned int id) override;
-        void AbrogateWorkplace() override;
+    /// Tries to go to the home ware house and returns whether this is possible
+    bool TryToGoHome();
+    /// Inform successor that the caravane is canceled
+    void CancelTradeCaravane();
 
-        /// Tries to go to the home ware house and returns whether this is possible
-        bool TryToGoHome();
-        /// Inform successor that the caravane is canceled
-        void CancelTradeCaravane();
+public:
+    nofTradeLeader(const MapPoint pt, const unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos);
+    nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    void Destroy() override
+    {
+        RTTR_Assert(!successor);
+        noFigure::Destroy();
+    }
 
-        nofTradeLeader(const MapPoint pt, const unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos);
-        nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id);
+    void Serialize(SerializedGameData& sgd) const override;
 
-        void Destroy() override { RTTR_Assert(!successor); noFigure::Destroy(); }
+    GO_Type GetGOT() const override { return GOT_NOF_TRADELEADER; }
 
-        void Serialize(SerializedGameData& sgd) const override;
+    void Draw(DrawPoint drawPt) override;
 
-        GO_Type GetGOT() const override { return GOT_NOF_TRADELEADER; }
+    /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+    void LostWork();
 
-        void Draw(DrawPoint drawPt) override;
-
-        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-        void LostWork();
-
-        /// Sets the sucessor in the caravane
-        void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
+    /// Sets the sucessor in the caravane
+    void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
 };
 
-
-#endif //!NOF_SCOUT_FREE_H_
+#endif //! NOF_SCOUT_FREE_H_

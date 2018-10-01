@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,22 +20,24 @@
 
 #include "PostCategory.h"
 #include "SoundEffect.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include <string>
 
 struct BasePlayerInfo;
-class glArchivItem_Bitmap;
+class ITexture;
 
 class PostMsg
 {
 public:
     /// Create a simple message
-    PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt, SoundEffect soundEffect = SoundEffect::Pidgeon);
+    PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt,
+            SoundEffect soundEffect = SoundEffect::Pidgeon);
     PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, SoundEffect soundEffect = SoundEffect::Pidgeon);
-    /// Reponse to a diplomacy question. Last parameter states if the pact was accepted(true) or canceled(false)
-    PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled, SoundEffect soundEffect = SoundEffect::Pidgeon);
-    virtual ~PostMsg(){}
+    /// Response to a diplomacy question. Last parameter states if the pact was accepted(true) or canceled(false)
+    PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled,
+            SoundEffect soundEffect = SoundEffect::Pidgeon);
+    virtual ~PostMsg() {}
 
     unsigned GetSendFrame() const { return sendFrame_; }
     const std::string& GetText() const { return text_; }
@@ -44,10 +46,10 @@ public:
     MapPoint GetPos() const { return pt_; }
     SoundEffect GetSoundEffect() const { return soundEffect_; }
     /// Get Associated image or NULL if none exists
-    virtual glArchivItem_Bitmap* GetImage_() const { return NULL; }
+    virtual ITexture* GetImage_() const { return NULL; }
 
 protected:
-    void SetText(const std::string& text){ text_ = text; }
+    void SetText(const std::string& text) { text_ = text; }
 
 private:
     unsigned sendFrame_;

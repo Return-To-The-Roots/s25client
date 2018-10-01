@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,89 +15,64 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Direct.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ArchivItem_Palette.h"
 #include "ogl/oglIncludes.h"
+#include "libsiedler2/PixelBufferARGB.h"
+#include <stdexcept>
 
-glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct()
-{
-}
+glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct() : isUpdating_(false) {}
 
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item)
-    : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_Bitmap(item)
+    : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_Bitmap(item), isUpdating_(false)
+{}
+
+void glArchivItem_Bitmap_Direct::beginUpdate()
 {
+    if(isUpdating_)
+        throw std::logic_error("Already updating! Forgot an endUpdate?");
+    isUpdating_ = true;
+    areaToUpdate_ = Rect(0, 0, 0, 0);
 }
 
-/**
- *  setzt einen Pixel auf einen bestimmten Wert.
- *
- *  @param[in] x       X Koordinate des Pixels
- *  @param[in] y       Y Koordinate des Pixels
- *  @param[in] color   Farbe des Pixels
- *  @param[in] palette Grundpalette
- */
-void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette* palette)
+void glArchivItem_Bitmap_Direct::endUpdate()
 {
-    // Pixel in Puffer setzen
-    libsiedler2::baseArchivItem_Bitmap::tex_setPixel(x, y, color, palette);
+    if(!isUpdating_)
+        throw std::logic_error("Already updating! Forgot an endUpdate?");
+    isUpdating_ = false;
+    // Nothing to update or no texture created yet
+    if(prodOfComponents(areaToUpdate_.getSize()) == 0 || !GetTexNoCreate())
+        return;
 
-    // Ist eine GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
-    if(GetTexNoCreate() != 0)
+    libsiedler2::PixelBufferARGB buffer(areaToUpdate_.getSize().x, areaToUpdate_.getSize().y);
+    Position origin = areaToUpdate_.getOrigin();
+    int ec = print(buffer, NULL, 0, 0, origin.x, origin.y);
+    RTTR_Assert(ec == 0);
+    VIDEODRIVER.BindTexture(GetTexNoCreate());
+    glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_BGRA, GL_UNSIGNED_BYTE,
+                    buffer.getPixelPtr());
+}
+
+void glArchivItem_Bitmap_Direct::updatePixel(const DrawPoint& pos, const libsiedler2::ColorARGB& clr)
+{
+    RTTR_Assert(isUpdating_);
+    RTTR_Assert(pos.x >= 0 && pos.y >= 0);
+    RTTR_Assert(static_cast<unsigned>(pos.x) < GetSize().x && static_cast<unsigned>(pos.y) < GetSize().y);
+    setPixel(pos.x, pos.y, clr);
+    // If the area is empty, create one
+    if(areaToUpdate_.getSize().x == 0)
+        areaToUpdate_ = Rect(Position(pos), Extent(1, 1));
+    else
     {
-        if(x < tex_width_ && y < tex_height_)
-        {
-            struct{
-                libsiedler2::Color clr;
-                unsigned char a;
-            } clr;
-
-            if(color == libsiedler2::TRANSPARENT_INDEX)
-                clr.a = 0x00;
-            else
-            {
-                clr.clr = (*this->palette_)[color];
-                clr.a = 0xFF;
-            }
-
-            VIDEODRIVER.BindTexture(GetTexNoCreate());
-            glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &clr);
-        }
+        // Else resize if required
+        if(pos.x < areaToUpdate_.left)
+            areaToUpdate_.left = pos.x;
+        if(pos.x >= areaToUpdate_.right)
+            areaToUpdate_.right = pos.x + 1;
+        if(pos.y < areaToUpdate_.top)
+            areaToUpdate_.top = pos.y;
+        if(pos.y >= areaToUpdate_.bottom)
+            areaToUpdate_.bottom = pos.y + 1;
     }
 }
-
-/**
- *  setzt einen Pixel auf einen bestimmten Wert.
- *
- *  @param[in] x X Koordinate des Pixels
- *  @param[in] y Y Koordinate des Pixels
- *  @param[in] r Roter Wert
- *  @param[in] g Grüner Wert
- *  @param[in] b Blauer Wert
- *  @param[in] a Alpha Wert (bei paletted nur 0xFF/0x00 unterstützt)
- */
-void glArchivItem_Bitmap_Direct::tex_setPixel(unsigned short x, unsigned short y, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
-{
-    // Pixel in Puffer setzen
-    libsiedler2::baseArchivItem_Bitmap::tex_setPixel(x, y, r, g, b, a);
-
-    // Ist ein GL-Textur bereits erzeugt? Wenn ja, Pixel in Textur austauschen
-    if(GetTexNoCreate() != 0)
-    {
-        if(x < tex_width_ && y < tex_height_)
-        {
-            unsigned char buffer[4] = { r, g, b, a };
-
-            VIDEODRIVER.BindTexture(GetTexNoCreate());
-            glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
-        }
-    }
-}
-
-/// liefert die Farbwerte eines Pixels als uc-Array: {r,g,b,a}
-unsigned char* glArchivItem_Bitmap_Direct::tex_getPixel(const unsigned short x, const unsigned short y)
-{
-    return &tex_data_[y * tex_width_ + x];
-}
-

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,12 +22,12 @@
 
 class iwOptionsWindow : public IngameWindow
 {
-    public:
-        iwOptionsWindow();
+public:
+    iwOptionsWindow();
 
-    private:
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position) override;
 };
 
 #endif

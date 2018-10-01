@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,21 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "PostMsgWithBuilding.h"
-#include "buildings/noBaseBuilding.h"
 #include "Loader.h"
+#include "buildings/noBaseBuilding.h"
 #include <stdexcept>
 
-PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld, SoundEffect soundEffect):
-    PostMsg(sendFrame, text, cat, bld.GetPos(), soundEffect), bldType(bld.GetBuildingType()), nation(bld.GetNation())
+PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld,
+                                         SoundEffect soundEffect)
+    : PostMsg(sendFrame, text, cat, bld.GetPos(), soundEffect), bldType(bld.GetBuildingType()), nation(bld.GetNation())
 {}
 
-PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation, const MapPoint& pos /*= MapPoint::Invalid()*/):
-    PostMsg(sendFrame, text, cat, pos), bldType(bld), nation(nation)
+PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation,
+                                         const MapPoint& pos /*= MapPoint::Invalid()*/)
+    : PostMsg(sendFrame, text, cat, pos), bldType(bld), nation(nation)
 {}
 
-glArchivItem_Bitmap* PostMsgWithBuilding::GetImage_() const
+ITexture* PostMsgWithBuilding::GetImage_() const
 {
     return noBaseBuilding::GetBuildingImage(bldType, nation);
 }

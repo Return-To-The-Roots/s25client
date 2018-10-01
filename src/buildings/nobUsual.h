@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,9 +19,10 @@
 #define NOB_USUAL_H_
 
 #include "noBuilding.h"
+#include "gameTypes/GoodTypes.h"
 #include <boost/array.hpp>
-#include <vector>
 #include <list>
+#include <vector>
 
 class Ware;
 class nofBuildingWorker;
@@ -33,107 +34,117 @@ class GameEvent;
 // Gewöhnliches Gebäude mit einem Arbeiter und Waren
 class nobUsual : public noBuilding
 {
-        /// Der Typ, der hier arbeitet
-        nofBuildingWorker* worker;
-        /// Produktivität
-        unsigned short productivity;
-        /// Produktion eingestellt? (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
-        bool disable_production, disable_production_virtual;
-        /// Warentyp, den er zuletzt bestellt hatte (bei >1 Waren)
-        unsigned char last_ordered_ware;
-        /// Rohstoffe, die zur Produktion benötigt werden
-        boost::array<unsigned char, 3> wares;
-        /// Bestellte Waren
-        std::vector< std::list<Ware*> > ordered_wares;
-        /// Bestell-Ware-Event
-        GameEvent* orderware_ev;
-        /// Rechne-Produktivität-aus-Event
-        GameEvent* productivity_ev;
-        /// Letzte Produktivitäten (Durschnitt = Gesamtproduktivität), vorne das neuste !
-        static const unsigned LAST_PRODUCTIVITIES_COUNT = 6;
-        boost::array<unsigned short, LAST_PRODUCTIVITIES_COUNT> last_productivities;
+    /// Der Typ, der hier arbeitet
+    nofBuildingWorker* worker;
+    /// Produktivität
+    unsigned short productivity;
+    /// Produktion eingestellt? (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
+    bool disable_production, disable_production_virtual;
+    /// Warentyp, den er zuletzt bestellt hatte (bei >1 Waren)
+    unsigned char last_ordered_ware;
+    /// Rohstoffe, die zur Produktion benötigt werden
+    boost::array<unsigned char, 3> numWares;
+    /// Bestellte Waren
+    std::vector<std::list<Ware*> > ordered_wares;
+    /// Bestell-Ware-Event
+    const GameEvent* orderware_ev;
+    /// Rechne-Produktivität-aus-Event
+    const GameEvent* productivity_ev;
+    /// Letzte Produktivitäten (Durchschnitt = Gesamt produktivität), vorne das neuste !
+    boost::array<unsigned short, 6> last_productivities;
+    /// How many GFs he did not work since the last productivity calculation
+    unsigned short numGfNotWorking;
+    /// Since which GF he did not work (0xFFFFFFFF = currently working)
+    unsigned since_not_working;
+    /// Did we notify the player that we are out of resources?
+    bool outOfRessourcesMsgSent;
 
 protected:
-        friend class SerializedGameData;
-        friend class BuildingFactory;
-        nobUsual(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-        nobUsual(SerializedGameData& sgd, const unsigned obj_id);
-    public:
+    friend class SerializedGameData;
+    friend class BuildingFactory;
+    nobUsual(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
+    nobUsual(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Wird gerade gearbeitet oder nicht?
-        bool is_working;
+public:
+    /// Wird gerade gearbeitet oder nicht?
+    bool is_working;
 
-        ~nobUsual() override;
+    ~nobUsual() override;
 
-        /// Aufräummethoden
-    protected:  void Destroy_nobUsual();
-    public:     void Destroy() override { Destroy_nobUsual(); }
+protected:
+    void DestroyBuilding() override;
+    void Serialize_nobUsual(SerializedGameData& sgd) const;
 
-        /// Serialisierungsfunktionen
-    protected: void Serialize_nobUsual(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobUsual(sgd); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nobUsual(sgd); }
 
-        GO_Type GetGOT() const override { return GOT_NOB_USUAL; }
+    GO_Type GetGOT() const override { return GOT_NOB_USUAL; }
+    unsigned GetMilitaryRadius() const override { return 0; }
 
-        void Draw(DrawPoint drawPt) override;
+    void Draw(DrawPoint drawPt) override;
 
-        bool HasWorker() const;
+    bool HasWorker() const;
 
-        /// Event-Handler
-        void HandleEvent(const unsigned int id) override;
-        /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-        void AddWare(Ware*& ware) override;
-        /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
-        bool FreePlaceAtFlag() override;
-        /// Eine bestellte Ware konnte doch nicht kommen
-        void WareLost(Ware* ware) override;
-        /// Wird aufgerufen, wenn ein Arbeiter für das Gebäude gefunden werden konnte
-        void GotWorker(Job job, noFigure* worker) override;
-        /// Wird vom Arbeiter aufgerufen, wenn er im Gebäude angekommen ist
-        void WorkerArrived();
-        /// Wird vom Arbeiter aufgerufen, wenn er nicht (mehr) zur Arbeit kommen kann
-        void WorkerLost();
+    /// Event-Handler
+    void HandleEvent(const unsigned id) override;
+    /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
+    void AddWare(Ware*& ware) override;
+    /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
+    bool FreePlaceAtFlag() override;
+    /// Eine bestellte Ware konnte doch nicht kommen
+    void WareLost(Ware* ware) override;
+    /// Wird aufgerufen, wenn ein Arbeiter für das Gebäude gefunden werden konnte
+    void GotWorker(Job job, noFigure* worker) override;
+    /// Wird vom Arbeiter aufgerufen, wenn er im Gebäude angekommen ist
+    void WorkerArrived();
+    /// Wird vom Arbeiter aufgerufen, wenn er nicht (mehr) zur Arbeit kommen kann
+    void WorkerLost();
 
-        /// Gibt den Warenbestand (eingehende Waren - Rohstoffe) zurück
-        unsigned char GetWares(const unsigned int id) const { return wares[id]; }
-        /// Prüft, ob Waren für einen Arbeitsschritt vorhanden sind
-        bool WaresAvailable();
-        /// Verbraucht Waren
-        void ConsumeWares();
+    /// Gibt den Warenbestand (eingehende Waren - Rohstoffe) zurück
+    unsigned char GetNumWares(unsigned id) const { return numWares[id]; }
+    /// Prüft, ob Waren für einen Arbeitsschritt vorhanden sind
+    bool WaresAvailable();
+    /// Verbraucht Waren
+    void ConsumeWares();
 
-        /// Berechnet Punktewertung für Ware type, start ist der Produzent, von dem die Ware kommt
-        unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type);
+    /// Berechnet Punktewertung für Ware type, start ist der Produzent, von dem die Ware kommt
+    unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type);
 
-        /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
-        void TakeWare(Ware* ware) override;
+    /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
+    void TakeWare(Ware* ware) override;
 
-        /// Bestellte Waren
-        inline bool AreThereAnyOrderedWares() const {
-            for(std::vector< std::list<Ware*> >::const_iterator it = ordered_wares.begin(); it != ordered_wares.end(); ++it)
-                if(!it->empty())
-                    return true;
-            return false;
-        }
+    /// Bestellte Waren
+    bool AreThereAnyOrderedWares() const
+    {
+        for(std::vector<std::list<Ware*> >::const_iterator it = ordered_wares.begin(); it != ordered_wares.end(); ++it)
+            if(!it->empty())
+                return true;
+        return false;
+    }
 
-        /// Gibt Pointer auf Produktivität zurück
-        const unsigned short* GetProductivityPointer() const { return &productivity; }
-        const unsigned short GetProductivity() const { return productivity; }
-        const nofBuildingWorker* GetWorker() const { return worker; }
+    /// Gibt Pointer auf Produktivität zurück
+    const unsigned short* GetProductivityPointer() const { return &productivity; }
+    const unsigned short GetProductivity() const { return productivity; }
+    const nofBuildingWorker* GetWorker() const { return worker; }
 
-        /// Ermittelt, ob es sich bei diesem Gebäude um ein Bergwerk handelt
-        bool IsMine() const { return type_ >= BLD_GRANITEMINE && type_ <= BLD_GOLDMINE; }
+    /// Stoppt/Erlaubt Produktion (visuell)
+    void ToggleProductionVirtual() { disable_production_virtual = !disable_production_virtual; }
+    /// Stoppt/Erlaubt Produktion (real)
+    void SetProductionEnabled(const bool enabled);
+    /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
+    bool IsProductionDisabledVirtual() const { return disable_production_virtual; }
+    /// Fragt ab, ob Produktion ausgeschaltet ist (real)
+    bool IsProductionDisabled() const { return disable_production; }
+    /// Called when there are no more resources
+    void OnOutOfResources();
+    /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)
+    void StartNotWorking();
+    /// Hört auf, nicht zu arbeiten, sprich fängt an zu arbeiten (fürs Ausrechnen der Produktivität)
+    void StopNotWorking();
 
-        /// Stoppt/Erlaubt Produktion (visuell)
-        void ToggleProductionVirtual() { disable_production_virtual = !disable_production_virtual; }
-        /// Stoppt/Erlaubt Produktion (real)
-        void SetProductionEnabled(const bool enabled);
-        /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
-        bool IsProductionDisabledVirtual() const { return disable_production_virtual; }
-        /// Fragt ab, ob Produktion ausgeschaltet ist (real)
-        bool IsProductionDisabled() const { return disable_production; }
-        /// Setzt Produktivität instant auf 0 (Keine Ressourcen mehr)
-        void SetProductivityToZero();
+private:
+    /// Calculates the productivity and resets the counter
+    unsigned short CalcProductivity();
 };
-
 
 #endif

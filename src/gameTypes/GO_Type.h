@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -78,7 +78,6 @@ enum GO_Type
     GOT_TREE,
     GOT_ANIMAL,
     GOT_FIGHTING,
-    GOT_EVENT,
     GOT_ROADSEGMENT,
     GOT_WARE,
     GOT_CATAPULTSTONE,

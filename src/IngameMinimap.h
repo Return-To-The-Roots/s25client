@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,11 +19,12 @@
 #define IngameMinimap_h__
 
 #include "Minimap.h"
+#include "gameTypes/MapTypes.h"
 #include <vector>
 
 class GameWorldViewer;
 
-class IngameMinimap: public Minimap
+class IngameMinimap : public Minimap
 {
     /// Referenz auf den GameWorldViewer
     const GameWorldViewer& gwv;
@@ -33,28 +34,26 @@ class IngameMinimap: public Minimap
     /// Liste mit allen Punkten, die geändert werden müssen
     std::vector<MapPoint> nodesToUpdate;
 
-
     /// Für jeden einzelnen Knoten speichern, welches Objekt hier dominiert, also wessen Pixel angezeigt wird
     enum DrawnObject
     {
         DO_INVALID = 0,
         DO_INVISIBLE, /// im im vollständigem Dunklen
-        DO_TERRAIN, /// Nur Terrain oder Baum und Granit ohne irgendwas
-        DO_PLAYER, /// Nur Terrain oder Baum und Granit mit Spielerterritorium dazu
-        DO_BUILDING, /// Gebäude
-        DO_ROAD /// Straße
+        DO_TERRAIN,   /// Nur Terrain oder Baum und Granit ohne irgendwas
+        DO_PLAYER,    /// Nur Terrain oder Baum und Granit mit Spielerterritorium dazu
+        DO_BUILDING,  /// Gebäude
+        DO_ROAD       /// Straße
     };
 
     std::vector<DrawnObject> dos;
 
     /// Einzelne Dinge anzeigen oder nicht anzeigen
     bool territory; /// Länder der Spieler
-    bool houses; /// Häuser
-    bool roads; /// Straßen
+    bool houses;    /// Häuser
+    bool roads;     /// Straßen
 
 public:
     IngameMinimap(const GameWorldViewer& gwv);
-
 
     /// Merkt, vor dass ein bestimmter Punkt aktualisiert werden soll
     void UpdateNode(const MapPoint pt);
@@ -68,7 +67,6 @@ public:
     void ToggleRoads();
 
 protected:
-
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
     unsigned CalcPixelColor(const MapPoint pt, const unsigned t) override;
     /// Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe

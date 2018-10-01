@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "WorldWithGCExecution.h"
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
-#include "postSystem/PostBox.h"
+#include "WorldWithGCExecution.h"
 #include "postSystem/DiplomacyPostQuestion.h"
+#include "postSystem/PostBox.h"
 #include <boost/test/unit_test.hpp>
 
 namespace utf = boost::unit_test;
@@ -29,67 +29,70 @@ BOOST_AUTO_TEST_SUITE(PactTestSuite)
 BOOST_FIXTURE_TEST_CASE(InitialPactStates, WorldWithGCExecution3P)
 {
     // No pacts at start
-    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
     {
         const GamePlayer& player = world.GetPlayer(i);
-        for(unsigned j = 0; j < world.GetPlayerCount(); j++)
+        for(unsigned j = 0; j < world.GetNumPlayers(); j++)
         {
             // Self is always an ally and not attackable
             if(i == j)
             {
                 BOOST_REQUIRE(player.IsAlly(j));
                 BOOST_REQUIRE(!player.IsAttackable(j));
-            } else{
+            } else
+            {
                 BOOST_REQUIRE(!player.IsAlly(j));
                 BOOST_REQUIRE(player.IsAttackable(j));
             }
-            for(unsigned p = 0; p < PACTS_COUNT; p++)
+            for(unsigned p = 0; p < NUM_PACTS; p++)
             {
                 BOOST_REQUIRE_EQUAL(player.GetPactState(PactType(p), j), GamePlayer::NO_PACT);
-                BOOST_REQUIRE_EQUAL(player.GetRemainingPactTime(PactType(p),j), 0u);
+                BOOST_REQUIRE_EQUAL(player.GetRemainingPactTime(PactType(p), j), 0u);
             }
         }
     }
 }
 
 namespace {
-    /// Validate the state of a pact between to players. Also checks that the state for the other player is the same
-    void CheckPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned playerIdTo, PactType pact, GamePlayer::PactState expectedState)
-    {
-        const GamePlayer& playerFrom = world.GetPlayer(playerIdFrom);
-        const GamePlayer& playerTo = world.GetPlayer(playerIdTo);
-
-        BOOST_REQUIRE_EQUAL(playerFrom.GetPactState(pact, playerIdTo), expectedState);
-        // If pact was requested, to other player has no pact yet
-        if(expectedState == GamePlayer::IN_PROGRESS)
-            BOOST_REQUIRE_EQUAL(playerTo.GetPactState(pact, playerIdFrom), GamePlayer::NO_PACT);
-        else
-            BOOST_REQUIRE_EQUAL(playerTo.GetPactState(pact, playerIdFrom), expectedState);
-
-        // If pact is accepted, we must have some time remaining, else not
-        if(expectedState == GamePlayer::ACCEPTED)
-            BOOST_REQUIRE_GT(playerFrom.GetRemainingPactTime(pact, playerIdTo), 0u);
-        else
-            BOOST_REQUIRE_EQUAL(playerFrom.GetRemainingPactTime(pact, playerIdTo), 0u);
-
-        // Remaining times must match
-        BOOST_REQUIRE_EQUAL(playerFrom.GetRemainingPactTime(pact, playerIdTo), playerFrom.GetRemainingPactTime(pact, playerIdTo));
-
-        // Attackable must match
-        BOOST_REQUIRE_EQUAL(playerFrom.IsAttackable(playerIdTo), playerTo.IsAttackable(playerIdFrom));
-        // Ally must match
-        BOOST_REQUIRE_EQUAL(playerFrom.IsAlly(playerIdTo), playerTo.IsAlly(playerIdFrom));
-
-        // Attackable only when non-agg. pact not accepted
-        BOOST_REQUIRE_EQUAL(playerFrom.IsAttackable(playerIdTo), (playerFrom.GetPactState(NON_AGGRESSION_PACT, playerIdTo) != GamePlayer::ACCEPTED));
-        // Ally when treaty of alliance accepted
-        BOOST_REQUIRE_EQUAL(playerFrom.IsAlly(playerIdTo), (playerFrom.GetPactState(TREATY_OF_ALLIANCE, playerIdTo) == GamePlayer::ACCEPTED));
-    }
-}
-
-BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P)//, *utf::depends_on("PactTestSuite/TestInitialPactStates"))
+/// Validate the state of a pact between to players. Also checks that the state for the other player is the same
+void CheckPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned playerIdTo, PactType pact,
+                    GamePlayer::PactState expectedState)
 {
-    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+    const GamePlayer& playerFrom = world.GetPlayer(playerIdFrom);
+    const GamePlayer& playerTo = world.GetPlayer(playerIdTo);
+
+    BOOST_REQUIRE_EQUAL(playerFrom.GetPactState(pact, playerIdTo), expectedState);
+    // If pact was requested, to other player has no pact yet
+    if(expectedState == GamePlayer::IN_PROGRESS)
+        BOOST_REQUIRE_EQUAL(playerTo.GetPactState(pact, playerIdFrom), GamePlayer::NO_PACT);
+    else
+        BOOST_REQUIRE_EQUAL(playerTo.GetPactState(pact, playerIdFrom), expectedState);
+
+    // If pact is accepted, we must have some time remaining, else not
+    if(expectedState == GamePlayer::ACCEPTED)
+        BOOST_REQUIRE_GT(playerFrom.GetRemainingPactTime(pact, playerIdTo), 0u);
+    else
+        BOOST_REQUIRE_EQUAL(playerFrom.GetRemainingPactTime(pact, playerIdTo), 0u);
+
+    // Remaining times must match
+    BOOST_REQUIRE_EQUAL(playerFrom.GetRemainingPactTime(pact, playerIdTo), playerFrom.GetRemainingPactTime(pact, playerIdTo));
+
+    // Attackable must match
+    BOOST_REQUIRE_EQUAL(playerFrom.IsAttackable(playerIdTo), playerTo.IsAttackable(playerIdFrom));
+    // Ally must match
+    BOOST_REQUIRE_EQUAL(playerFrom.IsAlly(playerIdTo), playerTo.IsAlly(playerIdFrom));
+
+    // Attackable only when non-agg. pact not accepted
+    BOOST_REQUIRE_EQUAL(playerFrom.IsAttackable(playerIdTo),
+                        (playerFrom.GetPactState(NON_AGGRESSION_PACT, playerIdTo) != GamePlayer::ACCEPTED));
+    // Ally when treaty of alliance accepted
+    BOOST_REQUIRE_EQUAL(playerFrom.IsAlly(playerIdTo), (playerFrom.GetPactState(TREATY_OF_ALLIANCE, playerIdTo) == GamePlayer::ACCEPTED));
+}
+} // namespace
+
+BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P) //, *utf::depends_on("PactTestSuite/TestInitialPactStates"))
+{
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         world.GetPostMgr().AddPostBox(i);
     // Use middle player for off-by-one detection
     curPlayer = 1;
@@ -111,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P)//, *utf::depends_o
     BOOST_REQUIRE_EQUAL(postbox2.GetNumMsgs(), 1u);
     const DiplomacyPostQuestion* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(0));
     BOOST_REQUIRE(msg);
-    BOOST_REQUIRE_EQUAL(msg->GetPactType(), NON_AGGRESSION_PACT);
+    BOOST_REQUIRE_EQUAL(msg->GetPactType(), NON_AGGRESSION_PACT); //-V522
     BOOST_REQUIRE_EQUAL(msg->GetPlayerId(), curPlayer);
     BOOST_REQUIRE_EQUAL(msg->IsAccept(), true);
     // should be in progress for player1
@@ -139,13 +142,13 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P)//, *utf::depends_o
 }
 
 // Creates a non-aggression pact between players 1 and 2
-struct PactCreatedFixture: public WorldWithGCExecution3P
+struct PactCreatedFixture : public WorldWithGCExecution3P
 {
     BOOST_STATIC_CONSTEXPR unsigned duration = 10;
     const DiplomacyPostQuestion* msg;
     PactCreatedFixture()
     {
-        for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
             world.GetPostMgr().AddPostBox(i);
         // Use middle player for off-by-one detection
         curPlayer = 1;
@@ -162,7 +165,7 @@ struct PactCreatedFixture: public WorldWithGCExecution3P
 
 BOOST_CONSTEXPR_OR_CONST unsigned PactCreatedFixture::duration;
 
-BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture)//, *utf::depends_on("PactTestSuite/MakePactTest"))
+BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture) //, *utf::depends_on("PactTestSuite/MakePactTest"))
 {
     GamePlayer& player1 = world.GetPlayer(1);
 
@@ -186,7 +189,7 @@ BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture)//, *utf::depends_o
     CheckPactState(world, 1, 2, NON_AGGRESSION_PACT, GamePlayer::NO_PACT);
 }
 
-BOOST_FIXTURE_TEST_CASE(PactCanceling, PactCreatedFixture)//, *utf::depends_on("PactTestSuite/MakePactTest"))
+BOOST_FIXTURE_TEST_CASE(PactCanceling, PactCreatedFixture) //, *utf::depends_on("PactTestSuite/MakePactTest"))
 {
     PostBox& postbox1 = *world.GetPostMgr().GetPostBox(1);
     PostBox& postbox2 = *world.GetPostMgr().GetPostBox(2);

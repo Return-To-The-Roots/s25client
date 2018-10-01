@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,104 +18,108 @@
 #define VIDEODRIVERWRAPPER_H_INCLUDED
 
 #include "DriverWrapper.h"
-#include "driver/src/VideoInterface.h"
 #include "Point.h"
-#include "libutil/src/Singleton.h"
-#include <string>
+#include "driver/KeyEvent.h"
+#include "driver/VideoMode.h"
+#include "libutil/Singleton.h"
 #include <boost/array.hpp>
+#include <string>
+
+class IVideoDriver;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
 class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicies::WithLongevity>
 {
-    public:
+public:
+    BOOST_STATIC_CONSTEXPR unsigned Longevity = 30;
 
-        BOOST_STATIC_CONSTEXPR unsigned Longevity = 30;
+    VideoDriverWrapper();
+    ~VideoDriverWrapper() override;
 
-        VideoDriverWrapper();
-        ~VideoDriverWrapper() override;
+    /// Loads a new driver. Takes the existing one, if given
+    bool LoadDriver(IVideoDriver* existingDriver = NULL);
+    void UnloadDriver();
+    IVideoDriver* GetDriver() const { return videodriver; }
 
-        /// Loads a new driver. Takes the existing one, if given
-        bool LoadDriver(IVideoDriver* existingDriver = NULL);
+    /// Erstellt das Fenster.
+    bool CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
+    /// Verändert Auflösung, Fenster/Fullscreen
+    bool ResizeScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
+    /// Viewport (neu) setzen
+    void RenewViewport();
+    /// zerstört das Fenster.
+    bool DestroyScreen();
+    /// räumt die Texturen auf
+    void CleanUp();
+    /// erstellt eine Textur
+    unsigned GenerateTexture();
+    void BindTexture(unsigned t);
+    void DeleteTexture(unsigned t);
 
-        /// Erstellt das Fenster.
-        bool CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
-        /// Verändert Auflösung, Fenster/Fullscreen
-        bool ResizeScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
-        /// Viewport (neu) setzen
-        void RenewViewport(bool onlyRenew = false);
-        /// zerstört das Fenster.
-        bool DestroyScreen();
-        /// räumt die Texturen auf
-        void CleanUp();
-        /// erstellt eine Textur
-        unsigned int GenerateTexture();
-        void BindTexture(unsigned int t);
-        void DeleteTexture(unsigned int t);
+    /// Swapped den Buffer
+    bool SwapBuffers();
+    /// Clears the screen (glClear)
+    void ClearScreen();
+    // liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, für alles andere die Mausmessages
+    // benutzen!!!)
+    int GetMouseX() const;
+    int GetMouseY() const;
+    Position GetMousePos() const;
 
-        /// Swapped den Buffer
-        bool SwapBuffers();
-        /// Clears the screen (glClear)
-        void ClearScreen();
-        // liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, für alles andere die Mausmessages
-        // benutzen!!!)
-        int GetMouseX() const;
-        int GetMouseY() const;
-        Point<int> GetMousePos() const;
+    /// Listet verfügbare Videomodi auf
+    void ListVideoModes(std::vector<VideoMode>& video_modes) const;
 
-        /// Listet verfügbare Videomodi auf
-        void ListVideoModes(std::vector<VideoMode>& video_modes) const;
+    /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
+    void* GetMapPointer() const;
 
-        /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-        void* GetMapPointer() const;
+    Extent GetScreenSize() const;
+    bool IsFullscreen() const;
 
-        unsigned short GetScreenWidth()  const { const unsigned short w = videodriver->GetScreenWidth(); return (w < 800 ? 800 : w); }
-        unsigned short GetScreenHeight() const { const unsigned short h = videodriver->GetScreenHeight(); return (h < 600 ? 600 : h); }
-        Point<int> GetScreenSize() const { return Point<int>(GetScreenWidth(), GetScreenHeight()); }
-        bool IsFullscreen() const { return videodriver->IsFullscreen(); }
+    bool IsLeftDown();
+    bool IsRightDown();
+    // setzt den Mausstatus
+    void SetMousePos(const int x, const int y);
+    void SetMousePos(const Position& newPos);
+    /// Get state of the modifier keys
+    KeyEvent GetModKeyState() const;
 
-        bool IsLeftDown();
-        bool IsRightDown();
-        // setzt den Mausstatus
-        void SetMousePos(const int x, const int y);
-        void SetMousePos(const Point<int>& newPos);
-        /// Get state of the modifier keys
-        KeyEvent GetModKeyState() const;
+    // Nachrichtenschleife
+    bool Run();
 
-        // Nachrichtenschleife
-        bool Run();
+    unsigned GetTickCount();
 
-        unsigned int GetTickCount();
+    std::string GetName() const;
+    bool IsLoaded() const { return videodriver != NULL; }
 
-        std::string GetName() const { return (videodriver) ? videodriver->GetName() : ""; }
-        bool IsLoaded() const { return videodriver != NULL; }
+    /// Calculate the size of the texture which is optimal for the driver and at least minSize
+    Extent calcPreferredTextureSize(const Extent& minSize) const;
 
-    private:
-        // Viewpoint und Co initialisieren
-        bool Initialize();
+private:
+    // Viewpoint und Co initialisieren
+    bool Initialize();
 
-        // prüft ob eine Extension verfügbar ist
-        bool hasExtension(const std::string& extension);
+    // prüft ob eine Extension verfügbar ist
+    bool hasExtension(const std::string& extension);
 
-        // lädt eine Funktion aus den Extensions
-        void* loadExtension(const std::string& extension);
+    // lädt eine Funktion aus den Extensions
+    void* loadExtension(const std::string& extension);
 
-        // Alle (im Programm benutzen) Extensions laden
-        bool LoadAllExtensions();
+    // Alle (im Programm benutzen) Extensions laden
+    bool LoadAllExtensions();
 
-    private:
+private:
+    DriverWrapper driver_wrapper;
+    IVideoDriver* videodriver;
+    bool loadedFromDll;
+    /// (Some) OpenGL can be disabled for testing
+    bool isOglEnabled_;
 
-        DriverWrapper driver_wrapper;
-        IVideoDriver* videodriver;
-        /// (Some) OpenGL can be disabled for testing
-        bool isOglEnabled_;
-
-        boost::array<unsigned int, 100000> texture_list;
-        unsigned int texture_pos;
-        unsigned int texture_current;
+    boost::array<unsigned, 100000> texture_list;
+    unsigned texture_pos;
+    unsigned texture_current;
 };
 
 #define VIDEODRIVER VideoDriverWrapper::inst()
 
 #endif
-

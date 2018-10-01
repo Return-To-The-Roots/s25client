@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,25 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nobStorehouse.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
 #include "EventManager.h"
+#include "GamePlayer.h"
+#include "network/GameClient.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 
 nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseWarehouse(BLD_STOREHOUSE, pos, player, nation)
 {
-    // Alle Waren 0, außer 100 Träger
+    // Alle Waren 0, außer 100 Träger. TODO: Really?
     inventory.clear();
 
     // Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
     AddToInventory();
-
-    // Der Wirtschaftsverwaltung Bescheid sagen
-    gwg->GetPlayer(player).AddWarehouse(this);
 
     // Post versenden
     SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("New storehouse finished"), PostCategory::Economy, *this));
@@ -44,10 +41,7 @@ void nobStorehouse::Serialize_nobStorehouse(SerializedGameData& sgd) const
     Serialize_nobBaseWarehouse(sgd);
 }
 
-nobStorehouse::nobStorehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id)
-{
-}
-
+nobStorehouse::nobStorehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id) {}
 
 void nobStorehouse::Draw(DrawPoint drawPt)
 {
@@ -55,8 +49,7 @@ void nobStorehouse::Draw(DrawPoint drawPt)
     DrawBaseBuilding(drawPt);
 }
 
-
-void nobStorehouse::HandleEvent(const unsigned int id)
+void nobStorehouse::HandleEvent(const unsigned id)
 {
     HandleBaseEvent(id);
 }

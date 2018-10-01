@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,59 +18,44 @@
 #define CTRL_MINIMAP_H_
 
 #include "Window.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 
 class Minimap;
 
 /// Übersichtskarte (MapPreview)
 class ctrlMinimap : public Window
 {
-    public:
+public:
+    ctrlMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding, const Extent& mapSize);
 
-        ctrlMinimap( Window* parent,
-                     const unsigned int id,
-                     const unsigned short x,
-                     const unsigned short y,
-                     const unsigned short width,
-                     const unsigned short height,
-                     const unsigned short padding_x,
-                     const unsigned short padding_y,
-                     const unsigned short map_width,
-                     const unsigned short map_height);
+    Extent GetCurMapSize() const { return drawnMapSize; }
 
-        /// Gibt width_show und height_show zurück
-        unsigned short GetWidthShow() const { return width_show; }
-        unsigned short GetHeightShow() const { return height_show; }
+    /// Get area the map covers (relative to control origin)
+    Rect GetMapArea() const;
+    Rect GetBoundaryRect() const override;
+    Rect GetMapDrawArea() const;
 
-        /// Gibt die entsprechenden Kanten relativ zur oberen linken Ecke der Bounding-Box
-        DrawPoint GetBBOffset() const { return DrawPoint(GetLeft(), GetTop()); }
-        unsigned short GetLeft() const { return (width_ - width_show) / 2; }
-        unsigned short GetTop() const { return (height_ - height_show) / 2; }
-        unsigned short GetRight() const { return GetLeft() + width_show; }
-        unsigned short GetBottom() const { return GetTop() + height_show; }
+    void SetPadding(const Extent& padding);
+    /// Größe ändern
+    void Resize(const Extent& size) override;
+    void SetMapSize(const Extent& newMapSize);
 
-        /// Größe ändern
-        void Resize(unsigned short width, unsigned short heigth) override;
-        void SetMapSize(const unsigned short map_width, const unsigned short map_height);
+    /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
+    DrawPoint CalcMapCoord(MapPoint pt) const;
 
-        /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
-        DrawPoint CalcMapCoord(MapPoint pt) const;
+    /// Verkleinert Minimap soweit es geht (entfernt Bounding-Box)
+    void RemoveBoundingBox(const Extent& minSize);
 
-        /// Verkleinert Minimap soweit es geht (entfernt Bounding-Box)
-        void RemoveBoundingBox(const unsigned short width_min, const unsigned short height_min);
+protected:
+    /// Zeichnet die Minimap an sich
+    void DrawMap(Minimap& map);
 
-    protected:
-
-        /// Zeichnet die Minimap an sich
-        void DrawMap(Minimap& map);
-
-        /// Real size of the minimap (gets scaled with retained aspect ratio)
-        unsigned short width_show, height_show;
-        /// Abstand der Minimap vom Rand des Controls
-        DrawPoint padding;
-        unsigned short mapWidth_, mapHeight_;
+    /// Real size of the minimap (gets scaled with retained aspect ratio)
+    Extent drawnMapSize;
+    /// Abstand der Minimap vom Rand des Controls
+    Extent padding;
+    /// Requested size of the drawn map
+    Extent mapSize;
 };
 
-
 #endif // !MapPreview_H_
-

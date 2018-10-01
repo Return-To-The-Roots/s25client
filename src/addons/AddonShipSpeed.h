@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,28 +20,22 @@
 #pragma once
 
 #include "AddonList.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  set ship movement speed
  */
 class AddonShipSpeed : public AddonList
 {
-    public:
-        AddonShipSpeed() : AddonList(AddonId::SHIP_SPEED,
-                                         ADDONGROUP_ECONOMY,
-                                         _("Set ship speed"),
-                                         _("Changes the ship movement speed"),
-                                         2
-                                        )
-        {
-            addOption(_("Very slow"));
-            addOption(_("Slow"));
-            addOption(_("Normal"));
-            addOption(_("Fast"));
-            addOption(_("Very fast"));
-        }
+public:
+    AddonShipSpeed() : AddonList(AddonId::SHIP_SPEED, ADDONGROUP_ECONOMY, _("Set ship speed"), _("Changes the ship movement speed"), 2)
+    {
+        addOption(_("Very slow"));
+        addOption(_("Slow"));
+        addOption(_("Normal"));
+        addOption(_("Fast"));
+        addOption(_("Very fast"));
+    }
 };
 
 #endif
-

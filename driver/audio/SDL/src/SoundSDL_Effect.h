@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,22 +17,19 @@
 #ifndef SOUNDSDL_EFFECT_H_INCLUDED
 #define SOUNDSDL_EFFECT_H_INCLUDED
 
-#include <Sound.h>
+#include "SoundHandle.h"
 
 struct Mix_Chunk;
 
-class SoundSDL_Effect : public Sound
+/// SDL sound descriptor. Internal use only
+class SoundSDL_Effect : public SoundDesc
 {
-        friend class AudioSDL;
+public:
+    explicit SoundSDL_Effect(Mix_Chunk* sound) : SoundDesc(SD_EFFECT), sound(sound) {}
 
-    public:
-        SoundSDL_Effect();
-
-        ~SoundSDL_Effect() override;
-
-
-    private:
-        Mix_Chunk* sound; /// Das PCM-Handle.
+    void setInvalid() { isValid_ = false; }
+    /// Handle to the sound. Managed and freed by the driver
+    Mix_Chunk* const sound;
 };
 
 #endif // !SOUNDSDL_EFFECT_H_INCLUDED

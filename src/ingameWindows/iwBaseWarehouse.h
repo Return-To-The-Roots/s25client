@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "iwWares.h"
 #include "IDataChangedListener.h"
+#include "iwWares.h"
 
 class nobBaseWarehouse;
 class GameWorldView;
@@ -29,29 +29,29 @@ class GameCommandFactory;
 /// Basisklasse für die HQ- und Lagerhäuserfenster
 class iwBaseWarehouse : public iwWares, public IDataChangedListener
 {
-        GameWorldView& gwv;		
-        GameCommandFactory& gcFactory;
-    protected:
-        nobBaseWarehouse* wh; /// Pointer zum entsprechenden Lagerhaus
+    GameWorldView& gwv;
+    GameCommandFactory& gcFactory;
 
-    public:
-        iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh);
-        ~iwBaseWarehouse() override;
+protected:
+    nobBaseWarehouse* wh; /// Pointer zum entsprechenden Lagerhaus
 
-        void OnChange(unsigned changeId) override;
+public:
+    iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh);
+    ~iwBaseWarehouse() override;
 
-    protected:
+    void OnChange(unsigned changeId) override;
 
-        /// Update displayed overlay (e.g. stop symbol) for the item at the current page
-        void UpdateOverlay(unsigned i);
-        /// Update displayed overlay (e.g. stop symbol) for the item of the given type
-        void UpdateOverlay(unsigned i, bool isWare);
-        void UpdateOverlays();
+protected:
+    /// Update displayed overlay (e.g. stop symbol) for the item at the current page
+    void UpdateOverlay(unsigned i);
+    /// Update displayed overlay (e.g. stop symbol) for the item of the given type
+    void UpdateOverlay(unsigned i, bool isWare);
+    void UpdateOverlays();
 
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+    void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 
-        void SetPage(unsigned page) override;
+    void SetPage(unsigned page) override;
 };
 
 #endif // !iwHQ_H_INCLUDED

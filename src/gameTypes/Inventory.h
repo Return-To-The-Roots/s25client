@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "JobTypes.h"
 #include "GoodTypes.h"
+#include "JobTypes.h"
 #include <boost/array.hpp>
 
 #ifndef Inventory_h__
@@ -25,16 +25,26 @@
 /// Struct for wares and people (for HQs, warehouses etc)
 struct Inventory
 {
-    boost::array<unsigned int, WARE_TYPES_COUNT> goods;
-    boost::array<unsigned int, JOB_TYPES_COUNT> people;
+    boost::array<unsigned, NUM_WARE_TYPES> goods;
+    boost::array<unsigned, NUM_JOB_TYPES> people;
 
     Inventory() { clear(); }
+    unsigned operator[](GoodType good) const { return goods[good]; }
+    unsigned operator[](Job job) const { return people[job]; }
     /// Sets everything to 0
     void clear();
-    void Add(const GoodType good, const unsigned amount = 1){ goods[good] += amount; }
-    void Add(const Job job, const unsigned amount = 1){ people[job] += amount; }
-    void Remove(const GoodType good, const unsigned amount = 1){ RTTR_Assert(goods[good] >= amount); goods[good] -= amount; }
-    void Remove(const Job job, const unsigned amount = 1){ RTTR_Assert(people[job] >= amount); people[job] -= amount; }
+    void Add(const GoodType good, const unsigned amount = 1) { goods[good] += amount; }
+    void Add(const Job job, const unsigned amount = 1) { people[job] += amount; }
+    void Remove(const GoodType good, const unsigned amount = 1)
+    {
+        RTTR_Assert(goods[good] >= amount);
+        goods[good] -= amount;
+    }
+    void Remove(const Job job, const unsigned amount = 1)
+    {
+        RTTR_Assert(people[job] >= amount);
+        people[job] -= amount;
+    }
 };
 
 #endif // Inventory_h__

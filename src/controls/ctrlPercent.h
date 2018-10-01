@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,20 +24,21 @@ class glArchivItem_Font;
 
 class ctrlPercent : public Window
 {
-    public:
-        ctrlPercent(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int text_color, glArchivItem_Font* font, const unsigned short* percentage);
+public:
+    ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
+                glArchivItem_Font* font, const unsigned short* percentage);
 
-        void SetPercentage(const unsigned short* percentage) { this->percentage_ = percentage; }
+    void SetPercentage(const unsigned short* percentage) { this->percentage_ = percentage; }
 
-    protected:
-        /// Zeichenmethode.
-        bool Draw_() override;
+protected:
+    /// Zeichenmethode.
+    void Draw_() override;
 
-    private:
-        TextureColor tc;
-        unsigned int text_color;
-        glArchivItem_Font* font;
-        const unsigned short* percentage_;
+private:
+    TextureColor tc;
+    unsigned text_color;
+    glArchivItem_Font* font;
+    const unsigned short* percentage_;
 };
 
 #endif // !CTRLPERCENT_H_INCLUDED

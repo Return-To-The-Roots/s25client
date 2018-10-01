@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,7 +18,8 @@
 #ifndef TradePath_h__
 #define TradePath_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/Direction.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 class SerializedGameData;
@@ -27,10 +28,10 @@ class SerializedGameData;
 struct TradePath
 {
     MapPoint start, goal;
-    std::vector<unsigned char> route;
+    std::vector<Direction> route;
 
-    TradePath(){}
-    TradePath(const MapPoint& start, const MapPoint& goal, const std::vector<unsigned char>& route): start(start), goal(goal), route(route){}
+    TradePath() {}
+    TradePath(const MapPoint& start, const MapPoint& goal, const std::vector<Direction>& route) : start(start), goal(goal), route(route) {}
     TradePath(SerializedGameData& sgd);
 
     void Serialize(SerializedGameData& sgd) const;

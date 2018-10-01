@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,18 +19,18 @@
 
 #pragma once
 
-#include "Desktop.h"
+#include "desktops/dskMenuBase.h"
 
 /// Klasse des Einzelspieler Desktops.
-class dskSinglePlayer : public Desktop
+class dskSinglePlayer : public dskMenuBase
 {
-    public:
-        dskSinglePlayer();
-    private:
+public:
+    dskSinglePlayer();
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void PrepareSinglePlayerServer();
-        void PrepareLoadGame();
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void PrepareSinglePlayerServer();
+    void PrepareLoadGame();
 };
 
 #endif // !dskSINGLEPLAYER_H_INCLUDED

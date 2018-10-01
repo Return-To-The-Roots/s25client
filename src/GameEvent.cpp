@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameEvent.h"
+#include "GameObject.h"
 #include "SerializedGameData.h"
 
-GameEvent::GameEvent(SerializedGameData& sgd, const unsigned obj_id):
-    GameObject(sgd, obj_id),
-    obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)),
-    startGF(sgd.PopUnsignedInt()),
-    length(sgd.PopUnsignedInt()),
-    id(sgd.PopUnsignedInt())
+GameEvent::GameEvent(unsigned instanceId, GameObject* obj, unsigned startGF, unsigned length, unsigned id)
+    : instanceId(instanceId), obj(obj), startGF(startGF), length(length), id(id)
+{
+    RTTR_Assert(length > 0); // Events cannot be executed in the same GF as they are added
+    RTTR_Assert(obj);        // Events without an object are pointless
+}
+
+GameEvent::GameEvent(SerializedGameData& sgd, const unsigned instanceId)
+    : instanceId(sgd.AddEvent(instanceId, this)), obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)), startGF(sgd.PopUnsignedInt()),
+      length(sgd.PopUnsignedInt()), id(sgd.PopUnsignedInt())
 {
     RTTR_Assert(obj);
 }
 
 void GameEvent::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_GameObject(sgd);
-
     sgd.PushObject(obj, false);
     sgd.PushUnsignedInt(startGF);
     sgd.PushUnsignedInt(length);

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,18 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwHarborBuilding.h"
-
 #include "Loader.h"
 #include "buildings/nobHarborBuilding.h"
 #include "controls/ctrlGroup.h"
-#include "GameClient.h"
-#include "controls/ctrlButton.h"
-#include "ogl/glArchivItem_Font.h"
+#include "controls/ctrlImageButton.h"
+#include "network/GameClient.h"
+#include "ogl/FontStyle.h"
 
-iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb)
-    : iwHQ(gwv, gcFactory, hb)
+iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb) : iwHQ(gwv, gcFactory, hb)
 {
     SetTitle(_("Harbor building"));
 
@@ -35,17 +33,18 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
     grpIdExpedition = harbor_page.GetID();
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(0, 83, 70, _("Expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    harbor_page.AddText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(1, 65, 100, 30, 30, TC_GREY, LOADER.GetImageN("io", 176), _("Start expedition"));
+    harbor_page.AddImageButton(1, DrawPoint(65, 100), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176), _("Start expedition"));
     AdjustExpeditionButton(false);
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(2, 83, 140, _("Exploration expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    harbor_page.AddText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(3, 65, 170, 30, 30, TC_GREY, LOADER.GetImageN("io", 176), _("Start exporation expedition"));
+    harbor_page.AddImageButton(3, DrawPoint(65, 170), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176),
+                               _("Start exporation expedition"));
     AdjustExplorationExpeditionButton(false);
 }
 
@@ -65,12 +64,11 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)
-    if( (flip || exp) && !(flip && exp))
+    if((flip || exp) && !(flip && exp))
     {
         button->SetModulationColor(COLOR_WHITE);
         button->SetTooltip(_("Cancel expedition"));
-    }
-    else
+    } else
     {
         button->SetModulationColor(COLOR_RED);
         button->SetTooltip(_("Start expedition"));
@@ -93,19 +91,18 @@ void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)
-    if( (flip || exp) && !(flip && exp))
+    if((flip || exp) && !(flip && exp))
     {
         button->SetModulationColor(COLOR_WHITE);
         button->SetTooltip(_("Cancel expedition"));
-    }
-    else
+    } else
     {
         button->SetModulationColor(COLOR_RED);
         button->SetTooltip(_("Start expedition"));
     }
 }
 
-void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
+void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     if(group_id == grpIdExpedition) // Hafengruppe?
     {
@@ -113,12 +110,13 @@ void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned int group_id, const 
         {
             case 1: // Expedition starten
                 // Entsprechenden GC senden
-                if(GAMECLIENT.StartExpedition(wh->GetPos()))
+                if(GAMECLIENT.StartStopExpedition(wh->GetPos(), !static_cast<const nobHarborBuilding*>(wh)->IsExpeditionActive()))
                     AdjustExpeditionButton(true);
                 break;
             case 3: // Expedition starten
                 // Entsprechenden GC senden
-                if(GAMECLIENT.StartExplorationExpedition(wh->GetPos()))
+                if(GAMECLIENT.StartStopExplorationExpedition(wh->GetPos(),
+                                                             !static_cast<const nobHarborBuilding*>(wh)->IsExplorationExpeditionActive()))
                     AdjustExplorationExpeditionButton(true);
                 break;
         }
@@ -127,4 +125,3 @@ void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned int group_id, const 
     // an Basis weiterleiten
     iwHQ::Msg_Group_ButtonClick(group_id, ctrl_id);
 }
-

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -63,7 +63,8 @@ enum GUI_ID
     CGI_MISSION_STATEMENT,
     CGI_MAP_DEBUG,
     CGI_AI_DEBUG,
-    CGI_NEXT = CGI_MAP_DEBUG + 40
+    CGI_MAP_GENERATOR,
+    CGI_NEXT = CGI_MAP_GENERATOR + 40
 };
 
 #endif // !CONST_GUI_IDS_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -13,37 +13,36 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>. 
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef GCExecutor_h__
 #define GCExecutor_h__
 
-#include "factories/GameCommandFactory.h"
 #include "GameCommand.h"
-#include "libutil/src/Serializer.h"
+#include "factories/GameCommandFactory.h"
+#include "libutil/Serializer.h"
+#include <boost/test/unit_test.hpp>
 
-class GCExecutor: public GameCommandFactory
+class GCExecutor : public GameCommandFactory
 {
 public:
-
     unsigned curPlayer;
-    GCExecutor(): curPlayer(0){}
+    GCExecutor() : curPlayer(0) {}
+
 protected:
-    bool AddGC(gc::GameCommand* gc) override
+    bool AddGC(gc::GameCommandPtr gc) override
     {
         // Go through serialization to check if that works too
         Serializer ser;
-        const gc::Type type = gc->GetType();
         gc->Serialize(ser);
-        deletePtr(gc);
-        gc = gc::GameCommand::Deserialize(type, ser);
+        gc.reset();
+        gc = gc::GameCommand::Deserialize(ser);
         BOOST_REQUIRE_EQUAL(ser.GetBytesLeft(), 0u);
         Serializer ser2;
         gc->Serialize(ser2);
         BOOST_REQUIRE_EQUAL(ser2.GetLength(), ser.GetLength());
         BOOST_REQUIRE_EQUAL(memcmp(ser2.GetData(), ser.GetData(), ser.GetLength()), 0);
         gc->Execute(GetWorld(), curPlayer);
-        deletePtr(gc);
         return true;
     }
 

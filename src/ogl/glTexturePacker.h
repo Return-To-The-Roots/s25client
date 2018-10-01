@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,8 +28,8 @@ private:
     std::vector<unsigned> textures;
     std::vector<glSmartBitmap*> items;
 
-    bool packHelper(std::vector<glSmartBitmap*> &list);
-    static bool sortSmartBitmap(glSmartBitmap* a, glSmartBitmap* b);
+    bool packHelper(std::vector<glSmartBitmap*>& list);
+
 public:
     ~glTexturePacker();
 

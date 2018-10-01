@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,23 +18,18 @@
 #ifndef ShieldConsts_h__
 #define ShieldConsts_h__
 
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/Nation.h"
+
 /// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
 /// die Warensysteme usw
 inline GoodType ConvertShields(const GoodType& good)
 {
-    return (good == GD_SHIELDVIKINGS ||
-        good == GD_SHIELDAFRICANS ||
-        good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : good;
+    return (good == GD_SHIELDVIKINGS || good == GD_SHIELDAFRICANS || good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : good;
 }
 
 /// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
-const boost::array<GoodType, NAT_COUNT> SUPPRESS_UNUSED SHIELD_TYPES =
-{{
-    GD_SHIELDAFRICANS,
-        GD_SHIELDJAPANESE,
-        GD_SHIELDROMANS,
-        GD_SHIELDVIKINGS,
-        GD_SHIELDJAPANESE
-}};
+const boost::array<GoodType, NUM_NATS> SUPPRESS_UNUSED SHIELD_TYPES = {
+  {GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS, GD_SHIELDVIKINGS, GD_SHIELDJAPANESE}};
 
 #endif // ShieldConsts_h__

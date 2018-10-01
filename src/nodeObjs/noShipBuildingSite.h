@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,36 +21,32 @@
 class SerializedGameData;
 
 /// Menschliches Skelett (Zierobjekt, das sich automatisch umwandelt und dann verschwindet)
-class noShipBuildingSite: public noCoordBase
+class noShipBuildingSite : public noCoordBase
 {
-    public:
+public:
+    noShipBuildingSite(const MapPoint pt, const unsigned char player);
+    noShipBuildingSite(SerializedGameData& sgd, const unsigned obj_id);
+    ~noShipBuildingSite() override;
+    void Destroy() override;
+    void Serialize(SerializedGameData& sgd) const override;
+    GO_Type GetGOT() const override { return GOT_SHIPBUILDINGSITE; }
 
-        noShipBuildingSite(const MapPoint pt, const unsigned char player);
-        noShipBuildingSite(SerializedGameData& sgd, const unsigned obj_id);
-        ~noShipBuildingSite() override;
-        void Destroy() override;
-        void Serialize(SerializedGameData& sgd) const override;
-        GO_Type GetGOT() const override { return GOT_SHIPBUILDINGSITE; }
+    /// Gibt den Eigentümer zurück
+    unsigned char GetPlayer() const { return player; }
 
-        /// Gibt den Eigentümer zurück
-        unsigned char GetPlayer() const { return player; }
+    /// Das Schiff wird um eine Stufe weitergebaut
+    void MakeBuildStep();
 
-        /// Das Schiff wird um eine Stufe weitergebaut
-        void MakeBuildStep();
+    BlockingManner GetBM() const override { return BlockingManner::Building; }
 
-        BlockingManner GetBM() const override { return BlockingManner::Building; }
+protected:
+    void Draw(DrawPoint drawPt) override;
 
-    protected:
-
-        void Draw(DrawPoint drawPt) override;
-
-    private:
-
-        /// Spieler, dem dieses Schiff gehört
-        unsigned char player;
-        /// Baufortschritt des Schiffes
-        unsigned char progress;
-
+private:
+    /// Spieler, dem dieses Schiff gehört
+    unsigned char player;
+    /// Baufortschritt des Schiffes
+    unsigned char progress;
 };
 
 #endif // !NOSKELETON_H_INCLUDED

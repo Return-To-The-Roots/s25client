@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -7,26 +7,26 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
- 
+
 #include "World.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 
 #ifndef BQCalculator_h__
 #define BQCalculator_h__
 
 struct BQCalculator
 {
-    BQCalculator(const World& world): world(world){}
+    BQCalculator(const World& world) : world(world) {}
 
     typedef BuildingQuality result_type;
-    
+
     template<typename T_IsOnRoad>
     inline BuildingQuality operator()(const MapPoint pt, T_IsOnRoad isOnRoad, bool flagOnly = false) const;
 
@@ -48,9 +48,10 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     unsigned mine_hits = 0;
     unsigned flag_hits = 0;
 
-    for(unsigned char i = 0; i < 6; ++i)
+    const WorldDescription& desc = world.GetDescription();
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        TerrainBQ bq = TerrainData::GetBuildingQuality(world.GetTerrainAround(pt, i));
+        TerrainBQ bq = desc.get(world.GetRightTerrain(pt, Direction::fromInt(dir))).GetBQ();
         if(bq == TerrainBQ::CASTLE)
             ++building_hits;
         else if(bq == TerrainBQ::MINE)
@@ -75,7 +76,6 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     else
         return BQ_NOTHING;
 
-
     RTTR_Assert(curBQ == BQ_FLAG || curBQ == BQ_MINE || curBQ == BQ_CASTLE);
 
     //////////////////////////////////////////////////////////////////////////
@@ -87,16 +87,16 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     {
         // First check the height of the (possible) buildings flag
         // flag point more than 1 higher? -> Flag
-        unsigned char otherAltitude = world.GetNeighbourNode(pt, 4).altitude;
+        unsigned char otherAltitude = world.GetNeighbourNode(pt, Direction::SOUTHEAST).altitude;
         if(otherAltitude > curAltitude + 1)
             curBQ = BQ_FLAG;
         else
         {
             // Direct neighbours: Flag for altitude diff > 3
-            for(unsigned i = 0; i < 6; ++i)
+            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
-                otherAltitude = world.GetNeighbourNode(pt, i).altitude;
-                if(SafeDiff(curAltitude, otherAltitude) > 3)
+                otherAltitude = world.GetNeighbourNode(pt, Direction::fromInt(dir)).altitude;
+                if(safeDiff(curAltitude, otherAltitude) > 3)
                 {
                     curBQ = BQ_FLAG;
                     break;
@@ -109,7 +109,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
                 for(unsigned i = 0; i < 12; ++i)
                 {
                     otherAltitude = world.GetNode(world.GetNeighbour2(pt, i)).altitude;
-                    if(SafeDiff(curAltitude, otherAltitude) > 2)
+                    if(safeDiff(curAltitude, otherAltitude) > 2)
                     {
                         curBQ = BQ_HUT;
                         break;
@@ -118,7 +118,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
             }
         }
 
-    } else if(curBQ == BQ_MINE && world.GetNeighbourNode(pt, 4).altitude > curAltitude + 3)
+    } else if(curBQ == BQ_MINE && world.GetNeighbourNode(pt, Direction::SOUTHEAST).altitude > curAltitude + 3)
     {
         // Mines only possible till altitude diff of 3
         curBQ = BQ_FLAG;
@@ -129,13 +129,13 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
 
     // Blocking manners of neighbours (cache for reuse)
     boost::array<BlockingManner, 6> neighbourBlocks;
-    for(unsigned i = 0; i < 6; ++i)
-        neighbourBlocks[i] = world.GetNO(world.GetNeighbour(pt, i))->GetBM();
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        neighbourBlocks[dir] = world.GetNO(world.GetNeighbour(pt, Direction::fromInt(dir)))->GetBM();
 
     // Don't build anything around charburner piles
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(neighbourBlocks[i] == BlockingManner::NothingAround)
+        if(neighbourBlocks[dir] == BlockingManner::NothingAround)
             return BQ_NOTHING;
     }
 
@@ -173,9 +173,9 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
 
     // Granite type block (stones, fire, grain fields) -> Flag around
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(neighbourBlocks[i] == BlockingManner::FlagsAround)
+        if(neighbourBlocks[dir] == BlockingManner::FlagsAround)
         {
             curBQ = BQ_FLAG;
             break;
@@ -215,7 +215,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            if(isOnRoad(world.GetNeighbour(pt, i)))
+            if(isOnRoad(world.GetNeighbour(pt, Direction::fromInt(i))))
             {
                 curBQ = BQ_HOUSE;
                 break;
@@ -251,13 +251,13 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         return curBQ;
 
     // If we can build the house flag -> OK
-    if((*this)(world.GetNeighbour(pt, 4), isOnRoad, true) != BQ_NOTHING)
+    if((*this)(world.GetNeighbour(pt, Direction::SOUTHEAST), isOnRoad, true) != BQ_NOTHING)
         return curBQ;
 
     // If not, we could still build a flag, unless there is another one around
-    for(unsigned i = 0; i < 3; ++i)
+    for(unsigned dir = 0; dir < 3; ++dir)
     {
-        if(neighbourBlocks[i] == BlockingManner::Flag)
+        if(neighbourBlocks[dir] == BlockingManner::Flag)
             return BQ_NOTHING;
     }
     return BQ_FLAG;

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,58 +18,57 @@
 #define SDL_H_INCLUDED
 
 #include <AudioDriver.h>
-class AudioDriverLoaderInterface;
-class Sound;
+class IAudioDriverCallback;
+class SoundHandle;
 
 /// Klasse für den SDL Audiotreiber.
 class AudioSDL : public AudioDriver
 {
-    private:
+private:
+    /// Lautstärke der Effekte.
+    uint8_t master_effects_volume;
+    /// Lautstärke der Musik.
+    uint8_t master_music_volume;
 
-        /// Welche Sounds werden in den Channels gerade gespielt?
-        unsigned channels[CHANNEL_COUNT];
-        /// Lautstärke der Effekte.
-        unsigned char master_effects_volume;
-        /// Lautstärke der Musik.
-        unsigned char master_music_volume;
+public:
+    AudioSDL(IAudioDriverCallback* driverCallback);
+    ~AudioSDL() override;
 
-    public:
-        AudioSDL(AudioDriverLoaderInterface* adli);
+    /// Return the name of the driver
+    const char* GetName() const override;
+    bool Initialize() override;
+    /// Closes all open handles of the driver (stops and unloads music and effects)
+    void CleanUp() override;
 
-        ~AudioSDL() override;
+    SoundHandle LoadEffect(const std::string& filepath) override;
+    SoundHandle LoadMusic(const std::string& filepath) override;
 
-        /// Funktion zum Auslesen des Treibernamens.
-        const char* GetName() const override;
+    /// Plays an effect at the given volume. If loop is true, effect is looped indefinitely
+    EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop) override;
+    /// Plays the given music. Only 1 music will be played. If Repeats is 0 it will loop indefinitely,
+    /// otherwise it loops the many times. TODO: What about not looping it (e.g. playing only once?)
+    void PlayMusic(const SoundHandle& sound, unsigned repeats) override;
+    /// Stop the music
+    void StopMusic() override;
+    /// Stop the effect with the given id (if it is still playing)
+    void StopEffect(EffectPlayId play_id) override;
+    /// Is the effect still being played
+    bool IsEffectPlaying(EffectPlayId play_id) override;
+    /// Changes volume [0..256) of a played sound (if it is still playing) relative to the master effect volume
+    void ChangeVolume(EffectPlayId play_id, uint8_t volume) override;
+    /// Set the master effect volume [0..256) at which all effects will be played. Changing the volume of an effect will be relative to this
+    void SetMasterEffectVolume(uint8_t volume) override;
+    /// Sets the music volume [0..256)
+    void SetMusicVolume(uint8_t volume) override;
 
-        /// Treiberinitialisierungsfunktion.
-        bool Initialize() override;
+protected:
+    void DoUnloadSound(SoundDesc& sound) override;
 
-        /// Treiberaufräumfunktion.
-        void CleanUp() override;
-
-        Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size) override;
-        Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size) override;
-
-        /// Spielt Sound ab
-        unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop) override;
-        /// Spielt Midi ab
-        void PlayMusic(Sound* sound, const unsigned repeats) override;
-        /// Stoppt die Musik.
-        void StopMusic() override;
-        /// Wird der Sound (noch) abgespielt?
-        bool IsEffectPlaying(const unsigned play_id) override;
-        /// Stoppt einen Sound
-        void StopEffect(const unsigned play_id) override;
-        /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-        void ChangeVolume(const unsigned play_id, const unsigned char volume) override;
-
-        void SetMasterEffectVolume(unsigned char volume) override;
-        void SetMasterMusicVolume(unsigned char volume) override;
-
-    private:
-
-        /// Callback für Audiotreiber
-        static void MusicFinished();
+private:
+    /// Calculates the volume at which the effect should be played using the master volume and the passed volume
+    uint8_t CalcEffectVolume(uint8_t volume) const;
+    /// Callback für Audiotreiber
+    static void MusicFinished();
 };
 
 #endif // !SDL_H_INCLUDED

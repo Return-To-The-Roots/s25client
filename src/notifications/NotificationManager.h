@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,8 +19,8 @@
 #define NotificationManager_h__
 
 #include "notifications/Subscribtion.h"
-#include <boost/unordered_map.hpp>
 #include <boost/function.hpp>
+#include <boost/unordered_map.hpp>
 #include <vector>
 
 class NotificationManager
@@ -28,9 +28,12 @@ class NotificationManager
     /// Non-template base class for callbacks
     struct NoteCallbackBase;
     /// Type of the callback for a Notification(Note)
-    template<class T_Note> struct NoteCallback;
+    template<class T_Note>
+    struct NoteCallback;
     /// Class used as a deleter for shared_ptr to unregister a callback
-    template<class T_Note> class CallbackUnregistrar;
+    template<class T_Note>
+    class CallbackUnregistrar;
+
 public:
     inline NotificationManager();
     inline ~NotificationManager();
@@ -48,6 +51,7 @@ public:
     /// Internally used by CallbackUnregistrar for unsubscribing
     template<class T_Note>
     inline void unsubscribe(NoteCallback<T_Note>* callback);
+
 private:
     /// We cannot store the real type of the callback in C++ (no mixed type list) so we store it as a void*
     /// and use a cast based on the NoteId

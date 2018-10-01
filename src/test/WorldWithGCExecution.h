@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,29 +16,39 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "CreateEmptyWorld.h"
-#include "WorldFixture.h"
-#include "GamePlayer.h"
 #include "GCExecutor.h"
+#include "GamePlayer.h"
+#include "WorldFixture.h"
 
 #ifndef WorldWithGCExecution_h__
 #define WorldWithGCExecution_h__
 
-template<unsigned T_numPlayers, unsigned T_width = 64, unsigned T_height = 64>
-class WorldWithGCExecution: public WorldFixture<CreateEmptyWorld, T_numPlayers, T_width, T_height>, public GCExecutor
+template<unsigned T_numPlayers, unsigned T_width = WorldDefault<T_numPlayers>::width,
+         unsigned T_height = WorldDefault<T_numPlayers>::height>
+class WorldWithGCExecution : public WorldFixture<CreateEmptyWorld, T_numPlayers, T_width, T_height>, public GCExecutor
 {
 public:
     typedef WorldFixture<CreateEmptyWorld, T_numPlayers, T_width, T_height> Parent;
     using Parent::world;
 
     MapPoint hqPos;
-    WorldWithGCExecution(): hqPos(world.GetPlayer(curPlayer).GetHQPos()){}
+    WorldWithGCExecution() : hqPos(world.GetPlayer(curPlayer).GetHQPos()) {}
 
 protected:
     virtual GameWorldGame& GetWorld() override { return world; }
 };
 
 // Avoid having to use "this->" to access those
-class WorldWithGCExecution2P: public WorldWithGCExecution<2>
+class WorldWithGCExecution1P : public WorldWithGCExecution<1>
+{
+public:
+    using WorldWithGCExecution<1>::world;
+    using WorldWithGCExecution<1>::curPlayer;
+    using WorldWithGCExecution<1>::hqPos;
+};
+
+// Avoid having to use "this->" to access those
+class WorldWithGCExecution2P : public WorldWithGCExecution<2>
 {
 public:
     using WorldWithGCExecution<2>::world;
@@ -46,7 +56,7 @@ public:
     using WorldWithGCExecution<2>::hqPos;
 };
 
-class WorldWithGCExecution3P: public WorldWithGCExecution<3>
+class WorldWithGCExecution3P : public WorldWithGCExecution<3>
 {
 public:
     using WorldWithGCExecution<3>::world;

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,23 +20,24 @@
 
 #include "world/GameWorldGame.h"
 #include "world/GameWorldViewer.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
+#include <boost/shared_ptr.hpp>
 #include <string>
 
 class SerializedGameData;
+class Game;
 
-class GameWorld: public GameWorldGame
+class GameWorld : public GameWorldGame
 {
-    public:
+public:
+    GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
 
-        GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
+    /// Lädt eine Karte
+    bool LoadMap(boost::shared_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath);
 
-        /// Lädt eine Karte
-        bool LoadMap(const std::string& mapFilePath, const std::string& luaFilePath);
-
-        /// Serialisiert den gesamten GameWorld
-        void Serialize(SerializedGameData& sgd) const;
-        void Deserialize(SerializedGameData& sgd);
+    /// Serialisiert den gesamten GameWorld
+    void Serialize(SerializedGameData& sgd) const;
+    void Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sgd);
 };
 
 #endif // GameWorld_h__

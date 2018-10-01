@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,80 +19,68 @@
 
 #pragma once
 
-#include "Singleton.h"
+#include "libutil/Singleton.h"
 
 // Die verschiedenen Cursor mit ihren Indizes in resource.idx
 enum CursorType
 {
     CURSOR_NONE,
     CURSOR_HAND,
-    CURSOR_SCROLL     = 32,
-    CURSOR_MOON       = 33,
-    CURSOR_RM         = 34,
-    CURSOR_RM_PRESSED = 35
+    CURSOR_SCROLL = 32,
+    CURSOR_MOON = 33,
+    CURSOR_RM = 34
 };
 
 /// "Die" GameManager-Klasse
 class GameManager : public Singleton<GameManager, SingletonPolicies::WithLongevity>
 {
-    public:
-        BOOST_STATIC_CONSTEXPR unsigned Longevity = 15;
+public:
+    BOOST_STATIC_CONSTEXPR unsigned Longevity = 15;
 
-        GameManager();
+    GameManager();
 
-        bool Start();
-        void Stop();
-        bool Run();
+    bool Start();
+    void Stop();
+    bool Run();
 
-        bool StartMenu();
-        bool ShowMenu();
+    bool ShowMenu();
 
-        /// Average FPS Zähler zurücksetzen.
-        inline void ResetAverageFPS()
-        {
-            run_time = 0;
-            frame_count = 0;
-        }
+    /// Average FPS Zähler zurücksetzen.
+    void ResetAverageFPS()
+    {
+        run_time = 0;
+        frame_count = 0;
+    }
 
-        inline unsigned int GetRuntime()
-        {
-            return run_time;
-        }
+    unsigned GetRuntime() { return run_time; }
 
-        inline unsigned int GetFrameCount()
-        {
-            return frame_count;
-        }
+    unsigned GetNumFrames() { return frame_count; }
 
-        inline unsigned int GetAverageFPS()
-        {
-            if(run_time == 0)
-                return 0;
-            return (frame_count / run_time);
-        }
+    unsigned GetAverageFPS()
+    {
+        if(run_time == 0)
+            return 0;
+        return (frame_count / run_time);
+    }
 
-        inline unsigned int GetFPS()
-        {
-            return framerate;
-        }
+    unsigned GetFPS() { return framerate; }
 
-        void SetCursor(CursorType cursor = CURSOR_HAND, bool once = false);
+    void SetCursor(CursorType cursor = CURSOR_HAND, bool once = false);
 
-    private:
+private:
+    bool ShowSplashscreen();
+    void DrawCursor();
 
-        void DrawCursor();
-
-    private:
-        unsigned int frames;
-        unsigned int frame_count;
-        unsigned int framerate;
-        unsigned int frame_time;
-        unsigned int run_time;
-        unsigned int last_time;
-		unsigned int skipgf_last_time;
-		unsigned int skipgf_last_report_gf;
-        CursorType cursor_;
-        CursorType cursor_next;
+    unsigned frames;
+    unsigned frame_count;
+    unsigned framerate;
+    unsigned frame_time;
+    unsigned run_time;
+    unsigned last_time;
+    unsigned skipgf_last_time;
+    unsigned skipgf_last_report_gf;
+    CursorType cursor_;
+    CursorType cursor_next;
 };
 
 #define GAMEMANAGER GameManager::inst()

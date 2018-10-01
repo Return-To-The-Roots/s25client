@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,8 +18,8 @@
 #define FOWOBJECT_H_INCLUDED
 
 #include "DrawPoint.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/MapTypes.h"
-#include "gameTypes/BuildingTypes.h"
 #include "gameData/NationConsts.h"
 
 class SerializedGameData;
@@ -47,111 +47,101 @@ unsigned CalcPlayerFOWDrawColor(const unsigned color);
 /// was ein bestimmter Spieler gesehen hat
 class FOWObject
 {
-    public:
-
-        virtual ~FOWObject();
-        /// An x,y zeichnen.
-        virtual void Draw(DrawPoint drawPt) const = 0;
-        /// Serialisierungsfunktion.
-        virtual void Serialize(SerializedGameData& sgd) const = 0;
-        /// Gibt Typ zurück
-        virtual FOW_Type GetType() const = 0;
+public:
+    virtual ~FOWObject();
+    /// An x,y zeichnen.
+    virtual void Draw(DrawPoint drawPt) const = 0;
+    /// Serialisierungsfunktion.
+    virtual void Serialize(SerializedGameData& sgd) const = 0;
+    /// Gibt Typ zurück
+    virtual FOW_Type GetType() const = 0;
 };
 
 /// Gebäude im Nebel
 class fowBuilding : public FOWObject
 {
-    private:
-        /// Typ des Gebäudes
-        const BuildingType type;
-        /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
-        const Nation nation;
-    public:
+private:
+    /// Typ des Gebäudes
+    const BuildingType type;
+    /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
+    const Nation nation;
 
-        fowBuilding(const BuildingType type, const Nation nation);
-        fowBuilding(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const override;
-        void Draw(DrawPoint drawPt) const override;
-        FOW_Type GetType() const override { return FOW_BUILDING; }
+public:
+    fowBuilding(const BuildingType type, const Nation nation);
+    fowBuilding(SerializedGameData& sgd);
+    void Serialize(SerializedGameData& sgd) const override;
+    void Draw(DrawPoint drawPt) const override;
+    FOW_Type GetType() const override { return FOW_BUILDING; }
 };
 
 /// Baustelle
 class fowBuildingSite : public FOWObject
 {
-    private:
-        /// Wird planiert?
-        const bool planing;
-        /// Typ des Gebäudes
-        const BuildingType type;
-        /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
-        const Nation nation;
-        /// Gibt den Baufortschritt an, wie hoch das Gebäude schon gebaut ist, gemessen in 8 Stufen für jede verbaute Ware
-        const unsigned char build_progress;
-    public:
+private:
+    /// Wird planiert?
+    const bool planing;
+    /// Typ des Gebäudes
+    const BuildingType type;
+    /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
+    const Nation nation;
+    /// Gibt den Baufortschritt an, wie hoch das Gebäude schon gebaut ist, gemessen in 8 Stufen für jede verbaute Ware
+    const unsigned char build_progress;
 
-        fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress);
-        fowBuildingSite(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const override;
-        void Draw(DrawPoint drawPt) const override;
-        FOW_Type GetType() const override { return FOW_BUILDINGSITE; }
+public:
+    fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress);
+    fowBuildingSite(SerializedGameData& sgd);
+    void Serialize(SerializedGameData& sgd) const override;
+    void Draw(DrawPoint drawPt) const override;
+    FOW_Type GetType() const override { return FOW_BUILDINGSITE; }
 };
-
 
 /// Flagge
 class fowFlag : public FOWObject
 {
-    private:
-        const unsigned color;
-        const Nation nation;
-        /// Flaggenart
-        const FlagType flag_type;
+private:
+    const unsigned color;
+    const Nation nation;
+    /// Flaggenart
+    const FlagType flag_type;
 
-    public:
-
-        fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type);
-        fowFlag(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const override;
-        void Draw(DrawPoint drawPt) const override;
-        FOW_Type GetType() const override { return FOW_FLAG; }
+public:
+    fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type);
+    fowFlag(SerializedGameData& sgd);
+    void Serialize(SerializedGameData& sgd) const override;
+    void Draw(DrawPoint drawPt) const override;
+    FOW_Type GetType() const override { return FOW_FLAG; }
 };
 
 /// Baum
 class fowTree : public FOWObject
 {
-    private:
+private:
+    /// Typ des Baumes (also welche Baumart)
+    const unsigned char type;
+    /// Größe des Baumes (0-2, 3 = aufgewachsen!)
+    const unsigned char size;
 
-        /// Typ des Baumes (also welche Baumart)
-        const unsigned char type;
-        /// Größe des Baumes (0-2, 3 = aufgewachsen!)
-        const unsigned char size;
-
-    public:
-
-        fowTree(const unsigned char type, const unsigned char size);
-        fowTree(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const override;
-        void Draw(DrawPoint drawPt) const override;
-        FOW_Type GetType() const override { return FOW_TREE; }
+public:
+    fowTree(const unsigned char type, const unsigned char size);
+    fowTree(SerializedGameData& sgd);
+    void Serialize(SerializedGameData& sgd) const override;
+    void Draw(DrawPoint drawPt) const override;
+    FOW_Type GetType() const override { return FOW_TREE; }
 };
 
 /// Granitblock
 class fowGranite : public FOWObject
 {
-    private:
+private:
+    const GraniteType type;    /// Welcher Typ ( gibt 2 )
+    const unsigned char state; /// Status, 0 - 5, von sehr wenig bis sehr viel
 
-        const GraniteType type; /// Welcher Typ ( gibt 2 )
-        const unsigned char state; /// Status, 0 - 5, von sehr wenig bis sehr viel
-
-    public:
-
-        fowGranite(const GraniteType type, const unsigned char state);
-        fowGranite(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const override;
-        void Draw(DrawPoint drawPt) const override;
-        FOW_Type GetType() const override { return FOW_GRANITE; }
+public:
+    fowGranite(const GraniteType type, const unsigned char state);
+    fowGranite(SerializedGameData& sgd);
+    void Serialize(SerializedGameData& sgd) const override;
+    void Draw(DrawPoint drawPt) const override;
+    FOW_Type GetType() const override { return FOW_GRANITE; }
 };
-
-
-
 
 #endif // !FOWOBJECT_H_INCLUDED

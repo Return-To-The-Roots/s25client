@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlTimer.h"
 
 #include "drivers/VideoDriverWrapper.h"
@@ -30,10 +30,7 @@
  *  Die Zeit nach der der Timer zünden soll.
  */
 
-ctrlTimer::ctrlTimer(Window* parent,
-                     unsigned int id,
-                     unsigned int timeout)
-    : Window(DrawPoint(0, 0), id, parent)
+ctrlTimer::ctrlTimer(Window* parent, unsigned id, unsigned timeout) : Window(parent, id, DrawPoint(0, 0))
 {
     Start(timeout);
 }
@@ -41,9 +38,9 @@ ctrlTimer::ctrlTimer(Window* parent,
 /**
  *  startet den Timer.
  */
-void ctrlTimer::Start(unsigned int timeout)
+void ctrlTimer::Start(unsigned timeout)
 {
-    this->timeout = timeout;
+    this->timeout_ = timeout;
 
     // timer initialisieren
     timer = VIDEODRIVER.GetTickCount();
@@ -59,18 +56,21 @@ void ctrlTimer::Stop()
 
 void ctrlTimer::Msg_PaintBefore()
 {
+    Window::Msg_PaintBefore();
     // timer ist deaktiviert, nix tun
     if(timer == 0)
         return;
 
     // Bei Timeout weiterschalten
-    if(VIDEODRIVER.GetTickCount() - timer > timeout)
+    if(VIDEODRIVER.GetTickCount() - timer > timeout_)
     {
-        parent_->Msg_Timer(GetID());
+        GetParent()->Msg_Timer(GetID());
 
-        if (timer != 0)
+        if(timer != 0)
         {
             timer = VIDEODRIVER.GetTickCount();
+            if(timer == 0)
+                timer = 1;
         }
     }
 }

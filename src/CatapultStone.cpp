@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,40 +15,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "CatapultStone.h"
 
-#include "SerializedGameData.h"
 #include "EventManager.h"
 #include "Loader.h"
-#include "GameClient.h"
+#include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
-#include "nodeObjs/noEnvObject.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
-#include "Random.h"
+#include "nodeObjs/noEnvObject.h"
 #include "gameData/MapConsts.h"
 
 #include <cmath>
 
-CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
-                             const DrawPoint start, const DrawPoint dest, const unsigned fly_duration) :
-    dest_building(dest_building), dest_map(dest_map), startPos(start), destPos(dest), explode(false)
+CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map, const DrawPoint start, const DrawPoint dest,
+                             const unsigned fly_duration)
+    : dest_building(dest_building), dest_map(dest_map), startPos(start), destPos(dest), explode(false)
 {
     event = GetEvMgr().AddEvent(this, fly_duration);
 }
 
-CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id),
-    dest_building(sgd.PopMapPoint()),
-    dest_map(sgd.PopMapPoint()),
-    startPos(sgd.PopPoint<int>()),
-    destPos(sgd.PopPoint<int>()),
-    explode(sgd.PopBool()),
-    event(sgd.PopEvent())
-{
-}
-
+CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id)
+    : GameObject(sgd, obj_id), dest_building(sgd.PopMapPoint()), dest_map(sgd.PopMapPoint()), startPos(sgd.PopPoint<int>()),
+      destPos(sgd.PopPoint<int>()), explode(sgd.PopBool()), event(sgd.PopEvent())
+{}
 
 /// Serialisierungsfunktionen
 void CatapultStone::Serialize_CatapultStone(SerializedGameData& sgd) const
@@ -58,12 +52,10 @@ void CatapultStone::Serialize_CatapultStone(SerializedGameData& sgd) const
     sgd.PushPoint<int>(startPos);
     sgd.PushPoint<int>(destPos);
     sgd.PushBool(explode);
-    sgd.PushObject(event, true);
+    sgd.PushEvent(event);
 }
 
-void CatapultStone::Destroy()
-{
-}
+void CatapultStone::Destroy() {}
 
 void CatapultStone::Draw(DrawPoint drawOffset)
 {
@@ -75,19 +67,18 @@ void CatapultStone::Draw(DrawPoint drawOffset)
         DrawPoint drawPos = destPos - drawOffset + worldSize;
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;
-        LOADER.GetMapPlayerImage(3102 + GAMECLIENT.Interpolate(4, event))->Draw(drawPos);
-    }
-    else
+        LOADER.GetMapPlayerImage(3102 + GAMECLIENT.Interpolate(4, event))->DrawFull(drawPos);
+    } else
     {
         // Linear interpolieren zwischen Ausgangs- und Zielpunkt
-        Point<int> curPos(GAMECLIENT.Interpolate(startPos.x, destPos.x, event), GAMECLIENT.Interpolate(startPos.y, destPos.y, event));
+        Position curPos(GAMECLIENT.Interpolate(startPos.x, destPos.x, event), GAMECLIENT.Interpolate(startPos.y, destPos.y, event));
         DrawPoint drawPos = curPos - drawOffset + worldSize;
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;
         // Schatten auf linearer Linie zeichnen
-        LOADER.GetMapImageN(3101)->Draw(drawPos, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(3101)->DrawFull(drawPos, COLOR_SHADOW);
 
-        Point<int> distance = destPos - startPos;
+        Position distance = destPos - startPos;
         double whole = std::sqrt(double(distance.x * distance.x + distance.y * distance.y));
         unsigned s = GAMECLIENT.Interpolate(static_cast<unsigned>(whole), event);
 
@@ -101,19 +92,18 @@ void CatapultStone::Draw(DrawPoint drawOffset)
 
         // Stein auf Parabel zeichnen
         drawPos.y = (drawPos.y + diff) % worldSize.y;
-        LOADER.GetMapPlayerImage(3100)->Draw(drawPos);
+        LOADER.GetMapPlayerImage(3100)->DrawFull(drawPos);
     }
 }
 
-void CatapultStone::HandleEvent(const unsigned int  /*id*/)
+void CatapultStone::HandleEvent(const unsigned /*id*/)
 {
     if(explode)
     {
         // Explodiert --> mich zerstören
         gwg->RemoveCatapultStone(this);
         GetEvMgr().AddToKillList(this);
-    }
-    else
+    } else
     {
         // Stein ist aufgeschlagen --> Explodierevent anmelden
         event = GetEvMgr().AddEvent(this, 10);
@@ -128,11 +118,10 @@ void CatapultStone::HandleEvent(const unsigned int  /*id*/)
             {
                 milBld->HitOfCatapultStone();
                 // If there are no troops left, destroy it
-                if(milBld->GetTroopsCount() == 0)
+                if(milBld->GetNumTroops() == 0)
                     gwg->DestroyNO(milBld->GetPos());
             }
-        }
-        else
+        } else
         {
             // Trifft nicht
             // ggf. Leiche hinlegen, falls da nix ist

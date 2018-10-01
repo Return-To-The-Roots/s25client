@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,15 +18,20 @@
 #ifndef MapNode_h__
 #define MapNode_h__
 
-#include "gameTypes/MapTypes.h"
+#include "Resource.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/FoWNode.h"
+#include "gameTypes/MapTypes.h"
+#include "gameData/DescIdx.h"
 #include "gameData/MaxPlayers.h"
 #include <boost/array.hpp>
 #include <list>
+#include <vector>
 
 class noBase;
 class SerializedGameData;
+struct TerrainDesc;
+struct WorldDescription;
 
 /// Eigenschaften von einem Punkt auf der Map
 struct MapNode
@@ -37,10 +42,11 @@ struct MapNode
     unsigned char altitude;
     /// Schattierung
     unsigned char shadow;
-    /// Terrain (t1 is the triangle with the edge at the top exactly below this pt, t2 with the edge at the bottom on the right lower side of the pt)
-    TerrainType t1, t2;
+    /// Terrain (t1 is the triangle with the edge at the top exactly below this pt, t2 with the edge at the bottom on the right lower side
+    /// of the pt)
+    DescIdx<TerrainDesc> t1, t2;
     /// Ressourcen
-    unsigned char resources;
+    Resource resources;
     /// Reservierungen
     bool reserved;
     /// Owner (playerIdx - 1)
@@ -61,9 +67,9 @@ struct MapNode
     std::list<noBase*> figures;
 
     MapNode();
-    void Serialize(SerializedGameData& sgd, const unsigned numPlayers) const;
-    void Deserialize(SerializedGameData& sgd, const unsigned numPlayers);
+    void Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const;
+    void Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
+                     const std::vector<DescIdx<TerrainDesc> >& landscapeTerrains);
 };
 
 #endif // MapNode_h__
-

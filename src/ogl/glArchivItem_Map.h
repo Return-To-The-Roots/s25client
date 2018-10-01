@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,9 +19,11 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Map.h"
+#include "libsiedler2/ArchivItem_Map.h"
 
-namespace libsiedler2 { class ArchivItem_Map_Header; }
+namespace libsiedler2 {
+class ArchivItem_Map_Header;
+}
 
 enum MapLayer
 {
@@ -45,35 +47,37 @@ enum MapLayer
 
 class glArchivItem_Map : public libsiedler2::ArchivItem_Map
 {
-    public:
-        glArchivItem_Map();
-        ~glArchivItem_Map() override;
+public:
+    glArchivItem_Map();
+    ~glArchivItem_Map() override;
+    RTTR_CLONEABLE(glArchivItem_Map)
 
-        /// lädt die Mapdaten aus einer Datei.
-        int load(std::istream& file, bool only_header) override;
+    /// lädt die Mapdaten aus einer Datei.
+    int load(std::istream& file, bool only_header) override;
+    /// Resets the data to the given archiv
+    void load(const libsiedler2::ArchivItem_Map& map);
 
-        /// liefert den Header der Map als konstantes Objekt zurück.
-        const libsiedler2::ArchivItem_Map_Header& getHeader() const { return *header; }
+    /// liefert den Header der Map als konstantes Objekt zurück.
+    const libsiedler2::ArchivItem_Map_Header& getHeader() const { return *header; }
 
-        /// liefert einen Map-Layer zurück.
-        const std::vector<unsigned char>& GetLayer(MapLayer type) const;
-        /// liefert einen Map-Layer zurück.
-        std::vector<unsigned char>& GetLayer(MapLayer type);
-        bool HasLayer(MapLayer type) const;
+    /// liefert einen Map-Layer zurück.
+    const std::vector<unsigned char>& GetLayer(MapLayer type) const;
+    /// liefert einen Map-Layer zurück.
+    std::vector<unsigned char>& GetLayer(MapLayer type);
+    bool HasLayer(MapLayer type) const;
 
-        /// liefert die Mapdaten an einer bestimmten Stelle zurück.
-        unsigned char GetMapDataAt(MapLayer type, unsigned int pos) const;
-        /// setzt die Mapdaten an einer bestimmten Stelle.
-        void SetMapDataAt(MapLayer type, unsigned int pos, unsigned char value);
+    /// liefert die Mapdaten an einer bestimmten Stelle zurück.
+    unsigned char GetMapDataAt(MapLayer type, unsigned pos) const;
+    /// setzt die Mapdaten an einer bestimmten Stelle.
+    void SetMapDataAt(MapLayer type, unsigned pos, unsigned char value);
 
-        /// liefert die Mapdaten an der Stelle X,Y zurück.
-        unsigned char GetMapDataAt(MapLayer type, unsigned short x, unsigned short y) const;
-        /// setzt die Mapdaten an der Stelle X,Y.
-        void SetMapDataAt(MapLayer type, unsigned short x, unsigned short y, unsigned char value);
+    /// liefert die Mapdaten an der Stelle X,Y zurück.
+    unsigned char GetMapDataAt(MapLayer type, unsigned short x, unsigned short y) const;
+    /// setzt die Mapdaten an der Stelle X,Y.
+    void SetMapDataAt(MapLayer type, unsigned short x, unsigned short y, unsigned char value);
 
-    private:
-        const libsiedler2::ArchivItem_Map_Header* header;
-
+private:
+    const libsiedler2::ArchivItem_Map_Header* header;
 };
 
 #endif // !GLARCHIVITEM_MAP_H_INCLUDED

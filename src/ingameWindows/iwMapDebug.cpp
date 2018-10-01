@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU-pragma: keep
+#include "rttrDefines.h" // IWYU-pragma: keep
 #include "iwMapDebug.h"
-#include "controls/ctrlComboBox.h"
-#include "controls/ctrlCheck.h"
-#include "Loader.h"
-#include "ogl/glArchivItem_Font.h"
-#include "world/GameWorldView.h"
-#include "world/GameWorldBase.h"
-#include "world/TerritoryRegion.h"
 #include "GamePlayer.h"
+#include "Loader.h"
+#include "controls/ctrlCheck.h"
+#include "controls/ctrlComboBox.h"
+#include "helpers/converters.h"
+#include "ogl/glArchivItem_Font.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldView.h"
+#include "world/TerritoryRegion.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/const_gui_ids.h"
-#include "helpers/converters.h"
 #include <boost/format.hpp>
 
-class iwMapDebug::DebugPrinter: public IDebugNodePrinter
+class iwMapDebug::DebugPrinter : public IDrawNodeCallback
 {
 public:
-    DebugPrinter(const GameWorldBase& gwb): showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont){}
+    DebugPrinter(const GameWorldBase& gwb) : showCoords(true), showDataIdx(0), playerIdx(0), gw(gwb), font(NormalFont) {}
 
-    void print(const MapPoint& pt, const DrawPoint& displayPt) override
+    void onDraw(const MapPoint& pt, const DrawPoint& displayPt) override
     {
         std::string data;
         unsigned coordsColor = 0xFFFFFF00;
@@ -43,38 +43,32 @@ public:
         const MapNode& node = gw.GetNode(pt);
         switch(showDataIdx)
         {
-        case 1:
-            if(node.reserved)
-                data = "R";
-            break;
-        case 2:
-            data = helpers::toString(static_cast<unsigned>(node.altitude));
-            break;
-        case 3:
-            data = helpers::toString(static_cast<unsigned>(node.resources));
-            break;
-        case 4:
-            if(node.seaId)
-                data = helpers::toString(node.seaId);
-            else if(gw.GetSeaFromCoastalPoint(pt))
-                data = "C";
-            break;
-        case 5:
-            data = helpers::toString(static_cast<unsigned>(node.owner));
-            break;
-        case 6:
-        {
-            bool isAllowed = TerritoryRegion::IsPointValid(gw, gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
-            coordsColor = dataColor = isAllowed ? 0xFF00FF00 : 0xFFFF0000;
-            if(!showCoords)
-                data = isAllowed ? 'y' : 'n';
-            break;
+            case 1:
+                if(node.reserved)
+                    data = "R";
+                break;
+            case 2: data = helpers::toString(static_cast<unsigned>(node.altitude)); break;
+            case 3: data = helpers::toString(static_cast<unsigned>(node.resources.getValue())); break;
+            case 4:
+                if(node.seaId)
+                    data = helpers::toString(node.seaId);
+                else if(gw.GetSeaFromCoastalPoint(pt))
+                    data = "C";
+                break;
+            case 5: data = helpers::toString(static_cast<unsigned>(node.owner)); break;
+            case 6:
+            {
+                bool isAllowed = TerritoryRegion::IsPointValid(gw.GetSize(), gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
+                coordsColor = dataColor = isAllowed ? 0xFF00FF00 : 0xFFFF0000;
+                if(!showCoords)
+                    data = isAllowed ? "y" : "n";
+                break;
+            }
+            default: return;
         }
-        default:
-            return;
-        }        
 
-        if(showCoords){
+        if(showCoords)
+        {
             std::string coord = helpers::toString(pt.x) + ":" + helpers::toString(pt.y);
             font->Draw(displayPt, coord, 0, coordsColor);
         }
@@ -89,17 +83,17 @@ public:
     glArchivItem_Font* font;
 };
 
-iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
-    IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, 230, 110, _("Map Debug"), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), printer(new DebugPrinter(gwv.GetWorld()))
+iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
+    : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 110), _("Map Debug"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv), printer(new DebugPrinter(gwv.GetWorld()))
 {
-    gwv.SetDebugNodePrinter(printer);
+    gwv.AddDrawNodeCallback(printer);
 
-    ctrlCheck* cbShowCoords = AddCheckBox(0, 15, 25, 200, 20, TC_GREY, _("Show coordinates"), NormalFont);
+    ctrlCheck* cbShowCoords = AddCheckBox(0, DrawPoint(15, 25), Extent(200, 20), TC_GREY, _("Show coordinates"), NormalFont);
     cbShowCoords->SetCheck(true);
     if(allowCheating)
     {
-        ctrlComboBox* data = AddComboBox(1, 15, 50, 200, 20, TC_GREY, NormalFont, 100);
+        ctrlComboBox* data = AddComboBox(1, DrawPoint(15, 50), Extent(200, 20), TC_GREY, NormalFont, 100);
         data->AddString(_("Nothing"));
         data->AddString(_("Reserved"));
         data->AddString(_("Altitude"));
@@ -108,8 +102,8 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
         data->AddString(_("Owner"));
         data->AddString(_("Restricted area"));
         data->SetSelection(1);
-        ctrlComboBox* players = AddComboBox(2, 15, 75, 200, 20, TC_GREY, NormalFont, 100);
-        for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetPlayerCount(); pIdx++)
+        ctrlComboBox* players = AddComboBox(2, DrawPoint(15, 75), Extent(200, 20), TC_GREY, NormalFont, 100);
+        for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetNumPlayers(); pIdx++)
         {
             const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);
             if(!p.isUsed())
@@ -124,7 +118,9 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
     {
         printer->showDataIdx = 0;
         printer->playerIdx = 0;
-        SetIwHeight(GetIwHeight() - 40 - 10);
+        Extent iwSize = GetIwSize();
+        iwSize.y -= 40 + 10;
+        SetIwSize(iwSize);
     }
 
     printer->showCoords = cbShowCoords->GetCheck();
@@ -132,11 +128,11 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
 
 iwMapDebug::~iwMapDebug()
 {
-    gwv.SetDebugNodePrinter(NULL);
+    gwv.RemoveDrawNodeCallback(printer);
     delete printer;
 }
 
-void iwMapDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select)
+void iwMapDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const int select)
 {
     if(ctrl_id == 1)
     {
@@ -150,7 +146,7 @@ void iwMapDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selec
     }
 }
 
-void iwMapDebug::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)
+void iwMapDebug::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     if(ctrl_id != 0)
         return;

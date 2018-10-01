@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,38 +24,41 @@ class SerializedGameData;
 
 class noStaticObject : public noCoordBase
 {
-    public:
-        noStaticObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF, unsigned char size = 1, NodalObjectType type = NOP_OBJECT);
-        noStaticObject(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    noStaticObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF, unsigned char size = 1,
+                   NodalObjectType type = NOP_OBJECT);
+    noStaticObject(SerializedGameData& sgd, const unsigned obj_id);
 
-        void Destroy() override { Destroy_noStaticObject(); }
+    void Destroy() override { Destroy_noStaticObject(); }
 
-        /// gibt die Item-ID zurück (nr in der jeweiligen File)
-        unsigned short GetItemID() const { return id; }
-        /// gibt die Nr der File zurück)
-        unsigned short GetItemFile() const { return file; }
-        /// gibt die Größe des Objekts zurück.
-        unsigned char GetSize() const { return size; }
+    /// gibt die Item-ID zurück (nr in der jeweiligen File)
+    unsigned short GetItemID() const { return id; }
+    /// gibt die Nr der File zurück)
+    unsigned short GetItemFile() const { return file; }
+    /// gibt die Größe des Objekts zurück.
+    unsigned char GetSize() const { return size; }
 
-        BlockingManner GetBM() const override;
+    BlockingManner GetBM() const override;
 
-        /// zeichnet das Objekt.
-        void Draw(DrawPoint drawPt) override;
+    /// zeichnet das Objekt.
+    void Draw(DrawPoint drawPt) override;
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noStaticObject(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noStaticObject(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noStaticObject(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_STATICOBJECT; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noStaticObject(sgd); }
 
-    protected:
-        void Destroy_noStaticObject();
+    GO_Type GetGOT() const override { return GOT_STATICOBJECT; }
 
-    protected:
+protected:
+    void Destroy_noStaticObject();
 
-        unsigned short id;
-        unsigned short file;
-        unsigned char size;
+protected:
+    unsigned short id;
+    unsigned short file;
+    unsigned char size;
 };
 
 #endif // !NOSTATICOBJECT_H_INCLUDED

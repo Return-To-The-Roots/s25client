@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,30 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwChat.h"
 #include "Loader.h"
-#include "GameClient.h"
-#include "Random.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
+#include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"
 
-unsigned char iwChat::chat_dest = 0;
+unsigned char iwChat::chat_dest = CD_ALL;
 
-iwChat::iwChat()
-    : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, 300, 150, _("Chat Window"), LOADER.GetImageN("resource", 41))
+iwChat::iwChat(Window* parent)
+    : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"), LOADER.GetImageN("resource", 41), false,
+                   true, parent)
 {
     // Eingabefeld für Chattext
-    AddEdit(0, 20, 30, 260, 22, TC_GREY, NormalFont);
+    AddEdit(0, DrawPoint(20, 30), Extent(260, 22), TC_GREY, NormalFont);
 
     ctrlOptionGroup* group = AddOptionGroup(1, ctrlOptionGroup::CHECK);
     // "Alle"
-    group->AddTextButton(0,  20,  80, 260, 22, TC_GREY, _("All"), NormalFont);
+    group->AddTextButton(CD_ALL, DrawPoint(20, 80), Extent(260, 22), TC_GREY, _("All"), NormalFont);
     // "Verbündete"
-    group->AddTextButton(1,  20, 112, 125, 22, TC_GREEN2, _("Allies"), NormalFont);
+    group->AddTextButton(CD_ALLIES, DrawPoint(20, 112), Extent(125, 22), TC_GREEN2, _("Allies"), NormalFont);
     // "Feinde"
-    group->AddTextButton(2, 155, 112, 125, 22, TC_RED1, _("Enemies"), NormalFont);
+    group->AddTextButton(CD_ENEMIES, DrawPoint(155, 112), Extent(125, 22), TC_RED1, _("Enemies"), NormalFont);
 
     // Entspr. vom letzten Mal auswählen auswählen
     group->SetSelection(chat_dest);
@@ -46,50 +46,33 @@ iwChat::iwChat()
 
 void iwChat::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
-void iwChat::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const int selection)
+void iwChat::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int selection)
 {
     chat_dest = static_cast<unsigned char>(selection);
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
-void iwChat::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
+void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
 {
     Close();
 
     ctrlEdit* edit = GetCtrl<ctrlEdit>(0);
-
-    if(chat_dest != 0 && chat_dest != 1 && chat_dest != 2)
-        chat_dest = 0;
-
-    if (edit->GetText() == "apocalypsis")
-    {
-        GAMECLIENT.CheatArmageddon();
-        return;
-    }
-    else if (edit->GetText() == "surrender")
-    {
-        GAMECLIENT.Surrender();
-        return;
-    }
-    else if (edit->GetText() == "async!")
-    {
-        (void) RANDOM.Rand(__FILE__, __LINE__, 0, 255);
-        return;
-    }
-    else if (edit->GetText() == "segfault!")
-    {
-        char* x = NULL;
-
-        *x = 1; //-V522 // NOLINT
-
-        return;
-    }
-
-    GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest + 1));
-
+    std::string text = edit->GetText();
     edit->SetText("");
-}
 
+    if(text.size() > 3u && text[0] == '!')
+    {
+        IChatCmdListener* listener = dynamic_cast<IChatCmdListener*>(GetParent());
+        if(listener)
+            listener->OnChatCommand(text.substr(1));
+    } else
+    {
+        if(chat_dest != CD_ALL && chat_dest != CD_ALLIES && chat_dest != CD_ENEMIES)
+            chat_dest = CD_ALL;
+        GAMECLIENT.Command_Chat(text, ChatDestination(chat_dest));
+    }
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,13 +18,12 @@
 #ifndef luaIncludes_h__
 #define luaIncludes_h__
 
-extern "C"
-{
-    // IWYU pragma: begin_exports
-    #include "lua.h"
-    #include "lualib.h"
-    #include "lauxlib.h"
-    // IWYU pragma: end_exports
+extern "C" {
+// IWYU pragma: begin_exports
+#include "lauxlib.h"
+#include "lua.h"
+#include "lualib.h"
+// IWYU pragma: end_exports
 }
 
 #endif // luaIncludes_h__

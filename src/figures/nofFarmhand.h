@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,63 +25,65 @@ class nobUsual;
 /// Ein Landarbeiter geht raus aus seiner Hütte und arbeitet in "freier Natur"
 class nofFarmhand : public nofBuildingWorker
 {
-    protected:
+protected:
+    /// Arbeitsziel, das der Arbeiter ansteuert
+    MapPoint dest;
 
-        /// Arbeitsziel, das der Arbeiter ansteuert
-        MapPoint dest;
+    enum PointQuality
+    {
+        PQ_NOTPOSSIBLE, // Work is not possible at this position
+        PQ_CLASS1,      /// Work is possible, points are prefered to other points
+        PQ_CLASS2,      /// Work is possible, points are prefered to other points class 2
+        PQ_CLASS3       /// Work is possible, points are only chosen if there are no other class 1/2's
+    };
 
-        enum PointQuality
-        {
-            PQ_NOTPOSSIBLE, // Work is not possible at this position
-            PQ_CLASS1, /// Work is possible, points are prefered to other points
-            PQ_CLASS2, /// Work is possible, points are prefered to other points class 2
-            PQ_CLASS3 /// Work is possible, points are only chosen if there are no other class 1/2's
-        };
+protected:
+    /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn...
+    void WalkedDerived() override;
 
-    protected:
+    /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
+    void WorkAborted() override;
 
-        /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn...
-        void WalkedDerived() override;
+    /// Läuft zum Arbeitspunkt
+    void WalkToWorkpoint();
+    /// Trifft Vorbereitungen fürs nach Hause - Laufen
+    void StartWalkingHome();
+    /// Läuft wieder zu seiner Hütte zurück
+    void WalkHome();
 
-        /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
-        void WorkAborted() override;
+    /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
+    virtual void WalkingStarted();
+    /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+    virtual void WorkStarted() = 0;
+    /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+    virtual void WorkFinished() = 0;
 
-        /// Läuft zum Arbeitspunkt
-        void WalkToWorkpoint();
-        /// Trifft Vorbereitungen fürs nach Hause - Laufen
-        void StartWalkingHome();
-        /// Läuft wieder zu seiner Hütte zurück
-        void WalkHome();
+    /// Zeichnen der Figur in sonstigen Arbeitslagen
+    void DrawOtherStates(DrawPoint drawPt) override;
 
-        /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
-        virtual void WalkingStarted();
-        /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-        virtual void WorkStarted() = 0;
-        /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-        virtual void WorkFinished() = 0;
+public:
+    nofFarmhand(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofFarmhand(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Zeichnen der Figur in sonstigen Arbeitslagen
-        void DrawOtherStates(DrawPoint drawPt) override;
+    /// Aufräummethoden
+protected:
+    void Destroy_nofFarmhand() { Destroy_nofBuildingWorker(); }
 
-    public:
+public:
+    void Destroy() override { Destroy_nofFarmhand(); }
 
-        nofFarmhand(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofFarmhand(SerializedGameData& sgd, const unsigned obj_id);
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofFarmhand(SerializedGameData& sgd) const;
 
-        /// Aufräummethoden
-    protected:  void Destroy_nofFarmhand() { Destroy_nofBuildingWorker(); }
-    public:     void Destroy() override { Destroy_nofFarmhand(); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmhand(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofFarmhand(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmhand(sgd); }
-
-        void HandleDerivedEvent(const unsigned int id) override;
-        /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann
-        bool IsPointAvailable(const MapPoint pt) const;
-        /// Returns the quality of this working point or determines if the worker can work here at all
-        virtual PointQuality GetPointQuality(const MapPoint pt) const = 0;
+    void HandleDerivedEvent(const unsigned id) override;
+    /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann
+    bool IsPointAvailable(const MapPoint pt) const;
+    /// Returns the quality of this working point or determines if the worker can work here at all
+    virtual PointQuality GetPointQuality(const MapPoint pt) const = 0;
 };
-
 
 #endif

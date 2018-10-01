@@ -4,7 +4,7 @@
 #export DH_VERBOSE=1
 
 ifeq ($(DH_VERBOSE),1)
-	CMAKE_VERBOSE=--enable-verbose
+	CMAKE_VERBOSE=-DCMAKE_VERBOSE_MAKEFILE=ON
 else
 	CMAKE_VERBOSE=
 endif
@@ -12,32 +12,20 @@ endif
 ifeq ($(DEB_HOST_ARCH),$(DEB_BUILD_ARCH))
 	CMAKE_ARCH=
 else
-	CMAKE_ARCH=--arch=c.$(DEB_BUILD_ARCH_OS).$(DEB_BUILD_GNU_CPU)
+	CMAKE_ARCH=-DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/c.$(DEB_BUILD_ARCH_OS).$(DEB_BUILD_GNU_CPU).cmake
 endif
 
 VERSION="$$(head debian/changelog -n 1 | cut -d '-' -f 1 | cut -d '(' -f 2)"
 REVISION="$$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)"
-
-# create .svn/entries with values from debian/changelog for version tool
-.svn/entries:
-	mkdir -p .svn && \
-	echo "10" > .svn/entries && \
-	echo "" >> .svn/entries && \
-	echo "dir" >> .svn/entries && \
-	echo "$$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)" >> .svn/entries
+CMAKE_RTTR_VERSION=-DRTTR_VERSION=$(VERSION) -DRTTR_REVISION=$(REVISION)
 
 # configure
-build/Makefile: .svn/entries
+build/Makefile:
 	dh_testdir
 
 	# Add here commands to configure the package.
-	chmod 0755 ./build/cmake.sh && \
-	cd build && ./cmake.sh --prefix=/usr $(CMAKE_VERBOSE) $(CMAKE_ARCH) -DCMAKE_C_FLAGS="$(CFLAGS)" -DCMAKE_LD_FLAGS="-Wl,-z,defs" -DCMAKE_CXX_FLAGS="$(CXXFLAGS)" -DCMAKE_SKIP_RPATH=ON
-
-	# force version
-	cp ./build_version_defines.h.cmake ./build/build_version_defines.h
-	sed -i "s/\"20000211\"/\"${VERSION}\"/g;s/\"0\"/\"${REVISION}\"/g" ./build/build_version_defines.h
-	touch ./build/build_version_defines.h.force
+	mkdir -p build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr $(CMAKE_VERBOSE) $(CMAKE_ARCH) $(CMAKE_RTTR_VERSION) -DCMAKE_C_FLAGS="$(CFLAGS)" -DCMAKE_LD_FLAGS="-Wl,-z,defs" -DCMAKE_CXX_FLAGS="$(CXXFLAGS)" -DCMAKE_SKIP_RPATH=ON
 
 # and make
 build: build-stamp
@@ -57,8 +45,7 @@ clean:
 	rm -f build-stamp 
 
 	# Add here commands to clean up after the build process.
-	chmod 0755 ./build/cleanup.sh
-	cd build && ./cleanup.sh
+	rm -rf build
 
 	dh_clean 
 
@@ -78,10 +65,7 @@ install: build
 	cp -v $(CURDIR)/debian/s25rttr.desktop $(CURDIR)/debian/s25rttr/usr/share/applications/
 	
 	# remove updater
-	rm -vf $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR/s25update
-	
-	# remove miniupnp
-	rm -vf $(CURDIR)/debian/s25rttr/usr/lib/libminiupnpc*
+	rm -vf $(CURDIR)/debian/s25rttr/usr/bin/s25update
 	
 	# move maps to maps-package
 	mkdir -vp $(CURDIR)/debian/s25rttr-maps/usr/share/s25rttr/RTTR
@@ -95,11 +79,6 @@ install: build
 	mkdir -vp $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr
 	mv -v $(CURDIR)/debian/s25rttr/usr/share/s25rttr/S2/* $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr/S2
 	mv -v $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR/* $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr/RTTR
-		
-	# move sound-convert binaries back ...
-	mkdir -vp $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR
-	mv -v $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr/RTTR/s-c_resample $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR
-	mv -v $(CURDIR)/debian/s25rttr-common/usr/share/s25rttr/RTTR/sound-convert $(CURDIR)/debian/s25rttr/usr/share/s25rttr/RTTR
 
 # Build architecture-independent files here.
 binary-indep: install

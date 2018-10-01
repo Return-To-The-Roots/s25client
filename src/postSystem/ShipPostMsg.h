@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,13 +23,13 @@
 class noShip;
 
 /// Post message concerning a ship. Displays ships location and picture
-class ShipPostMsg: public PostMsg
+class ShipPostMsg : public PostMsg
 {
 public:
     /// Creates the message.
     /// Note: Ship object might get invalidated after this call so do not store!
     ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship);
-    glArchivItem_Bitmap* GetImage_() const override;
+    ITexture* GetImage_() const override;
 };
 
 #endif // ShipPostMsg_h__

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,34 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "QuickStartGame.h"
-#include "GameServer.h"
-#include "GameClient.h"
 #include "WindowManager.h"
 #include "desktops/dskGameLoader.h"
 #include "desktops/dskSelectMap.h"
 #include "ingameWindows/iwPleaseWait.h"
-#include "ClientInterface.h"
+#include "network/ClientInterface.h"
+#include "network/CreateServerInfo.h"
+#include "network/GameClient.h"
 #include <boost/array.hpp>
+#include <boost/filesystem/path.hpp>
+#include <algorithm>
 #include <iostream>
 
-class SwitchOnStart: public ClientInterface
+class SwitchOnStart : public ClientInterface
 {
 public:
-    SwitchOnStart()
-    {
-        GAMECLIENT.SetInterface(this);
-    }
-    ~SwitchOnStart()
-    {
-        GAMECLIENT.RemoveInterface(this);
-    }
+    SwitchOnStart() { GAMECLIENT.SetInterface(this); }
+    ~SwitchOnStart() { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameStarted(GameWorldBase& world) override
-    {
-        WINDOWMANAGER.Switch(new dskGameLoader(world));
-    }
+    void CI_GameLoading(boost::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
 };
 
 bool QuickStartGame(const std::string& filePath, bool singlePlayer)
@@ -54,16 +47,18 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
     csi.ipv6 = false;
     csi.use_upnp = false;
 
-    printf("loading game!\n");
+    std::cout << "Loading game!" << std::endl;
+    std::string extension = bfs::path(filePath).extension().string();
+    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
     WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
-    if((filePath.find(".sav") != std::string::npos && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME))
-        || ((filePath.find(".swd") != std::string::npos || filePath.find(".wld") != std::string::npos) && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP)))
+    if((extension == ".sav" && GAMECLIENT.HostGame(csi, filePath, MAPTYPE_SAVEGAME))
+       || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, filePath, MAPTYPE_OLDMAP)))
     {
         WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
         return true;
-    }else
+    } else
     {
         SwitchOnStart switchOnStart;
         return GAMECLIENT.StartReplay(filePath);

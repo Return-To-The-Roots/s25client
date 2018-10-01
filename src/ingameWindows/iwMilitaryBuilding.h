@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,20 +28,20 @@ class GlobalGameSettings;
 
 class iwMilitaryBuilding : public IngameWindow
 {
-    private:
-        GameWorldView& gwv;
-        GameCommandFactory& gcFactory;
-        nobMilitary* const building;
+private:
+    GameWorldView& gwv;
+    GameCommandFactory& gcFactory;
+    nobMilitary* const building;
 
-    public:
-        iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building);
+public:
+    iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building);
 
-        /// Zeigt Messagebox an, dass das Militärgebäude nicht abgerissen werden kann (Abriss-Verbot)
-        static void DemolitionNotAllowed(const GlobalGameSettings& ggs);
+    /// Zeigt Messagebox an, dass das Militärgebäude nicht abgerissen werden kann (Abriss-Verbot)
+    static void DemolitionNotAllowed(const GlobalGameSettings& ggs);
 
-    private:
-        void Msg_PaintAfter() override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_PaintAfter() override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwMILITARYBUILDING_H_INCLUDED

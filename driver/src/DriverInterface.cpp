@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "main.h" // IWYU pragma: keep
+#include "driverDefines.h" // IWYU pragma: keep
 #include "DriverInterfaceVersion.h"
 
 #ifdef _WIN32
-#   define DRIVERDLLAPI extern "C" __declspec(dllexport)
+#define DRIVERDLLAPI extern "C" __declspec(dllexport)
 #else
-#   define DRIVERDLLAPI extern "C"
+#define DRIVERDLLAPI extern "C"
 #endif // !_WIN32
 
 /**
@@ -29,7 +29,7 @@
  *
  *  @return liefert die API-Version des Treibers
  */
-DRIVERDLLAPI unsigned int GetDriverAPIVersion(void)
+DRIVERDLLAPI unsigned GetDriverAPIVersion()
 {
     return DRIVERAPIVERSION;
 }

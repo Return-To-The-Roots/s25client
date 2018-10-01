@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,11 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlVarText.h"
 #include "ogl/glArchivItem_Font.h"
-#include <sstream>
-class Window;
 
 /**
  *  Konstruktor des Textcontrols, welches variablen Inhalt haben kann.
@@ -35,88 +33,19 @@ class Window;
  *  @param[in] count     Anzahl der nachfolgenden Pointer
  *  @param[in] liste     Pointerliste der variablen Inhalte
  */
-ctrlVarText::ctrlVarText(Window* parent,
-                         unsigned int id,
-                         unsigned short x,
-                         unsigned short y,
-                         const std::string& formatstr,
-                         unsigned int color,
-                         unsigned int format,
-                         glArchivItem_Font* font,
-                         unsigned int count,
-                         va_list liste)
-    : ctrlText(parent, id, x, y, formatstr, color, format, font)
-{
-    // Pointerliste einlesen
-    if(count > 0)
-    {
-        // und zuweisen
-        for(unsigned int i = 0; i < count; ++i)
-            vars.push_back(va_arg(liste, void*));
-    }
-}
-
-ctrlVarText::~ctrlVarText()
+ctrlVarText::ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format,
+                         glArchivItem_Font* font, unsigned count, va_list fmtArgs)
+    : Window(parent, id, pos), ctrlBaseVarText(formatstr, color, font, count, fmtArgs), format_(format)
 {}
 
-/**
- *  Zeichenmethode
- *
- *  @return @p true bei Erfolg, @p false bei Fehler
- */
-bool ctrlVarText::Draw_()
-{
-    font->Draw(GetDrawPos(), GetFormatedText(), format, color_);
+ctrlVarText::~ctrlVarText() {}
 
-    return true;
+Rect ctrlVarText::GetBoundaryRect() const
+{
+    return font->getBounds(GetDrawPos(), GetFormatedText(), format_);
 }
 
-std::string ctrlVarText::GetFormatedText() const
+void ctrlVarText::Draw_()
 {
-    std::stringstream str;
-
-    unsigned curVar = 0;
-    bool isInFormat = false;
-
-    for(std::string::const_iterator it = text.begin(); it != text.end(); ++it)
-    {
-        if(isInFormat)
-        {
-            isInFormat = false;
-            switch(*it)
-            {
-            case 'd':
-                str << *reinterpret_cast<int*>(vars[curVar]);
-                curVar++;
-                break;
-            case 'u':
-                str << *reinterpret_cast<unsigned*>(vars[curVar]);
-                curVar++;
-                break;
-            case 's':
-                str << reinterpret_cast<const char*>(vars[curVar]);
-                curVar++;
-                break;
-            case '%':
-                str << '%';
-                break;
-            default:
-                RTTR_Assert(false); // Invalid format string
-                str << '%' << *it;
-                break;
-            }
-        }
-        else if(*it == '%')
-            isInFormat = true;
-        else
-            str << *it;
-    }
-
-    if(isInFormat)
-    {
-        RTTR_Assert(false); // Invalid format string
-        str << '%';
-    }
-
-    return str.str();
+    font->Draw(GetDrawPos(), GetFormatedText(), format_, color_);
 }

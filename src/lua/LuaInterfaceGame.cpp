@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceGame.h"
+#include "EventManager.h"
+#include "Game.h"
+#include "GlobalVars.h"
+#include "WindowManager.h"
+#include "ai/AIInterface.h"
+#include "ai/AIPlayer.h"
+#include "ingameWindows/iwMissionStatement.h"
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "EventManager.h"
-#include "world/GameWorldGame.h"
-#include "ingameWindows/iwMissionStatement.h"
-#include "buildings/nobBaseWarehouse.h"
-#include "WindowManager.h"
-#include "GlobalVars.h"
+#include "network/GameClient.h"
 #include "postSystem/PostMsg.h"
-#include "libutil/src/Serializer.h"
-#include "libutil/src/Log.h"
+#include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
-#include <fstream>
+#include "libutil/Log.h"
+#include "libutil/Serializer.h"
+#include <boost/nowide/fstream.hpp>
 
-LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
+LuaInterfaceGame::LuaInterfaceGame(boost::weak_ptr<Game> gameInstance) : gw(gameInstance.lock()->world), game(gameInstance)
 {
-
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name
 
@@ -137,11 +137,16 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
     ADD_LUA_CONST(GD_MEAT);
     ADD_LUA_CONST(GD_HAM);
 
-    ADD_LUA_CONST(RES_IRON);
-    ADD_LUA_CONST(RES_GOLD);
-    ADD_LUA_CONST(RES_COAL);
-    ADD_LUA_CONST(RES_GRANITE);
-    ADD_LUA_CONST(RES_WATER);
+    lua["RES_IRON"] = Resource::Iron;
+    lua["RES_GOLD"] = Resource::Gold;
+    lua["RES_COAL"] = Resource::Coal;
+    lua["RES_GRANITE"] = Resource::Granite;
+    lua["RES_WATER"] = Resource::Water;
+
+    lua["NON_AGGRESSION_PACT"] = NON_AGGRESSION_PACT;
+    lua["TREATY_OF_ALLIANCE"] = TREATY_OF_ALLIANCE;
+    // infinite pact duration, see GamePlayer::GetRemainingPactTime
+    lua["DURATION_INFINITE"] = 0xFFFFFFFF;
 
 #undef ADD_LUA_CONST
 #define ADD_LUA_CONST(name) lua[#name] = iwMissionStatement::name
@@ -172,62 +177,51 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
     lua["rttr"] = this;
 }
 
-LuaInterfaceGame::~LuaInterfaceGame()
-{}
+LuaInterfaceGame::~LuaInterfaceGame() {}
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMissionGoal, 1, 2)
 
 void LuaInterfaceGame::Register(kaguya::State& state)
 {
-    state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceBase>()
-        .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
-        .addFunction("GetGF", &LuaInterfaceGame::GetGF)
-        .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
-        .addFunction("GetPlayerCount", &LuaInterfaceGame::GetPlayerCount)
-        .addFunction("Chat", &LuaInterfaceGame::Chat)
-        .addOverloadedFunctions("MissionStatement", &LuaInterfaceGame::MissionStatement, &LuaInterfaceGame::MissionStatementWithImg)
-        .addFunction("SetMissionGoal", SetMissionGoalWrapper())
-        .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
-        .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
-        .addFunction("GetPlayer", &LuaInterfaceGame::GetPlayer)
-        .addFunction("GetWorld", &LuaInterfaceGame::GetWorld)
-        );
+    state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceGameBase>()
+                                 .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
+                                 .addFunction("GetGF", &LuaInterfaceGame::GetGF)
+                                 .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
+                                 .addFunction("GetNumPlayers", &LuaInterfaceGame::GetNumPlayers)
+                                 .addFunction("Chat", &LuaInterfaceGame::Chat)
+                                 .addOverloadedFunctions("MissionStatement", &LuaInterfaceGame::MissionStatement,
+                                                         &LuaInterfaceGame::MissionStatement2, &LuaInterfaceGame::MissionStatement3)
+                                 .addFunction("SetMissionGoal", SetMissionGoalWrapper())
+                                 .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
+                                 .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
+                                 .addFunction("GetPlayer", &LuaInterfaceGame::GetPlayer)
+                                 .addFunction("GetWorld", &LuaInterfaceGame::GetWorld)
+                                 // Old name
+                                 .addFunction("GetPlayerCount", &LuaInterfaceGame::GetNumPlayers));
     state["RTTR_Serializer"].setClass(kaguya::UserdataMetatable<Serializer>()
-        .addFunction("PushInt", &Serializer::PushSignedInt)
-        .addFunction("PopInt", &Serializer::PopSignedInt)
-        .addFunction("PushBool", &Serializer::PushBool)
-        .addFunction("PopBool", &Serializer::PopBool)
-        .addFunction("PushString", &Serializer::PushString)
-        .addFunction("PopString", &Serializer::PopString)
-        );
-    state.setErrorHandler(ErrorHandler);
+                                        .addFunction("PushInt", &Serializer::PushSignedInt)
+                                        .addFunction("PopInt", &Serializer::PopSignedInt)
+                                        .addFunction("PushBool", &Serializer::PushBool)
+                                        .addFunction("PopBool", &Serializer::PopBool)
+                                        .addFunction("PushString", &Serializer::PushString)
+                                        .addFunction("PopString", &Serializer::PopString));
 }
 
-Serializer LuaInterfaceGame::Serialize()
+bool LuaInterfaceGame::Serialize(Serializer& luaSaveState)
 {
     kaguya::LuaRef save = lua["onSave"];
     if(save.type() == LUA_TFUNCTION)
     {
-        Serializer luaSaveState;
-        lua.setErrorHandler(ErrorHandlerThrow);
-        try
+        ClearErrorOccured();
+        if(save.call<bool>(kaguya::standard::ref(luaSaveState)) && !HasErrorOccurred())
+            return true;
+        else
         {
-            if(!save.call<bool>(kaguya::standard::ref(luaSaveState)))
-            {
-                LOG.write("Lua state could not be saved!");
-                luaSaveState.Clear();
-            }
-            lua.setErrorHandler(ErrorHandler);
-            return luaSaveState;
-        } catch(std::exception& e)
-        {
-            lua.setErrorHandler(ErrorHandler);
-            LOG.write("Error during saving: %s\n") % e.what();
-            if(GLOBALVARS.isTest)
-                throw std::runtime_error("Error during lua call");
+            luaSaveState.Clear();
+            return false;
         }
-    }
-    return Serializer();
+    } else
+        return true;
 }
 
 bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
@@ -235,48 +229,26 @@ bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
     kaguya::LuaRef load = lua["onLoad"];
     if(load.type() == LUA_TFUNCTION)
     {
-        lua.setErrorHandler(ErrorHandlerThrow);
-        try
-        {
-            bool result = load.call<bool>(kaguya::standard::ref(luaSaveState));
-            lua.setErrorHandler(ErrorHandler);
-            if(result)
-                return true;
-            else
-            {
-                LOG.write("Lua state was not loaded correctly!");
-                return false;
-            }
-        } catch(std::exception& e)
-        {
-            lua.setErrorHandler(ErrorHandler);
-            LOG.write("Error during loading: %s\n") % e.what();
-            if(GLOBALVARS.isTest)
-                throw std::runtime_error("Error during lua call");
-            return false;
-        }
+        ClearErrorOccured();
+        return load.call<bool>(kaguya::standard::ref(luaSaveState)) && !HasErrorOccurred();
     } else
         return true;
 }
 
 void LuaInterfaceGame::ClearResources()
 {
-    for(unsigned p = 0; p < gw.GetPlayerCount(); p++)
-    {
-        const std::list<nobBaseWarehouse*> warehouses = gw.GetPlayer(p).GetStorehouses();
-        for(std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
-            (*wh)->Clear();
-    }
+    for(unsigned p = 0; p < gw.GetNumPlayers(); p++)
+        GetPlayer(p).ClearResources();
 }
 
-unsigned LuaInterfaceGame::GetGF()
+unsigned LuaInterfaceGame::GetGF() const
 {
     return gw.GetEvMgr().GetCurrentGF();
 }
 
-unsigned LuaInterfaceGame::GetPlayerCount()
+unsigned LuaInterfaceGame::GetNumPlayers() const
 {
-    return gw.GetPlayerCount();
+    return gw.GetNumPlayers();
 }
 
 void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
@@ -289,15 +261,20 @@ void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
 
 void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title, const std::string& msg)
 {
-    MissionStatementWithImg(playerIdx, title, msg, iwMissionStatement::IM_SWORDSMAN);
+    MissionStatement2(playerIdx, title, msg, iwMissionStatement::IM_SWORDSMAN);
 }
 
-void LuaInterfaceGame::MissionStatementWithImg(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx)
+void LuaInterfaceGame::MissionStatement2(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx)
+{
+    MissionStatement3(playerIdx, title, msg, imgIdx, true);
+}
+
+void LuaInterfaceGame::MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx, bool pause)
 {
     if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
         return;
 
-    WINDOWMANAGER.Show(new iwMissionStatement(_(title), msg, gw.IsSinglePlayer(), iwMissionStatement::HelpImage(imgIdx)));
+    WINDOWMANAGER.Show(new iwMissionStatement(_(title), msg, gw.IsSinglePlayer() && pause, iwMissionStatement::HelpImage(imgIdx)));
 }
 
 void LuaInterfaceGame::SetMissionGoal(int playerIdx, const std::string& newGoal)
@@ -313,14 +290,15 @@ void LuaInterfaceGame::PostMessageLua(unsigned playerIdx, const std::string& msg
 
 void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y)
 {
-    gw.GetPostMgr().SendMsg(playerIdx, new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General, gw.MakeMapPoint(Point<int>(x, y))));
+    gw.GetPostMgr().SendMsg(playerIdx,
+                            new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General, gw.MakeMapPoint(Position(x, y))));
 }
 
 LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)
 {
-    if(playerIdx >= gw.GetPlayerCount())
-        throw std::runtime_error("Invalid player idx");
-    return LuaPlayer(gw.GetPlayer(playerIdx));
+    if(playerIdx >= gw.GetNumPlayers())
+        throw LuaExecutionError("Invalid player idx");
+    return LuaPlayer(game, gw.GetPlayer(playerIdx));
 }
 
 LuaWorld LuaInterfaceGame::GetWorld()
@@ -333,7 +311,7 @@ void LuaInterfaceGame::EventExplored(unsigned player, const MapPoint pt, unsigne
     kaguya::LuaRef onExplored = lua["onExplored"];
     if(onExplored.type() == LUA_TFUNCTION)
     {
-        if (owner == 0)
+        if(owner == 0)
         {
             // No owner? Pass nil value to Lua.
             onExplored.call<void>(player, pt.x, pt.y, kaguya::NilValue());
@@ -371,4 +349,51 @@ void LuaInterfaceGame::EventResourceFound(unsigned char player, const MapPoint p
     kaguya::LuaRef onResourceFound = lua["onResourceFound"];
     if(onResourceFound.type() == LUA_TFUNCTION)
         onResourceFound.call<void>(player, pt.x, pt.y, type, quantity);
+}
+
+bool LuaInterfaceGame::EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId)
+{
+    kaguya::LuaRef onPactCancel = lua["onCancelPactRequest"];
+    if(onPactCancel.type() == LUA_TFUNCTION)
+        return onPactCancel.call<bool>(pt, canceledByPlayerId, targetPlayerId);
+    return true; // always accept pact cancel if there is no handler
+}
+
+void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
+                                        const unsigned duration)
+{
+    Game& gameInst = *game.lock();
+    AIPlayer* ai = gameInst.GetAIPlayer(targetPlayerId);
+    if(ai != NULL)
+    {
+        kaguya::LuaRef onPactCancel = lua["onSuggestPact"];
+        if(onPactCancel.type() == LUA_TFUNCTION)
+        {
+            AIInterface aii = ai->getAIInterface();
+            bool luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
+            if(luaResult)
+                aii.AcceptPact(gw.GetEvMgr().GetCurrentGF(), pt, suggestedByPlayerId);
+            else
+                aii.CancelPact(pt, suggestedByPlayerId);
+        }
+    }
+}
+
+void LuaInterfaceGame::EventPactCanceled(const PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId)
+{
+    kaguya::LuaRef onPactCanceled = lua["onPactCanceled"];
+    if(onPactCanceled.type() == LUA_TFUNCTION)
+    {
+        onPactCanceled.call<void>(pt, canceledByPlayerId, targetPlayerId);
+    }
+}
+
+void LuaInterfaceGame::EventPactCreated(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
+                                        const unsigned duration)
+{
+    kaguya::LuaRef onPactCreated = lua["onPactCreated"];
+    if(onPactCreated.type() == LUA_TFUNCTION)
+    {
+        onPactCreated.call<void>(pt, suggestedByPlayerId, targetPlayerId, duration);
+    }
 }

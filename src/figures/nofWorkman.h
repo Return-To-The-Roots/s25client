@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,6 +20,7 @@
 
 #include "nofBuildingWorker.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/Resource.h"
 class SerializedGameData;
 class nobBaseWarehouse;
 class nobUsual;
@@ -29,38 +30,42 @@ class nobUsual;
 /// Warten -- Arbeiten -- Warten -- Ware raustragen -- wieder reinkommen -- ...
 class nofWorkman : public nofBuildingWorker
 {
-    private:
+private:
+    // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
+    void WalkedDerived() override {} // man gelaufen ist
+    /// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
+    virtual GoodType ProduceWare() = 0;
+    /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
+    virtual void WorkFinished() {}
 
-        // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
-        void WalkedDerived() override; // man gelaufen ist
-        /// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
-        virtual GoodType ProduceWare() = 0;
-        /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
-        virtual void WorkFinished();
+protected:
+    /// Entsprechende Methoden für die Abwicklung der einzelnen Zustände
+    /// Nach erstem Warten, sprich der Arbeiter muss versuchen, neu anfangen zu arbeiten
+    void HandleStateWaiting1();
+    void HandleStateWaiting2();
+    void HandleStateWork();
+    /// Called when the work actually starts. The base implementation changes the state and reduces ware count.
+    /// Subclasses can return false, if work has to be aborted for any reason in which case we enter the wait-for-wares state
+    virtual bool StartWorking();
 
-    protected:
+    /// Looks for a point with a given resource on the node
+    MapPoint FindPointWithResource(Resource::Type type) const;
 
-        /// Entsprechende Methoden für die Abwicklung der einzelnen Zustände
-        /// Nach erstem Warten, sprich der Arbeiter muss versuchen, neu anfangen zu arbeiten
-        void HandleStateWaiting1();
-        void HandleStateWaiting2();
-        void HandleStateWork();
+public:
+    /// Going to workplace
+    nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    /// Going to warehouse
+    nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
+    nofWorkman(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofWorkman(SerializedGameData& sgd) const;
 
-        /// Going to workplace
-        nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        /// Going to warehouse
-        nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
-        nofWorkman(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofWorkman(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofWorkman(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofWorkman(sgd); }
-
-        void HandleDerivedEvent(const unsigned int id) override;
-
-
+    void HandleDerivedEvent(const unsigned id) override;
 };
 
 #endif

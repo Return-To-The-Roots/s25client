@@ -4,22 +4,18 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  addon decativates reduction of fish population by fishing.
  */
 class AddonInexhaustibleFish : public AddonBool
 {
-    public:
-        AddonInexhaustibleFish() : AddonBool(AddonId::INEXHAUSTIBLE_FISH,
-                                                 ADDONGROUP_ECONOMY,
-                                                 _("Inexhaustible Fish"),
-                                                 _("Deactivates reduction of fish population."),
-                                                 0
-                                                )
-        {
-        }
+public:
+    AddonInexhaustibleFish()
+        : AddonBool(AddonId::INEXHAUSTIBLE_FISH, ADDONGROUP_ECONOMY, _("Inexhaustible Fish"),
+                    _("Deactivates reduction of fish population."), 0)
+    {}
 };
 
 #endif

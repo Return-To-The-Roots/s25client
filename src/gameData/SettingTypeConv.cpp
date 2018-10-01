@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,18 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "SettingTypeConv.h"
 
 /// Max value for each setting.
 /// Note: We skip the first 2 steppings for the occupation (last 4 values) as they had no effect in S2
 const MilitarySettings SUPPRESS_UNUSED MILITARY_SETTINGS_SCALE = {{10, 5, 5, 5, 8, 8, 8, 8}};
-const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO =
-{{   2, 12, 12, 12, 12, 12, 12, 12, 12, 12,
-    10, 10, 12, 12, 12, 13,  1,  3, 11, 11,
-    11,  1,  9,  7,  8,  1,  1, 11,  0,  4,
-     5,  6, 11, 11,  1
-}};
+const boost::array<unsigned char, NUM_WARE_TYPES> STD_TRANSPORT_PRIO = {
+  {2, 12, 12, 12, 12, 12, 12, 12, 12, 12, 10, 10, 12, 12, 12, 13, 1, 3, 11, 11, 11, 1, 9, 7, 8, 1, 1, 11, 0, 4, 5, 6, 11, 11, 1}};
 
 unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType good)
 {
@@ -46,7 +42,7 @@ TransportOrders GetOrderingFromTransportPrio(const TransportPriorities& prioriti
 {
     TransportOrders result;
     // Map prio of each ware to STD prio
-    for(unsigned ware = 0; ware < WARE_TYPES_COUNT; ware++)
+    for(unsigned ware = 0; ware < NUM_WARE_TYPES; ware++)
     {
         RTTR_Assert(priorities[ware] < result.size());
         result[priorities[ware]] = STD_TRANSPORT_PRIO[ware];

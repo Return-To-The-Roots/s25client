@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,7 +18,7 @@
 #ifndef HarborPos_h__
 #define HarborPos_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <boost/array.hpp>
 #include <vector>
 
@@ -29,7 +29,7 @@ struct HarborPos
     struct CoastalPoint
     {
         unsigned short seaId;
-        CoastalPoint(): seaId(0){}
+        CoastalPoint() : seaId(0) {}
     };
     boost::array<CoastalPoint, 6> cps;
 
@@ -39,17 +39,15 @@ struct HarborPos
         unsigned distance;
 
         Neighbor() {} //-V730
-        Neighbor(const unsigned id, const unsigned distance)
-            : id(id), distance(distance) {}
+        Neighbor(const unsigned id, const unsigned distance) : id(id), distance(distance) {}
 
-        bool operator<(const Neighbor& two) const
-        { return (distance < two.distance) || (distance == two.distance && id < two.id); }
+        bool operator<(const Neighbor& two) const { return (distance < two.distance) || (distance == two.distance && id < two.id); }
     };
 
     boost::array<std::vector<Neighbor>, 6> neighbors;
 
-    HarborPos(){} //-V730
-    HarborPos(const MapPoint pt): pos(pt){}
+    HarborPos() {} //-V730
+    HarborPos(const MapPoint pt) : pos(pt) {}
 };
 
 #endif // HarborPos_h__

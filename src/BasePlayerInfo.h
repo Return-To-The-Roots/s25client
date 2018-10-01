@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,8 +19,8 @@
 #define BasePlayerInfo_h__
 
 #include "gameTypes/AIInfo.h"
-#include "gameTypes/PlayerState.h"
 #include "gameTypes/Nation.h"
+#include "gameTypes/PlayerState.h"
 #include "gameTypes/TeamTypes.h"
 #include <string>
 
@@ -44,14 +44,13 @@ struct BasePlayerInfo
     void Serialize(Serializer& ser, bool lightData) const;
 
     /// Slot used by a human player (has socket etc)
-    bool isHuman() const { return (ps == PS_RESERVED || ps == PS_OCCUPIED); }
+    bool isHuman() const { return (ps == PS_OCCUPIED); }
     /// Slot filled (Used by human or AI, but excludes currently connecting humans)
     bool isUsed() const { return (ps == PS_AI || ps == PS_OCCUPIED); }
 
     /// Returns index of color in PLAYER_COLORS array or -1 if not found
     int GetColorIdx() const;
     static int GetColorIdx(unsigned color);
-
 };
 
 #endif // BasePlayerInfo_h__

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,30 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofCharburner.h"
 
-#include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
 #include "SoundManager.h"
-#include "nodeObjs/noCharburnerPile.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
-#include "gameData/TerrainData.h"
-#include "SerializedGameData.h"
+#include "nodeObjs/noCharburnerPile.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/bind.hpp>
 
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)
-{
-}
+{}
 
-nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
-    harvest(sgd.PopBool()),
-    wt(WareType(sgd.PopUnsignedChar()))
-{
-}
+nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id)
+    : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool()), wt(WareType(sgd.PopUnsignedChar()))
+{}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofCharburner::DrawWorking(DrawPoint drawPt)
@@ -60,12 +58,10 @@ void nofCharburner::DrawWorking(DrawPoint drawPt)
         else
             draw_id = 9 + 12 + (now_id - 36);
 
-
-        LOADER.GetPlayerImage("charburner_bobs", draw_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-    }
-    else
-        LOADER.GetPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-
+        LOADER.GetPlayerImage("charburner_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+    } else
+        LOADER.GetPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)
+          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -75,9 +71,7 @@ unsigned short nofCharburner::GetCarryID() const
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofCharburner::WorkStarted()
-{
-}
+void nofCharburner::WorkStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofCharburner::WorkFinished()
@@ -94,7 +88,6 @@ void nofCharburner::WorkFinished()
         // One step further
         static_cast<noCharburnerPile*>(no)->NextStep();
         return;
-
     }
 
     // Point still good?
@@ -161,40 +154,27 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
     if(gwg->GetNode(pt).boundary_stones[0])
         return PQ_NOTPOSSIBLE;
 
-
-
-
-
     for(unsigned char i = 0; i < 6; ++i)
     {
         // Don't set it next to buildings and other charburner piles and grain fields
-        BlockingManner bm = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetBM();
+        BlockingManner bm = gwg->GetNO(gwg->GetNeighbour(pt, Direction::fromInt(i)))->GetBM();
         if(bm != BlockingManner::None)
             return PQ_NOTPOSSIBLE;
         // darf außerdem nicht neben einer Straße liegen
         for(unsigned char j = 0; j < 6; ++j)
         {
-            if(gwg->GetPointRoad(gwg->GetNeighbour(pt, i), j))
+            if(gwg->GetPointRoad(gwg->GetNeighbour(pt, Direction::fromInt(i)), Direction::fromInt(j)))
                 return PQ_NOTPOSSIBLE;
         }
     }
 
-    // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-    unsigned char good_terrains = 0;
-
-    for(unsigned char i = 0; i < 6; ++i)
-    {
-        TerrainType t = gwg->GetTerrainAround(pt, i);
-        if(TerrainData::IsVital(t) || t == TT_DESERT)
-            ++good_terrains;
-    }
-
-    if(good_terrains != 6)
+    // Terrain untersuchen (need walkable land)
+    if(gwg->IsOfTerrain(pt,
+                        boost::bind(&TerrainDesc::Is, _1, ETerrain::Walkable) && boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND))
+        return PQ_CLASS3;
+    else
         return PQ_NOTPOSSIBLE;
-
-    return PQ_CLASS3;
 }
-
 
 void nofCharburner::Serialize(SerializedGameData& sgd) const
 {
@@ -223,20 +203,13 @@ void nofCharburner::WalkingStarted()
         else
             wt = WareType(static_cast<noCharburnerPile*>(nob)->GetNeededWareType());
     }
-
 }
 
 /// Draws the figure while returning home / entering the building (often carrying wares)
-void nofCharburner::DrawReturnStates(DrawPoint drawPt)
+void nofCharburner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    // Carry coal?
-    if(ware == GD_COAL)
-        DrawWalking(drawPt, "charburner_bobs", 200);
-    else
-        // Draw normal walking otherwise
-        DrawWalking(drawPt);
+    DrawWalking(drawPt, "charburner_bobs", 200);
 }
-
 
 /// Draws the charburner while walking
 /// (overriding standard method of nofFarmhand)
@@ -253,16 +226,17 @@ void nofCharburner::DrawOtherStates(DrawPoint drawPt)
                     DrawWalking(drawPt, "charburner_bobs", 102);
                 else
                     DrawWalking(drawPt, "charburner_bobs", 151);
-            }
-            else
+            } else
                 // Draw normal walking
                 DrawWalking(drawPt);
-        } break;
+        }
+        break;
         default: return;
     }
 }
 
-bool nofCharburner::AreWaresAvailable(){
+bool nofCharburner::AreWaresAvailable() const
+{
     // Charburner doesn't need wares for harvesting!
     // -> Wares are considered when calling GetPointQuality!
     return true;

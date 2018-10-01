@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,53 +17,184 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "defines.h" // IWYU pragma: keep
-
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "Loader.h"
-#include "files.h"
-
-#include "Settings.h"
-
-#include "drivers/VideoDriverWrapper.h"
-#include "Log.h"
-
 #include "ListDir.h"
-#include "fileFuncs.h"
-
-#include "ogl/glSmartBitmap.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
-#include "ogl/glArchivItem_Bitmap_Raw.h"
-#include "ogl/glArchivItem_Bitmap_RLE.h"
-#include "ogl/glArchivItem_Bob.h"
-#include "ogl/glArchivItem_Sound.h"
-#include "ogl/glAllocator.h"
-#include "ogl/glTexturePacker.h"
-#include "ogl/glArchivItem_Font.h"
+#include "RttrConfig.h"
+#include "Settings.h"
 #include "addons/const_addons.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "files.h"
+#include "helpers/Deleter.h"
+#include "helpers/containerUtils.h"
+#include "ogl/SoundEffectItem.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "ogl/glArchivItem_Bitmap_RLE.h"
+#include "ogl/glArchivItem_Bitmap_Raw.h"
+#include "ogl/glArchivItem_Bob.h"
+#include "ogl/glArchivItem_Font.h"
+#include "ogl/glSmartBitmap.h"
+#include "ogl/glTexturePacker.h"
+#include "gameTypes/Direction.h"
 #include "gameData/JobConsts.h"
-#include "gameData/TerrainData.h"
-
-#include "libsiedler2/src/libsiedler2.h"
-#include "libsiedler2/src/ArchivItem_Ini.h"
-#include "libsiedler2/src/ArchivItem_Palette.h"
-#include "libsiedler2/src/ArchivItem_Text.h"
-#include <boost/filesystem.hpp>
+#include "libsiedler2/ArchivItem_Ini.h"
+#include "libsiedler2/ArchivItem_Palette.h"
+#include "libsiedler2/ArchivItem_PaletteAnimation.h"
+#include "libsiedler2/ArchivItem_Text.h"
+#include "libsiedler2/ErrorCodes.h"
+#include "libsiedler2/IAllocator.h"
+#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferPaletted.h"
+#include "libsiedler2/libsiedler2.h"
+#include "libutil/Log.h"
+#include "libutil/StringConversion.h"
+#include "libutil/System.h"
+#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/assign/std/vector.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/range/adaptor/map.hpp>
+#include <algorithm>
+#include <cstdio>
 #include <iomanip>
 #include <sstream>
-#include <algorithm>
 #include <stdexcept>
-#include <cstdio>
 
-Loader::Loader() : lastgfx(0xFF), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
+Loader::Loader() : isWinterGFX_(false), map_gfx(NULL), stp(NULL)
 {
-    std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::ArchivInfo*>(NULL));
+    std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::Archiv*>(NULL));
 }
 
 Loader::~Loader()
 {
     delete stp;
-    ClearTerrainTextures();
+}
+
+glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned nr)
+{
+    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv[nr]);
+}
+
+ITexture* Loader::GetTextureN(const std::string& file, unsigned nr)
+{
+    return convertChecked<ITexture*>(files_[file].archiv[nr]);
+}
+
+glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string& name)
+{
+    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.find(name));
+}
+
+glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsigned nr)
+{
+    return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv[nr]);
+}
+
+glArchivItem_Font* Loader::GetFontN(const std::string& file, unsigned nr)
+{
+    return dynamic_cast<glArchivItem_Font*>(files_[file].archiv[nr]);
+}
+
+libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, unsigned nr)
+{
+    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv[nr]);
+}
+
+SoundEffectItem* Loader::GetSoundN(const std::string& file, unsigned nr)
+{
+    return dynamic_cast<SoundEffectItem*>(files_[file].archiv[nr]);
+}
+
+std::string Loader::GetTextN(const std::string& file, unsigned nr)
+{
+    libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv[nr]);
+    return archiv ? archiv->getText() : "text missing";
+}
+
+libsiedler2::Archiv& Loader::GetInfoN(const std::string& file)
+{
+    return files_[file].archiv;
+}
+
+glArchivItem_Bob* Loader::GetBobN(const std::string& file)
+{
+    return dynamic_cast<glArchivItem_Bob*>(files_[file].archiv.get(0));
+}
+
+glArchivItem_BitmapBase* Loader::GetNationImageN(unsigned nation, unsigned nr)
+{
+    return dynamic_cast<glArchivItem_BitmapBase*>(nation_gfx[nation]->get(nr));
+}
+
+glArchivItem_Bitmap* Loader::GetNationImage(unsigned nation, unsigned nr)
+{
+    return checkedCast<glArchivItem_Bitmap*>(GetNationImageN(nation, nr));
+}
+
+ITexture* Loader::GetNationTex(unsigned nation, unsigned nr)
+{
+    return checkedCast<ITexture*>(GetNationImage(nation, nr));
+}
+
+glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(unsigned nation, unsigned nr)
+{
+    return checkedCast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, nr));
+}
+
+glArchivItem_Bitmap* Loader::GetMapImageN(unsigned nr)
+{
+    return convertChecked<glArchivItem_Bitmap*>(map_gfx->get(nr));
+}
+
+ITexture* Loader::GetMapTexN(unsigned nr)
+{
+    return convertChecked<ITexture*>(map_gfx->get(nr));
+}
+
+glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
+{
+    return convertChecked<glArchivItem_Bitmap_Player*>(map_gfx->get(nr));
+}
+
+void Loader::AddOverrideFolder(std::string path, bool atBack)
+{
+    path = RTTRCONFIG.ExpandPath(path);
+    if(!bfs::exists(path))
+        throw std::runtime_error(std::string("Path ") + path + " does not exist");
+    // Don't add folders twice although it is not an error
+    BOOST_FOREACH(const OverrideFolder& cur, overrideFolders_)
+    {
+        if(bfs::equivalent(cur.path, path))
+            return;
+    }
+    OverrideFolder folder;
+    folder.path = path;
+    for(bfs::directory_iterator it = bfs::directory_iterator(path); it != bfs::directory_iterator(); ++it)
+        folder.files.push_back(it->path().filename().string());
+
+    std::sort(folder.files.begin(), folder.files.end());
+
+    BOOST_FOREACH(FileEntry& entry, files_ | boost::adaptors::map_values)
+        entry.loadedAfterOverrideChange = false;
+    if(atBack)
+        overrideFolders_.push_back(folder);
+    else
+        overrideFolders_.insert(overrideFolders_.begin(), folder);
+}
+
+void Loader::AddAddonFolder(AddonId id)
+{
+    std::stringstream s;
+    s << RTTRCONFIG.ExpandPath(FILE_PATHS[96]) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id;
+    std::string path = s.str();
+    if(bfs::exists(path))
+        AddOverrideFolder(path);
+}
+
+void Loader::ClearOverrideFolders()
+{
+    overrideFolders_.clear();
 }
 
 /**
@@ -76,124 +207,47 @@ bool Loader::LoadFilesAtStart()
     using namespace boost::assign; // Adds the vector += operator
     std::vector<unsigned> files;
 
-    files += 5, 6, 7, 8, 9, 10, 17, // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
-            FILE_SPLASH_ID,        // Splashscreen: splash.bmp
-            11, 12,                // Menüdateien:  resource.dat, io.dat
-            102, 103,              // Hintergründe: setup013.lbm, setup015.lbm
-            64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84; // Die ganzen Spielladescreens.
+    files += 5, 6, 7, 8, 9, 10, 17; // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
+    if(!LoadFilesFromArray(files))
+        return false;
 
-    if(!LoadFilesFromArray(files.size(), &files.front(), true))
+    files.clear();
+    files += 11, 12,                                                                      // Menüdateien:  resource.dat, io.dat
+      102, 103,                                                                           // Hintergründe: setup013.lbm, setup015.lbm
+      64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84; // Die ganzen Spielladescreens.
+
+    if(!LoadFilesFromArray(files))
         return false;
 
     if(!LoadSounds())
         return false;
 
-    if(!LoadLsts(95)) // lade systemweite und persönliche lst files
+    return LoadOverrideFiles();
+}
+
+bool ConvertSounds(const std::string& outputFilepath)
+{
+    bfs::path soundConverterPath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[57])) / "sound-convert";
+#ifdef _WIN32
+    soundConverterPath.replace_extension(".exe");
+#endif
+    std::stringstream sArguments;
+    sArguments << "-s \"";
+    sArguments << RTTRCONFIG.ExpandPath(FILE_PATHS[56]); // script
+    sArguments << "\" -f \"";
+    sArguments << RTTRCONFIG.ExpandPath(FILE_PATHS[49]); // quelle
+    sArguments << "\" -t \"";
+    sArguments << outputFilepath; // ziel
+    sArguments << "\"";
+
+    const std::string arguments = sArguments.str();
+
+    LOG.write(_("Starting Sound-Converter...\n"));
+    LOG.writeToFile("Executing %1% %2%\n") % soundConverterPath % arguments;
+    if(!System::execute(soundConverterPath, arguments))
         return false;
 
-    return true;
-}
-
-/**
- *  @brief
- *
- *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
- */
-bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, bool isOriginal)
-{
-    if(file.at(0) == '~')
-        throw std::logic_error("You must use resolved pathes: " + file);
-
-    if(!bfs::exists(file))
-    {
-        LOG.write(_("File or directory does not exist: %s\n")) % file;
-        return false;
-    }
-    // is the entry a directory?
-    if(bfs::is_directory(file))
-    {
-        // yes, load all files in the directory
-        unsigned int ladezeit = VIDEODRIVER.GetTickCount();
-
-        LOG.write(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % GetFilePath(file);
-
-        std::vector<std::string> lst = ListDir(file, "lst", true);
-        lst = ListDir(file, "bob", true, &lst);
-        lst = ListDir(file, "idx", true, &lst);
-        lst = ListDir(file, "bmp", true, &lst);
-        lst = ListDir(file, "txt", true, &lst);
-        lst = ListDir(file, "ger", true, &lst);
-        lst = ListDir(file, "eng", true, &lst);
-        lst = ListDir(file, "ini", true, &lst);
-
-        for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
-        {
-            if(!LoadFile( *i, GetPaletteN("pal5"), isOriginal ) )
-                return false;
-        }
-        LOG.write(_("finished in %ums\n")) % (VIDEODRIVER.GetTickCount() - ladezeit);
-    }
-    else
-    {
-        // no, only single file specified
-        if(!LoadFile(file, GetPaletteN("pal5"), isOriginal ) )
-            return false;
-
-        // ggf Splash anzeigen
-        if(file_id == FILE_SPLASH_ID)
-        {
-            glArchivItem_Bitmap* image = GetImageN("splash", 0);
-            image->setFilter(GL_LINEAR);
-            image->Draw(DrawPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
-            VIDEODRIVER.SwapBuffers();
-        }
-    }
-    return true;
-}
-
-/**
- *  Lädt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
- *
- *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool isOriginal)
-{
-    // load the files or directorys
-    for(unsigned int i = 0; i < files_count; ++i)
-    {
-        if(files[i] == 0xFFFFFFFF)
-            continue;
-
-        std::string filePath = GetFilePath(FILE_PATHS[ files[i] ]);
-        if(!LoadFileOrDir(filePath, files[i], isOriginal))
-        {
-            LOG.write(_("Failed to load %s\n")) % filePath;
-            return false;
-        }
-    }
-
-    return true;
-}
-
-/**
- *  Lädt die "override" lst-files aus den systemweiten und persönlichen verzeichnissen
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::LoadLsts(unsigned int dir)
-{
-    // systemweite lsts laden
-    unsigned int files_count;
-    unsigned int files[2] = {dir, dir + 3};
-
-    if(GetFilePath(FILE_PATHS[dir]) == GetFilePath(FILE_PATHS[dir + 3]))
-        files_count = 1;
-    else
-        files_count = 2;
-
-    return LoadFilesFromArray(files_count, files, false);
+    return bfs::exists(outputFilepath);
 }
 
 /**
@@ -203,198 +257,82 @@ bool Loader::LoadLsts(unsigned int dir)
  */
 bool Loader::LoadSounds()
 {
-    std::string soundLSTPath = GetFilePath(FILE_PATHS[55]);
+    std::string soundLSTPath = RTTRCONFIG.ExpandPath(FILE_PATHS[55]);
+    if(bfs::exists(soundLSTPath))
+    {
+        // Archive might be faulty: Remove if it is and recreate
+        if(!LoadFile(soundLSTPath))
+            bfs::remove(soundLSTPath);
+    }
     // ist die konvertierte sound.lst vorhanden?
     if(!bfs::exists(soundLSTPath))
     {
         // nein, dann konvertieren
-
-        std::stringstream cmdss;
-        cmdss << GetFilePath(FILE_PATHS[57]); // pfad zum sound-converter hinzufügen
-
-        // name anhängen
-#ifdef _WIN32
-        cmdss << "\\sound-convert.exe";
-#else
-        cmdss << "/sound-convert";
-#endif
-
-        // parameter anhängen
-        cmdss << " -s \"";
-        cmdss << GetFilePath(FILE_PATHS[56]); // script
-        cmdss << "\" -f \"";
-        cmdss << GetFilePath(FILE_PATHS[49]); // quelle
-        cmdss << "\" -t \"";
-        cmdss << GetFilePath(FILE_PATHS[55]); // ziel
-        cmdss << "\"";
-
-        std::string cmd = cmdss.str();
-#ifdef _WIN32
-        std::replace(cmd.begin(), cmd.end(), '/', '\\'); // Slash in Backslash verwandeln, sonst will "system" unter win nicht
-#endif // _WIN32
-
-        LOG.write(_("Starting Sound-Converter ..."));
-        if(system(cmd.c_str()) == -1)
+        if(!ConvertSounds(soundLSTPath))
             return false;
-
         // die konvertierte muss nicht extra geladen werden, da sie im override-ordner landet
     }
 
-    // ggf original laden, hier das overriding benutzen wär ladezeitverschwendung
-    if(!boost::filesystem::exists(soundLSTPath))
-    {
-        // existiert nicht
-        if(!LoadFile(GetFilePath(FILE_PATHS[49]), NULL, true))
-            return false;
-    }
+    const std::string oggPath = RTTRCONFIG.ExpandPath(FILE_PATHS[50]);
+    std::vector<std::string> oggFiles = ListDir(oggPath, "ogg");
 
-    std::vector<std::string> oggFiles = ListDir(GetFilePath(FILE_PATHS[50]), "ogg");
-
-    unsigned int i = 0;
+    unsigned i = 0;
     sng_lst.alloc(oggFiles.size());
     for(std::vector<std::string>::iterator it = oggFiles.begin(); it != oggFiles.end(); ++it)
     {
-        libsiedler2::ArchivInfo sng;
-
-        LOG.write(_("Loading \"%s\": ")) % *it;
-        if(libsiedler2::Load(*it, sng) != 0 )
-        {
-            LOG.write(_("failed\n"));
+        libsiedler2::Archiv sng;
+        if(!LoadArchiv(sng, *it))
             return false;
-        }
-        LOG.write(_("finished\n"));
+        sng_lst.set(i++, sng.release(0));
+    }
 
-        sng_lst.setC(i++, *sng.get(0));
+    if(sng_lst.empty())
+    {
+        LOG.write(
+          _("WARNING: Did not find the music files.\n\tYou have to run the updater once or copy the .ogg files manually to \"%1%\" or you "
+            "won't be able to hear the music.\n"))
+          % oggPath;
     }
 
     return true;
 }
-
-/**
- *  sortiert einen string nach Startzahl, Namen oder Länge (in dieser Reihenfolge).
- *  Wird für das Sortieren der Dateien benutzt.
- */
-bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
-{
-    int a, b;
-
-    std::stringstream aa;
-    aa << bfs::path(lhs).filename().string();
-    std::stringstream bb;
-    bb << bfs::path(rhs).filename().string();
-
-    if( !(aa >> a) || !(bb >> b) )
-    {
-        for( std::string::const_iterator lit = lhs.begin(), rit = rhs.begin(); lit != lhs.end() && rit != rhs.end(); ++lit, ++rit )
-            if( tolower( *lit ) < tolower( *rit ) )
-                return true;
-            else if( tolower( *lit ) > tolower( *rit ) )
-                return false;
-        if( lhs.size() < rhs.size() )
-            return true;
-    }
-    else
-    {
-        if(a < b)
-            return true;
-    }
-
-    return false;
-}
-
-/**
- *  zerlegt einen String in Einzelteile
- *  Wird für das richtige Laden der Dateien benutzt.
- */
-std::vector<std::string> Loader::ExplodeString(std::string const& line, const char delim, const unsigned int max)
-{
-    std::istringstream in(line);
-    std::vector<std::string> result;
-    std::string token;
-
-    unsigned int len = 0;
-    while(std::getline(in, token, delim) && result.size() < max - 1)
-    {
-        len += token.size() + 1;
-        result.push_back(token);
-    }
-
-    if(len < in.str().length())
-        result.push_back(in.str().substr(len));
-
-    return result;
-}
-
-
-/**
- *  Lädt die Settings.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::LoadSettings()
-{
-    return LoadFileOrDir(GetFilePath(FILE_PATHS[0]), 0, true);
-}
-
-/**
- *  Speichert die Settings.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::SaveSettings()
-{
-    std::string file = GetFilePath(FILE_PATHS[0]);
-
-    LOG.write(_("Writing \"%s\": ")) % file;
-    fflush(stdout);
-
-    if(libsiedler2::Write(file, *GetInfoN(CONFIG_NAME)) != 0)
-        return false;
-
-    using namespace boost::filesystem;
-    permissions(file, owner_read | owner_write);
-
-    LOG.write(_("finished\n"));
-
-    return true;
-}
-
 
 void Loader::LoadDummyGUIFiles()
 {
     // Palettes
     libsiedler2::ArchivItem_Palette* palette = new libsiedler2::ArchivItem_Palette;
-    files_["colors"].archiv.push(palette);
+    files_["colors"].archiv.pushC(*palette);
+    files_["pal5"].archiv.push(palette);
     // GUI elements
-    libsiedler2::ArchivInfo& resource = files_["resource"].archiv;
+    libsiedler2::Archiv& resource = files_["resource"].archiv;
     resource.alloc(57);
     for(unsigned id = 4; id < 36; id++)
     {
         glArchivItem_Bitmap_RLE* bmp = new glArchivItem_Bitmap_RLE();
-        const uint32_t buffer = SetAlpha(0, 255);
-        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette);
+        libsiedler2::PixelBufferARGB buffer(1, 1);
+        bmp->create(buffer);
         resource.set(id, bmp);
     }
     for(unsigned id = 36; id < 57; id++)
     {
         glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
-        const uint32_t buffer = SetAlpha(0, 255);
-        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette);
+        libsiedler2::PixelBufferARGB buffer(1, 1);
+        bmp->create(buffer);
         resource.set(id, bmp);
     }
-    libsiedler2::ArchivInfo& io = files_["io"].archiv;
+    libsiedler2::Archiv& io = files_["io"].archiv;
     for(unsigned id = 0; id < 264; id++)
     {
         glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
-        const uint32_t buffer = SetAlpha(0, 255);
-        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette);
+        libsiedler2::PixelBufferARGB buffer(1, 1);
+        bmp->create(buffer);
         io.push(bmp);
     }
     // Fonts
-    libsiedler2::ArchivInfo& fonts = files_["outline_fonts"].archiv;
+    libsiedler2::Archiv& fonts = files_["outline_fonts"].archiv;
     fonts.alloc(3);
-    std::vector<uint32_t> buffer(15*16, SetAlpha(0, 255));
-    for(unsigned i=0; i<3; i++)
+    libsiedler2::PixelBufferARGB buffer(15, 16);
+    for(unsigned i = 0; i < 3; i++)
     {
         glArchivItem_Font* font = new glArchivItem_Font();
         const unsigned dx = 9 + i * 3;
@@ -405,7 +343,7 @@ void Loader::LoadDummyGUIFiles()
         for(unsigned id = 0x21; id < 255; id++)
         {
             glArchivItem_Bitmap_Player* bmp = new glArchivItem_Bitmap_Player();
-            bmp->create(dx, dy, reinterpret_cast<const unsigned char*>(&buffer[0]), dx, dy, libsiedler2::FORMAT_RGBA, palette, 0);
+            bmp->create(dx, dy, buffer, palette, 0);
             font->set(id, bmp);
         }
         fonts.set(i, font);
@@ -420,44 +358,67 @@ void Loader::LoadDummyGUIFiles()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
+bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<bool>& nations)
 {
-    RTTR_Assert(gfxset <= LT_WINTERWORLD);
+    if(NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS])
+        AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME/Babylonier", false);
+
     using namespace boost::assign; // Adds the vector += operator
-    std::vector<unsigned int> files;
+    std::vector<unsigned> files;
 
-    files += 26, 44, 45, 86, 92,                             // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
-            58, 59, 60, 61, 62, 63,                          // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
-            35, 36, 37, 38,                                  // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
-            23u + gfxset,                                    // map_?_z.lst
-            20u + gfxset;                                    // tex?.lbm
+    files += 26, 44, 45, 86, 92, // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
+      58, 59, 60, 61, 62, 63,    // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
+      35, 36, 37, 38;            // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
 
-    for(unsigned char i = 0; i < NATIVE_NAT_COUNT; ++i)
+    for(unsigned char i = 0; i < NUM_NATIVE_NATS; ++i)
     {
         // ggf. Völker-Grafiken laden
-        if(nations[i] || (i == NAT_ROMANS && nations[NAT_BABYLONIANS]))
-            files += 27 + i + (gfxset == LT_WINTERWORLD) * NATIVE_NAT_COUNT;
+        if((i < nations.size() && nations[i]) || (i == NAT_ROMANS && NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS]))
+            files.push_back(27 + i + (isWinterGFX ? NUM_NATIVE_NATS : 0));
     }
 
-    lastgfx = 0xFF;
-
-    // Load files, but only once. If they are modified by overrides they will still be loaded again
-    if (!LoadFilesFromArray(files.size(), &files.front(), true))
+    // Load files
+    if(!LoadFilesFromArray(files))
         return false;
 
-    if ((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, true))
+    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
+
+    std::string mapGFXFile = RTTRCONFIG.ExpandPath(mapGfxPath);
+    if(!LoadFile(mapGFXFile, pal5))
         return false;
+    map_gfx = &GetInfoN(boost::algorithm::to_lower_copy(bfs::path(mapGFXFile).stem().string()));
 
-    if(!LoadLsts(96)) // lade systemweite und persönliche lst files
-        return false;
+    isWinterGFX_ = isWinterGFX;
 
-    lastgfx = gfxset;
+    for(unsigned nation = 0; nation < NUM_NATS; ++nation)
+        nation_gfx[nation] = &GetInfoN(NATION_GFXSET_Z[isWinterGFX ? 1 : 0][nation]);
 
-    for (unsigned int nation = 0; nation < NAT_COUNT; ++nation)
-        nation_gfx[nation] = GetInfoN(NATION_GFXSET_Z[lastgfx][nation]);
+    return true;
+}
 
-    map_gfx = GetInfoN(MAP_GFXSET_Z[lastgfx]);
-    tex_gfx = GetInfoN(TEX_GFXSET[lastgfx]);
+bool Loader::LoadOverrideFiles()
+{
+    BOOST_FOREACH(const OverrideFolder& overrideFolder, overrideFolders_)
+    {
+        if(!LoadOverrideDirectory(overrideFolder.path))
+            return false;
+    }
+    return true;
+}
+
+bool Loader::LoadFiles(const std::vector<std::string>& files)
+{
+    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
+    // load the files
+    BOOST_FOREACH(const std::string& curFile, files)
+    {
+        std::string filePath = RTTRCONFIG.ExpandPath(curFile);
+        if(!LoadFile(filePath, pal5))
+        {
+            LOG.write(_("Failed to load %s\n")) % filePath;
+            return false;
+        }
+    }
 
     return true;
 }
@@ -467,18 +428,19 @@ void Loader::fillCaches()
     delete stp;
     stp = new glTexturePacker();
 
-// Animals
-    for (unsigned species = 0; species < SPEC_COUNT; ++species)
+    // Animals
+    for(unsigned species = 0; species < NUM_SPECS; ++species)
     {
-        for (unsigned dir = 0; dir < 6; ++dir)
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            for (unsigned ani_step = 0; ani_step < ANIMALCONSTS[species].animation_steps; ++ani_step)
+            for(unsigned ani_step = 0; ani_step < ANIMALCONSTS[species].animation_steps; ++ani_step)
             {
                 glSmartBitmap& bmp = animal_cache[species][dir][ani_step];
 
                 bmp.reset();
 
-                bmp.add(GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ( (dir + 3) % 6) + ani_step));
+                bmp.add(
+                  GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ((dir + 3) % 6) + ani_step));
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
@@ -498,11 +460,11 @@ void Loader::fillCaches()
 
         bmp.reset();
 
-        if (ANIMALCONSTS[species].dead_id)
+        if(ANIMALCONSTS[species].dead_id)
         {
             bmp.add(GetMapImageN(ANIMALCONSTS[species].dead_id));
 
-            if (ANIMALCONSTS[species].shadow_dead_id)
+            if(ANIMALCONSTS[species].shadow_dead_id)
             {
                 bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
             }
@@ -513,10 +475,10 @@ void Loader::fillCaches()
 
     glArchivItem_Bob* bob_jobs = GetBobN("jobs");
 
-    for (unsigned nation = 0; nation < NAT_COUNT; ++nation)
+    for(unsigned nation = 0; nation < NUM_NATS; ++nation)
     {
-// BUILDINGS
-        for (unsigned type = 0; type < BUILDING_TYPES_COUNT; ++type)
+        // BUILDINGS
+        for(unsigned type = 0; type < NUM_BUILDING_TYPES; ++type)
         {
             glSmartBitmap& bmp = building_cache[nation][type][0];
             glSmartBitmap& skel = building_cache[nation][type][1];
@@ -524,17 +486,16 @@ void Loader::fillCaches()
             bmp.reset();
             skel.reset();
 
-            if (type == BLD_CHARBURNER)
+            if(type == BLD_CHARBURNER)
             {
                 unsigned id = nation * 8;
 
-                bmp.add(GetImageN("charburner", id + ((lastgfx == LT_WINTERWORLD) ? 6 : 1)));
+                bmp.add(GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1)));
                 bmp.addShadow(GetImageN("charburner", id + 2));
 
                 skel.add(GetImageN("charburner", id + 3));
                 skel.addShadow(GetImageN("charburner", id + 4));
-            }
-            else
+            } else
             {
                 bmp.add(GetNationImage(nation, 250 + 5 * type));
                 bmp.addShadow(GetNationImage(nation, 250 + 5 * type + 1));
@@ -554,10 +515,10 @@ void Loader::fillCaches()
             stp->add(skel);
         }
 
-// FLAGS
-        for (unsigned type = 0; type < 3; ++type)
+        // FLAGS
+        for(unsigned type = 0; type < 3; ++type)
         {
-            for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+            for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {
                 // Flaggentyp berücksichtigen
                 int nr = ani_step + 100 + 20 * type;
@@ -573,12 +534,12 @@ void Loader::fillCaches()
             }
         }
 
-// Bobs from jobs.bob. Job = JOB_TYPES_COUNT is used for fat carriers. See below.
-        for (unsigned job = 0; job < JOB_TYPES_COUNT + 1; ++job)
+        // Bobs from jobs.bob. Job = NUM_JOB_TYPES is used for fat carriers. See below.
+        for(unsigned job = 0; job < NUM_JOB_TYPES + 1; ++job)
         {
-            for (unsigned dir = 0; dir < 6; ++dir)
+            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
-                for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+                for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
                     bool fat;
                     unsigned id;
@@ -588,23 +549,21 @@ void Loader::fillCaches()
 
                     bmp.reset();
 
-                    if (job == JOB_TYPES_COUNT) // used for fat carrier, so that we do not need an additional sub-array
+                    if(job == NUM_JOB_TYPES) // used for fat carrier, so that we do not need an additional sub-array
                     {
                         fat = true;
                         id = 0;
-                    }
-                    else
+                    } else
                     {
                         id = JOB_CONSTS[job].jobs_bob_id;
                         fat = JOB_CONSTS[job].fat;
 
-                        if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
+                        if((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
                         {
-                            if (nation < NATIVE_NAT_COUNT)
+                            if(nation < NUM_NATIVE_NATS)
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
-                            }
-                            else if (nation == NAT_BABYLONIANS)
+                            } else if(nation == NAT_BABYLONIANS) //-V547
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
                                 /* TODO: change this once we have own job pictures for babylonians
@@ -612,17 +571,17 @@ void Loader::fillCaches()
                                                                 overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
 
                                                                 //8 Frames * 6 Directions * 6 Types
-                                                                overlayOffset += (nation - NATIVE_NAT_COUNT) * (8 * 6 * 6);
+                                                                overlayOffset += (nation - NUM_NATIVE_NATS) * (8 * 6 * 6);
                                 */
-                            }else
+                            } else
                                 throw std::runtime_error("Wrong nation");
                         }
                     }
 
-                    unsigned int good = id * 96 + ani_step * 12 + ( (dir + 3) % 6 ) + fat * 6;
-                    unsigned int body = fat * 48 + ( (dir + 3) % 6 ) * 8 + ani_step;
+                    unsigned good = id * 96 + ani_step * 12 + ((dir + 3) % 6) + fat * 6;
+                    unsigned body = fat * 48 + ((dir + 3) % 6) * 8 + ani_step;
 
-                    if (bob_jobs->getLink(good) == 92)
+                    if(bob_jobs->getLink(good) == 92)
                     {
                         good -= fat * 6;
                         body -= fat * 48;
@@ -630,7 +589,7 @@ void Loader::fillCaches()
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(body)));
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(overlayOffset + bob_jobs->getLink(good))));
-                    bmp.addShadow(GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+                    bmp.addShadow(GetMapImageN(900 + ((dir + 3) % 6) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -647,7 +606,7 @@ void Loader::fillCaches()
         stp->add(bmp);
     }
 
-// BUILDING FLAG ANIMATION (for military buildings)
+    // BUILDING FLAG ANIMATION (for military buildings)
     /*
         for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
@@ -665,10 +624,10 @@ void Loader::fillCaches()
             stp->add(bmp);
         }
     */
-// Trees
-    for (unsigned type = 0; type < 9; ++type)
+    // Trees
+    for(unsigned type = 0; type < 9; ++type)
     {
-        for (unsigned ani_step = 0; ani_step < 15; ++ani_step)
+        for(unsigned ani_step = 0; ani_step < 15; ++ani_step)
         {
             glSmartBitmap& bmp = tree_cache[type][ani_step];
 
@@ -681,10 +640,10 @@ void Loader::fillCaches()
         }
     }
 
-// Granite
-    for (unsigned type = 0; type < 2; ++type)
+    // Granite
+    for(unsigned type = 0; type < 2; ++type)
     {
-        for (unsigned size = 0; size < 6; ++size)
+        for(unsigned size = 0; size < 6; ++size)
         {
             glSmartBitmap& bmp = granite_cache[type][size];
 
@@ -697,10 +656,10 @@ void Loader::fillCaches()
         }
     }
 
-// Grainfields
-    for (unsigned type = 0; type < 2; ++type)
+    // Grainfields
+    for(unsigned type = 0; type < 2; ++type)
     {
-        for (unsigned size = 0; size < 4; ++size)
+        for(unsigned size = 0; size < 4; ++size)
         {
             glSmartBitmap& bmp = grainfield_cache[type][size];
 
@@ -713,10 +672,10 @@ void Loader::fillCaches()
         }
     }
 
-// Donkeys
-    for (unsigned dir = 0; dir < 6; ++dir)
+    // Donkeys
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+        for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
             glSmartBitmap& bmp = donkey_cache[dir][ani_step];
 
@@ -729,10 +688,10 @@ void Loader::fillCaches()
         }
     }
 
-// Boats
-    for (unsigned dir = 0; dir < 6; ++dir)
+    // Boats
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+        for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
             glSmartBitmap& bmp = boat_cache[dir][ani_step];
 
@@ -745,43 +704,35 @@ void Loader::fillCaches()
         }
     }
 
-// carrier_cache[ware][direction][animation_step][fat]
+    // carrier_cache[ware][direction][animation_step][fat]
     glArchivItem_Bob* bob_carrier = GetBobN("carrier");
 
-    for (unsigned ware = 0; ware < WARE_TYPES_COUNT; ++ware)
+    for(unsigned ware = 0; ware < NUM_WARE_TYPES; ++ware)
     {
-        for (unsigned dir = 0; dir < 6; ++dir)
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+            for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {
-                for (unsigned fat = 0; fat < 2; ++fat)
+                for(unsigned fat = 0; fat < 2; ++fat)
                 {
-                    unsigned id;
                     glSmartBitmap& bmp = carrier_cache[ware][dir][ani_step][fat];
-
                     bmp.reset();
 
-                    if (ware == GD_SHIELDJAPANESE)
-                    {
+                    unsigned id;
+                    // Japanese shield is missing
+                    if(ware == GD_SHIELDJAPANESE)
                         id = GD_SHIELDROMANS;
-                    }
                     else
-                    {
                         id = ware;
-                    }
 
-                    unsigned int good = id * 96 + ani_step * 12 + ( (dir + 3) % 6 ) + fat * 6;
-                    unsigned int body = fat * 48 + ( (dir + 3) % 6 ) * 8 + ani_step;
+                    unsigned imgDir = (dir + 3) % 6;
 
-                    /*if(bob_jobs->getLink(good) == 92)
-                    {
-                        good -= fat*6;
-                        body -= fat*48;
-                    }*/
+                    unsigned good = id * 96 + ani_step * 12 + fat * 6 + imgDir;
+                    unsigned body = fat * 48 + imgDir * 8 + ani_step;
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(body)));
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(96 + bob_carrier->getLink(good))));
-                    bmp.addShadow(GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+                    bmp.addShadow(GetMapImageN(900 + imgDir * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -789,7 +740,7 @@ void Loader::fillCaches()
         }
     }
 
-// gateway animation :)
+    // gateway animation :)
     {
         const unsigned char start_index = 248;
         const unsigned char color_count = 4;
@@ -798,7 +749,7 @@ void Loader::fillCaches()
         glArchivItem_Bitmap* image = GetMapImageN(561);
         glArchivItem_Bitmap* shadow = GetMapImageN(661);
 
-        if ((image) && (shadow) && (palette))
+        if((image) && (shadow) && (palette))
         {
             unsigned short width = image->getWidth();
             unsigned short height = image->getHeight();
@@ -813,9 +764,9 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                for(unsigned int x = 0; x < width; ++x)
+                for(unsigned x = 0; x < width; ++x)
                 {
-                    for(unsigned int y = 0; y < height; ++y)
+                    for(unsigned y = 0; y < height; ++y)
                     {
                         if(buffer[y * width + x] >= start_index && buffer[y * width + x] < start_index + color_count)
                         {
@@ -835,8 +786,7 @@ void Loader::fillCaches()
 
                 stp->add(bmp);
             }
-        }
-        else
+        } else
         {
             for(unsigned char i = 0; i < color_count; ++i)
             {
@@ -847,7 +797,7 @@ void Loader::fillCaches()
         }
     }
 
-    if (SETTINGS.video.shared_textures)
+    if(SETTINGS.video.shared_textures)
     {
         // generate mega texture
         stp->pack();
@@ -856,310 +806,157 @@ void Loader::fillCaches()
 }
 
 /**
- *  Lädt Dateien von Addons.
- *
- *  @param[in] id die Addon ID
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::LoadFilesFromAddon(const AddonId id)
-{
-    std::stringstream s;
-    s << GetFilePath(FILE_PATHS[96]) << "Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id << "/";
-
-    return LoadFileOrDir(s.str(), 96, false);
-}
-
-void Loader::ClearTerrainTextures()
-{
-    for(std::map<TerrainType, glArchivItem_Bitmap*>::iterator it = terrainTextures.begin(); it != terrainTextures.end(); ++it)
-        delete it->second;
-    for(std::map<TerrainType, libsiedler2::ArchivInfo*>::iterator it = terrainTexturesAnim.begin(); it != terrainTexturesAnim.end(); ++it)
-        delete it->second;
-    terrainTextures.clear();
-    terrainTexturesAnim.clear();
-    borders.clear();
-    roads.clear();
-    roads_points.clear();
-}
-
-/**
- *  zerschneidet die Terraintexturen.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::CreateTerrainTextures()
-{
-    RTTR_Assert(lastgfx <= 2);
-    ClearTerrainTextures();
-
-    // Ränder
-    Rect rec_raender[5] =
-    {
-        Rect(192, 176, 64, 16), // Schnee
-        Rect(192, 192, 64, 16), // Berg
-        Rect(192, 208, 64, 16), // Wste
-        Rect(192, 224, 64, 16), // Wiese
-        Rect(192, 240, 64, 16) // Wasser
-    };
-
-    // Wege
-    Rect rec_roads[8] =
-    {
-        Rect(192, 0, 50, 16),
-        Rect(192, 16, 50, 16),
-        Rect(192, 32, 50, 16),
-        Rect(192, 160, 50, 16),
-
-        Rect(242, 0, 50, 16),
-        Rect(242, 16, 50, 16),
-        Rect(242, 32, 50, 16),
-        Rect(242, 160, 50, 16),
-    };
-
-    for(unsigned char i=0; i<TT_COUNT; ++i)
-    {
-        TerrainType t = TerrainType(i);
-        if(TerrainData::IsAnimated(t))
-            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t), TerrainData::GetStartColor(t), TerrainData::GetShiftColor(t));
-        else
-            terrainTextures[t] = ExtractTexture(TerrainData::GetPosInTexture(t));
-    }
-
-    // die 5 Ränder
-    for(unsigned char i = 0; i < 5; ++i)
-        borders.push(ExtractTexture(rec_raender[i]));
-
-    // Wege
-    for(unsigned char i = 0; i < 4; ++i)
-    {
-        roads.push(ExtractTexture(rec_roads[i]));
-        roads_points.push(ExtractTexture(rec_roads[4 + i]));
-    }
-
-    return true;
-}
-
-glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned int nr)
-{
-    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.get(nr));
-}
-
-glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string& name)
-{
-    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.find(name));
-}
-
-glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsigned int nr)
-{
-    return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv.get(nr));
-}
-
-glArchivItem_Font* Loader::GetFontN(const std::string& file, unsigned int nr)
-{
-    return dynamic_cast<glArchivItem_Font*>(files_[file].archiv.get(nr));
-}
-
-libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, unsigned int nr)
-{
-    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv.get(nr));
-}
-
-glArchivItem_Sound* Loader::GetSoundN(const std::string& file, unsigned int nr)
-{
-    return dynamic_cast<glArchivItem_Sound*>(files_[file].archiv.get(nr));
-}
-
-std::string Loader::GetTextN(const std::string& file, unsigned int nr)
-{
-    libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv.get(nr)); return archiv ? archiv->getText() : "text missing";
-}
-
-libsiedler2::ArchivInfo* Loader::GetInfoN(const std::string& file)
-{
-    return &files_[file].archiv;
-}
-
-glArchivItem_Bob* Loader::GetBobN(const std::string& file)
-{
-    return dynamic_cast<glArchivItem_Bob*>(files_[file].archiv.get(0));
-}
-
-glArchivItem_BitmapBase* Loader::GetNationImageN(unsigned int nation, unsigned int nr)
-{
-    return dynamic_cast<glArchivItem_BitmapBase*>(nation_gfx[nation]->get(nr));
-}
-
-glArchivItem_Bitmap* Loader::GetNationImage(unsigned int nation, unsigned int nr)
-{
-    glArchivItem_BitmapBase* bmp = GetNationImageN(nation, nr);
-    RTTR_Assert(bmp == NULL || dynamic_cast<glArchivItem_Bitmap*>(bmp));
-    return static_cast<glArchivItem_Bitmap*>(bmp);
-}
-
-glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(unsigned int nation, unsigned int nr)
-{
-    glArchivItem_BitmapBase* bmp = GetNationImageN(nation, nr);
-    RTTR_Assert(bmp == NULL || dynamic_cast<glArchivItem_Bitmap_Player*>(bmp));
-    return static_cast<glArchivItem_Bitmap_Player*>(bmp);
-}
-
-glArchivItem_Bitmap* Loader::GetMapImageN(unsigned int nr)
-{
-    return convertChecked<glArchivItem_Bitmap*>(map_gfx->get(nr));
-}
-
-glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned int nr)
-{
-    return convertChecked<glArchivItem_Bitmap_Player*>(map_gfx->get(nr));
-}
-
-glArchivItem_Bitmap* Loader::GetTexImageN(unsigned int nr)
-{
-    return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr));
-}
-
-libsiedler2::ArchivItem_Palette* Loader::GetTexPaletteN(unsigned int nr)
-{
-    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(tex_gfx->get(nr));
-}
-
-libsiedler2::ArchivItem_Ini* Loader::GetSettingsIniN(const std::string& name)
-{
-    return static_cast<libsiedler2::ArchivItem_Ini*>(GetInfoN(CONFIG_NAME)->find(name));
-}
-
-glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame/* = 0*/)
-{
-    if(TerrainData::IsAnimated(t))
-    {
-        libsiedler2::ArchivInfo* archive = terrainTexturesAnim[t];
-        if(!archive)
-            throw std::runtime_error("Invalid terrain texture requested");
-        return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame));
-    }else
-    {
-        glArchivItem_Bitmap* bmp = terrainTextures[t];
-        if(!bmp)
-            throw std::runtime_error("Invalid terrain texture requested");
-        return *bmp;
-    }
-}
-
-/**
  *  Extrahiert eine Textur aus den Daten.
  */
-glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
+glArchivItem_Bitmap* Loader::ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect)
 {
-    libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
-    glArchivItem_Bitmap* image = GetTexImageN(0);
+    Extent texSize = rect.getSize();
+    if(texSize.x == 0 && rect.right < srcImg.getWidth())
+        texSize.x = srcImg.getWidth() - rect.right;
+    if(texSize.y == 0 && rect.bottom < srcImg.getHeight())
+        texSize.y = srcImg.getHeight() - rect.bottom;
+    libsiedler2::PixelBufferPaletted buffer(texSize.x, texSize.y);
 
-    unsigned short width = rect.right - rect.left;
-    unsigned short height = rect.bottom - rect.top;
-
-    std::vector<unsigned char> buffer(width * height, libsiedler2::TRANSPARENT_INDEX);
-
-    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
-    for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
-    {
-        if(*it == 0)
-            *it = libsiedler2::TRANSPARENT_INDEX;
-    }
+    if(int ec = srcImg.print(buffer, NULL, 0, 0, rect.left, rect.top))
+        throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
 
     glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
-    bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
-    bitmap->setPalette(palette);
-    bitmap->setFormat(libsiedler2::FORMAT_PALETTED);
+    if(int ec = bitmap->create(buffer, srcImg.getPalette()))
+    {
+        delete bitmap;
+        throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
+    }
     return bitmap;
 }
 
 /**
  *  Extrahiert mehrere (animierte) Texturen aus den Daten.
  */
-libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index, uint32_t colorShift)
+libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t start_index,
+                                                    uint8_t color_count)
 {
-    libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
-    glArchivItem_Bitmap* image = GetTexImageN(0);
+    Extent texSize = rect.getSize();
+    if(texSize.x == 0 && rect.right < srcImg.getWidth())
+        texSize.x = srcImg.getWidth() - rect.right;
+    if(texSize.y == 0 && rect.bottom < srcImg.getHeight())
+        texSize.y = srcImg.getHeight() - rect.bottom;
+    libsiedler2::PixelBufferPaletted buffer(texSize.x, texSize.y);
 
-    unsigned short width = rect.right - rect.left;
-    unsigned short height = rect.bottom - rect.top;
+    srcImg.print(buffer, NULL, 0, 0, rect.left, rect.top);
 
-    // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
-    std::vector<unsigned char> buffer(width * height, start_index);
-    std::vector<uint32_t> shiftBuffer(colorShift ? buffer.size() : 0);
-
-    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
-
-    glArchivItem_Bitmap_Raw bitmap;
-    bitmap.setPalette(palette);
-    bitmap.setFormat(libsiedler2::FORMAT_RGBA);
-
-    libsiedler2::ArchivInfo* destination = new libsiedler2::ArchivInfo();
-    for(unsigned char i = 0; i < color_count; ++i)
+    boost::interprocess::unique_ptr<libsiedler2::Archiv, Deleter<libsiedler2::Archiv> > destination(new libsiedler2::Archiv());
+    libsiedler2::ArchivItem_PaletteAnimation anim;
+    anim.isActive = true;
+    anim.moveUp = false;
+    anim.firstClr = start_index;
+    anim.lastClr = start_index + color_count - 1u;
+    libsiedler2::ArchivItem_Palette* curPal = NULL;
+    for(unsigned i = 0; i < color_count; ++i)
     {
-        for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
-        {
-            if(*it >= start_index && *it < start_index + color_count)
-            {
-                if(++*it >= start_index + color_count)
-                    *it = start_index;
-            }
-        }
+        if(i == 0)
+            curPal = srcImg.getPalette()->clone();
+        else
+            curPal = anim.apply(*curPal);
+        boost::interprocess::unique_ptr<glArchivItem_Bitmap_Raw, Deleter<glArchivItem_Bitmap> > bitmap(new glArchivItem_Bitmap_Raw);
 
-        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED);
-        if(colorShift)
-        {
-            bitmap.print(reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_RGBA);
-            for(std::vector<uint32_t>::iterator it = shiftBuffer.begin(); it != shiftBuffer.end(); ++it)
-            {
-                unsigned a = GetAlpha(*it) + GetAlpha(colorShift);
-                unsigned r = GetRed(*it) + GetRed(colorShift);
-                unsigned g = GetGreen(*it) + GetGreen(colorShift);
-                unsigned b = GetBlue(*it) + GetBlue(colorShift);
-                if(a > 0xFF)
-                    a -= 0xFF;
-                if(r > 0xFF)
-                    r -= 0xFF;
-                if(g > 0xFF)
-                    g -= 0xFF;
-                if(b > 0xFF)
-                    b -= 0xFF;
-                *it = MakeColor(a, r, g, b);
-            }
-            bitmap.create(width, height, reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_RGBA);
-        }
+        bitmap->setPalette(curPal);
 
-        destination->pushC(bitmap);
+        if(int ec = bitmap->create(buffer))
+            throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
+        destination->push(bitmap.release());
     }
-    return destination;
+    return destination.release();
+}
+
+std::vector<std::string> Loader::GetFilesToLoad(const std::string& filepath)
+{
+    std::vector<std::string> result;
+    result.push_back(filepath);
+    const std::string filename = bfs::path(filepath).filename().string();
+    BOOST_FOREACH(const OverrideFolder& overrideFolder, overrideFolders_)
+    {
+        BOOST_FOREACH(const std::string& overrideFile, overrideFolder.files)
+        {
+            if(overrideFile == filename)
+            {
+                const std::string overideFilepath = (bfs::path(overrideFolder.path) / overrideFile).string();
+                if(!helpers::contains(result, overideFilepath))
+                    result.push_back(overideFilepath);
+                break;
+            }
+        }
+    }
+    return result;
+}
+
+bool Loader::MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archiv& otherArchiv)
+{
+    if(targetArchiv.size() < otherArchiv.size())
+        targetArchiv.alloc_inc(otherArchiv.size() - targetArchiv.size());
+    for(unsigned i = 0; i < otherArchiv.size(); i++)
+    {
+        // Skip empty entries
+        if(!otherArchiv[i])
+            continue;
+        // If target entry is empty, just move the new one
+        if(!targetArchiv[i])
+            targetArchiv.set(i, otherArchiv.release(i));
+        else
+        {
+            libsiedler2::Archiv* subArchiv = dynamic_cast<libsiedler2::Archiv*>(targetArchiv[i]);
+            if(subArchiv)
+            {
+                // We have a sub-archiv -> Merge
+                libsiedler2::Archiv* otherSubArchiv = dynamic_cast<libsiedler2::Archiv*>(otherArchiv[i]);
+                if(!otherSubArchiv)
+                {
+                    LOG.write(_("Failed to merge entry %1%. Archive expected!\n")) % i;
+                    return false;
+                }
+                if(!MergeArchives(*subArchiv, *otherSubArchiv))
+                    return false;
+            } else
+                targetArchiv.set(i, otherArchiv.release(i)); // Just replace
+        }
+    }
+    return true;
+}
+
+bool Loader::LoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette)
+{
+    archiv.clear();
+    const std::vector<std::string> filesToLoad = GetFilesToLoad(pfad);
+    BOOST_FOREACH(const std::string& curFilepath, filesToLoad)
+    {
+        libsiedler2::Archiv newEntries;
+        if(!LoadSingleFile(newEntries, curFilepath, palette))
+            return false;
+        if(!MergeArchives(archiv, newEntries))
+            return false;
+    }
+    return true;
 }
 
 /**
- *  @brief Lädt eine Datei in ein ArchivInfo.
+ *  @brief
  *
- *  @param[in] pfad    Der Dateipfad
- *  @param[in] palette (falls benötigt) die Palette.
- *  @param[in] archiv  Das Zielarchivinfo.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
+ *  @param pfad Path to file or directory
+ *  @param palette Palette to use for possible graphic files
  */
-bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv)
+bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isFromOverrideDir)
 {
-    unsigned int ladezeit = VIDEODRIVER.GetTickCount();
+    std::string lowerPath = boost::algorithm::to_lower_copy(pfad);
+    std::string name = bfs::path(lowerPath).filename().stem().string();
 
-    std::string file = GetFilePath(pfad);
-
-    LOG.write(_("Loading \"%s\": ")) % file;
-    fflush(stdout);
-
-    if(libsiedler2::Load(file, archiv, palette) != 0)
+    FileEntry& entry = files_[name];
+    // Load if: 1. Not loaded
+    //          2. archive content changed BUT we are not loading an override file or the file wasn't loaded since the last override change
+    if(entry.archiv.empty() || (entry.filesUsed != GetFilesToLoad(pfad) && (!isFromOverrideDir || !entry.loadedAfterOverrideChange)))
     {
-        LOG.write(_("failed\n"));
-        return false;
+        if(!LoadFile(entry.archiv, pfad, palette))
+            return false;
+        entry.loadedAfterOverrideChange = true;
     }
-
-    LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - ladezeit);
-
     return true;
 }
 
@@ -1170,7 +967,7 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
  *  @param palette Palette to use for possible graphic files
  *  @param to Archtive to write to
  */
-bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& to)
+bool Loader::LoadSingleFile(libsiedler2::Archiv& to, const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette)
 {
     if(filePath.at(0) == '~')
         throw std::logic_error("You must use resolved pathes: " + filePath);
@@ -1181,7 +978,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
         return false;
     }
     if(boost::filesystem::is_regular_file(filePath))
-        return LoadArchiv(filePath, palette, to);
+        return LoadArchiv(to, filePath, palette);
     if(!boost::filesystem::is_directory(filePath))
     {
         LOG.write(_("Could not determine type of path %s\n")) % filePath;
@@ -1189,212 +986,91 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
     }
 
     LOG.write(_("Loading directory %s\n")) % filePath;
-    std::vector<std::string> lst = ListDir(filePath, "bmp");
-    lst = ListDir(filePath, "txt", false, &lst);
-    lst = ListDir(filePath, "ger", false, &lst);
-    lst = ListDir(filePath, "eng", false, &lst);
-    lst = ListDir(filePath, "fon", false, &lst);
-    lst = ListDir(filePath, "empty", false, &lst);
-
-    std::sort(lst.begin(), lst.end(), SortFilesHelper);
-
-    std::vector<unsigned char> buffer(1000 * 1000 * 4);
-    for(std::vector<std::string>::iterator itFile = lst.begin(); itFile != lst.end(); ++itFile)
+    unsigned startTime = VIDEODRIVER.GetTickCount();
+    std::vector<libsiedler2::FileEntry> files = libsiedler2::ReadFolderInfo(filePath);
+    LOG.write(_("  Loading %1% entries: ")) % files.size();
+    if(int ec = libsiedler2::LoadFolder(files, to, palette))
     {
-        // read file number, to set the index correctly
-        const std::string filename = bfs::path(*itFile).filename().string();
-        std::stringstream nrs;
-        int nr = -1;
-        nrs << filename;
-        if(! (nrs >> nr) )
-            nr = -1;
-
-        // Dateiname zerlegen
-        std::vector<std::string> wf = ExplodeString(*itFile, '.');
-
-        libsiedler2::BOBTYPES bobtype = libsiedler2::BOBTYPE_BITMAP_RAW;
-        short nx = 0;
-        short ny = 0;
-        unsigned char dx = 0;
-        unsigned char dy = 0;
-        libsiedler2::ArchivItem* item = NULL;
-
-        // Common
-        for(std::vector<std::string>::iterator it = wf.begin(); it != wf.end(); ++it)
-        {
-            if(*it == "rle")
-                bobtype = libsiedler2::BOBTYPE_BITMAP_RLE;
-            else if(*it == "player")
-                bobtype = libsiedler2::BOBTYPE_BITMAP_PLAYER;
-            else if(*it == "shadow")
-                bobtype = libsiedler2::BOBTYPE_BITMAP_SHADOW;
-
-            else if(it->substr(0, 2) == "nx")
-                nx = atoi(it->substr(2).c_str());
-            else if(it->substr(0, 2) == "ny")
-                ny = atoi(it->substr(2).c_str());
-            else if(it->substr(0, 2) == "dx")
-                dx = atoi(it->substr(2).c_str());
-            else if(it->substr(0, 2) == "dy")
-                dy = atoi(it->substr(2).c_str());
-        }
-
-        if( wf.back() == "empty" ) // Placeholder
-        {
-            LOG.write(_("Skipping %s\n")) % *itFile;
-            to.alloc_inc(1);
-            continue;
-        }else if( wf.back() == "bmp" ) // Bitmap
-        {
-            libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *itFile, palette, temp ) )
-                return false;
-
-            // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
-
-            glArchivItem_Bitmap* in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
-            glArchivItem_BitmapBase* out = dynamic_cast<glArchivItem_BitmapBase*>(GlAllocator().create(bobtype));
-
-            if(!out)
-            {
-                LOG.write("unbekannter bobtype: %d\n") % bobtype;
-                return false;
-            }
-
-            out->setName(filename);
-            out->setNx(nx);
-            out->setNy(ny);
-
-            std::fill(buffer.begin(), buffer.end(), 0);
-            in->print(&buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
-
-            switch(bobtype)
-            {
-                case libsiedler2::BOBTYPE_BITMAP_RLE:
-                case libsiedler2::BOBTYPE_BITMAP_SHADOW:
-                case libsiedler2::BOBTYPE_BITMAP_RAW:
-                {
-                    dynamic_cast<glArchivItem_Bitmap*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
-                } break;
-                case libsiedler2::BOBTYPE_BITMAP_PLAYER:
-                {
-                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
-                } break;
-                default:
-                    throw std::logic_error("Invalid Bitmap type");
-            }
-
-            item = out;
-        }else if( (wf.back() == "bbm") || (wf.back() == "act") ) // Palettes
-        {
-            libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *itFile, palette, temp ) )
-                return false;
-            item = GlAllocator().clone(*temp.get(0));
-        }else if( wf.back() == "fon" ) // Font
-        {
-            glArchivItem_Font* font = new glArchivItem_Font();
-            font->setName(filename);
-            font->setDx(dx);
-            font->setDy(dy);
-
-            if(!LoadFile(*itFile, palette, *font))
-                return false;
-            else
-                delete font;
-
-            item = font;
-        }
-
-        if(item)
-        {
-            // had the filename a number? then set it to the corresponding item.
-            if(nr >= 0)
-            {
-                if(nr >= (int)to.size())
-                    to.alloc_inc(nr - to.size() + 1);
-                to.set(nr, item);
-            }
-            else
-                to.push(item);
-        }
+        LOG.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
+        return false;
     }
+    LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - startTime);
 
     return true;
 }
 
 /**
- *  @brief
+ *  @brief Lädt eine Datei in ein Archiv.
  *
- *  @param pfad Path to file or directory
- *  @param palette Palette to use for possible graphic files
- *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
+ *  @param[in] pfad    Der Dateipfad
+ *  @param[in] palette (falls benötigt) die Palette.
+ *  @param[in] archiv  Das Zielarchivinfo.
+ *
+ *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isOriginal)
+bool Loader::LoadArchiv(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette)
 {
-    std::string lowerPath = pfad;
-    std::transform( lowerPath.begin(), lowerPath.end(), lowerPath.begin(), tolower );
+    unsigned ladezeit = VIDEODRIVER.GetTickCount();
 
-    boost::filesystem::path filePath(lowerPath);
-    boost::filesystem::path fileName = filePath.filename();
-    std::string name = fileName.stem().string();
+    std::string file = RTTRCONFIG.ExpandPath(pfad);
 
-    FileEntry& entry = files_[name];
-    bool isLoaded = entry.archiv.size() != 0;
-    if(isLoaded && entry.hasOverrides && isOriginal)
+    LOG.write(_("Loading \"%s\": ")) % file;
+    fflush(stdout);
+
+    if(int ec = libsiedler2::Load(file, archiv, palette))
     {
-        // We are loading the original file which was already loaded but modified --> Clear it to reload
-        entry.archiv.clear();
-        isLoaded = false;
-    }
-    // If the file is already loaded and we are not loading a override -> exit
-    if(isLoaded && isOriginal)
-        return true;
-
-    if(!isLoaded){
-        entry.hasOverrides = !isOriginal;
-        return LoadFile(pfad, palette, entry.archiv);
-    }
-
-    // haben wir eine override file? dann nicht-leere items überschreiben
-    libsiedler2::ArchivInfo newEntries;
-    if(!LoadFile(pfad, palette, newEntries))
+        LOG.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
         return false;
-
-#ifndef NDEBUG
-    LOG.write(_("Replacing entries of previously loaded file '%s'\n")) % name;
-#endif // !NDEBUG
-
-    libsiedler2::ArchivInfo* existing = GetInfoN(name);
-    // *.bob archives have exactly 1 entry which is a 'folder' of the actual entries
-    // An overwrite can be a (real) folder with those entries and we want to put them into that 'folder'
-    // So we check if the new archiv is a folder or an archiv by checking if it contains only 1 BOB entry
-    if(fileName.extension() == ".bob" && !(newEntries.size() == 1 && newEntries.get(0)->getBobType() == libsiedler2::BOBTYPE_BOB))
-    {
-        existing = dynamic_cast<libsiedler2::ArchivInfo*>(existing->get(0));
-        if(!existing)
-        {
-            LOG.write(_("Error while replacing a BOB file\n"));
-            return false;
-        }
     }
 
-    if(newEntries.size() > existing->size())
-        existing->alloc_inc(newEntries.size() - existing->size());
-
-    for(unsigned int i = 0; i < newEntries.size(); ++i)
-    {
-        if(newEntries.get(i))
-        {
-#ifndef NDEBUG
-            LOG.write(_("Replacing entry %d with %s\n")) % i % newEntries.get(i)->getName();
-#endif // !NDEBUG
-            existing->setC(i, *newEntries.get(i));
-        }
-    }
-
-    // Tell the system that we used overrides
-    entry.hasOverrides = true;
+    LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - ladezeit);
 
     return true;
+}
+
+bool Loader::LoadOverrideDirectory(const std::string& path)
+{
+    if(!bfs::is_directory(path))
+    {
+        LOG.write(_("Directory does not exist: %s\n")) % path;
+        return false;
+    }
+
+    // yes, load all files in the directory
+    unsigned ladezeit = VIDEODRIVER.GetTickCount();
+
+    LOG.write(_("Loading LST,LBM,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % RTTRCONFIG.ExpandPath(path);
+
+    std::vector<std::string> filesAndFolders = ListDir(path, "lst", true);
+    filesAndFolders = ListDir(path, "lbm", true, &filesAndFolders);
+    filesAndFolders = ListDir(path, "bob", true, &filesAndFolders);
+    filesAndFolders = ListDir(path, "idx", true, &filesAndFolders);
+    filesAndFolders = ListDir(path, "bmp", true, &filesAndFolders);
+    filesAndFolders = ListDir(path, "txt", true, &filesAndFolders);
+    filesAndFolders = ListDir(path, "ger", true, &filesAndFolders);
+    filesAndFolders = ListDir(path, "eng", true, &filesAndFolders);
+    filesAndFolders = ListDir(path, "ini", true, &filesAndFolders);
+
+    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
+    BOOST_FOREACH(const std::string& i, filesAndFolders)
+    {
+        if(!LoadFile(i, pal5, true))
+            return false;
+    }
+    LOG.write(_("finished in %ums\n")) % (VIDEODRIVER.GetTickCount() - ladezeit);
+    return true;
+}
+
+/**
+ *  Lädt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
+ *
+ *  @return @p true bei Erfolg, @p false bei Fehler.
+ */
+bool Loader::LoadFilesFromArray(const std::vector<unsigned>& files)
+{
+    std::vector<std::string> sFiles;
+    sFiles.reserve(files.size());
+    BOOST_FOREACH(unsigned curFileIdx, files)
+        sFiles.push_back(FILE_PATHS[curFileIdx]);
+    return LoadFiles(sFiles);
 }

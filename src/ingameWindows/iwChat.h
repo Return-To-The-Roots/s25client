@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,20 +21,25 @@
 
 #include "IngameWindow.h"
 
+class IChatCmdListener
+{
+public:
+    virtual void OnChatCommand(const std::string& cmd) = 0;
+};
+
 class iwChat : public IngameWindow
 {
-    private:
-        /// Chat-Destination auch merken, wenn das Fenster zugegangen ist
-        static unsigned char chat_dest;
+private:
+    /// Chat-Destination auch merken, wenn das Fenster zugegangen ist
+    static unsigned char chat_dest;
 
-    public:
-        iwChat();
+public:
+    iwChat(Window* parent);
 
-    private:
-
-        void Msg_PaintBefore() override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
+private:
+    void Msg_PaintBefore() override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
 };
 
 #endif // !iwCHAT_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "gameTypes/FoWNode.h"
 #include "SerializedGameData.h"
 #include <algorithm>
 
-FoWNode::FoWNode(): 
-    last_update_time(0), visibility(VIS_INVISIBLE), object(NULL), owner(0)
+FoWNode::FoWNode() : last_update_time(0), visibility(VIS_INVISIBLE), object(NULL), owner(0)
 {
     std::fill(roads.begin(), roads.end(), 0);
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
@@ -56,8 +55,7 @@ void FoWNode::Deserialize(SerializedGameData& sgd)
         owner = sgd.PopUnsignedChar();
         for(unsigned b = 0; b < boundary_stones.size(); ++b)
             boundary_stones[b] = sgd.PopUnsignedChar();
-    }
-    else
+    } else
     {
         last_update_time = 0;
         object = NULL;

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,21 +28,19 @@ class nobStorehouse : public nobBaseWarehouse
     nobStorehouse(const MapPoint pt, const unsigned char player, const Nation nation);
     nobStorehouse(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
-    public:     void Destroy() override { Destroy_nobBaseWarehouse(); }
+protected:
+    void Serialize_nobStorehouse(SerializedGameData& sgd) const;
 
-        /// Serialisierungsfunktionen
-    protected: void Serialize_nobStorehouse(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobStorehouse(sgd); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nobStorehouse(sgd); }
 
-        GO_Type GetGOT() const override { return GOT_NOB_STOREHOUSE; }
-        unsigned GetMilitaryRadius() const override { return 0; }
-        bool IsAttackable(int playerIdx) const override { return false; }
+    GO_Type GetGOT() const override { return GOT_NOB_STOREHOUSE; }
+    unsigned GetMilitaryRadius() const override { return 0; }
+    bool IsAttackable(unsigned playerIdx) const override { return false; }
 
-        void Draw(DrawPoint drawPt) override;
+    void Draw(DrawPoint drawPt) override;
 
-        void HandleEvent(const unsigned int id) override;
+    void HandleEvent(const unsigned id) override;
 };
-
 
 #endif

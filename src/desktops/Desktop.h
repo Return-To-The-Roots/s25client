@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,23 +20,31 @@
 #pragma once
 
 #include "Window.h"
+
+class IngameWindow;
 class glArchivItem_Bitmap;
 struct ScreenResizeEvent;
 
 /// Desktopklasse für Spielmenü-Haupthintergrundflächen.
 class Desktop : public Window
 {
-    public:
-        Desktop(glArchivItem_Bitmap* background);
-        void Show();
+public:
+    Desktop(glArchivItem_Bitmap* background);
+    ~Desktop();
+    void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
+    /// Callback when a window was closed
+    virtual void Msg_WindowClosed(IngameWindow& wnd){};
+    /// Show or hide the fps
+    void SetFpsDisplay(bool show);
+    void UpdateFps(unsigned newFps);
 
-        void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
+    /// ID of the fps display text
+    static const unsigned fpsDisplayId;
 
-    protected:
-        bool Draw_() override;
+protected:
+    void Draw_() override;
 
-    protected:
-        glArchivItem_Bitmap* background;
+    glArchivItem_Bitmap* background;
 };
 
 #endif // !DESKTOP_H_INCLUDED

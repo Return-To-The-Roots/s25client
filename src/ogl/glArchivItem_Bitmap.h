@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,23 +19,41 @@
 
 #pragma once
 
+#include "DrawPoint.h"
+#include "ITexture.h"
+#include "Rect.h"
 #include "glArchivItem_BitmapBase.h"
-#include "libsiedler2/src/ArchivItem_Bitmap.h"
-#include "libutil/src/colors.h"
+#include "libsiedler2/ArchivItem_Bitmap.h"
+#include "libutil/colors.h"
 
 /// Basisklasse für GL-Bitmapitems.
-class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, public glArchivItem_BitmapBase
+class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, public glArchivItem_BitmapBase, public ITexture
 {
-    public:
-        glArchivItem_Bitmap();
-        glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
+public:
+    glArchivItem_Bitmap();
+    glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
-        /// Erzeugt und zeichnet die Textur.
-        void Draw(DrawPoint dst, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y = 0, short src_w = 0, short src_h = 0, const unsigned int color = COLOR_WHITE);
+    /// Draw the texture in the given rect, stretching if required
+    void DrawFull(const Rect& destArea, unsigned color = COLOR_WHITE);
+    /// Draw the texture to the given position with full size
+    void DrawFull(const DrawPoint& dstPos, unsigned color = COLOR_WHITE) override;
+    /// Draw a rectangular part of the texture. offset specifies the offset from the origin of the texture
+    void DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color = COLOR_WHITE);
+    /// Draw a rectangular part of the texture from the origin of it
+    void DrawPart(const Rect& destArea, unsigned color = COLOR_WHITE);
+    /// Draw only percent% of the height of the image
+    void DrawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color = COLOR_WHITE);
 
-    protected:
-        void FillTexture() override;
+    virtual Position GetOrigin() const override { return glArchivItem_BitmapBase::GetOrigin(); }
+    virtual Extent GetSize() const override { return glArchivItem_BitmapBase::GetSize(); }
 
+protected:
+    /// Draw the texture.
+    /// src_w/h default to the full bitmap size
+    /// dst_w/h default the src_w/h
+    void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE);
+    void FillTexture() override;
+    Extent CalcTextureSize() const override;
 };
 
 #endif // !GLARCHIVITEM_BITMAP_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,56 +20,44 @@
 #pragma once
 
 #include "Window.h"
+#include "controls/ctrlBaseTooltip.h"
 class MouseCoords;
 
-class ctrlProgress : public Window
+class ctrlProgress : public Window, public ctrlBaseTooltip
 {
-    public:
-        ctrlProgress(Window* parent,
-                     const unsigned int id,
-                     const unsigned short x,
-                     const unsigned short y,
-                     const unsigned short width,
-                     const unsigned short height,
-                     const TextureColor tc,
-                     unsigned short button_minus,
-                     unsigned short button_plus,
-                     const unsigned short maximum,
-                     const unsigned short x_padding,
-                     const unsigned short y_padding,
-                     const unsigned int force_color,
-                     const std::string& tooltip,
-                     const std::string& button_minus_tooltip = NULL,
-                     const std::string& button_plus_tooltip = NULL,
-                     unsigned short* const write_val = NULL);
+public:
+    ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
+                 unsigned short button_minus, unsigned short button_plus, const unsigned short maximum, const Extent& padding,
+                 const unsigned force_color, const std::string& tooltip, const std::string& button_minus_tooltip = NULL,
+                 const std::string& button_plus_tooltip = NULL, unsigned short* const write_val = NULL);
 
-        void Resize(unsigned short width, unsigned short height) override;
-        void SetPosition(unsigned short position);
-        const unsigned short& GetPosition() const { return position; }
+    void Resize(const Extent& newSize) override;
+    void SetPosition(unsigned short position);
+    const unsigned short& GetPosition() const { return position; }
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        bool Msg_LeftDown(const MouseCoords& mc) override;
-        bool Msg_LeftUp(const MouseCoords& mc) override;
-        bool Msg_WheelUp(const MouseCoords& mc) override;
-        bool Msg_WheelDown(const MouseCoords& mc) override;
-        bool Msg_MouseMove(const MouseCoords& mc) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    bool Msg_LeftDown(const MouseCoords& mc) override;
+    bool Msg_LeftUp(const MouseCoords& mc) override;
+    bool Msg_WheelUp(const MouseCoords& mc) override;
+    bool Msg_WheelDown(const MouseCoords& mc) override;
+    bool Msg_MouseMove(const MouseCoords& mc) override;
 
-    protected:
-        bool Draw_() override;
+protected:
+    void Draw_() override;
 
-    private:
-        TextureColor tc;
+private:
+    TextureColor tc;
 
-        unsigned short position;
-        unsigned short maximum;
+    unsigned short position;
+    unsigned short maximum;
 
-        // Abstand vom Button zur Leiste (Leiste wird entsprechend verkleinert!)
-        DrawPoint padding;
+    // Abstand vom Button zur Leiste (Leiste wird entsprechend verkleinert!)
+    Extent padding_;
 
-        /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
-        unsigned int force_color;
+    /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
+    unsigned force_color;
 
-        unsigned CalcBarWidth() const;
+    unsigned CalcBarWidth() const;
 };
 
 #endif // !CTRLPROGRESS_H_INCLUDED

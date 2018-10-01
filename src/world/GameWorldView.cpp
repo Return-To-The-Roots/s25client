@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,54 +15,47 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldView.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "buildings/nobUsual.h"
-#include "buildings/nobMilitary.h"
-#include "buildings/noBuildingSite.h"
 #include "CatapultStone.h"
-#include "GameClient.h"
-#include "SoundManager.h"
-#include "Loader.h"
-#include "gameData/MapConsts.h"
 #include "FOWObjects.h"
-#include "GameServer.h"
-#include "ai/AIPlayerJH.h"
-#include "world/GameWorldViewer.h"
+#include "GamePlayer.h"
+#include "GlobalGameSettings.h"
+#include "Loader.h"
+#include "MapGeometry.h"
+#include "SoundManager.h"
+#include "addons/AddonMaxWaterwayLength.h"
+#include "buildings/noBuildingSite.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobUsual.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
+#include "helpers/converters.h"
+#include "network/GameClient.h"
+#include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
-#include "addons/AddonMaxWaterwayLength.h"
+#include "ogl/oglIncludes.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
-#include "helpers/converters.h"
+#include "gameData/BuildingConsts.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GuiConsts.h"
+#include "gameData/MapConsts.h"
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <stdexcept>
 
-GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height):
-	selPt(0, 0),
-	debugNodePrinter(NULL),
-	show_bq(false),
-	show_names(false),
-	show_productivity(false),
-	offset(0, 0),
-	lastOffset(0, 0),
-	gwv(gwv),
-	d_what(0),
-	d_player(0),
-	d_active(false),
-	pos(pos),
-	width(width), height(height),
-    zoomFactor_(1.f),
-    targetZoomFactor_(1.f),
-    zoomSpeed_(0.f)
+GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
+    : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
+      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     MoveTo(0, 0);
 }
 
-GameWorldView::~GameWorldView()
-{
-}
+GameWorldView::~GameWorldView() {}
 
 const GameWorldBase& GameWorldView::GetWorld() const
 {
@@ -71,29 +64,28 @@ const GameWorldBase& GameWorldView::GetWorld() const
 
 void GameWorldView::SetNextZoomFactor()
 {
-    if (zoomFactor_ == targetZoomFactor_) // == with float is ok here, is explicitly set in last step
+    if(zoomFactor_ == targetZoomFactor_) // == with float is ok here, is explicitly set in last step //-V550
         return;
 
     float remainingZoomDiff = targetZoomFactor_ - zoomFactor_;
 
-    if (std::abs(remainingZoomDiff) <= 0.5 * zoomSpeed_ * zoomSpeed_ / ZOOM_ACCELERATION)
+    if(std::abs(remainingZoomDiff) <= 0.5 * zoomSpeed_ * zoomSpeed_ / ZOOM_ACCELERATION)
     {
         // deceleration towards zero zoom speed
-        if (zoomSpeed_ > 0)
+        if(zoomSpeed_ > 0)
             zoomSpeed_ -= ZOOM_ACCELERATION;
         else
             zoomSpeed_ += ZOOM_ACCELERATION;
-    }
-    else
+    } else
     {
         // acceleration to unlimited speed
-        if (remainingZoomDiff > 0)
+        if(remainingZoomDiff > 0)
             zoomSpeed_ += ZOOM_ACCELERATION;
         else
             zoomSpeed_ -= ZOOM_ACCELERATION;
     }
 
-    if (std::abs(remainingZoomDiff) < std::abs(zoomSpeed_))
+    if(std::abs(remainingZoomDiff) < std::abs(zoomSpeed_))
     {
         // last step
         zoomFactor_ = targetZoomFactor_;
@@ -104,12 +96,12 @@ void GameWorldView::SetNextZoomFactor()
     CalcFxLx();
 }
 
-void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition/* = true*/)
+void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
 {
-    if (zoomFactor < ZOOM_MIN)
-        targetZoomFactor_ = ZOOM_MIN;
-    else if (zoomFactor > ZOOM_MAX)
-        targetZoomFactor_ = ZOOM_MAX;
+    if(zoomFactor < ZOOM_FACTORS.front())
+        targetZoomFactor_ = ZOOM_FACTORS.front();
+    else if(zoomFactor > ZOOM_FACTORS.back())
+        targetZoomFactor_ = ZOOM_FACTORS.back();
     else
         targetZoomFactor_ = zoomFactor;
     if(!smoothTransition)
@@ -129,30 +121,30 @@ struct ObjectBetweenLines
     ObjectBetweenLines(noBase* obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
 };
 
-void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, const MapPoint selected, unsigned* water)
+void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water)
 {
     SetNextZoomFactor();
 
     int shortestDistToMouse = 100000;
-    Point<int> mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
-    mousePos -= Point<int>(pos);
+    Position mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
+    mousePos -= Position(origin_);
 
-    glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - height, width, height);
-    if(zoomFactor_ != 1.f)
+    glScissor(origin_.x, VIDEODRIVER.GetScreenSize().y - origin_.y - size_.y, size_.x, size_.y);
+    if(zoomFactor_ != 1.f) //-V550
     {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glScalef(zoomFactor_, zoomFactor_, 1);
         // Offset to center view
-        Point<float> diff(width - width / zoomFactor_, height - height / zoomFactor_);
+        Point<float> diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
         diff = diff / 2.f;
         glTranslatef(-diff.x, -diff.y, 0.f);
         // Also adjust mouse
-        mousePos = Point<int>(Point<float>(mousePos) / zoomFactor_ + diff);
+        mousePos = Position(Point<float>(mousePos) / zoomFactor_ + diff);
         glMatrixMode(GL_MODELVIEW);
     }
 
-    glTranslatef(static_cast<GLfloat>(pos.x) / zoomFactor_, static_cast<GLfloat>(pos.y) / zoomFactor_, 0.0f);
+    glTranslatef(static_cast<GLfloat>(origin_.x) / zoomFactor_, static_cast<GLfloat>(origin_.y) / zoomFactor_, 0.0f);
 
     glTranslatef(static_cast<GLfloat>(-offset.x), static_cast<GLfloat>(-offset.y), 0.0f);
     const TerrainRenderer& terrainRenderer = gwv.GetTerrainRenderer();
@@ -167,11 +159,12 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
 
         for(int x = firstPt.x; x <= lastPt.x; ++x)
         {
-            Point<int> curOffset;
-            const MapPoint curPt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
+            Position curOffset;
+            const MapPoint curPt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
             DrawPoint curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
-            const Point<int> mouseDist = mousePos - curPos;
+            Position mouseDist = mousePos - curPos;
+            mouseDist *= mouseDist;
             if(std::abs(mouseDist.x) + std::abs(mouseDist.y) < shortestDistToMouse)
             {
                 selPt = curPt;
@@ -186,10 +179,10 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
             if(visibility == VIS_VISIBLE)
             {
                 DrawObject(curPt, curPos);
-
+                DrawMovingFiguresFromBelow(terrainRenderer, Position(x, y), between_lines);
                 DrawFigures(curPt, curPos, between_lines);
 
-                //Construction aid mode
+                // Construction aid mode
                 if(show_bq)
                     DrawConstructionAid(curPt, curPos);
             } else if(visibility == VIS_FOW)
@@ -199,11 +192,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
                     fowobj->Draw(curPos);
             }
 
-            if(debugNodePrinter)
-                debugNodePrinter->print(curPt, curPos);
-
-            if (d_active)
-                DrawAIDebug(curPt, curPos);
+            BOOST_FOREACH(IDrawNodeCallback* callback, drawNodeCallbacks)
+                callback->onDraw(curPt, curPos);
         }
 
         // Figuren zwischen den Zeilen zeichnen
@@ -214,7 +204,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
 
-    DrawGUI(rb, terrainRenderer, draw_selected, selected);
+    DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
     // Umherfliegende Katapultsteine zeichnen
     for(std::list<CatapultStone*>::const_iterator it = GetWorld().catapult_stones.begin(); it != GetWorld().catapult_stones.end(); ++it)
@@ -223,27 +213,27 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
             (*it)->Draw(offset);
     }
 
-    if(zoomFactor_ != 1.f)
+    if(zoomFactor_ != 1.f) //-V550
     {
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
     }
-    glTranslatef(-static_cast<GLfloat>(pos.x) / zoomFactor_, -static_cast<GLfloat>(pos.y) / zoomFactor_, 0.0f);
+    glTranslatef(-static_cast<GLfloat>(origin_.x) / zoomFactor_, -static_cast<GLfloat>(origin_.y) / zoomFactor_, 0.0f);
 
-    glScissor(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
+    glScissor(0, 0, VIDEODRIVER.GetScreenSize().x, VIDEODRIVER.GetScreenSize().y);
 }
 
-void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected, const MapPoint& selectedPt)
+void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
-    MapPoint road_points[6];
+    boost::array<MapPoint, 6> road_points;
 
     unsigned maxWaterWayLen = 0;
     if(rb.mode != RM_DISABLED)
     {
-        for(unsigned i = 0; i < 6; ++i)
-            road_points[i] = GetWorld().GetNeighbour(rb.point, i);
+        for(unsigned i = 0; i < Direction::COUNT; ++i)
+            road_points[i] = GetWorld().GetNeighbour(rb.point, Direction::fromInt(i));
 
         const unsigned index = GetWorld().GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
         RTTR_Assert(index < waterwayLengths.size());
@@ -255,77 +245,97 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
         for(int y = firstPt.y; y <= lastPt.y; ++y)
         {
             // Coordinates transform
-            Point<int> curOffset;
-            MapPoint curPt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
-            Point<int> curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
+            Position curOffset;
+            MapPoint curPt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
+            Position curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
             /// Current point indicated by Mouse
-            if(selPt == curPt)
+            if(drawMouse && selPt == curPt)
             {
                 // Mauszeiger am boden
                 unsigned mid = 22;
-                if(rb.mode == RM_DISABLED){
+                if(rb.mode == RM_DISABLED)
+                {
                     switch(gwv.GetBQ(curPt))
                     {
-                    case BQ_FLAG: mid = 40; break;
-                    case BQ_MINE: mid = 41; break;
-                    case BQ_HUT: mid = 42; break;
-                    case BQ_HOUSE: mid = 43; break;
-                    case BQ_CASTLE: mid = 44; break;
-                    case BQ_HARBOR: mid = 45; break;
-                    default: break;
+                        case BQ_FLAG: mid = 40; break;
+                        case BQ_MINE: mid = 41; break;
+                        case BQ_HUT: mid = 42; break;
+                        case BQ_HOUSE: mid = 43; break;
+                        case BQ_CASTLE: mid = 44; break;
+                        case BQ_HARBOR: mid = 45; break;
+                        default: break;
                     }
                 }
-
-                LOADER.GetMapImageN(mid)->Draw(curPos);
+                LOADER.GetMapImageN(mid)->DrawFull(curPos);
             }
 
             // Currently selected point
-            if(draw_selected && selectedPt == curPt)
-                LOADER.GetMapImageN(20)->Draw(curPos);
+            if(selectedPt == curPt)
+                LOADER.GetMapImageN(20)->DrawFull(curPos);
 
-            // Wegbauzeug
+            // not building roads, no further action needed
             if(rb.mode == RM_DISABLED)
                 continue;
 
+            // we dont own curPt, no need for any rendering...
+            if(!gwv.IsPlayerTerritory(curPt))
+                continue;
+
+            // we are in road build mode
+            // highlight current route pt
             if(rb.point == curPt)
-                LOADER.GetMapImageN(21)->Draw(curPos);
-
-            int altitude = GetWorld().GetNode(rb.point).altitude;
-
-            for(unsigned i = 0; i < 6; ++i)
             {
-                if(road_points[i] != curPt)
-                    continue;
+                LOADER.GetMapImageN(21)->DrawFull(curPos);
+                continue;
+            }
 
-                // test on maximal water way length
-                if(rb.mode == RM_BOAT && maxWaterWayLen != 0 && rb.route.size() >= maxWaterWayLen)
-                    continue;
+            // ensure that curPt is a neighbour of rb.point
+            if(!helpers::contains(road_points, curPt))
+            {
+                continue;
+            }
 
-                if((gwv.IsRoadAvailable(rb.mode == RM_BOAT, curPt) && gwv.IsOwner(curPt) && GetWorld().IsPlayerTerritory(curPt))
-                    || (gwv.GetBQ(curPt) == BQ_FLAG))
+            // test on maximal water way length
+            if(rb.mode == RM_BOAT && maxWaterWayLen != 0 && rb.route.size() >= maxWaterWayLen)
+                continue;
+
+            // render special icon for route revert
+            if(!rb.route.empty() && road_points[(rb.route.back() + 3u).toUInt()] == curPt)
+            {
+                LOADER.GetMapImageN(67)->DrawFull(curPos);
+                continue;
+            }
+
+            // is a flag but not the route start flag, as it would revert the route.
+            const bool targetFlag = GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start;
+            int altitude = GetWorld().GetNode(rb.point).altitude;
+            if(targetFlag || gwv.IsRoadAvailable(rb.mode == RM_BOAT, curPt))
+            {
+                unsigned id;
+                switch(int(GetWorld().GetNode(curPt).altitude) - altitude)
                 {
-                    unsigned id;
-                    switch(int(GetWorld().GetNode(curPt).altitude) - altitude)
-                    {
                     case 1: id = 61; break;
-                    case 2: case 3: id = 62; break;
-                    case 4: case 5: id = 63; break;
+                    case 2:
+                    case 3: id = 62; break;
+                    case 4:
+                    case 5: id = 63; break;
                     case -1: id = 64; break;
-                    case -2: case -3: id = 65; break;
-                    case -4: case -5: id = 66; break;
+                    case -2:
+                    case -3: id = 65; break;
+                    case -4:
+                    case -5: id = 66; break;
                     default: id = 60; break;
-                    }
-
-                    LOADER.GetMapImageN(id)->Draw(curPos);
                 }
-
-                // Flaggenanschluss? --> extra zeichnen
-                if(GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start)
-                    LOADER.GetMapImageN(20)->Draw(curPos);
-
-                if(!rb.route.empty() && unsigned(rb.route.back() + 3) % 6 == i)
-                    LOADER.GetMapImageN(67)->Draw(curPos);
+                if(!targetFlag)
+                    LOADER.GetMapImageN(id)->DrawFull(curPos);
+                else
+                {
+                    DrawPoint lastPos = GetWorld().GetNodePos(rb.point) - offset + curOffset;
+                    DrawPoint halfWayPos = (curPos + lastPos) / 2;
+                    LOADER.GetMapImageN(id)->DrawFull(halfWayPos);
+                    LOADER.GetMapImageN(20)->DrawFull(curPos);
+                }
             }
         }
     }
@@ -338,8 +348,8 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
         for(int y = firstPt.y; y <= lastPt.y; ++y)
         {
             // Coordinate transform
-            Point<int> curOffset;
-            MapPoint pt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
+            Position curOffset;
+            MapPoint pt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
 
             const noBaseBuilding* no = GetWorld().GetSpecObj<noBaseBuilding>(pt);
             if(!no)
@@ -349,18 +359,18 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             if(no->GetPlayer() != gwv.GetPlayerId())
                 continue;
 
-            Point<int> curPos = GetWorld().GetNodePos(pt) - offset + curOffset;
+            Position curPos = GetWorld().GetNodePos(pt) - offset + curOffset;
             curPos.y -= 22;
 
             // Draw object name
             if(show_names)
             {
-                unsigned int color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
-                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+                unsigned color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
+                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]), FontStyle::CENTER | FontStyle::VCENTER, color);
                 curPos.y += SmallFont->getHeight();
             }
 
-            //Draw productivity/soldiers
+            // Draw productivity/soldiers
             if(show_productivity)
                 DrawProductivity(*no, curPos);
         }
@@ -372,17 +382,15 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
     const GO_Type got = no.GetGOT();
     if(got == GOT_BUILDINGSITE)
     {
-        char text[256];
-        unsigned int color = COLOR_GREY;
+        unsigned color = COLOR_GREY;
 
         unsigned short p = static_cast<const noBuildingSite&>(no).GetBuildProgress();
-        snprintf(text, 256, "(%d %%)", p);
-        SmallFont->Draw(curPos, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
-    }else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
+        SmallFont->Draw(curPos, (boost::format("(%1% %%)") % p).str(), FontStyle::CENTER | FontStyle::VCENTER, color);
+    } else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
     {
         const nobUsual& n = static_cast<const nobUsual&>(no);
         std::string text;
-        unsigned int color = COLOR_0_PERCENT;
+        unsigned color = COLOR_0_PERCENT;
 
         if(!n.HasWorker())
             text = _("(House unoccupied)");
@@ -403,37 +411,61 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
             else if(p >= 20)
                 color = COLOR_20_PERCENT;
         }
-        SmallFont->Draw(curPos, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
-    }else if(got == GOT_NOB_MILITARY)
+        SmallFont->Draw(curPos, text, FontStyle::CENTER | FontStyle::VCENTER, color);
+    } else if(got == GOT_NOB_MILITARY)
     {
         // Display amount of soldiers
-        unsigned soldiers_count = static_cast<const nobMilitary&>(no).GetTroopsCount();
+        unsigned soldiers_count = static_cast<const nobMilitary&>(no).GetNumTroops();
         std::string sSoldiers;
         if(soldiers_count == 1)
             sSoldiers = _("(1 soldier)");
         else
-            sSoldiers = boost::str(
-                boost::format(_("(%d soldiers)")) % soldiers_count
-                );
+            sSoldiers = boost::str(boost::format(_("(%d soldiers)")) % soldiers_count);
 
-
-        SmallFont->Draw(curPos, sSoldiers, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
-            (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
+        SmallFont->Draw(curPos, sSoldiers, FontStyle::CENTER | FontStyle::VCENTER, (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
     }
 }
 
-void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint&curPos, std::vector<ObjectBetweenLines>& between_lines)
+void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines)
 {
-    const std::list<noBase*>& figures = GetWorld().GetNode(pt).figures;
-    for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+    const std::list<noBase*>& figures = GetWorld().GetFigures(pt);
+    BOOST_FOREACH(noBase* figure, figures)
     {
-        // Bewegt er sich oder ist es ein Schiff?
-        if((*it)->IsMoving() || (*it)->GetGOT() == GOT_SHIP)
-            // Dann nach der gesamten Zeile zeichnen
-            between_lines.push_back(ObjectBetweenLines(*it, curPos));
+        if(figure->IsMoving())
+        {
+            // Drawn from above
+            Direction curMoveDir = static_cast<noMovable*>(figure)->GetCurMoveDir();
+            if(curMoveDir == Direction::NORTHEAST || curMoveDir == Direction::NORTHWEST)
+                continue;
+            // Draw later
+            between_lines.push_back(ObjectBetweenLines(figure, curPos));
+        } else if(figure->GetGOT() == GOT_SHIP)
+            between_lines.push_back(ObjectBetweenLines(figure, curPos)); // TODO: Why special handling for ships?
         else
             // Ansonsten jetzt schon zeichnen
-            (*it)->Draw(curPos);
+            figure->Draw(curPos);
+    }
+}
+
+void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
+                                               std::vector<ObjectBetweenLines>& between_lines)
+{
+    // First draw figures moving towards this point from below
+    static const boost::array<Direction, 2> aboveDirs = {{Direction::NORTHEAST, Direction::NORTHWEST}};
+    BOOST_FOREACH(Direction dir, aboveDirs)
+    {
+        // Get figures opposite the current dir and check if they are moving in this dir
+        // Coordinates transform
+        Position curOffset;
+        MapPoint curPt = terrainRenderer.ConvertCoords(GetNeighbour(curPos, dir + 3u), &curOffset);
+        Position figPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
+
+        const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
+        BOOST_FOREACH(noBase* figure, figures)
+        {
+            if(figure->IsMoving() && static_cast<noMovable*>(figure)->GetCurMoveDir() == dir)
+                between_lines.push_back(ObjectBetweenLines(figure, figPos));
+        }
     }
 }
 
@@ -443,13 +475,14 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& cur
     if(bq != BQ_NOTHING)
     {
         glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + bq);
-        //Draw building quality icon
-        bm->Draw(curPos);
-        //Show ability to construct military buildings
+        // Draw building quality icon
+        bm->DrawFull(curPos);
+        // Show ability to construct military buildings
         if(GetWorld().GetGGS().isEnabled(AddonId::MILITARY_AID))
         {
-            if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
-                LOADER.GetImageN("map_new", 20000)->Draw(curPos - DrawPoint(-1, bm->getHeight() + 5));
+            if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId())
+               && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
+                LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->getHeight() + 5));
         }
     }
 }
@@ -463,50 +496,10 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
     obj->Draw(curPos);
 
     return;
-    //TODO: military aid - display icon overlay of attack possibility
+    // TODO: military aid - display icon overlay of attack possibility
 
-    noBuilding* building = dynamic_cast<noBuilding*>(obj);
-    if(!building || gwv.GetPlayer().IsAlly(building->GetPlayer()))
-        return;
-
-    BuildingType bt = building->GetBuildingType();
-    if((bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
-        || bt == BLD_HEADQUARTERS
-        || bt == BLD_HARBORBUILDING) //is it a military building?
-    {
-        if(gwv.GetNumSoldiersForAttack(building->GetPos())) //soldiers available for attack?
-            LOADER.GetImageN("map_new", 20000)->Draw(curPos + DrawPoint(1, -5));
-    }
-}
-
-void GameWorldView::DrawAIDebug(const MapPoint& pt, const DrawPoint& curPos)
-{
-    AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(GAMESERVER.GetAIPlayer(d_player));
-    if(!ai)
-        return;
-
-    if(d_what == 1)
-    {
-        if(ai->GetAINode(pt).bq && ai->GetAINode(pt).bq < 7) //-V807
-            LOADER.GetMapImageN(49 + ai->GetAINode(pt).bq)->Draw(curPos);
-    } else if(d_what == 2)
-    {
-        if(ai->GetAINode(pt).reachable)
-            LOADER.GetImageN("io", 32)->Draw(curPos);
-        else
-            LOADER.GetImageN("io", 40)->Draw(curPos);
-    } else if(d_what == 3)
-    {
-        if(ai->GetAINode(pt).farmed)
-            LOADER.GetImageN("io", 32)->Draw(curPos);
-        else
-            LOADER.GetImageN("io", 40)->Draw(curPos);
-    } else if(d_what > 3 && d_what < 13)
-    {
-        std::stringstream ss;
-        ss << ai->GetResMapValue(pt, AIJH::Resource(d_what - 4));
-        NormalFont->Draw(curPos, ss.str(), 0, 0xFFFFFF00);
-    }
+    if(gwv.GetNumSoldiersForAttack(pt) > 0) // soldiers available for attack?
+        LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
 }
 
 void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis)
@@ -533,12 +526,11 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
     {
         if(boundary_stones[i + 1])
         {
-            DrawPoint tmp = pos - DrawPoint((gwv.GetTerrainRenderer().GetNodePos(pt) - gwv.GetTerrainRenderer().GetNeighbourPos(pt, 3 + i)) / 2.0f);
+            DrawPoint tmp =
+              pos
+              - DrawPoint((gwv.GetTerrainRenderer().GetVertexPos(pt) - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, 3 + i)) / 2.0f);
 
-            LOADER.boundary_stone_cache[nation].draw(
-                tmp,
-                isFoW ? FOW_DRAW_COLOR : COLOR_WHITE,
-                player_color);
+            LOADER.boundary_stone_cache[nation].draw(tmp, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
         }
     }
 }
@@ -588,33 +580,46 @@ void GameWorldView::MoveToMapPt(const MapPoint pt)
         return;
 
     lastOffset = offset;
-    Point<int> nodePos = GetWorld().GetNodePos(pt);
+    Position nodePos = GetWorld().GetNodePos(pt);
 
-    MoveTo(nodePos - DrawPoint(GetSize() / 2), true);
+    MoveTo(nodePos - GetSize() / 2u, true);
 }
 
 /// Springt zur letzten Position, bevor man "weggesprungen" ist
 void GameWorldView::MoveToLastPosition()
 {
-    Point<int> newLastOffset = offset;
+    Position newLastOffset = offset;
 
     MoveTo(lastOffset.x, lastOffset.y, true);
 
     lastOffset = newLastOffset;
 }
 
+void GameWorldView::AddDrawNodeCallback(IDrawNodeCallback* newCallback)
+{
+    RTTR_Assert(newCallback);
+    drawNodeCallbacks.push_back(newCallback);
+}
+
+void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
+{
+    std::vector<IDrawNodeCallback*>::iterator itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
+    RTTR_Assert(itPos != drawNodeCallbacks.end());
+    drawNodeCallbacks.erase(itPos);
+}
+
 void GameWorldView::CalcFxLx()
 {
     // Calc first and last point in map units (with 1 extra for incomplete triangles)
     firstPt.x = offset.x / TR_W - 1;
-    firstPt.y = (offset.y - 10 * HEIGHT_FACTOR) / TR_H - 1; // base altitude = 10
-    lastPt.x = (offset.x + width) / TR_W + 1;
-    lastPt.y = (offset.y + height + (60 - 10) * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60, base = 10
+    firstPt.y = offset.y / TR_H - 1;
+    lastPt.x = (offset.x + size_.x) / TR_W + 1;
+    lastPt.y = (offset.y + size_.y + 60 * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60
 
-    if(zoomFactor_ != 1.f)
+    if(zoomFactor_ != 1.f) //-V550
     {
         // Calc pixels we can remove from sides, as they are not drawn due to zoom
-        Point<float> diff(width - width / zoomFactor_, height - height / zoomFactor_);
+        Point<float> diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
         // Stay centered by removing half the pixels from opposite sites
         diff = diff / 2.f;
         // Convert to map points
@@ -623,14 +628,13 @@ void GameWorldView::CalcFxLx()
         // Don't remove to much
         diff.x = std::floor(diff.x);
         diff.y = std::floor(diff.y);
-        firstPt = Point<int>(Point<float>(firstPt) + diff);
-        lastPt = Point<int>(Point<float>(lastPt) - diff);
+        firstPt = Position(Point<float>(firstPt) + diff);
+        lastPt = Position(Point<float>(lastPt) - diff);
     }
 }
 
-void GameWorldView::Resize(unsigned width, unsigned height)
+void GameWorldView::Resize(const Extent& newSize)
 {
-    this->width  = width;
-    this->height = height;
+    size_ = newSize;
     CalcFxLx();
 }

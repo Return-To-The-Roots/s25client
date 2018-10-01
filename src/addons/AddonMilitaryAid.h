@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2013 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for indicating military building construction possibility.
@@ -29,15 +29,11 @@
  */
 class AddonMilitaryAid : public AddonBool
 {
-    public:
-        AddonMilitaryAid() : AddonBool(AddonId::MILITARY_AID,
-                                           ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY,
-                                           _("Military Aid"),
-                                           _("Adds military building indicators in construction aid mode."),
-                                           0
-                                          )
-        {
-        }
+public:
+    AddonMilitaryAid()
+        : AddonBool(AddonId::MILITARY_AID, ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY, _("Military Aid"),
+                    _("Adds military building indicators in construction aid mode."), 0)
+    {}
 };
 
 #endif // !ADDONMILITARYAID_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,14 +26,12 @@ class nobBaseWarehouse;
 
 class iwHQ : public iwBaseWarehouse
 {
-    public:
-        iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh);
+public:
+    iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh);
 
-    protected:
-
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
-        unsigned grpIdReserve;
-
+protected:
+    void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
+    unsigned grpIdReserve;
 };
 
 #endif // !iwHQ_H_INCLUDED

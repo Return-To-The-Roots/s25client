@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,27 +27,21 @@ class noRoadNode;
 /// und z.B. zum Auslagern benutzt wird ober beim Abbrennen eines Lagerhaus
 class nofPassiveWorker : public noFigure
 {
-    private:
+private:
+    /// von noFigure aufgerufen
+    void Walked() override;      // wenn man gelaufen ist
+    void GoalReached() override; // wenn das Ziel erreicht wurde
+    void AbrogateWorkplace() override;
+    void HandleDerivedEvent(const unsigned id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 
-        /// von noFigure aufgerufen
-        void Walked() override; // wenn man gelaufen ist
-        void GoalReached() override; // wenn das Ziel erreicht wurde
-        void AbrogateWorkplace() override;
-        void HandleDerivedEvent(const unsigned int id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
+public:
+    nofPassiveWorker(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* goal);
+    nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    /// Zeichnen
+    void Draw(DrawPoint drawPt) override;
 
-        nofPassiveWorker(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* goal);
-        nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id);
-
-        /// Zeichnen
-        void Draw(DrawPoint drawPt) override;
-
-        GO_Type GetGOT() const override
-        {
-            return GOT_NOF_PASSIVEWORKER;
-        }
+    GO_Type GetGOT() const override { return GOT_NOF_PASSIVEWORKER; }
 };
-
 
 #endif

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,49 +27,51 @@ class noRoadNode;
 /// Basisklasse für Geologen und Späher, also die, die an eine Flagge gebunden sind zum Arbeiten
 class nofFlagWorker : public noFigure
 {
-    protected:
-        /// Flaggen-Ausgangspunkt
-        noFlag* flag;
+protected:
+    /// Flaggen-Ausgangspunkt
+    noFlag* flag;
 
-        enum State
-        {
-            STATE_FIGUREWORK, // Zur Flagge und zurückgehen, Rumirren usw
-            STATE_GOTOFLAG, // geht zurück zur Flagge um anschließend nach Hause zu gehen
+    enum State
+    {
+        STATE_FIGUREWORK, // Zur Flagge und zurückgehen, Rumirren usw
+        STATE_GOTOFLAG,   // geht zurück zur Flagge um anschließend nach Hause zu gehen
 
-            STATE_GEOLOGIST_GOTONEXTNODE, // Zum nächsten Punkt gehen, um dort zu graben
-            STATE_GEOLOGIST_DIG, // graben (mit Hammer auf Berg hauen)
-            STATE_GEOLOGIST_CHEER, // Jubeln, dass man etwas gefunden hat
+        STATE_GEOLOGIST_GOTONEXTNODE, // Zum nächsten Punkt gehen, um dort zu graben
+        STATE_GEOLOGIST_DIG,          // graben (mit Hammer auf Berg hauen)
+        STATE_GEOLOGIST_CHEER,        // Jubeln, dass man etwas gefunden hat
 
-            STATE_SCOUT_SCOUTING // läuft umher und erkundet
-        } state;
+        STATE_SCOUT_SCOUTING // läuft umher und erkundet
+    } state;
 
-    protected:
+protected:
+    /// Kündigt bei der Flagge
+    void AbrogateWorkplace() override;
+    /// Geht wieder zurück zur Flagge und dann nach Hause
+    void GoToFlag();
 
-        /// Kündigt bei der Flagge
-        void AbrogateWorkplace() override;
-        /// Geht wieder zurück zur Flagge und dann nach Hause
-        void GoToFlag();
+public:
+    nofFlagWorker(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* goal);
+    nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    /// Aufräummethoden
+protected:
+    void Destroy_nofFlagWorker();
 
-        nofFlagWorker(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* goal);
-        nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Destroy() override { Destroy_nofFlagWorker(); }
 
-        /// Aufräummethoden
-    protected:  void Destroy_nofFlagWorker();
-    public:     void Destroy() override { Destroy_nofFlagWorker(); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofFlagWorker(SerializedGameData& sgd) const;
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofFlagWorker(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFlagWorker(sgd); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofFlagWorker(sgd); }
 
+    /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+    virtual void LostWork() = 0;
 
-        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-        virtual void LostWork() = 0;
-
-        /// Gibt Flagge zurück
-        noFlag* GetFlag() const { return flag; }
+    /// Gibt Flagge zurück
+    noFlag* GetFlag() const { return flag; }
 };
-
 
 #endif

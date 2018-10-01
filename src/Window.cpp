@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,110 +15,46 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "Window.h"
 #include "CollisionDetection.h"
-#include "Loader.h"
-#include "controls/controls.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "driver/src/MouseCoords.h"
 #include "ExtensionList.h"
+#include "Loader.h"
+#include "RescaleWindowProp.h"
+#include "controls/controls.h"
+#include "driver/MouseCoords.h"
+#include "drivers/ScreenResizeEvent.h"
+#include "drivers/VideoDriverWrapper.h"
+#include <boost/foreach.hpp>
+#include <boost/range/adaptor/map.hpp>
 #include <cstdarg>
 
-Window::Window()
-    : pos_(0, 0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_(""), isInMouseRelay(false)
-{
-}
-
-/**
- *  Konstruktor von @p Window mit Parametern.
- *
- *  @param[in] x      X-Position des Fensters.
- *  @param[in] y      Y-Position des Fensters.
- *  @param[in] id     ID des Fensters
- *  @param[in] parent Handle auf das Parentfenster.
- */
-Window::Window(const DrawPoint& pos,
-               unsigned int id,
-               Window* parent,
-               unsigned short width,
-               unsigned short height,
-               const std::string& tooltip)
-    : pos_(pos), width_(width), height_(height), id_(id), parent_(parent), active_(false), visible_(true), scale_(false), tooltip_(tooltip), isInMouseRelay(false)
-{
-}
+Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size)
+    : parent_(parent), id_(id), pos_(pos), size_(size), active_(false), visible_(true), scale_(false), isInMouseRelay(false),
+      animations_(this)
+{}
 
 Window::~Window()
 {
     RTTR_Assert(!isInMouseRelay);
     // Steuerelemente aufräumen
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-        delete it->second;
+    BOOST_FOREACH(Window* ctrl, childIdToWnd_ | boost::adaptors::map_values)
+        delete ctrl;
 }
 
 /**
  *  zeichnet das Fenster.
  */
-bool Window::Draw()
+void Window::Draw()
 {
     if(visible_)
-        return Draw_();
-
-    return true;
+        Draw_();
 }
 
-/**
- *  liefert die X-Koordinate.
- *
- *  @param[in] absolute Absolute Koordinate oder relative?
- *
- *  @return die X-Koordinate.
- */
-DrawPoint::ElementType Window::GetX(bool absolute) const
+DrawPoint Window::GetPos() const
 {
-    if(!absolute)
-        return pos_.x;
-
-    DrawPoint::ElementType abs_x = pos_.x;
-    const Window* temp = this;
-
-    // Relative Koordinaten in absolute umrechnen
-    // ( d.h. Koordinaten von allen Eltern zusammenaddieren )
-    while(temp->parent_)
-    {
-        temp = temp->parent_;
-        abs_x += temp->pos_.x;
-    }
-
-    return abs_x;
+    return pos_;
 }
-
-/**
- *  liefert die Y-Koordinate.
- *
- *  @param[in] absolute Absolute Koordinate oder relative?
- *
- *  @return die Y-Koordinate.
- */
-DrawPoint::ElementType Window::GetY(bool absolute) const
-{
-    if(!absolute)
-        return pos_.y;
-
-    DrawPoint::ElementType abs_y = pos_.y;
-    const Window* temp = this;
-
-    // Relative Koordinaten in absolute umrechnen
-    // ( d.h. Koordinaten von allen Eltern zusammenaddieren )
-    while(temp->parent_)
-    {
-        temp = temp->parent_;
-        abs_y += temp->pos_.y;
-    }
-
-    return abs_y;
-}
-
 
 DrawPoint Window::GetDrawPos() const
 {
@@ -136,6 +72,22 @@ DrawPoint Window::GetDrawPos() const
     return result;
 }
 
+Extent Window::GetSize() const
+{
+    return size_;
+}
+
+Rect Window::GetDrawRect() const
+{
+    return Rect(GetDrawPos(), GetSize());
+}
+
+Rect Window::GetBoundaryRect() const
+{
+    // Default to draw rect
+    return GetDrawRect();
+}
+
 /**
  *  Sendet eine Fensternachricht an die Steuerelemente.
  *
@@ -143,7 +95,7 @@ DrawPoint Window::GetDrawPos() const
  *  @param[in] id    Die ID des Quellsteuerelements.
  *  @param[in] param Ein nachrichtenspezifischer Parameter.
  */
-bool Window::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke)
+bool Window::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 {
     // Abgeleitete Klassen fragen, ob das Weiterleiten von Nachrichten erlaubt ist
     // (IngameFenster könnten ja z.B. minimiert sein)
@@ -152,17 +104,16 @@ bool Window::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const Ke
 
     // Alle Controls durchgehen
     // Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end() && active_; ++it)
+    BOOST_FOREACH(Window* wnd, childIdToWnd_ | boost::adaptors::map_values)
     {
-        if(it->second->visible_ && it->second->active_)
-            if((it->second->*msg)(ke))
-                return true;
+        if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(ke))
+            return true;
     }
 
     return false;
 }
 
-bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc)
+bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
 {
     // Abgeleitete Klassen fragen, ob das Weiterleiten von Mausnachrichten erlaubt ist
     // (IngameFenster könnten ja z.B. minimiert sein)
@@ -174,17 +125,13 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
 
     // Alle Controls durchgehen
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
-    for(std::map<unsigned int, Window*>::reverse_iterator it = childIdToWnd_.rbegin(); it != childIdToWnd_.rend() && active_; ++it)
+    BOOST_REVERSE_FOREACH(Window* wnd, childIdToWnd_ | boost::adaptors::map_values)
     {
-        if(!lockedAreas_.empty())
-            if(TestWindowInRegion(it->second, mc))
-                continue;
+        if(!lockedAreas_.empty() && TestWindowInRegion(wnd, mc.GetPos()))
+            continue;
 
-        if(it->second->visible_ && it->second->active_)
-        {
-            if((it->second->*msg)(mc))
-                processed = true;
-        }
+        if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(mc))
+            processed = true;
     }
 
     for(std::vector<Window*>::iterator it = tofreeAreas_.begin(); it != tofreeAreas_.end(); ++it)
@@ -213,7 +160,7 @@ void Window::SetActive(bool activate)
  */
 void Window::ActivateControls(bool activate)
 {
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
+    for(std::map<unsigned, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
         it->second->SetActive(activate);
 }
 
@@ -245,12 +192,9 @@ void Window::FreeRegion(Window* window)
         lockedAreas_.erase(window);
 }
 
-void Window::Move(const DrawPoint& offsetOrPos, bool absolute /*= true*/)
+void Window::SetPos(const DrawPoint& newPos)
 {
-    if(absolute)
-        pos_ = offsetOrPos;
-    else
-        pos_ += offsetOrPos;
+    pos_ = newPos;
 }
 
 /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
@@ -259,9 +203,9 @@ bool Window::IsMessageRelayAllowed() const
     return true;
 }
 
-void Window::DeleteCtrl(unsigned int id)
+void Window::DeleteCtrl(unsigned id)
 {
-    std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id);
+    std::map<unsigned, Window*>::iterator it = childIdToWnd_.find(id);
 
     if(it == childIdToWnd_.end())
         return;
@@ -271,296 +215,94 @@ void Window::DeleteCtrl(unsigned int id)
     childIdToWnd_.erase(it);
 }
 
-/**
- *  fügt ein BuildingIcon hinzu.
- */
-ctrlBuildingIcon* Window::AddBuildingIcon(unsigned int id,
-        unsigned short x,
-        unsigned short y,
-        BuildingType type,
-        const Nation nation,
-        unsigned short size,
-        const std::string& tooltip)
+ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, const Nation nation, unsigned short size,
+                                          const std::string& tooltip)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-    }
-
-    return AddCtrl(id, new ctrlBuildingIcon(this, id, x, y, type, nation, size, tooltip));
+    return AddCtrl(new ctrlBuildingIcon(this, id, ScaleIf(pos), type, nation, ScaleIf(Extent(size, 0)).x, tooltip));
 }
 
-/**
- *  fügt einen ButtonCtrl hinzu.
- *
- *  @param[in] x      X-Koordinate des Steuerelements
- *  @param[in] y      Y-Koordinate des Steuerelements
- *  @param[in] width  Breite des Steuerelements
- *  @param[in] height Höhe des Steuerelements
- *  @param[in] tc     Farbe des Steuerelements
- *  @param[in] type   Typ des Steuerelements (@p false für Text, @p true für Bild)
- *  @param[in] text   Text des Buttons (nur für @p type gleich @p false)
- *  @param[in] font   Schrift des Buttons (nur für @p type gleich @p false)
- *  @param[in] image  Bild des Buttons (nur für @p type gleich @p true)
- *  @param[in] border Soll der Button einen Rahmen haben?
- */
-
-
-/// fügt einen Text-ButtonCtrl hinzu.
-ctrlTextButton* Window::AddTextButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
+ctrlButton* Window::AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const std::string& text,
+                                  glArchivItem_Font* font, const std::string& tooltip)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlTextButton(this, id, x, y, width, height, tc, text, font, tooltip));
+    return AddCtrl(new ctrlTextButton(this, id, ScaleIf(pos), ScaleIf(size), tc, text, font, tooltip));
 }
 
-/// fügt einen Color-ButtonCtrl hinzu.
-ctrlColorButton* Window::AddColorButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned int fillColor, const std::string& tooltip)
+ctrlButton* Window::AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const unsigned fillColor,
+                                   const std::string& tooltip)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlColorButton(this, id, x, y, width, height, tc, fillColor, tooltip));
+    return AddCtrl(new ctrlColorButton(this, id, ScaleIf(pos), ScaleIf(size), tc, fillColor, tooltip));
 }
 
-
-/// fügt einen Image-ButtonCtrl hinzu.
-ctrlImageButton* Window::AddImageButton(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image,  const std::string& tooltip)
+ctrlButton* Window::AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, ITexture* const image,
+                                   const std::string& tooltip)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlImageButton(this, id, x, y, width, height, tc, image, tooltip));
+    return AddCtrl(new ctrlImageButton(this, id, ScaleIf(pos), ScaleIf(size), tc, image, tooltip));
 }
 
-
-/**
- *  fügt ein ChatCtrl hinzu.
- */
-ctrlChat* Window::AddChatCtrl(unsigned int id,
-                              unsigned short x,
-                              unsigned short y,
-                              unsigned short width,
-                              unsigned short height,
-                              TextureColor tc,
-                              glArchivItem_Font* font)
+ctrlButton* Window::AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
+                                   glArchivItem_Bitmap* const image, const std::string& tooltip)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlChat(this, id, x, y, width, height, tc, font));
+    return AddImageButton(id, pos, size, tc, static_cast<ITexture*>(image), tooltip);
 }
 
-/**
- *  fügt eine Checkbox hinzu.
- */
-ctrlCheck* Window::AddCheckBox(unsigned int id,
-                               unsigned short x,
-                               unsigned short y,
-                               unsigned short width,
-                               unsigned short height,
-                               TextureColor tc,
-                               const std::string& text,
-                               glArchivItem_Font* font,
-                               bool readonly)
+ctrlChat* Window::AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlCheck(this, id, x, y, width, height, tc, text, font, readonly));
+    return AddCtrl(new ctrlChat(this, id, ScaleIf(pos), ScaleIf(size), tc, font));
 }
 
-/**
- *  fügt eine Combobox hinzu.
- */
-ctrlComboBox* Window::AddComboBox(unsigned int id,
-                                  unsigned short x,
-                                  unsigned short y,
-                                  unsigned short width,
-                                  unsigned short height,
-                                  TextureColor tc,
-                                  glArchivItem_Font* font,
-                                  unsigned short max_list_height,
-                                  bool readonly)
+ctrlCheck* Window::AddCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
+                               glArchivItem_Font* font, bool readonly)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlComboBox(this, id, x, y, width, height, tc, font, max_list_height, readonly));
+    return AddCtrl(new ctrlCheck(this, id, ScaleIf(pos), ScaleIf(size), tc, text, font, readonly));
 }
 
-/**
- *  fügt ein vertieftes TextCtrl hinzu.
- */
-ctrlDeepening* Window::AddDeepening(unsigned int id,
-                                    unsigned short x,
-                                    unsigned short y,
-                                    unsigned short width,
-                                    unsigned short height,
-                                    TextureColor tc,
-                                    const std::string& text,
-                                    glArchivItem_Font* font,
-                                    unsigned int color)
+ctrlComboBox* Window::AddComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                                  unsigned short max_list_height, bool readonly)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlDeepening(this, id, x, y, width, height, tc, text, font, color));
+    return AddCtrl(new ctrlComboBox(this, id, ScaleIf(pos), ScaleIf(size), tc, font, max_list_height, readonly));
 }
 
-/**
- *  adds a colored Deepening
- */
-ctrlColorDeepening* Window::AddColorDeepening(unsigned int id,
-        unsigned short x,
-        unsigned short y,
-        unsigned short width,
-        unsigned short height,
-        TextureColor tc,
-        unsigned int fillColor)
+ctrlDeepening* Window::AddTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
+                                        glArchivItem_Font* font, unsigned color)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlColorDeepening(this, id, x, y, width, height, tc, fillColor));
+    return AddCtrl(new ctrlTextDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, text, font, color));
 }
 
-/**
- *  fügt ein EditCtrl hinzu.
- */
-ctrlEdit* Window::AddEdit(unsigned int id,
-                          unsigned short x,
-                          unsigned short y,
-                          unsigned short width,
-                          unsigned short height,
-                          TextureColor tc,
-                          glArchivItem_Font* font,
-                          unsigned short maxlength,
-                          bool password,
-                          bool disabled,
-                          bool notify)
+ctrlDeepening* Window::AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlEdit(this, id, x, y, width, height, tc, font, maxlength, password, disabled, notify));
+    return AddCtrl(new ctrlColorDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, fillColor));
 }
 
-/**
- *  fügt eine Gruppe hinzu.
- */
-ctrlGroup* Window::AddGroup(unsigned int id, bool scale)
+ctrlEdit* Window::AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                          unsigned short maxlength, bool password, bool disabled, bool notify)
 {
-    return AddCtrl(id, new ctrlGroup(this, id, scale));
+    return AddCtrl(new ctrlEdit(this, id, ScaleIf(pos), ScaleIf(size), tc, font, maxlength, password, disabled, notify));
 }
 
-/**
- *  fügt ein ImageCtrl hinzu.
- */
-ctrlImage* Window::AddImage(unsigned int id,
-                            unsigned short x,
-                            unsigned short y,
-                            glArchivItem_Bitmap* image, const std::string& tooltip)
+ctrlGroup* Window::AddGroup(unsigned id)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-    }
-
-    return AddCtrl(id, new ctrlImage(this, id, x, y, image, tooltip));
+    return AddCtrl(new ctrlGroup(this, id));
 }
 
-/**
- *  fügt ein ListCtrl hinzu.
- */
-ctrlList* Window::AddList(unsigned int id,
-                          unsigned short x,
-                          unsigned short y,
-                          unsigned short width,
-                          unsigned short height,
-                          TextureColor tc,
-                          glArchivItem_Font* font)
+ctrlImage* Window::AddImage(unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlList(this, id, x, y, width, height, tc, font));
+    return AddCtrl(new ctrlImage(this, id, ScaleIf(pos), image, tooltip));
 }
 
-/**
- *  fügt ein mehrzeiliges TextCtrl hinzu.
- */
-ctrlMultiline* Window::AddMultiline(unsigned int id,
-                                    unsigned short x,
-                                    unsigned short y,
-                                    unsigned short width,
-                                    unsigned short height,
-                                    TextureColor tc,
-                                    glArchivItem_Font* font,
-                                    unsigned int format)
+ctrlImage* Window::AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
+    return AddImage(id, pos, static_cast<ITexture*>(image), tooltip);
+}
 
-    return AddCtrl(id, new ctrlMultiline(this, id, DrawPoint(x, y), width, height, tc, font, format));
+ctrlList* Window::AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
+{
+    return AddCtrl(new ctrlList(this, id, ScaleIf(pos), ScaleIf(size), tc, font));
+}
+
+ctrlMultiline* Window::AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                                    unsigned format)
+{
+    return AddCtrl(new ctrlMultiline(this, id, ScaleIf(pos), ScaleIf(size), tc, font, format));
 }
 
 /**
@@ -571,11 +313,9 @@ ctrlMultiline* Window::AddMultiline(unsigned int id,
  *
  *  @return Instanz das Steuerelement.
  */
-ctrlOptionGroup* Window::AddOptionGroup(unsigned int id,
-                                        int select_type,
-                                        bool scale)
+ctrlOptionGroup* Window::AddOptionGroup(unsigned id, int select_type)
 {
-    return AddCtrl(id, new ctrlOptionGroup(this, id, select_type, scale));
+    return AddCtrl(new ctrlOptionGroup(this, id, select_type));
 }
 
 /**
@@ -586,148 +326,59 @@ ctrlOptionGroup* Window::AddOptionGroup(unsigned int id,
  *
  *  @return Instanz das Steuerelement.
  */
-ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned int id,
-        int select_type,
-        bool scale)
+ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned id, int select_type)
 {
-    return AddCtrl(id, new ctrlMultiSelectGroup(this, id, select_type, scale));
+    return AddCtrl(new ctrlMultiSelectGroup(this, id, select_type));
 }
 
-/**
- *  fügt eine prozentuale ProgressBar hinzu.
- */
-ctrlPercent* Window::AddPercent(unsigned int id,
-                                unsigned short x,
-                                unsigned short y,
-                                unsigned short width,
-                                unsigned short height,
-                                TextureColor tc,
-                                unsigned int text_color,
-                                glArchivItem_Font* font,
-                                const unsigned short* percentage)
+ctrlPercent* Window::AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
+                                glArchivItem_Font* font, const unsigned short* percentage)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlPercent(this, id, x, y, width, height, tc, text_color, font, percentage));
+    return AddCtrl(new ctrlPercent(this, id, ScaleIf(pos), ScaleIf(size), tc, text_color, font, percentage));
 }
 
-/**
- *  fügt eine ProgressBar hinzu.
- */
-ctrlProgress* Window::AddProgress(unsigned int id,
-                                  unsigned short x,
-                                  unsigned short y,
-                                  unsigned short width,
-                                  unsigned short height,
-                                  TextureColor tc,
-                                  unsigned short button_minus,
-                                  unsigned short button_plus,
-                                  unsigned short maximum,
-                                  const std::string& tooltip,
-                                  unsigned short x_padding,
-                                  unsigned short y_padding,
-                                  unsigned int force_color,
-                                  const std::string& button_minus_tooltip,
-                                  const std::string& button_plus_tooltip)
+ctrlProgress* Window::AddProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned short button_minus,
+                                  unsigned short button_plus, unsigned short maximum, const std::string& tooltip, const Extent& padding,
+                                  unsigned force_color, const std::string& button_minus_tooltip, const std::string& button_plus_tooltip)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlProgress(this, id, x, y, width, height, tc, button_minus, button_plus, maximum, x_padding, y_padding, force_color, tooltip, button_minus_tooltip, button_plus_tooltip));
+    return AddCtrl(new ctrlProgress(this, id, ScaleIf(pos), ScaleIf(size), tc, button_minus, button_plus, maximum, padding, force_color,
+                                    tooltip, button_minus_tooltip, button_plus_tooltip));
 }
 
-/**
- *  fügt eine Scrollbar hinzu.
- */
-ctrlScrollBar* Window::AddScrollBar(unsigned int id,
-                                    unsigned short x,
-                                    unsigned short y,
-                                    unsigned short width,
-                                    unsigned short height,
-                                    unsigned short button_height,
-                                    TextureColor tc,
+ctrlScrollBar* Window::AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height, TextureColor tc,
                                     unsigned short page_size)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-        button_height = ScaleY(button_height);
-    }
+    button_height = ScaleIf(Extent(0, button_height)).y;
 
-    return AddCtrl(id, new ctrlScrollBar(this, id, x, y, width, height, button_height, tc, page_size));
+    return AddCtrl(new ctrlScrollBar(this, id, ScaleIf(pos), ScaleIf(size), button_height, tc, page_size));
 }
 
-/**
- *  fügt ein TabCtrl hinzu.
- */
-ctrlTab* Window::AddTabCtrl(unsigned int id,
-                            unsigned short x,
-                            unsigned short y,
-                            unsigned short width)
+ctrlTab* Window::AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-    }
-
-    return AddCtrl(id, new ctrlTab(this, id, x, y, width));
+    return AddCtrl(new ctrlTab(this, id, ScaleIf(pos), ScaleIf(Extent(width, 0)).x));
 }
 
 /**
  *  fügt eine Tabelle hinzu.
  *  ... sollte eine Menge von const char*, int und SortType sein
  */
-ctrlTable* Window::AddTable(unsigned int id,
-                            unsigned short x,
-                            unsigned short y,
-                            unsigned short width,
-                            unsigned short height,
-                            TextureColor tc,
-                            glArchivItem_Font* font,
-                            unsigned int columns,
-                            ...)
+ctrlTable* Window::AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                            unsigned columns, ...)
 {
     ctrlTable* ctrl;
     va_list liste;
     va_start(liste, columns);
 
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    ctrl = new ctrlTable(this, id, x, y, width, height, tc, font, columns, liste);
+    ctrl = new ctrlTable(this, id, ScaleIf(pos), ScaleIf(size), tc, font, columns, liste);
 
     va_end(liste);
 
-    return AddCtrl(id, ctrl);
+    return AddCtrl(ctrl);
 }
 
-/**
- *  fügt einen Timer hinzu.
- */
-ctrlTimer* Window::AddTimer(unsigned int id, unsigned int timeout)
+ctrlTimer* Window::AddTimer(unsigned id, unsigned timeout)
 {
-    return AddCtrl(id, new ctrlTimer(this, id, timeout));
+    return AddCtrl(new ctrlTimer(this, id, timeout));
 }
 
 /**
@@ -738,63 +389,37 @@ ctrlTimer* Window::AddTimer(unsigned int id, unsigned int timeout)
  *  @param[in] text   Text
  *  @param[in] color  Textfarbe
  *  @param[in] format Formatierung des Textes
- *                      @p 0    - Text links ( standard )
- *                      @p glArchivItem_Font::DF_CENTER  - Text mittig
- *                      @p glArchivItem_Font::DF_RIGHT   - Text rechts
- *                      @p glArchivItem_Font::DF_TOP     - Text oben ( standard )
- *                      @p glArchivItem_Font::DF_VCENTER - Text vertikal zentriert
- *                      @p glArchivItem_Font::DF_BOTTOM  - Text unten
+ *                      @p FontStyle::LEFT    - Text links ( standard )
+ *                      @p FontStyle::CENTER  - Text mittig
+ *                      @p FontStyle::RIGHT   - Text rechts
+ *                      @p FontStyle::TOP     - Text oben ( standard )
+ *                      @p FontStyle::VCENTER - Text vertikal zentriert
+ *                      @p FontStyle::BOTTOM  - Text unten
  *  @param[in] font   Schriftart
  */
-ctrlText* Window::AddText(unsigned int id,
-                          unsigned short x,
-                          unsigned short y,
-                          const std::string& text,
-                          unsigned int color,
-                          unsigned int format,
+ctrlText* Window::AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
                           glArchivItem_Font* font)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-    }
-
-    return AddCtrl(id, new ctrlText(this, id, x, y, text, color, format, font));
+    return AddCtrl(new ctrlText(this, id, ScaleIf(pos), text, color, format, font));
 }
 
-/**
- *  fügt ein vertieftes variables TextCtrl hinzu.
- */
-ctrlVarDeepening* Window::AddVarDeepening(unsigned int id,
-        unsigned short x,
-        unsigned short y,
-        unsigned short width,
-        unsigned short height,
-        TextureColor tc,
-        const std::string& formatstr,
-        glArchivItem_Font* font,
-        unsigned int color,
-        unsigned int parameters,
-        ...)
+TextFormatSetter Window::AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+                                          glArchivItem_Font* font)
 {
-    ctrlVarDeepening* ctrl;
+    return AddText(id, pos, text, color, format, font);
+}
+
+ctrlVarDeepening* Window::AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                          const std::string& formatstr, glArchivItem_Font* font, unsigned color, unsigned parameters, ...)
+{
     va_list liste;
     va_start(liste, parameters);
 
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    ctrl = new ctrlVarDeepening(this, id, x, y, width, height, tc, formatstr, font, color, parameters, liste);
+    ctrlVarDeepening* ctrl = new ctrlVarDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, formatstr, font, color, parameters, liste);
 
     va_end(liste);
 
-    return AddCtrl(id, ctrl);
+    return AddCtrl(ctrl);
 }
 
 /**
@@ -805,211 +430,131 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned int id,
  *  @param[in] formatstr  Der Formatstring des Steuerelements
  *  @param[in] color      Textfarbe
  *  @param[in] format     Formatierung des Textes
- *                          @p 0    - Text links ( standard )
- *                          @p glArchivItem_Font::DF_CENTER  - Text mittig
- *                          @p glArchivItem_Font::DF_RIGHT   - Text rechts
- *                          @p glArchivItem_Font::DF_TOP     - Text oben ( standard )
- *                          @p glArchivItem_Font::DF_VCENTER - Text vertikal zentriert
- *                          @p glArchivItem_Font::DF_BOTTOM  - Text unten
+ *                          @p FontStyle::LEFT    - Text links ( standard )
+ *                          @p FontStyle::CENTER  - Text mittig
+ *                          @p FontStyle::RIGHT   - Text rechts
+ *                          @p FontStyle::TOP     - Text oben ( standard )
+ *                          @p FontStyle::VCENTER - Text vertikal zentriert
+ *                          @p FontStyle::BOTTOM  - Text unten
  *  @param[in] font       Schriftart
  *  @param[in] parameters Anzahl der nachfolgenden Parameter
  *  @param[in] ...        die variablen Parameter
  */
-ctrlVarText* Window::AddVarText(unsigned int id,
-                                unsigned short x,
-                                unsigned short y,
-                                const std::string& formatstr,
-                                unsigned int color,
-                                unsigned int format,
-                                glArchivItem_Font* font,
-                                unsigned int parameters,
-                                ...)
+ctrlVarText* Window::AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format,
+                                glArchivItem_Font* font, unsigned parameters, ...)
 {
-    ctrlVarText* ctrl;
     va_list liste;
     va_start(liste, parameters);
 
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-    }
-
-    ctrl = new ctrlVarText(this, id, x, y, formatstr, color, format, font, parameters, liste);
+    ctrlVarText* ctrl = new ctrlVarText(this, id, ScaleIf(pos), formatstr, color, format, font, parameters, liste);
 
     va_end(liste);
 
-    return AddCtrl(id, ctrl);
+    return AddCtrl(ctrl);
 }
 
-ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id,
-        unsigned short x,
-        unsigned short y,
-        unsigned short width,
-        unsigned short height,
-        glArchivItem_Map* const map)
+ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* const map)
 {
-    if(scale_)
-    {
-        x = ScaleX(x);
-        y = ScaleY(y);
-        width = ScaleX(width);
-        height = ScaleY(height);
-    }
-
-    return AddCtrl(id, new ctrlPreviewMinimap(this, id, x, y, width, height, map));
+    return AddCtrl(new ctrlPreviewMinimap(this, id, ScaleIf(pos), ScaleIf(size), map));
 }
 
 /**
  *  Zeichnet einen 3D-Rahmen.
  */
-void Window::Draw3D(DrawPoint drawPt,
-                    const unsigned short width,
-                    const unsigned short height,
-                    const TextureColor tc,
-                    const unsigned short type,
-                    const bool illuminated,
-                    const bool draw_content)
+void Window::Draw3D(const Rect& rect, TextureColor tc, unsigned short type, bool illuminated, bool drawContent, unsigned color)
 {
-    if(width < 4 || height < 4 || tc == TC_INVISIBLE)
+    const Extent rectSize = rect.getSize();
+    if(rectSize.x < 4 || rectSize.y < 4 || tc == TC_INVISIBLE)
         return;
 
+    DrawPoint origin = rect.getOrigin();
+    // Position of the horizontal and vertical image border
+    DrawPoint horImgBorderPos(origin);
+    DrawPoint vertImgBorderPos(origin);
+
+    if(type > 1)
+    {
+        // For deepened effect the img border is at bottom and right
+        // else it stays top and left
+        horImgBorderPos += DrawPoint(0, rectSize.y - 2);
+        vertImgBorderPos += DrawPoint(rectSize.x - 2, 0);
+    }
+    // Draw img borders
+    glArchivItem_Bitmap* borderImg = LOADER.GetImageN("io", 12 + tc);
+    borderImg->DrawPart(Rect(horImgBorderPos, Extent(rectSize.x, 2)));
+    borderImg->DrawPart(Rect(vertImgBorderPos, Extent(2, rectSize.y)));
+
+    // Draw black borders over the img borders
+    glDisable(GL_TEXTURE_2D);
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_TRIANGLE_STRIP);
+    // Left lower point
+    DrawPoint lbPt = rect.getOrigin() + DrawPoint(rectSize);
     if(type <= 1)
     {
-        // äußerer Rahmen
-        LOADER.GetImageN("io", 12 + tc)->Draw(drawPt, width, 2,      0, 0, width, 2);
-        LOADER.GetImageN("io", 12 + tc)->Draw(drawPt, 2,     height, 0, 0, 2,     height);
-
-        if(illuminated)
-        {
-            // Modulate2x anmachen
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-            glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
-        }
-
-        // Inhalt der Box
-        if(draw_content)
-        {
-            DrawPoint contentPos = drawPt + DrawPoint(2, 2);
-            unsigned texture = (type) ? tc * 2 : tc * 2 + 1;
-            LOADER.GetImageN("io", texture)->Draw(contentPos, width - 4, height - 4, 0, 0, width - 4, height - 4);
-        }
-
-        if(illuminated)
-        {
-            // Modulate2x wieder ausmachen
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        }
-
-        glDisable(GL_TEXTURE_2D);
-
-        glColor3f(0.0f, 0.0f, 0.0f);
-
-        glBegin(GL_QUADS);
-
-        glVertex2i(drawPt.x + width - 1, drawPt.y);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + height);
-        glVertex2i(drawPt.x + width, drawPt.y + height);
-        glVertex2i(drawPt.x + width, drawPt.y);
-
-        glVertex2i(drawPt.x + width - 2, drawPt.y + 1);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + height);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + 1);
-
-        glVertex2i(drawPt.x, drawPt.y + height - 1);
-        glVertex2i(drawPt.x, drawPt.y + height);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height - 1);
-
-        glVertex2i(drawPt.x + 1, drawPt.y + height - 2);
-        glVertex2i(drawPt.x + 1, drawPt.y + height - 1);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height - 1);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height - 2);
-
-        glEnd();
-    }
-    else
+        // Bottom line with edge in left top and right line with little edge on left top
+        glVertex2i(lbPt.x, origin.y);
+        glVertex2i(lbPt.x - 2, origin.y + 1);
+        glVertex2i(lbPt.x, lbPt.y);
+        glVertex2i(lbPt.x - 2, lbPt.y - 2);
+        glVertex2i(origin.x, lbPt.y);
+        glVertex2i(origin.x + 1, lbPt.y - 2);
+    } else
     {
-        DrawPoint botBorderPos = drawPt;
-        botBorderPos.y += height - 2;
-        LOADER.GetImageN("io", 12 + tc)->Draw(botBorderPos, width, 2, 0, 0, width, 2);
-        DrawPoint rightBorderPos = drawPt;
-        rightBorderPos.x += width - 2;
-        LOADER.GetImageN("io", 12 + tc)->Draw(rightBorderPos, 2, height, 0, 0, 2, height);
+        // Top line with edge on right and left line with edge on bottom
+        glVertex2i(origin.x, lbPt.y);
+        glVertex2i(origin.x + 2, lbPt.y - 1);
+        glVertex2i(origin.x, origin.y);
+        glVertex2i(origin.x + 2, origin.y + 2);
+        glVertex2i(lbPt.x, origin.y);
+        glVertex2i(lbPt.x - 1, origin.y + 2);
+    }
+    glEnd();
+    glEnable(GL_TEXTURE_2D);
 
-        if(illuminated)
-        {
-            // Modulate2x anmachen
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-            glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
-        }
+    if(!drawContent)
+        return;
 
-        glArchivItem_Bitmap* img = LOADER.GetImageN("io", tc * 2 + 1);
-        DrawPoint curDrawPos = drawPt + DrawPoint(2, 2);
-        // Top border part
-        img->Draw(curDrawPos, width - 4, 2, 0, 0, width - 4, 2);
-        // Left border part
-        img->Draw(curDrawPos, 2, height - 4, 0, 0, 2, height - 4);
-        curDrawPos += DrawPoint(2, 2);
-        // Filler
-        img->Draw(curDrawPos, width - 6, height - 6, 0, 0, width - 6, height - 6);
-
-        if(illuminated)
-        {
-            // Modulate2x wieder ausmachen
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        }
-
-        // Black lines
-        glDisable(GL_TEXTURE_2D);
-
-        glColor3f(0.0f, 0.0f, 0.0f);
-
-        glBegin(GL_QUADS);
-        // Top
-        glVertex2i(drawPt.x,         drawPt.y);
-        glVertex2i(drawPt.x,         drawPt.y + 1);
-        glVertex2i(drawPt.x + width, drawPt.y + 1);
-        glVertex2i(drawPt.x + width, drawPt.y);
-        // Top inner
-        glVertex2i(drawPt.x,             drawPt.y + 1);
-        glVertex2i(drawPt.x,             drawPt.y + 2);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + 2);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + 1);
-        // Left
-        glVertex2i(drawPt.x,     drawPt.y + 2);
-        glVertex2i(drawPt.x,     drawPt.y + height);
-        glVertex2i(drawPt.x + 1, drawPt.y + height); //-V525
-        glVertex2i(drawPt.x + 1, drawPt.y + 2);
-        // Left inner
-        glVertex2i(drawPt.x + 1, drawPt.y + 2);
-        glVertex2i(drawPt.x + 1, drawPt.y + height - 1);
-        glVertex2i(drawPt.x + 2, drawPt.y + height - 1);
-        glVertex2i(drawPt.x + 2, drawPt.y + 2);
-
-        glEnd();
+    if(illuminated)
+    {
+        // Modulate2x anmachen
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+        glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
     }
 
-    glEnable(GL_TEXTURE_2D);
-}
+    DrawPoint contentPos = origin + DrawPoint(2, 2);
+    Extent contentSize(rectSize - Extent(4, 4));
+    DrawPoint contentOffset(0, 0);
+    if(type <= 1)
+    {
+        // Move the content a bit to left upper for non-deepened version
+        contentOffset = DrawPoint(2, 2);
+    }
+    unsigned texture = (type == 1) ? tc * 2 : tc * 2 + 1;
+    LOADER.GetImageN("io", texture)->DrawPart(Rect(contentPos, contentSize), contentOffset, color);
 
+    if(illuminated)
+    {
+        // Modulate2x wieder ausmachen
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
+}
 /**
  *  zeichnet ein Rechteck.
  *
  *  @param[in] x X-Koordinate
  */
-void Window::DrawRectangle(DrawPoint drawPt, unsigned short width, unsigned short height, unsigned int color)
+void Window::DrawRectangle(const Rect& rect, unsigned color)
 {
     glDisable(GL_TEXTURE_2D);
 
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 
     glBegin(GL_QUADS);
-    glVertex2i(drawPt.x,         drawPt.y);
-    glVertex2i(drawPt.x,         drawPt.y + height);
-    glVertex2i(drawPt.x + width, drawPt.y + height);
-    glVertex2i(drawPt.x + width, drawPt.y);
+    glVertex2i(rect.left, rect.top);
+    glVertex2i(rect.left, rect.bottom);
+    glVertex2i(rect.right, rect.bottom);
+    glVertex2i(rect.right, rect.top);
     glEnd();
 
     glEnable(GL_TEXTURE_2D);
@@ -1020,41 +565,71 @@ void Window::DrawRectangle(DrawPoint drawPt, unsigned short width, unsigned shor
  *
  *  @param[in] x X-Koordinate
  */
-void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, unsigned short by, unsigned short width, unsigned int color)
+void Window::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsigned color)
 {
     glDisable(GL_TEXTURE_2D);
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
 
     glLineWidth(width);
     glBegin(GL_LINES);
-    glVertex2i(ax, ay);
-    glVertex2i(bx, by);
+    glVertex2i(pt1.x, pt1.y);
+    glVertex2i(pt2.x, pt2.y);
     glEnd();
 
     glEnable(GL_TEXTURE_2D);
 }
+
+void Window::Msg_PaintBefore()
+{
+    animations_.update(VIDEODRIVER.GetTickCount());
+}
+
+void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
+{
+    // If the window elements don't get scaled there is nothing to do
+    if(!scale_)
+        return;
+    RescaleWindowProp rescale(sr.oldSize, sr.newSize);
+    BOOST_FOREACH(Window* ctrl, childIdToWnd_ | boost::adaptors::map_values)
+    {
+        if(!ctrl)
+            continue;
+        // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
+        Extent newSize = rescale(ctrl->GetSize());
+        ctrl->SetPos(rescale(ctrl->GetPos()));
+        ctrl->Msg_ScreenResize(sr);
+        ctrl->Resize(newSize);
+    }
+    animations_.onRescale(sr);
+}
+
+template<class T_Pt>
+T_Pt Window::Scale(const T_Pt& pt) const
+{
+    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetScreenSize());
+}
+
+template<class T_Pt>
+T_Pt Window::ScaleIf(const T_Pt& pt) const
+{
+    return scale_ ? Scale(pt) : pt;
+}
+
+// Inlining removes those. so add it here
+template DrawPoint Window::ScaleIf(const DrawPoint&) const;
+template Extent Window::ScaleIf(const Extent&) const;
 
 /**
  *  zeichnet die Steuerelemente.
  */
 void Window::DrawControls()
 {
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-    {
-        Window* control = it->second;
-        RTTR_Assert(control);
-
+    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
         control->Msg_PaintBefore();
+    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
         control->Draw();
-    }
-
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-    {
-        Window* control = it->second;
-        RTTR_Assert(control);
-
+    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
         control->Msg_PaintAfter();
-    }
 }
 
 /**
@@ -1066,28 +641,15 @@ void Window::DrawControls()
  *  @return @p true falls Mausposition innerhalb der gesperrten Region,
  *          @p false falls außerhalb
  */
-bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
+bool Window::TestWindowInRegion(Window* window, const Position& pos) const
 {
     for(std::map<Window*, Rect>::const_iterator it = lockedAreas_.begin(); it != lockedAreas_.end(); ++it)
     {
         if(it->first == window)
             continue; // Locking window can always access its locked regions
         // All others cannot:
-        if(Coll(mc.x, mc.y, it->second))
+        if(IsPointInRect(pos, it->second))
             return true;
     }
     return false;
-}
-
-/**
- *  skaliert einen Wert.
- */
-unsigned short Window::ScaleX(unsigned short val) const
-{
-    return  val * VIDEODRIVER.GetScreenWidth() / 800;
-}
-
-unsigned short Window::ScaleY(unsigned short val) const
-{
-    return val * VIDEODRIVER.GetScreenHeight() / 600;
 }

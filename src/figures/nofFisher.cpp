@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,23 +15,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofFisher.h"
 
-#include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
-#include "Random.h"
-#include "SoundManager.h"
+#include "GlobalGameSettings.h"
+#include "Loader.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "SoundManager.h"
 #include "addons/const_addons.h"
+#include "network/GameClient.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "pathfinding/PathConditionHuman.h"
+#include "random/Random.h"
+#include "world/GameWorldGame.h"
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(0), successful(false)
-{
-}
+{}
 
 void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
 {
@@ -41,11 +42,9 @@ void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
     sgd.PushBool(successful);
 }
 
-nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
-    fishing_dir(sgd.PopUnsignedChar()),
-    successful(sgd.PopBool())
-{
-}
+nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id)
+    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.PopUnsignedChar()), successful(sgd.PopBool())
+{}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofFisher::DrawWorking(DrawPoint drawPt)
@@ -66,13 +65,11 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
             SOUNDMANAGER.PlayNOSound(62, this, 0);
             was_sounding = true;
         }
-    }
-    else if(id < 216)
+    } else if(id < 216)
     {
         // Angel im Wasser hängen lassen und warten
         draw_id = 1590 + 8 * ((fishing_dir + 3) % 6) + (id % 8);
-    }
-    else
+    } else
     {
         // Angel wieder rausholn
         if(successful)
@@ -94,8 +91,8 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
         }
     }
 
-    LOADER.GetPlayerImage("rom_bobs", draw_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-    DrawShadow(drawPt, 0, fishing_dir);
+    LOADER.GetPlayerImage("rom_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+    DrawShadow(drawPt, 0, Direction(fishing_dir));
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -109,21 +106,20 @@ void nofFisher::WorkStarted()
 {
     unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
     // Punkt mit Fisch suchen (mit zufälliger Richtung beginnen)
-    fishing_dir = 0xFF;
+    Direction tmpFishingDir;
     for(unsigned char i = 0; i < 6; ++i)
     {
-        fishing_dir = (i + doffset) % 6;
-        unsigned char neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources;
-        if(neighbourRes > 0x80 && neighbourRes < 0x90)
+        tmpFishingDir = Direction(i + doffset);
+        Resource neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources;
+        if(neighbourRes.has(Resource::Fish))
             break;
     }
 
     // Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
-    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources - 0x80) * 10;
+    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources.getAmount()) * 10;
     successful = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 100) < probability);
+    fishing_dir = tmpFishingDir.toUInt();
 }
-
-
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofFisher::WorkFinished()
@@ -132,10 +128,9 @@ void nofFisher::WorkFinished()
     if(successful)
     {
         if(!gwg->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
-            gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
+            gwg->ReduceResource(gwg->GetNeighbour(pos, Direction::fromInt(fishing_dir)));
         ware = GD_FISH;
-    }
-    else
+    } else
         ware = GD_NOTHING;
 }
 
@@ -143,17 +138,15 @@ void nofFisher::WorkFinished()
 nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
 {
     // Der Punkt muss passierbar sein für Figuren
-    if(!gwg->IsNodeForFigures(pt))
+    if(!PathConditionHuman(*gwg).IsNodeOk(pt))
         return PQ_NOTPOSSIBLE;
 
     // irgendwo drumherum muss es Fisch geben
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetNode(gwg->GetNeighbour(pt, i)).resources > 0x80 &&
-                gwg->GetNode(gwg->GetNeighbour(pt, i)).resources < 0x90)
+        if(gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources.has(Resource::Fish))
             return PQ_CLASS1;
     }
 
     return PQ_NOTPOSSIBLE;
 }
-

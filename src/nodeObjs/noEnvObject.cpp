@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noEnvObject.h"
 
 /**
@@ -24,9 +24,6 @@
  *  @param[in] id Nr der Grafik
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
  */
-noEnvObject::noEnvObject(const MapPoint pos, unsigned short id, unsigned short file)
-    : noStaticObject(pos, id, file, 0, NOP_ENVIRONMENT)
-{}
+noEnvObject::noEnvObject(const MapPoint pos, unsigned short id, unsigned short file) : noStaticObject(pos, id, file, 0, NOP_ENVIRONMENT) {}
 
-noEnvObject::noEnvObject(SerializedGameData& sgd, const unsigned obj_id) : noStaticObject(sgd, obj_id)
-{}
+noEnvObject::noEnvObject(SerializedGameData& sgd, const unsigned obj_id) : noStaticObject(sgd, obj_id) {}

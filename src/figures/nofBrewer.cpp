@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,34 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofBrewer.h"
-#include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
-#include "buildings/nobUsual.h"
+#include "Loader.h"
 #include "SoundManager.h"
+#include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
 
-nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_BREWER, pos, player, workplace)
-{
-}
+nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_BREWER, pos, player, workplace)
+{}
 
-nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofBrewer::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPointInit offsets[NAT_COUNT] = { {10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17} };
+    static const DrawPointInit offsets[NUM_NATS] = {{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}};
 
     unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 
     if(now_id < 16)
         LOADER.GetPlayerImage("rom_bobs", now_id)
-        ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     if(now_id == 5)
     {

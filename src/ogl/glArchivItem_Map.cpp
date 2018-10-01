@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,22 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Map.h"
 
-#include "../libsiedler2/src/ArchivItem_Raw.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "glAllocator.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libsiedler2/ArchivItem_Raw.h"
 
-glArchivItem_Map::glArchivItem_Map()
-    : ArchivItem_Map(), header(NULL)
-{
-}
+glArchivItem_Map::glArchivItem_Map() : ArchivItem_Map(), header(NULL) {}
 
-glArchivItem_Map::~glArchivItem_Map()
-{
-}
-
+glArchivItem_Map::~glArchivItem_Map() {}
 
 /**
  *  lädt die Mapdaten aus einer Datei.
@@ -42,13 +36,21 @@ glArchivItem_Map::~glArchivItem_Map()
  */
 int glArchivItem_Map::load(std::istream& file, bool only_header)
 {
-    if(libsiedler2::ArchivItem_Map::load(file, only_header) != 0)
-        return 1;
+    if(int ec = libsiedler2::ArchivItem_Map::load(file, only_header))
+        return ec;
 
     header = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(get(0));
     RTTR_Assert(header);
 
     return 0;
+}
+
+void glArchivItem_Map::load(const libsiedler2::ArchivItem_Map& map)
+{
+    static_cast<libsiedler2::Archiv&>(*this) = map;
+    extraInfo = map.extraInfo;
+    header = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(get(0));
+    RTTR_Assert(header);
 }
 
 /**
@@ -61,7 +63,7 @@ const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) cons
     RTTR_Assert(HasLayer(type));
     const libsiedler2::ArchivItem_Raw* item = dynamic_cast<const libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
     RTTR_Assert(item);
-    return item->getData();
+    return item->getData(); //-V522
 }
 
 /**
@@ -74,7 +76,7 @@ std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type)
     RTTR_Assert(HasLayer(type));
     libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
     RTTR_Assert(item);
-    return item->getData();
+    return item->getData(); //-V522
 }
 
 bool glArchivItem_Map::HasLayer(MapLayer type) const
@@ -88,7 +90,7 @@ bool glArchivItem_Map::HasLayer(MapLayer type) const
  *  @param[in] type Typ des Layers.
  *  @param[in] pos  Position in den Daten.
  */
-unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) const
+unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned pos) const
 {
     return GetLayer(type)[pos];
 }
@@ -100,7 +102,7 @@ unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) co
  *  @param[in] pos   Position in den Daten.
  *  @param[in] value zu setzender Wert an der Position.
  */
-void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned int pos, unsigned char value)
+void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned pos, unsigned char value)
 {
     GetLayer(type)[pos] = value;
 }

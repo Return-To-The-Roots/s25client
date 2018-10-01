@@ -14,26 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "LanGameInfo.h"
-#include "Serializer.h"
+#include "libutil/Serializer.h"
 
 bool LanGameInfo::Serialize(Serializer& serializer)
 {
-    if (name.size() > 64)
+    if(name.size() > 64)
         name.resize(64);
-    if (map.size() > 64)
+    if(map.size() > 64)
         map.resize(64);
-    if (version.size() > 16)
+    if(version.size() > 16)
         version.resize(16);
     serializer.PushString(name);
     serializer.PushBool(hasPwd);
     serializer.PushString(map);
-    serializer.PushUnsignedChar(curPlayer);
-    serializer.PushUnsignedChar(maxPlayer);
+    serializer.PushUnsignedChar(curNumPlayers);
+    serializer.PushUnsignedChar(maxNumPlayers);
     serializer.PushUnsignedShort(port);
     serializer.PushBool(isIPv6);
     serializer.PushString(version);
+    serializer.PushString(revision);
     return true;
 }
 
@@ -42,10 +43,11 @@ bool LanGameInfo::Deserialize(Serializer& serializer)
     name = serializer.PopString();
     hasPwd = serializer.PopBool();
     map = serializer.PopString();
-    curPlayer = serializer.PopUnsignedChar();
-    maxPlayer = serializer.PopUnsignedChar();
+    curNumPlayers = serializer.PopUnsignedChar();
+    maxNumPlayers = serializer.PopUnsignedChar();
     port = serializer.PopUnsignedShort();
     isIPv6 = serializer.PopBool();
     version = serializer.PopString();
+    revision = serializer.PopString();
     return true;
 }

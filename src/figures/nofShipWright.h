@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,7 +17,6 @@
 #ifndef NOF_SHIPWRIGHT_H_
 #define NOF_SHIPWRIGHT_H_
 
-
 #include "nofWorkman.h"
 class SerializedGameData;
 class nobUsual;
@@ -25,44 +24,41 @@ class nobUsual;
 /// Schiffsbauer - erstmal nur provisorisch, da er nur Boote baut
 class nofShipWright : public nofWorkman
 {
-        /// Punkt, an dem das Schiff steht, an dem er gerade arbeitet
-        MapPoint dest;
-    private:
-        /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override { return 90; }
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override { return GD_BOAT; }
+    /// Punkt, an dem das Schiff steht, an dem er gerade arbeitet
+    MapPoint dest;
 
-        /// Startet das Laufen zu der Arbeitsstelle, dem Schiff
-        void StartWalkingToShip(const unsigned char first_dir);
+private:
+    /// Zeichnet ihn beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override { return 90; }
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override { return GD_BOAT; }
 
-        /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
-        bool IsPointGood(const MapPoint pt) const;
+    /// Startet das Laufen zu der Arbeitsstelle, dem Schiff
+    void StartWalkingToShip(const unsigned char first_dir);
 
-        /// Der Schiffsbauer hat einen Bauschritt bewältigt und geht wieder zurück zum Haus
-        void WorkFinished() override;
+    /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
+    bool IsPointGood(const MapPoint pt) const;
 
-        void WalkToWorkpoint();
-        void StartWalkingHome();
-        void WalkHome();
-        void WorkAborted() override;
-        void WalkedDerived() override;
+    /// Der Schiffsbauer hat einen Bauschritt bewältigt und geht wieder zurück zum Haus
+    void WorkFinished() override;
 
-        /// Zeichnen der Figur in sonstigen Arbeitslagen
-        void DrawOtherStates(DrawPoint drawPt) override;
+    void WalkToWorkpoint();
+    void StartWalkingHome();
+    void WalkHome();
+    void WorkAborted() override;
+    void WalkedDerived() override;
 
-    public:
+    /// Zeichnen der Figur in sonstigen Arbeitslagen
+    void DrawOtherStates(DrawPoint drawPt) override;
 
-        nofShipWright(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofShipWright(SerializedGameData& sgd, const unsigned obj_id);
-        GO_Type GetGOT() const override { return GOT_NOF_SHIPWRIGHT; }
-        void HandleDerivedEvent(const unsigned int id) override;
-        void Serialize(SerializedGameData& sgd) const override;
+public:
+    nofShipWright(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofShipWright(SerializedGameData& sgd, const unsigned obj_id);
+    GO_Type GetGOT() const override { return GOT_NOF_SHIPWRIGHT; }
+    void HandleDerivedEvent(const unsigned id) override;
+    void Serialize(SerializedGameData& sgd) const override;
 };
 
-
-
 #endif
-

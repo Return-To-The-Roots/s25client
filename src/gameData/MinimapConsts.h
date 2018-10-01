@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,6 +33,5 @@ const unsigned ROAD_COLOR = 0xFFAAAAAA;
 /// Scaling in x for displaying the map
 /// ~2/sqrt(3) based on hexagons beeing regular
 const double MINIMAP_SCALE_X = 1.1547;
-
 
 #endif

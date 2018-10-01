@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,50 +17,39 @@
 #ifndef PREVIEWMINIMAP_H_
 #define PREVIEWMINIMAP_H_
 
-#include "ctrlMinimap.h"
 #include "PreviewMinimap.h"
-#include "gameData/MaxPlayers.h"
-#include "gameTypes/MapTypes.h"
+#include "ctrlMinimap.h"
 #include "ogl/glArchivItem_Map.h"
+#include "gameTypes/MapCoordinates.h"
+#include "gameData/MaxPlayers.h"
 class Window;
 
 /// Übersichtskarte (MapPreview)
 class ctrlPreviewMinimap : public ctrlMinimap
 {
-        /// Minimap
-        PreviewMinimap minimap;
-        /// Startpositionen der Spieler
-        struct Player
-        {
-            Player();
-            /// Map-Koordinaten der Startposition
-            MapPoint pos;
-            /// Farbe
-            unsigned color;
-        } players[MAX_PLAYERS];
+    /// Minimap
+    PreviewMinimap minimap;
+    /// Startpositionen der Spieler
+    struct Player
+    {
+        Player();
+        /// Map-Koordinaten der Startposition
+        MapPoint pos;
+        /// Farbe
+        unsigned color;
+    } players[MAX_PLAYERS];
 
-    public:
+public:
+    ctrlPreviewMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* s2map);
 
-        ctrlPreviewMinimap( Window* parent,
-                            const unsigned int id,
-                            const unsigned short x,
-                            const unsigned short y,
-                            const unsigned short width,
-                            const unsigned short height,
-                            glArchivItem_Map* s2map);
+    /// Zeichnet die MapPreview
+    void Draw_() override;
+    Rect GetBoundaryRect() const override;
 
-        /// Zeichnet die MapPreview
-        bool Draw_() override;
+    /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
+    void SetPlayerColor(const unsigned id, const unsigned color) { players[id].color = color; }
 
-        /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
-        void SetPlayerColor(const unsigned id, const unsigned color)
-        {
-            players[id].color = color;
-        }
-
-        void SetMap(const glArchivItem_Map* const s2map);
+    void SetMap(const glArchivItem_Map* const s2map);
 };
 
-
 #endif // !MapPreview_H_
-

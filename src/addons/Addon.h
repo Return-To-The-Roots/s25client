@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -30,30 +30,31 @@ class Window;
  */
 class Addon
 {
-    public:
-        Addon(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
-            : id_(id), groups_(groups), name_(name), description_(description), defaultStatus_(default_status)  {   }
-        virtual ~Addon() {  }
+public:
+    Addon(const AddonId id, const unsigned groups, const std::string& name, const std::string& description, const unsigned default_status)
+        : id_(id), groups_(groups), name_(name), description_(description), defaultStatus_(default_status)
+    {}
+    virtual ~Addon() {}
 
-        virtual void hideGui(Window* window, unsigned int id) const;
-        virtual void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const;
-        virtual void setGuiStatus(Window*  /*window*/, unsigned int  /*id*/, unsigned int  /*status*/) const = 0;
+    virtual void hideGui(Window* window, unsigned id) const;
+    virtual void createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const;
+    virtual void setGuiStatus(Window* /*window*/, unsigned /*id*/, unsigned /*status*/) const = 0;
 
-        virtual unsigned int getGuiStatus(Window*  /*window*/, unsigned int  /*id*/, bool& failed) const;
+    virtual unsigned getGuiStatus(Window* /*window*/, unsigned /*id*/, bool& failed) const;
 
-        AddonId getId() const { return id_; }
-        unsigned int getGroups() const { return (ADDONGROUP_ALL | groups_); }
-        std::string getName() const { return name_; }
-        std::string getDescription() const { return description_; }
-        unsigned int getDefaultStatus() const { return defaultStatus_; }
-        virtual unsigned getNumOptions() const = 0;
+    AddonId getId() const { return id_; }
+    unsigned getGroups() const { return (ADDONGROUP_ALL | groups_); }
+    std::string getName() const { return name_; }
+    std::string getDescription() const { return description_; }
+    unsigned getDefaultStatus() const { return defaultStatus_; }
+    virtual unsigned getNumOptions() const = 0;
 
-    private:
-        AddonId id_;
-        unsigned int groups_;
-        std::string name_;
-        std::string description_;
-        unsigned int defaultStatus_;
+private:
+    AddonId id_;
+    unsigned groups_;
+    std::string name_;
+    std::string description_;
+    unsigned defaultStatus_;
 };
 
 #endif // !ADDON_H_INCLUDED

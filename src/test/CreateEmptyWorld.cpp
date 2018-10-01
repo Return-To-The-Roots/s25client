@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,49 +15,54 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "CreateEmptyWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/testHelpers.h"
+#include "gameData/TerrainDesc.h"
+#include "test/initTestHelpers.h"
+#include <stdexcept>
 
-CreateEmptyWorld::CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers):
-    width_(width), height_(height), playerNations_(numPlayers, NAT_AFRICANS)
-{}
+CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_AFRICANS) {}
 
 bool CreateEmptyWorld::operator()(GameWorldGame& world) const
 {
     // For consistent results
     doInitGameRNG(0);
 
-    world.Init(width_, height_, LT_GREENLAND);
-    // Set everything to meadow
-    for(MapPoint pt(0,0); pt.y < height_; ++pt.y)
+    loadGameData(world.GetDescriptionWriteable());
+    world.Init(size_);
+    // Set everything to buildable land
+    DescIdx<TerrainDesc> t(0);
+    const WorldDescription& desc = world.GetDescription();
+    for(; t.value < desc.terrain.size(); t.value++)
     {
-        for(pt.x = 0; pt.x < width_; ++pt.x)
-        {
-            MapNode& node = world.GetNodeWriteable(pt);
-            node.t1 = node.t2 = TT_MEADOW1;
-        }
+        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::LAND)
+            break;
+    }
+    RTTR_FOREACH_PT(MapPoint, size_)
+    {
+        MapNode& node = world.GetNodeWriteable(pt);
+        node.t1 = node.t2 = t;
     }
     if(!playerNations_.empty())
     {
         // Distribute player HQs evenly across map
         unsigned numPlayers = playerNations_.size();
         Point<unsigned> numPlayersPerDim;
-        numPlayersPerDim.y = static_cast<unsigned>(ceil(sqrt(numPlayers)));
-        numPlayersPerDim.x = static_cast<unsigned>(ceil(float(numPlayers) / numPlayersPerDim.y));
+        numPlayersPerDim.x = static_cast<unsigned>(ceil(sqrt(numPlayers)));
+        numPlayersPerDim.y = static_cast<unsigned>(ceil(float(numPlayers) / numPlayersPerDim.x));
         // Distance between HQs
-        Point<unsigned> playerDist = Point<unsigned>(width_ / numPlayersPerDim.x, height_ / numPlayersPerDim.y);
+        Point<unsigned> playerDist = size_ / numPlayersPerDim;
         // Start with a little offset so we don't place them at the map border
-        MapPoint curPt(playerDist / 2);
+        MapPoint curPt(playerDist / 2u);
         std::vector<MapPoint> hqPositions;
         for(unsigned y = 0; y < numPlayersPerDim.y; y++)
         {
             numPlayersPerDim.x = min<unsigned>(numPlayersPerDim.x, numPlayers - hqPositions.size());
-            playerDist.x = width_ / numPlayersPerDim.x;
+            playerDist.x = size_.x / numPlayersPerDim.x;
             curPt.x = playerDist.x / 2;
-            for (unsigned x = 0; x < numPlayersPerDim.x; x++)
+            for(unsigned x = 0; x < numPlayersPerDim.x; x++)
             {
                 hqPositions.push_back(curPt);
                 curPt.x += playerDist.x;
@@ -69,4 +74,38 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
     }
     world.InitAfterLoad();
     return true;
+}
+
+CreateUninitWorld::CreateUninitWorld(const MapExtent& size, unsigned numPlayers) : size_(size)
+{
+    if(numPlayers > 0)
+        throw std::logic_error("Cannot have players for uninitialized world");
+}
+
+bool CreateUninitWorld::operator()(GameWorldGame& world) const
+{
+    // For consistent results
+    doInitGameRNG(0);
+
+    loadGameData(world.GetDescriptionWriteable());
+    world.Init(size_);
+    return true;
+}
+
+void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
+{
+    switch(dir.native_value())
+    {
+        case Direction::WEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t1 = t; break;
+        case Direction::NORTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t2 = t; break;
+        case Direction::NORTHEAST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHEAST)).t1 = t; break;
+        case Direction::EAST: world.GetNodeWriteable(pt).t2 = t; break;
+        case Direction::SOUTHEAST: world.GetNodeWriteable(pt).t1 = t; break;
+        case Direction::SOUTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::WEST)).t2 = t; break;
+    }
+}
+
+void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
+{
+    setRightTerrain(world, pt, Direction(dir.toUInt() + 6 - 1), t);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,32 +18,32 @@
 #define NOSIGN_H_INCLUDED
 
 #include "noDisappearingEnvObject.h"
+#include "gameTypes/Resource.h"
 class SerializedGameData;
 
 /// Stellt ein Ressourcen-Schild dar
 class noSign : public noDisappearingEnvObject
 {
-    public:
-        noSign(const MapPoint pt, const unsigned char type, const unsigned char quantity);
-        noSign(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    noSign(const MapPoint pt, Resource resource);
+    noSign(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noSign(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noSign(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noSign(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_SIGN; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noSign(sgd); }
 
-        /// An x,y zeichnen.
-        void Draw(DrawPoint drawPt) override;
+    GO_Type GetGOT() const override { return GOT_SIGN; }
 
-        unsigned char GetSignType() const { return type; }
+    /// An x,y zeichnen.
+    void Draw(DrawPoint drawPt) override;
 
-    private:
+    Resource::Type GetSignType() const { return resource.getType(); }
 
-        /// Typ der Ressource (0 = Erz, 1 = Gold, 2 = Kohle, 3 = Granit, 4 = Wasser, 5 = nix)
-        const unsigned char type;
-        /// Häufigkeit der Ressource
-        const unsigned char quantity;
+private:
+    Resource resource;
 };
 
 #endif // !NOSIGN_H_INCLUDED

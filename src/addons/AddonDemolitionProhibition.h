@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,25 +20,22 @@
 #pragma once
 
 #include "AddonList.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for changing the maximum length of waterways.
  */
 class AddonDemolitionProhibition : public AddonList
 {
-    public:
-        AddonDemolitionProhibition() : AddonList(AddonId::DEMOLITION_PROHIBITION,
-                    ADDONGROUP_MILITARY,
-                    _("Disable Demolition of military buildings"),
-                    _("Disable the demolition of military buildings under attack or near frontiers."),
-                    0
-                    )
-        {
-            addOption(_("Off"));
-            addOption(_("Active if attacked"));
-            addOption(_("Active near frontiers"));
-        }
+public:
+    AddonDemolitionProhibition()
+        : AddonList(AddonId::DEMOLITION_PROHIBITION, ADDONGROUP_MILITARY, _("Disable Demolition of military buildings"),
+                    _("Disable the demolition of military buildings under attack or near frontiers."), 0)
+    {
+        addOption(_("Off"));
+        addOption(_("Active if attacked"));
+        addOption(_("Active near frontiers"));
+    }
 };
 
 #endif // !ADDONDEMOLITIONPROHIBITION_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,15 +20,15 @@
 #pragma once
 
 #include "DrawPoint.h"
-#include "libsiedler2/src/ArchivItem_Bob.h"
-
+#include "libsiedler2/ArchivItem_Bob.h"
 
 /// Klasse für GL-Bobfiles.
 class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
 {
-    public:
-        /// Zeichnet einen Animationsstep.
-        void Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, DrawPoint drawPt, unsigned int color);
+public:
+    /// Zeichnet einen Animationsstep.
+    void Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color);
+    RTTR_CLONEABLE(glArchivItem_Bob)
 };
 
 #endif // !GLARCHIVITEM_BOB_H_INCLUDED

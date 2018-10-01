@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,9 +28,9 @@ enum PactType
 };
 
 /// Number of the various pacts
-const unsigned PACTS_COUNT = 2;
+const unsigned NUM_PACTS = 2;
 
 /// Names of the possible pacts
-extern const boost::array<const char*, PACTS_COUNT> PACT_NAMES;
+extern const boost::array<const char*, NUM_PACTS> PACT_NAMES;
 
 #endif // PactTypes_h__

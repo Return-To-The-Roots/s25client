@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,8 +17,6 @@
 
 #ifndef TypeId_h__
 #define TypeId_h__
-
-#include <stdint.h>
 
 /** Class for getting a unique Id per type: TypeId::value<int>()
     Note: NOT constant over different program version and NOT thread safe */

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,18 +27,17 @@ class GameCommandFactory;
 
 class iwBuilding : public IngameWindow
 {
-        GameWorldView& gwv;
-        GameCommandFactory& gcFactory;
-        nobUsual* const building;              /// Das zugehörige Gebäudeobjekt
+    GameWorldView& gwv;
+    GameCommandFactory& gcFactory;
+    nobUsual* const building; /// Das zugehörige Gebäudeobjekt
 
-    public:
-        iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building);
+public:
+    iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building);
 
-    private:
-
-        void Msg_PaintBefore() override;
-        void Msg_PaintAfter() override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_PaintBefore() override;
+    void Msg_PaintAfter() override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwBUILDING_H_INCLUDED

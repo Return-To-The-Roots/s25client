@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,25 +18,31 @@
 #ifndef glTexturePackerNode_h__
 #define glTexturePackerNode_h__
 
+#include "Point.h"
 #include <vector>
-#include <stdint.h>
 
 class glSmartBitmap;
 class glTexturePackerNode;
+namespace libsiedler2 {
+class PixelBufferARGB;
+} // namespace libsiedler2
 
 class glTexturePackerNode
 {
-    int x, y;
-    int w, h;
+    /// Position on the packed texture (can't be negative)
+    Extent pos;
+    /// Size of all the subnodes combined (makes up area covered)
+    Extent size;
 
     glSmartBitmap* bmp;
     glTexturePackerNode* child[2];
 
 public:
-    glTexturePackerNode(): x(0), y(0), w(0), h(0), bmp(NULL) { child[0] = child[1] = NULL; }
-    glTexturePackerNode(int w, int h): x(0), y(0), w(w), h(h), bmp(NULL) { child[0] = child[1] = NULL; }
-
-    bool insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, unsigned gw, unsigned gh, std::vector<glTexturePackerNode*>& todo);
+    glTexturePackerNode() : pos(0, 0), size(0, 0), bmp(NULL) { child[0] = child[1] = NULL; }
+    glTexturePackerNode(const Extent& size) : pos(0, 0), size(size), bmp(NULL) { child[0] = child[1] = NULL; }
+    /// Find a position in the buffer to draw the bitmap starting at this node
+    /// todo list is cleared and used to avoid frequent allocations
+    bool insert(glSmartBitmap* b, libsiedler2::PixelBufferARGB& buffer, std::vector<glTexturePackerNode*>& todo);
     void destroy(unsigned reserve = 0);
 };
 

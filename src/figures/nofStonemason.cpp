@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,26 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofStonemason.h"
 
-#include "nodeObjs/noGranite.h"
-#include "Loader.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "world/GameWorldGame.h"
-#include "SoundManager.h"
 #include "GameInterface.h"
+#include "GamePlayer.h"
+#include "Loader.h"
+#include "SoundManager.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noGranite.h"
 
 nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_STONEMASON, pos, player, workplace)
-{
-}
+{}
 
-nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
-{
-}
+nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofStonemason::DrawWorking(DrawPoint drawPt)
@@ -43,14 +40,13 @@ void nofStonemason::DrawWorking(DrawPoint drawPt)
 
     // Stein hauen
     LOADER.GetPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
-    ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+      ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
     if(now_id % 8 == 5)
     {
         SOUNDMANAGER.PlayNOSound(56, this, now_id);
         was_sounding = true;
     }
-
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -60,9 +56,7 @@ unsigned short nofStonemason::GetCarryID() const
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofStonemason::WorkStarted()
-{
-}
+void nofStonemason::WorkStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofStonemason::WorkFinished()
@@ -79,8 +73,7 @@ void nofStonemason::WorkFinished()
 
         // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
         gwg->RecalcBQAroundPoint(pos);
-    }
-    else
+    } else
         // ansonsten wird er um 1 kleiner
         gwg->GetSpecObj<noGranite>(pos)->Hew();
 
@@ -94,4 +87,3 @@ nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt) cons
     // An dieser Position muss es nur Stein geben
     return ((gwg->GetNO(pt)->GetType() == NOP_GRANITE) ? PQ_CLASS1 : PQ_NOTPOSSIBLE);
 }
-

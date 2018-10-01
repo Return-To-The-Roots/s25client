@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,13 +26,12 @@ struct ToolNote
 
     enum Type
     {
-        OrderPlaced,    // New order was placed (might be only a visual one)
+        OrderPlaced,    // New order was placed
         OrderCompleted, // An ordered tool was produced
         SettingsChanged // Tool settings (production priority) has changed
     };
 
-    ToolNote(Type type, unsigned player):
-        type(type), player(player){}
+    ToolNote(Type type, unsigned player) : type(type), player(player) {}
 
     const Type type;
     const unsigned player;

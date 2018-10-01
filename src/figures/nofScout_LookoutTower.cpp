@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
-#include "postSystem/PostMsgWithBuilding.h"
-#include "world/GameWorldGame.h"
 #include "EventManager.h"
 #include "buildings/nobUsual.h"
-#include "GameClient.h"
+#include "network/GameClient.h"
+#include "postSystem/PostMsgWithBuilding.h"
+#include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
 class SerializedGameData;
 class nobBaseWarehouse;
@@ -34,25 +34,18 @@ nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned 
     : nofBuildingWorker(JOB_SCOUT, pos, player, goalWh)
 {}
 
-nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id)
-    : nofBuildingWorker(sgd, obj_id)
-{}
-
+nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id) {}
 
 void nofScout_LookoutTower::Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 }
 
+void nofScout_LookoutTower::WalkedDerived() {}
 
-void nofScout_LookoutTower::WalkedDerived()
-{}
+void nofScout_LookoutTower::DrawWorking(DrawPoint /*drawPt*/) {}
 
-void nofScout_LookoutTower::DrawWorking(DrawPoint /*drawPt*/)
-{}
-
-void nofScout_LookoutTower::HandleDerivedEvent(const unsigned int  /*id*/)
-{}
+void nofScout_LookoutTower::HandleDerivedEvent(const unsigned /*id*/) {}
 
 void nofScout_LookoutTower::WorkAborted()
 {
@@ -63,14 +56,15 @@ void nofScout_LookoutTower::WorkAborted()
 void nofScout_LookoutTower::WorkplaceReached()
 {
     // Im enstprechenden Radius alles sichtbar machen
-    gwg->SetVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
+    gwg->MakeVisibleAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
-    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"), PostCategory::Military, *workplace));
+    SendPostMessage(player,
+                    new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"), PostCategory::Military, *workplace));
 }
 
-bool nofScout_LookoutTower::AreWaresAvailable()
+bool nofScout_LookoutTower::AreWaresAvailable() const
 {
-    // Sp�hturm-Erkunder arbeiten nie!
+    // We never work!
     return false;
 }

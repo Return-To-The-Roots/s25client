@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,17 +27,37 @@ struct VirtualInventory
 {
     Inventory visual, real;
 
-    VirtualInventory(){ clear(); }
+    VirtualInventory() { clear(); }
     /// Sets everything to 0
-    void clear(){ visual.clear(); real.clear(); }
+    void clear()
+    {
+        visual.clear();
+        real.clear();
+    }
     /// Adds goods to both inventories
-    void Add(const GoodType good, const unsigned amount = 1){ visual.Add(good, amount); real.Add(good, amount); }
+    void Add(const GoodType good, const unsigned amount = 1)
+    {
+        visual.Add(good, amount);
+        real.Add(good, amount);
+    }
     /// Adds figures to both inventories
-    void Add(const Job job, const unsigned amount = 1){ visual.Add(job, amount); real.Add(job, amount); }
+    void Add(const Job job, const unsigned amount = 1)
+    {
+        visual.Add(job, amount);
+        real.Add(job, amount);
+    }
     /// Removes goods from both inventories
-    void Remove(const GoodType good, const unsigned amount = 1){ visual.Remove(good, amount); real.Remove(good, amount); }
+    void Remove(const GoodType good, const unsigned amount = 1)
+    {
+        visual.Remove(good, amount);
+        real.Remove(good, amount);
+    }
     /// Removes jobs from both inventories
-    void Remove(const Job job, const unsigned amount = 1){ visual.Remove(job, amount); real.Remove(job, amount); }
+    void Remove(const Job job, const unsigned amount = 1)
+    {
+        visual.Remove(job, amount);
+        real.Remove(job, amount);
+    }
 
     /// Returns the real number of people of the given type
     unsigned operator[](Job job) const { return real.people[job]; }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,49 +19,34 @@
 
 #pragma once
 
-#include "Singleton.h"
+#include "libutil/Singleton.h"
 #include <string>
 #include <vector>
 
-class Languages: public Singleton<Languages>
+struct Language
 {
-    public:
-        struct Language
-        {
-            Language(const std::string& name, const std::string& code) : name(name), code(code) {}
+    Language(const std::string& name, const std::string& code) : name(name), code(code) {}
 
-            static bool compare(const Language& o1, const Language& o2)
-            {
-                if (o1.name < o2.name)
-                    return true;
+    std::string name;
+    std::string code; // "normaler" locale-code
+};
 
-                if (o1.name == o2.name)
-                {
-                    if (o1.code < o2.code)
-                        return true;
-                }
-                return false;
-            }
+class Languages : public Singleton<Languages>
+{
+public:
+    Languages();
 
-            std::string name;
-            std::string code;  // "normaler" locale-code
-        };
+    void setLanguage(const std::string& lang_code);
+    const std::string setLanguage(unsigned i);
 
-    public:
-        Languages() : loaded(false) {}
+    unsigned size();
+    const Language& getLanguage(unsigned i);
 
-        void setLanguage(const std::string& lang_code);
-        const std::string setLanguage(unsigned int i);
+private:
+    void loadLanguages();
 
-        unsigned int getCount();
-        const Language& getLanguage(unsigned int i);
-
-    protected:
-        void loadLanguages();
-
-    private:
-        std::vector<Language> languages;
-        bool loaded;
+    std::vector<Language> languages;
+    bool loaded;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

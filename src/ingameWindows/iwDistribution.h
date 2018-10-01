@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,45 +20,38 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include <vector>
 
 class GameCommandFactory;
 class GameWorldViewer;
 
 class iwDistribution : public IngameWindow
 {
-    private:
+    struct DistributionGroup;
 
-        enum
-        {
-            TAB_FOOD = 1,
-            TAB_CORN,
-            TAB_IRON,
-            TAB_COAL,
-            TAB_WOOD,
-            TAB_BOARD,
-            TAB_WATER
-        };
+public:
+    iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
+    ~iwDistribution() override;
 
-        const GameWorldViewer& gwv;
-        GameCommandFactory& gcFactory;
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-        bool settings_changed;
-    public:
+private:
+    const GameWorldViewer& gwv;
+    GameCommandFactory& gcFactory;
+    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+    bool settings_changed;
 
-        iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-        ~iwDistribution() override;
+    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+    void UpdateSettings();
+    /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+    void TransmitSettings();
 
-    private:
+    void Msg_Group_ProgressChange(const unsigned group_id, const unsigned ctrl_id, const unsigned short position) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 
-        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-        void UpdateSettings();
-        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-        void TransmitSettings();
-
-        void Msg_Group_ProgressChange(const unsigned int group_id, const unsigned int ctrl_id, const unsigned short position) override;
-        void Msg_Timer(const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-
+    /// Groups for the settings
+    static std::vector<DistributionGroup> groups;
+    /// Initialize the groups structure
+    static void CreateGroups();
 };
 
 #endif // !iwDISTRIBUTION_H_INCLUDED

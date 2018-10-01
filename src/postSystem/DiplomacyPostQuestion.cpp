@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,34 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "DiplomacyPostQuestion.h"
 #include "GamePlayerInfo.h"
 // TODO: Remove this and add FormatGFTime somewhere else
-#include "GameClient.h"
+#include "network/GameClient.h"
 #include <boost/format.hpp>
 
-DiplomacyPostQuestion::DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer, int duration):
-    PostMsg(sendFrame, "", PostCategory::Diplomacy), acceptOrCancel(true), pact(pact), pactId(id), player(otherPlayer.GetPlayerId())
+DiplomacyPostQuestion::DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer,
+                                             int duration)
+    : PostMsg(sendFrame, "", PostCategory::Diplomacy), acceptOrCancel(true), pact(pact), pactId(id), player(otherPlayer.GetPlayerId())
 {
-    std::string text = boost::str(
-                        boost::format(_("The player '%s' offers you a %s.")) % otherPlayer.name % _(PACT_NAMES[pact])
-                       ) + "\n";
+    std::string text = boost::str(boost::format(_("The player '%s' offers you a %s.")) % otherPlayer.name % _(PACT_NAMES[pact])) + "\n";
     if(duration < 0)
         text += _("Duration: Forever");
     else
-        text += boost::str(
-            boost::format(_("Duration: %d GF (%s)")) % duration % GAMECLIENT.FormatGFTime(static_cast<unsigned>(duration))
-        );
+        text += boost::str(boost::format(_("Duration: %d GF (%s)")) % duration % GAMECLIENT.FormatGFTime(static_cast<unsigned>(duration)));
 
     SetText(text);
 }
 
-DiplomacyPostQuestion::DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer):
-    PostMsg(sendFrame, "", PostCategory::Diplomacy), acceptOrCancel(false), pact(pact), pactId(id), player(otherPlayer.GetPlayerId())
+DiplomacyPostQuestion::DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer)
+    : PostMsg(sendFrame, "", PostCategory::Diplomacy), acceptOrCancel(false), pact(pact), pactId(id), player(otherPlayer.GetPlayerId())
 {
-    std::string text = boost::str(
-        boost::format(_("The player '%s' want to cancel the '%s' between you both prematurely. Do you agree?")) % otherPlayer.name % _(PACT_NAMES[pact])
-    );
+    std::string text = boost::str(boost::format(_("The player '%s' want to cancel the '%s' between you both prematurely. Do you agree?"))
+                                  % otherPlayer.name % _(PACT_NAMES[pact]));
     SetText(text);
 }

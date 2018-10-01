@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofFlagWorker.h"
-#include "world/GameWorldGame.h"
-#include "nodeObjs/noFlag.h"
+#include "FindWhConditions.h"
 #include "GamePlayer.h"
 #include "SerializedGameData.h"
-#include "FindWhConditions.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noFlag.h"
 
 nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : noFigure(job, pos, player, goal), flag(0), state(STATE_FIGUREWORK)
@@ -35,18 +35,15 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
         {
             this->flag = static_cast<noFlag*>(goal);
             gwg->GetPlayer(player).RegisterFlagWorker(this);
-        }
-        else
+        } else
             this->flag = 0;
-    }
-    else
+    } else
         this->flag = 0;
 }
 
 nofFlagWorker::nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), flag(sgd.PopObject<noFlag>(GOT_FLAG)), state(State(sgd.PopUnsignedChar()))
-{
-}
+{}
 
 void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData& sgd) const
 {
@@ -70,7 +67,7 @@ void nofFlagWorker::AbrogateWorkplace()
         /// uns entfernen, da wir wieder umdrehen müssen
         gwg->GetPlayer(player).RemoveFlagWorker(this);
         flag = NULL;
-    }else
+    } else
         RTTR_Assert(!gwg->GetPlayer(player).IsFlagWorker(this));
 }
 
@@ -92,22 +89,19 @@ void nofFlagWorker::GoToFlag()
             cur_rs = &emulated_wanderroad;
             rs_pos = 0;
             WalkToGoal();
-        }
-        else
+        } else
         {
             // Weg führt nicht mehr zum Lagerhaus, dann rumirren
             StartWandering();
             Wander();
         }
 
-
         // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
         // "abmelden"
         gwg->GetPlayer(player).RemoveFlagWorker(this);
         state = STATE_FIGUREWORK;
         flag = NULL;
-    }
-    else
+    } else
     {
         // Weg suchen
         unsigned char dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
@@ -121,11 +115,9 @@ void nofFlagWorker::GoToFlag()
             state = STATE_FIGUREWORK;
 
             flag = NULL;
-        }
-        else
+        } else
         {
-            StartWalking(dir);
+            StartWalking(Direction::fromInt(dir));
         }
     }
 }
-

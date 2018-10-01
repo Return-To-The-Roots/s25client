@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,34 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofBuildingWorker.h"
-#include "buildings/nobUsual.h"
-#include "buildings/nobBaseWarehouse.h"
-#include "Loader.h"
-#include "nodeObjs/noFlag.h"
-#include "notifications/BuildingNote.h"
-#include "Ware.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "SoundManager.h"
-#include "postSystem/PostMsgWithBuilding.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
+#include "GamePlayer.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
+#include "SoundManager.h"
+#include "Ware.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobUsual.h"
 #include "world/GameWorldGame.h"
-#include "addons/const_addons.h"
-#include "gameData/GameConsts.h"
-#include "gameData/ShieldConsts.h"
+#include "nodeObjs/noFlag.h"
 #include "gameData/JobConsts.h"
+#include "gameData/ShieldConsts.h"
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), outOfRessourcesMsgSent(false)
+    : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), was_sounding(false)
 {
-    RTTR_Assert(dynamic_cast<nobUsual*>(static_cast<GameObject*>(workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
+    RTTR_Assert(dynamic_cast<nobUsual*>(
+      static_cast<GameObject*>(workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
 }
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
-    : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(NULL), ware(GD_NOTHING), not_working(0), since_not_working(0xFFFFFFFF), was_sounding(false), outOfRessourcesMsgSent(false)
+    : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(NULL), ware(GD_NOTHING), was_sounding(false)
 {}
 
 void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) const
@@ -55,35 +51,25 @@ void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) con
     {
         sgd.PushObject(workplace, false);
         sgd.PushUnsignedChar(static_cast<unsigned char>(ware));
-        sgd.PushUnsignedShort(not_working);
-        sgd.PushUnsignedInt(since_not_working);
         sgd.PushBool(was_sounding);
     }
-    sgd.PushBool(outOfRessourcesMsgSent);
 }
 
-nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
-    state(State(sgd.PopUnsignedChar()))
+nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id)
+    : noFigure(sgd, obj_id), state(State(sgd.PopUnsignedChar()))
 {
     if(fs != FS_GOHOME && fs != FS_WANDER)
     {
         workplace = sgd.PopObject<nobUsual>(GOT_UNKNOWN);
         ware = GoodType(sgd.PopUnsignedChar());
-        not_working = sgd.PopUnsignedShort();
-        since_not_working = sgd.PopUnsignedInt();
         was_sounding = sgd.PopBool();
-    }
-    else
+    } else
     {
         workplace = 0;
         ware = GD_NOTHING;
-        not_working = 0;
-        since_not_working = 0xFFFFFFFF;
         was_sounding = false;
     }
-    outOfRessourcesMsgSent = sgd.PopBool();
 }
-
 
 void nofBuildingWorker::AbrogateWorkplace()
 {
@@ -102,38 +88,25 @@ void nofBuildingWorker::Draw(DrawPoint drawPt)
 
         case STATE_HUNTER_CHASING:
         case STATE_HUNTER_WALKINGTOCADAVER:
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT:
-        {
-            DrawWalking(drawPt);
-        } break;
+        case STATE_HUNTER_FINDINGSHOOTINGPOINT: { DrawWalking(drawPt);
+        }
+        break;
         case STATE_WORK:
         case STATE_HUNTER_SHOOTING:
         case STATE_HUNTER_EVISCERATING:
         case STATE_CATAPULT_TARGETBUILDING:
-        case STATE_CATAPULT_BACKOFF:
-            DrawWorking(drawPt); break;
-        case STATE_CARRYOUTWARE:
-        {
-            unsigned short id = GetCarryID();
-
-            // Über 100 bedeutet aus der carrier.bob nehmen, ansonsten aus der jobs.bob!
-            if(id >= 100)
-                DrawWalking(drawPt, LOADER.GetBobN("carrier"), id - 100, JOB_CONSTS[job_].fat);
-            else
-                DrawWalking(drawPt, LOADER.GetBobN("jobs"), id, JOB_CONSTS[job_].fat);
-        } break;
+        case STATE_CATAPULT_BACKOFF: DrawWorking(drawPt); break;
+        case STATE_CARRYOUTWARE: DrawWalkingWithWare(drawPt); break;
         case STATE_WALKINGHOME:
         case STATE_ENTERBUILDING:
-        {
-            DrawReturnStates(drawPt);
-
-        } break;
-        default:
-            DrawOtherStates(drawPt);
+            if(ware != GD_NOTHING)
+                DrawWalkingWithWare(drawPt);
+            else
+                DrawWalking(drawPt);
             break;
+        default: DrawOtherStates(drawPt); break;
     }
 }
-
 
 void nofBuildingWorker::Walked()
 {
@@ -147,25 +120,24 @@ void nofBuildingWorker::Walked()
             {
                 // dann war draußen kein Platz --> ist jetzt evtl Platz?
                 state = STATE_WAITFORWARESPACE;
-                if(workplace->GetFlag()->GetWareCount() < 8)
+                if(workplace->GetFlag()->GetNumWares() < 8)
                     FreePlaceAtFlag();
                 // Ab jetzt warten, d.h. nicht mehr arbeiten --> schlecht für die Produktivität
-                StartNotWorking();
-            }
-            else
+                workplace->StartNotWorking();
+            } else
             {
                 // Anfangen zu Arbeiten
-			    TryToWork();
+                TryToWork();
             }
-
-        } break;
+        }
+        break;
         case STATE_CARRYOUTWARE:
         {
             // Alles weitere übernimmt nofBuildingWorker
             WorkingReady();
-        } break;
-        default:
-            WalkedDerived();
+        }
+        break;
+        default: WalkedDerived();
     }
 }
 
@@ -179,7 +151,7 @@ void nofBuildingWorker::WorkingReady()
     {
         noFlag* flag = workplace->GetFlag();
         // Ist noch Platz an der Fahne?
-        if(flag->GetWareCount() < 8)
+        if(flag->GetNumWares() < 8)
         {
             // Ware erzeugen
             Ware* real_ware = new Ware(ware, 0, flag);
@@ -201,7 +173,7 @@ void nofBuildingWorker::WorkingReady()
     }
 
     // Wieder reingehen
-    StartWalking(1);
+    StartWalking(Direction::NORTHWEST);
     state = STATE_ENTERBUILDING;
 }
 
@@ -212,37 +184,26 @@ void nofBuildingWorker::TryToWork()
     {
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         // Nun arbeite ich nich mehr
-        StartNotWorking();
+        workplace->StartNotWorking();
     }
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
     else if(AreWaresAvailable())
     {
-        if(ReadyForWork())
-        {
-            state = STATE_WAITING1;
-            current_ev = GetEvMgr().AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
-            StopNotWorking();
-        }else
-        {
-            state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
-        }
-    }
-    else
+        state = STATE_WAITING1;
+        current_ev =
+          GetEvMgr().AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
+        workplace->StopNotWorking();
+    } else
     {
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         // Nun arbeite ich nich mehr
-        StartNotWorking();
+        workplace->StartNotWorking();
     }
 }
 
-bool nofBuildingWorker::AreWaresAvailable()
+bool nofBuildingWorker::AreWaresAvailable() const
 {
     return workplace->WaresAvailable();
-}
-
-bool nofBuildingWorker::ReadyForWork()
-{
-    return true;
 }
 
 void nofBuildingWorker::GotWareOrProductionAllowed()
@@ -251,7 +212,7 @@ void nofBuildingWorker::GotWareOrProductionAllowed()
     if(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED)
     {
         // anfangen zu arbeiten
-		TryToWork();
+        TryToWork();
     }
 }
 
@@ -273,24 +234,23 @@ bool nofBuildingWorker::FreePlaceAtFlag()
     // Hinaus gehen, um Ware abzulegen, falls wir auf einen freien Platz warten
     if(state == STATE_WAITFORWARESPACE)
     {
-        StartWalking(4);
+        StartWalking(Direction::SOUTHEAST);
         state = STATE_CARRYOUTWARE;
         return true;
-    }
-    else
+    } else
         return false;
 }
 void nofBuildingWorker::LostWork()
 {
     switch(state)
     {
-        default:
-            break;
+        default: break;
         case STATE_FIGUREWORK:
         {
             // Auf Wegen nach Hause gehen
             GoHome();
-        } break;
+        }
+        break;
         case STATE_WAITING1:
         case STATE_WAITING2:
         case STATE_WORK:
@@ -311,13 +271,12 @@ void nofBuildingWorker::LostWork()
             StartWandering();
             Wander();
 
-
             // Evtl. Sounds löschen
             SOUNDMANAGER.WorkingFinished(this);
 
             state = STATE_FIGUREWORK;
-
-        } break;
+        }
+        break;
         case STATE_ENTERBUILDING:
         case STATE_CARRYOUTWARE:
         case STATE_WALKTOWORKPOINT:
@@ -330,125 +289,19 @@ void nofBuildingWorker::LostWork()
             WorkAborted();
 
             // Rumirren
-            // Bei diesen States läuft man schon, darf also nicht noch zusätzlich Wander aufrufen, da man dann ja im Laufen nochmal losläuft!
+            // Bei diesen States läuft man schon, darf also nicht noch zusätzlich Wander aufrufen, da man dann ja im Laufen nochmal
+            // losläuft!
             StartWandering();
 
             // Evtl. Sounds löschen
             SOUNDMANAGER.WorkingFinished(this);
 
             state = STATE_FIGUREWORK;
-        } break;
-
+        }
+        break;
     }
 
     workplace = NULL;
-}
-
-namespace{
-    struct NodeHasResource
-    {
-        const GameWorldGame& gwg;
-        const unsigned char res;
-        NodeHasResource(const GameWorldGame& gwg, const unsigned char res):gwg(gwg), res(res){}
-
-        bool operator()(const MapPoint pt)
-        {
-            return gwg.IsResourcesOnNode(pt, res);
-        }
-    };
-}
-
-/**
- *  verbraucht einen Rohstoff einer Mine oder eines Brunnens
- *  an einer (umliegenden) Stelle.
- */
-bool nofBuildingWorker::GetResources(unsigned char type)
-{
-    //this makes granite mines work everywhere
-    const GlobalGameSettings& settings = gwg->GetGGS();
-    if (type == 0 && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES))
-        return true;
-    // in Map-Resource-Koordinaten konvertieren
-    type = RESOURCES_MINE_TO_MAP[type];
-
-    MapPoint mP(0, 0);
-    bool found = false;
-
-    // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
-    if(gwg->IsResourcesOnNode(pos, type))
-    {
-        mP = pos;
-        found = true;
-    }else
-    {
-        std::vector<MapPoint> pts = gwg->GetPointsInRadius<1>(pos, MINER_RADIUS, Identity<MapPoint>(), NodeHasResource(*gwg, type));
-        if(!pts.empty())
-        {
-            mP = pts.front();
-            found = true;
-        }
-    }
-
-    if(found)
-    {
-        // Minen / Brunnen unerschöpflich?
-        if( (type == 4 && settings.isEnabled(AddonId::EXHAUSTIBLE_WELLS)) || (type != 4 && !settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)) )
-            gwg->ReduceResource(mP);
-        return true;
-    }
-
-    // Post verschicken, keine Rohstoffe mehr da
-    if (!outOfRessourcesMsgSent)
-    {
-        outOfRessourcesMsgSent = true;
-        // Produktivitätsanzeige auf 0 setzen
-        workplace->SetProductivityToZero();
-
-        const char* const error = (workplace->GetBuildingType() == BLD_WELL) ? _("This well has dried out") : _("This mine is exhausted");
-        SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), error, PostCategory::Economy, *workplace));
-        gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
-    }
-
-    return false;
-}
-
-void nofBuildingWorker::StartNotWorking()
-{
-    // Wenn noch kein Zeitpunkt festgesetzt wurde, jetzt merken
-    if(since_not_working == 0xFFFFFFFF)
-        since_not_working = GetEvMgr().GetCurrentGF();
-}
-
-void nofBuildingWorker::StopNotWorking()
-{
-    // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
-    if(since_not_working != 0xFFFFFFFF)
-    {
-        not_working += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
-        since_not_working = 0xFFFFFFFF;
-    }
-}
-
-unsigned short nofBuildingWorker::CalcProductivity()
-{
-    if (outOfRessourcesMsgSent)
-        return 0;
-    // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzählen
-    if(since_not_working != 0xFFFFFFFF)
-    {
-        // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
-        not_working += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
-        // Zähler zurücksetzen
-        since_not_working = GetEvMgr().GetCurrentGF();
-    }
-
-    // Produktivität ausrechnen
-    unsigned short productivity = (400 - not_working) / 4;
-
-    // Zähler zurücksetzen
-    not_working = 0;
-
-    return productivity;
 }
 
 void nofBuildingWorker::ProductionStopped()
@@ -459,31 +312,24 @@ void nofBuildingWorker::ProductionStopped()
         GetEvMgr().RemoveEvent(current_ev);
         current_ev = 0;
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
-        StartNotWorking();
+        workplace->StartNotWorking();
     }
 }
 
-void nofBuildingWorker::WorkAborted()
-{
-}
+void nofBuildingWorker::WorkAborted() {}
 
-void nofBuildingWorker::WorkplaceReached()
-{
-}
+void nofBuildingWorker::WorkplaceReached() {}
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen
-void nofBuildingWorker::DrawOtherStates(DrawPoint)
-{
-}
-
+void nofBuildingWorker::DrawOtherStates(DrawPoint) {}
 
 /// Zeichnet Figur beim Hereinlaufen/nach Hause laufen mit evtl. getragenen Waren
-void nofBuildingWorker::DrawReturnStates(DrawPoint drawPt)
+void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    // Beim Nachhausegehen (Landarbeiter) und beim Reingehen kann entweder eine Ware getragen werden oder nicht
-    if(ware != GD_NOTHING)
-        DrawWalking(drawPt, LOADER.GetBobN("jobs"), GetCarryID(), JOB_CONSTS[job_].fat);
+    unsigned short id = GetCarryID();
+    // >=100 -> carrier.bob else jobs.bob!
+    if(id >= 100)
+        DrawWalking(drawPt, LOADER.GetBobN("carrier"), id - 100, JOB_CONSTS[job_].fat);
     else
-        DrawWalking(drawPt);
+        DrawWalking(drawPt, LOADER.GetBobN("jobs"), id, JOB_CONSTS[job_].fat);
 }
-

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,19 +15,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaPlayer.h"
 #include "EventManager.h"
+#include "Game.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
+#include "ai/AIPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
-#include "gameTypes/BuildingCount.h"
-#include "postSystem/PostMsgWithBuilding.h"
-#include "notifications/BuildingNote.h"
-#include "lua/LuaHelpers.h"
 #include "helpers/converters.h"
-#include "libutil/src/Log.h"
+#include "lua/LuaHelpers.h"
+#include "lua/LuaInterfaceBase.h"
+#include "notifications/BuildingNote.h"
+#include "postSystem/PostMsgWithBuilding.h"
+#include "world/GameWorldGame.h"
+#include "world/TerritoryRegion.h"
+#include "gameTypes/BuildingCount.h"
+#include "gameData/BuildingConsts.h"
+#include "libutil/Log.h"
 #include <stdexcept>
 
 const BasePlayerInfo& LuaPlayer::GetPlayer() const
@@ -39,55 +44,62 @@ void LuaPlayer::Register(kaguya::State& state)
 {
     LuaPlayerBase::Register(state);
     state["Player"].setClass(kaguya::UserdataMetatable<LuaPlayer, LuaPlayerBase>()
-        .addFunction("EnableBuilding", &LuaPlayer::EnableBuilding)
-        .addFunction("DisableBuilding", &LuaPlayer::DisableBuilding)
-        .addFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
-        .addFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
-        .addFunction("SetRestrictedArea", &LuaPlayer::SetRestrictedArea)
-        .addFunction("ClearResources", &LuaPlayer::ClearResources)
-        .addFunction("AddWares", &LuaPlayer::AddWares)
-        .addFunction("AddPeople", &LuaPlayer::AddPeople)
-        .addFunction("GetBuildingCount", &LuaPlayer::GetBuildingCount)
-        .addFunction("GetBuildingSitesCount", &LuaPlayer::GetBuildingSitesCount)
-        .addFunction("GetWareCount", &LuaPlayer::GetWareCount)
-        .addFunction("GetPeopleCount", &LuaPlayer::GetPeopleCount)
-        .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
-        .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
-        .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
-        .addFunction("Surrender", &LuaPlayer::Surrender)
-    );
+                               .addFunction("EnableBuilding", &LuaPlayer::EnableBuilding)
+                               .addFunction("DisableBuilding", &LuaPlayer::DisableBuilding)
+                               .addFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
+                               .addFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
+                               .addFunction("SetRestrictedArea", &LuaPlayer::SetRestrictedArea)
+                               .addFunction("IsInRestrictedArea", &LuaPlayer::IsInRestrictedArea)
+                               .addFunction("ClearResources", &LuaPlayer::ClearResources)
+                               .addFunction("AddWares", &LuaPlayer::AddWares)
+                               .addFunction("AddPeople", &LuaPlayer::AddPeople)
+                               .addFunction("GetNumBuildings", &LuaPlayer::GetNumBuildings)
+                               .addFunction("GetNumBuildingSites", &LuaPlayer::GetNumBuildingSites)
+                               .addFunction("GetNumWares", &LuaPlayer::GetNumWares)
+                               .addFunction("GetNumPeople", &LuaPlayer::GetNumPeople)
+                               .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
+                               .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
+                               .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
+                               .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
+                               .addFunction("Surrender", &LuaPlayer::Surrender)
+                               .addFunction("IsAlly", &LuaPlayer::IsAlly)
+                               .addFunction("IsAttackable", &LuaPlayer::IsAttackable)
+                               .addFunction("SuggestPact", &LuaPlayer::SuggestPact)
+                               .addFunction("CancelPact", &LuaPlayer::CancelPact)
+                               // Old names
+                               .addFunction("GetBuildingCount", &LuaPlayer::GetNumBuildings)
+                               .addFunction("GetBuildingSitesCount", &LuaPlayer::GetNumBuildingSites)
+                               .addFunction("GetWareCount", &LuaPlayer::GetNumWares)
+                               .addFunction("GetPeopleCount", &LuaPlayer::GetNumPeople));
 }
 
 void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
 {
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     player.EnableBuilding(bld);
     if(notify)
     {
-        player.SendPostMessage(new PostMsgWithBuilding(
-            player.GetGameWorld().GetEvMgr().GetCurrentGF(),
-            std::string(_("New building type:")) + "\n" + _(BUILDING_NAMES[bld]),
-            PostCategory::General,
-            bld,
-            player.nation));
+        player.SendPostMessage(new PostMsgWithBuilding(player.GetGameWorld().GetEvMgr().GetCurrentGF(),
+                                                       std::string(_("New building type:")) + "\n" + _(BUILDING_NAMES[bld]),
+                                                       PostCategory::General, bld, player.nation));
     }
 }
 
 void LuaPlayer::DisableBuilding(BuildingType bld)
 {
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     player.DisableBuilding(bld);
 }
 
 void LuaPlayer::EnableAllBuildings()
 {
-    for(unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
+    for(unsigned building_type = 0; building_type < NUM_BUILDING_TYPES; building_type++)
         player.EnableBuilding(BuildingType(building_type));
 }
 
 void LuaPlayer::DisableAllBuildings()
 {
-    for(unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
+    for(unsigned building_type = 0; building_type < NUM_BUILDING_TYPES; building_type++)
         player.DisableBuilding(BuildingType(building_type));
 }
 
@@ -113,15 +125,16 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
         if(it->isNilref())
         {
             if(pts.empty()) // Start separator (old style)
-                LOG.write("You don't need leading nils for SetRestrictedArea");
+                LOG.write("You don't need leading nils for SetRestrictedArea\n");
             else if(curPolyStart < 0) // We don't have a current polygon? Can only happen for multiple nils (old style)
-                LOG.write("Duplicate nils found in SetRestrictedArea");
+                LOG.write("Duplicate nils found in SetRestrictedArea\n");
             else if(pts.size() - static_cast<unsigned>(curPolyStart) < 3)
-                throw std::runtime_error(std::string("Invalid polygon (less than 3 points) found at index ") + helpers::toString(std::distance(inPoints.cbegin(), it)));
+                throw LuaExecutionError(std::string("Invalid polygon (less than 3 points) found at index ")
+                                        + helpers::toString(std::distance(inPoints.cbegin(), it)));
             else if(pts[curPolyStart] != pts.back()) // Close polygon if not already done
                 pts.push_back(pts[curPolyStart]);
             curPolyStart = -1;
-        }else
+        } else
         {
             // Do we start a new polygon?
             if(curPolyStart < 0)
@@ -139,11 +152,12 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
             ++it;
             int y = *it;
             if(x < 0 || y < 0)
-                throw std::runtime_error("Points must be non-negative");
+                throw LuaExecutionError("Points must be positive");
             MapPoint pt(x, y);
             if(pt == MapPoint(0, 0))
             {
-                // This might be the (old) separator if: We have a previous 0,0-pair, a valid polygon (>= 3 points) and first pt after 0,0 matches last pt
+                // This might be the (old) separator if: We have a previous 0,0-pair, a valid polygon (>= 3 points) and first pt after 0,0
+                // matches last pt
                 if(lastNullPt >= 0 && pts.size() - lastNullPt >= 3 && pts[lastNullPt + 1] == pts.back())
                     isMultiPoly = true;
                 lastNullPt = pts.size();
@@ -164,9 +178,17 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
     player.GetRestrictedArea() = pts;
 }
 
+bool LuaPlayer::IsInRestrictedArea(unsigned x, unsigned y) const
+{
+    const GameWorldGame& world = player.GetGameWorld();
+    lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
+    lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
+    return TerritoryRegion::IsPointValid(world.GetSize(), player.GetRestrictedArea(), MapPoint(x, y));
+}
+
 void LuaPlayer::ClearResources()
 {
-    const std::list<nobBaseWarehouse*> warehouses = player.GetStorehouses();
+    const std::list<nobBaseWarehouse*> warehouses = player.GetBuildingRegister().GetStorehouses();
     for(std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
         (*wh)->Clear();
 }
@@ -182,10 +204,10 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
 
     for(std::map<GoodType, unsigned>::const_iterator it = wares.begin(); it != wares.end(); ++it)
     {
-        if(unsigned(it->first) < WARE_TYPES_COUNT)
+        if(unsigned(it->first) < NUM_WARE_TYPES)
             goods.Add(it->first, it->second);
         else
-            throw std::runtime_error((std::string("Invalid ware in AddWares: ") + helpers::toString(it->first)).c_str());
+            throw LuaExecutionError((std::string("Invalid ware in AddWares: ") + helpers::toString(it->first)).c_str());
     }
 
     warehouse->AddGoods(goods, true);
@@ -203,39 +225,39 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
 
     for(std::map<Job, unsigned>::const_iterator it = people.begin(); it != people.end(); ++it)
     {
-        if(unsigned(it->first) < JOB_TYPES_COUNT)
+        if(unsigned(it->first) < NUM_JOB_TYPES)
             goods.Add(it->first, it->second);
         else
-            throw std::runtime_error((std::string("Invalid job in AddPeople: ") + helpers::toString(it->first)).c_str());
+            throw LuaExecutionError((std::string("Invalid job in AddPeople: ") + helpers::toString(it->first)).c_str());
     }
 
     warehouse->AddGoods(goods, true);
     return true;
 }
 
-unsigned LuaPlayer::GetBuildingCount(BuildingType bld)
+unsigned LuaPlayer::GetNumBuildings(BuildingType bld) const
 {
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
 
-    return player.GetBuildingCount().buildings[bld];
+    return player.GetBuildingRegister().GetBuildingNums().buildings[bld];
 }
 
-unsigned LuaPlayer::GetBuildingSitesCount(BuildingType bld)
+unsigned LuaPlayer::GetNumBuildingSites(BuildingType bld) const
 {
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
 
-    return player.GetBuildingCount().buildingSites[bld];
+    return player.GetBuildingRegister().GetBuildingNums().buildingSites[bld];
 }
 
-unsigned LuaPlayer::GetWareCount(GoodType ware)
+unsigned LuaPlayer::GetNumWares(GoodType ware) const
 {
-    lua::assertTrue(unsigned(ware) < WARE_TYPES_COUNT, "Invalid ware");
+    lua::assertTrue(unsigned(ware) < NUM_WARE_TYPES, "Invalid ware");
     return player.GetInventory().goods[ware];
 }
 
-unsigned LuaPlayer::GetPeopleCount(Job job)
+unsigned LuaPlayer::GetNumPeople(Job job) const
 {
-    lua::assertTrue(unsigned(job) < JOB_TYPES_COUNT, "Invalid ware");
+    lua::assertTrue(unsigned(job) < NUM_JOB_TYPES, "Invalid ware");
     return player.GetInventory().people[job];
 }
 
@@ -244,7 +266,7 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
     // Only for actual AIs
     if(!player.isUsed() || player.isHuman())
         return false;
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     GameWorldGame& world = player.GetGameWorld();
     lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
     lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
@@ -263,6 +285,11 @@ void LuaPlayer::ModifyHQ(bool isTent)
     }
 }
 
+bool LuaPlayer::IsDefeated() const
+{
+    return player.IsDefeated();
+}
+
 void LuaPlayer::Surrender(bool destroyBlds)
 {
     player.Surrender();
@@ -270,7 +297,39 @@ void LuaPlayer::Surrender(bool destroyBlds)
         player.GetGameWorld().Armageddon(player.GetPlayerId());
 }
 
-kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()
+kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos() const
 {
     return kaguya::standard::tuple<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
+}
+
+bool LuaPlayer::IsAlly(unsigned char otherPlayerId)
+{
+    return player.IsAlly(otherPlayerId);
+}
+
+bool LuaPlayer::IsAttackable(unsigned char otherPlayerId)
+{
+    return player.IsAttackable(otherPlayerId);
+}
+
+void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, const unsigned duration)
+{
+    Game& gameInst = *game.lock();
+    AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
+    if(ai != NULL)
+    {
+        AIInterface aii = ai->getAIInterface();
+        aii.SuggestPact(otherPlayerId, pt, duration);
+    }
+}
+
+void LuaPlayer::CancelPact(const PactType pt, unsigned char otherPlayerId)
+{
+    Game& gameInst = *game.lock();
+    AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
+    if(ai != NULL)
+    {
+        AIInterface aii = ai->getAIInterface();
+        aii.CancelPact(pt, otherPlayerId);
+    }
 }

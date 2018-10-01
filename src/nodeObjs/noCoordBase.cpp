@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,10 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noCoordBase.h"
-#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 
 void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
 {
@@ -27,10 +27,7 @@ void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
     sgd.PushMapPoint(pos);
 }
 
-noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    pos(sgd.PopMapPoint())
-{
-}
+noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id), pos(sgd.PopMapPoint()) {}
 
 unsigned noCoordBase::CreateGUIID() const
 {

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,110 +19,108 @@
 
 #pragma once
 
-#include "ogl/glArchivItem_Bitmap.h"
-#include "colors.h"
-#include "ogl/oglIncludes.h"
 #include "DrawPoint.h"
-#include "helpers/containerUtils.h"
-#include "libsiedler2/src/ArchivItem_Font.h"
-#include "libutil/src/ucString.h"
+#include "Rect.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/oglIncludes.h"
+#include "libsiedler2/ArchivItem_Font.h"
+#include "libutil/colors.h"
+#include "libutil/ucString.h"
+#include <boost/array.hpp>
 #include <boost/smart_ptr/scoped_ptr.hpp>
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 /// Klasse für GL-Fontfiles.
-class glArchivItem_Font : public libsiedler2::ArchivItem_Font
+class glArchivItem_Font : public libsiedler2::ArchivItem_Font //-V690
 {
+public:
+    glArchivItem_Font();
+    glArchivItem_Font(const glArchivItem_Font& item);
+    RTTR_CLONEABLE(glArchivItem_Font)
+
+    /// Draw the the text at the given position with format (alignment) and color.
+    /// If length is given, only that many chars (not glyphs!) will be used
+    /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is appended (included in
+    /// maxWidth)
+    void Draw(DrawPoint pos, const ucString& wtext, unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0,
+              unsigned short maxWidth = 0xFFFF, const ucString& end = cvWideStringToUnicode(L"..."));
+    void Draw(DrawPoint pos, const std::string& text, unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0,
+              unsigned short maxWidth = 0xFFFF, const std::string& end = "...");
+
+    /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will be set to the
+    /// maximum number of chars (not glyphs!) that fit into the width
+    unsigned short getWidth(const ucString& text, unsigned length = 0) const;
+    unsigned short getWidth(const std::string& text, unsigned length = 0) const;
+    unsigned short getWidth(const ucString& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const;
+    unsigned short getWidth(const std::string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const;
+    /// liefert die Höhe des Textes ( entspricht @p getDy() )
+    unsigned short getHeight() const { return dy + 1; }
+
+    /// Return the bounds of the text when draw at the specified position with the specified format
+    Rect getBounds(DrawPoint pos, const std::string& text, unsigned format) const;
+
+    /// Gibt Infos, über die Unterbrechungspunkte in einem Text
+    class WrapInfo
+    {
     public:
-        glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL) {}
-        glArchivItem_Font(const glArchivItem_Font& item);
+        /// Erzeugt ein Arrays aus eigenständigen Strings aus den Unterbrechungsinfos.
+        std::vector<std::string> CreateSingleStrings(const std::string& origin_text);
 
-        glArchivItem_Font& operator=(const glArchivItem_Font& obj);
+        /// Array von Positionen, wo der Text umbrochen werden soll (jeweils der Anfang vom String)
+        std::vector<unsigned> positions;
+    };
 
-        /// Zeichnet einen Text.
-        void Draw(DrawPoint pos, const ucString& wtext,   unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const ucString& wend = cvWideStringToUnicode(L"..."));
-        void Draw(DrawPoint pos, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...");
+    /// Gibt Infos, über die Unterbrechungspunkte in einem Text, versucht Wörter nicht zu trennen, tut dies aber, falls
+    /// es unumgänglich ist (Wort länger als die Zeile)
+    WrapInfo GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width);
 
-        /// liefert die Länge einer Zeichenkette.
-        unsigned short getWidth(const ucString& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
-        unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
-        /// liefert die Höhe des Textes ( entspricht @p getDy()+1 )
-        inline unsigned short getHeight() const { return dy + 1; }
+    struct CharInfo
+    {
+        CharInfo() : pos(0, 0), width(0) {}
+        CharInfo(const Position& pos, unsigned width) : pos(pos), width(width) {}
+        Position pos;
+        unsigned width;
+    };
 
-        /// Gibt Infos, über die Unterbrechungspunkte in einem Text
-        class WrapInfo
-        {
-            public:
-                /// Erzeugt ein Arrays aus eigenständigen Strings aus den Unterbrechungsinfos.
-                std::vector<std::string> CreateSingleStrings(const std::string& origin_text);
+    /// prüft ob ein Buchstabe existiert.
+    bool CharExist(unsigned c) const;
+    /// liefert die Breite eines Zeichens
+    unsigned CharWidth(unsigned c) const { return GetCharInfo(c).width; }
 
-                /// Array von Positionen, wo der Text umbrochen werden soll (jeweils der Anfang vom String)
-                std::vector<unsigned int> positions;
-        };
+private:
+    typedef Point<GLfloat> GlPoint;
+    struct VertexArrays
+    {
+        std::vector<GlPoint> texCoords;
+        std::vector<GlPoint> vertices;
+    };
 
-        /// Gibt Infos, über die Unterbrechungspunkte in einem Text, versucht Wörter nicht zu trennen, tut dies aber, falls
-        /// es unumgänglich ist (Wort länger als die Zeile)
-        WrapInfo GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width);
+    void initFont();
+    void ClearCharInfoMapping();
+    void AddCharInfo(unsigned c, const CharInfo& info);
+    /// liefert das Char-Info eines Zeichens
+    const CharInfo& GetCharInfo(unsigned c) const;
+    void DrawChar(unsigned curChar, VertexArrays& vertices, DrawPoint& curPos) const;
 
-        enum
-        {
-            DF_LEFT   = 0,
-            DF_RIGHT  = 1,
-            DF_CENTER = 2
-        };
+    boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
+    boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
 
-        enum
-        {
-            DF_TOP     = 0,
-            DF_BOTTOM  = 4,
-            DF_VCENTER = 8
-        };
+    /// Holds ascii chars only. As most chars are ascii this is faster then accessing the map
+    boost::array<std::pair<bool, CharInfo>, 256> asciiMapping;
+    std::map<unsigned, CharInfo> utf8_mapping;
+    CharInfo placeHolder; /// Placeholder if glyph is missing
+    VertexArrays texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
 
-        enum
-        {
-            DF_NO_OUTLINE = 16
-        };
-
-        struct CharInfo
-        {
-            CharInfo() : x(0), y(0), width(0) {}
-            CharInfo(unsigned short x, unsigned short y, unsigned short width): x(x), y(y), width(width){}
-            unsigned short x;
-            unsigned short y;
-            unsigned short width;
-        };
-
-        /// prüft ob ein Buchstabe existiert.
-        inline bool CharExist(unsigned int c) const { return helpers::contains(utf8_mapping, c); }
-
-        /// liefert die Breite eines Zeichens
-        inline unsigned int CharWidth(unsigned int c) const { return GetCharInfo(c).width; }
-        inline unsigned int CharWidth(CharInfo ci) const { return ci.width; }
-
-    private:
-
-        struct GL_T2F_V3F_Struct
-        {
-            GLfloat tx, ty;
-            GLfloat x, y, z;
-        };
-
-        void initFont();
-        /// liefert das Char-Info eines Zeichens
-        const CharInfo& GetCharInfo(unsigned int c) const;
-        void DrawChar(const unsigned c, std::vector<GL_T2F_V3F_Struct>& vertices, short& cx, short& cy, float tw, float th) const;
-
-        boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
-        boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
-
-        std::map<unsigned int, CharInfo> utf8_mapping;
-        CharInfo placeHolder; /// Placeholder if glyph is missing
-
-        /// Get width of the sequence defined by the begin/end pair of iterators (returning Unicode chars)
-        /// The width will be at most maxWidth. The number of chars (or the iterator distance) is returned in maxNumChars (if specified)
-        template<class T_Iterator>
-        unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth = 0xffffffff, unsigned* maxNumChars = NULL) const;
+    /// Get width of the sequence defined by the begin/end pair of iterators
+    template<class T_Iterator>
+    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end) const;
+    /// Same as above but the width will be at most maxWidth. The number of chars (or the iterator distance) is returned in maxNumChars
+    template<class T_Iterator>
+    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const;
+    template<bool T_unlimitedWidth, class T_Iterator>
+    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const;
 };
 
 #endif // !GLARCHIVITEM_FONT_H_INCLUDED

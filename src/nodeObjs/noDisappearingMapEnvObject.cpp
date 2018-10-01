@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noDisappearingMapEnvObject.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
@@ -31,8 +31,7 @@
  */
 noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const unsigned short map_id)
     : noDisappearingEnvObject(pos, 4000, 1000), map_id(map_id)
-{
-}
+{}
 
 void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const
 {
@@ -43,8 +42,7 @@ void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(Serialized
 
 noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, const unsigned obj_id)
     : noDisappearingEnvObject(sgd, obj_id), map_id(sgd.PopUnsignedShort())
-{
-}
+{}
 
 /**
  *  An x,y zeichnen.
@@ -52,7 +50,7 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, 
 void noDisappearingMapEnvObject::Draw(DrawPoint drawPt)
 {
     // Bild
-    LOADER.GetMapImageN(map_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawColor());
+    LOADER.GetMapImageN(map_id)->DrawFull(drawPt, GetDrawColor());
     // Schatten
-    LOADER.GetMapImageN(map_id + 100)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
+    LOADER.GetMapImageN(map_id + 100)->DrawFull(drawPt, GetDrawShadowColor());
 }

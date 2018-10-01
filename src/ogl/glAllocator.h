@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,12 +19,12 @@
 
 #pragma once
 
-#include "libsiedler2/src/StandardAllocator.h"
+#include "libsiedler2/StandardAllocator.h"
 
-class GlAllocator: public libsiedler2::StandardAllocator{
+class GlAllocator : public libsiedler2::StandardAllocator
+{
 public:
-    libsiedler2::ArchivItem* create(libsiedler2::BOBTYPES type, libsiedler2::SOUNDTYPES subtype = libsiedler2::SOUNDTYPE_NONE) const override;
-    libsiedler2::ArchivItem* clone(const libsiedler2::ArchivItem& item) const override;
+    libsiedler2::ArchivItem* create(libsiedler2::BobType type, libsiedler2::SoundType subtype = libsiedler2::SOUNDTYPE_NONE) const override;
 };
 
 #endif // !GLALLOCATOR_H_INCLUDED

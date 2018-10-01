@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,7 +21,7 @@
 #include "PlayerInfo.h"
 
 /// Holds information for players relevant during match-making
-struct JoinPlayerInfo: public PlayerInfo
+struct JoinPlayerInfo : public PlayerInfo
 {
     std::string originName;
     unsigned rating;
@@ -37,6 +37,8 @@ struct JoinPlayerInfo: public PlayerInfo
 
     void InitRating();
     void SetAIName(unsigned id);
+    // Recovers fixed data in savegames after player slots are swapped
+    void FixSwappedSaveSlot(JoinPlayerInfo& other);
 };
 
 #endif // JoinPlayerInfo_h__

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,28 +26,27 @@ class nobHQ : public nobBaseWarehouse
 {
     /// True if tent graphic should be used
     bool isTent_;
-    public:
-        nobHQ(const MapPoint pt, const unsigned char player, const Nation nation, const bool isTent = false);
-        nobHQ(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
-    protected:  void Destroy_nobHQ();
-    public:     void Destroy() override { Destroy_nobHQ(); }
+public:
+    nobHQ(const MapPoint pt, const unsigned char player, const Nation nation, const bool isTent = false);
+    nobHQ(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Serialisierungsfunktionen
-    protected: void Serialize_nobHQ(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobHQ(sgd); }
+protected:
+    void DestroyBuilding() override;
+    void Serialize_nobHQ(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_NOB_HQ; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nobHQ(sgd); }
 
-        void Draw(DrawPoint drawPt) override;
+    GO_Type GetGOT() const override { return GOT_NOB_HQ; }
 
-        unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
+    void Draw(DrawPoint drawPt) override;
 
-        void HandleEvent(const unsigned int id) override;
-        bool IsTent() const { return isTent_; }
-        void SetIsTent(const bool isTent) { isTent_ = isTent; }
+    unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
+
+    void HandleEvent(const unsigned id) override;
+    bool IsTent() const { return isTent_; }
+    void SetIsTent(const bool isTent) { isTent_ = isTent; }
 };
-
 
 #endif

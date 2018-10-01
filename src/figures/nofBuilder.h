@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,66 +26,68 @@ class noRoadNode;
 
 class nofBuilder : public noFigure
 {
-    private:
+private:
+    // Wie weit der Bauarbeiter maximal in alle vier richtungen laufen darf (in Pixeln, rel..)
+    static const short LEFT_MAX = -28;
+    static const short RIGHT_MAX = 28;
+    static const short UP_MAX = 0;
+    static const short DOWN_MAX = 16;
 
-        // Wie weit der Bauarbeiter maximal in alle vier richtungen laufen darf (in Pixeln, rel..)
-        static const short LEFT_MAX = -28;
-        static const short RIGHT_MAX = 28;
-        static const short UP_MAX = 0;
-        static const short DOWN_MAX = 16;
+    enum BuilderState
+    {
+        STATE_FIGUREWORK = 0,
+        STATE_WAITINGFREEWALK, // Bauarbeiter geht auf und ab und wartet auf Rohstoffe
+        STATE_BUILDFREEWALK,   // Bauarbeiter geht auf und ab und baut
+        STATE_BUILD            // Bauarbeiter "baut" gerade (hämmert auf Gebäude ein)
+    } state;
 
+    /// Baustelle des Bauarbeiters
+    noBuildingSite* building_site;
 
-        enum BuilderState
-        {
-            STATE_FIGUREWORK = 0,
-            STATE_WAITINGFREEWALK, // Bauarbeiter geht auf und ab und wartet auf Rohstoffe
-            STATE_BUILDFREEWALK, // Bauarbeiter geht auf und ab und baut
-            STATE_BUILD // Bauarbeiter "baut" gerade (hämmert auf Gebäude ein)
-        } state;
+    // const GameEvent* current_ev;
 
-        /// Baustelle des Bauarbeiters
-        noBuildingSite* building_site;
+    /// X,Y relativ zur Baustelle in Pixeln
+    /// next ist der angesteuerte Punkt
+    Point<short> offsetSite, nextOffsetSite;
 
+    /// Wie viele Bauschritte noch verfügbar sind, bis der nächste Rohstoff geholt werden muss
+    unsigned char building_steps_available;
 
-        //GameEvent* current_ev;
+private:
+    void GoalReached() override;
+    void Walked() override;
+    void AbrogateWorkplace() override;
+    void HandleDerivedEvent(const unsigned id) override;
 
-        /// X,Y relativ zur Baustelle in Pixeln
-        /// next ist der angesteuerte Punkt
-        Point<short> offsetSite, nextOffsetSite;
+    /// In neue Richtung laufen (Freewalk)
+    void StartFreewalk();
+    /// "Frisst" eine passende Ware (falls vorhanden, gibt true in dem Fall zurück!) von der Baustelle, d.h nimmt sie in die Hand und erhöht
+    /// die building_steps_avaible
+    bool ChooseWare();
 
-        /// Wie viele Bauschritte noch verfügbar sind, bis der nächste Rohstoff geholt werden muss
-        unsigned char building_steps_available;
+public:
+    nofBuilder(const MapPoint pt, const unsigned char player, noRoadNode* building_site);
+    nofBuilder(SerializedGameData& sgd, const unsigned obj_id);
 
-    private:
+    void Destroy() override
+    {
+        RTTR_Assert(!building_site);
+        noFigure::Destroy();
+    }
 
-        void GoalReached() override;
-        void Walked() override;
-        void AbrogateWorkplace() override;
-        void HandleDerivedEvent(const unsigned int id) override;
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofBuilder(SerializedGameData& sgd) const;
 
-        /// In neue Richtung laufen (Freewalk)
-        void StartFreewalk();
-        /// "Frisst" eine passende Ware (falls vorhanden, gibt true in dem Fall zurück!) von der Baustelle, d.h nimmt sie in die Hand und erhöht die building_steps_avaible
-        bool ChooseWare();
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuilder(sgd); }
 
-    public:
+    GO_Type GetGOT() const override { return GOT_NOF_BUILDER; }
 
-        nofBuilder(const MapPoint pt, const unsigned char player, noRoadNode* building_site);
-        nofBuilder(SerializedGameData& sgd, const unsigned obj_id);
+    void Draw(DrawPoint drawPt) override;
 
-        void Destroy() override{ RTTR_Assert(!building_site); noFigure::Destroy(); }
-
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofBuilder(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuilder(sgd); }
-
-        GO_Type GetGOT() const override { return GOT_NOF_BUILDER; }
-
-        void Draw(DrawPoint drawPt) override;
-
-        // Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
-        void LostWork();
+    // Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
+    void LostWork();
 };
-
 
 #endif

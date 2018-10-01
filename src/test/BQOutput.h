@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,13 +19,21 @@
 #define BQOutput_h__
 
 #include "gameTypes/BuildingQuality.h"
-#include <iosfwd>
+#include "gameData/TerrainDesc.h"
 #include <boost/array.hpp>
+#include <iosfwd>
 
 const boost::array<const char*, 6> bqNames = {{"Nothing", "Flag", "Hut", "House", "Castle", "Mine"}};
 inline std::ostream& operator<<(std::ostream& stream, BuildingQuality bq)
 {
     return stream << bqNames[bq];
+}
+
+const boost::array<const char*, 6> bqNames2 = {{"Nothing", "Danger", "Flag", "Castle", "Mine"}};
+
+inline std::ostream& operator<<(std::ostream& stream, TerrainBQ bq)
+{
+    return stream << bqNames2[boost::underlying_cast<unsigned>(bq)];
 }
 
 #endif // BQOutput_h__

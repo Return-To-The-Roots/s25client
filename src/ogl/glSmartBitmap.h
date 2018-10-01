@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,62 +20,67 @@
 
 #pragma once
 
-#include "ogl/glBitmapItem.h"
 #include "DrawPoint.h"
+#include "ITexture.h"
 #include <vector>
-#include <stdint.h>
 
-namespace libsiedler2
+namespace libsiedler2 {
+class baseArchivItem_Bitmap;
+class ArchivItem_Bitmap_Player;
+class PixelBufferARGB;
+} // namespace libsiedler2
+
+class glBitmapItem;
+
+class glSmartBitmap : public ITexture
 {
-    class baseArchivItem_Bitmap;
-    class ArchivItem_Bitmap_Player;
-}
+private:
+    DrawPoint origin_;
+    Extent size_;
 
-class glSmartBitmap
-{
-    private:
-        int w, h;
-        DrawPoint origin;
+    bool sharedTexture;
+    unsigned texture;
 
-        bool sharedTexture;
-        unsigned int texture;
+    bool hasPlayer;
 
-        bool hasPlayer;
+    std::vector<glBitmapItem> items;
 
-        std::vector<glBitmapItem> items;
+    /// Calculate size, origin and hasPlayer based on current images
+    void calcDimensions();
 
-    public:
-        Point<float> texCoords[8];
+public:
+    Point<float> texCoords[8];
 
-        glSmartBitmap() : w(0), h(0), origin(0, 0), sharedTexture(false), texture(0), hasPlayer(false) {}
-        ~glSmartBitmap();
-        void reset();
+    glSmartBitmap();
+    ~glSmartBitmap();
+    void reset();
 
-        int getWidth() const {return w;}
-        int getHeight() const {return h;}
+    Position GetOrigin() const override { return origin_; }
+    Extent GetSize() const override { return size_; }
+    /// Return the space required on the texture
+    Extent getRequiredTexSize() const;
 
-        int getTexWidth() const {return hasPlayer ? getWidth() * 2 : getWidth();}
-        int getTexHeight() const {return getHeight();}
+    bool isGenerated() const { return texture != 0; }
+    bool isPlayer() const { return hasPlayer; }
+    bool empty() const { return items.empty(); }
 
-        bool isGenerated() const {return texture != 0;}
-        bool isPlayer() const {return hasPlayer;}
-        bool empty() const { return items.empty(); }
+    void setSharedTexture(unsigned tex)
+    {
+        texture = tex;
+        sharedTexture = (tex != 0);
+    }
+    unsigned getTexture() const { return texture; }
 
-        void setSharedTexture(unsigned tex) { texture = tex; sharedTexture = (tex != 0); }
+    void generateTexture();
+    void DrawFull(const Position& dstPos, unsigned color = 0xFFFFFFFF) override { draw(dstPos, color); }
+    void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
+    void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
+    /// Draw the bitmap(s) to the specified buffer at the position starting at bufOffset (must be positive)
+    void drawTo(libsiedler2::PixelBufferARGB& buffer, const Extent& bufOffset = Extent(0, 0)) const;
 
-        void calcDimensions();
-
-        void generateTexture();
-        void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
-        void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
-
-        void drawTo(std::vector<uint32_t>& buffer, const unsigned stride, const unsigned height, const int x_offset = 0, const int y_offset = 0);
-
-        void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, false, transferOwnership));}
-        void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, transferOwnership));}
-        void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, true, transferOwnership));}
-
-        static unsigned nextPowerOfTwo(unsigned k);
+    void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
+    void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false);
+    void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
 };
 
 #endif

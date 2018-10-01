@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noRoadNode.h"
 
-#include "RoadSegment.h"
 #include "GamePlayer.h"
+#include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 
-
-noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player)
-    : noCoordBase(nop, pos),
-      player(player)
+noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player) : noCoordBase(nop, pos), player(player)
 {
     for(unsigned i = 0; i < 6; ++i)
         routes[i] = 0;
     last_visit = 0;
 }
 
-noRoadNode::~noRoadNode()
-{
-}
+noRoadNode::~noRoadNode() {}
 
 void noRoadNode::Destroy_noRoadNode()
 {
@@ -51,86 +46,83 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(player);
 
     // the trick only seems to work for flags
-    if (this->GetGOT() == GOT_FLAG)
+    if(this->GetGOT() == GOT_FLAG)
     {
         // this is a trick:
         // -> initialize routes for flag with NULL
         // -> RoadSegment will set these later
-        for (unsigned i = 0; i < 6; ++i)
+        for(unsigned i = 0; i < 6; ++i)
         {
             sgd.PushObject(static_cast<GameObject*>(NULL), true);
         }
-    }
-    else
+    } else
     {
-        for (unsigned i = 0; i < 6; ++i)
+        for(unsigned i = 0; i < 6; ++i)
         {
             sgd.PushObject(routes[i], true);
         }
     }
 }
 
-noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    player(sgd.PopUnsignedChar())
+noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar())
 {
-    for (unsigned i = 0; i < 6; ++i)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        routes[i] = sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT);
+        routes[dir] = sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT);
     }
 
     last_visit = 0;
 }
 
-void noRoadNode::UpgradeRoad(const unsigned char dir)
+void noRoadNode::UpgradeRoad(const Direction dir)
 {
-    if(routes[dir])
-        routes[dir]->UpgradeDonkeyRoad();
+    if(GetRoute(dir))
+        GetRoute(dir)->UpgradeDonkeyRoad();
 }
 
-void noRoadNode::DestroyRoad(const unsigned char dir)
+void noRoadNode::DestroyRoad(const Direction dir)
 {
-    if(routes[dir])
+    RoadSegment* route = GetRoute(dir);
+    if(!route)
+        return;
+    MapPoint t = route->GetF1()->GetPos();
+    for(unsigned z = 0; z < route->GetLength(); ++z)
     {
-        MapPoint t = routes[dir]->GetF1()->GetPos();
-        for(unsigned z = 0; z < routes[dir]->GetLength(); ++z)
-        {
-            gwg->SetPointRoad(t, routes[dir]->GetRoute(z), 0);
-            gwg->RecalcBQForRoad(t);
-            t = gwg->GetNeighbour(t, routes[dir]->GetRoute(z));
-        }
-
-        noRoadNode* oflag;
-
-        if(routes[dir]->GetF1() == this)
-            oflag = routes[dir]->GetF2();
-        else
-            oflag = routes[dir]->GetF1();
-
-        for(unsigned z = 0; z < 6; ++z)
-        {
-            if(oflag->routes[z] == routes[dir])
-            {
-                oflag->routes[z] = NULL;
-                break;
-            }else
-                RTTR_Assert(z < 5); // Need to find it before last iteration
-        }
-
-        RoadSegment* tmp = routes[dir];
-        routes[dir] = NULL;
-
-        tmp->Destroy();
-        delete tmp;
-
-        // Spieler Bescheid sagen
-        gwg->GetPlayer(player).RoadDestroyed();
+        gwg->SetPointRoad(t, route->GetRoute(z), 0);
+        gwg->RecalcBQForRoad(t);
+        t = gwg->GetNeighbour(t, route->GetRoute(z));
     }
+
+    noRoadNode* oflag;
+
+    if(route->GetF1() == this)
+        oflag = route->GetF2();
+    else
+        oflag = route->GetF1();
+
+    for(unsigned z = 0; z < 6; ++z)
+    {
+        if(oflag->routes[z] == route)
+        {
+            oflag->routes[z] = NULL;
+            break;
+        } else
+            RTTR_Assert(z < 5); // Need to find it before last iteration
+    }
+
+    SetRoute(dir, NULL);
+
+    route->Destroy();
+    delete route;
+
+    // Spieler Bescheid sagen
+    gwg->GetPlayer(player).RoadDestroyed();
 }
 
 /// Vernichtet Alle Straße um diesen Knoten
 void noRoadNode::DestroyAllRoads()
 {
     // Alle Straßen um mich herum zerstören
-    for(unsigned char i = 0; i < 6; ++i)
-        DestroyRoad(i);
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
+        DestroyRoad(Direction::fromInt(dir));
 }

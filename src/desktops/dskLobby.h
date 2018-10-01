@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,54 +19,58 @@
 
 #pragma once
 
-#include "Desktop.h"
+#include "desktops/dskMenuBase.h"
 
-#include "LobbyInterface.h"
-#include "ClientInterface.h"
+#include "network/ClientInterface.h"
+#include "liblobby/LobbyInterface.h"
 
+class iwLobbyRanking;
 class iwLobbyServerInfo;
 class iwDirectIPCreate;
 class LobbyServerList;
 class LobbyPlayerList;
 
-class dskLobby :
-    public Desktop,
-    public ClientInterface,
-    public LobbyInterface
+class dskLobby : public dskMenuBase, public ClientInterface, public LobbyInterface
 {
-    private:
-        const LobbyServerList* serverlist;
-        const LobbyPlayerList* playerlist;
-        iwLobbyServerInfo* serverInfoWnd;
-        iwDirectIPCreate* createServerWnd;
+private:
+    iwLobbyServerInfo* serverInfoWnd;
+    iwDirectIPCreate* createServerWnd;
+    iwLobbyRanking* lobbyRankingWnd;
 
-    public:
-        dskLobby();
+public:
+    dskLobby();
+    ~dskLobby();
 
-        void UpdatePlayerList(bool first = false);
-        void UpdateServerList(bool first = false);
+    void UpdatePlayerList();
+    void UpdateServerList();
 
-        void LC_Connected() override;
+    void Msg_WindowClosed(IngameWindow& wnd) override;
 
-        void LC_Status_ConnectionLost() override;
-        void LC_Status_IncompleteMessage() override;
-        void LC_Status_Error(const std::string& error) override;
+    void LC_Connected() override;
 
-        void LC_Chat(const std::string& player, const std::string& text) override;
+    void LC_Status_ConnectionLost() override;
+    void LC_Status_IncompleteMessage() override;
+    void LC_Status_Error(const std::string& error) override;
 
-    protected:
-        void Msg_Timer(const unsigned int ctrl_id) override;
-        void Msg_PaintBefore() override;
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
-        void Msg_TableRightButton(const unsigned int ctrl_id, const int selection) override;
-        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+    void LC_Chat(const std::string& player, const std::string& text) override;
+    void LC_ServerList(const LobbyServerList& servers) override;
+    void LC_PlayerList(const LobbyPlayerList& players) override;
+    void LC_ServerInfo(const LobbyServerInfo& info) override;
+    void LC_RankingList(const LobbyPlayerList& players) override;
 
-        /**
-         * Connectes to the currently selected game and returns true on success
-         */
-        bool ConnectToSelectedGame();
+protected:
+    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_PaintBefore() override;
+    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
+    void Msg_TableRightButton(const unsigned ctrl_id, const int selection) override;
+    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+
+    /**
+     * Connects to the currently selected game and returns true on success
+     */
+    bool ConnectToSelectedGame();
 };
 
 #endif // dskLOBBY_H_INCLUDED

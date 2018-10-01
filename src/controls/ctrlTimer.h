@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,20 +23,20 @@
 
 class ctrlTimer : public Window
 {
-    public:
-        ctrlTimer(Window* parent, unsigned int id, unsigned int timeout);
+public:
+    ctrlTimer(Window* parent, unsigned id, unsigned timeout);
 
-        void Start(unsigned int timeout);
-        void Stop();
+    void Start(unsigned timeout);
+    void Stop();
 
-        void Msg_PaintBefore() override;
+    void Msg_PaintBefore() override;
 
-    protected:
-        bool Draw_() override { return true; };
+protected:
+    void Draw_() override{};
 
-    private:
-        unsigned int timeout;
-        unsigned int timer;
+private:
+    unsigned timeout_;
+    unsigned timer;
 };
 
 #endif // !CTRLTIMER_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ShipPostMsg.h"
-#include "nodeObjs/noShip.h"
 #include "Loader.h"
+#include "nodeObjs/noShip.h"
 
-ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship):
-    PostMsg(sendFrame, text, cat, ship.GetPos())
+ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship)
+    : PostMsg(sendFrame, text, cat, ship.GetPos())
 {}
 
-glArchivItem_Bitmap* ShipPostMsg::GetImage_() const
+ITexture* ShipPostMsg::GetImage_() const
 {
-    return LOADER.GetImageN("boot_z", 12);
+    return LOADER.GetTextureN("boot_z", 12);
 }

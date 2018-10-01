@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,14 +19,16 @@
 #define JobFactory_h__
 
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 
 class noFigure;
 class noRoadNode;
 
 /// static factory class to create new job figures
-class JobFactory{
+class JobFactory
+{
     JobFactory();
+
 public:
     // Erstellt Job anhand der job-id
     static noFigure* CreateJob(const Job job_id, const MapPoint pt, const unsigned char player, noRoadNode* const goal);

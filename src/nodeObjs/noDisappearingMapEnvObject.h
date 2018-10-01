@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,31 +17,31 @@
 #ifndef NO_DISAPPEARINGMAPENVOBJECT
 #define NO_DISAPPEARINGMAPENVOBJECT
 
-
 #include "noDisappearingEnvObject.h"
 class SerializedGameData;
 
 /// Verschwindendes Umwelt-Objekt ohne weiter Bedeutung (z.b. Baumstamm etc.)
 class noDisappearingMapEnvObject : public noDisappearingEnvObject
 {
-    public:
-        noDisappearingMapEnvObject(const MapPoint pt, const unsigned short map_id);
-        noDisappearingMapEnvObject(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    noDisappearingMapEnvObject(const MapPoint pt, const unsigned short map_id);
+    noDisappearingMapEnvObject(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noDisappearingMapEnvObject(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_DISAPPEARINGMAPENVOBJECT; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noDisappearingMapEnvObject(sgd); }
 
-        /// An x,y zeichnen.
-        void Draw(DrawPoint drawPt) override;
+    GO_Type GetGOT() const override { return GOT_DISAPPEARINGMAPENVOBJECT; }
 
-    private:
+    /// An x,y zeichnen.
+    void Draw(DrawPoint drawPt) override;
 
-        /// ID in der mapsx.lst
-        const unsigned short map_id;
+private:
+    /// ID in der mapsx.lst
+    const unsigned short map_id;
 };
-
 
 #endif

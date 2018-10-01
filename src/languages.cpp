@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,25 +15,40 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "languages.h"
-
 #include "Loader.h"
-
+#include "RttrConfig.h"
 #include "files.h"
-#include "Settings.h"
-#include "libsiedler2/src/ArchivItem_Ini.h"
-#include "libsiedler2/src/ArchivItem_Text.h"
-#include "mygettext/src/mygettext.h"
-
+#include "mygettext/mygettext.h"
+#include "libsiedler2/ArchivItem_Ini.h"
+#include "libsiedler2/ArchivItem_Text.h"
 #include <algorithm>
+
+bool operator<(const Language& o1, const Language& o2)
+{
+    if(o1.name < o2.name)
+        return true;
+
+    if(o1.name == o2.name)
+        return o1.code < o2.code;
+    return false;
+}
+
+Languages::Languages() : loaded(false)
+{
+    const char* domain = "rttr";
+    mybind_textdomain_codeset(domain, "UTF-8");
+    mybindtextdomain(domain, RTTRCONFIG.ExpandPath(FILE_PATHS[15]).c_str());
+    mytextdomain(domain);
+}
 
 void Languages::loadLanguages()
 {
-    const libsiedler2::ArchivInfo& langInfo = dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages")->find("Languages"));
-    unsigned int count = langInfo.size();
+    const libsiedler2::Archiv& langInfo = dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages").find("Languages"));
+    unsigned count = langInfo.size();
 
-    for(unsigned int i = 0; i < count; i++)
+    for(unsigned i = 0; i < count; i++)
     {
         const libsiedler2::ArchivItem_Text& langEntry = dynamic_cast<const libsiedler2::ArchivItem_Text&>(*langInfo[i]);
         Language lang(langEntry.getName(), langEntry.getText());
@@ -42,7 +57,7 @@ void Languages::loadLanguages()
     }
 
     // Sprachen sortieren
-    std::sort(languages.begin(), languages.end(), Language::compare);
+    std::sort(languages.begin(), languages.end());
 
     // Systemsprache hinzufügen
     Language l(gettext_noop("System language"), "");
@@ -51,44 +66,33 @@ void Languages::loadLanguages()
     loaded = true;
 }
 
-const Languages::Language& Languages::getLanguage(unsigned int i)
+const Language& Languages::getLanguage(unsigned i)
 {
     if(!loaded)
         loadLanguages();
 
-    if(i < languages.size())
-        return languages.at(i);
+    if(i >= languages.size())
+        i = 0;
 
-    return languages.at(0);
+    return languages.at(i);
 }
 
-unsigned int Languages::getCount()
+unsigned Languages::size()
 {
     if(!loaded)
         loadLanguages();
 
-    return unsigned(languages.size());
+    return static_cast<unsigned>(languages.size());
 }
 
 void Languages::setLanguage(const std::string& lang_code)
 {
-    SETTINGS.language.language = lang_code; //-V807
-
-    std::string locale = mysetlocale(LC_ALL, lang_code.c_str());
-    if(SETTINGS.language.language.length() == 0)
-        SETTINGS.language.language = locale;
-
-    const char* domain = "rttr";
-    bind_textdomain_codeset(domain, "UTF-8");
-    bindtextdomain(domain, FILE_PATHS[15]);
-    textdomain(domain);
+    mysetlocale(LC_ALL, lang_code.c_str());
 }
 
-const std::string Languages::setLanguage(unsigned int i)
+const std::string Languages::setLanguage(unsigned i)
 {
-    const Language l = getLanguage(i);
-
+    const Language& l = getLanguage(i);
     setLanguage(l.code);
-
     return l.code;
 }

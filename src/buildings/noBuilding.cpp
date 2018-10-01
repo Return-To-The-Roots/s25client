@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,32 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noBuilding.h"
-#include "world/GameWorldGame.h"
-#include "nodeObjs/noFire.h"
+#include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "libutil/src/Log.h"
+#include "ogl/glSmartBitmap.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noFire.h"
+#include "libutil/Log.h"
 class noFigure;
 
-noBuilding::noBuilding(const BuildingType type,
-                       const MapPoint pos,
-                       const unsigned char player,
-                       const Nation  /*nation*/)
-    : noBaseBuilding(NOP_BUILDING, type, pos, player),
-      opendoor(0)
-{
-}
+noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation /*nation*/)
+    : noBaseBuilding(NOP_BUILDING, type, pos, player), opendoor(0)
+{}
 
-void noBuilding::Destroy_noBuilding()
+void noBuilding::Destroy()
 {
-    // Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
-    // Feuer setzen
-    gwg->SetNO(pos, new noFire(pos, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), true);
-
+    // First we have to remove the building from the map and the player
+    // Replace by fire (huts and mines become small fire, rest big)
+    gwg->SetNO(pos, new noFire(pos, GetSize() != BQ_HUT && GetSize() != BQ_MINE), true);
+    gwg->GetPlayer(player).RemoveBuilding(this, bldType_);
+    // Destroy derived buildings
+    DestroyBuilding();
+    // Then go further down the chain
     Destroy_noBaseBuilding();
 }
 
@@ -51,10 +50,10 @@ void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const
     sgd.PushSignedChar(opendoor);
 }
 
-noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
-    opendoor(sgd.PopSignedChar())
+noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id), opendoor(sgd.PopSignedChar())
 {
-    if(opendoor < 0){
+    if(opendoor < 0)
+    {
         LOG.write("Bug detected: Door was closed to many times. Please report replay before this savegame/replay!");
         opendoor = 0;
     }
@@ -62,24 +61,31 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseB
 
 void noBuilding::DrawBaseBuilding(DrawPoint drawPt)
 {
-    LOADER.building_cache[nation][type_][0].draw(drawPt);
+    LOADER.building_cache[nation][bldType_][0].draw(drawPt);
     DrawDoor(drawPt);
 }
 
 void noBuilding::DrawDoor(DrawPoint drawPt)
 {
-    if(!opendoor)
+    if(!IsDoorOpen())
         return;
     glArchivItem_Bitmap* doorImg = GetDoorImage();
     if(doorImg)
-        doorImg->Draw(drawPt);
+        doorImg->DrawFull(drawPt);
 }
 
-void noBuilding::GotWorker(Job  /*job*/, noFigure*  /*worker*/)
+void noBuilding::OpenDoor()
 {
+    ++opendoor;
+}
+
+void noBuilding::CloseDoor()
+{
+    RTTR_Assert(IsDoorOpen());
+    --opendoor;
 }
 
 FOWObject* noBuilding::CreateFOWObject() const
 {
-    return new fowBuilding(type_, nation);
+    return new fowBuilding(bldType_, nation);
 }

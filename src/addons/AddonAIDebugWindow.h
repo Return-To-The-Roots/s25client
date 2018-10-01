@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,23 +21,20 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for disable the AI debugging window
  */
 class AddonAIDebugWindow : public AddonBool
 {
-    public:
-        AddonAIDebugWindow() : AddonBool(AddonId::AI_DEBUG_WINDOW,
-                                             ADDONGROUP_OTHER,
-                                             _("AI Debugging Window"),
-                                             _("Enable AI Debugging Window\n"
-                                                     "(possible cheating)"),
-                                             0
-                                            )
-        {
-        }
+public:
+    AddonAIDebugWindow()
+        : AddonBool(AddonId::AI_DEBUG_WINDOW, ADDONGROUP_OTHER, _("AI Debugging Window"),
+                    _("Enable AI Debugging Window\n"
+                      "(possible cheating)"),
+                    0)
+    {}
 };
 
 #endif // !ADDONAIDEBUGWINDOW_H_INCLUDED

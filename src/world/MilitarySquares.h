@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,9 +18,9 @@
 #ifndef MilitarySquares_h__
 #define MilitarySquares_h__
 
-#include "gameTypes/MapTypes.h"
-#include <vector>
+#include "gameTypes/MapCoordinates.h"
 #include <list>
+#include <vector>
 
 class nobBaseMilitary;
 class sortedMilitaryBlds;
@@ -28,14 +28,14 @@ class sortedMilitaryBlds;
 class MilitarySquares
 {
     /// military buildings (including HQs and harbors) per military square
-    std::vector< std::list<nobBaseMilitary*> > squares;
-    unsigned width, height;
+    std::vector<std::list<nobBaseMilitary*> > squares;
+    MapExtent size_;
     // Liefert das entsprechende Militärquadrat für einen bestimmten Punkt auf der Karte zurück (normale Koordinaten)
     std::list<nobBaseMilitary*>& GetSquare(const MapPoint pt);
 
 public:
     MilitarySquares();
-    void Init(const unsigned short mapWidth, const unsigned short mapHeight);
+    void Init(const MapExtent& mapSize);
     void Clear();
     void Add(nobBaseMilitary* const bld);
     void Remove(nobBaseMilitary* const bld);

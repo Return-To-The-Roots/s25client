@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,13 +18,13 @@
 #ifndef SettingTypeConv_h__
 #define SettingTypeConv_h__
 
-#include "gameTypes/SettingsTypes.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/SettingsTypes.h"
 
 /// Scaling (max values) of each military setting
 extern const MilitarySettings MILITARY_SETTINGS_SCALE;
 /// Standard priority of each ware
-extern const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO;
+extern const boost::array<unsigned char, NUM_WARE_TYPES> STD_TRANSPORT_PRIO;
 
 /// Get the priority of a given good from the ordering of goods (good categories)
 unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType good);
@@ -32,4 +32,3 @@ unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType 
 TransportOrders GetOrderingFromTransportPrio(const TransportPriorities& priorities);
 
 #endif // SettingTypeConv_h__
-

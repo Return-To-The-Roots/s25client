@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,29 +20,25 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon allows users to adjust the percentage of trees that have the recurring spawn animal event
  */
 class AddonMoreAnimals : public AddonList
 {
-    public:
-        AddonMoreAnimals() : AddonList(AddonId::MORE_ANIMALS,
-                                               ADDONGROUP_ECONOMY,
-                                               _("More trees spawn animals"),
-                                               _("Adjust the fraction of trees that spawn animals."),
-                                               0
-                                              )
-        {
-            addOption(_("default"));
-            addOption(_("+50%"));
-            addOption(_("+100%"));
-            addOption(_("+200%"));
-			addOption(_("+500%"));
-            addOption(_("+1000%"));
-        }
+public:
+    AddonMoreAnimals()
+        : AddonList(AddonId::MORE_ANIMALS, ADDONGROUP_ECONOMY, _("More trees spawn animals"),
+                    _("Adjust the fraction of trees that spawn animals."), 0)
+    {
+        addOption(_("default"));
+        addOption(_("+50%"));
+        addOption(_("+100%"));
+        addOption(_("+200%"));
+        addOption(_("+500%"));
+        addOption(_("+1000%"));
+    }
 };
 
 #endif // !ADDONREFUNDMATERIALS_H_INCLUDED
-

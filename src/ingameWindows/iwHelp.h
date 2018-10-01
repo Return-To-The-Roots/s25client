@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,8 +26,8 @@
 /// Soforthilfe-Fenster
 class iwHelp : public IngameWindow
 {
-    public:
-        iwHelp(const GUI_ID gui_id, const std::string& content);
+public:
+    iwHelp(const GUI_ID gui_id, const std::string& content);
 };
 
 #endif // iwHELP_H_INCLUDED

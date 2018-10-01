@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,33 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofButcher.h"
-#include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
-#include "buildings/nobUsual.h"
+#include "Loader.h"
 #include "SoundManager.h"
-#include "world/GameWorldGame.h"
+#include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
 
 nofButcher::nofButcher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_BUTCHER, pos, player, workplace)
-{
-}
+{}
 
-nofButcher::nofButcher(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofButcher::nofButcher(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofButcher::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPointInit offsets[NAT_COUNT] = { {38, 2}, { -3, 5}, {21, -1}, {26, -5}, { -7, 2} };
+    static const DrawPointInit offsets[NUM_NATS] = {{38, 2}, {-3, 5}, {21, -1}, {26, -5}, {-7, 2}};
 
     unsigned now_id;
 
     LOADER.GetPlayerImage("rom_bobs", 160 + (now_id = GAMECLIENT.Interpolate(136, current_ev)) % 6)
-    ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     if(now_id % 6 == 5)
     {

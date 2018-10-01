@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,11 +19,11 @@
 
 #pragma once
 
-/// Wie hoch und breit ist ein Dreieck?
-BOOST_CONSTEXPR_OR_CONST int TR_W = 53;
-BOOST_CONSTEXPR_OR_CONST int TR_H = 29;
+/// Width and height of a triangle. Measured from a screenshot of the original
+BOOST_CONSTEXPR_OR_CONST int TR_W = 56;
+BOOST_CONSTEXPR_OR_CONST int TR_H = 28;
 
-/// Faktor fr die Höhen
+/// Number of pixels the node is adjusted in y per altitude step
 BOOST_CONSTEXPR_OR_CONST int HEIGHT_FACTOR = 5;
 
 #endif // !MAPCONSTS_H_INCLUDED

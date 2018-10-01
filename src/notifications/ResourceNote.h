@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,20 +19,18 @@
 #define ResourceNote_h__
 
 #include "notifications/notifications.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
 
 struct ResourceNote
 {
     ENABLE_NOTIFICATION(ResourceNote);
 
-    ResourceNote(unsigned player, const MapPoint& pos, Resource res, unsigned char quantity):
-        player(player), pos(pos), res(res), quantity(quantity){}
+    ResourceNote(unsigned player, const MapPoint& pos, Resource res) : player(player), pos(pos), res(res) {}
 
     const unsigned player;
     const MapPoint pos;
     const Resource res;
-    const unsigned char quantity;
 };
 
 #endif // ResourceNote_h__

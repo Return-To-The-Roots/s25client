@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,21 +25,18 @@ class LobbyServerInfo;
 
 class iwLobbyServerInfo : public IngameWindow
 {
-    private:
-        unsigned serverId_;
+private:
+    unsigned serverId_;
 
-    public:
-        iwLobbyServerInfo(unsigned serverId);
+public:
+    iwLobbyServerInfo(unsigned serverId);
 
-        void SetServerId(unsigned serverId);
-        unsigned GetServerId() const { return serverId_; }
+    void SetServerId(unsigned serverId);
+    unsigned GetServerId() const { return serverId_; }
+    void UpdateServerInfo();
 
-    protected:
-        void UpdateServerInfo();
-
-        void Msg_Timer(const unsigned int ctrl_id) override;
-
-
+protected:
+    void Msg_Timer(const unsigned ctrl_id) override;
 };
 
 #endif // iwLOBBYSERVERINFO_H_INCLUDED

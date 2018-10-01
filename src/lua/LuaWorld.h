@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,8 +26,9 @@ class GameWorldGame;
 class LuaWorld
 {
     GameWorldGame& gw;
+
 public:
-    LuaWorld(GameWorldGame& gw): gw(gw){}
+    LuaWorld(GameWorldGame& gw) : gw(gw) {}
     static void Register(kaguya::State& state);
     bool AddEnvObject(int x, int y, unsigned id, unsigned file = 0xFFFF);
     bool AddStaticObject(int x, int y, unsigned id, unsigned file = 0xFFFF, unsigned size = 1);

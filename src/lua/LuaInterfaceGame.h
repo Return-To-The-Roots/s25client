@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,24 +18,27 @@
 #ifndef LuaInterfaceGame_h__
 #define LuaInterfaceGame_h__
 
-#include "LuaInterfaceBase.h"
-#include "gameTypes/MapTypes.h"
+#include "LuaInterfaceGameBase.h"
+#include "gameTypes/MapCoordinates.h"
+#include "gameTypes/PactTypes.h"
+#include <boost/weak_ptr.hpp>
 #include <string>
 
 class GameWorldGame;
 class LuaPlayer;
 class LuaWorld;
 class Serializer;
+class Game;
 
-class LuaInterfaceGame: public LuaInterfaceBase{
+class LuaInterfaceGame : public LuaInterfaceGameBase
+{
 public:
-
-    LuaInterfaceGame(GameWorldGame& gw);
+    LuaInterfaceGame(boost::weak_ptr<Game> game);
     virtual ~LuaInterfaceGame();
 
     static void Register(kaguya::State& state);
 
-    Serializer Serialize();
+    bool Serialize(Serializer& luaSaveState);
     bool Deserialize(Serializer& luaState);
 
     void EventExplored(unsigned player, const MapPoint pt, unsigned char owner);
@@ -43,21 +46,29 @@ public:
     void EventStart(bool isFirstStart);
     void EventGameFrame(unsigned number);
     void EventResourceFound(unsigned char player, const MapPoint pt, unsigned char type, unsigned char quantity);
-
+    // Called if player wants to cancel a pact
+    bool EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
+    // Called if player suggests a pact
+    void EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration);
+    // called if pact was canceled
+    void EventPactCanceled(const PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
+    // called if pact was created
+    void EventPactCreated(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration);
     // Callable from Lua
     void ClearResources();
-    unsigned GetGF();
-    unsigned GetPlayerCount();
+    unsigned GetGF() const;
+    unsigned GetNumPlayers() const;
     void Chat(int playerIdx, const std::string& msg);
     void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);
-    void MissionStatementWithImg(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
+    void MissionStatement2(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
+    void MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx, bool pause);
     void SetMissionGoal(int playerIdx, const std::string& newGoal = "");
     void PostMessageLua(unsigned playerIdx, const std::string& msg);
     void PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y);
 
 private:
     GameWorldGame& gw;
-
+    boost::weak_ptr<Game> game;
     LuaPlayer GetPlayer(unsigned playerIdx);
     LuaWorld GetWorld();
 };

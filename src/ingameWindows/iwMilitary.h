@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,26 +27,24 @@ class GameWorldViewer;
 /// Fenster mit den Militäreinstellungen.
 class iwMilitary : public IngameWindow
 {
-        const GameWorldViewer& gwv;
-        GameCommandFactory& gcFactory;
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-        bool settings_changed;
+    const GameWorldViewer& gwv;
+    GameCommandFactory& gcFactory;
+    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+    bool settings_changed;
 
-    public:
+public:
+    iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
+    ~iwMilitary() override;
 
-        iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-        ~iwMilitary() override;
+private:
+    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+    void UpdateSettings();
+    /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+    void TransmitSettings();
 
-    private:
-
-        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-        void UpdateSettings();
-        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-        void TransmitSettings();
-
-        void Msg_Timer(const unsigned int ctrl_id) override;
-        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwMILITARY_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,26 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofFarmer.h"
 
-#include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
-#include "nodeObjs/noEnvObject.h"
-#include "nodeObjs/noGrainfield.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
-#include "gameData/TerrainData.h"
+#include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noGrainfield.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/bind.hpp>
 
 nofFarmer::nofFarmer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FARMER, pos, player, workplace), harvest(false)
-{
-}
-
+{}
 
 void nofFarmer::Serialize_nofFarmer(SerializedGameData& sgd) const
 {
@@ -43,22 +42,17 @@ void nofFarmer::Serialize_nofFarmer(SerializedGameData& sgd) const
     sgd.PushBool(harvest);
 }
 
-nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
-    harvest(sgd.PopBool())
-{
-}
-
+nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool()) {}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofFarmer::DrawWorking(DrawPoint drawPt)
 {
     unsigned now_id;
 
-
     if(harvest)
     {
         LOADER.GetPlayerImage("rom_bobs", 140 + (now_id = GAMECLIENT.Interpolate(88, current_ev)) % 8)
-        ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
@@ -67,14 +61,11 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
             was_sounding = true;
         }
 
-    }
-    else
+    } else
     {
         LOADER.GetPlayerImage("rom_bobs", 132 + GAMECLIENT.Interpolate(88, current_ev) % 8)
-        ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
     }
-
-
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -111,8 +102,7 @@ void nofFarmer::WorkFinished()
 
         // Getreide, was wir geerntet haben, in die Hand nehmen
         ware = GD_GRAIN;
-    }
-    else
+    } else
     {
         // If the point got bad (e.g. something was build), abort work
         if(GetPointQuality(pos) == PQ_NOTPOSSIBLE)
@@ -154,18 +144,12 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
         // Nicht auf Straßen bauen!
         for(unsigned char i = 0; i < 6; ++i)
         {
-            if(gwg->GetPointRoad(pt, i))
+            if(gwg->GetPointRoad(pt, Direction::fromInt(i)))
                 return PQ_NOTPOSSIBLE;
         }
 
-        // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-        unsigned char good_terrains = 0;
-        for(unsigned char i = 0; i < 6; ++i)
-        {
-            if(TerrainData::IsVital(gwg->GetTerrainAround(pt, i)))
-                ++good_terrains;
-        }
-        if (good_terrains != 6)
+        // Terrain untersuchen
+        if(!gwg->IsOfTerrain(pt, boost::bind(&TerrainDesc::IsVital, _1)))
             return PQ_NOTPOSSIBLE;
 
         // Ist Platz frei?
@@ -176,16 +160,14 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
         for(unsigned char i = 0; i < 6; ++i)
         {
             // Nicht direkt neben andere Getreidefelder und Gebäude setzen!
-            noType = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetType();
+            noType = gwg->GetNO(gwg->GetNeighbour(pt, Direction::fromInt(i)))->GetType();
             if(noType == NOP_GRAINFIELD || noType == NOP_BUILDING || noType == NOP_BUILDINGSITE)
                 return PQ_NOTPOSSIBLE;
         }
 
         return PQ_CLASS2;
     }
-
 }
-
 
 void nofFarmer::WorkAborted()
 {
@@ -194,4 +176,3 @@ void nofFarmer::WorkAborted()
     if(harvest && state == STATE_WORK)
         gwg->GetSpecObj<noGrainfield>(pos)->EndHarvesting();
 }
-

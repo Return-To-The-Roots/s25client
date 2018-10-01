@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,34 +15,41 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlText.h"
 #include "ogl/glArchivItem_Font.h"
 
-ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font) :
-    text(text), color_(color), font(font)
+ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font) : text(text), color_(color), font(font)
+{}
+
+void ctrlBaseText::SetText(const std::string& text)
 {
+    this->text = text;
 }
 
-ctrlText::ctrlText(Window* parent,
-                   unsigned int id,
-                   unsigned short x,
-                   unsigned short y,
-                   const std::string& text,
-                   unsigned int color,
-                   unsigned int format,
-                   glArchivItem_Font* font)
-    : Window(DrawPoint(x, y), id, parent), ctrlBaseText(text, color, font), format(format)
+void ctrlBaseText::SetFont(glArchivItem_Font* font)
 {
+    this->font = font;
+}
+
+ctrlText::ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+                   glArchivItem_Font* font)
+    : Window(parent, id, pos), ctrlBaseText(text, color, font), format(format)
+{}
+
+Rect ctrlText::GetBoundaryRect() const
+{
+    if(text.empty())
+        return Rect(GetDrawPos(), 0, 0);
+    else
+        return font->getBounds(GetDrawPos(), text, format);
 }
 
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlText::Draw_()
+void ctrlText::Draw_()
 {
     if(!text.empty())
         font->Draw(GetDrawPos(), text, format, color_);
-
-    return true;
 }

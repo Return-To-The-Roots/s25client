@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,55 +15,61 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap.h"
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/oglIncludes.h"
+#include "libsiedler2/PixelBufferARGB.h"
 #include <vector>
 
-glArchivItem_Bitmap::glArchivItem_Bitmap()
-{
-}
+glArchivItem_Bitmap::glArchivItem_Bitmap() {}
 
 glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
     : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_BitmapBase(item)
-{
-}
+{}
 
 /**
  *  Zeichnet die Textur.
  */
-void glArchivItem_Bitmap::Draw(DrawPoint dst, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color)
+void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/)
 {
     if(GetTexture() == 0)
         return;
 
-    if(src_w == 0)
-        src_w = width_;
-    if(src_h == 0)
-        src_h = height_;
-    if(dst_w == 0)
-        dst_w = src_w;
-    if(dst_h == 0)
-        dst_h = src_h;
+    RTTR_Assert(dstArea.getSize().x > 0 && dstArea.getSize().y > 0);
+    RTTR_Assert(srcArea.getSize().x > 0 && srcArea.getSize().y > 0);
+    // Compatibility only!
+    Extent srcSize = srcArea.getSize();
+    if(srcSize.x == 0)
+        srcSize.x = getWidth();
+    if(srcSize.y == 0)
+        srcSize.y = getHeight();
+    srcArea.setSize(srcSize);
+    Extent dstSize = dstArea.getSize();
+    if(dstSize.x == 0)
+        dstSize.x = srcSize.x;
+    if(dstSize.y == 0)
+        dstSize.y = srcSize.y;
+    dstArea.setSize(dstSize);
 
     RTTR_Assert(getBobType() != libsiedler2::BOBTYPE_BITMAP_PLAYER);
 
     Point<GLfloat> texCoords[4], vertices[4];
 
-    int x = -nx_ + dst.x;
-    int y = -ny_ + dst.y;
+    dstArea.move(-GetOrigin());
 
-    vertices[0].x = vertices[1].x = GLfloat(x);
-    vertices[2].x = vertices[3].x = GLfloat(x + dst_w);
-    vertices[0].y = vertices[3].y = GLfloat(y);
-    vertices[1].y = vertices[2].y = GLfloat(y + dst_h);
+    vertices[0].x = vertices[1].x = GLfloat(dstArea.left);
+    vertices[2].x = vertices[3].x = GLfloat(dstArea.right);
+    vertices[0].y = vertices[3].y = GLfloat(dstArea.top);
+    vertices[1].y = vertices[2].y = GLfloat(dstArea.bottom);
 
-    texCoords[0].x = texCoords[1].x = GLfloat(src_x) / tex_width_;
-    texCoords[2].x = texCoords[3].x = GLfloat(src_x + src_w) / tex_width_;
-    texCoords[0].y = texCoords[3].y = GLfloat(src_y) / tex_height_;
-    texCoords[1].y = texCoords[2].y = GLfloat(src_y + src_h) / tex_height_;
+    Point<GLfloat> srcOrig = Point<GLfloat>(srcArea.getOrigin()) / GetTexSize();
+    Point<GLfloat> srcEndPt = Point<GLfloat>(srcArea.getEndPt()) / GetTexSize();
+    texCoords[0].x = texCoords[1].x = srcOrig.x;
+    texCoords[2].x = texCoords[3].x = srcEndPt.x;
+    texCoords[0].y = texCoords[3].y = srcOrig.y;
+    texCoords[1].y = texCoords[2].y = srcEndPt.y;
 
     glVertexPointer(2, GL_FLOAT, 0, vertices);
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
@@ -72,13 +78,47 @@ void glArchivItem_Bitmap::Draw(DrawPoint dst, short dst_w, short dst_h, short sr
     glDrawArrays(GL_QUADS, 0, 4);
 }
 
+void glArchivItem_Bitmap::DrawFull(const Rect& destArea, unsigned color)
+{
+    Draw(destArea, Rect(Position(0, 0), GetSize()), color);
+}
+
+void glArchivItem_Bitmap::DrawFull(const DrawPoint& dstPos, unsigned color)
+{
+    DrawFull(Rect(dstPos, GetSize()), color);
+}
+
+void glArchivItem_Bitmap::DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color)
+{
+    Draw(destArea, Rect(offset, destArea.getSize()), color);
+}
+
+void glArchivItem_Bitmap::DrawPart(const Rect& destArea, unsigned color /*= COLOR_WHITE*/)
+{
+    DrawPart(destArea, DrawPoint::all(0), color);
+}
+
+void glArchivItem_Bitmap::DrawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color /*= COLOR_WHITE*/)
+{
+    RTTR_Assert(percent <= 100);
+    if(percent == 0u)
+        return;
+    unsigned drawnHeight = getHeight() * std::min(100u, percent) / 100;
+    DrawPoint offset(0, getHeight() - drawnHeight);
+    DrawPart(Rect(dstPos + offset, getWidth(), drawnHeight), offset, color);
+}
+
 void glArchivItem_Bitmap::FillTexture()
 {
     int iformat = GetInternalFormat(), dformat = GL_BGRA;
 
-    std::vector<unsigned char> buffer(tex_width_ * tex_height_ * 4);
-
-    print(&buffer.front(), tex_width_, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 0, 0, 0, 0, 0, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width_, tex_height_, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
+    const Extent texSize = GetTexSize();
+    libsiedler2::PixelBufferARGB buffer(texSize.x, texSize.y);
+    print(buffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 }
 
+Extent glArchivItem_Bitmap::CalcTextureSize() const
+{
+    return VIDEODRIVER.calcPreferredTextureSize(GetSize());
+}

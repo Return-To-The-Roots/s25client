@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,65 +27,70 @@ struct AddonId;
 
 class GlobalGameSettings
 {
-    public:
-        GlobalGameSettings();
-        GlobalGameSettings(const GlobalGameSettings& ggs);
-        ~GlobalGameSettings();
+public:
+    GlobalGameSettings();
+    GlobalGameSettings(const GlobalGameSettings& ggs);
+    ~GlobalGameSettings();
 
-        GlobalGameSettings& operator=(const GlobalGameSettings& ggs);
+    GlobalGameSettings& operator=(const GlobalGameSettings& ggs);
 
-        /// Serialisierung und Deserialisierung
-        void Serialize(Serializer& ser) const;
-        void Deserialize(Serializer& ser);
+    /// Serialisierung und Deserialisierung
+    void Serialize(Serializer& ser) const;
+    void Deserialize(Serializer& ser);
 
-    public:
-        GameSpeed speed;
-        GameObjective objective;
-        StartWares startWares;
-        bool lockedTeams;
-        Exploration exploration;
-        bool teamView;
-        bool randomStartPosition;
+public:
+    GameSpeed speed;
+    GameObjective objective;
+    StartWares startWares;
+    bool lockedTeams;
+    Exploration exploration;
+    bool teamView;
+    bool randomStartPosition;
 
-        unsigned int getNumAddons() const { return addons.size(); }
-        const Addon* getAddon(unsigned int nr, unsigned int& status) const;
-        const Addon* getAddon(unsigned int nr) const;
-        /// clears the addon memory.
-        void clearAddons(bool recreate = true);
+    unsigned getNumAddons() const { return addons.size(); }
+    const Addon* getAddon(unsigned nr, unsigned& status) const;
+    const Addon* getAddon(unsigned nr) const;
+    /// clears the addon memory.
+    void clearAddons();
 
-        bool isEnabled(AddonId id) const;
-        unsigned int getSelection(AddonId id) const;
-        void setSelection(AddonId id, unsigned int selection);
+    void registerAllAddons();
 
-        /// loads the saved addon configuration from the SETTINGS.
-        void LoadSettings();
-        /// saves the current addon configuration to the SETTINGS.
-        void SaveSettings() const;
+    /// Reset all addons to their defaults
+    void resetAddons();
 
-        /// Get current maximum rank for soldiers
-        /// 0 = Private, 1 = Private First Class, ...
-        unsigned int GetMaxMilitaryRank() const;
-        /// Returns number of scouts required for exploration expeditions
-        unsigned int GetNumScoutsExedition() const;
+    bool isEnabled(AddonId id) const;
+    unsigned getSelection(AddonId id) const;
+    void setSelection(AddonId id, unsigned selection);
 
-    private:
-        void registerAddon(Addon* addon);
+    /// loads the saved addon configuration from the SETTINGS.
+    void LoadSettings();
+    /// saves the current addon configuration to the SETTINGS.
+    void SaveSettings() const;
 
-        struct AddonWithState
-        {
-            AddonWithState() : addon(NULL), status(0) {}
-            explicit AddonWithState(Addon* addon);
+    /// Get current maximum rank for soldiers
+    /// 0 = Private, 1 = Private First Class, ...
+    unsigned GetMaxMilitaryRank() const;
+    /// Returns number of scouts required for exploration expeditions
+    unsigned GetNumScoutsExedition() const;
 
-            Addon* addon;
-            unsigned status;
+private:
+    void registerAddon(Addon* addon);
 
-            inline bool operator==(const AddonId& rhs) const;
-            inline bool operator<(const AddonWithState& rhs) const;
-        };
+    struct AddonWithState
+    {
+        AddonWithState() : addon(NULL), status(0) {}
+        explicit AddonWithState(Addon* addon);
 
-        typedef std::vector<AddonWithState> AddonContainer;
+        Addon* addon;
+        unsigned status;
 
-        AddonContainer addons;
+        inline bool operator==(const AddonId& rhs) const;
+        inline bool operator<(const AddonWithState& rhs) const;
+    };
+
+    typedef std::vector<AddonWithState> AddonContainer;
+
+    AddonContainer addons;
 };
 
 #endif // !GlobalGameSettings_H_INCLUDED

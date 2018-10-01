@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,20 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "CompressedData.h"
 #include "FileChecksum.h"
-#include "libutil/src/Log.h"
-#include <bzlib.h>
+#include "libutil/Log.h"
+#include <boost/nowide/fstream.hpp>
 #include <boost/smart_ptr/scoped_array.hpp>
-#include <boost/filesystem/fstream.hpp>
+#include <bzlib.h>
 #include <cerrno>
 #include <cmath>
 #include <cstring>
 
 bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* checksum)
 {
-    bfs::ofstream file(filePath, std::ios::binary);
+    bnw::ofstream file(filePath, std::ios::binary);
 
     if(!file)
     {
@@ -38,7 +38,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
 
     boost::scoped_array<char> uncompressedData(new char[length]);
 
-    unsigned int outLength = length;
+    unsigned outLength = length;
 
     int err = BZ2_bzBuffToBuffDecompress(uncompressedData.get(), &outLength, &data[0], data.size(), 0, 0);
     if(err != BZ_OK)
@@ -67,7 +67,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
 
 bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* checksum /* = NULL */)
 {
-    bfs::ifstream file(filePath, std::ios::binary | std::ios::ate);
+    bnw::ifstream file(filePath, std::ios::binary | std::ios::ate);
     length = static_cast<unsigned>(file.tellg());
     data.resize(static_cast<int>(std::ceil(length * 1.1)) + 600); // Buffer should be at most 1% bigger + 600 Bytes according to docu
     file.seekg(0);

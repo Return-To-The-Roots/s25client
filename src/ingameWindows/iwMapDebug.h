@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,7 +23,7 @@
 class ctrlText;
 class GameWorldView;
 
-class iwMapDebug: public IngameWindow
+class iwMapDebug : public IngameWindow
 {
 public:
     iwMapDebug(GameWorldView& gwv, bool allowCheating);
@@ -32,8 +32,8 @@ public:
 private:
     class DebugPrinter;
 
-    void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
-    void Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked) override;
+    void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_CheckboxChange(const unsigned ctrl_id, const bool checked) override;
 
     GameWorldView& gwv;
     DebugPrinter* printer;

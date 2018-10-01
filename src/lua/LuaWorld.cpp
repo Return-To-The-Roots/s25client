@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaWorld.h"
 #include "lua/LuaHelpers.h"
 #include "world/GameWorldGame.h"
+#include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
-#include "gameTypes/MapTypes.h"
-#include "nodeObjs/noAnimal.h"
+#include "gameTypes/MapCoordinates.h"
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, AddEnvObject, 3, 4)
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddStaticObjectWrapper, LuaWorld, AddStaticObject, 3, 5)
@@ -42,15 +42,14 @@ void LuaWorld::Register(kaguya::State& state)
 #pragma endregion ConstDefs
 
     state["World"].setClass(kaguya::UserdataMetatable<LuaWorld>()
-        .addFunction("AddEnvObject", AddEnvObjectWrapper())
-        .addFunction("AddStaticObject", AddStaticObjectWrapper())
-        .addFunction("AddAnimal", &LuaWorld::AddAnimal)
-    );
+                              .addFunction("AddEnvObject", AddEnvObjectWrapper())
+                              .addFunction("AddStaticObject", AddStaticObjectWrapper())
+                              .addFunction("AddAnimal", &LuaWorld::AddAnimal));
 }
 
 bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */)
 {
-    MapPoint pt = gw.MakeMapPoint(Point<int>(x, y));
+    MapPoint pt = gw.MakeMapPoint(Position(x, y));
     noBase* obj = gw.GetNode(pt).obj;
     if(obj)
     {
@@ -69,8 +68,8 @@ bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF
 bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */, unsigned size /* = 1 */)
 {
     lua::assertTrue(size <= 2, "Invalid size");
-    
-    MapPoint pt = gw.MakeMapPoint(Point<int>(x, y));
+
+    MapPoint pt = gw.MakeMapPoint(Position(x, y));
     noBase* obj = gw.GetNode(pt).obj;
     if(obj)
     {
@@ -88,9 +87,9 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
 
 void LuaWorld::AddAnimal(int x, int y, Species species)
 {
-    lua::assertTrue(static_cast<unsigned>(species) < SPEC_COUNT, "Invalid animal species");
-    MapPoint pos = gw.MakeMapPoint(Point<int>(x, y));
+    lua::assertTrue(static_cast<unsigned>(species) < NUM_SPECS, "Invalid animal species");
+    MapPoint pos = gw.MakeMapPoint(Position(x, y));
     noAnimal* animal = new noAnimal(species, pos);
-    gw.AddFigure(animal, pos);
+    gw.AddFigure(pos, animal);
     animal->StartLiving();
 }

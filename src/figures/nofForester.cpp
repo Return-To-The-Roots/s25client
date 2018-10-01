@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,36 +15,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofForester.h"
 
-#include "Loader.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "Random.h"
-#include "nodeObjs/noTree.h"
-#include "SoundManager.h"
 #include "GameInterface.h"
-#include "world/GameWorldGame.h"
-#include "gameData/TerrainData.h"
+#include "GamePlayer.h"
+#include "Loader.h"
+#include "SoundManager.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "random/Random.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noTree.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/bind.hpp>
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FORESTER, pos, player, workplace)
-{
-}
+{}
 
-nofForester::nofForester(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
-{
-}
+nofForester::nofForester(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofForester::DrawWorking(DrawPoint drawPt)
 {
     unsigned short now_id = GAMECLIENT.Interpolate(36, current_ev);
     // Baum pflanzen
-    LOADER.GetPlayerImage("rom_bobs", 48 + now_id)
-    ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    LOADER.GetPlayerImage("rom_bobs", 48 + now_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
     // Schaufel-Sound
     if(now_id == 7 || now_id == 18)
@@ -58,7 +55,6 @@ void nofForester::DrawWorking(DrawPoint drawPt)
         SOUNDMANAGER.PlayNOSound(57, this, 2);
         was_sounding = true;
     }
-
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -68,17 +64,15 @@ unsigned short nofForester::GetCarryID() const
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofForester::WorkStarted()
-{
-}
+void nofForester::WorkStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofForester::WorkFinished()
 {
     // Wenn irgendwo ne Straße schon ist, NICHT einsetzen!
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(gwg->GetPointRoad(pos, i))
+        if(gwg->GetPointRoad(pos, Direction::fromInt(dir)))
             return;
     }
 
@@ -89,20 +83,15 @@ void nofForester::WorkFinished()
         gwg->DestroyNO(pos, false);
 
         // Je nach Landschaft andere Bäume pflanzbar!
-        const unsigned char AVAILABLE_TREES_COUNT[3] =
-        {
-            6, 3, 4
-        };
-        const unsigned char AVAILABLE_TREES[3][8] =
-        {
-            {0, 1, 2, 6, 7, 8,   0xFF, 0xFF},
-            {0, 1, 7,         0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
-            {0, 1, 6, 8,       0xFF, 0xFF, 0xFF, 0xFF}
-        };
+        const unsigned char NUM_AVAILABLE_TREES[3] = {6, 3, 4};
+        const unsigned char AVAILABLE_TREES[3][8] = {
+          {0, 1, 2, 6, 7, 8, 0xFF, 0xFF}, {0, 1, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, {0, 1, 6, 8, 0xFF, 0xFF, 0xFF, 0xFF}};
+        uint8_t landscapeType = std::min<uint8_t>(gwg->GetLandscapeType().value, 2);
 
         // jungen Baum einsetzen
-        gwg->SetNO(pos, new noTree(pos, AVAILABLE_TREES[gwg->GetLandscapeType()]
-                              [RANDOM.Rand(__FILE__, __LINE__, GetObjId(), AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0));
+        gwg->SetNO(
+          pos, new noTree(
+                 pos, AVAILABLE_TREES[landscapeType][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), NUM_AVAILABLE_TREES[landscapeType])], 0));
 
         // BQ drumherum neu berechnen
         gwg->RecalcBQAroundPoint(pos);
@@ -126,32 +115,23 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     if(gwg->GetNode(pt).boundary_stones[0])
         return PQ_NOTPOSSIBLE;
 
-
     // darf außerdem nich auf einer Straße liegen
-    for(unsigned char i = 0; i < 6; ++i)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(gwg->GetPointRoad(pt, i))
+        if(gwg->GetPointRoad(pt, Direction::fromInt(dir)))
             return PQ_NOTPOSSIBLE;
     }
 
     // es dürfen außerdem keine Gebäude rund um den Baum stehen
-    for(unsigned char i = 0; i < 6; ++i)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(gwg->GetNO(gwg->GetNeighbour(pt, i))->GetType() ==  NOP_BUILDING)
+        if(gwg->GetNO(gwg->GetNeighbour(pt, Direction::fromInt(dir)))->GetType() == NOP_BUILDING)
             return PQ_NOTPOSSIBLE;
     }
 
-    // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-    unsigned char good_terrains = 0;
-
-    for(unsigned char i = 0; i < 6; ++i)
-    {
-        if(TerrainData::IsVital(gwg->GetTerrainAround(pt, i)))
-            ++good_terrains;
-    }
-    if(good_terrains != 6)
+    // Terrain untersuchen
+    if(gwg->IsOfTerrain(pt, boost::bind(&TerrainDesc::IsVital, _1)))
+        return PQ_CLASS1;
+    else
         return PQ_NOTPOSSIBLE;
-
-
-    return PQ_CLASS1;
 }

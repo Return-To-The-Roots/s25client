@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,20 +18,38 @@
 #ifndef CreateEmptyWorld_h__
 #define CreateEmptyWorld_h__
 
+#include "gameTypes/Direction.h"
+#include "gameTypes/MapCoordinates.h"
+#include "gameTypes/MapTypes.h"
 #include "gameTypes/Nation.h"
+#include "gameData/DescIdx.h"
 #include <vector>
 
 class GameWorldGame;
+struct TerrainDesc;
 
 /// Creates an empty world, with meadow terrain and the given number of players
 struct CreateEmptyWorld
 {
-    CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers);
+    CreateEmptyWorld(const MapExtent& size, unsigned numPlayers);
     bool operator()(GameWorldGame& world) const;
+
 private:
-    unsigned width_, height_;
+    MapExtent size_;
     std::vector<Nation> playerNations_;
 };
 
+/// Create an uninitalized world (terrain, BQ etc not set. only nodes and size)
+struct CreateUninitWorld
+{
+    CreateUninitWorld(const MapExtent& size, unsigned numPlayers);
+    bool operator()(GameWorldGame& world) const;
+
+private:
+    MapExtent size_;
+};
+
+void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
+void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
 
 #endif // CreateEmptyWorld_h__

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2013 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,19 +22,15 @@
 #include "AddonBool.h"
 
 /**
- *  Addon adds shows the hitpoints of a soldier above his picture in military buildings. 
+ *  Addon adds shows the hitpoints of a soldier above his picture in military buildings.
  */
 class AddonMilitaryHitpoints : public AddonBool
 {
 public:
-	AddonMilitaryHitpoints() : AddonBool(AddonId::MILITARY_HITPOINTS,
-		ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY,
-		_("Military Hitpoints"),
-		_("Display the hitpoints of units in military buildings."),
-		0
-		)
-	{
-	}
+    AddonMilitaryHitpoints()
+        : AddonBool(AddonId::MILITARY_HITPOINTS, ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY, _("Military Hitpoints"),
+                    _("Display the hitpoints of units in military buildings."), 0)
+    {}
 };
 
-#endif 
+#endif

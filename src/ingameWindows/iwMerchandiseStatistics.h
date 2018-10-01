@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,35 +28,35 @@ class GamePlayer;
 /// Fenster mit den Warenstatistiken.
 class iwMerchandiseStatistics : public IngameWindow
 {
-    public:
-        iwMerchandiseStatistics(const GamePlayer& player);
-        ~iwMerchandiseStatistics() override;
+public:
+    iwMerchandiseStatistics(const GamePlayer& player);
+    ~iwMerchandiseStatistics() override;
 
-    private:
-        /// Malt die bunten Kästchen über den Buttons
-        void DrawRectangles();
-        /// Zeichnet das Achsensystem
-        void DrawAxis();
-        /// Zeichnet die Statistikdaten (TODO)
-        void DrawStatistic();
+private:
+    /// Malt die bunten Kästchen über den Buttons
+    void DrawRectangles();
+    /// Zeichnet das Achsensystem
+    void DrawAxis();
+    /// Zeichnet die Statistikdaten (TODO)
+    void DrawStatistic();
 
-        // Die Farben für die einzelnen Warenlinien
-        static const unsigned int BarColors[14];
-        const GamePlayer& player;
+    // Die Farben für die einzelnen Warenlinien
+    static const unsigned BarColors[14];
+    const GamePlayer& player;
 
-        // Aktueller Zeitbereich
-        StatisticTime currentTime;
+    // Aktueller Zeitbereich
+    StatisticTime currentTime;
 
-        // Textelemente für die verschiedenen Zeitbereiche
-        std::vector<ctrlText*> timeAnnotations;
+    // Textelemente für die verschiedenen Zeitbereiche
+    std::vector<ctrlText*> timeAnnotations;
 
-        // Maximalwert der y-Achse
-        ctrlText* maxValue;
+    // Maximalwert der y-Achse
+    ctrlText* maxValue;
 
-        // Durchgereichte Methoden vom Window
-        void Msg_PaintAfter() override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+    // Durchgereichte Methoden vom Window
+    void Msg_PaintAfter() override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwMERCHANDISE_STATISTICS_H_INCLUDED

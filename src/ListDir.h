@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,6 +27,7 @@
 /// @extension Extension that files/folders must have (dot is added automatically to front) or empty to list all
 /// @includeDirectories tells whether directories should be added too
 /// @appendTo Appends to given vector (if specified)
-std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories = false, const std::vector<std::string>* const appendTo = NULL);
+std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories = false,
+                                 const std::vector<std::string>* const appendTo = NULL);
 
 #endif // LISTDIR_H_INCLUDED

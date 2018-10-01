@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "FileChecksum.h"
-#include <boost/filesystem/fstream.hpp>
+#include <boost/nowide/fstream.hpp>
 
 uint32_t CalcChecksumOfFile(const std::string& path)
 {
-    bfs::ifstream file(path);
+    bnw::ifstream file(path);
     if(!file)
         return 0;
 
@@ -38,8 +38,7 @@ uint32_t CalcChecksumOfBuffer(const uint8_t* buffer, size_t size)
         return 0;
 
     uint32_t checksum = 0;
-    for(unsigned int i = 0; i < size; ++i)
+    for(unsigned i = 0; i < size; ++i)
         checksum += buffer[i];
     return checksum;
 }
-

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,9 +19,15 @@
 
 #include "Point.h"
 #include "gameTypes/Direction.h"
+#include "gameTypes/MapCoordinates.h"
 
-Point<int> GetNeighbour(const Point<int>& pt, const Direction dir);
-Point<int> GetNeighbour2(Point<int> pt, unsigned dir);
-Point<unsigned short> MakeMapPoint(Point<int> pt, const unsigned short width, const unsigned short height);
+Position GetNeighbour(const Position& pt, const Direction dir);
+Position GetNeighbour2(Position pt, unsigned dir);
+MapPoint MakeMapPoint(Position pt, const MapExtent& size);
+/// Return the position of the node on a flat map
+Position GetNodePos(MapPoint pt);
+Position GetNodePos(Position pt);
+/// Return the height adjusted point
+Position GetNodePos(MapPoint pt, uint8_t height);
 
-#endif //!MAP_GEOMETRY_H_
+#endif //! MAP_GEOMETRY_H_

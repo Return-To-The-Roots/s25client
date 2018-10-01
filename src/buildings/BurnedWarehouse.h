@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,35 +25,36 @@ class SerializedGameData;
 /// Unsichtbares Objekt, welches die fliehenden Leute aus einem ehemaligen abgebrannten Lagerhaus/HQ spuckt
 class BurnedWarehouse : public noCoordBase
 {
-        /// Spieler des ehemaligen Lagerhauses
-        const unsigned char player;
-        /// Aktuelle Rausgeh-Phase
-        unsigned go_out_phase;
-        // Leute, die noch rauskommen müssen
-        boost::array<unsigned, JOB_TYPES_COUNT> people;
+    /// Spieler des ehemaligen Lagerhauses
+    const unsigned char player;
+    /// Aktuelle Rausgeh-Phase
+    unsigned go_out_phase;
+    // Leute, die noch rauskommen müssen
+    boost::array<unsigned, NUM_JOB_TYPES> people;
 
-    public:
+public:
+    typedef boost::array<unsigned, NUM_JOB_TYPES> PeopleArray;
 
-        typedef boost::array<unsigned, JOB_TYPES_COUNT> PeopleArray;
+    BurnedWarehouse(const MapPoint pt, const unsigned char player, const PeopleArray& people);
+    BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id);
 
-        BurnedWarehouse(const MapPoint pt, const unsigned char player, const PeopleArray& people);
-        BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id);
+    ~BurnedWarehouse() override;
 
-        ~BurnedWarehouse() override;
+    void Destroy() override;
 
-        void Destroy() override;
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_BurnedWarehouse(SerializedGameData& sgd) const;
 
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_BurnedWarehouse(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_BurnedWarehouse(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_BurnedWarehouse(sgd); }
+    GO_Type GetGOT() const override { return GOT_BURNEDWAREHOUSE; }
 
-        GO_Type GetGOT() const override { return GOT_BURNEDWAREHOUSE; }
+    /// Benachrichtigen, wenn neuer GF erreicht wurde.
+    void HandleEvent(const unsigned id) override;
 
-        /// Benachrichtigen, wenn neuer GF erreicht wurde.
-        void HandleEvent(const unsigned int id) override;
-
-        void Draw(DrawPoint /*drawPt*/) override {}
+    void Draw(DrawPoint /*drawPt*/) override {}
 };
 
 #endif

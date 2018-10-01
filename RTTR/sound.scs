@@ -1,12 +1,13 @@
-#
-# you can use some special commands in here:
-# if <itemnr> is "empty", an empty item will be inserted,
-# if <itemnr> is "copy", the item <source-frequency> will be copied.
-#
-# if <source-frequency> is 0, an empty item will be inserted
-#
+# Format:
 # <itemnr> <source-frequency>
-copy 0
+#
+# The destination item nr is implicit. So the 3rd uncommented line will refer to the 3rd item.
+#
+# if <itemnr> is "empty", an empty item will be inserted and <source-frequency> is ignored (can be left out),
+# if <source-frequency> is "copy", the item <itemnr> will be copied
+# otherwise the item <itemnr> is converted using <source-frequency> as the frequency
+#
+0 copy
 empty
 empty
 empty

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,15 +25,16 @@ class IDataChangedListener;
 class DataChangedObservable
 {
     std::list<IDataChangedListener*> listeners;
+
 public:
     void AddListener(IDataChangedListener* listener);
     void RemoveListener(IDataChangedListener* listener);
+
 protected:
     virtual ~DataChangedObservable();
     /// Notifies all registered listeners
     /// ID=0 means, this is removed and should no longer be referenced
     void NotifyListeners(unsigned changeId);
 };
-
 
 #endif // DataChangedObservable_h__

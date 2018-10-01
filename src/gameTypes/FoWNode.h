@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,6 @@
 
 #include "gameTypes/MapTypes.h"
 #include <boost/array.hpp>
-#include <stdint.h>
 
 class FOWObject;
 class SerializedGameData;

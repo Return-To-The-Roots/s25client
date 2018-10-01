@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nobHQ.h"
-#include "Loader.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
-#include "gameData/MilitaryConsts.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "Loader.h"
 #include "SerializedGameData.h"
+#include "network/GameClient.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
+#include "gameData/MilitaryConsts.h"
 #include <numeric>
 
 nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation, const bool isTent)
@@ -33,7 +33,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     // StartWaren setzen
     switch(gwg->GetGGS().startWares)
     {
-            //sehr wenig
+        // sehr wenig
         case 0:
             inventory.visual.goods[GD_BEER] = 0;
             inventory.visual.goods[GD_TONGS] = 1;
@@ -43,8 +43,8 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
             inventory.visual.goods[GD_PICKAXE] = 0;
             inventory.visual.goods[GD_SHOVEL] = 1;
             inventory.visual.goods[GD_CRUCIBLE] = 1;
-            inventory.visual.goods[GD_RODANDLINE] = 1;//??
-            inventory.visual.goods[GD_SCYTHE] = 2;//??
+            inventory.visual.goods[GD_RODANDLINE] = 1; //??
+            inventory.visual.goods[GD_SCYTHE] = 2;     //??
             inventory.visual.goods[GD_WATEREMPTY] = 0;
             inventory.visual.goods[GD_WATER] = 0;
             inventory.visual.goods[GD_CLEAVER] = 0;
@@ -103,7 +103,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
             inventory.visual.people[JOB_PACKDONKEY] = 2;
             break;
 
-            // Wenig
+        // Wenig
         case 1:
 
             inventory.visual.goods[GD_BEER] = 0;
@@ -174,7 +174,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
             inventory.visual.people[JOB_PACKDONKEY] = 4;
             break;
 
-            // Mittel
+        // Mittel
         case 2:
 
             inventory.visual.goods[GD_BEER] = 6;
@@ -245,7 +245,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
             inventory.visual.people[JOB_PACKDONKEY] = 8;
             break;
 
-            // Viel
+        // Viel
         case 3:
             inventory.visual.goods[GD_BEER] = 12;
             inventory.visual.goods[GD_TONGS] = 0;
@@ -333,23 +333,16 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
 
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
-    gwg->RecalcTerritory(*this, false, true);
-
-    GamePlayer& owner = gwg->GetPlayer(player);
-    owner.SetHQ(this);
-    owner.AddWarehouse(this);
+    gwg->RecalcTerritory(*this, TerritoryChangeReason::Build);
 }
 
-void nobHQ::Destroy_nobHQ()
+void nobHQ::DestroyBuilding()
 {
-    Destroy_nobBaseWarehouse();
-
+    nobBaseWarehouse::DestroyBuilding();
     // Wieder aus dem Militärquadrat rauswerfen
     gwg->GetMilitarySquares().Remove(this);
-    // Land drumherum neu berechnen
-    // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
-    gwg->RecalcTerritory(*this, true, false);
-    gwg->GetPlayer(player).SetHQ(NULL);
+    // Recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
+    gwg->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
 }
 
 void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const
@@ -372,19 +365,20 @@ void nobHQ::Draw(DrawPoint drawPt)
         DrawBaseBuilding(drawPt);
 
         // Draw at most 4 flags
-        const unsigned numSoldiers = std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetSoldiersCount());
+        const unsigned numSoldiers =
+          std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetNumSoldiers());
         DrawPoint flagsPos = drawPt + TROOPS_FLAG_HQ_OFFSET[nation];
         for(unsigned i = min<unsigned>(numSoldiers, 4); i; --i)
         {
-            glArchivItem_Bitmap_Player* bitmap = LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
+            glArchivItem_Bitmap_Player* bitmap =
+              LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
             if(bitmap)
-                bitmap->Draw(flagsPos + DrawPoint(0, (i - 1) * 3), 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+                bitmap->DrawFull(flagsPos + DrawPoint(0, (i - 1) * 3), COLOR_WHITE, gwg->GetPlayer(player).color);
         }
     }
 }
 
-
-void nobHQ::HandleEvent(const unsigned int id)
+void nobHQ::HandleEvent(const unsigned id)
 {
     HandleBaseEvent(id);
 }

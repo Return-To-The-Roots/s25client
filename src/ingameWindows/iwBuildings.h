@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,26 +18,28 @@
 #define iwBUILDINGS_H_
 
 #include "IngameWindow.h"
+#include "gameTypes/BuildingType.h"
+#include <list>
 
 class GameCommandFactory;
 class GameWorldView;
 
-/// Fenster, welches die Anzahl aller Gebäude und der Baustellena auflistet
+/// Fenster, welches die Anzahl aller Gebäude und der Baustellen auflistet
 class iwBuildings : public IngameWindow
 {
-	GameWorldView& gwv;
+    GameWorldView& gwv;
     GameCommandFactory& gcFactory;
-    public:
 
-        iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory);
+public:
+    iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory);
 
-    private:
+private:
+    /// Anzahlen der Gebäude zeichnen
+    void Msg_PaintAfter() override;
 
-        /// Anzahlen der Gebäude zeichnen
-        void Msg_PaintAfter() override;
-		
-		void Msg_ButtonClick(const unsigned int ctrl_id) override;
-
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    template<class T_Window, class T_Building>
+    void GoToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds);
 };
 
 #endif

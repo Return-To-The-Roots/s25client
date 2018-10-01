@@ -3,7 +3,9 @@ branches:
   only:
   - master
   
-os: Visual Studio 2015
+image:
+  - Visual Studio 2015
+  - Visual Studio 2017
 
 configuration:
   - Debug
@@ -14,32 +16,48 @@ platform:
   - x64
 
 environment:
-  matrix:
-  - BOOST_ROOT: C:\Libraries\boost_1_59_0
-    BOOST_LIBRARYDIR_32: C:\Libraries\boost_1_59_0\lib32-msvc-14.0
-    BOOST_LIBRARYDIR_64: C:\Libraries\boost_1_59_0\lib64-msvc-14.0
-    
+  BOOST_ROOT: C:\Libraries\boost_1_60_0
+  GENERATOR: Visual Studio 14 2015
+  MSVC: 14.0
+  RTTR_DISABLE_ASSERT_BREAKPOINT: 1
+
+matrix:
+  allow_failures:
+    - platform: x64 # Fails for some reason (Lua?)
+      configuration: Release
+      image: Visual Studio 2017
+
+for:
+  - matrix:
+      only:
+        - image: Visual Studio 2017
+    environment:
+      BOOST_ROOT: C:\Libraries\boost_1_67_0
+      GENERATOR: Visual Studio 15 2017
+      MSVC: 14.1
+
 install:
   - dir C:\Libraries
   - appveyor-retry git submodule update --init
-  - cinst -y unrar
   - cd contrib
-  - unrar x full-contrib-msvc.rar
+  - 7z x full-contrib-msvc.rar
   - cd ..
 
 before_build:
+  - mkdir build
   - cd build
-  - if "%platform%"=="Win32" cmake -G "Visual Studio 14 2015" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR_32%" ..
-  - if "%platform%"=="x64" cmake -G "Visual Studio 14 2015 Win64" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR_64%" ..
+  - if %platform% == Win32 (set BOOST_LIBDIR=lib32-msvc-%MSVC%) else ((set BOOST_LIBDIR=lib64-msvc-%MSVC%) && (set GENERATOR=%GENERATOR% Win64))
+  - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_ROOT%\%BOOST_LIBDIR%"
+  - cmake -G "%GENERATOR%" -DRTTR_ENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR%" ..
   - cd ..
     
 build:
 
 build_script:
-  - echo "Building for %CONFIGURATION% on %platform%"
+  - echo "Building for %configuration% on %platform%"
   - msbuild /m /p:Configuration="%configuration%" /p:Platform="%platform%" /v:n build/s25client.sln
 
 test_script:
   - cd build
-  - ctest --output-on-failure -C %CONFIGURATION%
+  - ctest --output-on-failure -C %configuration%
   - cd ..

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,17 +25,16 @@ class GameInterface;
 
 class iwRoadWindow : public IngameWindow
 {
-    private:
-        GameInterface& gi;
-        Point<unsigned short> mousePosAtOpen_;
+private:
+    GameInterface& gi;
+    Point<unsigned short> mousePosAtOpen_;
 
-    public:
-        iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, int mouse_y);
-        ~iwRoadWindow() override;
+public:
+    iwRoadWindow(GameInterface& gi, bool flagpossible, const DrawPoint& mousePos);
+    ~iwRoadWindow() override;
 
-    private:
-
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwROADWINDOW_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofGeologist.h"
 
-#include "nodeObjs/noFlag.h"
-#include "Loader.h"
-#include "Random.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "nodeObjs/noSign.h"
-#include "notifications/ResourceNote.h"
-#include "gameData/GameConsts.h"
-#include "SoundManager.h"
-#include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
 #include "EventManager.h"
-#include "postSystem/PostMsg.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "GamePlayer.h"
+#include "GlobalGameSettings.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
+#include "SoundManager.h"
+#include "addons/Addon.h"
 #include "lua/LuaInterfaceGame.h"
+#include "network/GameClient.h"
+#include "notifications/ResourceNote.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "pathfinding/PathConditionHuman.h"
+#include "postSystem/PostMsg.h"
+#include "random/Random.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noSign.h"
+#include "gameData/GameConsts.h"
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
-    : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal),  signs(0), node_goal(0, 0)
+    : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal), signs(0), node_goal(0, 0)
 {
     std::fill(resAlreadyFound.begin(), resAlreadyFound.end(), false);
 }
@@ -47,7 +50,7 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData& sgd) const
     sgd.PushUnsignedShort(signs);
 
     sgd.PushUnsignedInt(available_nodes.size());
-    for(std::vector< MapPoint >::const_iterator it = available_nodes.begin(); it != available_nodes.end(); ++it)
+    for(std::vector<MapPoint>::const_iterator it = available_nodes.begin(); it != available_nodes.end(); ++it)
     {
         sgd.PushMapPoint(*it);
     }
@@ -56,11 +59,9 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData& sgd) const
 
     for(unsigned i = 0; i < 5; ++i)
         sgd.PushBool(resAlreadyFound[i]);
-
 }
 
-nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
-    signs(sgd.PopUnsignedShort())
+nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id), signs(sgd.PopUnsignedShort())
 {
     unsigned available_nodes_count = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < available_nodes_count; ++i)
@@ -86,7 +87,8 @@ void nofGeologist::Draw(DrawPoint drawPt)
         {
             // normales Laufen zeichnen
             DrawWalkingBobJobs(drawPt, JOB_GEOLOGIST);
-        } break;
+        }
+        break;
         case STATE_GEOLOGIST_DIG:
         {
             // 1x grab, 1x "spring-grab", 2x grab, 1x "spring-grab", 2x grab, 1x "spring-grab", 4x grab
@@ -95,74 +97,109 @@ void nofGeologist::Draw(DrawPoint drawPt)
 
             if(i < 6)
             {
-                LOADER.GetPlayerImage("rom_bobs", 324 + i)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-                if(i == 4) { sound = 1; sound_id = 0; }
-            }
-            else if(i < 16)
+                LOADER.GetPlayerImage("rom_bobs", 324 + i)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                if(i == 4)
+                {
+                    sound = 1;
+                    sound_id = 0;
+                }
+            } else if(i < 16)
             {
-                LOADER.GetPlayerImage("rom_bobs", 314 + i - 6)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-                if(i == 14) { sound = 2; sound_id = 1; }
-            }
-            else if(i < 28)
+                LOADER.GetPlayerImage("rom_bobs", 314 + i - 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                if(i == 14)
+                {
+                    sound = 2;
+                    sound_id = 1;
+                }
+            } else if(i < 28)
             {
-                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 16) % 6)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-                if(i == 20) { sound = 1; sound_id = 2; }
-                else if(i == 26) { sound = 1; sound_id = 3; }
-            }
-            else if(i < 38)
+                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 16) % 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                if(i == 20)
+                {
+                    sound = 1;
+                    sound_id = 2;
+                } else if(i == 26)
+                {
+                    sound = 1;
+                    sound_id = 3;
+                }
+            } else if(i < 38)
             {
-                LOADER.GetPlayerImage("rom_bobs", 314 + i - 28)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-                if(i == 36) { sound = 2; sound_id = 4; }
-            }
-            else if(i < 50)
+                LOADER.GetPlayerImage("rom_bobs", 314 + i - 28)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                if(i == 36)
+                {
+                    sound = 2;
+                    sound_id = 4;
+                }
+            } else if(i < 50)
             {
-                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 38) % 6)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-                if(i == 42) { sound = 1; sound_id = 5; }
-                else if(i == 48) { sound = 1; sound_id = 6; }
-            }
-            else if(i < 60)
+                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 38) % 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                if(i == 42)
+                {
+                    sound = 1;
+                    sound_id = 5;
+                } else if(i == 48)
+                {
+                    sound = 1;
+                    sound_id = 6;
+                }
+            } else if(i < 60)
             {
-                LOADER.GetPlayerImage("rom_bobs", 314 + i - 50)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-                if(i == 58) { sound = 2; sound_id = 7; }
-            }
-            else
+                LOADER.GetPlayerImage("rom_bobs", 314 + i - 50)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                if(i == 58)
+                {
+                    sound = 2;
+                    sound_id = 7;
+                }
+            } else
             {
-                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 60) % 6)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-                if(i == 64) { sound = 1; sound_id = 8; }
-                else if(i == 70) { sound = 1; sound_id = 9; }
-                else if(i == 76) { sound = 1; sound_id = 10; }
-                else if(i == 82) { sound = 1; sound_id = 11; }
+                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 60) % 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                if(i == 64)
+                {
+                    sound = 1;
+                    sound_id = 8;
+                } else if(i == 70)
+                {
+                    sound = 1;
+                    sound_id = 9;
+                } else if(i == 76)
+                {
+                    sound = 1;
+                    sound_id = 10;
+                } else if(i == 82)
+                {
+                    sound = 1;
+                    sound_id = 11;
+                }
             }
 
             if(sound)
                 SOUNDMANAGER.PlayNOSound((sound == 1) ? 81 : 56, this, sound_id);
-
-        } break;
+        }
+        break;
         case STATE_GEOLOGIST_CHEER:
         {
             unsigned short i = GAMECLIENT.Interpolate(16, current_ev);
 
             if(i < 7)
             {
-                LOADER.GetPlayerImage("rom_bobs", 357 +
-                                 i)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-            }
-            else
+                LOADER.GetPlayerImage("rom_bobs", 357 + i)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+            } else
             {
-                unsigned char ids[9] = { 1, 0, 1, 2, 1, 0, 1, 2, 1};
-                LOADER.GetPlayerImage("rom_bobs", 361 + ids[i - 7])->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+                unsigned char ids[9] = {1, 0, 1, 2, 1, 0, 1, 2, 1};
+                LOADER.GetPlayerImage("rom_bobs", 361 + ids[i - 7])->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
             }
 
-            if(i == 4)SOUNDMANAGER.PlayNOSound(107, this, 12); //yippy
-
-        } break;
+            if(i == 4)
+                SOUNDMANAGER.PlayNOSound(107, this, 12); // yippy
+        }
+        break;
     }
 
     /*char number[256];
     sprintf(number,"%u",obj_id);
     NormalFont->Draw(x,y,number,0,0xFFFF0000);*/
 }
-
 
 void nofGeologist::GoalReached()
 {
@@ -202,8 +239,7 @@ void nofGeologist::Walked()
             // anfangen zu graben
             current_ev = GetEvMgr().AddEvent(this, 100, 1);
             state = STATE_GEOLOGIST_DIG;
-        }
-        else
+        } else
         {
             // Weg zum nächsten Punkt suchen
             unsigned char dir = gwg->FindHumanPath(pos, node_goal, 20);
@@ -212,45 +248,42 @@ void nofGeologist::Walked()
             if(dir == INVALID_DIR)
                 GoToNextNode();
             else
-                StartWalking(dir);
+                StartWalking(Direction::fromInt(dir));
         }
-    }
-    else if(state == STATE_GOTOFLAG)
+    } else if(state == STATE_GOTOFLAG)
     {
         GoToFlag();
     }
 }
 
-void nofGeologist::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
-        default:
-            break;
+        default: break;
         case STATE_GEOLOGIST_DIG:
         {
-            // Ressourcen an diesem Punkt untersuchen
-            unsigned char resources = gwg->GetNode(pos).resources;
+            // Check what is here
+            Resource foundRes = gwg->GetNode(pos).resources;
+            // We don't care for fish (and most likely never find it)
+            if(foundRes.getType() == Resource::Fish)
+                foundRes.setType(Resource::Nothing);
 
-
-            if((resources >= 0x41 && resources <= 0x47) || (resources >= 0x49 && resources <= 0x4F) ||
-                    (resources >= 0x51 && resources <= 0x57) || (resources >= 0x59 && resources <= 0x5F) ||
-                    (resources >= 0x21 && resources <= 0x2F))
+            if(foundRes.getAmount() > 0u)
             {
                 // Es wurde was gefunden, erstmal Jubeln
                 state = STATE_GEOLOGIST_CHEER;
                 current_ev = GetEvMgr().AddEvent(this, 15, 1);
-            }
-            else
+            } else
             {
                 // leeres Schild hinstecken und ohne Jubel weiterziehen
-                SetSign(resources);
+                SetSign(foundRes);
                 /// Punkt wieder freigeben
                 gwg->SetReserved(pos, false);
                 GoToNextNode();
             }
-
-        } break;
+        }
+        break;
         case STATE_GEOLOGIST_CHEER:
         {
             // Schild reinstecken
@@ -261,30 +294,26 @@ void nofGeologist::HandleDerivedEvent(const unsigned int  /*id*/)
             SOUNDMANAGER.WorkingFinished(this);
             // Und weiterlaufen
             GoToNextNode();
-        } break;
+        }
+        break;
     }
 }
-
 
 bool nofGeologist::IsNodeGood(const MapPoint pt) const
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
     const noBase& obj = *gwg->GetNO(pt);
-    return gwg->IsNodeForFigures(pt) && obj.GetGOT() != GOT_SIGN
-            && obj.GetType() != NOP_FLAG && obj.GetType() != NOP_TREE;
+    return PathConditionHuman(*gwg).IsNodeOk(pt) && obj.GetGOT() != GOT_SIGN && obj.GetType() != NOP_FLAG && obj.GetType() != NOP_TREE;
 }
 
-namespace{
-    struct GetMapPointWithRadius
-    {
-        typedef std::pair<MapPoint, unsigned> result_type;
+namespace {
+struct GetMapPointWithRadius
+{
+    typedef std::pair<MapPoint, unsigned> result_type;
 
-        result_type operator()(const MapPoint pt, unsigned r)
-        {
-            return std::make_pair(pt, r);
-        }
-    };
-}
+    result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
+};
+} // namespace
 
 void nofGeologist::LookForNewNodes()
 {
@@ -335,7 +364,7 @@ unsigned char nofGeologist::GetNextNode()
             // Gucken, ob er gut ist und ob man hingehen kann und ob er noch nicht reserviert wurde!
             if(!IsNodeGood(node_goal) || gwg->GetNode(node_goal).reserved)
                 continue;
-            
+
             unsigned char ret_dir;
             if(pos == node_goal)
                 ret_dir = INVALID_DIR;
@@ -352,7 +381,7 @@ unsigned char nofGeologist::GetNextNode()
 
         // Nach neuen Punkten sucehn
         LookForNewNodes();
-    }while(!available_nodes.empty());
+    } while(!available_nodes.empty());
 
     node_goal = MapPoint::Invalid();
     return INVALID_DIR;
@@ -372,19 +401,19 @@ void nofGeologist::GoToNextNode()
     // ersten Punkt suchen
     unsigned char dir = GetNextNode();
 
-    if(dir != 0xFF)
+    if(dir != INVALID_DIR)
     {
         // Wenn es einen Punkt gibt, dann hingehen
         state = STATE_GEOLOGIST_GOTONEXTNODE;
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
         --signs;
-    }else if(node_goal == pos)
+    } else if(node_goal == pos)
     {
         // Already there
         state = STATE_GEOLOGIST_GOTONEXTNODE;
         --signs;
         Walked();
-    }else
+    } else
     {
         // ansonsten zur Flagge zurückgehen
         state = STATE_GOTOFLAG;
@@ -392,87 +421,46 @@ void nofGeologist::GoToNextNode()
     }
 }
 
-void nofGeologist::SetSign(const unsigned char resources)
+void nofGeologist::SetSign(Resource resources)
 {
+    RTTR_Assert(resources.getType() != Resource::Fish); // Shall never happen
+
     // Bestimmte Objekte können gelöscht werden
     NodalObjectType noType = gwg->GetNO(pos)->GetType();
     if(noType != NOP_NOTHING && noType != NOP_ENVIRONMENT)
         return;
     gwg->DestroyNO(pos, false);
 
-    // Schildtyp und -häufigkeit herausfinden
-    unsigned char quantity;
-    Resource type;
-
-    if(resources >= 0x41 && resources <= 0x47)
-    {
-        type = RES_COAL;
-        quantity = (resources - 0x40) / 3;
-    }
-    else if(resources >= 0x49 && resources <= 0x4F)
-    {
-        type = RES_IRON;
-        quantity = (resources - 0x48) / 3;
-    }
-    else if(resources >= 0x51 && resources <= 0x57)
-    {
-        type = RES_GOLD;
-        quantity = (resources - 0x50) / 3;
-    }
-    else if(resources >= 0x59 && resources <= 0x5F)
-    {
-        type = RES_GRANITE;
-        quantity = (resources - 0x58) / 3;
-    }
-    else if(resources >= 0x21 && resources <= 0x27)
-    {
-        type = RES_WATER;
-        quantity = (resources - 0x20) / 3;
-    }
-    else
-    {
-        // nichts
-        type = RES_TYPES_COUNT;
-        quantity = 0;
-    }
-
     // Schild setzen
-    gwg->SetNO(pos, new noSign(pos, type, quantity));
+    gwg->SetNO(pos, new noSign(pos, resources));
 
     // If nothing found, there is nothing left to do
-    if(type == RES_TYPES_COUNT)
+    if(resources.getAmount() == 0u)
         return;
 
-    if(!resAlreadyFound[type] && !IsSignInArea(type))
+    if(!resAlreadyFound[resources.getType()] && !IsSignInArea(resources.getType()))
     {
         const char* msg;
-        switch(type)
+        switch(resources.getType())
         {
-        case RES_IRON:
-            msg = _("Found iron ore");
-            break;
-        case RES_GOLD:
-            msg = _("Found gold");
-            break;
-        case RES_COAL:
-            msg = _("Found coal");
-            break;
-        case RES_GRANITE:
-            msg = _("Found granite");
-            break;
-        case RES_WATER:
-            msg = _("Found water");
-            break;
-        default:
-            RTTR_Assert(false);
-            return;
+            case Resource::Iron: msg = _("Found iron ore"); break;
+            case Resource::Gold: msg = _("Found gold"); break;
+            case Resource::Coal: msg = _("Found coal"); break;
+            case Resource::Granite: msg = _("Found granite"); break;
+            case Resource::Water: msg = _("Found water"); break;
+            default: RTTR_Assert(false); return;
         }
-        SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
-        gwg->GetNotifications().publish(ResourceNote(player, pos, type, quantity));
+
+        if(resources.getType() != Resource::Water || gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) != 1)
+        {
+            SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
+        }
+
+        gwg->GetNotifications().publish(ResourceNote(player, pos, resources));
         if(gwg->HasLua())
-            gwg->GetLua().EventResourceFound(this->player, pos, type, quantity);
+            gwg->GetLua().EventResourceFound(this->player, pos, resources.getType(), resources.getAmount());
     }
-    resAlreadyFound[type] = true;
+    resAlreadyFound[resources.getType()] = true;
 }
 
 void nofGeologist::LostWork()
@@ -481,36 +469,37 @@ void nofGeologist::LostWork()
 
     switch(state)
     {
-        default: break;
-            // Wenn wir noch hingehen, dann zurückgehen
-        case STATE_FIGUREWORK:
-        {
-            GoHome();
-        } break;
+        default:
+            break;
+        // Wenn wir noch hingehen, dann zurückgehen
+        case STATE_FIGUREWORK: { GoHome();
+        }
+        break;
         case STATE_GOTOFLAG:
         {
             // dann sofort rumirren, wenn wir zur Flagge gehen
             StartWandering();
             state = STATE_FIGUREWORK;
-        } break;
+        }
+        break;
     }
 }
 
 struct IsSignOfType
 {
-    const unsigned type;
+    const Resource::Type type;
     const World& gwb;
 
-    IsSignOfType(unsigned type, const World& gwb): type(type), gwb(gwb){}
+    IsSignOfType(Resource::Type type, const World& gwb) : type(type), gwb(gwb) {}
 
-    bool operator()(const MapPoint& pt)
+    bool operator()(const MapPoint& pt, unsigned /*distance*/)
     {
         const noSign* sign = gwb.GetSpecObj<noSign>(pt);
         return sign && sign->GetSignType() == type;
     }
 };
 
-bool nofGeologist::IsSignInArea(unsigned char type) const
+bool nofGeologist::IsSignInArea(Resource::Type type) const
 {
     return gwg->CheckPointsInRadius(pos, 7, IsSignOfType(type, *gwg), false);
 }

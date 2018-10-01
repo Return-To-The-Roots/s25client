@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,39 +17,34 @@
 #ifndef MINIMAP_H_
 #define MINIMAP_H_
 
-#include "ogl/glArchivItem_Bitmap_Direct.h"
-#include "gameTypes/MapTypes.h"
 #include "DrawPoint.h"
+#include "Rect.h"
+#include "ogl/glArchivItem_Bitmap_Direct.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
-
-class glArchivItem_Map;
 
 class Minimap
 {
 protected:
     /// Breite und Höhe der Map (in Knoten)
-    unsigned short map_width, map_height;
+    MapExtent mapSize;
 
     /// Textur für die Map
     glArchivItem_Bitmap_Direct map;
 
 public:
-    Minimap(): map_width(0), map_height(0){}
-    Minimap(const unsigned short map_width, const unsigned short map_height);
+    Minimap() : mapSize(0, 0) {}
+    Minimap(const MapExtent& mapSize);
     virtual ~Minimap() {}
 
-    virtual void SetMap(const glArchivItem_Map& s2map);
-
-    /// Zeichnet die Minimap zentriert in die entsprechende Bounding-Box
-    /// (x und y bezieht sich auf obere linke Ecke der Bounding Box)
-    void Draw(DrawPoint drawPt, const unsigned short width, const unsigned short height);
+    /// Draw the minimap in the given rectangle (stretching if required)
+    void Draw(const Rect& rect);
 
     /// Gibt Größe der Map zurück
-    unsigned short GetMapWidth() const { return map_width; }
-    unsigned short GetMapHeight() const { return map_height; }
+    MapExtent GetMapSize() const { return mapSize; }
 
 protected:
-    unsigned GetMMIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(map_width) + static_cast<unsigned>(pt.x); }
+    unsigned GetMMIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * mapSize.x + static_cast<unsigned>(pt.x); }
     /// Variiert die übergebene Farbe zufällig in der Helligkeit
     unsigned VaryBrightness(const unsigned color, const int range) const;
     /// Erstellt die Textur
@@ -60,4 +55,3 @@ protected:
 };
 
 #endif
-

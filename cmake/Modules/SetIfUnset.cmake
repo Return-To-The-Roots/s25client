@@ -1,0 +1,7 @@
+# Set the given variable to the default value if it is unset (empty)
+# Note: Does nothing even if the variable is falsy (OFF, ...)
+macro(set_if_unset variable default)
+    if("${${variable}}" STREQUAL "")
+        set(${variable} "${default}")
+    endif()
+endmacro()

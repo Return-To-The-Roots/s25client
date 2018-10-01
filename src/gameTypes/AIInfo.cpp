@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,19 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "AIInfo.h"
-#include "Serializer.h"
+#include "libutil/Serializer.h"
 
-namespace AI{
-    Info::Info(Serializer& ser):
-                    type(static_cast<Type>(ser.PopUnsignedChar())),
-                    level(static_cast<Level>(ser.PopUnsignedChar()))
-    {}
+namespace AI {
+Info::Info(Serializer& ser) : type(static_cast<Type>(ser.PopUnsignedChar())), level(static_cast<Level>(ser.PopUnsignedChar())) {}
 
-    void Info::serialize(Serializer& ser) const
-    {
-        ser.PushUnsignedChar(static_cast<unsigned char>(type));
-        ser.PushUnsignedChar(static_cast<unsigned char>(level));
-    }
+void Info::serialize(Serializer& ser) const
+{
+    ser.PushUnsignedChar(static_cast<unsigned char>(type));
+    ser.PushUnsignedChar(static_cast<unsigned char>(level));
 }
+} // namespace AI

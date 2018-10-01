@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "PostBox.h"
 #include "PostMsg.h"
 #include <algorithm>
 
-PostBox::PostBox(): numMessages(0)
+PostBox::PostBox() : numMessages(0)
 {
-    std::fill(messages.begin(), messages.end(), (PostMsg*) NULL);
+    std::fill(messages.begin(), messages.end(), (PostMsg*)NULL);
 }
 
 PostBox::~PostBox()

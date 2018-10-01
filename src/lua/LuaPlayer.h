@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,21 +19,27 @@
 #define LuaPlayer_h__
 
 #include "LuaPlayerBase.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
+#include "gameTypes/PactTypes.h"
+#include <boost/weak_ptr.hpp>
 #include <kaguya/kaguya.hpp>
 #include <map>
 
 class GamePlayer;
+class Game;
 
-class LuaPlayer: public LuaPlayerBase
+class LuaPlayer : public LuaPlayerBase
 {
+    boost::weak_ptr<Game> game;
     GamePlayer& player;
+
 protected:
     const BasePlayerInfo& GetPlayer() const override;
+
 public:
-    LuaPlayer(GamePlayer& player): player(player){}
+    LuaPlayer(boost::weak_ptr<Game> game, GamePlayer& player) : game(game), player(player) {}
     static void Register(kaguya::State& state);
 
     void EnableBuilding(BuildingType bld, bool notify);
@@ -41,17 +47,23 @@ public:
     void EnableAllBuildings();
     void DisableAllBuildings();
     void SetRestrictedArea(kaguya::VariadicArgType points);
+    bool IsInRestrictedArea(unsigned x, unsigned y) const;
     void ClearResources();
     bool AddWares(const std::map<GoodType, unsigned>& wares);
     bool AddPeople(const std::map<Job, unsigned>& people);
-    unsigned GetBuildingCount(BuildingType bld);
-    unsigned GetBuildingSitesCount(BuildingType bld);
-    unsigned GetWareCount(GoodType ware);
-    unsigned GetPeopleCount(Job job);
+    unsigned GetNumBuildings(BuildingType bld) const;
+    unsigned GetNumBuildingSites(BuildingType bld) const;
+    unsigned GetNumWares(GoodType ware) const;
+    unsigned GetNumPeople(Job job) const;
     bool AIConstructionOrder(unsigned x, unsigned y, BuildingType bld);
     void ModifyHQ(bool isTent);
+    bool IsDefeated() const;
     void Surrender(bool destroyBlds);
-    kaguya::standard::tuple<unsigned, unsigned> GetHQPos();
+    kaguya::standard::tuple<unsigned, unsigned> GetHQPos() const;
+    bool IsAlly(unsigned char otherPlayerId);
+    bool IsAttackable(unsigned char otherPlayerId);
+    void SuggestPact(unsigned char otherPlayerId, PactType pt, const unsigned duration);
+    void CancelPact(const PactType pt, unsigned char otherPlayerId);
 };
 
 #endif // LuaPlayer_h__

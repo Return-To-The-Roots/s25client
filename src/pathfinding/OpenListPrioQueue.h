@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -7,7 +7,7 @@
 // the Free Software Foundation,  either version 2 of the License,  or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -18,24 +18,20 @@
 #ifndef OpenListPrioQueue_h__
 #define OpenListPrioQueue_h__
 
-#include <vector>
+#include <algorithm>
 #include <queue>
+#include <vector>
 
 /// A priority queue based on a vector with rearange capabilities in case of a change
-template<
-    class T, 
-    class Pr = std::less<T>
->
+template<class T, class Pr = std::less<T> >
 class OpenListPrioQueue : public std::priority_queue<T, std::vector<T>, Pr>
 {
     typedef std::priority_queue<T, std::vector<T>, Pr> Parent;
+
 public:
     typedef typename std::vector<T>::iterator iterator;
 
-    OpenListPrioQueue(): Parent()
-    {
-        Parent::c.reserve(255);
-    }
+    OpenListPrioQueue() : Parent() { Parent::c.reserve(255); }
 
     void rearrange(const T& target)
     {
@@ -43,20 +39,11 @@ public:
         rearrange(it);
     }
 
-    void rearrange(iterator it)
-    {
-        std::push_heap(Parent::c.begin(), it + 1, Parent::comp);
-    }
+    void rearrange(iterator it) { std::push_heap(Parent::c.begin(), it + 1, Parent::comp); }
 
-    iterator find(const T& target)
-    {
-        return std::find(Parent::c.begin(), Parent::c.end(), target);
-    }
+    iterator find(const T& target) { return std::find(Parent::c.begin(), Parent::c.end(), target); }
 
-    void clear()
-    {
-        Parent::c.clear();
-    }
+    void clear() { Parent::c.clear(); }
 
     /// Removes and returns the first element
     T pop()

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,8 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
+#include <boost/array.hpp>
 
 class GameInterface;
 class GameWorldView;
@@ -28,77 +29,79 @@ class ctrlGroup;
 
 class iwAction : public IngameWindow
 {
+public:
+    /// Konstanten für ActionWindow-Flag-Tab - Typen
+    enum
+    {
+        AWFT_NORMAL = 0,
+        AWFT_HQ,         /// von der HQ-Flagge kann nur eine Straße gebaut werden
+        AWFT_STOREHOUSE, /// von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen werden
+        AWFT_WATERFLAG   /// Flagge mit Anker drauf (Wasserstraße kann gebaut werden)
+    };
+
+    /// Struktur mit den Tabs, die angestellt werden sollen
+    class Tabs
+    {
     public:
-
-        /// Konstanten für ActionWindow-Flag-Tab - Typen
-        enum
+        /// Haupttabs
+        bool build, setflag, watch, flag, cutroad, attack, sea_attack;
+        /// Gebäude-Bau-Tabs
+        enum BuildTab
         {
-            AWFT_NORMAL = 0,
-            AWFT_HQ,         /// von der HQ-Flagge kann nur eine Straße gebaut werden
-            AWFT_STOREHOUSE, /// von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen werden
-            AWFT_WATERFLAG   /// Flagge mit Anker drauf (Wasserstraße kann gebaut werden)
-        };
+            BT_HUT = 0,
+            BT_HOUSE,
+            BT_CASTLE,
+            BT_MINE,
+            BT_HARBOR
+        } build_tabs;
 
-        /// Struktur mit den Tabs, die angestellt werden sollen
-        class Tabs
-        {
-            public:
+        Tabs()
+            : build(false), setflag(false), watch(false), flag(false), cutroad(false), attack(false), sea_attack(false), build_tabs(BT_HUT)
+        {}
+    };
 
-                /// Haupttabs
-                bool build, setflag, watch, flag, cutroad, attack, sea_attack;
-                /// Gebäude-Bau-Tabs
-                enum BuildTab { BT_HUT = 0, BT_HOUSE, BT_CASTLE, BT_MINE, BT_HARBOR } build_tabs;
+private:
+    GameInterface& gi;
+    GameWorldView& gwv;
 
-                Tabs() : build(false), setflag(false), watch(false), flag(false), cutroad(false), attack(false), sea_attack(false),
-                    build_tabs(BT_HUT) {}
-        };
+    MapPoint selectedPt;
+    DrawPoint mousePosAtOpen_;
 
-    private:
+    /// Anzahl gewählter Soldaten für den Angriff und die Maximalanzahl
+    unsigned selected_soldiers_count;
+    unsigned available_soldiers_count;
+    /// Dasselbe für Schiffsangriffe
+    unsigned selected_soldiers_count_sea;
+    unsigned available_soldiers_count_sea;
+    /// Die einzelnen Höhen für die einzelnen Tabs im Bautab
+    boost::array<unsigned short, 4> building_tab_heights;
 
-        GameInterface& gi;
-        GameWorldView& gwv;
+public:
+    iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos, unsigned params,
+             bool military_buildings);
+    ~iwAction() override;
 
-        MapPoint selectedPt;
-        Point<unsigned short> mousePosAtOpen_;
+    /// Gibt zurück, auf welchen Punkt es sich bezieht
+    const MapPoint& GetSelectedPt() const { return selectedPt; }
 
-        /// Anzahl gewählter Soldaten für den Angriff und die Maximalanzahl
-        unsigned int selected_soldiers_count;
-        unsigned int available_soldiers_count;
-        /// Dasselbe für Schiffsangriffe
-        unsigned selected_soldiers_count_sea;
-        unsigned int available_soldiers_count_sea;
-        /// Die einzelnen Höhen für die einzelnen Tabs im Bautab
-        unsigned short building_tab_heights[4];
+private:
+    void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
+    void Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id) override;
+    void Msg_Group_TabChange(const unsigned group_id, const unsigned ctrl_id, const unsigned short tab_id) override;
+    void Msg_PaintAfter() override;
 
-    public:
-        iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings);
-        ~iwAction() override;
+    inline void Msg_ButtonClick_TabBuild(const unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabFlag(const unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabAttack(const unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabWatch(const unsigned ctrl_id);
 
-        /// Gibt zurück, auf welchen Punkt es sich bezieht
-        const MapPoint& GetSelectedPt() const { return selectedPt; }
-
-    private:
-
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
-        void Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id) override;
-        void Msg_Group_TabChange(const unsigned group_id, const unsigned int ctrl_id, const unsigned short tab_id) override;
-        void Msg_PaintAfter() override;
-
-        inline void Msg_ButtonClick_TabBuild(const unsigned int ctrl_id);
-        inline void Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id);
-        inline void Msg_ButtonClick_TabFlag(const unsigned int ctrl_id);
-        inline void Msg_ButtonClick_TabAttack(const unsigned int ctrl_id);
-        inline void Msg_ButtonClick_TabSeaAttack(const unsigned int ctrl_id);
-        inline void Msg_ButtonClick_TabSetFlag(const unsigned int ctrl_id);
-        inline void Msg_ButtonClick_TabWatch(const unsigned int ctrl_id);
-
-        /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
-        void AddAttackControls(ctrlGroup* group, const unsigned attackers_count);
-        void AddUpgradeRoad(ctrlGroup* group, unsigned int& x, unsigned int& width);
-        void DoUpgradeRoad();
-
+    /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
+    void AddAttackControls(ctrlGroup* group, const unsigned attackers_count);
+    void AddUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
+    void DoUpgradeRoad();
 };
 
 #endif // !iwACTION_H_INCLUDED
-
-

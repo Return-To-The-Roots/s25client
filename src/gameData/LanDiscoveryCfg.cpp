@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "LanDiscoveryCfg.h"
 
 static LANDiscoveryBase::Config makeDiscoveryConfig()
@@ -23,11 +23,10 @@ static LANDiscoveryBase::Config makeDiscoveryConfig()
     LANDiscoveryBase::Config cfg;
     cfg.magicQuery = cfg.MakeMagic("RTTRQRY");
     cfg.magicResponse = cfg.MakeMagic("RTTRRES");
-    cfg.version = 2;
+    cfg.version = 4;
     cfg.portQuery = 3666;
     cfg.portResponse = 3667;
     return cfg;
 }
 
 const LANDiscoveryBase::Config LAN_DISCOVERY_CFG = makeDiscoveryConfig();
-

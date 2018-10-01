@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,7 +18,7 @@
 #ifndef LAN_DISCOVERY_CFG_H_INCLUDED
 #define LAN_DISCOVERY_CFG_H_INCLUDED
 
-#include "LANDiscovery.h"
+#include "libutil/LANDiscovery.h"
 
 extern const LANDiscoveryBase::Config LAN_DISCOVERY_CFG;
 

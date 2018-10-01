@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,190 +17,89 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "Debug.h"
-#include "build_version.h"
-
+#include "RTTR_Version.h"
+#include "Replay.h"
 #include "Settings.h"
-#include "GameClient.h"
 #include "helpers/Deleter.h"
-
-#ifdef _WIN32
-#   include <windows.h>
-
-// Disable warning for faulty nameless enum typdef (check sfImage.../hdBase...)
-#   pragma warning(push)
-#   pragma warning(disable: 4091)
-#   include <dbghelp.h>
-
-#   pragma warning(pop)
-#else
-#   include <execinfo.h>
-#endif
-
-#include "../libutil/src/Log.h"
+#include "network/GameClient.h"
+#include "libutil/Log.h"
+#include <boost/endian/arithmetic.hpp>
+#include <boost/endian/conversion.hpp>
+#include <boost/foreach.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/static_assert.hpp>
+#include <boost/type_traits/conditional.hpp>
 #include <bzlib.h>
+#include <vector>
 
-#ifdef _WIN32
-
-    typedef USHORT (WINAPI* CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
-
-#   ifndef _MSC_VER
-        typedef WINBOOL (WINAPI* SymInitializeType)(HANDLE hProcess, PSTR UserSearchPath, WINBOOL fInvadeProcess);
-        typedef WINBOOL (WINAPI* SymCleanupType)(HANDLE hProcess);
-        typedef VOID (WINAPI* RtlCaptureContextType)(PCONTEXT ContextRecord);
-        typedef WINBOOL (WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDLE hThread, LPSTACKFRAME64 StackFrame, PVOID ContextRecord, PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine, PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine, PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine, PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
-#   else
-#       undef CaptureStackBackTrace
-#       pragma comment(lib, "dbgHelp.lib")
-#   endif
+#if defined(_WIN32) || defined(__CYGWIN__)
+#define RTTR_USE_WIN_API
 #endif
 
-DebugInfo::DebugInfo()
-{
-    sock.Connect("debug.rttr.info", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port); //-V807
-
-    Send("RTTRDBG", 7);
-
-    // Protocol Version
-    SendUnsigned(0x00000001);
-
-    // OS
-#ifdef _WIN32
-    SendString("WIN");
-    // TODO: These should be based on uname(3) output.
-#elif defined __APPLE__
-    SendString("MAC");
-#elif defined __FreeBSD__
-    SendString("BSD");
-#else
-    SendString("LNX");
-#endif
-
-    // Bits
-    SendUnsigned(sizeof(void*) << 3);
-
-    SendString(GetWindowVersion());
-    SendString(GetWindowRevision());
-
-    SendUnsigned(GAMECLIENT.GetGFNumber());
-}
-
-DebugInfo::~DebugInfo()
-{
-    SendString("DONE");
-    sock.Close();
-}
-
-bool DebugInfo::Send(const void* buffer, int length)
-{
-    char* ptr = (char*) buffer;
-
-    while (length > 0)
-    {
-        int res = sock.Send(ptr, length);
-
-        if (res >= 0)
-        {
-            ptr += res;
-            length -= res;
-        }
-        else
-        {
-            fprintf(stderr, "failed to send: %i left\n", length);
-            return(false);
-        }
-    }
-
-    return(true);
-}
-
-
-bool DebugInfo::SendUnsigned(unsigned i)
-{
-    return(Send(&i, 4));
-}
-
-bool DebugInfo::SendSigned(signed i)
-{
-    return(Send(&i, 4));
-}
-
-bool DebugInfo::SendString(const char* str, unsigned len)
-{
-    if (len == 0)
-        len  = strlen(str) + 1;
-
-    if (!SendUnsigned(len))
-        return(false);
-
-    return(Send(str, len));
-}
-
-bool DebugInfo::SendString(const std::string& str)
-{
-    return SendString(str.c_str(), str.length() + 1); // +1 to include NULL terminator
-}
-
-#ifdef _WIN32
-void* CALLBACK FunctionTableAccess(HANDLE hProcess, DWORD64 AddrBase)
-{
-    return NULL;
-}
-#endif
+#ifdef RTTR_USE_WIN_API
+#ifdef HAVE_DBGHELP_H
+#include <windows.h>
+// Disable warning for faulty nameless enum typedef (check sfImage.../hdBase...)
+#pragma warning(push)
+#pragma warning(disable : 4091)
+#include <dbghelp.h>
+#pragma warning(pop)
 
 #ifdef _MSC_VER
-bool DebugInfo::SendStackTrace(LPCONTEXT ctx)
+#pragma comment(lib, "dbgHelp.lib")
 #else
-bool DebugInfo::SendStackTrace()
+typedef WINBOOL(WINAPI* SymInitializeType)(HANDLE hProcess, PSTR UserSearchPath, WINBOOL fInvadeProcess);
+typedef WINBOOL(WINAPI* SymCleanupType)(HANDLE hProcess);
+typedef VOID(WINAPI* RtlCaptureContextType)(PCONTEXT ContextRecord);
+typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDLE hThread, LPSTACKFRAME64 StackFrame, PVOID ContextRecord,
+                                       PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
+                                       PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
+                                       PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine, PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
+#endif // _MSC_VER
+#endif // HAVE_DBGHELP_H
+
+#else
+#include <execinfo.h>
 #endif
+
+#ifdef RTTR_USE_WIN_API
+#ifdef HAVE_DBGHELP_H
+bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = NULL)
 {
-    const unsigned int maxTrace = 256;
-    void* stacktrace[maxTrace];
-
-#ifdef _WIN32
-
-#ifndef _MSC_VER
     CONTEXT context;
-    LPCONTEXT ctx = NULL;
+#ifndef _MSC_VER
 
     HMODULE kernel32 = LoadLibraryA("kernel32.dll");
     HMODULE dbghelp = LoadLibraryA("dbghelp.dll");
 
-    if ((!kernel32) || (!dbghelp))
-    {
-        return(false);
-    }
+    if(!kernel32 || !dbghelp)
+        return false;
 
     RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(kernel32, "RtlCaptureContext"));
 
     SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(dbghelp, "SymInitialize"));
     SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(dbghelp, "SymCleanup"));
-
     StackWalkType StackWalk64 = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
-    PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 = (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
+    PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 =
+      (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
     PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
 
-    if ((!SymInitialize) || (!StackWalk64) || (!SymFunctionTableAccess64) || (!SymGetModuleBase64) || (!RtlCaptureContext))
-    {
-        return(false);
-    }
+    if(!SymInitialize || !StackWalk64 || !SymFunctionTableAccess64 || !SymGetModuleBase64 || !RtlCaptureContext)
+        return false;
 #endif
 
-    if (!SymInitialize(GetCurrentProcess(), NULL, true))
-    {
-        return(false);
-    }
+    const HANDLE process = GetCurrentProcess();
+    if(!SymInitialize(process, NULL, true))
+        return false;
 
-#ifndef _MSC_VER
-    if (!ctx)
+    if(!ctx)
     {
         context.ContextFlags = CONTEXT_FULL;
         RtlCaptureContext(&context);
         ctx = &context;
     }
-#endif
 
     STACKFRAME64 frame;
     memset(&frame, 0, sizeof(frame));
@@ -219,47 +118,161 @@ bool DebugInfo::SendStackTrace()
     frame.AddrStack.Mode = AddrModeFlat;
     frame.AddrFrame.Mode = AddrModeFlat;
 
-    HANDLE process = GetCurrentProcess();
     HANDLE thread = GetCurrentThread();
-
-    unsigned num_frames = 0;
-    while (StackWalk64(
 #ifdef _WIN64
-                IMAGE_FILE_MACHINE_AMD64,
+    DWORD machineType = IMAGE_FILE_MACHINE_AMD64;
 #else
-                IMAGE_FILE_MACHINE_I386,
-#endif
-                process, thread, &frame,
-                ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL) && (num_frames < maxTrace))
-    {
-        LOG.write("Reading stack frame %d\n") % num_frames;
-        stacktrace[num_frames++] = (void*) frame.AddrPC.Offset;
-    }
-
-    SymCleanup(GetCurrentProcess());
-
-    /*CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"), "RtlCaptureStackBackTrace"));
-
-    if (!CaptureStackBackTrace)
-    {
-        return(false);
-    }
-
-    unsigned num_frames = CaptureStackBackTrace(0, maxTrace, stacktrace, NULL);
-    LOG.write("Read Frames %d\n") % num_frames;
-    */
-#else
-    unsigned num_frames = backtrace(stacktrace, maxTrace);
+    DWORD machineType = IMAGE_FILE_MACHINE_I386;
 #endif
 
-    LOG.write("Will now send %d stack frames\n") % num_frames;
+    for(unsigned i = 0; i < stacktrace.size(); i++)
+    {
+        if(!StackWalk64(machineType, process, thread, &frame, ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL))
+        {
+            stacktrace.resize(i);
+            break;
+        }
+        LOG.write("Reading stack frame %1%\n", LogTarget::Stdout) % i;
+        stacktrace[i] = (void*)frame.AddrPC.Offset;
+    }
 
-    if (!SendString("StackTrace"))
-        return(false);
+    SymCleanup(process);
+    return true;
+}
+#else  // HAVE_DBGHELP_H
+bool captureBacktrace(std::vector<void*>&, void* = NULL)
+{
+    return false;
+}
+#endif // HAVE_DBGHELP_H
 
-    num_frames *= sizeof(void*);
+#else
+void captureBacktrace(std::vector<void*>& stacktrace)
+{
+    unsigned num_frames = backtrace(&stacktrace[0], stacktrace.size());
+    stacktrace.resize(num_frames);
+}
+#endif
 
-    return(SendString((char*) &stacktrace, num_frames));
+DebugInfo::DebugInfo()
+{
+    sock.Connect("debug.rttr.info", 4123, false, SETTINGS.proxy);
+
+    Send("RTTRDBG", 7);
+
+    // Protocol Version
+    SendUnsigned(2);
+
+// OS
+#if defined _WIN32 || defined __CYGWIN__
+    SendString("WIN");
+// TODO: These should be based on uname(3) output.
+#elif defined __APPLE__
+    SendString("MAC");
+#elif defined __FreeBSD__
+    SendString("BSD");
+#else
+    SendString("LNX");
+#endif
+
+    // Bits
+    SendUnsigned(sizeof(void*) * 8u);
+
+    SendString(RTTR_Version::GetVersionDate());
+    SendString(RTTR_Version::GetRevision());
+
+    SendUnsigned(GAMECLIENT.GetGFNumber());
+}
+
+DebugInfo::~DebugInfo()
+{
+    SendString("DONE");
+    sock.Close();
+}
+
+std::vector<void*> DebugInfo::GetStackTrace(void* ctx)
+{
+    std::vector<void*> stacktrace(256);
+#ifdef _MSC_VER
+    if(!captureBacktrace(stacktrace, static_cast<LPCONTEXT>(ctx)))
+        stacktrace.clear();
+#else
+    captureBacktrace(stacktrace);
+#endif
+    return stacktrace;
+}
+
+bool DebugInfo::Send(const void* buffer, int length)
+{
+    char* ptr = (char*)buffer;
+
+    while(length > 0)
+    {
+        int res = sock.Send(ptr, length);
+
+        if(res >= 0)
+        {
+            ptr += res;
+            length -= res;
+        } else
+        {
+            fprintf(stderr, "failed to send: %i left\n", length);
+            return (false);
+        }
+    }
+
+    return (true);
+}
+
+bool DebugInfo::SendUnsigned(uint32_t i)
+{
+    // Debug server does not handle endianness and is little endian... TODO: Fix server
+    boost::endian::native_to_little_inplace(i);
+    return (Send(&i, 4));
+}
+
+bool DebugInfo::SendSigned(int32_t i)
+{
+    // Debug server does not handle endianness and is little endian... TODO: Fix server
+    boost::endian::native_to_little_inplace(i);
+    return (Send(&i, 4));
+}
+
+bool DebugInfo::SendString(const char* str, unsigned len)
+{
+    if(len == 0)
+        len = strlen(str) + 1;
+
+    if(!SendUnsigned(len))
+        return (false);
+
+    return (Send(str, len));
+}
+
+bool DebugInfo::SendString(const std::string& str)
+{
+    return SendString(str.c_str(), str.length() + 1); // +1 to include NULL terminator
+}
+
+bool DebugInfo::SendStackTrace(const std::vector<void*>& stacktrace)
+{
+    if(stacktrace.empty())
+        return false;
+
+    LOG.write("Will now send %1% stack frames\n") % stacktrace.size();
+
+    if(!SendString("StackTrace"))
+        return false;
+
+    typedef boost::conditional<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>::type littleVoid_t;
+    BOOST_STATIC_ASSERT_MSG(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
+    std::vector<littleVoid_t> endStacktrace;
+    endStacktrace.reserve(stacktrace.size());
+    BOOST_FOREACH(void* ptr, stacktrace)
+        endStacktrace.push_back(reinterpret_cast<littleVoid_t::value_type>(ptr));
+
+    unsigned stacktraceLen = sizeof(littleVoid_t) * endStacktrace.size();
+    return SendString(reinterpret_cast<const char*>(&endStacktrace[0]), stacktraceLen);
 }
 
 bool DebugInfo::SendReplay()
@@ -267,61 +280,25 @@ bool DebugInfo::SendReplay()
     LOG.write("Sending replay...\n");
 
     // Replay mode is on, no recording of replays active
-    if (!GAMECLIENT.IsReplayModeOn())
+    if(!GAMECLIENT.IsReplayModeOn())
     {
-        Replay& rpl = GAMECLIENT.GetReplay();
+        Replay* rpl = GAMECLIENT.GetReplay();
 
-        if(!rpl.IsValid())
+        if(!rpl || !rpl->IsRecording())
             return true;
 
-        BinaryFile* f = rpl.GetFile();
+        BinaryFile& f = rpl->GetFile();
 
-        if(!f) // no replay to send
-            return true;
+        f.Flush();
 
-        f->Flush();
-
-        unsigned replay_len = f->Tell();
-
-        LOG.write("- Replay length: %u\n") % replay_len;
-
-        boost::interprocess::unique_ptr<char, Deleter<char[]> > replay(new char[replay_len]);
-
-        f->Seek(0, SEEK_SET);
-
-        f->ReadRawData(replay.get(), replay_len);
-
-        unsigned int compressed_len = replay_len * 2 + 600;
-        boost::interprocess::unique_ptr<char, Deleter<char[]> > compressed(new char[compressed_len]);
-
-        // send size of replay via socket
-        if (!SendString("Replay"))
-        {
+        if(!SendString("Replay"))
             return false;
-        }
-
-        LOG.write("- Compressing...\n");
-        if (BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned int*) &compressed_len, replay.get(), replay_len, 9, 0, 250) == BZ_OK)
-        {
-            LOG.write("- Sending...\n");
-
-            if (SendString(compressed.get(), compressed_len))
-            {
-                LOG.write("-> success\n");
-                return true;
-            }
-
-            LOG.write("-> Sending replay failed :(\n");
-        }
-        else
-        {
-            LOG.write("-> BZ2 compression failed.\n");
-        }
-
+        if(SendFile(f))
+            return true;
+        // Empty replay
         SendUnsigned(0);
         return false;
-    }
-    else
+    } else
     {
         LOG.write("-> Already in replay mode, do not send replay\n");
     }
@@ -329,79 +306,49 @@ bool DebugInfo::SendReplay()
     return true;
 }
 
-bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
-                             const std::vector<RandomEntry> &a, const std::vector<RandomEntry> &b, unsigned identical)
+bool DebugInfo::SendAsyncLog(const std::string& asyncLogFilepath)
 {
-    if (!SendString("AsyncLog"))
+    BinaryFile file;
+    if(!file.Open(asyncLogFilepath, OFM_READ))
+        return false;
+
+    if(!SendString("AsyncLog"))
+        return false;
+
+    if(SendFile(file))
+        return true;
+    // Empty
+    SendUnsigned(0);
+    return false;
+}
+
+bool DebugInfo::SendFile(BinaryFile& file)
+{
+    file.Seek(0, SEEK_END);
+    unsigned fileSize = file.Tell();
+
+    LOG.write("- File size: %u\n") % fileSize;
+
+    boost::interprocess::unique_ptr<char, Deleter<char[]> > fileData(new char[fileSize]);
+    unsigned compressed_len = fileSize * 2 + 600;
+    boost::interprocess::unique_ptr<char, Deleter<char[]> > compressed(new char[compressed_len]);
+
+    file.Seek(0, SEEK_SET);
+    file.ReadRawData(fileData.get(), fileSize);
+
+    LOG.write("- Compressing...\n");
+    if(BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned*)&compressed_len, fileData.get(), fileSize, 9, 0, 250) == BZ_OK)
     {
-        return(false);
-    }
+        LOG.write("- Sending...\n");
 
-    // calculate size
-    unsigned len =  4;
-    unsigned cnt = 0;
+        if(SendString(compressed.get(), compressed_len))
+        {
+            LOG.write("-> success\n");
+            return true;
+        }
 
-    std::vector<RandomEntry>::const_iterator it_a = first_a;
-    std::vector<RandomEntry>::const_iterator it_b = first_b;
-
-    // if there were any identical lines, include only the last one
-    if (identical)
-    {
-        // sizes of: counter, max, rngState
-        //           string = length Bytes + 1 NULL terminator + 4B length
-        //           srcLine, objId
-        len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
-
-        ++cnt; ++it_a; ++it_b;
-    }
-
-    while ((it_a != a.end()) && (it_b != b.end()))
-    {
-        len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
-        len += 4 + 4 + 4 + it_b->src_name.length() + 1 + 4 + 4 + 4;
-
-        cnt += 2;
-        ++it_a; ++it_b;
-    }
-
-    if (!SendUnsigned(len))         return(false);
-    if (!SendUnsigned(identical))   return(false);
-    if (!SendUnsigned(cnt))         return(false);
-
-    it_a = first_a;
-    it_b = first_b;
-
-    // if there were any identical lines, send only one each
-    for(unsigned i = 0; i< identical; i++)
-    {
-        if (!SendUnsigned(it_a->counter))   return(false);
-        if (!SendSigned(it_a->max))         return(false);
-        if (!SendSigned(it_a->rngState))    return(false);
-        if (!SendString(it_a->src_name))    return(false);
-        if (!SendUnsigned(it_a->src_line))  return(false);
-        if (!SendUnsigned(it_a->obj_id))    return(false);
-
-        ++it_a; ++it_b;
-    }
-
-    while ((it_a != a.end()) && (it_b != b.end()))
-    {
-        if (!SendUnsigned(it_a->counter))   return(false);
-        if (!SendSigned(it_a->max))         return(false);
-        if (!SendSigned(it_a->rngState))    return(false);
-        if (!SendString(it_a->src_name))    return(false);
-        if (!SendUnsigned(it_a->src_line))  return(false);
-        if (!SendUnsigned(it_a->obj_id))    return(false);
-
-        if (!SendUnsigned(it_b->counter))   return(false);
-        if (!SendSigned(it_b->max))         return(false);
-        if (!SendSigned(it_b->rngState))    return(false);
-        if (!SendString(it_b->src_name))    return(false);
-        if (!SendUnsigned(it_b->src_line))  return(false);
-        if (!SendUnsigned(it_b->obj_id))    return(false);
-
-        ++it_a; ++it_b;
-    }
-
-    return(true);
+        LOG.write("-> Sending file failed :(\n");
+    } else
+        LOG.write("-> BZ2 compression failed.\n");
+    return false;
 }

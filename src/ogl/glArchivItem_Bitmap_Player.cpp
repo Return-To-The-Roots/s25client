@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,44 +15,67 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Player.h"
+#include "Loader.h"
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "Loader.h"
 #include "oglIncludes.h"
+#include "libsiedler2/PixelBufferARGB.h"
 #include <vector>
 
-void glArchivItem_Bitmap_Player::Draw(DrawPoint dst, short dst_w, short dst_h, short src_x, short src_y, short src_w, short src_h, const unsigned int color, const unsigned int player_color)
+Extent glArchivItem_Bitmap_Player::CalcTextureSize() const
+{
+    // We have the texture 2 times: one with non-player colors and one with them
+    return VIDEODRIVER.calcPreferredTextureSize(Extent(GetSize().x * 2, GetSize().y));
+}
+
+void glArchivItem_Bitmap_Player::DrawFull(const Rect& destArea, unsigned color, unsigned player_color)
+{
+    Draw(destArea, Rect(Position::all(0), GetSize()), color, player_color);
+}
+
+void glArchivItem_Bitmap_Player::DrawFull(const DrawPoint& dst, unsigned color, unsigned player_color)
+{
+    DrawFull(Rect(dst, GetSize()), color, player_color);
+}
+
+void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/, unsigned player_color /*= COLOR_WHITE*/)
 {
     if(GetTexture() == 0)
         return;
 
-    if(src_w == 0)
-        src_w = width_;
-    if(src_h == 0)
-        src_h = height_;
-    if(dst_w == 0)
-        dst_w = src_w;
-    if(dst_h == 0)
-        dst_h = src_h;
+    RTTR_Assert(dstArea.getSize().x > 0 && dstArea.getSize().y > 0);
+    RTTR_Assert(srcArea.getSize().x > 0 && srcArea.getSize().y > 0);
+    // Compatibility only!
+    Extent srcSize = srcArea.getSize();
+    if(srcSize.x == 0)
+        srcSize.x = getWidth();
+    if(srcSize.y == 0)
+        srcSize.y = getHeight();
+    srcArea.setSize(srcSize);
+    Extent dstSize = dstArea.getSize();
+    if(dstSize.x == 0)
+        dstSize.x = srcSize.x;
+    if(dstSize.y == 0)
+        dstSize.y = srcSize.y;
+    dstArea.setSize(dstSize);
 
     Point<GLfloat> texCoords[8], vertices[8];
 
-    int x = -nx_ + dst.x;
-    int y = -ny_ + dst.y;
+    dstArea.move(-GetOrigin());
 
-    vertices[0].x = vertices[1].x = GLfloat(x);
-    vertices[2].x = vertices[3].x = GLfloat(x + dst_w);
+    vertices[0].x = vertices[1].x = GLfloat(dstArea.left);
+    vertices[2].x = vertices[3].x = GLfloat(dstArea.right);
+    vertices[0].y = vertices[3].y = GLfloat(dstArea.top);
+    vertices[1].y = vertices[2].y = GLfloat(dstArea.bottom);
 
-    vertices[0].y = vertices[3].y = GLfloat(y);
-    vertices[1].y = vertices[2].y = GLfloat(y + dst_h);
-
-    texCoords[0].x = texCoords[1].x = (GLfloat)(src_x) / (GLfloat)tex_width_ / 2.0f;
-    texCoords[2].x = texCoords[3].x = (GLfloat)(src_x + src_w) / (GLfloat)tex_width_ / 2.0f;
-
-    texCoords[0].y = texCoords[3].y = (GLfloat)src_y / tex_height_;
-    texCoords[1].y = texCoords[2].y = (GLfloat)(src_y + src_h) / tex_height_;
+    Point<GLfloat> srcOrig = Point<GLfloat>(srcArea.getOrigin()) / GetTexSize();
+    Point<GLfloat> srcEndPt = Point<GLfloat>(srcArea.getEndPt()) / GetTexSize();
+    texCoords[0].x = texCoords[1].x = srcOrig.x;
+    texCoords[2].x = texCoords[3].x = srcEndPt.x;
+    texCoords[0].y = texCoords[3].y = srcOrig.y;
+    texCoords[1].y = texCoords[2].y = srcEndPt.y;
 
     std::copy(vertices, vertices + 4, vertices + 4);
     std::copy(texCoords, texCoords + 4, texCoords + 4);
@@ -91,13 +114,14 @@ void glArchivItem_Bitmap_Player::FillTexture()
 {
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!
-    setPalette(LOADER.GetPaletteN("colors"));
+    const libsiedler2::ArchivItem_Palette* palette = LOADER.GetPaletteN("colors");
 
-    int iformat = GetInternalFormat(), dformat = GL_BGRA; //GL_BGRA_EXT;
+    int iformat = GetInternalFormat(), dformat = GL_BGRA; // GL_BGRA_EXT;
 
-    std::vector<unsigned char> buffer(tex_width_ * 2 * tex_height_ * 4);
+    Extent texSize = GetTexSize();
+    libsiedler2::PixelBufferARGB buffer(texSize.x, texSize.y);
 
-    print(&buffer.front(), tex_width_ * 2, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 128, 0, 0, 0, 0, 0, 0, false);
-    print(&buffer.front(), tex_width_ * 2, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 128, tex_width_, 0, 0, 0, 0, 0, true);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width_ * 2, tex_height_, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
+    print(buffer, palette, 128, 0, 0, 0, 0, 0, 0, false);
+    print(buffer, palette, 128, texSize.x / 2u, 0, 0, 0, 0, 0, true);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 }

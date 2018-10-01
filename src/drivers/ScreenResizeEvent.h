@@ -1,4 +1,4 @@
-// Copyright (c) 20052008 Settlers Freaks (sfteam at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sfteam at siedler25.org)
 //
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the
@@ -16,13 +16,13 @@
 #ifndef ScreenResizeEvent_h__
 #define ScreenResizeEvent_h__
 
+#include "Point.h"
+
 /// ScreenResize-Event
 struct ScreenResizeEvent
 {
-    unsigned short oldWidth;
-    unsigned short oldHeight;
-    unsigned short newWidth;
-    unsigned short newHeight;
+    ScreenResizeEvent(const Extent& oldSize, const Extent& newSize) : oldSize(oldSize), newSize(newSize) {}
+    Extent oldSize, newSize;
 };
 
 #endif // ScreenResizeEvent_h__

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,25 +15,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "Desktop.h"
-
-#include "WindowManager.h"
-#include "drivers/VideoDriverWrapper.h"
+#include "Loader.h"
+#include "controls/ctrlText.h"
 #include "drivers/ScreenResizeEvent.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "helpers/converters.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include <limits>
+
+// Set to highest possible so it is drawn last
+const unsigned Desktop::fpsDisplayId = std::numeric_limits<unsigned>::max();
 
 /**
  *  Konstruktor für einen Spieldesktop
  *
  *  @param[in] background Hintergrund des Desktops
  */
-Desktop::Desktop(glArchivItem_Bitmap* background)
-    : Window(), background(background)
+Desktop::Desktop(glArchivItem_Bitmap* background) : Window(NULL, 0, DrawPoint::all(0), VIDEODRIVER.GetScreenSize()), background(background)
 {
     SetScale(true);
-    Resize(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
+    SetFpsDisplay(true);
 }
+
+Desktop::~Desktop() {}
 
 /**
  *  Zeichenmethode zum Zeichnen des Desktops
@@ -41,22 +48,12 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool Desktop::Draw_()
+void Desktop::Draw_()
 {
     if(background)
-        background->Draw(DrawPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
+        background->DrawFull(GetDrawRect());
 
     DrawControls();
-
-    return true;
-}
-
-/**
- *  Wechselt den aktuellen Desktop im WindowManager auf diesen Desktop.
- */
-void Desktop::Show()
-{
-    WINDOWMANAGER.Switch(this);
 }
 
 /**
@@ -64,34 +61,22 @@ void Desktop::Show()
  */
 void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
 {
-// Keep the following block the same as in ctrlGroup class:
-    // Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
-    if (scale_)
-    {
-        //Zunächst an die Kinder weiterleiten
-        for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-        {
-            if(!it->second)
-                continue;
-            Window* ctrl = it->second;
-            // unskalierte Position und Größe bekommen
-            int realX = ctrl->GetX() * 800 / sr.oldWidth;
-            int realY = ctrl->GetY() * 600 / sr.oldHeight;
-            unsigned realWidth = ctrl->GetWidth() * 800 / sr.oldWidth;
-            unsigned realHeight = ctrl->GetHeight() * 600 / sr.oldHeight;
-            // Rundungsfehler?
-            if(realX * sr.oldWidth / 800 < ctrl->GetX()) ++realX;
-            if(realY * sr.oldHeight / 600 < ctrl->GetY()) ++realY;
-            if(realWidth  * sr.oldWidth / 800 < ctrl->GetWidth())  ++realWidth;
-            if(realHeight * sr.oldHeight / 600 < ctrl->GetHeight()) ++realHeight;
-            // Und los
-            ctrl->Move(realX * sr.newWidth / 800, realY * sr.newHeight / 600);
-            ctrl->Msg_ScreenResize(sr);
-            ctrl->Resize(realWidth * sr.newWidth / 800, realHeight * sr.newHeight / 600);
-        }
-    }
-
-    // Individuelle Reaktion ist auch erlaubt
-    Resize(sr.newWidth, sr.newHeight);
+    Window::Msg_ScreenResize(sr);
+    // Resize to new screen size
+    Resize(sr.newSize);
 }
 
+void Desktop::SetFpsDisplay(bool show)
+{
+    if(!show)
+        DeleteCtrl(fpsDisplayId);
+    else if(!GetCtrl<ctrlText>(fpsDisplayId) && SmallFont)
+        AddText(fpsDisplayId, DrawPoint(800, 0), "", COLOR_YELLOW, FontStyle::RIGHT, SmallFont);
+}
+
+void Desktop::UpdateFps(unsigned newFps)
+{
+    ctrlText* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
+    if(fpsDisplay)
+        fpsDisplay->SetText(helpers::toString(newFps) + " fps");
+}

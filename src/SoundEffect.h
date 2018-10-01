@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,11 +20,6 @@
 
 #include <boost/core/scoped_enum.hpp>
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(SoundEffect)
-{
-    Fanfare,
-    Pidgeon
-}
-BOOST_SCOPED_ENUM_DECLARE_END(SoundEffect)
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(SoundEffect){Fanfare, Pidgeon} BOOST_SCOPED_ENUM_DECLARE_END(SoundEffect)
 
 #endif // SoundEffect_h__

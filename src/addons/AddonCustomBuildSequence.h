@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,23 +20,20 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for allowing a custom build sequence
  */
 class AddonCustomBuildSequence : public AddonBool
 {
-    public:
-        AddonCustomBuildSequence() : AddonBool(AddonId::CUSTOM_BUILD_SEQUENCE,
-                                                   ADDONGROUP_ECONOMY | ADDONGROUP_GAMEPLAY,
-                                                   _("Custom build sequence"),
-                                                   _("Allows every player to control whether building sites should be supplied "
-                                                           "in sequence of given order or in a definable sequence based on the building type."),
-                                                   0
-                                                  )
-        {
-        }
+public:
+    AddonCustomBuildSequence()
+        : AddonBool(AddonId::CUSTOM_BUILD_SEQUENCE, ADDONGROUP_ECONOMY | ADDONGROUP_GAMEPLAY, _("Custom build sequence"),
+                    _("Allows every player to control whether building sites should be supplied "
+                      "in sequence of given order or in a definable sequence based on the building type."),
+                    0)
+    {}
 };
 
 #endif // !ADDONCUSTOMBUILDSEQUENCE_H_INCLUDED

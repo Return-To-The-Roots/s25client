@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,35 +21,32 @@
 
 #include "IngameWindow.h"
 
-class glArchivItem_Bitmap;
+class ITexture;
 class GameWorldViewer;
 class GameCommandFactory;
 
 class iwTransport : public IngameWindow
 {
-    private:
+private:
+    const GameWorldViewer& gwv;
+    GameCommandFactory& gcFactory;
+    ITexture* TRANSPORT_SPRITES[14]; /// Einzelne Bilder für die Waren.
 
-        const GameWorldViewer& gwv;
-        GameCommandFactory& gcFactory;
-        glArchivItem_Bitmap* TRANSPORT_SPRITES[14]; /// Einzelne Bilder für die Waren.
+    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+    bool settings_changed;
 
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-        bool settings_changed;
+public:
+    iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
+    ~iwTransport() override;
 
-    public:
+private:
+    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+    void UpdateSettings();
+    /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+    void TransmitSettings();
 
-        iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-        ~iwTransport() override;
-
-    private:
-
-        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-        void UpdateSettings();
-        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-        void TransmitSettings();
-
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_Timer(const unsigned int ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
 };
 
 #endif // !iwTRANSPORT_H_INCLUDED

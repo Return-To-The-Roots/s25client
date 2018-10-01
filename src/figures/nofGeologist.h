@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,7 +19,7 @@
 #define NOF_GEOLOGIST_H_
 
 #include "nofFlagWorker.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
 #include <boost/array.hpp>
 #include <vector>
@@ -29,59 +29,58 @@ class noRoadNode;
 
 class nofGeologist : public nofFlagWorker
 {
-    private:
+private:
+    /// Schilder, die er noch aufstellen sollte (max 15 abarbeiten)
+    unsigned short signs;
 
-        /// Schilder, die er noch aufstellen sollte (max 15 abarbeiten)
-        unsigned short signs;
+    std::vector<MapPoint> available_nodes;
+    /// Punkt, zu dem er gerade geht
+    MapPoint node_goal;
 
-        std::vector<MapPoint> available_nodes;
-        /// Punkt, zu dem er gerade geht
-        MapPoint node_goal;
+    /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
+    static const unsigned short MAX_RADIUS = 10;
 
-        /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
-        static const unsigned short MAX_RADIUS = 10;
+    boost::array<bool, Resource::TypeCount> resAlreadyFound;
 
-        boost::array<bool, RES_TYPES_COUNT> resAlreadyFound;
+private:
+    void GoalReached() override;
+    void Walked() override;
+    void HandleDerivedEvent(const unsigned id) override;
 
-    private:
+    /// Kann man an diesem Punkt ein Schild aufstellen?
+    bool IsNodeGood(const MapPoint pt) const;
+    /// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
+    void LookForNewNodes();
+    /// Checks if the node is valid as a new target
+    inline bool IsValidTargetNode(const MapPoint pt) const;
+    /// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungültiger
+    /// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurück
+    unsigned char GetNextNode();
+    /// Sucht sich einen neuen Punkt und geht dorthin oder geht wieder nach Hause wenn alle Schilder aufgestellt wurden
+    /// oder es keinen Punkt mehr gibt
+    void GoToNextNode();
+    /// Setzt das Schild, wenn noch was frei ist
+    void SetSign(Resource resources);
 
-        void GoalReached() override;
-        void Walked() override;
-        void HandleDerivedEvent(const unsigned int id) override;
+    bool IsSignInArea(Resource::Type type) const;
 
-        /// Kann man an diesem Punkt ein Schild aufstellen?
-        bool IsNodeGood(const MapPoint pt) const;
-        /// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
-        void LookForNewNodes();
-        /// Checks if the node is valid as a new target
-        inline bool IsValidTargetNode(const MapPoint pt) const;
-        /// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungültiger
-        /// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurück
-        unsigned char GetNextNode();
-        /// Sucht sich einen neuen Punkt und geht dorthin oder geht wieder nach Hause wenn alle Schilder aufgestellt wurden
-        /// oder es keinen Punkt mehr gibt
-        void GoToNextNode();
-        /// Setzt das Schild, wenn noch was frei ist
-        void SetSign(const unsigned char resources);
+public:
+    nofGeologist(const MapPoint pt, const unsigned char player, noRoadNode* goal);
+    nofGeologist(SerializedGameData& sgd, const unsigned obj_id);
 
-        bool IsSignInArea(unsigned char type) const;
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofGeologist(SerializedGameData& sgd) const;
 
-    public:
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofGeologist(sgd); }
 
-        nofGeologist(const MapPoint pt, const unsigned char player, noRoadNode* goal);
-        nofGeologist(SerializedGameData& sgd, const unsigned obj_id);
+    GO_Type GetGOT() const override { return GOT_NOF_GEOLOGIST; }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofGeologist(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofGeologist(sgd); }
+    void Draw(DrawPoint drawPt) override;
 
-        GO_Type GetGOT() const override { return GOT_NOF_GEOLOGIST; }
-
-        void Draw(DrawPoint drawPt) override;
-
-        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-        void LostWork() override;
-
+    /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+    void LostWork() override;
 };
 
 #endif

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,38 +18,104 @@
 #ifndef WorldFixture_h__
 #define WorldFixture_h__
 
-#include "EventManager.h"
+#include "Game.h"
 #include "GlobalGameSettings.h"
-#include "world/GameWorldGame.h"
 #include "PlayerInfo.h"
+#include "TestEventManager.h"
+#include "addons/const_addons.h"
+#include "world/GameWorld.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Nation.h"
+#include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = 64, unsigned T_height = 64>
+//////////////////////////////////////////////////////////////////////////
+// Macros for executing GFs in tests effectively by skipping GFs without any events
+
+/// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
+/// Return the number of GFs executed in gfReturnVar
+#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                                          \
+    gfReturnVar = 0;                                                                             \
+    for(unsigned endGf = this->em.GetCurrentGF() + (maxGFs); !(cond) && gfReturnVar < (maxGFs);) \
+    {                                                                                            \
+        unsigned numGF = this->em.ExecuteNextEvent(endGf);                                       \
+        if(numGF == 0)                                                                           \
+            break;                                                                               \
+        gfReturnVar += numGF;                                                                    \
+    }                                                                                            \
+    BOOST_REQUIRE((cond))
+
+/// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
+#define RTTR_EXEC_TILL(maxGFs, cond)                       \
+    {                                                      \
+        unsigned dummyReturnGF;                            \
+        RTTR_EXEC_TILL_CT_GF(maxGFs, cond, dummyReturnGF); \
+        (void)dummyReturnGF;                               \
+    }
+
+/// Skip up to numGFs GFs or until no event left
+#define RTTR_SKIP_GFS(numGFs)                                                      \
+    for(unsigned gf = 0, endGf = this->em.GetCurrentGF() + (numGFs); gf < numGFs;) \
+    {                                                                              \
+        unsigned numGFsExecuted = this->em.ExecuteNextEvent(endGf);                \
+        if(numGFsExecuted == 0)                                                    \
+            break;                                                                 \
+        gf += numGFsExecuted;                                                      \
+    }
+//////////////////////////////////////////////////////////////////////////
+
+template<unsigned T_numPlayers>
+struct WorldDefault
+{
+    BOOST_STATIC_CONSTEXPR unsigned width = 40;
+    BOOST_STATIC_CONSTEXPR unsigned height = 32;
+};
+
+template<>
+struct WorldDefault<0>
+{
+    BOOST_STATIC_CONSTEXPR unsigned width = 10;
+    BOOST_STATIC_CONSTEXPR unsigned height = 8;
+};
+
+template<>
+struct WorldDefault<1>
+{
+    // Note: Less than HQ radius but enough for most tests
+    BOOST_STATIC_CONSTEXPR unsigned width = 12;
+    BOOST_STATIC_CONSTEXPR unsigned height = 10;
+};
+
+template<>
+struct WorldDefault<2>
+{
+    // Based on HQ radius of 9 -> min size 20 per player
+    BOOST_STATIC_CONSTEXPR unsigned width = 40;
+    BOOST_STATIC_CONSTEXPR unsigned height = 20;
+};
+
+template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault<T_numPlayers>::width,
+         unsigned T_height = WorldDefault<T_numPlayers>::height>
 struct WorldFixture
 {
-    EventManager em;
-    GlobalGameSettings ggs;
-    GameWorldGame world;
+    boost::shared_ptr<Game> game;
+    TestEventManager& em;
+    GlobalGameSettings& ggs;
+    GameWorld& world;
     T_WorldCreator worldCreator;
-    WorldFixture(): em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em), worldCreator(T_width, T_height, T_numPlayers)
+    WorldFixture()
+        : game(new Game(GlobalGameSettings(), new TestEventManager, std::vector<PlayerInfo>(T_numPlayers, GetPlayer()))),
+          em(static_cast<TestEventManager&>(*game->em)), ggs(const_cast<GlobalGameSettings&>(game->ggs)), world(game->world),
+          worldCreator(MapExtent(T_width, T_height), T_numPlayers)
     {
-        GameObject::SetPointers(&world);
-        try
-        {
-            BOOST_REQUIRE(worldCreator(world));
-        }catch(std::exception& e)
-        {
-            GameObject::SetPointers(NULL);
-            throw e;
-        }
-        BOOST_REQUIRE_EQUAL(world.GetPlayerCount(), T_numPlayers);
-    }
-    ~WorldFixture()
-    {
-        // Reset to allow assertions on GameObject destruction to pass
-        GameObject::SetPointers(NULL);
+        // Fast moving ships
+        ggs.setSelection(AddonId::SHIP_SPEED, 4);
+        // Explored area stays explored. Avoids fow creation
+        ggs.exploration = EXP_CLASSIC;
+        BOOST_REQUIRE(worldCreator(world));
+        BOOST_REQUIRE_EQUAL(world.GetNumPlayers(), T_numPlayers);
     }
     static PlayerInfo GetPlayer()
     {

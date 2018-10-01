@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,16 +19,16 @@
 
 #pragma once
 
-#include "Desktop.h"
+#include "desktops/dskMenuBase.h"
 
 /// Klasse des Multispieler Desktops.
-class dskMultiPlayer : public Desktop
+class dskMultiPlayer : public dskMenuBase
 {
-    public:
-        dskMultiPlayer();
+public:
+    dskMultiPlayer();
 
-    private:
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !dskMULTIPLAYER_H_INCLUDED

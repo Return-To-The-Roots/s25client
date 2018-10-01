@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,23 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#ifdef _WIN32
-#   include <windows.h>
-#else
-#   include <cstdlib>
-#endif // _WIN32
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "SignalHandler.h"
-
 #include "GlobalVars.h"
-#include <iostream>
+#ifndef _WIN32
+#include <boost/nowide/iostream.hpp>
+#include <csignal>
 #include <cstdio>
+#include <cstdlib>
+#endif // !_WIN32
 
 /**
  *  Signal-Handler
  */
 #ifdef _WIN32
-BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)
+BOOL WINAPI ConsoleSignalHandler(DWORD dwCtrlType)
 {
     switch(dwCtrlType)
     {
@@ -41,26 +39,23 @@ BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)
         {
             GLOBALVARS.notdone = false;
             return TRUE;
-        } break;
+        }
+        break;
     }
     return FALSE;
 }
 #else
 bool killme = false;
-void HandlerRoutine(int sig)
+void ConsoleSignalHandler(int sig)
 {
-
-    int c;
-    if(sig != SIGINT)
-        return;
-    else
+    if(sig == SIGINT)
     {
         if(!killme)
-            std::cout << "Wollen Sie das Programm beenden (j/n) : ";
+            bnw::cout << "Do you really want to terminate the program (y/n) : " << std::flush;
         else
-            std::cout << "Wollen Sie das Programm killen (j/n) : ";
+            bnw::cout << "Do you really want to kill the program (y/n) : " << std::flush;
 
-        c = getchar();
+        int c = getchar();
         if(c == 'j' || c == 'y' || c == 1079565930)
         {
             if(killme)
@@ -69,8 +64,6 @@ void HandlerRoutine(int sig)
             killme = true;
             GLOBALVARS.notdone = false;
         }
-        else
-            return;
     }
 }
 #endif // _WIN32

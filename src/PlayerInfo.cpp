@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,26 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "PlayerInfo.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Serializer.h"
 
-PlayerInfo::PlayerInfo():
-    isHost(false),
-    ping(0)
-{}
+PlayerInfo::PlayerInfo() : isHost(false), ping(0) {}
 
-PlayerInfo::PlayerInfo(const BasePlayerInfo& baseInfo) :
-    BasePlayerInfo(baseInfo),
-    isHost(false),
-    ping(0)
-{}
+PlayerInfo::PlayerInfo(const BasePlayerInfo& baseInfo) : BasePlayerInfo(baseInfo), isHost(false), ping(0) {}
 
-PlayerInfo::PlayerInfo(Serializer& ser):
-    BasePlayerInfo(ser, false),
-    isHost(ser.PopBool()),
-    ping(ser.PopUnsignedInt())
-{}
+PlayerInfo::PlayerInfo(Serializer& ser) : BasePlayerInfo(ser, false), isHost(ser.PopBool()), ping(ser.PopUnsignedInt()) {}
 
 void PlayerInfo::Serialize(Serializer& ser) const
 {
@@ -42,4 +31,3 @@ void PlayerInfo::Serialize(Serializer& ser) const
     ser.PushBool(isHost);
     ser.PushUnsignedInt(ping);
 }
-

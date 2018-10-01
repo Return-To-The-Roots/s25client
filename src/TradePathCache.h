@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -19,12 +19,12 @@
 #define TradePathCache_h__
 
 #include "world/TradePath.h"
-#include "Singleton.h"
+#include "libutil/Singleton.h"
 #include <boost/array.hpp>
 
 class GameWorldGame;
 
-class TradePathCache: public Singleton<TradePathCache>
+class TradePathCache : public Singleton<TradePathCache>
 {
     struct Entry
     {
@@ -37,10 +37,11 @@ class TradePathCache: public Singleton<TradePathCache>
     unsigned curSize;
 
     unsigned FindEntry(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player) const;
-public:
-    TradePathCache(): curSize(0){}
 
-    void Clear(){ curSize = 0; }
+public:
+    TradePathCache() : curSize(0) {}
+
+    void Clear() { curSize = 0; }
     bool PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player);
     void AddEntry(const GameWorldGame& gwg, const TradePath& path, const unsigned char player);
 };

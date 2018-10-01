@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,13 +22,7 @@
 
 // Servertypen
 BOOST_SCOPED_ENUM_DECLARE_BEGIN(ServerType) //-V730
-{
-    LOBBY = 0,
-    DIRECT,
-    LOCAL,
-    LAN
-}
-BOOST_SCOPED_ENUM_DECLARE_END(ServerType)
-//-V:ServerType:801 
+{LOBBY = 0, DIRECT, LOCAL, LAN} BOOST_SCOPED_ENUM_DECLARE_END(ServerType)
+//-V:ServerType:801
 
 #endif // ServerType_h__

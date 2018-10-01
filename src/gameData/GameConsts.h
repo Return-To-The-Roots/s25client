@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,9 +24,6 @@
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
 const boost::array<unsigned, 6> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30, 1}};
 
-/// Konvertierungstabelle von Rohstoff-Indizes von den Bergwerken --> Map
-const boost::array<unsigned char, 5> SUPPRESS_UNUSED RESOURCES_MINE_TO_MAP = {{3, 0, 1, 2, 4}};
-
 /// Reichweite der Bergarbeiter
 const unsigned MINER_RADIUS = 2;
 
@@ -36,12 +33,9 @@ const unsigned char INVALID_DIR = 0xFF;
 const unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max();
 
 /// Number of "classical" objectives in a friendly match
-const unsigned OBJECTIVES_COUNT = 3;
+const unsigned NUM_OBJECTIVESS = 3;
 /// tournament modes
-const unsigned TOURNAMENT_MODES_COUNT = 5;
-const boost::array<unsigned, TOURNAMENT_MODES_COUNT> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION =
-{{
-    30, 60, 90, 120, 240
-}};
+const unsigned NUM_TOURNAMENT_MODESS = 5;
+const boost::array<unsigned, NUM_TOURNAMENT_MODESS> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = {{30, 60, 90, 120, 240}};
 
 #endif

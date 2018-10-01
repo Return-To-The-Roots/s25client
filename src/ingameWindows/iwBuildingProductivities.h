@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,24 +24,19 @@ class GamePlayer;
 /// Fenster, welches die Anzahl aller Gebäude und der Baustellen auflistet
 class iwBuildingProductivities : public IngameWindow
 {
-        const GamePlayer& player;
-        /// Prozentzahlen der einzelnen Gebäude
-        std::vector<unsigned short> percents;
+    const GamePlayer& player;
+    /// Prozentzahlen der einzelnen Gebäude
+    std::vector<unsigned short> percents;
 
-    public:
+public:
+    iwBuildingProductivities(const GamePlayer& player);
 
-        iwBuildingProductivities(const GamePlayer& player);
+private:
+    /// Aktualisieren der Prozente
+    void UpdatePercents();
 
-    private:
-
-        /// Aktualisieren der Prozente
-        void UpdatePercents();
-
-        /// Produktivitäts-Progressbars aktualisieren
-        void Msg_PaintAfter() override;
-
+    /// Produktivitäts-Progressbars aktualisieren
+    void Msg_PaintAfter() override;
 };
 
-
-#endif //!iwBUILDINGPRODUCTIVITIES_H_
-
+#endif //! iwBUILDINGPRODUCTIVITIES_H_

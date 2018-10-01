@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,56 +27,64 @@ class nobBaseMilitary;
 /// Verteidiger, der rauskommt, wenn ein Angreifer an die Flagge kommt
 class nofDefender : public nofActiveSoldier
 {
-        /// angreifender Soldat an der Flagge
-        nofAttacker* attacker;
+    /// angreifender Soldat an der Flagge
+    nofAttacker* attacker;
 
-        /// wenn man gelaufen ist
-        void Walked() override;
+    /// wenn man gelaufen ist
+    void Walked() override;
 
-        /// The derived classes regain control after a fight of nofActiveSoldier
-        void FreeFightEnded() override;
+    /// The derived classes regain control after a fight of nofActiveSoldier
+    void FreeFightEnded() override;
 
-    public:
+public:
+    nofDefender(const MapPoint pt, const unsigned char player, nobBaseMilitary* const building, const unsigned char rank,
+                nofAttacker* const attacker);
+    nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
+    nofDefender(SerializedGameData& sgd, const unsigned obj_id);
 
-        nofDefender(const MapPoint pt, const unsigned char player, nobBaseMilitary* const building,
-                    const unsigned char rank, nofAttacker* const attacker);
-        nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
-        nofDefender(SerializedGameData& sgd, const unsigned obj_id);
+    /// Aufräummethoden
+protected:
+    void Destroy_nofDefender()
+    {
+        RTTR_Assert(!attacker);
+        Destroy_nofActiveSoldier();
+    }
 
-        /// Aufräummethoden
-    protected:  void Destroy_nofDefender() { RTTR_Assert(!attacker); Destroy_nofActiveSoldier(); }
-    public:     void Destroy() override { Destroy_nofDefender(); }
+public:
+    void Destroy() override { Destroy_nofDefender(); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofDefender(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofDefender(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofDefender(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_NOF_DEFENDER; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofDefender(sgd); }
 
-        /// Der Verteidiger geht gerade rein und es kommt ein neuer Angreifer an die Flagge, hiermit wird der Ver-
-        /// teidiger darüber informiert, damit er dann gleich wieder umdrehen kann
-        void NewAttacker(nofAttacker* attacker) { this->attacker = attacker; }
-        /// Der Angreifer konnte nicht mehr an die Flagge kommen
-        void AttackerArrested();
+    GO_Type GetGOT() const override { return GOT_NOF_DEFENDER; }
 
-        /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
-        void HomeDestroyed() override;
-        /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
-        void HomeDestroyedAtBegin() override;
-        /// Wenn ein Kampf gewonnen wurde
-        void WonFighting() override;
-        /// Wenn ein Kampf verloren wurde (Tod)
-        void LostFighting() override;
+    /// Der Verteidiger geht gerade rein und es kommt ein neuer Angreifer an die Flagge, hiermit wird der Ver-
+    /// teidiger darüber informiert, damit er dann gleich wieder umdrehen kann
+    void NewAttacker(nofAttacker* attacker) { this->attacker = attacker; }
+    /// Der Angreifer konnte nicht mehr an die Flagge kommen
+    void AttackerArrested();
 
-        /// Is the defender waiting at the flag for an attacker?
-        bool IsWaitingAtFlag() const { return (state == STATE_DEFENDING_WAITING); }
-        bool IsFightingAtFlag() const {return (state == STATE_FIGHTING);}
-        /// Informs the defender that a fight between him and an attacker has started
-        void FightStarted() { state = STATE_FIGHTING; }
+    /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
+    void HomeDestroyed() override;
+    /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
+    void HomeDestroyedAtBegin() override;
+    /// Wenn ein Kampf gewonnen wurde
+    void WonFighting() override;
+    /// Wenn ein Kampf verloren wurde (Tod)
+    void LostFighting() override;
 
-        //Debugging
-        const nofAttacker* GetAttacker() const { return attacker; }
+    /// Is the defender waiting at the flag for an attacker?
+    bool IsWaitingAtFlag() const { return (state == STATE_DEFENDING_WAITING); }
+    bool IsFightingAtFlag() const { return (state == STATE_FIGHTING); }
+    /// Informs the defender that a fight between him and an attacker has started
+    void FightStarted() { state = STATE_FIGHTING; }
+
+    // Debugging
+    const nofAttacker* GetAttacker() const { return attacker; }
 };
-
 
 #endif // !NOF_DEFENDER_H_

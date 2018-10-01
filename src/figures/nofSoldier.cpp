@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofSoldier.h"
-#include "world/GameWorldGame.h"
+#include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "GamePlayer.h"
+#include "world/GameWorldGame.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/MilitaryConsts.h"
 
-nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player,
-                       nobBaseMilitary* const goal , nobBaseMilitary* const home, const unsigned char rank)
-    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player, goal), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
+nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
+                       const unsigned char rank)
+    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player, goal), building(home),
+      hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
 {
     RTTR_Assert(IsSoldier());
 }
 
-nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player,
-                       nobBaseMilitary* const home, const unsigned char rank)
+nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank)
     : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
 {
     RTTR_Assert(IsSoldier());
@@ -62,7 +62,8 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
 
 void nofSoldier::DrawSoldierWalking(DrawPoint drawPt, bool waitingsoldier)
 {
-    DrawWalking(drawPt, LOADER.GetBobN("jobs"), 30 + NATION_RTTR_TO_S2[gwg->GetPlayer(player).nation] * 6 + job_ - JOB_PRIVATE, false, waitingsoldier);
+    DrawWalking(drawPt, LOADER.GetBobN("jobs"), 30 + NATION_RTTR_TO_S2[gwg->GetPlayer(player).nation] * 6 + job_ - JOB_PRIVATE, false,
+                waitingsoldier);
 }
 
 void nofSoldier::AbrogateWorkplace()

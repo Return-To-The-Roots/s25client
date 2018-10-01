@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameObject.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
-#include "world/GameWorldGame.h"
+#include "SerializedGameData.h"
 #include "postSystem/PostBox.h"
+#include "world/GameWorldGame.h"
 
 #include <iostream>
 #include <sstream>
@@ -28,12 +28,12 @@
 /**
  *  Objekt-ID-Counter.
  */
-unsigned int GameObject::objIdCounter_ = 1;
-unsigned int GameObject::objCounter_ = 0;
+unsigned GameObject::objIdCounter_ = 0;
+unsigned GameObject::objCounter_ = 0;
 
 GameWorldGame* GameObject::gwg = NULL;
 
-GameObject::GameObject() : objId(objIdCounter_++)
+GameObject::GameObject() : objId(++objIdCounter_)
 {
     // ein Objekt mehr
     ++objCounter_;
@@ -52,19 +52,17 @@ GameObject::GameObject(const GameObject& go) : objId(go.objId)
     ++objCounter_;
 }
 
-void GameObject::Destroy()
-{
-}
+void GameObject::Destroy() {}
 
-void GameObject::Serialize(SerializedGameData&  /*sgd*/) const
+void GameObject::Serialize(SerializedGameData& /*sgd*/) const
 {
     std::cout << "ERROR: GameObject::Serialize called." << std::endl; // qx
 }
 
 GameObject::~GameObject()
 {
-    //RTTR_Assert(!gwg || !GetEvMgr().ObjectHasEvents(this));
-    RTTR_Assert(!gwg || !GetEvMgr().ObjectIsInKillList(this));
+    // RTTR_Assert(!gwg || !GetEvMgr().ObjectHasEvents(*this));
+    RTTR_Assert(!gwg || !GetEvMgr().IsObjectInKillList(*this));
     // ein Objekt weniger
     --objCounter_;
 }
@@ -77,6 +75,17 @@ EventManager& GameObject::GetEvMgr() const
 void GameObject::SendPostMessage(unsigned player, PostMsg* msg)
 {
     gwg->GetPostMgr().SendMsg(player, msg);
+}
+
+void GameObject::DetachWorld(GameWorldGame* gameWorld)
+{
+    if(gwg == gameWorld)
+        gwg = NULL;
+}
+
+void GameObject::AttachWorld(GameWorldGame* gameWorld)
+{
+    gwg = gameWorld;
 }
 
 std::string GameObject::ToString() const

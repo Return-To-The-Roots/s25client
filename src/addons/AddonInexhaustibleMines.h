@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,22 +20,17 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for allowing to have unlimited resources.
  */
 class AddonInexhaustibleMines : public AddonBool
 {
-    public:
-        AddonInexhaustibleMines() : AddonBool(AddonId::INEXHAUSTIBLE_MINES,
-                                                  ADDONGROUP_ECONOMY,
-                                                  _("Inexhaustible Mines"),
-                                                  _("Mines will never be depleted."),
-                                                  0
-                                                 )
-        {
-        }
+public:
+    AddonInexhaustibleMines()
+        : AddonBool(AddonId::INEXHAUSTIBLE_MINES, ADDONGROUP_ECONOMY, _("Inexhaustible Mines"), _("Mines will never be depleted."), 0)
+    {}
 };
 
 #endif // !ADDONINEXHAUSTIBLEMINES_H_INCLUDED

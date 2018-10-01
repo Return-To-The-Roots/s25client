@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,29 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskCredits.h"
-
 #include "GameManager.h"
-#include "WindowManager.h"
 #include "Loader.h"
-
-#include "dskMainMenu.h"
+#include "WindowManager.h"
 #include "controls/ctrlButton.h"
-
 #include "drivers/VideoDriverWrapper.h"
-#include "gameData/JobConsts.h"
-#include "ogl/glArchivItem_Font.h"
-#include "ogl/glArchivItem_Music.h"
+#include "dskMainMenu.h"
+#include "lua/GameDataLoader.h"
+#include "ogl/FontStyle.h"
+#include "ogl/MusicItem.h"
 #include "ogl/glArchivItem_Bob.h"
+#include "ogl/glArchivItem_Font.h"
+#include "gameData/JobConsts.h"
+#include "gameData/WorldDescription.h"
 #include <boost/array.hpp>
 #include <cstdlib>
-struct KeyEvent;
+
 /** @class dskCredits
  *
  *  Klasse des Credits Desktops.
  */
-
 
 /// Duration for one credits page
 const unsigned PAGE_TIME = 12900;
@@ -47,13 +46,12 @@ const unsigned FADING_TIME = 2000;
 dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück
-    AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);
+    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
 
-    // "Die Siedler II.5 RTTR"
-    AddText(1, 400, 10, _("Return To The Roots"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(1, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     // "Credits"
-    AddText(2, 400, 33, _("Credits"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(2, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     CreditsEntry entry = CreditsEntry("Florian Doersch (FloSoft):", GetCreditsImgOrDefault("flosoft"));
     entry.lines.push_back(_("Project management"));
@@ -153,38 +151,73 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     entry.lines.push_back(_("Thank you!"));
     entries.push_back(entry);
 
-    bool nations[NAT_COUNT] = { true, true, true, true, false };
+    WorldDescription worldDesc;
+    GameDataLoader gdLoader(worldDesc);
+    if(!gdLoader.Load())
+        throw std::runtime_error("Failed to load game data");
 
-    LOADER.LoadFilesAtGame(0, nations);
+    std::vector<bool> nations(NUM_NATIVE_NATS, true);
+
+    LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations);
 
     this->itCurEntry = entries.begin();
-    startTime = bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
 
-    if(GetMusic(sng_lst, 8))
-        GetMusic(sng_lst, 8)->Play(0);
+    MusicItem* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[8]);
+    if(curSong)
+        curSong->Play(0);
 }
 
-dskCredits::~dskCredits()
-{
-}
+dskCredits::~dskCredits() {}
 
 void dskCredits::Msg_PaintAfter()
 {
-    unsigned int time = VIDEODRIVER.GetTickCount() - startTime;
+    DrawBobs();
+    DrawCredit();
+}
 
-    if (time > PAGE_TIME)
+void dskCredits::DrawCredit()
+{
+    unsigned time = VIDEODRIVER.GetTickCount() - startTime;
+    if(time > PAGE_TIME)
     {
+        // Next page
         ++this->itCurEntry;
-        if (this->itCurEntry == entries.end())
+        if(this->itCurEntry == entries.end())
             this->itCurEntry = entries.begin();
-        this->startTime = VIDEODRIVER.GetTickCount();
+        startTime = VIDEODRIVER.GetTickCount();
     }
 
-    // Frameratebegrenzer
-    int bob_time = VIDEODRIVER.GetTickCount() - bobTime;
-    int bob_prosec = 25;
+    // calculate text transparency
+    unsigned transparency = 0xFF;
+    if(time < FADING_TIME)
+        transparency = 0xFF * time / FADING_TIME;
+    if(time > PAGE_TIME - FADING_TIME)
+        transparency = (0xFF - 0xFF * (time - (PAGE_TIME - FADING_TIME)) / FADING_TIME);
 
-    int bob_spawntime = VIDEODRIVER.GetTickCount() - bobSpawnTime;
+    // draw text
+    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, SetAlpha(COLOR_RED, transparency));
+
+    boost::array<unsigned, 2> columnToY = {{150, 150}};
+
+    for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
+    {
+        LargeFont->Draw(DrawPoint(60 + line->column * 350, columnToY[line->column]), line->line, 0, SetAlpha(COLOR_YELLOW, transparency));
+        columnToY[line->column] += LargeFont->getHeight() + 5;
+    }
+
+    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, SetAlpha(COLOR_RED, transparency));
+
+    if(itCurEntry->pic)
+        itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetScreenSize().x - 300, 70), SetAlpha(COLOR_WHITE, transparency));
+}
+
+void dskCredits::DrawBobs()
+{
+    // Frameratebegrenzer
+    int msSinceLastBobAnim = VIDEODRIVER.GetTickCount() - bobTime;
+    int bobAnimStepsPerSec = 25;
+
+    int msSinceLastBobSpawn = VIDEODRIVER.GetTickCount() - bobSpawnTime;
     int bob_spawnprosec = 5;
 
     if(GAMEMANAGER.GetFPS() < 30)
@@ -195,7 +228,8 @@ void dskCredits::Msg_PaintAfter()
         bob_spawnprosec = 2;
 
     // add new bob
-    if ( bob_spawnprosec > 0 && bob_spawntime > (1000 / bob_spawnprosec) && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetScreenWidth() / 2))
+    if(bob_spawnprosec > 0 && msSinceLastBobSpawn > (1000 / bob_spawnprosec)
+       && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetScreenSize().x / 2))
     {
         bobSpawnTime = VIDEODRIVER.GetTickCount();
 
@@ -208,23 +242,21 @@ void dskCredits::Msg_PaintAfter()
         {
             b.pos.x = 0;
             b.direction = 3;
-        }
-        else
+        } else
         {
-            b.pos.x = VIDEODRIVER.GetScreenWidth();
+            b.pos.x = VIDEODRIVER.GetScreenSize().x;
             b.direction = 6;
         }
 
         b.color = PLAYER_COLORS[rand() % PLAYER_COLORS.size()];
-        unsigned int job = rand() % 29;
+        unsigned job = rand() % 29;
 
         // exclude "headless" bobs
-        if (job == 8 || job == 9 || job == 12 || job == 18)
+        if(job == 8 || job == 9 || job == 12 || job == 18)
         {
-            job = rand() % (WARE_TYPES_COUNT - 1);
+            job = rand() % (NUM_WARE_TYPES - 1);
             b.hasWare = true;
-        }
-        else
+        } else
         {
             if(job == JOB_SCOUT)
                 job = 35 + NATION_RTTR_TO_S2[rand() % 4] * 6;
@@ -236,72 +268,42 @@ void dskCredits::Msg_PaintAfter()
         }
 
         b.id = job;
-        b.pos.y = GetCtrl<ctrlButton>(0)->GetY() - 20 - rand() % 150;
+        b.pos.y = GetCtrl<ctrlButton>(0)->GetPos().y - 20 - rand() % 150;
         bobs.push_back(b);
     }
 
     // draw bobs
-    for (std::vector<Bob>::iterator bob = bobs.begin(); bob != bobs.end(); ++bob)
+    for(std::vector<Bob>::iterator bob = bobs.begin(); bob != bobs.end(); ++bob)
     {
-        if (!bob->hasWare)
+        if(!bob->hasWare)
             LOADER.GetBobN("jobs")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->pos, bob->color);
         else
             LOADER.GetBobN("carrier")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->pos, bob->color);
 
-        if( bob_time > (1000 / bob_prosec) )
+        if(msSinceLastBobAnim > (1000 / bobAnimStepsPerSec))
         {
             bobTime = VIDEODRIVER.GetTickCount();
 
             bob->animationStep++;
-            if (bob->animationStep > 7)
+            if(bob->animationStep > 7)
                 bob->animationStep = 0;
-            if (bob->direction == 3)
+            if(bob->direction == 3)
             {
                 bob->pos.x += bob->speed;
-                if (bob->pos.x > VIDEODRIVER.GetScreenWidth())
+                if(bob->pos.x > static_cast<int>(VIDEODRIVER.GetScreenSize().x))
                     bob->direction = 6;
-            }
-            else if (bob->direction == 6)
+            } else if(bob->direction == 6)
             {
                 bob->pos.x -= bob->speed;
-                if (bob->pos.x < 0)
+                if(bob->pos.x < 0)
                     bob->direction = 3;
             }
         }
     }
 
     // Frameratebegrenzer aktualisieren
-    if( bob_time > (1000 / bob_prosec) )
+    if(msSinceLastBobAnim > (1000 / bobAnimStepsPerSec))
         bobTime = VIDEODRIVER.GetTickCount();
-
-    // calculate text transparency
-    unsigned transparency = 0xFF;
-
-    if(time < FADING_TIME)
-        transparency = 0xFF * time / FADING_TIME;
-    if (time > PAGE_TIME - FADING_TIME)
-        transparency = (0xFF - 0xFF * (time - (PAGE_TIME - FADING_TIME)) / FADING_TIME);
-
-    if (time > PAGE_TIME)
-        transparency = 0;
-
-    transparency = transparency << 24;
-
-    // draw text
-    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
-
-    boost::array<unsigned int, 2> columnToY = {{150, 150}};
-
-    for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
-    {
-        LargeFont->Draw(DrawPoint(60 + line->column * 350, columnToY[line->column]), line->line, 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
-        columnToY[line->column] += LargeFont->getHeight() + 5;
-    }
-
-    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
-
-    if (itCurEntry->pic)
-        itCurEntry->pic->Draw(DrawPoint(VIDEODRIVER.GetScreenWidth() - 300, 70), 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
 }
 
 bool dskCredits::Close()
@@ -318,18 +320,21 @@ glArchivItem_Bitmap* dskCredits::GetCreditsImgOrDefault(const std::string& name)
     return result;
 }
 
-bool dskCredits::Msg_KeyDown(const KeyEvent&  /*ke*/)
+bool dskCredits::Msg_KeyDown(const KeyEvent& /*ke*/)
 {
     return Close();
 }
 
-
-void dskCredits::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
+void dskCredits::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     Close();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// EOF
-///////////////////////////////////////////////////////////////////////////////
-
+void dskCredits::SetActive(bool active)
+{
+    Desktop::SetActive(active);
+    if(active)
+    {
+        startTime = bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
+    }
+}

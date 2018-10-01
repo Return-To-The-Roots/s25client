@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,29 +20,29 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "LobbyInterface.h"
+#include "liblobby/LobbyInterface.h"
 
 class iwLobbyConnect : public IngameWindow, public LobbyInterface
 {
-    public:
-        iwLobbyConnect();
-        ~iwLobbyConnect() override;
+public:
+    iwLobbyConnect();
+    ~iwLobbyConnect() override;
 
-        void LC_LoggedIn(const std::string& email) override;
-        void LC_Registered() override;
+    void LC_LoggedIn(const std::string& email) override;
+    void LC_Registered() override;
 
-        void LC_Status_Waiting() override;
-        void LC_Status_Error(const std::string& error) override;
+    void LC_Status_Waiting() override;
+    void LC_Status_Error(const std::string& error) override;
 
-    protected:
-        void Msg_EditChange(const unsigned int ctrl_id) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
+protected:
+    void Msg_EditChange(const unsigned ctrl_id) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
 
-    private:
-        void SetText(const std::string& text, unsigned int color, bool button);
-        void LobbyForm(std::string& user, std::string& pass, std::string& email);
+private:
+    void SetText(const std::string& text, unsigned color, bool button);
+    void ReadFromEditAndSaveLobbyData(std::string& user, std::string& pass, std::string& email);
 };
 
 #endif // WP_LOBBYCONNECT_H_INCLUDED

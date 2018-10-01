@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,41 +15,37 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMinter.h"
 
-#include "Loader.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
-#include "buildings/nobUsual.h"
-#include "world/GameWorldGame.h"
+#include "Loader.h"
 #include "SoundManager.h"
+#include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
 
-nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MINTER, pos, player, workplace)
-{
-}
+nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINTER, pos, player, workplace)
+{}
 
 void nofMinter::Serialize_nofMinter(SerializedGameData& sgd) const
 {
     Serialize_nofWorkman(sgd);
 }
 
-nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofMinter::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = { {19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12} };
+    const DrawPointInit offsets[NUM_NATS] = {{19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12}};
 
     unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
 
     if(now_id < 91)
     {
         LOADER.GetPlayerImage("rom_bobs", 84 + (now_id) % 8)
-        ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)

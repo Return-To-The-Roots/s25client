@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,57 +28,61 @@ class glArchivItem_Bitmap;
 /// Klasse des Credits Desktops.
 class dskCredits : public Desktop
 {
-    public:
-        dskCredits();
-        ~dskCredits() override;
+public:
+    dskCredits();
+    ~dskCredits() override;
 
-    private:
-        bool Msg_KeyDown(const KeyEvent& ke) override;
-        void Msg_PaintAfter() override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+    bool Msg_KeyDown(const KeyEvent& ke) override;
+    void Msg_PaintAfter() override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void SetActive(bool active) override;
+    bool Close();
 
-        bool Close();
+private:
+    void DrawCredit();
+    void DrawBobs();
+    static glArchivItem_Bitmap* GetCreditsImgOrDefault(const std::string& name);
 
-        static glArchivItem_Bitmap* GetCreditsImgOrDefault(const std::string& name);
-
-        struct CreditsEntry
+    struct CreditsEntry
+    {
+        struct Line
         {
-            struct Line
-            {
-                Line(const char* const text): line(text), column(0) { }
-                Line(const std::string& text): line(text), column(0) { }
-                Line(const std::string& text, unsigned int c): line(text), column(0) { }
-                std::string line;
-                unsigned int column;
-            };
-            std::string title;
-            std::string lastLine;
-            glArchivItem_Bitmap* pic;
-            std::vector<Line> lines;
-            CreditsEntry(const std::string& title, const std::string& lastLine = ""): title(title), lastLine(lastLine), pic(NULL){}
-            CreditsEntry(const std::string& title, glArchivItem_Bitmap* pic, const std::string& lastLine = ""): title(title), lastLine(lastLine), pic(pic){}
+            Line(const char* const text) : line(text), column(0) {}
+            Line(const std::string& text) : line(text), column(0) {}
+            Line(const std::string& text, unsigned c) : line(text), column(0) {}
+            std::string line;
+            unsigned column;
         };
+        std::string title;
+        std::string lastLine;
+        glArchivItem_Bitmap* pic;
+        std::vector<Line> lines;
+        CreditsEntry(const std::string& title, const std::string& lastLine = "") : title(title), lastLine(lastLine), pic(NULL) {}
+        CreditsEntry(const std::string& title, glArchivItem_Bitmap* pic, const std::string& lastLine = "")
+            : title(title), lastLine(lastLine), pic(pic)
+        {}
+    };
 
-        std::vector<CreditsEntry> entries;
-        std::vector<dskCredits::CreditsEntry>::iterator itCurEntry;
+    std::vector<CreditsEntry> entries;
+    std::vector<dskCredits::CreditsEntry>::iterator itCurEntry;
 
-        struct Bob
-        {
-            unsigned id;
-            unsigned direction;
-            unsigned animationStep;
-            unsigned color;
-            DrawPoint pos;
-            unsigned char speed;
-            bool hasWare;
-            bool isFat;
-        };
+    struct Bob
+    {
+        unsigned id;
+        unsigned direction;
+        unsigned animationStep;
+        unsigned color;
+        DrawPoint pos;
+        unsigned char speed;
+        bool hasWare;
+        bool isFat;
+    };
 
-        std::vector<Bob> bobs;
+    std::vector<Bob> bobs;
 
-        unsigned int startTime;
-        unsigned int bobTime;
-        unsigned int bobSpawnTime;
+    unsigned startTime;
+    unsigned bobTime;
+    unsigned bobSpawnTime;
 };
 
 #endif // !dskCREDITS_H_INCLUDED

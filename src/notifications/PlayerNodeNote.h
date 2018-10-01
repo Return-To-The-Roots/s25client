@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,8 +18,8 @@
 #ifndef PlayerNodeNote_h__
 #define PlayerNodeNote_h__
 
-#include "gameTypes/MapTypes.h"
 #include "notifications/notifications.h"
+#include "gameTypes/MapCoordinates.h"
 
 struct PlayerNodeNote
 {
@@ -30,8 +30,7 @@ struct PlayerNodeNote
         Visibility // Nodes visibility has changed
     };
 
-    PlayerNodeNote(Type type, const MapPoint& pt, unsigned player):
-        type(type), pt(pt), player(player){}
+    PlayerNodeNote(Type type, const MapPoint& pt, unsigned player) : type(type), pt(pt), player(player) {}
 
     const Type type;
     const MapPoint pt;

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,29 +18,62 @@
 #ifndef CreateSeaWorld_h__
 #define CreateSeaWorld_h__
 
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Nation.h"
 #include <vector>
 
 class GameWorldGame;
 
+struct SeaWorldDefault
+{
+    // Min size is 59
+    BOOST_STATIC_CONSTEXPR unsigned width = 60;
+    BOOST_STATIC_CONSTEXPR unsigned height = 62;
+};
+
+template<unsigned T_numPlayers>
+struct SmallSeaWorldDefault
+{
+    // Min size for 2 players
+    BOOST_STATIC_CONSTEXPR unsigned width = (8 * 2 + 4) * 2;
+    BOOST_STATIC_CONSTEXPR unsigned height = width + 2;
+};
+template<>
+struct SmallSeaWorldDefault<1>
+{
+    // Min size for 1 player
+    BOOST_STATIC_CONSTEXPR unsigned width = 8 * 2 + 4;
+    BOOST_STATIC_CONSTEXPR unsigned height = width + 2;
+};
+
 /// Creates a world for up to 4 players,
 /// with a sea on the outside and a lake on the inside with each player having access to both
+/// Harbors: 1: Top outside
+///          2: Top inside
+///          3: Left outside
+///          4: Left inside
+///          5: Right inside
+///          6: Right outside
+///          7: Bottom inside
+///          8: Bottom outside
 struct CreateSeaWorld
 {
-    CreateSeaWorld(unsigned width, unsigned height, unsigned numPlayers);
+    CreateSeaWorld(const MapExtent& size, unsigned numPlayers);
     bool operator()(GameWorldGame& world) const;
+
 private:
-    unsigned width_, height_;
+    MapExtent size_;
     std::vector<Nation> playerNations_;
 };
 
-/// World for 2 players with all water except a small patch of land with player 0 HQ in the middle and player 1 HQ in the bottom left
+/// World for <=2 players with all water except 2 small patches of land at opposite sides of the map with 2 harbor spots each
 struct CreateWaterWorld
 {
-    CreateWaterWorld(unsigned width, unsigned height, unsigned numPlayers);
+    CreateWaterWorld(const MapExtent& size, unsigned numPlayers);
     bool operator()(GameWorldGame& world) const;
+
 private:
-    unsigned width_, height_;
+    MapExtent size_;
     std::vector<Nation> playerNations_;
 };
 

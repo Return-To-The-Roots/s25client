@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,32 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofTradeDonkey.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
-#include "buildings/nobBaseWarehouse.h"
-#include "ogl/glArchivItem_Bitmap.h"
+#include "Loader.h"
 #include "SerializedGameData.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "network/GameClient.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldGame.h"
 #include "world/TradeRoute.h"
-#include "Loader.h"
-#include "gameData/JobConsts.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
-#include "libutil/src/colors.h"
+#include "gameData/JobConsts.h"
+#include "libutil/colors.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
     : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(NULL), gt(gt)
-{
-}
-
-nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id),
-      successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
-      gt(GoodType(sgd.PopUnsignedChar())),
-      next_dirs(sgd.PopContainer(next_dirs))
 {}
 
+nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
+    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)), gt(GoodType(sgd.PopUnsignedChar()))
+{
+    sgd.PopContainer(next_dirs);
+}
 
 void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 {
@@ -66,7 +64,7 @@ void nofTradeDonkey::GoalReached()
     }
 
     whOwner.IncreaseInventoryJob(this->GetJobType(), 1);
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
     wh->AddFigure(this);
 }
 
@@ -83,16 +81,15 @@ void nofTradeDonkey::Walked()
     {
         // Does target still exist?
         noBase* nob = gwg->GetNO(pos);
-        if(nob->GetType() == NOP_BUILDING && static_cast<noBuilding*>(nob)->IsWarehouse())
+        if(nob->GetType() == NOP_BUILDING && BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
             GoalReached();
         else
         {
             CancelTradeCaravane();
             WanderFailedTrade();
         }
-    }
-    else if(nextDir != INVALID_DIR)
-        StartWalking(nextDir);
+    } else if(nextDir != INVALID_DIR)
+        StartWalking(Direction::fromInt(nextDir));
     else
     {
         CancelTradeCaravane();
@@ -100,12 +97,8 @@ void nofTradeDonkey::Walked()
     }
 }
 
-void nofTradeDonkey::HandleDerivedEvent(const unsigned int  /*id*/)
-{
-}
-void nofTradeDonkey::AbrogateWorkplace()
-{
-}
+void nofTradeDonkey::HandleDerivedEvent(const unsigned /*id*/) {}
+void nofTradeDonkey::AbrogateWorkplace() {}
 
 void nofTradeDonkey::Draw(DrawPoint drawPt)
 {
@@ -120,22 +113,18 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
         // Läuft normal mit oder ohne Ware
 
         // Esel
-        LOADER.donkey_cache[GetCurMoveDir()][ani_step].draw(drawPt);
+        LOADER.donkey_cache[GetCurMoveDir().toUInt()][ani_step].draw(drawPt);
 
         if(gt != GD_NOTHING)
         {
             // Ware im Korb zeichnen
-            LOADER.GetMapImageN(2350 + gt)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
+            LOADER.GetMapImageN(2350 + gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][ani_step]);
         }
-    }
-    else
+    } else
         DrawWalking(drawPt);
 }
 
-void nofTradeDonkey::LostWork()
-{
-}
-
+void nofTradeDonkey::LostWork() {}
 
 void nofTradeDonkey::CancelTradeCaravane()
 {

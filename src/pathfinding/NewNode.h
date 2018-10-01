@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -18,8 +18,8 @@
 #ifndef NewNode_h__
 #define NewNode_h__
 
-#include "pathfinding/PathfindingPoint.h"
 #include "pathfinding/OpenListBinaryHeap.h"
+#include "pathfinding/PathfindingPoint.h"
 #include <set>
 
 /// Konstante für einen ungültigen Vorgängerknoten
@@ -34,8 +34,8 @@ struct NewNode
     unsigned way;
     unsigned wayEven;
     /// Die Richtung, über die dieser Knoten erreicht wurde
-    unsigned char dir;
-    unsigned char dirEven;
+    Direction dir;
+    Direction dirEven;
     /// ID (gebildet aus y*Kartenbreite+x) des Vorgänngerknotens
     unsigned prev;
     unsigned prevEven;
@@ -43,7 +43,7 @@ struct NewNode
     std::set<PathfindingPoint>::iterator it_p; //-V730_NOINIT
     /// Wurde Knoten schon besucht (für A*-Algorithmus), wenn lastVisited == currentVisit
     unsigned lastVisited;
-    unsigned lastVisitedEven; //used for road pathfinding (for ai only for now)
+    unsigned lastVisitedEven; // used for road pathfinding (for ai only for now)
     MapPoint mapPt;
 };
 
@@ -62,7 +62,7 @@ struct FreePathNode
     /// Index used to distinguish nodes with same estimate
     unsigned idx;
     /// Direction used to reach this node
-    unsigned char dir;
+    Direction dir;
     /// Point on map which this node represents
     MapPoint mapPt;
     OpenListBinaryHeapBase<FreePathNode>::PosMarker posMarker;

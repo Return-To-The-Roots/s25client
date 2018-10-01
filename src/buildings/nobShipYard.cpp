@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,19 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nobShipYard.h"
 #include "SerializedGameData.h"
 
 nobShipYard::nobShipYard(const MapPoint pos, const unsigned char player, const Nation nation)
     : nobUsual(BLD_SHIPYARD, pos, player, nation), mode(nobShipYard::BOATS)
-{
-}
+{}
 
 nobShipYard::nobShipYard(SerializedGameData& sgd, const unsigned obj_id)
     : nobUsual(sgd, obj_id), mode(nobShipYard::Mode(sgd.PopUnsignedChar()))
-{
-}
+{}
 
 /// Serialisierungsfunktionen
 void nobShipYard::Serialize(SerializedGameData& sgd) const
@@ -38,10 +36,7 @@ void nobShipYard::Serialize(SerializedGameData& sgd) const
 }
 
 /// Schaltet Modus entsprechend um
-void nobShipYard::ToggleMode()
+void nobShipYard::SetMode(Mode newMode)
 {
-    if(mode == nobShipYard::BOATS)
-        mode = nobShipYard::SHIPS;
-    else
-        mode = nobShipYard::BOATS;
+    mode = newMode;
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,96 +18,77 @@
 #ifndef BuildingTypes_h__
 #define BuildingTypes_h__
 
+#include "BuildingQuality.h"
 #include "GoodTypes.h"
 #include "JobTypes.h"
-#include "BuildingQuality.h"
+#include "Point.h"
+#include <boost/array.hpp>
 
 struct BuildingCost
 {
-	unsigned char boards;
-	unsigned char stones;
+    uint8_t boards;
+    uint8_t stones;
 };
 
 // Größe der Gebäude
 enum BuildingSize
 {
-	BZ_HUT = 0,
-	BZ_HOUSE,
-	BZ_CASTLE,
-	BZ_MINE
+    BZ_HUT = 0,
+    BZ_HOUSE,
+    BZ_CASTLE,
+    BZ_MINE
 };
 
-// Konstanten zu den "normalen Gebäuden" (Betrieben), beginnt erst mit Granitmine
-struct UsualBuilding
+struct WaresNeeded : boost::array<GoodType, 3>
 {
-	/// Arbeitertyp, der in diesem Gebäude arbeitet
-	Job job;
-	/// Ware, die das Gebäude produziert
-	GoodType produced_ware;
-	/// Anzahl Waren, die das Gebäude benötigt
-	unsigned char wares_needed_count;
-	/// Waren, die das Gebäude benötigt
-	GoodType wares_needed[3];
+    WaresNeeded(GoodType good1 = GD_NOTHING, GoodType good2 = GD_NOTHING, GoodType good3 = GD_NOTHING)
+    {
+        elems[0] = good1;
+        elems[1] = good2;
+        elems[2] = good3;
+    }
+    /// Return number of non-empty entries (assumes GD_NOTHING implies all others are GD_NOTHING too)
+    unsigned getNum() const
+    {
+        for(unsigned i = 0; i < size(); i++)
+        {
+            if(elems[i] == GD_NOTHING)
+                return i;
+        }
+        return size();
+    }
 };
 
-/// Rauch-Konstanten zu den "normalen Gebäuden" (Betrieben), beginnt erst mit Granitmine
+/// Describes the work the building does
+struct BldWorkDescription
+{
+    BldWorkDescription(Job job = JOB_NOTHING, GoodType producedWare = GD_NOTHING, WaresNeeded waresNeeded = WaresNeeded(),
+                       uint8_t numSpacesPerWare = 6, bool useOneWareEach = true)
+        : job(job), producedWare(producedWare), waresNeeded(waresNeeded), numSpacesPerWare(numSpacesPerWare), useOneWareEach(useOneWareEach)
+    {}
+    /// Worker belonging to the building
+    Job job;
+    /// Ware produced (maybe nothing or invalid)
+    GoodType producedWare;
+    /// Wares the building needs (maybe nothing)
+    WaresNeeded waresNeeded;
+    /// How many wares of each type can be stored
+    uint8_t numSpacesPerWare;
+    /// True if one of each waresNeeded is used per production cycle
+    /// False if the ware type is used, that the building has the most of
+    bool useOneWareEach;
+};
+
+/// Smoke definition for buildings
 struct SmokeConst
 {
-	/// Art des Rauches (von 1-4), 0 = kein Rauch!
-	unsigned char type;
-	/// Position des Rauches relativ zum Nullpunkt des Gebäudes
-	signed char x, y;
+    SmokeConst() : type(0), offset(Point<int8_t>::Invalid()) {}
+    SmokeConst(uint8_t type, const DrawPoint& offset) : type(type), offset(offset) {}
+    SmokeConst(uint8_t type, int8_t x, int8_t y) : type(type), offset(x, y) {}
+    /// Smoke type (1-4), 0 = no smoke
+    uint8_t type;
+    /// Position of the smoke relativ to the buildings origin
+    Point<int8_t> offset;
 };
-
-enum BuildingType
-{
-	BLD_HEADQUARTERS   =  0, // ----
-	BLD_BARRACKS       =  1, // NJR
-	BLD_GUARDHOUSE     =  2, // NJR
-	BLD_NOTHING2       =  3, // ----
-	BLD_WATCHTOWER     =  4, // NJ
-	BLD_NOTHING3       =  5, // ----
-	BLD_NOTHING4       =  6, // ----
-	BLD_NOTHING5       =  7, // ----
-	BLD_NOTHING6       =  8, // ----
-	BLD_FORTRESS       =  9, // NJR
-	BLD_GRANITEMINE    = 10, // NJR
-	BLD_COALMINE       = 11, // NJR
-	BLD_IRONMINE       = 12, // NJR
-	BLD_GOLDMINE       = 13, // NJR
-	BLD_LOOKOUTTOWER   = 14, //
-	BLD_NOTHING7       = 15, // ----
-	BLD_CATAPULT       = 16, //
-	BLD_WOODCUTTER     = 17, // NJR
-	BLD_FISHERY        = 18, // N
-	BLD_QUARRY         = 19, // NJR
-	BLD_FORESTER       = 20, // NJR
-	BLD_SLAUGHTERHOUSE = 21, // NJR
-	BLD_HUNTER         = 22, // NJ
-	BLD_BREWERY        = 23, // NJR
-	BLD_ARMORY         = 24, // NJR
-	BLD_METALWORKS     = 25, // NJR
-	BLD_IRONSMELTER    = 26, // NJR
-	BLD_CHARBURNER     = 27, // ---- // neu
-	BLD_PIGFARM        = 28, // NJR
-	BLD_STOREHOUSE     = 29, //
-	BLD_NOTHING9       = 30, // ----
-	BLD_MILL           = 31, // NJR
-	BLD_BAKERY         = 32, // NJR
-	BLD_SAWMILL        = 33, // NJR
-	BLD_MINT           = 34, // NJR
-	BLD_WELL           = 35, // NJR
-	BLD_SHIPYARD       = 36, //
-	BLD_FARM           = 37, // NJR
-	BLD_DONKEYBREEDER  = 38, //
-	BLD_HARBORBUILDING = 39,  //
-	BLD_NOTHING,
-	BLD_COUNT = BLD_NOTHING
-};
-
-// Anzahl an unterschiedlichen Gebäudetypen
-const unsigned BUILDING_TYPES_COUNT = BLD_COUNT;
-// NUmber of NOTHING entries (currently unused buildings)
-const unsigned NUM_UNUSED_BLD_TYPES = 7;
 
 #endif // BuildingTypes_h__

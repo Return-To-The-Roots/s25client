@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -35,6 +35,7 @@ public:
     void RemovePostBox(unsigned player);
     void SendMsg(unsigned player, PostMsg* msg);
     void SetMissionGoal(unsigned player, const std::string& newGoal);
+
 private:
     boost::array<PostBox*, MAX_PLAYERS> postBoxes;
 };

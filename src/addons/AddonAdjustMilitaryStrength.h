@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonList.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for changing military strength of higher ranks.
@@ -39,18 +39,15 @@
  */
 class AddonAdjustMilitaryStrength : public AddonList
 {
-    public:
-        AddonAdjustMilitaryStrength() : AddonList(AddonId::ADJUST_MILITARY_STRENGTH,
-                    ADDONGROUP_MILITARY,
-                    _("Adjust military strength"),
-                    _("Modify the strength increase of military ranks"),
-                    1)
-        {
-            addOption(_("Maximum strength"));
-            addOption(_("Medium strength"));
-            addOption(_("Minimum strength"));
-        }
+public:
+    AddonAdjustMilitaryStrength()
+        : AddonList(AddonId::ADJUST_MILITARY_STRENGTH, ADDONGROUP_MILITARY, _("Adjust military strength"),
+                    _("Modify the strength increase of military ranks"), 1)
+    {
+        addOption(_("Maximum strength"));
+        addOption(_("Medium strength"));
+        addOption(_("Minimum strength"));
+    }
 };
 
 #endif // !ADDONADJUSTMILITARYSTRENGTH_H_INCLUDED
-

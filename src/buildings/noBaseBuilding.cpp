@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,28 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noBaseBuilding.h"
-#include "GameClient.h"
+#include "GameInterface.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
+#include "Ware.h"
+#include "addons/const_addons.h"
+#include "network/GameClient.h"
+#include "nobBaseWarehouse.h"
+#include "notifications/BuildingNote.h"
+#include "world/GameWorldGame.h"
 #include "nodeObjs/noExtension.h"
 #include "nodeObjs/noFlag.h"
-#include "notifications/BuildingNote.h"
-#include "addons/const_addons.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/DoorConsts.h"
 #include "gameData/MapConsts.h"
-#include "nobBaseWarehouse.h"
-#include "Ware.h"
-#include "SerializedGameData.h"
-#include "Loader.h"
-#include "GameInterface.h"
-#include "world/GameWorldGame.h"
-#include "Log.h"
+#include "libutil/Log.h"
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noRoadNode(nop, pos, player), type_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
+    : noRoadNode(nop, pos, player), bldType_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000),
+      door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
 {
-    MapPoint flagPt = gwg->GetNeighbour(pos, 4);
+    MapPoint flagPt = GetFlagPos();
     // Evtl Flagge setzen, wenn noch keine da ist
     if(gwg->GetNO(flagPt)->GetType() != NOP_FLAG)
     {
@@ -45,26 +48,25 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
-    if(!gwg->GetPointRoad(pos, 4))
+    if(!gwg->GetPointRoad(pos, Direction::SOUTHEAST))
     {
-        gwg->SetPointRoad(pos, 4, RoadSegment::RT_NORMAL + 1);
+        gwg->SetPointRoad(pos, Direction::SOUTHEAST, RoadSegment::RT_NORMAL + 1);
 
         // Straßenverbindung erstellen zwischen Flagge und Haus
         // immer von Flagge ZU Gebäude (!)
-        std::vector<unsigned char> route(1, 1);
+        std::vector<Direction> route(1, Direction::NORTHWEST);
         // Straße zuweisen
-        gwg->GetSpecObj<noRoadNode>(flagPt)->routes[1] = // der Flagge
-            routes[4] = // dem Gebäude
-                new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
-    }
-    else
+        RoadSegment* rs = new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
+        gwg->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NORTHWEST, rs); // der Flagge
+        SetRoute(Direction::SOUTHEAST, rs);                                      // dem Gebäude
+    } else
     {
         // vorhandene Straße der Flagge nutzen
         noFlag* flag = gwg->GetSpecObj<noFlag>(flagPt);
 
-        RTTR_Assert(flag->routes[1]);
-        routes[4] = flag->routes[1];
-        routes[4]->SetF2(this);
+        RTTR_Assert(flag->GetRoute(Direction::NORTHWEST));
+        SetRoute(Direction::SOUTHEAST, flag->GetRoute(Direction::NORTHWEST));
+        GetRoute(Direction::SOUTHEAST)->SetF2(this);
     }
 
     // Werde/Bin ich (mal) ein großes Schloss? Dann müssen die Anbauten gesetzt werden
@@ -72,21 +74,19 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapPoint pos2 = gwg->GetNeighbour(pos, i);
+            MapPoint pos2 = gwg->GetNeighbour(pos, Direction::fromInt(i));
             gwg->DestroyNO(pos2, false);
             gwg->SetNO(pos2, new noExtension(this));
         }
     }
 }
 
-noBaseBuilding::~noBaseBuilding()
-{
-}
+noBaseBuilding::~noBaseBuilding() {}
 
 void noBaseBuilding::Destroy_noBaseBuilding()
 {
     DestroyAllRoads();
-    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, type_));
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, bldType_));
 
     if(gwg->GetGameInterface())
         gwg->GetGameInterface()->GI_UpdateMinimap(pos);
@@ -96,15 +96,14 @@ void noBaseBuilding::Destroy_noBaseBuilding()
 
     // Baukosten zurückerstatten (nicht bei Baustellen)
     const GlobalGameSettings& settings = gwg->GetGGS();
-    if( (GetGOT() != GOT_BUILDINGSITE) &&
-            ( settings.isEnabled(AddonId::REFUND_MATERIALS) ||
-              settings.isEnabled(AddonId::REFUND_ON_EMERGENCY) ) )
+    if((GetGOT() != GOT_BUILDINGSITE)
+       && (settings.isEnabled(AddonId::REFUND_MATERIALS) || settings.isEnabled(AddonId::REFUND_ON_EMERGENCY)))
     {
         // lebt unsere Flagge noch?
         noFlag* flag = GetFlag();
         if(flag)
         {
-            unsigned int percent_index = 0;
+            unsigned percent_index = 0;
 
             // wenn Rückerstattung aktiv ist, entsprechende Prozentzahl wählen
             if(settings.isEnabled(AddonId::REFUND_MATERIALS))
@@ -114,18 +113,18 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                 percent_index = 2;
 
             // wieviel kriegt man von jeder Ware wieder?
-            const unsigned int percents[5] = { 0, 25, 50, 75, 100 };
-            const unsigned int percent = 10 * percents[percent_index];
+            const unsigned percents[5] = {0, 25, 50, 75, 100};
+            const unsigned percent = 10 * percents[percent_index];
 
             // zurückgaben berechnen (abgerundet)
-            unsigned int boards = (percent * BUILDING_COSTS[nation][type_].boards) / 1000;
-            unsigned int stones = (percent * BUILDING_COSTS[nation][type_].stones) / 1000;
+            unsigned boards = (percent * BUILDING_COSTS[nation][bldType_].boards) / 1000;
+            unsigned stones = (percent * BUILDING_COSTS[nation][bldType_].stones) / 1000;
 
             GoodType goods[2] = {GD_BOARDS, GD_STONES};
             bool which = 0;
-            while(flag->IsSpaceForWare() && ( boards > 0 || stones > 0 ))
+            while(flag->IsSpaceForWare() && (boards > 0 || stones > 0))
             {
-                if( (!which && boards > 0) || (which && stones > 0))
+                if((!which && boards > 0) || (which && stones > 0))
                 {
                     // Ware erzeugen
                     Ware* ware = new Ware(goods[which], NULL, flag);
@@ -147,7 +146,6 @@ void noBaseBuilding::Destroy_noBaseBuilding()
 
                 which = !which;
             }
-
         }
     }
 
@@ -158,19 +156,16 @@ void noBaseBuilding::Serialize_noBaseBuilding(SerializedGameData& sgd) const
 {
     Serialize_noRoadNode(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(type_));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(bldType_));
     sgd.PushUnsignedChar(nation);
     sgd.PushSignedInt(door_point_x);
     sgd.PushSignedInt(door_point_y);
 }
 
-noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id) : noRoadNode(sgd, obj_id),
-    type_(BuildingType(sgd.PopUnsignedChar())),
-    nation(Nation(sgd.PopUnsignedChar())),
-    door_point_x(sgd.PopSignedInt()),
-    door_point_y(sgd.PopSignedInt())
-{
-}
+noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id)
+    : noRoadNode(sgd, obj_id), bldType_(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar())),
+      door_point_x(sgd.PopSignedInt()), door_point_y(sgd.PopSignedInt())
+{}
 
 int noBaseBuilding::GetDoorPointX()
 {
@@ -180,22 +175,22 @@ int noBaseBuilding::GetDoorPointX()
         // The door is on the line between the building and flag point. The position of the line is set by the y-offset
         // this is why we need the x-offset here according to the equation x = m*y + n
         // with n=0 (as door point is relative to building pos) and m = dx/dy
-        const Point<int> bldPos  = gwg->GetNodePos(pos);
-        const Point<int> flagPos = gwg->GetNodePos(gwg->GetNeighbour(pos, 4));
-        Point<int> diff = flagPos - bldPos;
+        const Position bldPos = gwg->GetNodePos(pos);
+        const Position flagPos = gwg->GetNodePos(GetFlagPos());
+        Position diff = flagPos - bldPos;
 
         // We could have crossed the map border which results in unreasonable diffs
         // clamp the diff to [-w/2,w/2],[-h/2, h/2] (maximum diffs)
-        const int mapWidth  = gwg->GetWidth()  * TR_W;
+        const int mapWidth = gwg->GetWidth() * TR_W;
         const int mapHeight = gwg->GetHeight() * TR_H;
 
-        if(diff.x < -mapWidth/2)
+        if(diff.x < -mapWidth / 2)
             diff.x += mapWidth;
-        else if(diff.x > mapWidth/2)
+        else if(diff.x > mapWidth / 2)
             diff.x -= mapWidth;
-        if(diff.y < -mapHeight/2)
+        if(diff.y < -mapHeight / 2)
             diff.y += mapHeight;
-        else if(diff.y > mapHeight/2)
+        else if(diff.y > mapHeight / 2)
             diff.y -= mapHeight;
 
         door_point_x = (door_point_y * diff.x) / diff.y;
@@ -206,13 +201,17 @@ int noBaseBuilding::GetDoorPointX()
 
 noFlag* noBaseBuilding::GetFlag() const
 {
-    return gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4));
+    return gwg->GetSpecObj<noFlag>(GetFlagPos());
 }
 
+MapPoint noBaseBuilding::GetFlagPos() const
+{
+    return gwg->GetNeighbour(pos, Direction::SOUTHEAST);
+}
 
 void noBaseBuilding::WareNotNeeded(Ware* ware)
 {
-    if (!ware)
+    if(!ware)
     {
         RTTR_Assert(false);
         LOG.write("Warning: Trying to remove non-existing ware. Please report this replay!\n");
@@ -227,11 +226,9 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
         // Inventur entsprechend verringern
         gwg->GetPlayer(player).RemoveWare(ware);
         delete ware;
-    }
-    else
+    } else
         ware->GoalDestroyed();
 }
-
 
 void noBaseBuilding::DestroyBuildingExtensions()
 {
@@ -240,10 +237,14 @@ void noBaseBuilding::DestroyBuildingExtensions()
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
+            gwg->DestroyNO(gwg->GetNeighbour(pos, Direction::fromInt(i)));
         }
-
     }
+}
+
+BuildingQuality noBaseBuilding::GetSize() const
+{
+    return BUILDING_SIZE[bldType_];
 }
 
 BlockingManner noBaseBuilding::GetBM() const
@@ -252,57 +253,21 @@ BlockingManner noBaseBuilding::GetBM() const
 }
 
 /// Gibt ein Bild zurück für das normale Gebäude
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
+ITexture* noBaseBuilding::GetBuildingImage() const
 {
-    return GetBuildingImage(type_, nation, gwg->GetLandscapeType());
+    return GetBuildingImage(bldType_, nation);
 }
 
-glArchivItem_Bitmap * noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation)
+ITexture* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation) //-V688
 {
-    return GetBuildingImage(type, nation, LandscapeType(LOADER.GetLastGFX()));
-}
-
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt)
-{
-    if(type == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + ((lt == LT_WINTERWORLD) ? 6 : 1));
-    else
-        return LOADER.GetNationImage(nation, 250 + 5 * type);
-}
-
-/// Gibt ein Bild zurück für das Gebäudegerüst
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImage() const
-{
-    if (type_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + 3);
-    else
-        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 2);
-}
-
-/// Gibt ein Bild zurück für das normale Gebäude
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImageShadow() const
-{
-    if (type_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + 2);
-    else
-        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 1);
-}
-
-/// Gibt ein Bild zurück für das Gebäudegerüst
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImageShadow() const
-{
-    if (type_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + 4);
-    else
-        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 3);
+    return &LOADER.building_cache[nation][type][0];
 }
 
 /// Gibt ein Bild zurück für die Tür des Gebäudes
 glArchivItem_Bitmap* noBaseBuilding::GetDoorImage() const
 {
-    if (type_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 7 : 5));
+    if(bldType_ == BLD_CHARBURNER)
+        return LOADER.GetImageN("charburner", nation * 8 + (LOADER.IsWinterGFX() ? 7 : 5));
     else
-        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 4);
+        return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 4);
 }
-

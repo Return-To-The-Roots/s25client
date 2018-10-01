@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,21 +17,17 @@
 #ifndef SOUNDSDL_MUSIC_H_INCLUDED
 #define SOUNDSDL_MUSIC_H_INCLUDED
 
-#include <Sound.h>
+#include "SoundHandle.h"
 #include <SDL_mixer.h>
 
-class SoundSDL_Music : public Sound
+class SoundSDL_Music : public SoundDesc
 {
-        friend class AudioSDL;
-    public:
-        SoundSDL_Music();
+public:
+    explicit SoundSDL_Music(Mix_Music* music) : SoundDesc(SD_MUSIC), music(music) {}
 
-        ~SoundSDL_Music() override;
-
-    private:
-
-        Mix_Music* music;  /// Das Music-Handle.
-
+    void setInvalid() { isValid_ = false; }
+    /// Handle to the sound. Managed and freed by the driver
+    Mix_Music* const music; /// Das Music-Handle.
 };
 
 #endif // !SOUNDSDL_MUSIC_H_INCLUDED

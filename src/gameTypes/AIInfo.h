@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,29 +20,28 @@
 
 class Serializer;
 
-namespace AI
+namespace AI {
+enum Level
 {
-    enum Level
-    {
-        EASY = 0,
-        MEDIUM,
-        HARD
-    };
+    EASY = 0,
+    MEDIUM,
+    HARD
+};
 
-    enum Type
-    {
-        DUMMY = 0,
-        DEFAULT
-    };
+enum Type
+{
+    DUMMY = 0,
+    DEFAULT
+};
 
-    struct Info
-    {
-        Type type;
-        Level level;
-        Info(Type t = DUMMY, Level l = EASY): type(t), level(l) { }
-        Info(Serializer& ser);
-        void serialize(Serializer& ser) const;
-    };
-}
+struct Info
+{
+    Type type;
+    Level level;
+    Info(Type t = DUMMY, Level l = EASY) : type(t), level(l) {}
+    Info(Serializer& ser);
+    void serialize(Serializer& ser) const;
+};
+} // namespace AI
 
 #endif // AIInfo_h__

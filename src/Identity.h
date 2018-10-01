@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,10 +24,7 @@ struct Identity
 {
     typedef T result_type;
 
-    result_type operator()(const result_type& arg)
-    {
-        return arg;
-    }
+    result_type operator()(const result_type& arg) { return arg; }
 
     template<typename T_Unused>
     result_type operator()(const result_type& arg, const T_Unused&)
@@ -35,6 +32,5 @@ struct Identity
         return arg;
     }
 };
-
 
 #endif // Identity_h__

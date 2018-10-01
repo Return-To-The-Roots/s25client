@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,16 +21,18 @@
 
 #include "IngameWindow.h"
 
+class LobbyPlayerList;
+
 class iwLobbyRanking : public IngameWindow
 {
-    public:
-        iwLobbyRanking();
+public:
+    iwLobbyRanking();
 
-    protected:
-        void UpdateRankings(bool first = false);
+    void UpdateRankings(const LobbyPlayerList& rankinglist);
 
-        void Msg_Timer(const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+protected:
+    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // iwLOBBYRANKING_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,22 +24,20 @@ class Window;
 
 class ctrlBuildingIcon : public ctrlButton
 {
-    public:
-        ctrlBuildingIcon(Window* const parent, const unsigned int id, const unsigned short x, const unsigned short y,
-                         const BuildingType type, const Nation nation, const unsigned short size = 36,  const std::string& tooltip = "");
-        /// liefert den GebäudeTyp des Icons.
-        BuildingType GetType() const { return type; }
+public:
+    ctrlBuildingIcon(Window* const parent, const unsigned id, const DrawPoint& pos, const BuildingType type, const Nation nation,
+                     const unsigned short size = 36, const std::string& tooltip = "");
+    /// liefert den GebäudeTyp des Icons.
+    BuildingType GetType() const { return type; }
 
-    protected:
-        /// zeichnet das Fenster.
-        bool Draw_() override;
-        void DrawContent() const override;
+protected:
+    /// zeichnet das Fenster.
+    void Draw_() override;
+    void DrawContent() const override;
 
-    protected:
-        const BuildingType type;       /// der GebäudeType des Icons.
-        const Nation nation;       /// Volk
-        const unsigned short size; /// die Größe des Icons
-
+protected:
+    const BuildingType type; /// der GebäudeType des Icons.
+    const Nation nation;     /// Volk
 };
 
 #endif // !CTRLBUILDINGICON_H_INCLUDED

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,6 +32,6 @@ enum Team
 };
 
 /// Anzahl der Team-Optionen
-const unsigned TEAM_COUNT = 6; //teamrandom2,3,4 dont count
+const unsigned NUM_TEAMS = 6; // teamrandom2,3,4 dont count
 
 #endif // TeamTypes_h__

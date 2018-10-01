@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,38 +20,36 @@
 #pragma once
 
 #include "AddonList.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 #include <boost/array.hpp>
 
-const boost::array<unsigned, 6> SUPPRESS_UNUSED waterwayLengths = {{ 3, 5, 9, 13, 21, 0 }};
+const boost::array<unsigned, 6> SUPPRESS_UNUSED waterwayLengths = {{3, 5, 9, 13, 21, 0}};
 
 /**
  *  Addon for changing the maximum length of waterways.
  */
 class AddonMaxWaterwayLength : public AddonList
 {
-    public:
-        AddonMaxWaterwayLength() : AddonList(AddonId::MAX_WATERWAY_LENGTH,
-                                                 ADDONGROUP_GAMEPLAY,
-                                                 _("Set maximum waterway length"),
-                                                 _("Limits the distance settlers may travel per boat.\n\n"
-                                                         "Possible values are:\n"
-                                                         "Short: 3 tiles\n"
-                                                         "Default: 5 tiles\n"
-                                                         "Long: 9 tiles\n"
-                                                         "Longer: 13 tiles\n"
-                                                         "Very long: 21 tiles\n"
-                                                         "and Unlimited."),
-                                                 1
-                                                )
-        {
-            addOption(_("Short"));
-            addOption(_("Default"));
-            addOption(_("Long"));
-            addOption(_("Longer"));
-            addOption(_("Very long"));
-            addOption(_("Unlimited"));
-        }
+public:
+    AddonMaxWaterwayLength()
+        : AddonList(AddonId::MAX_WATERWAY_LENGTH, ADDONGROUP_GAMEPLAY, _("Set maximum waterway length"),
+                    _("Limits the distance settlers may travel per boat.\n\n"
+                      "Possible values are:\n"
+                      "Short: 3 tiles\n"
+                      "Default: 5 tiles\n"
+                      "Long: 9 tiles\n"
+                      "Longer: 13 tiles\n"
+                      "Very long: 21 tiles\n"
+                      "and Unlimited."),
+                    1)
+    {
+        addOption(_("Short"));
+        addOption(_("Default"));
+        addOption(_("Long"));
+        addOption(_("Longer"));
+        addOption(_("Very long"));
+        addOption(_("Unlimited"));
+    }
 };
 
 #endif // !ADDONMAXWATERWAYLENGTH_H_INCLUDED

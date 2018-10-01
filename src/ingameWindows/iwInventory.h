@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,8 +25,8 @@ class GamePlayer;
 
 class iwInventory : public iwWares
 {
-    public:
-        iwInventory(const GamePlayer& player);
+public:
+    iwInventory(const GamePlayer& player);
 };
 
 #endif // !iwINVENTORY_H_INCLUDED

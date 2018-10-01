@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwInventory.h"
-#include "Loader.h"
 #include "GamePlayer.h"
+#include "Loader.h"
 #include "gameData/const_gui_ids.h"
 
 iwInventory::iwInventory(const GamePlayer& player)
-    : iwWares(CGI_INVENTORY, IngameWindow::posLastOrCenter, 167, 376, _("Stock"), false, SmallFont, player.GetInventory(), player)
+    : iwWares(CGI_INVENTORY, IngameWindow::posLastOrCenter, Extent(167, 376), _("Stock"), false, SmallFont, player.GetInventory(), player)
 {}

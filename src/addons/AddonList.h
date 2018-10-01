@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,22 +29,25 @@
  */
 class AddonList : public Addon
 {
-    public:
-        AddonList(const AddonId id, const unsigned int groups, const std::string& name, const std::string& description, const unsigned int default_status)
-            : Addon(id, groups, name, description, default_status) { }
+public:
+    AddonList(const AddonId id, const unsigned groups, const std::string& name, const std::string& description,
+              const unsigned default_status)
+        : Addon(id, groups, name, description, default_status)
+    {}
 
-        void hideGui(Window* window, unsigned int id) const override;
-        void createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const override;
-        void setGuiStatus(Window* window, unsigned int id, unsigned int status) const override;
-        unsigned int getGuiStatus(Window* window, unsigned int id, bool& failed) const override;
+    void hideGui(Window* window, unsigned id) const override;
+    void createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const override;
+    void setGuiStatus(Window* window, unsigned id, unsigned status) const override;
+    unsigned getGuiStatus(Window* window, unsigned id, bool& failed) const override;
 
-        unsigned getNumOptions() const override;
-    protected:
-        void removeOptions();
-        void addOption(const std::string& name);
+    unsigned getNumOptions() const override;
 
-    private:
-        std::vector<std::string> options;
+protected:
+    void removeOptions();
+    void addOption(const std::string& name);
+
+private:
+    std::vector<std::string> options;
 };
 
 #endif // AddonList_h__

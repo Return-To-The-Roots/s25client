@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,171 +19,178 @@
 
 #pragma once
 
-#include "../libutil/src/Singleton.h"
-#include "gameData/NationConsts.h"
 #include "Rect.h"
+#include "helpers/multiArray.h"
 #include "ogl/glSmartBitmap.h"
+#include "gameTypes/BuildingType.h"
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/JobTypes.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/AnimalConsts.h"
-#include "gameTypes/BuildingTypes.h"
-#include "gameTypes/JobTypes.h"
-#include "helpers/multiArray.h"
-#include "libsiedler2/src/ArchivInfo.h"
+#include "gameData/NationConsts.h"
+#include "libsiedler2/Archiv.h"
+#include "libutil/Singleton.h"
 #include <boost/array.hpp>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
-#include <stdint.h>
-
-///////////////////////////////////////////////////////////////////////////////
 
 struct AddonId;
+class ITexture;
 class glArchivItem_Bitmap;
 class glArchivItem_BitmapBase;
 class glArchivItem_Bitmap_Player;
 class glArchivItem_Bitmap_Raw;
 class glArchivItem_Bob;
 class glArchivItem_Font;
-class glArchivItem_Sound;
+class SoundEffectItem;
 class glTexturePacker;
-namespace libsiedler2{
-    class ArchivItem_Ini;
-    class ArchivItem_Palette;
-}
-
-const std::string CONFIG_NAME = "config";
+namespace libsiedler2 {
+class ArchivItem_Ini;
+class ArchivItem_Palette;
+} // namespace libsiedler2
 
 /// Loader Klasse.
 class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
 {
     /// Struct for storing loaded file entries
-    struct FileEntry{
-        libsiedler2::ArchivInfo archiv;
-        /// True if the archiv was modified by overrides
-        bool hasOverrides;
-        FileEntry(): hasOverrides(false){}
+    struct FileEntry
+    {
+        libsiedler2::Archiv archiv;
+        /// List of files used to build this archiv
+        std::vector<std::string> filesUsed;
+        bool loadedAfterOverrideChange;
     };
-    public:
-        BOOST_STATIC_CONSTEXPR unsigned Longevity = 19;
+    struct OverrideFolder
+    {
+        /// Path to the folder
+        std::string path;
+        /// Filenames in the folder
+        std::vector<std::string> files;
+    };
 
-        Loader();
-        /// Desktruktor von @p Loader.
-        ~Loader() override;
+public:
+    BOOST_STATIC_CONSTEXPR unsigned Longevity = 19;
 
-        /// Lädt alle allgemeinen Dateien.
-        bool LoadFilesAtStart();
-        /// Lädt die Spieldateien.
-        bool LoadFilesAtGame(unsigned char gfxset, bool* nations);
-        /// Lädt Dateien von Addons.
-        bool LoadFilesFromAddon(const AddonId id);
-        void fillCaches();
-        /// Deletes all loaded terrain textures
-        void ClearTerrainTextures();
-        /// Lädt das Terrain.
-        bool CreateTerrainTextures();
+    Loader();
+    ~Loader() override;
 
-        /// Lädt die Settings.
-        bool LoadSettings();
-        /// Speichert die Settings.
-        bool SaveSettings();
+    /// Add a folder to the list of folders containing overrides. Files in folders added last will override prior ones
+    /// Paths with macros will be resolved
+    void AddOverrideFolder(std::string path, bool atBack = true);
+    /// Add the folder form an addon to the override folders
+    void AddAddonFolder(AddonId id);
+    void ClearOverrideFolders();
 
-        /// Creates archives with empty files for the GUI (for testing purposes)
-        void LoadDummyGUIFiles();
+    /// Lädt alle allgemeinen Dateien.
+    bool LoadFilesAtStart();
+    /// Lädt die Spieldateien.
+    bool LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<bool>& nations);
+    /// Load all files from the override folders that have not been use yet
+    bool LoadOverrideFiles();
+    /// Load all given files with the default palette
+    bool LoadFiles(const std::vector<std::string>& files);
 
-    protected:
-        /// Lädt alle Sounds.
-        inline bool LoadSounds();
+    /// Creates archives with empty files for the GUI (for testing purposes)
+    void LoadDummyGUIFiles();
+    /// Load a file and save it into the loader repo
+    bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL, bool isFromOverrideDir = false);
+    /// Load a file into the archiv
+    bool LoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL);
 
-    private:
-        bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isOriginal);
-        bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv);
-        bool LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv);
-        glArchivItem_Bitmap_Raw* ExtractTexture(const Rect& rect);
-        libsiedler2::ArchivInfo* ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index, uint32_t colorShift = 0);
+    void fillCaches();
+    static glArchivItem_Bitmap* ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
+    static libsiedler2::Archiv* ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t start_index,
+                                                       uint8_t color_count);
 
-        bool LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool isOriginal);
-        bool LoadLsts(unsigned int dir);
-        bool LoadFileOrDir(const std::string& file, const unsigned int file_id, bool isOriginal);
+    glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned nr);
+    /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
+    ITexture* GetTextureN(const std::string& file, unsigned nr);
+    glArchivItem_Bitmap* GetImage(const std::string& file, const std::string& name);
+    glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned nr);
+    glArchivItem_Font* GetFontN(const std::string& file, unsigned nr);
+    libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned nr = 0);
+    SoundEffectItem* GetSoundN(const std::string& file, unsigned nr);
+    std::string GetTextN(const std::string& file, unsigned nr);
+    libsiedler2::Archiv& GetInfoN(const std::string& file);
+    glArchivItem_Bob* GetBobN(const std::string& file);
+    glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
+    glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
+    /// Same as GetNationImage but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
+    ITexture* GetNationTex(unsigned nation, unsigned nr);
+    glArchivItem_Bitmap_Player* GetNationPlayerImage(unsigned nation, unsigned nr);
+    glArchivItem_Bitmap* GetMapImageN(unsigned nr);
+    /// Same as GetMapImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
+    ITexture* GetMapTexN(unsigned nr);
+    glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
 
-        static bool SortFilesHelper(const std::string& lhs, const std::string& rhs);
-        static std::vector<std::string> ExplodeString(std::string const& line, const char delim, const unsigned int max = 0xFFFFFFFF);
+    bool IsWinterGFX() const { return isWinterGFX_; }
 
-    public:
-        glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned int nr);
-        glArchivItem_Bitmap* GetImage(const std::string& file, const std::string& name);
-        glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned int nr);
-        glArchivItem_Font* GetFontN(const std::string& file, unsigned int nr);
-        libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned int nr = 0);
-        glArchivItem_Sound* GetSoundN(const std::string& file, unsigned int nr);
-        std::string GetTextN(const std::string& file, unsigned int nr);
-        libsiedler2::ArchivInfo* GetInfoN(const std::string& file);
-        glArchivItem_Bob* GetBobN(const std::string& file);
-        glArchivItem_BitmapBase* GetNationImageN(unsigned int nation, unsigned int nr);
-        glArchivItem_Bitmap* GetNationImage(unsigned int nation, unsigned int nr);
-        glArchivItem_Bitmap_Player* GetNationPlayerImage(unsigned int nation, unsigned int nr);
-        glArchivItem_Bitmap* GetMapImageN(unsigned int nr);
-        glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned int nr);
-        glArchivItem_Bitmap* GetTexImageN(unsigned int nr);
-        libsiedler2::ArchivItem_Palette* GetTexPaletteN(unsigned int nr);
-        libsiedler2::ArchivItem_Ini* GetSettingsIniN(const std::string& name);
-        /// Returns the texture for the given terrain. For animated textures the given frame is returned
-        glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
+    libsiedler2::Archiv sng_lst;
 
-        unsigned char GetLastGFX() const { return lastgfx; }
+    /// Animals: Species, Direction, AnimationFrame(Last = Dead)
+    helpers::MultiArray<glSmartBitmap, NUM_SPECS, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
+    /// Buildings: Nation, Type, Building/Skeleton
+    helpers::MultiArray<glSmartBitmap, NUM_NATS, NUM_BUILDING_TYPES, 2> building_cache;
+    /// Flags: Nation, Type, AnimationFrame
+    helpers::MultiArray<glSmartBitmap, NUM_NATS, 3, 8> flag_cache;
+    /// Military Flags: AnimationFrame
+    // helpers::MultiArray<glSmartBitmap, 8> building_flag_cache;
+    /// Trees: Type, AnimationFrame
+    helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
+    /// Jobs: Nation, Job (last is fat carrier), Direction, AnimationFrame
+    helpers::MultiArray<glSmartBitmap, NUM_NATS, NUM_JOB_TYPES + 1, 6, 8> bob_jobs_cache;
+    /// Stone: Type, Size
+    helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
+    /// Grainfield: Type, Size
+    helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
+    /// Carrier w/ ware: Ware, Direction, Animation, NormalOrFat
+    helpers::MultiArray<glSmartBitmap, NUM_WARE_TYPES, 6, 8, 2> carrier_cache;
+    /// Boundary stones: Nation
+    helpers::MultiArray<glSmartBitmap, NUM_NATS> boundary_stone_cache;
+    /// BoatCarrier: Direction, AnimationFrame
+    helpers::MultiArray<glSmartBitmap, 6, 8> boat_cache;
+    /// Donkey: Direction, AnimationFrame
+    helpers::MultiArray<glSmartBitmap, 6, 8> donkey_cache;
+    /// Gateway: AnimationFrame
+    helpers::MultiArray<glSmartBitmap, 5> gateway_cache;
 
-    private:
-        template<typename T>
-        static T convertChecked(libsiedler2::ArchivItem* item){ T res = dynamic_cast<T>(item); RTTR_Assert(!item || res); return res; }
-        std::map<std::string, FileEntry> files_;
-        /// Terraintextures (unanimated)
-        std::map<TerrainType, glArchivItem_Bitmap*> terrainTextures;
-        /// Terraintextures (animated) (currently only water and lava)
-        std::map<TerrainType, libsiedler2::ArchivInfo*> terrainTexturesAnim;
+private:
+    /// Get all files to load for a request of loading filepath
+    std::vector<std::string> GetFilesToLoad(const std::string& filepath);
+    static bool MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archiv& otherArchiv);
 
-        unsigned char lastgfx;
-        boost::array<libsiedler2::ArchivInfo*, NAT_COUNT> nation_gfx;
-        libsiedler2::ArchivInfo* map_gfx;
-        libsiedler2::ArchivInfo* tex_gfx;
+    /// Lädt alle Sounds.
+    bool LoadSounds();
 
-    public:
-        libsiedler2::ArchivInfo sng_lst;
+    /// Load a file into the archiv
+    bool LoadSingleFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL);
+    bool LoadArchiv(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL);
+    bool LoadOverrideDirectory(const std::string& path);
+    bool LoadFilesFromArray(const std::vector<unsigned>& files);
 
-        libsiedler2::ArchivInfo borders;
-        libsiedler2::ArchivInfo roads;
-        libsiedler2::ArchivInfo roads_points;
+    template<typename T>
+    static T convertChecked(libsiedler2::ArchivItem* item)
+    {
+        T res = dynamic_cast<T>(item);
+        RTTR_Assert(!item || res);
+        return res;
+    }
+    std::vector<OverrideFolder> overrideFolders_;
+    std::map<std::string, FileEntry> files_;
 
-        glTexturePacker* stp;
-
-        /// Animals: Species, Direction, AnimationFrame(Last = Dead)
-        helpers::MultiArray<glSmartBitmap, SPEC_COUNT, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
-        /// Buildings: Nation, Type, Building/Skeleton
-        helpers::MultiArray<glSmartBitmap, NAT_COUNT, BUILDING_TYPES_COUNT, 2> building_cache;
-        /// Flags: Nation, Type, AnimationFrame
-        helpers::MultiArray<glSmartBitmap, NAT_COUNT, 3, 8> flag_cache;
-        /// Military Flags: AnimationFrame
-        //helpers::MultiArray<glSmartBitmap, 8> building_flag_cache;
-        /// Trees: Type, AnimationFrame
-        helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
-        /// Jobs: Nation, Job (last is fat carrier), Direction, AnimationFrame
-        helpers::MultiArray<glSmartBitmap, NAT_COUNT, JOB_TYPES_COUNT + 1, 6, 8> bob_jobs_cache;
-        /// Stone: Type, Size
-        helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
-        /// Grainfield: Type, Size
-        helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
-        /// Carrier w/ ware: Ware, Direction, Animation, NormalOrFat
-        helpers::MultiArray<glSmartBitmap, WARE_TYPES_COUNT, 6, 8, 2> carrier_cache;
-        /// Boundary stones: Nation
-        helpers::MultiArray<glSmartBitmap, NAT_COUNT> boundary_stone_cache;
-        /// BoatCarrier: Direction, AnimationFrame
-        helpers::MultiArray<glSmartBitmap, 6, 8> boat_cache;
-        /// Donkey: Direction, AnimationFrame
-        helpers::MultiArray<glSmartBitmap, 6, 8> donkey_cache;
-        /// Gateway: AnimationFrame
-        helpers::MultiArray<glSmartBitmap, 5> gateway_cache;
+    bool isWinterGFX_;
+    boost::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
+    libsiedler2::Archiv* map_gfx;
+    glTexturePacker* stp;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
 #define LOADER Loader::inst()
+
+// Helper macros for easy access to fonts
+#define SmallFont (LOADER.GetFontN("outline_fonts", 0))
+#define NormalFont (LOADER.GetFontN("outline_fonts", 1))
+#define LargeFont (LOADER.GetFontN("outline_fonts", 2))
 
 #endif // LOADER_H_INCLUDED

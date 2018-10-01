@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonList.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for changing the behavior of the military setting
@@ -28,22 +28,19 @@
  */
 class AddonDefenderBehavior : public AddonList
 {
-    public:
-        AddonDefenderBehavior() : AddonList(AddonId::DEFENDER_BEHAVIOR,
-                                                ADDONGROUP_MILITARY,
-                                                _("Change defender behavior"),
-                                                _("Change the military setting 'defender'.\n\n"
-                                                        "You can choose to disallow any changes to that setting "
-                                                        "or you can limit the amount of reoccupying troops "
-                                                        "(during an attack) according to the defender setting."),
-                                                0
-                                               )
-        {
-            addOption(_("No change"));
-            addOption(_("Disallow change"));
-            addOption(_("Reduce reoccupying troops accordingly"));
-        }
+public:
+    AddonDefenderBehavior()
+        : AddonList(AddonId::DEFENDER_BEHAVIOR, ADDONGROUP_MILITARY, _("Change defender behavior"),
+                    _("Change the military setting 'defender'.\n\n"
+                      "You can choose to disallow any changes to that setting "
+                      "or you can limit the amount of reoccupying troops "
+                      "(during an attack) according to the defender setting."),
+                    0)
+    {
+        addOption(_("No change"));
+        addOption(_("Disallow change"));
+        addOption(_("Reduce reoccupying troops accordingly"));
+    }
 };
 
 #endif // !ADDONDEFENDERBEHAVIOR_H_INCLUDED
-

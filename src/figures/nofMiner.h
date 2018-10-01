@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,21 +27,22 @@ class nobUsual;
 class nofMiner : public nofWorkman
 {
 protected:
-        /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override;
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override;
+    /// Zeichnet ihn beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override;
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override;
 
-        bool AreWaresAvailable() override;
+    bool AreWaresAvailable() const override;
+    bool StartWorking() override;
+    Resource::Type GetRequiredResType() const;
 
-    public:
+public:
+    nofMiner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofMiner(SerializedGameData& sgd, const unsigned obj_id);
 
-        nofMiner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMiner(SerializedGameData& sgd, const unsigned obj_id);
-
-        GO_Type GetGOT() const override { return GOT_NOF_MINER; }
+    GO_Type GetGOT() const override { return GOT_NOF_MINER; }
 };
 
 #endif

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,21 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "glBitmapItem.h"
 
-#include "libsiedler2/src/ArchivItem_Bitmap.h"
-#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
+#include "libsiedler2/ArchivItem_Bitmap.h"
+#include "libsiedler2/ArchivItem_Bitmap_Player.h"
 
-glBitmapItem::glBitmapItem(libsiedler2::baseArchivItem_Bitmap* b, bool shadow, bool isOwning): bmp(b), type(shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP), isOwning_(isOwning)
+glBitmapItem::glBitmapItem(libsiedler2::baseArchivItem_Bitmap* b, bool shadow, bool isOwning)
+    : bmp(b), type(shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP), isOwning_(isOwning)
 {
-    b->getVisibleArea(x, y, w, h);
-    nx = b->getNx() - x;
-    ny = b->getNy() - y;
+    b->getVisibleArea(pos.x, pos.y, size.x, size.y);
+    origin = Position(b->getNx(), b->getNy()) - pos;
 }
-glBitmapItem::glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, bool isOwning): bmp(b), type(TYPE_ARCHIVITEM_BITMAP_PLAYER), isOwning_(isOwning)
+glBitmapItem::glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, bool isOwning)
+    : bmp(b), type(TYPE_ARCHIVITEM_BITMAP_PLAYER), isOwning_(isOwning)
 {
-    b->getVisibleArea(x, y, w, h);
-    nx = b->getNx() - x;
-    ny = b->getNy() - y;
+    b->getVisibleArea(pos.x, pos.y, size.x, size.y);
+    origin = Position(b->getNx(), b->getNy()) - pos;
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,19 +28,27 @@ struct JoinPlayerInfo;
 class GameLobby
 {
 public:
-    GameLobby(unsigned numPlayers);
+    GameLobby(bool isSavegame, bool isHost, unsigned numPlayers);
     ~GameLobby();
 
-    JoinPlayerInfo& GetPlayer(unsigned playerId);
-    const JoinPlayerInfo& GetPlayer(unsigned playerId) const;
-    const std::vector<JoinPlayerInfo>& GetPlayers() const { return players; }
-    unsigned GetPlayerCount() const;
+    JoinPlayerInfo& getPlayer(unsigned playerId);
+    const JoinPlayerInfo& getPlayer(unsigned playerId) const;
+    const std::vector<JoinPlayerInfo>& getPlayers() const { return players_; }
+    unsigned getNumPlayers() const;
 
-    GlobalGameSettings& GetSettings() { return ggs; }
-    const GlobalGameSettings& GetSettings() const { return ggs; }
+    GlobalGameSettings& getSettings() { return ggs_; }
+    const GlobalGameSettings& getSettings() const { return ggs_; }
+
+    bool isSavegame() const { return isSavegame_; }
+    bool isHost() const { return isHost_; }
+
 private:
-    std::vector<JoinPlayerInfo> players;
-    GlobalGameSettings ggs;
+    /// Is this a savegame or a loaded game?
+    bool isSavegame_;
+    /// Is this for the host/game creator
+    bool isHost_;
+    std::vector<JoinPlayerInfo> players_;
+    GlobalGameSettings ggs_;
 };
 
 #endif // GameLobby_h__

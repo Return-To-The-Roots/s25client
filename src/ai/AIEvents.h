@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,87 +18,84 @@
 #ifndef AIEvents_h__
 #define AIEvents_h__
 
-#include "gameTypes/MapTypes.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
+#include "gameTypes/Direction.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
 
-namespace AIEvent
+namespace AIEvent {
+enum EventType
 {
-    enum EventType
-    {
-        BuildingDestroyed,
-        BuildingConquered,
-        BuildingLost,
-        BorderChanged,
-        TerritoryLost,
-        NoMoreResourcesReachable,
-        BuildingFinished,
-        ExpeditionWaiting,
-        TreeChopped,
-        ShipBuilt,
-        ResourceUsed,
-        RoadConstructionComplete,
-        RoadConstructionFailed,
-        NewColonyFounded,
-        LuaConstructionOrder,
-        ResourceFound,
-        LostLand
-    };
+    BuildingDestroyed,
+    BuildingConquered,
+    BuildingLost,
+    BorderChanged,
+    NoMoreResourcesReachable,
+    BuildingFinished,
+    ExpeditionWaiting,
+    TreeChopped,
+    ShipBuilt,
+    ResourceUsed,
+    RoadConstructionComplete,
+    RoadConstructionFailed,
+    NewColonyFounded,
+    LuaConstructionOrder,
+    ResourceFound,
+    LostLand
+};
 
+class Base
+{
+public:
+    Base(EventType type) : type(type) {}
+    virtual ~Base() {}
+    EventType GetType() const { return type; }
 
-    class Base
-    {
-    public:
-        Base(EventType type): type(type) { }
-        virtual ~Base() { }
-        EventType GetType() const { return type; }
+protected:
+    EventType type;
+};
 
-    protected:
-        EventType type;
-    };
+class Location : public Base
+{
+public:
+    Location(EventType type, const MapPoint pt) : Base(type), pos(pt) {}
+    ~Location() override {}
+    MapCoord GetX() const { return pos.x; }
+    MapCoord GetY() const { return pos.y; }
+    MapPoint GetPos() const { return pos; }
 
+protected:
+    MapPoint pos;
+};
 
-    class Location: public Base
-    {
-    public:
-        Location(EventType type, const MapPoint pt): Base(type), pos(pt) { }
-        ~Location() override { }
-        MapCoord GetX() const { return pos.x; }
-        MapCoord GetY() const { return pos.y; }
-        MapPoint GetPos() const { return pos; }
+class Direction : public Location
+{
+public:
+    Direction(EventType type, const MapPoint pt, ::Direction direction) : Location(type, pt), direction(direction) {}
+    ~Direction() override {}
+    ::Direction GetDirection() const { return direction; }
 
-    protected:
-        MapPoint pos;
-    };
+protected:
+    ::Direction direction;
+};
 
-    class Direction: public Location
-    {
-    public:
-        Direction(EventType type, const MapPoint pt, unsigned char direction): Location(type, pt), direction(direction) { }
-        ~Direction() override { }
-        unsigned char GetDirection() const { return direction; }
+class Building : public Location
+{
+public:
+    Building(EventType type, const MapPoint pt, BuildingType building) : Location(type, pt), building(building) {}
+    ~Building() override {}
+    BuildingType GetBuildingType() const { return building; }
 
-    protected:
-        unsigned char direction;
-    };
+protected:
+    BuildingType building;
+};
 
-    class Building: public Location
-    {
-    public:
-        Building(EventType type, const MapPoint pt, BuildingType building): Location(type, pt), building(building) { }
-        ~Building() override { }
-        BuildingType GetBuildingType() const { return building; }
-
-    protected:
-        BuildingType building;
-    };
-
-    class Resource: public Location
-    {
-    public:
-        const ::Resource resType;
-        Resource(EventType type, const MapPoint& pt, ::Resource resType): Location(type, pt), resType(resType){}
-    };
-}
+class Resource : public Location
+{
+public:
+    const ::Resource resType;
+    Resource(EventType type, const MapPoint& pt, ::Resource resType) : Location(type, pt), resType(resType) {}
+};
+} // namespace AIEvent
 
 #endif // AIEvents_h__

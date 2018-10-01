@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,83 +15,87 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "SerializedGameData.h"
-
+#include "CatapultStone.h"
+#include "EventManager.h"
+#include "FOWObjects.h"
+#include "Game.h"
+#include "GameEvent.h"
 #include "GameObject.h"
 #include "GamePlayer.h"
-
-#include "buildings/nobHQ.h"
-#include "buildings/nobMilitary.h"
-#include "buildings/nobStorehouse.h"
-#include "buildings/nobShipYard.h"
-#include "buildings/noBuildingSite.h"
-#include "buildings/nobHarborBuilding.h"
+#include "RoadSegment.h"
+#include "Ware.h"
 #include "buildings/BurnedWarehouse.h"
+#include "buildings/noBuildingSite.h"
+#include "buildings/nobHQ.h"
+#include "buildings/nobHarborBuilding.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobShipYard.h"
+#include "buildings/nobStorehouse.h"
 #include "figures/nofAggressiveDefender.h"
+#include "figures/nofArmorer.h"
 #include "figures/nofAttacker.h"
-#include "figures/nofDefender.h"
-#include "figures/nofPassiveSoldier.h"
-#include "figures/nofWellguy.h"
+#include "figures/nofBaker.h"
+#include "figures/nofBrewer.h"
+#include "figures/nofBuilder.h"
+#include "figures/nofButcher.h"
+#include "figures/nofCarpenter.h"
 #include "figures/nofCarrier.h"
-#include "figures/nofWoodcutter.h"
+#include "figures/nofCatapultMan.h"
+#include "figures/nofCharburner.h"
+#include "figures/nofDefender.h"
+#include "figures/nofDonkeybreeder.h"
+#include "figures/nofFarmer.h"
 #include "figures/nofFisher.h"
 #include "figures/nofForester.h"
-#include "figures/nofCarpenter.h"
-#include "figures/nofStonemason.h"
-#include "figures/nofHunter.h"
-#include "figures/nofFarmer.h"
-#include "figures/nofMiller.h"
-#include "figures/nofBaker.h"
-#include "figures/nofButcher.h"
-#include "figures/nofMiner.h"
-#include "figures/nofBrewer.h"
-#include "figures/nofPigbreeder.h"
-#include "figures/nofDonkeybreeder.h"
-#include "figures/nofIronfounder.h"
-#include "figures/nofMinter.h"
-#include "figures/nofMetalworker.h"
-#include "figures/nofArmorer.h"
-#include "figures/nofBuilder.h"
-#include "figures/nofPlaner.h"
 #include "figures/nofGeologist.h"
-#include "figures/nofShipWright.h"
+#include "figures/nofHunter.h"
+#include "figures/nofIronfounder.h"
+#include "figures/nofMetalworker.h"
+#include "figures/nofMiller.h"
+#include "figures/nofMiner.h"
+#include "figures/nofMinter.h"
+#include "figures/nofPassiveSoldier.h"
+#include "figures/nofPassiveWorker.h"
+#include "figures/nofPigbreeder.h"
+#include "figures/nofPlaner.h"
 #include "figures/nofScout_Free.h"
 #include "figures/nofScout_LookoutTower.h"
-#include "figures/nofWarehouseWorker.h"
-#include "figures/nofPassiveWorker.h"
-#include "figures/nofCharburner.h"
-#include "figures/nofCatapultMan.h"
+#include "figures/nofShipWright.h"
+#include "figures/nofStonemason.h"
 #include "figures/nofTradeDonkey.h"
 #include "figures/nofTradeLeader.h"
-#include "nodeObjs/noExtension.h"
+#include "figures/nofWarehouseWorker.h"
+#include "figures/nofWellguy.h"
+#include "figures/nofWoodcutter.h"
+#include "helpers/containerUtils.h"
+#include "helpers/converters.h"
+#include "world/GameWorld.h"
+#include "nodeObjs/noAnimal.h"
+#include "nodeObjs/noCharburnerPile.h"
+#include "nodeObjs/noDisappearingMapEnvObject.h"
 #include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noExtension.h"
+#include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFire.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noGrainfield.h"
 #include "nodeObjs/noGranite.h"
+#include "nodeObjs/noShip.h"
+#include "nodeObjs/noShipBuildingSite.h"
 #include "nodeObjs/noSign.h"
 #include "nodeObjs/noSkeleton.h"
 #include "nodeObjs/noStaticObject.h"
 #include "nodeObjs/noTree.h"
-#include "nodeObjs/noAnimal.h"
-#include "nodeObjs/noFighting.h"
-#include "nodeObjs/noDisappearingMapEnvObject.h"
-#include "nodeObjs/noShip.h"
-#include "nodeObjs/noShipBuildingSite.h"
-#include "nodeObjs/noCharburnerPile.h"
-#include "EventManager.h"
-#include "GameEvent.h"
-#include "RoadSegment.h"
-#include "Ware.h"
-#include "CatapultStone.h"
-#include "FOWObjects.h"
-#include "world/GameWorld.h"
+#include "libutil/Log.h"
 
-#include "helpers/containerUtils.h"
-#include "helpers/converters.h"
-#include "libutil/src/Log.h"
-class BinaryFile;
+/// Version of the current game data
+/// Usage: Always save for the most current version but include loading code that can cope with file format changes
+/// If a format change occurred that can still be handled increase this version and handle it in the loading code.
+/// If the change is to big to handle increase the version in Savegame.cpp  and remove all code referencing GetGameDataVersion. Then reset
+/// this number to 1.
+static const unsigned currentGameDataVersion = 3;
 
 GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
 {
@@ -154,7 +158,6 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
         case GOT_TREE: return new noTree(*this, obj_id);
         case GOT_ANIMAL: return new noAnimal(*this, obj_id);
         case GOT_FIGHTING: return new noFighting(*this, obj_id);
-        case GOT_EVENT: return em->AddEvent(*this, obj_id);
         case GOT_ROADSEGMENT: return new RoadSegment(*this, obj_id);
         case GOT_WARE: return new Ware(*this, obj_id);
         case GOT_CATAPULTSTONE: return new CatapultStone(*this, obj_id);
@@ -162,9 +165,7 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
         case GOT_SHIPBUILDINGSITE: return new noShipBuildingSite(*this, obj_id);
         case GOT_CHARBURNERPILE: return new noCharburnerPile(*this, obj_id);
         case GOT_NOTHING:
-        case GOT_UNKNOWN:
-            RTTR_Assert(false);
-            break;
+        case GOT_UNKNOWN: RTTR_Assert(false); break;
     }
     throw Error("Invalid GameObjectType " + helpers::toString(got) + " for objId=" + helpers::toString(obj_id) + " found!");
 }
@@ -182,72 +183,101 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
     }
 }
 
-SerializedGameData::SerializedGameData() : debugMode(false), objectsCount(0), expectedObjectsCount(0), em(NULL), isReading(false)
+SerializedGameData::SerializedGameData()
+    : debugMode(false), gameDataVersion(0), expectedNumObjects(0), em(NULL), writeEm(NULL), isReading(false)
 {}
 
 void SerializedGameData::Prepare(bool reading)
 {
-    if(!reading)
+    static const boost::array<char, 4> versionID = {"VER"};
+    if(reading)
+    {
+        boost::array<char, 4> versionIDRead;
+        PopRawData(&versionIDRead.front(), versionIDRead.size());
+        if(versionIDRead != versionID)
+            throw Error("Invalid file format!");
+        gameDataVersion = PopUnsignedInt();
+    } else
+    {
         Clear();
+        PushRawData(&versionID.front(), versionID.size());
+        PushUnsignedInt(currentGameDataVersion);
+        gameDataVersion = currentGameDataVersion;
+    }
     writtenObjIds.clear();
     readObjects.clear();
-    objectsCount = 0;
-    expectedObjectsCount = 0;
+    expectedNumObjects = 0;
     isReading = reading;
 }
 
-void SerializedGameData::MakeSnapshot(GameWorld& gw)
+void SerializedGameData::MakeSnapshot(boost::shared_ptr<Game> game)
 {
     Prepare(false);
 
-    // Anzahl Objekte reinschreiben
-    expectedObjectsCount = GameObject::GetObjCount();
-    PushUnsignedInt(expectedObjectsCount);
+    GameWorld& gw = game->world;
+    writeEm = &gw.GetEvMgr();
 
-    // Objektmanager serialisieren
+    // Anzahl Objekte reinschreiben (used for safety checks only)
+    expectedNumObjects = GameObject::GetNumObjs();
+    PushUnsignedInt(expectedNumObjects);
+
+    // World and objects
     gw.Serialize(*this);
-    // EventManager serialisieren
-    gw.GetEvMgr().Serialize(*this);
+    // EventManager
+    writeEm->Serialize(*this);
     // Spieler serialisieren
-    for(unsigned i = 0; i < gw.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
+    {
+        if(debugMode)
+            LOG.write("Start serializing player %1% at %2%\n") % i % GetLength();
         gw.GetPlayer(i).Serialize(*this);
+        if(debugMode)
+            LOG.write("Done serializing player %1% at %2%\n") % i % GetLength();
+    }
 
+    static boost::format evCtError("Event count mismatch. Expected: %1%, written: %2%");
+    static boost::format objCtError("Object count mismatch. Expected: %1%, written: %2%");
+
+    if(writtenEventIds.size() != writeEm->GetNumActiveEvents())
+        throw Error((evCtError % writeEm->GetNumActiveEvents() % writtenEventIds.size()).str());
     // If this check fails, we missed some objects or some objects were destroyed without decreasing the obj count
-    RTTR_Assert(writtenObjIds.size() == objectsCount);
-    RTTR_Assert(expectedObjectsCount == objectsCount + 1); // "Nothing" nodeObj does not get serialized
+    if(expectedNumObjects != writtenObjIds.size() + 1) // "Nothing" nodeObj does not get serialized
+        throw Error((objCtError % expectedNumObjects % (writtenObjIds.size() + 1)).str());
 
+    writeEm = NULL;
     writtenObjIds.clear();
+    writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(GameWorld& gw)
+void SerializedGameData::ReadSnapshot(boost::shared_ptr<Game> game)
 {
     Prepare(true);
 
+    GameWorld& gw = game->world;
     em = &gw.GetEvMgr();
 
-    expectedObjectsCount = PopUnsignedInt();
-    GameObject::SetObjCount(0);
+    expectedNumObjects = PopUnsignedInt();
 
-    gw.Deserialize(*this);
+    gw.Deserialize(game, *this);
     em->Deserialize(*this);
-    for (unsigned i = 0; i < gw.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
         gw.GetPlayer(i).Deserialize(*this);
 
+    static boost::format evCtError("Event count mismatch. Expected: %1%, read: %2%");
+    static boost::format objCtError("Object count mismatch. Expected: %1%, Existing: %2%");
+    static boost::format objCtError2("Object count mismatch. Expected: %1%, read: %2%");
+
     // If this check fails, we did not serialize all objects or there was an async
-    RTTR_Assert(expectedObjectsCount == GameObject::GetObjCount());
-    RTTR_Assert(expectedObjectsCount == objectsCount + 1); // "Nothing" nodeObj does not get serialized
+    if(readEvents.size() != em->GetNumActiveEvents())
+        throw Error((evCtError % em->GetNumActiveEvents() % readEvents.size()).str());
+    if(expectedNumObjects != GameObject::GetNumObjs())
+        throw Error((objCtError % expectedNumObjects % GameObject::GetNumObjs()).str());
+    if(expectedNumObjects != readObjects.size() + 1) // "Nothing" nodeObj does not get serialized
+        throw Error((objCtError2 % expectedNumObjects % (readObjects.size() + 1)).str());
+
     em = NULL;
     readObjects.clear();
-}
-
-void SerializedGameData::PushObject(const GameEvent* event, const bool known)
-{
-    PushObject<GameEvent>(event, known);
-}
-
-void SerializedGameData::ReadFromFile(BinaryFile& file)
-{
-    Serializer::ReadFromFile(file);
+    readEvents.clear();
 }
 
 void SerializedGameData::PushObject_(const GameObject* go, const bool known)
@@ -255,7 +285,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     RTTR_Assert(!isReading);
 
     // Gibts das Objekt gar nich?
-    if (!go)
+    if(!go)
     {
         // Null draufschreiben
         PushUnsignedInt(0);
@@ -264,8 +294,8 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 
     const unsigned objId = go->GetObjId();
 
-    RTTR_Assert(objId < GameObject::GetObjIDCounter());
-    if(objId >= GameObject::GetObjIDCounter())
+    RTTR_Assert(objId <= GameObject::GetObjIDCounter());
+    if(objId > GameObject::GetObjIDCounter())
     {
         LOG.write("%s\n") % _("An error occured while saving which was suppressed!");
         PushUnsignedInt(0);
@@ -277,31 +307,80 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     // If the object was already serialized skip the data
     if(IsObjectSerialized(objId))
     {
-        if (debugMode)
-            LOG.writeToFile("Saved known objId %u\n") % objId;
+        if(debugMode)
+            LOG.write("Saved known objId %u\n") % objId;
         return;
     }
 
-    if (debugMode)
-        LOG.writeToFile("Saving objId %u, obj#=%u\n") % objId % objectsCount;
+    if(debugMode)
+        LOG.write("Saving objId %u, obj#=%u\n") % objId % writtenObjIds.size();
 
     // Objekt merken
     writtenObjIds.insert(objId);
 
-    objectsCount++;
-    RTTR_Assert(objectsCount < GameObject::GetObjCount());
+    RTTR_Assert(writtenObjIds.size() < GameObject::GetNumObjs());
 
     // Objekt nich bekannt? Dann Type-ID noch mit drauf
     if(!known)
         PushUnsignedShort(go->GetGOT());
 
     // Objekt serialisieren
-    if (debugMode)
-        LOG.writeToFile("Start serializing %u\n") % objId;
+    if(debugMode)
+        LOG.write("Start serializing %1% at %2%\n") % objId % GetLength();
     go->Serialize(*this);
+    if(debugMode)
+        LOG.write("Done serializing %1% at %2%\n") % objId % GetLength();
 
     // Sicherheitscode reinschreiben
     PushUnsignedShort(GetSafetyCode(*go));
+}
+
+void SerializedGameData::PushEvent(const GameEvent* event)
+{
+    if(!event)
+    {
+        PushUnsignedInt(0);
+        return;
+    }
+
+    unsigned instanceId = event->GetInstanceId();
+    PushUnsignedInt(instanceId);
+    if(IsEventSerialized(instanceId))
+        return;
+    writtenEventIds.insert(instanceId);
+    if(debugMode)
+        LOG.write("Start serializing event %1% at %2%\n") % instanceId % GetLength();
+    event->Serialize(*this);
+    if(debugMode)
+        LOG.write("Done serializing event %1% at %2%\n") % instanceId % GetLength();
+    PushUnsignedShort(GetSafetyCode(*event));
+}
+
+const GameEvent* SerializedGameData::PopEvent()
+{
+    return PopEventNonConst();
+}
+
+GameEvent* SerializedGameData::PopEventNonConst()
+{
+    unsigned instanceId = PopUnsignedInt();
+    if(!instanceId)
+        return NULL;
+
+    // Note: em->GetEventInstanceCtr() might not be set yet
+    std::map<unsigned, GameEvent*>::const_iterator foundObj = readEvents.find(instanceId);
+    if(foundObj != readEvents.end())
+        return foundObj->second;
+    GameEvent* ev = new GameEvent(*this, instanceId);
+
+    unsigned short safety_code = PopUnsignedShort();
+
+    if(safety_code != GetSafetyCode(*ev))
+    {
+        LOG.write("SerializedGameData::PopEvent: ERROR: After loading Event(instanceId = %1%); Code is wrong!\n") % instanceId;
+        throw Error("Invalid safety code after PopEvent");
+    }
+    return ev;
 }
 
 /// FoW-Objekt
@@ -320,11 +399,6 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
 
     // Objekt serialisieren
     fowobj->Serialize(*this);
-}
-
-GameEvent* SerializedGameData::PopEvent()
-{
-    return PopObject<GameEvent>(GOT_EVENT);
 }
 
 FOWObject* SerializedGameData::PopFOWObject()
@@ -370,6 +444,7 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
     if(safety_code != GetSafetyCode(*go))
     {
         LOG.write("SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n") % objId % got;
+        delete go;
         throw Error("Invalid safety code after PopObject");
     }
 
@@ -381,26 +456,45 @@ unsigned short SerializedGameData::GetSafetyCode(const GameObject& go)
     return 0xFFFF ^ go.GetGOT() ^ go.GetObjId();
 }
 
+unsigned short SerializedGameData::GetSafetyCode(const GameEvent& ev)
+{
+    return 0xFFFF ^ ev.GetInstanceId();
+}
+
 void SerializedGameData::AddObject(GameObject* go)
 {
     RTTR_Assert(isReading);
     RTTR_Assert(!readObjects[go->GetObjId()]); // Do not call this multiple times per GameObject
     readObjects[go->GetObjId()] = go;
-    objectsCount++;
-    RTTR_Assert(objectsCount < expectedObjectsCount);
+    RTTR_Assert(readObjects.size() < expectedNumObjects);
 }
 
-bool SerializedGameData::IsObjectSerialized(const unsigned obj_id) const
+unsigned SerializedGameData::AddEvent(unsigned instanceId, GameEvent* ev)
+{
+    RTTR_Assert(isReading);
+    RTTR_Assert(!readEvents[instanceId]); // Do not call this multiple times per GameObject
+    readEvents[instanceId] = ev;
+    return instanceId;
+}
+
+bool SerializedGameData::IsObjectSerialized(unsigned obj_id) const
 {
     RTTR_Assert(!isReading);
-    RTTR_Assert(obj_id < GameObject::GetObjIDCounter());
+    RTTR_Assert(obj_id <= GameObject::GetObjIDCounter());
     return helpers::contains(writtenObjIds, obj_id);
+}
+
+bool SerializedGameData::IsEventSerialized(unsigned evInstanceid) const
+{
+    RTTR_Assert(!isReading);
+    RTTR_Assert(evInstanceid < writeEm->GetEventInstanceCtr());
+    return helpers::contains(writtenEventIds, evInstanceid);
 }
 
 GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
 {
     RTTR_Assert(isReading);
-    RTTR_Assert(obj_id < GameObject::GetObjIDCounter());
+    RTTR_Assert(obj_id <= GameObject::GetObjIDCounter());
     std::map<unsigned, GameObject*>::const_iterator foundObj = readObjects.find(obj_id);
     if(foundObj == readObjects.end())
         return NULL;

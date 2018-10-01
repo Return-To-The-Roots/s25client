@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,41 +15,43 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwEndgame.h"
-#include "Loader.h"
 #include "GameManager.h"
-#include "iwSave.h"
+#include "Loader.h"
 #include "WindowManager.h"
+#include "iwSave.h"
 #include "gameData/const_gui_ids.h"
 
 iwEndgame::iwEndgame()
-    : IngameWindow(CGI_ENDGAME, IngameWindow::posLastOrCenter, 240, 100, _("End game?"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_ENDGAME, IngameWindow::posLastOrCenter, Extent(240, 100), _("End game?"), LOADER.GetImageN("resource", 41))
 {
     // Ok
-    AddImageButton(0,  16, 24, 71, 57, TC_GREEN2, LOADER.GetImageN("io", 32)); //-V525
+    AddImageButton(0, DrawPoint(16, 24), Extent(71, 57), TC_GREEN2, LOADER.GetImageN("io", 32)); //-V525
     // Abbrechen
-    AddImageButton(1,  88, 24, 71, 57, TC_RED1, LOADER.GetImageN("io", 40));
+    AddImageButton(1, DrawPoint(88, 24), Extent(71, 57), TC_RED1, LOADER.GetImageN("io", 40));
     // Ok + Speichern
-    AddImageButton(2, 160, 24, 65, 57, TC_GREY, LOADER.GetImageN("io", 47));
+    AddImageButton(2, DrawPoint(160, 24), Extent(65, 57), TC_GREY, LOADER.GetImageN("io", 47));
 }
 
-
-void iwEndgame::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwEndgame::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 0: // OK
         {
             GAMEMANAGER.ShowMenu();
-        } break;
+        }
+        break;
         case 1: // Abbrechen
         {
             Close();
-        } break;
+        }
+        break;
         case 2: // OK + Speichern
         {
             WINDOWMANAGER.Show(new iwSave());
-        } break;
+        }
+        break;
     }
 }

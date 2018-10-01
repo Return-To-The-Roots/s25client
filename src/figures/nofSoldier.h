@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,46 +27,52 @@ class SerializedGameData;
 /// Basisklasse für alle Soldatentypen
 class nofSoldier : public noFigure
 {
-    protected:
+protected:
+    /// Heimatgebäude, ist bei Soldaten aus HQs das HQ!
+    nobBaseMilitary* building;
+    /// Hitpoints
+    unsigned char hitpoints;
 
-        /// Heimatgebäude, ist bei Soldaten aus HQs das HQ!
-        nobBaseMilitary* building;
-        /// Hitpoints
-        unsigned char hitpoints;
+protected:
+    /// Zeichnet den Soldaten beim ganz normalen Laufen
+    void DrawSoldierWalking(DrawPoint drawPt, bool waitingsoldier = false);
 
-    protected:
+    /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+    void AbrogateWorkplace() override;
 
-        /// Zeichnet den Soldaten beim ganz normalen Laufen
-        void DrawSoldierWalking(DrawPoint drawPt, bool waitingsoldier = false);
+public:
+    nofSoldier(const MapPoint pt, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
+               const unsigned char rank);
+    nofSoldier(const MapPoint pt, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank);
+    nofSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
-        void AbrogateWorkplace() override;
+    /// Aufräummethoden
+protected:
+    void Destroy_nofSoldier()
+    {
+        RTTR_Assert(HasNoHome());
+        Destroy_noFigure();
+    }
 
-    public:
+public:
+    void Destroy() override { Destroy_nofSoldier(); }
 
-        nofSoldier(const MapPoint pt, const unsigned char player,
-                   nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
-        nofSoldier(const MapPoint pt, const unsigned char player,
-                   nobBaseMilitary* const home, const unsigned char rank);
-        nofSoldier(SerializedGameData& sgd, const unsigned obj_id);
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofSoldier(SerializedGameData& sgd) const;
 
-        /// Aufräummethoden
-    protected:  void Destroy_nofSoldier() { RTTR_Assert(HasNoHome()); Destroy_noFigure(); }
-    public:     void Destroy() override { Destroy_nofSoldier(); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofSoldier(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofSoldier(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofSoldier(sgd); }
-
-        /// Liefert Rang des Soldaten
-        unsigned char GetRank() const;
-        unsigned char GetHitpoints() const;
-        bool HasNoHome() const { return building == NULL; }
+    /// Liefert Rang des Soldaten
+    unsigned char GetRank() const;
+    unsigned char GetHitpoints() const;
+    bool HasNoHome() const { return building == NULL; }
 };
 
 /// Comparator to sort soldiers by rank (and ID for ties)
 /// Template arguments defines the sort order: True for weak ones first, false for strong ones first
-template< bool T_SortAsc >
+template<bool T_SortAsc>
 struct ComparatorSoldiersByRank
 {
     bool operator()(const nofSoldier* left, const nofSoldier* right) const

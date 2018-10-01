@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -18,12 +18,13 @@
 #ifndef FreePathFinderImpl_h__
 #define FreePathFinderImpl_h__
 
-#include "pathfinding/FreePathFinder.h"
-#include "pathfinding/PathfindingPoint.h"
-#include "pathfinding/NewNode.h"
-#include "pathfinding/OpenListPrioQueue.h"
-#include "pathfinding/OpenListBinaryHeap.h"
 #include "EventManager.h"
+#include "pathfinding/FreePathFinder.h"
+#include "pathfinding/NewNode.h"
+#include "pathfinding/OpenListBinaryHeap.h"
+#include "pathfinding/OpenListPrioQueue.h"
+#include "pathfinding/PathfindingPoint.h"
+#include "world/GameWorldBase.h"
 
 typedef std::vector<FreePathNode> FreePathNodes;
 extern FreePathNodes fpNodes;
@@ -32,7 +33,7 @@ struct NodePtrCmpGreater
 {
     bool operator()(const FreePathNode* const lhs, const FreePathNode* const rhs) const
     {
-        if (lhs->estimatedDistance == rhs->estimatedDistance)
+        if(lhs->estimatedDistance == rhs->estimatedDistance)
         {
             // Enforce strictly monotonic increasing order
             return (lhs->idx > rhs->idx);
@@ -44,20 +45,15 @@ struct NodePtrCmpGreater
 
 struct GetEstimatedDistance
 {
-    unsigned operator()(const FreePathNode& lhs) const
-    {
-        return lhs.estimatedDistance;
-    }
+    unsigned operator()(const FreePathNode& lhs) const { return lhs.estimatedDistance; }
 };
 
-//typedef OpenListPrioQueue<NewNode2*, NodePtrCmpGreater> QueueImpl;
+// typedef OpenListPrioQueue<NewNode2*, NodePtrCmpGreater> QueueImpl;
 typedef OpenListBinaryHeap<FreePathNode, GetEstimatedDistance> QueueImpl;
 
 template<class TNodeChecker>
-bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
-              const bool randomRoute, const unsigned maxLength,
-              std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
-              const TNodeChecker& nodeChecker)
+bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, const bool randomRoute, const unsigned maxLength,
+                              std::vector<Direction>* route, unsigned* length, Direction* firstDir, const TNodeChecker& nodeChecker)
 {
     RTTR_Assert(start != dest);
 
@@ -66,9 +62,9 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
 
     QueueImpl todo;
     const unsigned startId = gwb_.GetIdx(start);
-    const unsigned destId  = gwb_.GetIdx(dest);
+    const unsigned destId = gwb_.GetIdx(dest);
     FreePathNode& startNode = fpNodes[startId];
-    FreePathNode& destNode  = fpNodes[destId];
+    FreePathNode& destNode = fpNodes[destId];
 
     // Anfangsknoten einfügen Und mit entsprechenden Werten füllen
     startNode.targetDistance = gwb_.CalcDistance(start, dest);
@@ -76,7 +72,6 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     startNode.lastVisited = currentVisit;
     startNode.prev = NULL;
     startNode.curDistance = 0;
-    startNode.dir = 0;
 
     todo.push(&startNode);
 
@@ -123,7 +118,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
         // Knoten in alle 6 Richtungen bilden
         for(unsigned z = startDir; z < startDir + 6; ++z)
         {
-            unsigned dir = z % 6;
+            Direction dir(z);
 
             // Koordinaten des entsprechenden umliegenden Punktes bilden
             MapPoint neighbourPos = gwb_.GetNeighbour(best.mapPt, dir);
@@ -137,7 +132,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
                 continue;
 
             // Knoten schon auf dem Feld gebildet?
-            if (neighbour.lastVisited == currentVisit)
+            if(neighbour.lastVisited == currentVisit)
             {
                 // Dann nur ggf. Weg und Vorgänger korrigieren, falls der Weg kürzer ist
                 if(best.curDistance + 1 < neighbour.curDistance)
@@ -146,13 +141,13 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
                     if(!nodeChecker.IsEdgeOk(best.mapPt, dir))
                         continue;
 
-                    neighbour.curDistance  = best.curDistance + 1;
+                    neighbour.curDistance = best.curDistance + 1;
                     neighbour.estimatedDistance = neighbour.curDistance + neighbour.targetDistance;
                     neighbour.prev = &best;
                     neighbour.dir = dir;
                     todo.rearrange(&neighbour);
                 }
-            }else
+            } else
             {
                 // Check node for all but the goal (goal is assumed to be ok)
                 if(&neighbour != &destNode)
@@ -184,7 +179,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
 
 /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
 template<class TNodeChecker>
-bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, 
+bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos,
                                 const TNodeChecker& nodeChecker, MapPoint* dest) const
 {
     RTTR_Assert(pos < route.size());

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,25 +15,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Font.h"
-#include "Settings.h"
 #include "ExtensionList.h"
+#include "FontStyle.h"
+#include "Loader.h"
+#include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
-#include "Loader.h"
-#include "Log.h"
-
-#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
-#include "libsiedler2/src/libsiedler2.h"
-#include "libsiedler2/src/IAllocator.h"
-#include "libutil/utf8/utf8.h"
+#include "helpers/containerUtils.h"
+#include "libsiedler2/ArchivItem_Bitmap_Player.h"
+#include "libsiedler2/IAllocator.h"
+#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/libsiedler2.h"
+#include "libutf8/utf8.h"
+#include "libutil/Log.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 #include <cmath>
 #include <vector>
 
-typedef utf8::iterator<std::string::const_iterator> utf8Iterator;
+//#define RTTR_PRINT_FONTS
 
+typedef utf8::iterator<std::string::const_iterator> utf8Iterator;
 
 template<typename T>
 struct GetNextCharAndIncIt;
@@ -58,13 +62,25 @@ struct GetNextCharAndIncIt<char>
     }
 };
 
+template<typename T_Iterator, typename T_Value = typename std::iterator_traits<T_Iterator>::value_type>
+struct MakePrevIt;
+
+template<typename T_Iterator>
+struct MakePrevIt<T_Iterator, uint32_t>
+{
+    void operator()(T_Iterator& it, const T_Iterator& itStart) const { --it; }
+};
+
+template<typename T_Iterator>
+struct MakePrevIt<T_Iterator, char>
+{
+    void operator()(T_Iterator& it, const T_Iterator& itStart) const { utf8::prior(it, itStart); }
+};
+
 template<class T_Iterator>
 struct Distance
 {
-    size_t operator()(const T_Iterator& first, const T_Iterator& last) const
-    {
-        return std::distance(first, last);
-    }
+    size_t operator()(const T_Iterator& first, const T_Iterator& last) const { return std::distance(first, last); }
 };
 
 template<class T_Iterator>
@@ -77,114 +93,99 @@ struct Distance<utf8::iterator<T_Iterator> >
 };
 
 template<class T_Iterator>
-T_Iterator nextIt(T_Iterator it, typename std::iterator_traits<T_Iterator>::difference_type n = 1)
+T_Iterator nextIt(T_Iterator it)
 {
-    std::advance(it, n);
-    return it;
+    return ++it;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_Font(obj), utf8_mapping(obj.utf8_mapping)
+glArchivItem_Font::glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL)
 {
-    if(obj.fontNoOutline)
-        fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));
-    if(obj.fontWithOutline)
-        fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontWithOutline)));
+    ClearCharInfoMapping();
 }
 
-glArchivItem_Font& glArchivItem_Font::operator=(const glArchivItem_Font& obj)
+glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj)
+    : ArchivItem_Font(obj), asciiMapping(obj.asciiMapping), utf8_mapping(obj.utf8_mapping)
 {
-    if(this == &obj)
-        return *this;
-
-    libsiedler2::ArchivItem_Font::operator=(obj);
-    utf8_mapping = obj.utf8_mapping;
     if(obj.fontNoOutline)
-        fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));
-    else
-        fontNoOutline.reset();
+        fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(obj.fontNoOutline->clone()));
     if(obj.fontWithOutline)
-        fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontWithOutline)));
-    else
-        fontWithOutline.reset();
-    return *this;
+        fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(obj.fontWithOutline->clone()));
 }
 
-inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigned int c) const
+bool glArchivItem_Font::CharExist(unsigned c) const
 {
-    std::map<unsigned int, CharInfo>::const_iterator it = utf8_mapping.find(c);
-    if(it != utf8_mapping.end())
-        return it->second;
+    if(c < asciiMapping.size())
+        return asciiMapping[c].first;
+    return helpers::contains(utf8_mapping, c);
+}
 
+inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigned c) const
+{
+    if(c < asciiMapping.size())
+    {
+        if(asciiMapping[c].first)
+            return asciiMapping[c].second;
+    } else
+    {
+        std::map<unsigned, CharInfo>::const_iterator it = utf8_mapping.find(c);
+        if(it != utf8_mapping.end())
+            return it->second;
+    }
     return placeHolder;
+}
+
+void glArchivItem_Font::ClearCharInfoMapping()
+{
+    typedef std::pair<bool, CharInfo> CharPair;
+    BOOST_FOREACH(CharPair& entry, asciiMapping)
+        entry.first = false;
+    utf8_mapping.clear();
+}
+
+void glArchivItem_Font::AddCharInfo(unsigned c, const CharInfo& info)
+{
+    if(c < asciiMapping.size())
+        asciiMapping[c] = std::make_pair(true, info);
+    else
+        utf8_mapping[c] = info;
 }
 
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
  */
-inline void glArchivItem_Font::DrawChar(const unsigned c,
-                                        std::vector<GL_T2F_V3F_Struct>& vertices,
-                                        short& cx,
-                                        short& cy, //-V669
-                                        float tw,
-                                        float th) const
+inline void glArchivItem_Font::DrawChar(unsigned curChar, VertexArrays& vertices, DrawPoint& curPos) const
 {
-    CharInfo ci = GetCharInfo(c);
+    CharInfo ci = GetCharInfo(curChar);
 
-    float tx1 = static_cast<float>(ci.x) / tw;
-    float tx2 = static_cast<float>(ci.x + ci.width) / tw;
-    float ty1 = static_cast<float>(ci.y) / th;
-    float ty2 = static_cast<float>(ci.y + dy) / th;
+    GlPoint texCoord1(ci.pos);
+    GlPoint texCoord2(ci.pos + DrawPoint(ci.width, dy));
 
-    GL_T2F_V3F_Struct tmp;
-    tmp.tx = tx1;
-    tmp.ty = ty1;
-    tmp.x = cx;
-    tmp.y = cy;
-    tmp.z = 0.0f;
-    vertices.push_back(tmp);
+    vertices.texCoords.push_back(texCoord1);
+    vertices.texCoords.push_back(GlPoint(texCoord1.x, texCoord2.y));
+    vertices.texCoords.push_back(texCoord2);
+    vertices.texCoords.push_back(GlPoint(texCoord2.x, texCoord1.y));
 
-    tmp.tx = tx1;
-    tmp.ty = ty2;
-    tmp.x = cx;
-    tmp.y = (GLfloat)(cy + dy);
-    tmp.z = 0.0f;
-    vertices.push_back(tmp);
+    GlPoint curPos1(curPos);
+    GlPoint curPos2(curPos + DrawPoint(ci.width, dy));
 
-    tmp.tx = tx2;
-    tmp.ty = ty2;
-    tmp.x = (GLfloat)(cx + ci.width);
-    tmp.y = (GLfloat)(cy + dy);
-    tmp.z = 0.0f;
-    vertices.push_back(tmp);
+    vertices.vertices.push_back(curPos1);
+    vertices.vertices.push_back(GlPoint(curPos1.x, curPos2.y));
+    vertices.vertices.push_back(curPos2);
+    vertices.vertices.push_back(GlPoint(curPos2.x, curPos1.y));
 
-    tmp.tx = tx2;
-    tmp.ty = ty1;
-    tmp.x = (GLfloat)(cx + ci.width);
-    tmp.y = cy;
-    tmp.z = 0.0f;
-    vertices.push_back(tmp);
-
-    cx += ci.width;
+    curPos.x += ci.width;
 }
 
-/**
- *  @brief
- */
-void glArchivItem_Font::Draw(DrawPoint pos,
-                             const ucString& wtext,
-                             unsigned int format,
-                             unsigned int color,
-                             unsigned short length,
-                             unsigned short max,
-                             const ucString& wend)
+void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, unsigned format, unsigned color, unsigned short length,
+                             unsigned short maxWidth, const ucString& end)
 {
     // etwas dämlich, aber einfach ;)
     // da wir hier erstmal in utf8 konvertieren, und dann im anderen Draw wieder zurück ...
     std::string text = cvUnicodeToUTF8(wtext);
-    std::string end = cvUnicodeToUTF8(wend);
-    Draw(pos, text, format, color, length, max, end);
+    std::string utf8End = cvUnicodeToUTF8(end);
+    Draw(pos, text, format, color, length, maxWidth, utf8End);
 }
 
 /**
@@ -194,111 +195,101 @@ void glArchivItem_Font::Draw(DrawPoint pos,
  *  @param[in] y      Y-Koordinate
  *  @param[in] text   Der Text
  *  @param[in] format Format des Textes (verodern)
- *                      @p glArchivItem_Font::DF_LEFT    - Text links ( standard )
- *                      @p glArchivItem_Font::DF_CENTER  - Text mittig
- *                      @p glArchivItem_Font::DF_RIGHT   - Text rechts
- *                      @p glArchivItem_Font::DF_TOP     - Text oben ( standard )
- *                      @p glArchivItem_Font::DF_VCENTER - Text vertikal zentriert
- *                      @p glArchivItem_Font::DF_BOTTOM  - Text unten
+ *                      @p FontStyle::LEFT    - Text links ( standard )
+ *                      @p FontStyle::CENTER  - Text mittig
+ *                      @p FontStyle::RIGHT   - Text rechts
+ *                      @p FontStyle::TOP     - Text oben ( standard )
+ *                      @p FontStyle::VCENTER - Text vertikal zentriert
+ *                      @p FontStyle::BOTTOM  - Text unten
  *  @param[in] color  Farbe des Textes
  *  @param[in] length Länge des Textes
  *  @param[in] max    maximale Länge
  *  @param     end    Suffix for displaying a truncation of the text (...)
  */
-void glArchivItem_Font::Draw(DrawPoint pos,
-                             const std::string& textIn,
-                             unsigned int format,
-                             unsigned int color,
-                             unsigned short length,
-                             unsigned short max,
-                             const std::string& end)
+void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned format, unsigned color, unsigned short length,
+                             unsigned short maxWidth, const std::string& end)
 {
     if(!fontNoOutline)
         initFont();
 
-    std::string text;
-    if(!utf8::is_valid(textIn.begin(), textIn.end()))
-    {
-        RTTR_Assert(false); // Can only handle UTF-8 strings!
-        // However old savegames/replays might contain invalid chars -> Replace
-        // TODO: Remove this after next savegame version bump (cur: 31)!
-        text.reserve(textIn.length());
-        utf8::replace_invalid(textIn.begin(), textIn.end(), std::back_inserter(text));
-    } else
-        text = textIn;
-
-    RTTR_Assert(utf8::is_valid(end.begin(), end.end()));
+    RTTR_Assert(isValidUTF8(text));
 
     // Breite bestimmen
     if(length == 0)
         length = (unsigned short)text.length();
 
-    unsigned maxNumChars = 0;
-    unsigned short textWidth = getWidth(text, length, max, &maxNumChars);
-
+    unsigned maxNumChars;
+    unsigned short textWidth;
     bool drawEnd;
-    if(!end.empty() && maxNumChars < length)
+    if(maxWidth == 0xFFFF)
     {
-        unsigned short endWidth = getWidth(end, 0, max);
-
-        // If "end" does not fit, draw nothing
-        if(textWidth < endWidth)
-            return;
-
-        // Wieviele Buchstaben gehen in den "Rest" (ohne "end")
-        textWidth = getWidth(text, length, textWidth - endWidth, &maxNumChars) + endWidth;
-        drawEnd = true;
-    } else
+        maxNumChars = length;
+        textWidth = getWidth(text, length);
         drawEnd = false;
+    } else
+    {
+        RTTR_Assert(isValidUTF8(end));
+        textWidth = getWidth(text, length, maxWidth, &maxNumChars);
+        if(!end.empty() && maxNumChars < length)
+        {
+            unsigned short endWidth = getWidth(end);
+
+            // If "end" does not fit, draw nothing
+            if(textWidth < endWidth)
+                return;
+
+            // Wieviele Buchstaben gehen in den "Rest" (ohne "end")
+            textWidth = getWidth(text, length, textWidth - endWidth, &maxNumChars) + endWidth;
+            drawEnd = true;
+        } else
+            drawEnd = false;
+    }
 
     if(maxNumChars == 0)
         return;
-    std::string::iterator itEnd = text.begin();
+    std::string::const_iterator itEnd = text.begin();
     std::advance(itEnd, maxNumChars);
 
-    if( (format & 3) == DF_RIGHT)
-        pos.x -= textWidth;
-    if( (format & 12) == DF_BOTTOM)
+    // Vertical alignment (assumes 1 line only!)
+    if(format & FontStyle::BOTTOM)
         pos.y -= dy;
-    else if( (format & 12) == DF_VCENTER)
+    else if(format & FontStyle::VCENTER)
         pos.y -= dy / 2;
-
-    short cx = pos.x, cy = pos.y;
-    if( (format & 3) == DF_CENTER)
+    // Horizontal center must change current line only. Everything else changes the start point
+    DrawPoint curPos(pos);
+    // Horizontal alignment
+    if(format & FontStyle::RIGHT)
+        curPos.x = pos.x -= textWidth;
+    else if(format & FontStyle::CENTER)
     {
         unsigned short line_width;
-        std::string::iterator itNl = std::find(text.begin(), itEnd, '\n');
+        std::string::const_iterator itNl = std::find(text.begin(), itEnd, '\n');
         if(itNl != itEnd)
             line_width = getWidthInternal(text.begin(), itNl);
         else
             line_width = textWidth;
-        cx = pos.x - line_width / 2;
+        curPos.x = pos.x - line_width / 2;
     }
 
-    std::vector<GL_T2F_V3F_Struct> texList;
-    texList.reserve((maxNumChars + end.length()) * 4);
-    float tw = fontNoOutline->GetTexWidth();
-    float th = fontNoOutline->GetTexHeight();
-    
-    for(std::string::iterator it = text.begin(); it != itEnd;)
+    texList.texCoords.clear();
+    texList.vertices.clear();
+
+    for(std::string::const_iterator it = text.begin(); it != itEnd;)
     {
-        const uint32_t curChar = utf8::next(it, text.end());
+        const uint32_t curChar = utf8::next(it, itEnd);
         if(curChar == '\n')
         {
-            cy += dy;
-            if( (format & 3) == DF_CENTER)
+            if(format & FontStyle::CENTER)
             {
                 unsigned short line_width;
-                std::string::iterator itNext = nextIt(it);
-                std::string::iterator itNl = std::find(itNext, itEnd, '\n');
-                line_width = getWidthInternal(itNext, itNl);
-                cx = pos.x - line_width / 2;
-            }
-            else
-                cx = pos.x;
-        }
-        else
-            DrawChar(curChar, texList, cx, cy, tw, th);
+                std::string::const_iterator itNl = std::find(it, itEnd, '\n');
+                line_width = getWidthInternal(it, itNl);
+                curPos.x = pos.x - line_width / 2;
+            } else
+                curPos.x = pos.x;
+            curPos.y += dy;
+        } else
+            DrawChar(curChar, texList, curPos);
     }
 
     if(drawEnd)
@@ -308,24 +299,39 @@ void glArchivItem_Font::Draw(DrawPoint pos,
             const uint32_t curChar = utf8::next(it, end.end());
             if(curChar == '\n')
             {
-                cy += dy;
-                cx = pos.x;
+                curPos.x = pos.x;
+                curPos.y += dy;
             } else
-                DrawChar(curChar, texList, cx, cy, tw, th);
+                DrawChar(curChar, texList, curPos);
         }
     }
 
-    if(texList.empty())
+    if(texList.vertices.empty())
         return;
 
-    glVertexPointer(3, GL_FLOAT, sizeof(GL_T2F_V3F_Struct), &texList[0].x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(GL_T2F_V3F_Struct), &texList[0].tx);
-    VIDEODRIVER.BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? fontNoOutline->GetTexture() : fontWithOutline->GetTexture());
+    // Get texture first as it might need to be created
+    glArchivItem_Bitmap& usedFont = (format & FontStyle::NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
+    unsigned texture = usedFont.GetTexture();
+    if(!texture)
+        return;
+    const GlPoint texSize(usedFont.GetTexSize());
+    RTTR_Assert(texList.texCoords.size() == texList.vertices.size());
+    RTTR_Assert(texList.texCoords.size() % 4u == 0);
+    // Vectorizable loop
+    for(unsigned i = 0; i < texList.texCoords.size(); i += 4)
+    {
+        for(int j = 0; j < 4; j++)
+            texList.texCoords[i + j] /= texSize;
+    }
+
+    glVertexPointer(2, GL_FLOAT, 0, &texList.vertices[0]);
+    glTexCoordPointer(2, GL_FLOAT, 0, &texList.texCoords[0]);
+    VIDEODRIVER.BindTexture(texture);
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
-    glDrawArrays(GL_QUADS, 0, texList.size());
+    glDrawArrays(GL_QUADS, 0, texList.vertices.size());
 }
 
-template<class T_Iterator>
+template<bool T_limitWidth, class T_Iterator>
 unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const
 {
     unsigned curLineLen = 0, maxLineLen = 0;
@@ -334,56 +340,81 @@ unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_It
         const uint32_t curChar = GetNextCharAndIncIt<typename std::iterator_traits<T_Iterator>::value_type>()(it, end);
         if(curChar == '\n')
         {
-            if(curLineLen > maxLineLen) // Längste Zeile
+            if(curLineLen > maxLineLen)
                 maxLineLen = curLineLen;
             curLineLen = 0;
         } else
         {
             const unsigned cw = CharWidth(curChar);
-            // haben wir das maximum erreicht?
-            if(curLineLen + cw > maxWidth && it != begin)
+            // If we limit the width and the current line will be longer, stop before it
+            // Do not stop if this is the first char in this line
+            if(T_limitWidth && curLineLen != 0 && curLineLen + cw > maxWidth)
             {
-                if(maxNumChars)
-                    *maxNumChars = static_cast<unsigned>(std::distance(begin, it));
+                MakePrevIt<T_Iterator>()(it, begin);
+                *maxNumChars = static_cast<unsigned>(std::distance(begin, it));
                 return curLineLen;
             }
             curLineLen += cw;
         }
     }
 
-    if(curLineLen > maxLineLen) // Letzte Zeile kann auch die längste sein und hat kein \n am Ende
-        maxLineLen = curLineLen;
-
-    if(maxNumChars)
+    if(T_limitWidth)
         *maxNumChars = static_cast<unsigned>(std::distance(begin, end));
 
-    return maxLineLen;
+    // Last line can be longest
+    return std::max(curLineLen, maxLineLen);
 }
 
-/**
- *  liefert die Länge einer Zeichenkette.
- *
- *  @param[in]     text   Der Text
- *  @param[in]     length Textlänge
- *  @param[in,out] max    In:  maximale Breite des Textes in Pixeln
- *                        Out: maximale Breite in Buchstaben der in "max"-Pixel reinpasst.
- *
- *  @return Breite des Textes in Pixeln
- */
-unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length, unsigned max_width, unsigned* maxNumChars) const
+template<class T_Iterator>
+unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const
 {
-    if(length == 0)
-        length = unsigned(text.length());
-
-    return getWidthInternal(text.begin(), text.begin() + length, max_width, maxNumChars);
+    return getWidthInternal<true>(begin, end, maxWidth, maxNumChars);
 }
 
-unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned max_width, unsigned* maxNumChars) const
+template<class T_Iterator>
+unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_Iterator& end) const
 {
-    if(length == 0)
-        length = unsigned(text.length());
+    return getWidthInternal<false>(begin, end, 0, NULL);
+}
 
-    return getWidthInternal(text.begin(), text.begin() + length, max_width, maxNumChars);
+unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const
+{
+    return getWidthInternal(text.begin(), length ? text.begin() + length : text.end(), maxWidth, maxNumChars);
+}
+
+unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const
+{
+    return getWidthInternal(text.begin(), length ? text.begin() + length : text.end(), maxWidth, maxNumChars);
+}
+
+unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length) const
+{
+    return getWidthInternal(text.begin(), length ? text.begin() + length : text.end());
+}
+
+unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length) const
+{
+    return getWidthInternal(text.begin(), length ? text.begin() + length : text.end());
+}
+
+Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsigned format) const
+{
+    if(text.empty())
+        return Rect(Position(pos), 0, 0);
+    unsigned width = getWidth(text);
+    unsigned numLines = static_cast<unsigned>(std::count(text.begin(), text.end(), '\n')) + 1;
+    Rect result(Position(pos), width, numLines * getHeight());
+    Position offset(0, 0);
+    if((format & 3) == FontStyle::RIGHT)
+        offset.x = width;
+    else if((format & 3) == FontStyle::CENTER)
+        offset.x = width / 2;
+    if((format & 12) == FontStyle::BOTTOM)
+        offset.y = getHeight();
+    else if((format & 12) == FontStyle::VCENTER)
+        offset.y = getHeight() / 2;
+    result.move(-offset);
+    return result;
 }
 
 /**
@@ -391,7 +422,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
  */
 std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& text)
 {
-    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle UTF-8 strings!
+    RTTR_Assert(isValidUTF8(text)); // Can only handle UTF-8 strings!
 
     std::vector<std::string> destStrings;
     if(positions.empty())
@@ -419,17 +450,19 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
  *  @param[in]     primary_width   Maximale Breite der ersten Zeile
  *  @param[in]     secondary_width Maximale Breite der weiteren Zeilen
  */
-glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width)
+glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text, const unsigned short primary_width,
+                                                           const unsigned short secondary_width)
 {
     if(!fontNoOutline)
         initFont();
 
-    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle UTF-8 strings!
-    
+    RTTR_Assert(isValidUTF8(text)); // Can only handle UTF-8 strings!
+
     // Current line width
     unsigned line_width = 0;
     // Width of current word
     unsigned word_width = 0;
+    unsigned curMaxLineWidth = primary_width;
 
     WrapInfo wi;
     // We start the first line at the first char (so wi.positions.size() == numLines)
@@ -441,17 +474,16 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
 
     const unsigned spaceWidth = CharWidth(' ');
 
-    uint32_t curChar = 1;
     for(;; ++it)
     {
-        curChar = (it != itEnd) ? *it : 0;
+        uint32_t curChar = (it != itEnd) ? *it : 0;
         // Word ended
         if(curChar == 0 || curChar == '\n' || curChar == ' ')
         {
             // Is the current word to long for the current line
-            if(word_width + line_width > ((wi.positions.size() == 1) ? primary_width : secondary_width))
+            if(word_width + line_width > curMaxLineWidth)
             {
-                // Word does not fit -> Start new line 
+                // Word does not fit -> Start new line
 
                 // Can we fit the word in one line?
                 if(word_width <= secondary_width)
@@ -467,7 +499,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                         unsigned letter_width = CharWidth(*itWord);
 
                         // Can we fit the letter onto current line?
-                        if(line_width + letter_width <= ((wi.positions.size() == 1) ? primary_width : secondary_width))
+                        if(line_width + letter_width <= curMaxLineWidth)
                             line_width += letter_width; // Add it
                         else
                         {
@@ -481,6 +513,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                     // Restart word
                     word_width = 0;
                 }
+                curMaxLineWidth = secondary_width;
             }
             if(curChar == 0)
                 break;
@@ -491,7 +524,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                 line_width += word_width + spaceWidth;
                 word_width = 0;
                 itWordStart = nextIt(it);
-            }else if(curChar == '\n')
+            } else if(curChar == '\n')
             {
                 // If line break add new line (after all the word-breaking above)
                 itWordStart = nextIt(it);
@@ -501,8 +534,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                 line_width = 0;
                 wi.positions.push_back(static_cast<unsigned>(itWordStart.base() - text.begin()));
             }
-        }
-        else
+        } else
         {
             // Some char -> Add its width
             word_width += CharWidth(curChar);
@@ -520,13 +552,13 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
  */
 void glArchivItem_Font::initFont()
 {
-    utf8_mapping.clear();
+    ClearCharInfoMapping();
     fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
     fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
 
     // first, we have to find how much chars we really have
-    unsigned int numChars = 0;
-    for(unsigned int i = 0; i < size(); ++i)
+    unsigned numChars = 0;
+    for(unsigned i = 0; i < size(); ++i)
     {
         if(get(i))
             ++numChars;
@@ -539,17 +571,15 @@ void glArchivItem_Font::initFont()
     // Calc lines required (rounding up)
     const unsigned numLines = (numChars + numCharsPerLine - 1) / numCharsPerLine;
 
-    BOOST_CONSTEXPR_OR_CONST unsigned spacing = 1;
-    unsigned w = (dx + spacing * 2) * numCharsPerLine + spacing * 2;
-    unsigned h = (dy + spacing * 2) * numLines + spacing * 2;
-    std::vector<unsigned char> bufferWithOutline(w * h * 4); // RGBA Puffer für alle Buchstaben
-    std::vector<unsigned char> bufferNoOutline(w * h * 4); // RGBA Puffer für alle Buchstaben
+    BOOST_CONSTEXPR_OR_CONST Extent spacing(1, 1);
+    Extent texSize = (Extent(dx, dy) + spacing * 2u) * Extent(numCharsPerLine, numLines) + spacing * 2u;
+    libsiedler2::PixelBufferARGB bufferWithOutline(texSize.x, texSize.y);
+    libsiedler2::PixelBufferARGB bufferNoOutline(texSize.x, texSize.y);
 
-    libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
-    unsigned x = spacing;
-    unsigned y = spacing;
+    const libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
+    Position curPos(spacing);
     numChars = 0;
-    for(unsigned int i = 0; i < size(); ++i)
+    for(unsigned i = 0; i < size(); ++i)
     {
         const libsiedler2::ArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
         if(!c)
@@ -557,35 +587,39 @@ void glArchivItem_Font::initFont()
 
         if((numChars % numCharsPerLine) == 0 && numChars > 0)
         {
-            y += dy + spacing * 2;
-            x = spacing;
+            curPos.y += dy + spacing.y * 2;
+            curPos.x = spacing.x;
         }
 
         // Spezialpalette (blaue Spielerfarben sind Grau) verwenden, damit man per OpenGL einfärben kann!
-        c->print(&bufferNoOutline.front(),   w, h, libsiedler2::FORMAT_RGBA, palette, 128, x, y, 0, 0, 0, 0, true);
-        c->print(&bufferWithOutline.front(), w, h, libsiedler2::FORMAT_RGBA, palette, 128, x, y);
+        c->print(bufferNoOutline, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0, true);
+        c->print(bufferWithOutline, palette, 128, curPos.x, curPos.y);
 
-        CharInfo ci(x, y, std::min<unsigned short>(dx + 2, c->getWidth()));
+        CharInfo ci(curPos, std::min<unsigned short>(dx + 2, c->getWidth()));
 
-        utf8_mapping[i] = ci;
-        x += dx + spacing * 2;
+        AddCharInfo(i, ci);
+        curPos.x += dx + spacing.x * 2;
         ++numChars;
     }
 
-    fontNoOutline->create(  w, h, &bufferNoOutline.front(),   w, h, libsiedler2::FORMAT_RGBA, palette);
-    fontWithOutline->create(w, h, &bufferWithOutline.front(), w, h, libsiedler2::FORMAT_RGBA, palette);
+    fontNoOutline->create(bufferNoOutline);
+    fontWithOutline->create(bufferWithOutline);
 
-    // Set the placeholder for non-existant glyphs. Use '?' if possible (should always be)
-    if(helpers::contains(utf8_mapping, '?'))
-        placeHolder = utf8_mapping['?'];
+    // Set the placeholder for non-existant glyphs. Use '?' (should always be possible)
+    if(CharExist('?'))
+        placeHolder = GetCharInfo('?');
     else
     {
         // Fall back to first glyph in map (kinda random, but should not happen anyway)
         LOG.writeToFile("Cannot find '?' glyph in font!");
-        placeHolder = utf8_mapping.begin()->second;
+        throw std::runtime_error("Cannot find '?' glyph in font. What shall I use as fallback?");
     }
 
-    /*ArchivInfo items;
-    items.pushC(_font);
-    libsiedler2::loader::WriteBMP((std::string("font") + std::string(getName()) + std::string(".bmp")).c_str(), LOADER.GetPaletteN("colors"), &items);*/
+#ifdef RTTR_PRINT_FONTS
+    Archiv items;
+    items.pushC(*fontNoOutline);
+    libsiedler2::Write("font" + getName() + "_noOutline.bmp", items);
+    items.setC(0, *fontWithOutline);
+    libsiedler2::Write("font" + getName() + "_Outline.bmp", items);
+#endif
 }

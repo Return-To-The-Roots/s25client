@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,6 +19,7 @@
 #define NOF_METALWORKER_H_
 
 #include "nofWorkman.h"
+#include "notifications/Subscribtion.h"
 
 class SerializedGameData;
 class nobUsual;
@@ -27,30 +28,32 @@ class nobUsual;
 class nofMetalworker : public nofWorkman
 {
     GoodType nextProducedTool;
-    protected:
-        /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override;
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override;
-        /// Returns the next tool to be produced according to the orders
-        GoodType GetOrderedTool();
-        /// Returns a random tool according to the priorities
-        GoodType GetRandomTool();
-        
-        unsigned ToolsOrderedTotal() const;
+    Subscribtion toolOrderSub;
 
-        bool ReadyForWork() override;
+protected:
+    /// Zeichnet ihn beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override;
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override;
+    /// Returns the next tool to be produced according to the orders
+    GoodType GetOrderedTool();
+    /// Returns a random tool according to the priorities
+    GoodType GetRandomTool();
 
-    public:
+    bool HasToolOrder() const;
 
-        nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMetalworker(SerializedGameData& sgd, const unsigned obj_id);
-        void Serialize(SerializedGameData& sgd) const override;
+    bool AreWaresAvailable() const override;
+    bool StartWorking() override;
+    void CheckForOrders();
 
-        GO_Type GetGOT() const override { return GOT_NOF_METALWORKER; }
-        void HandleDerivedEvent(const unsigned int id) override;
+public:
+    nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofMetalworker(SerializedGameData& sgd, const unsigned obj_id);
+    void Serialize(SerializedGameData& sgd) const override;
+
+    GO_Type GetGOT() const override { return GOT_NOF_METALWORKER; }
 };
 
 #endif

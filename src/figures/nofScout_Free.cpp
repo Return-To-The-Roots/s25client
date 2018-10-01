@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,22 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofScout_Free.h"
 
-#include "nodeObjs/noFlag.h"
-#include "Random.h"
 #include "SerializedGameData.h"
+#include "pathfinding/PathConditionHuman.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
+#include "nodeObjs/noFlag.h"
+#include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
-#include "boost/foreach.hpp"
+#include <boost/foreach.hpp>
 #include <algorithm>
 class noRoadNode;
 
 nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : nofFlagWorker(JOB_SCOUT, pos, player, goal), nextPos(pos), rest_way(0)
-{
-}
+{}
 
 void nofScout_Free::Serialize_nofScout_Free(SerializedGameData& sgd) const
 {
@@ -39,17 +40,15 @@ void nofScout_Free::Serialize_nofScout_Free(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(rest_way);
 }
 
-nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id),
-    nextPos(sgd.PopMapPoint()), rest_way(sgd.PopUnsignedInt())
-{
-}
+nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id)
+    : nofFlagWorker(sgd, obj_id), nextPos(sgd.PopMapPoint()), rest_way(sgd.PopUnsignedInt())
+{}
 
 void nofScout_Free::Draw(DrawPoint drawPt)
 {
     // normales Laufen zeichnen
     DrawWalking(drawPt);
 }
-
 
 void nofScout_Free::GoalReached()
 {
@@ -67,20 +66,16 @@ void nofScout_Free::Walked()
     switch(state)
     {
         default: break;
-        case STATE_GOTOFLAG:
-        {
-            GoToFlag();
-        } break;
-        case STATE_SCOUT_SCOUTING:
-        {
-            Scout();
-        } break;
+        case STATE_GOTOFLAG: { GoToFlag();
+        }
+        break;
+        case STATE_SCOUT_SCOUTING: { Scout();
+        }
+        break;
     }
 }
 
-void nofScout_Free::HandleDerivedEvent(const unsigned int  /*id*/)
-{
-}
+void nofScout_Free::HandleDerivedEvent(const unsigned /*id*/) {}
 
 void nofScout_Free::LostWork()
 {
@@ -88,19 +83,20 @@ void nofScout_Free::LostWork()
 
     switch(state)
     {
-        default: break;
-            // Wenn wir noch hingehen, dann zurückgehen
-        case STATE_FIGUREWORK:
-        {
-            GoHome();
-        } break;
+        default:
+            break;
+        // Wenn wir noch hingehen, dann zurückgehen
+        case STATE_FIGUREWORK: { GoHome();
+        }
+        break;
         case STATE_GOTOFLAG:
         case STATE_SCOUT_SCOUTING:
         {
             // dann sofort rumirren, wenn wir zur Flagge gehen
             StartWandering();
             state = STATE_FIGUREWORK;
-        } break;
+        }
+        break;
     }
 }
 
@@ -121,41 +117,41 @@ void nofScout_Free::Scout()
     {
         // Nächsten Punkt suchen
         GoToNewNode();
-    }
-    else
+    } else
     {
         // Weg suchen
         unsigned char dir = gwg->FindHumanPath(pos, nextPos, 30);
 
         // Wenns keinen gibt, neuen suchen, ansonsten hinlaufen
-        if(dir == 0xFF)
+        if(dir == INVALID_DIR)
             // Neuen Punkt suchen
             GoToNewNode();
         else
-            StartWalking(dir);
+            StartWalking(Direction::fromInt(dir));
     }
 }
 
 const unsigned SCOUT_RANGE = 16;
 
-namespace{
-    struct IsScoutable
-    {
-        const unsigned char player;
-        const GameWorldGame& gwg;
-        IsScoutable(const unsigned char player, const GameWorldGame& gwg): player(player), gwg(gwg){}
+namespace {
+struct IsScoutable
+{
+    const unsigned char player;
+    const GameWorldGame& gwg;
+    IsScoutable(const unsigned char player, const GameWorldGame& gwg) : player(player), gwg(gwg) {}
 
-        bool operator()(const MapPoint& pt) const
-        {
-            // Liegt Punkt im Nebel und für Figuren begehbar?
-            return gwg.CalcVisiblityWithAllies(pt, player) != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
-        }
-    };
-}
+    bool operator()(const MapPoint& pt) const
+    {
+        // Liegt Punkt im Nebel und für Figuren begehbar?
+        return gwg.CalcVisiblityWithAllies(pt, player) != VIS_VISIBLE && PathConditionHuman(gwg).IsNodeOk(pt);
+    }
+};
+} // namespace
 
 void nofScout_Free::GoToNewNode()
 {
-    std::vector<MapPoint> available_points = gwg->GetPointsInRadius<0>(flag->GetPos(), SCOUT_RANGE, Identity<MapPoint>(), IsScoutable(player, *gwg));
+    std::vector<MapPoint> available_points =
+      gwg->GetPointsInRadius<0>(flag->GetPos(), SCOUT_RANGE, Identity<MapPoint>(), IsScoutable(player, *gwg));
     // Shuffle the points
     RANDOM_FUNCTOR(randFunc);
     std::random_shuffle(available_points.begin(), available_points.end(), randFunc);
@@ -163,7 +159,8 @@ void nofScout_Free::GoToNewNode()
     {
         // Is there a path to this point and is the point also not to far away from the flag?
         // (Second check avoids running around mountains with a very far way back)
-        if(gwg->FindHumanPath(pos, pt, SCOUT_RANGE * 2) != 0xFF && gwg->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4) != 0xFF)
+        if(gwg->FindHumanPath(pos, pt, SCOUT_RANGE * 2) != 0xFF
+           && gwg->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4) != 0xFF)
         {
             // Take it
             nextPos = pt;

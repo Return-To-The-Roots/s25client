@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,11 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/MapGeometry.h"
+#include "gameData/MapConsts.h"
 #include <stdexcept>
 
-Point<int> GetNeighbour(const Point<int>& p, const Direction dir)
+Position GetNeighbour(const Position& p, const Direction dir)
 {
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
     Modifications for the dirs:
@@ -31,63 +32,74 @@ Point<int> GetNeighbour(const Point<int>& p, const Direction dir)
                 SE   0|1    1|1
                 SW  -1|1    0|1
     */
-    switch(Direction::Type(dir))
+    switch(dir.native_value())
     {
-    case Direction::WEST:
-        return Point<int>(p.x - 1, p.y);
-    case Direction::NORTHWEST:
-        return Point<int>(p.x - !(p.y & 1), p.y - 1);
-    case Direction::NORTHEAST:
-        return Point<int>(p.x + (p.y & 1), p.y - 1);
-    case Direction::EAST:
-        return Point<int>(p.x + 1, p.y);
-    case Direction::SOUTHEAST:
-        return Point<int>(p.x + (p.y & 1), p.y + 1);
-    default:
-        RTTR_Assert(dir == Direction::SOUTHWEST);
-        return Point<int>(p.x - !(p.y & 1), p.y + 1);
+        case Direction::WEST: return Position(p.x - 1, p.y);
+        case Direction::NORTHWEST: return Position(p.x - !(p.y & 1), p.y - 1);
+        case Direction::NORTHEAST: return Position(p.x + (p.y & 1), p.y - 1);
+        case Direction::EAST: return Position(p.x + 1, p.y);
+        case Direction::SOUTHEAST: return Position(p.x + (p.y & 1), p.y + 1);
+        default: RTTR_Assert(dir == Direction::SOUTHWEST); return Position(p.x - !(p.y & 1), p.y + 1);
     }
 }
 
-Point<int> GetNeighbour2(Point<int> pt, unsigned dir)
+Position GetNeighbour2(Position pt, unsigned dir)
 {
     if(dir >= 12)
         throw std::logic_error("Invalid direction!");
 
-    static const int ADD_Y[12] =
-    { 0, -1, -2, -2, -2, -1, 0, 1, 2, 2, 2, 1 };
+    static const int ADD_Y[12] = {0, -1, -2, -2, -2, -1, 0, 1, 2, 2, 2, 1};
 
     switch(dir)
     {
-    case 0:  pt.x -= 2; break;
-    case 1:  pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
-    case 2:  pt.x -= 1; break;
-    case 3:  break;
-    case 4:  pt.x += 1; break;
-    case 5:  pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
-    case 6:  pt.x += 2; break;
-    case 7:  pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
-    case 8:  pt.x += 1; break;
-    case 9:  break;
-    case 10: pt.x -= 1; break;
-    default: RTTR_Assert(dir == 11);
-             pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
+        case 0: pt.x -= 2; break;
+        case 1: pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
+        case 2: pt.x -= 1; break;
+        case 3: break;
+        case 4: pt.x += 1; break;
+        case 5: pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
+        case 6: pt.x += 2; break;
+        case 7: pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
+        case 8: pt.x += 1; break;
+        case 9: break;
+        case 10: pt.x -= 1; break;
+        default: pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
     }
     pt.y += ADD_Y[dir];
     return pt;
 }
 
-Point<unsigned short> MakeMapPoint(Point<int> pt, const unsigned short width, const unsigned short height)
+MapPoint MakeMapPoint(Position pt, const MapExtent& size)
 {
     // Shift into range
-    pt.x %= width;
-    pt.y %= height;
+    pt.x %= size.x;
+    pt.y %= size.y;
     // Handle negative values (sign is implementation defined, but |value| < width)
     if(pt.x < 0)
-        pt.x += width;
+        pt.x += size.x;
     if(pt.y < 0)
-        pt.y += height;
+        pt.y += size.y;
     RTTR_Assert(pt.x >= 0 && pt.y >= 0);
-    RTTR_Assert(pt.x < width && pt.y < height);
-    return Point<unsigned short>(pt);
+    RTTR_Assert(static_cast<unsigned>(pt.x) < size.x && static_cast<unsigned>(pt.y) < size.y);
+    return MapPoint(pt);
+}
+
+Position GetNodePos(MapPoint pt)
+{
+    return GetNodePos(Position(pt));
+}
+
+Position GetNodePos(Position pt)
+{
+    Position result = pt * Position(TR_W, TR_H);
+    if(pt.y & 1)
+        result.x += TR_W / 2;
+    return result;
+}
+
+Position GetNodePos(MapPoint pt, uint8_t height)
+{
+    Position result = GetNodePos(pt);
+    result.y -= HEIGHT_FACTOR * height;
+    return result;
 }

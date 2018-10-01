@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,14 +18,14 @@
 #ifndef BuildingCount_h__
 #define BuildingCount_h__
 
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include <boost/array.hpp>
 
 /// Number of buildings and building sites per type
 struct BuildingCount
 {
-    boost::array<unsigned, BLD_COUNT> buildings;
-    boost::array<unsigned, BLD_COUNT> buildingSites;
+    boost::array<unsigned, NUM_BUILDING_TYPES> buildings;
+    boost::array<unsigned, NUM_BUILDING_TYPES> buildingSites;
 };
 
 #endif // BuildingCount_h__

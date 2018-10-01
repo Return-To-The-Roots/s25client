@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,20 +19,18 @@
 
 #pragma once
 
-#include "Singleton.h"
+#include "libutil/Singleton.h"
 
 /// Klasse für alle "globalen" Variablen/Objekte
 class GlobalVars : public Singleton<GlobalVars>
 {
-    public:
-        GlobalVars();
+public:
+    GlobalVars() : notdone(true), ext_vbo(false), ext_swapcontrol(false) {}
 
-    public:
-        bool notdone;
-        bool ext_vbo;
-        bool ext_swapcontrol;
-        bool isTest; // Whether we are in test mode
-        bool errorOccured; // Whether an error has occured (for test validation)
+public:
+    bool notdone;
+    bool ext_vbo;
+    bool ext_swapcontrol;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

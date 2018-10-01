@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -7,7 +7,7 @@
 // the Free Software Foundation,  either version 2 of the License,  or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -18,12 +18,13 @@
 #ifndef FreePathFinder_h__
 #define FreePathFinder_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/Direction.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 class GameWorldBase;
 
-typedef bool (*FP_Node_OK_Callback)(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
+typedef bool (*FP_Node_OK_Callback)(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
 
 // There are 2 callback types:
 // IsNodeToDestOk: Called for every point to check if this node is usable
@@ -33,27 +34,27 @@ class FreePathFinder
 {
     GameWorldBase& gwb_;
     unsigned currentVisit;
-    unsigned width_, height_;
+    Extent size_;
+
 public:
-    FreePathFinder(GameWorldBase& gwb): gwb_(gwb), currentVisit(0), width_(0), height_(0) {}
-    void Init(const unsigned mapWidth, const unsigned mapHeight);
+    FreePathFinder(GameWorldBase& gwb) : gwb_(gwb), currentVisit(0), size_(0, 0) {}
+    void Init(const MapExtent& mapSize);
 
     /// Wegfindung in freiem Terrain - Template version. Users need to include FreePathFinderImpl.h
-    /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool IsNodeToDestOk(MapPoint pt, unsigned char dirFromPrevPt)
+    /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool IsNodeToDestOk(MapPoint pt, unsigned
+    /// char dirFromPrevPt)
     template<class TNodeChecker>
-    bool FindPath(const MapPoint start, const MapPoint dest,
-        const bool randomRoute, const unsigned maxLength,
-        std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
-        const TNodeChecker& nodeChecker);
+    bool FindPath(const MapPoint start, const MapPoint dest, const bool randomRoute, const unsigned maxLength,
+                  std::vector<Direction>* route, unsigned* length, Direction* firstDir, const TNodeChecker& nodeChecker);
 
-    bool FindPathAlternatingConditions(const MapPoint start, const MapPoint dest,
-        const bool randomRoute, const unsigned maxLength,
-        std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
-        FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param);
+    bool FindPathAlternatingConditions(const MapPoint start, const MapPoint dest, const bool randomRoute, const unsigned maxLength,
+                                       std::vector<Direction>* route, unsigned* length, Direction* firstDir, FP_Node_OK_Callback IsNodeOK,
+                                       FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param);
 
     /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
     template<class TNodeChecker>
-    bool CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, const TNodeChecker& nodeChecker, MapPoint* dest) const;
+    bool CheckRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos, const TNodeChecker& nodeChecker,
+                    MapPoint* dest) const;
 
 private:
     void IncreaseCurrentVisit();

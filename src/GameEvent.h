@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,35 +18,29 @@
 #ifndef GameEvent_h__
 #define GameEvent_h__
 
-#include "GameObject.h"
+class GameObject;
+class SerializedGameData;
 
-class GameEvent: public GameObject
+class GameEvent
 {
+    const unsigned instanceId; /// unique ID
 public:
     /// Object that will handle this event
-    GameObject* const obj;
+    GameObject* obj;
     /// GF at which this event was added
-    const unsigned startGF;
+    unsigned startGF;
     /// Number of GF till event will be executed
-    const unsigned length;
+    unsigned length;
     /// ID of the event (meaning dependent on object)
-    const unsigned id;
+    unsigned id;
 
-    GameEvent(GameObject* const obj, const unsigned startGF, const unsigned length, const unsigned id)
-        : obj(obj), startGF(startGF), length(length), id(id)
-    {
-        RTTR_Assert(length > 0); // Events cannot be executed in the same GF as they are added
-        RTTR_Assert(obj); // Events without an object are pointless
-    }
+    GameEvent(unsigned instanceId, GameObject* obj, unsigned startGF, unsigned length, unsigned id);
+    GameEvent(SerializedGameData& sgd, unsigned instanceId);
+    void Serialize(SerializedGameData& sgd) const;
 
-    GameEvent(SerializedGameData& sgd, const unsigned obj_id);
-    void Serialize(SerializedGameData& sgd) const override;
-
-    void Destroy() override{}
-
-    GO_Type GetGOT() const override { return GOT_EVENT; }
     /// Return GF at which this event will be executed
     unsigned GetTargetGF() const { return startGF + length; }
+    unsigned GetInstanceId() const { return instanceId; }
 };
 
 #endif // GameEvent_h__

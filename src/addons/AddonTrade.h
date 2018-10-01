@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,19 +18,12 @@
 #define ADDONTRADE_H_INCLUDED
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 class AddonTrade : public AddonBool
 {
-    public:
-        AddonTrade() : AddonBool(AddonId::TRADE,
-                                     ADDONGROUP_ECONOMY,
-                                     _("Trade"),
-                                     _("Allows to send wares/figures to allied warehouses"),
-                                     0
-                                    )
-        {
-        }
+public:
+    AddonTrade() : AddonBool(AddonId::TRADE, ADDONGROUP_ECONOMY, _("Trade"), _("Allows to send wares/figures to allied warehouses"), 0) {}
 };
 
 #endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED

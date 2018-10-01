@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,140 +15,181 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "AudioDriverWrapper.h"
-#include "VideoDriverWrapper.h"
-#include "driver/src/AudioInterface.h"
-#include "Settings.h"
 #include "MusicPlayer.h"
+#include "Settings.h"
+#include "VideoDriverWrapper.h"
+#include "driver/AudioInterface.h"
+#include "mygettext/mygettext.h"
+#include "libsiedler2/ArchivItem_Sound.h"
+#include "libutil/Log.h"
+#include "libutil/tmpFile.h"
+#include <ostream>
 
-AudioDriverWrapper::AudioDriverWrapper() : audiodriver(0)
-{
-}
+AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(NULL), loadedFromDll(false) {}
 
 AudioDriverWrapper::~AudioDriverWrapper()
 {
-    PDRIVER_FREEAUDIOINSTANCE FreeAudioInstance = pto2ptf<PDRIVER_FREEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("FreeAudioInstance"));
-    if(FreeAudioInstance)
-        FreeAudioInstance(audiodriver);
+    UnloadDriver();
 }
 
 /// Spielt Midi ab
-void AudioDriverWrapper::PlayMusic(Sound* sound, const unsigned repeats)
+void AudioDriverWrapper::PlayMusic(const SoundHandle& sound, unsigned repeats)
 {
-    if(audiodriver)
-        audiodriver->PlayMusic(sound, repeats);
+    if(audiodriver_)
+        audiodriver_->PlayMusic(sound, repeats);
 }
 
 /// Stoppt die Musik.
 void AudioDriverWrapper::StopMusic()
 {
-    if(audiodriver)
-        audiodriver->StopMusic();
+    if(audiodriver_)
+        audiodriver_->StopMusic();
 }
 
 /// Wird ein Sound (noch) abgespielt?
-bool AudioDriverWrapper::IsEffectPlaying(const unsigned play_id)
+bool AudioDriverWrapper::IsEffectPlaying(EffectPlayId play_id)
 {
-    if(audiodriver)
-        return audiodriver->IsEffectPlaying(play_id);
+    if(audiodriver_)
+        return audiodriver_->IsEffectPlaying(play_id);
     else
         return false;
 }
 
 /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-void AudioDriverWrapper::ChangeVolume(const unsigned play_id, const unsigned char volume)
+void AudioDriverWrapper::ChangeVolume(EffectPlayId play_id, uint8_t volume)
 {
-    if(audiodriver)
-        audiodriver->ChangeVolume(play_id, volume);
+    if(audiodriver_)
+        audiodriver_->ChangeVolume(play_id, volume);
 }
 
-void AudioDriverWrapper::SetMasterEffectVolume(unsigned char volume)
+void AudioDriverWrapper::SetMasterEffectVolume(uint8_t volume)
 {
-    if(audiodriver)
-        audiodriver->SetMasterEffectVolume(volume);
+    if(audiodriver_)
+        audiodriver_->SetMasterEffectVolume(volume);
 }
 
-void AudioDriverWrapper::SetMasterMusicVolume(unsigned char volume)
+void AudioDriverWrapper::SetMusicVolume(uint8_t volume)
 {
-    if(audiodriver)
-        audiodriver->SetMasterMusicVolume(volume);
+    if(audiodriver_)
+        audiodriver_->SetMusicVolume(volume);
 }
 
 std::string AudioDriverWrapper::GetName() const
 {
-    if(audiodriver)
-        return audiodriver->GetName();
-    else
-        return "";
+    const char* name = (audiodriver_) ? audiodriver_->GetName() : NULL;
+    return (name) ? name : "";
 }
 
 /// Lädt den Treiber
-bool AudioDriverWrapper::LoadDriver()
+bool AudioDriverWrapper::LoadDriver(IAudioDriver* audioDriver)
 {
-    // DLL laden
-    if(!driver_wrapper.Load(DriverWrapper::DT_AUDIO, SETTINGS.driver.audio))
-        return false;
-
-    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
-
-    // Instanz erzeugen
-    audiodriver = CreateAudioInstance(this, VIDEODRIVER.GetMapPointer());
-    if(!audiodriver)
-        return false;
-
-    if(!audiodriver->Initialize())
+    loadedFromDll = audioDriver == NULL;
+    if(audioDriver)
+        audiodriver_ = audioDriver;
+    else
     {
-        delete audiodriver;
-        audiodriver = NULL;
+        // DLL laden
+        if(!driver_wrapper.Load(DriverWrapper::DT_AUDIO, SETTINGS.driver.audio))
+            return false;
+
+        PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance =
+          pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
+
+        // Instanz erzeugen
+        audiodriver_ = CreateAudioInstance(this, VIDEODRIVER.GetMapPointer());
+        if(!audiodriver_)
+        {
+            UnloadDriver();
+            return false;
+        }
+    }
+
+    if(!audiodriver_->Initialize())
+    {
+        UnloadDriver();
         return false;
     }
+
+    LOG.write(_("Loaded audio driver \"%1%\"\n")) % GetName();
 
     return true;
 }
 
+void AudioDriverWrapper::UnloadDriver()
+{
+    if(loadedFromDll)
+    {
+        PDRIVER_FREEAUDIOINSTANCE FreeAudioInstance =
+          pto2ptf<PDRIVER_FREEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("FreeAudioInstance"));
+        if(FreeAudioInstance)
+            FreeAudioInstance(audiodriver_);
+        driver_wrapper.Unload();
+    } else
+        delete audiodriver_;
+    audiodriver_ = NULL;
+}
 
 /**
  *  Lädt einen Sound.
  *
- *  @param[in] type      Typ (Musik/Effekt)
- *  @param[in] data_type Datentyp
- *  @param[in] data      Datenblock
- *  @param[in] size      Größe des Datenblocks
- *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  */
-Sound* AudioDriverWrapper::LoadMusic(AudioType data_type, const unsigned char* data, unsigned int size)
+SoundHandle AudioDriverWrapper::LoadMusic(const std::string& filepath)
 {
-    if(!audiodriver)
-        return NULL;
+    if(!audiodriver_)
+        return SoundHandle();
 
-    return audiodriver->LoadMusic(data_type, data, size);
+    return audiodriver_->LoadMusic(filepath);
 }
 
-Sound* AudioDriverWrapper::LoadEffect(AudioType data_type, const unsigned char* data, unsigned int size)
+SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
 {
-    if(!audiodriver)
-        return NULL;
-
-    return audiodriver->LoadEffect(data_type, data, size);
+    TmpFile tmp(extension);
+    if(!tmp.isValid())
+        return SoundHandle();
+    if(soundArchiv.write(tmp.getStream()) != 0)
+        return SoundHandle();
+    tmp.close();
+    SoundHandle sound = LoadMusic(tmp.filePath);
+    return sound;
 }
 
-
-unsigned AudioDriverWrapper::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
+SoundHandle AudioDriverWrapper::LoadEffect(const std::string& filepath)
 {
-    if(!audiodriver)
+    if(!audiodriver_)
+        return SoundHandle();
+
+    return audiodriver_->LoadEffect(filepath);
+}
+
+SoundHandle AudioDriverWrapper::LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
+{
+    TmpFile tmp(extension);
+    if(!tmp.isValid())
+        return SoundHandle();
+    if(soundArchiv.write(tmp.getStream()) != 0)
+        return SoundHandle();
+    tmp.close();
+    SoundHandle sound = LoadEffect(tmp.filePath);
+    return sound;
+}
+
+EffectPlayId AudioDriverWrapper::PlayEffect(const SoundHandle& sound, uint8_t volume, const bool loop)
+{
+    if(!audiodriver_)
         return 0;
 
-    return audiodriver->PlayEffect(sound, volume, loop);
+    return audiodriver_->PlayEffect(sound, volume, loop);
 }
 
-void AudioDriverWrapper::StopEffect(const unsigned int play_id)
+void AudioDriverWrapper::StopEffect(const unsigned play_id)
 {
-    if(!audiodriver)
+    if(!audiodriver_)
         return;
 
-    return audiodriver->StopEffect(play_id);
+    return audiodriver_->StopEffect(play_id);
 }
 
 void AudioDriverWrapper::Msg_MusicFinished()
@@ -156,4 +197,3 @@ void AudioDriverWrapper::Msg_MusicFinished()
     // MusicManager Bescheid sagen
     MUSICPLAYER.MusicFinished();
 }
-

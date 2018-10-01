@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,7 +21,6 @@
 enum PlayerState
 {
     PS_FREE = 0,
-    PS_RESERVED,
     PS_OCCUPIED,
     PS_LOCKED,
     PS_AI

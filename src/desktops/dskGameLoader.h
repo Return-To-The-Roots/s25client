@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,29 +20,30 @@
 #pragma once
 
 #include "Desktop.h"
-
-#include "LobbyInterface.h"
-#include "ClientInterface.h"
+#include "network/ClientInterface.h"
+#include "liblobby/LobbyInterface.h"
 
 class GameWorldBase;
+class dskGameInterface;
 
-class dskGameLoader :
-    public Desktop,
-    public ClientInterface,
-    public LobbyInterface
+class dskGameLoader : public Desktop, public ClientInterface, public LobbyInterface
 {
-    public:
-        dskGameLoader(GameWorldBase& world);
-        ~dskGameLoader() override;
+public:
+    dskGameLoader(boost::shared_ptr<Game> game);
+    ~dskGameLoader() override;
 
-        void LC_Status_Error(const std::string& error) override;
+    void LC_Status_Error(const std::string& error) override;
+    void CI_GameStarted(boost::shared_ptr<Game> game) override;
+    void CI_Error(const ClientError ce) override;
 
-    private:
-        void Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr) override;
-        void Msg_Timer(const unsigned int ctrl_id) override;
+private:
+    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
+    std::vector<std::string> GatherRequiredTexturePaths() const;
 
-        unsigned int position;
-        GameWorldBase& world;
+    unsigned position;
+    boost::shared_ptr<Game> game;
+    dskGameInterface* nextDesktop;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED

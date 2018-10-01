@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,22 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDiplomacy.h"
-
-#include "Loader.h"
-#include "GameClient.h"
-#include "WindowManager.h"
 #include "GamePlayer.h"
-#include "iwMsgbox.h"
-#include "controls/ctrlButton.h"
+#include "GlobalGameSettings.h"
+#include "Loader.h"
+#include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
-#include "controls/ctrlDeepening.h"
+#include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
-#include "ogl/glArchivItem_Font.h"
+#include "controls/ctrlTextDeepening.h"
+#include "helpers/converters.h"
+#include "iwMsgbox.h"
+#include "network/GameClient.h"
+#include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
+#include "libsiedler2/ArchivItem_BitmapBase.h"
+#include <cstdio>
 
 /// Position des Headers der Tabelle (Y)
 const unsigned short HEADER_Y = 30;
@@ -43,7 +47,7 @@ const unsigned short SPACE_HEIGHT = 10;
 /// Abstand vom Rand der Zeilen
 const unsigned short LINE_DISTANCE_TO_MARGINS = 20;
 /// Größe der Pingfelder
-const unsigned short PING_FIELD_WIDTH = 40;
+const Extent PING_FIELD_SIZE(40, 22);
 /// Position der Pingfelder vom linken Rand aus (relativ zur Mitte)
 const unsigned short PING_FIELD_POS = 150;
 /// Position der Bündnisse vom linken Rand aus (relativ zur Mitte)
@@ -51,83 +55,80 @@ const unsigned short TREATIES_POS = 240;
 /// Abstand zwischen den beiden Bündnis-Buttons (Achtung: von Mittelpunkten aus!)
 const unsigned short TREATIE_BUTTON_SPACE = 20;
 
-iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_DIPLOMACY, IngameWindow::posLastOrCenter,  500, FIRST_LINE_Y + gwv.GetWorld().GetPlayerCount() * (CELL_HEIGHT + SPACE_HEIGHT) + 20,
-        _("Diplomacy"), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), gcFactory(gcFactory)
+iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
+    : IngameWindow(CGI_DIPLOMACY, IngameWindow::posLastOrCenter,
+                   Extent(500, FIRST_LINE_Y + gwv.GetWorld().GetNumPlayers() * (CELL_HEIGHT + SPACE_HEIGHT) + 20), _("Diplomacy"),
+                   LOADER.GetImageN("resource", 41)),
+      gwv(gwv), gcFactory(gcFactory)
 {
     // "Header" der Tabelle
-    AddText(0, LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS, HEADER_Y, _("Ping"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
-    AddText(1, LINE_DISTANCE_TO_MARGINS + TREATIES_POS, HEADER_Y, _("Treaties"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(0, DrawPoint(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS, HEADER_Y), _("Ping"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    AddText(1, DrawPoint(LINE_DISTANCE_TO_MARGINS + TREATIES_POS, HEADER_Y), _("Treaties"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
-
-
-    for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    DrawPoint curTxtPos(LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + CELL_HEIGHT / 2 - CELL_HEIGHT - SPACE_HEIGHT);
+    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
     {
         const GamePlayer& player = gwv.GetWorld().GetPlayer(i);
-        if(player.isUsed())
+        curTxtPos.y += CELL_HEIGHT + SPACE_HEIGHT;
+        if(!player.isUsed())
+            continue;
+        // Einzelne Spielernamen
+        AddText(100 + i, curTxtPos, player.name, player.color, FontStyle::VCENTER, NormalFont);
+
+        if(player.ps == PS_OCCUPIED)
         {
-            // Einzelne Spielernamen
-            AddText(100 + i, LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2,
-                    player.name, player.color, glArchivItem_Font::DF_VCENTER,
-                    NormalFont);
-
-            if(player.ps == PS_OCCUPIED)
-                // Ping
-                AddDeepening(200 + i, LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS - PING_FIELD_WIDTH / 2,
-                             FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2 - 11, PING_FIELD_WIDTH, 22, TC_GREY, "0", NormalFont, COLOR_YELLOW);
-
-            // An sich selber braucht man keine Bündnisse zu schließen
-            if(gwv.GetPlayerId() != i)
-            {
-                // Bündnisvertrag-Button
-                glArchivItem_Bitmap* image = LOADER.GetImageN("io", 61);
-                ctrlButton* button = AddImageButton(300 + i, LINE_DISTANCE_TO_MARGINS + TREATIES_POS - TREATIE_BUTTON_SPACE / 2 - (image->getWidth() + 8),
-                                                    FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2 - 40 / 2, 40,
-                                                    40, TC_GREY, image, _("Treaty of alliance"));
-
-                // Verbleibende Zeit unter dem Button
-                AddText(500 + i, button->GetX(false) + button->GetWidth() / 2, button->GetY(false) + button->GetHeight() + 4, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, SmallFont);
-
-                // Nichtangriffspakt
-                image = LOADER.GetImageN("io", 100);
-                button = AddImageButton(400 + i, LINE_DISTANCE_TO_MARGINS + TREATIES_POS + TREATIE_BUTTON_SPACE / 2,
-                                        FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2 - 40 / 2, 40,
-                                        40, TC_GREY, image, _("Non-aggression pact"));
-
-                // Verbleibende Zeit unter dem Button
-                AddText(600 + i, button->GetX(false) + button->GetWidth() / 2, button->GetY(false) + button->GetHeight() + 4, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, SmallFont);
-
-            }
+            // Ping
+            DrawPoint pingPos(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS - PING_FIELD_SIZE.x / 2, curTxtPos.y);
+            AddTextDeepening(200 + i, pingPos, PING_FIELD_SIZE, TC_GREY, "0", NormalFont, COLOR_YELLOW);
         }
-    }
 
+        // An sich selber braucht man keine Bündnisse zu schließen
+        if(gwv.GetPlayerId() == i)
+            continue;
+        // Bündnisvertrag-Button
+        glArchivItem_Bitmap* image = LOADER.GetImageN("io", 61);
+        Extent btSize(40, 40);
+        DrawPoint btPos(LINE_DISTANCE_TO_MARGINS + TREATIES_POS - TREATIE_BUTTON_SPACE / 2 - (image->getWidth() + 8),
+                        curTxtPos.y - btSize.y / 2);
+        ctrlButton* button = AddImageButton(300 + i, btPos, btSize, TC_GREY, image, _("Treaty of alliance"));
+
+        // Verbleibende Zeit unter dem Button
+        DrawPoint remainingTimePos = button->GetPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
+        AddText(500 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
+
+        // Nichtangriffspakt
+        image = LOADER.GetImageN("io", 100);
+        btPos.x = LINE_DISTANCE_TO_MARGINS + TREATIES_POS + TREATIE_BUTTON_SPACE / 2;
+        button = AddImageButton(400 + i, btPos, btSize, TC_GREY, image, _("Non-aggression pact"));
+
+        // Verbleibende Zeit unter dem Button
+        remainingTimePos = button->GetPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
+        AddText(600 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
+    }
     // Farben festlegen
     Msg_PaintAfter();
 }
 
 void iwDiplomacy::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     // Die farbigen Zeilen malen
     DrawPoint curPos = GetDrawPos() + DrawPoint(LINE_DISTANCE_TO_MARGINS, FIRST_LINE_Y);
-    for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    Rect curRect(curPos, Extent(GetSize().x - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT));
+    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
-        DrawRectangle(curPos, width_ - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT, SetAlpha(gwv.GetWorld().GetPlayer(i).color, 0x40));
-        curPos.y += CELL_HEIGHT + SPACE_HEIGHT;
+        DrawRectangle(curRect, SetAlpha(gwv.GetWorld().GetPlayer(i).color, 0x40));
+        curRect.move(DrawPoint(0, CELL_HEIGHT + SPACE_HEIGHT));
     }
 }
 
 void iwDiplomacy::Msg_PaintAfter()
 {
     // Farben, die zu den 3 Bündnisstates gesetzt werden (0-kein Bündnis, 1-in Arbeit, 2-Bündnis abgeschlossen)
-    const unsigned PACT_COLORS[3] =
-    {
-        COLOR_RED, COLOR_YELLOW, COLOR_GREEN
-    };
+    const unsigned PACT_COLORS[3] = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
 
-
-    for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
     {
         // Farben der Bündnis-Buttons setzen, je nachdem wie der Status ist
 
@@ -144,12 +145,8 @@ void iwDiplomacy::Msg_PaintAfter()
             button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(NON_AGGRESSION_PACT, i)]);
 
         // Ggf. Ping aktualisieren
-        if(ctrlDeepening* pingfield = GetCtrl<ctrlDeepening>(200 + i))
-        {
-            char ping[64];
-            sprintf(ping, "%u", gwv.GetWorld().GetPlayer(i).ping);
-            pingfield->SetText(ping);
-        }
+        if(ctrlTextDeepening* pingfield = GetCtrl<ctrlTextDeepening>(200 + i))
+            pingfield->SetText(helpers::toString(gwv.GetWorld().GetPlayer(i).ping));
 
         // Verbleibende Zeit der Bündnisse in den Text-Ctrls anzeigen
         if(GetCtrl<ctrlText>(500 + i))
@@ -169,11 +166,12 @@ void iwDiplomacy::Msg_PaintAfter()
     }
 }
 
-void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    if (gwv.GetWorld().GetGGS().lockedTeams)
+    if(gwv.GetWorld().GetGGS().lockedTeams)
     {
-        WINDOWMANAGER.Show(new iwMsgbox(_("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), NULL, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+        WINDOWMANAGER.Show(new iwMsgbox(_("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), NULL,
+                                        MSB_OK, MSB_EXCLAMATIONGREEN, 1));
         return;
     }
 
@@ -201,43 +199,26 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
             // ansonsten Vertrag versuchen abzubrechen
             gcFactory.CancelPact(NON_AGGRESSION_PACT, playerId);
     }
-
 }
 
 /////////////////////////////
 /////////////////////////////
 
 /// Titel für die Fenster für unterschiedliche Bündnistypen
-const char* const PACT_TITLES[PACTS_COUNT] =
-{
-    gettext_noop("Suggest treaty of alliance"),
-    gettext_noop("Suggest non-aggression pact")
-};
-
+const char* const PACT_TITLES[NUM_PACTS] = {gettext_noop("Suggest treaty of alliance"), gettext_noop("Suggest non-aggression pact")};
 
 /// Anzahl der unterschiedlich möglichen Längen ("für immer" nicht mit eingerechnet!)
-const unsigned DURATION_COUNT = 3;
+const unsigned NUM_DURATIONS = 3;
 
 /// Längen für die Dauer des Vertrages (kurz-, mittel- und langfristig)
-const unsigned DURATIONS[DURATION_COUNT] =
-{
-    5000,
-    30000,
-    100000
-};
+const unsigned DURATIONS[NUM_DURATIONS] = {5000, 30000, 100000};
 
 /// Namen für diese Vertragsdauern
-const char* const DURATION_NAMES[DURATION_COUNT] =
-{
-    gettext_noop("Short-run"),
-    gettext_noop("Medium-term"),
-    gettext_noop("Long-run")
-};
+const char* const DURATION_NAMES[NUM_DURATIONS] = {gettext_noop("Short-run"), gettext_noop("Medium-term"), gettext_noop("Long-run")};
 
-
-iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter,  320, 215, _(PACT_TITLES[pt]), LOADER.GetImageN("resource", 41)),
-    pt(pt), player(player), gcFactory(gcFactory)
+iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory)
+    : IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter, Extent(320, 215), _(PACT_TITLES[pt]), LOADER.GetImageN("resource", 41)),
+      pt(pt), player(player), gcFactory(gcFactory)
 {
     glArchivItem_Bitmap* image;
 
@@ -250,17 +231,17 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
 
     // Bild als Orientierung, welchen Vertrag wir gerade bearbeiten
     if(image)
-        this->AddImage(0, 55, 100, image);
+        this->AddImage(0, DrawPoint(55, 100), image);
 
-    AddText(1, 100, 30, _("Contract type:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(2, 100, 45, _(PACT_NAMES[pt]), COLOR_GREEN, 0, NormalFont);
-    AddText(3, 100, 70, _("To player:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(4, 100, 85, player.name, player.color, 0, NormalFont);
-    AddText(5, 100, 110, _("Duration:"), COLOR_YELLOW, 0, NormalFont);
-    ctrlComboBox* combo = AddComboBox(6, 100, 125, 190, 22, TC_GREEN2, NormalFont, 100);
+    AddText(1, DrawPoint(100, 30), _("Contract type:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(2, DrawPoint(100, 45), _(PACT_NAMES[pt]), COLOR_GREEN, 0, NormalFont);
+    AddText(3, DrawPoint(100, 70), _("To player:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(4, DrawPoint(100, 85), player.name, player.color, 0, NormalFont);
+    AddText(5, DrawPoint(100, 110), _("Duration:"), COLOR_YELLOW, 0, NormalFont);
+    ctrlComboBox* combo = AddComboBox(6, DrawPoint(100, 125), Extent(190, 22), TC_GREEN2, NormalFont, 100);
 
     // Zeiten zur Combobox hinzufügen
-    for(unsigned i = 0; i < DURATION_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_DURATIONS; ++i)
     {
         char str[256];
         sprintf(str, "%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i]).c_str());
@@ -272,15 +253,14 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
     // Option "ewig" noch hinzufügen
     combo->AddString(_("Eternal"));
 
-    AddTextButton(7, 110, 170, 100, 22, TC_GREEN2, _("Confirm"), NormalFont);
+    AddTextButton(7, DrawPoint(110, 170), Extent(100, 22), TC_GREEN2, _("Confirm"), NormalFont);
 }
 
-
-void iwSuggestPact::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
+void iwSuggestPact::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
-    /// Dauer auswählen (wenn id == DURATION_COUNT, dann "für alle Ewigkeit" ausgewählt)
+    /// Dauer auswählen (wenn id == NUM_DURATIONS, dann "für alle Ewigkeit" ausgewählt)
     unsigned selected_id = GetCtrl<ctrlComboBox>(6)->GetSelection();
-    unsigned duration = (selected_id == DURATION_COUNT) ? 0xFFFFFFFF : DURATIONS[selected_id];
+    unsigned duration = (selected_id == NUM_DURATIONS) ? 0xFFFFFFFF : DURATIONS[selected_id];
     gcFactory.SuggestPact(player.GetPlayerId(), this->pt, duration);
     Close();
 }

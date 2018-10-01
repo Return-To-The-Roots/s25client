@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,8 +18,8 @@
 #ifndef ExpeditionNote_h__
 #define ExpeditionNote_h__
 
-#include "gameTypes/MapTypes.h"
 #include "notifications/notifications.h"
+#include "gameTypes/MapCoordinates.h"
 
 struct ExpeditionNote
 {
@@ -31,8 +31,7 @@ struct ExpeditionNote
         ColonyFounded
     };
 
-    ExpeditionNote(Type type, unsigned player, const MapPoint& pos):
-        type(type), player(player), pos(pos){}
+    ExpeditionNote(Type type, unsigned player, const MapPoint& pos) : type(type), player(player), pos(pos) {}
 
     const Type type;
     const unsigned player;

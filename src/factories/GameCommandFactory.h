@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,17 +18,18 @@
 #ifndef GameCommandFactory_h__
 #define GameCommandFactory_h__
 
-#include "gameTypes/MapTypes.h"
-#include "gameTypes/BuildingTypes.h"
+#include "GameCommand.h"
+#include "gameTypes/BuildingType.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/ShipDirection.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
+#include "gameTypes/ShipDirection.h"
 #include "gameData/MilitaryConsts.h"
 #include <vector>
 
-namespace gc { class GameCommand; }
 struct InventorySetting;
 
 /// Factory class for creating game commands. Handling of them (storing, sending...) must be done in the derived class
@@ -40,10 +41,10 @@ public:
     /// Destroys a flag on a spot
     bool DestroyFlag(const MapPoint pt);
     /// Builds a road from a starting point along a given route
-    bool BuildRoad(const MapPoint pt, bool boat_road, const std::vector<unsigned char>& route);
+    bool BuildRoad(const MapPoint pt, bool boat_road, const std::vector<Direction>& route);
     /// Destroys a road on a spot
-    bool DestroyRoad(const MapPoint pt, unsigned char start_dir);
-    bool UpgradeRoad(const MapPoint pt, unsigned char start_dir);
+    bool DestroyRoad(const MapPoint pt, Direction start_dir);
+    bool UpgradeRoad(const MapPoint pt, Direction start_dir);
     /// Sets new distribution of goods
     bool ChangeDistribution(const Distributions& data);
     bool ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& data);
@@ -59,10 +60,9 @@ public:
     /// Sets new military settings for the player (8 values)
     bool ChangeMilitary(const MilitarySettings& data);
     /// Sets new tool production settings
-    bool ChangeTools(const ToolSettings& data, const signed char* order_delta = NULL);
-    /// Calls a geologist to a flag
-    bool CallGeologist(const MapPoint pt);
-    bool CallScout(const MapPoint pt);
+    bool ChangeTools(const ToolSettings& data, const int8_t* order_delta = NULL);
+    /// Calls a specialist to a flag
+    bool CallSpecialist(const MapPoint pt, Job job);
     /// Attacks an enemy building
     bool Attack(const MapPoint pt, unsigned soldiers_count, bool strong_soldiers);
     /// Sea-Attacks an enemy building
@@ -77,7 +77,7 @@ public:
     bool SetInventorySetting(const MapPoint pt, Job job, InventorySetting state);
     bool SetInventorySetting(const MapPoint pt, GoodType good, InventorySetting state);
     bool SetAllInventorySettings(const MapPoint pt, bool isJob, const std::vector<InventorySetting>& states);
-    bool ChangeReserve(const MapPoint pt, unsigned char rank, unsigned char count);
+    bool ChangeReserve(const MapPoint pt, unsigned char rank, unsigned count);
     bool CheatArmageddon();
     /// Simply surrenders...
     bool Surrender();
@@ -86,22 +86,22 @@ public:
     bool AcceptPact(unsigned id, PactType pt, unsigned char player);
     bool CancelPact(PactType pt, unsigned char player);
     /// Toggles the construction mode of the shipyard between boat and ship
-    bool ToggleShipYardMode(const MapPoint pt);
+    bool SetShipYardMode(const MapPoint pt, bool buildShips);
     /// Starts Preparation of an sea expedition in a habor
-    bool StartExpedition(const MapPoint pt);
+    bool StartStopExpedition(const MapPoint pt, bool start);
     /// Lets a ship found a colony
-    bool FoundColony(unsigned int shipID);
+    bool FoundColony(unsigned shipID);
     /// Lets a ship travel to a new harbor spot in a given direction
-    bool TravelToNextSpot(ShipDirection direction, unsigned int shipID);
+    bool TravelToNextSpot(ShipDirection direction, unsigned shipID);
     /// Cancels an expedition
-    bool CancelExpedition(unsigned int shipID);
-    bool StartExplorationExpedition(const MapPoint pt);
+    bool CancelExpedition(unsigned shipID);
+    bool StartStopExplorationExpedition(const MapPoint pt, bool start);
     bool TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count);
 
 protected:
-    virtual ~GameCommandFactory(){}
-    /// Called for each created GC. Ownership over gc is passed!
-    virtual bool AddGC(gc::GameCommand* gc) = 0;
+    virtual ~GameCommandFactory() {}
+    /// Called for each created GC. Return true iff this is going to be executed
+    virtual bool AddGC(gc::GameCommandPtr gc) = 0;
 };
 
 #endif // GameMessageFactory_h__

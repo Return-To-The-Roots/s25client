@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,23 +19,21 @@
 
 #pragma once
 
-#include "ctrlVarText.h"
+#include "controls/ctrlBaseVarText.h"
+#include "controls/ctrlDeepening.h"
 #include <cstdarg>
 class Window;
 class glArchivItem_Font;
 
-class ctrlVarDeepening : public ctrlVarText
+class ctrlVarDeepening : public ctrlDeepening, public ctrlBaseVarText
 {
-    public:
-        /// liste contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-        ctrlVarDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc,  const std::string& text, glArchivItem_Font* font, unsigned int color, unsigned int count, va_list liste);
+public:
+    /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
+    ctrlVarDeepening(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& fmtString,
+                     glArchivItem_Font* font, unsigned color, unsigned count, va_list fmtArgs);
 
-    protected:
-        bool Draw_() override;
-
-    private:
-        TextureColor tc;
+protected:
+    void DrawContent() const override;
 };
 
 #endif // !CTRLVARDEEPENING_H_INCLUDED
-

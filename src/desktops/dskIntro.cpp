@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskIntro.h"
 
-#include "WindowManager.h"
 #include "Loader.h"
+#include "WindowManager.h"
 
 #include "dskMainMenu.h"
 
@@ -31,19 +31,19 @@
 dskIntro::dskIntro() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // "Zurück"
-    AddTextButton(0, 300, 550, 200, 22, TC_RED1, _("Back"), NormalFont);
+    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
 
-    AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
+    AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
 
-void dskIntro::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskIntro::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 0: // "Zurück"
         {
             WINDOWMANAGER.Switch(new dskMainMenu);
-        } break;
+        }
+        break;
     }
 }
-

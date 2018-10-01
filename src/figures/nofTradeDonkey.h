@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,51 +26,60 @@ class SerializedGameData;
 /// Can also be the other people following the leader!
 class nofTradeDonkey : public noFigure
 {
-        /// Successor (NULL if this is the last one)
-        nofTradeDonkey* successor;
-        /// Ware this donkey carries (GD_NOTHING if this is a normal figure)
-        GoodType gt;
-        /// Last dir this donkey used
-        std::deque<unsigned char> next_dirs;
+    /// Successor (NULL if this is the last one)
+    nofTradeDonkey* successor;
+    /// Ware this donkey carries (GD_NOTHING if this is a normal figure)
+    GoodType gt;
+    /// Last dir this donkey used
+    std::deque<unsigned char> next_dirs;
 
-    private:
+private:
+    void GoalReached() override;
+    void Walked() override;
+    void HandleDerivedEvent(const unsigned id) override;
+    void AbrogateWorkplace() override;
 
-        void GoalReached() override;
-        void Walked() override;
-        void HandleDerivedEvent(const unsigned int id) override;
-        void AbrogateWorkplace() override;
+    /// Returns next direction
+    unsigned char GetNextDir()
+    {
+        unsigned char dir = next_dirs.front();
+        next_dirs.pop_front();
+        return dir;
+    }
 
-        /// Returns next direction
-        unsigned char GetNextDir() { unsigned char dir = next_dirs.front(); next_dirs.pop_front(); return dir; }
+public:
+    nofTradeDonkey(const MapPoint pt, const unsigned char player, const GoodType gt, const Job job);
+    nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    void Destroy() override
+    {
+        RTTR_Assert(!successor);
+        noFigure::Destroy();
+    }
 
-        nofTradeDonkey(const MapPoint pt, const unsigned char player, const GoodType gt, const Job job);
-        nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id);
+    void Serialize(SerializedGameData& sgd) const override;
 
-        void Destroy() override { RTTR_Assert(!successor); noFigure::Destroy(); }
+    GO_Type GetGOT() const override { return GOT_NOF_TRADEDONKEY; }
 
-        void Serialize(SerializedGameData& sgd) const override;
+    void Draw(DrawPoint drawPt) override;
 
-        GO_Type GetGOT() const override { return GOT_NOF_TRADEDONKEY; }
+    /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+    void LostWork();
 
-        void Draw(DrawPoint drawPt) override;
+    /// Adds the next direction, this is usually done by the predecessor
+    void AddNextDir(const unsigned char dir) { next_dirs.push_back(dir); }
 
-        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-        void LostWork();
+    /// Gets the type of ware this donkey is carrying
+    GoodType GetCarriedWare() const { return gt; }
 
-        /// Adds the next direction, this is usually done by the predecessor
-        void AddNextDir(const unsigned char dir) { next_dirs.push_back(dir); }
+    /// Sets the successor in the caravane
+    void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
 
-        /// Gets the type of ware this donkey is carrying
-        GoodType GetCarriedWare() const { return gt; }
+    // get the successor in the caravane
+    nofTradeDonkey* GetSuccessor() { return successor; }
 
-        /// Sets the sucessor in the caravane
-        void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
-
-        /// Inform successor that the caravane is canceled
-        void CancelTradeCaravane();
+    /// Inform successor that the caravane is canceled
+    void CancelTradeCaravane();
 };
 
-
-#endif //!NOF_SCOUT_FREE_H_
+#endif //! NOF_SCOUT_FREE_H_

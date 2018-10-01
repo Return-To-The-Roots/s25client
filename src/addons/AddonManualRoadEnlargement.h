@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,22 +20,18 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for allowing to have unlimited resources.
  */
 class AddonManualRoadEnlargement : public AddonBool
 {
-    public:
-        AddonManualRoadEnlargement() : AddonBool(AddonId::MANUAL_ROAD_ENLARGEMENT,
-                    ADDONGROUP_ECONOMY,
-                    _("Manual road enlargement"),
-                    _("Manually upgrade your roads and directly build donkey roads."),
-                    0
-                    )
-        {
-        }
+public:
+    AddonManualRoadEnlargement()
+        : AddonBool(AddonId::MANUAL_ROAD_ENLARGEMENT, ADDONGROUP_ECONOMY, _("Manual road enlargement"),
+                    _("Manually upgrade your roads and directly build donkey roads."), 0)
+    {}
 };
 
 #endif // !ADDONMANUALROADENLARGEMENT_H_INCLUDED

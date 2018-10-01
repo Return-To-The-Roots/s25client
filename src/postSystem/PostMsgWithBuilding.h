@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,22 +19,24 @@
 #define PostMsgWithBuilding_h__
 
 #include "postSystem/PostMsg.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameData/NationConsts.h"
 
-class glArchivItem_Bitmap;
+class ITexture;
 class noBaseBuilding;
 
 /// Message that is related to a building, showing the buildings image and a GoTo button
-class PostMsgWithBuilding: public PostMsg
+class PostMsgWithBuilding : public PostMsg
 {
 public:
     /// Creates the message.
     /// NOTE: Building is only valid during the call (do not store)
-    PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld, SoundEffect soundEffect = SoundEffect::Pidgeon);
-    PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation, const MapPoint& pos = MapPoint::Invalid());
+    PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld,
+                        SoundEffect soundEffect = SoundEffect::Pidgeon);
+    PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation,
+                        const MapPoint& pos = MapPoint::Invalid());
 
-    glArchivItem_Bitmap* GetImage_() const override;
+    ITexture* GetImage_() const override;
 
 private:
     const BuildingType bldType;

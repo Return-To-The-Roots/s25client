@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,22 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nobBaseMilitary.h"
-#include "world/GameWorldGame.h"
-#include "Random.h"
-#include "nobMilitary.h"
-#include "figures/nofAttacker.h"
-#include "figures/nofAggressiveDefender.h"
-#include "figures/nofDefender.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "SerializedGameData.h"
+#include "figures/nofAggressiveDefender.h"
+#include "figures/nofAttacker.h"
+#include "figures/nofDefender.h"
+#include "helpers/containerUtils.h"
+#include "nobMilitary.h"
+#include "random/Random.h"
+#include "world/GameWorldGame.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include <limits>
 
-nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos,
-                                 const unsigned char player, const Nation nation)
+nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : noBuilding(type, pos, player, nation), leaving_event(0), go_out(false), defender_(0)
 {}
 
@@ -40,7 +41,7 @@ nobBaseMilitary::~nobBaseMilitary()
         delete *it;
 }
 
-void nobBaseMilitary::Destroy_nobBaseMilitary()
+void nobBaseMilitary::DestroyBuilding()
 {
     // Soldaten Bescheid sagen, die evtl auf Mission sind
     // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
@@ -63,7 +64,8 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     aggressive_defenders.clear();
 
     // Verteidiger Bescheid sagen
-    if(defender_){
+    if(defender_)
+    {
         defender_->HomeDestroyed();
         defender_ = NULL;
     }
@@ -74,16 +76,17 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
     for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
     {
-        gwg->AddFigure((*it), pos);
+        gwg->AddFigure(pos, (*it));
 
         if((*it)->DoJobWorks() && dynamic_cast<nofActiveSoldier*>(*it))
-            // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch Bescheid gesagt werden!
+            // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch Bescheid gesagt
+            // werden!
             static_cast<nofActiveSoldier*>(*it)->HomeDestroyedAtBegin();
         else
         {
             (*it)->Abrogate();
             (*it)->StartWandering();
-            (*it)->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+            (*it)->StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
         }
     }
 
@@ -91,16 +94,12 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 
     // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
-    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 4);
+    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, Direction::SOUTHEAST);
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
-        if((*it)->GetPlayer() != player
-                && (*it)->GetBuildingType() >= BLD_BARRACKS  && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if((*it)->GetPlayer() != player && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             static_cast<nobMilitary*>(*it)->LookForEnemyBuildings(this);
     }
-
-
-    Destroy_noBuilding();
 }
 
 void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData& sgd) const
@@ -108,7 +107,7 @@ void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData& sgd) const
     Serialize_noBuilding(sgd);
 
     sgd.PushObjectContainer(leave_house, false);
-    sgd.PushObject(leaving_event, true);
+    sgd.PushEvent(leaving_event);
     sgd.PushBool(go_out);
     sgd.PushUnsignedInt(0); // former age, compatibility with 0.7, remove it in furher versions
     sgd.PushObjectContainer(troops_on_mission, false);
@@ -163,10 +162,10 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
             return (*it);
         }
         // Check roughly the distance
-        if(gwg->CalcDistance((*it)->GetPos(), defender->GetPos()) <= 5)
+        if(gwg->CalcDistance(attackerPos, defenderPos) <= 5)
         {
             // Check it further (e.g. if they have to walk around a river...)
-            if(gwg->FindHumanPath((*it)->GetPos(), defender->GetPos(), 5) != 0xFF)
+            if(gwg->FindHumanPath(attackerPos, defenderPos, 5) != INVALID_DIR)
             {
                 (*it)->LetsFight(defender);
                 return (*it);
@@ -181,19 +180,16 @@ struct GetMapPointWithRadius
 {
     typedef std::pair<MapPoint, unsigned> result_type;
 
-    result_type operator()(const MapPoint pt, unsigned r)
-    {
-        return std::make_pair(pt, r);
-    }
+    result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
 };
 
 MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier)
 {
-    const MapPoint flagPos = gwg->GetNeighbour(pos, 4);
+    const MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SOUTHEAST);
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
-    bool capturing = (type_ >= BLD_BARRACKS && type_ <= BLD_FORTRESS) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
+    bool capturing = (BuildingProperties::IsMilitary(bldType_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
 
     if(!capturing && gwg->ValidPointForFighting(flagPos, false))
     {
@@ -265,8 +261,7 @@ bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
         AddLeavingFigure(defender_);
 
         return true;
-    }
-    else
+    } else
     {
         // Gebäude ist leer, dann kann es erobert werden
         return false;
@@ -279,7 +274,6 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
     // Den Soldaten, der am nächsten dran steht, nehmen
     nofAttacker* best_attacker = 0;
     unsigned best_radius = 0xFFFFFFFF;
-
 
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
@@ -312,7 +306,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
         {
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
             // vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, 4), 5, false) != 0xFF)
+            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 5, false) != 0xFF)
             {
                 // dann kann der zur Flagge gehen
                 (*it)->AttackFlag();
@@ -322,7 +316,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
     }
 }
 
-bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radius, const unsigned char dir)
+bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radius, const Direction dir)
 {
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
@@ -347,13 +341,13 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
     return false;
 }
 
-
-bool nobBaseMilitary::IsAttackable(int playerIdx) const
+bool nobBaseMilitary::IsAttackable(unsigned playerIdx) const
 {
-    if(playerIdx < 0)
-        return true; // Nothing prevents this in general
-    else
-        return gwg->GetPlayer(player).IsAttackable(static_cast<unsigned>(playerIdx));
+    // If we cannot be seen by the player -> not attackable
+    if(gwg->CalcVisiblityWithAllies(pos, playerIdx) != VIS_VISIBLE)
+        return false;
+    // Else it depends on the team settings
+    return gwg->GetPlayer(player).IsAttackable(playerIdx);
 }
 
 bool nobBaseMilitary::IsAggressor(nofAttacker* attacker) const
@@ -376,7 +370,7 @@ bool nobBaseMilitary::IsOnMission(nofActiveSoldier* soldier) const
 void nobBaseMilitary::CancelJobs()
 {
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
-    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); )
+    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end();)
     {
         // Nur Soldaten nehmen (Job-Arbeiten) und keine (normalen) Verteidiger, da diese ja rauskommen
         // sollen zum Kampf
@@ -390,9 +384,9 @@ void nobBaseMilitary::CancelJobs()
             // Wieder in das Haus verfrachten
             this->AddActiveSoldier(soldier);
             it = leave_house.erase(it);
-        }else
+        } else
             ++it;
     }
 
-    //leave_house.clear();
+    // leave_house.clear();
 }

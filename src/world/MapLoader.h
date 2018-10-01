@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,22 +18,26 @@
 #ifndef MapLoader_h__
 #define MapLoader_h__
 
-#include "gameTypes/MapTypes.h"
 #include "gameTypes/GameSettingTypes.h"
+#include "gameTypes/MapCoordinates.h"
+#include "gameData/DescIdx.h"
 #include "gameData/NationConsts.h"
 #include <vector>
 
 class World;
+class GameWorldBase;
 class glArchivItem_Map;
+struct TerrainDesc;
 
 class MapLoader
 {
-    World& world;
-    const std::vector<Nation> playerNations;
-    std::vector<MapPoint> hqPositions;
+    World& world_;
+    const std::vector<Nation> playerNations_;
+    std::vector<MapPoint> hqPositions_;
 
-    /// Inititalize the nodes according to the map data
-    void InitNodes(const glArchivItem_Map& map, Exploration exploration);
+    DescIdx<TerrainDesc> getTerrainFromS2(uint8_t s2Id) const;
+    /// Initialize the nodes according to the map data
+    bool InitNodes(const glArchivItem_Map& map, Exploration exploration);
     /// Place all objects on the nodes according to the map data.
     void PlaceObjects(const glArchivItem_Map& map);
     void PlaceAnimals(const glArchivItem_Map& map);
@@ -48,16 +52,18 @@ public:
     /// Size of @playerNations must be the player count and unused player spots must be set to NAT_INVALID
     MapLoader(World& world, const std::vector<Nation>& playerNations);
     /// Load the map from the given archive, resetting previous state. Return false on error
-    bool Load(const glArchivItem_Map& map, bool randomStartPos, Exploration exploration);
+    bool Load(const glArchivItem_Map& map, Exploration exploration);
+    /// Place the HQs on a loaded map (must be loaded first as hqPositions etc. are used)
+    bool PlaceHQs(GameWorldBase& world, bool randomStartPos);
 
     /// Return the position of the players HQ (only valid after successful load)
-    MapPoint GetHQPos(unsigned player) const { return hqPositions[player]; }
+    MapPoint GetHQPos(unsigned player) const { return hqPositions_[player]; }
 
     static void InitShadows(World& world);
     static void SetMapExplored(World& world, unsigned numPlayers);
-    static void InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
-    static bool PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos);
-
+    static bool InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
+    static bool PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations,
+                         bool randomStartPos);
 };
 
 #endif // MapLoader_h__

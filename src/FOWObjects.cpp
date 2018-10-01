@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "FOWObjects.h"
-#include "SerializedGameData.h"
-#include "GameClient.h"
-#include "gameData/BuildingConsts.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include "Loader.h"
-#include "libutil/src/colors.h"
+#include "SerializedGameData.h"
+#include "network/GameClient.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "gameData/BuildingConsts.h"
+#include "libutil/colors.h"
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
 unsigned CalcPlayerFOWDrawColor(const unsigned color)
@@ -39,21 +39,14 @@ unsigned CalcPlayerFOWDrawColor(const unsigned color)
     return MakeColor(0xFF, red, green, blue);
 }
 
-FOWObject::~FOWObject()
-{
-}
+FOWObject::~FOWObject() {}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // fowBuilding
 
+fowBuilding::fowBuilding(const BuildingType type, const Nation nation) : type(type), nation(nation) {}
 
-fowBuilding::fowBuilding(const BuildingType type, const Nation nation) : type(type), nation(nation)
-{}
-
-fowBuilding::fowBuilding(SerializedGameData& sgd) :
-    type(BuildingType(sgd.PopUnsignedChar())),
-    nation(Nation(sgd.PopUnsignedChar()))
-{}
+fowBuilding::fowBuilding(SerializedGameData& sgd) : type(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar())) {}
 
 void fowBuilding::Serialize(SerializedGameData& sgd) const
 {
@@ -63,32 +56,28 @@ void fowBuilding::Serialize(SerializedGameData& sgd) const
 
 void fowBuilding::Draw(DrawPoint drawPt) const
 {
-    if (type == BLD_CHARBURNER)
+    if(type == BLD_CHARBURNER)
     {
-        LOADER.GetImageN("charburner", nation * 8 + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-    }
-    else
+        LOADER.GetImageN("charburner", nation * 8 + 1)->DrawFull(drawPt, FOW_DRAW_COLOR);
+    } else
     {
-        LOADER.GetNationImage(nation, 250 + 5 * type)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
+        LOADER.GetNationImage(nation, 250 + 5 * type)->DrawFull(drawPt, FOW_DRAW_COLOR);
         // ACHTUNG nicht jedes Gebäude hat einen Schatten !!
         if(LOADER.GetNationImage(nation, 250 + 5 * type + 1))
-            LOADER.GetNationImage(nation, 250 + 5 * type + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetNationImage(nation, 250 + 5 * type + 1)->DrawFull(drawPt, COLOR_SHADOW);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 // fowBuildingSite
 
-
 fowBuildingSite::fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress)
     : planing(planing), type(type), nation(nation), build_progress(build_progress)
 {}
 
-fowBuildingSite::fowBuildingSite(SerializedGameData& sgd) :
-    planing(sgd.PopBool()),
-    type(BuildingType(sgd.PopUnsignedChar())),
-    nation(Nation(sgd.PopUnsignedChar())),
-    build_progress(sgd.PopUnsignedChar())
+fowBuildingSite::fowBuildingSite(SerializedGameData& sgd)
+    : planing(sgd.PopBool()), type(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar())),
+      build_progress(sgd.PopUnsignedChar())
 {}
 
 void fowBuildingSite::Serialize(SerializedGameData& sgd) const
@@ -104,69 +93,49 @@ void fowBuildingSite::Draw(DrawPoint drawPt) const
     if(planing)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(nation, 450)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(nation, 451)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    }
-    else
+        LOADER.GetNationImage(nation, 450)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.GetNationImage(nation, 451)->DrawFull(drawPt, COLOR_SHADOW);
+    } else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(nation, 455)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(nation, 456)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-
+        LOADER.GetNationImage(nation, 455)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.GetNationImage(nation, 456)->DrawFull(drawPt, COLOR_SHADOW);
 
         // bis dahin gebautes Haus zeichnen
 
-        // Rohbau
-
         // ausrechnen, wie weit er ist
-        unsigned int p1 = 0, p2 = 0;
+        unsigned progressRaw, progressBld;
+        unsigned maxProgressRaw, maxProgressBld;
 
         if(BUILDING_COSTS[nation][type].stones)
         {
             // Haus besteht aus Steinen und Brettern
-            p1 = min<unsigned int>(build_progress, BUILDING_COSTS[nation][type].boards * 8);
-            p2 = BUILDING_COSTS[nation][type].boards * 8;
-        }
-        else
+            maxProgressRaw = BUILDING_COSTS[nation][type].boards * 8;
+            maxProgressBld = BUILDING_COSTS[nation][type].stones * 8;
+        } else
         {
             // Haus besteht nur aus Brettern, dann 50:50
-            p1 = min<unsigned int>(build_progress, BUILDING_COSTS[nation][type].boards * 4);
-            p2 = BUILDING_COSTS[nation][type].boards * 4;
+            maxProgressBld = maxProgressRaw = BUILDING_COSTS[nation][type].boards * 4;
         }
+        progressRaw = min<unsigned>(build_progress, maxProgressRaw);
+        progressBld = ((build_progress > maxProgressRaw) ? (build_progress - maxProgressRaw) : 0);
 
-        LOADER.building_cache[nation][type][1].drawPercent(drawPt, p1 * 100 / p2);
-
+        // Rohbau
+        LOADER.building_cache[nation][type][1].drawPercent(drawPt, progressRaw * 100 / maxProgressRaw, FOW_DRAW_COLOR);
         // Das richtige Haus
-        if(BUILDING_COSTS[nation][type].stones)
-        {
-            // Haus besteht aus Steinen und Brettern
-            p1 = ((build_progress >  BUILDING_COSTS[nation][type].boards * 8) ? (build_progress - BUILDING_COSTS[nation][type].boards * 8) : 0);
-            p2 = BUILDING_COSTS[nation][type].stones * 8;
-        }
-        else
-        {
-            // Haus besteht nur aus Brettern, dann 50:50
-            p1 = ((build_progress >  BUILDING_COSTS[nation][type].boards * 4) ? (build_progress - BUILDING_COSTS[nation][type].boards * 4) : 0);
-            p2 = BUILDING_COSTS[nation][type].boards * 4;
-        }
-
-        LOADER.building_cache[nation][type][0].drawPercent(drawPt, p1 * 100 / p2);
+        LOADER.building_cache[nation][type][0].drawPercent(drawPt, progressBld * 100 / maxProgressBld, FOW_DRAW_COLOR);
     }
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 // fowFlag
 
-
-fowFlag::fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type):
-    color(CalcPlayerFOWDrawColor(playerColor)), nation(nation), flag_type(flag_type)
+fowFlag::fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type)
+    : color(CalcPlayerFOWDrawColor(playerColor)), nation(nation), flag_type(flag_type)
 {}
 
-fowFlag::fowFlag(SerializedGameData& sgd) :
-    color(sgd.PopUnsignedInt()),
-    nation(Nation(sgd.PopUnsignedChar())),
-    flag_type(FlagType(sgd.PopUnsignedChar()))
+fowFlag::fowFlag(SerializedGameData& sgd)
+    : color(sgd.PopUnsignedInt()), nation(Nation(sgd.PopUnsignedChar())), flag_type(FlagType(sgd.PopUnsignedChar()))
 {}
 
 void fowFlag::Serialize(SerializedGameData& sgd) const
@@ -184,13 +153,9 @@ void fowFlag::Draw(DrawPoint drawPt) const
 ////////////////////////////////////////////////////////////////////////////////////
 // fowTree
 
-fowTree::fowTree(const unsigned char type, const unsigned char size) : type(type), size(size)
-{}
+fowTree::fowTree(const unsigned char type, const unsigned char size) : type(type), size(size) {}
 
-fowTree::fowTree(SerializedGameData& sgd) :
-    type(sgd.PopUnsignedChar()),
-    size(sgd.PopUnsignedChar())
-{}
+fowTree::fowTree(SerializedGameData& sgd) : type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()) {}
 
 void fowTree::Serialize(SerializedGameData& sgd) const
 {
@@ -203,26 +168,21 @@ void fowTree::Draw(DrawPoint drawPt) const
     if(size == 3)
     {
         // Ausgewachsen
-        LOADER.GetMapImageN(200 + type * 15)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetMapImageN(350 + type * 15)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    }
-    else
+        LOADER.GetMapImageN(200 + type * 15)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.GetMapImageN(350 + type * 15)->DrawFull(drawPt, COLOR_SHADOW);
+    } else
     {
-        LOADER.GetMapImageN(208 + type * 15 + size)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-        LOADER.GetMapImageN(358 + type * 15 + size)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(208 + type * 15 + size)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.GetMapImageN(358 + type * 15 + size)->DrawFull(drawPt, COLOR_SHADOW);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 // fowGranite
 
-fowGranite::fowGranite(const GraniteType type, const unsigned char state) : type(type), state(state)
-{}
+fowGranite::fowGranite(const GraniteType type, const unsigned char state) : type(type), state(state) {}
 
-fowGranite::fowGranite(SerializedGameData& sgd) :
-    type(GraniteType(sgd.PopUnsignedChar())),
-    state(sgd.PopUnsignedChar())
-{}
+fowGranite::fowGranite(SerializedGameData& sgd) : type(GraniteType(sgd.PopUnsignedChar())), state(sgd.PopUnsignedChar()) {}
 
 void fowGranite::Serialize(SerializedGameData& sgd) const
 {
@@ -232,6 +192,6 @@ void fowGranite::Serialize(SerializedGameData& sgd) const
 
 void fowGranite::Draw(DrawPoint drawPt) const
 {
-    LOADER.GetMapImageN(516 + type * 6 + state)->Draw(drawPt, 0, 0, 0, 0, 0, 0, FOW_DRAW_COLOR);
-    LOADER.GetMapImageN(616 + type * 6 + state)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetMapImageN(516 + type * 6 + state)->DrawFull(drawPt, FOW_DRAW_COLOR);
+    LOADER.GetMapImageN(616 + type * 6 + state)->DrawFull(drawPt, COLOR_SHADOW);
 }

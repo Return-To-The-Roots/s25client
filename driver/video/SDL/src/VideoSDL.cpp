@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,22 +15,36 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "main.h" // IWYU pragma: keep
+#include "driverDefines.h" // IWYU pragma: keep
 #include "VideoSDL.h"
-#ifndef RTTR_Assert
-#   define RTTR_Assert assert
-#endif
-#include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
-#include <VideoInterface.h>
-#include <build_version.h>
-
+#include "VideoInterface.h"
+#include "helpers/containerUtils.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
 
 #ifdef _WIN32
-#include "../../../../win32/resource.h"
+#include "../../../../win32/s25clientResources.h"
+#include "libutil/ucString.h"
 #include <SDL_syswm.h>
+
+namespace {
+struct DeleterReleaseDC
+{
+    typedef HDC pointer;
+    HWND wnd;
+    DeleterReleaseDC(HWND wnd) : wnd(wnd) {}
+    void operator()(HDC dc) const { ReleaseDC(wnd, dc); }
+};
+struct DeleterDeleteRC
+{
+    typedef HGLRC pointer;
+    void operator()(HGLRC rc) const { wglDeleteContext(rc); }
+};
+
+} // namespace
 #endif // _WIN32
 
 /**
@@ -55,7 +69,7 @@ DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
  *
  *  @return liefert den Namen des Treibers.
  */
-DRIVERDLLAPI const char* GetDriverName(void)
+DRIVERDLLAPI const char* GetDriverName()
 {
     return "(SDL) OpenGL via SDL-Library";
 }
@@ -75,8 +89,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
-VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL)
-{}
+VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL) {}
 
 VideoSDL::~VideoSDL()
 {
@@ -100,7 +113,7 @@ const char* VideoSDL::GetName() const
  */
 bool VideoSDL::Initialize()
 {
-    if( SDL_InitSubSystem( SDL_INIT_VIDEO ) < 0 )
+    if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
     {
         fprintf(stderr, "%s\n", SDL_GetError());
         initialized = false;
@@ -142,15 +155,12 @@ void VideoSDL::CleanUp()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoSDL::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
 {
-    char title[512];
-
     if(!initialized)
         return false;
 
     // TODO: Icon setzen
-
 
     // GL-Attribute setzen
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -159,31 +169,17 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 
-#ifdef _WIN32
-    // das spinnt ja total unter windows ...
-    this->isFullscreen_ = false;
-#else
-    this->isFullscreen_ = fullscreen;
-#endif
-
-    // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
-    {
-        fprintf(stderr, "%s\n", SDL_GetError());
+    // Set the video mode
+    if(!SetVideoMode(newSize, fullscreen))
         return false;
-    }
 
-    sprintf(title, "%s - v%s-%s", GetWindowTitle(), GetWindowVersion(), GetWindowRevision());
-    SDL_WM_SetCaption(title, 0);
+    SDL_WM_SetCaption(title.c_str(), 0);
 
 #ifdef _WIN32
-    SetWindowTextA(GetConsoleWindow(), title);
+    SetWindowTextW(GetConsoleWindow(), cvUTF8ToWideString(title).c_str());
 #endif
 
     std::fill(keyboard.begin(), keyboard.end(), false);
-
-    this->screenWidth  = width;
-    this->screenHeight = height;
 
     SDL_ShowCursor(SDL_DISABLE);
 
@@ -201,29 +197,157 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
  *
  *  @todo Vollbildmodus ggf. wechseln
  */
-bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 {
     if(!initialized)
         return false;
 
-    this->screenWidth  = width;
-    this->screenHeight = height;
-
+        // On windows the current ogl context gets destroyed. Hence we have to save it to avoid having to reinitialize all resources
+        // Taken from http://www.bytehazard.com/articles/sdlres.html
 #ifdef _WIN32
-    // das spinnt ja total unter windows ...
-    this->isFullscreen_ = false;
-#else
-    this->isFullscreen_ = fullscreen;
-#endif
-
-    // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+    SDL_SysWMinfo info;
+    // get window handle from SDL
+    SDL_VERSION(&info.version);
+    if(SDL_GetWMInfo(&info) != 1)
     {
-        fprintf(stderr, "%s\n", SDL_GetError());
+        PrintError("SDL_GetWMInfo #1 failed");
         return false;
     }
 
+    // get device context handle
+    boost::interprocess::unique_ptr<HDC, DeleterReleaseDC> tempDC(GetDC(info.window), DeleterReleaseDC(info.window));
+
+    // create temporary context
+    boost::interprocess::unique_ptr<HGLRC, DeleterDeleteRC> tempRC(wglCreateContext(tempDC.get()));
+    if(!tempRC)
+    {
+        PrintError("wglCreateContext failed");
+        return false;
+    }
+
+    // share resources to temporary context
+    SetLastError(0);
+    if(!wglShareLists(info.hglrc, tempRC.get()))
+    {
+        PrintError("wglShareLists #1 failed");
+        return false;
+    }
+
+    // set video mode
+    if(!SetVideoMode(newSize, fullscreen))
+        return false;
+
+    // previously used structure may possibly be invalid, to be sure we get it again
+    SDL_VERSION(&info.version);
+    if(SDL_GetWMInfo(&info) != 1)
+    {
+        PrintError("SDL_GetWMInfo #2 failed\n");
+        return false;
+    }
+
+    // share resources to new SDL-created context
+    if(!wglShareLists(tempRC.get(), info.hglrc))
+    {
+        PrintError("wglShareLists #2 failed\n");
+        return false;
+    }
+
+    // success
     return true;
+#else
+    return SetVideoMode(newSize, fullscreen);
+#endif // _WIN32
+}
+
+bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
+{
+    // putenv needs a char* not a const char* -.-
+    static char CENTER_ENV[] = "SDL_VIDEO_CENTERED=center";
+    static char UNCENTER_ENV[] = "SDL_VIDEO_CENTERED=";
+
+    bool enteredWndMode = !screen || (isFullscreen_ && !fullscreen);
+
+    screenSize_ = (fullscreen) ? FindClosestVideoMode(newSize) : newSize;
+
+    if(enteredWndMode)
+        SDL_putenv(CENTER_ENV);
+
+    screen = SDL_SetVideoMode(screenSize_.width, screenSize_.height, 32,
+                              SDL_HWSURFACE | SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE));
+    // Fallback to non-fullscreen
+    if(!screen && fullscreen)
+        screen = SDL_SetVideoMode(screenSize_.width, screenSize_.height, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_RESIZABLE);
+
+    if(enteredWndMode)
+        SDL_putenv(UNCENTER_ENV);
+
+    // Videomodus setzen
+    if(!screen)
+    {
+        PrintError(SDL_GetError());
+        return false;
+    }
+
+    isFullscreen_ = (screen->flags & SDL_FULLSCREEN) != 0;
+
+#ifdef _WIN32
+    // Grabbing input in fullscreen is very buggy on windows. For one the mouse might jump (#806) which can be fixed by patching SDL:
+    // https://github.com/joncampbell123/dosbox-x/commit/f343dc2ec012699d04584b898925e3501a9b913c
+    // But doing that on the build server is to much work as SDL2 has fixed that already. The work-around in user code (this file) did not
+    // work (#809) Furthermore there is a bug (maybe SDL 1.2.14 only), that the cursor gets locked to the top left corner when alt-tab is
+    // used (#811) So we force SDL to not grab the input
+    if(isFullscreen_)
+    {
+        // This is a hack (flags should be read-only) but we cannot ungrab input in fullscreen mode
+        screen->flags &= ~SDL_FULLSCREEN;
+        SDL_WM_GrabInput(SDL_GRAB_OFF);
+        screen->flags |= SDL_FULLSCREEN;
+    }
+
+    SDL_SysWMinfo info;
+    // get window handle from SDL
+    SDL_VERSION(&info.version);
+    if(SDL_GetWMInfo(&info) == 1)
+    {
+        LPARAM icon = (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL));
+        SendMessage(info.window, WM_SETICON, ICON_BIG, icon);
+        SendMessage(info.window, WM_SETICON, ICON_SMALL, icon);
+    }
+#endif // _WIN32
+
+    return true;
+}
+
+void VideoSDL::PrintError(const std::string& msg)
+{
+    bnw::cerr << msg << std::endl;
+}
+
+void VideoSDL::HandlePaste()
+{
+#ifdef _WIN32
+    if(!IsClipboardFormatAvailable(CF_UNICODETEXT))
+        return;
+
+    OpenClipboard(NULL);
+
+    HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+    const wchar_t* pData = (const wchar_t*)GlobalLock(hData);
+
+    KeyEvent ke = {KT_INVALID, 0, false, false, false};
+    while(pData && *pData)
+    {
+        ke.c = *(pData++);
+        if(ke.c == L' ')
+            ke.kt = KT_SPACE;
+        else
+            ke.kt = KT_CHAR;
+        CallBack->Msg_KeyDown(ke);
+    }
+
+    GlobalUnlock(hData);
+    CloseClipboard();
+#endif
 }
 
 /**
@@ -256,37 +380,40 @@ bool VideoSDL::SwapBuffers()
  */
 bool VideoSDL::MessageLoop()
 {
+    static bool mouseMoved = false;
+
     SDL_Event ev;
-
-    static bool mouse_motion = 0;
-
     while(SDL_PollEvent(&ev))
     {
         switch(ev.type)
         {
-            default:
-                break;
+            default: break;
 
-            case SDL_QUIT:
-                return false;
+            case SDL_QUIT: return false;
 
             case SDL_ACTIVEEVENT:
-                if((ev.active.state & SDL_APPACTIVE) && ev.active.gain)
+                if((ev.active.state & SDL_APPACTIVE) && ev.active.gain && !isFullscreen_)
                 {
                     // Window was restored. We need a resize to avoid a black screen
-                    CallBack->ScreenResized(screenWidth, screenHeight);
+                    ResizeScreen(VideoMode(screenSize_.width, screenSize_.height), isFullscreen_);
+                    CallBack->ScreenResized(screenSize_.width, screenSize_.height);
                 }
                 break;
 
             case SDL_VIDEORESIZE:
             {
-                ResizeScreen(ev.resize.w, ev.resize.h, isFullscreen_);
-                CallBack->ScreenResized(screenWidth, screenHeight);
-            } break;
+                VideoMode newSize(ev.resize.w, ev.resize.h);
+                if(newSize != screenSize_)
+                {
+                    ResizeScreen(newSize, isFullscreen_);
+                    CallBack->ScreenResized(screenSize_.width, screenSize_.height);
+                }
+            }
+            break;
 
             case SDL_KEYDOWN:
             {
-                KeyEvent ke = { KT_INVALID, 0, false, false, false };
+                KeyEvent ke = {KT_INVALID, 0, false, false, false};
 
                 switch(ev.key.keysym.sym)
                 {
@@ -295,43 +422,58 @@ bool VideoSDL::MessageLoop()
                         // Die 12 F-Tasten
                         if(ev.key.keysym.sym >= SDLK_F1 && ev.key.keysym.sym <= SDLK_F12)
                             ke.kt = static_cast<KeyType>(KT_F1 + ev.key.keysym.sym - SDLK_F1);
-                    } break;
-                    case SDLK_RETURN:    ke.kt = KT_RETURN; break;
-                    case SDLK_SPACE:     ke.kt = KT_SPACE; break;
-                    case SDLK_LEFT:      ke.kt = KT_LEFT; break;
-                    case SDLK_RIGHT:     ke.kt = KT_RIGHT; break;
-                    case SDLK_UP:        ke.kt = KT_UP; break;
-                    case SDLK_DOWN:      ke.kt = KT_DOWN; break;
+                    }
+                    break;
+                    case SDLK_RETURN: ke.kt = KT_RETURN; break;
+                    case SDLK_SPACE: ke.kt = KT_SPACE; break;
+                    case SDLK_LEFT: ke.kt = KT_LEFT; break;
+                    case SDLK_RIGHT: ke.kt = KT_RIGHT; break;
+                    case SDLK_UP: ke.kt = KT_UP; break;
+                    case SDLK_DOWN: ke.kt = KT_DOWN; break;
                     case SDLK_BACKSPACE: ke.kt = KT_BACKSPACE; break;
-                    case SDLK_DELETE:    ke.kt = KT_DELETE; break;
-                    case SDLK_LSHIFT:    ke.kt = KT_SHIFT; break;
-                    case SDLK_RSHIFT:    ke.kt = KT_SHIFT; break;
-                    case SDLK_TAB:       ke.kt = KT_TAB; break;
-                    case SDLK_HOME:      ke.kt = KT_HOME; break;
-                    case SDLK_END:       ke.kt = KT_END; break;
-                    case SDLK_ESCAPE:    ke.kt = KT_ESCAPE; break;
+                    case SDLK_DELETE: ke.kt = KT_DELETE; break;
+                    case SDLK_LSHIFT: ke.kt = KT_SHIFT; break;
+                    case SDLK_RSHIFT: ke.kt = KT_SHIFT; break;
+                    case SDLK_TAB: ke.kt = KT_TAB; break;
+                    case SDLK_HOME: ke.kt = KT_HOME; break;
+                    case SDLK_END: ke.kt = KT_END; break;
+                    case SDLK_ESCAPE: ke.kt = KT_ESCAPE; break;
+                    case SDLK_PRINT: ke.kt = KT_PRINT; break;
                     case SDLK_BACKQUOTE: ev.key.keysym.unicode = '^'; break;
+                    case SDLK_v:
+                        if(SDL_GetModState() & KMOD_CTRL)
+                        {
+                            HandlePaste();
+                            continue;
+                        }
+                        break;
                 }
 
                 /// Strg, Alt, usw gedrückt?
-                if(ev.key.keysym.mod & KMOD_CTRL) ke.ctrl = true;
-                if(ev.key.keysym.mod & KMOD_SHIFT) ke.shift = true;
-                if(ev.key.keysym.mod & KMOD_ALT) ke.alt = true;
+                if(ev.key.keysym.mod & KMOD_CTRL)
+                    ke.ctrl = true;
+                if(ev.key.keysym.mod & KMOD_SHIFT)
+                    ke.shift = true;
+                if(ev.key.keysym.mod & KMOD_ALT)
+                    ke.alt = true;
 
                 if(ke.kt == KT_INVALID)
                 {
                     ke.kt = KT_CHAR;
                     ke.c = ev.key.keysym.unicode;
+                    if(ke.c == 0u)
+                        break;
                 }
 
                 CallBack->Msg_KeyDown(ke);
-            } break;
+            }
+            break;
             case SDL_MOUSEBUTTONDOWN:
             {
                 mouse_xy.x = ev.button.x;
                 mouse_xy.y = ev.button.y;
 
-                if(/*!mouse_xy.ldown && */ev.button.button == SDL_BUTTON_LEFT)
+                if(/*!mouse_xy.ldown && */ ev.button.button == SDL_BUTTON_LEFT)
                 {
                     mouse_xy.ldown = true;
                     CallBack->Msg_LeftDown(mouse_xy);
@@ -341,7 +483,8 @@ bool VideoSDL::MessageLoop()
                     mouse_xy.rdown = true;
                     CallBack->Msg_RightDown(mouse_xy);
                 }
-            } break;
+            }
+            break;
             case SDL_MOUSEBUTTONUP:
             {
                 mouse_xy.x = ev.button.x;
@@ -365,25 +508,25 @@ bool VideoSDL::MessageLoop()
                 {
                     CallBack->Msg_WheelDown(mouse_xy);
                 }
-
-            } break;
+            }
+            break;
             case SDL_MOUSEMOTION:
             {
-                if(!mouse_motion)
+                // Handle only 1st mouse move
+                if(!mouseMoved)
                 {
                     mouse_xy.x = ev.motion.x;
                     mouse_xy.y = ev.motion.y;
 
-                    mouse_motion = 1;
                     CallBack->Msg_MouseMove(mouse_xy);
+                    mouseMoved = true;
                 }
-
-
-            } break;
+            }
+            break;
         }
     }
 
-    mouse_motion = 0;
+    mouseMoved = false;
     return true;
 }
 
@@ -406,7 +549,7 @@ void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     SDL_Rect** modes = SDL_ListModes(NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
 
-    for (unsigned int i = 0; modes[i]; ++i)
+    for(unsigned i = 0; modes[i]; ++i)
     {
         VideoMode vm(modes[i]->w, modes[i]->h);
         if(!helpers::contains(video_modes, vm))
@@ -445,7 +588,7 @@ void VideoSDL::SetMousePos(int x, int y)
 KeyEvent VideoSDL::GetModKeyState() const
 {
     const SDLMod modifiers = SDL_GetModState();
-    const KeyEvent ke = { KT_INVALID, 0, ( (modifiers& KMOD_CTRL) != 0), ( (modifiers& KMOD_SHIFT) != 0), ( (modifiers& KMOD_ALT) != 0)};
+    const KeyEvent ke = {KT_INVALID, 0, ((modifiers & KMOD_CTRL) != 0), ((modifiers & KMOD_SHIFT) != 0), ((modifiers & KMOD_ALT) != 0)};
     return ke;
 }
 
@@ -456,7 +599,7 @@ void* VideoSDL::GetMapPointer() const
     SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);
     SDL_GetWMInfo(&wmInfo);
-    //return (void*)wmInfo.info.win.window;
+    // return (void*)wmInfo.info.win.window;
     return (void*)wmInfo.window;
 #else
     return NULL;

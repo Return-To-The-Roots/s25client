@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,19 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofPassiveSoldier.h"
-#include "world/GameWorldGame.h"
-#include "buildings/nobMilitary.h"
-#include "Random.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "SerializedGameData.h"
+#include "buildings/nobMilitary.h"
+#include "helpers/containerUtils.h"
+#include "random/Random.h"
+#include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
 class RoadSegment;
 
-nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier),
-    healing_event(NULL)
+nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier), healing_event(NULL)
 {
     // Soldat von einer Mission nach Hause gekommen --> ggf heilen!
     Heal();
@@ -35,17 +35,12 @@ nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(sol
     current_ev = NULL;
 }
 
-nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char player,
-                                     nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank)
+nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
+                                     nobBaseMilitary* const home, const unsigned char rank)
     : nofSoldier(pos, player, goal, home, rank), healing_event(NULL)
-{
-}
+{}
 
-
-nofPassiveSoldier::~nofPassiveSoldier()
-{
-}
-
+nofPassiveSoldier::~nofPassiveSoldier() {}
 
 void nofPassiveSoldier::Destroy_nofPassiveSoldier()
 {
@@ -57,13 +52,12 @@ void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData& sgd) con
 {
     Serialize_nofSoldier(sgd);
 
-    sgd.PushObject(healing_event, true);
+    sgd.PushEvent(healing_event);
 }
 
-nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id) : nofSoldier(sgd, obj_id),
-    healing_event(sgd.PopEvent())
-{
-}
+nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id)
+    : nofSoldier(sgd, obj_id), healing_event(sgd.PopEvent())
+{}
 
 void nofPassiveSoldier::Draw(DrawPoint drawPt)
 {
@@ -71,11 +65,11 @@ void nofPassiveSoldier::Draw(DrawPoint drawPt)
     DrawSoldierWalking(drawPt);
 }
 
-void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
+void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
 {
     switch(id)
     {
-            // "Heilungs-Event"
+        // "Heilungs-Event"
         case 1:
         {
             healing_event = 0;
@@ -90,11 +84,12 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
                     if(hitpoints < HITPOINTS[gwg->GetPlayer(player).nation][job_ - JOB_PRIVATE])
-                        healing_event = GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
+                        healing_event = GetEvMgr().AddEvent(
+                          this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
                 }
             }
-
-        } break;
+        }
+        break;
     }
 }
 
@@ -116,13 +111,8 @@ void nofPassiveSoldier::Heal()
 
 void nofPassiveSoldier::GoalReached()
 {
-    // im Militärgebäude angekommen
-
-    // mich hinzufügen
+    gwg->RemoveFigure(pos, this);
     static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
-
-    // und wir können uns auch aus der Laufliste erstmal entfernen
-    gwg->RemoveFigure(this, pos);
 }
 
 void nofPassiveSoldier::InBuildingDestroyed()
@@ -130,12 +120,11 @@ void nofPassiveSoldier::InBuildingDestroyed()
     building = NULL;
 
     // Auf die Karte setzen
-    gwg->AddFigure(this, pos);
+    gwg->AddFigure(pos, this);
     // Erstmal in zufällige Richtung rammeln
     StartWandering();
 
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
-
+    StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
 }
 
 void nofPassiveSoldier::LeaveBuilding()
@@ -143,16 +132,17 @@ void nofPassiveSoldier::LeaveBuilding()
     // Nach Hause in ein Lagerhaus gehen
     rs_dir = true;
     rs_pos = 1;
-    cur_rs = building->routes[4];
+    cur_rs = building->GetRoute(Direction::SOUTHEAST);
     GoHome();
 
     building = NULL;
 }
 
-
 void nofPassiveSoldier::Upgrade()
 {
-    RTTR_Assert(!building || !helpers::contains(static_cast<nobMilitary*>(building)->GetTroops(), this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
+    RTTR_Assert(!building
+                || !helpers::contains(static_cast<nobMilitary*>(building)->GetTroops(),
+                                      this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
     // Einen Rang höher
     job_ = Job(unsigned(job_) + 1);
 
@@ -176,4 +166,3 @@ void nofPassiveSoldier::NotNeeded()
     building = NULL;
     GoHome();
 }
-

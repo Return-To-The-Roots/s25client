@@ -9,9 +9,25 @@ see more information on http://www.rttr.info
 
 # Current Build Info
 
-Travis CI: ![Travis CI Build Info](https://travis-ci.org/Return-To-The-Roots/s25client.svg?branch=master)
+Travis CI: [![Travis CI Build Info](https://travis-ci.org/Return-To-The-Roots/s25client.svg?branch=master)](https://travis-ci.org/Return-To-The-Roots/s25client)
 
-Appveyor: ![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)
+Appveyor: [![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)](https://ci.appveyor.com/project/Flow86/s25client/branch/master)
+
+Coverage:
+[![Coverage Status](https://coveralls.io/repos/github/Return-To-The-Roots/s25client/badge.svg?branch=master)](https://coveralls.io/github/Return-To-The-Roots/s25client?branch=master)
+ / 
+[![codecov](https://codecov.io/gh/Return-To-The-Roots/s25client/branch/master/graph/badge.svg)](https://codecov.io/gh/Return-To-The-Roots/s25client)
+
+# How to install
+
+- Download the game for your OS at [siedler25.org](https://www.siedler25.org/index.php?com=dynamic&mod=2)
+    - stable: Usually more stable
+    - nightly: Latest features and bug fixes, but might be broken sometimes
+- Extract into a folder of your choice
+- Locate the file `put your S2-Installation in here` in that folder (usually at the root or in S2)
+- Copy the DATA and GFX folder from the original The Settlers II Gold into the folder containing the above file
+- Start `rttr.bat`/`rttr.sh` or the bundle (OSX only) to auto-update and start the game
+    - Alternatively start `s25client` directly, but updates and music might be missing
 
 # How to build
 
@@ -30,24 +46,31 @@ Appveyor: ![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/
 Most of them can be installed with the package manager.
 
 ### Prerequisite MacOSX:
- - cmake
- - git
- - boost
- - sdl
- - sdl_mixer
- - gettext (make sure it is in your path with e.g. `brew link --force gettext`)
- - miniupnpc
+- cmake
+- git
+- boost
+- sdl
+- sdl_mixer
+- gettext (make sure it is in your path with e.g. `brew link --force gettext`)
+- miniupnpc
 All of them can be installed via homebrew
 
 ### Steps:
 ```
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
-cd s25client/build
-./cmake.sh --prefix=.
+cd s25client
+mkdir -p build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```
 
-MacOSX defaults to XCode generator. If you don't have XCode installed, use `./cmake.sh --prefix=. --generator="Unix Makefiles"` instead.
+### Optimizations:
+There are various CMake options to control the build and optimization including ARM (Rasberry PI etc.) related ones. Examples:
+- RTTR_ENABLE_OPTIMIZATIONS/RTTR_ENABLE_WERROR
+- RTTR_OPTIMZATION_VECTOR_EXT (Non-Windows x86/x64 only)
+- RTTR_OPTIMZATION_TUNE (Non-Windows only)
+- RTTR_TARGET_BOARD (ARM only)
+See the description in CMake-GUI/ccmake for details.
 
 Note that due to the use of submodules you always need to `git pull && git submodule update --init --recursive` to get the latest version.
 (The `--init` and `--recursive` arguments are only required should we add *new* submodules to the existing set.)
@@ -88,7 +111,7 @@ Note that due to the use of submodules you always need to `git pull && git submo
     Notice: Don't forget to add the toolset parameter if you already used it before
 - Use cmake-gui:
   - "Where is the source code": Select checked out directory
-  - "Where to build the binaries": Select "build" directory
+  - "Where to build the binaries": Select "build" directory (create if required)
   - Press configure
   - Select your compiler version (i.e Visual Studio 2010 x86)
   - If it can't find boost:
@@ -102,5 +125,4 @@ Note that due to the use of submodules you always need to `git pull && git submo
 
 --
 
-for advanced info or help see INSTALL file the [FAQ in the wiki](
- https://github.com/Return-To-The-Roots/s25client/wiki/%5BFAQ%5D-Compiling) or http://www.rttr.info 
+for advanced info or help see [FAQ in the wiki](https://github.com/Return-To-The-Roots/s25client/wiki/How-to-install-RttR) or http://www.rttr.info 

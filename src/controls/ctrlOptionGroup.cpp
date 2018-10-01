@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlOptionGroup.h"
 class MouseCoords;
 
-ctrlOptionGroup::ctrlOptionGroup(Window* parent,
-                                 unsigned int id,
-                                 int select_type,
-                                 bool scale)
-    : ctrlGroup(parent, id, scale),
-      selection_(0xFFFF), select_type(select_type)
-{
-}
+ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, int select_type)
+    : ctrlGroup(parent, id), selection_(0xFFFF), select_type(select_type)
+{}
 
 /**
  *  Zeichenmethode.
  */
-bool ctrlOptionGroup::Draw_()
+void ctrlOptionGroup::Draw_()
 {
     DrawControls();
-
-    return true;
 }
 
 /**
@@ -51,8 +44,8 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
         switch(select_type)
         {
             case ILLUMINATE: button->SetIlluminated(false); break;
-            case CHECK:      button->SetCheck(false);       break;
-            case SHOW:       button->SetVisible(true);     break;
+            case CHECK: button->SetChecked(false); break;
+            case SHOW: button->SetVisible(true); break;
         }
     }
 
@@ -64,18 +57,18 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
         switch(select_type)
         {
             case ILLUMINATE: button->SetIlluminated(true); break;
-            case CHECK:      button->SetCheck(true);       break;
-            case SHOW:       button->SetVisible(false);     break;
+            case CHECK: button->SetChecked(true); break;
+            case SHOW: button->SetVisible(false); break;
         }
     }
 
     this->selection_ = selection;
 
-    if(notify && parent_)
-        parent_->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && GetParent())
+        GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
 
-void ctrlOptionGroup::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlOptionGroup::Msg_ButtonClick(const unsigned ctrl_id)
 {
     SetSelection(ctrl_id, true);
 }

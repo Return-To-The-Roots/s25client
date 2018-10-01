@@ -14,60 +14,58 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskLobby.h"
-
-#include "WindowManager.h"
 #include "Loader.h"
-#include "GameClient.h"
-#include "LobbyClient.h"
+#include "RTTR_Version.h"
 #include "Settings.h"
-
-#include "dskHostGame.h"
-#include "dskMultiPlayer.h"
+#include "WindowManager.h"
 #include "controls/ctrlChat.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlTable.h"
-#include "ingameWindows/iwLobbyServerInfo.h"
-#include "ingameWindows/iwLobbyRanking.h"
-#include "ingameWindows/iwDirectIPCreate.h"
+#include "dskHostGame.h"
+#include "dskMultiPlayer.h"
+#include "helpers/containerUtils.h"
 #include "ingameWindows/iwDirectIPConnect.h"
+#include "ingameWindows/iwDirectIPCreate.h"
+#include "ingameWindows/iwLobbyRanking.h"
+#include "ingameWindows/iwLobbyServerInfo.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "ogl/glArchivItem_Font.h"
-#include "ogl/glArchivItem_Sound.h"
-
-#include <Log.h>
+#include "network/GameClient.h"
+#include "ogl/SoundEffectItem.h"
+#include "liblobby/LobbyClient.h"
+#include "libutil/Log.h"
+#include "libutil/MyTime.h"
+#include "libutil/colors.h"
+#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <set>
 
-dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverInfoWnd(NULL), createServerWnd(NULL)
+dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWnd(NULL), createServerWnd(NULL), lobbyRankingWnd(NULL)
 {
-    // Version
-    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
-    // URL
-    AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
-    // Copyright
-    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
     // "Zurück"
-    AddTextButton(3, 530, 530, 250, 22, TC_RED1, _("Back"), NormalFont);
+    AddTextButton(3, DrawPoint(530, 530), Extent(250, 22), TC_RED1, _("Back"), NormalFont);
     // "Verbinden"
-    AddTextButton(4, 530, 470, 250, 22, TC_GREEN2, _("Connect"), NormalFont);
+    AddTextButton(4, DrawPoint(530, 470), Extent(250, 22), TC_GREEN2, _("Connect"), NormalFont);
     // "Internet Ranking"
-    AddTextButton(5, 530, 500, 250, 22, TC_GREEN2, _("Internet Ranking"), NormalFont);
+    AddTextButton(5, DrawPoint(530, 500), Extent(250, 22), TC_GREEN2, _("Internet Ranking"), NormalFont);
     // "Server hinzufügen"
-    AddTextButton(6, 530, 440, 250, 22, TC_GREEN2, _("Add Server"), NormalFont);
+    AddTextButton(6, DrawPoint(530, 440), Extent(250, 22), TC_GREEN2, _("Add Server"), NormalFont);
 
     // Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
-    AddTable(10, 20, 20, 500, 262, TC_GREY, NormalFont, 6, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300, ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_STRING, _("Version"), 100, ctrlTable::SRT_STRING, _("Ping"), 100, ctrlTable::SRT_NUMBER);
+    AddTable(10, DrawPoint(20, 20), Extent(500, 262), TC_GREY, NormalFont, 6, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300,
+             ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_STRING, _("Version"), 100,
+             ctrlTable::SRT_STRING, _("Ping"), 100, ctrlTable::SRT_NUMBER);
     // Spieler-Tabelle - "Name", "Punkte", "Version"
-    AddTable(11, 530, 20, 250, 410, TC_GREY, NormalFont, 3, _("Name"), 500, ctrlTable::SRT_STRING, _("Points"), 250, ctrlTable::SRT_STRING, _("Version"), 250, ctrlTable::SRT_STRING);
+    AddTable(11, DrawPoint(530, 20), Extent(250, 410), TC_GREY, NormalFont, 3, _("Name"), 500, ctrlTable::SRT_STRING, _("Points"), 250,
+             ctrlTable::SRT_STRING, _("Version"), 250, ctrlTable::SRT_STRING);
 
     // Chatfenster
-    AddChatCtrl(20, 20, 290, 500, 238, TC_GREY, NormalFont);
+    AddChatCtrl(20, DrawPoint(20, 290), Extent(500, 238), TC_GREY, NormalFont);
     // Chatfenster-Edit
-    AddEdit(21, 20, 530, 500, 22, TC_GREY, NormalFont);
+    AddEdit(21, DrawPoint(20, 530), Extent(500, 22), TC_GREY, NormalFont);
 
     AddTimer(30, 5000);
 
@@ -75,36 +73,43 @@ dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverInfoWnd(N
     if(LOBBYCLIENT.IsIngame())
         LOBBYCLIENT.SendLeaveServer();
 
-    UpdateServerList(true);
-    UpdatePlayerList(true);
+    UpdateServerList();
+    UpdatePlayerList();
 
-    LOBBYCLIENT.SetInterface(this);
+    LOBBYCLIENT.AddListener(this);
     LOBBYCLIENT.SendServerListRequest();
     LOBBYCLIENT.SendPlayerListRequest();
 
     GAMECLIENT.SetInterface(this);
 }
 
-void dskLobby::Msg_Timer(const unsigned int  /*ctrl_id*/)
+dskLobby::~dskLobby()
+{
+    LOBBYCLIENT.RemoveListener(this);
+    GAMECLIENT.RemoveInterface(this);
+}
+
+void dskLobby::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     LOBBYCLIENT.SendServerListRequest();
 }
 
 void dskLobby::Msg_PaintBefore()
 {
+    dskMenuBase::Msg_PaintBefore();
     UpdateServerList();
     UpdatePlayerList();
     GetCtrl<ctrlEdit>(21)->SetFocus();
 }
 
-void dskLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult  /*mbr*/)
+void dskLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     // Verbindung verloren
     if(msgbox_id == 0)
         WINDOWMANAGER.Switch(new dskMultiPlayer);
 }
 
-void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -112,30 +117,34 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             LOBBYCLIENT.Stop();
             WINDOWMANAGER.Switch(new dskMultiPlayer);
-        } break;
+        }
+        break;
         case 4: // Verbinden - Button
             ConnectToSelectedGame();
             break;
         case 5: // Ranking - Button
         {
             LOBBYCLIENT.SendRankingListRequest();
-            WINDOWMANAGER.Show(new iwLobbyRanking, true);
-        } break;
+            WINDOWMANAGER.Show(lobbyRankingWnd = new iwLobbyRanking, true);
+        }
+        break;
         case 6: // GameServer hinzufügen
         {
-            if(SETTINGS.proxy.typ != 0)
-                WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+            if(SETTINGS.proxy.type != PROXY_NONE)
+                WINDOWMANAGER.Show(new iwMsgbox(
+                  _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
+                  MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
                 createServerWnd = new iwDirectIPCreate(ServerType::LOBBY);
-                createServerWnd->SetParent(this);
                 WINDOWMANAGER.Show(createServerWnd, true);
             }
-        } break;
+        }
+        break;
     }
 }
 
-void dskLobby::Msg_EditEnter(const unsigned int ctrl_id)
+void dskLobby::Msg_EditEnter(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -144,11 +153,12 @@ void dskLobby::Msg_EditEnter(const unsigned int ctrl_id)
             ctrlEdit* edit = GetCtrl<ctrlEdit>(21);
             LOBBYCLIENT.SendChat(edit->GetText());
             edit->SetText("");
-        } break;
+        }
+        break;
     }
 }
 
-void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const int selection)
+void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const int selection)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
@@ -157,22 +167,22 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const int select
         {
             const std::string item = table->GetItemText(selection, 0);
 
-            if(atoi(item.c_str()) != 0)
+            if(boost::lexical_cast<unsigned>(item.c_str()) != 0)
             {
                 if(serverInfoWnd)
                 {
-                    if(serverInfoWnd->GetServerId() == (unsigned)atoi(item.c_str()))
+                    if(serverInfoWnd->GetServerId() == boost::lexical_cast<unsigned>(item.c_str()))
                         return; // raus
 
                     WINDOWMANAGER.Close(serverInfoWnd);
                 }
 
-                serverInfoWnd = new iwLobbyServerInfo(atoi(item.c_str()));
-                serverInfoWnd->SetParent(this);
+                serverInfoWnd = new iwLobbyServerInfo(boost::lexical_cast<unsigned>(item.c_str()));
                 serverInfoWnd->SetTitle(table->GetItemText(selection, 1));
                 WINDOWMANAGER.Show(serverInfoWnd, true);
             }
-        } break;
+        }
+        break;
     }
 }
 
@@ -182,129 +192,51 @@ void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned select
         ConnectToSelectedGame();
 }
 
-void dskLobby::UpdatePlayerList(bool first)
+void dskLobby::UpdatePlayerList()
 {
-    playerlist = &LOBBYCLIENT.GetPlayerList();
-    if(!playerlist)
+    if(LOBBYCLIENT.GetPlayerList().empty())
         return;
-
-    ctrlTable* playertable = GetCtrl<ctrlTable>(11);
-
-    if(!LOBBYCLIENT.receivedNewPlayerList)
-        return;
-
-    LOBBYCLIENT.receivedNewPlayerList = false;
-
-    if ((playertable->GetRowCount() > 0) && (playertable->GetRowCount() < playerlist->getCount()))
-    {
-        LOADER.GetSoundN("sound", 114)->Play(255, false);
-    }
-
-    unsigned int selection = playertable->GetSelection();
-    if(selection == 0xFFFF)
-        selection = 0;
-    unsigned short column = playertable->GetSortColumn();
-    if(column == 0xFFFF)
-        column = 0;
-    bool direction = playertable->GetSortDirection();
-    playertable->DeleteAllItems();
-
-    if(playerlist->getCount() > 0)
-    {
-        for(LobbyPlayerList::const_iterator it = playerlist->begin(); it != playerlist->end(); ++it)
-        {
-            if(it->getId() != 0xFFFFFFFF)
-            {
-                std::string punkte = boost::lexical_cast<std::string>(it->getPunkte());
-                std::string name = it->getName();
-                if(it->isIngame)
-                    name += _(" (playing)");
-                playertable->AddRow(0, name.c_str(), punkte.c_str(), it->getVersion().c_str());
-            }
-        }
-        if(first)
-            playertable->SortRows(0);
-        else
-            playertable->SortRows(column, &direction);
-        playertable->SetSelection(selection);
-    }
+    LC_PlayerList(LOBBYCLIENT.GetPlayerList());
 }
 
-void dskLobby::UpdateServerList(bool first)
+void dskLobby::UpdateServerList()
 {
-    serverlist = &LOBBYCLIENT.GetServerList();
-    if(!serverlist)
+    if(LOBBYCLIENT.GetServerList().empty())
         return;
+    LC_ServerList(LOBBYCLIENT.GetServerList());
+}
 
-    ctrlTable* servertable = GetCtrl<ctrlTable>(10);
-
-    if(!LOBBYCLIENT.receivedNewServerList)
-        return;
-
-    LOBBYCLIENT.receivedNewServerList = false;
-
-    unsigned int selection = servertable->GetSelection();
-    if(selection == 0xFFFF)
-        selection = 0;
-    unsigned short column = servertable->GetSortColumn();
-    if(column == 0xFFFF)
-        column = 0;
-    bool direction = servertable->GetSortDirection();
-    servertable->DeleteAllItems();
-
-    if(serverlist->getCount() > 0)
-    {
-        std::set<unsigned> ids;
-        for(LobbyServerList::const_iterator it = serverlist->begin(); it != serverlist->end(); ++it)
-        {
-            if(it->getName().empty())
-                continue;
-
-            if(helpers::contains(ids, it->getId()))
-            {
-                LOG.write("Duplicate ID in serverlist detected: %u\n") % it->getId();
-                continue;
-            }
-            ids.insert(it->getId());
-            std::string id = boost::lexical_cast<std::string>(it->getId());
-            std::string name = (it->hasPassword() ? "(pwd) " : "") + it->getName();
-            std::string ping = boost::lexical_cast<std::string>(it->getPing());
-            std::string player = boost::lexical_cast<std::string>(it->getCurPlayers()) + "/" + boost::lexical_cast<std::string>(it->getMaxPlayers());
-            servertable->AddRow(0, id.c_str(), name.c_str(), it->getMap().c_str(), player.c_str(), it->getVersion().c_str(), ping.c_str());
-        }
-        if(first)
-            servertable->SortRows(0);
-        else
-            servertable->SortRows(column, &direction);
-        servertable->SetSelection(selection);
-    }
+void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
+{
+    if(&wnd == serverInfoWnd)
+        serverInfoWnd = NULL;
+    else if(&wnd == createServerWnd)
+        createServerWnd = NULL;
+    else if(&wnd == lobbyRankingWnd)
+        lobbyRankingWnd = NULL;
 }
 
 bool dskLobby::ConnectToSelectedGame()
 {
-    if(!serverlist)
-        return false;
-
     ctrlTable* table = GetCtrl<ctrlTable>(10);
-    unsigned int selection = table->GetSelection();
-    if(selection >= serverlist->getCount())
-        return false;
-
-    selection = atoi(table->GetItemText(selection, 0).c_str());
-    for(LobbyServerList::const_iterator it = serverlist->begin(); it != serverlist->end(); ++it)
+    unsigned selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
+    BOOST_FOREACH(const LobbyServerInfo& server, LOBBYCLIENT.GetServerList())
     {
-        if(it->getId() != selection)
+        if(server.getId() != selection)
             continue;
 
-        if(it->getVersion() == std::string(GetWindowVersion()))
+        std::string serverRevision = server.getVersion();
+        if(!serverRevision.empty() && serverRevision[0] == 'v')
+            serverRevision = serverRevision.substr(std::string("v20001011 - ").size());
+        if(serverRevision == RTTR_Version::GetShortRevision())
         {
             iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LOBBY);
-            connect->Connect(it->getHost(), it->getPort(), false, it->hasPassword());
+            connect->Connect(server.getHost(), server.getPort(), false, server.hasPassword());
             WINDOWMANAGER.Show(connect);
             return true;
-        }
-        else
-            WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        } else
+            WINDOWMANAGER.Show(
+              new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
         break;
     }
     return false;
@@ -340,7 +272,7 @@ void dskLobby::LC_Status_Error(const std::string& error)
  */
 void dskLobby::LC_Connected()
 {
-    WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY));
+    WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId()));
 }
 
 /**
@@ -350,21 +282,20 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 {
     unsigned playerColor = ctrlChat::CalcUniqueColor(player);
 
-    std::string time = TIME.FormatTime("(%H:%i:%s)");
+    std::string time = s25util::Time::FormatTime("(%H:%i:%s)");
 
-    if (player == "LobbyBot")
+    if(player == "LobbyBot")
     {
         std::string self = LOBBYCLIENT.GetUser();
 
-        if ((text.length() > (self.length() + 3)) && text[0] == ' ')
+        if((text.length() > (self.length() + 3)) && text[0] == ' ')
         {
-            if (text.substr(1, self.length()) == self)
+            if(text.substr(1, self.length()) == self)
             {
-                if (text.substr(self.length() + 1, 2) == ": ")
+                if(text.substr(self.length() + 1, 2) == ": ")
                 {
                     WINDOWMANAGER.Show(new iwMsgbox("LobbyBot", text.substr(self.length() + 3), this, MSB_OK, MSB_EXCLAMATIONGREEN, 2));
-                }
-                else if (text.substr(self.length() + 1, 2) == ", ")
+                } else if(text.substr(self.length() + 1, 2) == ", ")
                 {
                     GetCtrl<ctrlChat>(20)->AddMessage(time, player, playerColor, text.substr(self.length() + 3), COLOR_YELLOW);
                 }
@@ -377,20 +308,92 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
     GetCtrl<ctrlChat>(20)->AddMessage(time, player, playerColor, text, COLOR_YELLOW);
 }
 
+void dskLobby::LC_ServerList(const LobbyServerList& servers)
+{
+    ctrlTable* servertable = GetCtrl<ctrlTable>(10);
+    bool first = servertable->GetNumRows() == 0;
 
-/// TODO!!
+    unsigned selection = servertable->GetSelection();
+    if(selection == 0xFFFF)
+        selection = 0;
+    unsigned short column = servertable->GetSortColumn();
+    if(column == 0xFFFF)
+        column = 0;
+    bool direction = servertable->GetSortDirection();
+    servertable->DeleteAllItems();
 
-//case MSG_CLOSE: // child notification
-//  {
-//      switch(ctrl_id)
-//      {
-//      case CGI_LOBBYSERVERINFO: // pointer expired ;)
-//          {
-//              serverinfo = NULL;
-//          } break;
-//      case CGI_DIRECTIPCREATE:
-//          {
-//              servercreate = NULL;
-//          } break;
-//      }
-//  } break;
+    std::set<unsigned> ids;
+    BOOST_FOREACH(const LobbyServerInfo& server, servers)
+    {
+        if(server.getName().empty())
+            continue;
+
+        if(helpers::contains(ids, server.getId()))
+        {
+            LOG.write("Duplicate ID in serverlist detected: %u\n") % server.getId();
+            continue;
+        }
+        ids.insert(server.getId());
+        std::string id = boost::lexical_cast<std::string>(server.getId());
+        std::string name = (server.hasPassword() ? "(pwd) " : "") + server.getName();
+        std::string ping = boost::lexical_cast<std::string>(server.getPing());
+        std::string player =
+          boost::lexical_cast<std::string>(server.getCurPlayers()) + "/" + boost::lexical_cast<std::string>(server.getMaxPlayers());
+        servertable->AddRow(0, id.c_str(), name.c_str(), server.getMap().c_str(), player.c_str(), server.getVersion().c_str(),
+                            ping.c_str());
+    }
+    if(first)
+        servertable->SortRows(0);
+    else
+        servertable->SortRows(column, &direction);
+    servertable->SetSelection(selection);
+}
+
+void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
+{
+    ctrlTable* playertable = GetCtrl<ctrlTable>(11);
+    bool first = playertable->GetNumRows() == 0;
+
+    if((playertable->GetNumRows() > 0) && (playertable->GetNumRows() < players.size()))
+    {
+        LOADER.GetSoundN("sound", 114)->Play(255, false);
+    }
+
+    unsigned selection = playertable->GetSelection();
+    if(selection == 0xFFFF)
+        selection = 0;
+    unsigned short column = playertable->GetSortColumn();
+    if(column == 0xFFFF)
+        column = 0;
+    bool direction = playertable->GetSortDirection();
+    playertable->DeleteAllItems();
+
+    BOOST_FOREACH(const LobbyPlayerInfo& player, players)
+    {
+        if(player.getId() != 0xFFFFFFFF)
+        {
+            std::string punkte = boost::lexical_cast<std::string>(player.getPunkte());
+            std::string name = player.getName();
+            if(player.isIngame)
+                name += _(" (playing)");
+            playertable->AddRow(0, name.c_str(), punkte.c_str(), player.getVersion().c_str());
+        }
+    }
+    if(first)
+        playertable->SortRows(0);
+    else
+        playertable->SortRows(column, &direction);
+    playertable->SetSelection(selection);
+}
+
+void dskLobby::LC_ServerInfo(const LobbyServerInfo& info)
+{
+    if(serverInfoWnd)
+        serverInfoWnd->UpdateServerInfo();
+}
+
+void dskLobby::LC_RankingList(const LobbyPlayerList& players)
+{
+    if(lobbyRankingWnd)
+        lobbyRankingWnd->UpdateRankings(players);
+}

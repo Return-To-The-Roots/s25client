@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,136 +15,63 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDistribution.h"
 
+#include "GamePlayer.h"
 #include "Loader.h"
+#include "WindowManager.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlProgress.h"
 #include "controls/ctrlTab.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "WindowManager.h"
 #include "iwHelp.h"
+#include "network/GameClient.h"
+#include "ogl/FontStyle.h"
 #include "world/GameWorldViewer.h"
-#include "ogl/glArchivItem_Font.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
+#include <boost/foreach.hpp>
 
-
-/// Anzahl der einzelnen Einstellungen in den Gruppen
-// Nahrungsgruppe
-const unsigned GROUP_SIZES[7] =
+struct iwDistribution::DistributionGroup
 {
-    4, 5, 2, 3, 2, 3, 4
+    DistributionGroup(const std::string& name, glArchivItem_Bitmap* img) : name(name), img(img) {}
+    std::string name;
+    glArchivItem_Bitmap* img;
+    std::vector<std::string> entries;
 };
+std::vector<iwDistribution::DistributionGroup> iwDistribution::groups;
 
 /// Dertermines width of the progress bars: distance to the window borders
 const unsigned PROGRESS_BORDER_DISTANCE = 20;
 
 iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, 290, 312, _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, Extent(290, 312), _("Distribution of goods"),
+                   LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
-    ctrlGroup* group;
+    CreateGroups();
 
     // Tab Control
-    ctrlTab* tab = AddTabCtrl(0, 10, 20, 270);
+    ctrlTab* tab = AddTabCtrl(0, DrawPoint(10, 20), 270);
+    DrawPoint txtPos(GetSize().x / 2, 60);
+    DrawPoint progPos(PROGRESS_BORDER_DISTANCE - tab->GetPos().x, txtPos.y);
+    const Extent progSize(GetSize().x - 2 * PROGRESS_BORDER_DISTANCE, 20);
 
-    // Nahrungsgruppe
-    group = tab->AddTab(LOADER.GetImageN("io", 80), _("Foodstuff"), TAB_FOOD);
-    // Granitbergwerk
-    group->AddText(0, width_ / 2,  60, _("Granite mine"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(1, PROGRESS_BORDER_DISTANCE - tab->GetX(false),  60, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Kohlebergwerk
-    group->AddText(2, width_ / 2, 100, _("Coal mine"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(3, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 100, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Eisenbergwerk
-    group->AddText(4, width_ / 2, 140, _("Iron mine"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(5, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 140, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Goldbergwerk
-    group->AddText(6, width_ / 2, 180, _("Gold mine"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(7, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 180, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-
-    // Getreidegruppe
-    group = tab->AddTab(LOADER.GetImageN("io", 90), _("Grain"), TAB_CORN);
-
-    // Mühle
-    group->AddText(0, width_ / 2,  60, _("Mill"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(1, PROGRESS_BORDER_DISTANCE - tab->GetX(false),  60, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Schweinezucht
-    group->AddText(2, width_ / 2, 100, _("Pig farm"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(3, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 100, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Eselzucht
-    group->AddText(4, width_ / 2, 140, _("Donkey breeding"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(5, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 140, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Brauerei
-    group->AddText(6, width_ / 2, 180, _("Brewery"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(7, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 180, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Charburner
-    group->AddText(8, width_ / 2, 220, _("Charburner"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(9, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 220, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-
-    // Eisengruppe
-    group = tab->AddTab(LOADER.GetImageN("io", 81), _("Iron"), TAB_IRON);
-
-    // Schmiede
-    group->AddText(0, width_ / 2,  60, _("Armory"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(1, PROGRESS_BORDER_DISTANCE - tab->GetX(false),  60, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Schlosserei
-    group->AddText(2, width_ / 2, 100, _("Metalworks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(3, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 100, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-
-    // Kohlegruppe
-    group = tab->AddTab(LOADER.GetImageN("io", 91), _("Coal"), TAB_COAL);
-
-    // Schmiede
-    group->AddText(0, width_ / 2,  60, _("Armory"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(1, PROGRESS_BORDER_DISTANCE - tab->GetX(false),  60, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Eisenschmelze
-    group->AddText(2, width_ / 2, 100, _("Iron smelter"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(3, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 100, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Münzprägerei
-    group->AddText(4, width_ / 2, 140, _("Mint"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(5, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 140, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-
-    // Wood group
-    group = tab->AddTab(LOADER.GetImageN("io", 89), _("Wood"), TAB_WOOD);
-
-    // Sawmill
-    group->AddText(0, width_ / 2,  60, _("Sawmill"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(1, PROGRESS_BORDER_DISTANCE - tab->GetX(false),  60, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Charburner
-    group->AddText(2, width_ / 2, 100, _("Charburner"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(3, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 100, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-
-    // Brettergruppe
-    group = tab->AddTab(LOADER.GetImageN("io", 82), _("Boards"), TAB_BOARD);
-
-    // Baustellen
-    group->AddText(0, width_ / 2,  60, _("Construction"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(1, PROGRESS_BORDER_DISTANCE - tab->GetX(false),  60, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Schlosserei
-    group->AddText(2, width_ / 2, 100, _("Metalworks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(3, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 100, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Werft
-    group->AddText(4, 120, 140, _("Shipyard"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(5, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 140, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-
-    // Wasserbüffel äh -gruppe ;-)
-    group = tab->AddTab(LOADER.GetImageN("io", 92), _("Water"), TAB_WATER);
-
-    // Bäckerei
-    group->AddText(0, width_ / 2,  60, _("Bakery"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(1, PROGRESS_BORDER_DISTANCE - tab->GetX(false),  60, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Brauerei
-    group->AddText(2, width_ / 2, 100, _("Brewery"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(3, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 100, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Schweinezucht
-    group->AddText(4, width_ / 2, 140, _("Pig farm"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(5, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 140, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
-    // Eselzucht
-    group->AddText(6, width_ / 2, 180, _("Donkey breeding"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
-    group->AddProgress(7, PROGRESS_BORDER_DISTANCE - tab->GetX(false), 180, width_ - 2 * PROGRESS_BORDER_DISTANCE, 20, TC_GREY, 139, 138, 10);
+    for(unsigned groupId = 0; groupId < groups.size(); groupId++)
+    {
+        const DistributionGroup& group = groups[groupId];
+        ctrlGroup* tabGrp = tab->AddTab(group.img, group.name, groupId);
+        txtPos.y = progPos.y = 60;
+        unsigned curId = 0;
+        BOOST_FOREACH(const std::string& entry, group.entries)
+        {
+            unsigned txtId = group.entries.size() + curId;
+            tabGrp->AddText(txtId, txtPos, entry, COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, SmallFont);
+            tabGrp->AddProgress(curId++, progPos, progSize, TC_GREY, 139, 138, 10);
+            txtPos.y = progPos.y += progSize.y * 2;
+        }
+    }
 
     // Gruppe auswählen
     tab->SetSelection(0);
@@ -152,10 +79,11 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     // Timer für die Übertragung der Daten via Netzwerk
     AddTimer(1, 2000);
 
+    const Extent btSize(32, 32);
     // Hilfe
-    AddImageButton(2, 15, height_ - 15 - 32, 32, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(2, DrawPoint(15, GetSize().y - 15 - btSize.y), btSize, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
     // Standardbelegung
-    AddImageButton(10, width_ - 15 - 32, height_ - 15 - 32, 32, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(10, GetSize() - DrawPoint::all(15) - btSize, btSize, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     UpdateSettings();
 }
@@ -171,31 +99,38 @@ void iwDistribution::TransmitSettings()
         return;
     if(settings_changed)
     {
-        // Werte aus den Progress-Controls auslesen
+        // Read values from the progress ctrls to the struct
+        Distributions newDistribution;
 
-        for(unsigned char i = 1, j = 0; i <= 7; ++i)
+        unsigned distIdx = 0;
+        for(unsigned i = 0; i < groups.size(); ++i)
         {
+            ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(i);
+            const DistributionGroup& group = groups[i];
             // Werte der Gruppen auslesen
-            for(unsigned char k = 0; k < GROUP_SIZES[i - 1]; ++k)
-                GAMECLIENT.visual_settings.distribution[j + k]
-                = (unsigned char)GetCtrl<ctrlTab>(0)->GetGroup(i)->GetCtrl<ctrlProgress>(k * 2 + 1)->
-                  GetPosition();
-            j += GROUP_SIZES[i - 1];
+            for(unsigned j = 0; j < group.entries.size(); ++j, ++distIdx)
+            {
+                uint8_t value = static_cast<uint8_t>(tab->GetCtrl<ctrlProgress>(j)->GetPosition());
+                newDistribution[distIdx] = value;
+            }
         }
+        RTTR_Assert(distIdx == newDistribution.size());
 
         // und übermitteln
-        gcFactory.ChangeDistribution(GAMECLIENT.visual_settings.distribution);
-
-        settings_changed = false;
+        if(gcFactory.ChangeDistribution(newDistribution))
+        {
+            GAMECLIENT.visual_settings.distribution = newDistribution;
+            settings_changed = false;
+        }
     }
 }
 
-void iwDistribution::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
+void iwDistribution::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     settings_changed = true;
 }
 
-void iwDistribution::Msg_Timer(const unsigned int  /*ctrl_id*/)
+void iwDistribution::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte
@@ -209,17 +144,18 @@ void iwDistribution::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    // Globale Id für alle Gruppen für die visual_settings
-    unsigned vsi = 0;
-    // Alle Gruppen durchgehen und Einstellungen festlegen
-    for(unsigned g = 0; g < 7; ++g)
+    unsigned distIdx = 0;
+    for(unsigned g = 0; g < groups.size(); ++g)
     {
-        ctrlGroup* group = GetCtrl<ctrlTab>(0)->GetGroup(TAB_FOOD + g);
-        for(unsigned i = 0; i < GROUP_SIZES[g]; ++i, ++vsi)
-            group->GetCtrl<ctrlProgress>(i * 2 + 1)->SetPosition(GAMECLIENT.visual_settings.distribution[vsi]);
+        // Look for correct group
+        const DistributionGroup& group = groups[g];
+        ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(g);
+        // And correct entry
+        for(unsigned i = 0; i < group.entries.size(); ++i, ++distIdx)
+            tab->GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.distribution[distIdx]);
     }
+    RTTR_Assert(distIdx == Distributions::static_size);
 }
-
 
 void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
 {
@@ -231,19 +167,54 @@ void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
 
         case 2:
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(
-                "The priority of goods for the individual buildings can be set here. "
-                "The higher the value, the quicker the required goods are delivered "
-                "to the building concerned.")));
-
-        } break;
-            // Default button
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("The priority of goods for the individual buildings can be set here. "
+                                                              "The higher the value, the quicker the required goods are delivered "
+                                                              "to the building concerned.")));
+        }
+        break;
+        // Default button
         case 10:
         {
             GAMECLIENT.visual_settings.distribution = GAMECLIENT.default_settings.distribution;
             UpdateSettings();
             settings_changed = true;
-        } break;
+        }
+        break;
     }
 }
 
+void iwDistribution::CreateGroups()
+{
+    if(!groups.empty())
+        return;
+
+    GoodType lastGood = GD_NOTHING;
+    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    {
+        // New group?
+        if(lastGood != mapping.get<0>())
+        {
+            lastGood = mapping.get<0>();
+            // Fish = all foodstuff
+            std::string name = lastGood == GD_FISH ? gettext_noop("Foodstuff") : WARE_NAMES[lastGood];
+            glArchivItem_Bitmap* img = NULL;
+            switch(lastGood)
+            {
+                case GD_FISH: img = LOADER.GetImageN("io", 80); break;
+                case GD_GRAIN: img = LOADER.GetImageN("io", 90); break;
+                case GD_IRON: img = LOADER.GetImageN("io", 81); break;
+                case GD_COAL: img = LOADER.GetImageN("io", 91); break;
+                case GD_WOOD: img = LOADER.GetImageN("io", 89); break;
+                case GD_BOARDS: img = LOADER.GetImageN("io", 82); break;
+                case GD_WATER: img = LOADER.GetImageN("io", 92); break;
+                default: break;
+            }
+            if(!img)
+                throw std::runtime_error("Unexpected good in distribution");
+            groups.push_back(DistributionGroup(_(name), img));
+        }
+        // HQ = Construction
+        std::string name = mapping.get<1>() == BLD_HEADQUARTERS ? gettext_noop("Construction") : BUILDING_NAMES[mapping.get<1>()];
+        groups.back().entries.push_back(_(name));
+    }
+}

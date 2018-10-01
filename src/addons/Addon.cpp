@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,44 +15,45 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "Addon.h"
 #include "Loader.h"
 #include "Window.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlText.h"
 #include "helpers/containerUtils.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
-void Addon::hideGui(Window* window, unsigned int id) const
+void Addon::hideGui(Window* window, unsigned id) const
 {
     ctrlText* text = window->GetCtrl<ctrlText>(id);
     if(text)
         text->SetVisible(false);
 
-    ctrlImageButton* button = window->GetCtrl<ctrlImageButton>(id + 1);
+    ctrlButton* button = window->GetCtrl<ctrlButton>(id + 1);
     if(button)
         button->SetVisible(false);
 }
 
-void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool  /*readonly*/, unsigned int  /*status*/) const //-V669
+void Addon::createGui(Window* window, unsigned id, unsigned short& y, bool /*readonly*/, unsigned /*status*/) const //-V669
 {
-    ctrlText* text = window->GetCtrl<ctrlText>(id);
-    if(!text)
-        text = window->AddText(id, 52, y + 4, name_, COLOR_YELLOW, 0, NormalFont);
-
-    text->SetVisible(true);
-    text->Move(52, y + 4);
-
-    ctrlImageButton* button = window->GetCtrl<ctrlImageButton>(id + 1);
+    DrawPoint btPos(20, y), txtPos(52, y + 4);
+    ctrlButton* button = window->GetCtrl<ctrlButton>(id + 1);
     if(!button)
-        button = window->AddImageButton(id + 1, 20, y, 22, 22, TC_GREY, LOADER.GetImageN("io", 21), description_);
+        button = window->AddImageButton(id + 1, btPos, Extent(22, 22), TC_GREY, LOADER.GetImageN("io", 21), description_);
 
     button->SetVisible(true);
-    button->Move(20, y);
+    button->SetPos(btPos);
+
+    ctrlText* text = window->GetCtrl<ctrlText>(id);
+    if(!text)
+        text = window->AddText(id, txtPos, name_, COLOR_YELLOW, 0, NormalFont);
+
+    text->SetVisible(true);
+    text->SetPos(txtPos);
 }
 
-unsigned int Addon::getGuiStatus(Window* /*window*/, unsigned int /*id*/, bool& failed) const
+unsigned Addon::getGuiStatus(Window* /*window*/, unsigned /*id*/, bool& failed) const
 {
     failed = false;
     return getDefaultStatus();

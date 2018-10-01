@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,17 +18,18 @@
 #ifndef LuaInterfaceSettings_h__
 #define LuaInterfaceSettings_h__
 
-#include "LuaInterfaceBase.h"
+#include "LuaInterfaceGameBase.h"
 #include <string>
 #include <vector>
 
 class LuaServerPlayer;
-class GameServerInterface;
+class IGameLobbyController;
 struct AddonId;
 
-class LuaInterfaceSettings: public LuaInterfaceBase{
+class LuaInterfaceSettings : public LuaInterfaceGameBase
+{
 public:
-    LuaInterfaceSettings(GameServerInterface& gameServer);
+    LuaInterfaceSettings(IGameLobbyController& lobbyServerController);
     virtual ~LuaInterfaceSettings();
 
     static void Register(kaguya::State& state);
@@ -48,11 +49,11 @@ public:
     std::vector<AddonId> GetAllowedAddons();
 
 private:
-    GameServerInterface& gameServer_;
+    IGameLobbyController& lobbyServerController_;
     kaguya::LuaRef GetAllowedChanges();
 
     // Callable from Lua
-    unsigned GetPlayerCount();
+    unsigned GetNumPlayers() const;
     LuaServerPlayer GetPlayer(unsigned idx);
     void SetAddon(AddonId id, unsigned value);
     void SetBoolAddon(AddonId id, bool enabled); // Alias

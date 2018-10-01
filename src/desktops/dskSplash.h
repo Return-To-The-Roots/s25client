@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,14 +25,18 @@ class MouseCoords;
 /// Klasse des Splashscreen Desktops.
 class dskSplash : public Desktop
 {
-    public:
-        dskSplash();
-        ~dskSplash() override;
+public:
+    dskSplash(glArchivItem_Bitmap* splashImg);
+    ~dskSplash() override;
 
-    private:
+    void SetActive(bool activate) override;
 
-        void Msg_Timer(const unsigned int ctrl_id) override;
-        bool Msg_LeftDown(const MouseCoords& mc) override;
+private:
+    void Msg_Timer(const unsigned ctrl_id) override;
+    bool Msg_LeftDown(const MouseCoords& mc) override;
+    void LoadFiles();
+
+    bool isLoading, isLoaded;
 };
 
 #endif // !dskSPLASH_H_INCLUDED

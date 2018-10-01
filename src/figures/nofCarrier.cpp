@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,29 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofCarrier.h"
 
-#include "Random.h"
-#include "SerializedGameData.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "SoundManager.h"
 #include "EventManager.h"
-#include "Ware.h"
-#include "RoadSegment.h"
-#include "nodeObjs/noRoadNode.h"
-#include "nodeObjs/noFlag.h"
-#include "world/GameWorldGame.h"
-#include "gameData/JobConsts.h"
+#include "GamePlayer.h"
 #include "Loader.h"
-#include "ogl/glSmartBitmap.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "RoadSegment.h"
+#include "SerializedGameData.h"
+#include "SoundManager.h"
+#include "Ware.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "Log.h"
-#include "libutil/src/colors.h"
-#include <boost/assign/std/vector.hpp>
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "ogl/glSmartBitmap.h"
+#include "pathfinding/PathConditionHuman.h"
+#include "random/Random.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noRoadNode.h"
+#include "gameData/JobConsts.h"
+#include "libutil/Log.h"
+#include "libutil/MyTime.h"
+#include "libutil/colors.h"
 #include <boost/array.hpp>
+#include <boost/assign/std/vector.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstanten
@@ -48,7 +50,7 @@ const unsigned PRODUCTIVITY_GF = 6000;
 const unsigned DONKEY_PRODUCTIVITY = 80;
 
 /// Abstand zur nächsten Animation (Wert ergibt sich aus NEXT_ANIMATION + rand(NEXT_ANIMATION_RANDOM) )
-const unsigned NEXT_ANIMATION = 200; // fest
+const unsigned NEXT_ANIMATION = 200;        // fest
 const unsigned NEXT_ANIMATION_RANDOM = 200; // was noch dazu zufälliges addiert wird
 
 /// Dauer in GF eines Frames
@@ -72,10 +74,8 @@ AnimationsType fillAnimations()
     animations[0] += idxs;
     // Read newspaper
     idxs.clear();
-    idxs += 1759, 1760, 1761, 1762, 1763, 1763, 1763, 1765, 1763, 1763,
-            1763, 1765, 1763, 1762, 1765, 1763, 1764, 1764, 1763, 1763,
-            1763, 1765, 1765, 1765, 1763, 1763, 1763, 1765, 1763, 1763,
-            1763, 1765, 1765, 1764, 1761;
+    idxs += 1759, 1760, 1761, 1762, 1763, 1763, 1763, 1765, 1763, 1763, 1763, 1765, 1763, 1762, 1765, 1763, 1764, 1764, 1763, 1763, 1763,
+      1765, 1765, 1765, 1763, 1763, 1763, 1765, 1763, 1763, 1763, 1765, 1765, 1764, 1761;
     animations[0] += idxs;
     // Yawn
     idxs.clear();
@@ -103,44 +103,29 @@ AnimationsType fillAnimations()
     idxs.clear();
     idxs += 1726, 1766, 1767, 1768, 1769, 1768, 1769, 1768, 1769, 1766, 1767, 1766, 1726;
     animations[1] += idxs;
-    
+
     return animations;
 }
 static const AnimationsType ANIMATIONS = fillAnimations();
 
+const boost::array<Job, 3> JOB_TYPES = {{JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER}};
 
-const boost::array<Job, 3> JOB_TYPES = {{ JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER }};
-
-nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos,
-                       unsigned char player,
-                       RoadSegment* workplace,
-                       noRoadNode* const goal)
-    : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct),
-      state(CARRS_FIGUREWORK), fat( ( RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0) ),
-      workplace(workplace), carried_ware(NULL), productivity_ev(0),
+nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char player, RoadSegment* workplace, noRoadNode* const goal)
+    : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct), state(CARRS_FIGUREWORK),
+      fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0)), workplace(workplace), carried_ware(NULL), productivity_ev(0),
       productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0)
-{
-}
+{}
 
-nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned int obj_id)
-    : noFigure(sgd, obj_id),
-      ct( CarrierType(sgd.PopUnsignedChar()) ),
-      state( CarrierState(sgd.PopUnsignedChar()) ),
-      fat( sgd.PopBool() ),
-      workplace( sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT) ),
-      carried_ware( sgd.PopObject<Ware>(GOT_WARE) ),
-      productivity_ev(sgd.PopEvent()),
-      productivity(sgd.PopUnsignedInt()),
-      worked_gf(sgd.PopUnsignedInt()),
-      since_working_gf(sgd.PopUnsignedInt()),
-      next_animation(0)
+nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
+    : noFigure(sgd, obj_id), ct(CarrierType(sgd.PopUnsignedChar())), state(CarrierState(sgd.PopUnsignedChar())), fat(sgd.PopBool()),
+      workplace(sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT)), carried_ware(sgd.PopObject<Ware>(GOT_WARE)), productivity_ev(sgd.PopEvent()),
+      productivity(sgd.PopUnsignedInt()), worked_gf(sgd.PopUnsignedInt()), since_working_gf(sgd.PopUnsignedInt()), next_animation(0)
 {
-
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
         shore_path.resize(sgd.PopUnsignedInt());
-        for(std::vector<unsigned char>::iterator it = shore_path.begin(); it != shore_path.end(); ++it)
-            *it = sgd.PopUnsignedChar();
+        for(std::vector<Direction>::iterator it = shore_path.begin(); it != shore_path.end(); ++it)
+            *it = Direction::fromInt(sgd.PopUnsignedChar());
     }
 }
 
@@ -153,7 +138,7 @@ void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
     sgd.PushBool(fat);
     sgd.PushObject(workplace, true);
     sgd.PushObject(carried_ware, true);
-    sgd.PushObject(productivity_ev, true);
+    sgd.PushEvent(productivity_ev);
     sgd.PushUnsignedInt(productivity);
     sgd.PushUnsignedInt(worked_gf);
     sgd.PushUnsignedInt(since_working_gf);
@@ -161,8 +146,8 @@ void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
         sgd.PushUnsignedInt(shore_path.size());
-        for(std::vector<unsigned char>::const_iterator it = shore_path.begin(); it != shore_path.end(); ++it)
-            sgd.PushUnsignedChar(*it);
+        for(std::vector<Direction>::const_iterator it = shore_path.begin(); it != shore_path.end(); ++it)
+            sgd.PushUnsignedChar(it->toUInt());
     }
 }
 
@@ -171,8 +156,6 @@ nofCarrier::~nofCarrier()
     // Ware vernichten (physisch)
     delete carried_ware;
 }
-
-
 
 void nofCarrier::Destroy_nofCarrier()
 {
@@ -184,7 +167,6 @@ void nofCarrier::Destroy_nofCarrier()
 
     Destroy_noFigure();
 }
-
 
 void nofCarrier::Draw(DrawPoint drawPt)
 {
@@ -206,40 +188,39 @@ void nofCarrier::Draw(DrawPoint drawPt)
                     unsigned animation_id = next_animation % ANIMATIONS[fat ? 1 : 0].size();
                     bool useNewyearsEgg = false;
 
-// <Silvesteregg>
+                    // <Silvesteregg>
                     // day of year, 0-365, accuracy about 1/4 day
-                    int doy = (TIME.CurrentTime() % 31556925) / 86400;
+                    int doy = (s25util::Time::CurrentTime() % 31556925) / 86400;
 
                     // last hours of last or first day of year
-                    if ((doy > 364) || (doy < 1))
+                    if((doy > 364) || (doy < 1))
                     {
                         useNewyearsEgg = next_animation % (ANIMATIONS[fat ? 1 : 0].size() + 1) == ANIMATIONS[fat ? 1 : 0].size();
                     }
-// </Silvesteregg>
+                    // </Silvesteregg>
 
                     // Ist die Animation schon vorbei?
-                    if ((!useNewyearsEgg && (current_gf >= next_animation + ANIMATIONS[fat ? 1 : 0][animation_id].size()*FRAME_GF)) ||
-                            (useNewyearsEgg && (current_gf >= next_animation + 32 * 3)))
+                    if((!useNewyearsEgg && (current_gf >= next_animation + ANIMATIONS[fat ? 1 : 0][animation_id].size() * FRAME_GF))
+                       || (useNewyearsEgg && (current_gf >= next_animation + 32 * 3)))
                     {
                         // Neuen nächsten Animationszeitpunkt bestimmen
                         SetNewAnimationMoment();
-                    }
-                    else
+                    } else
                     {
                         animation = true;
 
-                        if (!useNewyearsEgg)
+                        if(!useNewyearsEgg)
                         {
                             // Nein, dann Animation abspielen
-                            LOADER.GetPlayerImage("rom_bobs", ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
-                            ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-                        }
-                        else     // Silvesteregg
+                            LOADER
+                              .GetPlayerImage("rom_bobs", ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
+                              ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                        } else // Silvesteregg
                         {
                             glArchivItem_Bitmap_Player* bmp = LOADER.GetPlayerImage("firework", (current_gf - next_animation) / 3 + 1);
 
-                            if (bmp)
-                                bmp->Draw(drawPt - DrawPoint(26, 104), 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+                            if(bmp)
+                                bmp->DrawFull(drawPt - DrawPoint(26, 104), COLOR_WHITE, gwg->GetPlayer(player).color);
                             else
                             {
                                 SetNewAnimationMoment();
@@ -251,48 +232,45 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                 if(!animation)
                 {
-                    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir()][2].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
-                }
-                else
+                    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? NUM_JOB_TYPES : 0][GetCurMoveDir().toUInt()][2].draw(
+                      drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                } else
                     // Steht und wartet (ohne Ware)
                     DrawShadow(drawPt, 0, GetCurMoveDir());
-            }
-            else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
+            } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
                 // Steht und wartet (mit Ware)
-                LOADER.carrier_cache[carried_ware->type][GetCurMoveDir()][2][fat].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
-            }
-            else
+                LOADER.carrier_cache[carried_ware->type][GetCurMoveDir().toUInt()][2][fat].draw(drawPt, COLOR_WHITE,
+                                                                                                gwg->GetPlayer(player).color);
+            } else
             {
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     DrawWalkingBobCarrier(drawPt, carried_ware->type, fat);
                 else
-                    DrawWalkingBobJobs(drawPt, fat ? JOB_TYPES_COUNT : 0);
+                    DrawWalkingBobJobs(drawPt, fat ? NUM_JOB_TYPES : 0);
             }
-        } break;
+        }
+        break;
         case CT_DONKEY:
         {
-
             if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
             {
                 // Steht und wartet (ohne Ware)
 
                 // Esel
-                LOADER.donkey_cache[GetCurMoveDir()][0].draw(drawPt);
-            }
-            else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
+                LOADER.donkey_cache[GetCurMoveDir().toUInt()][0].draw(drawPt);
+            } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
                 //// Steht und wartet (mit Ware)
                 //// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
 
                 // Esel
-                LOADER.donkey_cache[GetCurMoveDir()][0].draw(drawPt);
+                LOADER.donkey_cache[GetCurMoveDir().toUInt()][0].draw(drawPt);
 
                 // Ware im Korb zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][0]);
-            }
-            else
+                LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][0]);
+            } else
             {
                 // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
@@ -303,35 +281,32 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 // Läuft normal mit oder ohne Ware
 
                 // Esel
-                LOADER.donkey_cache[GetCurMoveDir()][ani_step].draw(drawPt);
+                LOADER.donkey_cache[GetCurMoveDir().toUInt()][ani_step].draw(drawPt);
 
                 if(carried_ware)
                 {
                     // Ware im Korb zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][ani_step]);
                 }
             }
-
-        } break;
+        }
+        break;
         case CT_BOAT:
         {
             if(state == CARRS_FIGUREWORK)
             {
                 // Beim normalen Laufen Träger mit Boot über den Schultern zeichnen
                 DrawWalkingBobCarrier(drawPt, GD_BOAT, fat);
-            }
-            else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
+            } else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
             {
-                LOADER.boat_cache[GetCurMoveDir()][0].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
-            }
-            else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
+                LOADER.boat_cache[GetCurMoveDir().toUInt()][0].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+            } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
             {
-                LOADER.boat_cache[GetCurMoveDir()][0].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+                LOADER.boat_cache[GetCurMoveDir().toUInt()][0].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 
                 // Ware im Boot zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
-            }
-            else
+                LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir().toUInt()]);
+            } else
             {
                 // Wenn wir warten auf ein freies Plätzchen, müssen wir den (fest)stehend zeichnen!
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
@@ -340,12 +315,12 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 drawPt += CalcFigurRelative();
 
                 // ruderndes Boot zeichnen
-                LOADER.boat_cache[GetCurMoveDir()][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+                LOADER.boat_cache[GetCurMoveDir().toUInt()][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     // Ware im Boot zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir().toUInt()]);
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)
@@ -353,8 +328,8 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                 last_id = ani_step;
             }
-
-        } break;
+        }
+        break;
     }
 }
 
@@ -372,8 +347,7 @@ void nofCarrier::Walked()
 
     switch(state)
     {
-        default:
-            break;
+        default: break;
         case CARRS_GOTOMIDDLEOFROAD:
         {
             // Gibts an der Flagge in der entgegengesetzten Richtung, in die ich laufe, evtl Waren zu tragen
@@ -386,15 +360,14 @@ void nofCarrier::Walked()
                 state = CARRS_FETCHWARE;
 
                 StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
-            }
-            else if(rs_pos == cur_rs->GetLength() / 2 || rs_pos == cur_rs->GetLength() / 2 + cur_rs->GetLength() % 2)
+            } else if(rs_pos == cur_rs->GetLength() / 2 || rs_pos == cur_rs->GetLength() / 2 + cur_rs->GetLength() % 2)
             {
                 // Wir sind in der Mitte angekommen
                 state = CARRS_WAITFORWARE;
-                if(GetCurMoveDir() == 0 || GetCurMoveDir() == 1 || GetCurMoveDir() == 5)
-                    FaceDir(5);
+                if(GetCurMoveDir() == Direction::WEST || GetCurMoveDir() == Direction::NORTHWEST || GetCurMoveDir() == Direction::SOUTHWEST)
+                    FaceDir(Direction::SOUTHWEST);
                 else
-                    FaceDir(4);
+                    FaceDir(Direction::SOUTHEAST);
 
                 current_ev = 0;
 
@@ -403,8 +376,7 @@ void nofCarrier::Walked()
 
                 // Animation auf später verschieben, damit die nicht mittendrin startet
                 SetNewAnimationMoment();
-            }
-            else
+            } else
             {
                 // Eventuell laufen wir in die falsche Richtung?
                 if(rs_pos > cur_rs->GetLength() / 2)
@@ -415,7 +387,8 @@ void nofCarrier::Walked()
 
                 StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
             }
-        } break;
+        }
+        break;
         case CARRS_FETCHWARE:
         {
             // Zur Flagge laufen, um die Ware zu holen
@@ -426,17 +399,15 @@ void nofCarrier::Walked()
                 FetchWare(false);
             else
                 StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
-
-
-        } break;
+        }
+        break;
         case CARRS_CARRYWARE:
         {
             // Sind wir schon da?
             if(rs_pos == cur_rs->GetLength())
             {
-
                 // Flagge, an der wir gerade stehen
-                noFlag* this_flag  = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
+                noFlag* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
                 bool calculated = false;
 
@@ -445,12 +416,11 @@ void nofCarrier::Walked()
                 {
                     // Erst noch zur Baustelle bzw Gebäude laufen
                     state = CARRS_CARRYWARETOBUILDING;
-                    StartWalking(1);
-                    cur_rs = this_flag->routes[1];
+                    StartWalking(Direction::NORTHWEST);
+                    cur_rs = this_flag->GetRoute(Direction::NORTHWEST);
                     // location wird immer auf nächste Flagge gesetzt --> in dem Fall aktualisieren
                     carried_ware->Carry((cur_rs->GetF1() == this_flag) ? cur_rs->GetF2() : cur_rs->GetF1());
-                }
-                else
+                } else
                 {
                     // Ist an der Flagge noch genügend Platz (wenn wir wieder eine Ware mitnehmen, kann sie auch voll sein)
                     if(this_flag->IsSpaceForWare())
@@ -458,7 +428,7 @@ void nofCarrier::Walked()
                         carried_ware->WaitAtFlag(this_flag);
 
                         // Ware soll ihren weiteren Weg berechnen
-                        if (!calculated)
+                        if(!calculated)
                         {
                             carried_ware->RecalcRoute();
                         }
@@ -469,8 +439,7 @@ void nofCarrier::Walked()
                         carried_ware = 0;
                         // Gibts an den Flaggen etwas, was ich tragen muss, ansonsten wieder in die Mitte gehen und warten
                         LookForWares();
-                    }
-                    else if(workplace->AreWareJobs(!rs_dir, ct, true))
+                    } else if(workplace->AreWareJobs(!rs_dir, ct, true))
                     {
                         // die Flagge ist voll, aber wir können eine Ware mitnehmen, daher erst Ware nehmen und dann erst ablegen
 
@@ -482,45 +451,41 @@ void nofCarrier::Walked()
                         // alte Ware ablegen
                         tmp_ware->WaitAtFlag(this_flag);
 
-                        if (!calculated)
+                        if(!calculated)
                         {
                             tmp_ware->RecalcRoute();
                         }
                         this_flag->AddWare(tmp_ware);
-                    }
-                    else
+                    } else
                     {
                         // wenn kein Platz mehr ist --> wieder umdrehen und zurückgehen
                         state = CARRS_GOBACKFROMFLAG;
                         rs_dir = !rs_dir;
                         rs_pos = cur_rs->GetLength() - rs_pos;
-                        StartWalking((GetCurMoveDir() + 3) % 6);
+                        StartWalking(GetCurMoveDir() + 3u);
                     }
                 }
-            }
-            else if(rs_pos == cur_rs->GetLength() - 1)
+            } else if(rs_pos == cur_rs->GetLength() - 1)
             {
                 // Wenn wir fast da sind, gucken, ob an der Flagge noch ein freier Platz ist
-                noFlag* this_flag  = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
+                noFlag* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
                 if(this_flag->IsSpaceForWare() || WantInBuilding(NULL) || cur_rs->AreWareJobs(!rs_dir, ct, true))
                 {
                     // Es ist Platz, dann zur Flagge laufen
                     StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
-                }
-                else
+                } else
                 {
                     // Wenn kein Platz ist, stehenbleiben und warten!
                     state = CARRS_WAITFORWARESPACE;
                     FaceDir(cur_rs->GetDir(rs_dir, rs_pos));
                 }
-            }
-            else
+            } else
             {
                 StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
             }
-
-        } break;
+        }
+        break;
         case CARRS_CARRYWARETOBUILDING:
         {
             // Ware ablegen
@@ -529,15 +494,17 @@ void nofCarrier::Walked()
             carried_ware = 0;
             // Wieder zurück zu meinem Weg laufen
             state = CARRS_LEAVEBUILDING;
-            StartWalking(4);
-        } break;
+            StartWalking(Direction::SOUTHEAST);
+        }
+        break;
         case CARRS_LEAVEBUILDING:
         {
             // So tun, als ob der Träger gerade vom anderen Ende des Weges kommt, damit alles korrekt funktioniert
             cur_rs = workplace;
             FaceDir(workplace->GetDir(rs_dir, workplace->GetLength() - 1));
             LookForWares();
-        } break;
+        }
+        break;
         case CARRS_GOBACKFROMFLAG:
         {
             // Wieder umdrehen und so tun, als wären wir gerade normal angekommen
@@ -545,11 +512,11 @@ void nofCarrier::Walked()
             rs_pos = cur_rs->GetLength() - rs_pos;
             state = CARRS_CARRYWARE;
             Walked();
-        } break;
-        case CARRS_BOATCARRIER_WANDERONWATER:
-        {
-            WanderOnWater();
-        } break;
+        }
+        break;
+        case CARRS_BOATCARRIER_WANDERONWATER: { WanderOnWater();
+        }
+        break;
     }
 }
 
@@ -560,16 +527,14 @@ void nofCarrier::LookForWares()
     {
         // Dann soll das CARRS_FETCHWARE übernehmen
         FetchWare(false);
-    }
-    else if(workplace->AreWareJobs(rs_dir, ct, false))
+    } else if(workplace->AreWareJobs(rs_dir, ct, false))
     {
         // Oder evtl auf der anderen Seite?
         state = CARRS_FETCHWARE;
         rs_dir = !rs_dir;
         rs_pos = 0;
         StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
-    }
-    else
+    } else
     {
         // Wieder zurück in die Mitte gehen
         state = CARRS_GOTOMIDDLEOFROAD;
@@ -589,11 +554,11 @@ void nofCarrier::GoalReached()
     noRoadNode* rn = gwg->GetSpecObj<noRoadNode>(pos);
     for(unsigned char i = 0; i < 6; ++i)
     {
-        //noRoadNode * rn = gwg->GetSpecObj<noRoadNode>(x,y);
-        if(rn->routes[i] == workplace)
+        // noRoadNode * rn = gwg->GetSpecObj<noRoadNode>(x,y);
+        if(rn->GetRoute(Direction::fromInt(i)) == workplace)
         {
             // Am neuen Arbeitsplatz angekommen
-            StartWalking(i);
+            StartWalking(Direction::fromInt(i));
             cur_rs = workplace;
             rs_pos = 0;
             rs_dir = rn != cur_rs->GetF1();
@@ -608,7 +573,7 @@ void nofCarrier::GoalReached()
 
                 if(carried_ware)
                 {
-                    carried_ware->Carry( (rs_dir ? workplace->GetF1() : workplace->GetF2()) );
+                    carried_ware->Carry((rs_dir ? workplace->GetF1() : workplace->GetF2()));
                     state = CARRS_CARRYWARE;
                 }
             }
@@ -656,22 +621,19 @@ void nofCarrier::LooseWare()
     if(carried_ware)
     {
         carried_ware->WareLost(player);
-        carried_ware->Destroy();
-        deletePtr(carried_ware);
+        destroyAndDelete(carried_ware);
     }
 }
 
-namespace{
-    struct IsCoastalAndForFigs
-    {
-        const GameWorldGame& gwg;
-        IsCoastalAndForFigs(const GameWorldGame& gwg): gwg(gwg){}
+namespace {
+struct IsCoastalAndForFigs
+{
+    const World& world;
+    IsCoastalAndForFigs(const World& world) : world(world) {}
 
-        bool operator()(const MapPoint& pt) const{
-            return gwg.GetSeaFromCoastalPoint(pt) && gwg.IsNodeForFigures(pt);
-        }
-    };
-}
+    bool operator()(const MapPoint& pt) const { return world.GetSeaFromCoastalPoint(pt) && PathConditionHuman(world).IsNodeOk(pt); }
+};
+} // namespace
 
 void nofCarrier::LostWork()
 {
@@ -697,10 +659,14 @@ void nofCarrier::LostWork()
             }
 
             // Look for the shore
-            std::vector<MapPoint> coastPoints = gwg->GetPointsInRadius<0>(tmpPos, 5, Identity<MapPoint>(), IsCoastalAndForFigs(*gwg));
+            const unsigned maxNodeDistance = 5;
+            std::vector<MapPoint> coastPoints =
+              gwg->GetPointsInRadius<0>(tmpPos, maxNodeDistance, Identity<MapPoint>(), IsCoastalAndForFigs(*gwg));
             for(std::vector<MapPoint>::const_iterator it = coastPoints.begin(); it != coastPoints.end(); ++it)
             {
-                if(gwg->FindShipPath(tmpPos, *it, &shore_path, NULL))
+                // 10x the node distance should be enough, otherwise it would be to far to paddle
+                const unsigned maxDistance = maxNodeDistance * 10;
+                if(gwg->FindShipPath(tmpPos, *it, maxDistance, &shore_path, NULL))
                 {
                     // Ok let's paddle to the coast
                     rs_pos = 0;
@@ -711,7 +677,6 @@ void nofCarrier::LostWork()
                     return;
                 }
             }
-
         }
 
         StartWandering();
@@ -731,16 +696,14 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
             workplace = rs1;
         else
             workplace = rs2;
-    }
-    else if(state == CARRS_CARRYWARETOBUILDING || state == CARRS_LEAVEBUILDING)
+    } else if(state == CARRS_CARRYWARETOBUILDING || state == CARRS_LEAVEBUILDING)
     {
         // Wenn ich in ein Gebäude gehen oder rauskomme, auf den Weg gehen, der an dieses Gebäude grenzt
         if(cur_rs->GetF1() == rs1->GetF1() || cur_rs->GetF1() == rs1->GetF2())
             workplace = rs1;
         else
             workplace = rs2;
-    }
-    else
+    } else
     {
         // sonst wurde es ja schon entschieden
         workplace = (cur_rs == rs1) ? rs1 : rs2;
@@ -749,20 +712,21 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
     // Sonstige Sachen für jeweilige States unternehmen
     switch(state)
     {
-        default:
-            break;
+        default: break;
         case CARRS_WAITFORWARE:
         {
             // Wenn wir stehen, müssen wir in die Mitte laufen
             state = CARRS_GOTOMIDDLEOFROAD;
             Walked();
-        } break;
+        }
+        break;
         case CARRS_FETCHWARE:
         {
             // Wenn wir zur 2. Flagge vom 1. Wegstück gelaufen sind, können wir das nun vergessen
             if(!workplace->AreWareJobs(!rs_dir, ct, false))
                 state = CARRS_GOTOMIDDLEOFROAD;
-        } break;
+        }
+        break;
     }
 
     RoadSegment* otherRoad = (workplace == rs1) ? rs2 : rs1;
@@ -771,13 +735,13 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
     // Switch road if required
     if(workplace->getCarrier(carrierNr) != this)
     {
-        RTTR_Assert(otherRoad->getCarrier(carrierNr) == this);  // I should have been on other road
+        RTTR_Assert(otherRoad->getCarrier(carrierNr) == this); // I should have been on other road
         // Mich als Träger für meinen neuen Arbeitsplatz zuweisen
         workplace->setCarrier(carrierNr, this);
         // Für andere Straße neuen Träger/Esel rufen
         otherRoad->setCarrier(carrierNr, NULL);
-    }else
-        RTTR_Assert(otherRoad->getCarrier(carrierNr) == NULL);  // No carrier expected
+    } else
+        RTTR_Assert(otherRoad->getCarrier(carrierNr) == NULL); // No carrier expected
 
     if(ct == CT_NORMAL)
         gwg->GetPlayer(player).FindCarrierForRoad(otherRoad);
@@ -785,11 +749,11 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
         otherRoad->setCarrier(1, gwg->GetPlayer(player).OrderDonkey(otherRoad));
 }
 
-void nofCarrier::HandleDerivedEvent(const unsigned int id)
+void nofCarrier::HandleDerivedEvent(const unsigned id)
 {
     switch(id)
     {
-            // Produktivitätsevent
+        // Produktivitätsevent
         case 1:
         {
             productivity_ev = 0;
@@ -815,8 +779,8 @@ void nofCarrier::HandleDerivedEvent(const unsigned int id)
             // Reif für einen Esel?
             if(productivity >= DONKEY_PRODUCTIVITY && ct == CT_NORMAL)
                 workplace->UpgradeDonkeyRoad();
-
-        } break;
+        }
+        break;
     }
 }
 
@@ -826,14 +790,13 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
     if(state == CARRS_WAITFORWARE || state == CARRS_GOTOMIDDLEOFROAD)
     {
         // Stimmt die Richtung nicht? Dann umdrehen (geht aber nur, wenn wir stehen!)
-        if(rs_dir == workplace->GetNodeID(rn) && state == CARRS_WAITFORWARE)
+        if(rs_dir == workplace->GetNodeID(*rn) && state == CARRS_WAITFORWARE)
         {
             rs_dir = !rs_dir;
-            // wenn wir zur Mitte laufen, müssen noch 2 von der pos abgezogen werden wegen dem Laufen
-            rs_pos = cur_rs->GetLength() - rs_pos - ((state == CARRS_GOTOMIDDLEOFROAD) ? 2 : 0);
+            rs_pos = cur_rs->GetLength() - rs_pos;
         }
         // beim Gehen in die Mitte nicht sofort umdrehen!
-        else if(rs_dir == workplace->GetNodeID(rn))
+        else if(rs_dir == workplace->GetNodeID(*rn))
             return false;
 
         // Und loslaufen, wenn wir stehen
@@ -844,13 +807,11 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
             StartWorking();
         }
 
-
         state = CARRS_FETCHWARE;
 
         // Wir übernehmen den Job
         return true;
-    }
-    else if(state == CARRS_WAITFORWARESPACE && rs_dir == !workplace->GetNodeID(rn))
+    } else if(state == CARRS_WAITFORWARESPACE && rs_dir == !workplace->GetNodeID(*rn))
     {
         // Wenn wir auf einen freien Platz warten, können wir nun losgehen, da wir ja die Waren dann "tauschen" können
         StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
@@ -862,7 +823,6 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
 
     // Wir übernehmen den Job nicht
     return false;
-
 }
 
 void nofCarrier::RemoveWareJob()
@@ -875,12 +835,12 @@ void nofCarrier::RemoveWareJob()
         if(!workplace->AreWareJobs(!rs_dir, ct, false))
             //{
             //// Wenn es an der anderen Flagge noch einen gibt, dort hin gehen
-            //if(workplace->AreWareJobs(rs_dir))
+            // if(workplace->AreWareJobs(rs_dir))
             //{
             //  rs_pos = cur_rs->GetLength()-rs_pos-2;
             //  rs_dir = !rs_dir;
             //}
-            //else
+            // else
             //{
             // Gibt garnix mehr zu tragen --> wieder in die Mitte gehen
             state = CARRS_GOTOMIDDLEOFROAD;
@@ -892,7 +852,7 @@ void nofCarrier::RemoveWareJob()
 void nofCarrier::FetchWare(const bool swap_wares)
 {
     // Ware aufnehmnen
-    carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare((GetCurMoveDir() + 3) % 6, swap_wares, this);
+    carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare(GetCurMoveDir() + 3u, swap_wares, this);
 
     if(carried_ware)
     {
@@ -903,8 +863,7 @@ void nofCarrier::FetchWare(const bool swap_wares)
         rs_pos = 0;
 
         StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
-    }
-    else // zurücklaufen lassen
+    } else // zurücklaufen lassen
         state = CARRS_GOTOMIDDLEOFROAD;
 }
 
@@ -917,22 +876,20 @@ bool nofCarrier::SpaceAtFlag(const bool flag)
         StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
         state = CARRS_CARRYWARE;
         return true;
-    }
-    else
+    } else
         return false;
-
 }
 
 bool nofCarrier::WantInBuilding(bool* calculated)
 {
-    RoadSegment* rs = static_cast<noFlag*>((rs_dir ? cur_rs->GetF1() : cur_rs->GetF2()))->routes[1];
+    RoadSegment* rs = static_cast<noFlag*>((rs_dir ? cur_rs->GetF1() : cur_rs->GetF2()))->GetRoute(Direction::NORTHWEST);
     if(!rs)
         return false;
 
     if(rs->GetLength() != 1)
         return false;
 
-    if (calculated)
+    if(calculated)
     {
         *calculated = true;
     }
@@ -994,8 +951,7 @@ void nofCarrier::WanderOnWater()
         StartWandering();
         Wander();
         shore_path.clear();
-    }
-    else
+    } else
     {
         // Continue paddling to the coast
         StartWalking(shore_path[rs_pos]);

@@ -1,181 +1,104 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
-CMAKE_POLICY(SET CMP0003 NEW)
-CMAKE_POLICY(SET CMP0015 NEW)
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 IF(NOT CMAKE_VERSION VERSION_LESS 3.0)
 	# RPath enabled by default. Rpath only supported in CMake >2.8.12
-	CMAKE_POLICY(SET CMP0042 OLD)
+	cmake_policy(SET CMP0042 OLD)
 ENDIF()
 IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
-	CMAKE_POLICY(SET CMP0053 NEW)
+	# Simplified variable expansion. No change for usual variable references so use faster one
+	cmake_policy(SET CMP0053 NEW)
+	# Only interpret if() arguments as variables or keywords when unquoted. 
+	cmake_policy(SET CMP0054 NEW)
 ENDIF()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib")
-
-INCLUDE(CMakeMacroSetCCache)
-INCLUDE(CMakeMacroAddFlags)
-INCLUDE(CMakeMacroForceAddFlags)
-INCLUDE(CMakeMacroCorrectLib)
-INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
-INCLUDE(CMakeDetectOsXArchs)
-
-################################################################################
+#Check for ccache
+find_program(CCACHE_PROGRAM ccache)
+MARK_AS_ADVANCED(CCACHE_PROGRAM)
+if(CCACHE_PROGRAM)
+	MESSAGE(STATUS "Using ccache to speed up builds")
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
 
 PROJECT(s25client)
 
-
 ################################################################################
+
+message(STATUS "Using CMake ${CMAKE_VERSION}")
 
 IF (DEFINED CMAKE_TOOLCHAIN_FILE)
 	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 ENDIF()
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/libutil/cmake/Modules")
+
+# Just include required
+INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
+
+include(CheckStructHasMember)
+INCLUDE(CheckIncludeFile)
+
 ################################################################################
-# C++11 Handling
-# By using this if-else one can assume that:
-# CMAKE_CXX_STANDARD==11 <=> CMAKE_CXX_FLAGS contains "-std=c++11"
-if("${CMAKE_CXX_FLAGS}" MATCHES "-std=c\\+\\+11")
-    set(CMAKE_CXX_STANDARD 11)
-elseif("${CMAKE_CXX_FLAGS}" MATCHES "-std=c\\+\\+14")
-    set(CMAKE_CXX_STANDARD 14)
-elseif("${CMAKE_CXX_FLAGS}" MATCHES "-std=c\\+\\+98")
-    set(CMAKE_CXX_STANDARD 98)
-elseif(NOT "${CMAKE_CXX_STANDARD}" STREQUAL "")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "-std=c++${CMAKE_CXX_STANDARD}")
-else()
-    set(CMAKE_CXX_STANDARD 98)
-endif()
+# Include platform specific config files
 ################################################################################
 
-STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
-SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE INTERNAL "Do not change")
-
-# Set PLATFORM_ARCH
-IF(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	IF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		SET(PLATFORM_ARCH "x86_64")
-	ELSE ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-		SET(PLATFORM_ARCH "i386")
-	ENDIF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-ELSE()
-	IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
-		SET(PLATFORM_ARCH "i386")
-	ELSEIF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "amd64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "AMD64")
-		SET(PLATFORM_ARCH "x86_64")
-	ELSEIF(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "universal" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "") AND ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-		SET(PLATFORM_ARCH "universal")
-	ELSE()
-		MESSAGE(FATAL_ERROR "Unknown processor arch: ${CMAKE_SYSTEM_PROCESSOR}")
-	ENDIF()
-ENDIF()
-# Fill cache for post-processing tools
-SET(PLATFORM_ARCH ${PLATFORM_ARCH} CACHE INTERNAL "Do not change")
-
+STRING(TOLOWER ${CMAKE_SYSTEM_NAME} LOWER_SYSTEM_NAME)
 IF (CMAKE_CROSSCOMPILING)
-	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
+	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
 	#Include cross-compile platform config
-	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cmake/c.${PLATFORM_NAME}.cmake")
-		MESSAGE(STATUS "Using cross-platform config cmake/c.${PLATFORM_NAME}.cmake")
-		INCLUDE("cmake/c.${PLATFORM_NAME}.cmake")
+    set(_config "cmake/c.${LOWER_SYSTEM_NAME}.cmake")
+	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${_config}")
+		MESSAGE(STATUS "Using cross-platform config ${_config}")
+		INCLUDE("${_config}")
 	ENDIF()
-ELSE (CMAKE_CROSSCOMPILING)
-	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
-ENDIF (CMAKE_CROSSCOMPILING)
+ELSE()
+	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
+ENDIF()
 
 #Include generic platform config
-MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
-INCLUDE("cmake/${PLATFORM_NAME}.cmake")
+set(_config "cmake/${LOWER_SYSTEM_NAME}.cmake")
+IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${_config}")
+    MESSAGE(STATUS "Using platform config ${_config}")
+    INCLUDE("${_config}")
+ENDIF()
+
+OPTION(RTTR_ENABLE_OPTIMIZATIONS "Build with optimizing flags (such as -O2 and -ffast-math added to CFLAGS and CXXFLAGS)" ON)
+if(RTTR_ENABLE_OPTIMIZATIONS)
+    include("cmake/optimizations.cmake")
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -ggdb")
+endif()
 
 ################################################################################
-# Default boost libs are static on self-build msvc versions and dynamic in the linux package repos
-IF(MSVC)
-	SET(RTTR_USE_STATIC_BOOST_DEFAULT ON)
-ELSE()
-	SET(RTTR_USE_STATIC_BOOST_DEFAULT OFF)
-ENDIF()
-	
-OPTION(RTTR_USE_STATIC_BOOST "Build with static BOOST libraries instead of dynamic" ${RTTR_USE_STATIC_BOOST_DEFAULT})
-IF((NOT "${Boost_USE_STATIC_LIBS}" AND ${RTTR_USE_STATIC_BOOST}) OR
-   ("${Boost_USE_STATIC_LIBS}" AND NOT ${RTTR_USE_STATIC_BOOST}))
-    set(Boost_USE_STATIC_LIBS ${RTTR_USE_STATIC_BOOST})
-    unset(Boost_INCLUDE_DIR CACHE)
-    unset(Boost_LIBRARY_DIRS CACHE)
-ENDIF()
-if(Boost_USE_STATIC_LIBS)
-   message(STATUS "Linking against boost static libraries")
-else(Boost_USE_STATIC_LIBS)
-   message(STATUS "Linking against boost dynamic libraries")
-endif(Boost_USE_STATIC_LIBS)
-
-# For some reason boost needs sometimes 1.xy and sometimes 1.xy.0 to detect folder structures like boost_1_55_0
-SET(TMP_VERSIONS "1.63" "1.62" "1.61" "1.60" "1.59" "1.58" "1.57" "1.56" "1.55")
-foreach(I_VERSION ${TMP_VERSIONS})
-	list(APPEND Boost_ADDITIONAL_VERSIONS "${I_VERSION}.0" "${I_VERSION}")
-endforeach()
-UNSET(TMP_VERSIONS)
-
-IF (MSVC)
-	SET(RTTR_CONTRIB_DIR "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc" CACHE PATH "Path to base dir from contrib package")
-	IF(NOT EXISTS ${RTTR_CONTRIB_DIR} OR NOT IS_DIRECTORY ${RTTR_CONTRIB_DIR})
-		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${RTTR_CONTRIB_DIR} first!")
-	ENDIF()
-	IF(MSVC_VERSION GREATER 1800) # MSVC 2015
-		list(APPEND CMAKE_PREFIX_PATH "${RTTR_CONTRIB_DIR}/VS2015")
-	ENDIF()
-	list(APPEND CMAKE_PREFIX_PATH ${RTTR_CONTRIB_DIR} ${RTTR_CONTRIB_DIR}/buildTools)
-
-	IF("${PLATFORM_ARCH}" STREQUAL "i386")
-		SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "")
-	ELSE()
-		SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "")
-	ENDIF()
-	MESSAGE(STATUS "Building for MSVC: ${CMAKE_LIBRARY_ARCHITECTURE}")
-ENDIF()
-
-IF(EXISTS "${CMAKE_SOURCE_DIR}/contrib/boost" AND IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/boost")
-	SET(BOOST_ROOT ${CMAKE_SOURCE_DIR}/contrib/boost CACHE PATH "Path to find boost at")
-ENDIF()
-
-FIND_PACKAGE(Boost 1.55.0)
-IF(NOT Boost_FOUND)
-	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable (currently: ${BOOST_ROOT}), since cmake was unable to find boost!")
-ELSEIF("${BOOST_LIBRARYDIR}" STREQUAL "")
-	SET(BOOST_LIBRARYDIR "${Boost_INCLUDE_DIR}/stage/lib/${CMAKE_LIBRARY_ARCHITECTURE}")
-	MESSAGE(STATUS "Set boost library directory hint to: ${BOOST_LIBRARY_DIR}")
-ENDIF()
-
-SET(TMP_BOOST_VERSION "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
-IF(TMP_BOOST_VERSION VERSION_LESS 1.56)
-	IF(MSVC AND MSVC_VERSION EQUAL 1800)
-		# See https://svn.boost.org/trac/boost/ticket/9332
-		MESSAGE(FATAL_ERROR "Boost 1.55 contains a bug so that it does not work with MSVC 2013. Use a newer boost version or a different Visual Studio")
-	ENDIF()
-	MESSAGE(STATUS "Boost version smaller than 1.56 detected. Using backport 1.55-1.56")
-	INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/contrib/backport/boost_1.55-1.56")
-ENDIF()
-IF(TMP_BOOST_VERSION VERSION_LESS 1.58)
-	MESSAGE(STATUS "Boost version smaller than 1.58 detected. Using backport 1.56-1.58")
-	INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/contrib/backport/boost_1.56-1.58")
-ELSE()
-	MESSAGE(STATUS "Boost ${Boost_VERSION} detected. No backport required")
-ENDIF()
-UNSET(TMP_BOOST_VERSION)
+# Add contrib libraries. Might need different compile flags
+# Need to use include() so we can set and add variables/libraries to current scope
+include("${CMAKE_CURRENT_SOURCE_DIR}/contrib.cmake")
 
 ################################################################################
-# Set paths
-# All paths are relative to the install-prefix.
-# Example: BINDIR="bin", DATADIR="data" executed in "/foo/bar/bin/rttr.exe" -> FULL_DATADIR=/foo/bar/data
-IF(NOT "${RTTR_PREFIX}" STREQUAL "")
-	MESSAGE(FATAL_ERROR "Using RTTR_PREFIX was removed and the meaning of the paths have changed. Clear RTTR_PREFIX to disable this warning")
-ENDIF()
+# ClangFormat
+################################################################################
 
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+find_package(ClangFormat 5.0.0)
+
+################################################################################
+# Set paths.
+# Note: Mixing relative and absolute paths is not recommended!
+# If RTTR_BINDIR is absolute then relative paths are relative to CMAKE_INSTALL_PREFIX
+# Else a prefix path is calculated based on RTTR_BINDIR and the current executable path so that we have <PrefixPath>/RTTR_BINDIR
+# In this case all relative paths are relative to that prefix path
+# Example: RTTR_BINDIR="bin", RTTR_DATADIR="data" executed in "/foo/bar/bin/rttr.exe" -> FULL_DATADIR=/foo/bar/data
+################################################################################
+
+IF (WIN32)
 	# Windows uses one directory only
 	SET(RTTR_BINDIR "." CACHE INTERNAL "")
 	SET(RTTR_DATADIR "." CACHE INTERNAL "")
 	SET(RTTR_GAMEDIR "." CACHE INTERNAL "")
 	SET(RTTR_LIBDIR "." CACHE INTERNAL "")
 	SET(RTTR_DOCDIR "." CACHE INTERNAL "")
+	SET(RTTR_EXTRA_BINDIR "./RTTR" CACHE INTERNAL "")
 	SET(RTTR_DRIVERDIR "./driver" CACHE INTERNAL "")
 ELSE()
 	include(GNUInstallDirs)
@@ -198,75 +121,75 @@ ELSE()
 	else()
 		SET(DEFAULT_DRIVERDIR "${RTTR_LIBDIR}/driver")
 	endif()
+	SET(RTTR_EXTRA_BINDIR "${CMAKE_INSTALL_LIBEXECDIR}/s25rttr" CACHE STRING "Path to binaries used internally")
 	SET(RTTR_DRIVERDIR "${DEFAULT_DRIVERDIR}" CACHE STRING "Directory for driver objects")
 ENDIF()
-# Ensure relative paths
-foreach(curDirVar RTTR_BINDIR RTTR_DATADIR RTTR_GAMEDIR RTTR_LIBDIR RTTR_DOCDIR RTTR_DRIVERDIR)
-	if(IS_ABSOLUTE ${${curDirVar}})
-		message(FATAL_ERROR "All RTTR_*DIR variables must be relative paths. ${curDirVar} is absolute: ${${curDirVar}}")
-	endif()
-endforeach()
 
-SET(RTTR_SRCDIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "Path to source files. Used for some shell scripts")
+SET(RTTR_SRCDIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "Path to source files. Used for shell scripts and configure")
 set(RTTR_S2_PLACEHOLDER_PATH "${CMAKE_BINARY_DIR}/${RTTR_GAMEDIR}/put your S2-Installation in here")
+set(RTTR_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE INTERNAL "Used for configure scripts")
 
-# ensure out of source build
-ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Please go to the build directory and run './cmake.sh [options]' there.")
+# Output directories
+set(RTTR_OUTPUT_DIR ${CMAKE_BINARY_DIR})
+if(CMAKE_CONFIGURATION_TYPES)
+    foreach(type IN LISTS CMAKE_CONFIGURATION_TYPES)
+        string(TOUPPER ${type} _UPPER_TYPE)
+        set(RTTR_OUTPUT_DIR_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR}/${type})
+    endforeach()
+elseif(CMAKE_BUILD_TYPE)
+    string(TOUPPER ${CMAKE_BUILD_TYPE} _UPPER_TYPE)
+    set(RTTR_OUTPUT_DIR_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR})
+endif()
+
+# Helper function to set output dirs for all configurations
+# output_type is RUNTIME, LIBRARY, ...
+# subDir is the subdirectory in RTTR_OUTPUT_DIR_XXX
+macro(rttr_set_output_dir output_type subDir)
+    if(CMAKE_CONFIGURATION_TYPES)
+        foreach(type IN LISTS CMAKE_CONFIGURATION_TYPES)
+            string(TOUPPER ${type} _UPPER_TYPE)
+            set(CMAKE_${output_type}_OUTPUT_DIRECTORY_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR_${_UPPER_TYPE}}/${subDir})
+        endforeach()
+    elseif(CMAKE_BUILD_TYPE)
+        string(TOUPPER ${CMAKE_BUILD_TYPE} _UPPER_TYPE)
+        set(CMAKE_${output_type}_OUTPUT_DIRECTORY_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR}/${subDir})
+    else()
+        set(CMAKE_${output_type}_OUTPUT_DIRECTORY ${RTTR_OUTPUT_DIR}/${subDir})
+    endif()
+endmacro()
+rttr_set_output_dir(RUNTIME ${RTTR_BINDIR})
+rttr_set_output_dir(LIBRARY ${RTTR_LIBDIR})
 
 ################################################################################
 # Definitions and flags
+################################################################################
 
-INCLUDE(CheckCXXCompilerFlag)
-INCLUDE(CheckCCompilerFlag)
-MACRO(CheckAndAddFlag flag)
-	# We cannot check for -Wno-foo as this won't throw a warning so we must check for the -Wfoo option directly
-	# http://stackoverflow.com/questions/38785168/cc1plus-unrecognized-command-line-option-warning-on-any-other-warning
-	STRING(REGEX REPLACE "^-Wno-" "-W" checkedFlag ${flag})
-	SET(VarName ${checkedFlag})
-	STRING(REPLACE "+" "X" VarName ${VarName})
-	STRING(REPLACE "-" "_" VarName ${VarName})
-	CHECK_CXX_COMPILER_FLAG(${checkedFlag} CXX_FLAG_${VarName}_SUPPORTED)
-	CHECK_C_COMPILER_FLAG(${checkedFlag} C_FLAG_${VarName}_SUPPORTED)
-	IF (CXX_FLAG_${VarName}_SUPPORTED)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
-	ENDIF ()
-	IF (C_FLAG_${VarName}_SUPPORTED)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flag}")
-	ENDIF ()
-	unset(VarName)
-	unset(checkedFlag)
-ENDMACRO()
+# Do this before adding -Werror!
+check_struct_has_member("struct timespec" tv_sec time.h HAVE_STRUCT_TIMESPEC)
+ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
 
-IF (MSVC)
-	ADD_DEFINITIONS(/W3)
-	ADD_DEFINITIONS(/WX) # warning = error
-	ADD_DEFINITIONS(/MP) # parallel compilation
-	# Signed/Unsigned operations
-	ADD_DEFINITIONS(/w34389)
-ELSE (MSVC)
-	CheckAndAddFlag("-Wall")
-	CheckAndAddFlag("-Werror")
-ENDIF (MSVC)
-CheckAndAddFlag("-pedantic")
-CheckAndAddFlag("-Wpedantic")
-CheckAndAddFlag("-Wparentheses")
-CheckAndAddFlag("-Wno-error=type-limits")
-CheckAndAddFlag("-Wfloat-conversion")
-CheckAndAddFlag("-Wno-long-long")
-CheckAndAddFlag("-Wno-deprecated-register")
-CheckAndAddFlag("-Wno-unknown-pragmas")
-CheckAndAddFlag("-Wno-c++11-extensions")
-CheckAndAddFlag("-fno-strict-aliasing")
-CheckAndAddFlag("-Qunused-arguments")
-if(${CMAKE_CXX_STANDARD} EQUAL 11 OR ${CMAKE_CXX_STANDARD} EQUAL 14)
-    CheckAndAddFlag("-Wsuggest-override")
-    CheckAndAddFlag("-Wno-error=suggest-override")
+CHECK_INCLUDE_FILE(valgrind/memcheck.h HAVE_MEMCHECK_H)
+IF(HAVE_MEMCHECK_H)
+	ADD_DEFINITIONS(-DHAVE_MEMCHECK_H)
+ENDIF()
+
+# Clang bug workaround
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
+	if(NOT ${CHECK_CLANG_INLINE})
+		add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
+	endif()
+
+	# Some workaround flags for execssive warnings in clang
+	CheckAndAddFlag(-Wno-unused-local-typedefs)
 endif()
 
-# Variadic macros are part of C99 but supported by all big compilers in C++03
-CheckAndAddFlag("-Wno-variadic-macros")
-CheckAndAddFlag("-Wno-c99-extensions")
-ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
+# Enable warnings
+include(cmake/warnings.cmake)
+
+################################################################################
+# Code coverage
+################################################################################
 
 # VS does not support coverage analysis
 if(NOT MSVC)
@@ -276,146 +199,126 @@ if(NOT MSVC)
 			message(FATAL_ERROR "Coverage requires a debug build or you get false positives")
 		endif()
 		# Note: "--coverage" instead of "-coverage" makes this work with ccache
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 --coverage")
-		if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+		add_compile_options(-O0 --coverage)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+		if(CMAKE_COMPILER_IS_GNUCXX)
 			# Inlining makes the coverage statistic much harder to read and may lead to lots of partials
 			# However expect a slowdown!
 			message(STATUS "Enabled no-inline for better coverage statistics")
-			set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-inline -fno-inline-small-functions -fno-default-inline")
+			add_compile_options(-fno-inline -fno-inline-small-functions -fno-default-inline)
 		else()
 			message(STATUS "Using default inlining which probably influences coverage statistics")
 		endif()
 	endif()
 endif()
 
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-	# Enforce unicode
-	ADD_DEFINITIONS(-DUNICODE)
-	ADD_DEFINITIONS(-D_UNICODE)
-ENDIF()
-
-INCLUDE(CMakeDetectCxxFeatures)
-IF (NOT CXX_HAVE_OVERRIDE)
-	ADD_DEFINITIONS(-Doverride=)
-ENDIF()
-
-INCLUDE(CheckIncludeFile)
-CHECK_INCLUDE_FILE(valgrind/memcheck.h HAVE_MEMCHECK_H)
-IF(HAVE_MEMCHECK_H)
-    ADD_DEFINITIONS(-DHAVE_MEMCHECK_H)
-ENDIF()
-
-if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
-    try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
-    if(NOT ${CHECK_CLANG_INLINE})
-        add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
-    endif()
-
-    # Some workaround flags for execssive warnings in clang
-    CheckAndAddFlag(-Wno-unused-local-typedefs)
-endif()
-
-################################################################################
-# Create symlinks for easier debugging
-
-MACRO(symlinkFolder dst symLinkPath)
-	IF(NOT EXISTS "${symLinkPath}")
-		IF(EXISTS "${dst}")
-			set(symlink_failed)
-			message(STATUS "Creating symlink: '${symLinkPath}' -> '${dst}'")
-			execute_process(COMMAND ln -vs "${dst}" "${symLinkPath}" RESULT_VARIABLE symlink_failed)
-			if(symlink_failed)
-				message(FATAL_ERROR "Creating symlink failed")
-			endif(symlink_failed)
-		ELSE()
-			message(WARNING "Directory '${dst}' missing!")
-		ENDIF()
-	ENDIF()
-ENDMACRO(symlinkFolder)
-
-IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/${RTTR_DATADIR}")
-	symlinkFolder("${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_BINARY_DIR}/${RTTR_DATADIR}/RTTR")
-	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/${RTTR_LIBDIR}/RTTR")
-	if(NOT EXISTS "${CMAKE_SOURCE_DIR}/S2")
-		file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/S2")
-	endif()
-	symlinkFolder("${CMAKE_SOURCE_DIR}/S2" "${CMAKE_BINARY_DIR}/${RTTR_GAMEDIR}")
-ELSE()
-	message(STATUS "Host system is ${CMAKE_HOST_SYSTEM_NAME}. Will use copies instead of symlinks")
-	file(COPY "${CMAKE_SOURCE_DIR}/RTTR" DESTINATION "${CMAKE_BINARY_DIR}"
-		 PATTERN "*.po" EXCLUDE
-		 PATTERN "*.pot" EXCLUDE
-		 PATTERN ".*" EXCLUDE
-	)
-ENDIF()
-
 ################################################################################
 # Configure files
+################################################################################
 
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
-			   build_paths.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.cmake"
-			   build_version.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
-			   build_version_defines.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake"
-		   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/prepareRelease.sh @ONLY)
-file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/prepareRelease.sh
-	DESTINATION "."
-	FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-	GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-IF (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake"
-			   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/start.sh @ONLY)
-	file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/start.sh
-		DESTINATION "."
-		FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-		GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+IF (NOT WIN32)
+    include(ConfigureExecutable)
+	configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake" . start.sh)
 ENDIF()
+
 file(COPY "bugle" DESTINATION ".")
 file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
-# add build directory to compiler search path
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
-
 enable_testing()
 
+# Add dlls from contrib folder
+if(MSVC)
+	if(NOT EXISTS "${CONTRIB_DLL_DIR}/libcurl.dll")
+		MESSAGE(WARNING "Folder with DLLs not found in ${CONTRIB_DLL_DIR}. You may not be able to execute directly from VS")
+	else()
+		FILE(GLOB CONTRIB_DLLS ${CONTRIB_DLL_DIR}/*.dll)
+		include(GatherDll)
+		gather_dll_add(${CONTRIB_DLLS})
+	ENDIF()
+endif()
+
 ################################################################################
-# Add version generater first
-
-ADD_SUBDIRECTORY(version)
-
-ADD_CUSTOM_TARGET(updateversion ALL
-				  COMMAND "$<TARGET_FILE:version>" "${CMAKE_SOURCE_DIR}"
-				  DEPENDS version
-				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-)
-	
+# Include projects
 ################################################################################
-# Then add all other dependencies
 
-ADD_SUBDIRECTORY(driver)
+# Building the updater when using non-default paths (especially absolute paths)
+# is not recommended as it most likely won't work
+set(RTTR_BUILD_UPDATER_DEF ON)
+foreach(curDirVar BINDIR DATADIR LIBDIR DOCDIR DRIVERDIR)
+	if(IS_ABSOLUTE ${RTTR_${curDirVar}})
+		set(RTTR_BUILD_UPDATER_DEF OFF)
+	endif()
+endforeach()
+option(RTTR_BUILD_UPDATER "Build auto-updater. Not advised when changing the default paths as the updater is configured specifically for the official builds." ${RTTR_BUILD_UPDATER_DEF})
+################################################################################
+# Set variables used by the release scripts and the updater:
+#   PLATFORM_NAME in lowercase (windows, linux,...)
+#   PLATFORM_ARCH: i386, x86_64, universal
+################################################################################
+
+STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
+
+# Set PLATFORM_ARCH
+IF(WIN32)
+	IF (CMAKE_SIZEOF_VOID_P EQUAL 8)
+		SET(PLATFORM_ARCH "x86_64")
+	ELSEIF (CMAKE_SIZEOF_VOID_P EQUAL 4)
+		SET(PLATFORM_ARCH "i386")
+	ELSE()
+		MESSAGE(FATAL_ERROR "Unknown platform for sizeof(void*)=${CMAKE_SIZEOF_VOID_P}")
+	ENDIF ()
+ELSE()
+	if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
+		SET(PLATFORM_ARCH "i386")
+	elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
+		SET(PLATFORM_ARCH "x86_64")
+	ELSEIF(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "universal" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "") AND APPLE)
+		SET(PLATFORM_ARCH "universal")
+	ELSE()
+		MESSAGE(STATUS "Unofficial build with processor arch: ${CMAKE_SYSTEM_PROCESSOR}. Skipping release scripts and updater.")
+        unset(PLATFORM_ARCH)
+        set(RTTR_BUILD_UPDATER OFF CACHE INTERNAL "Disabled")
+	ENDIF()
+ENDIF()
+
+ADD_SUBDIRECTORY(libutil)
 ADD_SUBDIRECTORY(libendian)
 ADD_SUBDIRECTORY(mygettext)
 ADD_SUBDIRECTORY(libsiedler2)
-ADD_SUBDIRECTORY(libutil)
 # Build lobby client
-SET(LOBBY_C TRUE)
+SET(RTTR_BUILD_LOBBY_CLIENT TRUE)
 ADD_SUBDIRECTORY(liblobby)
 ADD_SUBDIRECTORY(s-c)
-ADD_SUBDIRECTORY(s25update)
+if(RTTR_BUILD_UPDATER)
+	ADD_SUBDIRECTORY(s25update)
+endif()
+
+add_subdirectory(common)
+ADD_SUBDIRECTORY(driver)
+ADD_SUBDIRECTORY(rttrConfig)
 ADD_SUBDIRECTORY(src)
+
+option(RTTR_BUILD_EDITOR "Build editor." ON)
+if(RTTR_BUILD_EDITOR)
+	add_subdirectory(s25edit)
+endif()
+
+if(ClangFormat_FOUND)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src true)
+	add_ClangFormat_target("file")
+endif()
 
 ################################################################################
 # Install
+################################################################################
 
 # Start script
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+IF (WIN32)
 	install(PROGRAMS "release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
-ELSEIF("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" OR "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
+ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
 	install(PROGRAMS "release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
-ELSEIF(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+ELSEIF(NOT APPLE)
 	message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
 ENDIF()
 
@@ -427,7 +330,7 @@ install(DIRECTORY "RTTR" DESTINATION "${RTTR_DATADIR}"
 )
 
 # Documentation. TODO: Avoid recursive entries?
-IF (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+IF (NOT WIN32)
 	install(DIRECTORY "RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
 			FILES_MATCHING PATTERN "*.txt"
 	)
@@ -436,22 +339,24 @@ ENDIF()
 # Placeholder for S2 installation
 install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
 
-IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-	# Special cleanup command "make mrproper"
-	ADD_CUSTOM_TARGET(mrproper
-					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"
-					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-	)
+################################################################################
+# Custom targets
+################################################################################
+
+IF(NOT CMAKE_HOST_WIN32 AND PLATFORM_ARCH)
+    include(ConfigureExecutable)
+    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake" . prepareRelease.sh)
+    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh.cmake" . create_release.sh)
 
 	# Create nightly release
 	ADD_CUSTOM_TARGET(create_nightly
-					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "nightly" "${CMAKE_SOURCE_DIR}"
+					  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/create_release.sh" nightly
 					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 
 	# Create stable release
 	ADD_CUSTOM_TARGET(create_stable
-					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "stable" "${CMAKE_SOURCE_DIR}"
+					  COMMAND "${CMAKE_CURRENT_BINARY_DIR_DIR}/create_release.sh" stable
 					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 ENDIF()

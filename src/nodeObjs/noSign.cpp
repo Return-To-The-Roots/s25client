@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,57 +15,57 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noSign.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include <algorithm>
 
 /**
- *  Konstruktor von @p noBase.
+ *  Konstruktor von @p noSign.
  *
  *  @param[in] x        X-Position
  *  @param[in] y        Y-Position
- *  @param[in] type     Typ der Ressource
- *  @param[in] quantity Menge der Ressource
+ *  @param[in] resource Typ der Ressource
  */
-noSign::noSign(const MapPoint pos,
-               const unsigned char type,
-               const unsigned char quantity)
-    : noDisappearingEnvObject(pos, 8500, 500), type(type), quantity(quantity)
+noSign::noSign(const MapPoint pos, Resource resource) : noDisappearingEnvObject(pos, 8500, 500), resource(resource)
 {
+    // As this is only for drawing we set the type to nothing if the resource is depleted
+    if(resource.getAmount() == 0u)
+        this->resource.setType(Resource::Nothing);
 }
 
 void noSign::Serialize_noSign(SerializedGameData& sgd) const
 {
     noDisappearingEnvObject::Serialize(sgd);
 
-    sgd.PushUnsignedChar(type);
-    sgd.PushUnsignedChar(quantity);
+    sgd.PushUnsignedChar(static_cast<uint8_t>(resource.getValue()));
 }
 
-noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingEnvObject(sgd, obj_id),
-    type(sgd.PopUnsignedChar()),
-    quantity(sgd.PopUnsignedChar())
-{
-}
+noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingEnvObject(sgd, obj_id), resource(sgd.PopUnsignedChar()) {}
 
 /**
  *  An x,y zeichnen.
  */
 void noSign::Draw(DrawPoint drawPt)
 {
-    // Wenns verschwindet, muss es immer transparenter werden
-    unsigned color = GetDrawColor();
-
     // Schild selbst
-    if(type != 5)
-        LOADER.GetMapPlayerImage(680 + type * 3 + quantity)->Draw(drawPt, 0, 0, 0, 0, 0, 0, color);
-    else
-        // leeres Schild
-        LOADER.GetMapPlayerImage(695)->Draw(drawPt, 0, 0, 0, 0, 0, 0, color);
+    unsigned imgId;
+    switch(resource.getType())
+    {
+        case Resource::Iron: imgId = 680; break;
+        case Resource::Gold: imgId = 683; break;
+        case Resource::Coal: imgId = 686; break;
+        case Resource::Granite: imgId = 689; break;
+        case Resource::Water: imgId = 692; break;
+        case Resource::Nothing: imgId = 695; break;
+        default: return;
+    }
+    imgId += std::min(resource.getAmount() / 3u, 2u);
+    LOADER.GetMapPlayerImage(imgId)->DrawFull(drawPt, GetDrawColor());
 
     // Schatten des Schildes
-    LOADER.GetMapImageN(700)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
+    LOADER.GetMapImageN(700)->DrawFull(drawPt, GetDrawShadowColor());
 }

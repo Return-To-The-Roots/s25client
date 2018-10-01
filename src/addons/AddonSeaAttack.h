@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonList.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  settings for sea attacks
@@ -33,19 +33,14 @@
  */
 class AddonSeaAttack : public AddonList
 {
-    public:
-        AddonSeaAttack() : AddonList(AddonId::SEA_ATTACK,
-                                         ADDONGROUP_MILITARY,
-                                         _("Sea attack settings"),
-                                         _("Set restriction level for sea attacks"),
-                                         2
-                                        )
-        {
-            addOption(_("Enemy harbors don't block"));
-            addOption(_("Enemy harbors block"));
-            addOption(_("No sea attacks"));
-        }
+public:
+    AddonSeaAttack()
+        : AddonList(AddonId::SEA_ATTACK, ADDONGROUP_MILITARY, _("Sea attack settings"), _("Set restriction level for sea attacks"), 2)
+    {
+        addOption(_("Enemy harbors don't block"));
+        addOption(_("Enemy harbors block"));
+        addOption(_("No sea attacks"));
+    }
 };
 
 #endif
-

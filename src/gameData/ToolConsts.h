@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,20 +22,19 @@
 #include <boost/array.hpp>
 
 /// List of all tools (correspond to buttons at IO:140-163)
-const boost::array<GoodType, TOOL_COUNT> SUPPRESS_UNUSED TOOLS =
-{{
-    GD_TONGS,       // Zange
-    GD_HAMMER,      // Hammer
-    GD_AXE,         // Axt,
-    GD_SAW,         // Säge
-    GD_PICKAXE,     // Spitzhacke
-    GD_SHOVEL,      // Schaufel
-    GD_CRUCIBLE,    // Schmelztiegel
-    GD_RODANDLINE,  // Angel
-    GD_SCYTHE,      // Sense
-    GD_CLEAVER,     // Beil
-    GD_ROLLINGPIN,  // Nudelholz
-    GD_BOW          // Bogen
+const boost::array<GoodType, NUM_TOOLS> SUPPRESS_UNUSED TOOLS = {{
+  GD_TONGS,      // Zange
+  GD_HAMMER,     // Hammer
+  GD_AXE,        // Axt,
+  GD_SAW,        // Säge
+  GD_PICKAXE,    // Spitzhacke
+  GD_SHOVEL,     // Schaufel
+  GD_CRUCIBLE,   // Schmelztiegel
+  GD_RODANDLINE, // Angel
+  GD_SCYTHE,     // Sense
+  GD_CLEAVER,    // Beil
+  GD_ROLLINGPIN, // Nudelholz
+  GD_BOW         // Bogen
 }};
 
 #endif // ToolConsts_h__

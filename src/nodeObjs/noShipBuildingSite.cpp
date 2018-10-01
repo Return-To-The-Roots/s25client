@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,29 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noShipBuildingSite.h"
 
+#include "EventManager.h"
+#include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
-#include "EventManager.h"
+#include "network/GameClient.h"
 #include "noShip.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
 #include "notifications/ShipNote.h"
-#include "postSystem/ShipPostMsg.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "postSystem/ShipPostMsg.h"
+#include "world/GameWorldGame.h"
 
 noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char player)
-    : noCoordBase(NOP_ENVIRONMENT, pos),
-      player(player), progress(0)
-{
-}
+    : noCoordBase(NOP_ENVIRONMENT, pos), player(player), progress(0)
+{}
 
-noShipBuildingSite::~noShipBuildingSite()
-{
-}
+noShipBuildingSite::~noShipBuildingSite() {}
 
 void noShipBuildingSite::Destroy()
 {
@@ -54,57 +50,43 @@ void noShipBuildingSite::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(progress);
 }
 
-noShipBuildingSite::noShipBuildingSite(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    player(sgd.PopUnsignedChar()),
-    progress(sgd.PopUnsignedChar())
-{
-}
+noShipBuildingSite::noShipBuildingSite(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), progress(sgd.PopUnsignedChar())
+{}
 
 /// Progress-Anteile für die 3 Baustufen
-const unsigned PROGRESS_PARTS[3] =
-{ 4, 2, 3};
+const unsigned PROGRESS_PARTS[3] = {4, 2, 3};
 
-//const unsigned TOTAL_PROGRESS = PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2];
+// const unsigned TOTAL_PROGRESS = PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2];
 
 void noShipBuildingSite::Draw(DrawPoint drawPt)
 {
     if(progress < PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
         glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 24);
-        unsigned height = std::min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
-                              unsigned(image->getHeight()));
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
-        image =  LOADER.GetImageN("boot_z", 25);
-        height = std::min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
-                     unsigned(image->getHeight()));
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
+        unsigned percentDone = (progress > PROGRESS_PARTS[0]) ? 100u : progress * 100 / PROGRESS_PARTS[0];
+        image->DrawPercent(drawPt, percentDone);
+        image = LOADER.GetImageN("boot_z", 25);
+        image->DrawPercent(drawPt, percentDone, COLOR_SHADOW);
     }
     if(progress > PROGRESS_PARTS[0])
     {
-        unsigned real_progress = progress - PROGRESS_PARTS[0];
-        glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 26);
-        unsigned height = std::min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
-                              unsigned(image->getHeight()));
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
-        image =  LOADER.GetImageN("boot_z", 27);
-        height = std::min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
-                     unsigned(image->getHeight()));
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
+        unsigned curProg = progress - PROGRESS_PARTS[0];
+        unsigned percentDone = (progress > PROGRESS_PARTS[1]) ? 100u : curProg * 100 / PROGRESS_PARTS[1];
+        glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 26);
+        image->DrawPercent(drawPt, percentDone);
+        image = LOADER.GetImageN("boot_z", 27);
+        image->DrawPercent(drawPt, percentDone, COLOR_SHADOW);
     }
     if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
-        unsigned real_progress = progress - PROGRESS_PARTS[0] - PROGRESS_PARTS[1];
-        glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 28);
-        unsigned height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
-        image =  LOADER.GetImageN("boot_z", 29);
-        height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
-
+        unsigned percentDone = (progress - PROGRESS_PARTS[0] - PROGRESS_PARTS[1]) * 100 / PROGRESS_PARTS[2];
+        glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 28);
+        image->DrawPercent(drawPt, percentDone);
+        image = LOADER.GetImageN("boot_z", 29);
+        image->DrawPercent(drawPt, percentDone, COLOR_SHADOW);
     }
 }
-
-
 
 /// Das Schiff wird um eine Stufe weitergebaut
 void noShipBuildingSite::MakeBuildStep()
@@ -118,7 +100,7 @@ void noShipBuildingSite::MakeBuildStep()
         GetEvMgr().AddToKillList(this);
         gwg->SetNO(pos, NULL);
         noShip* ship = new noShip(pos, player);
-        gwg->AddFigure(ship, pos);
+        gwg->AddFigure(pos, ship);
 
         // Schiff registrieren lassen
         gwg->GetPlayer(player).RegisterShip(ship);
@@ -130,5 +112,4 @@ void noShipBuildingSite::MakeBuildStep()
         SendPostMessage(player, new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A new ship is ready"), PostCategory::Economy, *ship));
         gwg->GetNotifications().publish(ShipNote(ShipNote::Constructed, player, pos));
     }
-
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "FramesInfo.h"
 #include "helpers/mathFuncs.h"
 
@@ -26,22 +26,13 @@ FramesInfo::FramesInfo()
 
 void FramesInfo::Clear()
 {
-    gf_length = 0;
-    gfLenghtNew = 0;
-    gfLenghtNew2 = 0;
+    // Default GF len of 20
+    gf_length = milliseconds32_t(20);
+    gfLengthReq = gf_length;
     nwf_length = 0;
-    frameTime = 0;
-    lastTime = 0;
+    frameTime = milliseconds32_t::zero();
+    lastTime = UsedClock::time_point();
     isPaused = false;
-}
-
-void FramesInfo::ApplyNewGFLength()
-{
-    // Current length of a NWF in ms
-    unsigned nwfLenInMs = gf_length * nwf_length;
-    gf_length = gfLenghtNew;
-    // Time for one NWF should stay the same
-    nwf_length = helpers::roundedDiv(nwfLenInMs, gf_length);
 }
 
 FramesInfoClient::FramesInfoClient()
@@ -52,7 +43,6 @@ FramesInfoClient::FramesInfoClient()
 void FramesInfoClient::Clear()
 {
     FramesInfo::Clear();
-    gfLengthReq = 0;
-    gfNrServer = 0;
-    forcePauseStart = forcePauseLen = 0;
+    forcePauseStart = UsedClock::time_point();
+    forcePauseLen = milliseconds32_t::zero();
 }

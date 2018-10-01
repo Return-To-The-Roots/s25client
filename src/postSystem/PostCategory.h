@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,14 +20,6 @@
 
 #include <boost/core/scoped_enum.hpp>
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(PostCategory)
-{
-    General,
-    Military,
-    Geologist,
-    Economy,
-    Diplomacy
-}
-BOOST_SCOPED_ENUM_DECLARE_END(PostCategory)
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(PostCategory){General, Military, Geologist, Economy, Diplomacy} BOOST_SCOPED_ENUM_DECLARE_END(PostCategory)
 
 #endif // PostCategory_h__

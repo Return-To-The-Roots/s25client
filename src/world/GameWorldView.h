@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,9 +18,9 @@
 #ifndef GameWorldView_h__
 #define GameWorldView_h__
 
-#include "gameTypes/MapTypes.h"
-#include "Point.h"
 #include "DrawPoint.h"
+#include "gameTypes/MapCoordinates.h"
+#include "gameTypes/MapTypes.h"
 #include <vector>
 
 class GameWorldViewer;
@@ -29,12 +29,13 @@ struct RoadBuildState;
 class TerrainRenderer;
 class noBaseBuilding;
 
-class IDebugNodePrinter{
+class IDrawNodeCallback
+{
 public:
-    virtual ~IDebugNodePrinter(){}
-    /// Called when a node is going to be printed at displayPt
+    virtual ~IDrawNodeCallback() {}
+    /// Called when a node is going to be drawn at displayPt
     /// Can e.g. print coordinates
-    virtual void print(const MapPoint& pt, const DrawPoint& displayPt) = 0;
+    virtual void onDraw(const MapPoint& pt, const DrawPoint& displayPt) = 0;
 };
 
 struct ObjectBetweenLines;
@@ -44,10 +45,10 @@ class GameWorldView
     /// Currently selected point (where the mouse points to)
     MapPoint selPt;
     /// Offset to selected point
-    Point<int> selPtOffset;
+    Position selPtOffset;
 
-    /// Class for printing debug map data
-    IDebugNodePrinter* debugNodePrinter;
+    /// Callbacks called when node is printed
+    std::vector<IDrawNodeCallback*> drawNodeCallbacks;
 
     /// Show building quality icons
     bool show_bq;
@@ -67,14 +68,10 @@ class GameWorldView
 
     const GameWorldViewer& gwv;
 
-    unsigned d_what;
-    unsigned d_player;
-    bool d_active;
-
     /// Top-Left position of the view (window)
-    Point<int> pos;
+    Position origin_;
     /// Size of the view
-    unsigned width, height;
+    Extent size_;
 
     /// How much the view is scaled (1=normal, >1=bigger, >0 && <1=smaller)
     float zoomFactor_;
@@ -82,15 +79,15 @@ class GameWorldView
     float zoomSpeed_;
 
 public:
-    GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height);
+    GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size);
     ~GameWorldView();
 
     const GameWorldViewer& GetViewer() const { return gwv; }
     const GameWorldBase& GetWorld() const;
 
-    void SetPos(const Point<int>& newPos) { pos = newPos; }
-    Point<int> GetPos() const { return pos; }
-    Point<unsigned> GetSize() const { return Point<unsigned>(width, height); }
+    void SetPos(const Position& newPos) { origin_ = newPos; }
+    Position GetPos() const { return origin_; }
+    Extent GetSize() const { return size_; }
 
     void SetZoomFactor(float zoomFactor, bool smoothTransition = true);
     float GetCurrentTargetZoomFactor() const;
@@ -105,7 +102,7 @@ public:
     /// Schaltet Produktivitäten/Namen komplett aus oder an
     void ToggleShowNamesAndProductivity();
 
-    void Draw(const RoadBuildState& rb, const bool draw_selected = false, const MapPoint selected = MapPoint::Invalid(), unsigned* water = NULL);
+    void Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water = NULL);
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
     void MoveTo(int x, int y, bool absolute = false);
@@ -115,39 +112,36 @@ public:
     /// Springt zur letzten Position, bevor man "weggesprungen" ist
     void MoveToLastPosition();
 
-    void MoveToX(int x, bool absolute = false) { MoveTo( (absolute ? 0 : offset.x) + x, offset.y, true); }
-    void MoveToY(int y, bool absolute = false) { MoveTo( offset.x, (absolute ? 0 : offset.y) + y, true); }
+    void MoveToX(int x, bool absolute = false) { MoveTo((absolute ? 0 : offset.x) + x, offset.y, true); }
+    void MoveToY(int y, bool absolute = false) { MoveTo(offset.x, (absolute ? 0 : offset.y) + y, true); }
     DrawPoint GetOffset() const { return offset; }
 
-    /// Set the debug node printer used. Max. 1 at a time. NULL for disabling
-    void SetDebugNodePrinter(IDebugNodePrinter* newPrinter) { debugNodePrinter = newPrinter; }
+    /// Add a debug node printer
+    void AddDrawNodeCallback(IDrawNodeCallback* newCallback);
+    void RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove);
 
     /// Gibt selektierten Punkt zurück
     MapPoint GetSelectedPt() const { return selPt; }
 
     /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-    Point<int> GetFirstPt() const { return firstPt; }
+    Position GetFirstPt() const { return firstPt; }
     /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-    Point<int> GetLastPt() const { return lastPt; }
+    Position GetLastPt() const { return lastPt; }
 
-    void Resize(unsigned width, unsigned height);
-
-    void SetAIDebug(unsigned what, unsigned player, bool active)
-    {
-        d_what = what; d_player = player; d_active = active;
-    }
+    void Resize(const Extent& newSize);
 
 private:
     void CalcFxLx();
-    void DrawAIDebug(const MapPoint& pt, const DrawPoint& curPos);
     void DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis);
     void DrawObject(const MapPoint& pt, const DrawPoint& curPos);
     void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
-    void DrawFigures(const MapPoint& pt, const DrawPoint&curPos, std::vector<ObjectBetweenLines>& between_lines);
+    void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines);
+    void DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
+                                    std::vector<ObjectBetweenLines>& between_lines);
+
     void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
-    void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected, const MapPoint& selectedPt);
-
+    void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse);
 };
 
 #endif // GameWorldView_h__

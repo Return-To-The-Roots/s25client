@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,47 +20,66 @@
 #pragma once
 
 #include "Desktop.h"
-
-#include "LobbyInterface.h"
-#include "ClientInterface.h"
 #include "ingameWindows/iwDirectIPCreate.h"
+#include "mapGenerator/MapSettings.h"
+#include "network/ClientInterface.h"
+#include "network/CreateServerInfo.h"
+#include "liblobby/LobbyInterface.h"
 #include <string>
 #include <vector>
 
-class dskSelectMap :
-    public Desktop,
-    public ClientInterface,
-    public LobbyInterface
+namespace boost {
+class thread;
+}
+
+class dskSelectMap : public Desktop, public ClientInterface, public LobbyInterface
 {
-        /// Kartenpfad
-        std::string map_path;
+public:
+    dskSelectMap(const CreateServerInfo& csi);
+    ~dskSelectMap() override;
 
-    public:
-        dskSelectMap(const CreateServerInfo& csi);
-        ~dskSelectMap() override;
+private:
+    void Draw_() override;
 
-    private:
-        void FillTable(const std::vector<std::string>& files);
+    void FillTable(const std::vector<std::string>& files);
 
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        void Msg_TableSelectItem(const unsigned int ctrl_id, const int selection) override;
-        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    void Msg_TableSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
-        void CI_NextConnectState(const ConnectState cs) override;
-        void CI_Error(const ClientError ce) override;
+    void CI_NextConnectState(const ConnectState cs) override;
+    void CI_Error(const ClientError ce) override;
 
-        void LC_Created() override;
-        void LC_Status_Error(const std::string& error) override;
+    void LC_Status_Error(const std::string& error) override;
 
-        /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
-        void StartServer();
-        void GoBack();
+    /**
+     * Starts a new game with the currently selected map.
+     */
+    void StartServer();
 
-    private:
-        CreateServerInfo csi;
+    /**
+     * Go back to the previous menu.
+     */
+    void GoBack();
+
+    /**
+     * Generates a new random map and selects the new map in the table (UI).
+     */
+    void CreateRandomMap();
+
+    void OnMapCreated(const std::string& mapPath);
+
+    CreateServerInfo csi;
+    MapSettings rndMapSettings;
+    boost::thread* mapGenThread;
+    std::string newRandMapPath;
+    IngameWindow* waitWnd;
+    /// Mapping of s2 ids to landscape names
+    std::map<uint8_t, std::string> landscapeNames;
+    /// Maps that we already know are broken
+    std::vector<std::string> brokenMapPaths;
 };
 
-#endif //!dskSELECTMAP_H_INCLUDED
-
+#endif //! dskSELECTMAP_H_INCLUDED

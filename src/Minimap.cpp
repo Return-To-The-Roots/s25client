@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,67 +15,43 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "Minimap.h"
 #include "Loader.h"
-#include "ogl/glArchivItem_Map.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "ogl/oglIncludes.h"
+#include "libsiedler2/PixelBufferARGB.h"
 
-Minimap::Minimap(const unsigned short map_width, const unsigned short map_height)
-    : map_width(map_width), map_height(map_height)
-{}
-
-void Minimap::SetMap(const glArchivItem_Map& s2map)
-{
-    map_width = s2map.getHeader().getWidth();
-    map_height = s2map.getHeader().getHeight();
-    CreateMapTexture();
-}
+Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize) {}
 
 void Minimap::CreateMapTexture()
 {
     map.DeleteTexture();
 
     /// Buffer für die Daten erzeugen
-    unsigned char* buffer = new unsigned char[map_width * 2 * map_height * 4];
+    libsiedler2::PixelBufferARGB buffer(mapSize.x * 2, mapSize.y);
 
-    for(MapCoord y = 0; y < map_height; ++y)
+    RTTR_FOREACH_PT(MapPoint, mapSize)
     {
-        for(MapCoord x = 0; x < map_width; ++x)
+        // Die 2. Terraindreiecke durchgehen
+        for(unsigned t = 0; t < 2; ++t)
         {
-            // Die 2. Terraindreiecke durchgehen
-            for(unsigned t = 0; t < 2; ++t)
-            {
-                unsigned color = CalcPixelColor(MapPoint(x, y), t);
-
-                unsigned pos  = y * map_width * 4 * 2 + (x * 4 * 2 + t * 4 + (y & 1) * 4) % (map_width * 4 * 2);
-                buffer[pos + 2] = GetRed(color);
-                buffer[pos + 1] = GetGreen(color);
-                buffer[pos]   = GetBlue(color);
-                buffer[pos + 3] = GetAlpha(color);
-            }
+            libsiedler2::ColorARGB color(CalcPixelColor(pt, t));
+            unsigned xCoord = (pt.x * 2 + t + (pt.y & 1)) % buffer.getWidth();
+            buffer.set(xCoord, pt.y, color);
         }
     }
 
     map.setFilter(GL_LINEAR);
-    map.create(map_width * 2, map_height, buffer, map_width * 2, map_height,
-               libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("pal5"));
-
-    delete [] buffer;
+    map.create(buffer);
 }
 
-void Minimap::Draw(DrawPoint drawPt, const unsigned short width, const unsigned short height)
+void Minimap::Draw(const Rect& rect)
 {
     BeforeDrawing();
-
-    // Map ansich zeichnen
-    map.Draw(drawPt, width, height, 0, 0, 0, 0, COLOR_WHITE);
+    map.DrawFull(rect);
 }
 
-void Minimap::BeforeDrawing()
-{
-}
+void Minimap::BeforeDrawing() {}
 
 /**
  *  Variiert die übergebene Farbe zufällig in der Helligkeit
@@ -85,14 +61,20 @@ unsigned Minimap::VaryBrightness(const unsigned color, const int range) const
     int add = 100 - rand() % (2 * range);
 
     int red = GetRed(color) * add / 100;
-    if(red < 0) red = 0;
-    else if(red > 0xFF) red = 0xFF;
+    if(red < 0)
+        red = 0;
+    else if(red > 0xFF)
+        red = 0xFF;
     int green = GetGreen(color) * add / 100;
-    if(green < 0) green = 0;
-    else if(green > 0xFF) green = 0xFF;
+    if(green < 0)
+        green = 0;
+    else if(green > 0xFF)
+        green = 0xFF;
     int blue = GetBlue(color) * add / 100;
-    if(blue < 0) blue = 0;
-    else if(blue > 0xFF) blue = 0xFF;
+    if(blue < 0)
+        blue = 0;
+    else if(blue > 0xFF)
+        blue = 0xFF;
 
     return MakeColor(GetAlpha(color), red, green, blue);
 }
