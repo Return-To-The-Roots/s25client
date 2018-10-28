@@ -40,13 +40,13 @@ class VBO
 
 public:
     VBO() : target_(Target::Array), size_(0) {}
-    VBO(Target target) { reset(target); }
+    explicit VBO(Target target) { reset(target); }
     void reset(Target target)
     {
         // TODO: Remove this function in favor of move in C++11
         target_ = target;
         size_ = 0;
-        handle_ = BufferHandle::create();
+        handle_.create();
     }
     bool isValid() const { return handle_.isValid(); }
     /// Initialize the buffer with the given data. May pass NULL to only allocate memory

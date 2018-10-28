@@ -42,11 +42,11 @@ public:
     void reset(GLuint handle = 0u) { handle_.reset(handle); }
     GLuint get() const { return handle_.get(); }
     bool isValid() const { return get() != 0u; }
-    static BufferHandle create()
+    void create()
     {
         GLuint handle;
         glGenBuffers(1, &handle);
-        return BufferHandle(handle);
+        reset(handle);
     }
 };
 } // namespace ogl
