@@ -19,7 +19,6 @@
 #define constants_h__
 
 #include <boost/core/scoped_enum.hpp>
-#include <boost/core/underlying_type.hpp>
 #include <glad/glad.h>
 
 namespace ogl {
@@ -35,12 +34,6 @@ namespace ogl {
         Dynamic = GL_DYNAMIC_DRAW, // Often changes
         Stream = GL_STREAM_DRAW    // Changes every frame
     } BOOST_SCOPED_ENUM_DECLARE_END(Usage)
-
-    template<typename T_Enum>
-    typename boost::underlying_type<T_Enum>::type enum_cast(T_Enum val)
-    {
-        return boost::underlying_cast<typename boost::underlying_type<T_Enum>::type>(val);
-    }
 // clang-format on
 } // namespace ogl
 
