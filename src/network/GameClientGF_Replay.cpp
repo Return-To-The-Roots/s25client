@@ -93,13 +93,19 @@ void GameClient::ExecuteGameFrame_Replay()
     // Check for game end
     if(curGF == replayinfo->replay.GetLastGF())
     {
-        char text[256];
-        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), curGF,
-                GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60,
-                GameManager::inst().GetNumFrames(), GameManager::inst().GetAverageGFPS());
-
         if(ci)
+        {
+            using boost::chrono::duration_cast;
+            boost::chrono::seconds runtime = duration_cast<boost::chrono::seconds>(GAMEMANAGER.GetRuntime());
+            boost::chrono::hours hours = duration_cast<boost::chrono::hours>(runtime);
+            boost::chrono::minutes mins = duration_cast<boost::chrono::minutes>(runtime - hours);
+            boost::chrono::seconds secs = duration_cast<boost::chrono::seconds>(runtime - hours - mins);
+            const std::string text = (boost::format(_("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"))
+                                      % curGF % hours % mins % secs % GAMEMANAGER.GetNumFrames() % GAMEMANAGER.GetAverageGFPS())
+                                       .str();
+
             ci->CI_ReplayEndReached(text);
+        }
 
         if(replayinfo->async != 0)
         {
