@@ -34,7 +34,7 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent, const unsigned id, const 
 void ctrlPreviewMinimap::Draw_()
 {
     // Button drumrum zeichnen
-    Draw3D(GetBoundaryRect(), TC_GREY, 0, false, false);
+    Draw3DBorder(GetBoundaryRect(), TC_GREY, true);
 
     // Map ansich zeichnen
     DrawMap(minimap);

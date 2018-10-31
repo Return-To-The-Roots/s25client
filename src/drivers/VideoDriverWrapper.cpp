@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "VideoDriverWrapper.h"
-#include "ExtensionList.h"
+#include "FrameCounter.h"
 #include "GlobalVars.h"
 #include "RTTR_Version.h"
 #include "Settings.h"
@@ -25,19 +25,31 @@
 #include "driver/VideoInterface.h"
 #include "helpers/roundToNextPow2.h"
 #include "mygettext/mygettext.h"
+#include "ogl/DummyRenderer.h"
+#include "ogl/OpenGLRenderer.h"
+#include "openglCfg.hpp"
 #include "libutil/Log.h"
 #include "libutil/error.h"
-#include <algorithm>
+#include <boost/static_assert.hpp>
 #include <ctime>
+#include <glad/glad.h>
 #include <sstream>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
 #include <valgrind/memcheck.h>
 #endif
 
-VideoDriverWrapper::VideoDriverWrapper() : videodriver(NULL), loadedFromDll(false), isOglEnabled_(false), texture_pos(0), texture_current(0)
-{
-    std::fill(texture_list.begin(), texture_list.end(), 0);
-}
+// WGL_EXT_swap_control
+#ifdef _WIN32
+typedef BOOL(APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
+#else
+typedef int (*PFNWGLSWAPINTERVALFARPROC)(int);
+#endif
+
+PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = NULL;
+
+VideoDriverWrapper::VideoDriverWrapper()
+    : videodriver(NULL), renderer_(NULL), loadedFromDll(false), isOglEnabled_(false), texture_current(0)
+{}
 
 VideoDriverWrapper::~VideoDriverWrapper()
 {
@@ -45,13 +57,6 @@ VideoDriverWrapper::~VideoDriverWrapper()
     UnloadDriver();
 }
 
-/**
- *  Wählt und lädt einen Displaytreiber.
- *
- *  @param[in] second @p true wenn 2te Chance aktiv, @p false wenn 2te Chance ausgeführt werden soll.
- *
- *  @return liefert @p true bei Erfolg, @p false bei Fehler
- */
 bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
 {
     loadedFromDll = existingDriver == NULL;
@@ -83,6 +88,12 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
     LOG.write(_("Loaded video driver \"%1%\"\n")) % GetName();
 
     isOglEnabled_ = videodriver->IsOpenGL();
+    if(isOglEnabled_)
+        renderer_.reset(new OpenGLRenderer);
+    else
+        renderer_.reset(new DummyRenderer);
+    frameCtr_.reset(new FrameCounter);
+    frameLimiter_.reset(new FrameLimiter);
 
     return true;
 }
@@ -138,8 +149,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     WINDOWMANAGER.Msg_ScreenResize(Extent(screen_width, screen_height));
 
     // VSYNC ggf abschalten/einschalten
-    if(GLOBALVARS.ext_swapcontrol)
-        wglSwapIntervalEXT((SETTINGS.video.vsync == 1));
+    setHwVSync(SETTINGS.video.vsync == 0);
 
     return true;
 }
@@ -204,6 +214,18 @@ bool VideoDriverWrapper::DestroyScreen()
     return true;
 }
 
+void VideoDriverWrapper::setTargetFramerate(int target)
+{
+    frameLimiter_->setTargetFramerate(target);
+    if(!setHwVSync(target == 0) && target == 0) // Fallback if no HW vsync but was requested
+        frameLimiter_->setTargetFramerate(60);
+}
+
+unsigned VideoDriverWrapper::GetFPS() const
+{
+    return frameCtr_->getFrameRate();
+}
+
 /**
  *  prüft, ob eine bestimmte Extension existiert.
  *
@@ -245,11 +267,10 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
  */
 void VideoDriverWrapper::CleanUp()
 {
-    if(isOglEnabled_)
-        glDeleteTextures(texture_pos, (const GLuint*)&texture_list.front());
+    if(isOglEnabled_ && !texture_list.empty())
+        glDeleteTextures(texture_list.size(), (const GLuint*)&texture_list.front());
 
-    std::fill(texture_list.begin(), texture_list.end(), 0);
-    texture_pos = 0;
+    texture_list.clear();
 }
 
 unsigned VideoDriverWrapper::GenerateTexture()
@@ -257,21 +278,15 @@ unsigned VideoDriverWrapper::GenerateTexture()
     if(!isOglEnabled_)
         return 0;
 
-    if(texture_pos >= texture_list.size())
-    {
-        s25util::fatal_error("Texture-limit reached!\n");
-        return 0;
-    }
-
     GLuint newTexture = 0;
     glGenTextures(1, &newTexture);
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
     VALGRIND_MAKE_MEM_DEFINED(&newTexture, sizeof(newTexture));
 #endif
 
-    texture_list[texture_pos] = newTexture;
-
-    return texture_list[texture_pos++];
+    BOOST_STATIC_ASSERT(sizeof(newTexture) == sizeof(texture_list[0]));
+    texture_list.push_back(newTexture);
+    return texture_list.back();
 }
 
 void VideoDriverWrapper::BindTexture(unsigned t)
@@ -300,15 +315,18 @@ KeyEvent VideoDriverWrapper::GetModKeyState() const
     return ke;
 }
 
-bool VideoDriverWrapper::SwapBuffers()
+void VideoDriverWrapper::SwapBuffers()
 {
     if(!videodriver)
     {
         s25util::fatal_error("No video driver selected!\n");
-        return false;
+        return;
     }
-
-    return videodriver->SwapBuffers();
+    frameLimiter_->sleepTillNextFrame(FrameCounter::clock::now());
+    videodriver->SwapBuffers();
+    FrameCounter::clock::time_point now = FrameCounter::clock::now();
+    frameLimiter_->update(now);
+    frameCtr_->update(now);
 }
 
 void VideoDriverWrapper::ClearScreen()
@@ -348,6 +366,13 @@ bool VideoDriverWrapper::Initialize()
     SwapBuffers();
 
     return true;
+}
+
+bool VideoDriverWrapper::setHwVSync(bool enabled)
+{
+    if(!wglSwapIntervalEXT)
+        return false;
+    return wglSwapIntervalEXT(enabled ? 1 : 0) != 0;
 }
 
 /**
@@ -414,39 +439,33 @@ void VideoDriverWrapper::RenewViewport()
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
-// auf VSync-Extension testen
-#ifdef _WIN32
-    if((GLOBALVARS.ext_swapcontrol = hasExtension("WGL_EXT_swap_control")))
+#if RTTR_OPENGL_ES
+    if(!gladLoadGLES2Loader(videodriver->GetLoaderFunction()))
     {
-        if((wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("wglSwapIntervalEXT"))) == NULL)
-            GLOBALVARS.ext_swapcontrol = false;
+        return false;
     }
 #else
-    /*if((GLOBALVARS.ext_swapcontrol = hasExtension("GLX_SGI_swap_control")))
-    {*/
-    // fix for buggy video driver...
-    GLOBALVARS.ext_swapcontrol = true;
-    if((wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"))) == NULL)
-        GLOBALVARS.ext_swapcontrol = false;
-//}
-#endif
-
-    // auf VertexBufferObject-Extension testen
-    if((GLOBALVARS.ext_vbo = hasExtension("GL_ARB_vertex_buffer_object")))
+    if(!gladLoadGLLoader(videodriver->GetLoaderFunction()))
     {
-#ifndef __APPLE__
-        if((glBindBufferARB = pto2ptf<PFNGLBINDBUFFERARBPROC>(loadExtension("glBindBufferARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-        else if((glDeleteBuffersARB = pto2ptf<PFNGLDELETEBUFFERSARBPROC>(loadExtension("glDeleteBuffersARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-        else if((glGenBuffersARB = pto2ptf<PFNGLGENBUFFERSARBPROC>(loadExtension("glGenBuffersARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-        else if((glBufferDataARB = pto2ptf<PFNGLBUFFERDATAARBPROC>(loadExtension("glBufferDataARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-        else if((glBufferSubDataARB = pto2ptf<PFNGLBUFFERSUBDATAARBPROC>(loadExtension("glBufferSubDataARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-#endif // ! __APPLE__
+        return false;
     }
+#endif
+    LOG.write(_("OpenGL %1%.%2% supported\n")) % GLVersion.major % GLVersion.minor;
+    if(GLVersion.major < RTTR_OGL_MAJOR || (GLVersion.major == RTTR_OGL_MAJOR && GLVersion.minor < RTTR_OGL_MINOR))
+    {
+        boost::format errorMsg(_("OpenGL %1% %2%.%3% is not supported. Try updating your GPU drivers or hardware!"));
+        errorMsg % (RTTR_OGL_ES ? "ES" : "") % RTTR_OGL_MAJOR % RTTR_OGL_MINOR;
+        s25util::fatal_error(errorMsg.str());
+        return false;
+    }
+// auf VSync-Extension testen
+#ifdef _WIN32
+    if(hasExtension("WGL_EXT_swap_control"))
+        wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("wglSwapIntervalEXT"));
+#else
+    wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"));
+#endif
+    GLOBALVARS.hasVSync = wglSwapIntervalEXT != NULL;
 
     return true;
 }
@@ -480,7 +499,7 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
         return (NULL);
     }
 
-    return videodriver->GetFunction(extension.c_str());
+    return videodriver->GetLoaderFunction()(extension.c_str());
 }
 
 int VideoDriverWrapper::GetMouseX() const

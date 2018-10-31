@@ -29,7 +29,6 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
-#include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include "network/GameClient.h"
 #include "network/GameServer.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -38,14 +37,12 @@
 #include "libutil/Log.h"
 #include "libutil/colors.h"
 #include "libutil/error.h"
-#include <boost/math/special_functions/round.hpp>
 #include <cstdio>
-#include <ctime>
 
-GameManager::GameManager()
-    : frames(0), frame_count(0), framerate(0), frame_time(0), run_time(0), last_time(0), skipgf_last_time(0), skipgf_last_report_gf(0),
-      cursor_(CURSOR_HAND), cursor_next(CURSOR_HAND)
-{}
+GameManager::GameManager() : skipgf_last_time(0), skipgf_last_report_gf(0), cursor_(CURSOR_HAND), cursor_next(CURSOR_HAND)
+{
+    ResetAverageGFPS();
+}
 
 /**
  *  Spiel starten
@@ -119,109 +116,47 @@ bool GameManager::Run()
     GAMESERVER.Run();
 
     unsigned current_time = VIDEODRIVER.GetTickCount();
+    const unsigned targetSkipGF = GAMECLIENT.skiptogf;
+    const unsigned curGF = targetSkipGF ? GAMECLIENT.GetGFNumber() : 0;
+    const bool skipping = targetSkipGF && targetSkipGF > curGF;
 
-    const bool skipping = GAMECLIENT.skiptogf && GAMECLIENT.skiptogf > GAMECLIENT.GetGFNumber();
-
-    // only draw if we dont skip ahead right now
-    if(!skipping)
+    // if we skip drawing write a comment every 5k gf
+    if(skipping && curGF % 5000 == 0)
     {
-        const unsigned long vsync_wanted =
-          ((GAMECLIENT.GetState() != GameClient::CS_GAME) || GAMECLIENT.IsPaused()) ? 60 : SETTINGS.video.vsync;
-
-        // SW-VSync (mit 4% Toleranz)
-        if(vsync_wanted > 1)
+        if(curGF > skipgf_last_report_gf)
         {
-            static unsigned long vsync = vsync_wanted;
-
-            // immer 10% dazu/weg bis man über der Framerate liegt
-            if(vsync < 200 && 1000 * framerate < (unsigned)(960 * vsync))
-                vsync = (1100 * vsync) / 1000;
-            else if(vsync > vsync_wanted)
-                vsync = (900 * vsync) / 1000;
-            else
-                vsync = vsync_wanted;
-
-            unsigned long goal_ticks = 960 * 1000 * 1000 / vsync;
-#ifdef _WIN32
-            if(goal_ticks < 13 * 1000 * 1000) // timer resolutions < 13ms do not work for windows correctly
-                goal_ticks = 0;
-#endif // !_WIN32
-
-            if(goal_ticks > 0 && (current_time - last_time) * 1000 * 1000 < goal_ticks && (current_time >= last_time))
-            {
-                struct timespec req;
-                req.tv_sec = 0;
-                req.tv_nsec = goal_ticks - (current_time - last_time) * 1000 * 1000;
-
-                while(nanosleep(&req, &req) == -1)
-                    continue;
-
-                current_time = VIDEODRIVER.GetTickCount();
-            }
-        }
-
-        VIDEODRIVER.ClearScreen();
-        WINDOWMANAGER.Draw();
-
-        DrawCursor();
-    } else if(GAMECLIENT.GetGFNumber() % 5000 == 0)
-    {
-        // if we skip drawing write a comment every 5k gf
-        if(GAMECLIENT.GetGFNumber() > skipgf_last_report_gf)
-        {
-            if(skipgf_last_time)
-                LOG.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % GAMECLIENT.skiptogf
-                  % GAMECLIENT.GetGFNumber() % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / 1000)
-                  % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / 5000);
-            else
-                LOG.write(_("jumping to gf %i, now at gf %i \n")) % GAMECLIENT.skiptogf % GAMECLIENT.GetGFNumber();
-            skipgf_last_time = VIDEODRIVER.GetTickCount();
-            skipgf_last_report_gf = GAMECLIENT.GetGFNumber();
-        }
+            // Elapsed time in ms
+            double timeDiff = static_cast<double>(current_time - skipgf_last_time);
+            LOG.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % curGF
+              % (timeDiff / 1000) % (timeDiff / (curGF - skipgf_last_time));
+        } else
+            LOG.write(_("jumping to gf %i, now at gf %i \n")) % targetSkipGF % curGF;
+        skipgf_last_time = current_time;
+        skipgf_last_report_gf = curGF;
     }
     // jump complete!
-    if(GAMECLIENT.skiptogf && GAMECLIENT.skiptogf == GAMECLIENT.GetGFNumber())
+    if(targetSkipGF && targetSkipGF == curGF)
     {
-        if(skipgf_last_time)
+        if(curGF > skipgf_last_report_gf)
         {
-            if((GAMECLIENT.skiptogf - 1) % 5000 > 0)
-                LOG.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % GAMECLIENT.skiptogf
-                  % ((GAMECLIENT.skiptogf - 1) % 5000 + 1) % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / 1000)
-                  % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / ((GAMECLIENT.skiptogf - 1) % 5000));
-            else
-                LOG.write(_("jump to gf %i complete \n")) % GAMECLIENT.skiptogf;
+            double timeDiff = static_cast<double>(current_time - skipgf_last_time);
+            unsigned numGFPassed = curGF - skipgf_last_report_gf;
+            LOG.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % numGFPassed
+              % (timeDiff / 1000) % (timeDiff / numGFPassed);
         }
         skipgf_last_time = 0;
         skipgf_last_report_gf = 0;
     }
-    last_time = current_time;
 
-    // Framerate berechnen
-    if(current_time - frame_time >= 1000)
-    {
-        unsigned msSinceLastFrameCalculation = current_time - frame_time;
-
-        run_time += msSinceLastFrameCalculation / 1000;
-
-        // Gesamtzahl der gezeichneten Frames erhöhen
-        frame_count += frames;
-
-        // normale Framerate berechnen
-        framerate = static_cast<unsigned>(boost::math::iround(frames * 1000. / msSinceLastFrameCalculation));
-        frames = 0;
-
-        frame_time = current_time;
-        WINDOWMANAGER.UpdateFps(framerate);
-    }
-
-    // und zeichnen
     // only draw if we dont skip ahead right now
     if(!skipping)
     {
-        // Zeichenpuffer wechseln
+        VIDEODRIVER.ClearScreen();
+        WINDOWMANAGER.Draw();
+        DrawCursor();
         VIDEODRIVER.SwapBuffers();
     }
-    ++frames;
+    gfCounter_.update();
 
     // Fenstermanager aufräumen
     if(!GLOBALVARS.notdone)
@@ -260,6 +195,11 @@ bool GameManager::ShowMenu()
         WINDOWMANAGER.Switch(new dskMainMenu);
 
     return true;
+}
+
+void GameManager::ResetAverageGFPS()
+{
+    gfCounter_ = FrameCounter(boost::chrono::hours::max()); // Never update
 }
 
 /**

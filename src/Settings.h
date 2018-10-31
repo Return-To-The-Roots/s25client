@@ -22,6 +22,7 @@
 #include "Point.h"
 #include "libutil/ProxySettings.h"
 #include "libutil/Singleton.h"
+#include <boost/array.hpp>
 #include <map>
 #include <string>
 
@@ -54,8 +55,8 @@ public:
     struct
     {
         Extent fullscreenSize, windowedSize;
+        signed short vsync; // <0 for unlimited, 0 for HW Vsync
         bool fullscreen;
-        unsigned short vsync;
         bool vbo;
         bool shared_textures;
     } video;
@@ -112,13 +113,11 @@ public:
         std::map<unsigned, unsigned> configuration;
     } addons;
 
-    static const unsigned char NUM_SCREEN_REFRESH_RATESS;
-    static const unsigned short SCREEN_REFRESH_RATES[];
+    static const boost::array<short, 13> SCREEN_REFRESH_RATES;
 
 private:
-    static const unsigned SETTINGS_VERSION;
-    static const unsigned SETTINGS_SECTIONS;
-    static const std::string SETTINGS_SECTION_NAMES[];
+    static const int VERSION;
+    static const boost::array<std::string, 11> SECTION_NAMES;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

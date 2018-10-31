@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlButton.h"
 #include "CollisionDetection.h"
-#include "ExtensionList.h"
 #include "Loader.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -106,34 +105,13 @@ void ctrlButton::Draw_()
     if(tc != TC_INVISIBLE)
     {
         unsigned color = isEnabled ? COLOR_WHITE : 0xFF666666;
+        bool isCurIlluminated = isIlluminated || (!isEnabled && isChecked);
+        bool isElevated = !isChecked && state != BUTTON_PRESSED;
+        bool isHighlighted = isEnabled && !isChecked && state == BUTTON_HOVER;
         if(hasBorder)
-        {
-            bool isCurIlluminated = isIlluminated;
-            ButtonState type;
-            if(isEnabled)
-                type = isChecked ? BUTTON_PRESSED : state;
-            else
-            {
-                type = BUTTON_UP;
-                isCurIlluminated |= isChecked;
-            }
-            Draw3D(Rect(GetDrawPos(), GetSize()), tc, type, isCurIlluminated, true, color);
-        } else
-        {
-            unsigned texture;
-            if(isEnabled && (state == BUTTON_UP || state == BUTTON_PRESSED))
-                texture = tc * 2 + 1;
-            else
-                texture = tc * 2;
-            if(isIlluminated)
-            {
-                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-                glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
-            }
-            LOADER.GetImageN("io", texture)->DrawPart(Rect(GetDrawPos(), GetSize()), DrawPoint::all(0), color);
-            if(isIlluminated)
-                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        }
+            Draw3D(GetDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
+        else
+            Draw3DContent(GetDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
     }
 
     /// Inhalt malen (Text, Bilder usw.)

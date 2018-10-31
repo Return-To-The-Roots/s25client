@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Font.h"
-#include "ExtensionList.h"
 #include "FontStyle.h"
 #include "Loader.h"
 #include "Settings.h"

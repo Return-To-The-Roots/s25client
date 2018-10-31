@@ -19,7 +19,7 @@ E. Übersicht: Updates und Änderungen
 
 A. Allgemeine Hinweise
 
-  Das Spiel benötigt eine OpenGL-fähige Grafikkarte mit mindestens
+  Das Spiel benötigt eine OpenGL2.1-fähige Grafikkarte mit mindestens
   64 MB Grafikspeicher. Ein Prozessor mit 800 MHz reicht aus.
 
   Weiterhin benötigt man eine installierte "Siedler 2 Gold-Edition" oder die

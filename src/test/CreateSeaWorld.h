@@ -58,23 +58,21 @@ struct SmallSeaWorldDefault<1>
 ///          8: Bottom outside
 struct CreateSeaWorld
 {
-    CreateSeaWorld(const MapExtent& size, unsigned numPlayers);
+    explicit CreateSeaWorld(const MapExtent& size);
     bool operator()(GameWorldGame& world) const;
 
 private:
     MapExtent size_;
-    std::vector<Nation> playerNations_;
 };
 
 /// World for <=2 players with all water except 2 small patches of land at opposite sides of the map with 2 harbor spots each
 struct CreateWaterWorld
 {
-    CreateWaterWorld(const MapExtent& size, unsigned numPlayers);
+    explicit CreateWaterWorld(const MapExtent& size);
     bool operator()(GameWorldGame& world) const;
 
 private:
     MapExtent size_;
-    std::vector<Nation> playerNations_;
 };
 
 #endif // CreateSeaWorld_h__

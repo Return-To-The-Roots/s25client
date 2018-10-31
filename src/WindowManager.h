@@ -48,8 +48,6 @@ public:
 
     /// Zeichnet Desktop und alle Fenster.
     void Draw();
-    /// Set the current frames per second
-    void UpdateFps(unsigned newFps);
     /// liefert ob der aktuelle Desktop den Focus besitzt oder nicht.
     bool IsDesktopActive();
 

@@ -58,7 +58,7 @@ void ctrlMultiline::Clear()
 void ctrlMultiline::Draw_()
 {
     if(showBackground_)
-        Draw3D(Rect(GetDrawPos(), GetSize()), tc_, 2);
+        Draw3D(Rect(GetDrawPos(), GetSize()), tc_, false);
 
     DrawControls();
 

@@ -20,8 +20,8 @@
 #include "Loader.h"
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "oglIncludes.h"
 #include "libsiedler2/PixelBufferARGB.h"
+#include <glad/glad.h>
 #include <vector>
 
 Extent glArchivItem_Bitmap_Player::CalcTextureSize() const

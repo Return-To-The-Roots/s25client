@@ -18,8 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Direct.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ogl/oglIncludes.h"
 #include "libsiedler2/PixelBufferARGB.h"
+#include <glad/glad.h>
 #include <stdexcept>
 
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct() : isUpdating_(false) {}

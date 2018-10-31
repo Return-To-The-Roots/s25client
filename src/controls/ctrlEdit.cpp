@@ -75,7 +75,7 @@ std::string ctrlEdit::GetText() const
 void ctrlEdit::Draw_()
 {
     // Box malen
-    Draw3D(Rect(GetDrawPos(), GetSize()), texColor_, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), texColor_, false);
 
     ucString dtext;
 

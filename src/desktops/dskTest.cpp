@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskTest.h"
+#include "CollisionDetection.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "animation/BlinkButtonAnim.h"
@@ -27,6 +28,7 @@
 #include "controls/ctrlText.h"
 #include "desktops/dskMainMenu.h"
 #include "desktops/dskTextureTest.h"
+#include "dskBenchmark.h"
 #include "files.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
@@ -45,15 +47,15 @@ enum
     ID_btAnimateRepeat,
     ID_btAnimateOscillate,
     ID_btTextureTest,
-    ID_btBack,
     ID_edtTest,
     ID_txtTest,
     ID_cbTxtSize,
-    ID_btHideCtrls
+    ID_btHideCtrls,
+    ID_btShowBenchmark
 };
 }
 
-dskTest::dskTest() : curBGIdx(FILE_LOAD_IDS.size())
+dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
 {
     AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER, LargeFont);
     boost::array<TextureColor, 4> textures = {{TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY}};
@@ -107,8 +109,8 @@ dskTest::dskTest() : curBGIdx(FILE_LOAD_IDS.size())
     AddTextButton(ID_btAnimateRepeat, DrawPoint(250, 540), Extent(110, 22), TC_GREEN1, "Animate-Repeat", NormalFont);
     AddTextButton(ID_btAnimateOscillate, DrawPoint(365, 540), Extent(110, 22), TC_GREEN1, "Animate-Oscillate", NormalFont);
     AddTextButton(ID_btHideCtrls, DrawPoint(480, 540), Extent(140, 22), TC_GREEN1, "Hide all elements (H)", NormalFont);
-    AddTextButton(ID_btTextureTest, DrawPoint(625, 540), Extent(110, 22), TC_GREEN1, "Texture test", NormalFont);
-    AddTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(ID_btTextureTest, DrawPoint(625, 540), Extent(90, 22), TC_GREEN1, "Texture test", NormalFont);
+    AddTextButton(ID_btShowBenchmark, DrawPoint(720, 540), Extent(80, 22), TC_GREEN1, "Benchmark", NormalFont);
 }
 
 void dskTest::Msg_EditChange(const unsigned ctrl_id)
@@ -134,8 +136,8 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btBack: WINDOWMANAGER.Switch(new dskMainMenu); break;
         case ID_btTextureTest: WINDOWMANAGER.Switch(new dskTextureTest); break;
+        case ID_btShowBenchmark: WINDOWMANAGER.Switch(new dskBenchmark); break;
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {
@@ -167,9 +169,24 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
                 repeat = Animation::RPT_Repeat;
             GetAnimationManager().addAnimation(new MoveAnimation(btAni, endPos, 4000, repeat));
             GetAnimationManager().addAnimation(new BlinkButtonAnim(GetCtrl<ctrlButton>(ctrl_id)));
+            break;
         }
         case ID_btHideCtrls: ToggleCtrlVisibility();
     }
+}
+
+bool dskTest::Msg_RightUp(const MouseCoords& mc)
+{
+    std::vector<ctrlButton*> bts = GetCtrls<ctrlButton>();
+    BOOST_FOREACH(ctrlButton* bt, bts)
+    {
+        if(IsPointInRect(mc.GetPos(), bt->GetDrawRect()))
+        {
+            bt->SetChecked(!bt->GetCheck());
+            return true;
+        }
+    }
+    return dskMenuBase::Msg_RightUp(mc);
 }
 
 void dskTest::ToggleCtrlVisibility()
@@ -188,13 +205,15 @@ bool dskTest::Msg_KeyDown(const KeyEvent& ke)
         ToggleCtrlVisibility();
     else if(ke.kt == KT_LEFT)
     {
-        curBGIdx = (curBGIdx > 0) ? curBGIdx - 1 : FILE_LOAD_IDS.size() - 1;
-        background = LOADER.GetImageN(FILE_LOAD_IDS[curBGIdx], 0);
+        curBGIdx = (curBGIdx > 0) ? curBGIdx - 1 : LOAD_SCREENS.size() - 1;
+        background = LOADER.GetImageN(LOAD_SCREENS[curBGIdx], 0);
     } else if(ke.kt == KT_RIGHT)
     {
-        curBGIdx = (curBGIdx < FILE_LOAD_IDS.size() - 1) ? curBGIdx + 1 : 0;
-        background = LOADER.GetImageN(FILE_LOAD_IDS[curBGIdx], 0);
-    } else
+        curBGIdx = (curBGIdx < LOAD_SCREENS.size() - 1) ? curBGIdx + 1 : 0;
+        background = LOADER.GetImageN(LOAD_SCREENS[curBGIdx], 0);
+    } else if(ke.kt == KT_ESCAPE)
+        WINDOWMANAGER.Switch(new dskMainMenu);
+    else
         return false;
     return true;
 }

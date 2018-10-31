@@ -17,20 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskOptions.h"
-
 #include "GlobalGameSettings.h"
-#include "Loader.h"
-#include "WindowManager.h"
-
 #include "GlobalVars.h"
-#include "Settings.h"
-
-#include "dskMainMenu.h"
-
-#include "languages.h"
-
-#include "ExtensionList.h"
+#include "Loader.h"
 #include "MusicPlayer.h"
+#include "Settings.h"
+#include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlGroup.h"
@@ -38,14 +30,17 @@
 #include "controls/ctrlProgress.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "dskMainMenu.h"
 #include "helpers/converters.h"
 #include "helpers/mathFuncs.h"
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ingameWindows/iwTextfile.h"
+#include "languages.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
+#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
 /** @class dskOptions
@@ -185,10 +180,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupGrafik->AddText(54, DrawPoint(80, 230), _("Vertex Buffer Objects:"), COLOR_YELLOW, 0, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(55, ctrlOptionGroup::CHECK);
 
-    if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
-        optiongroup->AddText(56, DrawPoint(280, 230), _("not supported"), COLOR_YELLOW, 0, NormalFont);
-    else
-        optiongroup->AddTextButton(56, DrawPoint(280, 225), Extent(190, 22), TC_GREY, _("On"), NormalFont);
+    optiongroup->AddTextButton(56, DrawPoint(280, 225), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(57, DrawPoint(480, 225), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
 
     // "Grafiktreiber"
@@ -279,48 +271,23 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Limit Framerate" füllen
     ctrlComboBox* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
-    for(unsigned char i = 0; i < Settings::NUM_SCREEN_REFRESH_RATESS; ++i)
+    if(GLOBALVARS.hasVSync)
+        cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
+    BOOST_FOREACH(int framerate, Settings::SCREEN_REFRESH_RATES)
     {
-        switch(Settings::SCREEN_REFRESH_RATES[i])
-        {
-            case 0:
-            {
-                cbFrameRate->AddString(_("Disabled"));
-                cbFrameRate->SetSelection(0);
-            }
-            break;
-            case 1:
-            {
-                if(GLOBALVARS.ext_swapcontrol)
-                    cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
-                if(SETTINGS.video.vsync == 1)
-                    cbFrameRate->SetSelection(1);
-            }
-            break;
-            default:
-            {
-// frameratebegrenzungen mit Bildabstand kleiner 13ms
-// wird unter windows nicht mehr aufgelöst
-#ifdef _WIN32
-                if(960 / Settings::SCREEN_REFRESH_RATES[i] > 13)
-#endif // _WIN32
-                {
-                    cbFrameRate->AddString(helpers::toString(Settings::SCREEN_REFRESH_RATES[i]) + " FPS");
-                }
-
-                if(SETTINGS.video.vsync == Settings::SCREEN_REFRESH_RATES[i])
-                    cbFrameRate->SetSelection(i - (GLOBALVARS.ext_swapcontrol ? 0 : 1));
-            }
-            break;
-        }
+        if(framerate == -1)
+            cbFrameRate->AddString(_("Disabled"));
+        else
+            cbFrameRate->AddString(helpers::toString(framerate) + " FPS");
+        if(SETTINGS.video.vsync == framerate)
+            cbFrameRate->SetSelection(cbFrameRate->GetNumItems() - 1);
     }
+    if(cbFrameRate->GetSelection() < 0)
+        cbFrameRate->SetSelection(0);
 
     // "VBO" setzen
     optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(55);
-    if(GLOBALVARS.ext_vbo)
-        optiongroup->SetSelection((SETTINGS.video.vbo ? 56 : 57));
-    else
-        optiongroup->SetSelection(57);
+    optiongroup->SetSelection((SETTINGS.video.vbo ? 56 : 57));
 
     optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(75);
     optiongroup->SetSelection((SETTINGS.video.shared_textures ? 76 : 77));
@@ -385,7 +352,6 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
         }
         break;
         case 39: // Proxy
-        {
             switch(selection)
             {
                 case 0: SETTINGS.proxy.type = PROXY_NONE; break;
@@ -403,46 +369,29 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
 
             if(SETTINGS.proxy.type != PROXY_SOCKS4)
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlButton>(302)->SetEnabled(true);
-        }
-        break;
+            break;
         case 41: // Auflösung
-        {
             SETTINGS.video.fullscreenSize.x = video_modes[selection].width;
             SETTINGS.video.fullscreenSize.y = video_modes[selection].height;
-        }
-        break;
+            break;
         case 51: // Limit Framerate
-        {
-            // 0: aus
-            // 1: vsync, wenn verfügbar, ansonsten schon eine Framerate
-            // 2: Framerates
-            switch(selection)
+            if(GLOBALVARS.hasVSync)
             {
-                case 0: { SETTINGS.video.vsync = 0;
-                }
-                break;
-                case 1: { SETTINGS.video.vsync = (GLOBALVARS.ext_swapcontrol ? 1 : Settings::SCREEN_REFRESH_RATES[2]);
-                }
-                break;
-                default: { SETTINGS.video.vsync = Settings::SCREEN_REFRESH_RATES[selection + (GLOBALVARS.ext_swapcontrol ? 0 : 1)];
-                }
-                break;
-            }
+                if(selection == 0)
+                    SETTINGS.video.vsync = 0;
+                else
+                    SETTINGS.video.vsync = Settings::SCREEN_REFRESH_RATES[selection - 1];
+            } else
+                SETTINGS.video.vsync = Settings::SCREEN_REFRESH_RATES[selection];
 
-            if(GLOBALVARS.ext_swapcontrol)
-                wglSwapIntervalEXT((SETTINGS.video.vsync == 1));
-        }
-        break;
+            VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync);
+            break;
         case 59: // Videotreiber
-        {
             SETTINGS.driver.video = combo->GetText(selection);
-        }
-        break;
+            break;
         case 61: // Audiotreiber
-        {
             SETTINGS.driver.audio = combo->GetText(selection);
-        }
-        break;
+            break;
     }
 }
 

@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Desktop.h"
 #include "Loader.h"
+#include "Settings.h"
 #include "controls/ctrlText.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -38,6 +39,12 @@ Desktop::Desktop(glArchivItem_Bitmap* background) : Window(NULL, 0, DrawPoint::a
 {
     SetScale(true);
     SetFpsDisplay(true);
+    // By default limit the maximum frame rate to 60 FPS
+    if(SETTINGS.video.vsync < 0)
+        VIDEODRIVER.setTargetFramerate(60);
+    else
+        VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync);
+    UpdateFps(VIDEODRIVER.GetFPS());
 }
 
 Desktop::~Desktop() {}
@@ -50,6 +57,10 @@ Desktop::~Desktop() {}
  */
 void Desktop::Draw_()
 {
+    unsigned curFPS = VIDEODRIVER.GetFPS();
+    if(curFPS != lastFPS_)
+        UpdateFps(curFPS);
+
     if(background)
         background->DrawFull(GetDrawRect());
 
@@ -71,7 +82,9 @@ void Desktop::SetFpsDisplay(bool show)
     if(!show)
         DeleteCtrl(fpsDisplayId);
     else if(!GetCtrl<ctrlText>(fpsDisplayId) && SmallFont)
-        AddText(fpsDisplayId, DrawPoint(800, 0), "", COLOR_YELLOW, FontStyle::RIGHT, SmallFont);
+    {
+        AddText(fpsDisplayId, DrawPoint(800, 0), helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT, SmallFont);
+    }
 }
 
 void Desktop::UpdateFps(unsigned newFps)
@@ -79,4 +92,5 @@ void Desktop::UpdateFps(unsigned newFps)
     ctrlText* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
     if(fpsDisplay)
         fpsDisplay->SetText(helpers::toString(newFps) + " fps");
+    lastFPS_ = newFps;
 }

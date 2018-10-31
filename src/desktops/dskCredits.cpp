@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskCredits.h"
-#include "GameManager.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
@@ -220,11 +219,11 @@ void dskCredits::DrawBobs()
     int msSinceLastBobSpawn = VIDEODRIVER.GetTickCount() - bobSpawnTime;
     int bob_spawnprosec = 5;
 
-    if(GAMEMANAGER.GetFPS() < 30)
+    if(VIDEODRIVER.GetFPS() < 30)
         bob_spawnprosec = 0;
-    else if(GAMEMANAGER.GetFPS() < 60)
+    else if(VIDEODRIVER.GetFPS() < 60)
         bob_spawnprosec = 1;
-    else if(GAMEMANAGER.GetFPS() < 200)
+    else if(VIDEODRIVER.GetFPS() < 200)
         bob_spawnprosec = 2;
 
     // add new bob

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,21 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
-#include "ExtensionList.h"
+#ifndef DummyRenderer_h__
+#define DummyRenderer_h__
 
-// WGL_EXT_swap_control
-PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = NULL;
+#include "IRenderer.h"
 
-// GL_ARB_vertex_buffer_object
+class glArchivItem_Bitmap;
 
-#ifndef __APPLE__
-PFNGLGENBUFFERSARBPROC glGenBuffersARB = NULL;
-PFNGLBINDBUFFERARBPROC glBindBufferARB = NULL;
-PFNGLBUFFERDATAARBPROC glBufferDataARB = NULL;
-PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB = NULL;
-PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB = NULL;
+class DummyRenderer : public IRenderer
+{
+public:
+    void Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture) override {}
+    void Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated, unsigned color) override {}
+    void DrawRect(const Rect&, unsigned) override {}
+    void DrawLine(DrawPoint, DrawPoint, unsigned, unsigned) override {}
+};
 
-// GL_EXT_paletted_texture
-PFNGLCOLORTABLEEXTPROC glColorTableEXT = NULL;
-#endif // !__APPLE__
+#endif // DummyRenderer_h__

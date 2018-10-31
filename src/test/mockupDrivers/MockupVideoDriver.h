@@ -35,7 +35,7 @@ public:
     bool SwapBuffers() override { return true; }
     bool MessageLoop() override;
     unsigned long GetTickCount() const override;
-    void* GetFunction(const char* function) const override;
+    OpenGL_Loader_Proc GetLoaderFunction() const override { return NULL; }
     void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
     void SetMousePos(int x, int y) override;
     KeyEvent GetModKeyState() const override;

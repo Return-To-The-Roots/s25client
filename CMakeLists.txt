@@ -281,6 +281,9 @@ ELSE()
 	ENDIF()
 ENDIF()
 
+# External dependencies
+add_subdirectory("${RTTR_CONTRIB_DIR}/glad")
+
 ADD_SUBDIRECTORY(libutil)
 ADD_SUBDIRECTORY(libendian)
 ADD_SUBDIRECTORY(mygettext)

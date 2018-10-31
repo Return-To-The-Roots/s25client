@@ -36,7 +36,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
-#include "ogl/oglIncludes.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
@@ -46,6 +45,7 @@
 #include "gameData/MapConsts.h"
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
+#include <glad/glad.h>
 #include <stdexcept>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)

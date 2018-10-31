@@ -57,17 +57,7 @@ bool GameWorld::LoadMap(boost::shared_ptr<Game> game, const std::string& mapFile
         }
     }
 
-    std::vector<Nation> players;
-    for(unsigned i = 0; i < GetNumPlayers(); i++)
-    {
-        GamePlayer& player = GetPlayer(i);
-        if(player.isUsed())
-            players.push_back(player.nation);
-        else
-            players.push_back(NAT_INVALID);
-    }
-
-    MapLoader loader(*this, players);
+    MapLoader loader(*this);
     if(!loader.Load(map, GetGGS().exploration))
         return false;
     if(!loader.PlaceHQs(*this, GetGGS().randomStartPosition))

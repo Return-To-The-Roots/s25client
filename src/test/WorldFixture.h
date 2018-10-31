@@ -108,7 +108,7 @@ struct WorldFixture
     WorldFixture()
         : game(new Game(GlobalGameSettings(), new TestEventManager, std::vector<PlayerInfo>(T_numPlayers, GetPlayer()))),
           em(static_cast<TestEventManager&>(*game->em)), ggs(const_cast<GlobalGameSettings&>(game->ggs)), world(game->world),
-          worldCreator(MapExtent(T_width, T_height), T_numPlayers)
+          worldCreator(MapExtent(T_width, T_height))
     {
         // Fast moving ships
         ggs.setSelection(AddonId::SHIP_SPEED, 4);

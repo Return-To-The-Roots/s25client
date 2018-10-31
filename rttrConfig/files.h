@@ -134,8 +134,7 @@ const boost::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
 
 BOOST_CONSTEXPR_OR_CONST unsigned FILE_SPLASH_ID = 104;
 
-BOOST_CONSTEXPR_OR_CONST unsigned NUM_FILE_LOAD_IDS = 21;
-const boost::array<const std::string, NUM_FILE_LOAD_IDS> SUPPRESS_UNUSED FILE_LOAD_IDS = {
+const boost::array<const std::string, 21> SUPPRESS_UNUSED LOAD_SCREENS = {
   {"setup666", "setup667", "setup801", "setup802", "setup803", "setup804", "setup805", "setup806", "setup810", "setup811", "setup895",
    "setup896", "africa",   "austra",   "europe",   "green",    "japan",    "namerica", "nasia",    "samerica", "sasia"}};
 

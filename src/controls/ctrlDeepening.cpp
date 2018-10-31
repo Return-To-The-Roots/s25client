@@ -27,6 +27,6 @@ ctrlDeepening::ctrlDeepening(Window* parent, unsigned id, DrawPoint pos, const E
  */
 void ctrlDeepening::Draw_()
 {
-    Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
     DrawContent();
 }

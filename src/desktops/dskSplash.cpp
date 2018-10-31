@@ -25,15 +25,15 @@
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlTimer.h"
+#include "dskBenchmark.h"
 #include "dskMainMenu.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/oglIncludes.h"
 #include "libutil/error.h"
 
 dskSplash::dskSplash(glArchivItem_Bitmap* splashImg) : Desktop(splashImg), isLoading(false), isLoaded(false)
 {
-    background->setFilter(GL_LINEAR);
+    background->setInterpolateTexture(false);
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 }
 
@@ -61,13 +61,13 @@ void dskSplash::Msg_Timer(const unsigned ctrl_id)
         isLoading = true;
         LoadFiles();
     } else if(isLoaded)
-        WINDOWMANAGER.Switch(new dskMainMenu);
+        WINDOWMANAGER.Switch(new dskBenchmark); // dskMainMenu);
 }
 
 bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
 {
     if(isLoaded)
-        WINDOWMANAGER.Switch(new dskMainMenu);
+        WINDOWMANAGER.Switch(new dskBenchmark); // dskMainMenu);
 
     return true;
 }
