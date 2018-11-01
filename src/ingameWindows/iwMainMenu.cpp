@@ -76,7 +76,7 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
     AddImageButton(11, DrawPoint(68, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
 
 // AI-Debug
-#ifdef _NDEBUG
+#ifdef NDEBUG
     bool enableAIDebug = gwv.GetWorld().GetGGS().isEnabled(AddonId::AI_DEBUG_WINDOW);
 #else
     bool enableAIDebug = true;
