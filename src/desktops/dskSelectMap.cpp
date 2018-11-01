@@ -154,9 +154,16 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int s
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
     static const boost::array<unsigned, 9> ids = {{39, 40, 41, 42, 43, 52, 91, 93, 48}};
 
-    // Und wieder füllen lassen
-    FillTable(ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]), "swd"));
-    FillTable(ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]), "wld"));
+    const std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]);
+    FillTable(ListDir(mapPath, "swd"));
+    FillTable(ListDir(mapPath, "wld"));
+    // For own maps (WORLDS folder) also use the one in the installation folder as S2 does
+    if(bfs::path(mapPath).filename() == "WORLDS")
+    {
+        const std::string worldsPath = RTTRCONFIG.ExpandPath("WORLDS");
+        FillTable(ListDir(worldsPath, "swd"));
+        FillTable(ListDir(worldsPath, "wld"));
+    }
 
     // Dann noch sortieren
     bool sortAsc = true;
