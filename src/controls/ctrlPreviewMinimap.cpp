@@ -19,6 +19,7 @@
 #include "ctrlPreviewMinimap.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
+#include <boost/foreach.hpp>
 
 ctrlPreviewMinimap::Player::Player() : pos(0, 0), color(0) {}
 
@@ -42,11 +43,11 @@ void ctrlPreviewMinimap::Draw_()
     Extent playerPxlSize(4, 4);
     const DrawPoint basePos = GetDrawPos();
     // Startpositionen zeichnen
-    for(unsigned i = 0; i < MAX_PLAYERS; ++i)
+    BOOST_FOREACH(const Player& player, players)
     {
         // Spieler anwesend?
-        if(players[i].color)
-            DrawRectangle(Rect(basePos + CalcMapCoord(players[i].pos), playerPxlSize), players[i].color);
+        if(player.pos.isValid())
+            DrawRectangle(Rect(basePos + CalcMapCoord(player.pos), playerPxlSize), player.color);
     }
 }
 
@@ -59,6 +60,8 @@ Rect ctrlPreviewMinimap::GetBoundaryRect() const
 
 void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
 {
+    for(unsigned i = 0; i < players.size(); i++)
+        players[i].pos = MapPoint::Invalid();
     if(!s2map)
     {
         SetMapSize(Extent::all(0));
@@ -69,8 +72,6 @@ void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
     unsigned short map_height = s2map->getHeader().getHeight();
     SetMapSize(Extent(map_width, map_height));
     minimap.SetMap(*s2map);
-    for(unsigned i = 0; i < MAX_PLAYERS; i++)
-        players[i].color = 0;
 
     // Startpositionen merken
     for(unsigned short y = 0; y < map_height; ++y)

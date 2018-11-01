@@ -47,7 +47,8 @@ void Minimap::CreateMapTexture()
 void Minimap::Draw(const Rect& rect)
 {
     BeforeDrawing();
-    map.DrawFull(rect);
+    if(rect.getSize().x > 0u && rect.getSize().y > 0)
+        map.DrawFull(rect);
 }
 
 void Minimap::BeforeDrawing() {}
