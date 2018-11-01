@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "WindowManager.h"
+#include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPreviewMinimap.h"
 #include "controls/ctrlTable.h"
@@ -153,9 +154,16 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int s
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
     static const boost::array<unsigned, 9> ids = {{39, 40, 41, 42, 43, 52, 91, 93, 48}};
 
-    // Und wieder füllen lassen
-    FillTable(ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]), "swd"));
-    FillTable(ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]), "wld"));
+    const std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]);
+    FillTable(ListDir(mapPath, "swd"));
+    FillTable(ListDir(mapPath, "wld"));
+    // For own maps (WORLDS folder) also use the one in the installation folder as S2 does
+    if(bfs::path(mapPath).filename() == "WORLDS")
+    {
+        const std::string worldsPath = RTTRCONFIG.ExpandPath("WORLDS");
+        FillTable(ListDir(worldsPath, "swd"));
+        FillTable(ListDir(worldsPath, "wld"));
+    }
 
     // Dann noch sortieren
     bool sortAsc = true;
@@ -170,47 +178,49 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int s
  */
 void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selection)
 {
-    if(ctrl_id == 1)
+    if(ctrl_id != 1)
+        return;
+    ctrlTable& table = *GetCtrl<ctrlTable>(1);
+    const std::string path = table.GetItemText(selection, 5);
+
+    ctrlPreviewMinimap& preview = *GetCtrl<ctrlPreviewMinimap>(11);
+    ctrlText& txtMapName = *GetCtrl<ctrlText>(12);
+    ctrlText& txtMapPath = *GetCtrl<ctrlText>(13);
+    ctrlButton& btContinue = *GetCtrl<ctrlButton>(5);
+    preview.SetMap(NULL);
+    txtMapName.SetText("");
+    txtMapPath.SetText("");
+    btContinue.SetEnabled(false);
+
+    // is the selection valid?
+    if(!path.empty())
     {
-        ctrlTable* table = GetCtrl<ctrlTable>(1);
-
-        // is the selection valid?
-        if(selection >= 0 && selection < table->GetNumRows())
+        libsiedler2::Archiv ai;
+        // load map data
+        int ec = libsiedler2::loader::LoadMAP(path, ai);
+        if(ec || !dynamic_cast<glArchivItem_Map*>(ai[0]))
         {
-            // get path to map from table
-            std::string path = table->GetItemText(selection, 5);
-
-            libsiedler2::Archiv ai;
-            // load map data
-            int ec = libsiedler2::loader::LoadMAP(path, ai);
-            if(ec || !dynamic_cast<glArchivItem_Map*>(ai[0]))
-            {
-                brokenMapPaths.push_back(path);
-                std::string errorTxt = _("Could not load map:\n");
-                errorTxt += path + '\n';
-                errorTxt += libsiedler2::getErrorString(ec);
-                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
-                table->RemoveRow(selection);
-            } else
-            {
-                glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai[0]);
-                ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(11);
-                preview->SetMap(map);
-
-                ctrlText* text = GetCtrl<ctrlText>(12);
-                text->SetText(cvStringToUTF8(map->getHeader().getName()));
-                DrawPoint txtPos = text->GetPos();
-                txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
-                text->SetPos(txtPos);
-
-                text = GetCtrl<ctrlText>(13);
-                text->SetText(path);
-                txtPos = text->GetPos();
-                txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
-                text->SetPos(txtPos);
-            }
+            brokenMapPaths.push_back(path);
+            std::string errorTxt = _("Could not load map:\n");
+            errorTxt += path + '\n';
+            errorTxt += libsiedler2::getErrorString(ec);
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+            table.RemoveRow(selection);
+        } else
+        {
+            const glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai[0]);
+            preview.SetMap(map);
+            txtMapName.SetText(cvStringToUTF8(map->getHeader().getName()));
+            txtMapPath.SetText(path);
+            btContinue.SetEnabled(true);
         }
     }
+    DrawPoint txtPos = txtMapName.GetPos();
+    txtPos.x = preview.GetPos().x + preview.GetSize().x + 10;
+    txtMapName.SetPos(txtPos);
+    txtPos = txtMapPath.GetPos();
+    txtPos.x = preview.GetPos().x + preview.GetSize().x + 10;
+    txtMapPath.SetPos(txtPos);
 }
 
 void dskSelectMap::GoBack()

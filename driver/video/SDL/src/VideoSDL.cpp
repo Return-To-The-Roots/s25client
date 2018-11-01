@@ -570,9 +570,12 @@ OpenGL_Loader_Proc VideoSDL::GetLoaderFunction() const
  */
 void VideoSDL::SetMousePos(int x, int y)
 {
-    mouse_xy.x = x;
-    mouse_xy.y = y;
-    SDL_WarpMouse(x, y);
+    if(SDL_GetAppState() & SDL_APPMOUSEFOCUS)
+    {
+        mouse_xy.x = x;
+        mouse_xy.y = y;
+        SDL_WarpMouse(x, y);
+    }
 }
 
 /**

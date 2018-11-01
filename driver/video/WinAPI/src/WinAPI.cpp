@@ -499,12 +499,15 @@ void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
  */
 void VideoWinAPI::SetMousePos(int x, int y)
 {
-    mouse_xy.x = x;
-    mouse_xy.y = y;
+    if(GetActiveWindow())
+    {
+        mouse_xy.x = x;
+        mouse_xy.y = y;
 
-    POINT p = {x, y};
-    ClientToScreen(screen, &p);
-    SetCursorPos(p.x, p.y);
+        POINT p = {x, y};
+        ClientToScreen(screen, &p);
+        SetCursorPos(p.x, p.y);
+    }
 }
 
 /**

@@ -25,7 +25,6 @@
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlTimer.h"
-#include "dskBenchmark.h"
 #include "dskMainMenu.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -61,13 +60,13 @@ void dskSplash::Msg_Timer(const unsigned ctrl_id)
         isLoading = true;
         LoadFiles();
     } else if(isLoaded)
-        WINDOWMANAGER.Switch(new dskBenchmark); // dskMainMenu);
+        WINDOWMANAGER.Switch(new dskMainMenu);
 }
 
 bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
 {
     if(isLoaded)
-        WINDOWMANAGER.Switch(new dskBenchmark); // dskMainMenu);
+        WINDOWMANAGER.Switch(new dskMainMenu);
 
     return true;
 }
