@@ -901,14 +901,16 @@ void WindowManager::DrawToolTip()
     // Tooltip zeichnen
     if(curTooltip.length() && lastMousePos.isValid())
     {
-        const unsigned spacing = 30;
+        // Horizontal pace between mouse position and tooltip border
+        const unsigned rightSpacing = 30;
+        const unsigned leftSpacing = 10;
         unsigned text_width = NormalFont->getWidth(curTooltip);
-        DrawPoint ttPos = DrawPoint(lastMousePos.x + spacing, lastMousePos.y);
+        DrawPoint ttPos = DrawPoint(lastMousePos.x + rightSpacing, lastMousePos.y);
         unsigned right_edge = ttPos.x + text_width + 2;
 
         // links neben der Maus, wenn es über den Rand gehen würde
-        if(right_edge > VIDEODRIVER.GetScreenSize().y)
-            ttPos.x = lastMousePos.x - spacing - text_width;
+        if(right_edge > VIDEODRIVER.GetScreenSize().x)
+            ttPos.x = lastMousePos.x - leftSpacing - text_width;
 
         unsigned numLines = 1;
         size_t pos = curTooltip.find('\n');
