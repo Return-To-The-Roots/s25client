@@ -134,8 +134,20 @@ SoundHandle AudioSDL::LoadEffect(const std::string& filepath)
         return SoundHandle();
     }
 
-    SoundSDL_Effect* sd = new SoundSDL_Effect(sound);
-    return CreateSoundHandle(sd);
+    return CreateSoundHandle(new SoundSDL_Effect(sound));
+}
+
+SoundHandle AudioSDL::LoadEffect(const std::vector<char>& data, const std::string& ext)
+{
+    SDL_RWops* rwOps = SDL_RWFromConstMem(data.data(), static_cast<int>(data.size()));
+    Mix_Chunk* sound = Mix_LoadWAV_RW(rwOps, true);
+    if(sound == NULL)
+    {
+        std::cerr << Mix_GetError() << std::endl;
+        return SoundHandle();
+    }
+
+    return CreateSoundHandle(new SoundSDL_Effect(sound));
 }
 
 /**
@@ -153,8 +165,25 @@ SoundHandle AudioSDL::LoadMusic(const std::string& filepath)
         return SoundHandle();
     }
 
-    SoundSDL_Music* sd = new SoundSDL_Music(music);
-    return CreateSoundHandle(sd);
+    return CreateSoundHandle(new SoundSDL_Music(music));
+}
+
+SoundHandle AudioSDL::LoadMusic(const std::vector<char>& data, const std::string& ext)
+{
+    // Need to copy data as it is used by SDL
+    SoundSDL_Music* handle = new SoundSDL_Music(data);
+    SDL_RWops* rwOps = SDL_RWFromConstMem(handle->data.data(), static_cast<int>(data.size()));
+    Mix_Music* music = Mix_LoadMUS_RW(rwOps);
+    if(music == NULL)
+    {
+        SDL_FreeRW(rwOps);
+        delete handle;
+        std::cerr << Mix_GetError() << std::endl;
+        return SoundHandle();
+    }
+    handle->music = music;
+
+    return CreateSoundHandle(handle);
 }
 
 EffectPlayId AudioSDL::PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop)

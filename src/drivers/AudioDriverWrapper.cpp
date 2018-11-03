@@ -24,8 +24,11 @@
 #include "mygettext/mygettext.h"
 #include "libsiedler2/ArchivItem_Sound.h"
 #include "libutil/Log.h"
-#include "libutil/tmpFile.h"
+#include <boost/interprocess/streams/vectorstream.hpp>
 #include <ostream>
+#include <vector>
+
+typedef boost::interprocess::basic_ovectorstream<std::vector<char> > ovectorstream;
 
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(NULL), loadedFromDll(false) {}
 
@@ -146,14 +149,12 @@ SoundHandle AudioDriverWrapper::LoadMusic(const std::string& filepath)
 
 SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
 {
-    TmpFile tmp(extension);
-    if(!tmp.isValid())
+    if(!audiodriver_)
         return SoundHandle();
-    if(soundArchiv.write(tmp.getStream()) != 0)
+    ovectorstream tmp;
+    if(soundArchiv.write(tmp) != 0)
         return SoundHandle();
-    tmp.close();
-    SoundHandle sound = LoadMusic(tmp.filePath);
-    return sound;
+    return audiodriver_->LoadMusic(tmp.vector(), extension);
 }
 
 SoundHandle AudioDriverWrapper::LoadEffect(const std::string& filepath)
@@ -166,14 +167,12 @@ SoundHandle AudioDriverWrapper::LoadEffect(const std::string& filepath)
 
 SoundHandle AudioDriverWrapper::LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
 {
-    TmpFile tmp(extension);
-    if(!tmp.isValid())
+    if(!audiodriver_)
         return SoundHandle();
-    if(soundArchiv.write(tmp.getStream()) != 0)
+    ovectorstream tmp;
+    if(soundArchiv.write(tmp) != 0)
         return SoundHandle();
-    tmp.close();
-    SoundHandle sound = LoadEffect(tmp.filePath);
-    return sound;
+    return audiodriver_->LoadEffect(tmp.vector(), extension);
 }
 
 EffectPlayId AudioDriverWrapper::PlayEffect(const SoundHandle& sound, uint8_t volume, const bool loop)
