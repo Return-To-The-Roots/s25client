@@ -27,9 +27,8 @@ class AddonFrontierDistanceReachable : public AddonBool
 public:
     AddonFrontierDistanceReachable()
         : AddonBool(AddonId::FRONTIER_DISTANCE_REACHABLE, ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY,
-                    _("Frontier Distance checks Reachability"),
-                    _("Checks if the military building is reachable by triple distance of both military buildings (minimum distance is "
-                      "10). If its not reachable within this distance a military building counts as far away."),
+                    _("Frontier Distance checks reachability"),
+                    _("Military building counts as interior if an attack is impossible. (Path blocked by see, stone, lava, etc.)"),
                     0)
     {}
 };
