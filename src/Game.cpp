@@ -84,60 +84,62 @@ void Game::CheckObjective()
         return;
 
     // check winning condition
-    unsigned max = 0, sum = 0, best = 0xFFFF, maxteam = 0, bestteam = 0xFFFF;
+    unsigned maxPoints = 0, totalPoints = 0, bestPlayer = 0xFFFF, maxTeamPoints = 0, bestTeam = 0xFFFF;
 
     // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
     for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         GamePlayer& player = world.GetPlayer(i);
+        if(player.IsDefeated())
+            continue;
         if(ggs.lockedTeams) // in games with locked team settings check for team victory
         {
-            if(player.IsDefeated())
-                continue;
-            unsigned curteam = 0;
-            unsigned teampoints = 0;
+            unsigned curTeam = 0;
+            unsigned teamPoints = 0;
+            // Add points of all players in this players team (including himself)
             for(unsigned j = 0; j < world.GetNumPlayers(); ++j)
             {
-                if(i == j || !player.IsAlly(j))
+                if(!player.IsAlly(j))
                     continue;
                 GamePlayer& teamPlayer = world.GetPlayer(j);
                 if(!teamPlayer.IsDefeated())
                 {
-                    curteam = curteam | (1 << j);
-                    teampoints += teamPlayer.GetStatisticCurrentValue(NUM_STATSRY);
+                    curTeam = curTeam | (1 << j);
+                    teamPoints += teamPlayer.GetStatisticCurrentValue(STAT_COUNTRY);
                 }
             }
-            teampoints += player.GetStatisticCurrentValue(NUM_STATSRY);
-            curteam = curteam | (1 << i);
-            if(teampoints > maxteam && teampoints > player.GetStatisticCurrentValue(NUM_STATSRY))
+            if(teamPoints > maxTeamPoints)
             {
-                maxteam = teampoints;
-                bestteam = curteam;
+                maxTeamPoints = teamPoints;
+                bestTeam = curTeam;
             }
         }
-        unsigned v = player.GetStatisticCurrentValue(NUM_STATSRY);
-        if(v > max)
+        unsigned points = player.GetStatisticCurrentValue(STAT_COUNTRY);
+        if(points > maxPoints)
         {
-            max = v;
-            best = i;
+            maxPoints = points;
+            bestPlayer = i;
         }
 
-        sum += v;
+        totalPoints += points;
     }
+    // No one has land -> All lost?
+    if(totalPoints == 0u)
+        return;
 
     switch(ggs.objective)
     {
         case GO_CONQUER3_4: // at least 3/4 of the land
-            if((max * 4 >= sum * 3) && (best != 0xFFFF))
+            if(maxTeamPoints * 4 >= totalPoints * 3)
                 finished = true;
-            if((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
+            else if(maxPoints * 4 >= totalPoints * 3)
                 finished = true;
             break;
 
         case GO_TOTALDOMINATION: // whole populated land
-            if((max == sum) && (best != 0xFFFF))
+            if(maxTeamPoints == totalPoints)
                 finished = true;
-            if((maxteam == sum) && (bestteam != 0xFFFF))
+            else if(maxPoints == totalPoints)
                 finished = true;
             break;
         default: break;
@@ -146,10 +148,10 @@ void Game::CheckObjective()
     // We have a winner!
     if(finished)
     {
-        if(maxteam <= best)
-            world.GetGameInterface()->GI_Winner(best);
+        if(maxPoints >= maxTeamPoints)
+            world.GetGameInterface()->GI_Winner(bestPlayer);
         else
-            world.GetGameInterface()->GI_TeamWinner(bestteam);
+            world.GetGameInterface()->GI_TeamWinner(bestTeam);
     }
 }
 

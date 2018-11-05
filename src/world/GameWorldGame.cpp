@@ -522,7 +522,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     // Notify players
     for(unsigned i = 0; i < GetNumPlayers(); ++i)
     {
-        GetPlayer(i).ChangeStatisticValue(NUM_STATSRY, sizeChanges[i]);
+        GetPlayer(i).ChangeStatisticValue(STAT_COUNTRY, sizeChanges[i]);
 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if(reason == TerritoryChangeReason::Build && sizeChanges[i] < 0)
