@@ -46,8 +46,20 @@ void Game::Start(bool startFromSave)
         world.GetLua().EventStart(!startFromSave);
 }
 
+unsigned getNumAlivePlayers(const GameWorldBase& world)
+{
+    unsigned numPlayersAlive = 0;
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    {
+        if(!world.GetPlayer(i).IsDefeated())
+            ++numPlayersAlive;
+    }
+    return numPlayersAlive;
+}
+
 void Game::RunGF()
 {
+    unsigned numPlayersAlive = getNumAlivePlayers(world);
     //  EventManager Bescheid sagen
     em->ExecuteNextGF();
     // Notfallprogramm durchlaufen lassen
@@ -67,6 +79,9 @@ void Game::RunGF()
     // Update statistic every 750 GFs (30 seconds on 'fast')
     if(em->GetCurrentGF() % 750 == 0)
         StatisticStep();
+    // If some players got defeated check objective
+    if(getNumAlivePlayers(world) < numPlayersAlive)
+        CheckObjective();
 }
 
 void Game::StatisticStep()
