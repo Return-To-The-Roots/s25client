@@ -48,7 +48,15 @@ public:
         return initialized = true;
     }
     SoundHandle LoadEffect(const std::string& filepath) override { return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT)); }
+    SoundHandle LoadEffect(const std::vector<char>& data, const std::string& ext) override
+    {
+        return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT));
+    }
     SoundHandle LoadMusic(const std::string& filepath) override { return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC)); }
+    SoundHandle LoadMusic(const std::vector<char>& data, const std::string& ext) override
+    {
+        return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC));
+    }
     EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop) override
     {
         if(!sound.isValid())

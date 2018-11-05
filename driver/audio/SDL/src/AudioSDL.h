@@ -41,7 +41,9 @@ public:
     void CleanUp() override;
 
     SoundHandle LoadEffect(const std::string& filepath) override;
+    SoundHandle LoadEffect(const std::vector<char>& data, const std::string& ext) override;
     SoundHandle LoadMusic(const std::string& filepath) override;
+    SoundHandle LoadMusic(const std::vector<char>& data, const std::string& ext) override;
 
     /// Plays an effect at the given volume. If loop is true, effect is looped indefinitely
     EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop) override;

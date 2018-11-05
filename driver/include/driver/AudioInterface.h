@@ -21,6 +21,7 @@
 #include "SoundHandle.h"
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 /// Interface for audio drivers (required for use across DLL boundaries)
 class IAudioDriver
@@ -37,7 +38,9 @@ public:
     virtual void CleanUp() = 0;
 
     virtual SoundHandle LoadEffect(const std::string& filepath) = 0;
+    virtual SoundHandle LoadEffect(const std::vector<char>& data, const std::string& ext) = 0;
     virtual SoundHandle LoadMusic(const std::string& filepath) = 0;
+    virtual SoundHandle LoadMusic(const std::vector<char>& data, const std::string& ext) = 0;
 
     /// Plays an effect at the given volume. If loop is true, effect is looped indefinitely
     virtual EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop) = 0;

@@ -19,15 +19,18 @@
 
 #include "SoundHandle.h"
 #include <SDL_mixer.h>
+#include <vector>
 
 class SoundSDL_Music : public SoundDesc
 {
 public:
     explicit SoundSDL_Music(Mix_Music* music) : SoundDesc(SD_MUSIC), music(music) {}
+    explicit SoundSDL_Music(const std::vector<char>& data) : SoundDesc(SD_MUSIC), music(NULL), data(data) {}
 
     void setInvalid() { isValid_ = false; }
     /// Handle to the sound. Managed and freed by the driver
-    Mix_Music* const music; /// Das Music-Handle.
+    Mix_Music* music; /// Das Music-Handle.
+    const std::vector<char> data;
 };
 
 #endif // !SOUNDSDL_MUSIC_H_INCLUDED

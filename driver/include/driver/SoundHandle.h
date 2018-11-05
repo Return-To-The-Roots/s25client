@@ -20,6 +20,7 @@
 #ifndef SOUNDHANDLE_H_INCLUDED
 #define SOUNDHANDLE_H_INCLUDED
 
+#include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 
 enum SoundType
@@ -30,7 +31,7 @@ enum SoundType
 };
 
 /// Base class for a sound descriptor managed by the driver
-struct SoundDesc
+struct SoundDesc : boost::noncopyable
 {
     SoundDesc() : type_(SD_UNKNOWN), isValid_(false) {}
     virtual ~SoundDesc() {}
