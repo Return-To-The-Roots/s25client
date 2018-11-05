@@ -22,8 +22,9 @@ environment:
   RTTR_DISABLE_ASSERT_BREAKPOINT: 1
 
 matrix:
-  allow_failures:
-    - platform: x64 # Fails for some reason (Lua?)
+  fast_finish: true
+  exclude:
+    - # Reduce build time, also VS2017,x64,Release Fails for some reason (Lua?)
       configuration: Release
       image: Visual Studio 2017
 
