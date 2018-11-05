@@ -33,7 +33,7 @@ void ctrlTextButton::DrawContent() const
     if(this->color_ == COLOR_YELLOW && isPressed)
         color = 0xFFFFAA00;
     else if(!isEnabled)
-        color = COLOR_GREY;
+        color = 0xFF818993;
     else
         color = this->color_;
 
