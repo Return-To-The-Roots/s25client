@@ -526,14 +526,19 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             else if(selObj.GetType() == NOP_FLAG)
                 action_tabs.flag = true;
 
-            // Prüfen, ob irgendwo Straßen anliegen
-            bool roads = false;
-            for(unsigned i = 0; i < 6; ++i)
-                if(worldViewer.GetVisiblePointRoad(cSel, Direction::fromInt(i)))
-                    roads = true;
-
-            if((roads) && !(selObj.GetType() == NOP_FLAG || selObj.GetType() == NOP_BUILDING))
-                action_tabs.cutroad = true;
+            if(selObj.GetType() != NOP_FLAG && selObj.GetType() != NOP_BUILDING)
+            {
+                // Check if there are roads
+                BOOST_FOREACH(Direction dir, Direction())
+                {
+                    uint8_t curRoad = worldViewer.GetVisiblePointRoad(cSel, dir);
+                    if(curRoad)
+                    {
+                        action_tabs.cutroad = true;
+                        action_tabs.upgradeRoad |= (curRoad - 1) == RoadSegment::RT_NORMAL;
+                    }
+                }
+            }
         }
         // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
         else if(worldViewer.GetVisibility(cSel) == VIS_VISIBLE)

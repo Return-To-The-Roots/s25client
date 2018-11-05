@@ -299,7 +299,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         // Straße aufwerten ggf anzeigen
         Extent btSize(180, 36);
         unsigned btPosX = 0;
-        if(!tabs.setflag)
+        if(tabs.upgradeRoad)
             AddUpgradeRoad(group, btPosX, btSize.x);
 
         group->AddImageButton(1, DrawPoint(btPosX, 45), btSize, TC_GREY, LOADER.GetImageN("io", 32), _("Dig up road"));
@@ -358,14 +358,8 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned& /*x*/, unsigned& width
 
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
     {
-        Direction flag_dir;
-        const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
-        if(flag && flag->GetRoute(flag_dir)->GetRoadType() == RoadSegment::RT_NORMAL)
-        {
-            width = 90;
-            group->AddImageButton(2, DrawPoint(90, 45), Extent(width, 36), TC_GREY, LOADER.GetImageN("io", 44),
-                                  _("Upgrade to donkey road"));
-        }
+        width = 90;
+        group->AddImageButton(2, DrawPoint(90, 45), Extent(width, 36), TC_GREY, LOADER.GetImageN("io", 44), _("Upgrade to donkey road"));
     }
 }
 
