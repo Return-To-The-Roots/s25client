@@ -768,6 +768,38 @@ BOOST_AUTO_TEST_CASE(onOccupied)
     }
 }
 
+BOOST_AUTO_TEST_CASE(onExplored)
+{
+    executeLua("explored = {}\n\
+    function onExplored(player_id, x, y)\n\
+        points = explored[player_id] or {}\n\
+        table.insert(points, {x, y})\n\
+        explored[player_id] = points\n\
+    end");
+    initWorld();
+    typedef std::vector<std::pair<int, int> > Points;
+    std::map<int, Points> gamePtsPerPlayer;
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        const MapNode& node = world.GetNode(pt);
+        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+        {
+            if(node.fow[i].visibility == VIS_VISIBLE)
+                gamePtsPerPlayer[i].push_back(std::pair<int, int>(pt.x, pt.y));
+        }
+    }
+    std::map<int, Points> luaPtsPerPlayer = getLuaState()["explored"];
+    BOOST_REQUIRE_EQUAL(luaPtsPerPlayer.size(), gamePtsPerPlayer.size());
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+    {
+        Points& gamePts = gamePtsPerPlayer[i];
+        Points& luaPts = luaPtsPerPlayer[i];
+        std::sort(gamePts.begin(), gamePts.end());
+        std::sort(luaPts.begin(), luaPts.end());
+        RTTR_REQUIRE_EQUAL_COLLECTIONS(luaPts, gamePts);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(LuaPacts)
 {
     initWorld();
