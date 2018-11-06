@@ -17,12 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PointOutput.h"
-#include "boost/interprocess/smart_ptr/unique_ptr.hpp"
-#include "helpers/Deleter.h"
 #include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 #include "gameData/MaxPlayers.h"
+#include "libutil/unique_ptr.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -43,7 +42,7 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
     settings.maxPlayerRadius = 0.3;
 
     RandomMapGenerator generator(config);
-    boost::interprocess::unique_ptr<Map, Deleter<Map> > map(generator.Create(settings));
+    libutil::unique_ptr<Map> map(generator.Create(settings));
 
     BOOST_REQUIRE_EQUAL(map->size, settings.size);
 }
@@ -64,7 +63,7 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
 
     RandomMapGenerator generator(config);
 
-    boost::interprocess::unique_ptr<Map, Deleter<Map> > map(generator.Create(settings));
+    libutil::unique_ptr<Map> map(generator.Create(settings));
     BOOST_REQUIRE_EQUAL(map->numPlayers, settings.numPlayers);
 
     unsigned minSize = std::min(map->size.x, map->size.y) / 2; //-V807
@@ -98,7 +97,7 @@ BOOST_AUTO_TEST_CASE(InvalidConfig)
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
-    boost::interprocess::unique_ptr<Map, Deleter<Map> > map(generator.Create(settings));
+    libutil::unique_ptr<Map> map(generator.Create(settings));
     BOOST_REQUIRE_GE(map->numPlayers, 1);
 
     settings.numPlayers = 99;

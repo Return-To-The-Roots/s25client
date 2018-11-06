@@ -25,7 +25,7 @@
 #include "mygettext/mygettext.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 
 #ifndef _WIN32
 #include <dlfcn.h>
@@ -124,7 +124,7 @@ void* DriverWrapper::GetDLLFunction(const std::string& name)
 
 bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)
 {
-    boost::interprocess::unique_ptr<HINSTANCE, DeleterFreeLib> dll(LoadLibraryW(path.c_str()));
+    libutil::unique_ptr<HINSTANCE, DeleterFreeLib> dll(LoadLibraryW(path.c_str()));
 
     if(!dll)
     {

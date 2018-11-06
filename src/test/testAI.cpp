@@ -27,11 +27,11 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/BuildingProperties.h"
+#include "libutil/unique_ptr.h"
 #include <boost/foreach.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/test/unit_test.hpp>
 
-typedef boost::interprocess::unique_ptr<AIPlayer, Deleter<AIPlayer> > AIPointer;
+typedef libutil::unique_ptr<AIPlayer> AIPointer;
 // We need border land
 typedef WorldWithGCExecution<1, 24, 22> BiggerWorldWithGCExecution;
 

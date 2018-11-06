@@ -19,12 +19,11 @@
 #define GameWorldBase_h__
 
 #include "buildings/nobBaseMilitary.h"
-#include "helpers/Deleter.h"
 #include "lua/LuaInterfaceGame.h"
 #include "notifications/NotificationManager.h"
 #include "postSystem/PostManager.h"
 #include "world/World.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 #include <vector>
 
 class EventManager;
@@ -43,15 +42,15 @@ class RoadPathFinder;
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
 class GameWorldBase : public World
 {
-    boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
-    boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
+    libutil::unique_ptr<RoadPathFinder> roadPathFinder;
+    libutil::unique_ptr<FreePathFinder> freePathFinder;
     PostManager postManager;
     NotificationManager notifications;
 
     std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
-    boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
+    libutil::unique_ptr<LuaInterfaceGame> lua;
 
 protected:
     /// Interface zum GUI

@@ -19,7 +19,6 @@
 #include "PointOutput.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
-#include "helpers/Deleter.h"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
@@ -36,9 +35,9 @@
 #include "libutil/Serializer.h"
 #include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
+#include "libutil/unique_ptr.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/test/unit_test.hpp>
 
 using namespace boost::assign;
@@ -330,7 +329,7 @@ BOOST_AUTO_TEST_CASE(AccessPlayerProperties)
 namespace {
 struct CatchConstructionNote
 {
-    boost::interprocess::unique_ptr<BuildingNote, Deleter<BuildingNote> > note_;
+    libutil::unique_ptr<BuildingNote> note_;
     Subscribtion sub;
 
     CatchConstructionNote(GameWorldGame& world) : sub(world.GetNotifications().subscribe<BuildingNote>(boost::ref(*this))) {}

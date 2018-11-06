@@ -22,7 +22,7 @@
 #include "EventManager.h"
 #include "GlobalGameSettings.h"
 #include "world/GameWorld.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 #include <boost/ptr_container/ptr_vector.hpp>
 
 class AIPlayer;
@@ -36,7 +36,7 @@ public:
     ~Game();
 
     const GlobalGameSettings ggs;
-    boost::interprocess::unique_ptr<EventManager, Deleter<EventManager> > em;
+    libutil::unique_ptr<EventManager> em;
     GameWorld world;
     boost::ptr_vector<AIPlayer> aiPlayers;
 

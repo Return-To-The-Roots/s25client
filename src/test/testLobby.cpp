@@ -24,7 +24,6 @@
 #include "controls/ctrlOptionGroup.h"
 #include "desktops/dskHostGame.h"
 #include "helperFuncs.h"
-#include "helpers/Deleter.h"
 #include "initTestHelpers.h"
 #include "liblobby/LobbyClient.h"
 #include "liblobby/LobbyMessages.h"
@@ -45,7 +44,7 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
             Connection& con = connections[id];
             while(!con.recvQueue.empty())
             {
-                boost::interprocess::unique_ptr<Message, Deleter<Message> > msg(con.recvQueue.popFront());
+                libutil::unique_ptr<Message> msg(con.recvQueue.popFront());
                 if(!msg->run(this, id))
                 {
                     LobbyMessage* lobbyMsg = dynamic_cast<LobbyMessage*>(msg.get());

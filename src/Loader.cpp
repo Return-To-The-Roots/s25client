@@ -25,7 +25,6 @@
 #include "addons/const_addons.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
-#include "helpers/Deleter.h"
 #include "helpers/containerUtils.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -49,11 +48,11 @@
 #include "libutil/Log.h"
 #include "libutil/StringConversion.h"
 #include "libutil/System.h"
+#include "libutil/unique_ptr.h"
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <algorithm>
 #include <cstdio>
@@ -844,7 +843,7 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& s
 
     srcImg.print(buffer, NULL, 0, 0, rect.left, rect.top);
 
-    boost::interprocess::unique_ptr<libsiedler2::Archiv, Deleter<libsiedler2::Archiv> > destination(new libsiedler2::Archiv());
+    libutil::unique_ptr<libsiedler2::Archiv> destination(new libsiedler2::Archiv());
     libsiedler2::ArchivItem_PaletteAnimation anim;
     anim.isActive = true;
     anim.moveUp = false;
@@ -857,7 +856,7 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& s
             curPal = srcImg.getPalette()->clone();
         else
             curPal = anim.apply(*curPal);
-        boost::interprocess::unique_ptr<glArchivItem_Bitmap_Raw, Deleter<glArchivItem_Bitmap> > bitmap(new glArchivItem_Bitmap_Raw);
+        libutil::unique_ptr<glArchivItem_Bitmap_Raw> bitmap(new glArchivItem_Bitmap_Raw);
 
         bitmap->setPalette(curPal);
 

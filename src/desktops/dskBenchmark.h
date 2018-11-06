@@ -22,9 +22,8 @@
 
 #include "FrameCounter.h"
 #include "desktops/dskMenuBase.h"
-#include "helpers/Deleter.h"
+#include "libutil/unique_ptr.h"
 #include <boost/chrono.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <vector>
 
@@ -71,7 +70,7 @@ private:
     std::vector<ColoredRect> rects_;
     std::vector<ColoredLine> lines_;
     boost::shared_ptr<Game> game_;
-    boost::interprocess::unique_ptr<GameView, Deleter<GameView> > gameView_;
+    libutil::unique_ptr<GameView> gameView_;
     boost::array<boost::chrono::milliseconds, TEST_CT> testDurations_;
 
     void startTest(Test test);

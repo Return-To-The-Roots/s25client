@@ -25,11 +25,10 @@
 #include "ai/aijh/AIMap.h"
 #include "ai/aijh/AIResourceMap.h"
 #include "ai/aijh/PositionSearch.h"
-#include "helpers/Deleter.h"
 #include "gameTypes/MapCoordinates.h"
+#include "libutil/unique_ptr.h"
 #include <boost/array.hpp>
 #include <boost/container/static_vector.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <list>
 #include <queue>
 
@@ -247,7 +246,7 @@ public:
 
 private:
     /// The current job the AI is working on
-    boost::interprocess::unique_ptr<Job, Deleter<Job> > currentJob;
+    libutil::unique_ptr<Job> currentJob;
     /// List of coordinates at which military buildings should be
     std::list<MapPoint> milBuildings;
     /// List of coordinates at which military buildingsites should be

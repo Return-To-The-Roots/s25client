@@ -22,13 +22,12 @@
 #include "RTTR_Version.h"
 #include "Replay.h"
 #include "Settings.h"
-#include "helpers/Deleter.h"
 #include "network/GameClient.h"
 #include "libutil/Log.h"
+#include "libutil/unique_ptr.h"
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
 #include <boost/foreach.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/conditional.hpp>
 #include <bzlib.h>
@@ -329,9 +328,9 @@ bool DebugInfo::SendFile(BinaryFile& file)
 
     LOG.write("- File size: %u\n") % fileSize;
 
-    boost::interprocess::unique_ptr<char, Deleter<char[]> > fileData(new char[fileSize]);
+    libutil::unique_ptr<char[]> fileData(new char[fileSize]);
     unsigned compressed_len = fileSize * 2 + 600;
-    boost::interprocess::unique_ptr<char, Deleter<char[]> > compressed(new char[compressed_len]);
+    libutil::unique_ptr<char[]> compressed(new char[compressed_len]);
 
     file.Seek(0, SEEK_SET);
     file.ReadRawData(fileData.get(), fileSize);

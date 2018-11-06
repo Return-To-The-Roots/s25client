@@ -21,9 +21,8 @@
 #define dskTextureTest_h__
 
 #include "desktops/dskMenuBase.h"
-#include "helpers/Deleter.h"
 #include "gameData/WorldDescription.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 
 class glArchivItem_Bitmap;
 
@@ -41,7 +40,7 @@ public:
 
 private:
     WorldDescription desc;
-    boost::interprocess::unique_ptr<glArchivItem_Bitmap, Deleter<glArchivItem_Bitmap> > curTexture;
+    libutil::unique_ptr<glArchivItem_Bitmap> curTexture;
     DescIdx<TerrainDesc> curTerrainIdx;
 };
 
