@@ -19,6 +19,8 @@
 #include "PointOutput.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
+#include "helpers/containerUtils.h"
+#include "lua/LuaTraits.h"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
@@ -39,6 +41,9 @@
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>
 #include <boost/test/unit_test.hpp>
+#include <map>
+#include <utility>
+#include <vector>
 
 using namespace boost::assign;
 
@@ -704,10 +709,6 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     // Re-enable
     lua.SetThrowOnError(true);
 
-    executeLua("function onOccupied(player_id, x, y)\n  rttr:Log('occupied: '..player_id..'('..x..', '..y..')')\nend");
-    lua.EventOccupied(1, pt1);
-    BOOST_REQUIRE_EQUAL(getLog(), (boost::format("occupied: %1%%2%\n") % 1 % pt1).str());
-
     executeLua(
       "function onExplored(player_id, x, y, owner)\n  rttr:Log('explored: '..player_id..'('..x..', '..y..')'..tostring(owner))\nend");
     // Owner == 0 -> No owner (nil in lua)
@@ -736,6 +737,35 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Granite" % 6).str());
     lua.EventResourceFound(2, pt3, Resource::Water, 5);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Water" % 5).str());
+}
+
+BOOST_AUTO_TEST_CASE(onOccupied)
+{
+    executeLua("occupied = {}\n\
+    function onOccupied(player_id, x, y)\n\
+        points = occupied[player_id] or {}\n\
+        table.insert(points, {x, y})\n\
+        occupied[player_id] = points\n\
+    end");
+    initWorld();
+    typedef std::vector<std::pair<int, int> > Points;
+    std::map<int, Points> gamePtsPerPlayer;
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        uint8_t owner = world.GetNode(pt).owner;
+        if(owner)
+            gamePtsPerPlayer[owner - 1].push_back(std::pair<int, int>(pt.x, pt.y));
+    }
+    std::map<int, Points> luaPtsPerPlayer = getLuaState()["occupied"];
+    BOOST_REQUIRE_EQUAL(luaPtsPerPlayer.size(), gamePtsPerPlayer.size());
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+    {
+        Points& gamePts = gamePtsPerPlayer[i];
+        Points& luaPts = luaPtsPerPlayer[i];
+        std::sort(gamePts.begin(), gamePts.end());
+        std::sort(luaPts.begin(), luaPts.end());
+        RTTR_REQUIRE_EQUAL_COLLECTIONS(luaPts, gamePts);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(LuaPacts)

@@ -115,7 +115,7 @@ public:
         loadGameData(world.GetDescriptionWriteable());
         world.Init(MapExtent(24, 32));
         hqPositions.push_back(MapPoint(0, 1));
-        hqPositions.push_back(MapPoint(16, 17));
+        hqPositions.push_back(MapPoint(world.GetSize() / 2u + hqPositions[0]));
         std::vector<Nation> playerNations;
         playerNations.push_back(world.GetPlayer(0).nation);
         playerNations.push_back(world.GetPlayer(1).nation);

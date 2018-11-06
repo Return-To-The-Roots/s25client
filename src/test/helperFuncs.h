@@ -23,7 +23,26 @@
 #include "libutil/AvoidDuplicatesWriter.h"
 #include "libutil/Log.h"
 #include <boost/test/unit_test.hpp>
+#include <iostream>
 #include <string>
+#include <utility>
+
+namespace boost {
+namespace test_tools {
+#if BOOST_VERSION >= 105900
+    namespace tt_detail {
+#endif
+        // Allow printing of pairs
+        template<typename T, typename U>
+        struct print_log_value<std::pair<T, U> >
+        {
+            void operator()(std::ostream& os, std::pair<T, U> const& v) { os << "(" << v.first << "," << v.second << ")"; }
+        };
+#if BOOST_VERSION >= 105900
+    }
+#endif
+}
+} // namespace boost
 
 struct LocaleResetter
 {
