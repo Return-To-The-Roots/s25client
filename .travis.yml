@@ -39,6 +39,8 @@ addons:
             - llvm-3.5
             - libsdl1.2-dev
             - libsdl-mixer1.2-dev
+            - libsdl2-dev
+            - libsdl2-mixer-dev
             - libcurl4-openssl-dev
             - libbz2-dev
             - libminiupnpc-dev
