@@ -44,7 +44,7 @@ public:
     {
     public:
         /// Haupttabs
-        bool build, setflag, watch, flag, cutroad, attack, sea_attack;
+        bool build, setflag, watch, flag, cutroad, upgradeRoad, attack, sea_attack;
         /// Gebäude-Bau-Tabs
         enum BuildTab
         {
@@ -56,7 +56,8 @@ public:
         } build_tabs;
 
         Tabs()
-            : build(false), setflag(false), watch(false), flag(false), cutroad(false), attack(false), sea_attack(false), build_tabs(BT_HUT)
+            : build(false), setflag(false), watch(false), flag(false), cutroad(false), upgradeRoad(false), attack(false), sea_attack(false),
+              build_tabs(BT_HUT)
         {}
     };
 
