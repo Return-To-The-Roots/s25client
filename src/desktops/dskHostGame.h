@@ -20,11 +20,10 @@
 
 #include "Desktop.h"
 #include "GlobalGameSettings.h"
-#include "helpers/Deleter.h"
 #include "network/ClientInterface.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 
 class ctrlChat;
 class GameLobby;
@@ -100,8 +99,8 @@ private:
     boost::shared_ptr<GameLobby> gameLobby;
     unsigned localPlayerId_;
     bool hasCountdown_;
-    boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
-    boost::interprocess::unique_ptr<GameLobbyController, Deleter<GameLobbyController> > lobbyHostController;
+    libutil::unique_ptr<LuaInterfaceSettings> lua;
+    libutil::unique_ptr<GameLobbyController> lobbyHostController;
     bool wasActivated, allowAddonChange;
     ctrlChat *gameChat, *lobbyChat;
     unsigned lobbyChatTabAnimId, localChatTabAnimId;

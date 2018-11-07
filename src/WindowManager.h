@@ -21,9 +21,8 @@
 
 #include "Point.h"
 #include "driver/VideoDriverLoaderInterface.h"
-#include "helpers/Deleter.h"
 #include "libutil/Singleton.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 #include <list>
 #include <string>
 #include <vector>
@@ -109,9 +108,9 @@ private:
     /// Actually close all ingame windows marked for closing
     void CloseMarkedIngameWnds();
 
-    boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > curDesktop;  /// aktueller Desktop
-    boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > nextdesktop; /// der nächste Desktop
-    bool disable_mouse; /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
+    libutil::unique_ptr<Desktop> curDesktop;  /// aktueller Desktop
+    libutil::unique_ptr<Desktop> nextdesktop; /// der nächste Desktop
+    bool disable_mouse;                       /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
 
     IgwList windows; /// Fensterliste
     /// Windows that will be shown after desktop switch

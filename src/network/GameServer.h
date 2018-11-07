@@ -26,15 +26,14 @@
 #include "GlobalGameSettings.h"
 #include "JoinPlayerInfo.h"
 #include "NWFInfo.h"
-#include "helpers/Deleter.h"
 #include "random/Random.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
 #include "libutil/LANDiscoveryService.h"
 #include "libutil/Singleton.h"
+#include "libutil/unique_ptr.h"
 #include <boost/chrono.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 
 class AIPlayer;

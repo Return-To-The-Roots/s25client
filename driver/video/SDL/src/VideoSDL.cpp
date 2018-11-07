@@ -20,7 +20,7 @@
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
 #include "helpers/containerUtils.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
@@ -215,10 +215,10 @@ bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     }
 
     // get device context handle
-    boost::interprocess::unique_ptr<HDC, DeleterReleaseDC> tempDC(GetDC(info.window), DeleterReleaseDC(info.window));
+    libutil::unique_ptr<HDC, DeleterReleaseDC> tempDC(GetDC(info.window), DeleterReleaseDC(info.window));
 
     // create temporary context
-    boost::interprocess::unique_ptr<HGLRC, DeleterDeleteRC> tempRC(wglCreateContext(tempDC.get()));
+    libutil::unique_ptr<HGLRC, DeleterDeleteRC> tempRC(wglCreateContext(tempDC.get()));
     if(!tempRC)
     {
         PrintError("wglCreateContext failed");

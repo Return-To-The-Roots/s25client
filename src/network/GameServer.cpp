@@ -27,7 +27,6 @@
 #include "Savegame.h"
 #include "Settings.h"
 #include "files.h"
-#include "helpers/Deleter.h"
 #include "helpers/containerUtils.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameMessages.h"

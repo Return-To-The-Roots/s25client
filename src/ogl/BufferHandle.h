@@ -18,7 +18,7 @@
 #ifndef BufferHandle_h__
 #define BufferHandle_h__
 
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 #include <glad/glad.h>
 
 namespace ogl {
@@ -35,7 +35,7 @@ class BufferHandle
         }
     };
 
-    boost::interprocess::unique_ptr<GLuint, BufferDeleter> handle_;
+    libutil::unique_ptr<GLuint, BufferDeleter> handle_;
 
 public:
     explicit BufferHandle(GLuint handle = 0u) : handle_(handle) {}

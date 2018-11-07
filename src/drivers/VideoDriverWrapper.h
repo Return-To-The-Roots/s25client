@@ -21,9 +21,8 @@
 #include "Point.h"
 #include "driver/KeyEvent.h"
 #include "driver/VideoMode.h"
-#include "helpers/Deleter.h"
 #include "libutil/Singleton.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 #include <string>
 
 class IVideoDriver;
@@ -123,9 +122,9 @@ private:
 private:
     DriverWrapper driver_wrapper;
     IVideoDriver* videodriver;
-    boost::interprocess::unique_ptr<IRenderer, Deleter<IRenderer> > renderer_;
-    boost::interprocess::unique_ptr<FrameCounter, Deleter<FrameCounter> > frameCtr_;
-    boost::interprocess::unique_ptr<FrameLimiter, Deleter<FrameLimiter> > frameLimiter_;
+    libutil::unique_ptr<IRenderer> renderer_;
+    libutil::unique_ptr<FrameCounter> frameCtr_;
+    libutil::unique_ptr<FrameLimiter> frameLimiter_;
     bool loadedFromDll;
     /// (Some) OpenGL can be disabled for testing
     bool isOglEnabled_;

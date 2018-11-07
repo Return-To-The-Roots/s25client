@@ -21,10 +21,9 @@
 
 #include "Desktop.h"
 #include "GameLoader.h"
-#include "helpers/Deleter.h"
 #include "network/ClientInterface.h"
 #include "liblobby/LobbyInterface.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 
 class dskGameInterface;
 
@@ -44,7 +43,7 @@ private:
 
     unsigned position;
     GameLoader loader_;
-    boost::interprocess::unique_ptr<dskGameInterface, Deleter<dskGameInterface> > gameInterface;
+    libutil::unique_ptr<dskGameInterface> gameInterface;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED

@@ -23,14 +23,13 @@
 #include "GameMessageInterface.h"
 #include "NetworkPlayer.h"
 #include "factories/GameCommandFactory.h"
-#include "helpers/Deleter.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
 #include "gameTypes/TeamTypes.h"
 #include "gameTypes/VisualSettings.h"
 #include "libutil/Singleton.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 #include <boost/shared_ptr.hpp>
 #include <queue>
 #include <vector>
@@ -300,7 +299,7 @@ private:
     /// GameCommands, die vom Client noch an den Server gesendet werden müssen
     std::vector<gc::GameCommandPtr> gameCommands_;
 
-    boost::interprocess::unique_ptr<ReplayInfo, Deleter<ReplayInfo> > replayinfo;
+    libutil::unique_ptr<ReplayInfo> replayinfo;
     bool replayMode;
 };
 

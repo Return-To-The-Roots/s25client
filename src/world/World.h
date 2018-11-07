@@ -20,7 +20,6 @@
 
 #include "Identity.h"
 #include "ReturnConst.h"
-#include "helpers/Deleter.h"
 #include "world/MapBase.h"
 #include "world/MilitarySquares.h"
 #include "gameTypes/Direction.h"
@@ -31,7 +30,7 @@
 #include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
 #include "gameData/WorldDescription.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 #include <list>
 #include <vector>
 
@@ -70,7 +69,7 @@ class World : public MapBase
 
     WorldDescription description_;
 
-    boost::interprocess::unique_ptr<noBase, Deleter<noBase> > noNodeObj;
+    libutil::unique_ptr<noBase> noNodeObj;
     void Resize(const MapExtent& newSize) override;
 
 public:

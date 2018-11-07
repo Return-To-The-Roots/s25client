@@ -43,7 +43,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "factories/AIFactory.h"
 #include "files.h"
-#include "helpers/Deleter.h"
 #include "lua/LuaInterfaceBase.h"
 #include "network/ClientInterface.h"
 #include "network/GameMessages.h"
@@ -66,10 +65,10 @@
 #include "libutil/fileFuncs.h"
 #include "libutil/strFuncs.h"
 #include "libutil/ucString.h"
+#include "libutil/unique_ptr.h"
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cerrno>
 #include <iostream>

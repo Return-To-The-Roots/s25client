@@ -49,6 +49,8 @@ SET(s25Main_SRCS
 
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} PRIVATE ${UTF8_INCLUDE_DIR})
+# Disable automatic boost linking
+target_compile_definitions(s25Main PUBLIC -DBOOST_ALL_NO_LIB)
 TARGET_LINK_LIBRARIES(s25Main PUBLIC
 	siedler2
 	lobby_c

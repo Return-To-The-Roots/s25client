@@ -18,10 +18,9 @@
 #ifndef MapInfo_h__
 #define MapInfo_h__
 
-#include "helpers/Deleter.h"
 #include "gameTypes/CompressedData.h"
 #include "gameTypes/MapType.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "libutil/unique_ptr.h"
 #include <string>
 
 class Savegame;
@@ -48,7 +47,7 @@ public:
     /// Checksum of map data
     unsigned mapChecksum, luaChecksum;
     /// Savegame (set if type == MAP_SAVEGAME)
-    boost::interprocess::unique_ptr<Savegame, Deleter<Savegame> > savegame;
+    libutil::unique_ptr<Savegame> savegame;
 };
 
 #endif // MapInfo_h__

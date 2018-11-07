@@ -18,14 +18,13 @@
 #define TERRAIN_RENDERER_H_
 
 #include "Point.h"
-#include "helpers/Deleter.h"
 #include "ogl/VBO.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
+#include "libutil/unique_ptr.h"
 #include <boost/array.hpp>
 #include <boost/container/vector.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <vector>
@@ -152,7 +151,7 @@ private:
 
     std::vector<Borders> borders;
 
-    typedef boost::interprocess::unique_ptr<glArchivItem_Bitmap, Deleter<glArchivItem_Bitmap> > BmpPtr;
+    typedef libutil::unique_ptr<glArchivItem_Bitmap> BmpPtr;
     boost::container::vector<TerrainTexture> terrainTextures;
     boost::container::vector<BmpPtr> edgeTextures;
     /// Flat 2D array: [Landscape][RoadType]
