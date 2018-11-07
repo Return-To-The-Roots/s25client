@@ -70,7 +70,7 @@
 #include "figures/nofWellguy.h"
 #include "figures/nofWoodcutter.h"
 #include "helpers/containerUtils.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noCharburnerPile.h"

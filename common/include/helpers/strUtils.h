@@ -15,11 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef converters_h__
-#define converters_h__
+#ifndef str_utils_h__
+#define str_utils_h__
 
 #include <boost/lexical_cast.hpp>
 #include <string>
+#include <vector>
 
 namespace helpers {
 
@@ -54,6 +55,14 @@ inline T fromString(const std::string& value, T defaultValue)
     return result;
 }
 
+/// Joins all values using delimiter. The last value is joined by using endDelimiter
+std::string join(const std::vector<std::string>& values, const std::string& delimiter, const std::string& endDelimiter);
+/// Joins all values using delimiter.
+inline std::string join(const std::vector<std::string>& values, const std::string& delimiter)
+{
+    return join(values, delimiter, delimiter);
+}
+
 } // namespace helpers
 
-#endif // converters_h__
+#endif // str_utils_h__

@@ -22,7 +22,7 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "languages.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"

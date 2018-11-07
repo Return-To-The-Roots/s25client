@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameCommand.h"
 #include "GameCommands.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 
 #include <stdexcept>
 

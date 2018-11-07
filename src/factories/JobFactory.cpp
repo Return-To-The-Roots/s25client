@@ -57,7 +57,7 @@
 #include "figures/nofStonemason.h"
 #include "figures/nofWellguy.h"
 #include "figures/nofWoodcutter.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "nodeObjs/noFlag.h"
 #include <stdexcept>
 

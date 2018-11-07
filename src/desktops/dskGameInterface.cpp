@@ -38,7 +38,7 @@
 #include "controls/ctrlText.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "ingameWindows/iwAction.h"
 #include "ingameWindows/iwBaseWarehouse.h"
 #include "ingameWindows/iwBuilding.h"
@@ -52,6 +52,7 @@
 #include "ingameWindows/iwMapDebug.h"
 #include "ingameWindows/iwMilitaryBuilding.h"
 #include "ingameWindows/iwMinimap.h"
+#include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ingameWindows/iwOptionsWindow.h"
 #include "ingameWindows/iwPostWindow.h"
@@ -1275,41 +1276,26 @@ void dskGameInterface::PostMessageDeleted(const unsigned msgCt)
  */
 void dskGameInterface::GI_Winner(const unsigned playerId)
 {
-    char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' is the winner!"), worldViewer.GetWorld().GetPlayer(playerId).name.c_str());
+    const std::string text = (boost::format(_("Player '%s' is the winner!")) % worldViewer.GetWorld().GetPlayer(playerId).name).str();
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
+    const std::string title = worldViewer.GetPlayerId() == playerId ? _("Victory!") : _("Defeat!");
+    WINDOWMANAGER.Show(new iwMsgbox(title, text, NULL, MSB_OK, MSB_EXCLAMATIONGREEN));
 }
 /**
  *  Ein Team hat das Spiel gewonnen.
  */
-void dskGameInterface::GI_TeamWinner(const unsigned playerId)
+void dskGameInterface::GI_TeamWinner(const unsigned playerMask)
 {
-    unsigned winnercount = 0;
-    char winners[5];
+    std::vector<std::string> winners;
     const GameWorldBase& world = worldViewer.GetWorld();
-    for(unsigned i = 0; i < world.GetNumPlayers() && winnercount < 5; i++)
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
     {
-        winners[winnercount] = i;
-        winnercount += playerId & (1 << i) ? 1 : 0;
+        if(playerMask & (1 << i))
+            winners.push_back(world.GetPlayer(i).name);
     }
-    char text[256];
-    switch(winnercount)
-    {
-        case 2:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' are the winners!"), world.GetPlayer(winners[0]).name.c_str(),
-                     world.GetPlayer(winners[1]).name.c_str());
-            break;
-        case 3:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' are the winners!"),
-                     world.GetPlayer(winners[0]).name.c_str(), world.GetPlayer(winners[1]).name.c_str(),
-                     world.GetPlayer(winners[2]).name.c_str());
-            break;
-        case 4:
-            snprintf(text, sizeof(text), _("Team victory! '%s' and '%s' and '%s' and '%s' are the winners!"),
-                     world.GetPlayer(winners[0]).name.c_str(), world.GetPlayer(winners[1]).name.c_str(),
-                     world.GetPlayer(winners[2]).name.c_str(), world.GetPlayer(winners[3]).name.c_str());
-            break;
-        default: snprintf(text, sizeof(text), "%s", _("Team victory!")); break;
-    }
+    const std::string winnerText = (boost::format(_("%1% are the winners!")) % helpers::join(winners, ", ", _(" and "))).str();
+    std::string text = (boost::format(_("%1% %2%")) % _("Team victory!") % winnerText).str();
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
+    const std::string title = (playerMask & (1 << worldViewer.GetPlayerId())) ? _("Team victory!") : _("Defeat!");
+    WINDOWMANAGER.Show(new iwMsgbox(title, winnerText, NULL, MSB_OK, MSB_EXCLAMATIONGREEN));
 }

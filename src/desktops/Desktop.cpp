@@ -22,7 +22,7 @@
 #include "controls/ctrlText.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include <limits>

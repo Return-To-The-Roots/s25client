@@ -28,7 +28,7 @@
 #include "desktops/dskGameLoader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"

@@ -18,7 +18,7 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "TerrainDesc.h"
 #include "WorldDescription.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "lua/CheckedLuaTable.h"
 #include "lua/LuaHelpers.h"
 

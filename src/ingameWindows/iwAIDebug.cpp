@@ -23,7 +23,7 @@
 #include "ai/aijh/Jobs.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
