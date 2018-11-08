@@ -104,7 +104,7 @@ void ctrlButton::Draw_()
 
     if(tc != TC_INVISIBLE)
     {
-        unsigned color = isEnabled ? COLOR_WHITE : 0xFF666666;
+        unsigned color = isEnabled ? COLOR_WHITE : 0xFFBBBBBB;
         bool isCurIlluminated = isIlluminated || (!isEnabled && isChecked);
         bool isElevated = !isChecked && state != BUTTON_PRESSED;
         bool isHighlighted = isEnabled && !isChecked && state == BUTTON_HOVER;
