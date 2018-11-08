@@ -37,6 +37,7 @@ public:
 
     void executeLua(const std::string& luaCode) { luaBase_->LoadScriptString(luaCode, true); }
     void executeLua(const boost::format& luaCode) { executeLua(luaCode.str()); }
+    kaguya::State& getLuaState() { return luaBase_->GetState(); }
 
     boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)
     {

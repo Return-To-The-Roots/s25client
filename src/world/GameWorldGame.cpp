@@ -464,10 +464,6 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
             sizeChanges[newOwner - 1]++;
         if(oldOwner != 0)
             sizeChanges[oldOwner - 1]--;
-
-        // Event for map scripting
-        if(newOwner != 0 && HasLua())
-            GetLua().EventOccupied(newOwner - 1, curMapPt);
     }
 
     std::set<MapPoint, MapPointComp> ptsHandled;
@@ -545,7 +541,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
             const uint8_t newOwner = GetNode(pt).owner;
             // Event for map scripting
             if(newOwner != 0)
-                GetLua().EventOccupied(newOwner - 1, MakeMapPoint(pt + region.startPt));
+                GetLua().EventOccupied(newOwner - 1, pt);
         }
     }
 }
