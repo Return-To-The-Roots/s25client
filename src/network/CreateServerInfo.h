@@ -24,12 +24,16 @@
 /// Data struct for game creation
 struct CreateServerInfo
 {
-    ServerType type;
-    unsigned short port;
-    std::string gamename;
-    std::string password;
-    bool ipv6; // IPv6 or IPv4
-    bool use_upnp;
+    const ServerType type;
+    const uint16_t port;
+    const std::string gameName;
+    const std::string password;
+    const bool ipv6; // IPv6 or IPv4
+    const bool use_upnp;
+    CreateServerInfo(ServerType type, uint16_t port, const std::string& gameName, const std::string& password = "", bool ipv6 = false,
+                     bool useUpnp = false)
+        : type(type), port(port), gameName(gameName), password(password), ipv6(ipv6), use_upnp(useUpnp)
+    {}
 };
 
 #endif // CreateServerInfo_h__

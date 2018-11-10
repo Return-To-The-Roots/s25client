@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "QuickStartGame.h"
+#include "Settings.h"
 #include "WindowManager.h"
 #include "desktops/dskGameLoader.h"
 #include "desktops/dskSelectMap.h"
@@ -40,12 +41,7 @@ public:
 
 bool QuickStartGame(const std::string& filePath, bool singlePlayer)
 {
-    CreateServerInfo csi;
-    csi.gamename = _("Unlimited Play");
-    csi.port = 3665;
-    csi.type = singlePlayer ? ServerType::LOCAL : ServerType::DIRECT;
-    csi.ipv6 = false;
-    csi.use_upnp = false;
+    CreateServerInfo csi(singlePlayer ? ServerType::LOCAL : ServerType::DIRECT, SETTINGS.server.localPort, _("Unlimited Play"));
 
     std::cout << "Loading game!" << std::endl;
     std::string extension = bfs::path(filePath).extension().string();

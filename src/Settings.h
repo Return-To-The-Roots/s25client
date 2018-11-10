@@ -92,7 +92,8 @@ public:
     struct
     {
         std::string last_ip; /// last entered ip or hostname
-        bool ipv6;           /// listen/connect on ipv6 as default or not
+        uint16_t localPort;
+        bool ipv6; /// listen/connect on ipv6 as default or not
     } server;
 
     ProxySettings proxy;
