@@ -51,7 +51,7 @@ ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} PRIVATE ${UTF8_INCLUDE_DIR})
 # Disable automatic boost linking
 target_compile_definitions(s25Main PUBLIC -DBOOST_ALL_NO_LIB)
-TARGET_LINK_LIBRARIES(s25Main PUBLIC
+target_link_libraries(s25Main PUBLIC
 	siedler2
 	lobby_c
 	s25util
@@ -64,6 +64,12 @@ TARGET_LINK_LIBRARIES(s25Main PUBLIC
 	${Boost_LIBRARIES}
 )
 
+# For clock_gettime etc. this is required on some platforms/compilers
+find_library(LIBRT rt)
+if(LIBRT)
+  target_link_libraries(s25Main PUBLIC ${LIBRT})
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	TARGET_LINK_LIBRARIES(s25Main PUBLIC ${CMAKE_DL_LIBS}) # For dynamic driver loading (DriverWrapper)
+	target_link_libraries(s25Main PUBLIC ${CMAKE_DL_LIBS}) # For dynamic driver loading (DriverWrapper)
 endif()
