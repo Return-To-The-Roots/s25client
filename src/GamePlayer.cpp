@@ -473,7 +473,7 @@ void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
             }
         }
     }
-    if(BuildingProperties::IsWareHouse(bldType))
+    if(BuildingProperties::IsWareHouse(bldType) || BuildingProperties::IsMilitary(bldType))
         TestDefeat();
 }
 
