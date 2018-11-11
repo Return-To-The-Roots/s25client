@@ -50,6 +50,10 @@ BOOST_AUTO_TEST_CASE(Rectmove)
     rect.move(-Position(5, 7));
     BOOST_REQUIRE_EQUAL(rect.getOrigin(), rectOrig.getOrigin());
     BOOST_REQUIRE_EQUAL(rect.getSize(), rectOrig.getSize());
+    Position newOrig(4, 9);
+    rect.setOrigin(newOrig);
+    BOOST_REQUIRE_EQUAL(rect.getOrigin(), newOrig);
+    BOOST_REQUIRE_EQUAL(rect.getSize(), rectOrig.getSize());
 }
 
 BOOST_AUTO_TEST_CASE(PointInRect)

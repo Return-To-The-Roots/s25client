@@ -52,7 +52,6 @@
 #include "ingameWindows/iwMapDebug.h"
 #include "ingameWindows/iwMilitaryBuilding.h"
 #include "ingameWindows/iwMinimap.h"
-#include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ingameWindows/iwOptionsWindow.h"
 #include "ingameWindows/iwPostWindow.h"
@@ -62,6 +61,7 @@
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTrade.h"
+#include "ingameWindows/iwVictory.h"
 #include "lua/GameDataLoader.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
@@ -1276,11 +1276,12 @@ void dskGameInterface::PostMessageDeleted(const unsigned msgCt)
  */
 void dskGameInterface::GI_Winner(const unsigned playerId)
 {
-    const std::string text = (boost::format(_("Player '%s' is the winner!")) % worldViewer.GetWorld().GetPlayer(playerId).name).str();
+    const std::string name = worldViewer.GetWorld().GetPlayer(playerId).name;
+    const std::string text = (boost::format(_("Player '%s' is the winner!")) % name).str();
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
-    const std::string title = worldViewer.GetPlayerId() == playerId ? _("Victory!") : _("Defeat!");
-    WINDOWMANAGER.Show(new iwMsgbox(title, text, NULL, MSB_OK, MSB_EXCLAMATIONGREEN));
+    WINDOWMANAGER.Show(new iwVictory(std::vector<std::string>(1, name)));
 }
+
 /**
  *  Ein Team hat das Spiel gewonnen.
  */
@@ -1293,9 +1294,7 @@ void dskGameInterface::GI_TeamWinner(const unsigned playerMask)
         if(playerMask & (1 << i))
             winners.push_back(world.GetPlayer(i).name);
     }
-    const std::string winnerText = (boost::format(_("%1% are the winners!")) % helpers::join(winners, ", ", _(" and "))).str();
-    std::string text = (boost::format(_("%1% %2%")) % _("Team victory!") % winnerText).str();
+    const std::string text = (boost::format(_("%1% are the winners!")) % helpers::join(winners, ", ", _(" and "))).str();
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
-    const std::string title = (playerMask & (1 << worldViewer.GetPlayerId())) ? _("Team victory!") : _("Defeat!");
-    WINDOWMANAGER.Show(new iwMsgbox(title, winnerText, NULL, MSB_OK, MSB_EXCLAMATIONGREEN));
+    WINDOWMANAGER.Show(new iwVictory(winners));
 }
