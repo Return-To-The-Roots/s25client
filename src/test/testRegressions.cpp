@@ -22,9 +22,11 @@
 #include "RTTR_AssertError.h"
 #include "TerrainRenderer.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofFarmhand.h"
+#include "figures/nofPassiveSoldier.h"
 #include "helperFuncs.h"
 #include "ingameWindows/iwHelp.h"
 #include "nodeObjs/noEnvObject.h"
@@ -498,6 +500,30 @@ BOOST_AUTO_TEST_CASE(TR_ConvertCoords)
     // Big value
     BOOST_REQUIRE_EQUAL(tr.ConvertCoords(Position(-10 * w + w / 2, -11 * h + h / 2), &offset), MapPoint(w / 2, h / 2));
     BOOST_REQUIRE_EQUAL(offset, Position(-10 * w * TR_W, -11 * h * TR_H));
+}
+
+typedef WorldFixture<CreateEmptyWorld, 2> WorldFixtureEmpty2P;
+
+BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
+{
+    BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
+    BOOST_REQUIRE(!world.GetPlayer(1).IsDefeated());
+    // Destroy HQ -> defeated
+    world.GetPlayer(1).GetFirstWH()->Destroy();
+    BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
+    BOOST_REQUIRE(world.GetPlayer(1).IsDefeated());
+    // Destroy HQ but leave a military bld
+    MapPoint milBldPos = world.MakeMapPoint(world.GetPlayer(0).GetFirstWH()->GetPos() + Position(4, 0));
+    nobMilitary* milBld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBldPos, 0, NAT_BABYLONIANS));
+    nofPassiveSoldier* sld = new nofPassiveSoldier(milBldPos, 0, milBld, milBld, 0);
+    world.AddFigure(milBldPos, sld);
+    milBld->GotWorker(JOB_PRIVATE, sld);
+    sld->WalkToGoal();
+    world.GetPlayer(0).GetFirstWH()->Destroy();
+    BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
+    // Destroy this -> defeated
+    milBld->Destroy();
+    BOOST_REQUIRE(world.GetPlayer(0).IsDefeated());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
