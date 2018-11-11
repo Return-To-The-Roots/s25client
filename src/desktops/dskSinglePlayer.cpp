@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "Savegame.h"
+#include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "dskMainMenu.h"
@@ -33,6 +34,11 @@
 #include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
 #include <boost/filesystem.hpp>
+
+CreateServerInfo createLocalGameInfo(const std::string& name)
+{
+    return CreateServerInfo(ServerType::LOCAL, SETTINGS.server.localPort, name);
+}
 
 /** @class dskSinglePlayer
  *
@@ -95,14 +101,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 fileName.replace_extension();
 
                 // Server info
-                CreateServerInfo csi;
-
-                csi.gamename = fileName.string();
-                csi.password = "localgame";
-                csi.port = 3665;
-                csi.type = ServerType::LOCAL;
-                csi.ipv6 = false;
-                csi.use_upnp = false;
+                CreateServerInfo csi = createLocalGameInfo(fileName.string());
 
                 WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
@@ -149,26 +148,12 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
 
 void dskSinglePlayer::PrepareSinglePlayerServer()
 {
-    CreateServerInfo csi;
-    csi.gamename = _("Unlimited Play");
-    csi.password = "localgame";
-    csi.port = 3665;
-    csi.type = ServerType::LOCAL;
-    csi.ipv6 = false;
-    csi.use_upnp = false;
-
-    WINDOWMANAGER.Switch(new dskSelectMap(csi));
+    WINDOWMANAGER.Switch(new dskSelectMap(createLocalGameInfo(_("Unlimited Play"))));
 }
 
 void dskSinglePlayer::PrepareLoadGame()
 {
-    CreateServerInfo csi;
-    csi.gamename = _("Unlimited Play");
-    csi.password = "localgame";
-    csi.port = 3665;
-    csi.type = ServerType::LOCAL;
-    csi.ipv6 = false;
-    csi.use_upnp = false;
+    CreateServerInfo csi = createLocalGameInfo(_("Unlimited Play"));
 
     WINDOWMANAGER.Switch(new dskSelectMap(csi));
     WINDOWMANAGER.ShowAfterSwitch(new iwLoad(csi));

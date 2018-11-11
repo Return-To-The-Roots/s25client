@@ -157,13 +157,8 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
                 break;
             }
 
-            CreateServerInfo csi;
-            csi.gamename = edtName->GetText();
-            csi.password = edtPw->GetText();
-            csi.port = static_cast<unsigned short>(iPort);
-            csi.type = server_type;
-            csi.ipv6 = SETTINGS.server.ipv6;
-            csi.use_upnp = (SETTINGS.global.use_upnp == 1);
+            CreateServerInfo csi(server_type, static_cast<uint16_t>(iPort), edtName->GetText(), edtPw->GetText(), SETTINGS.server.ipv6,
+                                 (SETTINGS.global.use_upnp == 1));
 
             // Map auswählen
             WINDOWMANAGER.Switch(new dskSelectMap(csi));

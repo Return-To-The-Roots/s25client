@@ -128,7 +128,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path,
     Stop();
 
     // Name, Password und Kartenname kopieren
-    config.gamename = csi.gamename;
+    config.gamename = csi.gameName;
     config.hostPassword = hostPw;
     config.password = csi.password;
     config.servertype = csi.type;

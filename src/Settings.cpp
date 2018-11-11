@@ -102,6 +102,7 @@ bool Settings::LoadDefaults()
     // server
     // {
     server.last_ip.clear();
+    server.localPort = 3665;
     server.ipv6 = false;
     // }
 
@@ -233,13 +234,20 @@ bool Settings::Load()
         // server
         // {
         server.last_ip = iniServer->getValue("last_ip");
+        int port = iniServer->getValueI("port");
+        if(port <= 0 || port >= 65535)
+            port = 3665;
+        server.localPort = port;
         server.ipv6 = (iniServer->getValueI("ipv6") != 0);
         // }
 
         // proxy
         // {
         proxy.hostname = iniProxy->getValue("proxy");
-        proxy.port = iniProxy->getValueI("port");
+        port = iniProxy->getValueI("port");
+        if(port < 0 || port >= 65535)
+            port = 0;
+        proxy.port = port;
         proxy.type = ProxyType(iniProxy->getValueI("typ"));
         // }
 
@@ -364,6 +372,7 @@ void Settings::Save()
     // server
     // {
     iniServer->setValue("last_ip", server.last_ip);
+    iniServer->setValue("port", server.localPort);
     iniServer->setValue("ipv6", (server.ipv6 ? 1 : 0));
     // }
 

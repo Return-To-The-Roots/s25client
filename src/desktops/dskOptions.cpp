@@ -81,8 +81,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     name->SetText(SETTINGS.lobby.name);
 
     // "Sprache"
-    groupAllgemein->AddText(32, DrawPoint(80, 130), _("Language:"), COLOR_YELLOW, 0, NormalFont);
-    combo = groupAllgemein->AddComboBox(33, DrawPoint(280, 125), Extent(190, 20), TC_GREY, NormalFont, 100);
+    groupAllgemein->AddText(32, DrawPoint(80, 110), _("Language:"), COLOR_YELLOW, 0, NormalFont);
+    combo = groupAllgemein->AddComboBox(33, DrawPoint(280, 105), Extent(190, 20), TC_GREY, NormalFont, 100);
 
     bool selected = false;
     for(unsigned i = 0; i < LANGUAGES.size(); ++i)
@@ -100,8 +100,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         combo->SetSelection(0);
 
     // Tastaturlayout
-    groupAllgemein->AddText(34, DrawPoint(80, 180), _("Keyboard layout:"), COLOR_YELLOW, 0, NormalFont);
-    groupAllgemein->AddTextButton(35, DrawPoint(280, 175), Extent(120, 22), TC_GREY, _("Readme"), NormalFont);
+    groupAllgemein->AddText(34, DrawPoint(80, 150), _("Keyboard layout:"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddTextButton(35, DrawPoint(280, 145), Extent(120, 22), TC_GREY, _("Readme"), NormalFont);
+
+    groupAllgemein->AddText(40, DrawPoint(80, 190), _("Local Port:"), COLOR_YELLOW, 0, NormalFont);
+    ctrlEdit* edtPort = groupAllgemein->AddEdit(41, DrawPoint(280, 185), Extent(190, 22), TC_GREY, NormalFont, 15);
+    edtPort->SetNumberOnly(true);
+    edtPort->SetText(SETTINGS.server.localPort);
 
     // IPv4/6
     groupAllgemein->AddText(300, DrawPoint(80, 230), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
@@ -119,6 +124,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ctrlEdit* proxy = groupAllgemein->AddEdit(37, DrawPoint(280, 275), Extent(190, 22), TC_GREY, NormalFont);
     proxy->SetText(SETTINGS.proxy.hostname);
     proxy = groupAllgemein->AddEdit(371, DrawPoint(480, 275), Extent(50, 22), TC_GREY, NormalFont, 5);
+    proxy->SetNumberOnly(true);
     proxy->SetText(SETTINGS.proxy.port);
 
     // Proxytyp
@@ -130,7 +136,6 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // TODO: not implemented
     // combo->AddString(_("Socks v5"));
 
-    // und auswählen
     switch(SETTINGS.proxy.type)
     {
         default: combo->SetSelection(0); break;
@@ -501,6 +506,22 @@ void dskOptions::Msg_OptionGroupChange(const unsigned ctrl_id, const int selecti
     }
 }
 
+/// Check that the port is valid and sets outPort to it. Shows an error otherwise
+bool validatePort(const std::string& sPort, uint16_t& outPort)
+{
+    int32_t port;
+    if(helpers::tryFromString(sPort, port) && port > 0 && port <= 65535)
+    {
+        outPort = port;
+        return true;
+    } else
+    {
+        WINDOWMANAGER.Show(
+          new iwMsgbox(_("Error"), _("The port you entered is invalid! Must be between 1 and 65535"), NULL, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        return false;
+    }
+}
+
 void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
@@ -511,9 +532,12 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 
             // Name abspeichern
             SETTINGS.lobby.name = groupAllgemein->GetCtrl<ctrlEdit>(31)->GetText();
-            // Proxy abspeichern, überprüfung der einstellung übernimmt SETTINGS.Save()
+            if(!validatePort(groupAllgemein->GetCtrl<ctrlEdit>(41)->GetText(), SETTINGS.server.localPort))
+                return;
+
             SETTINGS.proxy.hostname = groupAllgemein->GetCtrl<ctrlEdit>(37)->GetText();
-            SETTINGS.proxy.port = boost::lexical_cast<unsigned>(groupAllgemein->GetCtrl<ctrlEdit>(371)->GetText().c_str());
+            if(!validatePort(groupAllgemein->GetCtrl<ctrlEdit>(371)->GetText(), SETTINGS.proxy.port))
+                return;
 
             SETTINGS.Save();
 

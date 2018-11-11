@@ -23,6 +23,7 @@
 #include "helpers/converters.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
+#include "libutil/StringConversion.h"
 #include <sstream>
 
 ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
@@ -52,14 +53,7 @@ void ctrlEdit::SetText(const std::string& text)
 
 void ctrlEdit::SetText(const unsigned text)
 {
-    cursorPos_ = 0;
-    viewStart_ = 0;
-
-    text_.clear();
-
-    std::string tmp = helpers::toString(text);
-    for(std::string::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
-        AddChar(*it);
+    SetText(s25util::toStringClassic(text));
 }
 
 std::string ctrlEdit::GetText() const
