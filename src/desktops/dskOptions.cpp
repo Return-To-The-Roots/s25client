@@ -510,14 +510,14 @@ void dskOptions::Msg_OptionGroupChange(const unsigned ctrl_id, const int selecti
 bool validatePort(const std::string& sPort, uint16_t& outPort)
 {
     int32_t port;
-    if(helpers::tryFromString(sPort, port) && port > 0 && port <= 65535)
+    if(helpers::tryFromString(sPort, port) && port >= 0 && port <= 65535)
     {
         outPort = port;
         return true;
     } else
     {
         WINDOWMANAGER.Show(
-          new iwMsgbox(_("Error"), _("The port you entered is invalid! Must be between 1 and 65535"), NULL, MSB_OK, MSB_EXCLAMATIONRED, 1));
+          new iwMsgbox(_("Error"), _("The port you entered is invalid! Must be between 0 and 65535"), NULL, MSB_OK, MSB_EXCLAMATIONRED, 1));
         return false;
     }
 }
