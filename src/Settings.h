@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,13 +23,18 @@
 #include "libutil/ProxySettings.h"
 #include "libutil/Singleton.h"
 #include <boost/array.hpp>
+#include <boost/optional.hpp>
 #include <map>
 #include <string>
 
 #undef interface
 
-///////////////////////////////////////////////////////////////////////////////
-// Klasse für die Konfiguration
+namespace validate {
+boost::optional<uint16_t> checkPort(const std::string& port);
+bool checkPort(int port);
+} // namespace validate
+
+/// Configuration class
 class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 {
 public:
@@ -37,8 +42,8 @@ public:
 
     Settings();
 
-    bool Load(); // Lädt Einstellungen
-    void Save(); // Speichert Einstellungen
+    bool Load();
+    void Save();
 
 protected:
     bool LoadDefaults();
@@ -121,8 +126,6 @@ private:
     static const boost::array<std::string, 11> SECTION_NAMES;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
 #define SETTINGS Settings::inst()
 
 #endif // SETTINGS_H_INCLUDED

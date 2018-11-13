@@ -22,6 +22,7 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
+#include "helpers/converters.h"
 #include "languages.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
@@ -36,6 +37,22 @@ const boost::array<std::string, 11> Settings::SECTION_NAMES = {
   {"global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "ingame", "addons"}};
 
 const boost::array<short, 13> Settings::SCREEN_REFRESH_RATES = {{-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
+
+namespace validate {
+boost::optional<uint16_t> checkPort(const std::string& port)
+{
+    int32_t iPort;
+    if((helpers::tryFromString(port, iPort) || s25util::tryFromStringClassic(port, iPort)) && checkPort(iPort))
+        return static_cast<uint16_t>(iPort);
+    else
+        return boost::none;
+}
+bool checkPort(int port)
+{
+    // Disallow port 0 as it may cause problems
+    return port > 0 && port <= 65535;
+}
+} // namespace validate
 
 Settings::Settings() //-V730
 {}
@@ -107,6 +124,7 @@ bool Settings::LoadDefaults()
     // }
 
     proxy = ProxySettings();
+    proxy.port = 1080;
 
     // interface
     // {
@@ -234,20 +252,16 @@ bool Settings::Load()
         // server
         // {
         server.last_ip = iniServer->getValue("last_ip");
-        int port = iniServer->getValueI("port");
-        if(port <= 0 || port >= 65535)
-            port = 3665;
-        server.localPort = port;
+        boost::optional<uint16_t> port = validate::checkPort(iniServer->getValue("local_port"));
+        server.localPort = port.get_value_or(3665);
         server.ipv6 = (iniServer->getValueI("ipv6") != 0);
         // }
 
         // proxy
         // {
         proxy.hostname = iniProxy->getValue("proxy");
-        port = iniProxy->getValueI("port");
-        if(port < 0 || port >= 65535)
-            port = 0;
-        proxy.port = port;
+        port = validate::checkPort(iniProxy->getValue("port"));
+        proxy.port = port.get_value_or(1080);
         proxy.type = ProxyType(iniProxy->getValueI("typ"));
         // }
 
@@ -372,7 +386,7 @@ void Settings::Save()
     // server
     // {
     iniServer->setValue("last_ip", server.last_ip);
-    iniServer->setValue("port", server.localPort);
+    iniServer->setValue("local_port", server.localPort);
     iniServer->setValue("ipv6", (server.ipv6 ? 1 : 0));
     // }
 
