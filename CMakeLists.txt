@@ -7,7 +7,7 @@ ENDIF()
 IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
 	# Simplified variable expansion. No change for usual variable references so use faster one
 	cmake_policy(SET CMP0053 NEW)
-	# Only interpret if() arguments as variables or keywords when unquoted. 
+	# Only interpret if() arguments as variables or keywords when unquoted.
 	cmake_policy(SET CMP0054 NEW)
 ENDIF()
 
@@ -70,6 +70,9 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -ggdb")
 endif()
+
+include(CheckGitSubmodules)
+check_git_submodules()
 
 ################################################################################
 # Add contrib libraries. Might need different compile flags
