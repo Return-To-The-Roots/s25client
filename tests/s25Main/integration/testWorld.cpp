@@ -26,7 +26,7 @@
 struct MapTestFixture
 {
     const boost::filesystem::path testMapPath;
-    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(s25::folders::mapsRttr) / "Bergruft.swd") {}
+    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(s25::folders::mapsOther) / "Bergruft.swd") {}
 };
 
 BOOST_FIXTURE_TEST_SUITE(MapTestSuite, MapTestFixture)
