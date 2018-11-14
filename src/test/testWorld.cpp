@@ -43,7 +43,7 @@
 struct MapTestFixture
 {
     const std::string testMapPath;
-    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(std::string(FILE_PATHS[52]) + "/Bergruft.swd")) {}
+    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(std::string(FILE_PATHS[52]) + "/TueranTuer.SWD")) {}
 };
 
 BOOST_FIXTURE_TEST_SUITE(MapTestSuite, MapTestFixture)
@@ -108,9 +108,9 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
     bnw::ifstream mapFile(fixture.testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
-    BOOST_CHECK_EQUAL(header.getWidth(), 176);
-    BOOST_CHECK_EQUAL(header.getHeight(), 80);
-    BOOST_CHECK_EQUAL(header.getNumPlayers(), 4);
+    BOOST_CHECK_EQUAL(header.getWidth(), 32);
+    BOOST_CHECK_EQUAL(header.getHeight(), 48);
+    BOOST_CHECK_EQUAL(header.getNumPlayers(), 2);
 
     MapLoader loader(world);
     BOOST_REQUIRE(loader.Load(map, EXP_FOGOFWAR));
