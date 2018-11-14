@@ -68,7 +68,7 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
 
     name->SetText(SETTINGS.lobby.name + _("'s Game"));
     name->SetFocus();
-    port->SetText(LOADER.GetTextN("client", 3));
+    port->SetText(SETTINGS.server.localPort);
 }
 
 /**
@@ -147,8 +147,8 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
                 edtPw->SetFocus(false);
                 break;
             }
-            int iPort = helpers::fromString(edtPort->GetText(), 0);
-            if(iPort <= 0 || iPort >= 65535 || iPort == 3664)
+            boost::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
+            if(*port)
             {
                 SetText(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED, false);
                 edtName->SetFocus(false);
@@ -157,7 +157,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
                 break;
             }
 
-            CreateServerInfo csi(server_type, static_cast<uint16_t>(iPort), edtName->GetText(), edtPw->GetText(), SETTINGS.server.ipv6,
+            CreateServerInfo csi(server_type, *port, edtName->GetText(), edtPw->GetText(), SETTINGS.server.ipv6,
                                  (SETTINGS.global.use_upnp == 1));
 
             // Map auswählen

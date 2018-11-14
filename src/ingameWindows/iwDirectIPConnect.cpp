@@ -70,7 +70,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
 
     host->SetFocus();
     host->SetText(SETTINGS.server.last_ip);
-    port->SetText(LOADER.GetTextN("client", 3));
+    port->SetText(SETTINGS.server.localPort);
 
     // Client unser Window geben, damit er uns benachrichtigen kann
     GAMECLIENT.SetInterface(this);
@@ -121,9 +121,8 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
             ctrlEdit* edtHost = GetCtrl<ctrlEdit>(1);
             ctrlEdit* edtPort = GetCtrl<ctrlEdit>(3);
             ctrlEdit* edtPw = GetCtrl<ctrlEdit>(5);
-
-            int iPort = s25util::fromStringClassicDef(edtPort->GetText(), 0);
-            if(iPort <= 0 || iPort >= 65535 || iPort == 3664)
+            boost::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
+            if(!port)
             {
                 SetStatus(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED);
                 edtHost->SetFocus(false);
@@ -139,8 +138,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
             SetStatus(_("Connecting with Host..."), COLOR_RED);
 
             GAMECLIENT.Stop();
-            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), server_type, static_cast<unsigned short>(iPort), false,
-                                   SETTINGS.server.ipv6))
+            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), server_type, *port, false, SETTINGS.server.ipv6))
             {
                 // Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
                 SetStatus(_("Connection failed!"), COLOR_RED);
