@@ -212,10 +212,6 @@ public:
     virtual bool Msg_WheelDown(const MouseCoords& mc) { return false; }
     virtual bool Msg_MouseMove(const MouseCoords& mc) { return false; }
     virtual bool Msg_KeyDown(const KeyEvent& ke) { return false; }
-    // Wird aufgerufen, nachdem schon ein Mausklick behandelt wurde
-    // NUR VORÜBERGEHEND für Edit-Controls, bis richtiger Steuerelement-Fokus
-    // eingebaut wurde!
-    virtual bool Msg_LeftDown_After(const MouseCoords& mc) { return false; }
     virtual void Msg_ScreenResize(const ScreenResizeEvent& sr);
 
     // Nachrichten, die von unten (Controls) nach oben (Fenster) gereicht werden

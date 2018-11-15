@@ -184,15 +184,6 @@ bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
         return false;
 }
 
-// vorläufig
-bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
-{
-    if(!IsPointInRect(mc.GetPos(), GetDrawRect()))
-        newFocus_ = false;
-
-    return false;
-}
-
 /**
  *  Taste-gedrückt Callback
  */
@@ -204,8 +195,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 
     switch(ke.kt)
     {
-        default:
-            return false;
+        default: return false;
         // Wird bereits über Char geliefert !!
         case KT_SPACE: // Leertaste
         {

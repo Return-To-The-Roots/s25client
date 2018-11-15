@@ -100,5 +100,10 @@ if(WIN32)
 ENDIF()
 
 add_subdirectory("glad")
+
 add_interface_library(kaguya)
 target_include_directories(kaguya SYSTEM INTERFACE kaguya/include)
+
+add_interface_library(turtle)
+target_include_directories(turtle SYSTEM INTERFACE turtle/include)
+target_compile_definitions(turtle INTERFACE MOCK_NO_AUTO_PTR)

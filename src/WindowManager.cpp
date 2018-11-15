@@ -400,7 +400,7 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
 
     // Ggf. Doppelklick untersuche
     unsigned time_now = VIDEODRIVER.GetTickCount();
-    if((time_now - lastLeftClickTime) * 1000 / CLOCKS_PER_SEC < DOUBLE_CLICK_INTERVAL && mc.GetPos() == lastLeftClickPos)
+    if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.GetPos() == lastLeftClickPos)
     {
         mc.dbl_click = true;
     } else
@@ -838,7 +838,7 @@ void WindowManager::DoDesktopSwitch()
         disable_mouse = false;
 
     // Dummy mouse move to init hovering etc
-    Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), false, false, false));
+    Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMousePos()));
 }
 
 struct IsWndMarkedForClose
