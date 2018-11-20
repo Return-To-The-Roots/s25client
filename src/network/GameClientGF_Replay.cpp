@@ -77,7 +77,7 @@ void GameClient::ExecuteGameFrame_Replay()
                     // and pause the game for further investigation
                     framesinfo.isPaused = true;
                     if(skiptogf)
-                        skiptogf = curGF;
+                        skiptogf = 0;
                 }
 
                 replayinfo->async++;

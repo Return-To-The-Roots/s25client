@@ -1285,7 +1285,8 @@ void GameClient::ExecuteGameFrame()
             }
             Stop();
         }
-
+        if(skiptogf == GetGFNumber())
+            skiptogf = 0;
     } else
     {
         // Next GF not yet reached, just update the time in the current one for drawing

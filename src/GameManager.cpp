@@ -112,44 +112,43 @@ bool GameManager::Run()
 
     LOBBYCLIENT.Run();
 
+    // Get this before the run so we know if we are currently skipping
+    const unsigned targetSkipGF = GAMECLIENT.skiptogf;
     GAMECLIENT.Run();
     GAMESERVER.Run();
 
-    unsigned current_time = VIDEODRIVER.GetTickCount();
-    const unsigned targetSkipGF = GAMECLIENT.skiptogf;
-    const unsigned curGF = targetSkipGF ? GAMECLIENT.GetGFNumber() : 0;
-    const bool skipping = targetSkipGF && targetSkipGF > curGF;
-
-    // if we skip drawing write a comment every 5k gf
-    if(skipping && curGF % 5000 == 0)
+    if(targetSkipGF)
     {
-        if(curGF > skipgf_last_report_gf)
+        // if we skip drawing write a comment every 5k gf
+        unsigned current_time = VIDEODRIVER.GetTickCount();
+        const unsigned curGF = GAMECLIENT.GetGFNumber();
+        if(targetSkipGF > curGF)
         {
-            // Elapsed time in ms
-            double timeDiff = static_cast<double>(current_time - skipgf_last_time);
-            LOG.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % curGF
-              % (timeDiff / 1000) % (timeDiff / (curGF - skipgf_last_time));
+            if(curGF % 5000 == 0)
+            {
+                if(curGF > skipgf_last_report_gf)
+                {
+                    // Elapsed time in ms
+                    double timeDiff = static_cast<double>(current_time - skipgf_last_time);
+                    LOG.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF
+                      % curGF % (timeDiff / 1000) % (timeDiff / (curGF - skipgf_last_time));
+                } else
+                    LOG.write(_("jumping to gf %i, now at gf %i \n")) % targetSkipGF % curGF;
+                skipgf_last_time = current_time;
+                skipgf_last_report_gf = curGF;
+            }
         } else
-            LOG.write(_("jumping to gf %i, now at gf %i \n")) % targetSkipGF % curGF;
-        skipgf_last_time = current_time;
-        skipgf_last_report_gf = curGF;
-    }
-    // jump complete!
-    if(targetSkipGF && targetSkipGF == curGF)
-    {
-        if(curGF > skipgf_last_report_gf)
         {
+            // Jump just completed
+            RTTR_Assert(!GAMECLIENT.skiptogf);
             double timeDiff = static_cast<double>(current_time - skipgf_last_time);
             unsigned numGFPassed = curGF - skipgf_last_report_gf;
             LOG.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % numGFPassed
               % (timeDiff / 1000) % (timeDiff / numGFPassed);
+            skipgf_last_time = 0;
+            skipgf_last_report_gf = 0;
         }
-        skipgf_last_time = 0;
-        skipgf_last_report_gf = 0;
-    }
-
-    // only draw if we dont skip ahead right now
-    if(!skipping)
+    } else
     {
         VIDEODRIVER.ClearScreen();
         WINDOWMANAGER.Draw();
