@@ -63,7 +63,7 @@ void iwMinimap::Resize(const Extent& newSize)
     IngameWindow::Resize(newSize);
     ctrlIngameMinimap* im = GetCtrl<ctrlIngameMinimap>(0);
 
-    im->Resize(newSize);
+    im->Resize(newSize - contentOffset - contentOffsetEnd);
 
     // Control kürzen in der Höhe
     im->RemoveBoundingBox(Extent(BUTTON_SIZE.x * 4 + WINDOW_MAP_SPACE * 2, 0));
