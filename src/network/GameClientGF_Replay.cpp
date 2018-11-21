@@ -77,7 +77,7 @@ void GameClient::ExecuteGameFrame_Replay()
                     // and pause the game for further investigation
                     framesinfo.isPaused = true;
                     if(skiptogf)
-                        skiptogf = curGF;
+                        skiptogf = 0;
                 }
 
                 replayinfo->async++;
@@ -100,9 +100,10 @@ void GameClient::ExecuteGameFrame_Replay()
             boost::chrono::hours hours = duration_cast<boost::chrono::hours>(runtime);
             boost::chrono::minutes mins = duration_cast<boost::chrono::minutes>(runtime - hours);
             boost::chrono::seconds secs = duration_cast<boost::chrono::seconds>(runtime - hours - mins);
-            const std::string text = (boost::format(_("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"))
-                                      % curGF % hours % mins % secs % GAMEMANAGER.GetNumFrames() % GAMEMANAGER.GetAverageGFPS())
-                                       .str();
+            const std::string text =
+              (boost::format(_("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)")) % curGF % hours.count()
+               % mins.count() % secs.count() % GAMEMANAGER.GetNumFrames() % GAMEMANAGER.GetAverageGFPS())
+                .str();
 
             ci->CI_ReplayEndReached(text);
         }

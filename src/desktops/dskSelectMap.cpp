@@ -33,7 +33,7 @@
 #include "desktops/dskSinglePlayer.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"

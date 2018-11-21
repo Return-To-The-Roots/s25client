@@ -28,7 +28,7 @@
 #include "controls/ctrlTable.h"
 #include "desktops/dskLobby.h"
 #include "files.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "iwPleaseWait.h"
 #include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"

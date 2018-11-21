@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"

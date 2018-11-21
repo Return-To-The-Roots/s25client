@@ -20,7 +20,7 @@
 #include "CollisionDetection.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "libutil/StringConversion.h"

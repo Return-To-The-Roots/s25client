@@ -25,7 +25,7 @@
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTextDeepening.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"

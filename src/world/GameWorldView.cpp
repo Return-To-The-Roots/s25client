@@ -30,7 +30,7 @@
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"

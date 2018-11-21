@@ -21,7 +21,7 @@
 /// Statistic categories
 enum StatisticType
 {
-    NUM_STATSRY = 0,
+    STAT_COUNTRY = 0,
     STAT_BUILDINGS,
     STAT_INHABITANTS,
     STAT_MERCHANDISE,

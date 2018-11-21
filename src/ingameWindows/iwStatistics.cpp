@@ -166,7 +166,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
 
     // Standardansicht: 15min / Landesgröße
     statChanger->SetSelection(11);
-    currentView = NUM_STATSRY;
+    currentView = STAT_COUNTRY;
     timeChanger->SetSelection(21);
     currentTime = STAT_15M;
 
@@ -208,7 +208,7 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const int selec
             switch(selection)
             {
                 case 11:
-                    currentView = NUM_STATSRY;
+                    currentView = STAT_COUNTRY;
                     headline->SetText(_("Size of country"));
                     break;
                 case 12:

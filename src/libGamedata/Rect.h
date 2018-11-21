@@ -31,6 +31,7 @@ struct Rect
     Rect(const Position& lt, const Extent& size);
     Position getOrigin() const { return Position(left, top); }
     Position getEndPt() const { return Position(right, bottom); }
+    void setOrigin(const Position& pos);
     Extent getSize() const;
     void setSize(const Extent& newSize);
     void move(const Position& offset);
@@ -48,6 +49,11 @@ inline Rect::Rect(const Position& lt, unsigned width, unsigned height) : left(lt
 inline Rect::Rect(const Position& lt, const Extent& size) : left(lt.x), top(lt.y)
 {
     setSize(Extent(size));
+}
+
+inline void Rect::setOrigin(const Position& pos)
+{
+    move(pos - getOrigin());
 }
 
 inline Extent Rect::getSize() const

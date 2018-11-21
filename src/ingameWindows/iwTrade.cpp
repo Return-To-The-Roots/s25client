@@ -26,7 +26,7 @@
 #include "controls/ctrlImage.h"
 #include "controls/ctrlText.h"
 #include "factories/GameCommandFactory.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/JobConsts.h"

@@ -23,7 +23,7 @@
 #include "ai/AIPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "lua/LuaHelpers.h"
 #include "lua/LuaInterfaceBase.h"
 #include "notifications/BuildingNote.h"

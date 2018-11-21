@@ -25,7 +25,7 @@
 #include "figures/nofBuilder.h"
 #include "figures/nofPlaner.h"
 #include "helpers/containerUtils.h"
-#include "helpers/converters.h"
+#include "helpers/strUtils.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
