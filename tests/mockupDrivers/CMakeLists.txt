@@ -5,7 +5,7 @@ correct_lib(SDL_LIBRARY SDL)
 
 add_library(videoMockup STATIC MockupVideoDriver.h MockupVideoDriver.cpp)
 target_link_libraries(videoMockup PUBLIC videodrv s25util ${SDL_LIBRARY})
-target_include_directories(videoMockup PUBLIC ${PROJECT_SOURCE_DIR}/src INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_include_directories(videoMockup INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_include_directories(videoMockup SYSTEM PUBLIC ${SDL_INCLUDE_DIR})
 
 add_library(audioMockup STATIC MockupAudioDriver.h MockupAudioDriver.cpp)

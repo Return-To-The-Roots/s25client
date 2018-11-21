@@ -17,10 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 
+#include "WorldWithGCExecution.h"
 #include "addons/Addon.h"
 #include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
-#include "test/WorldWithGCExecution.h"
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
 

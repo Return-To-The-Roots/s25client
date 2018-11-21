@@ -1,26 +1,34 @@
 # Add Icon to Application
 if(WIN32)
+    set(rcDir ${PROJECT_SOURCE_DIR}/data/win32)
     if(CMAKE_HOST_WIN32)
-        SET(s25client_RC "${CMAKE_SOURCE_DIR}/win32/s25client.rc")
+        set(s25client_RC ${rcDir}/s25client.rc)
+        include_directories(${rcDir})
     else()
-        ADD_DEFINITIONS("-DAFX_TARG_DEU")
+        add_definitions(-DAFX_TARG_DEU)
+        set(s25client_RC ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
+        ADD_CUSTOM_COMMAND(OUTPUT ${s25client_RC}
+                           COMMAND ${CMAKE_RC_COMPILER} -I${rcDir}/ -i${rcDir}/s25client.rc -o ${s25client_RC})
 
-        ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o
-                           COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_SOURCE_DIR}/win32/ -i${CMAKE_SOURCE_DIR}/win32/s25client.rc -o ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
-
-        SET(s25client_RC ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
     endif()
 ELSE()
-	SET(s25client_RC "")
+	set(s25client_RC )
 ENDIF()
 
 ADD_EXECUTABLE(s25client s25client.cpp ${s25client_RC})
-TARGET_LINK_LIBRARIES(s25client s25Main)
+target_link_libraries(s25client PRIVATE s25Main)
 
 if(APPLE)
-	TARGET_LINK_LIBRARIES(s25client ${SDL_LIBRARY} SDLmain)
+    set(SDL_BUILDING_LIBRARY OFF)
+    find_package(SDL REQUIRED)
+    include(CMakeMacroCorrectLib)
+	CORRECT_LIB(SDL_LIBRARY SDL)
+
+	# Add the SDL-include flags to an apple build
+	target_include_directories(s25client SYSTEM PRIVATE ${SDL_INCLUDE_DIR})
+	target_link_libraries(s25client PRIVATE ${SDL_LIBRARY} SDLmain)
 elseif(WIN32)
-	TARGET_LINK_LIBRARIES(s25client ole32 ws2_32 shlwapi imagehlp)
+	target_link_libraries(s25client PRIVATE ole32 ws2_32 shlwapi imagehlp)
     if(MSVC)
         set_target_properties(s25client PROPERTIES LINK_FLAGS /MANIFEST:NO)
     endif()
@@ -28,9 +36,9 @@ elseif(WIN32)
         set_target_properties(s25client PROPERTIES LINK_FLAGS -Wl,--stack,8388608)
     endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	TARGET_LINK_LIBRARIES(s25client pthread)
+	target_link_libraries(s25client PRIVATE pthread)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
-	TARGET_LINK_LIBRARIES(s25client execinfo)
+	target_link_libraries(s25client PRIVATE execinfo)
 ENDif()
 
 if(MSVC)

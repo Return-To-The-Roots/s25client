@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
 #include "PointOutput.h"
+#include "WorldWithGCExecution.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
 #include "figures/noFigure.h"
 #include "nodeObjs/noFlag.h"
-#include "test/WorldWithGCExecution.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(FigureTests)

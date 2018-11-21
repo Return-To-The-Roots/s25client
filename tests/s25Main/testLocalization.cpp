@@ -19,10 +19,10 @@
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "files.h"
+#include "helperFuncs.h"
 #include "helpers/containerUtils.h"
 #include "languages.h"
 #include "mygettext/mygettext.h"
-#include "test/helperFuncs.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libutil/StringConversion.h"
 #include <boost/assign/std/vector.hpp>
@@ -35,6 +35,7 @@ struct LocaleFixture : private LogAccessor
     LocaleFixture()
     {
         LogAccessor logAcc;
+        LANGUAGES.setLanguage("en");
         LOADER.LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", NULL, true);
         RTTR_REQUIRE_LOG_CONTAINS("Loading", true);
     }

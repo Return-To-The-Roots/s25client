@@ -17,10 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "CreateEmptyWorld.h"
+#include "initTestHelpers.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "gameData/TerrainDesc.h"
-#include "test/initTestHelpers.h"
 #include <stdexcept>
 
 CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size) : size_(size) {}

@@ -18,12 +18,14 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
 #include "PointOutput.h"
+#include "WorldWithGCExecution.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
+#include "initTestHelpers.h"
 #include "postSystem/PostBox.h"
 #include "nodeObjs/noBase.h"
 #include "nodeObjs/noEnvObject.h"
@@ -32,8 +34,6 @@
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
-#include "test/WorldWithGCExecution.h"
-#include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>

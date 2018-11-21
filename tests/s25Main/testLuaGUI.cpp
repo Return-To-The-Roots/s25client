@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "CollisionDetection.h"
+#include "GameWithLuaAccess.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
@@ -26,7 +27,6 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
-#include "test/GameWithLuaAccess.h"
 #include <boost/assign/std/vector.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(LuaGUITestSuite, LuaTestsFixture)

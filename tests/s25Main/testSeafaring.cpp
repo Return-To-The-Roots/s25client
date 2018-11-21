@@ -23,11 +23,11 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobShipYard.h"
 #include "factories/BuildingFactory.h"
+#include "initTestHelpers.h"
 #include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/ShipPostMsg.h"
 #include "nodeObjs/noShip.h"
-#include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>

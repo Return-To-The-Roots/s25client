@@ -16,10 +16,10 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "initTestHelpers.h"
 #include "random/DefaultLCG.h"
 #include "random/Random.h"
 #include "random/XorShift.h"
-#include "test/initTestHelpers.h"
 #include "libutil/Serializer.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>

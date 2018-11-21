@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
 #include "PointOutput.h"
+#include "SeaWorldWithGCExecution.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
@@ -26,6 +27,7 @@
 #include "figures/nofAttacker.h"
 #include "figures/nofPassiveSoldier.h"
 #include "helpers/containerUtils.h"
+#include "initTestHelpers.h"
 #include "pathfinding/FindPathForRoad.h"
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
@@ -34,8 +36,6 @@
 #include "nodeObjs/noShip.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainDesc.h"
-#include "test/SeaWorldWithGCExecution.h"
-#include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>

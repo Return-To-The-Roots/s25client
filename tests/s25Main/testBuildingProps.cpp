@@ -16,13 +16,13 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "CreateEmptyWorld.h"
+#include "WorldFixture.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
 #include "gameData/BuildingProperties.h"
-#include "test/CreateEmptyWorld.h"
-#include "test/WorldFixture.h"
 #include <boost/test/unit_test.hpp>
 
 namespace {

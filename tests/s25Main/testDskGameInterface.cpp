@@ -16,18 +16,18 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "CreateEmptyWorld.h"
 #include "GameManager.h"
 #include "GamePlayer.h"
 #include "PointOutput.h"
 #include "WindowManager.h"
+#include "WorldFixture.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "desktops/dskGameInterface.h"
 #include "driver/KeyEvent.h"
 #include "driver/MouseCoords.h"
 #include "initTestHelpers.h"
 #include "mockupDrivers/MockupVideoDriver.h"
-#include "test/CreateEmptyWorld.h"
-#include "test/WorldFixture.h"
 #include <boost/test/unit_test.hpp>
 
 // Test stuff related to building/building quality

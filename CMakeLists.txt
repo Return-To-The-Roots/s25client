@@ -29,7 +29,7 @@ IF (DEFINED CMAKE_TOOLCHAIN_FILE)
 	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 ENDIF()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/libutil/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake/Modules")
 
 # Just include required
 INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
@@ -212,18 +212,12 @@ endif()
 ################################################################################
 
 IF (NOT WIN32)
-  include(ConfigureExecutable)
-	configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake" . start.sh)
+    include(ConfigureExecutable)
+    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake" . start.sh)
 ENDIF()
 
 file(COPY "bugle" DESTINATION ".")
 file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
-
-enable_testing()
-
-################################################################################
-# Include projects
-################################################################################
 
 # Building the updater when using non-default paths (especially absolute paths)
 # is not recommended as it most likely won't work
@@ -265,12 +259,50 @@ ELSE()
 	ENDIF()
 ENDIF()
 
-# External dependencies
-add_subdirectory(contrib)
+################################################################################
+# Boost
+################################################################################
+
+include(RttrBoostCfg)
+
+IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/boost AND IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/boost)
+	SET(BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/boost CACHE PATH "Path to find boost at")
+ENDIF()
+
+FIND_PACKAGE(Boost 1.55.0 QUIET)
+IF(NOT Boost_FOUND)
+	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set (as CMake or environment variable) "
+	"BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
+	"BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
+	"since cmake was unable to find boost!")
+ELSEIF(BOOST_LIBRARYDIR STREQUAL "")
+	list(APPEND CMAKE_PREFIX_PATH ${Boost_INCLUDE_DIR}/stage)
+	set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+ENDIF()
+
+include(EnableBoostBackport)
 enable_boost_backport()
-# Add dlls from contrib folder
+
+add_subdirectory(external)
+add_subdirectory(libs)
+add_subdirectory(extras)
+
+enable_testing()
+add_subdirectory(tests)
+
+find_package(Gettext REQUIRED)
+FILE(GLOB RTTR_PO_FILES data/RTTR/languages/*.po)
+GETTEXT_CREATE_TRANSLATIONS(data/RTTR/languages/rttr.pot ALL
+							${RTTR_PO_FILES}
+						   )
+# Copy the RTTR folder with the updated translations to the directory of the client.
+configure_file(copyDepsToBuildDir.cmake . @ONLY)
+add_custom_command(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIGURATION> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)
+
+
+# Add dlls from external folder
 if(MSVC)
-	if(NOT EXISTS "${CONTRIB_DLL_DIR}/libcurl.dll")
+	if(NOT EXISTS ${CONTRIB_DLL_DIR}/libcurl.dll)
 		MESSAGE(WARNING "Folder with DLLs not found in ${CONTRIB_DLL_DIR}. You may not be able to execute directly from VS")
 	else()
 		FILE(GLOB CONTRIB_DLLS ${CONTRIB_DLL_DIR}/*.dll)
@@ -279,31 +311,9 @@ if(MSVC)
 	ENDIF()
 endif()
 
-ADD_SUBDIRECTORY(libutil)
-ADD_SUBDIRECTORY(libendian)
-ADD_SUBDIRECTORY(mygettext)
-ADD_SUBDIRECTORY(libsiedler2)
-# Build lobby client
-SET(RTTR_BUILD_LOBBY_CLIENT TRUE)
-ADD_SUBDIRECTORY(liblobby)
-ADD_SUBDIRECTORY(s-c)
-if(RTTR_BUILD_UPDATER)
-	ADD_SUBDIRECTORY(s25update)
-endif()
-
-add_subdirectory(common)
-ADD_SUBDIRECTORY(driver)
-ADD_SUBDIRECTORY(rttrConfig)
-ADD_SUBDIRECTORY(src)
-
-option(RTTR_BUILD_EDITOR "Build editor." ON)
-if(RTTR_BUILD_EDITOR)
-	add_subdirectory(s25edit)
-endif()
-
 if(ClangFormat_FOUND)
-	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
-	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src true)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs true)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extra true)
 	add_ClangFormat_target("file")
 endif()
 
@@ -343,8 +353,8 @@ install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
 
 IF(NOT CMAKE_HOST_WIN32 AND PLATFORM_ARCH)
     include(ConfigureExecutable)
-    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake" . prepareRelease.sh)
-    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh.cmake" . create_release.sh)
+    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/tools/release/prepareRelease.sh.cmake" . prepareRelease.sh)
+    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/tools/release/create_release.sh.cmake" . create_release.sh)
 
 	# Create nightly release
 	ADD_CUSTOM_TARGET(create_nightly

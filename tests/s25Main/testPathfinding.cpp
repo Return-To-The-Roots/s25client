@@ -19,11 +19,11 @@
 #include "CreateEmptyWorld.h"
 #include "PointOutput.h"
 #include "WorldFixture.h"
+#include "initTestHelpers.h"
 #include "nodeObjs/noGranite.h"
 #include "gameTypes/Direction_Output.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
-#include "test/initTestHelpers.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>

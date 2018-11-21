@@ -16,13 +16,13 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "BQOutput.h"
 #include "helpers/containerUtils.h"
 #include "initTestHelpers.h"
+#include "legacy/TerrainData.h"
 #include "gameData/EdgeDesc.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
-#include "test/BQOutput.h"
-#include "test/legacy/TerrainData.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameData)

@@ -16,9 +16,12 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "BQOutput.h"
+#include "CreateEmptyWorld.h"
 #include "GamePlayer.h"
 #include "GlobalVars.h"
 #include "PointOutput.h"
+#include "WorldFixture.h"
 #include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
 #include "helperFuncs.h"
@@ -28,9 +31,6 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
-#include "test/BQOutput.h"
-#include "test/CreateEmptyWorld.h"
-#include "test/WorldFixture.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
 #include <boost/make_shared.hpp>

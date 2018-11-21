@@ -1,19 +1,22 @@
 FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem system)
 
-set(ALL_SOURCES files.h
-    RTTR_Version.cpp RTTR_Version.h
-    RttrConfig.cpp RttrConfig.h)
+set(ALL_SOURCES
+    src/files.h
+    src/RTTR_Version.cpp
+    src/RTTR_Version.h
+    src/RttrConfig.cpp
+    src/RttrConfig.h)
 
 add_library(rttrConfig STATIC ${ALL_SOURCES})
 target_include_directories(rttrConfig SYSTEM PUBLIC ${BOOST_INCLUDE_DIR})
-target_include_directories(rttrConfig INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(rttrConfig INTERFACE src)
 target_link_libraries(rttrConfig
 	PUBLIC s25util
 	PUBLIC s25Common
 	PUBLIC ${BOOST_LIBRARIES})
 SET_PROPERTY(TARGET rttrConfig PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake" build_paths.h @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake build_paths.h @ONLY)
 
 # Figure out RTTR_REVISION (git hash) and RTTR_VERSION (date)
 # Those can be manually set to override the default values
@@ -28,9 +31,9 @@ endif()
 if(NOT RTTR_VERSION)
     STRING(TIMESTAMP RTTR_VERSION "%Y%m%d")
 endif()
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake" build_version_defines.h @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake build_version_defines.h @ONLY)
 
-target_include_directories(rttrConfig PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+target_include_directories(rttrConfig PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 if(ClangFormat_FOUND)
     add_clangFormat_files(${ALL_SOURCES})

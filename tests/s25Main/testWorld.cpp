@@ -16,6 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "BQOutput.h"
+#include "CreateEmptyWorld.h"
 #include "EventManager.h"
 #include "FileChecksum.h"
 #include "GameObject.h"
@@ -24,6 +26,7 @@
 #include "PlayerInfo.h"
 #include "PointOutput.h"
 #include "RttrConfig.h"
+#include "WorldFixture.h"
 #include "files.h"
 #include "initTestHelpers.h"
 #include "ogl/glArchivItem_Map.h"
@@ -31,9 +34,6 @@
 #include "world/MapLoader.h"
 #include "nodeObjs/noBase.h"
 #include "gameTypes/Nation.h"
-#include "test/BQOutput.h"
-#include "test/CreateEmptyWorld.h"
-#include "test/WorldFixture.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/tmpFile.h"
 #include <boost/foreach.hpp>

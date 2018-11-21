@@ -13,6 +13,8 @@ if(MSVC)
 	# assignment operator could not be created
 	add_compile_options(/wd"4512")
 	add_compile_options(/w34062) # Enum not handled in switch
+	# disable warning 4267: 'var' : conversion from 'size_t' to 'type', possible loss of data
+	add_compile_options(/wd4267)
 	# disable MSVC "use secure function"
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd"4250")
 	# disable MSVC posix functions

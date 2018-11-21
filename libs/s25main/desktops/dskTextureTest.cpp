@@ -17,8 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskTextureTest.h"
-#include "../../rttrConfig/RttrConfig.h"
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
 #include "drivers/VideoDriverWrapper.h"

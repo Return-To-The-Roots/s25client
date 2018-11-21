@@ -1,75 +1,80 @@
-
-
 FIND_PACKAGE(BZip2 REQUIRED)
 gather_dll(BZIP2)
-FIND_PACKAGE(Gettext REQUIRED)
 FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams system program_options locale chrono)
 
-INCLUDE(CMakeMacroForceAddFlags)
-INCLUDE(CMakeMacroRemoveFlags)
+SET(SOURCES_SUBDIRS )
+MACRO(AddDirectory dir)
+	FILE(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h ${dir}/*.hpp ${dir}/*.tpp)
+	SET(SOURCES_SUBDIRS ${SOURCES_SUBDIRS} ${SUB_FILES})
+	SOURCE_GROUP(${dir} FILES ${SUB_FILES})
+ENDMACRO()
 
-################################################################################
+AddDirectory(addons)
+AddDirectory(ai)
+AddDirectory(ai/aijh)
+AddDirectory(animation)
+AddDirectory(buildings)
+AddDirectory(controls)
+AddDirectory(desktops)
+AddDirectory(drivers)
+AddDirectory(factories)
+AddDirectory(figures)
+AddDirectory(gameData)
+AddDirectory(gameTypes)
+AddDirectory(helpers)
+AddDirectory(ingameWindows)
+AddDirectory(lua)
+AddDirectory(mapGenerator)
+AddDirectory(network)
+AddDirectory(nodeObjs)
+AddDirectory(notifications)
+AddDirectory(ogl)
+AddDirectory(pathfinding)
+AddDirectory(postSystem)
+AddDirectory(random)
+AddDirectory(world)
+FILE(GLOB SOURCES_OTHER *.cpp *.h)
+SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/driver/include)
-INCLUDE_DIRECTORIES(SYSTEM
-	${BZIP2_INCLUDE_DIR}
-	${Boost_INCLUDE_DIR}
-	)
+SET(s25Main_SRCS
+	${SOURCES_OTHER}
+	${SOURCES_SUBDIRS}
+)
 
-################################################################################
+ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
+target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(s25Main SYSTEM PRIVATE ${BZIP2_INCLUDE_DIR} ${UTF8_INCLUDE_DIR} PUBLIC ${Boost_INCLUDE_DIR})
 
-FILE(GLOB RTTR_PO_FILES ../RTTR/languages/*.po)
+# Disable automatic boost linking
+target_compile_definitions(s25Main PUBLIC BOOST_ALL_NO_LIB)
+target_link_libraries(s25Main PUBLIC
+	siedler2
+	lobby_c
+	s25util
+	mygettext
+	s25Common
+	rttrConfig
+	gamedata
+    glad
+    driver
+	${BZIP2_LIBRARIES}
+	${Boost_LIBRARIES}
+)
 
-GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL
-							${RTTR_PO_FILES}
-						   )
-
-################################################################################
-
-if(APPLE)
-	CORRECT_LIB(SDL_LIBRARY SDL)
-
-	# Add the SDL-include flags to an apple build
-	INCLUDE_DIRECTORIES(SYSTEM ${SDL_INCLUDE_DIR})
-
-	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/macos)
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework OpenGL")
-ENDif()
-
-################################################################################
-
-SET(RTTR_Assert_Enabled 2 CACHE STRING "Status of RTTR assertions: 0=Disabled, 1=Enabled, 2=Default(Enabled only in debug)")
-IF("${RTTR_Assert_Enabled}" EQUAL 0)
-	ADD_DEFINITIONS(-DRTTR_ENABLE_ASSERTS=0)
-ELSEIF("${RTTR_Assert_Enabled}" EQUAL 1)
-	ADD_DEFINITIONS(-DRTTR_ENABLE_ASSERTS=1)
-ENDIF()
-
-if(MSVC)
-	# disable warning 4267: 'var' : conversion from 'size_t' to 'type', possible loss of data
-	add_compile_options(/wd4267)
-    option(RTTR_EDITANDCONTINUE "Enable Edit-And-Continue" OFF)
-    if(RTTR_EDITANDCONTINUE)
-        # Enable edit-and-continue
-        FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS_RELWITHDEBINFO /ZI)
-        REMOVE_FLAGS(CMAKE_CXX_FLAGS_RELWITHDEBINFO /Zi)
-        FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS_DEBUG /ZI)
-        REMOVE_FLAGS(CMAKE_CXX_FLAGS_DEBUG /Zi)
-    else()
-        FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS_RELWITHDEBINFO /Zi)
-        REMOVE_FLAGS(CMAKE_CXX_FLAGS_RELWITHDEBINFO /ZI)
-        FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS_DEBUG /Zi)
-        REMOVE_FLAGS(CMAKE_CXX_FLAGS_DEBUG /ZI)
+if(WIN32)
+    include(CheckIncludeFiles)
+    check_include_files("windows.h;dbghelp.h" HAVE_DBGHELP_H)
+    if(HAVE_DBGHELP_H)
+        target_compile_definitions(s25Main PUBLIC HAVE_DBGHELP_H)
     endif()
-    FORCE_ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS_DEBUG /SAFESEH:NO)
-    FORCE_ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO /SAFESEH:NO)
-ENDIF()
+endif()
 
-add_subdirectory(libGamedata)
-include(s25Main.cmake)
-add_subdirectory(s25client)
-add_subdirectory(test)
+# For clock_gettime etc. this is required on some platforms/compilers
+find_library(LIBRT rt)
+if(LIBRT)
+  target_link_libraries(s25Main PUBLIC ${LIBRT})
+endif()
 
-# Copy the RTTR folder with the updated translations to the directory of the client.
-configure_file(${CMAKE_SOURCE_DIR}/copyDepsToBuildDir.cmake . @ONLY)
-ADD_CUSTOM_COMMAND(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIGURATION> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	target_link_libraries(s25Main PUBLIC ${CMAKE_DL_LIBS}) # For dynamic driver loading (DriverWrapper)
+endif()

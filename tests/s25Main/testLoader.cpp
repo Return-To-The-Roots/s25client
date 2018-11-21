@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Loader.h"
-#include "test/helperFuncs.h"
+#include "helperFuncs.h"
 #include "test/testConfig.h"
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libutil/Tokenizer.h"
@@ -69,9 +69,9 @@ boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv& archi
 BOOST_AUTO_TEST_CASE(Overrides)
 {
     LogAccessor logAcc;
-    const std::string mainFile = RTTR_BASE_DIR "/tests/test.GER";
-    const std::string overrideFolder1 = RTTR_BASE_DIR "/tests/override1";
-    const std::string overrideFolder2 = RTTR_BASE_DIR "/tests/override2";
+    const std::string mainFile = RTTR_BASE_DIR "/tests/testData/test.GER";
+    const std::string overrideFolder1 = RTTR_BASE_DIR "/tests/testData/override1";
+    const std::string overrideFolder2 = RTTR_BASE_DIR "/tests/testData/override2";
     // No override folders
     LOADER.ClearOverrideFolders();
     BOOST_REQUIRE(LOADER.LoadFile(mainFile));

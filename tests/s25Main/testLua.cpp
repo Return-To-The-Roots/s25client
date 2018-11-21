@@ -16,10 +16,13 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "GameWithLuaAccess.h"
 #include "PointOutput.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
+#include "helperFuncs.h"
 #include "helpers/containerUtils.h"
+#include "initTestHelpers.h"
 #include "lua/LuaTraits.h"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
@@ -31,9 +34,6 @@
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
-#include "test/GameWithLuaAccess.h"
-#include "test/helperFuncs.h"
-#include "test/initTestHelpers.h"
 #include "libutil/Serializer.h"
 #include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"

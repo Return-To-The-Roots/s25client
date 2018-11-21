@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "helpers/containerUtils.h"
-#include "test/initTestHelpers.h"
+#include "initTestHelpers.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>

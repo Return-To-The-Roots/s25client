@@ -39,13 +39,13 @@ endif()
 IF(CMAKE_HOST_UNIX)
     message(STATUS "Creating symlinks in ${CUR_OUTPUT_DIR} to ease debugging.")
 	file(MAKE_DIRECTORY "${CUR_OUTPUT_DIR}/${RTTR_DATADIR}")
-	symlinkFolder("${CMAKE_SOURCE_DIR}/RTTR" "${CUR_OUTPUT_DIR}/${RTTR_DATADIR}/RTTR")
+	symlinkFolder("${CMAKE_SOURCE_DIR}/data/RTTR" "${CUR_OUTPUT_DIR}/${RTTR_DATADIR}/RTTR")
 	file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/S2")
 	symlinkFolder("${CMAKE_SOURCE_DIR}/S2/DATA" "${CUR_OUTPUT_DIR}/${RTTR_GAMEDIR}/DATA")
 	symlinkFolder("${CMAKE_SOURCE_DIR}/S2/GFX" "${CUR_OUTPUT_DIR}/${RTTR_GAMEDIR}/GFX")
 ELSE()
 	message(STATUS "Host system is not Unix. Will use copies instead of symlinks to init ${CUR_OUTPUT_DIR}.")
-    file(COPY "${CMAKE_SOURCE_DIR}/RTTR" DESTINATION "${CUR_OUTPUT_DIR}"
+    file(COPY "${CMAKE_SOURCE_DIR}/data/RTTR" DESTINATION "${CUR_OUTPUT_DIR}"
 		 PATTERN "*.po" EXCLUDE
 		 PATTERN "*.pot" EXCLUDE
 		 PATTERN ".*" EXCLUDE

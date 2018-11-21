@@ -17,10 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "CreateSeaWorld.h"
+#include "initTestHelpers.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "gameData/TerrainDesc.h"
-#include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 #include <boost/test/test_tools.hpp>
 
