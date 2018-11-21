@@ -21,7 +21,7 @@
 	path = external/s25update
 [submodule "RTTR/languages"]
 	url = https://github.com/Return-To-The-Roots/languages.git
-	path = RTTR/languages
+	path = data/RTTR/languages
 [submodule "contrib/kaguya"]
 	path = external/kaguya
 	url = https://github.com/satoren/kaguya.git
