@@ -15,14 +15,22 @@ IF (MSVC)
 	IF(NOT EXISTS ${msvcContribDir} OR NOT IS_DIRECTORY ${msvcContribDir})
 		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${msvcContribDir} first!")
 	ENDIF()
-	SET(CONTRIB_DLL_DIR "${msvcContribDir}/bin/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE INTERNAL "")
-	IF(MSVC_VERSION GREATER 1800) # MSVC 2015
+	SET(_dllDir "${msvcContribDir}/bin/${CMAKE_LIBRARY_ARCHITECTURE}")
+    # Add dlls to the gathered ones
+	if(NOT EXISTS ${_dllDir}/libcurl.dll)
+		message(WARNING "Folder with DLLs not found in ${_dllDir}. You may not be able to execute directly from VS")
+	else()
+		file(GLOB CONTRIB_DLLS ${_dllDir}/*.dll)
+		include(GatherDll)
+		gather_dll_add(${CONTRIB_DLLS})
+	endif()
+	if(MSVC_VERSION GREATER 1800) # MSVC 2015
 		list(APPEND CMAKE_PREFIX_PATH ${msvcContribDir}/VS2015)
-	ENDIF()
+	endif()
 	list(APPEND CMAKE_PREFIX_PATH ${msvcContribDir})
-	list(APPEND CMAKE_PROGRAM_PATH ${msvcContribDir}/buildTools ${CONTRIB_DLL_DIR})
+	list(APPEND CMAKE_PROGRAM_PATH ${msvcContribDir}/buildTools ${_dllDir})
 	set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
-	set(CMAKE_PROGRAM_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+	set(CMAKE_PROGRAM_PATH ${CMAKE_PROGRAM_PATH} PARENT_SCOPE)
 ENDIF()
 
 ################################################################################

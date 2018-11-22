@@ -299,18 +299,6 @@ GETTEXT_CREATE_TRANSLATIONS(data/RTTR/languages/rttr.pot ALL
 configure_file(copyDepsToBuildDir.cmake . @ONLY)
 add_custom_command(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIGURATION> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)
 
-
-# Add dlls from external folder
-if(MSVC)
-	if(NOT EXISTS ${CONTRIB_DLL_DIR}/libcurl.dll)
-		MESSAGE(WARNING "Folder with DLLs not found in ${CONTRIB_DLL_DIR}. You may not be able to execute directly from VS")
-	else()
-		FILE(GLOB CONTRIB_DLLS ${CONTRIB_DLL_DIR}/*.dll)
-		include(GatherDll)
-		gather_dll_add(${CONTRIB_DLLS})
-	ENDIF()
-endif()
-
 if(ClangFormat_FOUND)
 	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs true)
 	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extra true)
@@ -359,12 +347,10 @@ IF(NOT CMAKE_HOST_WIN32 AND PLATFORM_ARCH)
 	# Create nightly release
 	ADD_CUSTOM_TARGET(create_nightly
 					  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/create_release.sh" nightly
-					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 
 	# Create stable release
 	ADD_CUSTOM_TARGET(create_stable
 					  COMMAND "${CMAKE_CURRENT_BINARY_DIR_DIR}/create_release.sh" stable
-					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 ENDIF()

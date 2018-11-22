@@ -212,11 +212,11 @@ case "$SYSTEM_NAME" in
 		mkdir -vp ${macOSPath}/lib || exit 1
 
 		# binaries und paketdaten kopieren
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.command ${macOSPath}/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.terminal ${macOSPath}/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/icon.icns ${contentsPath}/Resources/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/PkgInfo ${contentsPath}/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/Info.plist ${contentsPath}/ || exit 1
+		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/rttr.command ${macOSPath}/ || exit 1
+		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/rttr.terminal ${macOSPath}/ || exit 1
+		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/icon.icns ${contentsPath}/Resources/ || exit 1
+		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/PkgInfo ${contentsPath}/ || exit 1
+		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/Info.plist ${contentsPath}/ || exit 1
 		mv -v ${DESTDIR}bin/* ${macOSPath}/bin/ || exit 1
 		mv -v ${DESTDIR}libexec/* ${macOSPath}/libexec/ || exit 1
 		mv -v ${DESTDIR}lib/* ${macOSPath}/lib/ || exit 1
@@ -255,7 +255,7 @@ case "$SYSTEM_NAME" in
 			;;
 		esac
 		
-		cp -v ${RTTR_SRCDIR}/contrib/lua/${lua}/lua52.dll ${DESTDIR} || exit 1
+		cp -v ${RTTR_SRCDIR}/external/lua/${lua}/lua52.dll ${DESTDIR} || exit 1
 		cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
 		cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
 		cp -v ${mingw}/bin/libiconv-2.dll ${DESTDIR} || exit 1

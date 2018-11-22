@@ -66,7 +66,7 @@ else()
 endif()
 
 include(GatherDll)
-gather_dll(LUA)
+gather_dll(Lua)
 
 ADD_LIBRARY(gamedata STATIC ${SOURCES_OTHER} ${SOURCES_SUBDIRS})
 target_include_directories(gamedata PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

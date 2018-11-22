@@ -1,8 +1,8 @@
 #!/bin/bash
 
-cd $(dirname $0)/../
+cd $(dirname $0)
 
-source release/repository.def || error
+source repository.def || error
 
 # pass arguments (build number) to update-changelog.sh
 debian/update-changelog.sh $* || exit 1
@@ -12,19 +12,22 @@ REVISION=$(head debian/changelog -n 1 | cut -d '-' -f 2 | cut -d ')' -f 1)
 
 PARAMS="--svn-ignore-new -k6D09334C"
 
-mkdir -p ../tarballs
+TARBALLS_DIR="$PWD/../../tarballs"
+BUILD_AREA_DIR="$PWD/../../build-area"
+
+mkdir -p "$TARBALLS_DIR"
  
-if [ ! -f "../tarballs/s25rttr_${VERSION}.orig.tar.gz" ] ; then
-	rm -rf ../tarballs/s25rttr_${VERSION}
-	svn export . ../tarballs/s25rttr_${VERSION}
-	rm -r ../tarballs/s25rttr_${VERSION}/debian
-	rm -r ../tarballs/s25rttr_${VERSION}/contrib
-	(cd ../tarballs && tar cvzf s25rttr_${VERSION}.orig.tar.gz s25rttr_${VERSION})
-	rm -r ../tarballs/s25rttr_${VERSION}
+if [ ! -f "${TARBALLS_DIR}/s25rttr_${VERSION}.orig.tar.gz" ] ; then
+	rm -rf ${TARBALLS_DIR}/s25rttr_${VERSION}
+	svn export . ${TARBALLS_DIR}/s25rttr_${VERSION}
+	rm -r ${TARBALLS_DIR}/s25rttr_${VERSION}/debian
+	rm -r ${TARBALLS_DIR}/s25rttr_${VERSION}/contrib
+	(cd ${TARBALLS_DIR} && tar cvzf s25rttr_${VERSION}.orig.tar.gz s25rttr_${VERSION})
+	rm -r ${TARBALLS_DIR}/s25rttr_${VERSION}
 	PARAMS="-sa $PARAMS"
 
-	find ../tarballs -mtime +7 -exec rm {} \;
-	rm -rf ../build-area/*
+	find ${TARBALLS_DIR} -mtime +7 -exec rm {} \;
+	rm -rf ${BUILD_AREA_DIR}/*
 fi
 
 if [ ! -z "$UPLOAD" ] ; then
@@ -32,7 +35,7 @@ if [ ! -z "$UPLOAD" ] ; then
 	svn rm --force contrib
 	svn-buildpackage $PARAMS -S || exit 1
 
-	dput $UPLOAD ../build-area/s25rttr*${VERSION}-${REVISION}*.changes || exit 1
+	dput $UPLOAD ${BUILD_AREA_DIR}/s25rttr*${VERSION}-${REVISION}*.changes || exit 1
 else
 	if [ ! -d "$REPOSITORY" ] ; then
 		echo "ERROR: repository.def does not contain REPOSITORY"
@@ -49,16 +52,16 @@ else
 
 	# build source, i386 and all
 	svn-buildpackage $PARAMS -ai386 || exit 1
-	mv -v ../build-area/s25rttr_${VERSION}-${REVISION}.dsc release/deb || exit 1
-	mv -v ../build-area/s25rttr_${VERSION}-${REVISION}.tar.gz release/deb || exit 1
-	mv -v ../build-area/s25rttr_${VERSION}-${REVISION}_i386.changes release/deb || exit 1
-	mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_i386.deb release/deb || exit 1
-	mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_all.deb release/deb || exit 1
+	mv -v ${BUILD_AREA_DIR}/s25rttr_${VERSION}-${REVISION}.dsc release/deb || exit 1
+	mv -v ${BUILD_AREA_DIR}/s25rttr_${VERSION}-${REVISION}.tar.gz release/deb || exit 1
+	mv -v ${BUILD_AREA_DIR}/s25rttr_${VERSION}-${REVISION}_i386.changes release/deb || exit 1
+	mv -v ${BUILD_AREA_DIR}/s25rttr*_${VERSION}-${REVISION}_i386.deb release/deb || exit 1
+	mv -v ${BUILD_AREA_DIR}/s25rttr*_${VERSION}-${REVISION}_all.deb release/deb || exit 1
 
 	# build amd64
 	svn-buildpackage $PARAMS -aamd64 -B || exit 1
-	mv -v ../build-area/s25rttr_${VERSION}-${REVISION}_amd64.changes release/deb || exit 1
-	mv -v ../build-area/s25rttr*_${VERSION}-${REVISION}_amd64.deb release/deb || exit 1
+	mv -v ${BUILD_AREA_DIR}/s25rttr_${VERSION}-${REVISION}_amd64.changes release/deb || exit 1
+	mv -v ${BUILD_AREA_DIR}/s25rttr*_${VERSION}-${REVISION}_amd64.deb release/deb || exit 1
 
 	# add repository to params
 	PARAMS="-b $REPOSITORY"

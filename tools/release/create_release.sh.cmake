@@ -32,10 +32,13 @@ TYPE=$1
 
 # Configured by CMake
 SRCDIR=@CMAKE_SOURCE_DIR@
+BUILD_DIR=@CMAKE_BINARY_DIR@
 PLATFORM_NAME=@PLATFORM_NAME@
 PLATFORM_ARCH=@PLATFORM_ARCH@
+VERSION=@RTTR_VERSION@
+REVISION=@RTTR_REVISION@
 
-RELEASEDEF=$SRCDIR/release/release.$TYPE.def
+RELEASEDEF=$SRCDIR/tools/release/release.$TYPE.def
 source $RELEASEDEF || error
 
 [ -d "$TARGET" ] || error "$RELEASEDEF does not contain TARGET"
@@ -67,21 +70,11 @@ exec 1>$npipe
 
 echo "Building $TYPE for $ARCH in $SRCDIR"
 
+cd "${BUILD_DIR}
 make || error
 
-# get version
-VERSION=$(grep WINDOW_VERSION rttrConfig/build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
-
-# get revision
-REVISION=$(grep WINDOW_REVISION rttrConfig/build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
-
-if [ $REVISION -eq 0 ] ; then
-	echo "error: revision is null"
-	error
-fi
-
 # get savegame version
-SAVEGAMEVERSION=$(grep "; // SaveGameVersion -- " $SRCDIR/src/Savegame.cpp | cut -d " " -f 6 | cut -d \; -f 1)
+SAVEGAMEVERSION=$(grep "; // SaveGameVersion -- " $SRCDIR/libs/s25main/Savegame.cpp | cut -d " " -f 6 | cut -d \; -f 1)
 
 echo "Current version is: $VERSION-$REVISION"
 echo "Savegame version:   $SAVEGAMEVERSION"
