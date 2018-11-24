@@ -18,12 +18,15 @@
 #ifndef mathFuncs_h__
 #define mathFuncs_h__
 
+#include <boost/type_traits/common_type.hpp>
+#include <boost/type_traits/is_signed.hpp>
+
 namespace helpers {
 
 /// Returns the greatest common divisor of a and b
 /// That is the greatest number x with a % x == b % x == 0
 int gcd(int a, int b);
-/// Returns the result of "divident / divisor" rounded to the nearest integer value
+/// Returns the result of "dividend / divisor" rounded to the nearest integer value
 unsigned roundedDiv(unsigned dividend, unsigned divisor);
 /// Clamp the value into [min, max]
 template<typename T>
@@ -35,6 +38,26 @@ T clamp(T val, T min, T max)
         return max;
     else
         return val;
+}
+template<typename T, typename U>
+U clamp(T val, U min, U max)
+{
+    typedef typename boost::common_type<T, U>::type Common;
+    if(boost::is_signed<T>::value && !boost::is_signed<U>::value)
+    {
+        // min/max is unsigned -> No negative values possible
+        if(val < 0)
+            return min;
+    } else if(!boost::is_signed<T>::value && boost::is_signed<U>::value)
+    {
+        // min/max is signed
+        if(max < 0)
+            return max;
+        if(min < 0)
+            min = 0;
+    }
+    // Here all values are positive or have the same signedness
+    return static_cast<U>(clamp(static_cast<Common>(val), static_cast<Common>(min), static_cast<Common>(max)));
 }
 } // namespace helpers
 
