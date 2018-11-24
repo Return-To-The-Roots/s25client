@@ -21,7 +21,7 @@
 
 #include "AsyncChecksum.h"
 #include "NetworkPlayer.h"
-#include <boost/chrono.hpp>
+#include "Timer.h"
 #include <queue>
 
 class Serializer;
@@ -29,15 +29,12 @@ class Serializer;
 /// Player connected to the server
 class GameServerPlayer : public NetworkPlayer
 {
-    typedef boost::chrono::high_resolution_clock Clock;
-    typedef boost::chrono::time_point<Clock> TimePoint;
-
 public:
     GameServerPlayer(unsigned id, const Socket& socket);
     ~GameServerPlayer();
 
-    void setConnected() { isConnecting = false; }
-    bool isConnected() const { return !isConnecting; }
+    void setConnected();
+    bool isConnected() const { return !connectTimer.isRunning(); }
     /// Get seconds till the player gets kicked due to lag
     unsigned getLagTimeOut() const;
     /// Ping the player if required
@@ -53,16 +50,14 @@ public:
     void setNotLagging();
 
 private:
-    /// True if the player is just connecting (reserved slot) or false if he really is connected
-    bool isConnecting;
+    /// Running if the player is connecting (reserved slot)
+    Timer connectTimer;
     /// Are we waiting for a ping reply
     bool isPinging;
-    /// Is the player currently lagging
-    bool isLagging;
-    /// Time the last ping command was sent or received or the time the player started connecting (connecting players are not pinged)
-    TimePoint lastPingTime;
-    /// Time at which the player started lagging
-    TimePoint lagStartTime;
+    /// Timer for the current sent ping command or the last received ping reply
+    Timer pingTimer;
+    /// Timer started when the player started lagging
+    Timer lagTimer;
 
 public:
     bool mapDataSent;
