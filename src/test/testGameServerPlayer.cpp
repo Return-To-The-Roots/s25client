@@ -53,7 +53,7 @@ BOOST_FIXTURE_TEST_CASE(Ping, MockClockFixture)
     player.doPing();
     // Already pinging
     BOOST_REQUIRE(player.sendQueue.empty());
-    BOOST_REQUIRE_EQUAL(player.calcPingTime(), 2000u);
+    BOOST_REQUIRE_EQUAL(player.calcPingTime(), (2000u + 15u) / 2u); // Smoothed value
 }
 
 BOOST_AUTO_TEST_SUITE_END()

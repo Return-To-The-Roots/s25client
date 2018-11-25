@@ -22,6 +22,7 @@
 #include "AsyncChecksum.h"
 #include "NetworkPlayer.h"
 #include "Timer.h"
+#include "helpers/SmoothedValue.hpp"
 #include <queue>
 
 class Serializer;
@@ -58,6 +59,7 @@ private:
     Timer pingTimer;
     /// Timer started when the player started lagging
     Timer lagTimer;
+    helpers::SmoothedValue<unsigned> ping;
 
 public:
     bool mapDataSent;

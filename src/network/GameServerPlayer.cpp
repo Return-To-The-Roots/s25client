@@ -35,7 +35,7 @@ int durationToInt(const T_Duration& duration)
 } // namespace
 
 GameServerPlayer::GameServerPlayer(unsigned id, const Socket& socket) //-V818
-    : NetworkPlayer(id), isPinging(false), mapDataSent(false)
+    : NetworkPlayer(id), isPinging(false), ping(3), mapDataSent(false)
 {
     connectTimer.start();
     this->socket = socket;
@@ -65,7 +65,9 @@ unsigned GameServerPlayer::calcPingTime()
     int result = durationToInt(boost::chrono::duration_cast<boost::chrono::milliseconds>(pingTimer.getElapsed()));
     isPinging = false;
     pingTimer.restart();
-    return result > 0 ? static_cast<unsigned>(result) : 1u;
+    unsigned curPing = static_cast<unsigned>(std::max(1, result));
+    ping.add(curPing);
+    return ping.get();
 }
 
 bool GameServerPlayer::hasTimedOut() const
