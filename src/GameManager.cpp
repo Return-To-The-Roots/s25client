@@ -50,8 +50,7 @@ GameManager::GameManager() : skipgf_last_time(0), skipgf_last_report_gf(0), curs
 bool GameManager::Start()
 {
     // Einstellungen laden
-    if(!SETTINGS.Load())
-        return false;
+    SETTINGS.Load();
 
     /// Videotreiber laden
     if(!VIDEODRIVER.LoadDriver())

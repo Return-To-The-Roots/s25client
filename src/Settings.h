@@ -42,11 +42,11 @@ public:
 
     Settings();
 
-    bool Load();
+    void Load();
     void Save();
 
 protected:
-    bool LoadDefaults();
+    void LoadDefaults();
 
 public:
     struct
