@@ -91,6 +91,11 @@ unsigned long MockupVideoDriver::GetTickCount() const
     return tickCount_;
 }
 
+OpenGL_Loader_Proc MockupVideoDriver::GetLoaderFunction() const
+{
+    return SDL_GL_GetProcAddress;
+}
+
 void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const {}
 
 void MockupVideoDriver::SetMousePos(int x, int y)
