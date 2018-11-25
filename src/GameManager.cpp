@@ -39,7 +39,7 @@
 #include "libutil/error.h"
 #include <cstdio>
 
-GameManager::GameManager() : skipgf_last_time(0), skipgf_last_report_gf(0), cursor_(CURSOR_HAND), cursor_next(CURSOR_HAND)
+GameManager::GameManager() : skipgf_last_time(0), skipgf_last_report_gf(0), cursor_(CURSOR_HAND)
 {
     ResetAverageGFPS();
 }
@@ -204,11 +204,9 @@ void GameManager::ResetAverageGFPS()
 /**
  *  Set the cursor type
  */
-void GameManager::SetCursor(CursorType cursor, bool once)
+void GameManager::SetCursor(CursorType cursor)
 {
-    cursor_next = cursor;
-    if(!once)
-        this->cursor_ = cursor;
+    cursor_ = cursor;
 }
 
 /**
@@ -217,14 +215,12 @@ void GameManager::SetCursor(CursorType cursor, bool once)
 void GameManager::DrawCursor()
 {
     unsigned resId;
-    switch(cursor_next)
+    switch(cursor_)
     {
         case CURSOR_HAND: resId = VIDEODRIVER.IsLeftDown() ? 31 : 30; break;
         case CURSOR_RM: resId = VIDEODRIVER.IsLeftDown() ? 35 : 34; break;
-        default: resId = cursor_next;
+        default: resId = cursor_;
     }
     if(resId)
         LOADER.GetImageN("resource", resId)->DrawFull(VIDEODRIVER.GetMousePos());
-
-    cursor_next = cursor_;
 }
