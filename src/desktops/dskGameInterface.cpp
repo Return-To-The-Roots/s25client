@@ -106,9 +106,9 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, const boost::shared_ptr<const NWFInfo>& newInfo, unsigned playerIdx,
+dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, const boost::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx,
                                    bool initOGL)
-    : Desktop(NULL), game_(game), nwfInfo(nwfInfo), worldViewer(playerIdx, game->world),
+    : Desktop(NULL), game_(game), nwfInfo_(nwfInfo), worldViewer(playerIdx, game->world),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL), roadwindow(NULL),
       minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
@@ -324,7 +324,7 @@ void dskGameInterface::Msg_PaintAfter()
     {
         // Laggende Spieler anzeigen in Form von Schnecken
         DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
-        BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo->getPlayerInfos())
+        BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo_->getPlayerInfos())
         {
             if(player.isLagging)
             {

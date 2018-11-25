@@ -49,7 +49,8 @@ class NWFInfo;
 class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface, public IChatCmdListener
 {
 public:
-    dskGameInterface(boost::shared_ptr<Game> game, bool initOGL = true);
+    dskGameInterface(boost::shared_ptr<Game> game, const boost::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx,
+                     bool initOGL = true);
     ~dskGameInterface() override;
 
     void Resize(const Extent& newSize) override;
@@ -109,7 +110,7 @@ public:
     void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
                           const bool enable_military_buildings);
 
-    const GameWorldViewer& GetViewer() const { return worldViewer; }
+    const GameWorldView& GetView() const { return gwv; }
 
     void OnChatCommand(const std::string& cmd) override;
 
@@ -141,7 +142,7 @@ private:
 
     PostBox& GetPostBox();
     boost::shared_ptr<const Game> game_;
-    boost::shared_ptr<const NWFInfo> nwfInfo;
+    boost::shared_ptr<const NWFInfo> nwfInfo_;
     GameWorldViewer worldViewer;
     GameWorldView gwv;
 
