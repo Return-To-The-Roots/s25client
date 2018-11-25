@@ -340,8 +340,7 @@ bool VideoSDL2::MessageLoop()
                 break;
             }
             case SDL_MOUSEBUTTONDOWN:
-                mouse_xy.x = ev.button.x;
-                mouse_xy.y = ev.button.y;
+                mouse_xy.pos = Position(ev.button.x, ev.button.y);
 
                 if(/*!mouse_xy.ldown && */ ev.button.button == SDL_BUTTON_LEFT)
                 {
@@ -355,8 +354,7 @@ bool VideoSDL2::MessageLoop()
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
-                mouse_xy.x = ev.button.x;
-                mouse_xy.y = ev.button.y;
+                mouse_xy.pos = Position(ev.button.x, ev.button.y);
 
                 if(/*mouse_xy.ldown &&*/ ev.button.button == SDL_BUTTON_LEFT)
                 {
@@ -384,8 +382,7 @@ bool VideoSDL2::MessageLoop()
                 // Handle only 1st mouse move
                 if(!mouseMoved)
                 {
-                    mouse_xy.x = ev.motion.x;
-                    mouse_xy.y = ev.motion.y;
+                    mouse_xy.pos = Position(ev.button.x, ev.button.y);
 
                     CallBack->Msg_MouseMove(mouse_xy);
                     mouseMoved = true;
@@ -427,8 +424,7 @@ OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
 
 void VideoSDL2::SetMousePos(int x, int y)
 {
-    mouse_xy.x = x;
-    mouse_xy.y = y;
+    mouse_xy.pos = Position(x, y);
     SDL_WarpMouseInWindow(window, x, y);
 }
 

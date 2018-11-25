@@ -43,8 +43,8 @@ VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack) : CallBack(CallBa
  */
 void VideoDriver::GetMousePos(int& x, int& y) const
 {
-    x = mouse_xy.x;
-    y = mouse_xy.y;
+    x = mouse_xy.pos.x;
+    y = mouse_xy.pos.y;
 }
 
 /**

@@ -645,7 +645,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
  */
 void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
-    lastMousePos = Position(mc.x, mc.y);
+    lastMousePos = mc.pos;
 
     // ist unser Desktop gültig?
     if(!curDesktop)

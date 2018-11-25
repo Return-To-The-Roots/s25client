@@ -95,8 +95,7 @@ void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) cons
 
 void MockupVideoDriver::SetMousePos(int x, int y)
 {
-    mouse_xy.x = x;
-    mouse_xy.y = y;
+    mouse_xy.pos = Position(x, y);
 }
 
 KeyEvent MockupVideoDriver::GetModKeyState() const

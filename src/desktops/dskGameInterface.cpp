@@ -106,8 +106,9 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, bool initOGL)
-    : Desktop(NULL), game_(game), nwfInfo(GAMECLIENT.GetNWFInfo()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
+dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, const boost::shared_ptr<const NWFInfo>& newInfo, unsigned playerIdx,
+                                   bool initOGL)
+    : Desktop(NULL), game_(game), nwfInfo(nwfInfo), worldViewer(playerIdx, game->world),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL), roadwindow(NULL),
       minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
@@ -611,7 +612,7 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    startScrollPt = Position(mc.x, mc.y);
+    startScrollPt = mc.pos;
     isScrolling = true;
     GAMEMANAGER.SetCursor(CURSOR_SCROLL);
     return false;
