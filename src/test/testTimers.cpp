@@ -17,9 +17,47 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "FrameCounter.h"
+#include "MockClock.hpp"
+#include "Timer.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(Timers)
+
+BOOST_FIXTURE_TEST_CASE(TimerClass, MockClockFixture)
+{
+    using namespace boost::chrono;
+    Timer timer;
+    BOOST_REQUIRE(!timer.isRunning());
+    // getElapsed on non-running timer throws
+    BOOST_REQUIRE_THROW(timer.getElapsed(), std::runtime_error);
+    currentTime += seconds(5);
+    timer.start();
+    BOOST_REQUIRE(timer.isRunning());
+    BOOST_REQUIRE_EQUAL(timer.getElapsed(), milliseconds(0));
+    currentTime += milliseconds(3);
+    BOOST_REQUIRE_EQUAL(timer.getElapsed(), milliseconds(3));
+    // Multiple requests allowed
+    BOOST_REQUIRE_EQUAL(timer.getElapsed(), milliseconds(3));
+    currentTime += milliseconds(10);
+    BOOST_REQUIRE_EQUAL(timer.getElapsed(), milliseconds(13));
+    // start on running timer throws and does not change instance
+    BOOST_REQUIRE_THROW(timer.start(), std::runtime_error);
+    BOOST_REQUIRE_EQUAL(timer.getElapsed(), milliseconds(13));
+    timer.stop();
+    BOOST_REQUIRE(!timer.isRunning());
+    // Restart
+    timer.start();
+    BOOST_REQUIRE_EQUAL(timer.getElapsed(), milliseconds(0));
+    currentTime += milliseconds(5);
+    BOOST_REQUIRE_EQUAL(timer.getElapsed(), milliseconds(5));
+    timer.restart();
+    BOOST_REQUIRE_EQUAL(timer.getElapsed(), milliseconds(0));
+    timer.stop();
+    // Works on stopped
+    timer.restart();
+    currentTime += milliseconds(15);
+    BOOST_REQUIRE_EQUAL(timer.getElapsed(), milliseconds(15));
+}
 
 BOOST_AUTO_TEST_CASE(FrameCounterBasic)
 {

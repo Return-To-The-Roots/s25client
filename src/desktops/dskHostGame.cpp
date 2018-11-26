@@ -441,8 +441,8 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
             }
         }
 
-        // Ping bei KI und Host ausblenden
-        if(player.ps == PS_AI || player.isHost)
+        // Hide ping for AIs or on single player games
+        if(player.ps == PS_AI || IsSinglePlayer())
             ping->SetVisible(false);
 
         // Felder ausfüllen

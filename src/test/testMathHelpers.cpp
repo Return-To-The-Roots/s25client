@@ -16,6 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "helpers/SmoothedValue.hpp"
+#include "helpers/mathFuncs.h"
 #include "helpers/roundToNextPow2.h"
 #include <boost/test/unit_test.hpp>
 
@@ -42,6 +44,71 @@ BOOST_AUTO_TEST_CASE(NextPow2)
     }
     BOOST_REQUIRE_EQUAL(helpers::roundToNextPowerOfTwo(1u << 31), 1u << 31);
     // TODO: Max unsigned is 2^32 - 1. What to do with values greater than 2^31?
+}
+
+BOOST_AUTO_TEST_CASE(clamp)
+{
+    // Simple
+    BOOST_REQUIRE_EQUAL(helpers::clamp(5, 1, 10), 5);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(-5, 1, 10), 1);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(0, 1, 10), 1);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(1, 1, 10), 1);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(10, 1, 10), 10);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(11, 1, 10), 10);
+    // Signed value, unsigned min/max
+    BOOST_REQUIRE_EQUAL(helpers::clamp(5, 1u, 10u), 5u);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(-5, 1u, 10u), 1u);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<int>::min(), 1u, 10u), 1u);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<int>::max(), 1u, 10u), 10u);
+    // unsigned value, signed min/max
+    BOOST_REQUIRE_EQUAL(helpers::clamp(5u, -5, 6), 5);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(10u, -5, 6), 6);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::min(), -5, 6), 0);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::max(), -5, 6), 6);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::min(), -15, -2), -2);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::max(), -15, -2), -2);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::min(), std::numeric_limits<int>::min(), 10), 0);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::max(), std::numeric_limits<int>::min(), 10), 10);
+    BOOST_REQUIRE_EQUAL(
+      helpers::clamp(std::numeric_limits<unsigned>::min(), std::numeric_limits<int>::min(), std::numeric_limits<int>::max()), 0);
+    BOOST_REQUIRE_EQUAL(
+      helpers::clamp(std::numeric_limits<unsigned>::max(), std::numeric_limits<int>::min(), std::numeric_limits<int>::max()),
+      std::numeric_limits<int>::max());
+    // short value, long min/max
+    BOOST_REQUIRE_EQUAL(helpers::clamp(static_cast<short>(-3), -5, 6), -3);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(static_cast<short>(5), -5, 6), 5);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<short>::min(), -5, 6), -5);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<short>::max(), -5, 6), 6);
+    // long value, short min/max
+    BOOST_REQUIRE_EQUAL(helpers::clamp(-1, static_cast<short>(-3), static_cast<short>(6)), -1);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(4, static_cast<short>(-3), static_cast<short>(6)), 4);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<int>::min(), static_cast<short>(-3), static_cast<short>(6)), -3);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<int>::max(), static_cast<short>(-3), static_cast<short>(6)), 6);
+}
+
+BOOST_AUTO_TEST_CASE(SmoothedValue)
+{
+    helpers::SmoothedValue<int> val(5);
+    BOOST_REQUIRE_EQUAL(val.size(), 0u);
+    BOOST_REQUIRE_EQUAL(val.get(), 0);
+    val.add(4);
+    BOOST_REQUIRE_EQUAL(val.size(), 1u);
+    BOOST_REQUIRE_EQUAL(val.get(), 4);
+    val.add(2);
+    BOOST_REQUIRE_EQUAL(val.size(), 2u);
+    BOOST_REQUIRE_EQUAL(val.get(), (4 + 2) / 2);
+    val.add(11);
+    BOOST_REQUIRE_EQUAL(val.size(), 3u);
+    BOOST_REQUIRE_EQUAL(val.get(), (4 + 2 + 11) / 3);
+    val.add(102);
+    BOOST_REQUIRE_EQUAL(val.size(), 4u);
+    BOOST_REQUIRE_EQUAL(val.get(), (4 + 2 + 11 + 102) / 4);
+    val.add(1);
+    BOOST_REQUIRE_EQUAL(val.size(), 5u);
+    BOOST_REQUIRE_EQUAL(val.get(), (4 + 2 + 11 + 102 + 1) / 5);
+    val.add(7);
+    BOOST_REQUIRE_EQUAL(val.size(), 5u);
+    BOOST_REQUIRE_EQUAL(val.get(), (2 + 11 + 102 + 1 + 7) / 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

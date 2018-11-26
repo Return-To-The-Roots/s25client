@@ -22,31 +22,38 @@
 #include "helpers/mathFuncs.h"
 #include "libutil/Log.h"
 #include <algorithm>
+#include <limits>
 
 using boost::chrono::seconds;
 
+namespace {
 template<class T_Duration>
-inline typename boost::enable_if<boost::chrono::detail::is_duration<T_Duration>, int>::type toIntSeconds(const T_Duration& duration)
+int durationToInt(const T_Duration& duration)
 {
-    seconds sec = boost::chrono::duration_cast<seconds>(duration);
-    return static_cast<int>(helpers::clamp<seconds::rep>(sec.count(), std::numeric_limits<int>::min(), std::numeric_limits<int>::max()));
+    return helpers::clamp(duration.count(), std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 }
+} // namespace
 
 GameServerPlayer::GameServerPlayer(unsigned id, const Socket& socket) //-V818
-    : NetworkPlayer(id), isConnecting(true), isPinging(false), isLagging(false), mapDataSent(false)
+    : NetworkPlayer(id), isPinging(false), ping(3), mapDataSent(false)
 {
-    lastPingTime = Clock::now();
+    connectTimer.start();
     this->socket = socket;
 }
 
 GameServerPlayer::~GameServerPlayer() {}
 
+void GameServerPlayer::setConnected()
+{
+    connectTimer.stop();
+}
+
 void GameServerPlayer::doPing()
 {
-    if(!isConnecting && !isPinging && (Clock::now() - lastPingTime) > seconds(PING_RATE))
+    if(isConnected() && !isPinging && (!pingTimer.isRunning() || pingTimer.getElapsed() >= seconds(PING_RATE)))
     {
         isPinging = true;
-        lastPingTime = Clock::now();
+        pingTimer.restart();
         sendQueue.push(new GameMessage_Ping(0xFF));
     }
 }
@@ -55,44 +62,38 @@ unsigned GameServerPlayer::calcPingTime()
 {
     if(!isPinging)
         return 0u;
+    int result = durationToInt(boost::chrono::duration_cast<boost::chrono::milliseconds>(pingTimer.getElapsed()));
     isPinging = false;
-    TimePoint now = Clock::now();
-    int result = toIntSeconds(now - lastPingTime);
-    lastPingTime = now;
-    return result > 0 ? static_cast<unsigned>(result) : 1u;
+    pingTimer.restart();
+    unsigned curPing = static_cast<unsigned>(std::max(1, result));
+    ping.add(curPing);
+    return ping.get();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// prüft auf Ping-Timeout beim verbinden
 bool GameServerPlayer::hasTimedOut() const
 {
-    if(isConnecting)
-        return (Clock::now() - lastPingTime) > seconds(CONNECT_TIMEOUT);
+    if(!isConnected())
+        return connectTimer.getElapsed() > seconds(CONNECT_TIMEOUT);
     else if(isPinging)
-        return (Clock::now() - lastPingTime) > seconds(PING_TIMEOUT);
+        return pingTimer.getElapsed() > seconds(PING_TIMEOUT);
     else
         return false;
 }
 
 unsigned GameServerPlayer::getLagTimeOut() const
 {
-    if(!isLagging)
+    if(!lagTimer.isRunning())
         return LAG_TIMEOUT;
-    int timeout = toIntSeconds(lagStartTime + seconds(LAG_TIMEOUT) - Clock::now());
+    int timeout = durationToInt(boost::chrono::duration_cast<seconds>(seconds(LAG_TIMEOUT) - lagTimer.getElapsed()));
     return static_cast<unsigned>(std::max(0, timeout));
 }
 
 void GameServerPlayer::setLagging()
 {
-    /// Start lagging time if we are not yet lagging
-    if(!isLagging)
-    {
-        isLagging = true;
-        lagStartTime = Clock::now();
-    }
+    lagTimer.restart();
 }
 
 void GameServerPlayer::setNotLagging()
 {
-    isLagging = false;
+    lagTimer.stop();
 }
