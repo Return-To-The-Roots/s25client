@@ -737,7 +737,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     }
 }
 
-const Window* WindowManager::GetTopMostWindow() const
+const IngameWindow* WindowManager::GetTopMostWindow() const
 {
     if(windows.empty())
         return NULL;

@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
         world.SetOwner(pt, 1);
 
-    dskGameInterface gameDesktop(this->game, NULL, 0, false);
+    dskGameInterface gameDesktop(this->game, boost::shared_ptr<NWFInfo>(), 0, false);
     const GameWorldViewer& gwv = gameDesktop.GetView().GetViewer();
     // Start at a position a bit away from the HQ so all points are castles
     const MapPoint roadPt = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(6, 6));

@@ -184,6 +184,15 @@ void dskGameInterface::SetActive(bool activate)
 {
     if(activate == IsActive())
         return;
+    if(!activate && isScrolling)
+    {
+        // Stay active if scrolling and no modal window is open
+        const IngameWindow* wnd = WINDOWMANAGER.GetTopMostWindow();
+        if(wnd && wnd->IsModal())
+            StopScrolling();
+        else
+            return;
+    }
     Desktop::SetActive(activate);
     // Do this here to allow previous screen to keep control
     if(activate)
@@ -193,13 +202,19 @@ void dskGameInterface::SetActive(bool activate)
         if(!game_->IsStarted())
             GAMECLIENT.OnGameStart();
     }
+}
 
-    if(!activate)
-    {
-        isScrolling = false;
-        GAMEMANAGER.SetCursor(CURSOR_HAND);
-    } else if(road.mode != RM_DISABLED)
-        GAMEMANAGER.SetCursor(CURSOR_RM);
+void dskGameInterface::StopScrolling()
+{
+    isScrolling = false;
+    GAMEMANAGER.SetCursor(road.mode == RM_DISABLED ? CURSOR_HAND : CURSOR_RM);
+}
+
+void dskGameInterface::StartScrolling(const Position& mousePos)
+{
+    startScrollPt = mousePos;
+    isScrolling = true;
+    GAMEMANAGER.SetCursor(CURSOR_SCROLL);
 }
 
 void dskGameInterface::SettingsChanged() {}
@@ -390,7 +405,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     {
         Msg_RightDown(mc);
         return true;
-    }
+    } else if(isScrolling)
+        StopScrolling();
 
     // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
     if(road.mode)
@@ -586,9 +602,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords& /*mc*/)
+bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 {
-    isScrolling = false;
+    if(isScrolling)
+    {
+        StopScrolling();
+        return true;
+    }
     return false;
 }
 
@@ -612,16 +632,14 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    startScrollPt = mc.pos;
-    isScrolling = true;
-    GAMEMANAGER.SetCursor(CURSOR_SCROLL);
-    return false;
+    StartScrolling(mc.pos);
+    return true;
 }
 
 bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
 {
-    isScrolling = false;
-    GAMEMANAGER.SetCursor(road.mode == RM_DISABLED ? CURSOR_HAND : CURSOR_RM);
+    if(isScrolling)
+        StopScrolling();
     return false;
 }
 
@@ -1041,9 +1059,6 @@ void dskGameInterface::GI_WindowClosed(Window* wnd)
         actionwindow = NULL;
     else if(roadwindow == wnd)
         roadwindow = NULL;
-    else
-        return;
-    isScrolling = false;
 }
 
 void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)

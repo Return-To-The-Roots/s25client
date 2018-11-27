@@ -140,6 +140,9 @@ private:
 
     void OnBuildingNote(const BuildingNote& note);
 
+    void StopScrolling();
+    void StartScrolling(const Position& mousePos);
+
     PostBox& GetPostBox();
     boost::shared_ptr<const Game> game_;
     boost::shared_ptr<const NWFInfo> nwfInfo_;

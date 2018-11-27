@@ -92,7 +92,7 @@ public:
     void Msg_ScreenResize(const Extent& newSize);
 
     /// Return the window currently on the top (probably active)
-    const Window* GetTopMostWindow() const;
+    const IngameWindow* GetTopMostWindow() const;
     IngameWindow* FindWindowAtPos(const Position& pos) const;
 
 protected:
