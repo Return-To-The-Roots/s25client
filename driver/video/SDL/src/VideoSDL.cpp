@@ -470,8 +470,8 @@ bool VideoSDL::MessageLoop()
             break;
             case SDL_MOUSEBUTTONDOWN:
             {
-                mouse_xy.x = ev.button.x;
-                mouse_xy.y = ev.button.y;
+                mouse_xy.pos.x = ev.button.x;
+                mouse_xy.pos.y = ev.button.y;
 
                 if(/*!mouse_xy.ldown && */ ev.button.button == SDL_BUTTON_LEFT)
                 {
@@ -487,8 +487,8 @@ bool VideoSDL::MessageLoop()
             break;
             case SDL_MOUSEBUTTONUP:
             {
-                mouse_xy.x = ev.button.x;
-                mouse_xy.y = ev.button.y;
+                mouse_xy.pos.x = ev.button.x;
+                mouse_xy.pos.y = ev.button.y;
 
                 if(/*mouse_xy.ldown &&*/ ev.button.button == SDL_BUTTON_LEFT)
                 {
@@ -515,8 +515,8 @@ bool VideoSDL::MessageLoop()
                 // Handle only 1st mouse move
                 if(!mouseMoved)
                 {
-                    mouse_xy.x = ev.motion.x;
-                    mouse_xy.y = ev.motion.y;
+                    mouse_xy.pos.x = ev.motion.x;
+                    mouse_xy.pos.y = ev.motion.y;
 
                     CallBack->Msg_MouseMove(mouse_xy);
                     mouseMoved = true;
@@ -572,8 +572,8 @@ void VideoSDL::SetMousePos(int x, int y)
 {
     if(SDL_GetAppState() & SDL_APPMOUSEFOCUS)
     {
-        mouse_xy.x = x;
-        mouse_xy.y = y;
+        mouse_xy.pos.x = x;
+        mouse_xy.pos.y = y;
         SDL_WarpMouse(x, y);
     }
 }

@@ -501,8 +501,8 @@ void VideoWinAPI::SetMousePos(int x, int y)
 {
     if(GetActiveWindow())
     {
-        mouse_xy.x = x;
-        mouse_xy.y = y;
+        mouse_xy.pos.x = x;
+        mouse_xy.pos.y = y;
 
         POINT p = {x, y};
         ClientToScreen(screen, &p);
@@ -650,8 +650,8 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             SetCursor(NULL);
             break;
         case WM_MOUSEMOVE:
-            pVideoWinAPI->mouse_xy.x = LOWORD(lParam);
-            pVideoWinAPI->mouse_xy.y = HIWORD(lParam);
+            pVideoWinAPI->mouse_xy.pos.x = LOWORD(lParam);
+            pVideoWinAPI->mouse_xy.pos.y = HIWORD(lParam);
             pVideoWinAPI->CallBack->Msg_MouseMove(pVideoWinAPI->mouse_xy);
             break;
         case WM_LBUTTONDOWN:

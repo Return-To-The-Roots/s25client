@@ -52,7 +52,8 @@ public:
     unsigned GetNumFrames() { return gfCounter_.getCurNumFrames(); }
     unsigned GetAverageGFPS() { return gfCounter_.getCurFrameRate(); }
 
-    void SetCursor(CursorType cursor = CURSOR_HAND, bool once = false);
+    void SetCursor(CursorType cursor = CURSOR_HAND);
+    CursorType GetCursor() const { return cursor_; }
 
 private:
     bool ShowSplashscreen();
@@ -63,7 +64,6 @@ private:
     unsigned skipgf_last_time;
     unsigned skipgf_last_report_gf;
     CursorType cursor_;
-    CursorType cursor_next;
 };
 
 #define GAMEMANAGER GameManager::inst()

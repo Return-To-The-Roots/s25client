@@ -645,7 +645,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
  */
 void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
-    lastMousePos = Position(mc.x, mc.y);
+    lastMousePos = mc.pos;
 
     // ist unser Desktop gültig?
     if(!curDesktop)
@@ -737,7 +737,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     }
 }
 
-const Window* WindowManager::GetTopMostWindow() const
+const IngameWindow* WindowManager::GetTopMostWindow() const
 {
     if(windows.empty())
         return NULL;

@@ -108,14 +108,14 @@ bool ctrlScrollBar::Msg_MouseMove(const MouseCoords& mc)
 {
     if(isMouseScrolling)
     {
-        const int moveDist = mc.y - last_y;
+        const int moveDist = mc.pos.y - last_y;
         sliderPos += moveDist;
         if(sliderPos + sliderHeight > scroll_height)
             sliderPos = moveDist < 0 ? 0 : (scroll_height - sliderHeight);
 
         UpdatePosFromSlider();
     }
-    last_y = mc.y;
+    last_y = mc.pos.y;
 
     // ButtonMessages weiterleiten
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);

@@ -155,7 +155,7 @@ bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
     Extent progressSize = GetSize() - Extent((GetSize().y + 1) * 2, 8) - padding_ * 2u;
     if(IsPointInRect(mc.GetPos(), Rect(progressOrigin, progressSize)))
     {
-        position = boost::math::iround(static_cast<double>((mc.x - progressOrigin.x) * maximum) / progressSize.x);
+        position = boost::math::iround(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x);
 
         if(GetParent())
             GetParent()->Msg_ProgressChange(GetID(), position);

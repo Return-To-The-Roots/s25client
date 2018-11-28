@@ -55,9 +55,11 @@ bool checkPort(int port)
 } // namespace validate
 
 Settings::Settings() //-V730
-{}
+{
+    LoadDefaults();
+}
 
-bool Settings::LoadDefaults()
+void Settings::LoadDefaults()
 {
     // global
     // {
@@ -141,26 +143,19 @@ bool Settings::LoadDefaults()
     // {
     addons.configuration.clear();
     // }
-
-    Save();
-
-    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Routine zum Laden der Konfiguration
-bool Settings::Load()
+void Settings::Load()
 {
     libsiedler2::Archiv settings;
     std::string settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);
-    if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SECTION_NAMES.size())
-    {
-        s25util::warning(std::string("No or corrupt \"") + settingsPath + "\" found, using default values.");
-        return LoadDefaults();
-    }
-
     try
     {
+        if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SECTION_NAMES.size())
+            throw std::runtime_error("File missing or invalid");
+
         const libsiedler2::ArchivItem_Ini* iniGlobal = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("global"));
         const libsiedler2::ArchivItem_Ini* iniVideo = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("video"));
         const libsiedler2::ArchivItem_Ini* iniLanguage = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("language"));
@@ -211,10 +206,7 @@ bool Settings::Load()
         // };
 
         if(video.fullscreenSize.x == 0 || video.fullscreenSize.y == 0 || video.windowedSize.x == 0 || video.windowedSize.y == 0)
-        {
-            s25util::warning(std::string("Corrupted \"") + settingsPath + "\" found, using default values.");
-            return LoadDefaults();
-        }
+            throw std::runtime_error("Invalid video settings");
 
         // language
         // {
@@ -301,11 +293,10 @@ bool Settings::Load()
 
     } catch(std::runtime_error& e)
     {
-        s25util::warning(std::string("Could not use settings from \"") + settingsPath + "\", using default values. Error: " + e.what());
-        return LoadDefaults();
+        s25util::warning(std::string("Could not use settings from \"") + settingsPath + "\", using default values. Reason: " + e.what());
+        LoadDefaults();
+        Save();
     }
-
-    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -400,7 +391,7 @@ void Settings::Save()
     // interface
     // {
     iniInterface->setValue("autosave_interval", interface.autosave_interval);
-    iniInterface->setValue("revert_mouse", (interface.revert_mouse));
+    iniInterface->setValue("revert_mouse", (interface.revert_mouse ? 1 : 0));
     // }
 
     // ingame

@@ -106,8 +106,9 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, bool initOGL)
-    : Desktop(NULL), game_(game), nwfInfo(GAMECLIENT.GetNWFInfo()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
+dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, const boost::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx,
+                                   bool initOGL)
+    : Desktop(NULL), game_(game), nwfInfo_(nwfInfo), worldViewer(playerIdx, game->world),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL), roadwindow(NULL),
       minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
@@ -183,6 +184,15 @@ void dskGameInterface::SetActive(bool activate)
 {
     if(activate == IsActive())
         return;
+    if(!activate && isScrolling)
+    {
+        // Stay active if scrolling and no modal window is open
+        const IngameWindow* wnd = WINDOWMANAGER.GetTopMostWindow();
+        if(wnd && wnd->IsModal())
+            StopScrolling();
+        else
+            return;
+    }
     Desktop::SetActive(activate);
     // Do this here to allow previous screen to keep control
     if(activate)
@@ -192,13 +202,19 @@ void dskGameInterface::SetActive(bool activate)
         if(!game_->IsStarted())
             GAMECLIENT.OnGameStart();
     }
+}
 
-    if(!activate)
-    {
-        isScrolling = false;
-        GAMEMANAGER.SetCursor(CURSOR_HAND);
-    } else if(road.mode != RM_DISABLED)
-        GAMEMANAGER.SetCursor(CURSOR_RM);
+void dskGameInterface::StopScrolling()
+{
+    isScrolling = false;
+    GAMEMANAGER.SetCursor(road.mode == RM_DISABLED ? CURSOR_HAND : CURSOR_RM);
+}
+
+void dskGameInterface::StartScrolling(const Position& mousePos)
+{
+    startScrollPt = mousePos;
+    isScrolling = true;
+    GAMEMANAGER.SetCursor(CURSOR_SCROLL);
 }
 
 void dskGameInterface::SettingsChanged() {}
@@ -323,7 +339,7 @@ void dskGameInterface::Msg_PaintAfter()
     {
         // Laggende Spieler anzeigen in Form von Schnecken
         DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
-        BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo->getPlayerInfos())
+        BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo_->getPlayerInfos())
         {
             if(player.isLagging)
             {
@@ -389,7 +405,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     {
         Msg_RightDown(mc);
         return true;
-    }
+    } else if(isScrolling)
+        StopScrolling();
 
     // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
     if(road.mode)
@@ -585,9 +602,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords& /*mc*/)
+bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 {
-    isScrolling = false;
+    if(isScrolling)
+    {
+        StopScrolling();
+        return true;
+    }
     return false;
 }
 
@@ -611,16 +632,14 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    startScrollPt = Position(mc.x, mc.y);
-    isScrolling = true;
-    GAMEMANAGER.SetCursor(CURSOR_SCROLL);
-    return false;
+    StartScrolling(mc.pos);
+    return true;
 }
 
 bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
 {
-    isScrolling = false;
-    GAMEMANAGER.SetCursor(road.mode == RM_DISABLED ? CURSOR_HAND : CURSOR_RM);
+    if(isScrolling)
+        StopScrolling();
     return false;
 }
 
@@ -1040,9 +1059,6 @@ void dskGameInterface::GI_WindowClosed(Window* wnd)
         actionwindow = NULL;
     else if(roadwindow == wnd)
         roadwindow = NULL;
-    else
-        return;
-    isScrolling = false;
 }
 
 void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)

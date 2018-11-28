@@ -51,10 +51,12 @@ struct MapPointLess
     }
 };
 
+namespace {
 typedef WorldFixture<CreateEmptyWorld, 0> EmptyWorldFixture0P;
 typedef WorldFixture<CreateEmptyWorld, 1> EmptyWorldFixture1P;
 typedef WorldFixture<CreateEmptyWorld, 1, 18, 16> EmptyWorldFixture1PBigger;
 typedef std::map<MapPoint, BuildingQuality, MapPointLess> ReducedBQMap;
+} // namespace
 
 /// Check that the BQ at all points is BQ_CASTLE except the points in the reducedBQs map which have given BQs
 boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const std::vector<MapPoint>& pts, const ReducedBQMap& reducedBQs)
@@ -209,11 +211,8 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
         world.SetOwner(pt, 1);
 
-    // Set player
-    GAMECLIENT.SetTestPlayerId(0);
-
-    dskGameInterface gameDesktop(this->game, false);
-    const GameWorldViewer& gwv = gameDesktop.GetViewer();
+    dskGameInterface gameDesktop(this->game, boost::shared_ptr<NWFInfo>(), 0, false);
+    const GameWorldViewer& gwv = gameDesktop.GetView().GetViewer();
     // Start at a position a bit away from the HQ so all points are castles
     const MapPoint roadPt = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(6, 6));
     const std::vector<MapPoint> roadRadiusPts = world.GetPointsInRadiusWithCenter(roadPt, 6);
