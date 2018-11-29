@@ -35,7 +35,11 @@ else()
 
     set(RTTR_OPTIMZATION_TUNE "${RTTR_OPTIMZATION_TUNE_DEFAULT}" CACHE STRING "Target architecture to tune for (e.g. prescott, core2, nehalem (>=Core ix), westmere)")
     
-    CheckAndAddFlags(-ffast-math -fomit-frame-pointer -mtune=generic)
+    # Don't use this for GCC < 8 on apple due to ICE: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78380
+    if(NOT (APPLE AND CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8))
+        CheckAndAddFlags(-ffast-math)
+    endif()
+    CheckAndAddFlags(-fomit-frame-pointer -mtune=generic)
     
     if(RTTR_OPTIMZATION_TUNE)
         # Adding multiple mtune flags just uses the last one, so adding mtune=generic above is ok
