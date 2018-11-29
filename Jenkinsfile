@@ -26,7 +26,6 @@ def transformIntoStep(arch, wspwd) {
                               if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" != "${arch}" ] ; then
                                   TOOLCHAIN=-DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/c.${arch}.cmake
                               fi
-                              MAKE_TARGET=
                               VOLUMES="-v /srv/apache2/siedler25.org/nightly:/www \
                                   -v /srv/backup/www/s25client:/archive \
                                   "
@@ -39,13 +38,14 @@ def transformIntoStep(arch, wspwd) {
                               # Auto detect version and revision
                               ADDITIONAL_CMAKE_FLAGS="-DRTTR_VERSION=OFF -DRTTR_REVISION=OFF"
 
-                              if [[ "${env.BRANCH_NAME}" == PR-* ]] ; then
-                                  VOLUMES=""
-                              elif [ "${env.BRANCH_NAME}" == "master" ] ; then
+                              if [ "${env.BRANCH_NAME}" == "master" ] ; then
                                   MAKE_TARGET=create_nightly
                               elif [ "${env.BRANCH_NAME}" == "stable" ] ; then
                                   MAKE_TARGET=create_stable
                                   ADDITIONAL_CMAKE_FLAGS="-DRTTR_VERSION=\$(cat ../.stable-version) -DRTTR_REVISION=OFF"
+                              else
+                                  VOLUMES=
+                                  MAKE_TARGET=
                               fi
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
@@ -171,11 +171,12 @@ catchError() {
                           git tag -a "\$(cat .stable-version)-$BUILD_NUMBER" -m "Created release \$(cat .stable-version) from Jenkins build $BUILD_NUMBER"
                           git push git@github.com:Return-To-The-Roots/s25client.git --tags
                       fi
-
-                      alias ssh="ssh -o ForwardX11=no"
-                      cd release
-                      ./upload_urls.sh nightly
-                      ./upload_urls.sh stable
+                      if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "stable" ] ; then
+                          alias ssh="ssh -o ForwardX11=no"
+                          cd release
+                          ./upload_urls.sh nightly
+                          ./upload_urls.sh stable
+                      fi
                 """
 
                 archiveArtifacts artifacts: 'release/changelog-*.txt,release/rapidshare-*.txt', fingerprint: true, onlyIfSuccessful: true
