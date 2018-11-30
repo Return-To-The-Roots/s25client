@@ -6,6 +6,8 @@
 *.suo
 *.user
 *~
+.DS_Store
+.vscode
 /S2
 /build
 /external/boost*

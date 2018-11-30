@@ -1,2 +1,5 @@
 add_subdirectory(audioDrivers)
 add_subdirectory(videoDrivers)
+if(RTTR_OSX_BUNDLE)
+    add_subdirectory(macosLauncher)
+endif()

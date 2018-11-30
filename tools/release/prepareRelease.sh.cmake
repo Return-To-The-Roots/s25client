@@ -132,75 +132,7 @@ mecho --blue "## Performing additional tasks"
 
 case "$SYSTEM_NAME" in
 	Darwin)
-		# create app-bundle for apple
-		# app anlegen
-		contentsPath="${DESTDIR}s25client.app/Contents"
-		mkdir -vp ${contentsPath}/{MacOS,Resources} || exit 1
-		macOSPath="${contentsPath}/MacOS"
-		frameworksPath="${macOSPath}/Frameworks"
-
-		# frameworks kopieren
-		mkdir -vp ${frameworksPath} || exit 1
-		mkdir -vp ${frameworksPath}/{SDL,SDL_mixer}.framework || exit 1
-
-		srcFrameworksPath="/Library/Frameworks"
-		if [ ! -d /Library/Frameworks ] ; then
-			srcFrameworksPath="/usr/lib/apple/SDKs/Library/Frameworks"
-		fi
-		cp -r ${srcFrameworksPath}/SDL.framework ${frameworksPath} || exit 1
-		cp -r ${srcFrameworksPath}/SDL_mixer.framework ${frameworksPath} || exit 1
-
-		# remove headers and additional libraries from the frameworks
-		find ${frameworksPath}/ -name Headers -exec rm -rf {} \; || true
-		find ${frameworksPath}/ -name Resources -exec rm -rf {} \; || true
-
-		SDK=@CMAKE_OSX_SYSROOT@
-
-		# copy libs
-		for LIBNAME in boost_system boost_filesystem boost_iostreams boost_thread boost_locale boost_program_options ; do
-			LIB=/usr/lib/lib${LIBNAME}.dylib
-			if [ -f $SDK$LIB ] ; then
-				cp -rv $SDK$LIB ${macOSPath} || exit 1
-			else
-				echo "$LIB was not found in $SDK" >&2
-				exit 1
-			fi
-		done
-        LIB=/usr/lib/libminiupnpc.5.dylib
-        if [ -f $SDK$LIB ] ; then
-            cp -rv $SDK$LIB ${macOSPath} || exit 1
-        else
-            LIB=/usr/lib/libminiupnpc.16.dylib
-            cp -rv $SDK$LIB ${macOSPath} || exit 1
-            LIB=/usr/lib/libminiupnpc.2.0.dylib
-            cp -rv $SDK$LIB ${macOSPath} || exit 1
-        fi
-
-		mkdir -vp ${macOSPath}/bin || exit 1
-		mkdir -vp ${macOSPath}/libexec || exit 1
-		mkdir -vp ${macOSPath}/lib || exit 1
-
-		# binaries und paketdaten kopieren
-		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/rttr.command ${macOSPath}/ || exit 1
-		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/rttr.terminal ${macOSPath}/ || exit 1
-		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/icon.icns ${contentsPath}/Resources/ || exit 1
-		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/PkgInfo ${contentsPath}/ || exit 1
-		cp -v ${RTTR_SRCDIR}/tools/release/bin/macos/Info.plist ${contentsPath}/ || exit 1
-		mv -v ${DESTDIR}bin/* ${macOSPath}/bin/ || exit 1
-		mv -v ${DESTDIR}libexec/* ${macOSPath}/libexec/ || exit 1
-		mv -v ${DESTDIR}lib/* ${macOSPath}/lib/ || exit 1
-
-		chmod +x ${macOSPath}/rttr.command || exit 1
-		chmod +x ${macOSPath}/bin/* || exit 1
-		chmod +x ${macOSPath}/libexec/s25rttr/* || exit 1
-
-		# remove dirs if empty
-		rmdir ${DESTDIR}bin || true
-		rmdir ${DESTDIR}lib || true
-		rmdir ${DESTDIR}libexec || true
-
-		# RTTR-Ordner kopieren
-		mv -v ${DESTDIR}share ${macOSPath}/ || exit 1
+        # All done in CMake
 	;;
 	Windows)
 		lua=""
@@ -295,7 +227,7 @@ case "$SYSTEM_NAME" in
 		fi
 	;;
 	*)
-		echo "$SYSTEM_ARCH not supported" >&2
+		echo "$SYSTEM_NAME not supported" >&2
 		exit 1
 	;;
 esac
