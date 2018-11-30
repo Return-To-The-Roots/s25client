@@ -28,3 +28,6 @@
 [submodule "s25edit"]
 	path = s25edit
 	url = https://github.com/Return-To-The-Roots/s25edit.git
+[submodule "contrib/turtle"]
+	path = contrib/turtle
+	url = https://github.com/mat007/turtle.git

@@ -43,7 +43,6 @@ public:
 
     void Msg_PaintAfter() override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftDown_After(const MouseCoords& mc) override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
 
 protected:

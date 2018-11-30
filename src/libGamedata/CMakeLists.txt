@@ -70,12 +70,12 @@ gather_dll(LUA)
 
 ADD_LIBRARY(gamedata STATIC ${SOURCES_OTHER} ${SOURCES_SUBDIRS})
 target_include_directories(gamedata PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(gamedata SYSTEM PUBLIC ${RTTR_CONTRIB_DIR}/kaguya/include ${LUA_INCLUDE_DIR} PRIVATE ${UTF8_INCLUDE_DIR})
+target_include_directories(gamedata SYSTEM PUBLIC ${LUA_INCLUDE_DIR} PRIVATE ${UTF8_INCLUDE_DIR})
 TARGET_LINK_LIBRARIES(gamedata PUBLIC
 	s25util
 	mygettext
 	s25Common
 	rttrConfig
+	kaguya
 	${LUA_LIBRARIES}
 )
-

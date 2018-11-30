@@ -1,10 +1,8 @@
-
-
 add_subdirectory(mockupDrivers)
 
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 if(NOT Boost_USE_STATIC_LIBS)
-	ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
+    ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
 endif()
 if(MSVC)
     # Use full paths for defines (makes Boost.Test with the VS addin work better)
@@ -23,12 +21,13 @@ SET(TEST_SOURCES ${OTHER_SRC} ${LEGACY_FILES})
 SOURCE_GROUP(legacy FILES ${LEGACY_FILES})
 
 add_executable(Test ${TEST_SOURCES})
-target_link_libraries(Test
-						s25Main
+target_link_libraries(Test PRIVATE
+                        s25Main
                         audioMockup
                         videoMockup
-						${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-					  )
+                        turtle
+                        ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                      )
 target_include_directories(Test PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/include")
 add_test(NAME MainTest COMMAND Test WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 

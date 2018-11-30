@@ -33,11 +33,8 @@ else()
 	CheckAndAddFlag("-Wno-long-long")
 	CheckAndAddFlag("-Wno-deprecated-register")
 	CheckAndAddFlag("-Wno-unknown-pragmas")
-	CheckAndAddFlag("-Wno-c++11-extensions")
 	CheckAndAddFlag("-fno-strict-aliasing")
 	CheckAndAddFlag("-Qunused-arguments")
-	# For Boost < 1.59 (static-assert emulation)
-	CheckAndAddFlag("-Wno-unused-local-typedefs")
 
 	CHECK_CXX_SOURCE_COMPILES("
 		#if __cplusplus >= 201103L
@@ -47,9 +44,11 @@ else()
 		CheckAndAddFlags("-Wsuggest-override" "-Wno-error=suggest-override")
 	else()
 		add_definitions(-Doverride=)
+	    CheckAndAddFlag("-Wno-c++11-extensions")
+    	# Variadic macros are part of C99 but supported by all big compilers in C++03
+	    CheckAndAddFlag("-Wno-variadic-macros")
+	    CheckAndAddFlag("-Wno-c99-extensions")
+	    # For Boost < 1.59 (static-assert emulation)
+	    CheckAndAddFlag("-Wno-unused-local-typedef")
 	endif()
-
-	# Variadic macros are part of C99 but supported by all big compilers in C++03
-	CheckAndAddFlag("-Wno-variadic-macros")
-	CheckAndAddFlag("-Wno-c99-extensions")
 endif()

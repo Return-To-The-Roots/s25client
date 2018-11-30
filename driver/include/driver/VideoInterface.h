@@ -53,7 +53,7 @@ public:
     /// Die Nachrichtenschleife.
     virtual bool MessageLoop() = 0;
 
-    /// Funktion zum Auslesen des TickCounts.
+    /// Return the current tick count (time since epoch in ms)
     virtual unsigned long GetTickCount() const = 0;
 
     /// Funktion zum Holen einer Subfunktion.

@@ -75,11 +75,6 @@ include(CheckGitSubmodules)
 check_git_submodules()
 
 ################################################################################
-# Add contrib libraries. Might need different compile flags
-# Need to use include() so we can set and add variables/libraries to current scope
-include("${CMAKE_CURRENT_SOURCE_DIR}/contrib.cmake")
-
-################################################################################
 # ClangFormat
 ################################################################################
 
@@ -182,9 +177,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	if(NOT ${CHECK_CLANG_INLINE})
 		add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
 	endif()
-
-	# Some workaround flags for execssive warnings in clang
-	CheckAndAddFlag(-Wno-unused-local-typedefs)
 endif()
 
 # Enable warnings
@@ -220,7 +212,7 @@ endif()
 ################################################################################
 
 IF (NOT WIN32)
-    include(ConfigureExecutable)
+  include(ConfigureExecutable)
 	configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake" . start.sh)
 ENDIF()
 
@@ -228,17 +220,6 @@ file(COPY "bugle" DESTINATION ".")
 file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
 enable_testing()
-
-# Add dlls from contrib folder
-if(MSVC)
-	if(NOT EXISTS "${CONTRIB_DLL_DIR}/libcurl.dll")
-		MESSAGE(WARNING "Folder with DLLs not found in ${CONTRIB_DLL_DIR}. You may not be able to execute directly from VS")
-	else()
-		FILE(GLOB CONTRIB_DLLS ${CONTRIB_DLL_DIR}/*.dll)
-		include(GatherDll)
-		gather_dll_add(${CONTRIB_DLLS})
-	ENDIF()
-endif()
 
 ################################################################################
 # Include projects
@@ -285,7 +266,18 @@ ELSE()
 ENDIF()
 
 # External dependencies
-add_subdirectory("${RTTR_CONTRIB_DIR}/glad")
+add_subdirectory(contrib)
+enable_boost_backport()
+# Add dlls from contrib folder
+if(MSVC)
+	if(NOT EXISTS "${CONTRIB_DLL_DIR}/libcurl.dll")
+		MESSAGE(WARNING "Folder with DLLs not found in ${CONTRIB_DLL_DIR}. You may not be able to execute directly from VS")
+	else()
+		FILE(GLOB CONTRIB_DLLS ${CONTRIB_DLL_DIR}/*.dll)
+		include(GatherDll)
+		gather_dll_add(${CONTRIB_DLLS})
+	ENDIF()
+endif()
 
 ADD_SUBDIRECTORY(libutil)
 ADD_SUBDIRECTORY(libendian)
