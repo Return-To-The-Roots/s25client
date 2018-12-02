@@ -21,7 +21,7 @@
 #include "gameTypes/BuildingQuality.h"
 #include "gameData/TerrainDesc.h"
 #include <boost/array.hpp>
-#include <iosfwd>
+#include <iostream>
 
 const boost::array<const char*, 6> bqNames = {{"Nothing", "Flag", "Hut", "House", "Castle", "Mine"}};
 inline std::ostream& operator<<(std::ostream& stream, BuildingQuality bq)
