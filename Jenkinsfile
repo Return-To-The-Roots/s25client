@@ -45,7 +45,9 @@ def transformIntoStep(arch, wspwd) {
                                   ADDITIONAL_CMAKE_FLAGS="-DRTTR_VERSION=\$(cat ../.stable-version) -DRTTR_REVISION=OFF"
                               else
                                   VOLUMES=
-                                  MAKE_TARGET=
+                                  MAKE_TARGET=install
+                                  ADDITIONAL_CMAKE_FLAGS="\${ADDITIONAL_CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/workdir/installed"
+                                  touch s25rttrDummy.zip
                               fi
                               CMAKE_VERSION="3.8.2"
                               CMAKE_DIR="/workdir/installedCMake-\${CMAKE_VERSION}"
@@ -62,7 +64,7 @@ def transformIntoStep(arch, wspwd) {
                                                         export PATH=\${CMAKE_DIR}/bin:\\\$PATH && \
                                                         mkdir -p build && cd build && \
                                                         cmake .. -DCMAKE_BUILD_TYPE=\$BUILD_TYPE \$TOOLCHAIN \
-                                                        -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
+                                                        -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \
                                                         \$ADDITIONAL_CMAKE_FLAGS && \
                                                         make \$MAKE_TARGET"
                               EXIT=\$?
@@ -128,15 +130,17 @@ catchError() {
             node('master') {
                 ansiColor('xterm') {
                     sh """set -x
-                          mkdir -p ws
-                          pushd ws
-                          if [ ! -d s25client.git ] ; then
-                              git clone --mirror https://github.com/Return-To-The-Roots/s25client.git
-                              (cd s25client.git && git remote set-url --push origin git+ssh://git.launchpad.net/s25rttr)
+                          if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "latest" ]; then
+                              mkdir -p ws
+                              pushd ws
+                              if [ ! -d s25client.git ] ; then
+                                  git clone --mirror https://github.com/Return-To-The-Roots/s25client.git
+                                  (cd s25client.git && git remote set-url --push origin git+ssh://git.launchpad.net/s25rttr)
+                              fi
+                              cd s25client.git
+                              git fetch -p origin
+                              git push --mirror
                           fi
-                          cd s25client.git
-                          git fetch -p origin
-                          git push --mirror
                     """
                     // todo: mirror submodules?
                 }
@@ -152,7 +156,7 @@ catchError() {
                         sh 'chmod -R u+w .git || true' // fixes unstash overwrite bug ... #JENKINS-33126
                         unstash 'source'
                         sh """set -x
-                              if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "latest" ] ; then
+                              if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "latest" ]; then
                                     cd release
                                     ./build_deb.sh ${env.BUILD_NUMBER} || exit 1
                               fi
@@ -179,10 +183,13 @@ catchError() {
                           git push git@github.com:Return-To-The-Roots/s25client.git --tags
                       fi
                       if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "stable" ] ; then
-                      alias ssh="ssh -o ForwardX11=no"
-                      cd tools/release
-                      ./upload_urls.sh nightly
-                      ./upload_urls.sh stable
+                        alias ssh="ssh -o ForwardX11=no"
+                        cd tools/release
+                        ./upload_urls.sh nightly
+                        ./upload_urls.sh stable
+                      else
+                        touch tools/release/changelog-dummy.txt
+                        touch tools/release/rapidshare-dummy.txt
                       fi
                 """
 
