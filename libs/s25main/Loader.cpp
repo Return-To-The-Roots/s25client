@@ -807,7 +807,7 @@ void Loader::fillCaches()
 /**
  *  Extrahiert eine Textur aus den Daten.
  */
-glArchivItem_Bitmap* Loader::ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect)
+libutil::unique_ptr<glArchivItem_Bitmap> Loader::ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect)
 {
     Extent texSize = rect.getSize();
     if(texSize.x == 0 && rect.right < srcImg.getWidth())
@@ -819,20 +819,19 @@ glArchivItem_Bitmap* Loader::ExtractTexture(const glArchivItem_Bitmap& srcImg, c
     if(int ec = srcImg.print(buffer, NULL, 0, 0, rect.left, rect.top))
         throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
 
-    glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
+    libutil::unique_ptr<glArchivItem_Bitmap> bitmap(new glArchivItem_Bitmap_Raw());
     if(int ec = bitmap->create(buffer, srcImg.getPalette()))
     {
-        delete bitmap;
         throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
     }
-    return bitmap;
+    return RTTR_MOVE_RET(bitmap);
 }
 
 /**
  *  Extrahiert mehrere (animierte) Texturen aus den Daten.
  */
-libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t start_index,
-                                                    uint8_t color_count)
+libutil::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
+                                                                        uint8_t start_index, uint8_t color_count)
 {
     Extent texSize = rect.getSize();
     if(texSize.x == 0 && rect.right < srcImg.getWidth())
@@ -864,7 +863,7 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& s
             throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
         destination->push(bitmap.release());
     }
-    return destination.release();
+    return RTTR_MOVE_RET(destination);
 }
 
 std::vector<std::string> Loader::GetFilesToLoad(const std::string& filepath)

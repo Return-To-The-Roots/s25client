@@ -83,7 +83,7 @@ void dskTextureTest::Msg_ComboSelectItem(const unsigned ctrl_id, const int selec
     LOADER.LoadFile(RTTRCONFIG.ExpandPath(cur.texturePath));
     std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
     glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
-    curTexture.reset(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
+    curTexture = LOADER.ExtractTexture(*texBmp, cur.posInTexture);
 }
 
 void dskTextureTest::Msg_ButtonClick(const unsigned ctrl_id)
