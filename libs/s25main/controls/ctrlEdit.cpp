@@ -118,7 +118,7 @@ void ctrlEdit::Draw_()
             cursorDrawPos.x += 5;
         cursorDrawPos.y += (GetSize().y - (font_->getHeight() + 2)) / 2;
 
-        DrawRectangle(Rect(cursorDrawPos, 1, font_->getHeight() + 2), 0xFFFFA000);
+        DrawRectangle(Rect(cursorDrawPos, Extent(1, font_->getHeight() + 2)), 0xFFFFA000);
     }
 }
 

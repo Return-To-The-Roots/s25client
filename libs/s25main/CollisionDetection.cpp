@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "CollisionDetection.h"
 #include "Rect.h"
-#include <cstdlib>
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +33,7 @@ bool IsPointInRect(const int x, const int y, const Rect& rect)
 
 bool IsPointInRect(const int x, const int y, const int rx, const int ry, const int rwidth, const int rheight)
 {
-    return IsPointInRect(x, y, Rect(rx, ry, rwidth, rheight));
+    return IsPointInRect(Position(x, y), Rect(Position(rx, ry), Extent(rwidth, rheight)));
 }
 
 bool DoRectsIntersect(const Rect& rect1, const Rect& rect2)

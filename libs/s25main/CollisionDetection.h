@@ -19,8 +19,7 @@
 #define COLLISIONDETECTION_H_INCLUDED
 
 #include "Point.h"
-
-struct Rect;
+#include "Rect.h"
 
 bool IsPointInRect(const Position& pt, const Rect& rect);
 bool IsPointInRect(const int x, const int y, const Rect& rect);

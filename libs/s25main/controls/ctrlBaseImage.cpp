@@ -31,7 +31,7 @@ void ctrlBaseImage::SwapImage(ctrlBaseImage& other)
 Rect ctrlBaseImage::GetImageRect() const
 {
     if(!img_)
-        return Rect(0, 0, 0, 0);
+        return Rect();
     return Rect(-img_->GetOrigin(), img_->GetSize());
 }
 
