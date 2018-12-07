@@ -75,9 +75,9 @@ inline DescIdx<T> DescriptionContainer<T>::getIndex(const std::string& name) con
 template<typename T>
 inline const T* DescriptionContainer<T>::tryGet(const DescIdx<T> idx) const
 {
-    if(!idx || idx >= size())
+    if(!idx || idx.value >= size())
         return NULL;
-    return items[idx];
+    return &items[idx.value];
 }
 
 template<typename T>
