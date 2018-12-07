@@ -24,6 +24,10 @@
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
 #include <boost/test/unit_test.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/nowide/fstream.hpp>
+#include "lua/GameDataLoader.h"
+#include "PointOutput.h"
 
 BOOST_AUTO_TEST_SUITE(GameData)
 
@@ -69,6 +73,71 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
         }
     }
     // TerrainData::PrintEdgePrios();
+}
+
+BOOST_AUTO_TEST_CASE(TextureCoords)
+{
+    bfs::path basePath("testGameData");
+    bfs::create_directories(basePath);
+    {
+        bnw::ofstream file(basePath/"default.lua");
+        file << "rttr:AddLandscape{\
+            name = \"testland\",\
+            mapGfx = \"<RTTR_GAME>/DATA/MAP_0_Z.LST\",\
+            roads = {\
+                normal = { texture = \"<RTTR_GAME>/foo\"},\
+                upgraded = { texture = \"<RTTR_GAME>/foo\"},\
+                boat = { texture = \"<RTTR_GAME>/foo\"},\
+                mountain = { texture = \"<RTTR_GAME>/foo\"}\
+            }}";
+        file << "rttr:AddTerrainEdge{ name = \"edge\", landscape = \"testland\", texture = \"<RTTR_GAME>/foo\" }";
+        file << "rttr:AddTerrain{\
+            name = \"terrain1\",\
+            landscape = \"testland\", edgeType = \"edge\", texture = \"<RTTR_GAME>/foo\", color = 0, \
+            pos = { 10, 20, 32, 31 }, texType = \"overlapped\" }";
+        file << "rttr:AddTerrain{\
+            name = \"terrain2\",\
+            landscape = \"testland\", edgeType = \"edge\", texture = \"<RTTR_GAME>/foo\", color = 0, \
+            pos = { 10, 20, 32, 31 }, texType = \"stacked\" }";
+        file << "rttr:AddTerrain{\
+            name = \"terrain3\",\
+            landscape = \"testland\", edgeType = \"edge\", texture = \"<RTTR_GAME>/foo\", color = 0, \
+            pos = { 10, 20, 32, 31 }, texType = \"rotated\" }";
+    }
+    WorldDescription desc;
+    GameDataLoader loader(desc, basePath.string());
+    BOOST_REQUIRE(loader.Load());
+    typedef TerrainDesc::PointF PointF;
+    // Border points are inset by half a pixel for OpenGL (sample middle of pixel!)
+    // Overlapped uses the full rectangle
+    const TerrainDesc::Triangle rsuO = desc.terrain.tryGet("terrain1")->GetRSUTriangle();
+    BOOST_REQUIRE_EQUAL(rsuO.tip, PointF(10 + 32 / 2, 20 + 0.5f));
+    BOOST_REQUIRE_EQUAL(rsuO.left, PointF(10 + 0.5f, 20 + 31 - 0.5f));
+    BOOST_REQUIRE_EQUAL(rsuO.right, PointF(10 + 32 - 0.5f, 20 + 31 - 0.5f));
+    const TerrainDesc::Triangle usdO = desc.terrain.tryGet("terrain1")->GetUSDTriangle();
+    BOOST_REQUIRE_EQUAL(usdO.tip, PointF(10 + 32 / 2, 20 + 31 - 0.5f));
+    BOOST_REQUIRE_EQUAL(usdO.left, PointF(10 + 0.5f, 20 + 0.5f));
+    BOOST_REQUIRE_EQUAL(usdO.right, PointF(10 + 32 - 0.5f, 20 + 0.5f));
+
+    // Stacked has RSU over USD
+    const TerrainDesc::Triangle rsuS = desc.terrain.tryGet("terrain2")->GetRSUTriangle();
+    BOOST_REQUIRE_EQUAL(rsuS.tip, rsuO.tip);
+    BOOST_REQUIRE_EQUAL(rsuS.left, PointF(10 + 0.5f, 20 + 31 / 2.f));
+    BOOST_REQUIRE_EQUAL(rsuS.right, PointF(10 + 32 - 0.5f, 20 + 31 / 2.f));
+    const TerrainDesc::Triangle usdS = desc.terrain.tryGet("terrain2")->GetUSDTriangle();
+    BOOST_REQUIRE_EQUAL(usdS.tip, usdO.tip);
+    BOOST_REQUIRE_EQUAL(usdS.left, PointF(10 + 0.5f, 20 + 31 / 2.f));
+    BOOST_REQUIRE_EQUAL(usdS.right, PointF(10 + 32 - 0.5f, 20 + 31 / 2.f));
+
+    // Rotated is stacked sideways (note that order stays the same)
+    const TerrainDesc::Triangle rsuR = desc.terrain.tryGet("terrain3")->GetRSUTriangle();
+    BOOST_REQUIRE_EQUAL(rsuR.tip, rsuS.left);
+    BOOST_REQUIRE_EQUAL(rsuR.left, rsuS.right);
+    BOOST_REQUIRE_EQUAL(rsuR.right, rsuS.tip);
+    const TerrainDesc::Triangle usdR = desc.terrain.tryGet("terrain3")->GetUSDTriangle();
+    BOOST_REQUIRE_EQUAL(usdR.tip, usdS.right);
+    BOOST_REQUIRE_EQUAL(usdR.left, usdS.tip);
+    BOOST_REQUIRE_EQUAL(usdR.right, usdS.left);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

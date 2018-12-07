@@ -160,38 +160,28 @@ bool TerrainDesc::IsVital() const
 
 TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
 {
+    // Inset by 0.5 on all sites to sample middle of pixel in OGL
+    RectBase<float> oglRect(posInTexture.getOrigin() + PointF::all(.5f), posInTexture.getSize() - PointF::all(1));
+    const PointF middlePt = oglRect.getOrigin() + oglRect.getSize() / 2.f;
+    const PointF middleBottom(middlePt.x, oglRect.bottom);
     Triangle result;
-    PointF middleBottom((posInTexture.left + posInTexture.right) / 2.f, posInTexture.bottom + 0.f);
-    PointF leftMiddle;
-    if(texType == ETexType::Stacked || texType == ETexType::Rotated)
-    {
-        // Integer rounding up
-        leftMiddle = PointF(Position(posInTexture.left, (posInTexture.top + posInTexture.bottom + 1) / 2));
-        // When cutting the 2 triangles from a square, we want a 45 deg angle (height = 0.5*width) to avoid using outside pixels
-        // So if we can make those equal by removing half a pixel to the bottom middle position, we do this
-        if(middleBottom.x - leftMiddle.x == middleBottom.y - 0.5f - leftMiddle.y)
-            middleBottom.y -= 0.5f;
-    } else
-        leftMiddle = PointF(0, 0); // Unused but silences warnings
     switch(boost::native_value(texType))
     {
         case ETexType::Overlapped:
         default:
             result.tip = middleBottom;
-            result.left = PointF(posInTexture.getOrigin());
-            result.right = PointF(Position(posInTexture.right, posInTexture.top));
+            result.left = oglRect.getOrigin();
+            result.right = PointF(oglRect.right, oglRect.top);
             break;
         case ETexType::Stacked:
             result.tip = middleBottom;
-            result.left = leftMiddle;
-            result.right = PointF(posInTexture.right + 0.f, result.left.y);
-            if(result.tip.x - result.left.x == result.tip.y - 0.5f - result.left.y)
-                result.tip.y -= 0.5f;
+            result.left = PointF(oglRect.left, middlePt.y);
+            result.right = PointF(oglRect.right, middlePt.y);
             break;
         case ETexType::Rotated:
-            result.tip = PointF(posInTexture.right + 0.f, leftMiddle.y);
+            result.tip = PointF(oglRect.right, middlePt.y);
             result.left = middleBottom;
-            result.right = leftMiddle;
+            result.right = PointF(oglRect.left, middlePt.y);
             break;
     }
     return result;
@@ -199,37 +189,27 @@ TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
 
 TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
 {
+    // Inset by 0.5 on all sites to sample middle of pixel in OGL
+    RectBase<float> oglRect(posInTexture.getOrigin() + PointF::all(.5f), posInTexture.getSize() - PointF::all(1));
+    const PointF middlePt = oglRect.getOrigin() + oglRect.getSize() / 2.f;
+    const PointF middleTop(middlePt.x, oglRect.top);
     Triangle result;
-    PointF middleTop((posInTexture.left + posInTexture.right) / 2.f, posInTexture.top + 0.f);
-    PointF leftMiddle;
-    if(texType == ETexType::Stacked || texType == ETexType::Rotated)
-    {
-        // Integer rounding down
-        leftMiddle = PointF(Position(posInTexture.left, (posInTexture.top + posInTexture.bottom) / 2));
-        // When cutting the 2 triangles from a square, we want a 45 deg angle (height = 0.5*width) to avoid using outside pixels
-        // So if we can make those equal by adding half a pixel to the top middle position, we do this
-        if(middleTop.x - leftMiddle.x == leftMiddle.y - (middleTop.y + 0.5f))
-            middleTop.y += 0.5f;
-    } else
-        leftMiddle = PointF(0, 0); // Unused but silences warnings
     switch(boost::native_value(texType))
     {
         case ETexType::Overlapped:
         default:
             result.tip = middleTop;
-            result.left = PointF(posInTexture.left + 0.5f, posInTexture.bottom + 0.f);
-            result.right = PointF(posInTexture.right - 0.5f, posInTexture.bottom + 0.f);
+            result.left = PointF(oglRect.left, oglRect.bottom);
+            result.right = PointF(oglRect.right, oglRect.bottom);
             break;
         case ETexType::Stacked:
             result.tip = middleTop;
-            result.left = leftMiddle;
-            result.right = PointF(posInTexture.right + 0.f, result.left.y);
-            if(result.tip.x - result.left.x == result.left.y - result.tip.y - 0.5f)
-                result.tip.y += 0.5f;
+            result.left = PointF(oglRect.left, middlePt.y);
+            result.right = PointF(oglRect.right, middlePt.y);
             break;
         case ETexType::Rotated:
-            result.tip = leftMiddle;
-            result.left = PointF(posInTexture.right + 0.f, result.tip.y);
+            result.tip = PointF(oglRect.left, middlePt.y);
+            result.left = PointF(oglRect.right, middlePt.y);
             result.right = middleTop;
             break;
     }
