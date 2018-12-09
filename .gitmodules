@@ -1,33 +1,33 @@
 [submodule "libendian"]
 	url = https://github.com/Return-To-The-Roots/libendian.git
-	path = libendian
+	path = external/libendian
 [submodule "liblobby"]
 	url = https://github.com/Return-To-The-Roots/liblobby.git
-	path = liblobby
+	path = external/liblobby
 [submodule "libsiedler2"]
 	url = https://github.com/Return-To-The-Roots/libsiedler2.git
-	path = libsiedler2
+	path = external/libsiedler2
 [submodule "libutil"]
 	url = https://github.com/Return-To-The-Roots/libutil.git
-	path = libutil
+	path = external/libutil
 [submodule "mygettext"]
 	url = https://github.com/Return-To-The-Roots/mygettext.git
-	path = mygettext
+	path = external/mygettext
 [submodule "s-c"]
 	url = https://github.com/Return-To-The-Roots/s-c.git
-	path = s-c
+	path = external/s-c
 [submodule "s25update"]
 	url = https://github.com/Return-To-The-Roots/s25update.git
-	path = s25update
+	path = external/s25update
 [submodule "RTTR/languages"]
 	url = https://github.com/Return-To-The-Roots/languages.git
-	path = RTTR/languages
+	path = data/RTTR/languages
 [submodule "contrib/kaguya"]
-	path = contrib/kaguya
+	path = external/kaguya
 	url = https://github.com/satoren/kaguya.git
 [submodule "s25edit"]
-	path = s25edit
+	path = external/s25edit
 	url = https://github.com/Return-To-The-Roots/s25edit.git
 [submodule "contrib/turtle"]
-	path = contrib/turtle
+	path = external/turtle
 	url = https://github.com/mat007/turtle.git

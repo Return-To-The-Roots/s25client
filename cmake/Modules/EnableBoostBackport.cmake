@@ -1,0 +1,21 @@
+# Cache so it can be used inside the functions below
+set(_boost_backport_dir ${CMAKE_CURRENT_LIST_DIR}/backport CACHE INTERNAL "")
+
+function(enable_boost_backport)
+  find_package(Boost 1.55 QUIET)
+	set(tmpBoostVersion "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
+	IF(tmpBoostVersion VERSION_LESS 1.56)
+		IF(MSVC AND MSVC_VERSION EQUAL 1800)
+			# See https://svn.boost.org/trac/boost/ticket/9332
+			MESSAGE(FATAL_ERROR "Boost 1.55 contains a bug so that it does not work with MSVC 2013. Use a newer boost version or a different Visual Studio")
+		ENDIF()
+		MESSAGE(STATUS "Boost version smaller than 1.56 detected. Using backport 1.55-1.56")
+		INCLUDE_DIRECTORIES(${_boost_backport_dir}/boost_1.55-1.56)
+	ENDIF()
+	IF(tmpBoostVersion VERSION_LESS 1.58)
+		MESSAGE(STATUS "Boost version smaller than 1.58 detected. Using backport 1.56-1.58")
+		INCLUDE_DIRECTORIES(${_boost_backport_dir}/boost_1.56-1.58)
+	ELSE()
+		MESSAGE(STATUS "Boost ${Boost_VERSION} detected. No backport required")
+	ENDIF()
+endfunction()

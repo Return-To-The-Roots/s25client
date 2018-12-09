@@ -40,7 +40,7 @@ for:
 install:
   - dir C:\Libraries
   - appveyor-retry git submodule update --init
-  - cd contrib
+  - cd external
   - 7z x full-contrib-msvc.rar
   - cd ..
 

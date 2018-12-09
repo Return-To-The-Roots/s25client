@@ -172,10 +172,10 @@ catchError() {
                           git push git@github.com:Return-To-The-Roots/s25client.git --tags
                       fi
                       if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "stable" ] ; then
-                          alias ssh="ssh -o ForwardX11=no"
-                          cd release
-                          ./upload_urls.sh nightly
-                          ./upload_urls.sh stable
+                      alias ssh="ssh -o ForwardX11=no"
+                      cd tools/release
+                      ./upload_urls.sh nightly
+                      ./upload_urls.sh stable
                       fi
                 """
 

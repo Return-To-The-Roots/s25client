@@ -8,6 +8,6 @@
 *~
 /S2
 /build
-/contrib/boost*
-/contrib/full-contrib-msvc
+/external/boost*
+/external/full-contrib-msvc
 /win32/*.aps
