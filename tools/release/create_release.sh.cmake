@@ -70,7 +70,7 @@ exec 1>$npipe
 
 echo "Building $TYPE for $ARCH in $SRCDIR"
 
-cd "${BUILD_DIR}
+cd "${BUILD_DIR}"
 make || error
 
 # get savegame version
