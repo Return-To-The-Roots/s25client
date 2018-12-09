@@ -132,24 +132,24 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
             if(!texBmp->getPalette() || !animItem || animItem->getBobType() != libsiedler2::BOBTYPE_PALETTE_ANIM)
             {
                 LOG.write("Invalid palette animation '%1%' for '%2%'") % unsigned(cur.palAnimIdx) % cur.name;
-                terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
-                terrainTextures[curIdx.value].textures.back().GetTexture();
+                terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
             } else
             {
                 libsiedler2::ArchivItem_PaletteAnimation& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
-                libsiedler2::Archiv* textures =
+                libutil::unique_ptr<libsiedler2::Archiv> textures =
                   LOADER.ExtractAnimatedTexture(*texBmp, cur.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
                 for(unsigned i = 0; i < textures->size(); i++)
                 {
                     terrainTextures[curIdx.value].textures.push_back(dynamic_cast<glArchivItem_Bitmap*>(textures->release(i)));
-                    terrainTextures[curIdx.value].textures.back().GetTexture();
                 }
             }
         } else
         {
-            terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
-            terrainTextures[curIdx.value].textures.back().GetTexture();
+            terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
         }
+        // Initialize OpenGL textures
+        BOOST_FOREACH(glArchivItem_Bitmap& bmp, terrainTextures[curIdx.value].textures)
+            bmp.GetTexture();
         TerrainDesc::Triangle trianglePos = cur.GetRSUTriangle();
         Position texOrigin = cur.posInTexture.getOrigin();
         const glArchivItem_Bitmap& texture = terrainTextures[curIdx.value].textures[0];
@@ -178,7 +178,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
         glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
         if(!texBmp)
             throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for edge '" + cur.name + "'");
-        edgeTextures[curIdx.value].reset(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
+        edgeTextures[curIdx.value].reset(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
         edgeTextures[curIdx.value]->GetTexture(); // Init texture
     }
     BOOST_FOREACH(DescIdx<LandscapeDesc> curIdx, usedLandscapes)
@@ -191,7 +191,8 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
             if(!texBmp)
                 throw std::runtime_error("Invalid texture '" + cur.roadTexDesc[i].texturePath + "' for road in landscape '" + cur.name
                                          + "'");
-            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i].reset(LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture));
+            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i].reset(
+              LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture).release());
             roadTextures[curIdx.value * cur.NUM_ROADTYPES + i]->GetTexture(); // Init texture
         }
     }

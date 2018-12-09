@@ -107,7 +107,7 @@ inline Rect CheckedLuaTable::getRectOrDefault(const std::string& fieldName, cons
     {
         if(luaRect.size() != 4u)
             throw GameDataLoadError("You need 4 values for attribute '" + fieldName + "'");
-        return Rect(luaRect[0], luaRect[1], luaRect[2], luaRect[3]);
+        return Rect(Position(luaRect[0], luaRect[1]), Extent(luaRect[2], luaRect[3]));
     } else
         return defaultValue;
 }

@@ -30,6 +30,7 @@
 #include "gameData/NationConsts.h"
 #include "libsiedler2/Archiv.h"
 #include "libutil/Singleton.h"
+#include "libutil/unique_ptr.h"
 #include <boost/array.hpp>
 #include <map>
 #include <string>
@@ -99,9 +100,9 @@ public:
     bool LoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL);
 
     void fillCaches();
-    static glArchivItem_Bitmap* ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
-    static libsiedler2::Archiv* ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t start_index,
-                                                       uint8_t color_count);
+    static libutil::unique_ptr<glArchivItem_Bitmap> ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
+    static libutil::unique_ptr<libsiedler2::Archiv> ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
+                                                                           uint8_t start_index, uint8_t color_count);
 
     glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned nr);
     /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture

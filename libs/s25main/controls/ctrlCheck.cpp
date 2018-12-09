@@ -84,7 +84,7 @@ void ctrlCheck::Draw_()
     DrawPoint boxPos = drawRect.getOrigin() + DrawPoint(boxStartOffsetX, spacing);
 
     if(!readonly)
-        Draw3D(Rect(boxPos, boxSize, boxSize), tc, false);
+        Draw3D(Rect(boxPos, Extent::all(boxSize)), tc, false);
 
     if(check)
         LOADER.GetImageN("io", 32)->DrawFull(boxPos + DrawPoint(boxSize, boxSize) / 2);
