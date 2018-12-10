@@ -1,9 +1,9 @@
 # Add Icon to Application
 if(WIN32)
     set(rcDir ${PROJECT_SOURCE_DIR}/data/win32)
+    target_include_directories(s25client PRIVATE ${rcDir})
     if(CMAKE_HOST_WIN32)
         set(s25client_RC ${rcDir}/s25client.rc)
-        include_directories(${rcDir})
     else()
         add_definitions(-DAFX_TARG_DEU)
         set(s25client_RC ${CMAKE_CURRENT_BINARY_DIR}/s25client.res.o)
@@ -12,7 +12,7 @@ if(WIN32)
 
     endif()
 ELSE()
-	set(s25client_RC )
+    set(s25client_RC )
 ENDIF()
 
 ADD_EXECUTABLE(s25client s25client.cpp ${s25client_RC})
