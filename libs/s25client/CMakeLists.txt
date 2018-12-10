@@ -1,7 +1,6 @@
 # Add Icon to Application
 if(WIN32)
     set(rcDir ${PROJECT_SOURCE_DIR}/data/win32)
-    target_include_directories(s25client PRIVATE ${rcDir})
     if(CMAKE_HOST_WIN32)
         set(s25client_RC ${rcDir}/s25client.rc)
     else()
@@ -17,6 +16,10 @@ ENDIF()
 
 ADD_EXECUTABLE(s25client s25client.cpp ${s25client_RC})
 target_link_libraries(s25client PRIVATE s25Main)
+
+if(WIN32)
+    target_include_directories(s25client PRIVATE ${rcDir})
+endif()
 
 if(APPLE)
     set(SDL_BUILDING_LIBRARY OFF)
