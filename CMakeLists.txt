@@ -311,15 +311,15 @@ endif()
 
 # Start script
 IF (WIN32)
-	install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/tools/release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
+	install(PROGRAMS "tools/release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
 ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
-	install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/tools/release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
+	install(PROGRAMS "tools/release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
 ELSEIF(NOT APPLE)
 	message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
 ENDIF()
 
 # RTTR directory, but exclude language input files
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/RTTR" DESTINATION "${RTTR_DATADIR}"
+install(DIRECTORY "data/RTTR" DESTINATION "${RTTR_DATADIR}"
 		PATTERN "*.po" EXCLUDE
 		PATTERN "*.pot" EXCLUDE
 		PATTERN ".*" EXCLUDE
@@ -327,7 +327,7 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/RTTR" DESTINATION "${RTTR_DA
 
 # Documentation. TODO: Avoid recursive entries?
 IF (NOT WIN32)
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
+	install(DIRECTORY "data/RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
 			FILES_MATCHING PATTERN "*.txt"
 	)
 ENDIF()
@@ -341,8 +341,8 @@ install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
 
 IF(NOT CMAKE_HOST_WIN32 AND PLATFORM_ARCH)
     include(ConfigureExecutable)
-    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/tools/release/prepareRelease.sh.cmake" . prepareRelease.sh)
-    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/tools/release/create_release.sh.cmake" . create_release.sh)
+    configure_executable("tools/release/prepareRelease.sh.cmake" . prepareRelease.sh)
+    configure_executable("tools/release/create_release.sh.cmake" . create_release.sh)
 
 	# Create nightly release
 	ADD_CUSTOM_TARGET(create_nightly
