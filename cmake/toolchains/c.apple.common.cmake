@@ -29,6 +29,12 @@ MESSAGE(STATUS "Using OSX SDK at ${CMAKE_OSX_SYSROOT}")
 
 SET(CMAKE_FIND_ROOT_PATH ${CMAKE_OSX_SYSROOT})
 
+if(CMAKE_OSX_SYSROOT MATCHES "10.5")
+    # GCC 4.2 is not supported by CMake. Emulate those:
+    set(CMAKE_C_COMPILE_FEATURES "c_std_90;c_function_prototypes;c_variadic_macros" CACHE INTERNAL "")
+    set(CMAKE_CXX_COMPILE_FEATURES "cxx_std_98;cxx_variadic_macros" CACHE INTERNAL "")
+endif()
+
 # search for programs in the build host directories
 # for libraries and headers in the target directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
