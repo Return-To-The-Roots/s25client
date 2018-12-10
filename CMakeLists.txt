@@ -10,6 +10,12 @@ endif()
 
 PROJECT(s25client)
 
+if(NOT CMAKE_CXX_COMPILE_FEATURES AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.4")
+    message(STATUS "Compile features for < GCC 4.4 are not supported by CMake. Emulate those")
+    set(CMAKE_C_COMPILE_FEATURES "c_std_90;c_function_prototypes;c_variadic_macros" CACHE INTERNAL "")
+    set(CMAKE_CXX_COMPILE_FEATURES "cxx_std_98;cxx_variadic_macros" CACHE INTERNAL "")
+endif()
+
 ################################################################################
 
 message(STATUS "Using CMake ${CMAKE_VERSION}")
