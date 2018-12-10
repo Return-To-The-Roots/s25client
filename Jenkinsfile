@@ -17,7 +17,7 @@ def transformIntoStep(arch, wspwd) {
                         unstash 'source'
 
                         sh """set -x
-                              git clean -f
+                              git clean -fd --exclude "/cmake-*" --exclude "/installedCMake-*"
                               git submodule foreach git clean -fxd
                               echo "Git status for main and sub repos:"
                               git status
@@ -47,13 +47,20 @@ def transformIntoStep(arch, wspwd) {
                                   VOLUMES=
                                   MAKE_TARGET=
                               fi
+                              CMAKE_VERSION="3.8.2"
+                              CMAKE_DIR="/workdir/installedCMake-\${CMAKE_VERSION}"
+                              # Extract major.minor
+                              CMAKE_V=`expr "\${CMAKE_VERSION}" : '\\([0-9]*\\.[0-9]*\\)'`
+                              wget --no-check-certificate https://cmake.org/files/v\${CMAKE_V}/cmake-\${CMAKE_VERSION}.tar.gz -qO- | tar xz
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
-                                                        "mkdir -p build && cd build && \
+                                                        "(cd "cmake-\${CMAKE_VERSION}" && ./configure --prefix="\${CMAKE_DIR}" > /dev/null && make install -j2 > /dev/null) && \
+                                                        export PATH=\${CMAKE_DIR}/bin:\\\$PATH && \
+                                                        mkdir -p build && cd build && \
                                                         cmake .. -DCMAKE_BUILD_TYPE=\$BUILD_TYPE \$TOOLCHAIN \
                                                         -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
                                                         \$ADDITIONAL_CMAKE_FLAGS && \
