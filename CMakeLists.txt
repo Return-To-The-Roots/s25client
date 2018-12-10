@@ -311,15 +311,15 @@ endif()
 
 # Start script
 IF (WIN32)
-	install(PROGRAMS "release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
+	install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/tools/release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
 ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
-	install(PROGRAMS "release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
+	install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/tools/release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
 ELSEIF(NOT APPLE)
 	message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
 ENDIF()
 
 # RTTR directory, but exclude language input files
-install(DIRECTORY "RTTR" DESTINATION "${RTTR_DATADIR}"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/RTTR" DESTINATION "${RTTR_DATADIR}"
 		PATTERN "*.po" EXCLUDE
 		PATTERN "*.pot" EXCLUDE
 		PATTERN ".*" EXCLUDE
@@ -327,7 +327,7 @@ install(DIRECTORY "RTTR" DESTINATION "${RTTR_DATADIR}"
 
 # Documentation. TODO: Avoid recursive entries?
 IF (NOT WIN32)
-	install(DIRECTORY "RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
 			FILES_MATCHING PATTERN "*.txt"
 	)
 ENDIF()
