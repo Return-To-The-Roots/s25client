@@ -2,7 +2,7 @@ version: 0.8.3.{build}
 branches:
   only:
   - master
-  
+
 image:
   - Visual Studio 2015
   - Visual Studio 2017
@@ -10,7 +10,7 @@ image:
 configuration:
   - Debug
   - Release
-  
+
 platform:
   - Win32
   - x64
@@ -45,20 +45,22 @@ install:
   - cd ..
 
 before_build:
+  - if exist build\ (rmdir /S /Q build)
+  - set INSTALL_DIR=%APPVEYOR_BUILD_FOLDER%\installed
+  - if exist %INSTALL_DIR%\ (rmdir /S /Q %INSTALL_DIR%)
   - mkdir build
   - cd build
   - if %platform% == Win32 (set BOOST_LIBDIR=lib32-msvc-%MSVC%) else ((set BOOST_LIBDIR=lib64-msvc-%MSVC%) && (set GENERATOR=%GENERATOR% Win64))
   - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_ROOT%\%BOOST_LIBDIR%"
-  - cmake -G "%GENERATOR%" -DRTTR_ENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR%" ..
-  - cd ..
-    
+  - cmake -G "%GENERATOR%" -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR%" ..
+
 build:
 
 build_script:
   - echo "Building for %configuration% on %platform%"
-  - msbuild /m /p:Configuration="%configuration%" /p:Platform="%platform%" /v:n build/s25client.sln
+  - dir .
+  - cmake --build . --target ALL_BUILD --config "%configuration%" --parallel
+  - if %configuration% == Release (cmake --build . --target INSTALL --config "%configuration%" --parallel)
 
 test_script:
-  - cd build
   - ctest --output-on-failure -C %configuration%
-  - cd ..
