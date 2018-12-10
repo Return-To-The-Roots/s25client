@@ -29,7 +29,7 @@ def transformIntoStep(arch, wspwd) {
                               VOLUMES="-v /srv/apache2/siedler25.org/nightly:/www \
                                   -v /srv/backup/www/s25client:/archive \
                                   "
-                              
+
                               BUILD_TYPE=RelWithDebInfo
                               if [[ "${arch}" == "apple.universal" ]]; then
                                   # Current apple compiler doesn't work with debug info and we can't extract them anyway
@@ -179,7 +179,7 @@ catchError() {
                       fi
                 """
 
-                archiveArtifacts artifacts: 'release/changelog-*.txt,release/rapidshare-*.txt', fingerprint: true, onlyIfSuccessful: true
+                archiveArtifacts artifacts: 'tools/release/changelog-*.txt,tools/release/rapidshare-*.txt', fingerprint: true, onlyIfSuccessful: true
             }
         }
     }
