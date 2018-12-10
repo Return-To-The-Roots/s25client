@@ -24,9 +24,9 @@ if(MSVC)
 	endif()
 else()
   include(CheckAndAddFlag)
-	CheckAndAddFlag("-Wall")
+	add_compile_options(-Wall)
 	if(RTTR_ENABLE_WERROR)
-		CheckAndAddFlag("-Werror")
+		add_compile_options(-Werror)
 	endif()
 	CheckAndAddFlags("-pedantic" "-Wpedantic")
 	CheckAndAddFlag("-Wparentheses")
@@ -38,19 +38,13 @@ else()
 	CheckAndAddFlag("-fno-strict-aliasing")
 	CheckAndAddFlag("-Qunused-arguments")
 
-	CHECK_CXX_SOURCE_COMPILES("
-		#if __cplusplus >= 201103L
-		int main() {}
-		#endif" COMPILER_IN_CXX11_MODE)
-	if(COMPILER_IN_CXX11_MODE)
-		CheckAndAddFlags("-Wsuggest-override" "-Wno-error=suggest-override")
-	else()
-		add_definitions(-Doverride=)
-	    CheckAndAddFlag("-Wno-c++11-extensions")
+	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+		add_compile_options(
+			"$<$<COMPILE_FEATURES:cxx_override>:-Wsuggest-override -Wno-error=suggest-override>"
     	# Variadic macros are part of C99 but supported by all big compilers in C++03
-	    CheckAndAddFlag("-Wno-variadic-macros")
-	    CheckAndAddFlag("-Wno-c99-extensions")
+			"$<$<NOT:$<COMPILE_FEATURES:cxx_std_11>>:-Wno-c++11-extensions -Wno-variadic-macros-Wno-c99-extensions>"
 	    # For Boost < 1.59 (static-assert emulation)
-	    CheckAndAddFlag("-Wno-unused-local-typedef")
+			"$<$<NOT:$<COMPILE_FEATURES:cxx_static_assert>>:-Wno-unused-local-typedef>"
+		)
 	endif()
 endif()

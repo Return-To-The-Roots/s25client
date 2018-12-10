@@ -1,9 +1,7 @@
-include(AddInterfaceLibrary)
-
 find_package(Boost 1.55.0 REQUIRED)
 
 # Library interface to be consumed by users
-add_interface_library(driver)
+add_library(driver INTERFACE)
 target_include_directories(driver INTERFACE include)
 target_include_directories(driver SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
 

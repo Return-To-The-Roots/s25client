@@ -77,12 +77,16 @@ matrix:
 install:
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
     - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-    # Use CMake 2.8.12 (same as build server)
+    # Use CMake 3.8.2 (same as build server)
     - |
-        CMAKE_DIR="${DEPS_DIR}/cmake"
+        CMAKE_VERSION="3.8.2"
+        # Extract major.minor
+        CMAKE_V=`expr "${CMAKE_VERSION}" : '\([0-9]*\.[0-9]*\)'`
+        CMAKE_DIR="${DEPS_DIR}/cmake-${CMAKE_VERSION}"
         if [ -z "$(ls -A ${CMAKE_DIR})" ]; then
-            CMAKE_URL="https://cmake.org/files/v2.8/cmake-2.8.12.tar.gz"
-            mkdir cmakeSrc && travis_retry wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmakeSrc
+            CMAKE_URL="https://cmake.org/files/v${CMAKE_V}/cmake-${CMAKE_VERSION}.tar.gz"
+            rm -rf cmakeSrc && mkdir cmakeSrc
+            travis_retry wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmakeSrc
             cd cmakeSrc && ./bootstrap --prefix=${CMAKE_DIR} && make -j2 && make install && cd ..
         fi
         export PATH=${CMAKE_DIR}/bin:${PATH}
