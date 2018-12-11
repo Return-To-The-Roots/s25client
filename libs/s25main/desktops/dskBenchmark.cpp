@@ -104,7 +104,9 @@ bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
                 if(numInstances_ == 0)
                     numInstances_ = 1000;
                 GetCtrl<ctrlText>(ID_txtAmount)->SetText("Instances: " + helpers::toString(numInstances_));
-            }
+                break;
+            } else
+                return dskMenuBase::Msg_KeyDown(ke);
         default: return dskMenuBase::Msg_KeyDown(ke);
     }
     return true;

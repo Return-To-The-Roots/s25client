@@ -143,9 +143,9 @@ public:
     void CapturedBuildingFull();
     /// Gibt den Radius von einem um-eine-Fahne-herum-wartenden angreifenden Soldaten zurück
     unsigned GetRadius() const { return radius; }
-    /// Ein um-die-Flagge-Swartender Angreifer soll auf einen frei gewordenen Platz nachrücken, damit keine
+    /// Ein um-die-Flagge-wartender Angreifer soll auf einen frei gewordenen Platz nachrücken, damit keine
     /// Lücken entstehen
-    void StartSucceeding(const MapPoint pt, const unsigned short new_radius, Direction dir);
+    void StartSucceeding(const MapPoint pt, unsigned short new_radius);
     /// Try to start capturing although he is still far away from the destination
     /// Returns true if successful
     bool TryToStartFarAwayCapturing(nobMilitary* dest);

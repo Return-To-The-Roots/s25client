@@ -1061,7 +1061,7 @@ bool GameClient::OnGameMessage(const GameMessage_GGSChange& msg)
     return true;
 }
 
-bool GameClient::OnGameMessage(const GameMessage_RemoveLua& msg)
+bool GameClient::OnGameMessage(const GameMessage_RemoveLua&)
 {
     if(state != CS_CONNECT && state != CS_CONFIG)
         return true;

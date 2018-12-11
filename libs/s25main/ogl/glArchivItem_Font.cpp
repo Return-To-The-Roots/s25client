@@ -45,7 +45,7 @@ template<>
 struct GetNextCharAndIncIt<uint32_t>
 {
     template<class T_Iterator>
-    uint32_t operator()(T_Iterator& it, const T_Iterator& itEnd) const
+    uint32_t operator()(T_Iterator& it, const T_Iterator& /*itEnd*/) const
     {
         return *it++;
     }
@@ -67,7 +67,7 @@ struct MakePrevIt;
 template<typename T_Iterator>
 struct MakePrevIt<T_Iterator, uint32_t>
 {
-    void operator()(T_Iterator& it, const T_Iterator& itStart) const { --it; }
+    void operator()(T_Iterator& it, const T_Iterator& /*itStart*/) const { --it; }
 };
 
 template<typename T_Iterator>

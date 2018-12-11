@@ -115,8 +115,7 @@ iwMusicPlayer::~iwMusicPlayer()
                 // Fehler, konnte nicht gespeichert werden
                 WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
         } catch(std::exception&)
-        {
-        }
+        {}
 
         // Entsprechenden Dateipfad speichern
         SETTINGS.sound.playlist = GetCtrl<ctrlComboBox>(2)->GetText(selection);
@@ -147,7 +146,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const int se
     }
 }
 
-void iwMusicPlayer::Msg_ListChooseItem(const unsigned ctrl_id, const unsigned selection)
+void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
     // Werte in Musikplayer bringen
     MUSICPLAYER.GetPlaylist().ReadMusicPlayer(this);

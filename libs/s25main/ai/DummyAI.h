@@ -29,7 +29,7 @@ class DummyAI : public AIPlayer
 public:
     DummyAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIPlayer(playerId, gwb, level) {}
 
-    void RunGF(const unsigned gf, bool gfisnwf) override {}
+    void RunGF(const unsigned /*gf*/, bool /*gfisnwf*/) override {}
 };
 
 #endif //! DUMMYAI_H_INCLUDED

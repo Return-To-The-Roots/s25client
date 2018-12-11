@@ -75,7 +75,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                 // Wege müssen immer von der Flagge aus berechnet werden
                 MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SOUTHEAST);
                 std::vector<MapPoint> possiblePts =
-                  gwg->GetPointsInRadius<0>(flagPos, SHIPWRIGHT_RADIUS, Identity<MapPoint>(), IsNotReserved(*gwg));
+                  gwg->GetPointsInRadius<-1>(flagPos, SHIPWRIGHT_RADIUS, Identity<MapPoint>(), IsNotReserved(*gwg));
 
                 // Verfügbare Punkte, die geeignete Plätze darstellen würden
                 std::vector<ShipPoint> available_points;

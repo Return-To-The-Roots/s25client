@@ -46,32 +46,31 @@ class ClientInterface
 public:
     virtual ~ClientInterface() {}
 
-    virtual void CI_NextConnectState(const ConnectState cs) {}
-    virtual void CI_Error(const ClientError ce) {}
+    virtual void CI_NextConnectState(const ConnectState) {}
+    virtual void CI_Error(const ClientError) {}
 
-    virtual void CI_NewPlayer(const unsigned playerId) {}
-    virtual void CI_PlayerLeft(const unsigned playerId) {}
+    virtual void CI_NewPlayer(const unsigned /*playerId*/) {}
+    virtual void CI_PlayerLeft(const unsigned /*playerId*/) {}
     /// Game entered loading state
-    virtual void CI_GameLoading(boost::shared_ptr<Game> game) {}
+    virtual void CI_GameLoading(boost::shared_ptr<Game>) {}
     /// Game is started and running
-    virtual void CI_GameStarted(boost::shared_ptr<Game> game) {}
+    virtual void CI_GameStarted(boost::shared_ptr<Game>) {}
 
-    virtual void CI_PlayerDataChanged(unsigned playerId) {}
-    virtual void CI_PingChanged(const unsigned playerId, const unsigned short ping) {}
-    virtual void CI_ReadyChanged(const unsigned playerId, const bool ready) {}
-    virtual void CI_PlayersSwapped(const unsigned player1, const unsigned player2) {}
-    virtual void CI_GGSChanged(const GlobalGameSettings& ggs) {}
+    virtual void CI_PlayerDataChanged(unsigned /*playerId*/) {}
+    virtual void CI_PingChanged(const unsigned /*playerId*/, const unsigned short /*ping*/) {}
+    virtual void CI_ReadyChanged(const unsigned /*playerId*/, const bool /*ready*/) {}
+    virtual void CI_PlayersSwapped(const unsigned /*player1*/, const unsigned /*player2*/) {}
+    virtual void CI_GGSChanged(const GlobalGameSettings&) {}
 
-    virtual void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) {}
-    virtual void CI_Countdown(unsigned remainingTimeInSec) {}
-    virtual void CI_CancelCountdown(bool error) {}
+    virtual void CI_Chat(const unsigned /*playerId*/, const ChatDestination /*cd*/, const std::string& /*msg*/) {}
+    virtual void CI_Countdown(unsigned /*remainingTimeInSec*/) {}
+    virtual void CI_CancelCountdown(bool /*error*/) {}
 
-    virtual void CI_Async(const std::string& checksums_list) {}
-    virtual void CI_ReplayAsync(const std::string& msg) {}
-    virtual void CI_ReplayEndReached(const std::string& msg) {}
+    virtual void CI_Async(const std::string& /*checksums_list*/) {}
+    virtual void CI_ReplayAsync(const std::string& /*msg*/) {}
+    virtual void CI_ReplayEndReached(const std::string& /*msg*/) {}
     virtual void CI_GamePaused() {}
     virtual void CI_GameResumed() {}
-    virtual void CI_FlagDestroyed(const unsigned short x, const unsigned short y) {}
 };
 
 #endif

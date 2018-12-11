@@ -124,7 +124,7 @@ public:
 
     /// Gibt Pointer auf Produktivität zurück
     const unsigned short* GetProductivityPointer() const { return &productivity; }
-    const unsigned short GetProductivity() const { return productivity; }
+    unsigned short GetProductivity() const { return productivity; }
     const nofBuildingWorker* GetWorker() const { return worker; }
 
     /// Stoppt/Erlaubt Produktion (visuell)

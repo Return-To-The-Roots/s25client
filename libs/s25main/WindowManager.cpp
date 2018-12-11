@@ -699,7 +699,7 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
 void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHeight)
 {
     VIDEODRIVER.RenewViewport();
-    Msg_ScreenResize(VIDEODRIVER.GetScreenSize());
+    Msg_ScreenResize(Extent(newWidth, newHeight));
 }
 
 /**

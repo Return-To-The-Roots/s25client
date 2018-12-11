@@ -56,8 +56,8 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
     pagePeople = figures.GetID() - 100;
 
     bool four = true;
-    unsigned short ware_id = 0;
-    for(int x = 0, y = 0; y < 7; ++x, ++ware_id)
+    unsigned short ware_idx = 0;
+    for(int x = 0, y = 0; y < 7; ++x, ++ware_idx)
     {
         // 4er und 5er Block abwechselnd
         if(x >= (four ? 4 : 5))
@@ -75,86 +75,86 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         DrawPoint btPos((four ? btSize.x + 1 : btSize.x / 2) + x * 28, 21 + y * 42);
         if(allow_outhousing)
         {
-            ctrlButton* b = wares.AddImageButton(100 + INVENTORY_IDS[0][ware_id], btPos, btSize, TC_GREY, LOADER.GetMapImageN(2298),
-                                                 _(WARE_NAMES[INVENTORY_IDS[0][ware_id]]));
+            ctrlButton* b = wares.AddImageButton(100 + INVENTORY_IDS[0][ware_idx], btPos, btSize, TC_GREY, LOADER.GetMapImageN(2298),
+                                                 _(WARE_NAMES[INVENTORY_IDS[0][ware_idx]]));
             b->SetBorder(false);
         } else
-            wares.AddImage(100 + INVENTORY_IDS[0][ware_id], btPos + btSize / 2, LOADER.GetMapImageN(2298),
-                           _(WARE_NAMES[INVENTORY_IDS[0][ware_id]]));
+            wares.AddImage(100 + INVENTORY_IDS[0][ware_idx], btPos + btSize / 2, LOADER.GetMapImageN(2298),
+                           _(WARE_NAMES[INVENTORY_IDS[0][ware_idx]]));
 
-        if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
+        if(INVENTORY_IDS[1][ware_idx] != 0xFFFF)
         {
             if(allow_outhousing)
             {
-                ctrlButton* b = figures.AddImageButton(100 + INVENTORY_IDS[1][ware_id], btPos, btSize, TC_GREY, LOADER.GetMapImageN(2298),
-                                                       _(JOB_NAMES[INVENTORY_IDS[1][ware_id]]));
+                ctrlButton* b = figures.AddImageButton(100 + INVENTORY_IDS[1][ware_idx], btPos, btSize, TC_GREY, LOADER.GetMapImageN(2298),
+                                                       _(JOB_NAMES[INVENTORY_IDS[1][ware_idx]]));
                 b->SetBorder(false);
             } else
             {
-                figures.AddImage(100 + INVENTORY_IDS[1][ware_id], btPos + btSize / 2, LOADER.GetMapImageN(2298),
-                                 _(JOB_NAMES[INVENTORY_IDS[1][ware_id]]));
+                figures.AddImage(100 + INVENTORY_IDS[1][ware_idx], btPos + btSize / 2, LOADER.GetMapImageN(2298),
+                                 _(JOB_NAMES[INVENTORY_IDS[1][ware_idx]]));
             }
         }
 
         // Hintergrundbild hinter Anzahl
         DrawPoint bgCtPos = btPos + DrawPoint(btSize.x / 2, 32);
-        wares.AddImage(200 + INVENTORY_IDS[0][ware_id], bgCtPos, LOADER.GetMapImageN(2299));
-        if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
-            figures.AddImage(200 + INVENTORY_IDS[1][ware_id], bgCtPos, LOADER.GetMapImageN(2299));
+        wares.AddImage(200 + INVENTORY_IDS[0][ware_idx], bgCtPos, LOADER.GetMapImageN(2299));
+        if(INVENTORY_IDS[1][ware_idx] != 0xFFFF)
+            figures.AddImage(200 + INVENTORY_IDS[1][ware_idx], bgCtPos, LOADER.GetMapImageN(2299));
 
         // die jeweilige Ware
         DrawPoint warePos = btPos + btSize / 2;
-        wares.AddImage(300 + INVENTORY_IDS[0][ware_id], warePos,
-                       LOADER.GetMapImageN(
-                         2250 + (INVENTORY_IDS[0][ware_id] == GD_SHIELDROMANS ? SHIELD_TYPES[player.nation] : INVENTORY_IDS[0][ware_id])));
-        if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
+        const GoodType ware =
+          INVENTORY_IDS[0][ware_idx] == GD_SHIELDROMANS ? SHIELD_TYPES[player.nation] : GoodType(INVENTORY_IDS[0][ware_idx]);
+        wares.AddImage(300 + INVENTORY_IDS[0][ware_idx], warePos, LOADER.GetMapImageN(2250 + ware));
+        if(INVENTORY_IDS[1][ware_idx] != 0xFFFF)
         {
             glArchivItem_Bitmap* image;
             // Exception: charburner
-            if(INVENTORY_IDS[1][ware_id] != JOB_CHARBURNER)
-                image = LOADER.GetMapImageN(2300 + INVENTORY_IDS[1][ware_id]);
+            if(INVENTORY_IDS[1][ware_idx] != JOB_CHARBURNER)
+                image = LOADER.GetMapImageN(2300 + INVENTORY_IDS[1][ware_idx]);
             else
                 image = LOADER.GetImageN("io_new", 5);
 
-            figures.AddImage(300 + INVENTORY_IDS[1][ware_id], warePos, image);
+            figures.AddImage(300 + INVENTORY_IDS[1][ware_idx], warePos, image);
         }
 
         // Overlay für "Nicht Einlagern"
         DrawPoint overlayPos = warePos - DrawPoint(0, 4);
-        ctrlImage* image = wares.AddImage(400 + INVENTORY_IDS[0][ware_id], overlayPos, LOADER.GetImageN("io", 222));
+        ctrlImage* image = wares.AddImage(400 + INVENTORY_IDS[0][ware_idx], overlayPos, LOADER.GetImageN("io", 222));
         image->SetVisible(false);
-        if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
+        if(INVENTORY_IDS[1][ware_idx] != 0xFFFF)
         {
-            image = figures.AddImage(400 + INVENTORY_IDS[1][ware_id], overlayPos, LOADER.GetImageN("io", 222));
+            image = figures.AddImage(400 + INVENTORY_IDS[1][ware_idx], overlayPos, LOADER.GetImageN("io", 222));
             image->SetVisible(false);
         }
 
         // Overlay für "Auslagern"
         overlayPos = warePos + DrawPoint(0, 10);
-        image = wares.AddImage(500 + INVENTORY_IDS[0][ware_id], overlayPos, LOADER.GetImageN("io", 221));
+        image = wares.AddImage(500 + INVENTORY_IDS[0][ware_idx], overlayPos, LOADER.GetImageN("io", 221));
         image->SetVisible(false);
-        if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
+        if(INVENTORY_IDS[1][ware_idx] != 0xFFFF)
         {
-            image = figures.AddImage(500 + INVENTORY_IDS[1][ware_id], overlayPos, LOADER.GetImageN("io", 221));
+            image = figures.AddImage(500 + INVENTORY_IDS[1][ware_idx], overlayPos, LOADER.GetImageN("io", 221));
             image->SetVisible(false);
         }
 
         // Overlay für "Einlagern"
-        image = wares.AddImage(700 + INVENTORY_IDS[0][ware_id], overlayPos, LOADER.GetImageN("io_new", 3));
+        image = wares.AddImage(700 + INVENTORY_IDS[0][ware_idx], overlayPos, LOADER.GetImageN("io_new", 3));
         image->SetVisible(false);
-        if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
+        if(INVENTORY_IDS[1][ware_idx] != 0xFFFF)
         {
-            image = figures.AddImage(700 + INVENTORY_IDS[1][ware_id], overlayPos, LOADER.GetImageN("io_new", 3));
+            image = figures.AddImage(700 + INVENTORY_IDS[1][ware_idx], overlayPos, LOADER.GetImageN("io_new", 3));
             image->SetVisible(false);
         }
 
         // die jeweilige Anzahl (Texte)
         DrawPoint txtPos = btPos + DrawPoint(btSize.x, 40);
-        wares.AddVarText(600 + INVENTORY_IDS[0][ware_id], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font, 1,
-                         &inventory.goods[INVENTORY_IDS[0][ware_id]]);
-        if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
-            figures.AddVarText(600 + INVENTORY_IDS[1][ware_id], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font,
-                               1, &inventory.people[INVENTORY_IDS[1][ware_id]]);
+        wares.AddVarText(600 + INVENTORY_IDS[0][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font, 1,
+                         &inventory.goods[INVENTORY_IDS[0][ware_idx]]);
+        if(INVENTORY_IDS[1][ware_idx] != 0xFFFF)
+            figures.AddVarText(600 + INVENTORY_IDS[1][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font,
+                               1, &inventory.people[INVENTORY_IDS[1][ware_idx]]);
     }
 
     // "Blättern"

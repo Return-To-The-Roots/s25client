@@ -57,22 +57,22 @@ public:
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
     /// Number of results is constrained to maxResults (if > 0)
     /// Overloads are used due to missing template default args until C++11
-    template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
+    template<int T_maxResults, class T_TransformPt, class T_IsValidPt>
     std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt,
                                                                        T_IsValidPt isValid, bool includePt = false) const;
     template<class T_TransformPt>
     std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, const unsigned radius,
                                                                        T_TransformPt transformPt) const
     {
-        return GetPointsInRadius<0>(pt, radius, transformPt, ReturnConst<bool, true>());
+        return GetPointsInRadius<-1>(pt, radius, transformPt, ReturnConst<bool, true>());
     }
     std::vector<MapPoint> GetPointsInRadius(const MapPoint pt, const unsigned radius) const
     {
-        return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
+        return GetPointsInRadius<-1>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
     }
     std::vector<MapPoint> GetPointsInRadiusWithCenter(const MapPoint pt, const unsigned radius) const
     {
-        return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>(), true);
+        return GetPointsInRadius<-1>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>(), true);
     }
     /// Returns true, if the IsValid functor returns true for any point in the given radius
     /// If includePt is true, then the point itself is also checked
@@ -102,7 +102,7 @@ inline unsigned MapBase::GetIdx(const MapPoint pt) const
     return static_cast<unsigned>(pt.y) * size_.x + pt.x;
 }
 
-template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
+template<int T_maxResults, class T_TransformPt, class T_IsValidPt>
 inline std::vector<typename T_TransformPt::result_type>
 MapBase::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid, bool includePt) const
 {
@@ -133,7 +133,7 @@ MapBase::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_Transform
                 if(isValid(el))
                 {
                     result.push_back(el);
-                    if(T_maxResults && result.size() >= T_maxResults)
+                    if(T_maxResults > 0 && static_cast<int>(result.size()) > T_maxResults)
                         return result;
                 }
                 curPt = GetNeighbour(curPt, Direction(i));

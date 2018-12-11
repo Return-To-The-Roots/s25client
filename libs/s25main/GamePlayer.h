@@ -328,7 +328,7 @@ public:
     void StatisticStep();
 
     const Statistic& GetStatistic(StatisticTime time) const { return statistic[time]; };
-    const unsigned GetStatisticCurrentValue(unsigned idx) const
+    unsigned GetStatisticCurrentValue(unsigned idx) const
     {
         RTTR_Assert(idx < NUM_STAT_TYPES);
         return (statisticCurrentData[idx]);

@@ -81,7 +81,7 @@ public:
 
     size_t size() const { return elements.size(); }
 
-    void rearrange(const T& target) {}
+    void rearrange(const T& /*target*/) {}
 };
 
 #endif // OpenListVector_h__

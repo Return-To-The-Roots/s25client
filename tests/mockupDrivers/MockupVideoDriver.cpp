@@ -55,7 +55,7 @@ void MockupVideoDriver::CleanUp()
     initialized = false;
 }
 
-bool MockupVideoDriver::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
+bool MockupVideoDriver::CreateScreen(const std::string& /*title*/, const VideoMode& newSize, bool fullscreen)
 {
     ResizeScreen(newSize, fullscreen);
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -96,7 +96,7 @@ OpenGL_Loader_Proc MockupVideoDriver::GetLoaderFunction() const
     return SDL_GL_GetProcAddress;
 }
 
-void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const {}
+void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& /*video_modes*/) const {}
 
 void MockupVideoDriver::SetMousePos(int x, int y)
 {

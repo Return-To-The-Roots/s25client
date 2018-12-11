@@ -79,3 +79,6 @@ endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_link_libraries(s25Main PUBLIC ${CMAKE_DL_LIBS}) # For dynamic driver loading (DriverWrapper)
 endif()
+
+include(EnableWarnings)
+enable_warnings(s25Main)

@@ -128,7 +128,7 @@ inline std::vector<DescIdx<TerrainDesc> > RandomConfig::FilterTerrains(const std
                                                                        T_Predicate predicate) const
 {
     std::vector<DescIdx<TerrainDesc> > result;
-    BOOST_FOREACH(DescIdx<TerrainDesc> t, landscapeTerrains)
+    BOOST_FOREACH(DescIdx<TerrainDesc> t, inTerrains)
     {
         if(predicate(worldDesc.get(t)))
             result.push_back(t);

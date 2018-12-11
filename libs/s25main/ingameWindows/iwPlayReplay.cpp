@@ -167,7 +167,7 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwPlayReplay::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection)
+void iwPlayReplay::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
     StartReplay();
 }

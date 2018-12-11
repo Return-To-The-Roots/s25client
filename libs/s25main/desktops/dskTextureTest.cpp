@@ -86,7 +86,7 @@ void dskTextureTest::Msg_ComboSelectItem(const unsigned ctrl_id, const int selec
     curTexture = LOADER.ExtractTexture(*texBmp, cur.posInTexture);
 }
 
-void dskTextureTest::Msg_ButtonClick(const unsigned ctrl_id)
+void dskTextureTest::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     WINDOWMANAGER.Switch(new dskMainMenu);
 }

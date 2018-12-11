@@ -62,7 +62,7 @@ public:
     /// Return true when the animation is done
     virtual bool isFinished() const;
     /// React when the parents elements have been rescaled
-    virtual void onRescale(const ScreenResizeEvent& rs) {}
+    virtual void onRescale(const ScreenResizeEvent&) {}
 
 protected:
     /// Function for subclasses to override to do the actual animation

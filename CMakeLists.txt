@@ -174,9 +174,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	endif()
 endif()
 
-# Enable warnings
-include(cmake/warnings.cmake)
-
 ################################################################################
 # Code coverage
 ################################################################################

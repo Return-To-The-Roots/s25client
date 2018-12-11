@@ -83,8 +83,7 @@ void nofScout_Free::LostWork()
 
     switch(state)
     {
-        default:
-            break;
+        default: break;
         // Wenn wir noch hingehen, dann zurückgehen
         case STATE_FIGUREWORK: { GoHome();
         }
@@ -151,7 +150,7 @@ struct IsScoutable
 void nofScout_Free::GoToNewNode()
 {
     std::vector<MapPoint> available_points =
-      gwg->GetPointsInRadius<0>(flag->GetPos(), SCOUT_RANGE, Identity<MapPoint>(), IsScoutable(player, *gwg));
+      gwg->GetPointsInRadius<-1>(flag->GetPos(), SCOUT_RANGE, Identity<MapPoint>(), IsScoutable(player, *gwg));
     // Shuffle the points
     RANDOM_FUNCTOR(randFunc);
     std::random_shuffle(available_points.begin(), available_points.end(), randFunc);

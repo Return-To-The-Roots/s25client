@@ -47,17 +47,17 @@ public:
         SetNumChannels(MAX_NUM_CHANNELS);
         return initialized = true;
     }
-    SoundHandle LoadEffect(const std::string& filepath) override { return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT)); }
-    SoundHandle LoadEffect(const std::vector<char>& data, const std::string& ext) override
+    SoundHandle LoadEffect(const std::string&) override { return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT)); }
+    SoundHandle LoadEffect(const std::vector<char>&, const std::string&) override
     {
         return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT));
     }
-    SoundHandle LoadMusic(const std::string& filepath) override { return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC)); }
-    SoundHandle LoadMusic(const std::vector<char>& data, const std::string& ext) override
+    SoundHandle LoadMusic(const std::string&) override { return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC)); }
+    SoundHandle LoadMusic(const std::vector<char>&, const std::string&) override
     {
         return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC));
     }
-    EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop) override
+    EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t /*volume*/, bool /*loop*/) override
     {
         if(!sound.isValid())
             return -1;
@@ -66,13 +66,13 @@ public:
             channel = 0;
         return AddPlayedEffect(channel);
     }
-    void PlayMusic(const SoundHandle& sound, unsigned repeats) override {}
+    void PlayMusic(const SoundHandle&, unsigned /*repeats*/) override {}
     void StopMusic() override {}
     void StopEffect(EffectPlayId play_id) override { RemoveEffect(play_id); }
     bool IsEffectPlaying(EffectPlayId play_id) override { return GetEffectChannel(play_id) >= 0; }
-    void ChangeVolume(EffectPlayId play_id, uint8_t volume) override {}
-    void SetMasterEffectVolume(uint8_t volume) override {}
-    void SetMusicVolume(uint8_t volume) override {}
+    void ChangeVolume(EffectPlayId, uint8_t /*volume*/) override {}
+    void SetMasterEffectVolume(uint8_t /*volume*/) override {}
+    void SetMusicVolume(uint8_t /*volume*/) override {}
     void Msg_MusicFinished() override {}
 };
 

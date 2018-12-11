@@ -1259,7 +1259,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, Direction dir)
     }
 }
 
-void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, Direction dir)
+void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, Direction)
 {
     const noFlag* flag = gwb.GetSpecObj<noFlag>(pt);
     // does the flag still exist?
@@ -1515,9 +1515,8 @@ void AIPlayerJH::MilUpgradeOptim()
                     if(milBld->GetNumTroops() > 1) // more than 1 soldier remaining? -> send out order
                     {
                         aii.SendSoldiersHome(milBld->GetPos());
-                    } else if(!milBld
-                                 ->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier at some point and the
-                                                 // building is not new on the list-> cancel road (and fix roadsystem if necessary)
+                    } else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier at some point and
+                                                     // the building is not new on the list-> cancel road (and fix roadsystem if necessary)
                     {
                         RemoveUnusedRoad(*milBld->GetFlag(), 1, true, true, true);
                     }
