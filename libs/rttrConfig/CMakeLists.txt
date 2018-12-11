@@ -37,6 +37,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake build_v
 
 target_include_directories(rttrConfig PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
+include(EnableWarnings)
+enable_warnings(rttrConfig)
+
 if(ClangFormat_FOUND)
     add_clangFormat_files(${ALL_SOURCES})
 endif()

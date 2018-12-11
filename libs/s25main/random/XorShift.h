@@ -39,7 +39,7 @@ public:
     XorShift() { seed(); }
     explicit XorShift(uint64_t initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit XorShift(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0)
+    explicit XorShift(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* = 0)
     {
         seed(seedSeq);
     }

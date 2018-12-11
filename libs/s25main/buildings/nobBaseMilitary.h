@@ -109,7 +109,7 @@ public:
     /// warten
     MapPoint FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier);
     /// Sucht einen Nachrücker, der weiter hinten steht, auf diesen Posten und schickt diesen auch los
-    bool SendSuccessor(const MapPoint pt, const unsigned short radius, const Direction dir);
+    bool SendSuccessor(const MapPoint pt, const unsigned short radius);
 
     /// Gibt zurück, ob es noch einenen Verteidiger in dieser Hütte gibt, wenn ja wird dieser losgeschickt,
     /// aggressor ist der Angreifer an der Fahne, mit dem er kämpfen soll

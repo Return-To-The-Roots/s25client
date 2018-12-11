@@ -337,8 +337,7 @@ void nofAttacker::Walked()
         }
         break;
         case STATE_SEAATTACKING_WAITINHARBOR: // wartet im Hafen auf das ankommende Schiff
-        {
-        }
+        {}
         break;
         case STATE_SEAATTACKING_ONSHIP: // befindet sich auf dem Schiff auf dem Weg zum Zielpunkt
         {
@@ -378,7 +377,7 @@ void nofAttacker::HomeDestroyed()
             Wander();
 
             // und evtl einen Nachrücker für diesen Platz suchen
-            curGoal->SendSuccessor(pos, radius, GetCurMoveDir());
+            curGoal->SendSuccessor(pos, radius);
         }
         break;
         default:
@@ -768,9 +767,6 @@ bool nofAttacker::AttackFlag(nofDefender* /*defender*/)
 
     if(tmp_dir != 0xFF)
     {
-        // alte Richtung für Nachrücker merken
-        Direction old_dir = GetCurMoveDir();
-
         // Hat er drumrum gewartet?
         bool waiting_around_building = (state == STATE_ATTACKING_WAITINGAROUNDBUILDING);
 
@@ -786,7 +782,7 @@ bool nofAttacker::AttackFlag(nofDefender* /*defender*/)
         if(waiting_around_building)
         {
             // evtl. Nachrücker senden
-            attacked_goal->SendSuccessor(pos, radius, old_dir);
+            attacked_goal->SendSuccessor(pos, radius);
         }
         return true;
     }
@@ -940,22 +936,17 @@ void nofAttacker::CapturedBuildingFull()
     }
 }
 
-void nofAttacker::StartSucceeding(const MapPoint pt, const unsigned short new_radius, Direction dir)
+void nofAttacker::StartSucceeding(const MapPoint /*pt*/, unsigned short /*new_radius*/)
 {
-    // Wir sollen auf diesen Punkt nachrücken
     state = STATE_ATTACKING_WALKINGTOGOAL;
 
-    // Unsere alte Richtung merken für evtl. weitere Nachrücker
-    Direction old_dir = GetCurMoveDir();
+    const MapPoint oldPos = pos;
+    const unsigned short oldRadius = radius;
 
-    // unser alter Platz ist ja nun auch leer, da gibts vielleicht auch einen Nachrücker?
-    attacked_goal->SendSuccessor(this->pos, radius, old_dir);
-
-    // Und schonmal loslaufen, da wir ja noch stehen
     MissAttackingWalk();
 
-    // Neuen Radius speichern
-    radius = new_radius;
+    if(IsMoving())
+        attacked_goal->SendSuccessor(oldPos, oldRadius);
 }
 
 void nofAttacker::LetsFight(nofAggressiveDefender* other)

@@ -34,8 +34,8 @@ public:
     const std::string& GetText() const { return text; }
     void SetFont(glArchivItem_Font* font);
     glArchivItem_Font* GetFont() const { return font; }
-    void SetTextColor(unsigned color) { this->color_ = color; }
-    unsigned GetTextColor(unsigned color) const { return color_; }
+    void SetTextColor(unsigned color) { color_ = color; }
+    unsigned GetTextColor() const { return color_; }
 
 protected:
     std::string text;

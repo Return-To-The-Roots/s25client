@@ -50,15 +50,14 @@ VecImpl todo;
 namespace AdditonalCosts {
 struct None
 {
-    unsigned operator()(const noRoadNode& curNode, const Direction nextDir) const { return 0; }
+    unsigned operator()(const noRoadNode&, const Direction) const { return 0; }
 };
 
 struct Carrier
 {
     unsigned operator()(const noRoadNode& curNode, const Direction nextDir) const
     {
-        // Im Warenmodus m�ssen wir Strafpunkte für �berlastete Tr�ger hinzuaddieren,
-        // damit der Algorithmus auch Ausweichrouten ausw�hlt
+        // Add costs for busy carriers to allow alternative routes
         return curNode.GetPunishmentPoints(nextDir);
     }
 };
@@ -68,7 +67,7 @@ struct Carrier
 namespace SegmentConstraints {
 struct None
 {
-    bool operator()(const RoadSegment& segment) const { return true; }
+    bool operator()(const RoadSegment&) const { return true; }
 };
 
 /// Disallows a specific road segment

@@ -602,7 +602,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
+bool dskGameInterface::Msg_LeftUp(const MouseCoords&)
 {
     if(isScrolling)
     {
@@ -831,12 +831,12 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     return false;
 }
 
-bool dskGameInterface::Msg_WheelUp(const MouseCoords& mc)
+bool dskGameInterface::Msg_WheelUp(const MouseCoords&)
 {
     WheelZoom(ZOOM_WHEEL_INCREMENT);
     return true;
 }
-bool dskGameInterface::Msg_WheelDown(const MouseCoords& mc)
+bool dskGameInterface::Msg_WheelDown(const MouseCoords&)
 {
     WheelZoom(-ZOOM_WHEEL_INCREMENT);
     return true;

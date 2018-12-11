@@ -73,3 +73,5 @@ TARGET_LINK_LIBRARIES(gamedata PUBLIC
 	${LUA_LIBRARIES}
 	PRIVATE utf8
 )
+include(EnableWarnings)
+enable_warnings(gamedata)

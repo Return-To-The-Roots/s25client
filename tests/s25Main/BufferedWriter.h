@@ -45,7 +45,7 @@ inline void BufferedWriter::flush()
     }
 }
 
-inline void BufferedWriter::writeText(const std::string& txt, unsigned color)
+inline void BufferedWriter::writeText(const std::string& txt, unsigned /*color*/)
 {
     curText += txt;
 }

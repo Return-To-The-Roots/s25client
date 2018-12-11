@@ -110,7 +110,7 @@ void iwSaveLoad::RefreshTable()
     loadedOnce = true;
 }
 
-void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param) {}
+void iwSaveLoad::FillSaveTable(const std::string&, void*) {}
 
 void iwSave::SaveLoad()
 {
@@ -209,7 +209,7 @@ void iwLoad::SaveLoad()
 }
 
 /// Handle double click on the table
-void iwLoad::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection)
+void iwLoad::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
     SaveLoad();
 }

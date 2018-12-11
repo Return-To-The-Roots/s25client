@@ -47,9 +47,8 @@ private:
     {
         struct Line
         {
-            Line(const char* const text) : line(text), column(0) {}
-            Line(const std::string& text) : line(text), column(0) {}
-            Line(const std::string& text, unsigned c) : line(text), column(0) {}
+            Line(const char* text, unsigned c = 0) : line(text), column(c) {}
+            Line(const std::string& text, unsigned c = 0) : line(text), column(c) {}
             std::string line;
             unsigned column;
         };
@@ -57,7 +56,7 @@ private:
         std::string lastLine;
         glArchivItem_Bitmap* pic;
         std::vector<Line> lines;
-        CreditsEntry(const std::string& title, const std::string& lastLine = "") : title(title), lastLine(lastLine), pic(NULL) {}
+        explicit CreditsEntry(const std::string& title, const std::string& lastLine = "") : title(title), lastLine(lastLine), pic(NULL) {}
         CreditsEntry(const std::string& title, glArchivItem_Bitmap* pic, const std::string& lastLine = "")
             : title(title), lastLine(lastLine), pic(pic)
         {}

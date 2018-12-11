@@ -98,6 +98,8 @@ typedef int socklen_t;
 #define SUPPRESS_UNUSED
 #endif
 
+#define RTTR_UNUSED(x) (void)(x)
+
 // RTTR_FUNCTION_NAME evaluates to the name of the current function if supported
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 supports __func__ as a standard. */
 #define RTTR_FUNCTION_NAME __func__

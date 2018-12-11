@@ -5,6 +5,9 @@ add_library(driver INTERFACE)
 target_include_directories(driver INTERFACE include)
 target_include_directories(driver SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
 
+include(EnableWarnings)
+enable_warnings(driver)
+
 # Base libraries to be used by driver implementations
 set(RTTR_DRIVER_INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/src/DriverInterface.cpp CACHE INTERNAL "")
 

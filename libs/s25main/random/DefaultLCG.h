@@ -37,7 +37,7 @@ public:
     DefaultLCG() { seed(); }
     explicit DefaultLCG(result_type initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit DefaultLCG(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0)
+    explicit DefaultLCG(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* = 0)
     {
         seed(seedSeq);
     }
@@ -45,7 +45,7 @@ public:
     void seed() { seed(0x1337); }
     void seed(unsigned newSeed) { state_ = newSeed; }
     template<class T_SeedSeq>
-    void seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0);
+    void seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* = 0);
 
     /// Return random value in [min, max]
     result_type operator()();

@@ -33,7 +33,7 @@ public:
     ~Desktop();
     void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
     /// Callback when a window was closed
-    virtual void Msg_WindowClosed(IngameWindow& wnd){};
+    virtual void Msg_WindowClosed(IngameWindow&){};
     /// Show or hide the fps
     void SetFpsDisplay(bool show);
 

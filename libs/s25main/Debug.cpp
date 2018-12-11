@@ -196,6 +196,7 @@ std::vector<void*> DebugInfo::GetStackTrace(void* ctx)
     if(!captureBacktrace(stacktrace, static_cast<LPCONTEXT>(ctx)))
         stacktrace.clear();
 #else
+    RTTR_UNUSED(ctx);
     captureBacktrace(stacktrace);
 #endif
     return stacktrace;

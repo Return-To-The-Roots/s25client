@@ -44,7 +44,7 @@ public:
     void HandleEvent(const unsigned evId) override { handledEventIds.push_back(evId); }
 
     void Destroy() override {}
-    void Serialize(SerializedGameData& sgd) const override {}
+    void Serialize(SerializedGameData&) const override {}
     GO_Type GetGOT() const override { return GOT_UNKNOWN; }
 };
 
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(Reschedule)
     BOOST_REQUIRE_EQUAL(obj.handledEventIds.size(), 1u);
 }
 
-class TestLogKill : public TestEventHandler
+class TestLogKill : public GameObject
 {
 public:
     EventManager& em;
@@ -149,18 +149,16 @@ public:
 
     static unsigned killNum, destroyNum;
     ~TestLogKill() { killNum++; }
-    void HandleEvent(const unsigned evId) override
+    void HandleEvent(const unsigned /*evId*/) override
     {
         BOOST_REQUIRE(!em.IsObjectInKillList(*this));
         // Kill this on event
         em.AddToKillList(this);
         BOOST_REQUIRE(em.IsObjectInKillList(*this));
     }
-    void Destroy() override
-    {
-        destroyNum++;
-        TestEventHandler::Destroy();
-    }
+    void Destroy() override { destroyNum++; }
+    void Serialize(SerializedGameData&) const override {}
+    GO_Type GetGOT() const override { return GOT_UNKNOWN; }
 };
 
 unsigned TestLogKill::killNum = 0;

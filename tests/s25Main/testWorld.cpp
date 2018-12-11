@@ -65,8 +65,8 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
 namespace {
 struct UninitializedWorldCreator
 {
-    explicit UninitializedWorldCreator(const MapExtent& size) {}
-    bool operator()(GameWorldBase& world) { return true; }
+    explicit UninitializedWorldCreator(const MapExtent&) {}
+    bool operator()(GameWorldBase&) { return true; }
 };
 
 struct LoadWorldFromFileCreator : MapTestFixture
@@ -74,7 +74,7 @@ struct LoadWorldFromFileCreator : MapTestFixture
     glArchivItem_Map map;
     std::vector<MapPoint> hqs;
 
-    explicit LoadWorldFromFileCreator(const MapExtent& size) {}
+    explicit LoadWorldFromFileCreator(const MapExtent&) {}
     bool operator()(GameWorldBase& world)
     {
         bnw::ifstream mapFile(testMapPath, std::ios::binary);
