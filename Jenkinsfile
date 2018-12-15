@@ -51,15 +51,17 @@ def transformIntoStep(arch, wspwd) {
                               fi
                               CMAKE_VERSION="3.8.2"
                               CMAKE_DIR="/workdir/installedCMake-\${CMAKE_VERSION}"
-                              wget --no-check-certificate https://github.com/Kitware/CMake/releases/download/v\${CMAKE_VERSION}/cmake-\${CMAKE_VERSION}.tar.gz -qO- | tar xz
+                              if [ ! -f cmake-\${CMAKE_VERSION}/configure ]; then
+                                  https://github.com/Kitware/CMake/releases/download/v\${CMAKE_VERSION}/cmake-\${CMAKE_VERSION}.tar.gz -qO- | tar xz
+                              fi
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
-                                                        "(cd "cmake-\${CMAKE_VERSION}" && ./configure --prefix="\${CMAKE_DIR}" > /dev/null && make install -j2 > /dev/null) && \
-                                                        export PATH=\${CMAKE_DIR}/bin:\\\$PATH && \
+                                                        "export PATH=\${CMAKE_DIR}/bin:\\\$PATH && \
+                                                        (cd "cmake-\${CMAKE_VERSION}" && ./configure --prefix="\${CMAKE_DIR}" >/dev/null && make install -j2 >/dev/null) && \
                                                         mkdir -p build && cd build && \
                                                         cmake .. -DCMAKE_BUILD_TYPE=\$BUILD_TYPE \$TOOLCHAIN \
                                                         -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \
