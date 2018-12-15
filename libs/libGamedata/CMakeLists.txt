@@ -56,21 +56,14 @@ if(_contrib_lua_libpath)
 endif()
 
 # CMake < 3.2 treats version 5.2.x as not equal to 5.2 but we want to allow all 5.2 versions
-if(CMAKE_VERSION VERSION_LESS 3.2)
-	find_package(Lua 5.2 REQUIRED)
-	if(LUA_FOUND AND NOT LUA_VERSION_STRING VERSION_LESS 5.3)
-		message(FATAL_ERROR "Lua version ${LUA_VERSION_STRING} found but required is 5.2")
-	endif()
-else()
-	find_package(Lua 5.2 EXACT REQUIRED)
-endif()
+find_package(Lua 5.2 EXACT REQUIRED)
 
 include(GatherDll)
 gather_dll(Lua)
 
 ADD_LIBRARY(gamedata STATIC ${SOURCES_OTHER} ${SOURCES_SUBDIRS})
 target_include_directories(gamedata PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(gamedata SYSTEM PUBLIC ${LUA_INCLUDE_DIR} PRIVATE ${UTF8_INCLUDE_DIR})
+target_include_directories(gamedata SYSTEM PUBLIC ${LUA_INCLUDE_DIR})
 TARGET_LINK_LIBRARIES(gamedata PUBLIC
 	s25util
 	mygettext
@@ -78,4 +71,7 @@ TARGET_LINK_LIBRARIES(gamedata PUBLIC
 	rttrConfig
 	kaguya
 	${LUA_LIBRARIES}
+	PRIVATE utf8
 )
+include(EnableWarnings)
+enable_warnings(gamedata)

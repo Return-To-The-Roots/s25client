@@ -36,7 +36,7 @@ struct Param_RoadPath
     bool boat_road;
 };
 
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param)
+bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
 {
     const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
     return makePathConditionRoad(gwb, prp->boat_road).IsNodeOk(pt);

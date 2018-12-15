@@ -43,7 +43,7 @@ SET(s25Main_SRCS
 
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(s25Main SYSTEM PRIVATE ${BZIP2_INCLUDE_DIR} ${UTF8_INCLUDE_DIR} PUBLIC ${Boost_INCLUDE_DIR})
+target_include_directories(s25Main SYSTEM PRIVATE ${BZIP2_INCLUDE_DIR} PUBLIC ${Boost_INCLUDE_DIR})
 
 # Disable automatic boost linking
 target_compile_definitions(s25Main PUBLIC BOOST_ALL_NO_LIB)
@@ -55,10 +55,11 @@ target_link_libraries(s25Main PUBLIC
 	s25Common
 	rttrConfig
 	gamedata
-    glad
-    driver
+  glad
+  driver
 	${BZIP2_LIBRARIES}
 	${Boost_LIBRARIES}
+	PRIVATE utf8
 )
 
 if(WIN32)
@@ -78,3 +79,6 @@ endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_link_libraries(s25Main PUBLIC ${CMAKE_DL_LIBS}) # For dynamic driver loading (DriverWrapper)
 endif()
+
+include(EnableWarnings)
+enable_warnings(s25Main)

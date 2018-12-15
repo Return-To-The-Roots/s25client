@@ -72,7 +72,7 @@ struct TestAnimation : public Animation
     double getLinInterpolation() const { return getCurLinearInterpolationFactor(lastNextFramepartTime); }
 
 protected:
-    void doUpdate(Window* element, double nextFramepartTime) override
+    void doUpdate(Window*, double nextFramepartTime) override
     {
         updateCalled = true;
         lastNextFramepartTime = nextFramepartTime;

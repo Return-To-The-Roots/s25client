@@ -1,15 +1,4 @@
-
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
-IF(NOT CMAKE_VERSION VERSION_LESS 3.0)
-	# RPath enabled by default. Rpath only supported in CMake >2.8.12
-	cmake_policy(SET CMP0042 OLD)
-ENDIF()
-IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
-	# Simplified variable expansion. No change for usual variable references so use faster one
-	cmake_policy(SET CMP0053 NEW)
-	# Only interpret if() arguments as variables or keywords when unquoted.
-	cmake_policy(SET CMP0054 NEW)
-ENDIF()
+cmake_minimum_required(VERSION 3.8)
 
 #Check for ccache
 find_program(CCACHE_PROGRAM ccache)
@@ -20,6 +9,12 @@ if(CCACHE_PROGRAM)
 endif()
 
 PROJECT(s25client)
+
+if(NOT CMAKE_CXX_COMPILE_FEATURES AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.4")
+    message(STATUS "Compile features for < GCC 4.4 are not supported by CMake. Emulate those")
+    set(CMAKE_C_COMPILE_FEATURES "c_std_90;c_function_prototypes;c_variadic_macros" CACHE INTERNAL "")
+    set(CMAKE_CXX_COMPILE_FEATURES "cxx_std_98;cxx_variadic_macros" CACHE INTERNAL "")
+endif()
 
 ################################################################################
 
@@ -178,9 +173,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
 	endif()
 endif()
-
-# Enable warnings
-include(cmake/warnings.cmake)
 
 ################################################################################
 # Code coverage

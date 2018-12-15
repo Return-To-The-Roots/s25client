@@ -144,7 +144,7 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
     return true;
 }
 
-bool GameWorldBase::RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<Direction>& route)
+bool GameWorldBase::RoadAlreadyBuilt(const bool /*boat_road*/, const MapPoint start, const std::vector<Direction>& route)
 {
     MapPoint tmp(start);
     for(unsigned i = 0; i < route.size() - 1; ++i)
@@ -261,7 +261,7 @@ Position GameWorldBase::GetNodePos(const MapPoint pt) const
     return ::GetNodePos(pt, GetNode(pt).altitude);
 }
 
-void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis)
+void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player, Visibility /*oldVis*/, Visibility /*newVis*/)
 {
     GetNotifications().publish(PlayerNodeNote(PlayerNodeNote::Visibility, pt, player));
 }
@@ -332,7 +332,7 @@ bool GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapPoint pt) const
 
 template<typename T_IsHarborOk>
 unsigned GameWorldBase::GetHarborInDir(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
-                                       const unsigned char player, T_IsHarborOk isHarborOk) const
+                                       T_IsHarborOk isHarborOk) const
 {
     RTTR_Assert(origin_harborId);
 
@@ -402,7 +402,7 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harborId, const unsigned ch
 unsigned GameWorldBase::GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
                                                const unsigned char player) const
 {
-    return GetHarborInDir(pt, origin_harborId, dir, player, boost::bind(&GameWorldBase::IsHarborPointFree, this, _1, player));
+    return GetHarborInDir(pt, origin_harborId, dir, boost::bind(&GameWorldBase::IsHarborPointFree, this, _1, player));
 }
 
 /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt

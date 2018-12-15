@@ -275,7 +275,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection)
+void dskSelectMap::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
     // Doppelklick auf bestimmte Map -> weiter
     StartServer();

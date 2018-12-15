@@ -23,3 +23,6 @@ endif()
 if(HAVE_STRUCT_TIMESPEC)
 	target_compile_definitions(s25Common PUBLIC HAVE_STRUCT_TIMESPEC)
 endif()
+
+include(EnableWarnings)
+enable_warnings(s25Common)

@@ -202,8 +202,7 @@ private:
     /// Returns the harbor ID of the next matching harbor in the given direction (0 = None)
     /// T_IsHarborOk must be a predicate taking a harbor Id and returning a bool if the harbor is valid to return
     template<typename T_IsHarborOk>
-    unsigned GetHarborInDir(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir, const unsigned char player,
-                            T_IsHarborOk isHarborOk) const;
+    unsigned GetHarborInDir(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir, T_IsHarborOk isHarborOk) const;
 };
 
 #endif // GameWorldBase_h__

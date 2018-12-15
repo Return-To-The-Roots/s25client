@@ -196,7 +196,7 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned ctrl_id, const int selectio
     // Liste wieder ausblenden
     ShowList(false);
 
-    ctrlList* list = GetCtrl<ctrlList>(0);
+    ctrlList* list = GetCtrl<ctrlList>(ctrl_id);
 
     // ist in der Liste überhaupt was drin?
     if(selection != selectionOnListOpen && list->GetNumLines() > 0)

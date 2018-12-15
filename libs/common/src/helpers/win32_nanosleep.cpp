@@ -24,7 +24,7 @@
 /**
  *  nanosleep replacement for windows.
  */
-int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay)
+int nanosleep(const struct timespec* requested_delay, struct timespec* /*remaining_delay*/)
 {
     const int64_t usPerSecond = 1000 * 1000;
     const int64_t nsPerus = 1000;

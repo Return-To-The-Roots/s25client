@@ -98,7 +98,7 @@ bool TestServer::stop()
     return true;
 }
 
-Connection TestServer::acceptConnection(unsigned id, const Socket& so)
+Connection TestServer::acceptConnection(unsigned /*id*/, const Socket& so)
 {
     return Connection(Message::create_base, so);
 }

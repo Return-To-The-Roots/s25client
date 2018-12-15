@@ -316,7 +316,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
     }
 }
 
-bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radius, const Direction dir)
+bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radius)
 {
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
@@ -330,8 +330,7 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
                 if(gwg->FindHumanPath((*it)->GetPos(), pt, 50, false) != 0xFF)
                 {
                     // dann soll er dorthin gehen
-                    (*it)->StartSucceeding(pt, radius, dir);
-
+                    (*it)->StartSucceeding(pt, radius);
                     return true;
                 }
             }

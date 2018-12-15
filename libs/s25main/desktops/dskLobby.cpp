@@ -386,7 +386,7 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
     playertable->SetSelection(selection);
 }
 
-void dskLobby::LC_ServerInfo(const LobbyServerInfo& info)
+void dskLobby::LC_ServerInfo(const LobbyServerInfo&)
 {
     if(serverInfoWnd)
         serverInfoWnd->UpdateServerInfo();

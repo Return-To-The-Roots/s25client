@@ -80,7 +80,7 @@ public:
 
     /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch
     /// transportiert werden müssen
-    virtual unsigned GetPunishmentPoints(const Direction dir) const { return 0; }
+    virtual unsigned GetPunishmentPoints(const Direction) const { return 0; }
 };
 
 inline noRoadNode* noRoadNode::GetNeighbour(const Direction dir) const

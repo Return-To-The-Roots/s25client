@@ -97,7 +97,7 @@ public:
     /// Gibt Pfad zu der Map zurück
     const std::string& GetMapPath() const { return mapinfo.filepath; }
     /// Gibt Map-Typ zurück
-    const MapType GetMapType() const { return mapinfo.type; }
+    MapType GetMapType() const { return mapinfo.type; }
     const std::string& GetLuaFilePath() const { return mapinfo.luaFilepath; }
 
     // Initialisiert und startet das Spiel

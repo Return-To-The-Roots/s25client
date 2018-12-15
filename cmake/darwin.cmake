@@ -1,8 +1,3 @@
-# CMake < 3.4 does not know about tbd and dylib for shared libraries
-IF(CMAKE_VERSION VERSION_LESS 3.4)
-    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".tbd;.dylib;.so;.a" CACHE INTERNAL "Library Suffixes")
-ENDIF()
-
 # Detect possible platforms
 include(CMakeDetectOsXArchs)
 DetectOSXArchs()
