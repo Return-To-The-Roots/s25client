@@ -53,7 +53,7 @@ def transformIntoStep(arch, wspwd) {
                               CMAKE_DIR="/workdir/installedCMake-\${CMAKE_VERSION}"
                               # Extract major.minor
                               CMAKE_V=`expr "\${CMAKE_VERSION}" : '\\([0-9]*\\.[0-9]*\\)'`
-                              wget --no-check-certificate https://cmake.org/files/v\${CMAKE_V}/cmake-\${CMAKE_VERSION}.tar.gz -qO- | tar xz
+                              wget --no-check-certificate https://github.com/Kitware/CMake/releases/download/v\${CMAKE_V}/cmake-\${CMAKE_VERSION}.tar.gz -qO- | tar xz
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
