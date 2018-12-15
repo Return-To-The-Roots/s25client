@@ -19,6 +19,12 @@ foreach(infix w64 pc)
     endif()
 endforeach()
 
+find_program(CMAKE_DUMPBIN NAMES ${COMPILER_PREFIX}-dumpbin dumpbin)
+find_program(CMAKE_OBJDUMP NAMES ${COMPILER_PREFIX}-objdump objdump)
+
+include(${CMAKE_CURRENT_LIST_DIR}/CreateBundleUtilSymlinks.cmake)
+create_bundle_util_symlinks(${CMAKE_DUMPBIN} ${CMAKE_OBJDUMP})
+
 # set search prefix
 set(CMAKE_FIND_ROOT_PATH /usr/${COMPILER_PREFIX})
 

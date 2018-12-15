@@ -6,19 +6,23 @@ endif()
 # specify the cross compiler
 set(usedToolchain)
 foreach(COMPILER_PREFIX i386-apple-darwin15 i686-apple-darwin10)
-    foreach(var CMAKE_C_COMPILER CMAKE_CXX_COMPILER CMAKE_INSTALL_NAME_TOOL)
+    foreach(var CMAKE_C_COMPILER CMAKE_CXX_COMPILER)
         unset(${var} CACHE)
         unset(${var})
     endforeach()
     find_program(CMAKE_C_COMPILER NAMES ${COMPILER_PREFIX}-clang ${COMPILER_PREFIX}-gcc)
     find_program(CMAKE_CXX_COMPILER NAMES ${COMPILER_PREFIX}-clang++-libc++ ${COMPILER_PREFIX}-clang++ ${COMPILER_PREFIX}-g++)
     if(CMAKE_C_COMPILER AND CMAKE_CXX_COMPILER)
-	set(usedToolchain ${COMPILER_PREFIX})
+        set(usedToolchain ${COMPILER_PREFIX})
         break()
     endif()
 endforeach()
 
 find_program(CMAKE_INSTALL_NAME_TOOL NAMES ${usedToolchain}-install_name_tool)
+find_program(CMAKE_OTOOL NAMES ${usedToolchain}-otool otool)
+
+include(${CMAKE_CURRENT_LIST_DIR}/CreateBundleUtilSymlinks.cmake)
+create_bundle_util_symlinks(${CMAKE_INSTALL_NAME_TOOL} ${CMAKE_OTOOL})
 
 set(OSX_SDKS "/usr/lib/apple/SDKs/MacOSX10.11.sdk" "/usr/lib/apple/SDKs/MacOSX10.5.sdk" "/usr/lib/apple/SDKs/MacOSX10.4u.sdk")
 
