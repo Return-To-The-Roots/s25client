@@ -37,6 +37,12 @@ if(APPLE)
         endforeach()
         install(CODE "
             ${varInit}
+            # GetPrerequisites does not handle non-default PATH -.-
+            set(PATH \$ENV{PATH})
+            foreach(p IN LISTS CMAKE_PROGRAM_PATH)
+                list(APPEND PATH \${p})
+            endforeach()
+            set(ENV{PATH} \${PATH})
             include(BundleUtilities)
             set(BU_CHMOD_BUNDLE_ITEMS ON)
             file(GLOB_RECURSE LIBS \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${RTTR_DRIVERDIR}/*.*)
