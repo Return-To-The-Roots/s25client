@@ -59,10 +59,6 @@ public:
     bool Msg_WheelDown(const MouseCoords& mc) override;
     bool Msg_MouseMove(const MouseCoords& mc) override;
 
-protected:
-    /// Zeichenmethode.
-    void Draw_() override;
-
 private:
     std::set<unsigned short> selectedItems_; /// aktuell ausgewählte Buttons
     int select_type;                         /// Typ der Selektierung

@@ -44,7 +44,7 @@ private:
     unsigned numPlayingPlayers;
 
     void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_PaintAfter() override;
+    void Draw_() override;
     void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
     void DrawStatistic(StatisticType type);
     void DrawAxis();

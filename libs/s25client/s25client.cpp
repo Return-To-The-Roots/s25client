@@ -36,9 +36,9 @@
 #include "libutil/error.h"
 
 #ifdef _WIN32
-#include <s25clientResources.h>
 #include "drivers/VideoDriverWrapper.h"
 #include "libutil/ucString.h"
+#include <s25clientResources.h>
 #endif
 
 #include <boost/array.hpp>

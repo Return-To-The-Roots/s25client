@@ -26,7 +26,6 @@ public:
 
 private:
     void Msg_PaintBefore() override;
-    void Msg_PaintAfter() override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;
     void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
     unsigned GetPossibleTradeAmount(const Job job) const;

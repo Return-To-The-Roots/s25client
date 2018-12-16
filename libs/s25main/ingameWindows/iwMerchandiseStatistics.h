@@ -54,7 +54,7 @@ private:
     ctrlText* maxValue;
 
     // Durchgereichte Methoden vom Window
-    void Msg_PaintAfter() override;
+    void Draw_() override;
     void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;
 };

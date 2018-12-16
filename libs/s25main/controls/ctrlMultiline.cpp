@@ -60,7 +60,7 @@ void ctrlMultiline::Draw_()
     if(showBackground_)
         Draw3D(Rect(GetDrawPos(), GetSize()), tc_, false);
 
-    DrawControls();
+    Window::Draw_();
 
     unsigned numVisibleLines = std::min<unsigned>(maxNumVisibleLines, drawLines.size());
 

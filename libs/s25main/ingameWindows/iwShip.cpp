@@ -65,8 +65,9 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
         AddImageButton(12 + i, BUTTON_POS[i], Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 181 + (i + 4) % 6))->SetVisible(false);
 }
 
-void iwShip::Msg_PaintAfter()
+void iwShip::Draw_()
 {
+    IngameWindow::Draw_();
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     // Schiff holen
     noShip* ship = (player == 0xff) ? NULL : owner.GetShipByID(ship_id);

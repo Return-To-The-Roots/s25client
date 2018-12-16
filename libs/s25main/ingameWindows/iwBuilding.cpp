@@ -114,6 +114,7 @@ void iwBuilding::Msg_PaintBefore()
 
 void iwBuilding::Msg_PaintAfter()
 {
+    IngameWindow::Msg_PaintAfter();
     if(BuildingProperties::IsMine(building->GetBuildingType()))
     {
         // Bei Bergwerken sieht die Nahrungsanzeige ein wenig anders aus (3x 2)

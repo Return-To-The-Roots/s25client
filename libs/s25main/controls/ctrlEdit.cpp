@@ -171,6 +171,7 @@ void ctrlEdit::Notify()
 void ctrlEdit::Msg_PaintAfter()
 {
     focus_ = newFocus_;
+    Window::Msg_PaintAfter();
 }
 
 /**

@@ -117,8 +117,7 @@ void ctrlChat::Draw_()
     // Box malen
     Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
 
-    // Scrolleiste zeichnen
-    DrawControls();
+    Window::Draw_();
 
     // Wieviele Linien anzeigen?
     unsigned show_lines = (page_size > unsigned(chat_lines.size()) ? unsigned(chat_lines.size()) : page_size);

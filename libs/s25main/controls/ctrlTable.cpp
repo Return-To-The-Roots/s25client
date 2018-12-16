@@ -254,7 +254,7 @@ void ctrlTable::Draw_()
 {
     Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
 
-    DrawControls();
+    Window::Draw_();
 
     int lines = static_cast<int>(line_count > rows.size() ? rows.size() : line_count);
     ctrlScrollBar* scroll = GetCtrl<ctrlScrollBar>(0);

@@ -76,7 +76,7 @@ void ctrlProgress::Draw_()
     Draw3D(Rect(barPos, barSize), tc, false);
 
     // Buttons
-    DrawControls();
+    Window::Draw_();
 
     const DrawPoint innerPadding(4, 4);
     unsigned percentage = position * 100 / maximum;

@@ -74,8 +74,9 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
                        _("Send max rank soldiers to a warehouse"));
 }
 
-void iwMilitaryBuilding::Msg_PaintAfter()
+void iwMilitaryBuilding::Draw_()
 {
+    IngameWindow::Draw_();
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)
       ->DrawFull(GetDrawPos() + DrawPoint(117, 114), COLOR_SHADOW);

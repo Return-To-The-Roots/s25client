@@ -33,7 +33,7 @@ public:
     ~dskCredits() override;
 
     bool Msg_KeyDown(const KeyEvent& ke) override;
-    void Msg_PaintAfter() override;
+    void Draw_() override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;
     void SetActive(bool active) override;
     bool Close();

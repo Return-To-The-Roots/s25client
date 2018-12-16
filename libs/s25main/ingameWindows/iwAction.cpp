@@ -505,6 +505,7 @@ void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned c
 
 void iwAction::Msg_PaintAfter()
 {
+    IngameWindow::Msg_PaintAfter();
     ctrlTab* tab = GetCtrl<ctrlTab>(0);
     if(tab)
     {

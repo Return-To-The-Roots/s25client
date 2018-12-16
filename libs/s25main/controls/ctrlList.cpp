@@ -169,7 +169,7 @@ void ctrlList::Draw_()
     Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
 
     // Scrolleiste zeichnen
-    DrawControls();
+    Window::Draw_();
 
     // Wieviele Linien anzeigen?
     unsigned show_lines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);

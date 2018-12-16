@@ -83,7 +83,8 @@ void nofScout_Free::LostWork()
 
     switch(state)
     {
-        default: break;
+        default:
+            break;
         // Wenn wir noch hingehen, dann zurückgehen
         case STATE_FIGUREWORK: { GoHome();
         }

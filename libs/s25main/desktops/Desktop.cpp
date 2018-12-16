@@ -64,7 +64,7 @@ void Desktop::Draw_()
     if(background)
         background->DrawFull(GetDrawRect());
 
-    DrawControls();
+    Window::Draw_();
 }
 
 /**

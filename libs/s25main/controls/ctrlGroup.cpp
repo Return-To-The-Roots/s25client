@@ -23,15 +23,6 @@ struct KeyEvent;
 
 ctrlGroup::ctrlGroup(Window* parent, unsigned id) : Window(parent, id, DrawPoint(0, 0)) {}
 
-/**
- *  Zeichenmethode
- */
-void ctrlGroup::Draw_()
-{
-    // Steuerelemente zeichnen
-    DrawControls();
-}
-
 void ctrlGroup::Msg_ButtonClick(const unsigned ctrl_id)
 {
     GetParent()->Msg_Group_ButtonClick(this->GetID(), ctrl_id);

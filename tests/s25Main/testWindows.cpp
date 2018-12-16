@@ -22,6 +22,10 @@
 #include "initTestHelpers.h"
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
+#include <turtle/mock.hpp>
+#include "WindowManager.h"
+#include "desktops/Desktop.h"
+#include "controls/ctrlGroup.h"
 
 namespace {
 
@@ -54,6 +58,52 @@ BOOST_AUTO_TEST_CASE(Victory)
         found |= curFound;
     }
     BOOST_REQUIRE(found);
+}
+
+namespace
+{
+    /* clang-format off */
+    MOCK_BASE_CLASS(TestWindow, Window)
+    {
+    public:
+        TestWindow(Window* parent, unsigned id, const DrawPoint& position): Window(parent, id, position) {}
+        MOCK_METHOD(Msg_PaintBefore, 0)
+        MOCK_METHOD(Msg_PaintAfter, 0)
+        MOCK_METHOD(Draw_, 0, void())
+    };
+    /* clang-format on */
+}
+
+BOOST_AUTO_TEST_CASE(DrawOrder)
+{
+    Desktop* dsk = WINDOWMANAGER.GetCurrentDesktop();
+    std::vector<TestWindow*> wnds;
+    // Top level controls
+    for(int i = 0; i < 3; i++)
+    {
+        wnds.push_back(new TestWindow(dsk, wnds.size(), DrawPoint(0, 0)));
+        dsk->AddCtrl(wnds.back());
+    }
+    // Some groups with own controls
+    for(int i = 0; i < 3; i++)
+    {
+        ctrlGroup* grp = dsk->AddGroup(100 + i);
+        for(int i = 0; i < 3; i++)
+        {
+            wnds.push_back(new TestWindow(dsk, wnds.size(), DrawPoint(0, 0)));
+            grp->AddCtrl(wnds.back());
+        }
+    }
+    mock::sequence s;
+    // Note: Actually order of calls to controls is undefined but in practice matches the IDs
+    BOOST_FOREACH(TestWindow* wnd, wnds)
+        MOCK_EXPECT(wnd->Msg_PaintBefore).once().in(s);
+    BOOST_FOREACH(TestWindow* wnd, wnds)
+        MOCK_EXPECT(wnd->Draw_).once().in(s);
+    BOOST_FOREACH(TestWindow* wnd, wnds)
+        MOCK_EXPECT(wnd->Msg_PaintAfter).once().in(s);
+    WINDOWMANAGER.Draw();
+    mock::verify();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

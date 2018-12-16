@@ -253,8 +253,9 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const int selec
     }
 }
 
-void iwStatistics::Msg_PaintAfter()
+void iwStatistics::Draw_()
 {
+    IngameWindow::Draw_();
     // Die farbigen Boxen unter den Spielerportraits malen
     unsigned short startX = 126 - numPlayingPlayers * 17;
     DrawPoint drawPt = GetDrawPos() + DrawPoint(startX, 68);

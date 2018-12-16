@@ -24,14 +24,6 @@ ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, int select_type)
 {}
 
 /**
- *  Zeichenmethode.
- */
-void ctrlOptionGroup::Draw_()
-{
-    DrawControls();
-}
-
-/**
  *  wählt einen Button aus der Gruppe aus.
  */
 void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)

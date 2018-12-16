@@ -36,7 +36,7 @@ public:
     iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship, const DrawPoint& pos = IngameWindow::posAtMouse);
 
 private:
-    void Msg_PaintAfter() override;
+    void Draw_() override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;
 
     void DrawCargo();

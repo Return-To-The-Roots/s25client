@@ -97,5 +97,6 @@ void iwBuildingProductivities::UpdatePercents()
 /// Produktivitäts-percentbars aktualisieren
 void iwBuildingProductivities::Msg_PaintAfter()
 {
+    IngameWindow::Msg_PaintAfter();
     UpdatePercents();
 }

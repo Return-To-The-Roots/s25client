@@ -168,8 +168,9 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 
 dskCredits::~dskCredits() {}
 
-void dskCredits::Msg_PaintAfter()
+void dskCredits::Draw_()
 {
+    Desktop::Draw_();
     DrawBobs();
     DrawCredit();
 }

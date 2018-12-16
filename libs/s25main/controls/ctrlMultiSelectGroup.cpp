@@ -24,14 +24,6 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int sele
 {}
 
 /**
- *  Zeichenmethode.
- */
-void ctrlMultiSelectGroup::Draw_()
-{
-    DrawControls();
-}
-
-/**
  *  Selektiert einen neuen Button aus der Gruppe.
  */
 void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)

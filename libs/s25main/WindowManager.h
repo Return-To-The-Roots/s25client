@@ -95,6 +95,8 @@ public:
     const IngameWindow* GetTopMostWindow() const;
     IngameWindow* FindWindowAtPos(const Position& pos) const;
 
+    Desktop* GetCurrentDesktop() { return curDesktop.get(); }
+
 protected:
     void DrawToolTip();
 

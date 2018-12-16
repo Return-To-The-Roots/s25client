@@ -67,9 +67,6 @@ public:
     bool Msg_WheelDown(const MouseCoords& mc) override;
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
-
-protected:
-    void Draw_() override;
 };
 
 #endif // !CTRLGROUP_H_INCLUDED

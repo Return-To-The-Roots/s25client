@@ -145,8 +145,9 @@ void iwMerchandiseStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, cons
     }
 }
 
-void iwMerchandiseStatistics::Msg_PaintAfter()
+void iwMerchandiseStatistics::Draw_()
 {
+    IngameWindow::Draw_();
     DrawRectangles();
     DrawAxis();
     DrawStatistic();

@@ -337,7 +337,8 @@ void nofAttacker::Walked()
         }
         break;
         case STATE_SEAATTACKING_WAITINHARBOR: // wartet im Hafen auf das ankommende Schiff
-        {}
+        {
+        }
         break;
         case STATE_SEAATTACKING_ONSHIP: // befindet sich auf dem Schiff auf dem Weg zum Zielpunkt
         {
