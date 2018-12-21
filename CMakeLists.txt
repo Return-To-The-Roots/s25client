@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.8)
 
 #Check for ccache
-find_program(CCACHE_PROGRAM ccache)
-MARK_AS_ADVANCED(CCACHE_PROGRAM)
+if(APPLE)
+    find_program(CCACHE_PROGRAM NAMES ccache-lipo ccache)
+else()
+    find_program(CCACHE_PROGRAM ccache)
+endif()
+mark_as_advanced(CCACHE_PROGRAM)
 if(CCACHE_PROGRAM)
-	MESSAGE(STATUS "Using ccache to speed up builds")
+	message(STATUS "Using ccache(${CCACHE_PROGRAM}) to speed up builds")
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif()
 
