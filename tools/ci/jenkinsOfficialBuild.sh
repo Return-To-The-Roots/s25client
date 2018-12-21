@@ -20,7 +20,7 @@ git submodule foreach git status
 
 TOOLCHAIN=
 if [ "$(uname -s | tr "[:upper:]" "[:lower:]").$(uname -m)" != "${ARCH}" ] ; then
-    TOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=$(pwd)/cmake/toolchains/c.${ARCH}.cmake"
+    TOOLCHAIN="$(pwd)/cmake/toolchains/c.${ARCH}.cmake"
 fi
 
 BUILD_TYPE=RelWithDebInfo
@@ -52,8 +52,8 @@ INSTALL_DIR="$(pwd)/installed"
 rm -rf "${INSTALL_DIR}"
 mkdir -p build && cd build
 cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
-    "${TOOLCHAIN}" \
-    "${VERSION_FLAGS}" \
+    -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" \
+    ${VERSION_FLAGS} \
     -DRTTR_ENABLE_WERROR=ON \
     -DRTTR_USE_STATIC_BOOST=ON \
     -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}"
