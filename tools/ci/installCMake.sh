@@ -5,6 +5,7 @@ set -euo pipefail
 CMAKE_VERSION="${1:?Missing CMake version}"
 INSTALL_DIR="${2:?Missing install dir}"
 CONFIGURE_PREFIX_DIR="${3:?Missing directory prefix where to build CMake}" # Where to store downloaded and build files
+DOWNLOAD_ONLY="${4:-no}"
 
 export PATH="${INSTALL_DIR}/bin:${PATH}"
 
@@ -26,6 +27,10 @@ if [ ! -f "${BUILD_DIR}/bootstrap" ]; then
         echo "Download failed or files invalid" >&2
         exit 1
     fi
+fi
+
+if [ "${DOWNLOAD_ONLY}" != "no" ]; then
+    exit 0
 fi
 
 cd "${BUILD_DIR}"

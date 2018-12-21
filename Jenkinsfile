@@ -33,6 +33,8 @@ def transformIntoStep(arch, wspwd) {
                                   VOLUMES=
                                   touch s25rttrDummy.zip
                               fi
+                              # Download here as container does not have wget
+                              tools/ci/installCMake.sh "3.8.2" "dummy-unused" cmakeSrc yes
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
