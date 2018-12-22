@@ -34,8 +34,12 @@ if [ "${DOWNLOAD_ONLY}" != "no" ]; then
 fi
 
 cd "${BUILD_DIR}"
+
+# Linux and OSX version
+NPROC=$(nproc 2>/dev/null || sysctl -n hw.ncpu)
+
 # Build quietely preferably with cmake (if it exists) or fallback to bootstrap
 cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" >/dev/null || \
-    ./bootstrap --prefix="${INSTALL_DIR}" --parallel=$(nproc) >/dev/null
+    ./bootstrap --prefix="${INSTALL_DIR}" --parallel=${NPROC} >/dev/null
 
-make install -j$(nproc) >/dev/null
+make install -j${NPROC} >/dev/null
