@@ -22,7 +22,6 @@ addons:
         sources:
             - boost-latest
             - ubuntu-toolchain-r-test
-            - george-edison55-trusty-backports # cmake 3.2.3
         packages:
             - libboost-filesystem1.55-dev
             - libboost-thread1.55-dev
@@ -44,7 +43,7 @@ addons:
 
 cache:
     directories:
-        - ${TRAVIS_BUILD_DIR}/deps/cmake
+        - ${TRAVIS_BUILD_DIR}/deps
 
 matrix:
     include:
@@ -57,14 +56,12 @@ matrix:
               - brew install gettext
               - brew install miniupnpc
               - brew link --force gettext
-              - command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-              - rvm get head || true # https://github.com/travis-ci/travis-ci/issues/6307
               - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-              - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+              - mkdir -p ${DEPS_DIR}
               - |
-                CMAKE_URL="http://www.cmake.org/files/v2.8/cmake-2.8.12.2-Darwin64-universal.tar.gz"
-                mkdir cmake && travis_retry wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-                export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+                CMAKE_DIR="${DEPS_DIR}/cmakeOsx"        
+                tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}" cmakeSrc
+                export PATH="${CMAKE_DIR}/bin:${PATH}"
               - cd ${TRAVIS_BUILD_DIR}
           #                                                             Travis libs are x64 only
           env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03 ADDITIONAL_CMAKE_FLAGS="-DRTTR_NOi386=ON" GCOV="gcov"
@@ -75,21 +72,14 @@ matrix:
           env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03
 
 install:
+    - export ADDITIONAL_CMAKE_FLAGS=""
     - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-    - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+    - mkdir -p ${DEPS_DIR}
     # Use CMake 3.8.2 (same as build server)
     - |
-        CMAKE_VERSION="3.8.2"
-        # Extract major.minor
-        CMAKE_V=`expr "${CMAKE_VERSION}" : '\([0-9]*\.[0-9]*\)'`
-        CMAKE_DIR="${DEPS_DIR}/cmake-${CMAKE_VERSION}"
-        if [ -z "$(ls -A ${CMAKE_DIR})" ]; then
-            CMAKE_URL="https://cmake.org/files/v${CMAKE_V}/cmake-${CMAKE_VERSION}.tar.gz"
-            rm -rf cmakeSrc && mkdir cmakeSrc
-            travis_retry wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmakeSrc
-            cd cmakeSrc && ./bootstrap --prefix=${CMAKE_DIR} && make -j2 && make install && cd ..
-        fi
-        export PATH=${CMAKE_DIR}/bin:${PATH}
+        CMAKE_DIR="${DEPS_DIR}/cmakeLin"        
+        tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}" cmakeSrc
+        export PATH="${CMAKE_DIR}/bin:${PATH}"
     # Enable coverage analysis only in debug and for g++
     - |
         if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
@@ -111,7 +101,6 @@ install:
             export RTTR_COVERAGE="1"
             export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
         else
-            export GCOV="gcov" # Just to have anything valid
             export RTTR_COVERAGE="0"
         fi
     # C++11 requires gcc-4.8 or newer
@@ -128,55 +117,10 @@ before_script:
         fi
     - sleep 3 # give xvfb some time to start
 
-script:
-    # Information
-    - cmake --version
-    - $CXX --version
-    - $GCOV --version
-    - lcov --version 2>/dev/null || true
-    # Fail if any command failed
-    - set -e
-    - INSTALL_DIR="${TRAVIS_BUILD_DIR}/installed"
-    - rm -rf "${INSTALL_DIR}"
-    - mkdir -p build && cd build
-    - |
-        cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" \
-            -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-            -DRTTR_ENABLE_WERROR=ON -DRTTR_EDITOR_ADMINMODE=ON \
-            -G "Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
-    # Travis uses 2 cores
-    - |
-        if [[ ${BUILD_TYPE} == "Release" ]]; then
-            make -j2 install
-        else
-            make -j2
-        fi
-    # Execute tests
-    - export CTEST_OUTPUT_ON_FAILURE=1
-    - export BOOST_TEST_CATCH_SYSTEM_ERRORS="no"
-    - export RTTR_DISABLE_ASSERT_BREAKPOINT=1
-    - make test
-    # Reset environment
-    - cd ..
-    - set +e
+script: tools/ci/travisBuild.sh
 
 after_success:
-    # Coverage.io
     - |
         if [ "$RTTR_COVERAGE" = "1" ]; then
-            bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -lpb {} +" || true
-            files=$(find . -type f -name '*.gcov' -not -path '*/conftest_*.c.gcov')
-            if [ "$files" != "" ]; then
-                bash <(curl -s https://codecov.io/bash) -f "$files"
-            fi
-        fi
-    # Coveralls
-    - |
-        if [ "$RTTR_COVERAGE" = "1" ]; then
-            lcov --gcov-tool $GCOV --directory build --capture --output-file coverage.info --rc lcov_branch_coverage=1 > /dev/null
-            # Remove everything from /usr (unrelated), external folder (3rd party data), test code
-            lcov --gcov-tool $GCOV --remove coverage.info '/usr/*' 'external/*' 'tests/*' --output-file coverage.info > /dev/null
-            # Debug output
-            lcov --list coverage.info
-            coveralls-lcov coverage.info
+            tools/ci/uploadCoverageData.sh
         fi

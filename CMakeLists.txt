@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.8)
 
 #Check for ccache
-find_program(CCACHE_PROGRAM ccache)
-MARK_AS_ADVANCED(CCACHE_PROGRAM)
+if(APPLE)
+    find_program(CCACHE_PROGRAM NAMES ccache-lipo ccache)
+else()
+    find_program(CCACHE_PROGRAM ccache)
+endif()
+mark_as_advanced(CCACHE_PROGRAM)
 if(CCACHE_PROGRAM)
-	MESSAGE(STATUS "Using ccache to speed up builds")
+	message(STATUS "Using ccache(${CCACHE_PROGRAM}) to speed up builds")
 	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif()
 
@@ -130,6 +134,10 @@ if(CMAKE_CONFIGURATION_TYPES)
         set(RTTR_OUTPUT_DIR_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR}/${type})
     endforeach()
 elseif(CMAKE_BUILD_TYPE)
+    set(validBuildTypes Debug Release RelWithDebInfo MinSizeRel)
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "" AND NOT CMAKE_BUILD_TYPE IN_LIST validBuildTypes)
+        message(FATAL_ERROR "CMAKE_BUILD_TYPE set to invalid value '${CMAKE_BUILD_TYPE}'. Valid are '' (empty) or ${validBuildTypes}")
+    endif()
     string(TOUPPER ${CMAKE_BUILD_TYPE} _UPPER_TYPE)
     set(RTTR_OUTPUT_DIR_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR})
 endif()
@@ -289,7 +297,7 @@ GETTEXT_CREATE_TRANSLATIONS(data/RTTR/languages/rttr.pot ALL
 						   )
 # Copy the RTTR folder with the updated translations to the directory of the client.
 configure_file(copyDepsToBuildDir.cmake . @ONLY)
-add_custom_command(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIGURATION> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)
+add_custom_command(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIG> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)
 
 if(ClangFormat_FOUND)
 	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs true)

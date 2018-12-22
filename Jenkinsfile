@@ -17,56 +17,31 @@ def transformIntoStep(arch, wspwd) {
                         unstash 'source'
 
                         sh """set -x
-                              git clean -fd --exclude "/cmake-*" --exclude "/installedCMake-*"
-                              git submodule foreach git clean -fxd
-                              echo "Git status for main and sub repos:"
-                              git status
-                              git submodule foreach git status
-                              TOOLCHAIN=
-                              if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" != "${arch}" ] ; then
-                                  TOOLCHAIN=-DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/c.${arch}.cmake
-                              fi
+                              # Clean repo from untracked or changed files
+                              git clean --force -d --exclude "/installedCMake-*" --exclude "/.ccache"
+                              git submodule foreach git clean --force -xd
+
                               VOLUMES="-v /srv/apache2/siedler25.org/nightly:/www \
-                                  -v /srv/backup/www/s25client:/archive \
-                                  "
-
-                              BUILD_TYPE=RelWithDebInfo
-                              if [[ "${arch}" == "apple.universal" ]]; then
-                                  # Current apple compiler doesn't work with debug info and we can't extract them anyway
-                                  BUILD_TYPE=Release
-                              fi
-                              # Auto detect version and revision
-                              ADDITIONAL_CMAKE_FLAGS="-DRTTR_VERSION=OFF -DRTTR_REVISION=OFF"
-
+                                       -v /srv/backup/www/s25client:/archive \
+                                      "
                               if [ "${env.BRANCH_NAME}" == "master" ] ; then
-                                  MAKE_TARGET=create_nightly
+                                  CI_TYPE=nightly
                               elif [ "${env.BRANCH_NAME}" == "stable" ] ; then
-                                  MAKE_TARGET=create_stable
-                                  ADDITIONAL_CMAKE_FLAGS="-DRTTR_VERSION=\$(cat ../.stable-version) -DRTTR_REVISION=OFF"
+                                  CI_TYPE=stable
                               else
+                                  CI_TYPE=other
                                   VOLUMES=
-                                  MAKE_TARGET=install
-                                  ADDITIONAL_CMAKE_FLAGS="\${ADDITIONAL_CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=/workdir/installed"
                                   touch s25rttrDummy.zip
                               fi
-                              CMAKE_VERSION="3.8.2"
-                              CMAKE_DIR="/workdir/installedCMake-\${CMAKE_VERSION}"
-                              if [ ! -f cmake-\${CMAKE_VERSION}/configure ]; then
-                                  https://github.com/Kitware/CMake/releases/download/v\${CMAKE_VERSION}/cmake-\${CMAKE_VERSION}.tar.gz -qO- | tar xz
-                              fi
+                              # Download here as container does not have wget
+                              tools/ci/installCMake.sh "3.8.2" "dummy-unused" cmakeSrc yes
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
-                                                        "export PATH=\${CMAKE_DIR}/bin:\\\$PATH && \
-                                                        (cd "cmake-\${CMAKE_VERSION}" && ./configure --prefix="\${CMAKE_DIR}" >/dev/null && make install -j2 >/dev/null) && \
-                                                        mkdir -p build && cd build && \
-                                                        cmake .. -DCMAKE_BUILD_TYPE=\$BUILD_TYPE \$TOOLCHAIN \
-                                                        -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \
-                                                        \$ADDITIONAL_CMAKE_FLAGS && \
-                                                        make \$MAKE_TARGET"
+                                                        "tools/ci/jenkinsOfficialBuild.sh ${arch} \${CI_TYPE}"
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
                               exit \$EXIT
