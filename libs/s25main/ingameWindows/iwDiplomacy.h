@@ -34,7 +34,6 @@ private:
     const GameWorldViewer& gwv;
     GameCommandFactory& gcFactory;
     void Msg_PaintBefore() override;
-    void Msg_PaintAfter() override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 

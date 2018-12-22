@@ -40,7 +40,7 @@ public:
     static void DemolitionNotAllowed(const GlobalGameSettings& ggs);
 
 private:
-    void Msg_PaintAfter() override;
+    void Draw_() override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 

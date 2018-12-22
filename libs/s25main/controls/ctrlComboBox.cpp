@@ -86,6 +86,7 @@ void ctrlComboBox::Msg_PaintAfter()
 {
     // Liste erst jetzt malen, damit sie den Rest überdeckt
     GetCtrl<ctrlList>(0)->Draw();
+    Window::Msg_PaintAfter();
 }
 
 bool ctrlComboBox::Msg_MouseMove(const MouseCoords& mc)

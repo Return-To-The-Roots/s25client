@@ -140,7 +140,9 @@ bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path,
     // Maps, Random-Maps, Savegames - Header laden und relevante Informationen rausschreiben (Map-Titel, Spieleranzahl)
     switch(mapinfo.type)
     {
-        default: LOG.write("GameServer::Start: ERROR: Map-Type %u not supported!\n") % mapinfo.type; return false;
+        default:
+            LOG.write("GameServer::Start: ERROR: Map-Type %u not supported!\n") % mapinfo.type;
+            return false;
         // Altes S2-Mapformat von BB
         case MAPTYPE_OLDMAP:
         {

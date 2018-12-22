@@ -197,7 +197,7 @@ void ctrlScrollBar::Draw_()
     Draw3D(Rect(pos + DrawPoint(0, button_height - 2), GetSize().x, GetSize().y - button_height * 2 + 4), tc, false);
 
     // Buttons
-    DrawControls();
+    Window::Draw_();
 
     // Scrollbar
     Draw3D(Rect(pos + DrawPoint(0, button_height + sliderPos), GetSize().x, sliderHeight), tc, true);

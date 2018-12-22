@@ -98,8 +98,6 @@ void iwTrade::Msg_PaintBefore()
     }
 }
 
-void iwTrade::Msg_PaintAfter() {}
-
 void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     // pressed the send button

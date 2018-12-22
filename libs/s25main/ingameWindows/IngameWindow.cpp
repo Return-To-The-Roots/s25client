@@ -325,10 +325,7 @@ void IngameWindow::Draw_()
         if(background)
             background->DrawPart(Rect(GetPos() + DrawPoint(contentOffset), GetIwSize()));
 
-        // Msg_PaintBefore aufrufen vor den Controls
-        Msg_PaintBefore();
-
-        DrawControls();
+        Window::Draw_();
     }
 
     // Links und rechts unten die 2 kleinen Knäufe

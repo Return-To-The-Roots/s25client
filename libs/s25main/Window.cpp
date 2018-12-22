@@ -498,6 +498,20 @@ void Window::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsign
 void Window::Msg_PaintBefore()
 {
     animations_.update(VIDEODRIVER.GetTickCount());
+    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
+        control->Msg_PaintBefore();
+}
+
+void Window::Msg_PaintAfter()
+{
+    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
+        control->Msg_PaintAfter();
+}
+
+void Window::Draw_()
+{
+    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
+        control->Draw();
 }
 
 void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
@@ -534,19 +548,6 @@ T_Pt Window::ScaleIf(const T_Pt& pt) const
 // Inlining removes those. so add it here
 template DrawPoint Window::ScaleIf(const DrawPoint&) const;
 template Extent Window::ScaleIf(const Extent&) const;
-
-/**
- *  zeichnet die Steuerelemente.
- */
-void Window::DrawControls()
-{
-    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
-        control->Msg_PaintBefore();
-    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
-        control->Draw();
-    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
-        control->Msg_PaintAfter();
-}
 
 /**
  *  prüft ob Mauskoordinaten in einer gesperrten Region liegt.

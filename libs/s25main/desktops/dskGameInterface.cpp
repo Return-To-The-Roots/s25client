@@ -303,6 +303,8 @@ void dskGameInterface::Msg_PaintBefore()
 
 void dskGameInterface::Msg_PaintAfter()
 {
+    Desktop::Msg_PaintAfter();
+
     /* NWF-Anzeige (vorläufig)*/
     char nwf_string[256];
 

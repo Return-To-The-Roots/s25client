@@ -137,7 +137,7 @@ ctrlGroup* ctrlTab::GetGroup(const unsigned tab_id)
  */
 void ctrlTab::Draw_()
 {
-    DrawControls();
+    Window::Draw_();
 
     // TODO: What is this really?
     int headerSize = tab_count * 36;

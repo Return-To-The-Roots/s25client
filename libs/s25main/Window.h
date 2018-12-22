@@ -135,6 +135,9 @@ public:
 
     AnimationManager& GetAnimationManager() { return animations_; }
 
+    template<typename T>
+    T* AddCtrl(T* ctrl);
+
     ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, const Nation nation, unsigned short size = 36,
                                       const std::string& tooltip_ = "");
     ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const std::string& text,
@@ -203,7 +206,7 @@ public:
 
     // Nachrichten, die von oben (WindowManager) nach unten (zu Controls) gereicht werden
     virtual void Msg_PaintBefore();
-    virtual void Msg_PaintAfter() {}
+    virtual void Msg_PaintAfter();
     virtual bool Msg_LeftDown(const MouseCoords&) { return false; }
     virtual bool Msg_RightDown(const MouseCoords&) { return false; }
     virtual bool Msg_LeftUp(const MouseCoords&) { return false; }
@@ -269,17 +272,12 @@ protected:
     T_Pt ScaleIf(const T_Pt& pt) const;
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
     void SetScale(bool scale = true) { this->scale_ = scale; }
-    /// zeichnet die Steuerelemente.
-    void DrawControls();
     /// prüft ob koordinaten in einer gesperrten Region liegt.
     bool TestWindowInRegion(Window* window, const Position& pos) const;
     /// zeichnet das Fenster.
-    virtual void Draw_() = 0;
+    virtual void Draw_();
     /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
     virtual bool IsMessageRelayAllowed() const;
-
-    template<typename T>
-    T* AddCtrl(T* ctrl);
 
 private:
     Window* const parent_; /// Handle auf das Parentfenster.

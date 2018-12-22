@@ -111,6 +111,9 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
 
 void iwDiplomacy::Msg_PaintBefore()
 {
+    // Farben, die zu den 3 Bündnisstates gesetzt werden (0-kein Bündnis, 1-in Arbeit, 2-Bündnis abgeschlossen)
+    const unsigned PACT_COLORS[3] = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
+
     IngameWindow::Msg_PaintBefore();
     // Die farbigen Zeilen malen
     DrawPoint curPos = GetDrawPos() + DrawPoint(LINE_DISTANCE_TO_MARGINS, FIRST_LINE_Y);
@@ -120,16 +123,7 @@ void iwDiplomacy::Msg_PaintBefore()
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
         DrawRectangle(curRect, SetAlpha(gwv.GetWorld().GetPlayer(i).color, 0x40));
         curRect.move(DrawPoint(0, CELL_HEIGHT + SPACE_HEIGHT));
-    }
-}
 
-void iwDiplomacy::Msg_PaintAfter()
-{
-    // Farben, die zu den 3 Bündnisstates gesetzt werden (0-kein Bündnis, 1-in Arbeit, 2-Bündnis abgeschlossen)
-    const unsigned PACT_COLORS[3] = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
-
-    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
-    {
         // Farben der Bündnis-Buttons setzen, je nachdem wie der Status ist
 
         // Existiert der Button auch?

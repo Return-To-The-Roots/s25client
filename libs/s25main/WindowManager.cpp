@@ -69,15 +69,12 @@ void WindowManager::Draw()
     if(nextdesktop)
         DoDesktopSwitch();
 
-    // haben wir einen gültigen Desktop?
     if(!curDesktop)
         return;
 
-    // ja, Msg_PaintBefore aufrufen
     curDesktop->Msg_PaintBefore();
-
-    // und Desktop zeichnen
     curDesktop->Draw();
+    curDesktop->Msg_PaintAfter();
 
     // First close all marked windows
     CloseMarkedIngameWnds();
@@ -93,9 +90,6 @@ void WindowManager::Draw()
     }
 
     DrawToolTip();
-
-    // Msg_PaintAfter aufrufen
-    curDesktop->Msg_PaintAfter();
 }
 
 /**

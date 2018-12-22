@@ -93,6 +93,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 /// Anzahlen der Gebäude zeichnen
 void iwBuildings::Msg_PaintAfter()
 {
+    IngameWindow::Msg_PaintAfter();
     // Anzahlen herausfinden
     BuildingCount bc = gwv.GetViewer().GetPlayer().GetBuildingRegister().GetBuildingNums();
 

@@ -72,6 +72,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
 
 void iwBuildingSite::Msg_PaintAfter()
 {
+    IngameWindow::Msg_PaintAfter();
     // Baukosten zeichnen
     DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)

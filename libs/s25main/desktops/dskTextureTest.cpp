@@ -96,6 +96,7 @@ typedef boost::array<PointF, 3> Triangle;
 
 void dskTextureTest::Msg_PaintAfter()
 {
+    dskMenuBase::Msg_PaintAfter();
     if(!curTexture)
         return;
     DrawRectangle(Rect(0, 50, 800, 550), COLOR_BLACK);

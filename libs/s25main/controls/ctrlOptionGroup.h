@@ -52,10 +52,6 @@ public:
     bool Msg_WheelDown(const MouseCoords& mc) override;
     bool Msg_MouseMove(const MouseCoords& mc) override;
 
-protected:
-    /// Zeichenmethode.
-    void Draw_() override;
-
 private:
     unsigned short selection_; /// aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
     int select_type;           /// Typ der Selektierung
