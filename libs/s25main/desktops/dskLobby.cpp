@@ -91,7 +91,8 @@ dskLobby::~dskLobby()
 
 void dskLobby::Msg_Timer(const unsigned /*ctrl_id*/)
 {
-    LOBBYCLIENT.SendServerListRequest();
+    if(LOBBYCLIENT.IsLoggedIn())
+        LOBBYCLIENT.SendServerListRequest();
 }
 
 void dskLobby::Msg_PaintBefore()
