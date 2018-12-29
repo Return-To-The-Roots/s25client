@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,13 +24,6 @@
 #ifndef _CRTDBG_MAP_ALLOC
 #define _CRTDBG_MAP_ALLOC
 #endif
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-// Allow e.g. UINT64_C macros
-#ifndef __STDC_CONSTANT_MACROS
-#define __STDC_CONSTANT_MACROS
-#endif
 
 #ifdef _WIN32
 
@@ -40,7 +33,6 @@
 // Enable catching of exceptions
 //#define RTTR_HWETRANS
 
-#define WIN32_LEAN_AND_MEAN
 #ifdef _MSC_VER
 // Visual Studio
 #ifdef _DEBUG
@@ -88,17 +80,9 @@ typedef int socklen_t;
 // Fixed width types like uint32_t shall be treated like build-in types
 #include <stdint.h>
 
+#include <rttr/warningSuppression.h>
+
 // IWYU pragma: end_exports
-
-// Macro that can be used to suppress unused warnings. Required e.g. for const boost::arrays defined in headers
-// Don't use this if not absolutely necessary!
-#ifdef __GNUC__
-#define SUPPRESS_UNUSED __attribute__((unused))
-#else
-#define SUPPRESS_UNUSED
-#endif
-
-#define RTTR_UNUSED(x) (void)(x)
 
 // RTTR_FUNCTION_NAME evaluates to the name of the current function if supported
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 supports __func__ as a standard. */

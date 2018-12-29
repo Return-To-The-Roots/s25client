@@ -18,6 +18,7 @@
 #ifndef JobTypes_h__
 #define JobTypes_h__
 
+#include "rttr/warningSuppression.h"
 #include <boost/array.hpp>
 
 enum Job

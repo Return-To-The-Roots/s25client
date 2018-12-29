@@ -21,7 +21,6 @@
 #define helperTests_h__
 
 #include "helpers/traits.h"
-
 #include <boost/container/flat_set.hpp>
 #include <boost/static_assert.hpp>
 #include <vector>

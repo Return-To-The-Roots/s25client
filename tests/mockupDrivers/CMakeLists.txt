@@ -16,7 +16,3 @@ if(WIN32)
 	include(GatherDll)
 	gather_dll_by_name(SDL SDL.dll)
 endif()
-
-if(ClangFormat_FOUND)
-    add_clangFormat_files(MockupVideoDriver.h MockupVideoDriver.cpp MockupAudioDriver.h MockupAudioDriver.cpp)
-endif()

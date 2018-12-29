@@ -29,8 +29,8 @@
 #include <string>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-// DriverWrapper
+namespace bfs = boost::filesystem;
+
 class DriverWrapper
 {
 public:

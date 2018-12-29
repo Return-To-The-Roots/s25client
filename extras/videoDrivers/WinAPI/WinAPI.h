@@ -20,7 +20,9 @@
 #pragma once
 
 #include "driver/VideoDriver.h"
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #include <string>
 #include <utility>

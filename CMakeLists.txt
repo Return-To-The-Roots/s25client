@@ -324,8 +324,9 @@ configure_file(copyDepsToBuildDir.cmake . @ONLY)
 add_custom_command(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIG> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)
 
 if(ClangFormat_FOUND)
-	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs true)
-	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extra true)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs TRUE)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extra TRUE)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/tests TRUE)
 	add_ClangFormat_target("file")
 endif()
 

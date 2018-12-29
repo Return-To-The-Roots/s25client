@@ -50,7 +50,7 @@
 #include "ogl/FontStyle.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
-#include "liblobby/LobbyClient.h"
+#include "liblobby/LobbyPlayerInfo.h"
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/Log.h"
@@ -73,9 +73,11 @@ enum CtrlIds
 };
 }
 
-dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gameLobby, unsigned playerId)
+dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gameLobby, unsigned playerId,
+                         libutil::unique_ptr<ILobbyClient> lobbyClient)
     : Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(gameLobby), localPlayerId_(playerId),
-      hasCountdown_(false), wasActivated(false), gameChat(NULL), lobbyChat(NULL), lobbyChatTabAnimId(0), localChatTabAnimId(0)
+      lobbyClient_(boost::move(lobbyClient)), hasCountdown_(false), wasActivated(false), gameChat(NULL), lobbyChat(NULL),
+      lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
     if(gameLobby->isHost())
         lobbyHostController.reset(new GameLobbyController(gameLobby));
@@ -140,7 +142,7 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
     if(!IsSinglePlayer())
     {
         // Enable lobby chat when we are logged in
-        if(LOBBYCLIENT.IsLoggedIn())
+        if(lobbyClient_ && lobbyClient_->IsLoggedIn())
         {
             ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK);
             chatTab->AddTextButton(TAB_GAMECHAT, DrawPoint(20, 320), Extent(178, 22), TC_GREEN2, _("Game Chat"), NormalFont);
@@ -202,7 +204,7 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
     combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
     combo->AddString(_("Total domination"));   // Alleinherrschaft
     // Lobby game?
-    if(LOBBYCLIENT.IsLoggedIn())
+    if(lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
         // Then add tournament modes as possible "objectives"
         for(unsigned i = 0; i < NUM_TOURNAMENT_MODESS; ++i)
@@ -270,16 +272,16 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
     }
     CI_GGSChanged(gameLobby->getSettings());
 
-    LOBBYCLIENT.AddListener(this);
-    if(serverType == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
+    if(serverType == ServerType::LOBBY && lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
-        LOBBYCLIENT.SendServerJoinRequest();
-        LOBBYCLIENT.SendRankingInfoRequest(gameLobby->getPlayer(localPlayerId_).name);
+        lobbyClient_->AddListener(this);
+        lobbyClient_->SendServerJoinRequest();
+        lobbyClient_->SendRankingInfoRequest(gameLobby->getPlayer(localPlayerId_).name);
         for(unsigned char i = 0; i < gameLobby->getNumPlayers(); ++i)
         {
             const JoinPlayerInfo& player = gameLobby->getPlayer(i);
             if(player.ps == PS_OCCUPIED)
-                LOBBYCLIENT.SendRankingInfoRequest(player.name);
+                lobbyClient_->SendRankingInfoRequest(player.name);
         }
     }
 
@@ -288,7 +290,8 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
 
 dskHostGame::~dskHostGame()
 {
-    LOBBYCLIENT.RemoveListener(this);
+    if(lobbyClient_)
+        lobbyClient_->RemoveListener(this);
     GAMECLIENT.RemoveInterface(this);
 }
 
@@ -378,7 +381,8 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     {
         /// Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
         group->AddVarDeepening(2, DrawPoint(180, cy), Extent(50, 22), tc,
-                               (LOBBYCLIENT.IsLoggedIn() || player.ps == PS_AI ? _("%d") : _("n/a")), NormalFont, COLOR_YELLOW, 1,
+                               ((lobbyClient_ && lobbyClient_->IsLoggedIn()) || player.ps == PS_AI ? _("%d") : _("n/a")), NormalFont,
+                               COLOR_YELLOW, 1,
                                &player.rating); //-V111
 
         // If not in savegame -> Player can change own row and host can change AIs
@@ -613,7 +617,7 @@ void dskHostGame::GoBack()
         WINDOWMANAGER.Switch(new dskSinglePlayer);
     else if(serverType == ServerType::LAN)
         WINDOWMANAGER.Switch(new dskLAN);
-    else if(serverType == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
+    else if(serverType == ServerType::LOBBY && lobbyClient_ && lobbyClient_->IsLoggedIn())
         WINDOWMANAGER.Switch(new dskLobby);
     else
         WINDOWMANAGER.Switch(new dskDirectIP);
@@ -680,8 +684,8 @@ void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
     edit->SetText("");
     if(gameChat->IsVisible())
         GAMECLIENT.Command_Chat(msg, CD_ALL);
-    else if(LOBBYCLIENT.IsLoggedIn() && lobbyChat->IsVisible())
-        LOBBYCLIENT.SendChat(msg);
+    else if(lobbyClient_ && lobbyClient_->IsLoggedIn() && lobbyChat->IsVisible())
+        lobbyClient_->SendChat(msg);
 }
 
 void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
@@ -912,11 +916,11 @@ void dskHostGame::CI_NewPlayer(const unsigned playerId)
     UpdatePlayerRow(playerId);
 
     // Rankinginfo abrufen
-    if(LOBBYCLIENT.IsLoggedIn())
+    if(lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
         const JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
         if(player.ps == PS_OCCUPIED)
-            LOBBYCLIENT.SendRankingInfoRequest(player.name);
+            lobbyClient_->SendRankingInfoRequest(player.name);
     }
     if(lua && gameLobby->isHost())
         lua->EventPlayerJoined(playerId);
@@ -938,11 +942,11 @@ void dskHostGame::CI_GameLoading(boost::shared_ptr<Game> game)
 void dskHostGame::CI_PlayerDataChanged(unsigned playerId)
 {
     UpdatePlayerRow(playerId);
-    if(LOBBYCLIENT.IsLoggedIn())
+    if(lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
         const JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
         if(player.ps == PS_OCCUPIED)
-            LOBBYCLIENT.SendRankingInfoRequest(player.name);
+            lobbyClient_->SendRankingInfoRequest(player.name);
     }
 }
 

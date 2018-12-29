@@ -45,4 +45,6 @@ private:
     bool errorInIncludeFile_;
 };
 
+void loadGameData(WorldDescription& worldDesc);
+
 #endif // GameDataLoader_h__

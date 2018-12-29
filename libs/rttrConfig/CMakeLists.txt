@@ -39,7 +39,3 @@ target_include_directories(rttrConfig PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 include(EnableWarnings)
 enable_warnings(rttrConfig)
-
-if(ClangFormat_FOUND)
-    add_clangFormat_files(${ALL_SOURCES})
-endif()

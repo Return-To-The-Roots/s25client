@@ -28,6 +28,7 @@
 #ifdef _WIN32
 #include "s25clientResources.h"
 #include "libutil/ucString.h"
+#undef WIN32_LEAN_AND_MEAN
 #include <SDL_syswm.h>
 
 namespace {

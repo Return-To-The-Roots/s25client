@@ -20,6 +20,7 @@
 #ifndef RANDOM_H_INCLUDED
 #define RANDOM_H_INCLUDED
 
+#include "RTTR_Assert.h"
 #include "random/XorShift.h"
 #include "libutil/Singleton.h"
 #include <boost/array.hpp>
