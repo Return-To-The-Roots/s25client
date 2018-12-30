@@ -107,8 +107,6 @@ void AddReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
 
 void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 {
-    std::vector<unsigned char> data(2, 42);
-
     BOOST_REQUIRE(loadReplay.IsReplaying());
     unsigned gf;
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));

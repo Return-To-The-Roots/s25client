@@ -105,8 +105,6 @@ public:
     }
 
     const GameEvent* PopEvent();
-    /// Not required by objects but by the EventManager
-    GameEvent* PopEventNonConst();
 
     /// FoW-Objekt
     FOWObject* PopFOWObject();

@@ -67,7 +67,7 @@ public:
 
 protected:
     // Use list to allow removing of events while iterating (Event A can cause Event B in the same GF to be removed)
-    typedef std::list<GameEvent*> EventList;
+    typedef std::list<const GameEvent*> EventList;
     typedef std::map<unsigned, EventList> EventMap;
     // Use list to allow adding events while iterating (Destroying 1 object may lead to destruction of another)
     typedef std::list<GameObject*> GameObjList;
@@ -79,7 +79,7 @@ protected:
     GameObjList killList; /// Objects that will be killed after current GF
     const GameEvent* curActiveEvent;
 
-    GameEvent* AddEventToQueue(GameEvent* event);
+    const GameEvent* AddEventToQueue(const GameEvent* event);
     void RemoveEventFromQueue(const GameEvent& event);
     /// Execute all events of the current GF
     void ExecuteCurrentEvents();

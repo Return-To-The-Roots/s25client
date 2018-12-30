@@ -55,7 +55,7 @@ DRIVERDLLAPI const char* GetDriverName()
     return "(SDL2) OpenGL via SDL2-Library";
 }
 
-VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), window(NULL) {}
+VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), window(NULL), context(NULL) {}
 
 VideoSDL2::~VideoSDL2()
 {

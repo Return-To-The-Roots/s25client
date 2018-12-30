@@ -37,7 +37,7 @@ void EventManager::Clear()
 {
     for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
     {
-        BOOST_FOREACH(GameEvent* ev, it->second)
+        BOOST_FOREACH(const GameEvent* ev, it->second)
         {
             delete ev;
             RTTR_Assert(numActiveEvents > 0u);
@@ -61,7 +61,7 @@ void EventManager::Clear()
     eventInstanceCtr = 1u;
 }
 
-GameEvent* EventManager::AddEventToQueue(GameEvent* event)
+const GameEvent* EventManager::AddEventToQueue(const GameEvent* event)
 {
     // Should be in the future!
     RTTR_Assert(event->GetTargetGF() > currentGF);
@@ -146,7 +146,7 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
     // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
     for(EventList::iterator e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
     {
-        GameEvent* ev = (*e_it);
+        const GameEvent* ev = (*e_it);
         RTTR_Assert(ev->obj);
         RTTR_Assert(ev->obj->GetObjId() <= GameObject::GetObjIDCounter());
 
@@ -186,7 +186,7 @@ void EventManager::Deserialize(SerializedGameData& sgd)
 
     unsigned numEvents = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < numEvents; ++i)
-        AddEventToQueue(sgd.PopEventNonConst());
+        AddEventToQueue(sgd.PopEvent());
 
     eventInstanceCtr = sgd.PopUnsignedInt();
 
@@ -213,7 +213,7 @@ bool EventManager::ObjectHasEvents(const GameObject& obj)
 {
     for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
     {
-        BOOST_FOREACH(GameEvent* ev, it->second)
+        BOOST_FOREACH(const GameEvent* ev, it->second)
         {
             if(ev->obj == &obj)
                 return true;

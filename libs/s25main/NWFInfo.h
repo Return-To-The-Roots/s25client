@@ -42,7 +42,7 @@ struct NWFPlayerInfo
     bool isLagging;
     std::queue<PlayerGameCommands> commands;
 
-    explicit NWFPlayerInfo(unsigned playerId) : id(playerId) {}
+    explicit NWFPlayerInfo(unsigned playerId) : id(playerId), isLagging(false) {}
     /// Set isLagging flag to commands.empty()
     void checkLagging();
 };
