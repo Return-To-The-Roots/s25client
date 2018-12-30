@@ -1,6 +1,6 @@
 find_package(SDL 1.2 REQUIRED)
 
-include(CMakeMacroCorrectLib)	
+include(CorrectLib)
 correct_lib(SDL_LIBRARY SDL)
 
 add_library(videoMockup STATIC MockupVideoDriver.h MockupVideoDriver.cpp)

@@ -1,5 +1,5 @@
 if(MSVC)
-    include(CMakeMacroAddFlags)
+    include(AddFlags)
     # systemintern functions for faster code; Optimize whole program
 	add_flags(CMAKE_CXX_FLAGS_RELEASE /Oi /GL)
 	# Strip unused symbols and us COMDAT folding

@@ -8,7 +8,7 @@ ELSEIF(NOT SDLMIXER_FOUND)
 	MESSAGE(WARNING ": SDL_mixer library not found: Not building SDL audiodriver")
 ELSE()
 	FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem system)
-    include(CMakeMacroCorrectLib)
+    include(CorrectLib)
 	CORRECT_LIB(SDL_LIBRARY SDL)
 	CORRECT_LIB(SDLMIXER_LIBRARY SDL_mixer)
 	

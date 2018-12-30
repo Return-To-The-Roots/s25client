@@ -3,7 +3,7 @@ FIND_PACKAGE(SDL)
 
 IF (SDL_FOUND)
 	FIND_PACKAGE(Boost 1.55.0 REQUIRED)
-	include(CMakeMacroCorrectLib)	
+	include(CorrectLib)	
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
 	ADD_LIBRARY(videoSDL SHARED ${RTTR_DRIVER_INTERFACE} VideoSDL.cpp VideoSDL.h)
