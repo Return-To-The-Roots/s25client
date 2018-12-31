@@ -36,6 +36,12 @@ INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
 include(CheckStructHasMember)
 INCLUDE(CheckIncludeFile)
 
+IF(APPLE)
+	SET(CMAKE_INSTALL_RPATH "@executable_path" "@executable_path/../Frameworks")
+ELSEIF(NOT WIN32)
+	SET(CMAKE_INSTALL_RPATH "\$ORIGIN" "\$ORIGIN/../lib")
+ENDIF()
+
 ################################################################################
 # Include platform specific config files
 ################################################################################
@@ -98,28 +104,46 @@ IF (WIN32)
 	SET(RTTR_EXTRA_BINDIR "./RTTR" CACHE INTERNAL "")
 	SET(RTTR_DRIVERDIR "./driver" CACHE INTERNAL "")
 ELSE()
-	include(GNUInstallDirs)
-	SET(RTTR_BINDIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Directory for the binaries")
-	SET(RTTR_DATADIR "${CMAKE_INSTALL_DATAROOTDIR}/s25rttr" CACHE STRING "Data directory")
-	if("${RTTR_DATADIR}" STREQUAL "")
-		# Avoid using absolute path accidentally
-		SET(DEFAULT_GAMEDIR "S2")
-	else()
-		SET(DEFAULT_GAMEDIR "${RTTR_DATADIR}/S2")
+	if(APPLE)
+		OPTION(RTTR_OSX_BUNDLE "Create an Apple/OSX bundle directory (=clickable application)" ON)
 	endif()
-	SET(RTTR_GAMEDIR "${DEFAULT_GAMEDIR}" CACHE STRING "(Original) Settlers 2 data directory")
-	SET(RTTR_LIBDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Directory for shared binaries")
-	# The default contains PROJECTNAME which would be "s25client"
-	string(REPLACE "${PROJECT_NAME}" "s25rttr" DEFAULT_DOCDIR "${CMAKE_INSTALL_DOCDIR}")
-	SET(RTTR_DOCDIR "${DEFAULT_DOCDIR}" CACHE STRING "Directory for documentation files")
-	if("${RTTR_LIBDIR}" STREQUAL "")
-		# Avoid using absolute path accidentally
-		SET(DEFAULT_DRIVERDIR "driver")
+
+	IF(APPLE AND RTTR_OSX_BUNDLE)
+		set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.app)
+		set(RTTR_MACOS_DIR Contents/MacOS CACHE INTERNAL "")
+		set(RTTR_DATADIR ${RTTR_MACOS_DIR}/share/s25rttr CACHE INTERNAL "")
+		set(RTTR_LIBDIR ${RTTR_MACOS_DIR} CACHE INTERNAL "")
+		set(RTTR_DOCDIR ${RTTR_MACOS_DIR}/share/doc CACHE INTERNAL "")
+		# (At least) bundling assumes, that all executables are in same folder inside MacOS
+		# Additionally main executable is assumed to be in MacOS
+		set(RTTR_BINDIR ${RTTR_MACOS_DIR} CACHE INTERNAL "")
+		set(RTTR_EXTRA_BINDIR ${RTTR_BINDIR} CACHE INTERNAL "")
+		set(RTTR_GAMEDIR ${RTTR_DATADIR}/S2 CACHE INTERNAL "")
+		set(RTTR_DRIVERDIR ${RTTR_LIBDIR}/driver CACHE INTERNAL "")
 	else()
-		SET(DEFAULT_DRIVERDIR "${RTTR_LIBDIR}/driver")
-	endif()
-	SET(RTTR_EXTRA_BINDIR "${CMAKE_INSTALL_LIBEXECDIR}/s25rttr" CACHE STRING "Path to binaries used internally")
-	SET(RTTR_DRIVERDIR "${DEFAULT_DRIVERDIR}" CACHE STRING "Directory for driver objects")
+		include(GNUInstallDirs)
+		SET(RTTR_BINDIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Directory for the binaries")
+		SET(RTTR_DATADIR "${CMAKE_INSTALL_DATAROOTDIR}/s25rttr" CACHE STRING "Data directory")
+		if("${RTTR_DATADIR}" STREQUAL "")
+			# Avoid using absolute path accidentally
+			SET(DEFAULT_GAMEDIR "S2")
+		else()
+			SET(DEFAULT_GAMEDIR "${RTTR_DATADIR}/S2")
+		endif()
+		SET(RTTR_GAMEDIR "${DEFAULT_GAMEDIR}" CACHE STRING "(Original) Settlers 2 data directory")
+		SET(RTTR_LIBDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Directory for shared binaries")
+		# The default contains PROJECTNAME which would be "s25client"
+		string(REPLACE "${PROJECT_NAME}" "s25rttr" DEFAULT_DOCDIR "${CMAKE_INSTALL_DOCDIR}")
+		SET(RTTR_DOCDIR "${DEFAULT_DOCDIR}" CACHE STRING "Directory for documentation files")
+		if("${RTTR_LIBDIR}" STREQUAL "")
+			# Avoid using absolute path accidentally
+			SET(DEFAULT_DRIVERDIR "driver")
+		else()
+			SET(DEFAULT_DRIVERDIR "${RTTR_LIBDIR}/driver")
+		endif()
+		SET(RTTR_EXTRA_BINDIR "${CMAKE_INSTALL_LIBEXECDIR}/s25rttr" CACHE STRING "Path to binaries used internally")
+		SET(RTTR_DRIVERDIR "${DEFAULT_DRIVERDIR}" CACHE STRING "Directory for driver objects")
+	ENDIF()
 ENDIF()
 
 SET(RTTR_SRCDIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "Path to source files. Used for shell scripts and configure")
@@ -309,15 +333,6 @@ endif()
 # Install
 ################################################################################
 
-# Start script
-IF (WIN32)
-	install(PROGRAMS "tools/release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
-ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
-	install(PROGRAMS "tools/release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
-ELSEIF(NOT APPLE)
-	message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
-ENDIF()
-
 # RTTR directory, but exclude language input files
 install(DIRECTORY "data/RTTR" DESTINATION "${RTTR_DATADIR}"
 		PATTERN "*.po" EXCLUDE
@@ -334,6 +349,19 @@ ENDIF()
 
 # Placeholder for S2 installation
 install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
+
+# Start script
+IF (WIN32)
+	install(PROGRAMS "tools/release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
+ELSEIF(APPLE)
+	if(COMMAND rttr_create_bundle)
+		rttr_create_bundle()
+	endif()
+ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
+	install(PROGRAMS "tools/release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
+ELSE()
+	message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
+ENDIF()
 
 ################################################################################
 # Custom targets
