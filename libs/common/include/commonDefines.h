@@ -80,7 +80,7 @@ typedef int socklen_t;
 // Fixed width types like uint32_t shall be treated like build-in types
 #include <stdint.h>
 
-#include <rttr/warningSuppression.h>
+#include <libutil/warningSuppression.h>
 
 // IWYU pragma: end_exports
 

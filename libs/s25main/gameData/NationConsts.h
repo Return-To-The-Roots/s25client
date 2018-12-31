@@ -23,7 +23,7 @@
 #include "mygettext/mygettext.h"
 #include "gameTypes/Nation.h"
 #include <boost/array.hpp>
-#include <rttr/warningSuppression.h>
+#include <libutil/warningSuppression.h>
 
 const boost::array<const char*, NUM_NATS> SUPPRESS_UNUSED NationNames = {
   {gettext_noop("Africans"), gettext_noop("Japanese"), gettext_noop("Romans"), gettext_noop("Vikings"), gettext_noop("Babylonians")}};
