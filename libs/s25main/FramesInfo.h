@@ -23,7 +23,7 @@
 /// Struct that stores information about the frames, like GF status...
 struct FramesInfo
 {
-    typedef boost::chrono::duration<uint32_t, boost::milli> milliseconds32_t;
+    typedef boost::chrono::duration<uint32_t, boost::milli> milliseconds32_t; //-V:milliseconds32_t:813
     typedef boost::chrono::steady_clock UsedClock;
 
     FramesInfo();

@@ -24,6 +24,9 @@
 #include <boost/test/unit_test.hpp>
 #include <turtle/mock.hpp>
 
+//-V:MOCK_METHOD:813
+//-V:MOCK_EXPECT:807
+
 inline bool operator==(const MouseCoords& lhs, const MouseCoords& rhs)
 {
     return lhs.GetPos() == rhs.GetPos() && lhs.ldown == rhs.ldown && lhs.rdown == rhs.rdown && lhs.dbl_click == rhs.dbl_click;

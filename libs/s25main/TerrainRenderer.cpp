@@ -989,7 +989,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     glTexCoordPointer(2, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].tx);
     glColorPointer(3, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].r);
 
-    int type = 0;
+    size_t type = 0;
     for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
     {
         if(itRoad->empty())

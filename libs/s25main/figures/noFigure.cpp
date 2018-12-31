@@ -222,14 +222,6 @@ void noFigure::StartWalking(const Direction dir)
 {
     RTTR_Assert(!(GetGOT() == GOT_NOF_PASSIVESOLDIER && fs == FS_JOB));
 
-    if(dir.toUInt() >= Direction::COUNT)
-    {
-        RTTR_Assert(false);
-        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n")
-          % GetEvMgr().GetCurrentGF() % dir.toUInt();
-        return;
-    }
-
     // Gehen wir in ein Gebäude?
     if(dir == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->OpenDoor(); // Dann die Tür aufmachen

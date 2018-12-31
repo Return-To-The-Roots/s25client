@@ -257,7 +257,7 @@ void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
 
 void GameWorldViewer::RoadConstructionEnded(const RoadNote& note)
 {
-    if(note.player != playerId_ || (note.type != RoadNote::Constructed && note.type != RoadNote::ConstructionFailed))
+    if(note.player != playerId_ || (note.type != RoadNote::Constructed && note.type != RoadNote::ConstructionFailed)) //-V560
         return;
     // Road construction command ended -> Remove visual overlay
     RemoveVisualRoad(note.pos, note.route);

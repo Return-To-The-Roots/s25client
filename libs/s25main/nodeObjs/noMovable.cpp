@@ -57,7 +57,6 @@ void noMovable::Walk()
 
 void noMovable::FaceDir(Direction newDir)
 {
-    RTTR_Assert(newDir.toUInt() < 6);
     curMoveDir = newDir;
 }
 

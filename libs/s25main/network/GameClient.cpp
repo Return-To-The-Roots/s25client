@@ -1511,7 +1511,7 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
     FramesInfo::milliseconds32_t duration = ev->length * framesinfo.gf_length;
     unsigned result = (max_val * elapsedTime) / duration;
     if(result >= max_val)
-        RTTR_Assert(result < max_val);
+        RTTR_Assert(result < max_val); //-V547
     return result;
 }
 
@@ -1644,7 +1644,7 @@ void GameClient::SetPause(bool pause)
         // However we allow to pause even when stopped so we can pause after we received the stop notification
         if(!pause)
             return;
-        framesinfo.isPaused = pause;
+        framesinfo.isPaused = true;
         framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
     } else if(replayMode)
     {

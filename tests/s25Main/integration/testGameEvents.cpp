@@ -128,11 +128,11 @@ BOOST_AUTO_TEST_CASE(Reschedule)
     // Run 3 of the 5 GFs
     for(unsigned i = 1; i <= 3; i++)
         evMgr.ExecuteNextGF();
-    std::vector<GameEvent*> evts = evMgr.GetObjEvents(obj);
+    std::vector<const GameEvent*> evts = evMgr.GetObjEvents(obj);
     BOOST_REQUIRE_EQUAL(evts.size(), 1u);
     BOOST_REQUIRE_EQUAL(evts.front(), ev);
     // Execute at GF 7 instead
-    evMgr.RescheduleEvent(*evts.front(), 7);
+    evMgr.RescheduleEvent(evts.front(), 7);
     for(unsigned i = 3; i <= 5; i++)
         evMgr.ExecuteNextGF();
     BOOST_REQUIRE_EQUAL(obj.handledEventIds.size(), 0u);

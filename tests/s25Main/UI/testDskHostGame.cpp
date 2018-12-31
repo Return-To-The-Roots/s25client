@@ -28,6 +28,9 @@
 #include <rttr/test/LogAccessor.hpp>
 #include <turtle/mock.hpp>
 
+//-V:MOCK_METHOD:813
+//-V:MOCK_EXPECT:807
+
 BOOST_AUTO_TEST_SUITE(UI)
 
 /* clang-format off */
@@ -67,6 +70,7 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
       new dskHostGame(ServerType::LOBBY, boost::shared_ptr<GameLobby>(&gameLobby, &deleteNoting), 0, boost::move(client));
     ClientInterface* ci = dynamic_cast<ClientInterface*>(desktop);
     LobbyInterface* li = dynamic_cast<LobbyInterface*>(desktop);
+    BOOST_REQUIRE(ci && li);
     std::vector<ctrlOptionGroup*> chatTab = desktop->GetCtrls<ctrlOptionGroup>();
     BOOST_REQUIRE_EQUAL(chatTab.size(), 1u);
     std::vector<ctrlButton*> chatBts = chatTab.front()->GetCtrls<ctrlButton>();

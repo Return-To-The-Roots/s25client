@@ -323,9 +323,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
             // Pause figure
             BOOST_FOREACH(noBase* sld, world.GetFigures(pt))
             {
-                std::vector<GameEvent*> evts = em.GetObjEvents(*sld);
-                BOOST_FOREACH(GameEvent* ev, evts)
-                    em.RescheduleEvent(*ev, em.GetCurrentGF() + 10000);
+                std::vector<const GameEvent*> evts = em.GetObjEvents(*sld);
+                BOOST_FOREACH(const GameEvent* ev, evts)
+                    em.RescheduleEvent(ev, em.GetCurrentGF() + 10000);
             }
         }
     }

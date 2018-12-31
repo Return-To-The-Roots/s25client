@@ -164,7 +164,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
         return;
 
     const std::vector<MapPoint>* allowedArea = &world.GetPlayer(building.GetPlayer()).GetRestrictedArea();
-    if(allowedArea && allowedArea->empty())
+    if(allowedArea->empty())
         allowedArea = NULL;
 
     // Punkt, auf dem das Militärgebäude steht

@@ -133,7 +133,7 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
 BOOST_FIXTURE_TEST_CASE(ScrollingWhileRoadBuilding, GameInterfaceFixture)
 {
     const int acceleration = 2;
-    MapPoint hqPos = worldFixture.world.GetPlayer(0).GetFirstWH()->GetFlagPos();
+    MapPoint hqPos = worldFixture.world.GetPlayer(0).GetFirstWH()->GetFlagPos(); //-V522
     gameDesktop->GI_StartRoadBuilding(hqPos, false);
     BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_RM);
     Position startPos(10, 15);

@@ -34,10 +34,10 @@ public:
 
     static std::vector<void*> GetStackTrace(void* ctx = NULL);
 
-    bool Send(const void* buffer, int length);
+    bool Send(const void* buffer, size_t length);
     bool SendSigned(int32_t i);
     bool SendUnsigned(uint32_t i);
-    bool SendString(const char* str, unsigned len = 0);
+    bool SendString(const char* str, size_t len = 0);
     bool SendString(const std::string& str);
 
     bool SendStackTrace(const std::vector<void*>& stacktrace);

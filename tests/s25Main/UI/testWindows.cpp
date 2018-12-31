@@ -27,6 +27,9 @@
 #include <boost/test/unit_test.hpp>
 #include <turtle/mock.hpp>
 
+//-V:MOCK_METHOD:813
+//-V:MOCK_EXPECT:807
+
 namespace {
 
 struct WindowsFixture
@@ -80,7 +83,7 @@ BOOST_AUTO_TEST_CASE(DrawOrder)
     // Top level controls
     for(int i = 0; i < 3; i++)
     {
-        wnds.push_back(new TestWindow(dsk, wnds.size(), DrawPoint(0, 0)));
+        wnds.push_back(new TestWindow(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0)));
         dsk->AddCtrl(wnds.back());
     }
     // Some groups with own controls
@@ -89,7 +92,7 @@ BOOST_AUTO_TEST_CASE(DrawOrder)
         ctrlGroup* grp = dsk->AddGroup(100 + i);
         for(int i = 0; i < 3; i++)
         {
-            wnds.push_back(new TestWindow(dsk, wnds.size(), DrawPoint(0, 0)));
+            wnds.push_back(new TestWindow(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0)));
             grp->AddCtrl(wnds.back());
         }
     }

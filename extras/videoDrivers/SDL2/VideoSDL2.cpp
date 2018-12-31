@@ -126,7 +126,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& newSize,
     if(!window && fullscreen)
     {
         window = SDL_CreateWindow(title.c_str(), wndPos, wndPos, newSize.width, newSize.height,
-                                  SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
+                                  SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     }
 
     if(!window)

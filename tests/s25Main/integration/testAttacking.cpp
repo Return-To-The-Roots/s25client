@@ -50,12 +50,12 @@ struct AttackDefaults
 /// Reschedule the walk event of the obj to be executed in numGFs GFs
 void rescheduleWalkEvent(TestEventManager& em, noMovable& obj, unsigned numGFs)
 {
-    std::vector<GameEvent*> evts = em.GetObjEvents(obj);
-    BOOST_FOREACH(GameEvent* ev, evts)
+    std::vector<const GameEvent*> evts = em.GetObjEvents(obj);
+    BOOST_FOREACH(const GameEvent* ev, evts)
     {
         if(ev->id == 0)
         {
-            em.RescheduleEvent(*ev, em.GetCurrentGF() + numGFs);
+            em.RescheduleEvent(ev, em.GetCurrentGF() + numGFs);
             return;
         }
     }
@@ -399,7 +399,6 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     // Once an attacker reaches the flag, the bld will send a defender
     BOOST_REQUIRE(!milBld1->GetDefender());
     RTTR_EXEC_TILL(300, milBld1->GetNumTroops() == 0);
-    BOOST_REQUIRE_EQUAL(milBld1->GetNumTroops(), 0u);
     // Defender deployed, attacker at flag
     BOOST_REQUIRE(milBld1->GetDefender());
     const std::list<noBase*>& figures = world.GetFigures(milBld1->GetFlag()->GetPos());

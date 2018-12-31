@@ -32,11 +32,11 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
     BOOST_REQUIRE(!world.GetPlayer(1).IsDefeated());
     // Destroy HQ -> defeated
-    world.GetPlayer(1).GetFirstWH()->Destroy();
+    world.GetPlayer(1).GetFirstWH()->Destroy(); //-V522
     BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
     BOOST_REQUIRE(world.GetPlayer(1).IsDefeated());
     // Destroy HQ but leave a military bld
-    MapPoint milBldPos = world.MakeMapPoint(world.GetPlayer(0).GetFirstWH()->GetPos() + Position(4, 0));
+    MapPoint milBldPos = world.MakeMapPoint(world.GetPlayer(0).GetFirstWH()->GetPos() + Position(4, 0)); //-V522
     nobMilitary* milBld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBldPos, 0, NAT_BABYLONIANS));
     nofPassiveSoldier* sld = new nofPassiveSoldier(milBldPos, 0, milBld, milBld, 0);
     world.AddFigure(milBldPos, sld);

@@ -19,6 +19,7 @@
 #define DescIdx_h__
 
 /// Type safe index for a description
+//-V:DescIdx:801
 template<class T>
 struct DescIdx
 {

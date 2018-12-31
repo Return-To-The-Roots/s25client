@@ -47,24 +47,24 @@ unsigned char TradeRoute::GetNextDir()
     if(curRouteIdx >= path.route.size())
         return INVALID_DIR;
 
-    unsigned char nextDir;
+    Direction nextDir;
     // Check if the route is still valid
     if(gwg.CheckTradeRoute(curPos, path.route, curRouteIdx, player))
-        nextDir = path.route[curRouteIdx].toUInt();
+        nextDir = path.route[curRouteIdx];
     else
     {
         // If not, recalc it
-        nextDir = RecalcRoute();
+        uint8_t calculatedNextDir = RecalcRoute();
         // Check if we found a valid direction
-        if(nextDir >= 6)
-            return nextDir; // If not, bail out
+        if(calculatedNextDir >= 6)
+            return calculatedNextDir; // If not, bail out
+        nextDir = Direction::fromInt(calculatedNextDir);
     }
 
-    RTTR_Assert(nextDir < 6);
-    RTTR_Assert(nextDir == path.route[curRouteIdx].toUInt());
+    RTTR_Assert(nextDir == path.route[curRouteIdx]);
     curRouteIdx++;
-    curPos = gwg.GetNeighbour(curPos, Direction::fromInt(nextDir));
-    return nextDir;
+    curPos = gwg.GetNeighbour(curPos, nextDir);
+    return nextDir.toUInt();
 }
 
 /// Recalc local route and returns next direction

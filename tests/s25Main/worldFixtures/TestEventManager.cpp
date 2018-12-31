@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TestEventManager.h"
 #include "GameEvent.h"
+#include <libutil/unique_ptr.h>
 #include <boost/foreach.hpp>
 
 unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
@@ -38,12 +39,12 @@ unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
     return numGFs;
 }
 
-std::vector<GameEvent*> TestEventManager::GetObjEvents(const GameObject& obj)
+std::vector<const GameEvent*> TestEventManager::GetObjEvents(const GameObject& obj) const
 {
-    std::vector<GameEvent*> objEvnts;
-    for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
+    std::vector<const GameEvent*> objEvnts;
+    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
-        BOOST_FOREACH(GameEvent* ev, it->second)
+        BOOST_FOREACH(const GameEvent* ev, it->second)
         {
             if(ev->obj == &obj)
                 objEvnts.push_back(ev);
@@ -56,7 +57,7 @@ bool TestEventManager::IsEventActive(const GameObject& obj, const unsigned id) c
 {
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
-        BOOST_FOREACH(GameEvent* ev, it->second)
+        BOOST_FOREACH(const GameEvent* ev, it->second)
         {
             if(ev->id == id && ev->obj == &obj)
                 return true;
@@ -66,11 +67,12 @@ bool TestEventManager::IsEventActive(const GameObject& obj, const unsigned id) c
     return false;
 }
 
-void TestEventManager::RescheduleEvent(GameEvent& event, unsigned targetGF)
+const GameEvent* TestEventManager::RescheduleEvent(const GameEvent* event, unsigned targetGF)
 {
-    RemoveEventFromQueue(event);
-    event.length = targetGF - event.startGF;
-    AddEventToQueue(&event);
+    RemoveEventFromQueue(*event);
+    // Hacky but we need to preserve the location (pointer) of the event as objects store it
+    const_cast<GameEvent*>(event)->length = targetGF - event->startGF;
+    return AddEventToQueue(event);
 }
 
 std::vector<const GameEvent*> TestEventManager::GetEvents() const

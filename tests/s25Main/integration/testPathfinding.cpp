@@ -234,15 +234,16 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
     // Test cases 4         a)                 b)                     c)
     testDirections += Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST;
     std::vector<DescIdx<TerrainDesc> > deadlyTerrains;
-    for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
+    const WorldDescription& worldDescription = world.GetDescription();
+    for(DescIdx<TerrainDesc> t(0); t.value < worldDescription.terrain.size(); t.value++)
     {
-        if(world.GetDescription().get(t).Is(ETerrain::Unreachable))
+        if(worldDescription.get(t).Is(ETerrain::Unreachable))
             deadlyTerrains.push_back(t);
     }
     DescIdx<TerrainDesc> tLand(0);
-    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
+    for(; tLand.value < worldDescription.terrain.size(); tLand.value++)
     {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+        if(worldDescription.get(tLand).kind == TerrainKind::LAND && worldDescription.get(tLand).Is(ETerrain::Walkable))
             break;
     }
     BOOST_FOREACH(DescIdx<TerrainDesc> deadlyTerrain, deadlyTerrains)

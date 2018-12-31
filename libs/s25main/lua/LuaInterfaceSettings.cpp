@@ -126,30 +126,30 @@ void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
 
     if(std::find(keys.begin(), keys.end(), "speed") != keys.end())
     {
-        GameSpeed speed = settings.getField("speed");
-        lua::assertTrue(unsigned(speed) <= GS_VERYFAST, "Speed is invalid");
-        ggs.speed = speed;
+        unsigned speed = settings.getField("speed");
+        lua::assertTrue(speed <= GS_VERYFAST, "Speed is invalid");
+        ggs.speed = GameSpeed(speed);
     }
 
     if(std::find(keys.begin(), keys.end(), "objective") != keys.end())
     {
-        GameObjective objective = settings.getField("objective");
-        lua::assertTrue(unsigned(objective) <= GO_TOTALDOMINATION, "Objective is invalid");
-        ggs.objective = objective;
+        unsigned objective = settings.getField("objective");
+        lua::assertTrue(objective <= GO_TOTALDOMINATION, "Objective is invalid");
+        ggs.objective = GameObjective(objective);
     }
 
     if(std::find(keys.begin(), keys.end(), "startWares") != keys.end())
     {
-        StartWares wares = settings.getField("startWares");
-        lua::assertTrue(unsigned(wares) <= SWR_ALOT, "Start wares is invalid");
-        ggs.startWares = wares;
+        unsigned wares = settings.getField("startWares");
+        lua::assertTrue(wares <= SWR_ALOT, "Start wares is invalid");
+        ggs.startWares = StartWares(wares);
     }
 
     if(std::find(keys.begin(), keys.end(), "fow") != keys.end())
     {
-        Exploration fow = settings.getField("fow");
-        lua::assertTrue(unsigned(fow) <= EXP_FOGOFWARE_EXPLORED, "FoW is invalid");
-        ggs.exploration = fow;
+        unsigned fow = settings.getField("fow");
+        lua::assertTrue(fow <= EXP_FOGOFWARE_EXPLORED, "FoW is invalid");
+        ggs.exploration = Exploration(fow);
     }
 
     if(std::find(keys.begin(), keys.end(), "lockedTeams") != keys.end())
