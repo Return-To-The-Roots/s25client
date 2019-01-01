@@ -27,6 +27,11 @@ else()
         # Set allowed options
         set_property(CACHE RTTR_OPTIMZATION_VECTOR_EXT PROPERTY STRINGS OFF SSE SSE2 SSE3 SSE4 AVX AVX2)
         if(RTTR_OPTIMZATION_VECTOR_EXT)
+            if(MINGW AND RTTR_OPTIMZATION_VECTOR_EXT STREQUAL "SSE")
+                # MinGW has a check for a bug(?) in GCC >=6 which warns/errors on "-msse -mfpmath=sse" which leads to an invalid __FLT_EVAL_METHOD__
+                message(WARNING "Due to an issue with GCC under MinGW 'SSE' is not supported. Using 'SSE2'")
+                set(RTTR_OPTIMZATION_VECTOR_EXT SSE2)
+            endif()
             CheckAndAddFlag(-mfpmath=sse)
             string(TOLOWER ${RTTR_OPTIMZATION_VECTOR_EXT} vectorExt)
             CheckAndAddFlag(-m${vectorExt})
