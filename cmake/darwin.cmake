@@ -42,7 +42,13 @@ IF(CMAKE_OSX_ARCHITECTURES MATCHES "^i.86$") # i386 only?
 elseIF(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64") # x86_64 only?
     set(RTTR_OPTIMZATION_TUNE_DEFAULT core2)
 ENDIF()
+
 # set linker flags
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fexceptions")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fexceptions")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fexceptions")
+
+# add rpath to linker flags
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rpath @executable_path -rpath @executable_path/..")
+set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -rpath @executable_path -rpath @executable_path/..")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -rpath @executable_path -rpath @executable_path/..")
