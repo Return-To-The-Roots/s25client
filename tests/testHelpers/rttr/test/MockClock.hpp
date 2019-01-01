@@ -32,7 +32,7 @@ namespace rttr { namespace test {
     {
         MockClock::duration currentTime;
 
-        MockClockFixture() : currentTime(0) { Clock::setClock(libutil::make_unique<MockClock>(currentTime)); }
+        MockClockFixture() : currentTime(0) { Clock::setClock(libutil::unique_ptr<BaseClock>(new MockClock(currentTime))); }
         ~MockClockFixture() { Clock::setClock(libutil::make_unique<BaseClock>()); }
     };
 }}     // namespace rttr::test

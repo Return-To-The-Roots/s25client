@@ -368,10 +368,13 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
     switch(cs)
     {
         case CS_FINISHED:
-            WINDOWMANAGER.Switch(
-              new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(),
-                              csi.type == ServerType::LOBBY ? libutil::make_unique<RttrLobbyClient>(LOBBYCLIENT) : NULL));
+        {
+            libutil::unique_ptr<ILobbyClient> lobbyClient;
+            if(csi.type == ServerType::LOBBY)
+                lobbyClient.reset(new RttrLobbyClient(LOBBYCLIENT));
+            WINDOWMANAGER.Switch(new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), boost::move(lobbyClient)));
             break;
+        }
         default: break;
     }
 }

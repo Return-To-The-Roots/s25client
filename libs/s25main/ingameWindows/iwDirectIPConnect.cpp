@@ -222,9 +222,11 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 
         case CS_FINISHED: // Wir wurden verbunden
         {
+            libutil::unique_ptr<ILobbyClient> lobbyClient;
+            if(server_type == ServerType::LOBBY)
+                lobbyClient.reset(new RttrLobbyClient(LOBBYCLIENT));
             WINDOWMANAGER.Switch(
-              new dskHostGame(server_type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(),
-                              server_type == ServerType::LOBBY ? libutil::make_unique<RttrLobbyClient>(LOBBYCLIENT) : NULL));
+              new dskHostGame(server_type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), boost::move(lobbyClient)));
         }
         break;
         default: break;
