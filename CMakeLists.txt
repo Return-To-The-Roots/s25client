@@ -1,15 +1,17 @@
 cmake_minimum_required(VERSION 3.8)
 
-#Check for ccache
-if(APPLE)
-    find_program(CCACHE_PROGRAM NAMES ccache-lipo ccache)
-else()
-    find_program(CCACHE_PROGRAM ccache)
-endif()
-mark_as_advanced(CCACHE_PROGRAM)
-if(CCACHE_PROGRAM)
-	message(STATUS "Using ccache(${CCACHE_PROGRAM}) to speed up builds")
-	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+if(NOT MSVC)
+    #Check for ccache
+    if(APPLE)
+        find_program(CCACHE_PROGRAM NAMES ccache-lipo ccache)
+    else()
+        find_program(CCACHE_PROGRAM ccache)
+    endif()
+    mark_as_advanced(CCACHE_PROGRAM)
+    if(CCACHE_PROGRAM)
+        message(STATUS "Using ccache(${CCACHE_PROGRAM}) to speed up builds")
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+    endif()
 endif()
 
 PROJECT(s25client)
