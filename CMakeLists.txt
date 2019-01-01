@@ -28,7 +28,7 @@ IF (DEFINED CMAKE_TOOLCHAIN_FILE)
 	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 ENDIF()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
 
 # Just include required
 INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
