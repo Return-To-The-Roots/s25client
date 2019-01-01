@@ -24,8 +24,8 @@ fi
 
 # create changelog
 echo "Creating Changelog ..."
-git log --submodule | git log --submodule | sed -r "s#commit (.*)#commit \1\nRepository: $(git remote -v | head -n 1 | egrep -o "([^/]*)\.git" | sed s/.git//g)#g" > ${UPLOADFILE}changelog.txt || exit 2
-git submodule foreach 'git log --submodule | sed -r "s#commit (.*)#commit \1\nRepository: $(git remote -v | head -n 1 | egrep -o "([^/]*)\.git" | sed s/.git//g)#g"' >> ${UPLOADFILE}changelog.txt || exit 2
+git log --submodule --no-max-parents | sed -r "s#commit (.*)#commit \1\nRepository: $(git remote -v | head -n 1 | egrep -o "([^/]*)\.git" | sed s/.git//g)#g" > ${UPLOADFILE}changelog.txt || exit 2
+git submodule foreach 'git log --submodule --no-max-parents | sed -r "s#commit (.*)#commit \1\nRepository: $(git remote -v | head -n 1 | egrep -o "([^/]*)\.git" | sed s/.git//g)#g"' >> ${UPLOADFILE}changelog.txt || exit 2
 
 
 cp ${UPLOADFILE}changelog.txt changelog-$TYPE.txt
