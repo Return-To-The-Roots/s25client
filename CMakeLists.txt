@@ -301,9 +301,6 @@ IF(NOT Boost_FOUND)
 	"BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
 	"BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
 	"since cmake was unable to find boost!")
-ELSEIF(BOOST_LIBRARYDIR STREQUAL "")
-	list(APPEND CMAKE_PREFIX_PATH ${Boost_INCLUDE_DIR}/stage)
-	set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
 ENDIF()
 
 include(EnableBoostBackport)

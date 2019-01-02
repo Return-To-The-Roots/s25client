@@ -1,6 +1,6 @@
 FIND_PACKAGE(BZip2 REQUIRED)
 gather_dll(BZIP2)
-FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams system program_options locale chrono)
+FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams locale chrono)
 
 SET(SOURCES_SUBDIRS )
 MACRO(AddDirectory dir)
@@ -43,10 +43,8 @@ SET(s25Main_SRCS
 
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(s25Main SYSTEM PRIVATE ${BZIP2_INCLUDE_DIR} PUBLIC ${Boost_INCLUDE_DIR})
+target_include_directories(s25Main SYSTEM PRIVATE ${BZIP2_INCLUDE_DIR})
 
-# Disable automatic boost linking
-target_compile_definitions(s25Main PUBLIC BOOST_ALL_NO_LIB)
 target_link_libraries(s25Main PUBLIC
 	siedler2
 	lobby_c
@@ -55,11 +53,11 @@ target_link_libraries(s25Main PUBLIC
 	s25Common
 	rttrConfig
 	gamedata
-  glad
-  driver
+    glad
+    driver
 	${BZIP2_LIBRARIES}
-	${Boost_LIBRARIES}
-	PRIVATE utf8
+	Boost::filesystem Boost::chrono Boost::disable_autolinking
+	PRIVATE utf8 Boost::iostreams Boost::locale nowide::static
 )
 
 if(WIN32)

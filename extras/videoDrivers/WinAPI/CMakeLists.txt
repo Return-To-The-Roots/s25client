@@ -3,8 +3,8 @@ IF (WIN32)
     find_package(OpenGL REQUIRED)
 
 	ADD_LIBRARY(videoWinAPI SHARED ${RTTR_DRIVER_INTERFACE} WinAPI.cpp WinAPI.h)
-	TARGET_LINK_LIBRARIES(videoWinAPI PRIVATE videodrv s25util gdi32 user32 ${OPENGL_gl_LIBRARY}) 
-    target_include_directories(videoWinAPI SYSTEM PRIVATE ${Boost_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/data/win32)
+	TARGET_LINK_LIBRARIES(videoWinAPI PRIVATE videodrv s25util gdi32 user32 ${OPENGL_gl_LIBRARY} Boost::boost) 
+    target_include_directories(videoWinAPI SYSTEM PRIVATE ${OPENGL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/data/win32)
 
 	INSTALL(TARGETS videoWinAPI RUNTIME DESTINATION ${RTTR_DRIVERDIR}/video)
 ENDIF ()

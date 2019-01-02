@@ -11,8 +11,7 @@ source_group(helpers FILES ${COMMON_HELPERS_SRC} ${COMMON_HELPERS_HEADERS})
 
 add_library(s25Common STATIC ${ALL_SRC})
 target_include_directories(s25Common PUBLIC include)
-target_include_directories(s25Common SYSTEM PUBLIC ${Boost_INCLUDE_DIR})
-target_link_libraries(s25Common PUBLIC s25util)
+target_link_libraries(s25Common PUBLIC s25util Boost::boost)
 set_property(TARGET s25Common PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(RTTR_Assert_Enabled EQUAL 0)

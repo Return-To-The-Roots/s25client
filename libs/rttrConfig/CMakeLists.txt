@@ -1,4 +1,4 @@
-FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem system)
+FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem)
 
 set(ALL_SOURCES
     src/files.h
@@ -8,12 +8,11 @@ set(ALL_SOURCES
     src/RttrConfig.h)
 
 add_library(rttrConfig STATIC ${ALL_SOURCES})
-target_include_directories(rttrConfig SYSTEM PUBLIC ${BOOST_INCLUDE_DIR})
 target_include_directories(rttrConfig INTERFACE src)
 target_link_libraries(rttrConfig
-	PUBLIC s25util
-	PUBLIC s25Common
-	PUBLIC ${BOOST_LIBRARIES})
+	PUBLIC s25util Boost::filesystem
+	PRIVATE s25Common
+)
 SET_PROPERTY(TARGET rttrConfig PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake build_paths.h @ONLY)

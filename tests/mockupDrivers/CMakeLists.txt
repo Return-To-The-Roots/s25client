@@ -4,7 +4,7 @@ include(CorrectLib)
 correct_lib(SDL_LIBRARY SDL)
 
 add_library(videoMockup STATIC MockupVideoDriver.h MockupVideoDriver.cpp)
-target_link_libraries(videoMockup PUBLIC videodrv s25util ${SDL_LIBRARY})
+target_link_libraries(videoMockup PUBLIC videodrv s25util PRIVATE ${SDL_LIBRARY} nowide::static)
 target_include_directories(videoMockup INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_include_directories(videoMockup SYSTEM PUBLIC ${SDL_INCLUDE_DIR})
 
