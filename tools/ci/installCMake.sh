@@ -5,7 +5,6 @@ set -euo pipefail
 CMAKE_VERSION="${1:?Missing CMake version}"
 INSTALL_DIR="${2:?Missing install dir}"
 CONFIGURE_PREFIX_DIR="${3:?Missing directory prefix where to build CMake}" # Where to store downloaded and build files
-DOWNLOAD_ONLY="${4:-no}"
 
 export PATH="${INSTALL_DIR}/bin:${PATH}"
 
@@ -29,15 +28,12 @@ if [ ! -f "${BUILD_DIR}/bootstrap" ]; then
     fi
 fi
 
-if [ "${DOWNLOAD_ONLY}" != "no" ]; then
-    exit 0
-fi
-
 cd "${BUILD_DIR}"
 
 # Linux and OSX version
 NPROC=$(nproc 2>/dev/null || sysctl -n hw.ncpu)
 
+rm -rf CMakeFiles CMakeCache.txt
 # Build quietely preferably with cmake (if it exists) or fallback to bootstrap
 cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" >/dev/null || \
     ./bootstrap --prefix="${INSTALL_DIR}" --parallel=${NPROC} >/dev/null
