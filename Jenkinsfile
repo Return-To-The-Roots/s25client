@@ -33,7 +33,7 @@ def transformIntoStep(arch, wspwd, container) {
                                   VOLUMES=
                                   touch s25rttrDummy.zip
                               fi
-                              docker run --rm -u jenkins -v \$(pwd):/workdir \
+                              docker run --rm -u $(id -u jenkins):$(id -g jenkins) -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
                                                          \$VOLUMES \
