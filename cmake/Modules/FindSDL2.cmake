@@ -1,48 +1,69 @@
-# - Find SDL2 library and headers
-# 
-# Find module for SDL 2.0 (http://www.libsdl.org/).
-# It defines the following variables:
-#  SDL2_INCLUDE_DIRS - The location of the headers, e.g., SDL.h.
-#  SDL2_LIBRARIES - The libraries to link against to use SDL2.
-#  SDL2_FOUND - If false, do not try to use SDL2.
-#  SDL2_VERSION - Human-readable string containing the version of SDL2.
+# - Find SDL2
+# Find the SDL2 headers and libraries
 #
-# Also defined, but not for general use are:
-#   SDL2_INCLUDE_DIR - The directory that contains SDL.h.
-#   SDL2_LIBRARY - The location of the SDL2 library.
+#  SDL2::SDL2 - Imported target to use for building a library
+#  SDL2::SDL2main - Imported interface target to use if you want SDL2main.
+#  SDL2_FOUND - True if SDL2 was found.
+#  SDL2_DYNAMIC - If we found a DLL version of SDL (meaning you might want to copy a DLL from SDL2::SDL2)
 #
+# Original Author:
+# 2015 Ryan Pavlik <ryan.pavlik@gmail.com> <abiryan@ryand.net>
+#
+# Copyright Sensics, Inc. 2015.
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#=============================================================================
-# Copyright 2013 Benjamin Eikel
-#
-# Distributed under the OSI-approved BSD License (the "License");
-# see accompanying file Copyright.txt for details.
-#
-# This software is distributed WITHOUT ANY WARRANTY; without even the
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the License for more information.
-#=============================================================================
-# (To distribute this file outside of CMake, substitute the full
-#  License text for the above reference.)
+set(sdl2_extra_required "")
 
+# Invoke pkgconfig for hints
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_SDL2 QUIET sdl2)
+if(PKG_CONFIG_FOUND)
+	pkg_search_module(PC_SDL2 QUIET sdl2)
+endif()
 
-find_path(SDL2_INCLUDE_DIR
-        NAMES SDL.h
-        HINTS
-        ${PC_SDL2_INCLUDEDIR}
-        ${PC_SDL2_INCLUDE_DIRS}
-        PATH_SUFFIXES SDL2
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(sdl2_lib_suffix x64)
+else()
+    set(sdl2_lib_suffix x86)
+endif()
+
+find_path(SDL2_INCLUDE_DIR NAMES SDL_haptic.h # this file was introduced with SDL2
+	HINTS ${PC_SDL2_INCLUDE_DIRS}
+	PATHS ${SDL2_ROOT_DIR}
+          ENV SDL2DIR
+	PATH_SUFFIXES include/SDL2 SDL2 include
 )
 
-find_library(SDL2_LIBRARY
-        NAMES SDL2
-        HINTS
-        ${PC_SDL2_LIBDIR}
-        ${PC_SDL2_LIBRARY_DIRS}
-        PATH_SUFFIXES x64 x86
+find_library(SDL2_LIBRARY NAMES	SDL2
+	HINTS ${PC_SDL2_LIBRARY_DIRS} ${PC_SDL2_LIBDIR}
+	PATHS ${SDL2_ROOT_DIR}
+          ENV SDL2DIR
+	PATH_SUFFIXES SDL2 lib ${sdl2_lib_suffix} lib/${sdl2_lib_suffix}
 )
+
+if(WIN32 AND SDL2_LIBRARY)
+	find_file(SDL2_RUNTIME_LIBRARY NAMES SDL2.dll libSDL2.dll
+		HINTS ${PC_SDL2_LIBRARY_DIRS} ${PC_SDL2_LIBDIR}
+		PATHS ${SDL2_ROOT_DIR}
+              ENV SDL2DIR
+		PATH_SUFFIXES bin lib ${sdl2_lib_suffix} bin/${sdl2_lib_suffix}
+    )
+endif()
+
+if(NOT SDL2_INCLUDE_DIR MATCHES ".framework")
+	list(APPEND sdl2_extra_required SDL2_SDL2MAIN_LIBRARY)
+	find_library(SDL2_SDL2MAIN_LIBRARY NAMES SDL2main
+        HINTS ${PC_SDL2_LIBRARY_DIRS} ${PC_SDL2_LIBDIR}
+        PATHS ${SDL2_ROOT_DIR}
+              ENV SDL2DIR
+        PATH_SUFFIXES SDL2 lib ${sdl2_lib_suffix} lib/${sdl2_lib_suffix}
+    )
+endif()
+
+if(MINGW)
+	find_library(SDL2_MINGW_LIBRARY mingw32)
+	list(APPEND sdl2_extra_required SDL2_MINGW_LIBRARY)
+endif()
 
 if(SDL2_INCLUDE_DIR AND EXISTS "${SDL2_INCLUDE_DIR}/SDL_version.h")
     file(STRINGS "${SDL2_INCLUDE_DIR}/SDL_version.h" SDL2_VERSION_MAJOR_LINE REGEX "^#define[ \t]+SDL_MAJOR_VERSION[ \t]+[0-9]+$")
@@ -60,13 +81,66 @@ if(SDL2_INCLUDE_DIR AND EXISTS "${SDL2_INCLUDE_DIR}/SDL_version.h")
     unset(SDL2_VERSION_PATCH)
 endif()
 
-set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
-set(SDL2_LIBRARIES ${SDL2_LIBRARY})
-
 include(FindPackageHandleStandardArgs)
-
 find_package_handle_standard_args(SDL2
-        REQUIRED_VARS SDL2_INCLUDE_DIR SDL2_LIBRARY
-        VERSION_VAR SDL2_VERSION)
+    REQUIRED_VARS SDL2_INCLUDE_DIR SDL2_LIBRARY ${sdl2_extra_required}
+    VERSION_VAR SDL2_VERSION
+)
 
-mark_as_advanced(SDL2_INCLUDE_DIR SDL2_LIBRARY)
+if(SDL2_FOUND)
+    if(NOT TARGET SDL2::SDL2)
+        if(WIN32 AND SDL2_RUNTIME_LIBRARY)
+            set(SDL2_DYNAMIC TRUE)
+            add_library(SDL2::SDL2 SHARED IMPORTED)
+            set_target_properties(SDL2::SDL2 PROPERTIES
+                IMPORTED_IMPLIB "${SDL2_LIBRARY}"
+                IMPORTED_LOCATION "${SDL2_RUNTIME_LIBRARY}"
+                INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIR}"
+            )
+        else()
+            add_library(SDL2::SDL2 UNKNOWN IMPORTED)
+	    if(APPLE AND SDL2_LIBRARY MATCHES "/([^/]*).framework$")
+	        set(sdl2_location "${SDL2_LIBRARY}/${CMAKE_MATCH_1}")
+	    else()
+		set(sdl2_location "${SDL2_LIBRARY}")
+	    endif()
+            set_target_properties(SDL2::SDL2 PROPERTIES
+                IMPORTED_LOCATION "${sdl2_location}"
+                INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIR}"
+            )
+        endif()
+
+        if(APPLE)
+            # Need Cocoa here
+            set_target_properties(SDL2::SDL2 PROPERTIES
+                IMPORTED_LINK_INTERFACE_LIBRARIES "-framework Cocoa"
+            )
+        endif()
+    endif()
+
+    # Compute what to do with SDL2main
+    if(NOT TARGET SDL2::SDL2main)
+        if(SDL2_SDL2MAIN_LIBRARY)
+            add_library(SDL2::SDL2main STATIC IMPORTED)
+            set_target_properties(SDL2::SDL2main PROPERTIES
+                IMPORTED_LOCATION "${SDL2_SDL2MAIN_LIBRARY}"
+                INTERFACE_COMPILE_DEFINITIONS "main=SDL_main"
+            )
+            if(MINGW AND SDL2_MINGW_LIBRARY)
+                set_target_properties(SDL2::SDL2main PROPERTIES
+                    INTERFACE_LINK_LIBRARIES "${SDL2_MINGW_LIBRARY} -mwindows"
+                )
+            endif()
+        else()
+            # Dummy target
+            add_library(SDL2::SDL2main INTERFACE IMPORTED)
+        endif()
+    endif()
+endif()
+
+mark_as_advanced(SDL2_LIBRARY
+	SDL2_RUNTIME_LIBRARY
+	SDL2_INCLUDE_DIR
+	SDL2_SDL2MAIN_LIBRARY
+	SDL2_MINGW_LIBRARY
+)

@@ -1,9 +1,9 @@
+set(SDL2_BUILDING_LIBRARY ON)
 find_package(SDL2 2.0.4)
 
 if(SDL2_FOUND)
 	add_library(videoSDL2 SHARED ${RTTR_DRIVER_INTERFACE} VideoSDL2.cpp VideoSDL2.h icon.h icon.cpp)
-	target_include_directories(videoSDL2 SYSTEM PRIVATE ${SDL2_INCLUDE_DIRS})
-	target_link_libraries(videoSDL2 PRIVATE videodrv s25util glad utf8 ${SDL2_LIBRARIES})
+    target_link_libraries(videoSDL2 PRIVATE videodrv s25util glad utf8 SDL2::SDL2)
 
 	if(WIN32)
         include(GatherDll)
