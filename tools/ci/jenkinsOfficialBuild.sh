@@ -23,6 +23,10 @@ if [ "$(uname -s | tr "[:upper:]" "[:lower:]").$(uname -m)" != "${ARCH}" ] ; the
     TOOLCHAIN="$(pwd)/cmake/toolchains/c.${ARCH}.cmake"
 fi
 
+if [ -d /workdir ] ; then
+    export CCACHE_DIR=/workdir/.ccache
+fi
+
 BUILD_TYPE=RelWithDebInfo
 if [[ "${ARCH}" == apple.* ]]; then
     # Current apple compiler doesn't work with debug info and we can't extract them anyway
