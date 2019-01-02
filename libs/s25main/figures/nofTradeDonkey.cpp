@@ -106,7 +106,7 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
     {
         // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
         // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
-        unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
+        unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 
         drawPt += CalcFigurRelative();
 

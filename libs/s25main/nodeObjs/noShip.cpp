@@ -87,7 +87,7 @@ noShip::~noShip()
 
 void noShip::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noMovable(sgd);
+    noMovable::Serialize(sgd);
 
     sgd.PushUnsignedChar(ownerId_);
     sgd.PushUnsignedChar(static_cast<unsigned char>(state));

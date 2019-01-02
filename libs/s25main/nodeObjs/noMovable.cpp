@@ -26,26 +26,31 @@
 #include "gameData/MapConsts.h"
 #include "libutil/Log.h"
 
+EventState::EventState(SerializedGameData& sgd) : elapsed(sgd.PopUnsignedInt()), length(sgd.PopUnsignedInt()) {}
+
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
-    : noCoordBase(nop, pos), curMoveDir(4), ascent(0), current_ev(0), pause_walked_gf(0), pause_event_length(0), moving(false)
+    : noCoordBase(nop, pos), curMoveDir(4), ascent(0), moving(false), current_ev(0)
 {}
 
-void noMovable::Serialize_noMovable(SerializedGameData& sgd) const
+void noMovable::Serialize(SerializedGameData& sgd) const
 {
-    Serialize_noCoordBase(sgd);
+    noCoordBase::Serialize(sgd);
 
     sgd.PushUnsignedChar(curMoveDir.toUInt());
     sgd.PushUnsignedChar(ascent);
     sgd.PushEvent(current_ev);
-    sgd.PushUnsignedInt(pause_walked_gf);
-    sgd.PushUnsignedInt(pause_event_length);
+    sgd.PushUnsignedInt(pauseEv.elapsed);
+    sgd.PushUnsignedInt(pauseEv.length);
     sgd.PushBool(moving);
 }
 
 noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), curMoveDir(sgd.PopUnsignedChar()), ascent(sgd.PopUnsignedChar()), current_ev(sgd.PopEvent()),
-      pause_walked_gf(sgd.PopUnsignedInt()), pause_event_length(sgd.PopUnsignedInt()), moving(sgd.PopBool())
-{}
+    : noCoordBase(sgd, obj_id), curMoveDir(sgd.PopUnsignedChar()), ascent(sgd.PopUnsignedChar())
+{
+    current_ev = sgd.PopEvent();
+    pauseEv = EventState(sgd);
+    moving = sgd.PopBool();
+}
 
 void noMovable::Walk()
 {
@@ -65,15 +70,15 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
     RTTR_Assert(!moving);
 
     // Ist das Wesen stehengeblieben mitten aufm Weg?
-    if(pause_walked_gf)
+    if(IsStoppedBetweenNodes())
     {
         // Das Laufevent fortführen
         RTTR_Assert(dir == curMoveDir);
         // Avoid setting an event for current gf by increasing the length
-        if(pause_walked_gf == pause_event_length)
-            pause_event_length++;
-        current_ev = GetEvMgr().AddEvent(this, pause_event_length, 0, pause_walked_gf);
-        pause_walked_gf = 0;
+        if(pauseEv.length == pauseEv.elapsed)
+            pauseEv.length++;
+        current_ev = GetEvMgr().AddEvent(this, pauseEv.length, 0, pauseEv.elapsed);
+        pauseEv = EventState();
         moving = true;
         return;
     }
@@ -131,31 +136,30 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
         }
     }
 
-    RTTR_Assert(current_ev || pause_walked_gf);
+    RTTR_Assert(IsMoving() || IsStoppedBetweenNodes());
 
     typedef boost::chrono::duration<int32_t, boost::milli> milliseconds_i32_t;
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
-    unsigned gf_diff, evLength;
+    EventState curState;
     milliseconds_i32_t frame_time;
     if(current_ev)
     {
-        gf_diff = GetEvMgr().GetCurrentGF() - current_ev->startGF;
-        evLength = current_ev->length;
+        curState.elapsed = GetEvMgr().GetCurrentGF() - current_ev->startGF;
+        curState.length = current_ev->length;
         frame_time = GAMECLIENT.GetFrameTime();
     } else
     {
-        gf_diff = pause_walked_gf;
-        evLength = pause_event_length;
+        curState = pauseEv;
         frame_time = milliseconds_i32_t::zero();
     }
 
     // Convert to real world time
     const milliseconds_i32_t gfLength = GAMECLIENT.GetGFLength();
     // Time since the start of the event
-    milliseconds_i32_t curTimePassed = gf_diff * gfLength + frame_time;
+    milliseconds_i32_t curTimePassed = curState.elapsed * gfLength + frame_time;
     // Duration of the event
-    milliseconds_i32_t duration = evLength * gfLength;
+    milliseconds_i32_t duration = curState.length * gfLength;
 
     // We are in that event
     RTTR_Assert(curTimePassed <= duration);
@@ -192,10 +196,9 @@ DrawPoint noMovable::CalcWalkingRelative() const
 
 void noMovable::PauseWalking()
 {
+    RTTR_Assert(IsMoving());
     // Frames festhalten, bis zu denen wir gekommen sind
-    pause_walked_gf = GetEvMgr().GetCurrentGF() - current_ev->startGF;
-    // Länge merken
-    pause_event_length = current_ev->length;
+    pauseEv = EventState(GetEvMgr().GetCurrentGF() - current_ev->startGF, current_ev->length);
     // Event abmelden
     GetEvMgr().RemoveEvent(current_ev);
     moving = false;

@@ -76,7 +76,7 @@ protected:
     void Destroy_noAnimal()
     {
         RTTR_Assert(!hunter);
-        Destroy_noMovable();
+        noMovable::Destroy();
     }
 
 public:

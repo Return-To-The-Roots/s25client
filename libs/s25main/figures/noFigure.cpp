@@ -79,14 +79,14 @@ void noFigure::Destroy_noFigure()
 {
     RTTR_Assert(HasNoGoal());
     RTTR_Assert(!cur_rs);
-    Destroy_noMovable();
+    noMovable::Destroy();
 
     RTTR_Assert(!gwg->GetPlayer(player).IsDependentFigure(this));
 }
 
 void noFigure::Serialize_noFigure(SerializedGameData& sgd) const
 {
-    Serialize_noMovable(sgd);
+    noMovable::Serialize(sgd);
 
     sgd.PushUnsignedChar(static_cast<unsigned char>(fs));
     sgd.PushUnsignedChar(static_cast<unsigned char>(job_));
@@ -497,8 +497,8 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
     {
         waiting_for_free_node = false;
         // We should be paused, so just continue moving now
-        if(pause_walked_gf)
-            StartMoving(GetCurMoveDir(), pause_event_length);
+        if(IsStoppedBetweenNodes())
+            StartMoving(GetCurMoveDir(), GetPausedEvent().length);
         else
             Wander();
     }
@@ -758,10 +758,10 @@ void noFigure::CorrectSplitData_Derived() {}
 void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat)
 {
     // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
-    unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
+    unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    if(!waiting_for_free_node || pause_walked_gf)
+    if(!waiting_for_free_node || IsStoppedBetweenNodes())
         drawPt += CalcFigurRelative();
 
     LOADER.carrier_cache[ware][GetCurMoveDir().toUInt()][ani_step][fat].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
@@ -777,10 +777,10 @@ void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, unsigned job)
     }
 
     // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
-    unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
+    unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    if(!waiting_for_free_node || pause_walked_gf)
+    if(!waiting_for_free_node || IsStoppedBetweenNodes())
         drawPt += CalcFigurRelative();
 
     LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir().toUInt()][ani_step].draw(drawPt, 0xFFFFFFFF,
@@ -791,10 +791,10 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id
 {
     // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
     unsigned ani_step =
-      waiting_for_free_node || waitingsoldier ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
+      waiting_for_free_node || waitingsoldier ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    if(!waitingsoldier && (!waiting_for_free_node || pause_walked_gf))
+    if(!waitingsoldier && (!waiting_for_free_node || IsStoppedBetweenNodes()))
         drawPt += CalcFigurRelative();
     if(file)
         file->Draw(id, GetCurMoveDir().toUInt(), fat, ani_step, drawPt, gwg->GetPlayer(player).color);
@@ -805,10 +805,10 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id
 void noFigure::DrawWalking(DrawPoint drawPt, const char* const file, unsigned id)
 {
     // Wenn wir warten, ani-step 2 benutzen
-    unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
+    unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 
     // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    if(!waiting_for_free_node || pause_walked_gf)
+    if(!waiting_for_free_node || IsStoppedBetweenNodes())
         drawPt += CalcFigurRelative();
 
     LOADER.GetPlayerImage(file, id + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)
@@ -824,10 +824,10 @@ void noFigure::DrawWalking(DrawPoint drawPt)
         case JOB_PACKDONKEY:
         {
             // Wenn wir warten, ani-step 2 benutzen
-            unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
+            unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 
             // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-            if(!waiting_for_free_node || pause_walked_gf)
+            if(!waiting_for_free_node || IsStoppedBetweenNodes())
                 drawPt += CalcFigurRelative();
 
             // Esel
