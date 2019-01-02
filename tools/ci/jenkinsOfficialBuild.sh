@@ -43,11 +43,6 @@ else
   MAKE_TARGET=install
 fi
 
-CMAKE_VERSION="3.8.2"
-CMAKE_DIR="$(pwd)/installedCMake-${CMAKE_VERSION}"
-tools/ci/installCMake.sh "${CMAKE_VERSION}" "${CMAKE_DIR}" cmakeSrc
-export PATH="${CMAKE_DIR}/bin:${PATH}"
-
 INSTALL_DIR="$(pwd)/installed"
 rm -rf "${INSTALL_DIR}"
 mkdir -p build && cd build
