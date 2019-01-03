@@ -55,6 +55,7 @@ matrix:
               - brew install sdl_mixer
               - brew install gettext
               - brew install miniupnpc
+              - brew install boost@1.55
               - brew link --force gettext
               - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
               - mkdir -p ${DEPS_DIR}
@@ -63,6 +64,7 @@ matrix:
                 tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}" cmakeSrc
                 export PATH="${CMAKE_DIR}/bin:${PATH}"
               - cd ${TRAVIS_BUILD_DIR}
+              - export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBOOST_ROOT=/usr/local/opt/boost@1.55"
           #                                                             Travis libs are x64 only
           env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03 ADDITIONAL_CMAKE_FLAGS="-DRTTR_NOi386=ON" GCOV="gcov"
     exclude:
