@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
+project(s25client)
+
 if(NOT MSVC)
     #Check for ccache
     if(APPLE)
@@ -9,20 +11,16 @@ if(NOT MSVC)
     endif()
     mark_as_advanced(CCACHE_PROGRAM)
     if(CCACHE_PROGRAM)
-        message(STATUS "Using ccache(${CCACHE_PROGRAM}) to speed up builds")
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+        foreach(lang C CXX)
+            # Do only set ccache compiler if we don't already use a ccache wrapper
+            # Example: /usr/lib/ccache/g++
+            if(NOT CMAKE_${lang}_COMPILER MATCHES "ccache")
+                message(STATUS "Using ccache(${CCACHE_PROGRAM}) for ${lang} to speed up builds")
+                set(CMAKE_${lang}_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
     endif()
+        endforeach()
 endif()
-
-project(s25client)
-
-if(NOT CMAKE_CXX_COMPILE_FEATURES AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.4")
-    message(STATUS "Compile features for < GCC 4.4 are not supported by CMake. Emulate those")
-    set(CMAKE_C_COMPILE_FEATURES "c_std_90;c_function_prototypes;c_variadic_macros" CACHE INTERNAL "")
-    set(CMAKE_CXX_COMPILE_FEATURES "cxx_std_98;cxx_variadic_macros" CACHE INTERNAL "")
 endif()
-
-################################################################################
 
 message(STATUS "Using CMake ${CMAKE_VERSION}")
 
@@ -300,9 +298,9 @@ endif()
 find_package(Boost 1.64.0 QUIET)
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "You have to install boost (>=1.64) into contrib/boost or set (as CMake or environment variable) "
-                        "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
-                        "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
-                        "since cmake was unable to find boost!")
+	"BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
+	"BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
+	"since cmake was unable to find boost!")
 endif()
 
 include(EnableBoostBackport)
