@@ -852,7 +852,6 @@ void WindowManager::CloseMarkedIngameWnds()
 
 void WindowManager::TakeScreenshot()
 {
-    Extent screenSize = VIDEODRIVER.GetScreenSize();
     libsiedler2::PixelBufferARGB buffer(screenSize.x, screenSize.y);
     glReadPixels(0, 0, screenSize.x, screenSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     libsiedler2::ArchivItem_Bitmap_Raw* bmp = new libsiedler2::ArchivItem_Bitmap_Raw;
@@ -910,7 +909,7 @@ void WindowManager::DrawToolTip()
         size_t pos = curTooltip.find('\n');
         while(pos != std::string::npos)
         {
-            numLines++;
+            numLines++; //-V127
             pos = curTooltip.find('\n', pos + 1);
         }
 

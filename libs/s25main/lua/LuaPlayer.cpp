@@ -128,7 +128,7 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
                 LOG.write("You don't need leading nils for SetRestrictedArea\n");
             else if(curPolyStart < 0) // We don't have a current polygon? Can only happen for multiple nils (old style)
                 LOG.write("Duplicate nils found in SetRestrictedArea\n");
-            else if(pts.size() - static_cast<unsigned>(curPolyStart) < 3)
+            else if(pts.size() < static_cast<unsigned>(curPolyStart) + 3)
                 throw LuaExecutionError(std::string("Invalid polygon (less than 3 points) found at index ")
                                         + helpers::toString(std::distance(inPoints.cbegin(), it)));
             else if(pts[curPolyStart] != pts.back()) // Close polygon if not already done

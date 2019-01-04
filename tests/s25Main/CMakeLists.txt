@@ -4,37 +4,39 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/testConfig.h.cmake include/test/testC
 unset(RTTR_BASE_DIR)
 unset(RTTR_LIBSIEDLER2_TEST_FILES_DIR)
 
-file(GLOB OTHER_SRC *.cpp *.h)
-FILE(GLOB LEGACY_FILES legacy/*.cpp legacy/*.h)
-SET(TEST_SOURCES ${OTHER_SRC} ${LEGACY_FILES})
-SOURCE_GROUP(legacy FILES ${LEGACY_FILES})
+add_library(testConfig INTERFACE)
+target_include_directories(testConfig INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/include)
 
-add_executable(Test ${TEST_SOURCES})
-target_link_libraries(Test PRIVATE
-						s25Main
-                        audioMockup
-                        videoMockup
-                        turtle
-						${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-					  )
-target_include_directories(Test PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include)
-if(NOT Boost_USE_STATIC_LIBS)
-	target_compile_definitions(Test PRIVATE BOOST_TEST_DYN_LINK)
-endif()
-if(MSVC)
-    # Use full paths for defines (makes Boost.Test with the VS addin work better)
-    target_compile_options(Test PUBLIC /FC)
-endif()
-add_test(NAME MainTest COMMAND Test WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+add_library(testWorldFixtures STATIC
+    worldFixtures/CreateEmptyWorld.cpp
+    worldFixtures/CreateEmptyWorld.h
+    worldFixtures/CreateSeaWorld.cpp
+    worldFixtures/CreateSeaWorld.h
+    worldFixtures/GCExecutor.h
+    worldFixtures/initGameRNG.cpp
+    worldFixtures/initGameRNG.hpp
+    worldFixtures/SeaWorldWithGCExecution.h
+    worldFixtures/TestEventManager.cpp
+    worldFixtures/TestEventManager.h
+    worldFixtures/WorldFixture.h
+    worldFixtures/WorldWithGCExecution.h
+)
+target_link_libraries(testWorldFixtures PUBLIC s25Main PRIVATE testHelpers)
+target_include_directories(testWorldFixtures PUBLIC .)
 
-file(GLOB TEST_CASES test*.cpp)
-source_group(testCases FILES ${TEST_CASES})
-foreach(curFile ${TEST_CASES})
-    list(REMOVE_ITEM OTHER_SRC ${curFile})
-endforeach()
-source_group(other FILES ${OTHER_SRC})
+include(AddMacros)
+
+add_subdirectory(audio)
+add_subdirectory(integration)
+add_subdirectory(IO)
+add_subdirectory(locale)
+add_subdirectory(lua)
+add_subdirectory(mapGenerator)
+add_subdirectory(network)
+add_subdirectory(simple)
+add_subdirectory(UI)
 
 if(WIN32)
     include(GatherDll)
-    gather_dll_copy(Test)
+    gather_dll_copy(testWorldFixtures)
 endif()

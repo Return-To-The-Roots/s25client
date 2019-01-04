@@ -473,6 +473,8 @@ void Loader::fillCaches()
     }
 
     glArchivItem_Bob* bob_jobs = GetBobN("jobs");
+    if(!bob_jobs)
+        throw std::runtime_error("jobs not found");
 
     for(unsigned nation = 0; nation < NUM_NATS; ++nation)
     {
@@ -705,6 +707,8 @@ void Loader::fillCaches()
 
     // carrier_cache[ware][direction][animation_step][fat]
     glArchivItem_Bob* bob_carrier = GetBobN("carrier");
+    if(!bob_carrier)
+        throw std::runtime_error("carrier not found");
 
     for(unsigned ware = 0; ware < NUM_WARE_TYPES; ++ware)
     {

@@ -95,6 +95,7 @@ VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack)
 
 VideoWinAPI::~VideoWinAPI()
 {
+    DestroyScreen();
     pVideoWinAPI = NULL;
 }
 
@@ -400,12 +401,12 @@ void VideoWinAPI::DestroyScreen()
         screen_rc = NULL;
     }
 
-    if((screen_dc) && (!ReleaseDC(screen, screen_dc)))
+    if(screen_dc && !ReleaseDC(screen, screen_dc))
         return;
 
     screen_dc = NULL;
 
-    if((screen) && (!DestroyWindow(screen)))
+    if(screen && !DestroyWindow(screen))
         return;
 
     screen = NULL;

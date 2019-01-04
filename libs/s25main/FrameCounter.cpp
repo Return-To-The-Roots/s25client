@@ -21,6 +21,8 @@
 #include <boost/math/special_functions/round.hpp>
 #include <cstdlib>
 
+//-V:clock::time_point:813
+
 FrameCounter::FrameCounter(clock::duration updateInverval) : updateInverval_(updateInverval), framerate_(0), curNumFrames_(0) {}
 
 void FrameCounter::update(clock::time_point curTime)

@@ -166,7 +166,7 @@ bool LuaInterfaceBase::ValidateUTF8(const std::string& scriptTxt)
     std::string faultyLine = scriptTxt.substr(lineBegin, lineEnd - lineBegin);
     std::string fixedLine;
     fixedLine.reserve(faultyLine.length());
-    while(true)
+    while(true) //-V776
     {
         try
         {

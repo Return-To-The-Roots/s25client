@@ -175,7 +175,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
     {
         case CT_NORMAL:
         {
-            if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
+            if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
                 bool animation = false;
 
@@ -237,7 +237,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 } else
                     // Steht und wartet (ohne Ware)
                     DrawShadow(drawPt, 0, GetCurMoveDir());
-            } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
+            } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !IsStoppedBetweenNodes() && carried_ware))
             {
                 // Steht und wartet (mit Ware)
                 LOADER.carrier_cache[carried_ware->type][GetCurMoveDir().toUInt()][2][fat].draw(drawPt, COLOR_WHITE,
@@ -254,13 +254,13 @@ void nofCarrier::Draw(DrawPoint drawPt)
         break;
         case CT_DONKEY:
         {
-            if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
+            if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
                 // Steht und wartet (ohne Ware)
 
                 // Esel
                 LOADER.donkey_cache[GetCurMoveDir().toUInt()][0].draw(drawPt);
-            } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
+            } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !IsStoppedBetweenNodes() && carried_ware))
             {
                 //// Steht und wartet (mit Ware)
                 //// Japaner-Schild-Animation existiert leider nicht --> Römerschild nehmen
@@ -274,7 +274,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
             {
                 // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
-                unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
+                unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 
                 drawPt += CalcFigurRelative();
 
@@ -297,10 +297,10 @@ void nofCarrier::Draw(DrawPoint drawPt)
             {
                 // Beim normalen Laufen Träger mit Boot über den Schultern zeichnen
                 DrawWalkingBobCarrier(drawPt, GD_BOAT, fat);
-            } else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !pause_walked_gf && !carried_ware))
+            } else if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
                 LOADER.boat_cache[GetCurMoveDir().toUInt()][0].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
-            } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !pause_walked_gf && carried_ware))
+            } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !IsStoppedBetweenNodes() && carried_ware))
             {
                 LOADER.boat_cache[GetCurMoveDir().toUInt()][0].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 
@@ -310,7 +310,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
             {
                 // Wenn wir warten auf ein freies Plätzchen, müssen wir den (fest)stehend zeichnen!
                 // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
-                unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
+                unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 
                 drawPt += CalcFigurRelative();
 
@@ -592,7 +592,6 @@ void nofCarrier::AbrogateWorkplace()
     if(workplace)
     {
         GetEvMgr().RemoveEvent(productivity_ev);
-        productivity_ev = 0;
 
         // anderen Träger herausfinden
         unsigned other = (ct == CT_DONKEY) ? 0 : 1;

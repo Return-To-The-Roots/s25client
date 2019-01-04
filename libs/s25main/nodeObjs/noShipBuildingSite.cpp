@@ -72,7 +72,7 @@ void noShipBuildingSite::Draw(DrawPoint drawPt)
     if(progress > PROGRESS_PARTS[0])
     {
         unsigned curProg = progress - PROGRESS_PARTS[0];
-        unsigned percentDone = (progress > PROGRESS_PARTS[1]) ? 100u : curProg * 100 / PROGRESS_PARTS[1];
+        unsigned percentDone = (curProg > PROGRESS_PARTS[1]) ? 100u : curProg * 100 / PROGRESS_PARTS[1];
         glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 26);
         image->DrawPercent(drawPt, percentDone);
         image = LOADER.GetImageN("boot_z", 27);

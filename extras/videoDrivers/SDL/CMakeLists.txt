@@ -3,12 +3,12 @@ FIND_PACKAGE(SDL)
 
 IF (SDL_FOUND)
 	FIND_PACKAGE(Boost 1.55.0 REQUIRED)
-	include(CMakeMacroCorrectLib)	
+	include(CorrectLib)	
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
 	ADD_LIBRARY(videoSDL SHARED ${RTTR_DRIVER_INTERFACE} VideoSDL.cpp VideoSDL.h)
-	target_link_libraries(videoSDL PRIVATE videodrv s25util ${SDL_LIBRARY})
-	target_include_directories(videoSDL PRIVATE ${SDL_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/data/win32)
+	target_link_libraries(videoSDL PRIVATE videodrv s25util ${SDL_LIBRARY} Boost::boost nowide::static)
+	target_include_directories(videoSDL PRIVATE ${SDL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/data/win32)
 
 	IF (WIN32)
         find_package(OpenGL REQUIRED)

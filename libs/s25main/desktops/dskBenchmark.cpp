@@ -326,22 +326,21 @@ void dskBenchmark::createGame()
     p.color = PLAYER_COLORS[1];
     players.push_back(p);
     game_.reset(new Game(GlobalGameSettings(), 0u, players));
+    GameWorld& world = game_->world;
     try
     {
-        GameDataLoader gdLoader(game_->world.GetDescriptionWriteable());
-        if(!gdLoader.Load())
-            throw "Game data";
-        game_->world.Init(MapExtent(128, 128));
-        const WorldDescription& desc = game_->world.GetDescription();
+        loadGameData(world.GetDescriptionWriteable());
+        world.Init(MapExtent(128, 128));
+        const WorldDescription& desc = world.GetDescription();
         DescIdx<TerrainDesc> lastTerrain(0);
         int lastHeight = 10;
         boost::random::mt19937 rng(42);
         using boost::random::uniform_int_distribution;
         uniform_int_distribution<int> percentage(0, 100);
         uniform_int_distribution<int> randTerrain(0, desc.terrain.size() / 2);
-        RTTR_FOREACH_PT(MapPoint, game_->world.GetSize())
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
-            MapNode& node = game_->world.GetNodeWriteable(pt);
+            MapNode& node = world.GetNodeWriteable(pt);
             DescIdx<TerrainDesc> t;
             // 90% chance of using the same terrain
             if(percentage(rng) <= 90)
@@ -360,8 +359,8 @@ void dskBenchmark::createGame()
                 lastHeight = helpers::clamp(lastHeight + uniform_int_distribution<int>(-1, 1)(rng), 8, 13);
             node.altitude = lastHeight;
         }
-        MapLoader::InitShadows(game_->world);
-        MapLoader::SetMapExplored(game_->world);
+        MapLoader::InitShadows(world);
+        MapLoader::SetMapExplored(world);
 
         GameLoader loader(game_);
         if(!loader.load())

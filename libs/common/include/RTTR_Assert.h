@@ -47,7 +47,9 @@ extern bool RTTR_AssertEnableBreak;
         if(!(cond))                                                            \
         {                                                                      \
             if(RTTR_IsBreakOnAssertFailureEnabled())                           \
+            {                                                                  \
                 RTTR_BREAKPOINT;                                               \
+            }                                                                  \
             RTTR_AssertFailure(#cond, __FILE__, __LINE__, RTTR_FUNCTION_NAME); \
         }                                                                      \
     } while(false)
@@ -57,7 +59,9 @@ extern bool RTTR_AssertEnableBreak;
         if(!(cond))                                                                   \
         {                                                                             \
             if(RTTR_IsBreakOnAssertFailureEnabled())                                  \
+            {                                                                         \
                 RTTR_BREAKPOINT;                                                      \
+            }                                                                         \
             RTTR_AssertFailure(#cond, __FILE__, __LINE__, RTTR_FUNCTION_NAME, false); \
         }                                                                             \
     } while(false)

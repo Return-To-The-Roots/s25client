@@ -386,7 +386,7 @@ void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
     else if(distance == DIST_MID)
     {
         // Mittel (nur wenns vorher auf weit weg war)
-        if(!frontier_distance)
+        if(frontier_distance == DIST_FAR)
             frontier_distance = DIST_MID;
     }
     RegulateTroops();
@@ -569,7 +569,7 @@ void nobMilitary::OrderNewSoldiers()
 
 bool nobMilitary::IsUseless() const
 {
-    if(frontier_distance || new_built)
+    if(frontier_distance != DIST_FAR || new_built)
         return false;
     return !gwg->DoesDestructionChangeTerritory(*this);
 }
@@ -767,11 +767,12 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
 
 nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker* attacker)
 {
-    // Sind noch Soldaten da?
-    if(troops.size() > 1)
+    // Don't send last soldier
+    if(GetNumTroops() <= 1)
+        return NULL;
+    nofPassiveSoldier* soldier = ChooseSoldier();
+    if(soldier)
     {
-        // Verteidiger auswählen
-        nofPassiveSoldier* soldier = ChooseSoldier();
         // neuen aggressiven Verteidiger daraus erzeugen
         nofAggressiveDefender* defender = new nofAggressiveDefender(soldier, attacker);
         SoldierOnMission(soldier, defender);

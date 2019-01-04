@@ -21,6 +21,7 @@
 #include "noCoordBase.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
+#include <stdint.h>
 
 class SerializedGameData;
 class GameEvent;
@@ -28,20 +29,25 @@ class GameEvent;
 /// Anzahl Animationsschritte bei dem jeweiligen Anstieg
 const unsigned short ASCENT_ANIMATION_STEPS[7] = {16, 16, 16, 16, 24, 32, 48};
 
+struct EventState
+{
+    unsigned elapsed, length;
+    EventState() : elapsed(0), length(0) {}
+    EventState(unsigned elapsed, unsigned length) : elapsed(elapsed), length(length) {}
+    explicit EventState(SerializedGameData& sgd);
+};
+
 class noMovable : public noCoordBase
 {
-    Direction curMoveDir; // Richtung, in die es gerade läcft
-protected:
-    unsigned char ascent; // Anstieg beim Laufen (0-2 runter, 3 gerade, 4-6 hoch)
-    const GameEvent* current_ev;
-    /// Falls er unterwegs angehalten ist: wie weit war er schon gelaufen (0 wenn nicht)
-    unsigned pause_walked_gf;
-    /// Wenn er angehalten hat, wie lange das Laufevent war
-    unsigned pause_event_length;
-    /// Läuft es gerade (zum Debuggen)
+    Direction curMoveDir; /// Current move direction
+    uint8_t ascent;       /// Current ascent (0-2 runter, 3 gerade, 4-6 hoch)
+    /// If stopped, how long did it walk and how much it should have walked, 0 if not stopped
+    EventState pauseEv;
+    /// Is it currently moving (for debugging)
     bool moving;
 
 protected:
+    const GameEvent* current_ev;
     /// Pausiert ein gerade laufendes Wesen
     void PauseWalking();
 
@@ -49,22 +55,16 @@ public:
     noMovable(const NodalObjectType nop, const MapPoint pt);
     noMovable(SerializedGameData& sgd, const unsigned obj_id);
 
-protected:
-    void Destroy_noMovable() { Destroy_noCoordBase(); }
+    void Destroy() override { noCoordBase::Destroy(); }
+    void Serialize(SerializedGameData& sgd) const override;
 
-public:
-    void Destroy() override { Destroy_noMovable(); }
-
-protected:
-    void Serialize_noMovable(SerializedGameData& sgd) const;
-
-public:
-    void Serialize(SerializedGameData& sgd) const override { Serialize_noMovable(sgd); }
     /// Sets the position. Usually not required as all position changes are done by the walk functions
     void SetPos(const MapPoint& pos) { this->pos = pos; }
 
     /// Returns the direction in which the object is moving/which it is facing
     Direction GetCurMoveDir() const { return curMoveDir; }
+    uint8_t GetAscent() const { return ascent; }
+    const EventState& GetPausedEvent() { return pauseEv; }
     /// "Turns" the object in that direction without starting to walk
     void FaceDir(Direction newDir);
     /// In aktueller Richtung ein Stück zurücklegen
@@ -76,7 +76,7 @@ public:
     /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
     DrawPoint CalcWalkingRelative() const;
     // Steht er in der zwischen 2 Wegpunkten?
-    bool IsStandingBetweenNodes() const { return (pause_walked_gf > 0) ? true : false; }
+    bool IsStoppedBetweenNodes() const { return pauseEv.elapsed > 0; }
     /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
     MapPoint GetDestinationForCurrentMove() const;
     /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt

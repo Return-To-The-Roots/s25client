@@ -942,7 +942,7 @@ nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker* att
 {
     // Sind noch Soldaten da?
     unsigned char rank;
-    for(rank = SOLDIER_JOBS.size(); rank > 0; --rank)
+    for(rank = SOLDIER_JOBS.size(); rank > 0; --rank) //-V1029
     {
         if(inventory[SOLDIER_JOBS[rank - 1]])
             break;

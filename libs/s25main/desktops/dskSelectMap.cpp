@@ -20,6 +20,7 @@
 #include "ListDir.h"
 #include "Loader.h"
 #include "RttrConfig.h"
+#include "RttrLobbyClient.hpp"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
@@ -332,7 +333,7 @@ void dskSelectMap::StartServer()
     if(selection < table->GetNumRows())
     {
         // Kartenpfad aus Tabelle holen
-        std::string mapPath = table->GetItemText(selection, 5);
+        const std::string& mapPath = table->GetItemText(selection, 5);
 
         // Server starten
         if(!GAMECLIENT.HostGame(csi, mapPath, MAPTYPE_OLDMAP))
@@ -366,7 +367,14 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
     {
-        case CS_FINISHED: WINDOWMANAGER.Switch(new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId())); break;
+        case CS_FINISHED:
+        {
+            libutil::unique_ptr<ILobbyClient> lobbyClient;
+            if(csi.type == ServerType::LOBBY)
+                lobbyClient.reset(new RttrLobbyClient(LOBBYCLIENT));
+            WINDOWMANAGER.Switch(new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), boost::move(lobbyClient)));
+            break;
+        }
         default: break;
     }
 }

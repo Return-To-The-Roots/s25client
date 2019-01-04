@@ -164,8 +164,8 @@ void handleException(void* pCtx = NULL)
             ss << p << "\n";
         LOG.write(ss.str(), target);
     } catch(...)
-    {
-        // Could not write stacktrace. Ignore errors
+    { //-V565
+      // Could not write stacktrace. Ignore errors
     }
     if(shouldSendDebugData())
     {

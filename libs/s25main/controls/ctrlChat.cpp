@@ -215,7 +215,7 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
     line.msg_color = msg_color;
     raw_chat_lines.push_back(line);
 
-    const unsigned short oldlength = chat_lines.size();
+    const size_t oldlength = chat_lines.size();
 
     // Loggen
     LOG.write("%s <") % time_string;

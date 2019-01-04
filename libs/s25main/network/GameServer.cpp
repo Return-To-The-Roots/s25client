@@ -71,6 +71,7 @@ GameServer::ServerConfig::ServerConfig()
 
 void GameServer::ServerConfig::Clear()
 {
+    servertype = ServerType::LOCAL;
     gamename.clear();
     password.clear();
     port = 0;
@@ -1648,7 +1649,7 @@ int GameServer::GetTargetPlayer(const GameMessageWithPlayer& msg)
         {
             unsigned result = msg.player;
             // Apply pending swaps
-            BOOST_FOREACH(GameServerPlayer::PendingSwap& pSwap, GetNetworkPlayer(msg.senderPlayerID)->pendingSwaps)
+            BOOST_FOREACH(GameServerPlayer::PendingSwap& pSwap, GetNetworkPlayer(msg.senderPlayerID)->pendingSwaps) //-V522
             {
                 if(pSwap.playerId1 == result)
                     result = pSwap.playerId2;

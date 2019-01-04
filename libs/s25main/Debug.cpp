@@ -28,6 +28,8 @@
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
+#include <boost/nowide/iostream.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/conditional.hpp>
 #include <bzlib.h>
@@ -202,7 +204,7 @@ std::vector<void*> DebugInfo::GetStackTrace(void* ctx)
     return stacktrace;
 }
 
-bool DebugInfo::Send(const void* buffer, int length)
+bool DebugInfo::Send(const void* buffer, size_t length)
 {
     char* ptr = (char*)buffer;
 
@@ -212,16 +214,19 @@ bool DebugInfo::Send(const void* buffer, int length)
 
         if(res >= 0)
         {
-            ptr += res;
-            length -= res;
+            size_t numSend = res;
+            if(numSend >= length)
+                break;
+            ptr += numSend;
+            length -= numSend;
         } else
         {
-            fprintf(stderr, "failed to send: %i left\n", length);
-            return (false);
+            boost::nowide::cerr << (boost::format("failed to send: %1% left\n") % length).str();
+            return false;
         }
     }
 
-    return (true);
+    return true;
 }
 
 bool DebugInfo::SendUnsigned(uint32_t i)
@@ -238,7 +243,7 @@ bool DebugInfo::SendSigned(int32_t i)
     return (Send(&i, 4));
 }
 
-bool DebugInfo::SendString(const char* str, unsigned len)
+bool DebugInfo::SendString(const char* str, size_t len)
 {
     if(len == 0)
         len = strlen(str) + 1;

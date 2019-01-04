@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDirectIPConnect.h"
 #include "Loader.h"
+#include "RttrLobbyClient.hpp"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
@@ -29,6 +30,7 @@
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
+#include "liblobby/LobbyClient.h"
 #include "libutil/StringConversion.h"
 #include "libutil/colors.h"
 
@@ -220,7 +222,11 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 
         case CS_FINISHED: // Wir wurden verbunden
         {
-            WINDOWMANAGER.Switch(new dskHostGame(server_type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId()));
+            libutil::unique_ptr<ILobbyClient> lobbyClient;
+            if(server_type == ServerType::LOBBY)
+                lobbyClient.reset(new RttrLobbyClient(LOBBYCLIENT));
+            WINDOWMANAGER.Switch(
+              new dskHostGame(server_type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), boost::move(lobbyClient)));
         }
         break;
         default: break;

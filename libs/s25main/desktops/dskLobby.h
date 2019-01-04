@@ -46,8 +46,6 @@ public:
 
     void Msg_WindowClosed(IngameWindow& wnd) override;
 
-    void LC_Connected() override;
-
     void LC_Status_ConnectionLost() override;
     void LC_Status_IncompleteMessage() override;
     void LC_Status_Error(const std::string& error) override;

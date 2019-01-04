@@ -1,15 +1,17 @@
 cmake_minimum_required(VERSION 3.8)
 
-#Check for ccache
-if(APPLE)
-    find_program(CCACHE_PROGRAM NAMES ccache-lipo ccache)
-else()
-    find_program(CCACHE_PROGRAM ccache)
-endif()
-mark_as_advanced(CCACHE_PROGRAM)
-if(CCACHE_PROGRAM)
-	message(STATUS "Using ccache(${CCACHE_PROGRAM}) to speed up builds")
-	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+if(NOT MSVC)
+    #Check for ccache
+    if(APPLE)
+        find_program(CCACHE_PROGRAM NAMES ccache-lipo ccache)
+    else()
+        find_program(CCACHE_PROGRAM ccache)
+    endif()
+    mark_as_advanced(CCACHE_PROGRAM)
+    if(CCACHE_PROGRAM)
+        message(STATUS "Using ccache(${CCACHE_PROGRAM}) to speed up builds")
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+    endif()
 endif()
 
 PROJECT(s25client)
@@ -28,10 +30,10 @@ IF (DEFINED CMAKE_TOOLCHAIN_FILE)
 	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 ENDIF()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
 
 # Just include required
-INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
+INCLUDE(EnsureOutOfSourceBuild)
 
 include(CheckStructHasMember)
 INCLUDE(CheckIncludeFile)
@@ -299,9 +301,6 @@ IF(NOT Boost_FOUND)
 	"BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
 	"BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
 	"since cmake was unable to find boost!")
-ELSEIF(BOOST_LIBRARYDIR STREQUAL "")
-	list(APPEND CMAKE_PREFIX_PATH ${Boost_INCLUDE_DIR}/stage)
-	set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
 ENDIF()
 
 include(EnableBoostBackport)
@@ -324,8 +323,9 @@ configure_file(copyDepsToBuildDir.cmake . @ONLY)
 add_custom_command(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIG> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)
 
 if(ClangFormat_FOUND)
-	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs true)
-	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extra true)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs TRUE)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extra TRUE)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/tests TRUE)
 	add_ClangFormat_target("file")
 endif()
 

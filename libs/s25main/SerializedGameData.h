@@ -70,7 +70,7 @@ public:
         /* The assert below basically checks the virtual function table.
            If the dynamic_cast fails, we tried to push an object of another type or it was deleted */
         const GameObject* goTmp = static_cast<const GameObject*>(go);
-        RTTR_Assert(dynamic_cast<const T*>(goTmp) == go);
+        RTTR_Assert(dynamic_cast<const T*>(goTmp) == go); //-V547
         PushObject_(goTmp, known);
     }
 
@@ -105,8 +105,6 @@ public:
     }
 
     const GameEvent* PopEvent();
-    /// Not required by objects but by the EventManager
-    GameEvent* PopEventNonConst();
 
     /// FoW-Objekt
     FOWObject* PopFOWObject();

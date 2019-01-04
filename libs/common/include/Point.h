@@ -26,6 +26,7 @@
 #include <boost/type_traits/make_signed.hpp>
 #include <algorithm>
 #include <limits>
+#include <stdint.h>
 
 /// Type for describing a 2D value (position, size, offset...)
 /// Note: Combining a signed with an unsigned point will result in a signed type!

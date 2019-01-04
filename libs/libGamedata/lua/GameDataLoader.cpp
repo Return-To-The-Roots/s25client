@@ -28,6 +28,7 @@
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
+#include <stdexcept>
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)
     : worldDesc_(worldDesc), basePath_(bfs::canonical(basePath).make_preferred().string()), curIncludeDepth_(0), errorInIncludeFile_(false)
@@ -109,4 +110,12 @@ void GameDataLoader::AddTerrainEdge(const kaguya::LuaTable& data)
 void GameDataLoader::AddTerrain(const kaguya::LuaTable& data)
 {
     worldDesc_.terrain.add(TerrainDesc(data, worldDesc_));
+}
+
+void loadGameData(WorldDescription& worldDesc)
+
+{
+    GameDataLoader gdLoader(worldDesc);
+    if(!gdLoader.Load())
+        throw std::runtime_error("Failed to load game data");
 }

@@ -523,7 +523,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                 line_width += word_width + spaceWidth;
                 word_width = 0;
                 itWordStart = nextIt(it);
-            } else if(curChar == '\n')
+            } else
             {
                 // If line break add new line (after all the word-breaking above)
                 itWordStart = nextIt(it);

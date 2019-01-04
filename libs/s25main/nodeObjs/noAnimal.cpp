@@ -39,7 +39,7 @@ noAnimal::noAnimal(const Species species, const MapPoint pos)
 
 void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
 {
-    Serialize_noMovable(sgd);
+    noMovable::Serialize(sgd);
 
     sgd.PushUnsignedChar(static_cast<unsigned char>(species));
     sgd.PushUnsignedChar(static_cast<unsigned char>(state));
@@ -73,7 +73,8 @@ void noAnimal::Draw(DrawPoint drawPt)
             // Interpolieren zwischen beiden Knotenpunkten
             drawPt += CalcWalkingRelative();
 
-            unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % ANIMALCONSTS[species].animation_steps;
+            unsigned ani_step =
+              GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
             LOADER.animal_cache[species][GetCurMoveDir().toUInt()][ani_step].draw(drawPt);

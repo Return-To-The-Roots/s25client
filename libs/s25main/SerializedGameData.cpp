@@ -358,11 +358,6 @@ void SerializedGameData::PushEvent(const GameEvent* event)
 
 const GameEvent* SerializedGameData::PopEvent()
 {
-    return PopEventNonConst();
-}
-
-GameEvent* SerializedGameData::PopEventNonConst()
-{
     unsigned instanceId = PopUnsignedInt();
     if(!instanceId)
         return NULL;
@@ -371,7 +366,7 @@ GameEvent* SerializedGameData::PopEventNonConst()
     std::map<unsigned, GameEvent*>::const_iterator foundObj = readEvents.find(instanceId);
     if(foundObj != readEvents.end())
         return foundObj->second;
-    GameEvent* ev = new GameEvent(*this, instanceId);
+    libutil::unique_ptr<GameEvent> ev = libutil::make_unique<GameEvent>(*this, instanceId);
 
     unsigned short safety_code = PopUnsignedShort();
 
@@ -380,7 +375,7 @@ GameEvent* SerializedGameData::PopEventNonConst()
         LOG.write("SerializedGameData::PopEvent: ERROR: After loading Event(instanceId = %1%); Code is wrong!\n") % instanceId;
         throw Error("Invalid safety code after PopEvent");
     }
-    return ev;
+    return ev.release();
 }
 
 /// FoW-Objekt

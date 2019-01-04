@@ -20,6 +20,7 @@
 
 #include "Desktop.h"
 #include "GlobalGameSettings.h"
+#include "ILobbyClient.hpp"
 #include "network/ClientInterface.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
@@ -35,7 +36,8 @@ struct GameLobbyController;
 class dskHostGame : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gameLobby, unsigned playerId);
+    dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gameLobby, unsigned playerId,
+                libutil::unique_ptr<ILobbyClient> lobbyClient);
     ~dskHostGame();
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
@@ -98,6 +100,7 @@ private:
     const ServerType serverType;
     boost::shared_ptr<GameLobby> gameLobby;
     unsigned localPlayerId_;
+    libutil::unique_ptr<ILobbyClient> lobbyClient_;
     bool hasCountdown_;
     libutil::unique_ptr<LuaInterfaceSettings> lua;
     libutil::unique_ptr<GameLobbyController> lobbyHostController;

@@ -161,7 +161,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
                 maxTex = true;
             else
                 curSize.x *= 2;
-        } else if(curSize.y < curSize.x)
+        } else
         {
             glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y * 2, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
             glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);

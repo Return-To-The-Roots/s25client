@@ -23,7 +23,6 @@
 #include "controls/ctrlChat.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlTable.h"
-#include "dskHostGame.h"
 #include "dskMultiPlayer.h"
 #include "helpers/containerUtils.h"
 #include "ingameWindows/iwDirectIPConnect.h"
@@ -91,7 +90,8 @@ dskLobby::~dskLobby()
 
 void dskLobby::Msg_Timer(const unsigned /*ctrl_id*/)
 {
-    LOBBYCLIENT.SendServerListRequest();
+    if(LOBBYCLIENT.IsLoggedIn())
+        LOBBYCLIENT.SendServerListRequest();
 }
 
 void dskLobby::Msg_PaintBefore()
@@ -265,14 +265,6 @@ void dskLobby::LC_Status_Error(const std::string& error)
 {
     if(createServerWnd)
         createServerWnd->LC_Status_Error(error);
-}
-
-/**
- *  Status: Wir wurden erfolgreich mit einem Gameserver verbunden
- */
-void dskLobby::LC_Connected()
-{
-    WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId()));
 }
 
 /**

@@ -1,6 +1,6 @@
 # Detect possible platforms
-include(CMakeDetectOsXArchs)
-DetectOSXArchs()
+include(DetectOsXArchs)
+detect_osx_archs()
 
 # Set default to current (if not set)
 SET(CHOOSEN_OSX_ARCHS "${CMAKE_OSX_ARCHITECTURES}")

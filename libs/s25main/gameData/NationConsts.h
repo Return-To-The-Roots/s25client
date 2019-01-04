@@ -22,6 +22,7 @@
 
 #include "mygettext/mygettext.h"
 #include "gameTypes/Nation.h"
+#include <libutil/warningSuppression.h>
 #include <boost/array.hpp>
 
 const boost::array<const char*, NUM_NATS> SUPPRESS_UNUSED NationNames = {
