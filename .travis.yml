@@ -23,14 +23,14 @@ addons:
             - boost-latest
             - ubuntu-toolchain-r-test
         packages:
-            - libboost-filesystem1.55-dev
-            - libboost-thread1.55-dev
-            - libboost-iostreams1.55-dev
-            - libboost-program-options1.55-dev
-            - libboost-system1.55-dev
-            - libboost-random1.55-dev
-            - libboost-test1.55-dev
-            - libboost-locale1.55-dev
+            - libboost-filesystem1.64-dev
+            - libboost-thread1.64-dev
+            - libboost-iostreams1.64-dev
+            - libboost-program-options1.64-dev
+            - libboost-system1.64-dev
+            - libboost-random1.64-dev
+            - libboost-test1.64-dev
+            - libboost-locale1.64-dev
             - g++-4.8
             - libsdl1.2-dev
             - libsdl-mixer1.2-dev
@@ -55,7 +55,7 @@ matrix:
               - brew install sdl_mixer
               - brew install gettext
               - brew install miniupnpc
-              - brew install boost@1.55
+              - brew install boost@1.64
               - brew link --force gettext
               - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
               - mkdir -p ${DEPS_DIR}
@@ -64,7 +64,7 @@ matrix:
                 tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}" cmakeSrc
                 export PATH="${CMAKE_DIR}/bin:${PATH}"
               - cd ${TRAVIS_BUILD_DIR}
-              - export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBOOST_ROOT=/usr/local/opt/boost@1.55"
+              - export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBOOST_ROOT=/usr/local/opt/boost@1.64"
           #                                                             Travis libs are x64 only
           env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03 ADDITIONAL_CMAKE_FLAGS="-DRTTR_NOi386=ON" GCOV="gcov"
     exclude:

@@ -16,7 +16,7 @@ platform:
   - x64
 
 environment:
-  BOOST_ROOT: C:\Libraries\boost_1_60_0
+  BOOST_ROOT: C:\Libraries\boost_1_64_0
   GENERATOR: Visual Studio 14 2015
   MSVC: 14.0
   RTTR_DISABLE_ASSERT_BREAKPOINT: 1

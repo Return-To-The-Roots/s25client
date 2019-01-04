@@ -1,4 +1,4 @@
-find_package(Boost 1.55.0 REQUIRED)
+find_package(Boost 1.64.0 REQUIRED)
 
 # Library interface to be consumed by users
 add_library(driver INTERFACE)

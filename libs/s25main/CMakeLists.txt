@@ -1,6 +1,6 @@
 FIND_PACKAGE(BZip2 REQUIRED)
 gather_dll(BZIP2)
-FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams locale chrono)
+FIND_PACKAGE(Boost 1.64.0 REQUIRED COMPONENTS filesystem iostreams locale chrono)
 
 SET(SOURCES_SUBDIRS )
 MACRO(AddDirectory dir)
