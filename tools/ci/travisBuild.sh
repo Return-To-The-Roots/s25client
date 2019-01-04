@@ -21,6 +21,5 @@ else
 fi
 
 # Execute tests
-export BOOST_TEST_CATCH_SYSTEM_ERRORS="no"
 export RTTR_DISABLE_ASSERT_BREAKPOINT=1
 ctest --output-on-failure=1 -j2
