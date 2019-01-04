@@ -70,7 +70,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, const b
     startNode.targetDistance = gwb_.CalcDistance(start, dest);
     startNode.estimatedDistance = startNode.targetDistance;
     startNode.lastVisited = currentVisit;
-    startNode.prev = NULL;
+    startNode.prev = nullptr;
     startNode.curDistance = 0;
 
     todo.push(&startNode);

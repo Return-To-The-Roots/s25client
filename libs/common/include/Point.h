@@ -18,15 +18,10 @@
 #ifndef Point_h__
 #define Point_h__
 
-#include <boost/type_traits/common_type.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/is_arithmetic.hpp>
-#include <boost/type_traits/is_float.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/type_traits/make_signed.hpp>
 #include <algorithm>
 #include <limits>
 #include <stdint.h>
+#include <type_traits>
 
 /// Type for describing a 2D value (position, size, offset...)
 /// Note: Combining a signed with an unsigned point will result in a signed type!
@@ -36,17 +31,16 @@ struct Point //-V690
     typedef T ElementType;
 
     T x, y;
-    BOOST_CONSTEXPR Point() {} //-V730
-    BOOST_CONSTEXPR Point(const T x, const T y) : x(x), y(y) {}
-    BOOST_CONSTEXPR Point(const Point& other) : x(other.x), y(other.y) {}
+    constexpr Point(const T x, const T y) : x(x), y(y) {}
+    constexpr Point(const Point& other = Invalid()) : x(other.x), y(other.y) {}
     template<typename U>
-    BOOST_CONSTEXPR explicit Point(const Point<U>& pt) : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
+    constexpr explicit Point(const Point<U>& pt) : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
     {}
 
-    static BOOST_CONSTEXPR Point Invalid();
+    static constexpr Point Invalid();
     /// Create a new point with all coordinates set to value
-    static BOOST_CONSTEXPR Point all(const T& value);
-    BOOST_CONSTEXPR bool isValid() const;
+    static constexpr Point all(const T& value);
+    constexpr bool isValid() const;
 
     bool operator==(const Point& second) const;
     bool operator!=(const Point& second) const;
@@ -61,19 +55,19 @@ typedef Point<unsigned> Extent;
 //////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-inline BOOST_CONSTEXPR Point<T> Point<T>::Invalid()
+inline constexpr Point<T> Point<T>::Invalid()
 {
     return Point::all(std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max());
 }
 
 template<typename T>
-inline BOOST_CONSTEXPR Point<T> Point<T>::all(const T& val)
+inline constexpr Point<T> Point<T>::all(const T& val)
 {
     return Point(val, val);
 }
 
 template<typename T>
-inline BOOST_CONSTEXPR bool Point<T>::isValid() const
+inline constexpr bool Point<T>::isValid() const
 {
     return *this != Invalid();
 }
@@ -110,7 +104,7 @@ inline Point<T> elMax(const Point<T>& lhs, const Point<T>& rhs)
     return Point<T>(max(lhs.x, rhs.x), max(lhs.y, rhs.y));
 }
 
-template<typename T, bool T_isFloat = boost::is_float<T>::value>
+template<typename T, bool T_isFloat = std::is_floating_point<T>::value>
 struct PointProductType
 {
     typedef T type;
@@ -119,10 +113,9 @@ struct PointProductType
 template<typename T>
 struct PointProductType<T, false>
 {
-    BOOST_STATIC_CONSTANT(bool, is64Bit = sizeof(T) > 4u);
-    typedef typename boost::conditional<is64Bit, T,
-                                        typename boost::conditional<boost::is_signed<T>::value, int32_t, uint32_t>::type // 32 bit int type
-                                        >::type type;
+    static constexpr bool is64Bit = sizeof(T) > 4u;
+    using type32Bit = std::conditional_t<std::is_signed<T>::value, int32_t, uint32_t>;
+    typedef std::conditional_t<is64Bit, T, type32Bit> type;
 };
 
 /// Compute pt.x * pt.y
@@ -140,29 +133,30 @@ namespace detail {
 template<typename T>
 struct TryMakeSigned
 {
-    typedef typename boost::conditional<boost::is_integral<T>::value, boost::make_signed<T>, boost::common_type<T> >::type::type type;
+    typedef typename std::conditional<std::is_integral<T>::value, std::make_signed<T>, std::common_type<T>>::type::type type;
 };
 /// Creates a mixed type out of types T and U which is
 /// the common type of T & U AND signed iff either is signed
 /// fails for non-numeric types with SFINAE
-template<typename T, typename U, bool T_areNumeric = boost::is_arithmetic<T>::value&& boost::is_arithmetic<U>::value>
+template<typename T, typename U, bool T_areNumeric = std::is_arithmetic<T>::value&& std::is_arithmetic<U>::value>
 struct MixedType;
 
 template<typename T, typename U>
 struct MixedType<T, U, true>
 {
-    typedef typename boost::common_type<T, U>::type Common;
+    typedef typename std::common_type<T, U>::type Common;
     // Convert to signed iff least one value is signed
-    typedef typename boost::conditional<boost::is_signed<T>::value || boost::is_signed<U>::value, typename TryMakeSigned<Common>::type,
-                                        Common>::type type;
+    typedef
+      typename std::conditional<std::is_signed<T>::value || std::is_signed<U>::value, typename TryMakeSigned<Common>::type, Common>::type
+        type;
 };
 } // namespace detail
 
 /// Unary negate
 template<typename T>
-inline Point<typename boost::make_signed<T>::type> operator-(const Point<T>& pt)
+inline Point<typename std::make_signed<T>::type> operator-(const Point<T>& pt)
 {
-    typedef typename boost::make_signed<T>::type Res;
+    typedef typename std::make_signed<T>::type Res;
     return Point<Res>(-static_cast<Res>(pt.x), -static_cast<Res>(pt.y));
 }
 

@@ -25,7 +25,7 @@
 #include <SDL_mixer.h>
 #include <iostream>
 
-static AudioSDL* nthis = NULL;
+static AudioSDL* nthis = nullptr;
 
 /**
  *  Instanzierungsfunktion von @p AudioSDL.
@@ -94,7 +94,7 @@ bool AudioSDL::Initialize()
     }
 
     SetNumChannels(Mix_AllocateChannels(MAX_NUM_CHANNELS));
-    Mix_SetMusicCMD(NULL);
+    Mix_SetMusicCMD(nullptr);
     Mix_HookMusicFinished(AudioSDL::MusicFinished);
 
     initialized = true;
@@ -111,7 +111,7 @@ void AudioSDL::CleanUp()
     AudioDriver::CleanUp();
 
     Mix_CloseAudio();
-    Mix_HookMusicFinished(NULL);
+    Mix_HookMusicFinished(nullptr);
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
@@ -122,13 +122,13 @@ void AudioSDL::CleanUp()
  *  @param[in] data Datenblock
  *  @param[in] size Größe des Datenblocks
  *
- *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
+ *  @return Sounddeskriptor bei Erfolg, @p nullptr bei Fehler
  */
 SoundHandle AudioSDL::LoadEffect(const std::string& filepath)
 {
     Mix_Chunk* sound = Mix_LoadWAV(filepath.c_str());
 
-    if(sound == NULL)
+    if(sound == nullptr)
     {
         std::cerr << Mix_GetError() << std::endl;
         return SoundHandle();
@@ -141,7 +141,7 @@ SoundHandle AudioSDL::LoadEffect(const std::vector<char>& data, const std::strin
 {
     SDL_RWops* rwOps = SDL_RWFromConstMem(&data[0], static_cast<int>(data.size()));
     Mix_Chunk* sound = Mix_LoadWAV_RW(rwOps, true); //-V601
-    if(sound == NULL)
+    if(sound == nullptr)
     {
         std::cerr << Mix_GetError() << std::endl;
         return SoundHandle();
@@ -153,13 +153,13 @@ SoundHandle AudioSDL::LoadEffect(const std::vector<char>& data, const std::strin
 /**
  *  Läd ein Musikstück.
 
- *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
+ *  @return Sounddeskriptor bei Erfolg, @p nullptr bei Fehler
  */
 SoundHandle AudioSDL::LoadMusic(const std::string& filepath)
 {
     Mix_Music* music = Mix_LoadMUS(filepath.c_str());
 
-    if(music == NULL)
+    if(music == nullptr)
     {
         std::cerr << Mix_GetError() << std::endl;
         return SoundHandle();
@@ -174,7 +174,7 @@ SoundHandle AudioSDL::LoadMusic(const std::vector<char>& data, const std::string
     SoundSDL_Music* handle = new SoundSDL_Music(data);
     SDL_RWops* rwOps = SDL_RWFromConstMem(&handle->data[0], static_cast<int>(data.size()));
     Mix_Music* music = Mix_LoadMUS_RW(rwOps);
-    if(music == NULL)
+    if(music == nullptr)
     {
         SDL_FreeRW(rwOps);
         delete handle;

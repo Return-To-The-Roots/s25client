@@ -110,10 +110,11 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 else
                 {
                     WINDOWMANAGER.Show(
-                      new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
+                      new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
                 }
             } else
-                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
+                WINDOWMANAGER.Show(
+                  new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         }
         break;
         case 4: // "Replay abspielen"

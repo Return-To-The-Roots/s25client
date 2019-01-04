@@ -25,7 +25,7 @@ class SoundSDL_Music : public SoundDesc
 {
 public:
     explicit SoundSDL_Music(Mix_Music* music) : SoundDesc(SD_MUSIC), music(music) {}
-    explicit SoundSDL_Music(const std::vector<char>& data) : SoundDesc(SD_MUSIC), music(NULL), data(data) {}
+    explicit SoundSDL_Music(const std::vector<char>& data) : SoundDesc(SD_MUSIC), music(nullptr), data(data) {}
 
     void setInvalid() { isValid_ = false; }
     /// Handle to the sound. Managed and freed by the driver

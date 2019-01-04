@@ -25,7 +25,6 @@
 #include "worldFixtures/initGameRNG.hpp"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrainfield.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 
 struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1>
@@ -52,7 +51,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     std::vector<MapPoint> radius1Pts = world.GetPointsInRadiusWithCenter(farmPt, 1);
     // First check points for validity
     // Cannot build directly next to farm
-    BOOST_FOREACH(MapPoint pt, radius1Pts)
+    for(MapPoint pt : radius1Pts)
         BOOST_REQUIRE(!farmer->IsPointAvailable(pt));
     // Can build everywhere but on road
     for(unsigned dir = 0; dir < 12; dir++)

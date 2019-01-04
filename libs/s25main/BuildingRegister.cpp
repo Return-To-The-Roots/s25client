@@ -26,7 +26,6 @@
 #include "helpers/containerUtils.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
-#include <boost/foreach.hpp>
 
 void BuildingRegister::Serialize(SerializedGameData& sgd) const
 {
@@ -137,13 +136,13 @@ BuildingCount BuildingRegister::GetBuildingNums() const
     for(unsigned i = 0; i < NUM_BUILDING_TYPES - FIRST_USUAL_BUILDING; ++i)
         bc.buildings[i + FIRST_USUAL_BUILDING] = buildings[i].size();
     // Lagerhäuser zählen
-    BOOST_FOREACH(const nobBaseWarehouse* bld, warehouses)
+    for(const nobBaseWarehouse* bld : warehouses)
         ++bc.buildings[bld->GetBuildingType()];
     // Militärgebäude zählen
-    BOOST_FOREACH(const nobMilitary* bld, military_buildings)
+    for(const nobMilitary* bld : military_buildings)
         ++bc.buildings[bld->GetBuildingType()];
     // Baustellen zählen
-    BOOST_FOREACH(const noBuildingSite* bld, building_sites)
+    for(const noBuildingSite* bld : building_sites)
         ++bc.buildingSites[bld->GetBuildingType()];
     return bc;
 }
@@ -164,7 +163,7 @@ unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
     unsigned numBlds = GetBuildings(bldType).size();
     if(numBlds > 0)
     {
-        BOOST_FOREACH(const nobUsual* bld, GetBuildings(bldType))
+        for(const nobUsual* bld : GetBuildings(bldType))
             productivity += bld->GetProductivity();
         productivity /= numBlds;
     }
@@ -181,7 +180,7 @@ unsigned short BuildingRegister::CalcAverageProductivity() const
         if(BLD_WORK_DESC[bldType].producedWare == GD_NOTHING)
             continue;
 
-        BOOST_FOREACH(const nobUsual* bld, GetBuildings(bldType))
+        for(const nobUsual* bld : GetBuildings(bldType))
             totalProductivity += bld->GetProductivity();
 
         numBlds += GetBuildings(bldType).size();

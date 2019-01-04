@@ -19,10 +19,10 @@
 #define ToolConsts_h__
 
 #include "gameTypes/GoodTypes.h"
-#include <boost/array.hpp>
+#include <array>
 
 /// List of all tools (correspond to buttons at IO:140-163)
-const boost::array<GoodType, NUM_TOOLS> SUPPRESS_UNUSED TOOLS = {{
+const std::array<GoodType, NUM_TOOLS> SUPPRESS_UNUSED TOOLS = {{
   GD_TONGS,      // Zange
   GD_HAMMER,     // Hammer
   GD_AXE,        // Axt,

@@ -21,7 +21,7 @@
 #include "LuaInterfaceGameBase.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <string>
 
 class GameWorldGame;
@@ -33,7 +33,7 @@ class Game;
 class LuaInterfaceGame : public LuaInterfaceGameBase
 {
 public:
-    LuaInterfaceGame(boost::weak_ptr<Game> game);
+    LuaInterfaceGame(std::weak_ptr<Game> game);
     virtual ~LuaInterfaceGame();
 
     static void Register(kaguya::State& state);
@@ -68,7 +68,7 @@ public:
 
 private:
     GameWorldGame& gw;
-    boost::weak_ptr<Game> game;
+    std::weak_ptr<Game> game;
     LuaPlayer GetPlayer(unsigned playerIdx);
     LuaWorld GetWorld();
 };

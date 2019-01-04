@@ -62,7 +62,7 @@ bool nofWorkman::StartWorking()
 
 void nofWorkman::HandleStateWaiting1()
 {
-    current_ev = NULL;
+    current_ev = nullptr;
     if(!StartWorking())
     {
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
@@ -72,7 +72,7 @@ void nofWorkman::HandleStateWaiting1()
 
 void nofWorkman::HandleStateWaiting2()
 {
-    current_ev = NULL;
+    current_ev = nullptr;
     // Ware erzeugen... (noch nicht "richtig"!, sondern nur viruell erstmal)
     if((ware = ProduceWare()) == GD_NOTHING)
     {

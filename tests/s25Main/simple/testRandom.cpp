@@ -21,12 +21,10 @@
 #include "random/XorShift.h"
 #include "libutil/Serializer.h"
 #include <boost/assign/std/vector.hpp>
-#include <boost/foreach.hpp>
-#include <boost/random/seed_seq.hpp>
 #include <boost/test/unit_test.hpp>
 #include <limits>
+#include <random>
 #include <vector>
-//#include <iostream>
 
 using namespace boost::assign;
 
@@ -47,16 +45,16 @@ BOOST_FIXTURE_TEST_SUITE(RNG_Tests, SeedFixture)
 
 BOOST_AUTO_TEST_CASE(RandomTest)
 {
-    BOOST_FOREACH(unsigned seed, seeds)
+    for(unsigned seed : seeds)
     {
         RANDOM.Init(seed);
-        std::vector<std::vector<unsigned> > results;
+        std::vector<std::vector<unsigned>> results;
         results += std::vector<unsigned>(1), std::vector<unsigned>(10), std::vector<unsigned>(11), std::vector<unsigned>(13),
           std::vector<unsigned>(32), std::vector<unsigned>(33);
         const unsigned numSamples = 3000;
         for(unsigned i = 0; i < numSamples; i++)
         {
-            BOOST_FOREACH(std::vector<unsigned>& result, results)
+            for(std::vector<unsigned>& result : results)
             {
                 // Using .at makes sure we don't exceed the maximum value
                 ++result.at(RANDOM_RAND(0, result.size()));
@@ -67,7 +65,7 @@ BOOST_AUTO_TEST_CASE(RandomTest)
         // Due to normal fluctuations on true random numbers we just check that they occurred at least
         // average * percentage times
         const unsigned minPercentage = 70u;
-        BOOST_FOREACH(std::vector<unsigned>& result, results)
+        for(std::vector<unsigned>& result : results)
         {
             const unsigned average = numSamples / result.size();
             const unsigned minCt = average * minPercentage / 100u;
@@ -83,7 +81,7 @@ BOOST_AUTO_TEST_CASE(RandomSameSeq)
     RANDOM.Init(0x1337);
     std::vector<int> results;
     results += 623, 453, 927, 305, 478, 933, 230, 491, 968, 623, 418;
-    BOOST_FOREACH(int result, results)
+    for(int result : results)
     {
         // std::cout << RANDOM_RAND(0, 1024) << std::endl;
         BOOST_REQUIRE_EQUAL(RANDOM_RAND(0, 1024), result);
@@ -92,7 +90,7 @@ BOOST_AUTO_TEST_CASE(RandomSameSeq)
 
 BOOST_AUTO_TEST_CASE(RandomEmptySeq)
 {
-    BOOST_FOREACH(unsigned seed, seeds)
+    for(unsigned seed : seeds)
     {
         RANDOM.Init(seed);
         for(int i = 0; i < 100; i++)
@@ -106,7 +104,7 @@ BOOST_AUTO_TEST_CASE(RandomEmptySeq)
 template<class T_RNG, class T_Seeds>
 void testRange(const T_Seeds& seeds)
 {
-    BOOST_FOREACH(unsigned seed, seeds)
+    for(unsigned seed : seeds)
     {
         T_RNG rng(seed);
         const unsigned numSamplesMinMax = 3000;
@@ -119,13 +117,13 @@ void testRange(const T_Seeds& seeds)
             BOOST_REQUIRE_LE(val, max);
         }
 
-        std::vector<std::vector<unsigned> > results;
+        std::vector<std::vector<unsigned>> results;
         results += std::vector<unsigned>(2), std::vector<unsigned>(10), std::vector<unsigned>(11), std::vector<unsigned>(13),
           std::vector<unsigned>(32), std::vector<unsigned>(33);
         const unsigned numSamples = 3000;
         for(unsigned i = 0; i < numSamples; i++)
         {
-            BOOST_FOREACH(std::vector<unsigned>& result, results)
+            for(std::vector<unsigned>& result : results)
             {
                 const unsigned maxVal = static_cast<unsigned>(result.size());
                 unsigned val = rng() % maxVal;
@@ -137,7 +135,7 @@ void testRange(const T_Seeds& seeds)
         // Due to normal fluctuations on true random numbers we just check that they occurred at least
         // average * percentage times
         const unsigned minPercentage = 70u;
-        BOOST_FOREACH(std::vector<unsigned>& result, results)
+        for(std::vector<unsigned>& result : results)
         {
             const unsigned average = numSamples / result.size();
             const unsigned minCt = average * minPercentage / 100u;
@@ -155,7 +153,7 @@ BOOST_AUTO_TEST_CASE(ValueRangeValid)
 
 BOOST_AUTO_TEST_CASE(EmptyRange)
 {
-    BOOST_FOREACH(unsigned seed, seeds)
+    for(unsigned seed : seeds)
     {
         RANDOM.Init(seed);
         for(int i = 0; i < 100; i++)
@@ -169,7 +167,7 @@ BOOST_AUTO_TEST_CASE(EmptyRange)
 template<class T_RNG, class T_Seed>
 void testCtorFromSeedSeq(const T_Seed& seeds)
 {
-    boost::random::seed_seq seedSeq(seeds.begin(), seeds.end());
+    std::seed_seq seedSeq(seeds.begin(), seeds.end());
     T_RNG rng(seedSeq);
     // Now check that we get different values during multiple calls
     // to the rng. It is possible that same values are returned as it is random
@@ -198,7 +196,7 @@ BOOST_AUTO_TEST_CASE(CtorFromSeedSeq)
 template<class T_RNG, class T_Seeds>
 void testCopy(const T_Seeds& seeds)
 {
-    BOOST_FOREACH(unsigned seed, seeds)
+    for(unsigned seed : seeds)
     {
         T_RNG rng(seed), rng2(seed);
         BOOST_REQUIRE_EQUAL(rng, rng2);
@@ -227,7 +225,7 @@ BOOST_AUTO_TEST_CASE(Copy)
 template<class T_RNG, class T_Seeds>
 void testStreamOps(const T_Seeds& seeds)
 {
-    BOOST_FOREACH(unsigned seed, seeds)
+    for(unsigned seed : seeds)
     {
         T_RNG rng(seed), rng2(seed);
         // Execute it a few times
@@ -251,7 +249,7 @@ BOOST_AUTO_TEST_CASE(StreamOperations)
 template<class T_RNG, class T_Seeds>
 void testSerialize(const T_Seeds& seeds)
 {
-    BOOST_FOREACH(unsigned seed, seeds)
+    for(unsigned seed : seeds)
     {
         T_RNG rng(seed), rng2(seed);
         // Execute it a few times
@@ -273,7 +271,7 @@ BOOST_AUTO_TEST_CASE(Serialization)
 template<class T_RNG, class T_Seeds>
 void testDiscard(const T_Seeds& seeds)
 {
-    BOOST_FOREACH(unsigned seed, seeds)
+    for(unsigned seed : seeds)
     {
         T_RNG rng(seed), rng2(seed);
         const unsigned skipCt = 100;

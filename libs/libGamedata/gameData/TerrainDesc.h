@@ -20,7 +20,6 @@
 
 #include "DescIdx.h"
 #include "Rect.h"
-#include <boost/core/scoped_enum.hpp>
 #include <string>
 #include <vector>
 
@@ -29,26 +28,46 @@ struct EdgeDesc;
 struct WorldDescription;
 class CheckedLuaTable;
 
-BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CASTLE, MINE} BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
-  BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainKind, uint8_t){LAND, WATER, LAVA, SNOW, MOUNTAIN} BOOST_SCOPED_ENUM_DECLARE_END(TerrainKind)
-  /// Bitset of what can be done on that terrain
-  BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(ETerrain,
-                                     uint8_t){/// Can do nothing, but also not dangerous. Don't use in code! Use !Is(Walkable) etc. instead!
-                                              Unwalkable = 0,
-                                              /// Dangerous, can't go near
-                                              Unreachable = 1,
-                                              /// Can walk on
-                                              Walkable = 2,
-                                              /// Ships can drive on
-                                              Shippable = 4,
-                                              /// Can build buildings
-                                              Buildable = 8 | Walkable,
-                                              /// Can build mines
-                                              Mineable = 16 | Walkable} BOOST_SCOPED_ENUM_DECLARE_END(ETerrain)
+enum class TerrainBQ : uint8_t
+{
+    NOTHING,
+    DANGER,
+    FLAG,
+    CASTLE,
+    MINE
+};
+enum class TerrainKind : uint8_t
+{
+    LAND,
+    WATER,
+    LAVA,
+    SNOW,
+    MOUNTAIN
+};
+/// Bitset of what can be done on that terrain
+enum class ETerrain : uint8_t
+{ /// Can do nothing, but also not dangerous. Don't use in code! Use !Is(Walkable) etc. instead!
+    Unwalkable = 0,
+    /// Dangerous, can't go near
+    Unreachable = 1,
+    /// Can walk on
+    Walkable = 2,
+    /// Ships can drive on
+    Shippable = 4,
+    /// Can build buildings
+    Buildable = 8 | Walkable,
+    /// Can build mines
+    Mineable = 16 | Walkable
+};
 
-    BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(ETexType, uint8_t){Overlapped, Stacked, Rotated} BOOST_SCOPED_ENUM_DECLARE_END(ETexType)
+enum class ETexType : uint8_t
+{
+    Overlapped,
+    Stacked,
+    Rotated
+};
 
-      struct TerrainDesc
+struct TerrainDesc
 {
     typedef Point<float> PointF;
     struct Triangle
@@ -89,7 +108,7 @@ BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CA
 
 inline bool TerrainDesc::Is(ETerrain what) const
 {
-    return (boost::underlying_cast<uint8_t>(flags) & boost::underlying_cast<uint8_t>(what)) == boost::underlying_cast<uint8_t>(what);
+    return (static_cast<uint8_t>(flags) & static_cast<uint8_t>(what)) == static_cast<uint8_t>(what);
 }
 
 #endif // TerrainDesc_h__

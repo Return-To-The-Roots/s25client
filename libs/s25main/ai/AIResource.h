@@ -18,17 +18,27 @@
 #ifndef AIResource_h__
 #define AIResource_h__
 
-#include <boost/array.hpp>
-#include <boost/core/scoped_enum.hpp>
+#include <array>
 
-// Suppress uninitialized v_
-//-V:AIResource:730,801
-BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(AIResource, unsigned){WOOD, STONES, GOLD, IRONORE, COAL, GRANITE, PLANTSPACE, BORDERLAND, FISH, MULTIPLE,
-                                                         // special:
-                                                         BLOCKED = 254, NOTHING = 255} BOOST_SCOPED_ENUM_DECLARE_END(AIResource)
+enum class AIResource : unsigned
+{
+    WOOD,
+    STONES,
+    GOLD,
+    IRONORE,
+    COAL,
+    GRANITE,
+    PLANTSPACE,
+    BORDERLAND,
+    FISH,
+    MULTIPLE,
+    // special:
+    BLOCKED = 254,
+    NOTHING = 255
+};
 
-  const unsigned NUM_AIRESOURCES = 9;
-const boost::array<unsigned, NUM_AIRESOURCES> SUPPRESS_UNUSED RES_RADIUS = {{
+const unsigned NUM_AIRESOURCES = 9;
+const std::array<unsigned, NUM_AIRESOURCES> SUPPRESS_UNUSED RES_RADIUS = {{
   8, // Wood
   8, // Stones
   2, // Gold

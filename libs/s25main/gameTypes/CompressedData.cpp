@@ -20,11 +20,11 @@
 #include "FileChecksum.h"
 #include "libutil/Log.h"
 #include <boost/nowide/fstream.hpp>
-#include <boost/smart_ptr/scoped_array.hpp>
 #include <bzlib.h>
 #include <cerrno>
 #include <cmath>
 #include <cstring>
+#include <memory>
 
 bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* checksum)
 {
@@ -36,7 +36,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
         return false;
     }
 
-    boost::scoped_array<char> uncompressedData(new char[length]);
+    auto uncompressedData = std::make_unique<char[]>(length);
 
     unsigned outLength = length;
 
@@ -65,14 +65,14 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
     return true;
 }
 
-bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* checksum /* = NULL */)
+bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* checksum /* = nullptr */)
 {
     bnw::ifstream file(filePath, std::ios::binary | std::ios::ate);
     length = static_cast<unsigned>(file.tellg());
     data.resize(static_cast<int>(std::ceil(length * 1.1)) + 600); // Buffer should be at most 1% bigger + 600 Bytes according to docu
     file.seekg(0);
 
-    boost::scoped_array<char> uncompressedData(new char[length]);
+    auto uncompressedData = std::make_unique<char[]>(length);
 
     if(!file.read(uncompressedData.get(), length))
     {

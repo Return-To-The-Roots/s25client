@@ -41,12 +41,11 @@
 #include <s25clientResources.h>
 #endif
 
-#include <boost/array.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <boost/program_options.hpp>
+#include <array>
 
 #ifdef __APPLE__
 #include <SDL_main.h>
@@ -125,7 +124,7 @@ bool shouldSendDebugData()
     std::wstring title = cvUTF8ToWideString(_("Error"));
     std::wstring text = cvUTF8ToWideString(_(
       "RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"));
-    if(MessageBoxW(NULL, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
+    if(MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
         return true;
 #endif
     return false;
@@ -135,7 +134,7 @@ void showCrashMessage()
 {
     std::string text = _("RttR crashed. Please restart the application!");
 #ifdef _WIN32
-    MessageBoxW(NULL, cvUTF8ToWideString(text).c_str(), cvUTF8ToWideString(_("Error")).c_str(),
+    MessageBoxW(nullptr, cvUTF8ToWideString(text).c_str(), cvUTF8ToWideString(_("Error")).c_str(),
                 MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
 #else
     bnw::cerr << text << std::endl;
@@ -151,7 +150,7 @@ void terminateProgramm()
 #endif
 }
 
-void handleException(void* pCtx = NULL)
+void handleException(void* pCtx = nullptr)
 {
     std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
     try
@@ -160,7 +159,7 @@ void handleException(void* pCtx = NULL)
         LOG.write("RttR crashed. Backtrace:\n", target);
         // Don't let locale mess up addresses
         s25util::ClassicImbuedStream<std::stringstream> ss;
-        BOOST_FOREACH(void* p, stacktrace)
+        for(void* p : stacktrace)
             ss << p << "\n";
         LOG.write(ss.str(), target);
     } catch(...)
@@ -204,9 +203,9 @@ void InstallSignalHandlers()
     sa.sa_flags = 0; // SA_RESTART would not allow to interrupt connect call;
     sigemptyset(&sa.sa_mask);
 
-    sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGPIPE, &sa, NULL);
-    sigaction(SIGALRM, &sa, NULL);
+    sigaction(SIGINT, &sa, nullptr);
+    sigaction(SIGPIPE, &sa, nullptr);
+    sigaction(SIGALRM, &sa, nullptr);
 #endif
 
 #ifdef _MSC_VER
@@ -236,13 +235,13 @@ void UninstallSignalHandlers()
     sa.sa_flags = 0; // SA_RESTART would not allow to interrupt connect call;
     sigemptyset(&sa.sa_mask);
 
-    sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGPIPE, &sa, NULL);
-    sigaction(SIGALRM, &sa, NULL);
+    sigaction(SIGINT, &sa, nullptr);
+    sigaction(SIGPIPE, &sa, nullptr);
+    sigaction(SIGALRM, &sa, nullptr);
 #endif // _WIN32
 
 #ifdef _MSC_VER
-    SetUnhandledExceptionFilter(NULL);
+    SetUnhandledExceptionFilter(nullptr);
 #else
     signal(SIGSEGV, SIG_DFL);
 #endif
@@ -265,8 +264,8 @@ void SetAppSymbol()
 {
 #ifdef _WIN32
     // set console window icon
-    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
-    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
+    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_SYMBOL)));
+    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_SYMBOL)));
 #endif // _WIN32
 }
 
@@ -277,7 +276,7 @@ bool InitDirectories()
     LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
-    boost::array<unsigned, 9> dirs = {{94, 41, 47, 48, 51, 85, 98, 99, 100}}; // settingsdir muss zuerst angelegt werden (94)
+    std::array<unsigned, 9> dirs = {{94, 41, 47, 48, 51, 85, 98, 99, 100}}; // settingsdir muss zuerst angelegt werden (94)
 
     std::string oldSettingsDir;
 
@@ -306,7 +305,7 @@ bool InitDirectories()
         }
     }
 
-    BOOST_FOREACH(unsigned dirIdx, dirs)
+    for(unsigned dirIdx : dirs)
     {
         std::string dir = RTTRCONFIG.ExpandPath(FILE_PATHS[dirIdx]);
         boost::system::error_code ec;
@@ -378,7 +377,7 @@ int RunProgram(po::variables_map& options)
 
     // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere (spielentscheidende) wird unser
     // Generator verwendet)
-    srand(static_cast<unsigned>(std::time(NULL)));
+    srand(static_cast<unsigned>(std::time(nullptr)));
 
     try
     {
@@ -398,7 +397,7 @@ int RunProgram(po::variables_map& options)
 
         // Spiel beenden
         GAMEMANAGER.Stop();
-        libsiedler2::setAllocator(NULL);
+        libsiedler2::setAllocator(nullptr);
     } catch(RTTR_AssertError& error)
     {
         // Write to log file, but don't throw any errors if this fails too

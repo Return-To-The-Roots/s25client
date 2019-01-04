@@ -18,7 +18,7 @@
 #ifndef InventorySetting_h__
 #define InventorySetting_h__
 
-#include <boost/array.hpp>
+#include <array>
 
 /// Setting for each item in a warehouses inventory
 struct EInventorySetting
@@ -84,7 +84,7 @@ unsigned char InventorySetting::MakeBitField(const EInventorySetting setting)
 
 void InventorySetting::MakeValid()
 {
-    static const boost::array<unsigned char, 4> validStates = {
+    static const std::array<unsigned char, 4> validStates = {
       {MakeBitField(EInventorySetting::STOP), MakeBitField(EInventorySetting::SEND), MakeBitField(EInventorySetting::COLLECT),
        static_cast<unsigned char>(MakeBitField(EInventorySetting::STOP) | MakeBitField(EInventorySetting::SEND))}};
     for(unsigned i = 0; i < validStates.size(); i++)

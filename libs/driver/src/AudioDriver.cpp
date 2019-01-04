@@ -19,7 +19,7 @@
 #include "driver/AudioDriver.h"
 #include "driver/SoundHandle.h"
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
+#include <algorithm>
 #include <limits>
 #include <stdexcept>
 
@@ -41,7 +41,7 @@ AudioDriver::~AudioDriver()
 
 void AudioDriver::CleanUp()
 {
-    BOOST_FOREACH(SoundDesc* sound, sounds_)
+    for(SoundDesc* sound : sounds_)
     {
         RTTR_Assert(sound->isValid());
         // Note: Don't call UnloadSound as it would also remove it from sounds invalidating the iterator

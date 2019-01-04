@@ -21,7 +21,7 @@
 #include "libutil/colors.h"
 #include <algorithm>
 
-ctrlBaseImage::ctrlBaseImage(ITexture* img /*= NULL*/) : img_(img), modulationColor_(COLOR_WHITE) {}
+ctrlBaseImage::ctrlBaseImage(ITexture* img /*= nullptr*/) : img_(img), modulationColor_(COLOR_WHITE) {}
 
 void ctrlBaseImage::SwapImage(ctrlBaseImage& other)
 {

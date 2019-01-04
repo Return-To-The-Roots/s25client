@@ -104,7 +104,7 @@ TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(const MapPoint& pt)
 TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt)
 {
     if(!AdjustCoords(realPt))
-        return NULL;
+        return nullptr;
 
     return &GetNode(realPt);
 }
@@ -112,7 +112,7 @@ TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt)
 const TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt) const
 {
     if(!AdjustCoords(realPt))
-        return NULL;
+        return nullptr;
 
     return &GetNode(realPt);
 }
@@ -165,11 +165,11 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 
     const std::vector<MapPoint>* allowedArea = &world.GetPlayer(building.GetPlayer()).GetRestrictedArea();
     if(allowedArea->empty())
-        allowedArea = NULL;
+        allowedArea = nullptr;
 
     // Punkt, auf dem das Militärgebäude steht
     MapPoint bldPos = building.GetPos();
-    AdjustNode(bldPos, building.GetPlayer(), 0, NULL); // no need to check barriers here. this point is on our territory.
+    AdjustNode(bldPos, building.GetPlayer(), 0, nullptr); // no need to check barriers here. this point is on our territory.
 
     std::vector<GetMapPointWithRadius::result_type> pts = world.GetPointsInRadius(bldPos, radius, GetMapPointWithRadius());
     for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)

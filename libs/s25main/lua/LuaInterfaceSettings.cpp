@@ -231,7 +231,7 @@ std::vector<AddonId> LuaInterfaceSettings::GetAllowedAddons()
     if(getAllowedAddons.type() == LUA_TFUNCTION)
     {
         kaguya::LuaRef addons = getAllowedAddons();
-        if(addons.typeTest<std::vector<AddonId> >())
+        if(addons.typeTest<std::vector<AddonId>>())
             return addons;
         else
             LOG.write("Invalid type returned by getAllowedAddons");

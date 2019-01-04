@@ -26,9 +26,8 @@
 #include "world/GameWorld.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Nation.h"
-#include <boost/make_shared.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/test/unit_test.hpp>
+#include <memory>
 #include <vector>
 
 //////////////////////////////////////////////////////////////////////////
@@ -69,38 +68,38 @@
 template<unsigned T_numPlayers>
 struct WorldDefault
 {
-    BOOST_STATIC_CONSTEXPR unsigned width = 40;
-    BOOST_STATIC_CONSTEXPR unsigned height = 32;
+    static constexpr unsigned width = 40;
+    static constexpr unsigned height = 32;
 };
 
 template<>
 struct WorldDefault<0>
 {
-    BOOST_STATIC_CONSTEXPR unsigned width = 10;
-    BOOST_STATIC_CONSTEXPR unsigned height = 8;
+    static constexpr unsigned width = 10;
+    static constexpr unsigned height = 8;
 };
 
 template<>
 struct WorldDefault<1>
 {
     // Note: Less than HQ radius but enough for most tests
-    BOOST_STATIC_CONSTEXPR unsigned width = 12;
-    BOOST_STATIC_CONSTEXPR unsigned height = 10;
+    static constexpr unsigned width = 12;
+    static constexpr unsigned height = 10;
 };
 
 template<>
 struct WorldDefault<2>
 {
     // Based on HQ radius of 9 -> min size 20 per player
-    BOOST_STATIC_CONSTEXPR unsigned width = 40;
-    BOOST_STATIC_CONSTEXPR unsigned height = 20;
+    static constexpr unsigned width = 40;
+    static constexpr unsigned height = 20;
 };
 
 template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault<T_numPlayers>::width,
          unsigned T_height = WorldDefault<T_numPlayers>::height>
 struct WorldFixture
 {
-    boost::shared_ptr<Game> game;
+    std::shared_ptr<Game> game;
     TestEventManager& em;
     GlobalGameSettings& ggs;
     GameWorld& world;

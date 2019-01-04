@@ -21,7 +21,7 @@
 #include "world/GameWorldGame.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/MapCoordinates.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 
 class SerializedGameData;
@@ -33,11 +33,11 @@ public:
     GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
 
     /// Lädt eine Karte
-    bool LoadMap(boost::shared_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath);
+    bool LoadMap(std::shared_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath);
 
     /// Serialisiert den gesamten GameWorld
     void Serialize(SerializedGameData& sgd) const;
-    void Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sgd);
+    void Deserialize(std::shared_ptr<Game> game, SerializedGameData& sgd);
 };
 
 #endif // GameWorld_h__

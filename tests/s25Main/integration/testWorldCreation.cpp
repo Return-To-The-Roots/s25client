@@ -19,7 +19,6 @@
 #include "GamePlayer.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 
 /// HQ radius is 9 -> min size is 20
@@ -33,7 +32,7 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldFixtureEmpty1P)
     BOOST_REQUIRE_EQUAL(world.GetNO(player.GetHQPos())->GetGOT(), GOT_NOB_HQ);
     // Check ownership of points
     std::vector<MapPoint> ownerPts = world.GetPointsInRadius(hqPos, HQ_RADIUS);
-    BOOST_FOREACH(MapPoint pt, ownerPts)
+    for(MapPoint pt : ownerPts)
     {
         // This should be ensured by `GetPointsInRadius`
         BOOST_REQUIRE_LE(world.CalcDistance(pt, hqPos), HQ_RADIUS);

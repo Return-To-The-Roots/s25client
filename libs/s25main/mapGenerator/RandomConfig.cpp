@@ -20,25 +20,15 @@
 #include "lua/GameDataLoader.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
-#include <boost/bind.hpp>
-#include <boost/random/uniform_real_distribution.hpp>
-
-#ifdef _WIN32
-// Fix stupid conversion warning in boost
-#pragma warning(push)
-#pragma warning(disable : 4244)
-#endif
-#include <boost/random/uniform_smallint.hpp>
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
 #include "libsiedler2/enumTypes.h"
+#include <boost/bind.hpp>
 #include <ctime>
+#include <random>
 #include <stdexcept>
 
 bool RandomConfig::Init(MapStyle mapStyle, DescIdx<LandscapeDesc> landscape)
 {
-    uint64_t seed = static_cast<uint64_t>(time(NULL));
+    uint64_t seed = static_cast<uint64_t>(time(nullptr));
     return Init(mapStyle, landscape, seed);
 }
 
@@ -53,7 +43,7 @@ bool RandomConfig::Init(MapStyle mapStyle, DescIdx<LandscapeDesc> landscape, uin
             landscapeTerrains.push_back(t);
     }
     rng_.seed(static_cast<UsedRNG::result_type>(seed));
-    switch(boost::native_value(mapStyle))
+    switch(mapStyle)
     {
         case MapStyle::Greenland: CreateGreenland(); break;
         case MapStyle::Riverland: CreateRiverland(); break;
@@ -90,7 +80,7 @@ void RandomConfig::CreateGreenland()
 void RandomConfig::CreateDefaultTextures(bool snowOrLava)
 {
     // Water
-    std::vector<DescIdx<TerrainDesc> > terrains =
+    std::vector<DescIdx<TerrainDesc>> terrains =
       FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER && boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
     if(!terrains.empty())
     {
@@ -298,13 +288,13 @@ int RandomConfig::Rand(const int max)
 int RandomConfig::Rand(const int min, const int max)
 {
     RTTR_Assert(max > min);
-    boost::random::uniform_smallint<> distr(min, max - 1);
+    std::uniform_int_distribution<> distr(min, max - 1);
     return distr(rng_);
 }
 
 double RandomConfig::DRand(const double min, const double max)
 {
-    boost::random::uniform_real_distribution<double> distr(min, max);
+    std::uniform_real_distribution<double> distr(min, max);
     return distr(rng_);
 }
 

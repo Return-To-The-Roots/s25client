@@ -120,7 +120,7 @@ public:
     /// zu kommen, diese Funktion sucht nach solchen Soldaten schickt einen ggf. zur Flagge, um anzugreifen
     void CheckArrestedAttackers();
     /// Der Verteidiger ist entweder tot oder wieder reingegegangen
-    void NoDefender() { defender_ = NULL; }
+    void NoDefender() { defender_ = nullptr; }
     /// Bricht einen aktuell von diesem Haus gestarteten Angriff/aggressive Verteidigung ab, d.h. setzt die Soldaten
     /// aus der Warteschleife wieder in das Haus --> wenn Angreifer an der Fahne ist und Verteidiger rauskommen soll
     void CancelJobs();
@@ -145,7 +145,7 @@ public:
     };
 
 protected:
-    /// The building shall provide a soldier for defense. Return NULL if none available
+    /// The building shall provide a soldier for defense. Return nullptr if none available
     virtual nofDefender* ProvideDefender(nofAttacker* const attacker) = 0;
     /// Add a figure that will leave the house
     void AddLeavingFigure(noFigure* fig);

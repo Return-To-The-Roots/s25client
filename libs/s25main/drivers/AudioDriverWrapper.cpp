@@ -28,9 +28,9 @@
 #include <ostream>
 #include <vector>
 
-typedef boost::interprocess::basic_ovectorstream<std::vector<char> > ovectorstream;
+typedef boost::interprocess::basic_ovectorstream<std::vector<char>> ovectorstream;
 
-AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(NULL), loadedFromDll(false) {}
+AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(nullptr), loadedFromDll(false) {}
 
 AudioDriverWrapper::~AudioDriverWrapper()
 {
@@ -81,14 +81,14 @@ void AudioDriverWrapper::SetMusicVolume(uint8_t volume)
 
 std::string AudioDriverWrapper::GetName() const
 {
-    const char* name = (audiodriver_) ? audiodriver_->GetName() : NULL;
+    const char* name = (audiodriver_) ? audiodriver_->GetName() : nullptr;
     return (name) ? name : "";
 }
 
 /// Lädt den Treiber
 bool AudioDriverWrapper::LoadDriver(IAudioDriver* audioDriver)
 {
-    loadedFromDll = audioDriver == NULL;
+    loadedFromDll = audioDriver == nullptr;
     if(audioDriver)
         audiodriver_ = audioDriver;
     else
@@ -131,13 +131,13 @@ void AudioDriverWrapper::UnloadDriver()
         driver_wrapper.Unload();
     } else
         delete audiodriver_;
-    audiodriver_ = NULL;
+    audiodriver_ = nullptr;
 }
 
 /**
  *  Lädt einen Sound.
  *
- *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
+ *  @return Sounddeskriptor bei Erfolg, @p nullptr bei Fehler
  */
 SoundHandle AudioDriverWrapper::LoadMusic(const std::string& filepath)
 {

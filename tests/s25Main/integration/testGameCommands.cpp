@@ -34,7 +34,6 @@
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -511,8 +510,8 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
     nobBaseWarehouse* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     const std::list<noFigure*>& leavings = hq->GetLeavingFigures();
-    nofPassiveSoldier* soldier = NULL;
-    BOOST_FOREACH(noFigure* fig, leavings)
+    nofPassiveSoldier* soldier = nullptr;
+    for(noFigure* fig : leavings)
     {
         soldier = dynamic_cast<nofPassiveSoldier*>(fig);
         if(soldier)
@@ -960,8 +959,8 @@ BOOST_FIXTURE_TEST_CASE(SurrenderTest, WorldWithGCExecution2P)
     this->Surrender();
     BOOST_REQUIRE(player1.GetHQPos().isValid());
     BOOST_REQUIRE(player2.GetHQPos().isValid());
-    BOOST_REQUIRE_NE(world.GetNode(hqPt1).obj, (const noBase*)NULL);
-    BOOST_REQUIRE_NE(world.GetNode(hqPt2).obj, (const noBase*)NULL);
+    BOOST_REQUIRE_NE(world.GetNode(hqPt1).obj, (const noBase*)nullptr);
+    BOOST_REQUIRE_NE(world.GetNode(hqPt2).obj, (const noBase*)nullptr);
     BOOST_REQUIRE(player1.IsDefeated());
     BOOST_REQUIRE(!player2.IsDefeated());
 }

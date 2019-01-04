@@ -117,10 +117,10 @@ public:
     /// liefert das übergeordnete Fenster
     Window* GetParent() const { return parent_; }
     unsigned GetID() const { return id_; }
-    /// Get control with given ID of given type or NULL if not found or other type
+    /// Get control with given ID of given type or nullptr if not found or other type
     template<typename T>
     T* GetCtrl(unsigned id);
-    /// Get control with given ID of given type or NULL if not found or other type
+    /// Get control with given ID of given type or nullptr if not found or other type
     template<typename T>
     const T* GetCtrl(unsigned id) const;
 
@@ -314,7 +314,7 @@ inline T* Window::GetCtrl(unsigned id)
 {
     ControlMap::iterator it = childIdToWnd_.find(id);
     if(it == childIdToWnd_.end())
-        return NULL;
+        return nullptr;
 
     return dynamic_cast<T*>(it->second);
 }
@@ -324,7 +324,7 @@ inline const T* Window::GetCtrl(unsigned id) const
 {
     ControlMap::const_iterator it = childIdToWnd_.find(id);
     if(it == childIdToWnd_.end())
-        return NULL;
+        return nullptr;
 
     return dynamic_cast<T*>(it->second);
 }

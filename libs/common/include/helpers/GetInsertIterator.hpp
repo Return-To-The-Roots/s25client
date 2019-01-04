@@ -18,23 +18,23 @@
 #ifndef GetInsertIterator_h__
 #define GetInsertIterator_h__
 
-#include "helpers/traits.h"
+#include <boost/type_traits/make_void.hpp>
 
 namespace helpers {
 
 /// Returns the most efficient insert operator defining its type as "iterator"
-template<class T, bool T_hasPushBack = has_member_function_push_back<void (T::*)(const typename T::value_type&)>::value>
+template<class T, typename = void>
 struct GetInsertIterator
-{
-    typedef std::back_insert_iterator<T> iterator;
-    static iterator get(T& collection) { return iterator(collection); }
-};
-
-template<class T>
-struct GetInsertIterator<T, false>
 {
     typedef std::insert_iterator<T> iterator;
     static iterator get(T& collection) { return iterator(collection, collection.end()); }
+};
+
+template<class T>
+struct GetInsertIterator<T, boost::void_t<decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))>>
+{
+    typedef std::back_insert_iterator<T> iterator;
+    static iterator get(T& collection) { return iterator(collection); }
 };
 
 } // namespace helpers

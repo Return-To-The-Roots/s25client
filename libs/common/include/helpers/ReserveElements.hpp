@@ -18,21 +18,21 @@
 #ifndef ReserveElements_h__
 #define ReserveElements_h__
 
-#include "helpers/traits.h"
+#include <boost/type_traits/make_void.hpp>
 
 namespace helpers {
 
 /// Reserves space in a collection if possible
-template<class T, bool T_hasReserve = has_member_function_reserve<void (T::*)(size_t)>::value>
+template<class T, typename = void>
 struct ReserveElements
 {
-    static void reserve(T& collection, unsigned size) { collection.reserve(size); }
+    static void reserve(T& /*collection*/, unsigned /*size*/) {}
 };
 
 template<class T>
-struct ReserveElements<T, false>
+struct ReserveElements<T, boost::void_t<decltype(std::declval<T>().reserve(0u))>>
 {
-    static void reserve(T& /*collection*/, unsigned /*size*/) {}
+    static void reserve(T& collection, unsigned size) { collection.reserve(size); }
 };
 
 } // namespace helpers

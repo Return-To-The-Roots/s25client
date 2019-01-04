@@ -153,7 +153,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     start.targetDistance = gwb_.CalcDistance(start.GetPos(), goal.GetPos());
     start.estimate = start.targetDistance;
     start.last_visit = currentVisit;
-    start.prev = NULL;
+    start.prev = nullptr;
     start.cost = 0;
     start.dir_ = 0;
 
@@ -317,8 +317,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, c
         if(forbidden)
             return FindPathImpl(
               start, goal, max, AdditonalCosts::None(),
-              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT> >(
-                forbidden),
+              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>>(forbidden),
               length, firstDir, firstNodePos);
         else
             return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>(), length,
@@ -340,7 +339,7 @@ bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal,
         if(forbidden)
             return FindPathImpl(
               start, goal, max, AdditonalCosts::None(),
-              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT> >(
+              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>>(
                 forbidden));
         else
             return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>());

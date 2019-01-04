@@ -24,7 +24,7 @@
 #include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
 #include "gameData/MaxPlayers.h"
-#include <boost/array.hpp>
+#include <array>
 #include <list>
 #include <vector>
 
@@ -37,7 +37,7 @@ struct WorldDescription;
 struct MapNode
 {
     /// Roads from this point: E, SE, SW
-    boost::array<unsigned char, 3> roads;
+    std::array<unsigned char, 3> roads;
     /// Height
     unsigned char altitude;
     /// Schattierung
@@ -54,7 +54,7 @@ struct MapNode
     BoundaryStones boundary_stones;
     BuildingQuality bq;
     /// How the players see the point in FoW
-    boost::array<FoWNode, MAX_PLAYERS> fow;
+    std::array<FoWNode, MAX_PLAYERS> fow;
 
     /// To which sea this belongs to (0=None)
     unsigned short seaId;
@@ -69,7 +69,7 @@ struct MapNode
     MapNode();
     void Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const;
     void Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
-                     const std::vector<DescIdx<TerrainDesc> >& landscapeTerrains);
+                     const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains);
 };
 
 #endif // MapNode_h__

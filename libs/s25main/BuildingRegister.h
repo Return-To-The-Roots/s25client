@@ -63,7 +63,7 @@ public:
 
 private:
     std::list<noBuildingSite*> building_sites;
-    boost::array<std::list<nobUsual*>, 30> buildings;
+    std::array<std::list<nobUsual*>, 30> buildings;
     std::list<nobMilitary*> military_buildings;
     std::list<nobHarborBuilding*> harbors;
     std::list<nobBaseWarehouse*> warehouses;

@@ -200,7 +200,7 @@ bool GameWorldViewer::IsOnRoad(const MapPoint& pt) const
 /// Return a ship at this position owned by the given player. Prefers ships that need instructions.
 noShip* GameWorldViewer::GetShip(const MapPoint pt) const
 {
-    noShip* resultShip = NULL;
+    noShip* resultShip = nullptr;
 
     for(unsigned i = 0; i < 7; ++i)
     {

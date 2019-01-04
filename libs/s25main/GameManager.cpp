@@ -197,7 +197,7 @@ bool GameManager::ShowMenu()
 
 void GameManager::ResetAverageGFPS()
 {
-    gfCounter_ = FrameCounter(boost::chrono::hours::max()); // Never update
+    gfCounter_ = FrameCounter(std::chrono::hours::max()); // Never update
 }
 
 /**

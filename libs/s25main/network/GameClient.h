@@ -29,8 +29,7 @@
 #include "gameTypes/TeamTypes.h"
 #include "gameTypes/VisualSettings.h"
 #include "libutil/Singleton.h"
-#include "libutil/unique_ptr.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <queue>
 #include <vector>
 
@@ -56,7 +55,7 @@ struct ReplayInfo;
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
 {
 public:
-    BOOST_STATIC_CONSTEXPR unsigned Longevity = 5;
+    static constexpr unsigned Longevity = 5;
 
     enum ClientState
     {
@@ -76,7 +75,7 @@ public:
     void RemoveInterface(ClientInterface* ci)
     {
         if(this->ci == ci)
-            this->ci = NULL;
+            this->ci = nullptr;
     }
     bool IsHost() const { return clientconfig.isHost; }
     /// Manually set the host status. Normally done in connect call
@@ -110,8 +109,8 @@ public:
 
     ClientState GetState() const { return state; }
     Replay* GetReplay();
-    boost::shared_ptr<const NWFInfo> GetNWFInfo() const;
-    boost::shared_ptr<GameLobby> GetGameLobby();
+    std::shared_ptr<const NWFInfo> GetNWFInfo() const;
+    std::shared_ptr<GameLobby> GetGameLobby();
     const AIPlayer* GetAIPlayer(unsigned id) const;
 
     unsigned GetGFNumber() const;
@@ -270,11 +269,11 @@ private:
     ClientState state;
 
     /// Game state itself (valid during LOADING and GAME state)
-    boost::shared_ptr<Game> game;
+    std::shared_ptr<Game> game;
     /// NWF info
-    boost::shared_ptr<NWFInfo> nwfInfo;
+    std::shared_ptr<NWFInfo> nwfInfo;
     /// Game lobby (valid during CONFIG state)
-    boost::shared_ptr<GameLobby> gameLobby;
+    std::shared_ptr<GameLobby> gameLobby;
 
     class ClientConfig
     {
@@ -299,7 +298,7 @@ private:
     /// GameCommands, die vom Client noch an den Server gesendet werden müssen
     std::vector<gc::GameCommandPtr> gameCommands_;
 
-    libutil::unique_ptr<ReplayInfo> replayinfo;
+    std::unique_ptr<ReplayInfo> replayinfo;
     bool replayMode;
 };
 

@@ -139,7 +139,7 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::Archiv& archiveInfo)
     return 0;
 }
 
-int CustomBorderBuilder::buildBorder(const Extent& size, boost::array<glArchivItem_Bitmap*, 4>& borderInfo)
+int CustomBorderBuilder::buildBorder(const Extent& size, std::array<glArchivItem_Bitmap*, 4>& borderInfo)
 {
     // simples Fehlerabfangen
     if(size.x < 640 || size.y < 480)
@@ -148,7 +148,7 @@ int CustomBorderBuilder::buildBorder(const Extent& size, boost::array<glArchivIt
         return 2; // Die Stücken sind noch nicht geladen worden, so gehts nicht!
 
     // temporäre BdrBitmap's deklarieren
-    boost::array<BdrBitmap, 4> customEdges;
+    std::array<BdrBitmap, 4> customEdges;
     customEdges[0] = BdrBitmap(Extent(size.x, 12));      // oben
     customEdges[1] = BdrBitmap(customEdges[0].size);     // unten
     customEdges[2] = BdrBitmap(Extent(12, size.y - 24)); // links
@@ -174,8 +174,8 @@ int CustomBorderBuilder::buildBorder(const Extent& size, boost::array<glArchivIt
         // Freie Flächen mit Kanten ausfüllen
         // Kanten
         unsigned toFillPixel;
-        boost::array<unsigned char, 3> countEdge = {{0, 0, 0}};
-        boost::array<unsigned short, 3> lengthEdge;
+        std::array<unsigned char, 3> countEdge = {{0, 0, 0}};
+        std::array<unsigned short, 3> lengthEdge;
         // obere Kante
         ImgPos emptyFromPixel(584, 0);
         toFillPixel = size.x - 640;
@@ -237,8 +237,8 @@ void CustomBorderBuilder::BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bi
         bitmapRLE.setPixel(pt.x, pt.y, bdrBitmap.get(pt));
 }
 
-void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, boost::array<unsigned short, 3>& lengths,
-                                               boost::array<unsigned char, 3>& shouldCounts)
+void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths,
+                                               std::array<unsigned char, 3>& shouldCounts)
 {
     // Die should-Variablen speichern die bisher als am besten befundene Kombination; die would-Variablen die gerade zu prüfende
     shouldCounts[0] = 0;
@@ -284,10 +284,9 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, boost::array<uns
 template<size_t T_numEdges, size_t T_numFillers>
 void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigned toFill,
                                                 const bool direction, // false = waagerecht, true = senkrecht
-                                                const boost::array<unsigned short, 3>& edgeLengths,
-                                                boost::array<unsigned char, 3>& edgeCounts,
-                                                const boost::array<BdrBitmap, T_numEdges>& edges,
-                                                const boost::array<BdrBitmap, T_numFillers>& fillers, BdrBitmap& outBorder)
+                                                const std::array<unsigned short, 3>& edgeLengths, std::array<unsigned char, 3>& edgeCounts,
+                                                const std::array<BdrBitmap, T_numEdges>& edges,
+                                                const std::array<BdrBitmap, T_numFillers>& fillers, BdrBitmap& outBorder)
 // Schreibt die übergebene Verteilung ins Bild und füllt die restliche Fläche auf.
 {
     unsigned emptyFromPixel = direction ? pos.y : pos.x;
@@ -317,7 +316,7 @@ void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigne
     }
 
     // Fülle den Rest auf
-    boost::array<unsigned char, T_numFillers> numFillersToUse;
+    std::array<unsigned char, T_numFillers> numFillersToUse;
     std::fill(numFillersToUse.begin(), numFillersToUse.end(), 0);
     // Finde, wie oft jedes Füllerstück gebraucht wird. Einfach von groß nach klein einfügen, wenn der Platz jeweils noch reicht.
     unsigned char curFiller = T_numFillers - 1;

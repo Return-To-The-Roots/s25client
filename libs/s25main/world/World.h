@@ -30,8 +30,8 @@
 #include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
 #include "gameData/WorldDescription.h"
-#include "libutil/unique_ptr.h"
 #include <list>
+#include <memory>
 #include <vector>
 
 struct LandscapeDesc;
@@ -69,7 +69,7 @@ class World : public MapBase
 
     WorldDescription description_;
 
-    libutil::unique_ptr<noBase> noNodeObj;
+    std::unique_ptr<noBase> noNodeObj;
     void Resize(const MapExtent& newSize) override;
 
 public:
@@ -130,13 +130,13 @@ public:
     /// Return the figures currently on the node
     const std::list<noBase*>& GetFigures(const MapPoint pt) const { return GetNode(pt).figures; }
 
-    /// Return a specific object or NULL
+    /// Return a specific object or nullptr
     template<typename T>
     T* GetSpecObj(const MapPoint pt)
     {
         return dynamic_cast<T*>(GetNode(pt).obj);
     }
-    /// Return a specific object or NULL
+    /// Return a specific object or nullptr
     template<typename T>
     const T* GetSpecObj(const MapPoint pt) const
     {

@@ -33,7 +33,7 @@ protected:
     void setLua(LuaInterfaceGameBase* lua) { luaBase_ = lua; }
 
 public:
-    LuaBaseFixture() : luaBase_(NULL) {}
+    LuaBaseFixture() : luaBase_(nullptr) {}
 
     void executeLua(const std::string& luaCode) { luaBase_->LoadScriptString(luaCode, true); }
     void executeLua(const boost::format& luaCode) { executeLua(luaCode.str()); }

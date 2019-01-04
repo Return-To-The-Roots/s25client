@@ -20,7 +20,7 @@
 
 #include "gameTypes/CompressedData.h"
 #include "gameTypes/MapType.h"
-#include "libutil/unique_ptr.h"
+#include <memory>
 #include <string>
 
 class Savegame;
@@ -47,7 +47,7 @@ public:
     /// Checksum of map data
     unsigned mapChecksum, luaChecksum;
     /// Savegame (set if type == MAP_SAVEGAME)
-    libutil::unique_ptr<Savegame> savegame;
+    std::unique_ptr<Savegame> savegame;
 };
 
 #endif // MapInfo_h__

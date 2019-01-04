@@ -30,8 +30,8 @@ struct CompressedData
         length = 0;
         data.clear();
     }
-    bool DecompressToFile(const std::string& filePath, unsigned* checksum = NULL);
-    bool CompressFromFile(const std::string& filePath, unsigned* checksum = NULL);
+    bool DecompressToFile(const std::string& filePath, unsigned* checksum = nullptr);
+    bool CompressFromFile(const std::string& filePath, unsigned* checksum = nullptr);
 
     /// Uncompressed length
     unsigned length;

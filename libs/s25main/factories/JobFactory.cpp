@@ -92,7 +92,7 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
         case JOB_HELPER:
             // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
             if(!goal)
-                return new nofWellguy(pt, player, static_cast<nobUsual*>(NULL));
+                return new nofWellguy(pt, player, static_cast<nobUsual*>(nullptr));
             else if(goal->GetGOT() == GOT_NOB_STOREHOUSE || goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_HQ)
                 return new nofWellguy(pt, player, static_cast<nobBaseWarehouse*>(goal));
             else if(goal->GetGOT() == GOT_NOB_USUAL)
@@ -109,7 +109,7 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
             // Im Spähturm arbeitet ein anderer Späher-Typ
             // Wenn goal = 0 oder Lagerhaus, dann Auslagern anscheinend und mann kann irgendeinen Typ nehmen
             if(!goal)
-                return new nofScout_LookoutTower(pt, player, static_cast<nobUsual*>(NULL));
+                return new nofScout_LookoutTower(pt, player, static_cast<nobUsual*>(nullptr));
             else if(goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_STOREHOUSE || goal->GetGOT() == GOT_NOB_HQ)
                 return new nofPassiveWorker(JOB_SCOUT, pt, player, goal);
             else if(goal->GetGOT() == GOT_NOB_USUAL) // Spähturm / Lagerhaus?
@@ -134,9 +134,9 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
         case JOB_SERGEANT:
         case JOB_OFFICER:
         case JOB_GENERAL:
-            // TODO: Is this ever called? If yes, then why is the home here set to NULL?
+            // TODO: Is this ever called? If yes, then why is the home here set to nullptr?
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(goal));
-            return new nofPassiveSoldier(pt, player, static_cast<nobBaseMilitary*>(goal), NULL, job_id - JOB_PRIVATE);
+            return new nofPassiveSoldier(pt, player, static_cast<nobBaseMilitary*>(goal), nullptr, job_id - JOB_PRIVATE);
         case JOB_PACKDONKEY: return new nofCarrier(nofCarrier::CT_DONKEY, pt, player, 0, goal);
         case JOB_SHIPWRIGHT: RTTR_Assert(dynamic_cast<nobUsual*>(goal)); return new nofShipWright(pt, player, static_cast<nobUsual*>(goal));
         case JOB_CHARBURNER: RTTR_Assert(dynamic_cast<nobUsual*>(goal)); return new nofCharburner(pt, player, static_cast<nobUsual*>(goal));

@@ -52,7 +52,7 @@ ETexType strToTexType(const std::string& name)
 
 TerrainBQ getDefaultBQ(TerrainKind kind)
 {
-    switch(boost::native_value(kind))
+    switch(kind)
     {
         case TerrainKind::LAND: return TerrainBQ::CASTLE;
         case TerrainKind::WATER: return TerrainBQ::NOTHING;
@@ -60,12 +60,12 @@ TerrainBQ getDefaultBQ(TerrainKind kind)
         case TerrainKind::SNOW: return TerrainBQ::DANGER;
         case TerrainKind::MOUNTAIN: return TerrainBQ::MINE;
     }
-    throw GameDataError("Invalid terrain kind: " + helpers::toString(boost::underlying_cast<unsigned>(kind)));
+    throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
 }
 
 ETerrain getDefaultFlags(TerrainKind kind)
 {
-    switch(boost::native_value(kind))
+    switch(kind)
     {
         case TerrainKind::LAND: return ETerrain::Buildable;
         case TerrainKind::WATER: return ETerrain::Shippable;
@@ -73,12 +73,12 @@ ETerrain getDefaultFlags(TerrainKind kind)
         case TerrainKind::SNOW: return ETerrain::Unreachable;
         case TerrainKind::MOUNTAIN: return ETerrain::Mineable;
     }
-    throw GameDataError("Invalid terrain kind: " + helpers::toString(boost::underlying_cast<unsigned>(kind)));
+    throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
 }
 
 uint8_t getDefaultHumidity(TerrainKind kind)
 {
-    switch(boost::native_value(kind))
+    switch(kind)
     {
         case TerrainKind::LAND:
         case TerrainKind::WATER: return 100;
@@ -86,7 +86,7 @@ uint8_t getDefaultHumidity(TerrainKind kind)
         case TerrainKind::SNOW:
         case TerrainKind::MOUNTAIN: return 0;
     }
-    throw GameDataError("Invalid terrain kind: " + helpers::toString(boost::underlying_cast<unsigned>(kind)));
+    throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
 }
 
 TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
@@ -165,7 +165,7 @@ TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
     const PointF middlePt = oglRect.getOrigin() + oglRect.getSize() / 2.f;
     const PointF middleBottom(middlePt.x, oglRect.bottom);
     Triangle result;
-    switch(boost::native_value(texType))
+    switch(texType)
     {
         case ETexType::Overlapped:
         default:
@@ -194,7 +194,7 @@ TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
     const PointF middlePt = oglRect.getOrigin() + oglRect.getSize() / 2.f;
     const PointF middleTop(middlePt.x, oglRect.top);
     Triangle result;
-    switch(boost::native_value(texType))
+    switch(texType)
     {
         case ETexType::Overlapped:
         default:

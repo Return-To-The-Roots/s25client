@@ -75,7 +75,7 @@ typedef int socklen_t;
 
 #include "RTTR_Assert.h"
 
-// Include to use e.g. boost macros like BOOST_CONSTEXPR
+// Include to use e.g. boost macros like constexpr
 #include <boost/config.hpp>
 // Fixed width types like uint32_t shall be treated like build-in types
 #include <stdint.h>
@@ -103,7 +103,7 @@ typedef int socklen_t;
 /// Call a member function trough an object and a member function pointer
 #define CALL_MEMBER_FN(object, ptrToMember) ((object).*(ptrToMember))
 
-/// Deletes the ptr and sets it to NULL
+/// Deletes the ptr and sets it to nullptr
 template<typename T>
 inline void deletePtr(T*& ptr)
 {
@@ -138,8 +138,5 @@ namespace nowide {
 namespace bfs = boost::filesystem;
 /// Shortcut for boost::nowide
 namespace bnw = boost::nowide;
-
-// Suppress uninitialized v_
-//-V:BOOST_SCOPED_ENUM_DECLARE_BEGIN:730,801
 
 #endif // commonDefines_h__

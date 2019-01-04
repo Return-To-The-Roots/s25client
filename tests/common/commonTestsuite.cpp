@@ -17,6 +17,3 @@
 
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/test/unit_test.hpp>
-
-// Test helpers. Header only
-#include "helpers/helperTests.hpp" // IWYU pragma: keep

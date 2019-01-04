@@ -27,7 +27,7 @@
 
 std::ostream& operator<<(std::ostream& os, const TerrainKind& t)
 {
-    return os << unsigned(boost::underlying_cast<uint8_t>(t));
+    return os << unsigned(static_cast<uint8_t>(t));
 }
 
 namespace {

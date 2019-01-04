@@ -18,11 +18,13 @@
 #ifndef ServerType_h__
 #define ServerType_h__
 
-#include <boost/core/scoped_enum.hpp>
-
 // Servertypen
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(ServerType) //-V730
-{LOBBY = 0, DIRECT, LOCAL, LAN} BOOST_SCOPED_ENUM_DECLARE_END(ServerType)
-//-V:ServerType:801
+enum class ServerType
+{
+    LOBBY = 0,
+    DIRECT,
+    LOCAL,
+    LAN
+};
 
 #endif // ServerType_h__

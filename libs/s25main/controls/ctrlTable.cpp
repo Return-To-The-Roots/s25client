@@ -197,7 +197,7 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  *
  *  @param[in] column    Die Spalte nach der sortiert werden soll.
  *  @param[in] direction Die Richtung in die sortiert werden soll
- *                         @p NULL  - Wechsel,
+ *                         @p nullptr  - Wechsel,
  *                         @p true  - A-Z,
  *                         @p false - Z-A
  */

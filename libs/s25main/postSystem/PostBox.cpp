@@ -22,7 +22,7 @@
 
 PostBox::PostBox() : numMessages(0)
 {
-    std::fill(messages.begin(), messages.end(), (PostMsg*)NULL);
+    std::fill(messages.begin(), messages.end(), (PostMsg*)nullptr);
 }
 
 PostBox::~PostBox()
@@ -81,7 +81,7 @@ void PostBox::Clear()
 const PostMsg* PostBox::GetMsg(unsigned idx) const
 {
     if(idx >= numMessages)
-        return NULL;
+        return nullptr;
     return messages[idx];
 }
 

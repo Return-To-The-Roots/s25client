@@ -38,8 +38,8 @@
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
 #include "libutil/colors.h"
-#include <boost/array.hpp>
 #include <boost/assign/std/vector.hpp>
+#include <array>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstanten
@@ -57,7 +57,7 @@ const unsigned NEXT_ANIMATION_RANDOM = 200; // was noch dazu zufälliges addiert
 const unsigned FRAME_GF = 3;
 
 /// Animation indices, 1st Dim: small or big, 2nd Dim: Animation, 3rd Dim: Index in map.lst of the frame
-typedef boost::array<std::vector<std::vector<unsigned short> >, 2> AnimationsType;
+typedef std::array<std::vector<std::vector<unsigned short>>, 2> AnimationsType;
 
 AnimationsType fillAnimations()
 {
@@ -108,11 +108,11 @@ AnimationsType fillAnimations()
 }
 static const AnimationsType ANIMATIONS = fillAnimations();
 
-const boost::array<Job, 3> JOB_TYPES = {{JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER}};
+const std::array<Job, 3> JOB_TYPES = {{JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER}};
 
 nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char player, RoadSegment* workplace, noRoadNode* const goal)
     : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct), state(CARRS_FIGUREWORK),
-      fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0)), workplace(workplace), carried_ware(NULL), productivity_ev(0),
+      fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0)), workplace(workplace), carried_ware(nullptr), productivity_ev(0),
       productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0)
 {}
 
@@ -470,7 +470,7 @@ void nofCarrier::Walked()
                 // Wenn wir fast da sind, gucken, ob an der Flagge noch ein freier Platz ist
                 noFlag* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
-                if(this_flag->IsSpaceForWare() || WantInBuilding(NULL) || cur_rs->AreWareJobs(!rs_dir, ct, true))
+                if(this_flag->IsSpaceForWare() || WantInBuilding(nullptr) || cur_rs->AreWareJobs(!rs_dir, ct, true))
                 {
                     // Es ist Platz, dann zur Flagge laufen
                     StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
@@ -607,7 +607,7 @@ void nofCarrier::AbrogateWorkplace()
         }
 
         workplace->CarrierAbrogated(this);
-        workplace = NULL;
+        workplace = nullptr;
         LooseWare();
 
         state = CARRS_FIGUREWORK;
@@ -636,7 +636,7 @@ struct IsCoastalAndForFigs
 
 void nofCarrier::LostWork()
 {
-    workplace = NULL;
+    workplace = nullptr;
     GetEvMgr().RemoveEvent(productivity_ev);
 
     if(state == CARRS_FIGUREWORK)
@@ -665,11 +665,11 @@ void nofCarrier::LostWork()
             {
                 // 10x the node distance should be enough, otherwise it would be to far to paddle
                 const unsigned maxDistance = maxNodeDistance * 10;
-                if(gwg->FindShipPath(tmpPos, *it, maxDistance, &shore_path, NULL))
+                if(gwg->FindShipPath(tmpPos, *it, maxDistance, &shore_path, nullptr))
                 {
                     // Ok let's paddle to the coast
                     rs_pos = 0;
-                    cur_rs = NULL;
+                    cur_rs = nullptr;
                     if(state == CARRS_WAITFORWARE || state == CARRS_WAITFORWARESPACE)
                         WanderOnWater();
                     state = CARRS_BOATCARRIER_WANDERONWATER;
@@ -738,9 +738,9 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
         // Mich als Träger für meinen neuen Arbeitsplatz zuweisen
         workplace->setCarrier(carrierNr, this);
         // Für andere Straße neuen Träger/Esel rufen
-        otherRoad->setCarrier(carrierNr, NULL);
+        otherRoad->setCarrier(carrierNr, nullptr);
     } else
-        RTTR_Assert(otherRoad->getCarrier(carrierNr) == NULL); // No carrier expected
+        RTTR_Assert(otherRoad->getCarrier(carrierNr) == nullptr); // No carrier expected
 
     if(ct == CT_NORMAL)
         gwg->GetPlayer(player).FindCarrierForRoad(otherRoad);
@@ -932,11 +932,11 @@ void nofCarrier::CorrectSplitData_Derived()
 
 noRoadNode* nofCarrier::GetFirstFlag() const
 {
-    return workplace ? workplace->GetF1() : NULL;
+    return workplace ? workplace->GetF1() : nullptr;
 }
 noRoadNode* nofCarrier::GetSecondFlag() const
 {
-    return workplace ? workplace->GetF2() : NULL;
+    return workplace ? workplace->GetF2() : nullptr;
 }
 
 /// Boat carrier paddles to the coast after his road was destroyed

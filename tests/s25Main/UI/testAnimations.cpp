@@ -52,7 +52,7 @@ struct WindowFixture
     bool animFinished;
     double lastNextFramepartTime;
     unsigned lastFrame;
-    WindowFixture() : wnd(DrawPoint(0, 0), 0, NULL, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
+    WindowFixture() : wnd(DrawPoint(0, 0), 0, nullptr, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
     {
         bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TC_RED1, "Test", NormalFont);
         bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TC_RED1, "Test", NormalFont);
@@ -116,11 +116,11 @@ BOOST_FIXTURE_TEST_SUITE(Animations, WindowFixture)
 BOOST_AUTO_TEST_CASE(AddRemoveAnimations)
 {
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
-    // NULL animation ignored
-    BOOST_REQUIRE_EQUAL(animMgr.addAnimation(NULL), 0u);
+    // nullptr animation ignored
+    BOOST_REQUIRE_EQUAL(animMgr.addAnimation(nullptr), 0u);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
-    boost::array<Animation*, 3> anims;
-    boost::array<unsigned, 3> animIds;
+    std::array<Animation*, 3> anims;
+    std::array<unsigned, 3> animIds;
     for(unsigned i = 0; i < anims.size(); i++)
     {
         anims[i] = new TestAnimation(*this, bt, 10u, 100u, Animation::RPT_None);
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(AddRemoveAnimations)
     animMgr.removeAnimation(animIds[1]);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 2u);
     BOOST_REQUIRE(!animMgr.isAnimationActive(animIds[1]));
-    BOOST_REQUIRE_EQUAL(animMgr.getAnimation(animIds[1]), (Animation*)NULL);
+    BOOST_REQUIRE_EQUAL(animMgr.getAnimation(animIds[1]), (Animation*)nullptr);
 
     // Add animation for another element so we can test that it isn't returned for getElementAnimations
     // and not removed for removeElementAnimations
@@ -236,9 +236,9 @@ BOOST_AUTO_TEST_CASE(InvalidAnimIdHandling)
     // Test all calls with the 0 id (always invalid) and a non-existing one
     BOOST_REQUIRE(!animMgr.isAnimationActive(0));
     BOOST_REQUIRE(!animMgr.isAnimationActive(1337));
-    BOOST_REQUIRE(animMgr.getAnimation(0) == NULL);
-    BOOST_REQUIRE(animMgr.getAnimation(1337) == NULL);
-    BOOST_REQUIRE_EQUAL(animMgr.getAnimationId(NULL), 0u);
+    BOOST_REQUIRE(animMgr.getAnimation(0) == nullptr);
+    BOOST_REQUIRE(animMgr.getAnimation(1337) == nullptr);
+    BOOST_REQUIRE_EQUAL(animMgr.getAnimationId(nullptr), 0u);
     animMgr.removeAnimation(0);
     animMgr.removeAnimation(1337);
     animMgr.finishAnimation(0, true);
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(InvalidAnimIdHandling)
 BOOST_AUTO_TEST_CASE(FinishAnims)
 {
     unsigned time = 10;
-    boost::array<Animation::RepeatType, 4> rpts = {
+    std::array<Animation::RepeatType, 4> rpts = {
       {Animation::RPT_None, Animation::RPT_Repeat, Animation::RPT_Oscillate, Animation::RPT_OscillateOnce}};
 
     for(unsigned i = 0; i < rpts.size(); i++)
@@ -640,7 +640,7 @@ BOOST_AUTO_TEST_CASE(MoveAni)
 BOOST_AUTO_TEST_CASE(MoveAniScale)
 {
     MockupVideoDriver* video = uiHelper::GetVideoDriver();
-    Desktop* dsk = new Desktop(NULL);
+    Desktop* dsk = new Desktop(nullptr);
     WINDOWMANAGER.Switch(dsk);
     WINDOWMANAGER.Draw();
     bt = dsk->AddTextButton(0, DrawPoint(10, 20), Extent(100, 150), TC_RED1, "", NormalFont);

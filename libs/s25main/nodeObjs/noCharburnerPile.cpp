@@ -43,7 +43,7 @@ const unsigned short REMOVECOVER_WORK_STEPS = 1;
 const unsigned short HARVEST_WORK_STEPS = 1;
 
 noCharburnerPile::noCharburnerPile(const MapPoint pos)
-    : noCoordBase(NOP_CHARBURNERPILE, pos), state(STATE_WOOD), step(0), sub_step(1), event(NULL)
+    : noCoordBase(NOP_CHARBURNERPILE, pos), state(STATE_WOOD), step(0), sub_step(1), event(nullptr)
 {}
 
 noCharburnerPile::~noCharburnerPile() {}
@@ -134,7 +134,7 @@ void noCharburnerPile::HandleEvent(const unsigned /*id*/)
     } else
     {
         // selfdestruct!
-        event = NULL;
+        event = nullptr;
         gwg->SetNO(pos, new noFire(pos, false), true);
         gwg->RecalcBQAroundPoint(pos);
         GetEvMgr().AddToKillList(this);

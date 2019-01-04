@@ -19,8 +19,8 @@
 #define NotificationManager_h__
 
 #include "notifications/Subscribtion.h"
-#include <boost/function.hpp>
-#include <boost/unordered_map.hpp>
+#include <functional>
+#include <unordered_map>
 #include <vector>
 
 class NotificationManager
@@ -41,7 +41,7 @@ public:
     /// Subscribe to a specific notification.
     /// Unsubscribes when the subscription has no references left
     template<class T_Note>
-    inline Subscribtion subscribe(boost::function<void(T_Note)> callback);
+    inline Subscribtion subscribe(std::function<void(T_Note)> callback);
     /// Manually unsubscribes the callback
     inline void unsubscribe(Subscribtion& subscription);
     /// Call the registred callbacks for the note
@@ -56,7 +56,7 @@ private:
     /// We cannot store the real type of the callback in C++ (no mixed type list) so we store it as a void*
     /// and use a cast based on the NoteId
     typedef std::vector<void*> CallbackList;
-    typedef boost::unordered_map<uint32_t, CallbackList> SubscriberMap;
+    typedef std::unordered_map<uint32_t, CallbackList> SubscriberMap;
     SubscriberMap noteId2Subscriber;
     /// True when we are in the publish method (used for error checking)
     bool isPublishing;

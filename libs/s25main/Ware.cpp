@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Ware.h"
-
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "RoadSegment.h"
@@ -35,6 +34,7 @@
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "libutil/Log.h"
+#include <sstream>
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
     : next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),
@@ -93,7 +93,7 @@ void Ware::RecalcRoute()
 {
     // Nächste Richtung nehmen
     if(location && goal)
-        next_dir = gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
+        next_dir = gwg->FindPathForWareOnRoads(*location, *goal, nullptr, &next_harbor);
     else
         next_dir = INVALID_DIR;
 
@@ -135,14 +135,14 @@ void Ware::GoalDestroyed()
     {
         // Ware ist noch im Lagerhaus auf der Warteliste
         RTTR_Assert(false); // Should not happen. noBaseBuilding::WareNotNeeded handles this case!
-        goal = NULL;        // just in case: avoid corruption although the ware itself might be lost (won't ever be carried again)
+        goal = nullptr;     // just in case: avoid corruption although the ware itself might be lost (won't ever be carried again)
     }
     // Ist sie evtl. gerade mit dem Schiff unterwegs?
     else if(state == STATE_ONSHIP)
     {
-        // Ziel zunächst auf NULL setzen, was dann vom Zielhafen erkannt wird,
+        // Ziel zunächst auf nullptr setzen, was dann vom Zielhafen erkannt wird,
         // woraufhin dieser die Ware gleich in sein Inventar mit übernimmt
-        goal = NULL;
+        goal = nullptr;
     }
     // Oder wartet sie im Hafen noch auf ein Schiff
     else if(state == STATE_WAITFORSHIP)
@@ -154,8 +154,8 @@ void Ware::GoalDestroyed()
         static_cast<nobHarborBuilding*>(location)->CancelWareForShip(this);
         // Kill the ware
         gwg->GetPlayer(location->GetPlayer()).RemoveWare(this);
-        goal = NULL;
-        location = NULL;
+        goal = nullptr;
+        location = nullptr;
         GetEvMgr().AddToKillList(this);
     } else
     {
@@ -171,14 +171,14 @@ void Ware::GoalDestroyed()
                 SetGoal(static_cast<noBaseBuilding*>(location));
             } else // at the goal (which was just destroyed) and get carried out right now? -> we are about to get destroyed...
             {
-                goal = NULL;
+                goal = nullptr;
                 next_dir = INVALID_DIR;
             }
         }
         // Wenn sie an einer Flagge liegt, muss der Weg neu berechnet werden und dem Träger Bescheid gesagt werden
         else if(state == STATE_WAITATFLAG)
         {
-            goal = NULL;
+            goal = nullptr;
             unsigned char oldNextDir = next_dir;
             FindRouteToWarehouse();
             if(oldNextDir != next_dir)
@@ -209,13 +209,13 @@ void Ware::GoalDestroyed()
                     SetGoal(static_cast<noBaseBuilding*>(location));
                 } else
                 {
-                    goal = NULL;
+                    goal = nullptr;
                     FindRouteToWarehouse();
                 }
             } else
             {
                 // too late to do anything our road will be removed and ware destroyed when the carrier starts walking about
-                goal = NULL;
+                goal = nullptr;
             }
         }
     }
@@ -249,7 +249,7 @@ void Ware::NotifyGoalAboutLostWare()
     if(goal)
     {
         goal->WareLost(this);
-        goal = NULL;
+        goal = nullptr;
         next_dir = INVALID_DIR;
     }
 }
@@ -257,7 +257,7 @@ void Ware::NotifyGoalAboutLostWare()
 /// Wenn die Ware vernichtet werden muss
 void Ware::WareLost(const unsigned char player)
 {
-    location = NULL;
+    location = nullptr;
     // Inventur verringern
     gwg->GetPlayer(player).DecreaseInventoryWare(type, 1);
     // Ziel der Ware Bescheid sagen
@@ -279,7 +279,7 @@ void Ware::RemoveWareJobForDir(const unsigned char last_next_dir)
     if(!location->GetRoute(lastDir))
         return;
     // Den Trägern Bescheid sagen
-    location->GetRoute(lastDir)->WareJobRemoved(NULL);
+    location->GetRoute(lastDir)->WareJobRemoved(nullptr);
     // Wenn nicht, könntes ja sein, dass die Straße in ein Lagerhaus führt, dann muss dort Bescheid gesagt werden
     if(location->GetRoute(lastDir)->GetF2()->GetType() == NOP_BUILDING)
     {
@@ -312,13 +312,13 @@ bool Ware::FindRouteToWarehouse()
                 next_dir = INVALID_DIR; // Warehouse will detect this
             else
             {
-                next_dir = gwg->FindPathForWareOnRoads(*location, *goal, NULL, &next_harbor);
+                next_dir = gwg->FindPathForWareOnRoads(*location, *goal, nullptr, &next_harbor);
                 RTTR_Assert(next_dir != INVALID_DIR);
             }
         }
     } else
         next_dir = INVALID_DIR; // Make sure we are not going anywhere
-    return goal != NULL;
+    return goal != nullptr;
 }
 
 /// a lost ware got ordered
@@ -396,7 +396,7 @@ bool Ware::IsRouteToGoal()
 void Ware::StartShipJourney()
 {
     state = STATE_ONSHIP;
-    location = NULL;
+    location = nullptr;
 }
 
 /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt

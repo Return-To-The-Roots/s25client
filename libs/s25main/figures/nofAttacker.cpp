@@ -36,7 +36,6 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/BuildingProperties.h"
-#include <boost/foreach.hpp>
 
 /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
 /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER
@@ -45,7 +44,7 @@ const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal), mayBeHunted(true),
-      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(MapPoint::Invalid()),
+      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(nullptr), blocking_event(nullptr), harborPos(MapPoint::Invalid()),
       shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -56,7 +55,7 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
     : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal), mayBeHunted(true),
-      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(harbor->GetPos()),
+      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(nullptr), blocking_event(nullptr), harborPos(harbor->GetPos()),
       shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -123,19 +122,19 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
             blocking_event = sgd.PopEvent();
         else
-            blocking_event = NULL;
+            blocking_event = nullptr;
 
         harborPos = sgd.PopMapPoint();
         shipPos = sgd.PopMapPoint();
         ship_obj_id = sgd.PopUnsignedInt();
     } else
     {
-        attacked_goal = NULL;
+        attacked_goal = nullptr;
         mayBeHunted = false;
         canPlayerSendAggDefender.resize(gwg->GetNumPlayers(), 2);
-        huntingDefender = NULL;
+        huntingDefender = nullptr;
         radius = 0;
-        blocking_event = NULL;
+        blocking_event = nullptr;
         harborPos = MapPoint::Invalid();
         shipPos = MapPoint::Invalid(); //-V656
         ship_obj_id = 0;
@@ -167,7 +166,7 @@ void nofAttacker::Walked()
             // RTTR_Assert(enemy->GetGOT() == GOT_NOF_DEFENDER);
             // Are we at the flag?
 
-            nofDefender* defender = NULL;
+            nofDefender* defender = nullptr;
             // Look for defenders at this position
             const std::list<noBase*>& figures = gwg->GetFigures(goalFlagPos);
             for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
@@ -275,7 +274,7 @@ void nofAttacker::Walked()
                     nobBaseMilitary* tmp_goal = attacked_goal; // attacked_goal wird evtl auf 0 gesetzt!
                     tmp_goal->Destroy();
                     delete tmp_goal;
-                    attacked_goal = NULL;
+                    attacked_goal = nullptr;
                     ReturnHomeMissionAttacking();
                 }
             }
@@ -323,7 +322,7 @@ void nofAttacker::Walked()
             else
             {
                 // Weg zum Hafen suchen
-                unsigned char dir = gwg->FindHumanPath(pos, harborFlagPos, MAX_ATTACKING_RUN_DISTANCE, false, NULL);
+                unsigned char dir = gwg->FindHumanPath(pos, harborFlagPos, MAX_ATTACKING_RUN_DISTANCE, false, nullptr);
                 if(dir == 0xff)
                 {
                     // Kein Weg gefunden? Dann auch abbrechen!
@@ -372,7 +371,7 @@ void nofAttacker::HomeDestroyed()
                 CancelAtShip();
 
             // Rumirren
-            building = NULL;
+            building = nullptr;
             state = STATE_FIGUREWORK;
             StartWandering();
             Wander();
@@ -385,11 +384,11 @@ void nofAttacker::HomeDestroyed()
         {
             // Wenn wir gerade auf dem Weg dorthin sind (z.B. an Bord eines Schiffs), Ziel löschen
             if(goal_ == building)
-                goal_ = NULL;
+                goal_ = nullptr;
 
             //  Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
             // wird er auch nicht mehr zurückgehen)
-            building = NULL;
+            building = nullptr;
         }
         break;
     }
@@ -397,7 +396,7 @@ void nofAttacker::HomeDestroyed()
 
 void nofAttacker::HomeDestroyedAtBegin()
 {
-    building = NULL;
+    building = nullptr;
 
     // angegriffenem Gebäude Bescheid sagen, dass wir doch nicht mehr kommen
     InformTargetsAboutCancelling();
@@ -691,7 +690,7 @@ void nofAttacker::OrderAggressiveDefender()
 {
     // Militärgebäude in der Nähe abgrasen
     sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 2);
-    BOOST_FOREACH(nobBaseMilitary* bld, buildings)
+    for(nobBaseMilitary* bld : buildings)
     {
         // darf kein HQ sein, außer, das HQ wird selbst angegriffen,
         if(bld->GetBuildingType() == BLD_HEADQUARTERS && bld != attacked_goal)
@@ -733,7 +732,7 @@ void nofAttacker::OrderAggressiveDefender()
 
 void nofAttacker::AttackedGoalDestroyed()
 {
-    attacked_goal = NULL;
+    attacked_goal = nullptr;
 
     bool was_waiting_for_defender = (state == STATE_ATTACKING_WAITINGFORDEFENDER);
 
@@ -906,7 +905,7 @@ void nofAttacker::CapturingWalking()
 void nofAttacker::CapturedBuildingFull()
 {
     // No need to notify the goal
-    attacked_goal = NULL;
+    attacked_goal = nullptr;
 
     switch(state)
     {
@@ -931,7 +930,7 @@ void nofAttacker::CapturedBuildingFull()
             // Bei allem anderen läuft man oder kämpft --> auf 0 setzen und wenn man fertig
             // mit der jetzigen Aktion ist, entsprechend handeln (nicht die Einnehmer darüber benachrichten, sonst
             // gehen die nicht rein)
-            attacked_goal = NULL;
+            attacked_goal = nullptr;
         }
         break;
     }
@@ -961,7 +960,7 @@ void nofAttacker::LetsFight(nofAggressiveDefender* other)
 void nofAttacker::AggressiveDefenderLost()
 {
     RTTR_Assert(huntingDefender);
-    huntingDefender = NULL;
+    huntingDefender = nullptr;
 }
 
 void nofAttacker::SwitchStateAttackingWaitingForDefender()
@@ -978,7 +977,7 @@ void nofAttacker::HandleDerivedEvent(const unsigned /*id*/)
     {
         // Figuren stoppen
         gwg->StopOnRoads(pos);
-        blocking_event = NULL;
+        blocking_event = nullptr;
     }
 }
 
@@ -989,7 +988,7 @@ bool nofAttacker::IsBlockingRoads() const
 
     // Wenn Block-Event schon abgelaufen ist --> blocking_event = 0, da dürfen sich nicht mehr durch
     // wenn es das noch gibt, ist es noch nicht abgelaufen und die Leute können noch durchgehen
-    return blocking_event == NULL;
+    return blocking_event == nullptr;
 }
 
 /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
@@ -1001,7 +1000,7 @@ void nofAttacker::InformTargetsAboutCancelling()
     // Ziel Bescheid sagen, falls es das noch gibt
     if(attacked_goal)
         RemoveFromAttackedGoal();
-    RTTR_Assert(attacked_goal == NULL);
+    RTTR_Assert(attacked_goal == nullptr);
 }
 
 void nofAttacker::RemoveFromAttackedGoal()
@@ -1015,7 +1014,7 @@ void nofAttacker::RemoveFromAttackedGoal()
         it != attacked_goal->GetAggresiveDefenders().end(); ++it)
         RTTR_Assert((*it)->GetAttacker() != this);
     attacked_goal->UnlinkAggressor(this);
-    attacked_goal = NULL;
+    attacked_goal = nullptr;
 }
 
 /// Startet den Angriff am Landungspunkt vom Schiff
@@ -1037,7 +1036,7 @@ void nofAttacker::SeaAttackFailedBeforeLaunch()
     InformTargetsAboutCancelling();
     RTTR_Assert(!huntingDefender);
     AbrogateWorkplace();
-    goal_ = NULL;
+    goal_ = nullptr;
     state = STATE_FIGUREWORK;
 }
 
@@ -1070,14 +1069,14 @@ void nofAttacker::StartReturnViaShip(noShip& ship)
 /// notify sea attackers that they wont return home
 void nofAttacker::HomeHarborLost()
 {
-    goal_ = NULL; // this in combination with telling the home building that the soldier is lost should work just fine
+    goal_ = nullptr; // this in combination with telling the home building that the soldier is lost should work just fine
 }
 
 /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
 void nofAttacker::CancelAtShip()
 {
     // Alle Figuren durchgehen
-    BOOST_FOREACH(noBase* figure, gwg->GetFigures(shipPos))
+    for(noBase* figure : gwg->GetFigures(shipPos))
     {
         if(figure->GetObjId() == ship_obj_id)
         {
@@ -1095,7 +1094,7 @@ void nofAttacker::CancelAtHuntingDefender()
     {
         RTTR_Assert(huntingDefender->GetAttacker() == this);
         huntingDefender->AttackerLost();
-        huntingDefender = NULL;
+        huntingDefender = nullptr;
     }
 }
 
@@ -1119,7 +1118,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
     if(pos == shipPos)
     {
         // Alle Figuren durchgehen
-        BOOST_FOREACH(noBase* figure, gwg->GetFigures(pos))
+        for(noBase* figure : gwg->GetFigures(pos))
         {
             if(figure->GetObjId() == ship_obj_id)
             {

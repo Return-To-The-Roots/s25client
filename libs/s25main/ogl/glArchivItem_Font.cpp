@@ -30,7 +30,6 @@
 #include "libutf8/utf8.h"
 #include "libutil/Log.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/foreach.hpp>
 #include <cmath>
 #include <vector>
 
@@ -83,7 +82,7 @@ struct Distance
 };
 
 template<class T_Iterator>
-struct Distance<utf8::iterator<T_Iterator> >
+struct Distance<utf8::iterator<T_Iterator>>
 {
     size_t operator()(const utf8::iterator<T_Iterator>& first, const utf8::iterator<T_Iterator>& last) const
     {
@@ -99,7 +98,7 @@ T_Iterator nextIt(T_Iterator it)
 
 //////////////////////////////////////////////////////////////////////////
 
-glArchivItem_Font::glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL)
+glArchivItem_Font::glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(nullptr), fontWithOutline(nullptr)
 {
     ClearCharInfoMapping();
 }
@@ -138,7 +137,7 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
 void glArchivItem_Font::ClearCharInfoMapping()
 {
     typedef std::pair<bool, CharInfo> CharPair;
-    BOOST_FOREACH(CharPair& entry, asciiMapping)
+    for(CharPair& entry : asciiMapping)
         entry.first = false;
     utf8_mapping.clear();
 }
@@ -373,7 +372,7 @@ unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_It
 template<class T_Iterator>
 unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_Iterator& end) const
 {
-    return getWidthInternal<false>(begin, end, 0, NULL);
+    return getWidthInternal<false>(begin, end, 0, nullptr);
 }
 
 unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const
@@ -570,7 +569,7 @@ void glArchivItem_Font::initFont()
     // Calc lines required (rounding up)
     const unsigned numLines = (numChars + numCharsPerLine - 1) / numCharsPerLine;
 
-    BOOST_CONSTEXPR_OR_CONST Extent spacing(1, 1);
+    constexpr Extent spacing(1, 1);
     Extent texSize = (Extent(dx, dy) + spacing * 2u) * Extent(numCharsPerLine, numLines) + spacing * 2u;
     libsiedler2::PixelBufferARGB bufferWithOutline(texSize.x, texSize.y);
     libsiedler2::PixelBufferARGB bufferNoOutline(texSize.x, texSize.y);

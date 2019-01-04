@@ -92,7 +92,7 @@ public:
     /// with the local player via team view
     const FoWNode& GetYoungestFOWNode(const MapPoint pos) const;
 
-    /// Get first found ship of this player at that point or NULL of none
+    /// Get first found ship of this player at that point or nullptr of none
     noShip* GetShip(const MapPoint pt) const;
 
     /// Schattierungen (vor allem FoW) neu berechnen
@@ -105,7 +105,7 @@ private:
     /// Visual node status (might be different than world if GameCommand is just sent) to hide network latency
     struct VisualMapNode
     {
-        boost::array<unsigned char, 3> roads; // If != 0 then this road value is used (road construction) else real road is used
+        std::array<unsigned char, 3> roads; // If != 0 then this road value is used (road construction) else real road is used
         BuildingQuality bq;
     };
     unsigned playerId_;

@@ -98,7 +98,7 @@ private:
     static unsigned objCounter_;   /// Objekt-Counter (number of objects alive)
 };
 
-/// Calls destroy on a GameObject and then deletes it setting the ptr to NULL
+/// Calls destroy on a GameObject and then deletes it setting the ptr to nullptr
 template<typename T>
 void destroyAndDelete(T*& obj)
 {

@@ -18,23 +18,21 @@
 #ifndef constants_h__
 #define constants_h__
 
-#include <boost/core/scoped_enum.hpp>
 #include <glad/glad.h>
 
 namespace ogl {
-// TODO: remove format-disable after C++11
-// clang-format off
-    BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(Target, GLenum){
-        Array = GL_ARRAY_BUFFER,
-        Index = GL_ELEMENT_ARRAY_BUFFER
-    } BOOST_SCOPED_ENUM_DECLARE_END(Target)
+enum class Target : GLenum
+{
+    Array = GL_ARRAY_BUFFER,
+    Index = GL_ELEMENT_ARRAY_BUFFER
+};
 
-    BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(Usage, GLenum){
-        Static = GL_STATIC_DRAW,   // Very rare changes
-        Dynamic = GL_DYNAMIC_DRAW, // Often changes
-        Stream = GL_STREAM_DRAW    // Changes every frame
-    } BOOST_SCOPED_ENUM_DECLARE_END(Usage)
-// clang-format on
+enum class Usage : GLenum
+{
+    Static = GL_STATIC_DRAW,   // Very rare changes
+    Dynamic = GL_DYNAMIC_DRAW, // Often changes
+    Stream = GL_STREAM_DRAW    // Changes every frame
+};
 } // namespace ogl
 
 #endif // constants_h__

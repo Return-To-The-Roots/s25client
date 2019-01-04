@@ -19,10 +19,10 @@
 #define BQOutput_h__
 
 #include "gameTypes/BuildingQuality.h"
-#include <boost/array.hpp>
+#include <array>
 #include <iostream>
 
-const boost::array<const char*, 6> bqNames = {{"Nothing", "Flag", "Hut", "House", "Castle", "Mine"}};
+const std::array<const char*, 6> bqNames = {{"Nothing", "Flag", "Hut", "House", "Castle", "Mine"}};
 
 inline std::ostream& operator<<(std::ostream& stream, BuildingQuality bq)
 {

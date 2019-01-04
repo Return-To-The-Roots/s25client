@@ -18,20 +18,20 @@
 #ifndef Clock_h__
 #define Clock_h__
 
-#include <libutil/unique_ptr.h>
-#include <boost/chrono.hpp>
+#include <chrono>
+#include <memory>
 
 class BaseClock
 {
 public:
-    typedef boost::chrono::nanoseconds duration;
+    typedef std::chrono::nanoseconds duration;
     typedef duration::rep rep;
     typedef duration::period period;
 
     virtual ~BaseClock() {}
     virtual duration time_since_epoch()
     {
-        return boost::chrono::duration_cast<duration>(boost::chrono::steady_clock::now().time_since_epoch());
+        return std::chrono::duration_cast<duration>(std::chrono::steady_clock::now().time_since_epoch());
     }
 };
 
@@ -39,19 +39,19 @@ public:
 /// Satisfies TrivialClock requirement
 class Clock
 {
-    static libutil::unique_ptr<BaseClock>& instance()
+    static std::unique_ptr<BaseClock>& instance()
     {
-        static libutil::unique_ptr<BaseClock> clock(new BaseClock);
+        static std::unique_ptr<BaseClock> clock(new BaseClock);
         return clock;
     }
 
 public:
     typedef BaseClock::rep rep;
     typedef BaseClock::duration duration;
-    typedef boost::chrono::time_point<Clock> time_point;
+    typedef std::chrono::time_point<Clock> time_point;
     static time_point now() { return time_point(instance()->time_since_epoch()); }
     // Set to a different clock
-    static void setClock(libutil::unique_ptr<BaseClock> newClock) { instance() = boost::move(newClock); }
+    static void setClock(std::unique_ptr<BaseClock> newClock) { instance() = std::move(newClock); }
 };
 
 #endif // Clock_h__

@@ -47,13 +47,12 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "libutil/Log.h"
-#include <boost/foreach.hpp>
 #include <limits>
 #include <stdexcept>
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : nobBaseMilitary(type, pos, player, nation), new_built(true), numCoins(0), coinsDisabled(false), coinsDisabledVirtual(false),
-      capturing(false), capturing_soldiers(0), goldorder_event(NULL), upgrade_event(NULL), is_regulating_troops(false)
+      capturing(false), capturing_soldiers(0), goldorder_event(nullptr), upgrade_event(nullptr), is_regulating_troops(false)
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
     gwg->GetMilitarySquares().Add(this);
@@ -188,7 +187,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
 
     // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
     unsigned frontier_distance_tmp = frontier_distance;
-    glArchivItem_Bitmap_Player* bitmap = NULL;
+    glArchivItem_Bitmap_Player* bitmap = nullptr;
     unsigned animationFrame = GAMECLIENT.GetGlobalAnimation(4, 1, 1, pos.x * pos.y * GetObjId());
     if(new_built)
     {
@@ -218,7 +217,7 @@ void nobMilitary::HandleEvent(const unsigned id)
         // "Rausgeh-Event"
         case 0:
         {
-            leaving_event = NULL;
+            leaving_event = nullptr;
 
             // Sind Leute da, die noch rausgehen wollen?
             if(!leave_house.empty())
@@ -243,7 +242,7 @@ void nobMilitary::HandleEvent(const unsigned id)
         // Goldbestell-Event
         case 1:
         {
-            goldorder_event = NULL;
+            goldorder_event = nullptr;
 
             // ggf. nach neuen Goldmünzen suchen
             SearchCoins();
@@ -252,7 +251,7 @@ void nobMilitary::HandleEvent(const unsigned id)
         // Beförderungs-Event
         case 2:
         {
-            upgrade_event = NULL;
+            upgrade_event = nullptr;
 
             // Soldaten befördern
             // Von hinten durchgehen
@@ -728,9 +727,9 @@ void nobMilitary::SoldierOnMission(nofPassiveSoldier* passive_soldier, nofActive
 nofPassiveSoldier* nobMilitary::ChooseSoldier()
 {
     if(troops.empty())
-        return NULL;
+        return nullptr;
 
-    nofPassiveSoldier* candidates[5] = {NULL, NULL, NULL, NULL, NULL}; // candidates per rank
+    nofPassiveSoldier* candidates[5] = {nullptr, nullptr, nullptr, nullptr, nullptr}; // candidates per rank
 
     // how many ranks
     unsigned rank_count = 0;
@@ -762,14 +761,14 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker* attacker)
 {
     // Don't send last soldier
     if(GetNumTroops() <= 1)
-        return NULL;
+        return nullptr;
     nofPassiveSoldier* soldier = ChooseSoldier();
     if(soldier)
     {
@@ -781,7 +780,7 @@ nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker* attacker
 
         return defender;
     } else
-        return NULL;
+        return nullptr;
 }
 
 /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
@@ -879,7 +878,7 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
         // Nochmal versuchen
         soldier = ChooseSoldier();
         if(!soldier)
-            return NULL;
+            return nullptr;
     }
 
     // neuen Verteidiger erzeugen
@@ -933,7 +932,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     gwg->RecalcTerritory(*this, TerritoryChangeReason::Captured);
 
     // Sichtbarkeiten berechnen für alten Spieler
-    gwg->RecalcVisibilitiesAroundPoint(pos, GetMilitaryRadius() + VISUALRANGE_MILITARY + 1, old_player, NULL);
+    gwg->RecalcVisibilitiesAroundPoint(pos, GetMilitaryRadius() + VISUALRANGE_MILITARY + 1, old_player, nullptr);
 
     // Grenzflagge entsprechend neu setzen von den Feinden
     LookForEnemyBuildings();
@@ -1009,7 +1008,7 @@ void nobMilitary::NeedOccupyingTroops()
     // Check if we need more soldiers from the attacking soldiers
     // Choose the closest ones first to avoid having them walk a long way
 
-    nofAttacker* best_attacker = NULL;
+    nofAttacker* best_attacker = nullptr;
     unsigned best_radius = std::numeric_limits<unsigned>::max();
 
     unsigned needed_soldiers = CalcRequiredNumTroops();
@@ -1126,7 +1125,7 @@ unsigned nobMilitary::CalcCoinsPoints() const
 
     const unsigned maxRank = gwg->GetGGS().GetMaxMilitaryRank();
     // Beförderbare Soldaten zählen
-    BOOST_FOREACH(const nofPassiveSoldier* soldier, troops)
+    for(const nofPassiveSoldier* soldier : troops)
     {
         // Solange es kein Max Rank ist, kann der Soldat noch befördert werden
         if(soldier->GetRank() < maxRank)
@@ -1161,7 +1160,7 @@ void nobMilitary::SearchCoins()
             {
                 RTTR_Assert(false);
                 // Ware dürfte nicht 0 werden, da ja ein Lagerhaus MIT GOLDMÜNZEN bereits gesucht wird
-                LOG.write("nobMilitary::SearchCoins: WARNING: ware = NULL. Bug alarm!\n");
+                LOG.write("nobMilitary::SearchCoins: WARNING: ware = nullptr. Bug alarm!\n");
                 return;
             }
 
@@ -1310,7 +1309,7 @@ void nobMilitary::CallNextFarAwayCapturer(nofAttacker* attacker)
 {
     const MapPoint flagPos = GetFlag()->GetPos();
     unsigned minLength = std::numeric_limits<unsigned>::max();
-    nofAttacker* bestAttacker = NULL;
+    nofAttacker* bestAttacker = nullptr;
     for(std::list<nofAttacker*>::iterator it = far_away_capturers.begin(); it != far_away_capturers.end(); ++it)
     {
         // Skip us and possible capturers at the building

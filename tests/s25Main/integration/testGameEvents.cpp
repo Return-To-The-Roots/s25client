@@ -185,7 +185,7 @@ class TestRemoveEvent : public TestEventHandler
 public:
     EventManager& em;
     const GameEvent* ev2Remove;
-    TestRemoveEvent(EventManager& em) : em(em), ev2Remove(NULL) {}
+    TestRemoveEvent(EventManager& em) : em(em), ev2Remove(nullptr) {}
 
     void HandleEvent(const unsigned evId) override
     {
@@ -193,7 +193,7 @@ public:
         if(evId == 42 && ev2Remove)
         {
             em.RemoveEvent(ev2Remove);
-            // Should be set to NULL
+            // Should be set to nullptr
             BOOST_REQUIRE(!ev2Remove);
         }
     }
@@ -228,13 +228,13 @@ BOOST_AUTO_TEST_CASE(InvalidEvent)
     EventManager evMgr(100);
     TestEventHandler obj;
     // Need object
-    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(NULL, 1));
+    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(nullptr, 1));
     // Length must be > 0
     RTTR_REQUIRE_ASSERT(evMgr.AddEvent(&obj, 0));
     // ... even for continued events
-    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(NULL, 50, 0, 50));
+    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(nullptr, 50, 0, 50));
     // continued event cannot start before the game
-    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(NULL, 200, 0, 150));
+    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(nullptr, 200, 0, 150));
     RTTR_AssertEnableBreak = true;
 #endif
 }

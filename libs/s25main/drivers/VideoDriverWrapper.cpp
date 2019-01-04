@@ -30,7 +30,6 @@
 #include "openglCfg.hpp"
 #include "libutil/Log.h"
 #include "libutil/error.h"
-#include <boost/static_assert.hpp>
 #include <ctime>
 #include <glad/glad.h>
 #include <sstream>
@@ -45,10 +44,10 @@ typedef BOOL(APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
 typedef int (*PFNWGLSWAPINTERVALFARPROC)(int);
 #endif
 
-PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = NULL;
+PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = nullptr;
 
 VideoDriverWrapper::VideoDriverWrapper()
-    : videodriver(NULL), renderer_(NULL), loadedFromDll(false), isOglEnabled_(false), texture_current(0)
+    : videodriver(nullptr), renderer_(nullptr), loadedFromDll(false), isOglEnabled_(false), texture_current(0)
 {}
 
 VideoDriverWrapper::~VideoDriverWrapper()
@@ -57,9 +56,9 @@ VideoDriverWrapper::~VideoDriverWrapper()
     UnloadDriver();
 }
 
-bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
+bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
 {
-    loadedFromDll = existingDriver == NULL;
+    loadedFromDll = existingDriver == nullptr;
     if(!existingDriver)
     {
         // DLL laden
@@ -109,7 +108,7 @@ void VideoDriverWrapper::UnloadDriver()
         driver_wrapper.Unload();
     } else
         delete videodriver;
-    videodriver = NULL;
+    videodriver = nullptr;
 }
 
 /**
@@ -284,7 +283,7 @@ unsigned VideoDriverWrapper::GenerateTexture()
     VALGRIND_MAKE_MEM_DEFINED(&newTexture, sizeof(newTexture));
 #endif
 
-    BOOST_STATIC_ASSERT(sizeof(newTexture) == sizeof(texture_list[0]));
+    static_assert(sizeof(newTexture) == sizeof(texture_list[0]), "Unexpected texture size");
     texture_list.push_back(newTexture);
     return texture_list.back();
 }
@@ -465,7 +464,7 @@ bool VideoDriverWrapper::LoadAllExtensions()
 #else
     wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"));
 #endif
-    GLOBALVARS.hasVSync = wglSwapIntervalEXT != NULL;
+    GLOBALVARS.hasVSync = wglSwapIntervalEXT != nullptr;
 
     return true;
 }
@@ -473,14 +472,14 @@ bool VideoDriverWrapper::LoadAllExtensions()
 unsigned VideoDriverWrapper::GetTickCount()
 {
     if(!videodriver)
-        return (unsigned)time(NULL);
+        return (unsigned)time(nullptr);
 
     return (unsigned)videodriver->GetTickCount();
 }
 
 std::string VideoDriverWrapper::GetName() const
 {
-    const char* name = (videodriver) ? videodriver->GetName() : NULL;
+    const char* name = (videodriver) ? videodriver->GetName() : nullptr;
     return (name) ? name : "";
 }
 
@@ -489,14 +488,14 @@ std::string VideoDriverWrapper::GetName() const
  *
  *  @param[in] extension Die Extension-Funktion
  *
- *  @return @p NULL bei Fehler, Adresse der gewünschten Funktion bei Erfolg.
+ *  @return @p nullptr bei Fehler, Adresse der gewünschten Funktion bei Erfolg.
  */
 void* VideoDriverWrapper::loadExtension(const std::string& extension)
 {
     if(!videodriver)
     {
         s25util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
-        return (NULL);
+        return (nullptr);
     }
 
     return videodriver->GetLoaderFunction()(extension.c_str());
@@ -570,7 +569,7 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) con
 void* VideoDriverWrapper::GetMapPointer() const
 {
     if(!videodriver)
-        return NULL;
+        return nullptr;
 
     return videodriver->GetMapPointer();
 }

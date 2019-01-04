@@ -37,7 +37,7 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player, const unsigned ch
     : noRoadNode(NOP_FLAG, pos, player), ani_offset(rand() % 20000)
 {
     for(unsigned i = 0; i < wares.size(); ++i)
-        wares[i] = NULL;
+        wares[i] = nullptr;
 
     // BWUs nullen
     for(unsigned i = 0; i < bwus.size(); ++i)
@@ -84,7 +84,7 @@ noFlag::~noFlag()
 void noFlag::Destroy_noFlag()
 {
     /// Da ist dann nichts
-    gwg->SetNO(pos, NULL);
+    gwg->SetNO(pos, nullptr);
 
     // Waren vernichten
     for(unsigned i = 0; i < wares.size(); ++i)
@@ -188,7 +188,7 @@ unsigned noFlag::GetNumWares() const
  */
 Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const noFigure* const carrier)
 {
-    Ware* best_ware = NULL;
+    Ware* best_ware = nullptr;
 
     // Index merken, damit wir die enstprechende Ware dann entfernen können
     unsigned best_ware_index = 0xFF;
@@ -218,7 +218,7 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
 
     // Ware von der Flagge entfernen
     if(best_ware)
-        wares[best_ware_index] = NULL;
+        wares[best_ware_index] = nullptr;
 
     // ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
     GetRoute(roadDir)->WareJobRemoved(carrier);

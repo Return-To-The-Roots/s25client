@@ -25,8 +25,8 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameData/BuildingProperties.h"
-#include <boost/foreach.hpp>
 #include <algorithm>
+#include <cmath>
 
 namespace AIJH {
 BuildingPlanner::BuildingPlanner(const AIPlayerJH& aijh) : buildingsWanted(NUM_BUILDING_TYPES), expansionRequired(false)
@@ -66,7 +66,7 @@ bool BuildingPlanner::CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) con
         const BuildingRegister& buildingRegister = aijh.player.GetBuildingRegister();
         std::vector<noBuilding*> blds(buildingRegister.GetMilitaryBuildings().begin(), buildingRegister.GetMilitaryBuildings().end());
         blds.insert(blds.end(), buildingRegister.GetStorehouses().begin(), buildingRegister.GetStorehouses().end());
-        BOOST_FOREACH(const noBuilding* bld, blds)
+        for(const noBuilding* bld : blds)
         {
             if(!hasWood)
                 hasWood = aijh.FindPositionForBuildingAround(BLD_WOODCUTTER, bld->GetPos()).isValid();
@@ -93,7 +93,7 @@ unsigned BuildingPlanner::GetNumBuildingSites(BuildingType type) const
 unsigned BuildingPlanner::GetNumMilitaryBlds() const
 {
     unsigned result = 0;
-    BOOST_FOREACH(BuildingType bld, BuildingProperties::militaryBldTypes)
+    for(BuildingType bld : BuildingProperties::militaryBldTypes)
         result += GetNumBuildings(bld);
     return result;
 }
@@ -101,7 +101,7 @@ unsigned BuildingPlanner::GetNumMilitaryBlds() const
 unsigned BuildingPlanner::GetNumMilitaryBldSites() const
 {
     unsigned result = 0;
-    BOOST_FOREACH(BuildingType bld, BuildingProperties::militaryBldTypes)
+    for(BuildingType bld : BuildingProperties::militaryBldTypes)
         result += GetNumBuildingSites(bld);
     return result;
 }

@@ -9,7 +9,7 @@ $CXX --version
 INSTALL_DIR="${TRAVIS_BUILD_DIR}/installed"
 rm -rf "${INSTALL_DIR}"
 mkdir -p build && cd build
-cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" \
+cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
     -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
     -DRTTR_ENABLE_WERROR=ON -DRTTR_EDITOR_ADMINMODE=ON \
     -G "Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}

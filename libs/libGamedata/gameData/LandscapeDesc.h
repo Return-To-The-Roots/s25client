@@ -19,7 +19,7 @@
 #define LandscapeDesc_h__
 
 #include "Rect.h"
-#include <boost/array.hpp>
+#include <array>
 #include <string>
 
 struct WorldDescription;
@@ -40,12 +40,12 @@ struct LandscapeDesc
         Boat,
         Mountain
     };
-    BOOST_STATIC_CONSTEXPR unsigned NUM_ROADTYPES = Mountain + 1;
+    static constexpr unsigned NUM_ROADTYPES = Mountain + 1;
     std::string name;
     std::string mapGfxPath;
     uint8_t s2Id;
     bool isWinter;
-    boost::array<RoadTextureDesc, NUM_ROADTYPES> roadTexDesc;
+    std::array<RoadTextureDesc, NUM_ROADTYPES> roadTexDesc;
 
     LandscapeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
 };

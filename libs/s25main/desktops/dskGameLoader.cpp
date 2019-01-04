@@ -37,7 +37,7 @@
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
  */
-dskGameLoader::dskGameLoader(boost::shared_ptr<Game> game)
+dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
     : Desktop(LOADER.GetImageN(LOAD_SCREENS[rand() % LOAD_SCREENS.size()], 0)), position(0), loader_(game)
 {
     GAMEMANAGER.SetCursor(CURSOR_NONE);
@@ -144,7 +144,7 @@ void dskGameLoader::LC_Status_Error(const std::string& error)
     GetCtrl<ctrlTimer>(1)->Stop();
 }
 
-void dskGameLoader::CI_GameStarted(boost::shared_ptr<Game>)
+void dskGameLoader::CI_GameStarted(std::shared_ptr<Game>)
 {
     RTTR_Assert(gameInterface);
     WINDOWMANAGER.Switch(gameInterface.release());

@@ -32,7 +32,7 @@ struct Direction
         SOUTHEAST, // 4
         SOUTHWEST  // 5
     };
-    static BOOST_CONSTEXPR_OR_CONST unsigned COUNT = SOUTHWEST + 1;
+    static constexpr unsigned COUNT = SOUTHWEST + 1;
 
     Type t_;
     Direction() : t_(WEST) {}

@@ -21,7 +21,7 @@
 #include "RoadSegment.h"
 #include "noCoordBase.h"
 #include "gameTypes/Direction.h"
-#include <boost/array.hpp>
+#include <array>
 
 class Ware;
 class SerializedGameData;
@@ -31,7 +31,7 @@ class noRoadNode : public noCoordBase
 {
 protected:
     unsigned char player;
-    boost::array<RoadSegment*, 6> routes;
+    std::array<RoadSegment*, 6> routes;
 
 public:
     // For Pathfinding
@@ -87,7 +87,7 @@ inline noRoadNode* noRoadNode::GetNeighbour(const Direction dir) const
 {
     const RoadSegment* route = routes[dir.toUInt()];
     if(!route)
-        return NULL;
+        return nullptr;
     else if(route->GetF1() == this)
         return route->GetF2();
     else

@@ -124,7 +124,7 @@ public:
 
     /// Sucht feindliche Miitärgebäude im Umkreis und setzt die frontier_distance entsprechend (sowohl selber als
     /// auch von den feindlichen Gebäuden) und bestellt somit ggf. neue Soldaten, exception wird nicht mit einbezogen
-    void LookForEnemyBuildings(const nobBaseMilitary* const exception = NULL);
+    void LookForEnemyBuildings(const nobBaseMilitary* const exception = nullptr);
 
     /// Wird von gegnerischem Gebäude aufgerufen, wenn sie neu gebaut worden sind und es so ein neues Gebäude im Umkreis gibt
     /// setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung

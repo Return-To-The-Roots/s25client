@@ -28,7 +28,7 @@ bool GameMessage::run(MessageInterface* callback, unsigned senderPlayerID)
 
 Message* GameMessage::create_game(unsigned short id)
 {
-    Message* msg = NULL;
+    Message* msg = nullptr;
 
     switch(id)
     {

@@ -127,7 +127,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                 if((!which && boards > 0) || (which && stones > 0))
                 {
                     // Ware erzeugen
-                    Ware* ware = new Ware(goods[which], NULL, flag);
+                    Ware* ware = new Ware(goods[which], nullptr, flag);
                     // Inventur anpassen
                     gwg->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden

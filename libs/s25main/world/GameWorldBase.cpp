@@ -38,11 +38,10 @@
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 
 GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em)
     : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(players), gameSettings(gameSettings),
-      em(em), gi(NULL)
+      em(em), gi(nullptr)
 {}
 
 GameWorldBase::~GameWorldBase() {}
@@ -81,7 +80,7 @@ unsigned GameWorldBase::GetNumPlayers() const
 bool GameWorldBase::IsSinglePlayer() const
 {
     bool foundPlayer = false;
-    BOOST_FOREACH(const PlayerInfo& player, players)
+    for(const PlayerInfo& player : players)
     {
         if(player.ps == PS_OCCUPIED)
         {
@@ -242,7 +241,7 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned p
         }
 
         if(i == 6)
-            return NULL;
+            return nullptr;
 
         pt = GetNeighbour(pt, Direction::fromInt(i));
 

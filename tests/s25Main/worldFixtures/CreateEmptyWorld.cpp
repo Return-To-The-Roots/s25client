@@ -22,6 +22,7 @@
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "gameData/TerrainDesc.h"
+#include <cmath>
 #include <stdexcept>
 
 CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size) : size_(size) {}

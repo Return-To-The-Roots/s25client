@@ -23,7 +23,7 @@
 #include "notifications/NotificationManager.h"
 #include "postSystem/PostManager.h"
 #include "world/World.h"
-#include "libutil/unique_ptr.h"
+#include <memory>
 #include <vector>
 
 class EventManager;
@@ -42,15 +42,15 @@ class RoadPathFinder;
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
 class GameWorldBase : public World
 {
-    libutil::unique_ptr<RoadPathFinder> roadPathFinder;
-    libutil::unique_ptr<FreePathFinder> freePathFinder;
+    std::unique_ptr<RoadPathFinder> roadPathFinder;
+    std::unique_ptr<FreePathFinder> freePathFinder;
     PostManager postManager;
     NotificationManager notifications;
 
     std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
-    libutil::unique_ptr<LuaInterfaceGame> lua;
+    std::unique_ptr<LuaInterfaceGame> lua;
 
 protected:
     /// Interface zum GUI
@@ -92,7 +92,7 @@ public:
 
     /// Finds a path for figures. Returns 0xFF if none found
     unsigned char FindHumanPath(const MapPoint start, const MapPoint dest, unsigned max_route = 0xFFFFFFFF, bool random_route = false,
-                                unsigned* length = NULL, std::vector<Direction>* route = NULL) const;
+                                unsigned* length = nullptr, std::vector<Direction>* route = nullptr) const;
     /// Find path for ships to a specific harbor and see. Return true on success
     bool FindShipPathToHarbor(const MapPoint start, unsigned harborId, unsigned seaId, std::vector<Direction>* route, unsigned* length);
     /// Find path for ships with a limited distance. Return true on success
@@ -188,7 +188,7 @@ public:
     /// Recalculates the BQ for the given point
     void RecalcBQ(const MapPoint pt);
 
-    bool HasLua() const { return lua.get() != NULL; }
+    bool HasLua() const { return lua.get() != nullptr; }
     LuaInterfaceGame& GetLua() const { return *lua.get(); }
     void SetLua(LuaInterfaceGame* newLua) { lua.reset(newLua); }
 

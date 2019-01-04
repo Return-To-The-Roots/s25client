@@ -37,7 +37,6 @@
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
-#include <boost/foreach.hpp>
 #include <algorithm>
 
 WindowManager::WindowManager()
@@ -78,7 +77,7 @@ void WindowManager::Draw()
 
     // First close all marked windows
     CloseMarkedIngameWnds();
-    BOOST_FOREACH(IngameWindow* wnd, windows)
+    for(IngameWindow* wnd : windows)
     {
         // If the window is not minimized, call paintAfter
         if(!wnd->IsMinimized())
@@ -180,7 +179,7 @@ void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc
 void WindowManager::Show(IngameWindow* window, bool mouse)
 {
     RTTR_Assert(window);
-    SetToolTip(NULL, "");
+    SetToolTip(nullptr, "");
 
     // haben wir ein gültiges Fenster erhalten?
     if(!window)
@@ -268,10 +267,10 @@ IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
             return *it;
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
-        if((*it)->TestWindowInRegion(NULL, pos))
+        if((*it)->TestWindowInRegion(nullptr, pos))
             return *it;
     }
-    return NULL;
+    return nullptr;
 }
 
 /**
@@ -734,7 +733,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
 const IngameWindow* WindowManager::GetTopMostWindow() const
 {
     if(windows.empty())
-        return NULL;
+        return nullptr;
     else
         return windows.back();
 }
@@ -757,7 +756,7 @@ void WindowManager::Close(const IngameWindow* window)
     if(it == windows.end())
         return; // Window already closed -> Out
 
-    SetToolTip(NULL, "");
+    SetToolTip(nullptr, "");
 
     // War es an vorderster Stelle?
     if(window == windows.back())
@@ -809,7 +808,7 @@ void WindowManager::DoDesktopSwitch()
     RTTR_Assert(nextdesktop);
     VIDEODRIVER.ClearScreen();
 
-    SetToolTip(NULL, "");
+    SetToolTip(nullptr, "");
 
     // haben wir einen aktuell gültigen Desktop?
     if(curDesktop)
@@ -870,7 +869,7 @@ void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& to
 {
     // Max width of tooltip
     const unsigned short MAX_TOOLTIP_WIDTH = 260;
-    static const ctrlBaseTooltip* lttw = NULL;
+    static const ctrlBaseTooltip* lttw = nullptr;
 
     if(tooltip.empty() && (!ttw || lttw == ttw))
         this->curTooltip.clear();

@@ -80,7 +80,7 @@ tc = broadcast to team
  */
 /* Reihenfolge bei Client:
 
-NMS_NULL_MSG            --> ignore
+NMS_nullptr_MSG            --> ignore
 
 NMS_PING                --> NMS_PONG
 
@@ -108,7 +108,7 @@ NMS_DEAD_MSG            --> disconnect
  */
 /* Reihenfolge bei Server:
 
-NMS_NULL_MSG            --> ignore
+NMS_nullptr_MSG            --> ignore
 
 NMS_PONG                --> bc(NMS_PLAYER_PING)
 

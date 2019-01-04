@@ -19,7 +19,6 @@
 #include "TestServer.h"
 #include "libutil/Message.h"
 #include "libutil/SocketSet.h"
-#include <boost/foreach.hpp>
 
 bool TestServer::run()
 {
@@ -28,7 +27,7 @@ bool TestServer::run()
 
     SocketSet set;
 
-    BOOST_FOREACH(Connection& con, connections)
+    for(Connection& con : connections)
         set.Add(con.so);
 
     // Check for errors
@@ -63,7 +62,7 @@ bool TestServer::run()
     {
         msgReceived = true;
         set.Clear();
-        BOOST_FOREACH(Connection& con, connections)
+        for(Connection& con : connections)
             set.Add(con.so);
         if(set.Select(0, 0) <= 0)
             break;
@@ -86,7 +85,7 @@ bool TestServer::run()
 
     handleMessages();
 
-    BOOST_FOREACH(Connection& con, connections)
+    for(Connection& con : connections)
         con.sendQueue.send(con.so, 10);
     return true;
 }

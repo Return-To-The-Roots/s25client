@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainData.h"
-#include <boost/array.hpp>
+#include <array>
 #include <iostream>
 #include <list>
 
@@ -153,7 +153,7 @@ unsigned char TerrainData::GetStartColor(TerrainType t)
 
 unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
 {
-    switch(boost::native_value(landsCape))
+    switch(landsCape)
     {
         case Landscape::GREENLAND:
             switch(t)
@@ -242,7 +242,7 @@ unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
 
 EdgeType TerrainData::GetEdgeType(Landscape landsCape, TerrainType t)
 {
-    switch(boost::native_value(landsCape))
+    switch(landsCape)
     {
         case Landscape::GREENLAND:
             switch(t)
@@ -405,7 +405,7 @@ const signed char TERRAIN_DRAW_PRIORITY[NUM_LTS][NUM_TTS][NUM_TTS] = {
 
 unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, TerrainType t2)
 {
-    static boost::array<boost::array<boost::array<unsigned char, NUM_TTS>, NUM_TTS>, NUM_LTS> EDGE_TABLE;
+    static std::array<std::array<std::array<unsigned char, NUM_TTS>, NUM_TTS>, NUM_LTS> EDGE_TABLE;
     static bool isInitialized = false;
     if(!isInitialized)
     {
@@ -436,10 +436,10 @@ unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, Terr
                 }
         isInitialized = true;
     }
-    return EDGE_TABLE[boost::underlying_cast<uint8_t>(landsCape)][t1][t2];
+    return EDGE_TABLE[static_cast<uint8_t>(landsCape)][t1][t2];
 }
 
-void CheckPriorities(Landscape lt, const boost::array<int, NUM_TTS>& terrainPrios)
+void CheckPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrainPrios)
 {
     for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
         std::cout << iT1 << ": " << terrainPrios[iT1] << std::endl;
@@ -464,12 +464,12 @@ void CheckPriorities(Landscape lt, const boost::array<int, NUM_TTS>& terrainPrio
     std::cout << numWrong << " different entries" << std::endl;
 }
 
-const boost::array<int, NUM_TTS>& TerrainData::GetEdgePrios(Landscape landsCape)
+const std::array<int, NUM_TTS>& TerrainData::GetEdgePrios(Landscape landsCape)
 {
-    static const boost::array<int, NUM_TTS> prioGL = {{}};
-    static const boost::array<int, NUM_TTS> prioWL = {{}};
-    static const boost::array<int, NUM_TTS> prioWW = {{}};
-    switch(boost::native_value(landsCape))
+    static const std::array<int, NUM_TTS> prioGL = {{}};
+    static const std::array<int, NUM_TTS> prioWL = {{}};
+    static const std::array<int, NUM_TTS> prioWW = {{}};
+    switch(landsCape)
     {
         default:
         case Landscape::GREENLAND: return prioGL;
@@ -557,7 +557,7 @@ bool TerrainData::IsLava(TerrainType t)
 
 bool TerrainData::IsSnow(Landscape lt, TerrainType t)
 {
-    switch(boost::native_value(lt))
+    switch(lt)
     {
         case Landscape::GREENLAND: return t == TT_SNOW;
         case Landscape::WASTELAND: return false;

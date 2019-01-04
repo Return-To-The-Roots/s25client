@@ -25,7 +25,6 @@
 #include "nodeObjs/noFlag.h"
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
-#include <boost/foreach.hpp>
 #include <algorithm>
 class noRoadNode;
 
@@ -79,7 +78,7 @@ void nofScout_Free::HandleDerivedEvent(const unsigned /*id*/) {}
 
 void nofScout_Free::LostWork()
 {
-    flag = NULL;
+    flag = nullptr;
 
     switch(state)
     {
@@ -155,7 +154,7 @@ void nofScout_Free::GoToNewNode()
     // Shuffle the points
     RANDOM_FUNCTOR(randFunc);
     std::random_shuffle(available_points.begin(), available_points.end(), randFunc);
-    BOOST_FOREACH(MapPoint pt, available_points)
+    for(MapPoint pt : available_points)
     {
         // Is there a path to this point and is the point also not to far away from the flag?
         // (Second check avoids running around mountains with a very far way back)

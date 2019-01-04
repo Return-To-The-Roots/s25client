@@ -24,12 +24,12 @@
 #include "ai/aijh/AIConstruction.h"
 #include "ai/aijh/AIPlayerJH.h"
 #include "ai/aijh/BuildingPlanner.h"
-#include "boost/foreach.hpp"
 #include "buildings/noBuildingSite.h"
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
+#include <boost/range/adaptor/reversed.hpp>
 
 namespace AIJH {
 
@@ -122,7 +122,7 @@ void BuildJob::TryToBuild()
                    && aiInterface.GetBuildingQuality(foundPos) > BUILDING_SIZE[type] && aijh.BQsurroundcheck(foundPos, 6, true, 10) < 10)
                 {
                     // more than 80% is unbuildable in range 7 -> upgrade
-                    BOOST_FOREACH(BuildingType bld, BuildingProperties::militaryBldTypes)
+                    for(BuildingType bld : BuildingProperties::militaryBldTypes)
                     {
                         if(BUILDING_SIZE[bld] > BUILDING_SIZE[type] && aiInterface.CanBuildBuildingtype(bld))
                         {
@@ -134,7 +134,7 @@ void BuildJob::TryToBuild()
             } else if(aijh.GetBldPlanner().IsExpansionRequired() && BUILDING_SIZE[type] != BQ_HUT)
             {
                 // Downgrade to the next smaller building
-                BOOST_REVERSE_FOREACH(BuildingType bld, BuildingProperties::militaryBldTypes)
+                for(BuildingType bld : BuildingProperties::militaryBldTypes | boost::adaptors::reversed)
                 {
                     if(BUILDING_SIZE[bld] < BUILDING_SIZE[type] && aijh.GetInterface().CanBuildBuildingtype(bld))
                     {

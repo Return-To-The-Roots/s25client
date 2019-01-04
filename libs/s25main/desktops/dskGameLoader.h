@@ -23,18 +23,18 @@
 #include "GameLoader.h"
 #include "network/ClientInterface.h"
 #include "liblobby/LobbyInterface.h"
-#include "libutil/unique_ptr.h"
+#include <memory>
 
 class dskGameInterface;
 
 class dskGameLoader : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskGameLoader(boost::shared_ptr<Game> game);
+    dskGameLoader(std::shared_ptr<Game> game);
     ~dskGameLoader() override;
 
     void LC_Status_Error(const std::string& error) override;
-    void CI_GameStarted(boost::shared_ptr<Game> game) override;
+    void CI_GameStarted(std::shared_ptr<Game> game) override;
     void CI_Error(const ClientError ce) override;
 
 private:
@@ -43,7 +43,7 @@ private:
 
     unsigned position;
     GameLoader loader_;
-    libutil::unique_ptr<dskGameInterface> gameInterface;
+    std::unique_ptr<dskGameInterface> gameInterface;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED

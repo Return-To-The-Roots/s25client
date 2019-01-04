@@ -20,7 +20,6 @@
 #include "world/MapBase.h"
 #include "world/MapGeometry.h"
 #include <boost/assign/std/vector.hpp>
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(WorldCreationSuite)
@@ -59,7 +58,7 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
     // Test border points with 1 offset in Y
     testPoints += Position(0, 1), Position(0, world.GetHeight() - 2), Position(world.GetWidth() - 1, 1),
       Position(world.GetWidth() - 1, world.GetHeight() - 2);
-    BOOST_FOREACH(const Position& pt, testPoints)
+    for(const Position& pt : testPoints)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; dir++)
         {

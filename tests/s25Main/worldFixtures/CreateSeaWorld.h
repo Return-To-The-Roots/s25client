@@ -27,23 +27,23 @@ class GameWorldGame;
 struct SeaWorldDefault
 {
     // Min size is 59
-    BOOST_STATIC_CONSTEXPR unsigned width = 60;
-    BOOST_STATIC_CONSTEXPR unsigned height = 62;
+    static constexpr unsigned width = 60;
+    static constexpr unsigned height = 62;
 };
 
 template<unsigned T_numPlayers>
 struct SmallSeaWorldDefault
 {
     // Min size for 2 players
-    BOOST_STATIC_CONSTEXPR unsigned width = (8 * 2 + 4) * 2;
-    BOOST_STATIC_CONSTEXPR unsigned height = width + 2;
+    static constexpr unsigned width = (8 * 2 + 4) * 2;
+    static constexpr unsigned height = width + 2;
 };
 template<>
 struct SmallSeaWorldDefault<1>
 {
     // Min size for 1 player
-    BOOST_STATIC_CONSTEXPR unsigned width = 8 * 2 + 4;
-    BOOST_STATIC_CONSTEXPR unsigned height = width + 2;
+    static constexpr unsigned width = 8 * 2 + 4;
+    static constexpr unsigned height = width + 2;
 };
 
 /// Creates a world for up to 4 players,

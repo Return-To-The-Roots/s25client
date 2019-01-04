@@ -53,7 +53,7 @@ nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, n
 nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
     : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd.PopUnsignedChar()))
 {
-    if(state == STATE_ENTERBUILDING && current_ev == NULL && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
+    if(state == STATE_ENTERBUILDING && current_ev == nullptr && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
     {
         LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, "
                   "report this!");

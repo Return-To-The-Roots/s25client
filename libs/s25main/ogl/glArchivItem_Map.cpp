@@ -22,7 +22,7 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 
-glArchivItem_Map::glArchivItem_Map() : ArchivItem_Map(), header(NULL) {}
+glArchivItem_Map::glArchivItem_Map() : ArchivItem_Map(), header(nullptr) {}
 
 glArchivItem_Map::~glArchivItem_Map() {}
 
@@ -81,7 +81,7 @@ std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type)
 
 bool glArchivItem_Map::HasLayer(MapLayer type) const
 {
-    return get(type + 1) != NULL;
+    return get(type + 1) != nullptr;
 }
 
 /**

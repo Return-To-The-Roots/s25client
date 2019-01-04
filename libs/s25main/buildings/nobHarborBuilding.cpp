@@ -41,7 +41,6 @@
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
-#include <boost/foreach.hpp>
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd)
     : boards(sgd.PopUnsignedInt()), stones(sgd.PopUnsignedInt()), active(sgd.PopBool()), builder(sgd.PopBool())
@@ -66,7 +65,7 @@ void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData&
 }
 
 nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseWarehouse(BLD_HARBORBUILDING, pos, player, nation), orderware_ev(NULL)
+    : nobBaseWarehouse(BLD_HARBORBUILDING, pos, player, nation), orderware_ev(nullptr)
 {
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
@@ -294,7 +293,7 @@ void nobHarborBuilding::HandleEvent(const unsigned id)
     {
         case 10:
             // Waren-Bestell-Event
-            this->orderware_ev = NULL;
+            this->orderware_ev = nullptr;
             // Mal wieder schauen, ob es Waren für unsere Expedition gibt
             OrderExpeditionWares();
             break;
@@ -329,7 +328,7 @@ void nobHarborBuilding::StartExpedition()
         expedition.builder = false;
         // got a builder in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
-        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses()) //-V807
+        for(const nobBaseWarehouse* wh : owner.GetBuildingRegister().GetStorehouses()) //-V807
         {
             if(wh->GetNumRealFigures(JOB_BUILDER))
             {
@@ -402,7 +401,7 @@ void nobHarborBuilding::StartExplorationExpedition()
         unsigned missing = numScoutsRequired - inventory[JOB_SCOUT];
         // got scouts in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
-        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses()) //-V807
+        for(const nobBaseWarehouse* wh : owner.GetBuildingRegister().GetStorehouses()) //-V807
         {
             const unsigned numScouts = wh->GetNumRealFigures(JOB_SCOUT);
             if(numScouts >= missing)
@@ -877,7 +876,7 @@ void nobHarborBuilding::AddWareForShip(Ware*& ware)
     ware->WaitForShip(this);
     OrderShip();
     // Take ownership
-    ware = NULL;
+    ware = nullptr;
 }
 
 /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
@@ -1010,7 +1009,7 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
         return false;
 
     MapPoint next_harbor;
-    if(gwg->FindHumanPathOnRoads(*this, goal, NULL, &next_harbor) == SHIP_DIR)
+    if(gwg->FindHumanPathOnRoads(*this, goal, nullptr, &next_harbor) == SHIP_DIR)
     {
         // Reduce figure count because figures don't go through the house leaving process
         // And therefore the visual count reducement
@@ -1039,7 +1038,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
 
         // Wenn es kein Ziel mehr hat, sprich keinen weiteren Weg, kann es direkt hier gelagert werden
         if((*it)->GetGoal() == this)
-            (*it)->SetGoalToNULL();
+            (*it)->SetGoalTonullptr();
         else if(!(*it)->HasNoGoal())
         {
             unsigned char nextDir;
@@ -1062,7 +1061,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
             {
                 // No or invalid path -> Store here
                 RTTR_Assert(nextDir == 0xFF);
-                (*it)->SetGoalToNULL();
+                (*it)->SetGoalTonullptr();
                 AddDependentFigure(*it);
             }
         } else
@@ -1085,14 +1084,14 @@ nofAggressiveDefender* nobHarborBuilding::SendAggressiveDefender(nofAttacker* at
 {
     // Don't sent out last soldier
     unsigned numSoldiers = 0;
-    BOOST_FOREACH(const Job rankJob, SOLDIER_JOBS)
+    for(const Job rankJob : SOLDIER_JOBS)
     {
         numSoldiers += inventory[rankJob];
         if(numSoldiers > 1)
             break;
     }
     if(numSoldiers <= 1)
-        return NULL;
+        return nullptr;
     return nobBaseWarehouse::SendAggressiveDefender(attacker);
 }
 

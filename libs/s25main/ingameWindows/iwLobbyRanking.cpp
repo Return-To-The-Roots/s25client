@@ -21,7 +21,6 @@
 #include "controls/ctrlTable.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
-#include <boost/lexical_cast.hpp>
 
 /**
  *  aktualisiert die Ranking-Tabelle.
@@ -38,9 +37,9 @@ void iwLobbyRanking::UpdateRankings(const LobbyPlayerList& rankinglist)
         for(unsigned i = 0; i < rankinglist.size() && i < 10; ++i)
         {
             const LobbyPlayerInfo& rankInfo = *rankinglist.getElement(i);
-            std::string points = boost::lexical_cast<std::string>(rankInfo.getPunkte());
-            std::string numLost = boost::lexical_cast<std::string>(rankInfo.getVerloren());
-            std::string numWon = boost::lexical_cast<std::string>(rankInfo.getGewonnen());
+            std::string points = std::to_string(rankInfo.getPunkte());
+            std::string numLost = std::to_string(rankInfo.getVerloren());
+            std::string numWon = std::to_string(rankInfo.getGewonnen());
             rankingtable->AddRow(0, rankInfo.getName().c_str(), points.c_str(), numLost.c_str(), numWon.c_str());
         }
         if(first)

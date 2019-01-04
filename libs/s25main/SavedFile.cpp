@@ -22,7 +22,6 @@
 #include "libendian/ConvertEndianess.h"
 #include "libutil/BinaryFile.h"
 #include "libutil/Serializer.h"
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <algorithm>
 #include <stdexcept>
@@ -56,7 +55,7 @@ void SavedFile::WriteExtHeader(BinaryFile& file, const std::string& mapName)
     file.WriteRawData(&tmpTime, sizeof(tmpTime));
     file.WriteShortString(mapName);
     file.WriteUnsignedInt(playerNames_.size());
-    BOOST_FOREACH(const std::string& name, playerNames_)
+    for(const std::string& name : playerNames_)
         file.WriteShortString(name);
 }
 
@@ -65,7 +64,7 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
     lastErrorMsg.clear();
 
     const std::string signature = GetSignature();
-    boost::array<char, 32> read_signature;
+    std::array<char, 32> read_signature;
     if(signature.size() > read_signature.size())
         throw std::range_error("Program signature is to long!");
     try
@@ -106,7 +105,7 @@ bool SavedFile::ReadExtHeader(BinaryFile& file)
     saveTime_ = libendian::ConvertEndianess<false>::toNative(saveTime_);
     mapName_ = file.ReadShortString();
     playerNames_.resize(file.ReadUnsignedInt());
-    BOOST_FOREACH(std::string& name, playerNames_)
+    for(std::string& name : playerNames_)
         name = file.ReadShortString();
     return true;
 }

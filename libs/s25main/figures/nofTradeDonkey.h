@@ -26,7 +26,7 @@ class SerializedGameData;
 /// Can also be the other people following the leader!
 class nofTradeDonkey : public noFigure
 {
-    /// Successor (NULL if this is the last one)
+    /// Successor (nullptr if this is the last one)
     nofTradeDonkey* successor;
     /// Ware this donkey carries (GD_NOTHING if this is a normal figure)
     GoodType gt;

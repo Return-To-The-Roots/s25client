@@ -22,7 +22,6 @@
 #include "Loader.h"
 #include "PlayerInfo.h"
 #include "WindowManager.h"
-#include "boost/foreach.hpp"
 #include "buildings/nobMilitary.h"
 #include "controls/ctrlText.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -43,7 +42,8 @@
 #include "gameTypes/RoadBuildState.h"
 #include "libutil/Log.h"
 #include "libutil/strFuncs.h"
-#include <boost/random.hpp>
+#include <helpers/chronoIO.h>
+#include <random>
 
 namespace {
 enum
@@ -74,7 +74,7 @@ dskBenchmark::dskBenchmark() : curTest_(TEST_NONE), runAll_(false), numInstances
     AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F5 to start benchmark, F10 for all, NUM_n to set amount of instances", COLOR_YELLOW,
             FontStyle::LEFT, LargeFont);
     AddText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
-    BOOST_FOREACH(boost::chrono::milliseconds& t, testDurations_)
+    for(std::chrono::milliseconds& t : testDurations_)
         t = t.zero();
 }
 
@@ -114,9 +114,9 @@ bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
 
 void dskBenchmark::Msg_PaintAfter()
 {
-    BOOST_FOREACH(const ColoredRect& rect, rects_)
+    for(const ColoredRect& rect : rects_)
         DrawRectangle(rect.rect, rect.clr);
-    BOOST_FOREACH(const ColoredLine& line, lines_)
+    for(const ColoredLine& line : lines_)
         DrawLine(line.p1, line.p2, line.width, line.clr);
     if(gameView_)
     {
@@ -145,7 +145,7 @@ void dskBenchmark::SetActive(bool activate)
 void dskBenchmark::startTest(Test test)
 {
     uint32_t seed = 0x1337;
-    boost::random::mt19937 rng(seed);
+    std::mt19937 rng(seed);
     switch(test)
     {
         case TEST_NONE:
@@ -155,9 +155,9 @@ void dskBenchmark::startTest(Test test)
             static const std::string charset =
               "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()`~-_=+[{]{\\|;:'\",<.>/? ";
 
-            boost::random::uniform_int_distribution<unsigned> distr(1, 30);
-            boost::random::uniform_int_distribution<unsigned> distr2(0, 100000);
-            boost::random::uniform_int_distribution<unsigned> distrMove(10, 25);
+            std::uniform_int_distribution<unsigned> distr(1, 30);
+            std::uniform_int_distribution<unsigned> distr2(0, 100000);
+            std::uniform_int_distribution<unsigned> distrMove(10, 25);
             DrawPoint pt(0, 0);
             glArchivItem_Font* fnt = NormalFont;
             for(int i = 0; i < numInstances_; i++)
@@ -179,12 +179,12 @@ void dskBenchmark::startTest(Test test)
         case TEST_PRIMITIVES:
         {
             Extent screenSize = VIDEODRIVER.GetScreenSize();
-            boost::random::uniform_int_distribution<unsigned> distSize(5, 50);
-            boost::random::uniform_int_distribution<unsigned> distClr(0, 0xFF);
-            boost::random::uniform_int_distribution<unsigned> distrMove(10, 50);
-            boost::random::uniform_int_distribution<unsigned> distrPosX(0, screenSize.x);
-            boost::random::uniform_int_distribution<unsigned> distrPosY(0, screenSize.y);
-            boost::random::uniform_int_distribution<unsigned> distrWidth(1, 10);
+            std::uniform_int_distribution<unsigned> distSize(5, 50);
+            std::uniform_int_distribution<unsigned> distClr(0, 0xFF);
+            std::uniform_int_distribution<unsigned> distrMove(10, 50);
+            std::uniform_int_distribution<unsigned> distrPosX(0, screenSize.x);
+            std::uniform_int_distribution<unsigned> distrPosY(0, screenSize.y);
+            std::uniform_int_distribution<unsigned> distrWidth(1, 10);
             DrawPoint pt(0, 0);
             for(int i = 0; i < numInstances_; i++)
             {
@@ -242,13 +242,13 @@ void dskBenchmark::startTest(Test test)
             for(unsigned i = 0; i < hqs.size(); i++)
             {
                 std::vector<MapPoint> pts = game_->world.GetPointsInRadius(hqs[i], 15);
-                boost::random::bernoulli_distribution<> dist(numInstances_ / 1000.f);
-                boost::random::bernoulli_distribution<> distEqual;
-                boost::array<BuildingType, 5> blds = {{BLD_BARRACKS, BLD_MILL, BLD_IRONMINE, BLD_SLAUGHTERHOUSE, BLD_BAKERY}};
-                boost::random::uniform_int_distribution<unsigned> getBld(0, blds.size() - 1);
-                boost::random::uniform_int_distribution<unsigned> getJob(0, NUM_JOB_TYPES - 1);
-                boost::random::uniform_int_distribution<int> getDir(0, Direction::COUNT - 1);
-                BOOST_FOREACH(MapPoint pt, pts)
+                std::bernoulli_distribution dist(numInstances_ / 1000.f);
+                std::bernoulli_distribution distEqual;
+                std::array<BuildingType, 5> blds = {{BLD_BARRACKS, BLD_MILL, BLD_IRONMINE, BLD_SLAUGHTERHOUSE, BLD_BAKERY}};
+                std::uniform_int_distribution<unsigned> getBld(0, blds.size() - 1);
+                std::uniform_int_distribution<unsigned> getJob(0, NUM_JOB_TYPES - 1);
+                std::uniform_int_distribution<int> getDir(0, Direction::COUNT - 1);
+                for(MapPoint pt : pts)
                 {
                     MapPoint flagPt = game_->world.GetNeighbour(pt, Direction::SOUTHEAST);
                     if(game_->world.GetNode(pt).obj || game_->world.GetNode(flagPt).obj || !dist(rng))
@@ -262,7 +262,7 @@ void dskBenchmark::startTest(Test test)
                         nofPassiveSoldier* sld = new nofPassiveSoldier(pt, i, mil, mil, 0);
                         mil->AddPassiveSoldier(sld);
                     }
-                    nofPassiveWorker* figure = new nofPassiveWorker(Job(getJob(rng)), flagPt, i, NULL);
+                    nofPassiveWorker* figure = new nofPassiveWorker(Job(getJob(rng)), flagPt, i, nullptr);
                     game_->world.AddFigure(flagPt, figure);
                     figure->StartWandering();
                     figure->StartWalking(Direction::fromInt(getDir(rng)));
@@ -281,8 +281,8 @@ void dskBenchmark::startTest(Test test)
 
 void dskBenchmark::finishTest()
 {
-    using namespace boost::chrono;
-    LOG.write("Benchmark #%1% took %2%. -> %3%/frame\n") % curTest_ % duration_cast<duration<float> >(frameCtr_.getCurIntervalLength())
+    using namespace std::chrono;
+    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % curTest_ % duration_cast<duration<float>>(frameCtr_.getCurIntervalLength())
       % duration_cast<milliseconds>(frameCtr_.getCurIntervalLength() / frameCtr_.getCurNumFrames());
     if(testDurations_[curTest_] == milliseconds::zero())
         testDurations_[curTest_] = duration_cast<milliseconds>(frameCtr_.getCurIntervalLength());
@@ -290,7 +290,7 @@ void dskBenchmark::finishTest()
         testDurations_[curTest_] = duration_cast<milliseconds>(testDurations_[curTest_] + frameCtr_.getCurIntervalLength()) / 2;
 
     std::vector<Window*> ctrls = GetCtrls<Window>();
-    BOOST_FOREACH(Window* ctrl, ctrls)
+    for(Window* ctrl : ctrls)
     {
         if(ctrl->GetID() >= ID_first)
             DeleteCtrl(ctrl->GetID());
@@ -334,8 +334,8 @@ void dskBenchmark::createGame()
         const WorldDescription& desc = world.GetDescription();
         DescIdx<TerrainDesc> lastTerrain(0);
         int lastHeight = 10;
-        boost::random::mt19937 rng(42);
-        using boost::random::uniform_int_distribution;
+        std::mt19937 rng(42);
+        using std::uniform_int_distribution;
         uniform_int_distribution<int> percentage(0, 100);
         uniform_int_distribution<int> randTerrain(0, desc.terrain.size() / 2);
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
@@ -373,14 +373,14 @@ void dskBenchmark::createGame()
 
 void dskBenchmark::printTimes() const
 {
-    using namespace boost::chrono;
+    using namespace std::chrono;
     milliseconds total(0);
     for(unsigned i = 1; i < testDurations_.size(); i++)
     {
-        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % i % duration_cast<duration<float> >(testDurations_[i])
+        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % i % duration_cast<duration<float>>(testDurations_[i])
           % duration_cast<milliseconds>(testDurations_[i] / numTestFrames);
         total += testDurations_[i];
     }
-    LOG.write("Total benchmark time; %1% -> %2%/frame\n") % duration_cast<duration<float> >(total)
+    LOG.write("Total benchmark time; %1% -> %2%/frame\n") % duration_cast<duration<float>>(total)
       % duration_cast<milliseconds>(total / numTestFrames);
 }

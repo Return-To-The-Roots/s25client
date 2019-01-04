@@ -21,7 +21,7 @@
 
 #include "GameObject.h"
 #include "gameTypes/Direction.h"
-#include <boost/array.hpp>
+#include <array>
 #include <vector>
 
 class nofCarrier;
@@ -77,7 +77,7 @@ public:
         carriers_[nr] = c;
     }
     /// haben wir den Carrier "nr"?
-    bool hasCarrier(unsigned char nr) const { return (carriers_[nr] != NULL); }
+    bool hasCarrier(unsigned char nr) const { return (carriers_[nr] != nullptr); }
     /// Braucht die Straße einen Esel? Nur wenn sie auch einen Träger schon hat!
     bool NeedDonkey() const { return (rt == RT_DONKEY && carriers_[0] && !carriers_[1]); }
     /// Hat einen Esel als Arbeiter dazubekommen.
@@ -131,7 +131,7 @@ private:
     /// Beschreibung des Weges, ist length groß und liegt als Beschreibung der einzelnen Richtungen vor (von f1 zu f2)
     std::vector<Direction> route;
     /// Träger (und ggf. Esel), der auf diesem Weg arbeitet
-    boost::array<nofCarrier*, 2> carriers_;
+    std::array<nofCarrier*, 2> carriers_;
 };
 
 #endif // !ROADSEGMENT_H_INCLUDED

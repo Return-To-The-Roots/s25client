@@ -24,7 +24,7 @@
 #include "network/ClientInterface.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
-#include "libutil/unique_ptr.h"
+#include <memory>
 
 class ctrlChat;
 class GameLobby;
@@ -36,8 +36,7 @@ struct GameLobbyController;
 class dskHostGame : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gameLobby, unsigned playerId,
-                libutil::unique_ptr<ILobbyClient> lobbyClient);
+    dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId, std::unique_ptr<ILobbyClient> lobbyClient);
     ~dskHostGame();
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
@@ -76,7 +75,7 @@ private:
     void CI_NewPlayer(const unsigned playerId) override;
     void CI_PlayerLeft(const unsigned playerId) override;
 
-    void CI_GameLoading(boost::shared_ptr<Game> game) override;
+    void CI_GameLoading(std::shared_ptr<Game> game) override;
 
     void CI_PlayerDataChanged(unsigned playerId) override;
     void CI_PingChanged(const unsigned playerId, const unsigned short ping) override;
@@ -98,12 +97,12 @@ private:
 
 private:
     const ServerType serverType;
-    boost::shared_ptr<GameLobby> gameLobby;
+    std::shared_ptr<GameLobby> gameLobby;
     unsigned localPlayerId_;
-    libutil::unique_ptr<ILobbyClient> lobbyClient_;
+    std::unique_ptr<ILobbyClient> lobbyClient_;
     bool hasCountdown_;
-    libutil::unique_ptr<LuaInterfaceSettings> lua;
-    libutil::unique_ptr<GameLobbyController> lobbyHostController;
+    std::unique_ptr<LuaInterfaceSettings> lua;
+    std::unique_ptr<GameLobbyController> lobbyHostController;
     bool wasActivated, allowAddonChange;
     ctrlChat *gameChat, *lobbyChat;
     unsigned lobbyChatTabAnimId, localChatTabAnimId;

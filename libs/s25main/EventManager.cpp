@@ -21,12 +21,10 @@
 #include "GameObject.h"
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
-#include "helpers/mapTraits.h"
 #include "libutil/Log.h"
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
-EventManager::EventManager(unsigned startGF) : numActiveEvents(0), eventInstanceCtr(1), currentGF(startGF), curActiveEvent(NULL) {}
+EventManager::EventManager(unsigned startGF) : numActiveEvents(0), eventInstanceCtr(1), currentGF(startGF), curActiveEvent(nullptr) {}
 
 EventManager::~EventManager()
 {
@@ -37,7 +35,7 @@ void EventManager::Clear()
 {
     for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
     {
-        BOOST_FOREACH(const GameEvent* ev, it->second)
+        for(const GameEvent* ev : it->second)
         {
             delete ev;
             RTTR_Assert(numActiveEvents > 0u);
@@ -50,7 +48,7 @@ void EventManager::Clear()
     for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
     {
         GameObject* obj = *it;
-        *it = NULL;
+        *it = nullptr;
         delete obj;
     }
     killList.clear();
@@ -109,7 +107,7 @@ void EventManager::DestroyCurrentObjects()
     {
         GameObject* obj = *it;
         // Object is no longer in the kill list (some may check this upon destruction)
-        *it = NULL;
+        *it = nullptr;
         obj->Destroy();
         delete obj;
     }
@@ -156,7 +154,7 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
         delete ev;
         --numActiveEvents;
     }
-    curActiveEvent = NULL;
+    curActiveEvent = nullptr;
     events.erase(itEvents);
 }
 
@@ -174,7 +172,7 @@ void EventManager::Serialize(SerializedGameData& sgd) const
     }
 
     sgd.PushUnsignedInt(saveEvents.size());
-    BOOST_FOREACH(const GameEvent* ev, saveEvents)
+    for(const GameEvent* ev : saveEvents)
         sgd.PushEvent(ev);
     sgd.PushUnsignedInt(eventInstanceCtr);
 }
@@ -198,7 +196,7 @@ void EventManager::Deserialize(SerializedGameData& sgd)
     }
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
-        BOOST_FOREACH(const GameEvent* ev, it->second)
+        for(const GameEvent* ev : it->second)
         {
             if(ev->GetInstanceId() >= eventInstanceCtr)
             {
@@ -213,7 +211,7 @@ bool EventManager::ObjectHasEvents(const GameObject& obj)
 {
     for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
     {
-        BOOST_FOREACH(const GameEvent* ev, it->second)
+        for(const GameEvent* ev : it->second)
         {
             if(ev->obj == &obj)
                 return true;
@@ -236,7 +234,7 @@ void EventManager::RemoveEvent(const GameEvent*& ep)
     {
         RTTR_Assert(false);
         LOG.write("Bug detected: Active event deleted");
-        ep = NULL;
+        ep = nullptr;
         return;
     }
     RemoveEventFromQueue(*ep);

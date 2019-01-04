@@ -24,7 +24,7 @@
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/array.hpp>
+#include <array>
 
 /// Static class returning properties of terrain types
 class TerrainData
@@ -53,7 +53,7 @@ public:
     /// 0: None, 1: Snow, 2: Mountain, 3: Desert, 4: Meadow, 5: Water
     static unsigned char GetEdgeType(Landscape landsCape, TerrainType t1, TerrainType t2);
     static void PrintEdgePrios();
-    static const boost::array<int, NUM_TTS>& GetEdgePrios(Landscape landsCape);
+    static const std::array<int, NUM_TTS>& GetEdgePrios(Landscape landsCape);
     /// Returns whether the given map terrain index is a harbour spot
     static bool IsHarborSpot(unsigned char mapIdx) { return (mapIdx & 0x40) != 0; }
     /// Returns whether the given terrain type can be used (is not deadly)

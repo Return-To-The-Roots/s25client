@@ -31,7 +31,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
-#include <boost/array.hpp>
+#include <array>
 
 unsigned short noTree::DRAW_COUNTER = 0;
 
@@ -230,8 +230,7 @@ void noTree::DontFall()
 void noTree::ProduceAnimal()
 {
     // neues Tier erzeugen, zufälliger Typ
-    static const boost::array<Species, 6> possibleSpecies = {
-      {SPEC_RABBITWHITE, SPEC_RABBITGREY, SPEC_FOX, SPEC_STAG, SPEC_DEER, SPEC_SHEEP}};
+    static const std::array<Species, 6> possibleSpecies = {{SPEC_RABBITWHITE, SPEC_RABBITGREY, SPEC_FOX, SPEC_STAG, SPEC_DEER, SPEC_SHEEP}};
     noAnimal* animal = new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
     // In die Landschaft setzen
     gwg->AddFigure(pos, animal);

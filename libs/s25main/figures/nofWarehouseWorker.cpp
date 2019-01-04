@@ -95,7 +95,7 @@ void nofWarehouseWorker::GoalReached()
             gwg->GetSpecObj<noFlag>(pos)->AddWare(carried_ware);
 
             // Ich trage keine Ware mehr
-            carried_ware = NULL;
+            carried_ware = nullptr;
         } else
             // ansonsten Ware wieder mit reinnehmen
             carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NORTHWEST)));
@@ -136,7 +136,7 @@ void nofWarehouseWorker::Walked()
                 LooseWare();
             }
             // Ich trage keine Ware mehr
-            RTTR_Assert(carried_ware == NULL);
+            RTTR_Assert(carried_ware == nullptr);
         }
     } else
     {
@@ -151,7 +151,7 @@ void nofWarehouseWorker::Walked()
                 LooseWare();
             }
             // Ich trage keine Ware mehr
-            RTTR_Assert(carried_ware == NULL);
+            RTTR_Assert(carried_ware == nullptr);
         }
     }
 

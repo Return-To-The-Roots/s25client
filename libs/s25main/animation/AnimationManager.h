@@ -40,7 +40,7 @@ public:
     unsigned addAnimation(Animation* animation);
     /// Return true, if the given animation still exists
     bool isAnimationActive(unsigned animId) const;
-    /// Return the animation with the given id or NULL if it doesn't exist
+    /// Return the animation with the given id or nullptr if it doesn't exist
     Animation* getAnimation(unsigned animId);
     /// Return the id of a given animation
     unsigned getAnimationId(const Animation* animation) const;

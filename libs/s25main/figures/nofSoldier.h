@@ -67,7 +67,7 @@ public:
     /// Liefert Rang des Soldaten
     unsigned char GetRank() const;
     unsigned char GetHitpoints() const;
-    bool HasNoHome() const { return building == NULL; }
+    bool HasNoHome() const { return building == nullptr; }
 };
 
 /// Comparator to sort soldiers by rank (and ID for ties)
@@ -87,6 +87,6 @@ struct ComparatorSoldiersByRank
 };
 
 class nofPassiveSoldier;
-typedef boost::container::flat_set<nofPassiveSoldier*, ComparatorSoldiersByRank<true> > SortedTroops;
+typedef boost::container::flat_set<nofPassiveSoldier*, ComparatorSoldiersByRank<true>> SortedTroops;
 
 #endif

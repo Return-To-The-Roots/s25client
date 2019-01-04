@@ -23,7 +23,6 @@
 #include "icon.h"
 #include "openglCfg.hpp"
 #include "libutf8/utf8.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
@@ -55,7 +54,7 @@ DRIVERDLLAPI const char* GetDriverName()
     return "(SDL2) OpenGL via SDL2-Library";
 }
 
-VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), window(NULL), context(NULL) {}
+VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), window(nullptr), context(nullptr) {}
 
 VideoSDL2::~VideoSDL2()
 {
@@ -209,7 +208,7 @@ void VideoSDL2::HandlePaste()
     if(!IsClipboardFormatAvailable(CF_UNICODETEXT))
         return;
 
-    OpenClipboard(NULL);
+    OpenClipboard(nullptr);
 
     HANDLE hData = GetClipboardData(CF_UNICODETEXT);
     const wchar_t* pData = (const wchar_t*)GlobalLock(hData);
@@ -444,6 +443,6 @@ void* VideoSDL2::GetMapPointer() const
     // return (void*)wmInfo.info.win.window;
     return (void*)wmInfo.info.win.window;
 #else
-    return NULL;
+    return nullptr;
 #endif
 }

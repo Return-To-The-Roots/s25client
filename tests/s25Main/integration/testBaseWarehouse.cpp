@@ -24,14 +24,14 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/ShieldConsts.h"
-#include <boost/array.hpp>
 #include <boost/test/unit_test.hpp>
+#include <array>
 #include <rttr/test/LogAccessor.hpp>
 
 struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::test::LogAccessor
 {
-    boost::array<unsigned, NUM_JOB_TYPES> numPeople, numPeoplePlayer;
-    boost::array<unsigned, NUM_WARE_TYPES> numGoods, numGoodsPlayer;
+    std::array<unsigned, NUM_JOB_TYPES> numPeople, numPeoplePlayer;
+    std::array<unsigned, NUM_WARE_TYPES> numGoods, numGoodsPlayer;
     AddGoodsFixture()
     {
         GamePlayer& player = world.GetPlayer(0);

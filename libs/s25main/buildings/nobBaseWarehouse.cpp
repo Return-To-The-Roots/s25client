@@ -212,7 +212,7 @@ void nobBaseWarehouse::Clear()
 
 void nobBaseWarehouse::OrderCarrier(noRoadNode& goal, RoadSegment& workplace)
 {
-    RTTR_Assert(workplace.getCarrier(0) == NULL);
+    RTTR_Assert(workplace.getCarrier(0) == nullptr);
     const bool isBoatRequired = workplace.GetRoadType() == RoadSegment::RT_BOAT;
 
     // We assume, that the caller already checked, if this is possible
@@ -269,7 +269,7 @@ nofCarrier* nobBaseWarehouse::OrderDonkey(RoadSegment* road, noRoadNode* const g
 {
     // Überhaupt ein Esel vorhanden?
     if(!inventory[JOB_PACKDONKEY])
-        return NULL;
+        return nullptr;
 
     nofCarrier* donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, goal_flag);
     AddLeavingFigure(donkey);
@@ -283,23 +283,23 @@ void nobBaseWarehouse::HandleBaseEvent(const unsigned id)
     switch(id)
     {
         case 0:
-            leaving_event = NULL;
+            leaving_event = nullptr;
             HandleLeaveEvent();
             break;
         case 1:
-            producinghelpers_event = NULL;
+            producinghelpers_event = nullptr;
             HandleProduceHelperEvent();
             break;
         case 2:
-            recruiting_event = NULL;
+            recruiting_event = nullptr;
             HandleRecrutingEvent();
             break;
         case 3:
-            empty_event = NULL;
+            empty_event = nullptr;
             HandleSendoutEvent();
             break;
         case 4:
-            store_event = NULL;
+            store_event = nullptr;
             HandleCollectEvent();
             break;
     }
@@ -405,7 +405,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     if(selectedId < NUM_WARE_TYPES)
     {
         // Ware
-        Ware* ware = new Ware(GoodType(selectedId), NULL, this);
+        Ware* ware = new Ware(GoodType(selectedId), nullptr, this);
         noBaseBuilding* wareGoal = gwg->GetPlayer(player).FindClientForWare(ware);
         if(wareGoal != this)
         {
@@ -434,7 +434,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
         nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(Job(selectedId)), true, false);
         if(wh != this)
         {
-            nofPassiveWorker* fig = new nofPassiveWorker(Job(selectedId), pos, player, NULL);
+            nofPassiveWorker* fig = new nofPassiveWorker(Job(selectedId), pos, player, nullptr);
 
             if(wh)
                 fig->GoHome(wh);
@@ -683,7 +683,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
     if(!inventory[good])
     {
         LOG.write("nobBaseWarehouse::OrderWare: WARNING: No ware type %u in warehouse!\n") % static_cast<unsigned>(good);
-        return NULL;
+        return nullptr;
     }
 
     Ware* ware = new Ware(good, goal, this);
@@ -711,7 +711,7 @@ void nobBaseWarehouse::AddWaitingWare(Ware*& ware)
     AddLeavingEvent();
     // Die visuelle Warenanzahl wieder erhöhen
     inventory.visual.Add(ConvertShields(ware->type));
-    ware = NULL; // Take ownership
+    ware = nullptr; // Take ownership
 }
 
 bool nobBaseWarehouse::FreePlaceAtFlag()
@@ -950,7 +950,7 @@ nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker* att
 
     // Wenn kein Soldat mehr da ist --> 0 zurückgeben
     if(!rank)
-        return NULL;
+        return nullptr;
 
     // Dann den Stärksten rausschicken
     nofAggressiveDefender* soldier = new nofAggressiveDefender(pos, player, this, rank - 1, attacker);
@@ -1073,7 +1073,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
         return defender;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 bool nobBaseWarehouse::AreRecruitingConditionsComply()
@@ -1443,7 +1443,7 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, Job job, const unsi
     AddLeavingFigure(tl);
 
     // Create the donkeys or other people
-    nofTradeDonkey* last = NULL;
+    nofTradeDonkey* last = nullptr;
     for(unsigned i = 0; i < count; ++i)
     {
         nofTradeDonkey* next = new nofTradeDonkey(pos, player, gt, job);

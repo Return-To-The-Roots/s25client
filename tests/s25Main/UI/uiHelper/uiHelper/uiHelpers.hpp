@@ -18,7 +18,7 @@
 #ifndef uiHelpers_h__
 #define uiHelpers_h__
 
-#include "libutil/unique_ptr.h"
+#include <memory>
 
 class MockupVideoDriver;
 class Desktop;

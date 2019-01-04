@@ -23,7 +23,7 @@
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/PlayerState.h"
 #include "gameData/NationConsts.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Game;
 class GlobalGameSettings;
@@ -52,9 +52,9 @@ public:
     virtual void CI_NewPlayer(const unsigned /*playerId*/) {}
     virtual void CI_PlayerLeft(const unsigned /*playerId*/) {}
     /// Game entered loading state
-    virtual void CI_GameLoading(boost::shared_ptr<Game>) {}
+    virtual void CI_GameLoading(std::shared_ptr<Game>) {}
     /// Game is started and running
-    virtual void CI_GameStarted(boost::shared_ptr<Game>) {}
+    virtual void CI_GameStarted(std::shared_ptr<Game>) {}
 
     virtual void CI_PlayerDataChanged(unsigned /*playerId*/) {}
     virtual void CI_PingChanged(const unsigned /*playerId*/, const unsigned short /*ping*/) {}

@@ -22,7 +22,6 @@
 #include "libutf8/utf8.h"
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 
@@ -117,7 +116,7 @@ void LuaInterfaceBase::SetThrowOnError(bool doThrow)
 std::map<std::string, std::string> LuaInterfaceBase::GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)
 {
     std::vector<std::string> folders = getPossibleFoldersForLangCode(code);
-    BOOST_FOREACH(const std::string& folder, folders)
+    for(const std::string& folder : folders)
     {
         kaguya::LuaRef entry = luaTranslations[folder];
         if(entry.type() == LUA_TTABLE)
@@ -131,7 +130,7 @@ void LuaInterfaceBase::RegisterTranslations(const kaguya::LuaRef& luaTranslation
     // Init with default
     translations_ = GetTranslation(luaTranslations, "en_GB");
     // Replace with entries of current locale
-    std::string locale = mysetlocale(LC_ALL, NULL);
+    std::string locale = mysetlocale(LC_ALL, nullptr);
     std::map<std::string, std::string> translated = GetTranslation(luaTranslations, locale);
     for(std::map<std::string, std::string>::const_iterator it = translated.begin(); it != translated.end(); ++it)
         translations_[it->first] = it->second;

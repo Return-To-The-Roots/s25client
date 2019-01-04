@@ -41,7 +41,7 @@ namespace {
 /* clang-format off */
 MOCK_BASE_CLASS(TestDesktop, Desktop)
 {
-    TestDesktop(): Desktop(NULL){}
+    TestDesktop(): Desktop(nullptr){}
     MOCK_METHOD(Msg_LeftDown, 1)
     MOCK_METHOD(Msg_RightDown, 1)
     MOCK_METHOD(Msg_LeftUp, 1)

@@ -20,7 +20,7 @@
 
 #include "DrawPointInit.h"
 #include "gameData/NationConsts.h"
-#include <boost/array.hpp>
+#include <array>
 
 /// Größe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude
 const unsigned short MILITARY_SQUARE_SIZE = 20;
@@ -51,7 +51,7 @@ const int NUM_TROOPSS[NUM_NATS][4] = {{2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, 
 const unsigned short NUM_GOLDS[NUM_NATS][4] = {{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}};
 
 /// Radien der Militärgebäude
-const boost::array<unsigned, 4> SUPPRESS_UNUSED MILITARY_RADIUS = {{8, 9, 10, 11}};
+const std::array<unsigned, 4> SUPPRESS_UNUSED MILITARY_RADIUS = {{8, 9, 10, 11}};
 // Radius für einzelne Hafen(baustellen)
 const unsigned HARBOR_RADIUS = 8;
 const unsigned HQ_RADIUS = 9;
@@ -323,6 +323,6 @@ const unsigned short HIT_SOLDIERS[NUM_NATS][5] = {{1556, 1558, 1560, 1562, 1564}
                                                   {1143, 1145, 1147, 1149, 1147}};
 
 /// Bestimmt den Aufblinkframe vom den Opfern der folgenden Angreifer (nach Rängen)
-const boost::array<unsigned short, 5> SUPPRESS_UNUSED HIT_MOMENT = {{4, 4, 4, 4, 6}};
+const std::array<unsigned short, 5> SUPPRESS_UNUSED HIT_MOMENT = {{4, 4, 4, 4, 6}};
 
 #endif

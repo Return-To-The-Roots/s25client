@@ -23,7 +23,6 @@
 #include "gameData/MilitaryConsts.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
-#include <boost/foreach.hpp>
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
@@ -40,7 +39,7 @@ GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
       teamView(ggs.teamView), randomStartPosition(ggs.randomStartPosition)
 {
     registerAllAddons();
-    BOOST_FOREACH(const AddonWithState& addon, ggs.addons)
+    for(const AddonWithState& addon : ggs.addons)
         setSelection(addon.addon->getId(), addon.status);
 }
 
@@ -55,7 +54,7 @@ GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
     exploration = ggs.exploration;
     teamView = ggs.teamView;
     randomStartPosition = ggs.randomStartPosition;
-    BOOST_FOREACH(const AddonWithState& addon, ggs.addons)
+    for(const AddonWithState& addon : ggs.addons)
         setSelection(addon.addon->getId(), addon.status);
 
     return *this;
@@ -132,7 +131,7 @@ void GlobalGameSettings::registerAllAddons()
 
 void GlobalGameSettings::resetAddons()
 {
-    BOOST_FOREACH(AddonWithState& addon, addons)
+    for(AddonWithState& addon : addons)
         addon.status = addon.addon->getDefaultStatus();
 }
 
@@ -140,7 +139,7 @@ const Addon* GlobalGameSettings::getAddon(unsigned nr, unsigned& status) const
 {
     const Addon* addon = getAddon(nr);
     if(!addon)
-        return NULL;
+        return nullptr;
 
     status = addons[nr].status;
     return addon;
@@ -149,7 +148,7 @@ const Addon* GlobalGameSettings::getAddon(unsigned nr, unsigned& status) const
 const Addon* GlobalGameSettings::getAddon(unsigned nr) const
 {
     if(nr >= addons.size())
-        return NULL;
+        return nullptr;
     else
         return addons[nr].addon;
 }
@@ -198,7 +197,7 @@ void GlobalGameSettings::LoadSettings()
 void GlobalGameSettings::SaveSettings() const
 {
     SETTINGS.addons.configuration.clear();
-    BOOST_FOREACH(const AddonWithState& addon, addons)
+    for(const AddonWithState& addon : addons)
         SETTINGS.addons.configuration.insert(std::make_pair(addon.addon->getId(), addon.status));
 }
 
@@ -218,7 +217,7 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
     ser.PushBool(randomStartPosition);
 
     ser.PushUnsignedInt(addons.size());
-    BOOST_FOREACH(const AddonWithState& addon, addons)
+    for(const AddonWithState& addon : addons)
     {
         ser.PushUnsignedInt(addon.addon->getId());
         ser.PushUnsignedInt(addon.status);

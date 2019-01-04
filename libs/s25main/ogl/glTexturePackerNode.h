@@ -38,8 +38,8 @@ class glTexturePackerNode
     glTexturePackerNode* child[2];
 
 public:
-    glTexturePackerNode() : pos(0, 0), size(0, 0), bmp(NULL) { child[0] = child[1] = NULL; }
-    glTexturePackerNode(const Extent& size) : pos(0, 0), size(size), bmp(NULL) { child[0] = child[1] = NULL; }
+    glTexturePackerNode() : pos(0, 0), size(0, 0), bmp(nullptr) { child[0] = child[1] = nullptr; }
+    glTexturePackerNode(const Extent& size) : pos(0, 0), size(size), bmp(nullptr) { child[0] = child[1] = nullptr; }
     /// Find a position in the buffer to draw the bitmap starting at this node
     /// todo list is cleared and used to avoid frequent allocations
     bool insert(glSmartBitmap* b, libsiedler2::PixelBufferARGB& buffer, std::vector<glTexturePackerNode*>& todo);

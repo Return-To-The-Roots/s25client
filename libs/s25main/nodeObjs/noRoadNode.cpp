@@ -49,11 +49,11 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
     if(this->GetGOT() == GOT_FLAG)
     {
         // this is a trick:
-        // -> initialize routes for flag with NULL
+        // -> initialize routes for flag with nullptr
         // -> RoadSegment will set these later
         for(unsigned i = 0; i < 6; ++i)
         {
-            sgd.PushObject(static_cast<GameObject*>(NULL), true);
+            sgd.PushObject(static_cast<GameObject*>(nullptr), true);
         }
     } else
     {
@@ -104,13 +104,13 @@ void noRoadNode::DestroyRoad(const Direction dir)
     {
         if(oflag->routes[z] == route)
         {
-            oflag->routes[z] = NULL;
+            oflag->routes[z] = nullptr;
             break;
         } else
             RTTR_Assert(z < 5); // Need to find it before last iteration
     }
 
-    SetRoute(dir, NULL);
+    SetRoute(dir, nullptr);
 
     route->Destroy();
     delete route;

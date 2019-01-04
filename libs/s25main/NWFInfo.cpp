@@ -87,7 +87,7 @@ bool NWFInfo::addServerInfo(const NWFServerInfo& info)
 bool NWFInfo::isReady()
 {
     bool result = true;
-    BOOST_FOREACH(NWFPlayerInfo& player, playerInfos_)
+    for(NWFPlayerInfo& player : playerInfos_)
     {
         player.checkLagging();
         result &= !player.isLagging;
@@ -126,7 +126,7 @@ void NWFInfo::execute(FramesInfo& info)
         throw std::runtime_error("Cannot execute NWF if not ready");
     const NWFServerInfo serverInfo = getServerInfo();
     serverInfos_.pop();
-    BOOST_FOREACH(NWFPlayerInfo& player, playerInfos_)
+    for(NWFPlayerInfo& player : playerInfos_)
     {
         if(player.commands.empty())
             throw std::runtime_error("Cannot execute NWF if not ready");

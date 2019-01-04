@@ -22,7 +22,7 @@
 #include "driver/KeyEvent.h"
 #include "driver/VideoMode.h"
 #include "libutil/Singleton.h"
-#include "libutil/unique_ptr.h"
+#include <memory>
 #include <string>
 
 class IVideoDriver;
@@ -35,14 +35,14 @@ class FrameLimiter;
 class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicies::WithLongevity>
 {
 public:
-    BOOST_STATIC_CONSTEXPR unsigned Longevity = 30;
+    static constexpr unsigned Longevity = 30;
 
     VideoDriverWrapper();
     ~VideoDriverWrapper() override;
 
     /// Loads a new driver. Takes the existing one, if given
     /// Do not use this class unless this returned true!
-    bool LoadDriver(IVideoDriver* existingDriver = NULL);
+    bool LoadDriver(IVideoDriver* existingDriver = nullptr);
     void UnloadDriver();
     IVideoDriver* GetDriver() const { return videodriver; }
 
@@ -100,7 +100,7 @@ public:
     unsigned GetFPS() const;
 
     std::string GetName() const;
-    bool IsLoaded() const { return videodriver != NULL; }
+    bool IsLoaded() const { return videodriver != nullptr; }
 
     /// Calculate the size of the texture which is optimal for the driver and at least minSize
     Extent calcPreferredTextureSize(const Extent& minSize) const;
@@ -122,9 +122,9 @@ private:
 private:
     DriverWrapper driver_wrapper;
     IVideoDriver* videodriver;
-    libutil::unique_ptr<IRenderer> renderer_;
-    libutil::unique_ptr<FrameCounter> frameCtr_;
-    libutil::unique_ptr<FrameLimiter> frameLimiter_;
+    std::unique_ptr<IRenderer> renderer_;
+    std::unique_ptr<FrameCounter> frameCtr_;
+    std::unique_ptr<FrameLimiter> frameLimiter_;
     bool loadedFromDll;
     /// (Some) OpenGL can be disabled for testing
     bool isOglEnabled_;

@@ -201,7 +201,7 @@ void iwMapGenerator::Reset()
     GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->SetPosition(mapSettings.ratioGranite);
 
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE);
-    switch(boost::native_value(mapSettings.style))
+    switch(mapSettings.style)
     {
         case MapStyle::Islands: combo->SetSelection(0); break;
         case MapStyle::Continent: combo->SetSelection(1); break;

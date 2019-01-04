@@ -140,7 +140,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         unsigned bestId = best.id_;
         // LOG.write((" now %i, %i id: %i \n", best.x, best.y, best_id);
         // Dieser Knoten wurde aus dem set entfernt, daher wird der entsprechende Iterator
-        // auf das Ende (also nicht definiert) gesetzt, quasi als "NULL"-Ersatz
+        // auf das Ende (also nicht definiert) gesetzt, quasi als "nullptr"-Ersatz
         // pf_nodes[best_id].it_p = todo.end();
 
         // Ziel schon erreicht?

@@ -19,13 +19,13 @@
 #define FoWNode_h__
 
 #include "gameTypes/MapTypes.h"
-#include <boost/array.hpp>
+#include <array>
 
 class FOWObject;
 class SerializedGameData;
 
 /// Border stones on 1 node: Directly on Point and halfway to E, SE and SW
-typedef boost::array<uint8_t, 4> BoundaryStones;
+typedef std::array<uint8_t, 4> BoundaryStones;
 
 /// How a player sees the point in FoW
 struct FoWNode
@@ -36,7 +36,7 @@ struct FoWNode
     Visibility visibility;
     /// FOW-Objekt
     FOWObject* object;
-    boost::array<uint8_t, 3> roads;
+    std::array<uint8_t, 3> roads;
     unsigned char owner;
     BoundaryStones boundary_stones;
 

@@ -297,9 +297,9 @@ void LuaPlayer::Surrender(bool destroyBlds)
         player.GetGameWorld().Armageddon(player.GetPlayerId());
 }
 
-kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos() const
+std::tuple<unsigned, unsigned> LuaPlayer::GetHQPos() const
 {
-    return kaguya::standard::tuple<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
+    return std::tuple<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
 }
 
 bool LuaPlayer::IsAlly(unsigned char otherPlayerId)
@@ -316,7 +316,7 @@ void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, cons
 {
     Game& gameInst = *game.lock();
     AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
-    if(ai != NULL)
+    if(ai != nullptr)
     {
         AIInterface aii = ai->getAIInterface();
         aii.SuggestPact(otherPlayerId, pt, duration);
@@ -327,7 +327,7 @@ void LuaPlayer::CancelPact(const PactType pt, unsigned char otherPlayerId)
 {
     Game& gameInst = *game.lock();
     AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
-    if(ai != NULL)
+    if(ai != nullptr)
     {
         AIInterface aii = ai->getAIInterface();
         aii.CancelPact(pt, otherPlayerId);

@@ -18,8 +18,10 @@
 #ifndef SoundEffect_h__
 #define SoundEffect_h__
 
-#include <boost/core/scoped_enum.hpp>
-
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(SoundEffect){Fanfare, Pidgeon} BOOST_SCOPED_ENUM_DECLARE_END(SoundEffect)
+enum class SoundEffect
+{
+    Fanfare,
+    Pidgeon
+};
 
 #endif // SoundEffect_h__

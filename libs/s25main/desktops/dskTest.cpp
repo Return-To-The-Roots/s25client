@@ -32,7 +32,6 @@
 #include "files.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
-#include <boost/foreach.hpp>
 
 namespace {
 enum
@@ -58,8 +57,8 @@ enum
 dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
 {
     AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER, LargeFont);
-    boost::array<TextureColor, 4> textures = {{TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY}};
-    boost::array<std::string, 4> labels = {{"Green1", "Green2", "Red1", "Grey"}};
+    std::array<TextureColor, 4> textures = {{TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY}};
+    std::array<std::string, 4> labels = {{"Green1", "Green2", "Red1", "Grey"}};
     unsigned yPos = 50;
     unsigned curId = ID_grpBtStart;
     for(unsigned i = 0; i < textures.size(); i++)
@@ -178,7 +177,7 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
 bool dskTest::Msg_RightUp(const MouseCoords& mc)
 {
     std::vector<ctrlButton*> bts = GetCtrls<ctrlButton>();
-    BOOST_FOREACH(ctrlButton* bt, bts)
+    for(ctrlButton* bt : bts)
     {
         if(IsPointInRect(mc.GetPos(), bt->GetDrawRect()))
         {

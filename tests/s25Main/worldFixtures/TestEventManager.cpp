@@ -18,8 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TestEventManager.h"
 #include "GameEvent.h"
-#include <libutil/unique_ptr.h>
-#include <boost/foreach.hpp>
+#include <memory>
 
 unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
 {
@@ -44,7 +43,7 @@ std::vector<const GameEvent*> TestEventManager::GetObjEvents(const GameObject& o
     std::vector<const GameEvent*> objEvnts;
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
-        BOOST_FOREACH(const GameEvent* ev, it->second)
+        for(const GameEvent* ev : it->second)
         {
             if(ev->obj == &obj)
                 objEvnts.push_back(ev);
@@ -57,7 +56,7 @@ bool TestEventManager::IsEventActive(const GameObject& obj, const unsigned id) c
 {
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
-        BOOST_FOREACH(const GameEvent* ev, it->second)
+        for(const GameEvent* ev : it->second)
         {
             if(ev->id == id && ev->obj == &obj)
                 return true;

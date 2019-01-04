@@ -43,7 +43,6 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <glad/glad.h>
 #include <stdexcept>
@@ -192,7 +191,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
                     fowobj->Draw(curPos);
             }
 
-            BOOST_FOREACH(IDrawNodeCallback* callback, drawNodeCallbacks)
+            for(IDrawNodeCallback* callback : drawNodeCallbacks)
                 callback->onDraw(curPt, curPos);
         }
 
@@ -227,7 +226,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
-    boost::array<MapPoint, 6> road_points;
+    std::array<MapPoint, 6> road_points;
 
     unsigned maxWaterWayLen = 0;
     if(rb.mode != RM_DISABLED)
@@ -429,7 +428,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
 void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines)
 {
     const std::list<noBase*>& figures = GetWorld().GetFigures(pt);
-    BOOST_FOREACH(noBase* figure, figures)
+    for(noBase* figure : figures)
     {
         if(figure->IsMoving())
         {
@@ -451,8 +450,8 @@ void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRen
                                                std::vector<ObjectBetweenLines>& between_lines)
 {
     // First draw figures moving towards this point from below
-    static const boost::array<Direction, 2> aboveDirs = {{Direction::NORTHEAST, Direction::NORTHWEST}};
-    BOOST_FOREACH(Direction dir, aboveDirs)
+    static const std::array<Direction, 2> aboveDirs = {{Direction::NORTHEAST, Direction::NORTHWEST}};
+    for(Direction dir : aboveDirs)
     {
         // Get figures opposite the current dir and check if they are moving in this dir
         // Coordinates transform
@@ -461,7 +460,7 @@ void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRen
         Position figPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
         const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
-        BOOST_FOREACH(noBase* figure, figures)
+        for(noBase* figure : figures)
         {
             if(figure->IsMoving() && static_cast<noMovable*>(figure)->GetCurMoveDir() == dir)
                 between_lines.push_back(ObjectBetweenLines(figure, figPos));

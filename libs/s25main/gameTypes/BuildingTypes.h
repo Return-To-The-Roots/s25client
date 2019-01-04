@@ -22,7 +22,7 @@
 #include "GoodTypes.h"
 #include "JobTypes.h"
 #include "Point.h"
-#include <boost/array.hpp>
+#include <array>
 
 struct BuildingCost
 {
@@ -39,20 +39,20 @@ enum BuildingSize
     BZ_MINE
 };
 
-struct WaresNeeded : boost::array<GoodType, 3>
+struct WaresNeeded : std::array<GoodType, 3>
 {
     WaresNeeded(GoodType good1 = GD_NOTHING, GoodType good2 = GD_NOTHING, GoodType good3 = GD_NOTHING)
     {
-        elems[0] = good1;
-        elems[1] = good2;
-        elems[2] = good3;
+        (*this)[0] = good1;
+        (*this)[1] = good2;
+        (*this)[2] = good3;
     }
     /// Return number of non-empty entries (assumes GD_NOTHING implies all others are GD_NOTHING too)
     unsigned getNum() const
     {
         for(unsigned i = 0; i < size(); i++)
         {
-            if(elems[i] == GD_NOTHING)
+            if((*this)[i] == GD_NOTHING)
                 return i;
         }
         return size();

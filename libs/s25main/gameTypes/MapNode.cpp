@@ -24,7 +24,7 @@
 #include <algorithm>
 
 MapNode::MapNode()
-    : altitude(10), shadow(64), t1(0), t2(0), resources(0), reserved(false), owner(0), bq(BQ_NOTHING), seaId(0), harborId(0), obj(NULL)
+    : altitude(10), shadow(64), t1(0), t2(0), resources(0), reserved(false), owner(0), bq(BQ_NOTHING), seaId(0), harborId(0), obj(nullptr)
 {
     std::fill(roads.begin(), roads.end(), 0);
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
@@ -55,7 +55,7 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
 }
 
 void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
-                          const std::vector<DescIdx<TerrainDesc> >& landscapeTerrains)
+                          const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains)
 {
     for(unsigned z = 0; z < roads.size(); ++z)
     {

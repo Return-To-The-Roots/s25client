@@ -22,8 +22,8 @@
 #include "Point.h"
 #include "libutil/ProxySettings.h"
 #include "libutil/Singleton.h"
-#include <boost/array.hpp>
 #include <boost/optional.hpp>
+#include <array>
 #include <map>
 #include <string>
 
@@ -38,7 +38,7 @@ bool checkPort(int port);
 class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 {
 public:
-    BOOST_STATIC_CONSTEXPR unsigned Longevity = 18;
+    static constexpr unsigned Longevity = 18;
 
     Settings();
 
@@ -119,11 +119,11 @@ public:
         std::map<unsigned, unsigned> configuration;
     } addons;
 
-    static const boost::array<short, 13> SCREEN_REFRESH_RATES;
+    static const std::array<short, 13> SCREEN_REFRESH_RATES;
 
 private:
     static const int VERSION;
-    static const boost::array<std::string, 11> SECTION_NAMES;
+    static const std::array<std::string, 11> SECTION_NAMES;
 };
 
 #define SETTINGS Settings::inst()

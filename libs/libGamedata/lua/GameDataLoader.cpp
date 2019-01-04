@@ -78,7 +78,7 @@ void GameDataLoader::Register(kaguya::State& state)
 
 void GameDataLoader::Include(const std::string& filepath)
 {
-    BOOST_CONSTEXPR_OR_CONST int maxIncludeDepth = 10;
+    constexpr int maxIncludeDepth = 10;
     // Protect against cycles and stack overflows
     if(++curIncludeDepth_ >= maxIncludeDepth)
         throw std::runtime_error("Include file '" + filepath + "' cannot be included as the maximum include depth of 10 is reached!");

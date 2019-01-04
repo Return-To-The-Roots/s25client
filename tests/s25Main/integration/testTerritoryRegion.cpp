@@ -21,18 +21,16 @@
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
 #include "helpers/containerUtils.h"
-#include "helpers/setTraits.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "world/GameWorld.h"
 #include "world/TerritoryRegion.h"
-#include <boost/array.hpp>
 #include <boost/assign/std/set.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/test/unit_test.hpp>
+#include <array>
 #include <iostream>
 #include <rttr/test/testHelpers.hpp>
 #include <string>
@@ -126,7 +124,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     // Consistency checks
 
     // Make a rectangle (10,5)->(15,10) and 2 parallelograms below
-    boost::array<std::vector<MapPoint>, 4> rectAreas;
+    std::array<std::vector<MapPoint>, 4> rectAreas;
     rectAreas[0] += MapPoint(10, 5), MapPoint(15, 5), MapPoint(15, 10);
     rectAreas[0] += MapPoint(18, 13), MapPoint(15, 15);
     rectAreas[0] += MapPoint(10, 15);
@@ -182,13 +180,13 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     for(unsigned i = 0; i < rectAreas.size(); i++)
     {
         // Those must be outside
-        BOOST_FOREACH(MapPoint pt, outsidePts)
+        for(MapPoint pt : outsidePts)
         {
             BOOST_REQUIRE(!TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt));
         }
     }
     // Border points are unspecified, but must be consistently either inside or outside
-    BOOST_FOREACH(MapPoint pt, borderPts)
+    for(MapPoint pt : borderPts)
     {
         const bool isValid = TerritoryRegion::IsPointValid(worldSize, rectAreas[0], pt);
         if(isValid)
@@ -234,7 +232,7 @@ typedef WorldFixture<CreateEmptyWorld, 2, 26, 10> WorldFixtureEmpty2P;
 
 BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
 {
-    boost::array<MapPoint, 3> milBldPos;
+    std::array<MapPoint, 3> milBldPos;
     milBldPos[0] = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + Position(2, 0));
     milBldPos[1] = world.MakeMapPoint(milBldPos[0] + Position(5, 4));
     milBldPos[2] = world.MakeMapPoint(milBldPos[0] + Position(5, -4));
@@ -264,9 +262,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
             positions.push_back(milBldPos[0]);
         else
             positions.push_back(milBldPos[2]);
-        BOOST_FOREACH(const MapPoint pt, positions)
+        for(const MapPoint pt : positions)
             BuildingFactory::CreateBuilding(world, BLD_BARRACKS, pt, (pt == milBldPos[0]) ? 0 : 1, NAT_AFRICANS);
-        boost::array<nobBaseMilitary*, 5> milBlds;
+        std::array<nobBaseMilitary*, 5> milBlds;
         // bld 0 last as it would destroy others
         for(int j = 2; j >= 0; --j)
         {
@@ -284,7 +282,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
         TerritoryRegion region(Position(0, 0), Extent(world.GetSize()), world);
         sortedMilitaryBlds buildings = world.LookForMilitaryBuildings(MapPoint(0, 0), 99);
         BOOST_REQUIRE_EQUAL(buildings.size(), 5u);
-        BOOST_FOREACH(const nobBaseMilitary* bld, buildings)
+        for(const nobBaseMilitary* bld : buildings)
             region.CalcTerritoryOfBuilding(*bld);
         // Check that TerritoryRegion assigned owners as expected
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
@@ -292,7 +290,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
             uint8_t owner = 0;
             unsigned bestDist = 1000;
             unsigned bestID = 0;
-            BOOST_FOREACH(const nobBaseMilitary* bld, milBlds)
+            for(const nobBaseMilitary* bld : milBlds)
             {
                 unsigned distance = world.CalcDistance(pt, bld->GetPos());
                 // The closest bld gets the point. If 2 players are tied, the younger bld gets it
@@ -316,15 +314,15 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
             else
                 RTTR_REQUIRE_NE_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
         }
-        BOOST_FOREACH(const MapPoint pt, milBldPos)
+        for(const MapPoint pt : milBldPos)
         {
             world.DestroyNO(pt);
             world.DestroyNO(pt); // Destroy fire
             // Pause figure
-            BOOST_FOREACH(noBase* sld, world.GetFigures(pt))
+            for(noBase* sld : world.GetFigures(pt))
             {
                 std::vector<const GameEvent*> evts = em.GetObjEvents(*sld);
-                BOOST_FOREACH(const GameEvent* ev, evts)
+                for(const GameEvent* ev : evts)
                     em.RescheduleEvent(ev, em.GetCurrentGF() + 10000);
             }
         }

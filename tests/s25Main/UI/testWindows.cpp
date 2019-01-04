@@ -23,7 +23,6 @@
 #include "desktops/Desktop.h"
 #include "ingameWindows/iwVictory.h"
 #include "uiHelper/uiHelpers.hpp"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <turtle/mock.hpp>
 
@@ -51,10 +50,10 @@ BOOST_AUTO_TEST_CASE(Victory)
     // Find a text field containing all winner names
     std::vector<const ctrlText*> txts = wnd.GetCtrls<ctrlText>();
     bool found = false;
-    BOOST_FOREACH(const ctrlText* txt, txts)
+    for(const ctrlText* txt : txts)
     {
         bool curFound = true;
-        BOOST_FOREACH(const std::string& name, winnerNames)
+        for(const std::string& name : winnerNames)
         {
             curFound &= txt->GetText().find(name) != std::string::npos;
         }
@@ -98,11 +97,11 @@ BOOST_AUTO_TEST_CASE(DrawOrder)
     }
     mock::sequence s;
     // Note: Actually order of calls to controls is undefined but in practice matches the IDs
-    BOOST_FOREACH(TestWindow* wnd, wnds)
+    for(TestWindow* wnd : wnds)
         MOCK_EXPECT(wnd->Msg_PaintBefore).once().in(s);
-    BOOST_FOREACH(TestWindow* wnd, wnds)
+    for(TestWindow* wnd : wnds)
         MOCK_EXPECT(wnd->Draw_).once().in(s);
-    BOOST_FOREACH(TestWindow* wnd, wnds)
+    for(TestWindow* wnd : wnds)
         MOCK_EXPECT(wnd->Msg_PaintAfter).once().in(s);
     WINDOWMANAGER.Draw();
     mock::verify();

@@ -24,7 +24,7 @@ namespace rttr { namespace test {
     struct LocaleResetter
     {
         const std::string oldLoc;
-        LocaleResetter(const char* newLoc) : oldLoc(mysetlocale(LC_ALL, NULL)) { mysetlocale(LC_ALL, newLoc); }
+        LocaleResetter(const char* newLoc) : oldLoc(mysetlocale(LC_ALL, nullptr)) { mysetlocale(LC_ALL, newLoc); }
         ~LocaleResetter() { mysetlocale(LC_ALL, oldLoc.c_str()); }
     };
 }} // namespace rttr::test

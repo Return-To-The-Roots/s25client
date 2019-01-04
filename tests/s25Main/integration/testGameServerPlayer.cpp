@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_SUITE(GameServerPlayerSuite)
 
 BOOST_FIXTURE_TEST_CASE(Ping, rttr::test::MockClockFixture)
 {
-    using namespace boost::chrono;
+    using namespace std::chrono;
     Socket sock;
     GameServerPlayer player(1, sock);
     currentTime += seconds(5);

@@ -18,8 +18,7 @@
 #ifndef mathFuncs_h__
 #define mathFuncs_h__
 
-#include <boost/type_traits/common_type.hpp>
-#include <boost/type_traits/is_signed.hpp>
+#include <type_traits>
 
 namespace helpers {
 
@@ -42,13 +41,13 @@ T clamp(T val, T min, T max)
 template<typename T, typename U>
 U clamp(T val, U min, U max)
 {
-    typedef typename boost::common_type<T, U>::type Common;
-    if(boost::is_signed<T>::value && !boost::is_signed<U>::value)
+    typedef std::common_type_t<T, U> Common;
+    if(std::is_signed<T>::value && !std::is_signed<U>::value)
     {
         // min/max is unsigned -> No negative values possible
         if(val < 0)
             return min;
-    } else if(!boost::is_signed<T>::value && boost::is_signed<U>::value)
+    } else if(!std::is_signed<T>::value && std::is_signed<U>::value)
     {
         // min/max is signed
         if(max < 0)

@@ -27,14 +27,14 @@ namespace rttr { namespace test {
     /// Provide the last log line via getLog
     struct LogAccessor
     {
-        boost::shared_ptr<AvoidDuplicatesWriter> logWriter;
-        boost::shared_ptr<BufferedWriter> logWriterBuff;
+        std::shared_ptr<AvoidDuplicatesWriter> logWriter;
+        std::shared_ptr<BufferedWriter> logWriterBuff;
 
         LogAccessor()
         {
-            logWriter = boost::dynamic_pointer_cast<AvoidDuplicatesWriter>(LOG.getStdoutWriter());
+            logWriter = std::dynamic_pointer_cast<AvoidDuplicatesWriter>(LOG.getStdoutWriter());
             BOOST_REQUIRE(logWriter);
-            logWriterBuff = boost::dynamic_pointer_cast<BufferedWriter>(logWriter->origWriter);
+            logWriterBuff = std::dynamic_pointer_cast<BufferedWriter>(logWriter->origWriter);
             BOOST_REQUIRE(logWriterBuff);
             flush();
         }

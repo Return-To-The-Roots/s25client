@@ -25,7 +25,7 @@
 #include "mygettext/mygettext.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
-#include "libutil/unique_ptr.h"
+#include <memory>
 
 #ifndef _WIN32
 #include <dlfcn.h>
@@ -103,7 +103,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 void* GetDLLFunction2(HINSTANCE dll, const std::string& name)
 {
     if(!dll)
-        return NULL;
+        return nullptr;
 #ifdef _WIN32
     union
     {
@@ -124,7 +124,7 @@ void* DriverWrapper::GetDLLFunction(const std::string& name)
 
 bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)
 {
-    libutil::unique_ptr<HINSTANCE, DeleterFreeLib> dll(LoadLibraryW(path.c_str()));
+    std::unique_ptr<HINSTANCE, DeleterFreeLib> dll(LoadLibraryW(path.c_str()));
 
     if(!dll)
     {

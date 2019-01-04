@@ -17,7 +17,6 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "driver/VideoDriver.h"
-#include <boost/foreach.hpp>
 #include <algorithm>
 #include <stdexcept>
 
@@ -75,7 +74,7 @@ VideoMode VideoDriver::FindClosestVideoMode(const VideoMode& mode) const
         throw std::runtime_error("No supported video modes found!");
     unsigned minSizeDiff = std::numeric_limits<unsigned>::max();
     VideoMode best = avModes.front();
-    BOOST_FOREACH(const VideoMode& current, avModes)
+    for(const VideoMode& current : avModes)
     {
         unsigned sizeDiff = safeDiff(current.width, mode.width) * safeDiff(current.height, mode.height);
         if(sizeDiff < minSizeDiff)

@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
     player.name = "TestName";
     player.isHost = true;
 
-    libutil::unique_ptr<MockLobbyClient> client(new MockLobbyClient);
+    auto client = std::make_unique<MockLobbyClient>();
     mock::sequence s, s2;
     MOCK_EXPECT(client->IsLoggedIn).at_least(1).in(s2).returns(true);
     MOCK_EXPECT(client->AddListener).exactly(1).in(s);
@@ -66,8 +66,7 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
     MOCK_EXPECT(client->SendServerJoinRequest).exactly(1).in(s2);
     MOCK_EXPECT(client->SendRankingInfoRequest).at_least(1);
 
-    dskHostGame* desktop = new dskHostGame(ServerType::LOBBY, boost::shared_ptr<GameLobby>(&gameLobby, &deleteNoting), 0,
-                                           libutil::unique_ptr<ILobbyClient>(client.release())); // boost::move(client));
+    dskHostGame* desktop = new dskHostGame(ServerType::LOBBY, std::shared_ptr<GameLobby>(&gameLobby, &deleteNoting), 0, std::move(client));
     ClientInterface* ci = dynamic_cast<ClientInterface*>(desktop);
     LobbyInterface* li = dynamic_cast<LobbyInterface*>(desktop);
     BOOST_REQUIRE(ci && li);

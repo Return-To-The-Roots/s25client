@@ -39,7 +39,7 @@
 const MapCoord MAX_HUNTING_DISTANCE = 50;
 
 nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(JOB_HUNTER, pos, player, workplace), animal(NULL), shootingPos(0, 0)
+    : nofBuildingWorker(JOB_HUNTER, pos, player, workplace), animal(nullptr), shootingPos(0, 0)
 {}
 
 void nofHunter::Serialize_nofHunter(SerializedGameData& sgd) const
@@ -63,7 +63,7 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
         shooting_dir = Direction::fromInt(sgd.PopUnsignedChar());
     } else
     {
-        animal = NULL;
+        animal = nullptr;
         shootingPos = MapPoint::Invalid();
     }
 }
@@ -422,7 +422,7 @@ void nofHunter::StartWalkingHome()
     if(animal)
     {
         animal->StopHunting();
-        animal = NULL;
+        animal = nullptr;
     }
 
     state = STATE_WALKINGHOME;
@@ -457,7 +457,7 @@ void nofHunter::WalkHome()
 
 void nofHunter::AnimalLost()
 {
-    animal = NULL;
+    animal = nullptr;
 
     switch(state)
     {
@@ -491,7 +491,7 @@ void nofHunter::WorkAborted()
         if(animal)
         {
             animal->StopHunting();
-            animal = NULL;
+            animal = nullptr;
         }
     }
 }

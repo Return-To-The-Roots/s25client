@@ -33,9 +33,8 @@
 #include "gameTypes/MapInfo.h"
 #include "libutil/tmpFile.h"
 #include <boost/filesystem/operations.hpp>
-#include <boost/foreach.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/test/unit_test.hpp>
+#include <memory>
 #include <rttr/test/testHelpers.hpp>
 
 template<class T>
@@ -198,7 +197,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     firePositions.push_back(world.MakeMapPoint(hqPos + Position(8, 0)));
     firePositions.push_back(world.MakeMapPoint(hqPos + Position(7, 0)));
     firePositions.push_back(world.MakeMapPoint(hqPos + Position(9, 0)));
-    BOOST_FOREACH(const MapPoint& pt, firePositions)
+    for(const MapPoint& pt : firePositions)
     {
         BOOST_REQUIRE(!world.GetNode(pt).obj);
         world.SetNO(pt, new noFire(pt, false));
@@ -267,7 +266,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             std::vector<PlayerInfo> players;
             for(unsigned j = 0; j < 4; j++)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
-            boost::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
+            std::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
             GameWorld& newWorld = sharedGame->world;
             save.sgd.ReadSnapshot(sharedGame);
             TestEventManager& newEm = static_cast<TestEventManager&>(sharedGame->world.GetEvMgr());
@@ -301,7 +300,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
                 BOOST_REQUIRE_EQUAL(loadNode.bq, worldNode.bq);
                 BOOST_REQUIRE_EQUAL(loadNode.seaId, worldNode.seaId);
                 BOOST_REQUIRE_EQUAL(loadNode.harborId, worldNode.harborId);
-                BOOST_REQUIRE_EQUAL(loadNode.obj != NULL, worldNode.obj != NULL);
+                BOOST_REQUIRE_EQUAL(loadNode.obj != nullptr, worldNode.obj != nullptr);
             }
             const nobUsual* newUsual = newWorld.GetSpecObj<nobUsual>(usualBldPos);
             BOOST_REQUIRE(newUsual);
@@ -343,7 +342,7 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     BOOST_REQUIRE(!replay.IsValid());
     BOOST_REQUIRE(!replay.IsRecording());
     BOOST_REQUIRE(!replay.IsReplaying());
-    BOOST_FOREACH(const BasePlayerInfo& player, players)
+    for(const BasePlayerInfo& player : players)
         replay.AddPlayer(player);
     replay.ggs.speed = GS_VERYFAST;
     replay.random_init = 815;
@@ -450,7 +449,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     BOOST_REQUIRE(!replay.IsValid());
     BOOST_REQUIRE(!replay.IsRecording());
     BOOST_REQUIRE(!replay.IsReplaying());
-    BOOST_FOREACH(const BasePlayerInfo& player, players)
+    for(const BasePlayerInfo& player : players)
         replay.AddPlayer(player);
     replay.ggs.speed = GS_VERYFAST;
     replay.random_init = 815;

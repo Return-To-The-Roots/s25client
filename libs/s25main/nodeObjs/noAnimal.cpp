@@ -34,7 +34,7 @@
 
 noAnimal::noAnimal(const Species species, const MapPoint pos)
     : noMovable(NOP_ANIMAL, pos), species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)),
-      hunter(NULL), sound_moment(0)
+      hunter(nullptr), sound_moment(0)
 {}
 
 void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
@@ -132,7 +132,7 @@ void noAnimal::Draw(DrawPoint drawPt)
 
 void noAnimal::HandleEvent(const unsigned id)
 {
-    current_ev = NULL;
+    current_ev = nullptr;
 
     switch(id)
     {
@@ -167,7 +167,7 @@ void noAnimal::HandleEvent(const unsigned id)
             if(hunter)
             {
                 hunter->AnimalLost();
-                hunter = NULL;
+                hunter = nullptr;
             }
         }
         break;
@@ -199,7 +199,7 @@ void noAnimal::StandardWalking()
         if(hunter) //-V779
         {
             hunter->AnimalLost();
-            hunter = NULL;
+            hunter = nullptr;
         }
     } else
     {
@@ -341,7 +341,7 @@ MapPoint noAnimal::HunterIsNear()
 void noAnimal::StopHunting()
 {
     // keiner jagt uns mehr
-    hunter = NULL;
+    hunter = nullptr;
 
     switch(state)
     {
@@ -384,5 +384,5 @@ void noAnimal::Eviscerated()
     // Event abmelden
     GetEvMgr().RemoveEvent(current_ev);
     // Reset hunter
-    hunter = NULL;
+    hunter = nullptr;
 }

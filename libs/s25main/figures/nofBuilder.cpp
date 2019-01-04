@@ -69,7 +69,7 @@ nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id)
 
 void nofBuilder::GoalReached()
 {
-    goal_ = NULL;
+    goal_ = nullptr;
     // an der Baustelle normal anfangen zu arbeiten
     state = STATE_WAITINGFREEWALK;
 
@@ -88,13 +88,13 @@ void nofBuilder::AbrogateWorkplace()
     {
         state = STATE_FIGUREWORK;
         building_site->Abrogate();
-        building_site = NULL;
+        building_site = nullptr;
     }
 }
 
 void nofBuilder::LostWork()
 {
-    building_site = NULL;
+    building_site = nullptr;
 
     if(state == STATE_FIGUREWORK)
         GoHome();
@@ -141,7 +141,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
             } else if(building_site->IsBuildingComplete())
             {
                 // fertig mit Bauen!
-                current_ev = NULL;
+                current_ev = nullptr;
 
                 // Baustelle abreißen und Gebäude hinsetzen
 
@@ -158,7 +158,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                     gwg->RemoveHarborBuildingSiteFromSea(building_site);
 
                 // Remove buildingsite, but don't destroy!
-                gwg->SetNO(building_site->GetPos(), NULL);
+                gwg->SetNO(building_site->GetPos(), nullptr);
                 deletePtr(building_site);
 
                 noBuilding* bld = BuildingFactory::CreateBuilding(*gwg, building_type, pos, player, building_nation);

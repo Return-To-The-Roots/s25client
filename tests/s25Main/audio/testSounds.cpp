@@ -84,7 +84,7 @@ BOOST_FIXTURE_TEST_CASE(SoundHandles, LoadMockupAudio)
 BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
 {
     libsiedler2::Archiv snd;
-    boost::array<std::string, 3> musicFiles = {{"/test.ogg", "/testMidi.mid", "/testXMidi.xmi"}};
+    std::array<std::string, 3> musicFiles = {{"/test.ogg", "/testMidi.mid", "/testXMidi.xmi"}};
     BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR "/testMono.wav", snd), 0);
     SoundEffectItem* effect = dynamic_cast<SoundEffectItem*>(snd[0]);
     BOOST_REQUIRE(effect);

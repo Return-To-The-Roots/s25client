@@ -51,9 +51,8 @@
 #include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainDesc.h"
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
-#include <boost/math/special_functions/round.hpp>
 #include <algorithm>
+#include <cmath>
 #include <functional>
 #include <set>
 #include <stdexcept>
@@ -468,13 +467,13 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
 
     std::set<MapPoint, MapPointComp> ptsHandled;
     // Destroy everything from old player on all nodes where the owner has changed
-    BOOST_FOREACH(const MapPoint& curMapPt, ptsWithChangedOwners)
+    for(const MapPoint& curMapPt : ptsWithChangedOwners)
     {
         // Destroy everything around this point as this is at best a border node where nothing should be around
         // Do not destroy the triggering building or its flag
         // TODO: What about this point?
         const uint8_t owner = GetNode(curMapPt).owner;
-        BOOST_FOREACH(Direction dir, Direction())
+        for(Direction dir : Direction())
         {
             MapPoint neighbourPt = GetNeighbour(curMapPt, dir);
             if(ptsHandled.insert(neighbourPt).second)
@@ -486,7 +485,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     }
 
     // Destroy remaining roads going through non-owned territory
-    BOOST_FOREACH(const MapPoint& curMapPt, ptsWithChangedOwners)
+    for(const MapPoint& curMapPt : ptsWithChangedOwners)
     {
         // Skip if there is an object. We are looking only for roads going through, not ending here
         // (objects here are already destroyed and if the road ended there it would have been as well)
@@ -499,7 +498,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         flag->DestroyRoad(dir);
     }
 
-    BOOST_FOREACH(const MapPoint& pt, ptsHandled)
+    for(const MapPoint& pt : ptsHandled)
     {
         // BQ neu berechnen
         RecalcBQ(pt);
@@ -536,7 +535,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     // Notify script
     if(HasLua())
     {
-        BOOST_FOREACH(const MapPoint& pt, ptsWithChangedOwners)
+        for(const MapPoint& pt : ptsWithChangedOwners)
         {
             const uint8_t newOwner = GetNode(pt).owner;
             // Event for map scripting
@@ -597,14 +596,14 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(bldPos, 3);
-    BOOST_FOREACH(const nobBaseMilitary* milBld, buildings)
+    for(const nobBaseMilitary* milBld : buildings)
     {
         if(!(reason == TerritoryChangeReason::Destroyed && milBld == &building))
             region.CalcTerritoryOfBuilding(*milBld);
     }
 
     // Baustellen von Häfen mit einschließen
-    BOOST_FOREACH(const noBuildingSite* bldSite, harbor_building_sites_from_sea)
+    for(const noBuildingSite* bldSite : harbor_building_sites_from_sea)
     {
         if(!(reason == TerritoryChangeReason::Destroyed && bldSite == &building))
             region.CalcTerritoryOfBuilding(*bldSite);
@@ -747,7 +746,7 @@ void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
         MapPoint nb = GetNeighbour(pt, Direction::fromInt(i));
 
         // Figuren Bescheid sagen
-        BOOST_FOREACH(noBase* object, GetFigures(nb))
+        for(noBase* object : GetFigures(nb))
         {
             if(object->GetType() == NOP_FIGURE)
                 static_cast<noFigure*>(object)->NodeFreed(pt);
@@ -848,7 +847,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
     // Send the soldiers to attack
     unsigned short i = 0;
 
-    BOOST_FOREACH(PotentialAttacker& pa, soldiers)
+    for(PotentialAttacker& pa : soldiers)
     {
         if(i >= soldiers_count)
             break;
@@ -888,13 +887,13 @@ void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapP
 
     // Sort them
     if(strong_soldiers)
-        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::greater<unsigned> >());
+        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::greater<unsigned>>());
     else
-        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::less<unsigned> >());
+        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::less<unsigned>>());
 
     nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     unsigned counter = 0;
-    BOOST_FOREACH(GameWorldBase::PotentialSeaAttacker& pa, attackers)
+    for(GameWorldBase::PotentialSeaAttacker& pa : attackers)
     {
         if(counter >= soldiers_count)
             break;
@@ -909,7 +908,7 @@ void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapP
 bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
 {
     // Figuren durchgehen, bei Kämpfen und wartenden Angreifern sowie anderen wartenden Figuren stoppen!
-    BOOST_FOREACH(noBase* object, GetFigures(pt))
+    for(noBase* object : GetFigures(pt))
     {
         // andere wartende Figuren
         /*
@@ -1078,7 +1077,7 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
 
     // Sichtbereich von Militärgebäuden
-    BOOST_FOREACH(const nobBaseMilitary* milBld, buildings)
+    for(const nobBaseMilitary* milBld : buildings)
     {
         if(milBld->GetPlayer() == player && milBld != exception)
         {
@@ -1095,7 +1094,7 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
     }
 
     // Sichtbereich von Hafenbaustellen
-    BOOST_FOREACH(const noBuildingSite* bldSite, harbor_building_sites_from_sea)
+    for(const noBuildingSite* bldSite : harbor_building_sites_from_sea)
     {
         if(bldSite->GetPlayer() == player && bldSite != exception)
         {
@@ -1105,7 +1104,7 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
     }
 
     // Sichtbereich von Spähtürmen
-    BOOST_FOREACH(const nobUsual* bld, GetPlayer(player).GetBuildingRegister().GetBuildings(BLD_LOOKOUTTOWER)) //-V807
+    for(const nobUsual* bld : GetPlayer(player).GetBuildingRegister().GetBuildings(BLD_LOOKOUTTOWER)) //-V807
     {
         // Ist Späturm überhaupt besetzt?
         if(!bld->HasWorker())
@@ -1129,10 +1128,10 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
 
 bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, unsigned distance) const
 {
-    BOOST_STATIC_ASSERT_MSG(VISUALRANGE_SCOUT >= VISUALRANGE_SOLDIER, "Visual range changed. Check loop below!");
+    static_assert(VISUALRANGE_SCOUT >= VISUALRANGE_SOLDIER, "Visual range changed. Check loop below!");
 
     // Späher/Soldaten in der Nähe prüfen und direkt auf dem Punkt
-    BOOST_FOREACH(noBase* obj, GetFigures(pt))
+    for(noBase* obj : GetFigures(pt))
     {
         const GO_Type got = obj->GetGOT();
         // Check for scout. Note: no need to check for distance as scouts have higher distance than soldiers
@@ -1167,7 +1166,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, 
 bool GameWorldGame::IsPointScoutedByShip(const MapPoint& pt, unsigned player) const
 {
     const std::vector<noShip*>& ships = GetPlayer(player).GetShips();
-    BOOST_FOREACH(const noShip* ship, ships)
+    for(const noShip* ship : ships)
     {
         unsigned shipDistance = CalcDistance(pt, ship->GetPos());
         if(shipDistance <= ship->GetVisualRange())
@@ -1220,7 +1219,7 @@ void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCo
                                                   const noBaseBuilding* const exception)
 {
     std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
-    BOOST_FOREACH(const MapPoint& pt, pts)
+    for(const MapPoint& pt : pts)
         RecalcVisibility(pt, player, exception);
 }
 
@@ -1228,7 +1227,7 @@ void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCo
 void GameWorldGame::MakeVisibleAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player)
 {
     std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
-    BOOST_FOREACH(const MapPoint& curPt, pts)
+    for(const MapPoint& curPt : pts)
         MakeVisible(curPt, player);
 }
 
@@ -1298,13 +1297,13 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     for(MapCoord i = 0; i < radius + 1; ++i)
         t = GetNeighbour(t, anti_moving_dir);
 
-    RecalcVisibility(t, player, NULL);
+    RecalcVisibility(t, player, nullptr);
     tt = t;
     dir = anti_moving_dir + 2u;
     for(MapCoord i = 0; i < radius; ++i)
     {
         tt = GetNeighbour(tt, dir);
-        RecalcVisibility(tt, player, NULL);
+        RecalcVisibility(tt, player, nullptr);
     }
 
     tt = t;
@@ -1312,7 +1311,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     for(unsigned i = 0; i < radius; ++i)
     {
         tt = GetNeighbour(tt, dir);
-        RecalcVisibility(tt, player, NULL);
+        RecalcVisibility(tt, player, nullptr);
     }
 }
 
@@ -1378,7 +1377,7 @@ void GameWorldGame::PlaceAndFixWater()
             }
         }
         if(minHumidity)
-            curNodeResource = Resource(Resource::Water, waterEverywhere ? 7 : boost::math::iround(minHumidity * 7. / 100.));
+            curNodeResource = Resource(Resource::Water, waterEverywhere ? 7 : static_cast<uint8_t>(std::lround(minHumidity * 7. / 100.)));
         else
             curNodeResource = Resource(Resource::Nothing);
 

@@ -37,7 +37,7 @@ noShipBuildingSite::~noShipBuildingSite() {}
 
 void noShipBuildingSite::Destroy()
 {
-    gwg->SetNO(pos, NULL);
+    gwg->SetNO(pos, nullptr);
 
     Destroy_noCoordBase();
 }
@@ -98,7 +98,7 @@ void noShipBuildingSite::MakeBuildStep()
     {
         // Replace me by ship
         GetEvMgr().AddToKillList(this);
-        gwg->SetNO(pos, NULL);
+        gwg->SetNO(pos, nullptr);
         noShip* ship = new noShip(pos, player);
         gwg->AddFigure(pos, ship);
 

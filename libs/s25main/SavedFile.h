@@ -84,7 +84,7 @@ protected:
 private:
     std::vector<BasePlayerInfo> players;
     /// Revision as saved in the file
-    boost::array<char, 8> revision;
+    std::array<char, 8> revision;
     /// Zeitpunkt der Aufnahme
     s25util::time64_t saveTime_;
     /// Mapname

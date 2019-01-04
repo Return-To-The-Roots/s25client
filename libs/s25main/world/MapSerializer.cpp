@@ -96,7 +96,7 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
     world.Init(size, lt);
     GameObject::ResetCounters(sgd.PopUnsignedInt());
 
-    std::vector<DescIdx<TerrainDesc> > landscapeTerrains;
+    std::vector<DescIdx<TerrainDesc>> landscapeTerrains;
     if(sgd.GetGameDataVersion() < 3)
     {
         // Assumes the order of the terrain in the description file is the same as in the prior RTTR versions

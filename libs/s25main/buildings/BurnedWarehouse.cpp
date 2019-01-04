@@ -69,7 +69,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
 {
     RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 
-    boost::array<Direction, 6> possibleDirs;
+    std::array<Direction, 6> possibleDirs;
     unsigned possibleDirCt = 0;
 
     // Mögliche Richtungen zählen und speichern
@@ -123,7 +123,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             for(unsigned z = 0; z < numPeopleInDir; ++z)
             {
                 // Job erzeugen
-                nofPassiveWorker* figure = new nofPassiveWorker(Job(iJob), pos, player, NULL);
+                nofPassiveWorker* figure = new nofPassiveWorker(Job(iJob), pos, player, nullptr);
                 // Auf die Map setzen
                 gwg->AddFigure(pos, figure);
                 // Losrumirren in die jeweilige Richtung

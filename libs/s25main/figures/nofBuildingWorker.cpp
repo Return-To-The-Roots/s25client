@@ -38,7 +38,7 @@ nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const un
 }
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
-    : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(NULL), ware(GD_NOTHING), was_sounding(false)
+    : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(nullptr), ware(GD_NOTHING), was_sounding(false)
 {}
 
 void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) const
@@ -76,7 +76,7 @@ void nofBuildingWorker::AbrogateWorkplace()
     if(workplace)
     {
         workplace->WorkerLost();
-        workplace = NULL;
+        workplace = nullptr;
     }
 }
 
@@ -301,7 +301,7 @@ void nofBuildingWorker::LostWork()
         break;
     }
 
-    workplace = NULL;
+    workplace = nullptr;
 }
 
 void nofBuildingWorker::ProductionStopped()

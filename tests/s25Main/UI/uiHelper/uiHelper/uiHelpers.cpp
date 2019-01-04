@@ -30,7 +30,7 @@ namespace uiHelper {
 class DummyDesktop : public Desktop
 {
 public:
-    DummyDesktop() : Desktop(NULL) {}
+    DummyDesktop() : Desktop(nullptr) {}
 };
 void initGUITests()
 {

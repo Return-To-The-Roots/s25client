@@ -17,9 +17,9 @@ if(NOT MSVC)
             if(NOT CMAKE_${lang}_COMPILER MATCHES "ccache")
                 message(STATUS "Using ccache(${CCACHE_PROGRAM}) for ${lang} to speed up builds")
                 set(CMAKE_${lang}_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
-    endif()
+            endif()
         endforeach()
-endif()
+    endif()
 endif()
 
 message(STATUS "Using CMake ${CMAKE_VERSION}")
@@ -30,11 +30,11 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
 
+include(CheckGitSubmodules)
+check_git_submodules()
+
 # Just include required
 include(EnsureOutOfSourceBuild)
-
-include(CheckStructHasMember)
-include(CheckIncludeFile)
 
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@executable_path" "@executable_path/../Frameworks")
@@ -76,8 +76,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -ggdb")
 endif()
 
-include(CheckGitSubmodules)
-check_git_submodules()
+# Better portability
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 ################################################################################
 # ClangFormat
@@ -190,10 +190,9 @@ rttr_set_output_dir(LIBRARY ${RTTR_LIBDIR})
 # Definitions and flags
 ################################################################################
 
-# Do this before adding -Werror!
+include(CheckStructHasMember)
 check_struct_has_member("struct timespec" tv_sec time.h HAVE_STRUCT_TIMESPEC)
-add_definitions(-DBOOST_PP_VARIADICS=1)
-
+include(CheckIncludeFile)
 check_include_file(valgrind/memcheck.h HAVE_MEMCHECK_H)
 if(HAVE_MEMCHECK_H)
     add_definitions(-DHAVE_MEMCHECK_H)
@@ -291,20 +290,18 @@ endif()
 
 include(RttrBoostCfg)
 
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/boost AND IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/boost)
-    set(BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/boost CACHE PATH "Path to find boost at")
+set(rttrContribBoostDir ${CMAKE_CURRENT_SOURCE_DIR}/contrib/boost)
+if(EXISTS ${rttrContribBoostDir} AND IS_DIRECTORY ${rttrContribBoostDir})
+    set(BOOST_ROOT ${rttrContribBoostDir} CACHE PATH "Path to find boost at")
 endif()
 
 find_package(Boost 1.64.0 QUIET)
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "You have to install boost (>=1.64) into contrib/boost or set (as CMake or environment variable) "
 	"BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
-	"BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
+	"BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}') "
 	"since cmake was unable to find boost!")
 endif()
-
-include(EnableBoostBackport)
-enable_boost_backport()
 
 add_subdirectory(external)
 add_subdirectory(libs)

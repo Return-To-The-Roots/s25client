@@ -28,7 +28,7 @@ class sortedMilitaryBlds;
 class MilitarySquares
 {
     /// military buildings (including HQs and harbors) per military square
-    std::vector<std::list<nobBaseMilitary*> > squares;
+    std::vector<std::list<nobBaseMilitary*>> squares;
     MapExtent size_;
     // Liefert das entsprechende Militärquadrat für einen bestimmten Punkt auf der Karte zurück (normale Koordinaten)
     std::list<nobBaseMilitary*>& GetSquare(const MapPoint pt);

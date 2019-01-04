@@ -28,13 +28,12 @@
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/BuildingProperties.h"
 #include "libutil/Log.h"
-#include <boost/foreach.hpp>
 #include <stdexcept>
 
 RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<Direction>& route)
     : rt(rt), f1(f1), f2(f2), route(route)
 {
-    carriers_[0] = carriers_[1] = NULL;
+    carriers_[0] = carriers_[1] = nullptr;
 }
 
 RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
@@ -80,7 +79,7 @@ void RoadSegment::Destroy_RoadSegment()
         for(unsigned short i = 0; i < route.size() + 1; ++i)
         {
             // Figuren sammeln
-            BOOST_FOREACH(noBase* object, gwg->GetFigures(pt))
+            for(noBase* object : gwg->GetFigures(pt))
             {
                 if(object->GetType() == NOP_FIGURE)
                 {
@@ -346,7 +345,7 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
     if(carrier->GetCarrierType() == nofCarrier::CT_NORMAL || carrier->GetCarrierType() == nofCarrier::CT_BOAT)
     {
         // Straße wieder unbesetzt, bzw. nur noch Esel
-        this->carriers_[0] = NULL;
+        this->carriers_[0] = nullptr;
         gwg->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(this);
     } else
     {

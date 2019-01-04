@@ -19,9 +19,7 @@
 #define Rect_h__
 
 #include "Point.h"
-#include <boost/type_traits/common_type.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/make_unsigned.hpp>
+#include <type_traits>
 
 /// Describe a rectangular shape with dimensions:
 /// x: [left, right), y: [top, bottom)
@@ -29,8 +27,7 @@ template<typename T>
 struct RectBase
 {
     typedef Point<T> position_type;
-    typedef typename boost::conditional<boost::is_integral<T>::value, boost::make_unsigned<T>, boost::common_type<T> >::type::type
-      extent_elem_type;
+    typedef typename std::conditional_t<std::is_integral<T>::value, std::make_unsigned<T>, std::common_type<T>>::type extent_elem_type;
     typedef Point<extent_elem_type> extent_type;
     T left, top, right, bottom;
     RectBase() : left(0), top(0), right(0), bottom(0) {}

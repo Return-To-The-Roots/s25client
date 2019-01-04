@@ -17,7 +17,7 @@
 
 #include "GoodTypes.h"
 #include "JobTypes.h"
-#include <boost/array.hpp>
+#include <array>
 
 #ifndef Inventory_h__
 #define Inventory_h__
@@ -25,8 +25,8 @@
 /// Struct for wares and people (for HQs, warehouses etc)
 struct Inventory
 {
-    boost::array<unsigned, NUM_WARE_TYPES> goods;
-    boost::array<unsigned, NUM_JOB_TYPES> people;
+    std::array<unsigned, NUM_WARE_TYPES> goods;
+    std::array<unsigned, NUM_JOB_TYPES> people;
 
     Inventory() { clear(); }
     unsigned operator[](GoodType good) const { return goods[good]; }

@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_SUITE(GameInterfaceDesktop)
 namespace {
 struct dskGameInterfaceMock : public dskGameInterface
 {
-    dskGameInterfaceMock(boost::shared_ptr<Game> game) : dskGameInterface(game, boost::shared_ptr<NWFInfo>(), 0, false) {}
+    dskGameInterfaceMock(std::shared_ptr<Game> game) : dskGameInterface(game, std::shared_ptr<NWFInfo>(), 0, false) {}
     void Msg_PaintBefore() override {}
     void Msg_PaintAfter() override {}
 };

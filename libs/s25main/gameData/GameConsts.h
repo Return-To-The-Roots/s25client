@@ -18,11 +18,11 @@
 #ifndef GAMECONSTS_H_
 #define GAMECONSTS_H_
 
-#include <boost/array.hpp>
+#include <array>
 #include <limits>
 
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
-const boost::array<unsigned, 6> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30, 1}};
+const std::array<unsigned, 6> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30, 1}};
 
 /// Reichweite der Bergarbeiter
 const unsigned MINER_RADIUS = 2;
@@ -36,6 +36,6 @@ const unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max()
 const unsigned NUM_OBJECTIVESS = 3;
 /// tournament modes
 const unsigned NUM_TOURNAMENT_MODESS = 5;
-const boost::array<unsigned, NUM_TOURNAMENT_MODESS> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = {{30, 60, 90, 120, 240}};
+const std::array<unsigned, NUM_TOURNAMENT_MODESS> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = {{30, 60, 90, 120, 240}};
 
 #endif

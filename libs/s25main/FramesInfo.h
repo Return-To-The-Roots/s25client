@@ -18,13 +18,13 @@
 #ifndef FramesInfo_h__
 #define FramesInfo_h__
 
-#include <boost/chrono.hpp>
+#include <chrono>
 
 /// Struct that stores information about the frames, like GF status...
 struct FramesInfo
 {
-    typedef boost::chrono::duration<uint32_t, boost::milli> milliseconds32_t; //-V:milliseconds32_t:813
-    typedef boost::chrono::steady_clock UsedClock;
+    typedef std::chrono::duration<uint32_t, std::milli> milliseconds32_t; //-V:milliseconds32_t:813
+    typedef std::chrono::steady_clock UsedClock;
 
     FramesInfo();
     void Clear();

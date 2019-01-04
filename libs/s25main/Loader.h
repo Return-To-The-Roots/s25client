@@ -30,9 +30,9 @@
 #include "gameData/NationConsts.h"
 #include "libsiedler2/Archiv.h"
 #include "libutil/Singleton.h"
-#include "libutil/unique_ptr.h"
-#include <boost/array.hpp>
+#include <array>
 #include <map>
+#include <memory>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -72,7 +72,7 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
     };
 
 public:
-    BOOST_STATIC_CONSTEXPR unsigned Longevity = 19;
+    static constexpr unsigned Longevity = 19;
 
     Loader();
     ~Loader() override;
@@ -96,14 +96,14 @@ public:
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
     /// Load a file and save it into the loader repo
-    bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL, bool isFromOverrideDir = false);
+    bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr, bool isFromOverrideDir = false);
     /// Load a file into the archiv
-    bool LoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL);
+    bool LoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
-    static libutil::unique_ptr<glArchivItem_Bitmap> ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
-    static libutil::unique_ptr<libsiedler2::Archiv> ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
-                                                                           uint8_t start_index, uint8_t color_count);
+    static std::unique_ptr<glArchivItem_Bitmap> ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
+    static std::unique_ptr<libsiedler2::Archiv> ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
+                                                                       uint8_t start_index, uint8_t color_count);
 
     glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned nr);
     /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
@@ -166,8 +166,8 @@ private:
     bool LoadSounds();
 
     /// Load a file into the archiv
-    bool LoadSingleFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL);
-    bool LoadArchiv(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = NULL);
+    bool LoadSingleFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool LoadArchiv(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadOverrideDirectory(const std::string& path);
     bool LoadFilesFromArray(const std::vector<unsigned>& files);
 
@@ -182,7 +182,7 @@ private:
     std::map<std::string, FileEntry> files_;
 
     bool isWinterGFX_;
-    boost::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
+    std::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
     libsiedler2::Archiv* map_gfx;
     glTexturePacker* stp;
 };

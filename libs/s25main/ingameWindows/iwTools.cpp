@@ -107,7 +107,7 @@ void iwTools::TransmitSettings()
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
             newSettings[i] = static_cast<uint8_t>(GetCtrl<ctrlProgress>(i)->GetPosition());
 
-        int8_t* orderDelta = NULL;
+        int8_t* orderDelta = nullptr;
         if(ordersChanged)
         {
             orderDelta = &pendingOrderChanges[0];

@@ -50,7 +50,7 @@ public:
         handle_.create();
     }
     bool isValid() const { return handle_.isValid(); }
-    /// Initialize the buffer with the given data. May pass NULL to only allocate memory
+    /// Initialize the buffer with the given data. May pass nullptr to only allocate memory
     void fill(const T* data, size_t numElems, Usage usageHint)
     {
         bind();

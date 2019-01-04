@@ -18,7 +18,7 @@
 #ifndef FrameCounter_h__
 #define FrameCounter_h__
 
-#include <boost/chrono.hpp>
+#include <chrono>
 
 /// Class for keeping track of the number of frames passed
 /// Updates frame rate in specified intervalls (e.g. once per second),
@@ -27,7 +27,7 @@
 class FrameCounter
 {
 public:
-    typedef boost::chrono::steady_clock clock;
+    typedef std::chrono::steady_clock clock;
 
 private:
     clock::duration updateInverval_; /// How often the FPS are updated
@@ -36,7 +36,7 @@ private:
     clock::time_point curStartTime_, lastUpdateTime_;
 
 public:
-    FrameCounter(clock::duration updateInverval = boost::chrono::seconds(1));
+    FrameCounter(clock::duration updateInverval = std::chrono::seconds(1));
     /// To be called after a frame has passed
     void update(clock::time_point curTime = clock::now());
     /// Get frame rate (FPS) as calculated in the last period

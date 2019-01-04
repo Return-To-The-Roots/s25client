@@ -25,11 +25,11 @@
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
 #include "libutil/Serializer.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/static_assert.hpp>
 #include <map>
+#include <memory>
 #include <set>
 #include <stdexcept>
+#include <type_traits>
 
 class GameObject;
 class GameWorld;
@@ -52,10 +52,10 @@ public:
     SerializedGameData();
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-    void MakeSnapshot(boost::shared_ptr<Game> game);
+    void MakeSnapshot(std::shared_ptr<Game> game);
 
     /// Reads the snapshot from the internal buffer
-    void ReadSnapshot(boost::shared_ptr<Game> game);
+    void ReadSnapshot(std::shared_ptr<Game> game);
 
     unsigned GetGameDataVersion() const { return gameDataVersion; }
 
@@ -148,9 +148,9 @@ private:
     /// Expected number of objects to be read/written
     unsigned expectedNumObjects;
 
-    /// EventManager, used during deserialization to add events, NULL otherwise
+    /// EventManager, used during deserialization to add events, nullptr otherwise
     EventManager* em;
-    /// EventManager, used during serialization to add events, NULL otherwise
+    /// EventManager, used during serialization to add events, nullptr otherwise
     const EventManager* writeEm;
     /// Is set to true when currently in read mode
     bool isReading;
@@ -166,7 +166,7 @@ private:
     /// Objekt(referenzen) lesen
     GameObject* PopObject_(GO_Type got);
 
-    /// Returns the object with the given id when it was read, NULL otherwise (only valid during reading)
+    /// Returns the object with the given id when it was read, nullptr otherwise (only valid during reading)
     GameObject* GetReadGameObject(const unsigned obj_id) const;
     /// Returns whether the object with the given id was already serialized (only valid during writing)
     bool IsObjectSerialized(unsigned obj_id) const;
@@ -190,7 +190,7 @@ template<typename T>
 void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
 {
     typedef typename T::value_type ObjectPtr;
-    typedef typename helpers::remove_pointer<ObjectPtr>::type Object;
+    typedef std::remove_pointer_t<ObjectPtr> Object;
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     gos.clear();
@@ -204,7 +204,7 @@ template<typename T>
 void SerializedGameData::PushContainer(const T& container)
 {
     typedef typename T::value_type Type;
-    BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
+    static_assert(std::is_integral<Type>::value, "Only integral types are possible");
     PushVarSize(container.size());
     for(typename T::const_iterator it = container.begin(); it != container.end(); ++it)
     {
@@ -217,7 +217,7 @@ template<typename T>
 void SerializedGameData::PopContainer(T& result)
 {
     typedef typename T::value_type Type;
-    BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
+    static_assert(std::is_integral<Type>::value, "Only integral types are possible");
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     result.clear();

@@ -23,7 +23,7 @@
 #include "nobBaseMilitary.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VirtualInventory.h"
-#include <boost/array.hpp>
+#include <array>
 #include <list>
 
 class nofCarrier;
@@ -51,8 +51,8 @@ class SetAllInventorySettings;
 /// Ein/Auslagereinstellungsstruktur
 struct InventorySettings
 {
-    boost::array<InventorySetting, NUM_WARE_TYPES> wares;
-    boost::array<InventorySetting, NUM_JOB_TYPES> figures;
+    std::array<InventorySetting, NUM_WARE_TYPES> wares;
+    std::array<InventorySetting, NUM_JOB_TYPES> figures;
 };
 
 /// Grundlegende Warenhausklasse, die alle Funktionen vereint, die für Warenhäuser (HQ, Lagerhaus, Häfen) wichtig sind.
@@ -80,9 +80,9 @@ protected:
 
 protected:
     /// Soldaten-Reserve-Einstellung
-    boost::array<unsigned, 5> reserve_soldiers_available;      /// einkassierte Soldaten zur Reserve
-    boost::array<unsigned, 5> reserve_soldiers_claimed_visual; /// geforderte Soldaten zur Reserve - visuell
-    boost::array<unsigned, 5> reserve_soldiers_claimed_real;   /// geforderte Soldaten zur Reserve - real
+    std::array<unsigned, 5> reserve_soldiers_available;      /// einkassierte Soldaten zur Reserve
+    std::array<unsigned, 5> reserve_soldiers_claimed_visual; /// geforderte Soldaten zur Reserve - visuell
+    std::array<unsigned, 5> reserve_soldiers_claimed_real;   /// geforderte Soldaten zur Reserve - real
 
     /// Inventory of the building, real is the usable amount, visual is the total amount currently in the wh
     VirtualInventory inventory;

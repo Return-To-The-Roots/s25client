@@ -21,7 +21,6 @@
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libutil/Tokenizer.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
 

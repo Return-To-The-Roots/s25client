@@ -31,7 +31,6 @@
 #include "gameTypes/TeamTypes.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
-#include <boost/foreach.hpp>
 
 struct JoinPlayerInfo;
 class MessageInterface;
@@ -80,13 +79,13 @@ public:
     GameMessage_Server_Type(const ServerType type, const std::string& revision)
         : GameMessage(NMS_SERVER_TYPE), type(type), revision(revision)
     {
-        LOG.writeToFile(">>> NMS_SERVER_Type(%d, %s)\n") % boost::underlying_cast<int>(type) % revision;
+        LOG.writeToFile(">>> NMS_SERVER_Type(%d, %s)\n") % static_cast<int>(type) % revision;
     }
 
     void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        ser.PushUnsignedShort(boost::underlying_cast<unsigned short>(type));
+        ser.PushUnsignedShort(static_cast<unsigned short>(type));
         ser.PushLongString(revision);
     }
 
@@ -99,7 +98,7 @@ public:
 
     bool Run(GameMessageInterface* callback) const override
     {
-        LOG.writeToFile("<<< NMS_SERVER_Type(%d, %s)\n") % boost::underlying_cast<int>(type) % revision;
+        LOG.writeToFile("<<< NMS_SERVER_Type(%d, %s)\n") % static_cast<int>(type) % revision;
         return callback->OnGameMessage(*this);
     }
 };
@@ -1077,7 +1076,7 @@ public:
         ser.PushString(addData);
 
         ser.PushUnsignedInt(entries.size());
-        BOOST_FOREACH(const RandomEntry& entry, entries)
+        for(const RandomEntry& entry : entries)
             entry.Serialize(ser);
 
         ser.PushBool(last);
@@ -1091,7 +1090,7 @@ public:
         unsigned cnt = ser.PopUnsignedInt();
         entries.clear();
         entries.resize(cnt);
-        BOOST_FOREACH(RandomEntry& entry, entries)
+        for(RandomEntry& entry : entries)
             entry.Deserialize(ser);
 
         last = ser.PopBool();

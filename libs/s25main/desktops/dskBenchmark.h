@@ -22,16 +22,15 @@
 
 #include "FrameCounter.h"
 #include "desktops/dskMenuBase.h"
-#include "libutil/unique_ptr.h"
-#include <boost/chrono.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
+#include <chrono>
+#include <memory>
 #include <vector>
 
 class Game;
 
 class dskBenchmark : public dskMenuBase
 {
-    typedef boost::chrono::steady_clock clock;
+    typedef std::chrono::steady_clock clock;
     enum Test
     {
         TEST_NONE,
@@ -69,9 +68,9 @@ private:
     FrameCounter frameCtr_;
     std::vector<ColoredRect> rects_;
     std::vector<ColoredLine> lines_;
-    boost::shared_ptr<Game> game_;
-    libutil::unique_ptr<GameView> gameView_;
-    boost::array<boost::chrono::milliseconds, TEST_CT> testDurations_;
+    std::shared_ptr<Game> game_;
+    std::unique_ptr<GameView> gameView_;
+    std::array<std::chrono::milliseconds, TEST_CT> testDurations_;
 
     void startTest(Test test);
     void finishTest();

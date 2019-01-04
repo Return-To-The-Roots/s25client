@@ -24,15 +24,13 @@
 #include "Settings.h"
 #include "network/GameClient.h"
 #include "libutil/Log.h"
-#include "libutil/unique_ptr.h"
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/nowide/iostream.hpp>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/conditional.hpp>
 #include <bzlib.h>
+#include <memory>
+#include <type_traits>
 #include <vector>
 
 #if defined(_WIN32) || defined(__CYGWIN__)
@@ -67,7 +65,7 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 
 #ifdef RTTR_USE_WIN_API
 #ifdef HAVE_DBGHELP_H
-bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = NULL)
+bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr)
 {
     CONTEXT context;
 #ifndef _MSC_VER
@@ -92,7 +90,7 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = NULL)
 #endif
 
     const HANDLE process = GetCurrentProcess();
-    if(!SymInitialize(process, NULL, true))
+    if(!SymInitialize(process, nullptr, true))
         return false;
 
     if(!ctx)
@@ -128,7 +126,7 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = NULL)
 
     for(unsigned i = 0; i < stacktrace.size(); i++)
     {
-        if(!StackWalk64(machineType, process, thread, &frame, ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL))
+        if(!StackWalk64(machineType, process, thread, &frame, ctx, nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
         {
             stacktrace.resize(i);
             break;
@@ -141,7 +139,7 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = NULL)
     return true;
 }
 #else  // HAVE_DBGHELP_H
-bool captureBacktrace(std::vector<void*>&, void* = NULL)
+bool captureBacktrace(std::vector<void*>&, void* = nullptr)
 {
     return false;
 }
@@ -256,7 +254,7 @@ bool DebugInfo::SendString(const char* str, size_t len)
 
 bool DebugInfo::SendString(const std::string& str)
 {
-    return SendString(str.c_str(), str.length() + 1); // +1 to include NULL terminator
+    return SendString(str.c_str(), str.length() + 1); // +1 to include nullptr terminator
 }
 
 bool DebugInfo::SendStackTrace(const std::vector<void*>& stacktrace)
@@ -269,11 +267,11 @@ bool DebugInfo::SendStackTrace(const std::vector<void*>& stacktrace)
     if(!SendString("StackTrace"))
         return false;
 
-    typedef boost::conditional<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>::type littleVoid_t;
-    BOOST_STATIC_ASSERT_MSG(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
+    typedef std::conditional_t<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t> littleVoid_t;
+    static_assert(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
     std::vector<littleVoid_t> endStacktrace;
     endStacktrace.reserve(stacktrace.size());
-    BOOST_FOREACH(void* ptr, stacktrace)
+    for(void* ptr : stacktrace)
         endStacktrace.push_back(reinterpret_cast<littleVoid_t::value_type>(ptr));
 
     unsigned stacktraceLen = sizeof(littleVoid_t) * endStacktrace.size();
@@ -334,15 +332,15 @@ bool DebugInfo::SendFile(BinaryFile& file)
 
     LOG.write("- File size: %u\n") % fileSize;
 
-    libutil::unique_ptr<char[]> fileData(new char[fileSize]);
+    auto fileData = std::make_unique<char[]>(fileSize);
     unsigned compressed_len = fileSize * 2 + 600;
-    libutil::unique_ptr<char[]> compressed(new char[compressed_len]);
+    auto compressed = std::make_unique<char[]>(compressed_len);
 
     file.Seek(0, SEEK_SET);
     file.ReadRawData(fileData.get(), fileSize);
 
     LOG.write("- Compressing...\n");
-    if(BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned*)&compressed_len, fileData.get(), fileSize, 9, 0, 250) == BZ_OK)
+    if(BZ2_bzBuffToBuffCompress(compressed.get(), &compressed_len, fileData.get(), fileSize, 9, 0, 250) == BZ_OK)
     {
         LOG.write("- Sending...\n");
 

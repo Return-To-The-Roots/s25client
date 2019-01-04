@@ -89,7 +89,7 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
            || (res == AIResource::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt))
                && (gwb.GetDescription().get(t1).Is(ETerrain::Walkable) || gwb.GetDescription().get(t2).Is(ETerrain::Walkable))))
         {
-            return RES_RADIUS[boost::underlying_cast<unsigned>(res)];
+            return RES_RADIUS[static_cast<unsigned>(res)];
         }
         // Adjust based on building on node (if any)
         if(res == AIResource::WOOD)
@@ -110,7 +110,7 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
     else
     {
         if(GetSubsurfaceResource(pt) == res)
-            return RES_RADIUS[boost::underlying_cast<unsigned>(res)];
+            return RES_RADIUS[static_cast<unsigned>(res)];
     }
     return 0;
 }
@@ -121,7 +121,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
     if(direction == -1) // calculate complete value from scratch (3n^2+3n+1)
     {
         returnVal = 0;
-        std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, RES_RADIUS[boost::underlying_cast<unsigned>(res)]);
+        std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, RES_RADIUS[static_cast<unsigned>(res)]);
         for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
             returnVal += GetResourceRating(*it, res);
     } else // calculate different nodes only (4n+2 ?anyways much faster)
@@ -130,12 +130,12 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
         // add new points
         // first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
-        for(unsigned i = 0; i < RES_RADIUS[boost::underlying_cast<unsigned>(res)]; i++)
+        for(unsigned i = 0; i < RES_RADIUS[static_cast<unsigned>(res)]; i++)
             tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 5));
         // then clockwise around at radius distance to get all new points
         for(int i = direction + 1; i < (direction + 3); ++i)
         {
-            int resRadius = RES_RADIUS[boost::underlying_cast<unsigned>(res)];
+            int resRadius = RES_RADIUS[static_cast<unsigned>(res)];
             // add 1 extra step on the second side we check to complete the side
             if(i == direction + 2)
                 ++resRadius;
@@ -150,12 +150,12 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
         tmpPt = pt;
         tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 3));
         // next: go to the first old point we have to substract
-        for(unsigned i = 0; i < RES_RADIUS[boost::underlying_cast<unsigned>(res)]; i++)
+        for(unsigned i = 0; i < RES_RADIUS[static_cast<unsigned>(res)]; i++)
             tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 2));
         // now clockwise around at radius distance to remove all old points
         for(int i = direction + 4; i < (direction + 6); ++i)
         {
-            int resRadius = RES_RADIUS[boost::underlying_cast<unsigned>(res)];
+            int resRadius = RES_RADIUS[static_cast<unsigned>(res)];
             if(i == direction + 5)
                 ++resRadius;
             for(MapCoord r2 = 0; r2 < resRadius; ++r2)
@@ -170,12 +170,12 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
     return returnVal;
 }
 
-bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route /*= NULL*/,
-                                         unsigned* length /*= NULL*/) const
+bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route /*= nullptr*/,
+                                         unsigned* length /*= nullptr*/) const
 {
     bool boat = false;
-    return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,
-                                                                 IsPointOK_RoadPathEvenStep, NULL, (void*)&boat);
+    return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, nullptr, IsPointOK_RoadPath,
+                                                                 IsPointOK_RoadPathEvenStep, nullptr, (void*)&boat);
 }
 
 bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)
@@ -196,7 +196,7 @@ BuildingQuality AIInterface::GetBuildingQualityAnyOwner(const MapPoint pt) const
 bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
 {
     if(length)
-        return gwb.GetRoadPathFinder().FindPath(start, target, false, std::numeric_limits<unsigned>::max(), NULL, length);
+        return gwb.GetRoadPathFinder().FindPath(start, target, false, std::numeric_limits<unsigned>::max(), nullptr, length);
     else
         return gwb.GetRoadPathFinder().PathExists(start, target, false);
 }

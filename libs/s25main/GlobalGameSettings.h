@@ -78,7 +78,7 @@ private:
 
     struct AddonWithState
     {
-        AddonWithState() : addon(NULL), status(0) {}
+        AddonWithState() : addon(nullptr), status(0) {}
         explicit AddonWithState(Addon* addon);
 
         Addon* addon;

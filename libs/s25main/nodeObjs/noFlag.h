@@ -20,7 +20,7 @@
 #include "noRoadNode.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
-#include <boost/array.hpp>
+#include <array>
 class FOWObject;
 class SerializedGameData;
 class Ware;
@@ -77,7 +77,7 @@ private:
     FlagType flagtype;
 
     /// Die Waren, die an dieser Flagge liegen
-    boost::array<Ware*, 8> wares;
+    std::array<Ware*, 8> wares;
 
     /// Wieviele BWU-Teile es maximal geben soll, also wieviele abgebrannte Lagerhausgruppen
     /// gleichzeitig die Flagge als nicht begehbar deklarieren können.
@@ -89,7 +89,7 @@ private:
         unsigned id;      /// ID der Gruppe
         unsigned last_gf; /// letzter TÜV, ob man auch nicht hinkommt, in GF
     };
-    boost::array<BurnedWarehouseUnit, MAX_BWU> bwus;
+    std::array<BurnedWarehouseUnit, MAX_BWU> bwus;
 };
 
 #endif // !NO_FLAG_H_INCLUDED

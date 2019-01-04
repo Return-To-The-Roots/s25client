@@ -20,10 +20,10 @@
 #pragma once
 
 /// Width and height of a triangle. Measured from a screenshot of the original
-BOOST_CONSTEXPR_OR_CONST int TR_W = 56;
-BOOST_CONSTEXPR_OR_CONST int TR_H = 28;
+constexpr int TR_W = 56;
+constexpr int TR_H = 28;
 
 /// Number of pixels the node is adjusted in y per altitude step
-BOOST_CONSTEXPR_OR_CONST int HEIGHT_FACTOR = 5;
+constexpr int HEIGHT_FACTOR = 5;
 
 #endif // !MAPCONSTS_H_INCLUDED

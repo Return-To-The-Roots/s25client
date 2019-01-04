@@ -31,7 +31,6 @@
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GuiConsts.h"
 #include "libutil/Log.h"
-#include <boost/foreach.hpp>
 #include <cmath>
 
 const Extent SmallWndSize(260, 190);
@@ -39,7 +38,7 @@ const Extent MediumWndSize(300, 250);
 const Extent BigWndSize(340, 310);
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
-    : IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), NULL),
+    : IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), nullptr),
       parentView(gwv), view(new GameWorldView(gwv.GetViewer(), Position(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
       selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0), followMovableId(0)
 {
@@ -104,7 +103,7 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
 
                         const std::list<noBase*>& figures = view->GetWorld().GetFigures(curPt);
 
-                        BOOST_FOREACH(const noBase* obj, figures)
+                        for(const noBase* obj : figures)
                         {
                             const noMovable* movable = dynamic_cast<const noMovable*>(obj);
                             if(!movable)
@@ -196,7 +195,7 @@ bool iwObservate::MoveToFollowedObj()
     const GameWorldBase& world = view->GetWorld();
     const MapPoint centerPt = world.MakeMapPoint((view->GetFirstPt() + view->GetLastPt()) / 2);
     const std::vector<MapPoint> centerPts = world.GetPointsInRadiusWithCenter(centerPt, 2);
-    BOOST_FOREACH(const MapPoint& curPt, centerPts)
+    for(const MapPoint& curPt : centerPts)
     {
         if(MoveToFollowedObj(curPt))
             return true;
@@ -220,7 +219,7 @@ bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
     if(view->GetViewer().GetVisibility(ptToCheck) != VIS_VISIBLE)
         return false;
     const std::list<noBase*>& curObjs = view->GetWorld().GetFigures(ptToCheck);
-    BOOST_FOREACH(const noBase* obj, curObjs)
+    for(const noBase* obj : curObjs)
     {
         if(obj->GetObjId() == followMovableId)
         {

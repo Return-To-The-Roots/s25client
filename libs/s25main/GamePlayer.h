@@ -30,7 +30,7 @@
 #include "gameData/MaxPlayers.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ToolConsts.h"
-#include <boost/array.hpp>
+#include <array>
 #include <list>
 #include <queue>
 
@@ -76,7 +76,7 @@ public:
     struct Distribution
     {
         /// Mapping of Building to percentage of ware the building gets
-        boost::array<uint8_t, NUM_BUILDING_TYPES> percent_buildings;
+        std::array<uint8_t, NUM_BUILDING_TYPES> percent_buildings;
         /// Buildings that get this ware
         std::vector<BuildingType> client_buildings;
         /// Possible preferred buildings (each building is n times in here with n=percentage)
@@ -116,14 +116,15 @@ public:
     /// Returns true if the given wh does still exist and hence the ptr is valid
     bool IsWarehouseValid(nobBaseWarehouse* wh) const;
     /// Gibt erstes Lagerhaus zurück
-    nobBaseWarehouse* GetFirstWH() { return buildings.GetStorehouses().empty() ? NULL : buildings.GetStorehouses().front(); }
+    nobBaseWarehouse* GetFirstWH() { return buildings.GetStorehouses().empty() ? nullptr : buildings.GetStorehouses().front(); }
     /// Looks for the closest warehouse for the point 'start' (including it) that matches the conditions by the functor
     /// - isWarehouseGood must be a functor taking a "const nobBaseWarhouse&", that returns a bool whether this warehouse should be
     /// considered - to_wh true if path to wh is searched, false for path from wh - length is optional for the path length - forbidden
     /// optional roadSegment that must not be used
     template<class T_IsWarehouseGood>
     nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh,
-                                    const bool use_boat_roads, unsigned* const length = 0, const RoadSegment* const forbidden = NULL) const;
+                                    const bool use_boat_roads, unsigned* const length = 0,
+                                    const RoadSegment* const forbidden = nullptr) const;
     /// Für alle unbesetzen Straßen Weg neu berechnen
     void FindCarrierForAllRoads();
     /// Versucht für alle Arbeitsplätze eine Arbeitskraft zu suchen
@@ -188,7 +189,7 @@ public:
     /// Setzt neue Militäreinstellungen
     void ChangeMilitarySettings(const MilitarySettings& military_settings);
     /// Setzt neue Werkzeugeinstellungen
-    void ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<int8_t, NUM_TOOLS>& orderChanges);
+    void ChangeToolsSettings(const ToolSettings& tools_settings, const std::array<int8_t, NUM_TOOLS>& orderChanges);
     /// Setzt neue Verteilungseinstellungen
     void ChangeDistribution(const Distributions& distribution_settings);
     /// Setzt neue Baureihenfolge-Einstellungen
@@ -237,7 +238,7 @@ public:
     bool OrderShip(nobHarborBuilding& hb);
     /// Gibt die ID eines Schiffes zurück
     unsigned GetShipID(const noShip* const ship) const;
-    /// Gibt ein Schiff anhand der ID zurück bzw. NULL, wenn keines mit der ID existiert
+    /// Gibt ein Schiff anhand der ID zurück bzw. nullptr, wenn keines mit der ID existiert
     noShip* GetShipByID(const unsigned ship_id) const;
     /// Gibt die Gesamtanzahl von Schiffen zurück
     unsigned GetNumShips() const { return ships.size(); }
@@ -383,7 +384,7 @@ private:
     /// Koordinaten des HQs des Spielers
     MapPoint hqPos;
 
-    boost::array<Distribution, NUM_WARE_TYPES> distribution;
+    std::array<Distribution, NUM_WARE_TYPES> distribution;
 
     /// Art der Reihenfolge (false = nach Auftraggebung, ansonsten nach build_order)
     bool useCustomBuildOrder_;
@@ -396,7 +397,7 @@ private:
     /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
     ToolSettings toolsSettings_;
     // qx:tools
-    boost::array<unsigned char, NUM_TOOLS> tools_ordered;
+    std::array<unsigned char, NUM_TOOLS> tools_ordered;
 
     /// Bündnisse mit anderen Spielern
     struct Pact
@@ -418,11 +419,11 @@ private:
     helpers::MultiArray<Pact, MAX_PLAYERS, NUM_PACTS> pacts;
 
     // Statistikdaten
-    boost::array<Statistic, NUM_STAT_TIMES> statistic;
+    std::array<Statistic, NUM_STAT_TIMES> statistic;
 
     // Die Statistikwerte die 'aktuell' gemessen werden
-    boost::array<int, NUM_STAT_TYPES> statisticCurrentData;
-    boost::array<int, NUM_STAT_MERCHANDISE_TYPES> statisticCurrentMerchandiseData;
+    std::array<int, NUM_STAT_TYPES> statisticCurrentData;
+    std::array<int, NUM_STAT_MERCHANDISE_TYPES> statisticCurrentMerchandiseData;
 
     // Notfall-Programm aktiviert ja/nein (Es gehen nur noch Res an Holzfäller- und Sägewerk-Baustellen raus)
     bool emergency;
@@ -448,10 +449,10 @@ private:
      *  -http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
      */
     std::vector<MapPoint> restricted_area;
-    boost::array<bool, NUM_BUILDING_TYPES> building_enabled;
+    std::array<bool, NUM_BUILDING_TYPES> building_enabled;
 
     // TODO: Move to viewer. Mutable as a work-around
-    mutable boost::array<int8_t, NUM_TOOLS> tools_ordered_delta;
+    mutable std::array<int8_t, NUM_TOOLS> tools_ordered_delta;
 };
 
 #endif

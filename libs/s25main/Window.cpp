@@ -25,8 +25,8 @@
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/IRenderer.h"
-#include <boost/foreach.hpp>
 #include <boost/range/adaptor/map.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 #include <cstdarg>
 
 Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size)
@@ -38,7 +38,7 @@ Window::~Window()
 {
     RTTR_Assert(!isInMouseRelay);
     // Steuerelemente aufräumen
-    BOOST_FOREACH(Window* ctrl, childIdToWnd_ | boost::adaptors::map_values)
+    for(Window* ctrl : childIdToWnd_ | boost::adaptors::map_values)
         delete ctrl;
 }
 
@@ -104,7 +104,7 @@ bool Window::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 
     // Alle Controls durchgehen
     // Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
-    BOOST_FOREACH(Window* wnd, childIdToWnd_ | boost::adaptors::map_values)
+    for(Window* wnd : childIdToWnd_ | boost::adaptors::map_values)
     {
         if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(ke))
             return true;
@@ -125,7 +125,7 @@ bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
 
     // Alle Controls durchgehen
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
-    BOOST_REVERSE_FOREACH(Window* wnd, childIdToWnd_ | boost::adaptors::map_values)
+    for(Window* wnd : childIdToWnd_ | boost::adaptors::map_values | boost::adaptors::reversed)
     {
         if(!lockedAreas_.empty() && TestWindowInRegion(wnd, mc.GetPos()))
             continue;
@@ -498,19 +498,19 @@ void Window::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsign
 void Window::Msg_PaintBefore()
 {
     animations_.update(VIDEODRIVER.GetTickCount());
-    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
+    for(Window* control : childIdToWnd_ | boost::adaptors::map_values)
         control->Msg_PaintBefore();
 }
 
 void Window::Msg_PaintAfter()
 {
-    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
+    for(Window* control : childIdToWnd_ | boost::adaptors::map_values)
         control->Msg_PaintAfter();
 }
 
 void Window::Draw_()
 {
-    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
+    for(Window* control : childIdToWnd_ | boost::adaptors::map_values)
         control->Draw();
 }
 
@@ -520,7 +520,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
     if(!scale_)
         return;
     RescaleWindowProp rescale(sr.oldSize, sr.newSize);
-    BOOST_FOREACH(Window* ctrl, childIdToWnd_ | boost::adaptors::map_values)
+    for(Window* ctrl : childIdToWnd_ | boost::adaptors::map_values)
     {
         if(!ctrl)
             continue;

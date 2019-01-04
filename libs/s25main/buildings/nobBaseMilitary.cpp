@@ -67,7 +67,7 @@ void nobBaseMilitary::DestroyBuilding()
     if(defender_)
     {
         defender_->HomeDestroyed();
-        defender_ = NULL;
+        defender_ = nullptr;
     }
 
     // Warteschlangenevent vernichten
@@ -173,7 +173,7 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 struct GetMapPointWithRadius

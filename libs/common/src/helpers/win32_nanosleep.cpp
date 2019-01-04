@@ -31,13 +31,13 @@ int nanosleep(const struct timespec* requested_delay, struct timespec* /*remaini
     int64_t micro_delay =
       static_cast<int64_t>(requested_delay->tv_sec) * usPerSecond + (requested_delay->tv_nsec + nsPerus - 1) / nsPerus; // Round
 
-    HANDLE timer = CreateWaitableTimer(NULL, TRUE, NULL);
-    if(timer == NULL)
+    HANDLE timer = CreateWaitableTimer(nullptr, TRUE, nullptr);
+    if(timer == nullptr)
         return -1;
     LARGE_INTEGER ft;
     ft.QuadPart = -(10 * micro_delay); // 100ns intervalls, negative to be relative
     int result;
-    if(SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0) && WaitForSingleObject(timer, INFINITE) == WAIT_OBJECT_0)
+    if(SetWaitableTimer(timer, &ft, 0, nullptr, nullptr, 0) && WaitForSingleObject(timer, INFINITE) == WAIT_OBJECT_0)
         result = 0;
     else
         result = -1;

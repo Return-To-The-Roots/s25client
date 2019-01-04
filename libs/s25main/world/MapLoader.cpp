@@ -37,8 +37,6 @@
 #include "gameData/TerrainDesc.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/Log.h"
-#include <boost/foreach.hpp>
-#include <boost/typeof/typeof.hpp>
 #include <algorithm>
 #include <map>
 #include <queue>
@@ -182,13 +180,13 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
             FoWNode& fow = node.fow[i];
             fow.last_update_time = 0;
             fow.visibility = fowVisibility;
-            fow.object = NULL;
+            fow.object = nullptr;
             std::fill(fow.roads.begin(), fow.roads.end(), 0);
             fow.owner = 0;
             std::fill(fow.boundary_stones.begin(), fow.boundary_stones.end(), 0);
         }
 
-        node.obj = NULL; // Will be overwritten later...
+        node.obj = nullptr; // Will be overwritten later...
         RTTR_Assert(node.figures.empty());
     }
     return true;
@@ -201,7 +199,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
         unsigned char lc = map.GetMapDataAt(MAP_LANDSCAPE, pt.x, pt.y);
-        noBase* obj = NULL;
+        noBase* obj = nullptr;
 
         switch(map.GetMapDataAt(MAP_TYPE, pt.x, pt.y))
         {
@@ -367,7 +365,6 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
 void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
 {
     // Tiere auslesen
-    MapPoint pt;
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
         Species species;
@@ -494,9 +491,9 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     for(unsigned startHbId = 1; startHbId < world.harbor_pos.size(); ++startHbId)
     {
         const HarborPos& startHbPos = world.harbor_pos[startHbId];
-        BOOST_FOREACH(const std::vector<HarborPos::Neighbor>& neighbors, startHbPos.neighbors)
+        for(const std::vector<HarborPos::Neighbor>& neighbors : startHbPos.neighbors)
         {
-            BOOST_FOREACH(const HarborPos::Neighbor& neighbor, neighbors)
+            for(const HarborPos::Neighbor& neighbor : neighbors)
             {
                 if(world.CalcHarborDistance(neighbor.id, startHbId) != neighbor.distance)
                 {
@@ -523,7 +520,7 @@ struct CalcHarborPosNeighborsNode
 /// Calculate the distance from each harbor to the others
 void MapLoader::CalcHarborPosNeighbors(World& world)
 {
-    BOOST_FOREACH(HarborPos& harbor, world.harbor_pos)
+    for(HarborPos& harbor : world.harbor_pos)
     {
         for(unsigned z = 0; z < 6; ++z)
             harbor.neighbors[z].clear();
@@ -554,7 +551,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 
         std::vector<bool> hbFound(world.harbor_pos.size(), false);
         // For each sea, store the coastal point indices and their harbor
-        std::vector<std::multimap<unsigned, unsigned> > coastToHarborPerSea(world.seas.size() + 1);
+        std::vector<std::multimap<unsigned, unsigned>> coastToHarborPerSea(world.seas.size() + 1);
         std::vector<MapPoint> ownCoastalPoints;
 
         // mark coastal points around harbors
@@ -582,12 +579,12 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             }
         }
 
-        BOOST_FOREACH(const MapPoint& ownCoastPt, ownCoastalPoints)
+        for(const MapPoint& ownCoastPt : ownCoastalPoints)
         {
             // Special case: Get all harbors that share the coast point with us
             unsigned short seaId = world.GetSeaFromCoastalPoint(ownCoastPt);
-            BOOST_AUTO(coastToHbs, coastToHarborPerSea[seaId].equal_range(world.GetIdx(ownCoastPt)));
-            for(BOOST_AUTO(it, coastToHbs.first); it != coastToHbs.second; ++it)
+            auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(world.GetIdx(ownCoastPt));
+            for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
             {
                 ShipDirection shipDir = world.GetShipDir(ownCoastPt, ownCoastPt);
                 world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(HarborPos::Neighbor(it->second, 0));
@@ -618,8 +615,8 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                 {
                     ShipDirection shipDir = world.GetShipDir(world.harbor_pos[startHbId].pos, curPt);
                     unsigned seaId = world.GetSeaFromCoastalPoint(curPt);
-                    BOOST_AUTO(coastToHbs, coastToHarborPerSea[seaId].equal_range(idx));
-                    for(BOOST_AUTO(it, coastToHbs.first); it != coastToHbs.second; ++it)
+                    auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(idx);
+                    for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
                     {
                         unsigned otherHbId = it->second;
                         if(hbFound[otherHbId])

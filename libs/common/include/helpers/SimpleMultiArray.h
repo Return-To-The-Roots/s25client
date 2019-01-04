@@ -18,9 +18,7 @@
 #ifndef SimpleMultiArray_h__
 #define SimpleMultiArray_h__
 
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/add_const.hpp>
-#include <boost/type_traits/conditional.hpp>
+#include <type_traits>
 
 #ifndef RTTR_Assert_Msg
 #define RTTR_Assert_Msg(cond, msg) RTTR_Assert((cond) && (msg))
@@ -39,10 +37,10 @@ namespace detail {
     template<typename T, size_t T_n1, size_t T_n2 = 0, size_t T_n3 = 0, size_t T_n4 = 0>
     struct MultiArrayRef
     {
-        BOOST_STATIC_CONSTEXPR bool is1D = T_n2 == 0;
-        typedef typename boost::conditional<is1D, T&, MultiArrayRef<T, T_n2, T_n3, T_n4> >::type reference;
-        typedef typename boost::add_const<reference>::type const_reference;
-        BOOST_STATIC_CONSTEXPR size_t stride = (T_n2 == 0 ? 1 : T_n2) * (T_n3 == 0 ? 1 : T_n3) * (T_n4 == 0 ? 1 : T_n4);
+        static constexpr bool is1D = T_n2 == 0;
+        typedef std::conditional_t<is1D, T&, MultiArrayRef<T, T_n2, T_n3, T_n4>> reference;
+        typedef std::add_const_t<reference> const_reference;
+        static constexpr size_t stride = (T_n2 == 0 ? 1 : T_n2) * (T_n3 == 0 ? 1 : T_n3) * (T_n4 == 0 ? 1 : T_n4);
 
         T* elems;
         BOOST_FORCEINLINE explicit MultiArrayRef(T* elems) : elems(elems) {}
@@ -67,7 +65,7 @@ namespace detail {
 template<typename T, size_t T_n1, size_t T_n2, size_t T_n3, size_t T_n4, size_t T_n5>
 struct SimpleMultiArray
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0 && T_n2 > 0 && T_n3 > 0 && T_n4 > 0 && T_n5 > 0);
+    static_assert(T_n1 > 0 && T_n2 > 0 && T_n3 > 0 && T_n4 > 0 && T_n5 > 0, "");
     typedef detail::MultiArrayRef<T, T_n2, T_n3, T_n4, T_n5> reference;
     typedef detail::MultiArrayRef<const T, T_n2, T_n3, T_n4, T_n5> const_reference;
 
@@ -91,7 +89,7 @@ struct SimpleMultiArray
 template<typename T, size_t T_n1, size_t T_n2, size_t T_n3, size_t T_n4>
 struct SimpleMultiArray<T, T_n1, T_n2, T_n3, T_n4>
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0 && T_n2 > 0 && T_n3 > 0 && T_n4 > 0);
+    static_assert(T_n1 > 0 && T_n2 > 0 && T_n3 > 0 && T_n4 > 0, "");
     typedef detail::MultiArrayRef<T, T_n2, T_n3, T_n4> reference;
     typedef detail::MultiArrayRef<const T, T_n2, T_n3, T_n4> const_reference;
 
@@ -115,7 +113,7 @@ struct SimpleMultiArray<T, T_n1, T_n2, T_n3, T_n4>
 template<typename T, size_t T_n1, size_t T_n2, size_t T_n3>
 struct SimpleMultiArray<T, T_n1, T_n2, T_n3>
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0 && T_n2 > 0 && T_n3 > 0);
+    static_assert(T_n1 > 0 && T_n2 > 0 && T_n3 > 0, "");
     typedef detail::MultiArrayRef<T, T_n2, T_n3> reference;
     typedef detail::MultiArrayRef<const T, T_n2, T_n3> const_reference;
 
@@ -139,7 +137,7 @@ struct SimpleMultiArray<T, T_n1, T_n2, T_n3>
 template<typename T, size_t T_n1, size_t T_n2>
 struct SimpleMultiArray<T, T_n1, T_n2>
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0 && T_n2 > 0);
+    static_assert(T_n1 > 0 && T_n2 > 0, "");
     typedef detail::MultiArrayRef<T, T_n2> reference;
     typedef detail::MultiArrayRef<const T, T_n2> const_reference;
 

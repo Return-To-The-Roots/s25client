@@ -19,13 +19,13 @@
 #define TerrainBQOutput_h__
 
 #include "gameData/TerrainDesc.h"
-#include <boost/array.hpp>
+#include <array>
 #include <iostream>
 
 inline std::ostream& operator<<(std::ostream& stream, TerrainBQ bq)
 {
-    static const boost::array<const char*, 6> bqNames = {{"Nothing", "Danger", "Flag", "Castle", "Mine"}};
-    return stream << bqNames[boost::underlying_cast<unsigned>(bq)];
+    static const std::array<const char*, 6> bqNames = {{"Nothing", "Danger", "Flag", "Castle", "Mine"}};
+    return stream << bqNames[static_cast<unsigned>(bq)];
 }
 
 #endif // TerrainBQOutput_h__

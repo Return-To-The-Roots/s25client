@@ -28,7 +28,7 @@ class nofTradeLeader : public noFigure
 {
     /// Route of this caravane
     TradeRoute tr;
-    /// Successor (NULL if there is none)
+    /// Successor (nullptr if there is none)
     nofTradeDonkey* successor;
     /// The start and home warehosue
     MapPoint homePos, goalPos;

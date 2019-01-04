@@ -144,7 +144,7 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P) //, *utf::depends_
 // Creates a non-aggression pact between players 1 and 2
 struct PactCreatedFixture : public WorldWithGCExecution3P
 {
-    BOOST_STATIC_CONSTEXPR unsigned duration = 10;
+    static constexpr unsigned duration = 10;
     const DiplomacyPostQuestion* msg;
     PactCreatedFixture()
     {
@@ -163,7 +163,7 @@ struct PactCreatedFixture : public WorldWithGCExecution3P
     }
 };
 
-BOOST_CONSTEXPR_OR_CONST unsigned PactCreatedFixture::duration;
+constexpr unsigned PactCreatedFixture::duration;
 
 BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture) //, *utf::depends_on("PactTestSuite/MakePactTest"))
 {

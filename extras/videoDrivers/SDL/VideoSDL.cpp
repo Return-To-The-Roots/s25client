@@ -20,7 +20,7 @@
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
-#include "libutil/unique_ptr.h"
+#include <memory>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
@@ -90,7 +90,7 @@ DRIVERDLLAPI const char* GetDriverName()
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
-VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL) {}
+VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(nullptr) {}
 
 VideoSDL::~VideoSDL()
 {
@@ -214,10 +214,10 @@ bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     }
 
     // get device context handle
-    libutil::unique_ptr<HDC, DeleterReleaseDC> tempDC(GetDC(info.window), DeleterReleaseDC(info.window));
+    std::unique_ptr<HDC, DeleterReleaseDC> tempDC(GetDC(info.window), DeleterReleaseDC(info.window));
 
     // create temporary context
-    libutil::unique_ptr<HGLRC, DeleterDeleteRC> tempRC(wglCreateContext(tempDC.get()));
+    std::unique_ptr<HGLRC, DeleterDeleteRC> tempRC(wglCreateContext(tempDC.get()));
     if(!tempRC)
     {
         PrintError("wglCreateContext failed");
@@ -308,7 +308,7 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
     SDL_VERSION(&info.version);
     if(SDL_GetWMInfo(&info) == 1)
     {
-        LPARAM icon = (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL));
+        LPARAM icon = (LPARAM)LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_SYMBOL));
         SendMessage(info.window, WM_SETICON, ICON_BIG, icon);
         SendMessage(info.window, WM_SETICON, ICON_SMALL, icon);
     }
@@ -328,7 +328,7 @@ void VideoSDL::HandlePaste()
     if(!IsClipboardFormatAvailable(CF_UNICODETEXT))
         return;
 
-    OpenClipboard(NULL);
+    OpenClipboard(nullptr);
 
     HANDLE hData = GetClipboardData(CF_UNICODETEXT);
     const wchar_t* pData = (const wchar_t*)GlobalLock(hData);
@@ -546,7 +546,7 @@ unsigned long VideoSDL::GetTickCount() const
  */
 void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
-    SDL_Rect** modes = SDL_ListModes(NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
+    SDL_Rect** modes = SDL_ListModes(nullptr, SDL_FULLSCREEN | SDL_HWSURFACE);
 
     for(unsigned i = 0; modes[i]; ++i)
     {
@@ -597,6 +597,6 @@ void* VideoSDL::GetMapPointer() const
     // return (void*)wmInfo.info.win.window;
     return (void*)wmInfo.window;
 #else
-    return NULL;
+    return nullptr;
 #endif
 }

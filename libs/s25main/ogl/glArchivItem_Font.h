@@ -25,10 +25,10 @@
 #include "libsiedler2/ArchivItem_Font.h"
 #include "libutil/colors.h"
 #include "libutil/ucString.h"
-#include <boost/array.hpp>
-#include <boost/smart_ptr/scoped_ptr.hpp>
+#include <array>
 #include <glad/glad.h>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -104,11 +104,11 @@ private:
     const CharInfo& GetCharInfo(unsigned c) const;
     void DrawChar(unsigned curChar, VertexArrays& vertices, DrawPoint& curPos) const;
 
-    boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
-    boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
+    std::unique_ptr<glArchivItem_Bitmap> fontNoOutline;
+    std::unique_ptr<glArchivItem_Bitmap> fontWithOutline;
 
     /// Holds ascii chars only. As most chars are ascii this is faster then accessing the map
-    boost::array<std::pair<bool, CharInfo>, 256> asciiMapping;
+    std::array<std::pair<bool, CharInfo>, 256> asciiMapping;
     std::map<unsigned, CharInfo> utf8_mapping;
     CharInfo placeHolder; /// Placeholder if glyph is missing
     VertexArrays texList; /// Buffer to hold last textures. Used so memory reallocations are avoided

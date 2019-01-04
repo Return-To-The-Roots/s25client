@@ -19,7 +19,6 @@
 #include "ListDir.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/nowide/fstream.hpp>
@@ -66,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
     std::string parentPath = tmpPath.string();
     std::vector<std::string> files = ListDir(parentPath, "txt");
     BOOST_REQUIRE_EQUAL(files.size(), 3u);
-    BOOST_FOREACH(const std::string& file, files)
+    for(const std::string& file : files)
     {
         BOOST_REQUIRE(bfs::exists(file));
         BOOST_REQUIRE(bfs::path(file).is_absolute());

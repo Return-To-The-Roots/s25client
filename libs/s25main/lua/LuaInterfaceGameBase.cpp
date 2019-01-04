@@ -81,18 +81,18 @@ unsigned LuaInterfaceGameBase::GetLocalPlayerIdx() const
 
 void LuaInterfaceGameBase::MsgBox(const std::string& title, const std::string& msg, bool isError)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), NULL, MSB_OK, isError ? MSB_EXCLAMATIONRED : MSB_EXCLAMATIONGREEN));
+    WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), nullptr, MSB_OK, isError ? MSB_EXCLAMATIONRED : MSB_EXCLAMATIONGREEN));
 }
 
 void LuaInterfaceGameBase::MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx));
+    WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), nullptr, MSB_OK, iconFile, iconIdx));
 }
 
 void LuaInterfaceGameBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx,
                                      int iconX, int iconY)
 {
-    iwMsgbox* msgBox = new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx);
+    iwMsgbox* msgBox = new iwMsgbox(_(title), _(msg), nullptr, MSB_OK, iconFile, iconIdx);
     msgBox->MoveIcon(DrawPoint(iconX, iconY));
     WINDOWMANAGER.Show(msgBox);
 }

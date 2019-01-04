@@ -38,11 +38,10 @@
 #include "gameTypes/Inventory.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/BuildingProperties.h"
-#include <boost/array.hpp>
 #include <boost/container/flat_set.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/foreach.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
@@ -56,9 +55,9 @@ AIConstruction::AIConstruction(AIPlayerJH& aijh)
 
 AIConstruction::~AIConstruction()
 {
-    BOOST_FOREACH(AIJH::BuildJob* job, buildJobs)
+    for(AIJH::BuildJob* job : buildJobs)
         delete job;
-    BOOST_FOREACH(AIJH::ConnectJob* job, connectJobs)
+    for(AIJH::ConnectJob* job : connectJobs)
         delete job;
 }
 
@@ -163,7 +162,7 @@ void AIConstruction::SetFlagsAlongRoad(const noRoadNode& roadNode, Direction dir
 BuildJob* AIConstruction::GetBuildJob()
 {
     if(buildJobs.empty())
-        return NULL;
+        return nullptr;
 
     BuildJob* job = buildJobs.front();
     buildJobs.pop_front();
@@ -251,7 +250,7 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
     {
         list<nobBaseMilitary*> military;
         gwb->LookForMilitaryBuildings(military, pt, 2);
-        BOOST_FOREACH(const nobBaseMilitary* milBld, military)
+        for(const nobBaseMilitary* milBld: military)
         {
             unsigned distance = gwb->CalcDistance(milBld->GetPos(), pt);
             if (distance < radius && milBld->GetPlayer() == player->getPlayerId())
@@ -308,12 +307,12 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     std::cout << "FindFlagsNum: " << flags.size() << std::endl;
 #endif
 
-    const noFlag* shortest = NULL;
+    const noFlag* shortest = nullptr;
     unsigned shortestLength = 99999;
     std::vector<Direction> tmpRoute;
 
     // Jede Flagge testen...
-    BOOST_FOREACH(const noFlag* curFlag, flags)
+    for(const noFlag* curFlag : flags)
     {
         tmpRoute.clear();
         unsigned length;
@@ -465,7 +464,7 @@ bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag) const
 
 BuildingType AIConstruction::GetSmallestAllowedMilBuilding() const
 {
-    BOOST_FOREACH(BuildingType bld, BuildingProperties::militaryBldTypes)
+    for(BuildingType bld : BuildingProperties::militaryBldTypes)
     {
         if(aii.CanBuildBuildingtype(bld))
             return bld;
@@ -475,7 +474,7 @@ BuildingType AIConstruction::GetSmallestAllowedMilBuilding() const
 
 BuildingType AIConstruction::GetBiggestAllowedMilBuilding() const
 {
-    BOOST_REVERSE_FOREACH(BuildingType bld, BuildingProperties::militaryBldTypes)
+    for(BuildingType bld : boost::adaptors::reverse(BuildingProperties::militaryBldTypes))
     {
         if(aii.CanBuildBuildingtype(bld))
             return bld;
@@ -520,7 +519,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 
     uint8_t playerId = aii.GetPlayerId();
     sortedMilitaryBlds military = aii.gwb.LookForMilitaryBuildings(pt, 3);
-    BOOST_FOREACH(const nobBaseMilitary* milBld, military)
+    for(const nobBaseMilitary* milBld : military)
     {
         unsigned distance = aii.gwb.CalcDistance(milBld->GetPos(), pt);
 
@@ -535,7 +534,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
                 buildCatapult = false;
             if(buildCatapult)
             {
-                BOOST_FOREACH(const nobUsual* catapult, aii.GetBuildings(BLD_CATAPULT))
+                for(const nobUsual* catapult : aii.GetBuildings(BLD_CATAPULT))
                 {
                     if(aii.gwb.CalcDistance(pt, catapult->GetPos()) < min)
                     {
@@ -546,7 +545,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
             }
             if(buildCatapult)
             {
-                BOOST_FOREACH(const noBuildingSite* bldSite, aii.GetBuildingSites())
+                for(const noBuildingSite* bldSite : aii.GetBuildingSites())
                 {
                     if(bldSite->GetBuildingType() == bld && aii.gwb.CalcDistance(pt, bldSite->GetPos()) < min)
                     {
@@ -698,12 +697,12 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
 
 bool AIConstruction::OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt)
 {
-    BOOST_FOREACH(const nobUsual* bld, aii.GetBuildings(bt))
+    for(const nobUsual* bld : aii.GetBuildings(bt))
     {
         if(aii.gwb.CalcDistance(bld->GetPos(), pt) < radius)
             return true;
     }
-    BOOST_FOREACH(const noBuildingSite* bldSite, aii.GetBuildingSites())
+    for(const noBuildingSite* bldSite : aii.GetBuildingSites())
     {
         if(bldSite->GetBuildingType() == bt)
         {
@@ -716,12 +715,12 @@ bool AIConstruction::OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, Bu
 
 bool AIConstruction::OtherStoreInRadius(MapPoint pt, unsigned radius)
 {
-    BOOST_FOREACH(const nobBaseWarehouse* wh, aii.GetStorehouses())
+    for(const nobBaseWarehouse* wh : aii.GetStorehouses())
     {
         if(aii.gwb.CalcDistance(wh->GetPos(), pt) < radius)
             return true;
     }
-    BOOST_FOREACH(const noBuildingSite* bldSite, aii.GetBuildingSites())
+    for(const noBuildingSite* bldSite : aii.GetBuildingSites())
     {
         if(BuildingProperties::IsWareHouse(bldSite->GetBuildingType()))
         {
@@ -735,8 +734,8 @@ bool AIConstruction::OtherStoreInRadius(MapPoint pt, unsigned radius)
 noFlag* AIConstruction::FindTargetStoreHouseFlag(const MapPoint pt) const
 {
     unsigned minDistance = std::numeric_limits<unsigned>::max();
-    const nobBaseWarehouse* minTarget = NULL;
-    BOOST_FOREACH(const nobBaseWarehouse* wh, aii.GetStorehouses())
+    const nobBaseWarehouse* minTarget = nullptr;
+    for(const nobBaseWarehouse* wh : aii.GetStorehouses())
     {
         unsigned dist = aii.gwb.CalcDistance(pt, wh->GetPos());
         if(dist < minDistance)
@@ -746,7 +745,7 @@ noFlag* AIConstruction::FindTargetStoreHouseFlag(const MapPoint pt) const
         }
     }
     if(!minTarget)
-        return NULL;
+        return nullptr;
     else
         return minTarget->GetFlag();
 }

@@ -23,7 +23,6 @@
 #include "libutil/Log.h"
 #include "libutil/NullWriter.h"
 #include "libutil/StdStreamWriter.h"
-#include <boost/make_shared.hpp>
 #include <cstdlib>
 #include <ctime>
 
@@ -36,7 +35,7 @@ rttr::test::BaseFixture::BaseFixture()
     // Don't write to file
     LOG.setWriter(new NullWriter(), LogTarget::File);
     // Filter everything so FileAndStdout won't result in duplicate lines and store text for tests
-    LOG.setWriter(new AvoidDuplicatesWriter(boost::make_shared<BufferedWriter>(boost::make_shared<StdStreamWriter>(true))),
+    LOG.setWriter(new AvoidDuplicatesWriter(std::make_shared<BufferedWriter>(std::make_shared<StdStreamWriter>(true))),
                   LogTarget::StdoutAndStderr);
-    srand(static_cast<unsigned>(time(NULL)));
+    srand(static_cast<unsigned>(time(nullptr)));
 }

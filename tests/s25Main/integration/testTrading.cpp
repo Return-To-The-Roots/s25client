@@ -24,7 +24,6 @@
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
 #include "gameData/JobConsts.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
 
@@ -32,7 +31,7 @@ BOOST_AUTO_TEST_SUITE(GameCommandSuite)
 
 struct TradeFixture : public WorldWithGCExecution3P
 {
-    boost::array<const GamePlayer*, 3> players;
+    std::array<const GamePlayer*, 3> players;
     unsigned numHelpers, numWoodcutters, numDonkeys, numBoards, numSaws, numSwords;
     const nobBaseWarehouse* curWh;
     TradeFixture()
@@ -249,7 +248,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
 
     // Add a ring off enemy owned land so they cannot pass
     std::vector<MapPoint> pts = world.GetPointsInRadius(curWh->GetPos(), 10);
-    BOOST_FOREACH(const MapPoint& pt, pts)
+    for(const MapPoint& pt : pts)
     {
         if(world.CalcDistance(pt, curWh->GetPos()) >= 8)
             world.SetOwner(pt, 2 + 1); // playerID = 2 -> Owner = +1
