@@ -42,7 +42,7 @@ if [ -z "${RTTR_SRCDIR}" ] ; then
 	exit 1
 fi
 
-if [ -z "$(type -p $OBJCOPY)" ] ; then
+if [ "$SYSTEM_NAME" != "Darwin" ] && [ -z "$(type -p $OBJCOPY)" ] ; then
 	echo "You have to install objcopy" >&2
 	exit 1
 fi

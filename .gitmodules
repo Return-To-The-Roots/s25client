@@ -24,10 +24,10 @@
 	path = data/RTTR/languages
 [submodule "contrib/kaguya"]
 	path = external/kaguya
-	url = https://github.com/Return-To-The-Roots/kaguya.git
+	url = https://github.com/satoren/kaguya.git
 [submodule "s25edit"]
 	path = external/s25edit
 	url = https://github.com/Return-To-The-Roots/s25edit.git
 [submodule "contrib/turtle"]
 	path = external/turtle
-	url = https://github.com/Return-To-The-Roots/turtle.git
+	url = https://github.com/mat007/turtle.git
