@@ -27,7 +27,6 @@
 #include "world/TerritoryRegion.h"
 #include <boost/assign/std/set.hpp>
 #include <boost/assign/std/vector.hpp>
-#include <boost/bind.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/test/unit_test.hpp>
 #include <array>

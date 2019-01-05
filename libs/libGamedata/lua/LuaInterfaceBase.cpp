@@ -21,7 +21,6 @@
 #include "mygettext/utils.h"
 #include "libutf8/utf8.h"
 #include "libutil/Log.h"
-#include <boost/bind.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 
@@ -34,9 +33,9 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), errorOccured_(f
     lua.openlib("math", luaopen_math);
 
     Register(lua);
-    lua.setErrorHandler(boost::bind(&LuaInterfaceBase::ErrorHandler, this, _1, _2));
+    lua.setErrorHandler([this](int status, const char* msg) { ErrorHandler(status, msg); });
     // Quasi-Standard translate function
-    lua["_"] = kaguya::function<std::string(const std::string&)>(boost::bind(&LuaInterfaceBase::Translate, this, _1));
+    lua["_"] = kaguya::function([this](const std::string& s) { return Translate(s); });
     // No-op translate (translated later)
     lua["__"] = gettext_noop;
 }
@@ -110,7 +109,10 @@ bool LuaInterfaceBase::LoadScriptString(const std::string& script, bool rethrowE
 
 void LuaInterfaceBase::SetThrowOnError(bool doThrow)
 {
-    lua.setErrorHandler(boost::bind(doThrow ? &LuaInterfaceBase::ErrorHandler : &LuaInterfaceBase::ErrorHandlerNoThrow, this, _1, _2));
+    if(doThrow)
+        lua.setErrorHandler([this](int status, const char* msg) { ErrorHandler(status, msg); });
+    else
+        lua.setErrorHandler([this](int status, const char* msg) { ErrorHandlerNoThrow(status, msg); });
 }
 
 std::map<std::string, std::string> LuaInterfaceBase::GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)

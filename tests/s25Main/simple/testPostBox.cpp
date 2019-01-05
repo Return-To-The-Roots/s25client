@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
-#include <boost/bind.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -107,8 +106,8 @@ BOOST_AUTO_TEST_CASE(MsgCallbacks)
 {
     PostBox box;
     CallbackChecker cb(box);
-    box.ObserveNewMsg(boost::bind(&CallbackChecker::OnNew, &cb, _1, _2));
-    box.ObserveDeletedMsg(boost::bind(&CallbackChecker::OnDel, &cb, _1));
+    box.ObserveNewMsg([&cb](const auto& msg, auto ct) { cb.OnNew(msg, ct); });
+    box.ObserveDeletedMsg([&cb](auto ct) { cb.OnDel(ct); });
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
         box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
     BOOST_REQUIRE_EQUAL(cb.newCalls, box.GetMaxMsgs());
@@ -123,7 +122,7 @@ BOOST_AUTO_TEST_CASE(ClearMsgs)
 {
     PostBox box;
     CallbackChecker cb(box);
-    box.ObserveDeletedMsg(boost::bind(&CallbackChecker::OnDel, &cb, _1));
+    box.ObserveDeletedMsg([&cb](auto ct) { cb.OnDel(ct); });
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
         box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
     // Deleting should delete all messages and call delete callback for each one

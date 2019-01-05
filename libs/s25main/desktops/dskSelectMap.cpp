@@ -51,7 +51,6 @@
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/ucString.h"
-#include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 //#include <boost/thread.hpp>
 

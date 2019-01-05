@@ -29,7 +29,6 @@
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrainfield.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/bind.hpp>
 
 nofFarmer::nofFarmer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FARMER, pos, player, workplace), harvest(false)
@@ -149,7 +148,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
         }
 
         // Terrain untersuchen
-        if(!gwg->IsOfTerrain(pt, boost::bind(&TerrainDesc::IsVital, _1)))
+        if(!gwg->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
             return PQ_NOTPOSSIBLE;
 
         // Ist Platz frei?

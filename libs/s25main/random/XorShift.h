@@ -31,9 +31,9 @@ class XorShift
 public:
     typedef uint64_t result_type;
 
-    static result_type min() { return 1; }
-    static result_type max() { return std::numeric_limits<uint64_t>::max(); }
-    static const char* getName() { return "XorShift"; }
+    static constexpr result_type min() { return 1; }
+    static constexpr result_type max() { return std::numeric_limits<uint64_t>::max(); }
+    static constexpr const char* getName() { return "XorShift"; }
 
     XorShift() { seed(); }
     explicit XorShift(uint64_t initSeed) { seed(initSeed); }

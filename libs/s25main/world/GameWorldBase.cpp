@@ -37,7 +37,6 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/bind.hpp>
 
 GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em)
     : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(players), gameSettings(gameSettings),
@@ -196,7 +195,7 @@ bool IsMilBldOfOwner(const GameWorldBase& gwb, MapPoint pt, unsigned char owner)
 bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const
 {
     // Im Umkreis von 4 Punkten ein Militärgebäude suchen
-    return CheckPointsInRadius(nPt, 4, boost::bind(IsMilBldOfOwner, boost::cref(*this), _1, player + 1), false);
+    return CheckPointsInRadius(nPt, 4, [this, player](auto pt, auto) { return IsMilBldOfOwner(*this, pt, player + 1); }, false);
 }
 
 bool GameWorldBase::IsMilitaryBuildingOnNode(const MapPoint pt, bool attackBldsOnly) const
@@ -401,7 +400,7 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harborId, const unsigned ch
 unsigned GameWorldBase::GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
                                                const unsigned char player) const
 {
-    return GetHarborInDir(pt, origin_harborId, dir, boost::bind(&GameWorldBase::IsHarborPointFree, this, _1, player));
+    return GetHarborInDir(pt, origin_harborId, dir, [this, player](auto harborId) { return this->IsHarborPointFree(harborId, player); });
 }
 
 /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
@@ -693,6 +692,8 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
 void GameWorldBase::RecalcBQ(const MapPoint pt)
 {
     BQCalculator calcBQ(*this);
-    if(SetBQ(pt, calcBQ(pt, boost::bind(&GameWorldBase::IsOnRoad, this, _1))))
+    if(SetBQ(pt, calcBQ(pt, [this](auto pt) { return this->IsOnRoad(pt); })))
+    {
         GetNotifications().publish(NodeNote(NodeNote::BQ, pt));
+    }
 }

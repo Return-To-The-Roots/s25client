@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "noFlag.h"
-
 #include "EventManager.h"
 #include "FOWObjects.h"
 #include "GamePlayer.h"
@@ -31,7 +30,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/bind.hpp>
 
 noFlag::noFlag(const MapPoint pos, const unsigned char player, const unsigned char dis_dir)
     : noRoadNode(NOP_FLAG, pos, player), ani_offset(rand() % 20000)
@@ -54,7 +52,7 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player, const unsigned ch
         flag->GetRoute(dir)->SplitRoad(this);
 
     // auf Wasseranteile prüfen
-    if(gwg->HasTerrain(pos, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER))
+    if(gwg->HasTerrain(pos, [](const auto& desc) { return desc.kind == TerrainKind::WATER; }))
         flagtype = FT_WATER;
     else
         flagtype = FT_NORMAL;

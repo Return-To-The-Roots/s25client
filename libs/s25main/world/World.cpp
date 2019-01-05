@@ -29,7 +29,6 @@
 #include "helpers/containerUtils.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/bind.hpp>
 #include <set>
 #include <stdexcept>
 
@@ -310,12 +309,12 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
 
 bool World::IsSeaPoint(const MapPoint pt) const
 {
-    return World::IsOfTerrain(pt, boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
+    return World::IsOfTerrain(pt, [](const auto& desc) { return desc.Is(ETerrain::Shippable); });
 }
 
 bool World::IsWaterPoint(const MapPoint pt) const
 {
-    return World::IsOfTerrain(pt, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER);
+    return World::IsOfTerrain(pt, [](const auto& desc) { return desc.kind == TerrainKind::WATER; });
 }
 
 unsigned World::GetSeaSize(const unsigned seaId) const

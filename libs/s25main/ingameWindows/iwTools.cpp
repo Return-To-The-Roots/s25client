@@ -37,7 +37,6 @@
 #include "gameData/ToolConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
-#include <boost/lambda/lambda.hpp>
 
 iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_TOOLS, IngameWindow::posLastOrCenter,
@@ -79,7 +78,7 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     // Netzwerk-Übertragungs-Timer
     AddTimer(14, 2000);
 
-    toolSubscription = gwv.GetWorld().GetNotifications().subscribe<ToolNote>(boost::lambda::var(shouldUpdateTexts) = true);
+    toolSubscription = gwv.GetWorld().GetNotifications().subscribe<ToolNote>([this](auto) { this->shouldUpdateTexts = true; });
 }
 
 void iwTools::AddToolSettingSlider(unsigned id, GoodType ware)

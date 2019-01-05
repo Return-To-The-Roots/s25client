@@ -30,9 +30,6 @@
 #include "nodeObjs/noShip.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameData/BuildingProperties.h"
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/if.hpp>
-#include <boost/lambda/lambda.hpp>
 
 GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb) : playerId_(playerId), gwb(gwb)
 {
@@ -50,26 +47,26 @@ void GameWorldViewer::InitVisualData()
         // Roads are only overlays. At first we don't have any -> 0=use real road
         std::fill(vNode.roads.begin(), vNode.roads.end(), 0);
     }
-    namespace bl = boost::lambda;
-    using bl::_1;
-    evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>(bl::bind(&GameWorldViewer::RoadConstructionEnded, this, _1));
-    evBQChanged = gwb.GetNotifications().subscribe<NodeNote>(
-      bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&GameWorldViewer::RecalcBQ, this, bl::bind(&NodeNote::pos, _1))]);
+    evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>([this](const RoadNote& note) { RoadConstructionEnded(note); });
+    evBQChanged = gwb.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
+        if(note.type == NodeNote::BQ)
+            RecalcBQ(note.pos);
+    });
 }
 
 void GameWorldViewer::InitTerrainRenderer()
 {
     tr.GenerateOpenGL(*this);
-    namespace bl = boost::lambda;
-    using bl::_1;
     // Notify renderer about altitude changes
-    evAltitudeChanged = gwb.GetNotifications().subscribe<NodeNote>(
-      bl::if_(bl::bind(&NodeNote::type, _1)
-              == NodeNote::Altitude)[bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pos, _1), boost::cref(*this))]);
+    evAltitudeChanged = gwb.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
+        if(note.type == NodeNote::Altitude)
+            tr.AltitudeChanged(note.pos, *this);
+    });
     // And visibility changes
-    evVisibilityChanged =
-      gwb.GetNotifications().subscribe<PlayerNodeNote>(bl::if_(bl::bind(&PlayerNodeNote::type, _1) == PlayerNodeNote::Visibility)[bl::bind(
-        &GameWorldViewer::VisibilityChanged, this, bl::bind(&PlayerNodeNote::pt, _1), bl::bind(&PlayerNodeNote::player, _1))]);
+    evVisibilityChanged = gwb.GetNotifications().subscribe<PlayerNodeNote>([this](const PlayerNodeNote& note) {
+        if(note.type == PlayerNodeNote::Visibility)
+            VisibilityChanged(note.pt, note.player);
+    });
 }
 
 const GamePlayer& GameWorldViewer::GetPlayer() const
@@ -266,7 +263,7 @@ void GameWorldViewer::RoadConstructionEnded(const RoadNote& note)
 void GameWorldViewer::RecalcBQ(const MapPoint& pt)
 {
     BQCalculator calcBQ(GetWorld());
-    visualNodes[GetWorld().GetIdx(pt)].bq = calcBQ(pt, boost::lambda::bind(&GameWorldViewer::IsOnRoad, this, boost::lambda::_1));
+    visualNodes[GetWorld().GetIdx(pt)].bq = calcBQ(pt, [this](const MapPoint& pos) { return IsOnRoad(pos); });
 }
 
 void GameWorldViewer::RecalcBQForRoad(const MapPoint& pt)

@@ -85,11 +85,7 @@
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
-#include <boost/bind.hpp>
 #include <boost/format.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/if.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <algorithm>
 #include <cstdio>
 #include <sstream>
@@ -152,13 +148,13 @@ void dskGameInterface::InitPlayer()
     if(worldViewer.GetPlayer().GetHQPos().isValid())
         gwv.MoveToMapPt(worldViewer.GetPlayer().GetHQPos());
 
-    namespace bl = boost::lambda;
-    using bl::_1;
-    evBld = worldViewer.GetWorld().GetNotifications().subscribe<BuildingNote>(
-      bl::if_(bl::bind(&BuildingNote::player, _1) == worldViewer.GetPlayerId())[bl::bind(&dskGameInterface::OnBuildingNote, this, _1)]);
+    evBld = worldViewer.GetWorld().GetNotifications().subscribe<BuildingNote>([this](const auto& note) {
+        if(note.player == worldViewer.GetPlayerId())
+            this->OnBuildingNote(note);
+    });
     PostBox& postBox = GetPostBox();
-    postBox.ObserveNewMsg(boost::bind(&dskGameInterface::NewPostMessage, this, _1, _2));
-    postBox.ObserveDeletedMsg(boost::bind(&dskGameInterface::PostMessageDeleted, this, _1));
+    postBox.ObserveNewMsg([this](const auto& msg, auto msgCt) { this->NewPostMessage(msg, msgCt); });
+    postBox.ObserveDeletedMsg([this](auto msgCt) { this->PostMessageDeleted(msgCt); });
     UpdatePostIcon(postBox.GetNumMsgs(), true);
 }
 
@@ -997,7 +993,8 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Sind wir am Wasser?
     if(action_tabs.setflag)
     {
-        if(world.HasTerrain(cSel, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER))
+        auto isWater = [](const auto& desc) { return desc.kind == TerrainKind::WATER; };
+        if(world.HasTerrain(cSel, isWater))
             params = iwAction::AWFT_WATERFLAG;
     }
 

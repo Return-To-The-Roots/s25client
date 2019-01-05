@@ -21,7 +21,6 @@
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
 #include "libsiedler2/enumTypes.h"
-#include <boost/bind.hpp>
 #include <ctime>
 #include <random>
 #include <stdexcept>
@@ -81,17 +80,16 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
 {
     // Water
     std::vector<DescIdx<TerrainDesc>> terrains =
-      FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER && boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
+      FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::WATER && desc.Is(ETerrain::Shippable); });
     if(!terrains.empty())
     {
         for(int i = 0; i < 4; i++)
             textures.push_back(terrains[Rand(terrains.size())]);
     }
     // Walkable land
-    terrains =
-      FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND && boost::bind(&TerrainDesc::Is, _1, ETerrain::Walkable));
+    terrains = FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Walkable); });
     // Desert or similar
-    terrains = FilterTerrains(terrains, boost::bind(&TerrainDesc::GetBQ, _1) == TerrainBQ::FLAG);
+    terrains = FilterTerrains(terrains, [](const auto& desc) { return desc.GetBQ() == TerrainBQ::FLAG; });
     if(!terrains.empty())
     {
         for(unsigned i = 1; i < terrains.size(); i++)
@@ -102,8 +100,7 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
         textures.push_back(terrains.front());
     }
     // Buildable land ordered by humidity
-    terrains =
-      FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    terrains = FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
     if(terrains.empty())
         throw std::runtime_error("No buildable land found");
     bool swapped;
@@ -124,8 +121,7 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
         textures.push_back(terrains[i]);
 
     // Buildable, humid mountain
-    terrains = FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
-                               && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    terrains = FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Buildable); });
     if(!terrains.empty())
     {
         for(unsigned i = 1; i < terrains.size(); i++)
@@ -137,20 +133,20 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
     }
     // Mountain
     DescIdx<TerrainDesc> t =
-      FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN && boost::bind(&TerrainDesc::Is, _1, ETerrain::Mineable));
+      FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Mineable); });
     if(!t)
         throw std::runtime_error("No mineable mountain found");
     for(int i = 0; i < 3; i++)
         textures.push_back(t);
 
     if(snowOrLava)
-        t = FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
+        t = FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::SNOW; });
     else
         t = DescIdx<TerrainDesc>();
     if(!t)
-        t = FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAVA);
+        t = FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::LAVA; });
     if(!t)
-        t = FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
+        t = FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::SNOW; });
     if(!!t)
     {
         for(int i = 0; i < 10; i++)
@@ -301,5 +297,5 @@ double RandomConfig::DRand(const double min, const double max)
 const TerrainDesc& RandomConfig::GetTerrainByS2Id(uint8_t s2Id) const
 {
     s2Id &= ~(libsiedler2::HARBOR_MASK | 0x80); // Exclude harbor mask and highest bit
-    return worldDesc.get(FindTerrain(boost::bind(&TerrainDesc::s2Id, _1) == s2Id));
+    return worldDesc.get(FindTerrain([s2Id](const auto& desc) { return desc.s2Id == s2Id; }));
 }

@@ -50,7 +50,6 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/bind.hpp>
 #include <algorithm>
 #include <cmath>
 #include <functional>
@@ -1121,8 +1120,11 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
 
     // Check scouts and soldiers
     const unsigned range = std::max(VISUALRANGE_SCOUT, VISUALRANGE_SOLDIER);
-    if(CheckPointsInRadius(pt, range, boost::bind(&GameWorldGame::IsScoutingFigureOnNode, this, _1, player, _2), true))
+    if(CheckPointsInRadius(pt, range, [this, player](auto pt, auto distance) { return this->IsScoutingFigureOnNode(pt, player, distance); },
+                           true))
+    {
         return true;
+    }
     return IsPointScoutedByShip(pt, player);
 }
 

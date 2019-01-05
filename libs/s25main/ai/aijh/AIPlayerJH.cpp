@@ -48,16 +48,10 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/if.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <algorithm>
 #include <array>
 #include <sstream>
 #include <stdexcept>
-
-namespace bl = boost::lambda;
-using bl::_1;
 
 namespace {
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
@@ -139,18 +133,30 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     // TODO: Use C++11 lambdas to simplify this
     // TODO: Maybe remove the AIEvents where possible and call the handler functions directly
     NotificationManager& notifications = gwb.GetNotifications();
-    subBuilding = notifications.subscribe<BuildingNote>(
-      bl::if_(bl::bind(&BuildingNote::player, _1) == playerId)[bl::bind(&HandleBuildingNote, boost::ref(eventManager), _1)]);
-    subExpedition = notifications.subscribe<ExpeditionNote>(
-      bl::if_(bl::bind(&ExpeditionNote::player, _1) == playerId)[bl::bind(&HandleExpeditionNote, boost::ref(eventManager), _1)]);
-    subResource = notifications.subscribe<ResourceNote>(
-      bl::if_(bl::bind(&ResourceNote::player, _1) == playerId)[bl::bind(&HandleResourceNote, boost::ref(eventManager), _1)]);
-    subRoad = notifications.subscribe<RoadNote>(
-      bl::if_(bl::bind(&RoadNote::player, _1) == playerId)[bl::bind(&HandleRoadNote, boost::ref(eventManager), _1)]);
-    subShip = notifications.subscribe<ShipNote>(
-      bl::if_(bl::bind(&ShipNote::player, _1) == playerId)[bl::bind(&HandleShipNote, boost::ref(eventManager), _1)]);
-    subBQ = notifications.subscribe<NodeNote>(
-      bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&AIPlayerJH::UpdateNodeBQ, this, bl::bind(&NodeNote::pos, _1))]);
+    subBuilding = notifications.subscribe<BuildingNote>([this, playerId](const BuildingNote& note) {
+        if(note.player == playerId)
+            HandleBuildingNote(eventManager, note);
+    });
+    subExpedition = notifications.subscribe<ExpeditionNote>([this, playerId](const ExpeditionNote& note) {
+        if(note.player == playerId)
+            HandleExpeditionNote(eventManager, note);
+    });
+    subResource = notifications.subscribe<ResourceNote>([this, playerId](const ResourceNote& note) {
+        if(note.player == playerId)
+            HandleResourceNote(eventManager, note);
+    });
+    subRoad = notifications.subscribe<RoadNote>([this, playerId](const RoadNote& note) {
+        if(note.player == playerId)
+            HandleRoadNote(eventManager, note);
+    });
+    subShip = notifications.subscribe<ShipNote>([this, playerId](const ShipNote& note) {
+        if(note.player == playerId)
+            HandleShipNote(eventManager, note);
+    });
+    subBQ = notifications.subscribe<NodeNote>([this](const NodeNote& note) {
+        if(note.type == NodeNote::BQ)
+            UpdateNodeBQ(note.pos);
+    });
 }
 
 AIPlayerJH::~AIPlayerJH()
@@ -447,7 +453,7 @@ AIResource AIPlayerJH::CalcResource(const MapPoint pt)
             if(gwb.IsOnRoad(pt))
                 return AIResource::NOTHING;
             // check for vital plant space
-            if(!gwb.IsOfTerrain(pt, bl::bind(&TerrainDesc::IsVital, _1)))
+            if(!gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.IsVital(); }))
                 return AIResource::NOTHING;
             return AIResource::PLANTSPACE;
         }
@@ -673,15 +679,15 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
                 {
                     if(res == AIResource::FISH)
                     {
-                        if(!gwb.IsOfTerrain(curPt, bl::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER))
+                        if(!gwb.IsOfTerrain(curPt, [](TerrainDesc desc) { return desc.kind == TerrainKind::WATER; }))
                             resMapVal = 0;
                     } else if(res == AIResource::STONES)
                     {
-                        if(!gwb.IsOfTerrain(curPt, bl::bind(&TerrainDesc::Is, _1, ETerrain::Buildable)))
+                        if(!gwb.IsOfTerrain(curPt, [](TerrainDesc desc) { return desc.Is(ETerrain::Buildable); }))
                             resMapVal = 0;
                     } else //= granite,gold,iron,coal
                     {
-                        if(!gwb.IsOfTerrain(curPt, bl::bind(&TerrainDesc::Is, _1, ETerrain::Mineable)))
+                        if(!gwb.IsOfTerrain(curPt, [](TerrainDesc desc) { return desc.Is(ETerrain::Mineable); }))
                             resMapVal = 0;
                     }
                 }

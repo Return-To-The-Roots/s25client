@@ -29,9 +29,9 @@ class DefaultLCG
 public:
     typedef uint32_t result_type;
 
-    static result_type min() { return 0; }
-    static result_type max() { return 0xFFFF; }
-    static const char* getName() { return "DefaultLCG"; }
+    static constexpr result_type min() { return 0; }
+    static constexpr result_type max() { return 0xFFFF; }
+    static constexpr const char* getName() { return "DefaultLCG"; }
 
     DefaultLCG() { seed(); }
     explicit DefaultLCG(result_type initSeed) { seed(initSeed); }

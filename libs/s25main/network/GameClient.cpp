@@ -65,7 +65,6 @@
 #include "libutil/fileFuncs.h"
 #include "libutil/strFuncs.h"
 #include "libutil/ucString.h"
-#include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <cerrno>
@@ -1760,8 +1759,8 @@ unsigned GameClient::GetTournamentModeDuration() const
 void GameClient::ToggleHumanAIPlayer()
 {
     RTTR_Assert(!IsReplayModeOn());
-    boost::ptr_vector<AIPlayer>::iterator it =
-      std::find_if(game->aiPlayers.begin(), game->aiPlayers.end(), boost::bind(&AIPlayer::GetPlayerId, _1) == GetPlayerId());
+    auto it = std::find_if(game->aiPlayers.begin(), game->aiPlayers.end(),
+                           [this](const auto& player) { return player.GetPlayerId() == this->GetPlayerId(); });
     if(it != game->aiPlayers.end())
         game->aiPlayers.erase(it);
     else

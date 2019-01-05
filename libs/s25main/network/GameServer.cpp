@@ -40,7 +40,6 @@
 #include "libutil/SocketSet.h"
 #include "libutil/colors.h"
 #include "libutil/ucString.h"
-#include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <cmath>
@@ -1394,8 +1393,7 @@ std::string GameServer::SaveAsyncLog()
     unsigned numEntries = 0;
     for(AsyncLog& log : asyncLogs)
     {
-        std::vector<RandomEntry>::iterator it =
-          std::find_if(log.randEntries.begin(), log.randEntries.end(), boost::bind(&RandomEntry::counter, _1) == maxCtr);
+        auto it = std::find_if(log.randEntries.begin(), log.randEntries.end(), [maxCtr](const auto& e) { return e.counter == maxCtr; });
         log.randEntries.erase(log.randEntries.begin(), it);
         if(numEntries < log.randEntries.size())
             numEntries = log.randEntries.size();

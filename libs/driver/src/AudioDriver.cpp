@@ -18,7 +18,6 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "driver/AudioDriver.h"
 #include "driver/SoundHandle.h"
-#include <boost/bind.hpp>
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
@@ -103,7 +102,7 @@ SoundHandle AudioDriver::CreateSoundHandle(SoundDesc* sound)
 {
     RTTR_Assert(sound->isValid());
     sounds_.push_back(sound);
-    return SoundHandle(SoundHandle::Descriptor(sound, boost::bind(&AudioDriver::UnloadSound, boost::ref(*this), _1)));
+    return SoundHandle(SoundHandle::Descriptor(sound, [this](auto* sound) { UnloadSound(*this, sound); }));
 }
 
 EffectPlayId AudioDriver::GeneratePlayID()
