@@ -80,7 +80,7 @@ extract_debug_symbols()
 
 	if [ "$SYSTEM_NAME" == "Darwin" ]; then
 		# Can't extract symbols for apple, so just strip them
-		$STRIP -S ${DESTDIR}$FILE
+		$STRIP -S ${DESTDIR}s25client.app/$FILE
 		return 0
 	fi
 
