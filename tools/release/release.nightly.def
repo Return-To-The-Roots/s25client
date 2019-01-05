@@ -6,4 +6,4 @@ UPLOADTARGET=$UPLOADHOST:$UPLOADPATH
 UPLOADSCRIPT="ssh $UPLOADHOST /usr/bin/php -q /www/siedler25.org/www/docs/cron/nightlysql.php"
 UPLOADTO=nightly/
 UPLOADURL=http://www.siedler25.org/uploads/
-UPLOADFILE=/srv/apache2/siedler25.org/nightly/s25client/
+UPLOADFILE=/www/s25client/
