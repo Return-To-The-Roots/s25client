@@ -1,4 +1,8 @@
 set(CMAKE_SYSTEM_NAME Windows)
+# Default to Win10 if not set on command line
+if(NOT CMAKE_SYSTEM_VERSION)
+    set(CMAKE_SYSTEM_VERSION 10.0.0)
+endif()
 
 # Search for a matching MinGW compiler preferring the more recent w64 infix
 foreach(infix w64 pc)

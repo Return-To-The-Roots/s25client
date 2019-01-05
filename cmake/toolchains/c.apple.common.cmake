@@ -20,7 +20,6 @@ endforeach()
 set(OSX_SDKS "/usr/lib/apple/SDKs/MacOSX10.11.sdk" "/usr/lib/apple/SDKs/MacOSX10.5.sdk" "/usr/lib/apple/SDKs/MacOSX10.4u.sdk")
 
 # set SDK (use newest first)
-MESSAGE(STATUS "Getting SDK. Old deployment target: ${CMAKE_OSX_DEPLOYMENT_TARGET}. Old sysroot: ${CMAKE_OSX_SYSROOT}")
 unset(CMAKE_OSX_DEPLOYMENT_TARGET)
 unset(CMAKE_OSX_SYSROOT)
 foreach(SDK IN LISTS OSX_SDKS)
@@ -34,6 +33,17 @@ if(NOT CMAKE_OSX_SYSROOT)
 ENDIF()
 SET(CMAKE_OSX_SYSROOT ${CMAKE_OSX_SYSROOT} CACHE PATH "Path to OSX SDK")
 MESSAGE(STATUS "Using OSX SDK at ${CMAKE_OSX_SYSROOT}")
+
+if(CMAKE_OSX_SYSROOT MATCHES "OSX10\\.([0-9]+)u?\\.sdk")
+    #  10.x == Mac OSX 10.6 (Snow Leopard)
+    #  11.x == Mac OSX 10.7 (Lion)
+    #  12.x == Mac OSX 10.8 (Mountain Lion)
+    #  etc.
+    math(EXPR majorVersion "4 + ${CMAKE_MATCH_1}")
+    set(CMAKE_SYSTEM_VERSION "${majorVersion}.0.0")
+else()
+    message(FATAL_ERROR "Could not parse SDK version")
+endif()
 
 SET(CMAKE_FIND_ROOT_PATH ${CMAKE_OSX_SYSROOT})
 

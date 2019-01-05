@@ -1,6 +1,10 @@
 SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 
+if(NOT CMAKE_SYSTEM_VERSION)
+    message(FATAL_ERROR "Need to set CMAKE_SYSTEM_VERSION to target version (uname -r) on cmd line")
+endif()
+
 # specify the cross compiler
 set(COMPILER_PREFIX arm-linux-gnueabi)
 find_program(CMAKE_C_COMPILER NAMES ${COMPILER_PREFIX}-gcc)
