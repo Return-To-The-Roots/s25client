@@ -1,5 +1,5 @@
 TARGET=/www/s25client/stable
-ARCHIVE=/www/s25client/archive/stable/$(date +%Y)
+ARCHIVE=/archive/stable/$(date +%Y)
 UPLOADHOST=root@tyra4.ra-doersch.de
 UPLOADPATH=/www/siedler25.org/www/uploads/stable/
 UPLOADTARGET=$UPLOADHOST:$UPLOADPATH
