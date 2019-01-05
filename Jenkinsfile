@@ -2,7 +2,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-def transformIntoStep(arch, wspwd) {
+def transformIntoStep(arch, wspwd, container) {
     return {
         timeout(120) {
             node('master') {
@@ -33,12 +33,13 @@ def transformIntoStep(arch, wspwd) {
                                   VOLUMES=
                                   touch s25rttrDummy.zip
                               fi
-                              docker run --rm -u jenkins -v \$(pwd):/workdir \
+                              docker run --rm -u \$(id -u jenkins):\$(id -g jenkins) -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
+                                                         -w /workdir \
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
-                                                         git.ra-doersch.de:5005/rttr/docker-precise:master -c \
+                                                         ${container} bash -c \
                                                         "tools/ci/jenkinsOfficialBuild.sh ${arch} \${CI_TYPE}"
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
@@ -89,13 +90,23 @@ catchError() {
     milestone label: 'Checkout complete'
 
     stage("Building") {
-        String[] archs = ["windows.i686", "windows.x86_64", "linux.i686", "linux.x86_64", "apple.universal" ]
+        String[] archs = [
+            "windows.i686",
+            "windows.x86_64",
+            "linux.x86_64",
+            "apple.universal" ]
+        String[] containers = [
+            "git.ra-doersch.de:5005/rttr/cross-compiler/mingw/mingw-w64-docker:master",
+            "git.ra-doersch.de:5005/rttr/cross-compiler/mingw/mingw-w64-docker:master",
+            "git.ra-doersch.de:5005/rttr/cross-compiler/linux/linux-amd64-docker:master",
+            "git.ra-doersch.de:5005/rttr/cross-compiler/apple/apple-docker:master"
+            ]
         def parallel_map = [:]
 
         for(int i = 0; i < archs.size(); i++) {
             def arch = archs[i]
             echo "Adding Job ${arch}"
-            parallel_map["${arch}"] = transformIntoStep(arch, wspwd)
+            parallel_map["${arch}"] = transformIntoStep(arch, wspwd, containers[i])
         }
 
         // mirror to launchpad step

@@ -1,4 +1,8 @@
 set(CMAKE_SYSTEM_NAME Windows)
+# Default to Win10 if not set on command line
+if(NOT CMAKE_SYSTEM_VERSION)
+    set(CMAKE_SYSTEM_VERSION 10.0.0)
+endif()
 
 # Search for a matching MinGW compiler preferring the more recent w64 infix
 foreach(infix w64 pc)
@@ -26,4 +30,6 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
-set(Boost_COMPILER "-mgw44")
+list(APPEND CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES ${CMAKE_FIND_ROOT_PATH}/include)
+list(APPEND CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES ${CMAKE_FIND_ROOT_PATH}/include)
+

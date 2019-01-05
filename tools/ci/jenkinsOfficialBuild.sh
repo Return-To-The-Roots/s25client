@@ -23,6 +23,10 @@ if [ "$(uname -s | tr "[:upper:]" "[:lower:]").$(uname -m)" != "${ARCH}" ] ; the
     TOOLCHAIN="$(pwd)/cmake/toolchains/c.${ARCH}.cmake"
 fi
 
+if [ -d /workdir ] ; then
+    export CCACHE_DIR=/workdir/.ccache
+fi
+
 BUILD_TYPE=RelWithDebInfo
 if [[ "${ARCH}" == apple.* ]]; then
     # Current apple compiler doesn't work with debug info and we can't extract them anyway
@@ -42,11 +46,6 @@ elif [ "${CI_TYPE}" == "stable" ] ; then
 else
   MAKE_TARGET=install
 fi
-
-CMAKE_VERSION="3.8.2"
-CMAKE_DIR="$(pwd)/installedCMake-${CMAKE_VERSION}"
-tools/ci/installCMake.sh "${CMAKE_VERSION}" "${CMAKE_DIR}" cmakeSrc
-export PATH="${CMAKE_DIR}/bin:${PATH}"
 
 INSTALL_DIR="$(pwd)/installed"
 rm -rf "${INSTALL_DIR}"

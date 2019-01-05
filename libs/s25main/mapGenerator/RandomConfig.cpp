@@ -22,11 +22,16 @@
 #include "gameData/WorldDescription.h"
 #include <boost/bind.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
+
+#ifdef _WIN32
 // Fix stupid conversion warning in boost
 #pragma warning(push)
 #pragma warning(disable : 4244)
+#endif
 #include <boost/random/uniform_smallint.hpp>
+#ifdef _WIN32
 #pragma warning(pop)
+#endif
 #include "libsiedler2/enumTypes.h"
 #include <ctime>
 #include <stdexcept>

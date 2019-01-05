@@ -19,7 +19,7 @@ install(FILES icon.icns DESTINATION ${RTTR_MACOS_DIR}/../Resources)
 function(rttr_create_bundle)
     if(CMAKE_CROSSCOMPILING)
         # copy Frameworks
-        foreach(lib IN LISTS SDL_LIBRARY SDL_MIXER_LIBRARY)
+        foreach(lib IN LISTS SDL_LIBRARY SDL2_LIBRARY SDL_MIXER_LIBRARY)
             if(lib MATCHES "\\.framework$")
                 install(DIRECTORY ${lib}
                     DESTINATION ${RTTR_MACOS_DIR}/../Frameworks
