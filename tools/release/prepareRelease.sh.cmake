@@ -49,7 +49,7 @@ if [ "$SYSTEM_NAME" != "Darwin" ] && [ -z "$(type -p $OBJCOPY)" ] ; then
 	exit 1
 fi
 
-if [ "$SYSTEM_NAME" != "Windows" ] && [ -z "$(type -p $OBJDUMP)" ] ; then
+if [ "$SYSTEM_NAME" == "Windows" ] && [ -z "$(type -p $OBJDUMP)" ] ; then
 	echo "You have to install objdump" >&2
 	exit 1
 fi
