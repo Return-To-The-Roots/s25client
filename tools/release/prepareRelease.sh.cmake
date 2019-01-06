@@ -27,7 +27,9 @@ SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
 SYSTEM_ARCH=@PLATFORM_ARCH@
 IS_CROSS_COMPILE=@CMAKE_CROSSCOMPILING@
 SYSROOT=@CMAKE_FIND_ROOT_PATH@
+CXX=@CMAKE_CXX_COMPILER@
 OBJCOPY=@CMAKE_OBJCOPY@
+OBJDUMP=@CMAKE_OBJDUMP@
 STRIP=@CMAKE_STRIP@
 RTTR_BINDIR=@RTTR_BINDIR@
 RTTR_EXTRA_BINDIR=@RTTR_EXTRA_BINDIR@
@@ -44,6 +46,11 @@ fi
 
 if [ "$SYSTEM_NAME" != "Darwin" ] && [ -z "$(type -p $OBJCOPY)" ] ; then
 	echo "You have to install objcopy" >&2
+	exit 1
+fi
+
+if [ "$SYSTEM_NAME" != "Windows" ] && [ -z "$(type -p $OBJDUMP)" ] ; then
+	echo "You have to install objdump" >&2
 	exit 1
 fi
 
@@ -121,7 +128,7 @@ esac
 
 binaries+=( "${RTTR_BINDIR}/"{s25client,s25edit}${exe_suffix} )
 binaries+=( "${RTTR_EXTRA_BINDIR}/"{s25update,sound-convert,s-c_resample}${exe_suffix} )
-binaries+=( "${RTTR_DRIVERDIR}/"{video/libvideoSDL,audio/libaudioSDL}${lib_suffix} )
+binaries+=( "${RTTR_DRIVERDIR}/"{video/libvideoSDL,video/libvideoSDL2,audio/libaudioSDL}${lib_suffix} )
 
 # strip out debug symbols into external file
 for binary in "${binaries[@]}" ; do
@@ -132,7 +139,7 @@ mecho --blue "## Performing additional tasks"
 
 case "$SYSTEM_NAME" in
 	Darwin)
-        # All done in CMake
+		# All done in CMake
 	;;
 	Windows)
 		lua=""
@@ -145,45 +152,62 @@ case "$SYSTEM_NAME" in
 			;;
 		esac
 
-		cp -v ${RTTR_SRCDIR}/external/lua/${lua}/lua52.dll ${DESTDIR} || exit 1
+		# exclude system dlls
+		DLL_BLACKLIST="GDI32.dll KERNEL32.dll msvcrt.dll OPENGL32.DLL USER32.dll ADVAPI32.dll IPHLPAPI.DLL ole32.dll SHELL32.dll WS2_32.dll WINMM.DLL CRYPT32.dll wldap32.dll IMM32.DLL OLEAUT32.dll VERSION.dll"
 
-		if [ -f $SYSROOT/bin/libgcc_s_sjlj-1.dll ] ; then
-			cp -v $SYSROOT/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
-			cp -v $SYSROOT/bin/libgcc_s_sjlj-1.dll ${DESTDIR}RTTR || exit 1
-		else
-			cp -v $SYSROOT/bin/libgcc_s_seh-1.dll ${DESTDIR} || exit 1
-			cp -v $SYSROOT/bin/libgcc_s_seh-1.dll ${DESTDIR}RTTR || exit 1
+		copy_dll()
+		{
+			local dll=$1
+			local to=$2
+
+			echo -n "$(basename $dll) "
+			cp $dll ${DESTDIR}$to || return 1
+			return 0
+		}
+
+		copy_dlls()
+		{
+			local to=$1
+			shift
+			local dlls=$*
+
+			for dll in "${dlls[@]}" ; do
+				dep_dlls="$($OBJDUMP -p $dll | grep "DLL Name" | cut -f 3 -d " " | egrep -v "${DLL_BLACKLIST// /|}")"
+				for dep_dll in $dep_dlls ; do
+					FOUND=0
+					CXX_SYSROOT=$(dirname $($CXX -v 2>&1 | grep COLLECT_LTO_WRAPPER | cut -d '=' -f 2))
+					for P in $SYSROOT $CXX_SYSROOT ${RTTR_SRCDIR}/external/lua/${lua} ; do
+						for SUFFIX in "" lib/ bin/ ; do
+							if [ -f $P/$SUFFIX$dep_dll ] ; then
+								copy_dll $P/$SUFFIX$dep_dll $to || return 1
+								copy_dlls $to $P/$SUFFIX$dep_dll || return 1
+								FOUND=1
+								break
+							fi
+						done
+					done
+					if [ $FOUND -eq 0 ] ; then
+						echo "Unable to find $dep_dll for $dll" >&2
+						return 1
+					fi
+				done
+			done
+			return 0
+		}
+
+		for binary in "${binaries[@]}" ; do
+			to=$(dirname $binary)
+			if [[ "$to" = ${RTTR_DRIVERDIR}/* ]] ; then
+				to=$RTTR_BINDIR
+			fi
+			echo "Copying dependency dlls of $binary to ${DESTDIR}$to"
+			copy_dlls $to $binary || exit 1
+			echo ""
+		done
+
+		if [ -d ${DESTDIR}S2 ]; then
+			rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
 		fi
-		
-		if [ -f $SYSROOT/bin/libintl-8.dll ] ; then
-			cp -v $SYSROOT/bin/libintl-8.dll ${DESTDIR} || exit 1
-		fi
-		
-		if [ -f $SYSROOT/bin/libminiupnpc-5.dll ] ; then
-			cp -v $SYSROOT/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
-			cp -v $SYSROOT/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
-		else
-			cp -v $SYSROOT/bin/libminiupnpc.dll ${DESTDIR} || exit 1
-		fi
-		
-		if [ -f $SYSROOT/bin/libstdc++-6.dll ] ; then
-			cp -v $SYSROOT/bin/libstdc++-6.dll ${DESTDIR} || exit
-			cp -v $SYSROOT/bin/libstdc++-6.dll ${DESTDIR}RTTR || exit
-		fi
-
-		cp -v $SYSROOT/bin/libiconv-2.dll ${DESTDIR} || exit 1
-
-		cp -v $SYSROOT/bin/SDL.dll ${DESTDIR} || exit 1
-		cp -v $SYSROOT/bin/SDL_mixer.dll ${DESTDIR} || exit 1
-		cp -v $SYSROOT/bin/libogg-0.dll ${DESTDIR} || exit 1
-		cp -v $SYSROOT/bin/libvorbis-0.dll ${DESTDIR} || exit 1
-		cp -v $SYSROOT/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
-
-		cp -v $SYSROOT/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
-
-        if [ -d ${DESTDIR}S2 ]; then
-            rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
-        fi
 	;;
 	Linux)
 		miniupnpc=/usr/lib/libminiupnpc.so
