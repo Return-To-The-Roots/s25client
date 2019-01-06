@@ -133,8 +133,8 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
 					-- s25rttr_$VERSION) || error
 		;;
 	esac
-	
-	cp -v $ARCHNEWDIR/packed/s25rttr$FORMAT ../s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT || exit
+
+	cp -v $ARCHNEWDIR/packed/s25rttr$FORMAT $SRCDIR/s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT || exit
 
 	if [ -d $ARCHNEWDIR/unpacked/s25rttr_$VERSION/dbg ] ; then
 		case "$FORMAT" in
@@ -149,11 +149,11 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
 			;;
 		esac
 
-		cp -v $ARCHNEWDIR/packed/s25rttr_dbg$FORMAT ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH$FORMAT || exit 1 
+		cp -v $ARCHNEWDIR/packed/s25rttr_dbg$FORMAT $SRCDIR/s25rttr-dbg_$VERSION-${REVISION}_$ARCH$FORMAT || exit 1
 	else
-		touch ../s25rttr-dbg_$VERSION-${REVISION}_$ARCH$FORMAT
+		touch $SRCDIR/s25rttr-dbg_$VERSION-${REVISION}_$ARCH$FORMAT
 	fi
-	
+
 	# link to archive
 	mkdir -p $ARCHIVE
 	ln -v $ARCHNEWDIR/packed/s25rttr$FORMAT $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT || \
@@ -168,7 +168,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
     UPLOADTARGET="${UPLOADTARGET:-}"
 	if [ ! "${NOUPLOAD:-0}" = "1" ] && [ ! -z "$UPLOADTARGET" ] ; then
         UPLOADTO="${UPLOADTO:-$VERSION/}"
-		
+
 		echo "uploading file to $UPLOADTARGET$UPLOADTO"
 		ssh $UPLOADHOST "mkdir -vp $UPLOADPATH$UPLOADTO" || echo "mkdir $UPLOADPATH$UPLOADTO failed"
 		rsync -avz --progress $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT $UPLOADTARGET$UPLOADTO || echo "scp failed"
@@ -176,26 +176,26 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
 			echo "$(date +%s);${UPLOADURL}${UPLOADTO}s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT" >> ${UPLOADFILE}rapidshare.txt
 		fi
 	fi
-	
+
 	echo "creating new updater tree"
 
 	# fastcopy files (only dirs and files, no symlinks
 	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type d -a ! -path */dbg* -exec mkdir -vp $ARCHNEWDIR/updater/{} \;)
 	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type f -a ! -name *.dbg -exec cp {} $ARCHNEWDIR/updater/{} \;)
-	
+
 	# note symlinks
 	L=/tmp/links.$$
 	echo -n > $L
 	echo "reading links"
 	(cd $ARCHNEWDIR/unpacked/s25rttr_$VERSION && find -type l -exec bash -c 'echo "{} $(readlink {})"' \;) | tee $L
-	
+
 	# savegame version
 	UPDATERPATH=$(dirname $(find $ARCHNEWDIR/updater -name "s25update*" | head -n 1))
 	S=/tmp/savegameversion.$$
 	echo "reading savegame version"
-	echo $SAVEGAMEVERSION > $S	
-	cp -v $S $UPDATERPATH/savegameversion || exit 1	
-	
+	echo $SAVEGAMEVERSION > $S
+	cp -v $S $UPDATERPATH/savegameversion || exit 1
+
 	# note hashes
 	F=/tmp/files.$$
 	echo "reading files"
@@ -203,11 +203,11 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
 
 	# bzip files
 	find $ARCHNEWDIR/updater -type f -exec bzip2 -v {} \;
-	
+
 	# move file lists
 	mv -v $L $ARCHNEWDIR/updater/links || exit 1
 	mv -v $F $ARCHNEWDIR/updater/files || exit 1
-	mv -v $S $ARCHNEWDIR/updater/savegameversion || exit 1	
+	mv -v $S $ARCHNEWDIR/updater/savegameversion || exit 1
 
 	# create human version notifier
 	echo "$REVISION" > $ARCHNEWDIR/revision-${REVISION} || exit 1
@@ -216,7 +216,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
 	echo "$VERSION"  > $ARCHNEWDIR/version || exit 1
 	echo "${VERSION}-${REVISION}" > $ARCHNEWDIR/full-version || exit 1
 
-	
+
 	# rotate trees
 	rm -rf $ARCHDIR.5
 	mv $ARCHDIR.4 $ARCHDIR.5
