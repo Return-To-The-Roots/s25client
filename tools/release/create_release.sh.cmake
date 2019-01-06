@@ -17,9 +17,9 @@ cleanup()
 
 error()
 {
-    if [ $# != 0 ]; then
-        echo "ERROR: $1"
-    fi
+	if [ $# != 0 ]; then
+		echo "ERROR: $1"
+	fi
 	cleanup
 	exit 1
 }
@@ -165,9 +165,9 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
 	fi
 
 	# do upload
-    UPLOADTARGET="${UPLOADTARGET:-}"
+	UPLOADTARGET="${UPLOADTARGET:-}"
 	if [ ! "${NOUPLOAD:-0}" = "1" ] && [ ! -z "$UPLOADTARGET" ] ; then
-        UPLOADTO="${UPLOADTO:-$VERSION/}"
+		UPLOADTO="${UPLOADTO:-$VERSION/}"
 
 		echo "uploading file to $UPLOADTARGET$UPLOADTO"
 		ssh $UPLOADHOST "mkdir -vp $UPLOADPATH$UPLOADTO" || echo "mkdir $UPLOADPATH$UPLOADTO failed"

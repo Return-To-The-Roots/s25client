@@ -153,7 +153,7 @@ case "$SYSTEM_NAME" in
 		esac
 
 		# exclude system dlls
-		DLL_BLACKLIST="GDI32.dll KERNEL32.dll msvcrt.dll OPENGL32.DLL USER32.dll ADVAPI32.dll IPHLPAPI.DLL ole32.dll SHELL32.dll WS2_32.dll WINMM.DLL CRYPT32.dll wldap32.dll IMM32.DLL OLEAUT32.dll VERSION.dll"
+		DLL_BLACKLIST="GDI32.dll KERNEL32.dll msvcrt.dll OPENGL32.dll USER32.dll ADVAPI32.dll IPHLPAPI.DLL ole32.dll SHELL32.dll WS2_32.dll WINMM.DLL CRYPT32.dll wldap32.dll IMM32.DLL OLEAUT32.dll VERSION.dll"
 
 		copy_dll()
 		{
@@ -172,7 +172,7 @@ case "$SYSTEM_NAME" in
 			local dlls=$*
 
 			for dll in "${dlls[@]}" ; do
-				dep_dlls="$($OBJDUMP -p $dll | grep "DLL Name" | cut -f 3 -d " " | egrep -v "${DLL_BLACKLIST// /|}")"
+				dep_dlls="$($OBJDUMP -p $dll | grep "DLL Name" | cut -f 3 -d " " | egrep -i -v "${DLL_BLACKLIST// /|}")"
 				for dep_dll in $dep_dlls ; do
 					FOUND=0
 					CXX_SYSROOT=$(dirname $($CXX -v 2>&1 | grep COLLECT_LTO_WRAPPER | cut -d '=' -f 2))
