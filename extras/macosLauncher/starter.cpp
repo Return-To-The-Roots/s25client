@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     {
         bfs::path updaterPath = RTTRCONFIG.ExpandPath("<RTTR_EXTRA_BIN>/s25update");
         if(bfs::exists(updaterPath))
-            System::execute(updaterPath, "--dir \"..\" -v");
+            System::execute(updaterPath, "--dir \"../../../\" -v");
         else
             std::cerr << "Updater not found at " << updaterPath << std::endl;
     }
