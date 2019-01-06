@@ -7,3 +7,4 @@ UPLOADSCRIPT="ssh $UPLOADHOST /usr/bin/php -q /www/siedler25.org/www/docs/cron/s
 UPLOADTO=
 UPLOADURL=http://www.siedler25.org/uploads/stable/
 UPLOADFILE=/www/s25client/stable/
+UPLOADFILE2=/srv/apache2/siedler25.org/nightly/s25client/stable/
