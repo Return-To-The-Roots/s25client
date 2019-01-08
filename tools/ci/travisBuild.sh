@@ -20,6 +20,11 @@ else
     make -j2
 fi
 
+# Set runtime path for boost libraries
+boostLibDir=`cmake -LA -N . | grep Boost_LIBRARY_DIR_DEBUG | cut -d "=" -f2`
+export DYLD_LIBRARY_PATH="${boostLibDir}:${DYLD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="${boostLibDir}:${LD_LIBRARY_PATH:-}"
+
 # Execute tests
 export RTTR_DISABLE_ASSERT_BREAKPOINT=1
 ctest --output-on-failure=1 -j2
