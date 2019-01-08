@@ -307,15 +307,19 @@ add_subdirectory(external)
 add_subdirectory(libs)
 add_subdirectory(extras)
 
-option(RTTR_ENABLE_TESTING "Build tests" ON)
-if(${RTTR_ENABLE_TESTING})
-enable_testing()
-add_subdirectory(tests)
+include(CTest)
+if(BUILD_TESTING)
+    message(STATUS "Testing ('make test') is enabled. Add -DBUILD_TESTING=OFF to disable tests.")
+    enable_testing()
+    add_subdirectory(tests)
+else()
+    message(STATUS "Testing ('make test') is disabled. Add -DBUILD_TESTING=ON to enable tests.")
 endif()
 
 find_package(Gettext REQUIRED)
-file(GLOB RTTR_PO_FILES data/RTTR/languages/*.po)
-gettext_create_translations(data/RTTR/languages/rttr.pot ALL ${RTTR_PO_FILES})
+file(GLOB RTTR_PO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/RTTR/languages/*.po)
+gettext_create_translations(${CMAKE_CURRENT_SOURCE_DIR}/data/RTTR/languages/rttr.pot ALL DESTINATION ${RTTR_DATADIR}/RTTR/languages ${RTTR_PO_FILES})
+
 # Copy the RTTR folder with the updated translations to the directory of the client.
 configure_file(copyDepsToBuildDir.cmake . @ONLY)
 add_custom_command(TARGET translations POST_BUILD
@@ -361,19 +365,34 @@ else()
 endif()
 
 ################################################################################
-# Custom targets
+
+# Packing
 ################################################################################
 
-if(NOT CMAKE_HOST_WIN32 AND PLATFORM_ARCH)
-    include(ConfigureExecutable)
-    configure_executable("tools/release/prepareRelease.sh.cmake" . prepareRelease.sh)
-    configure_executable("tools/release/create_release.sh.cmake" . create_release.sh)
-
-	# Create nightly release
-    add_custom_target(create_nightly
-                      COMMAND "${CMAKE_CURRENT_BINARY_DIR}/create_release.sh" nightly)
-
-	# Create stable release
-    add_custom_target(create_stable
-                      COMMAND "${CMAKE_CURRENT_BINARY_DIR_DIR}/create_release.sh" stable)
+set(CPACK_GENERATOR "TBZ2")
+if(WIN32)
+    set(CPACK_GENERATOR "ZIP")
 endif()
+
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+set(CPACK_PACKAGE_NAME "s25rttr")
+set(CPACK_PACKAGE_VENDOR "Settlers Freaks")
+
+set(CPACK_PACKAGE_VERSION "${RTTR_VERSION}-${RTTR_REVISION}")
+set(CPACK_SYSTEM_NAME "${PLATFORM_NAME}.${PLATFORM_ARCH}")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
+
+set(CPACK_SOURCE_GENERATOR "${CPACK_GENERATOR}")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}")
+
+set(CPACK_IGNORE_FILES "\\\\.a;/\\\\.ccache/;/\\\\.git/;${RTTR_OUTPUT_DIR};${PROJECT_SOURCE_DIR}/build.*")
+set(CPACK_SOURCE_IGNORE_FILES "${CPACK_IGNORE_FILES}")
+set(CPACK_BUILD_SOURCE_DIRS "${PROJECT_SOURCE_DIR}")
+
+if(APPLE)
+    set(CPACK_PACKAGING_INSTALL_PREFIX "/s25client.app")
+else()
+    set(CPACK_PACKAGING_INSTALL_PREFIX "/s25rttr_${RTTR_VERSION}")
+endif()
+
+include(CPack)
