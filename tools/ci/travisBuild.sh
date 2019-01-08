@@ -27,4 +27,9 @@ export LD_LIBRARY_PATH="${boostLibDir}:${LD_LIBRARY_PATH:-}"
 
 # Execute tests
 export RTTR_DISABLE_ASSERT_BREAKPOINT=1
-ctest --output-on-failure=1 -j2
+if ! ctest --output-on-failure=1 -j2; then
+    cat CMakeCache.txt
+    echo "LD:${LD_LIBRARY_PATH:-}"
+    echo "DYLD:${DYLD_LIBRARY_PATH:-}"
+    ctest --output-on-failure=1 --rerun-failed --extra-verbose
+fi
