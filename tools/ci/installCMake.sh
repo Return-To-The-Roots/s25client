@@ -4,7 +4,6 @@ set -euo pipefail
 
 CMAKE_VERSION="${1:?Missing CMake version}"
 INSTALL_DIR="${2:?Missing install dir}"
-CONFIGURE_PREFIX_DIR="${3:?Missing directory prefix where to build CMake}" # Where to store downloaded and build files
 
 export PATH="${INSTALL_DIR}/bin:${PATH}"
 
@@ -15,7 +14,8 @@ if echo "${curVersion}" | grep -q "cmake version ${CMAKE_VERSION}"; then
     exit 0
 fi
 
-mkdir -p "${CONFIGURE_PREFIX_DIR}" && cd "${CONFIGURE_PREFIX_DIR}"
+BUILD_DIR_ROOT="/tmp/cmake" # Where to store downloaded and build files
+mkdir -p "${BUILD_DIR_ROOT}" && cd "${BUILD_DIR_ROOT}"
 
 # Encode version into directory to find it again
 BUILD_DIR="cmake-${CMAKE_VERSION}"
