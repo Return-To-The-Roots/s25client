@@ -310,8 +310,11 @@ add_subdirectory(external)
 add_subdirectory(libs)
 add_subdirectory(extras)
 
-enable_testing()
-add_subdirectory(tests)
+option(RTTR_ENABLE_TESTING "Build tests" ON)
+if(${RTTR_ENABLE_TESTING})
+	enable_testing()
+	add_subdirectory(tests)
+endif()
 
 find_package(Gettext REQUIRED)
 FILE(GLOB RTTR_PO_FILES data/RTTR/languages/*.po)
