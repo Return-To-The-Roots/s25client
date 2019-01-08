@@ -1,115 +1,115 @@
 language: cpp
 dist: trusty
 branches:
-    only:
-        - master
+  only:
+    - master
 
 os:
-    - linux
+  - linux
 
 compiler:
-    - clang
-    - g++
+  - clang
+  - g++
 
 env:
-    - BUILD_TYPE=Debug
-    - BUILD_TYPE=Release
+  - BUILD_TYPE=Debug
+  - BUILD_TYPE=Release
 
 addons:
-    apt:
-        sources:
-            - boost-latest
-            - ubuntu-toolchain-r-test
-        packages:
-            - libboost-filesystem1.64-dev
-            - libboost-thread1.64-dev
-            - libboost-iostreams1.64-dev
-            - libboost-program-options1.64-dev
-            - libboost-system1.64-dev
-            - libboost-test1.64-dev
-            - libboost-locale1.64-dev
-            - g++-6.4
-            - libsdl1.2-dev
-            - libsdl-mixer1.2-dev
-            - libsdl2-dev
-            - libsdl2-mixer-dev
-            - libcurl4-openssl-dev
-            - libbz2-dev
-            - libminiupnpc-dev
-            - liblua5.2-dev
+  apt:
+    sources:
+      - boost-latest
+      - ubuntu-toolchain-r-test
+    packages:
+      - libboost-filesystem1.64-dev
+      - libboost-thread1.64-dev
+      - libboost-iostreams1.64-dev
+      - libboost-program-options1.64-dev
+      - libboost-system1.64-dev
+      - libboost-test1.64-dev
+      - libboost-locale1.64-dev
+      - g++-6.4
+      - libsdl1.2-dev
+      - libsdl-mixer1.2-dev
+      - libsdl2-dev
+      - libsdl2-mixer-dev
+      - libcurl4-openssl-dev
+      - libbz2-dev
+      - libminiupnpc-dev
+      - liblua5.2-dev
 
 cache:
-    directories:
-        - ${TRAVIS_BUILD_DIR}/deps
+  directories:
+    - ${TRAVIS_BUILD_DIR}/deps
 
 matrix:
-    include:
-        - os: osx
-          compiler: clang
-          install:
-              - brew update
-              - brew install sdl
-              - brew install sdl_mixer
-              - brew install gettext
-              - brew install miniupnpc
-              - brew install boost@1.64
-              - brew link --force gettext
-              - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-              - mkdir -p ${DEPS_DIR}
-              - |
-                CMAKE_DIR="${DEPS_DIR}/cmakeOsx"        
-                tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}" cmakeSrc
-                export PATH="${CMAKE_DIR}/bin:${PATH}"
-              - cd ${TRAVIS_BUILD_DIR}
-              - export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBOOST_ROOT=/usr/local/opt/boost@1.64"
-          #                                                             Travis libs are x64 only
-          env: BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_NOi386=ON" GCOV="gcov"
-
-install:
-    - export ADDITIONAL_CMAKE_FLAGS=""
-    - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-    - mkdir -p ${DEPS_DIR}
-    # Use CMake 3.8.2 (same as build server)
-    - |
-        CMAKE_DIR="${DEPS_DIR}/cmakeLin"        
+  include:
+    - os: osx
+      compiler: clang
+      install:
+        - brew update
+        - brew install sdl
+        - brew install sdl_mixer
+        - brew install gettext
+        - brew install miniupnpc
+        - brew install boost@1.64
+        - brew link --force gettext
+        - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
+        - mkdir -p ${DEPS_DIR}
+        - |
+        CMAKE_DIR="${DEPS_DIR}/cmakeOsx"
         tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}" cmakeSrc
         export PATH="${CMAKE_DIR}/bin:${PATH}"
-    - if [ "$CXX" = "g++" ]; then export CXX="g++-6.4"; export CC="gcc-6.4"; export GCOV="gcov-6.4"; fi
-    # Enable coverage analysis only in debug and for g++
-    - |
-        if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
-            # Install newer lcov (1.9 seems to fail: http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/)
-            export LCOV_ROOT="${DEPS_DIR}/lcov"
-            LCOV_URL="http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz"
-            mkdir "$LCOV_ROOT" && travis_retry wget --quiet -O - ${LCOV_URL} | tar --strip-components=1 -xz -C $LCOV_ROOT
-            export PATH=${LCOV_ROOT}/bin:${PATH}
-            which lcov
+        - cd ${TRAVIS_BUILD_DIR}
+        - export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBOOST_ROOT=/usr/local/opt/boost@1.64"
+      #                               Travis libs are x64 only
+      env: BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_NOi386=ON" GCOV="gcov"
 
-            # Install coveralls tool
-            gem install coveralls-lcov
+install:
+  - export ADDITIONAL_CMAKE_FLAGS=""
+  - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
+  - mkdir -p ${DEPS_DIR}
+  # Use CMake 3.8.2 (same as build server)
+  - |
+    CMAKE_DIR="${DEPS_DIR}/cmakeLin"
+    tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}" cmakeSrc
+    export PATH="${CMAKE_DIR}/bin:${PATH}"
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-6.4"; export CC="gcc-6.4"; export GCOV="gcov-6.4"; fi
+  # Enable coverage analysis only in debug and for g++
+  - |
+    if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
+      # Install newer lcov (1.9 seems to fail: http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/)
+      export LCOV_ROOT="${DEPS_DIR}/lcov"
+      LCOV_URL="http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz"
+      mkdir "$LCOV_ROOT" && travis_retry wget --quiet -O - ${LCOV_URL} | tar --strip-components=1 -xz -C $LCOV_ROOT
+      export PATH=${LCOV_ROOT}/bin:${PATH}
+      which lcov
 
-            # Enable
-            export RTTR_COVERAGE="1"
-            export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
-        else
-            export RTTR_COVERAGE="0"
-        fi
-    - cd ${TRAVIS_BUILD_DIR}
+      # Install coveralls tool
+      gem install coveralls-lcov
+
+      # Enable
+      export RTTR_COVERAGE="1"
+      export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
+    else
+      export RTTR_COVERAGE="0"
+    fi
+  - cd ${TRAVIS_BUILD_DIR}
 
 before_script:
-    - "export DISPLAY=:99.0"
-    - |
-        if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-            ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )&
-        else
-            sh -e /etc/init.d/xvfb start
-        fi
-    - sleep 3 # give xvfb some time to start
+  - "export DISPLAY=:99.0"
+  - |
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+      ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )&
+    else
+      sh -e /etc/init.d/xvfb start
+    fi
+  - sleep 3 # give xvfb some time to start
 
 script: tools/ci/travisBuild.sh
 
 after_success:
-    - |
-        if [ "$RTTR_COVERAGE" = "1" ]; then
-            tools/ci/uploadCoverageData.sh
-        fi
+  - |
+    if [ "$RTTR_COVERAGE" = "1" ]; then
+      tools/ci/uploadCoverageData.sh
+    fi
