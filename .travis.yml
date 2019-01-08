@@ -4,7 +4,7 @@ if: branch = master
 
 addons:
   apt: &defApt
-    sources:
+    sources: &defSrcs
       - ubuntu-toolchain-r-test
     packages: &defPackages
       - libsdl1.2-dev
@@ -32,6 +32,7 @@ jobs:
   include:
     - &linux-gcc6
       os: linux
+      compiler: gcc
       env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6 BUILD_TYPE=Debug RTTR_COVERAGE=1
       addons:
         apt:
@@ -49,6 +50,21 @@ jobs:
     - os: osx
       compiler: clang
       env: BUILD_TYPE=Debug
+    # Latest versions of Clang and GCC
+    - os: linux
+      compiler: gcc
+      env: MATRIX_EVAL="CXX=g++-8 && CC=gcc-8" BUILD_TYPE=Debug
+      addons:
+        apt:
+          <<: *defApt
+          packages: [*defPackages, g++-8]
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: [*defSrcs, llvm-toolchain-trusty-7]
+          packages: [*defPackages, g++-7, clang-7]
+      env: MATRIX_EVAL="CXX=clang++-7 && CC=clang-7" BUILD_TYPE=Debug
 
 before_install:
   - eval "${MATRIX_EVAL}"
