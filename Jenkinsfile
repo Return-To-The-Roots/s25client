@@ -1,52 +1,28 @@
-#!/bin/groovy
+dockerRegistry = "git.ra-doersch.de:5005/"
+dockerCredentials = "2d20af83-9ebd-4a5a-b6ee-c77bec430970"
+dockerImages = [
+    "windows.i686"    : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
+    "windows.x86_64"  : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
+    "linux.x86_64"    : "rttr/cross-compiler/linux/linux-amd64-docker:master",
+    "apple.universal" : "rttr/cross-compiler/apple/apple-docker:master"
+]
 
-///////////////////////////////////////////////////////////////////////////////
-
-def transformIntoStep(arch, wspwd, container) {
+def transformIntoStep(architecture, dockerImage, buildScript) {
     return {
         timeout(120) {
-            node('master') {
-                ansiColor('xterm') {
-                    ws(wspwd + "/ws/" + arch) {
-                        echo "Build ${arch} in " + pwd()
-
-                        if( isUnix() ) {
-                            sh 'chmod -R u+w .git || true' // fixes unstash overwrite bug ... #JENKINS-33126
-                        }
-
-                        unstash 'source'
-
-                        sh """set -x
-                              # Clean repo from untracked or changed files
-                              git clean --force -d --exclude "/installedCMake-*" --exclude "/.ccache"
-                              git submodule foreach git clean --force -xd
-
-                              VOLUMES="-v /srv/apache2/siedler25.org/nightly:/www \
-                                       -v /srv/backup/www/s25client:/archive \
-                                      "
-                              if [ "${env.BRANCH_NAME}" == "master" ] ; then
-                                  CI_TYPE=nightly
-                              elif [ "${env.BRANCH_NAME}" == "stable" ] ; then
-                                  CI_TYPE=stable
-                              else
-                                  CI_TYPE=other
-                                  VOLUMES=
-                                  touch s25rttrDummy.zip
-                              fi
-                              docker run --rm -u \$(id -u jenkins):\$(id -g jenkins) -v \$(pwd):/workdir \
-                                                         -v ~/.ssh:/home/jenkins/.ssh \
-                                                         -v ~/.ccache:/workdir/.ccache \
-                                                         -w /workdir \
-                                                         \$VOLUMES \
-                                                         --name "${env.BUILD_TAG}-${arch}" \
-                                                         ${container} bash -c \
-                                                        "tools/ci/jenkinsOfficialBuild.sh ${arch} \${CI_TYPE}"
-                              EXIT=\$?
-                              echo "Exiting with error code \$EXIT"
-                              exit \$EXIT
-                        """
-
-                        archiveArtifacts artifacts: 's25rttr*.tar.bz2,s25rttr*.zip', fingerprint: true, onlyIfSuccessful: true
+            def wspwd = pwd()
+            dir("build-$architecture") {
+                sh 'touch .git-keep'
+                withDockerRegistry( registry: [credentialsId: dockerCredentials, url: 'https://'+dockerRegistry ] ) {
+                    withDockerContainer(
+                        image: dockerRegistry+dockerImage,
+                        args: " \
+                            -v $HOME/.ccache:/.ccache \
+                            -v $wspwd/source:/source:ro \
+                            -v $wspwd/result:/result \
+                        ") {
+                        def script = buildScript.replace("%architecture%", architecture)
+                        sh script
                     }
                 }
             }
@@ -54,142 +30,140 @@ def transformIntoStep(arch, wspwd, container) {
     }
 }
 
+pipeline {
+    agent {
+        label "docker"
+    }
 
-///////////////////////////////////////////////////////////////////////////////
+    parameters {
+        choice(name: 'DEPLOY_TO', choices: [ "none", "nightly", "stable"], description: 'deploy to this after build (none = disable deployment)')
+    }
 
-catchError() {
-
-    properties([
-        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '14', daysToKeepStr: '14', numToKeepStr: '180')),
+    options {
+        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '14', daysToKeepStr: '14', numToKeepStr: '180'))
         disableConcurrentBuilds()
-    ])
-
-    milestone label: 'Start'
-
-    def wspwd = "";
-
-    stage("Checkout") {
-        node('master') {
-            ansiColor('xterm') {
-                checkout scm
-
-                sh """set -x
-                      git reset --hard
-                      git submodule foreach git clean -fxd
-                      git submodule foreach git reset --hard
-                      git submodule update --init --force --checkout
-                   """
-
-                stash includes: '**, .git/', excludes: 'ws/**', name: 'source', useDefaultExcludes: false
-
-                wspwd = pwd()
-            }
-        }
+        skipDefaultCheckout(true)
     }
 
-    milestone label: 'Checkout complete'
+    environment {
+        DEBIAN_FRONTEND = 'noninteractive'
+    }
 
-    stage("Building") {
-        String[] archs = [
-            "windows.i686",
-            "windows.x86_64",
-            "linux.x86_64",
-            "apple.universal" ]
-        String[] containers = [
-            "git.ra-doersch.de:5005/rttr/cross-compiler/mingw/mingw-w64-docker:master",
-            "git.ra-doersch.de:5005/rttr/cross-compiler/mingw/mingw-w64-docker:master",
-            "git.ra-doersch.de:5005/rttr/cross-compiler/linux/linux-amd64-docker:master",
-            "git.ra-doersch.de:5005/rttr/cross-compiler/apple/apple-docker:master"
-            ]
-        def parallel_map = [:]
+    stages {
+        stage('checkout') {
+            steps {
+                dir('source') {
+                    checkout scm: [
+                        $class: 'GitSCM',
+                        branches: scm.branches,
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: scm.extensions + [
+                            [$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: true, recursiveSubmodules: true, reference: '', trackingSubmodules: false],
+                            [$class: 'GitLFSPull'],
+                            [$class: 'AuthorInChangelog'],
+                            [$class: 'CleanCheckout']
+                        ],
+                        submoduleCfg: [],
+                        userRemoteConfigs: scm.userRemoteConfigs
+                    ]
 
-        for(int i = 0; i < archs.size(); i++) {
-            def arch = archs[i]
-            echo "Adding Job ${arch}"
-            parallel_map["${arch}"] = transformIntoStep(arch, wspwd, containers[i])
-        }
-
-        // mirror to launchpad step
-        parallel_map["mirror"] = {
-            node('master') {
-                ansiColor('xterm') {
-                    sh """set -x
-                          if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "latest" ]; then
-                              mkdir -p ws
-                              pushd ws
-                              if [ ! -d s25client.git ] ; then
-                                  git clone --mirror https://github.com/Return-To-The-Roots/s25client.git
-                                  (cd s25client.git && git remote set-url --push origin git+ssh://git.launchpad.net/s25rttr)
-                              fi
-                              cd s25client.git
-                              git fetch -p origin
-                              git push --mirror
-                          fi
+                    sh """
+                        git status
+                        git submodule foreach git status
                     """
-                    // todo: mirror submodules?
+                }
+                sh 'rm -rf result'
+                dir('result') {
+                    sh 'touch .git-keep'
                 }
             }
         }
 
-        /*
-        parallel_map["upload-ppa"] = {
-            node('master') {
-                ansiColor('xterm') {
-                    ws(wspwd+"/ws/upload-ppa") {
-                        echo "Upload to PPA in "+pwd()
-                        sh 'chmod -R u+w .git || true' // fixes unstash overwrite bug ... #JENKINS-33126
-                        unstash 'source'
-                        sh """set -x
-                              if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "latest" ]; then
-                                    cd release
-                                    ./build_deb.sh ${env.BUILD_NUMBER} || exit 1
-                              fi
-                        """
+        stage('changelog') {
+            steps {
+                script {
+                    def changelogScript = readTrusted("tools/ci/jenkins/changelog.sh")
+                    sh changelogScript
+                }
+            }
+        }
+
+        stage('build') {
+            steps {
+                script {
+                    def parallel_map = [:]
+                    def buildScript = readTrusted("tools/ci/jenkins/build.sh")
+
+                    dockerImages.each { architecture, image ->
+                        echo "Adding Job ${architecture} (${image})"
+                        parallel_map["${architecture}"] = transformIntoStep(architecture, image, buildScript)
                     }
+
+                    // todo: mirror launchpad
+                    parallel_map.failFast = true
+                    parallel parallel_map
                 }
             }
         }
-        */
 
-        parallel_map.failFast = true
-        parallel parallel_map
-    }
-
-
-    milestone label: 'Build complete'
-
-    stage("Publishing") {
-        node('master') {
-            ansiColor('xterm') {
-                sh """set -x
-                      if [ "${env.BRANCH_NAME}" == "stable" ] ; then
-                          git tag -a "\$(cat .stable-version)-$BUILD_NUMBER" -m "Created release \$(cat .stable-version) from Jenkins build $BUILD_NUMBER"
-                          git push git@github.com:Return-To-The-Roots/s25client.git --tags
-                      fi
-                      if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "stable" ] ; then
-                        alias ssh="ssh -o ForwardX11=no"
-                        cd tools/release
-                        ./upload_urls.sh nightly
-                        ./upload_urls.sh stable
-                      else
-                        touch tools/release/changelog-dummy.txt
-                        touch tools/release/rapidshare-dummy.txt
-                      fi
-                """
-
-                archiveArtifacts artifacts: 'tools/release/changelog-*.txt,tools/release/rapidshare-*.txt', fingerprint: true, onlyIfSuccessful: true
+        stage('deploy') {
+            when {
+                expression { params.DEPLOY_TO != "none" }
+            }
+            steps {
+                script {
+                    def prepareDeployScript = readTrusted("tools/ci/jenkins/prepare-deploy.sh")
+                    sh prepareDeployScript
+                }
+                dir('result') {
+                    sshPublisher alwaysPublishFromMaster: true,
+                        failOnError: true,
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'tyra.ra-doersch.de (www.siedler25.org)',
+                                transfers: [
+                                    sshTransfer(
+                                        cleanRemote: false,
+                                        excludes: '',
+                                        execCommand: "php -q /www/siedler25.org/www/docs/cron/${params.DEPLOY_TO}sql.php",
+                                        execTimeout: 120000,
+                                        flatten: true,
+                                        makeEmptyDirs: false,
+                                        noDefaultExcludes: false,
+                                        patternSeparator: '[, ]+',
+                                        remoteDirectory: "uploads/${params.DEPLOY_TO}/",
+                                        remoteDirectorySDF: false,
+                                        removePrefix: '',
+                                        sourceFiles: '*.tar.bz2,*.zip,*.txt'
+                                    )
+                                ],
+                                usePromotionTimestamp: false,
+                                useWorkspaceInPromotion: false,
+                                verbose: true
+                            )
+                        ]
+                }
+                script {
+                    def deployScript = readTrusted("tools/ci/jenkins/deploy.sh")
+                    deployScript = deployScript.replace("%deploy_to%", params.DEPLOY_TO)
+                    sh deployScript
+                }
             }
         }
     }
-
-    milestone label: 'Publishing complete'
-
-} // catchError()
-
-node {
-    step([$class: 'Mailer',
-          notifyEveryUnstableBuild: true,
-          recipients: "sf-team@siedler25.org",
-          sendToIndividuals: true
-    ])
+    post {
+        success {
+            dir('result') {
+                archiveArtifacts artifacts: '*.tar.bz2,*.zip,*.txt', fingerprint: true
+            }
+        }
+        failure {
+            mail to: 'sf-team@siedler25.org',
+                subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                body: "Pipeline failed: ${env.BUILD_URL}"
+        }
+        cleanup {
+            sh 'rm -rf result'
+        }
+    }
 }
