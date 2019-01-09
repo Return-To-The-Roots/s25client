@@ -24,7 +24,6 @@
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include "libutil/colors.h"
-#include <boost/foreach.hpp>
 #include <climits>
 #include <glad/glad.h>
 #include <limits>
@@ -42,7 +41,7 @@ void glSmartBitmap::reset()
         VIDEODRIVER.DeleteTexture(texture);
     texture = 0;
 
-    BOOST_FOREACH(glBitmapItem& bmpItem, items)
+    for(glBitmapItem& bmpItem : items)
     {
         if(bmpItem.isOwning_)
             delete bmpItem.bmp;
@@ -97,7 +96,7 @@ void glSmartBitmap::calcDimensions()
 
     hasPlayer = false;
 
-    BOOST_FOREACH(const glBitmapItem& bmpItem, items)
+    for(const glBitmapItem& bmpItem : items)
     {
         if(bmpItem.type == TYPE_ARCHIVITEM_BITMAP_PLAYER)
             hasPlayer = true;
@@ -114,7 +113,7 @@ void glSmartBitmap::drawTo(libsiedler2::PixelBufferARGB& buffer, const Extent& b
     libsiedler2::ArchivItem_Palette* p_colors = LOADER.GetPaletteN("colors");
     libsiedler2::ArchivItem_Palette* p_5 = LOADER.GetPaletteN("pal5");
 
-    BOOST_FOREACH(const glBitmapItem& bmpItem, items)
+    for(const glBitmapItem& bmpItem : items)
     {
         if((bmpItem.size.x == 0) || (bmpItem.size.y == 0))
             continue;

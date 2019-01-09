@@ -22,7 +22,7 @@
 
 #include "desktops/dskMenuBase.h"
 #include "gameData/WorldDescription.h"
-#include "libutil/unique_ptr.h"
+#include <memory>
 
 class glArchivItem_Bitmap;
 
@@ -40,7 +40,7 @@ public:
 
 private:
     WorldDescription desc;
-    libutil::unique_ptr<glArchivItem_Bitmap> curTexture;
+    std::unique_ptr<glArchivItem_Bitmap> curTexture;
     DescIdx<TerrainDesc> curTerrainIdx;
 };
 

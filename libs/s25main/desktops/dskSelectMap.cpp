@@ -51,9 +51,7 @@
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/ucString.h"
-#include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 //#include <boost/thread.hpp>
 
 /**
@@ -64,7 +62,7 @@
  *  @param[in] pass Server-Passwort
  */
 dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
-    : Desktop(LOADER.GetImageN("setup015", 0)), csi(csi), mapGenThread(NULL), waitWnd(NULL)
+    : Desktop(LOADER.GetImageN("setup015", 0)), csi(csi), mapGenThread(nullptr), waitWnd(nullptr)
 {
     WorldDescription desc;
     GameDataLoader gdLoader(desc);
@@ -126,7 +124,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     // "Heruntergeladene"
     optiongroup->AddTextButton(8, curBtPos, catBtSize, TC_GREY, _("Played"), NormalFont);
 
-    AddPreviewMinimap(11, DrawPoint(110, 445), Extent(140, 140), NULL);
+    AddPreviewMinimap(11, DrawPoint(110, 445), Extent(140, 140), nullptr);
     AddText(12, DrawPoint(260, 470), _("Map: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
     AddText(13, DrawPoint(260, 490), _("Mapfile: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
@@ -153,7 +151,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int s
     table->DeleteAllItems();
 
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
-    static const boost::array<unsigned, 9> ids = {{39, 40, 41, 42, 43, 52, 91, 93, 48}};
+    static const std::array<unsigned, 9> ids = {{39, 40, 41, 42, 43, 52, 91, 93, 48}};
 
     const std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]);
     FillTable(ListDir(mapPath, "swd"));
@@ -188,7 +186,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
     ctrlText& txtMapName = *GetCtrl<ctrlText>(12);
     ctrlText& txtMapPath = *GetCtrl<ctrlText>(13);
     ctrlButton& btContinue = *GetCtrl<ctrlButton>(5);
-    preview.SetMap(NULL);
+    preview.SetMap(nullptr);
     txtMapName.SetText("");
     txtMapPath.SetText("");
     btContinue.SetEnabled(false);
@@ -303,7 +301,7 @@ void dskSelectMap::OnMapCreated(const std::string& mapPath)
     if(waitWnd)
     {
         waitWnd->Close();
-        waitWnd = NULL;
+        waitWnd = nullptr;
     }
     // select the "played maps" entry
     ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);
@@ -369,10 +367,10 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
     {
         case CS_FINISHED:
         {
-            libutil::unique_ptr<ILobbyClient> lobbyClient;
+            std::unique_ptr<ILobbyClient> lobbyClient;
             if(csi.type == ServerType::LOBBY)
-                lobbyClient.reset(new RttrLobbyClient(LOBBYCLIENT));
-            WINDOWMANAGER.Switch(new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), boost::move(lobbyClient)));
+                lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
+            WINDOWMANAGER.Switch(new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
             break;
         }
         default: break;
@@ -397,11 +395,11 @@ void dskSelectMap::Draw_()
     if(!newRandMapPath.empty())
     {
         // mapGenThread->join();
-        // mapGenThread = NULL;
+        // mapGenThread = nullptr;
         if(newRandMapPath[0] == '!')
         {
             std::string errorTxt = _("Failed to generate random map.\nReason: ");
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errorTxt + newRandMapPath.substr(1), NULL, MSB_OK, MSB_EXCLAMATIONRED));
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errorTxt + newRandMapPath.substr(1), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         } else
             OnMapCreated(newRandMapPath);
         newRandMapPath.clear();
@@ -413,7 +411,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(1);
 
-    BOOST_FOREACH(const std::string& filePath, files)
+    for(const std::string& filePath : files)
     {
         if(helpers::contains(brokenMapPaths, filePath))
             continue;

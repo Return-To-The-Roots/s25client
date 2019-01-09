@@ -22,14 +22,14 @@
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
 #include "worldFixtures/WorldWithGCExecution.h"
-#include <boost/array.hpp>
 #include <boost/test/unit_test.hpp>
 #include <algorithm>
+#include <array>
 #include <rttr/test/LogAccessor.hpp>
 
 std::ostream& operator<<(std::ostream& os, const PostCategory& cat)
 {
-    return os << boost::underlying_cast<unsigned>(cat);
+    return os << static_cast<unsigned>(cat);
 }
 
 BOOST_AUTO_TEST_SUITE(Production)
@@ -49,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     BuildingFactory::CreateBuilding(world, BLD_METALWORKS, bldPos2, curPlayer, NAT_AFRICANS);
     this->BuildRoad(world.GetNeighbour(bldPos2, Direction::SOUTHEAST), false, std::vector<Direction>(2, Direction::EAST));
 
-    boost::array<signed char, NUM_TOOLS> toolOrder;
+    std::array<signed char, NUM_TOOLS> toolOrder;
     ToolSettings toolSettings;
     std::fill(toolOrder.begin(), toolOrder.end(), 0);
     std::fill(toolSettings.begin(), toolSettings.end(), 0);
@@ -102,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
     RTTR_EXEC_TILL(3000, mw->GetNumWares(1) == 6);
     // No order -> not working
     BOOST_REQUIRE(!mw->is_working);
-    boost::array<int8_t, NUM_TOOLS> orders;
+    std::array<int8_t, NUM_TOOLS> orders;
     std::fill(orders.begin(), orders.end(), 0);
     orders[0] = 1;
     this->ChangeTools(settings, &orders.front());

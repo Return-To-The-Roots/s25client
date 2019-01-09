@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
-#include <boost/bind.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -29,14 +28,14 @@ BOOST_AUTO_TEST_CASE(AddMsg)
     PostBox box;
     std::vector<PostMsg*> msgs;
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
-    BOOST_REQUIRE_EQUAL(box.GetMsg(0u), (PostMsg*)NULL);
+    BOOST_REQUIRE_EQUAL(box.GetMsg(0u), (PostMsg*)nullptr);
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
     {
         PostMsg* msg = new PostMsg(0, "Test", PostCategory::General);
         box.AddMsg(msg);
         BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), i + 1);
         BOOST_REQUIRE_EQUAL(box.GetMsg(i), msg);
-        BOOST_REQUIRE_EQUAL(box.GetMsg(i + 1), (PostMsg*)NULL);
+        BOOST_REQUIRE_EQUAL(box.GetMsg(i + 1), (PostMsg*)nullptr);
         msgs.push_back(msg);
     }
     // Check that messages are still in their correct positions
@@ -83,7 +82,7 @@ BOOST_AUTO_TEST_CASE(DeleteMsg)
             expected++; // This one was also deleted
         BOOST_REQUIRE_EQUAL(box.GetMsg(i)->GetSendFrame(), expected);
     }
-    BOOST_REQUIRE_EQUAL(box.GetMsg(box.GetMaxMsgs() - 3), (PostMsg*)NULL);
+    BOOST_REQUIRE_EQUAL(box.GetMsg(box.GetMaxMsgs() - 3), (PostMsg*)nullptr);
 }
 
 struct CallbackChecker
@@ -107,8 +106,8 @@ BOOST_AUTO_TEST_CASE(MsgCallbacks)
 {
     PostBox box;
     CallbackChecker cb(box);
-    box.ObserveNewMsg(boost::bind(&CallbackChecker::OnNew, &cb, _1, _2));
-    box.ObserveDeletedMsg(boost::bind(&CallbackChecker::OnDel, &cb, _1));
+    box.ObserveNewMsg([&cb](const auto& msg, auto ct) { cb.OnNew(msg, ct); });
+    box.ObserveDeletedMsg([&cb](auto ct) { cb.OnDel(ct); });
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
         box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
     BOOST_REQUIRE_EQUAL(cb.newCalls, box.GetMaxMsgs());
@@ -123,7 +122,7 @@ BOOST_AUTO_TEST_CASE(ClearMsgs)
 {
     PostBox box;
     CallbackChecker cb(box);
-    box.ObserveDeletedMsg(boost::bind(&CallbackChecker::OnDel, &cb, _1));
+    box.ObserveDeletedMsg([&cb](auto ct) { cb.OnDel(ct); });
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
         box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
     // Deleting should delete all messages and call delete callback for each one

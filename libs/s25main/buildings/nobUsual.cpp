@@ -36,12 +36,11 @@
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
-#include <boost/foreach.hpp>
 #include <numeric>
 
 nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation)
-    : noBuilding(type, pos, player, nation), worker(NULL), disable_production(false), disable_production_virtual(false),
-      last_ordered_ware(0), orderware_ev(NULL), productivity_ev(NULL), numGfNotWorking(0), since_not_working(0xFFFFFFFF),
+    : noBuilding(type, pos, player, nation), worker(nullptr), disable_production(false), disable_production_virtual(false),
+      last_ordered_ware(0), orderware_ev(nullptr), productivity_ev(nullptr), numGfNotWorking(0), since_not_working(0xFFFFFFFF),
       outOfRessourcesMsgSent(false), is_working(false)
 {
     std::fill(numWares.begin(), numWares.end(), 0);
@@ -72,7 +71,7 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
 
     ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.getNum());
 
-    BOOST_FOREACH(std::list<Ware*>& orderedWare, ordered_wares)
+    for(std::list<Ware*>& orderedWare : ordered_wares)
         sgd.PopObjectContainer(orderedWare, GOT_WARE);
     for(unsigned i = 0; i < last_productivities.size(); ++i)
         last_productivities[i] = sgd.PopUnsignedShort();
@@ -95,7 +94,7 @@ void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
 
     for(unsigned i = 0; i < 3; ++i)
         sgd.PushUnsignedChar(numWares[i]);
-    BOOST_FOREACH(const std::list<Ware*>& orderedWare, ordered_wares)
+    for(const std::list<Ware*>& orderedWare : ordered_wares)
         sgd.PushObjectContainer(orderedWare, true);
     for(unsigned i = 0; i < last_productivities.size(); ++i)
         sgd.PushUnsignedShort(last_productivities[i]);
@@ -109,14 +108,14 @@ void nobUsual::DestroyBuilding()
     if(worker)
     {
         worker->LostWork();
-        worker = NULL;
+        worker = nullptr;
     } else
         gwg->GetPlayer(player).JobNotWanted(this);
 
     // Bestellte Waren Bescheid sagen
-    BOOST_FOREACH(std::list<Ware*>& orderedWare, ordered_wares)
+    for(std::list<Ware*>& orderedWare : ordered_wares)
     {
-        BOOST_FOREACH(Ware* ware, orderedWare)
+        for(Ware* ware : orderedWare)
             WareNotNeeded(ware);
         orderedWare.clear();
     }
@@ -177,7 +176,7 @@ void nobUsual::Draw(DrawPoint drawPt)
                                                            {{7, -17}, {18, -17}, {30, -17}},
                                                            {{3, -22}, {16, -22}, {30, -22}}};
         // Animations-IDS des Esels
-        const boost::array<unsigned char, 25> DONKEY_ANIMATION = {
+        const std::array<unsigned char, 25> DONKEY_ANIMATION = {
           {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0}};
 
         // Die drei Esel zeichnen mithilfe von Globalanimation
@@ -364,7 +363,7 @@ void nobUsual::WorkerLost()
     GetEvMgr().RemoveEvent(orderware_ev);
 
     // neuen Arbeiter bestellen
-    worker = NULL;
+    worker = nullptr;
     gwg->GetPlayer(player).AddJobWanted(BLD_WORK_DESC[bldType_].job, this);
 }
 

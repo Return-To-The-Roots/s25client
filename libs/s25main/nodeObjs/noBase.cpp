@@ -33,7 +33,7 @@ void noBase::Serialize_noBase(SerializedGameData& sgd) const
 
 FOWObject* noBase::CreateFOWObject() const
 {
-    return NULL;
+    return nullptr;
 }
 
 BlockingManner noBase::GetBM() const

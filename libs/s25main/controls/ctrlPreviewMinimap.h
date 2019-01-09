@@ -22,7 +22,7 @@
 #include "ogl/glArchivItem_Map.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameData/MaxPlayers.h"
-#include <boost/array.hpp>
+#include <array>
 class Window;
 
 /// Übersichtskarte (MapPreview)
@@ -39,7 +39,7 @@ class ctrlPreviewMinimap : public ctrlMinimap
         /// Farbe
         unsigned color;
     };
-    boost::array<Player, MAX_PLAYERS> players;
+    std::array<Player, MAX_PLAYERS> players;
 
 public:
     ctrlPreviewMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* s2map);

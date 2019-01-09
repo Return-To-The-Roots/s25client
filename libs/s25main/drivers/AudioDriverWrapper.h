@@ -34,13 +34,13 @@ class ArchivItem_Sound;
 class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicies::WithLongevity>, public IAudioDriverCallback
 {
 public:
-    BOOST_STATIC_CONSTEXPR unsigned Longevity = 30;
+    static constexpr unsigned Longevity = 30;
 
     AudioDriverWrapper();
     ~AudioDriverWrapper() override;
 
-    /// Loads the driver. If audioDriver is NULL then the dll directory is checked
-    bool LoadDriver(IAudioDriver* audioDriver = NULL);
+    /// Loads the driver. If audioDriver is nullptr then the dll directory is checked
+    bool LoadDriver(IAudioDriver* audioDriver = nullptr);
     /// Unloads the driver resetting all open handles
     void UnloadDriver();
 

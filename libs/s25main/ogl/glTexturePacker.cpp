@@ -21,7 +21,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePackerNode.h"
 #include "libsiedler2/PixelBufferARGB.h"
-#include <boost/foreach.hpp>
 #include <algorithm>
 #include <glad/glad.h>
 
@@ -54,7 +53,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
     // find space needed in total and biggest texture to store (as a start)
     Extent maxBmpSize(0, 0);
     unsigned total = 0;
-    BOOST_FOREACH(glSmartBitmap* bmp, list)
+    for(glSmartBitmap* bmp : list)
     {
         Extent texSize = bmp->getRequiredTexSize();
         maxBmpSize = elMax(maxBmpSize, texSize);
@@ -66,7 +65,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
     maxBmpSize = VIDEODRIVER.calcPreferredTextureSize(maxBmpSize);
 
     int parTexWidth = 0;
-    glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, maxBmpSize.x, maxBmpSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, maxBmpSize.x, maxBmpSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
     glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
     if(parTexWidth == 0)
@@ -92,7 +91,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
             libsiedler2::PixelBufferARGB buffer(curSize.x, curSize.y);
 
             // try storing bitmaps in the big texture
-            BOOST_FOREACH(glSmartBitmap* bmp, list)
+            for(glSmartBitmap* bmp : list)
             {
                 if(!root->insert(bmp, buffer, tmpVec))
                 {
@@ -154,7 +153,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
         // increase width or height, try whether opengl is able to handle textures that big
         if(curSize.x <= curSize.y)
         {
-            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, curSize.x * 2, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, curSize.x * 2, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
             glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
             if(parTexWidth == 0)
@@ -163,7 +162,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
                 curSize.x *= 2;
         } else
         {
-            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y * 2, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y * 2, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
             glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
             if(parTexWidth == 0)
@@ -182,11 +181,11 @@ bool glTexturePacker::pack()
         return true;
 
     // free all textures allocated by us
-    BOOST_FOREACH(unsigned tex, textures)
+    for(unsigned tex : textures)
         VIDEODRIVER.DeleteTexture(tex);
 
     // reset glSmartBitmap textures
-    BOOST_FOREACH(glSmartBitmap* bmp, items)
+    for(glSmartBitmap* bmp : items)
         bmp->setSharedTexture(0);
 
     return false;

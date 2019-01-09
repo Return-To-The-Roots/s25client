@@ -33,10 +33,10 @@
 #include <boost/filesystem/operations.hpp>
 
 const int Settings::VERSION = 13;
-const boost::array<std::string, 11> Settings::SECTION_NAMES = {
+const std::array<std::string, 11> Settings::SECTION_NAMES = {
   {"global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "ingame", "addons"}};
 
-const boost::array<short, 13> Settings::SCREEN_REFRESH_RATES = {{-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
+const std::array<short, 13> Settings::SCREEN_REFRESH_RATES = {{-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
 
 namespace validate {
 boost::optional<uint16_t> checkPort(const std::string& port)

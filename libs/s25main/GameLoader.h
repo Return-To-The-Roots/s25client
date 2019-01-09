@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <boost/smart_ptr/shared_ptr.hpp>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,7 +28,7 @@ class Game;
 class GameLoader
 {
 public:
-    GameLoader(boost::shared_ptr<Game> game);
+    GameLoader(std::shared_ptr<Game> game);
     ~GameLoader();
 
     // These steps must be called in order
@@ -38,10 +38,10 @@ public:
 
     /// Execute all steps and return the interface
     bool load();
-    const boost::shared_ptr<Game>& getGame() const { return game; }
+    const std::shared_ptr<Game>& getGame() const { return game; }
 
 private:
-    boost::shared_ptr<Game> game;
+    std::shared_ptr<Game> game;
     std::vector<bool> load_nations;
     std::vector<std::string> textures;
 };

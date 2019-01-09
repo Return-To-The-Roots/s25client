@@ -22,7 +22,7 @@
 #include "network/GameClient.h"
 #include "network/GameMessages.h"
 
-GameLobbyController::GameLobbyController(boost::shared_ptr<GameLobby> lobby) : lobby(lobby) {}
+GameLobbyController::GameLobbyController(std::shared_ptr<GameLobby> lobby) : lobby(lobby) {}
 
 GameLobbyController::~GameLobbyController() {}
 

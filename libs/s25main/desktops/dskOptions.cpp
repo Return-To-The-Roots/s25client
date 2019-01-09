@@ -40,8 +40,6 @@
 #include "languages.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
 
 /** @class dskOptions
  *
@@ -278,7 +276,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ctrlComboBox* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
     if(GLOBALVARS.hasVSync)
         cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
-    BOOST_FOREACH(int framerate, Settings::SCREEN_REFRESH_RATES)
+    for(int framerate : Settings::SCREEN_REFRESH_RATES)
     {
         if(framerate == -1)
             cbFrameRate->AddString(_("Disabled"));
@@ -515,7 +513,7 @@ bool validatePort(const std::string& sPort, uint16_t& outPort)
     else
     {
         WINDOWMANAGER.Show(
-          new iwMsgbox(_("Error"), _("Invalid port. The valid port-range is 1 to 65535!"), NULL, MSB_OK, MSB_EXCLAMATIONRED, 1));
+          new iwMsgbox(_("Error"), _("Invalid port. The valid port-range is 1 to 65535!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED, 1));
     }
     return static_cast<bool>(port);
 }

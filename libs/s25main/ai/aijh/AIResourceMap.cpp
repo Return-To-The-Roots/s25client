@@ -19,7 +19,6 @@
 #include "AIResourceMap.h"
 #include "ai/AIInterface.h"
 #include "ai/aijh/AIMap.h"
-#include "boost/foreach.hpp"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainDesc.h"
@@ -27,7 +26,7 @@
 namespace AIJH {
 
 AIResourceMap::AIResourceMap(const AIResource res, const AIInterface& aii, const AIMap& aiMap)
-    : res(res), resRadius(RES_RADIUS[boost::underlying_cast<unsigned>(res)]), aii(aii), aiMap(aiMap)
+    : res(res), resRadius(RES_RADIUS[static_cast<unsigned>(res)]), aii(aii), aiMap(aiMap)
 {}
 
 AIResourceMap::~AIResourceMap() {}
@@ -116,7 +115,7 @@ MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, Buil
         radius = 30;
 
     std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
-    BOOST_FOREACH(const MapPoint& curPt, pts)
+    for(const MapPoint& curPt : pts)
     {
         const unsigned idx = map.GetIdx(curPt);
         if(map[idx] >= threshold)
@@ -143,7 +142,7 @@ MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality siz
     int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
 
     std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
-    BOOST_FOREACH(const MapPoint& curPt, pts)
+    for(const MapPoint& curPt : pts)
     {
         const unsigned idx = map.GetIdx(curPt);
         if(map[idx] > best_value)

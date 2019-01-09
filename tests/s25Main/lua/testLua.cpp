@@ -35,11 +35,11 @@
 #include "libutil/Serializer.h"
 #include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
-#include "libutil/unique_ptr.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>
 #include <boost/test/unit_test.hpp>
 #include <map>
+#include <memory>
 #include <rttr/test/LocaleResetter.hpp>
 #include <rttr/test/testHelpers.hpp>
 #include <utility>
@@ -193,7 +193,7 @@ struct StoreChat : public ClientInterface
 BOOST_AUTO_TEST_CASE(GameFunctions)
 {
     initWorld();
-    boost::array<nobHQ*, 2> hqs;
+    std::array<nobHQ*, 2> hqs;
     hqs[0] = world.GetSpecObj<nobHQ>(world.GetPlayer(0).GetHQPos());
     hqs[1] = world.GetSpecObj<nobHQ>(world.GetPlayer(1).GetHQPos());
 
@@ -334,12 +334,12 @@ BOOST_AUTO_TEST_CASE(AccessPlayerProperties)
 namespace {
 struct CatchConstructionNote
 {
-    libutil::unique_ptr<BuildingNote> note_;
+    std::unique_ptr<BuildingNote> note_;
     Subscribtion sub;
 
-    CatchConstructionNote(GameWorldGame& world) : sub(world.GetNotifications().subscribe<BuildingNote>(boost::ref(*this))) {}
+    CatchConstructionNote(GameWorldGame& world) : sub(world.GetNotifications().subscribe<BuildingNote>(std::ref(*this))) {}
 
-    void operator()(const BuildingNote& note) { note_.reset(new BuildingNote(note)); }
+    void operator()(const BuildingNote& note) { note_ = std::make_unique<BuildingNote>(note); }
 };
 } // namespace
 
@@ -748,7 +748,7 @@ BOOST_AUTO_TEST_CASE(onOccupied)
         occupied[player_id] = points\n\
     end");
     initWorld();
-    typedef std::vector<std::pair<int, int> > Points;
+    typedef std::vector<std::pair<int, int>> Points;
     std::map<int, Points> gamePtsPerPlayer;
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
@@ -777,7 +777,7 @@ BOOST_AUTO_TEST_CASE(onExplored)
         explored[player_id] = points\n\
     end");
     initWorld();
-    typedef std::vector<std::pair<int, int> > Points;
+    typedef std::vector<std::pair<int, int>> Points;
     std::map<int, Points> gamePtsPerPlayer;
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {

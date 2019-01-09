@@ -30,8 +30,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
-#include <boost/array.hpp>
-#include <boost/foreach.hpp>
+#include <array>
 #include <sstream>
 
 namespace {
@@ -45,15 +44,15 @@ enum
 
 class iwAIDebug::DebugPrinter : public IDrawNodeCallback
 {
-    boost::array<glArchivItem_Bitmap*, 7> bqImgs;
-    boost::array<glArchivItem_Bitmap*, 2> ticks;
+    std::array<glArchivItem_Bitmap*, 7> bqImgs;
+    std::array<glArchivItem_Bitmap*, 2> ticks;
     glArchivItem_Font& font;
 
 public:
     DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : font(*NormalFont), ai(ai), overlay(overlay)
     {
         // Cache images
-        bqImgs[0] = NULL;
+        bqImgs[0] = nullptr;
         for(int i = 1; i < 6; i++)
             bqImgs[i] = LOADER.GetMapImageN(49 + i);
         ticks[0] = LOADER.GetImageN("io", 40);
@@ -84,9 +83,9 @@ public:
 
 iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais)
     : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(300, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), text(NULL), printer(NULL)
+      gwv(gwv), text(nullptr), printer(nullptr)
 {
-    BOOST_FOREACH(const AIPlayer* ai, ais)
+    for(const AIPlayer* ai : ais)
     {
         const AIJH::AIPlayerJH* aijh = dynamic_cast<const AIJH::AIPlayerJH*>(ai);
         if(aijh)
@@ -100,7 +99,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
     }
 
     ctrlComboBox* players = AddComboBox(ID_CbPlayer, DrawPoint(15, 30), Extent(250, 20), TC_GREY, NormalFont, 100);
-    BOOST_FOREACH(const AIJH::AIPlayerJH* ai, ais_)
+    for(const AIJH::AIPlayerJH* ai : ais_)
     {
         players->AddString(ai->GetPlayerName());
     }

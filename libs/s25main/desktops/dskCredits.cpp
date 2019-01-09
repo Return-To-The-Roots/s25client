@@ -29,7 +29,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/JobConsts.h"
 #include "gameData/WorldDescription.h"
-#include <boost/array.hpp>
+#include <array>
 #include <cstdlib>
 
 /** @class dskCredits
@@ -197,7 +197,7 @@ void dskCredits::DrawCredit()
     // draw text
     LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, SetAlpha(COLOR_RED, transparency));
 
-    boost::array<unsigned, 2> columnToY = {{150, 150}};
+    std::array<unsigned, 2> columnToY = {{150, 150}};
 
     for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {

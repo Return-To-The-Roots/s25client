@@ -46,7 +46,7 @@ public:
 class GameMessageWithPlayer : public GameMessage
 {
 public:
-    BOOST_STATIC_CONSTEXPR uint8_t NO_PLAYER_ID = 0xFF;
+    static constexpr uint8_t NO_PLAYER_ID = 0xFF;
     /// Player set in the message
     uint8_t player;
 

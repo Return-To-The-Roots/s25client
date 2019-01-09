@@ -98,7 +98,7 @@ void noDisappearingEnvObject::HandleEvent(const unsigned id)
 void noDisappearingEnvObject::Destroy()
 {
     // Feld räumen, wenn ich sterbe
-    gwg->SetNO(pos, NULL);
+    gwg->SetNO(pos, nullptr);
 
     // ggf Event abmelden
     if(dead_event)

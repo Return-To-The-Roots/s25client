@@ -123,7 +123,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
 {
     const int players = settings.numPlayers;
     std::vector<AreaDesc> areas = config.areas;
-    std::vector<DescIdx<TerrainDesc> > textures = config.textures;
+    std::vector<DescIdx<TerrainDesc>> textures = config.textures;
 
     RTTR_FOREACH_PT(Position, map.size)
     {
@@ -163,7 +163,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
         {
             std::vector<int> positions = VertexUtility::GetNeighbors(pt, map.size, 1);
             bool treeFound = false;
-            BOOST_FOREACH(int curIdx, positions)
+            for(int curIdx : positions)
             {
                 if(helper.objGen.IsTree(map, curIdx))
                 {

@@ -29,7 +29,7 @@ class ITexture;
 class ctrlBaseImage
 {
 public:
-    ctrlBaseImage(ITexture* img = NULL);
+    ctrlBaseImage(ITexture* img = nullptr);
 
     void SetImage(ITexture* image) { img_ = image; }
     const ITexture* GetImage() const { return img_; }

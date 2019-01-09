@@ -24,7 +24,7 @@ template<class T>
 struct DescIdx
 {
     /// Invalid index
-    BOOST_STATIC_CONSTEXPR uint8_t INVALID = 0xFF;
+    static constexpr uint8_t INVALID = 0xFF;
     uint8_t value;
     explicit DescIdx(uint8_t value = INVALID) : value(value) {}
     bool operator!() const { return value == INVALID; }

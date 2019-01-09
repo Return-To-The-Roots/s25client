@@ -19,6 +19,6 @@
 #define MaxPlayers_h__
 
 /// Maximale Anzahl an Spielern
-BOOST_CONSTEXPR_OR_CONST unsigned MAX_PLAYERS = 8;
+constexpr unsigned MAX_PLAYERS = 8;
 
 #endif // MaxPlayers_h__

@@ -18,29 +18,30 @@
 #ifndef BufferHandle_h__
 #define BufferHandle_h__
 
-#include "libutil/unique_ptr.h"
 #include <glad/glad.h>
 
 namespace ogl {
 /// RAII Handle of an OpenGL buffer
 class BufferHandle
 {
-    struct BufferDeleter
-    {
-        typedef GLuint pointer;
-        void operator()(pointer buffer) const
-        {
-            if(buffer)
-                glDeleteBuffers(1, &buffer);
-        }
-    };
-
-    libutil::unique_ptr<GLuint, BufferDeleter> handle_;
+    GLuint handle_;
 
 public:
     explicit BufferHandle(GLuint handle = 0u) : handle_(handle) {}
-    void reset(GLuint handle = 0u) { handle_.reset(handle); }
-    GLuint get() const { return handle_.get(); }
+    BufferHandle(BufferHandle&& other) : handle_(other.handle_) { other.handle_ = 0u; }
+    ~BufferHandle() { reset(); }
+    BufferHandle& operator=(BufferHandle other)
+    {
+        std::swap(handle_, other.handle_);
+        return *this;
+    }
+    void reset(GLuint handle = 0u)
+    {
+        if(handle_)
+            glDeleteBuffers(1, &handle_);
+        handle_ = handle;
+    }
+    GLuint get() const { return handle_; }
     bool isValid() const { return get() != 0u; }
     void create()
     {

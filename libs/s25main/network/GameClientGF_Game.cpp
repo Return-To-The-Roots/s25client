@@ -25,7 +25,6 @@
 #include "network/GameClient.h"
 #include "random/Random.h"
 #include "libutil/Log.h"
-#include <boost/foreach.hpp>
 
 void GameClient::ExecuteNWF()
 {
@@ -34,7 +33,7 @@ void GameClient::ExecuteNWF()
     AsyncChecksum checksum = AsyncChecksum::create(*game);
     const unsigned curGF = GetGFNumber();
 
-    BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo->getPlayerInfos())
+    for(const NWFPlayerInfo& player : nwfInfo->getPlayerInfos())
     {
         const PlayerGameCommands& currentGCs = player.commands.front();
 
@@ -53,7 +52,7 @@ void GameClient::ExecuteNWF()
 
     // Send GC message for this NWF
     // First for all potential AIs as we need to combine the AI cmds of the local player with our own ones
-    BOOST_FOREACH(AIPlayer& ai, game->aiPlayers)
+    for(AIPlayer& ai : game->aiPlayers)
     {
         const std::vector<gc::GameCommandPtr> aiGCs = ai.FetchGameCommands();
         /// Cmds from own AI get added to our gcs

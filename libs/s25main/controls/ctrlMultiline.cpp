@@ -21,7 +21,6 @@
 #include "ctrlScrollBar.h"
 #include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
-#include <boost/foreach.hpp>
 #include <algorithm>
 
 ctrlMultiline::ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
@@ -130,7 +129,7 @@ void ctrlMultiline::RecalcWrappedLines()
         {
             // Break it
             const std::vector<std::string> newLines = wrapInfos[i].CreateSingleStrings(lines[i].str);
-            BOOST_FOREACH(const std::string& line, newLines)
+            for(const std::string& line : newLines)
                 drawLines.push_back(Line(line, lines[i].color));
         }
     }
@@ -227,7 +226,7 @@ unsigned ctrlMultiline::GetContentWidth() const
     unsigned addWidth = 2 * PADDING;
     if(drawLines.size() > maxNumVisibleLines)
         addWidth += SCROLLBAR_WIDTH;
-    BOOST_FOREACH(const Line& line, drawLines)
+    for(const Line& line : drawLines)
     {
         unsigned curWidth = font->getWidth(line.str) + addWidth;
         if(curWidth > maxWidth)

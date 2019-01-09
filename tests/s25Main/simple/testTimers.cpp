@@ -19,13 +19,14 @@
 #include "FrameCounter.h"
 #include "Timer.h"
 #include <boost/test/unit_test.hpp>
+#include <helpers/chronoIO.h>
 #include <rttr/test/MockClock.hpp>
 
 BOOST_AUTO_TEST_SUITE(Timers)
 
 BOOST_FIXTURE_TEST_CASE(TimerClass, rttr::test::MockClockFixture)
 {
-    using namespace boost::chrono;
+    using namespace std::chrono;
     Timer timer;
     BOOST_REQUIRE(!timer.isRunning());
     // getElapsed on non-running timer throws
@@ -62,28 +63,28 @@ BOOST_FIXTURE_TEST_CASE(TimerClass, rttr::test::MockClockFixture)
 BOOST_AUTO_TEST_CASE(FrameCounterBasic)
 {
     // Let numFPS frames pass and then check after updateInterval that frame rate matches
-    for(unsigned numFPS = 10; numFPS < 420; ++numFPS)
+    for(unsigned numFPS = 10; numFPS < 420; numFPS += 7)
     {
         FrameCounter ctr;
         FrameCounter::clock::time_point time, startTime;
         for(unsigned t = 0; t < numFPS; t++)
         {
             ctr.update(time);
-            time += boost::chrono::milliseconds(1);
+            time += std::chrono::milliseconds(1);
             BOOST_REQUIRE_EQUAL(ctr.getFrameRate(), 0u);
         }
-        time = startTime + boost::chrono::seconds(1);
+        time = startTime + std::chrono::seconds(1);
         // And again but with twice the rate. Framerate should be calculated after next update
         startTime = time;
         for(unsigned t = 0; t < numFPS; t++)
         {
             ctr.update(time);
-            time += boost::chrono::milliseconds(1);
+            time += std::chrono::milliseconds(1);
             ctr.update(time);
-            time += boost::chrono::milliseconds(1);
+            time += std::chrono::milliseconds(1);
             BOOST_REQUIRE_EQUAL(ctr.getFrameRate(), numFPS);
         }
-        time = startTime + boost::chrono::seconds(1);
+        time = startTime + std::chrono::seconds(1);
         ctr.update(time);
         BOOST_REQUIRE_EQUAL(ctr.getFrameRate(), numFPS * 2u);
     }
@@ -97,8 +98,8 @@ BOOST_AUTO_TEST_CASE(FrameCounterRounding)
     for(int i = 0; i < 20; i++)
     {
         for(int t = 1; t < 66; t++)
-            ctr.update(time += boost::chrono::microseconds(1));
-        time = startTime + boost::chrono::seconds(10);
+            ctr.update(time += std::chrono::microseconds(1));
+        time = startTime + std::chrono::seconds(10);
         ctr.update(time); // 66 Frames in 10s -> 6.6 FPS = 7
         BOOST_REQUIRE_EQUAL(ctr.getFrameRate(), 7u);
         startTime = time;
@@ -106,8 +107,8 @@ BOOST_AUTO_TEST_CASE(FrameCounterRounding)
     for(int i = 0; i < 20; i++)
     {
         for(int t = 1; t < 64; t++)
-            ctr.update(time += boost::chrono::microseconds(1));
-        time = startTime + boost::chrono::seconds(10);
+            ctr.update(time += std::chrono::microseconds(1));
+        time = startTime + std::chrono::seconds(10);
         ctr.update(time); // 64 Frames in 10s -> 6.4 FPS = 6
         BOOST_REQUIRE_EQUAL(ctr.getFrameRate(), 6u);
         startTime = time;
@@ -116,7 +117,7 @@ BOOST_AUTO_TEST_CASE(FrameCounterRounding)
 
 BOOST_AUTO_TEST_CASE(FrameTimerBasic)
 {
-    using namespace boost::chrono;
+    using namespace std::chrono;
     FrameTimer::clock::time_point time = FrameTimer::clock::now();
     FrameTimer timer_(10, 5, time); // 10 FPS, max 5 frames behind
     milliseconds frameTime(1000 / 10);

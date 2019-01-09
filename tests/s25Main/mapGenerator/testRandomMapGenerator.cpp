@@ -21,8 +21,8 @@
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 #include "gameData/MaxPlayers.h"
-#include "libutil/unique_ptr.h"
 #include <boost/test/unit_test.hpp>
+#include <memory>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(RandomMapGeneratorTest)
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
     settings.maxPlayerRadius = 0.3;
 
     RandomMapGenerator generator(config);
-    libutil::unique_ptr<Map> map(generator.Create(settings));
+    std::unique_ptr<Map> map(generator.Create(settings));
 
     BOOST_REQUIRE_EQUAL(map->size, settings.size);
 }
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
 
     RandomMapGenerator generator(config);
 
-    libutil::unique_ptr<Map> map(generator.Create(settings));
+    std::unique_ptr<Map> map(generator.Create(settings));
     BOOST_REQUIRE_EQUAL(map->numPlayers, settings.numPlayers);
 
     unsigned minSize = std::min(map->size.x, map->size.y) / 2; //-V807
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(InvalidConfig)
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
-    libutil::unique_ptr<Map> map(generator.Create(settings));
+    std::unique_ptr<Map> map(generator.Create(settings));
     BOOST_REQUIRE_GE(map->numPlayers, 1);
 
     settings.numPlayers = 99;

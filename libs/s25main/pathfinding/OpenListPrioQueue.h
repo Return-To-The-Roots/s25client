@@ -23,7 +23,7 @@
 #include <vector>
 
 /// A priority queue based on a vector with rearange capabilities in case of a change
-template<class T, class Pr = std::less<T> >
+template<class T, class Pr = std::less<T>>
 class OpenListPrioQueue : public std::priority_queue<T, std::vector<T>, Pr>
 {
     typedef std::priority_queue<T, std::vector<T>, Pr> Parent;

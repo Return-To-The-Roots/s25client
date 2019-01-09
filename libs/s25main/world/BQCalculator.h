@@ -128,7 +128,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     // 3. Check neighbouring objects that make building impossible
 
     // Blocking manners of neighbours (cache for reuse)
-    boost::array<BlockingManner, 6> neighbourBlocks;
+    std::array<BlockingManner, 6> neighbourBlocks;
     for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         neighbourBlocks[dir] = world.GetNO(world.GetNeighbour(pt, Direction::fromInt(dir)))->GetBM();
 

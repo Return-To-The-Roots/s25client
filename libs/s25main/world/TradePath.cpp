@@ -18,12 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/TradePath.h"
 #include "SerializedGameData.h"
-#include <boost/foreach.hpp>
 
 TradePath::TradePath(SerializedGameData& sgd) : start(sgd.PopMapPoint()), goal(sgd.PopMapPoint())
 {
     route.resize(sgd.PopUnsignedInt());
-    BOOST_FOREACH(Direction& dir, route)
+    for(Direction& dir : route)
     {
         dir = Direction::fromInt(sgd.PopUnsignedChar());
     }
@@ -34,7 +33,7 @@ void TradePath::Serialize(SerializedGameData& sgd) const
     sgd.PushMapPoint(start);
     sgd.PushMapPoint(goal);
     sgd.PushUnsignedInt(route.size());
-    BOOST_FOREACH(const Direction& dir, route)
+    for(const Direction& dir : route)
     {
         sgd.PushUnsignedChar(dir.toUInt());
     }

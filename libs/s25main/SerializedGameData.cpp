@@ -174,7 +174,7 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
 {
     switch(fowtype)
     {
-        default: return NULL;
+        default: return nullptr;
         case FOW_BUILDING: return new fowBuilding(*this);
         case FOW_BUILDINGSITE: return new fowBuildingSite(*this);
         case FOW_FLAG: return new fowFlag(*this);
@@ -184,15 +184,15 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
 }
 
 SerializedGameData::SerializedGameData()
-    : debugMode(false), gameDataVersion(0), expectedNumObjects(0), em(NULL), writeEm(NULL), isReading(false)
+    : debugMode(false), gameDataVersion(0), expectedNumObjects(0), em(nullptr), writeEm(nullptr), isReading(false)
 {}
 
 void SerializedGameData::Prepare(bool reading)
 {
-    static const boost::array<char, 4> versionID = {"VER"};
+    static const std::array<char, 4> versionID = {"VER"};
     if(reading)
     {
-        boost::array<char, 4> versionIDRead;
+        std::array<char, 4> versionIDRead;
         PopRawData(&versionIDRead.front(), versionIDRead.size());
         if(versionIDRead != versionID)
             throw Error("Invalid file format!");
@@ -210,7 +210,7 @@ void SerializedGameData::Prepare(bool reading)
     isReading = reading;
 }
 
-void SerializedGameData::MakeSnapshot(boost::shared_ptr<Game> game)
+void SerializedGameData::MakeSnapshot(std::shared_ptr<Game> game)
 {
     Prepare(false);
 
@@ -244,12 +244,12 @@ void SerializedGameData::MakeSnapshot(boost::shared_ptr<Game> game)
     if(expectedNumObjects != writtenObjIds.size() + 1) // "Nothing" nodeObj does not get serialized
         throw Error((objCtError % expectedNumObjects % (writtenObjIds.size() + 1)).str());
 
-    writeEm = NULL;
+    writeEm = nullptr;
     writtenObjIds.clear();
     writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(boost::shared_ptr<Game> game)
+void SerializedGameData::ReadSnapshot(std::shared_ptr<Game> game)
 {
     Prepare(true);
 
@@ -275,7 +275,7 @@ void SerializedGameData::ReadSnapshot(boost::shared_ptr<Game> game)
     if(expectedNumObjects != readObjects.size() + 1) // "Nothing" nodeObj does not get serialized
         throw Error((objCtError2 % expectedNumObjects % (readObjects.size() + 1)).str());
 
-    em = NULL;
+    em = nullptr;
     readObjects.clear();
     readEvents.clear();
 }
@@ -360,13 +360,13 @@ const GameEvent* SerializedGameData::PopEvent()
 {
     unsigned instanceId = PopUnsignedInt();
     if(!instanceId)
-        return NULL;
+        return nullptr;
 
     // Note: em->GetEventInstanceCtr() might not be set yet
     std::map<unsigned, GameEvent*>::const_iterator foundObj = readEvents.find(instanceId);
     if(foundObj != readEvents.end())
         return foundObj->second;
-    libutil::unique_ptr<GameEvent> ev = libutil::make_unique<GameEvent>(*this, instanceId);
+    std::unique_ptr<GameEvent> ev = std::make_unique<GameEvent>(*this, instanceId);
 
     unsigned short safety_code = PopUnsignedShort();
 
@@ -403,7 +403,7 @@ FOWObject* SerializedGameData::PopFOWObject()
 
     // Kein Objekt?
     if(type == FOW_NOTHING)
-        return NULL;
+        return nullptr;
 
     // entsprechendes Objekt erzeugen
     return Create_FOWObject(type);
@@ -417,7 +417,7 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
 
     // Obj-ID = 0 ? Dann Null-Pointer zurueckgeben
     if(!objId)
-        return NULL;
+        return nullptr;
 
     GameObject* go = GetReadGameObject(objId);
 
@@ -492,7 +492,7 @@ GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
     RTTR_Assert(obj_id <= GameObject::GetObjIDCounter());
     std::map<unsigned, GameObject*>::const_iterator foundObj = readObjects.find(obj_id);
     if(foundObj == readObjects.end())
-        return NULL;
+        return nullptr;
     else
         return foundObj->second;
 }

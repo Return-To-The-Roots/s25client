@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(CreateArchiv_NotNull)
 
     libsiedler2::Archiv* archiv = map.CreateArchiv();
 
-    BOOST_REQUIRE(archiv != NULL);
+    BOOST_REQUIRE(archiv != nullptr);
 
     delete archiv;
 }

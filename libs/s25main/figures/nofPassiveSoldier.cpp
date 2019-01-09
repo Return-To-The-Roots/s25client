@@ -27,17 +27,17 @@
 #include "gameData/MilitaryConsts.h"
 class RoadSegment;
 
-nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier), healing_event(NULL)
+nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier), healing_event(nullptr)
 {
     // Soldat von einer Mission nach Hause gekommen --> ggf heilen!
     Heal();
     // Laufevent nullen, laufen ja nicht mehr
-    current_ev = NULL;
+    current_ev = nullptr;
 }
 
 nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
                                      nobBaseMilitary* const home, const unsigned char rank)
-    : nofSoldier(pos, player, goal, home, rank), healing_event(NULL)
+    : nofSoldier(pos, player, goal, home, rank), healing_event(nullptr)
 {}
 
 nofPassiveSoldier::~nofPassiveSoldier() {}
@@ -100,7 +100,7 @@ void nofPassiveSoldier::Heal()
     if(healing_event)
     {
         GetEvMgr().RemoveEvent(healing_event);
-        healing_event = NULL;
+        healing_event = nullptr;
     }
 
     // Ist er verletzt?
@@ -117,7 +117,7 @@ void nofPassiveSoldier::GoalReached()
 
 void nofPassiveSoldier::InBuildingDestroyed()
 {
-    building = NULL;
+    building = nullptr;
 
     // Auf die Karte setzen
     gwg->AddFigure(pos, this);
@@ -135,7 +135,7 @@ void nofPassiveSoldier::LeaveBuilding()
     cur_rs = building->GetRoute(Direction::SOUTHEAST);
     GoHome();
 
-    building = NULL;
+    building = nullptr;
 }
 
 void nofPassiveSoldier::Upgrade()
@@ -163,6 +163,6 @@ void nofPassiveSoldier::Walked()
 
 void nofPassiveSoldier::NotNeeded()
 {
-    building = NULL;
+    building = nullptr;
     GoHome();
 }

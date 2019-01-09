@@ -23,10 +23,9 @@
 #include "addons/const_addons.h"
 #include "desktops/dskGameInterface.h"
 #include "helpers/containerUtils.h"
-#include <boost/foreach.hpp>
 #include <set>
 
-GameLoader::GameLoader(boost::shared_ptr<Game> game) : game(game) {}
+GameLoader::GameLoader(std::shared_ptr<Game> game) : game(game) {}
 
 GameLoader::~GameLoader() {}
 
@@ -41,17 +40,17 @@ void GameLoader::initNations()
 void GameLoader::initTextures()
 {
     textures.clear();
-    std::set<DescIdx<TerrainDesc> > usedTerrains;
+    std::set<DescIdx<TerrainDesc>> usedTerrains;
     RTTR_FOREACH_PT(MapPoint, game->world.GetSize())
     {
         const MapNode& node = game->world.GetNode(pt);
         usedTerrains.insert(node.t1);
         usedTerrains.insert(node.t2);
     }
-    std::set<DescIdx<EdgeDesc> > usedEdges;
-    std::set<DescIdx<LandscapeDesc> > usedLandscapes;
+    std::set<DescIdx<EdgeDesc>> usedEdges;
+    std::set<DescIdx<LandscapeDesc>> usedLandscapes;
 
-    BOOST_FOREACH(DescIdx<TerrainDesc> tIdx, usedTerrains)
+    for(DescIdx<TerrainDesc> tIdx : usedTerrains)
     {
         const TerrainDesc& t = game->world.GetDescription().get(tIdx);
         if(!helpers::contains(textures, t.texturePath))
@@ -59,7 +58,7 @@ void GameLoader::initTextures()
         usedEdges.insert(t.edgeType);
         usedLandscapes.insert(t.landscape);
     }
-    BOOST_FOREACH(DescIdx<EdgeDesc> eIdx, usedEdges)
+    for(DescIdx<EdgeDesc> eIdx : usedEdges)
     {
         if(!eIdx)
             continue;
@@ -67,10 +66,10 @@ void GameLoader::initTextures()
         if(!helpers::contains(textures, e.texturePath))
             textures.push_back(e.texturePath);
     }
-    BOOST_FOREACH(DescIdx<LandscapeDesc> lIdx, usedLandscapes)
+    for(DescIdx<LandscapeDesc> lIdx : usedLandscapes)
     {
         const LandscapeDesc& e = game->world.GetDescription().get(lIdx);
-        BOOST_FOREACH(const RoadTextureDesc& r, e.roadTexDesc)
+        for(const RoadTextureDesc& r : e.roadTexDesc)
         {
             if(!helpers::contains(textures, r.texturePath))
                 textures.push_back(r.texturePath);

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Window.h"
-#include <boost/array.hpp>
+#include <array>
 #include <vector>
 
 class glArchivItem_Bitmap;
@@ -44,7 +44,7 @@ public:
     static const Extent borderSize;
 
     IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, glArchivItem_Bitmap* background,
-                 bool modal = false, bool closeOnRightClick = true, Window* parent = NULL);
+                 bool modal = false, bool closeOnRightClick = true, Window* parent = nullptr);
     ~IngameWindow() override;
 
     /// setzt den Hintergrund.
@@ -108,7 +108,7 @@ protected:
     DrawPoint lastMousePos;
     bool last_down;
     bool last_down2;
-    boost::array<ButtonState, 2> button_state;
+    std::array<ButtonState, 2> button_state;
 
     /// Offset from left and top to actual content
     Extent contentOffset;

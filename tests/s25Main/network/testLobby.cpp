@@ -20,10 +20,9 @@
 #include "liblobby/LobbyClient.h"
 #include "liblobby/LobbyInterface.h"
 #include "liblobby/LobbyMessages.h"
-#include <libutil/unique_ptr.h>
-#include <boost/foreach.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/test/unit_test.hpp>
+#include <memory>
 #include <rttr/test/LogAccessor.hpp>
 #include <turtle/mock.hpp>
 
@@ -40,7 +39,7 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
             Connection& con = connections[id];
             while(!con.recvQueue.empty())
             {
-                libutil::unique_ptr<Message> msg(con.recvQueue.popFront());
+                std::unique_ptr<Message> msg(con.recvQueue.popFront());
                 if(!msg->run(this, id))
                 {
                     LobbyMessage* lobbyMsg = dynamic_cast<LobbyMessage*>(msg.get());

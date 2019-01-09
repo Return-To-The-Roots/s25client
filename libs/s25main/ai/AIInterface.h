@@ -83,9 +83,9 @@ public:
     BuildingQuality GetBuildingQuality(const MapPoint pt) const;
     BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const;
     /// Tries to find a free path for a road and return length and the route
-    bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route = NULL, unsigned* length = NULL) const;
+    bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route = nullptr, unsigned* length = nullptr) const;
     /// Tries to find a route from start to target, returning length of that route if it exists
-    bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length = NULL) const;
+    bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length = nullptr) const;
     /// Checks if it is allowed to build catapults
     bool CanBuildCatapult() const { return player_.CanBuildCatapult(); }
     /// checks if the player is allowed to build the building type (lua maybe later addon?)
@@ -95,7 +95,8 @@ public:
     /// player.FindWarehouse
     template<class T_IsWarehouseGood>
     nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh,
-                                    const bool use_boat_roads, unsigned* const length = 0, const RoadSegment* const forbidden = NULL) const
+                                    const bool use_boat_roads, unsigned* const length = 0,
+                                    const RoadSegment* const forbidden = nullptr) const
     {
         return player_.FindWarehouse(start, isWarehouseGood, to_wh, use_boat_roads, length, forbidden);
     }

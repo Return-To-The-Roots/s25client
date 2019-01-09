@@ -125,7 +125,7 @@ private:
     /// Startet Schiffs-Angreiff
     void StartSeaAttack();
 
-    /// Fängt an mit idlen und setzt nötigen Sachen auf NULL
+    /// Fängt an mit idlen und setzt nötigen Sachen auf nullptr
     void StartIdling();
 
     /// Fängt an zu einem Hafen zu fahren (berechnet Route usw.)

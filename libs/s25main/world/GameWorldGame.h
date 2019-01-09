@@ -20,7 +20,6 @@
 
 #include "world/GameWorldBase.h"
 #include "gameTypes/MapCoordinates.h"
-#include <boost/core/scoped_enum.hpp>
 #include <vector>
 
 class CatapultStone;
@@ -35,14 +34,15 @@ struct PlayerInfo;
 class RoadSegment;
 class TerritoryRegion;
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerritoryChangeReason){
-  Build,     /// Building was build (and occupied for the first time)
-  Destroyed, /// Building destroyed
-  Captured   /// Owner changed
-} BOOST_SCOPED_ENUM_DECLARE_END(TerritoryChangeReason)
+enum class TerritoryChangeReason
+{
+    Build,     /// Building was build (and occupied for the first time)
+    Destroyed, /// Building destroyed
+    Captured   /// Owner changed
+};
 
-  /// "Interface-Klasse" für das Spiel
-  class GameWorldGame : public GameWorldBase
+/// "Interface-Klasse" für das Spiel
+class GameWorldGame : public GameWorldBase
 {
     /// Destroys player belongings if that pint does not belong to the player anymore
     void DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception);
@@ -98,20 +98,20 @@ public:
     void DestroyBuilding(const MapPoint pt, const unsigned char playe);
 
     /// Find a path for people using roads. Result will be a direction, INVALID_DIR or SHIP_DIR
-    unsigned char FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = NULL, MapPoint* firstPt = NULL,
-                                       const RoadSegment* const forbidden = NULL);
+    unsigned char FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = nullptr,
+                                       MapPoint* firstPt = nullptr, const RoadSegment* const forbidden = nullptr);
     /// Find a path for wares using roads. Result will be a direction, INVALID_DIR or SHIP_DIR
-    unsigned char FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = NULL, MapPoint* firstPt = NULL,
-                                         unsigned max = std::numeric_limits<unsigned>::max());
+    unsigned char FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = nullptr,
+                                         MapPoint* firstPt = nullptr, unsigned max = std::numeric_limits<unsigned>::max());
     /// Prüft, ob eine Schiffsroute noch Gültigkeit hat
     bool CheckShipRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos, MapPoint* dest);
     /// Find a route for trade caravanes
     unsigned char FindTradePath(const MapPoint start, const MapPoint dest, unsigned char player, unsigned max_route = 0xffffffff,
-                                bool random_route = false, std::vector<Direction>* route = NULL, unsigned* length = NULL) const;
+                                bool random_route = false, std::vector<Direction>* route = nullptr, unsigned* length = nullptr) const;
     /// Check whether trade path (starting from point @param start and at index @param startRouteIdx) is still valid. Optionally returns
     /// destination pt
     bool CheckTradeRoute(const MapPoint start, const std::vector<Direction>& route, unsigned startRouteIdx, unsigned char player,
-                         MapPoint* dest = NULL) const;
+                         MapPoint* dest = nullptr) const;
 
     /// setzt den Straßen-Wert um den Punkt X,Y.
     void SetPointRoad(MapPoint pt, Direction dir, unsigned char type);
@@ -143,7 +143,7 @@ public:
     /// Ist der Punkt ein geeigneter Platz zum Warten vor dem Militärgebäude
     bool ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* attacker, const MapPoint center);
     /// Geeigneter Punkt für Kämpfe?
-    bool ValidPointForFighting(const MapPoint pt, const bool avoid_military_building_flags, nofActiveSoldier* exception = NULL);
+    bool ValidPointForFighting(const MapPoint pt, const bool avoid_military_building_flags, nofActiveSoldier* exception = nullptr);
 
     /// Berechnet die Sichtbarkeiten neu um einen Punkt mit radius
     void RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,

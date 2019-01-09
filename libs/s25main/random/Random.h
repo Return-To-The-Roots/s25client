@@ -23,7 +23,7 @@
 #include "RTTR_Assert.h"
 #include "random/XorShift.h"
 #include "libutil/Singleton.h"
-#include <boost/array.hpp>
+#include <array>
 #include <iosfwd>
 #include <limits>
 #include <string>
@@ -38,7 +38,7 @@ class Serializer;
 ///        http://www.boost.org/doc/libs/1_61_0/doc/html/boost_random/reference.html#boost_random.reference.concepts.pseudo_random_number_generator
 /// Additionally it must implement Serialize and Deserialize functions and provide a static GetName function
 template<class T_PRNG>
-class Random : public Singleton<Random<T_PRNG> >
+class Random : public Singleton<Random<T_PRNG>>
 {
 public:
     /// The used random number generator type
@@ -92,7 +92,7 @@ private:
     /// Number of invocations to the PRNG
     unsigned numInvocations_;
     /// History
-    boost::array<RandomEntry, 1024> history_; //-V730_NOINIT
+    std::array<RandomEntry, 1024> history_; //-V730_NOINIT
 };
 
 /// The actual PRNG used for the ingame RNG

@@ -22,7 +22,6 @@
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/foreach.hpp>
 #include <boost/test/test_tools.hpp>
 
 CreateSeaWorld::CreateSeaWorld(const MapExtent& size) : size_(size) {}
@@ -32,7 +31,7 @@ bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbo
 {
     // Get all points within a radius of 3 and place the harbor on the first possible place
     std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(pt, 3);
-    BOOST_FOREACH(MapPoint curPt, pts)
+    for(MapPoint curPt : pts)
     {
         // Harbor only at castles
         world.RecalcBQ(curPt);
@@ -149,7 +148,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
 
     std::vector<MapPoint> harbors;
     // Place harbors
-    BOOST_FOREACH(MapPoint pt, hqPositions)
+    for(MapPoint pt : hqPositions)
     {
         unsigned harborsPlaced = 0;
         if(PlaceHarbor(pt - MapPoint(landSize / 2, 0), world, harbors))
@@ -220,10 +219,10 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
         if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::LAND)
             break;
     }
-    BOOST_FOREACH(MapPoint hqPos, hqPositions)
+    for(MapPoint hqPos : hqPositions)
     {
         std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(hqPos, landRadius);
-        BOOST_FOREACH(MapPoint curPt, pts)
+        for(MapPoint curPt : pts)
         {
             MapNode& node = world.GetNodeWriteable(curPt);
             node.t1 = node.t2 = t;
@@ -232,7 +231,7 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
     BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
 
     std::vector<MapPoint> harbors;
-    BOOST_FOREACH(MapPoint hqPos, hqPositions)
+    for(MapPoint hqPos : hqPositions)
     {
         BOOST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos - Position(landRadius, 0)), world, harbors));
         BOOST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos - Position(0, landRadius)), world, harbors));

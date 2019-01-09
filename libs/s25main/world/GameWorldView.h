@@ -102,7 +102,7 @@ public:
     /// Schaltet Produktivitäten/Namen komplett aus oder an
     void ToggleShowNamesAndProductivity();
 
-    void Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water = NULL);
+    void Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water = nullptr);
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
     void MoveTo(int x, int y, bool absolute = false);

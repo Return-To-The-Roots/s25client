@@ -20,7 +20,6 @@
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "gameTypes/FoWNode.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 
 typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
@@ -31,7 +30,7 @@ boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, co
     {
         const BoundaryStones& isValue = world.GetNode(pt).boundary_stones;
         const BoundaryStones& expectedValue = expected[world.GetIdx(pt)];
-        for(unsigned i = 0; i < BoundaryStones::size(); i++)
+        for(unsigned i = 0; i < isValue.size(); i++)
         {
             if(isValue[i] != expectedValue[i])
             {
@@ -50,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
     // Check some point in the middle and at 0,0 which causes wrapping
     ptsToTest.push_back(MapPoint(5, 5));
     ptsToTest.push_back(MapPoint(0, 0));
-    BOOST_FOREACH(MapPoint middlePt, ptsToTest)
+    for(MapPoint middlePt : ptsToTest)
     {
         std::vector<BoundaryStones> expectedBoundaryStones(world.GetWidth() * world.GetHeight());
         // Reset owner to 0 (None) and boundary stones to nothing
@@ -67,12 +66,12 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
         expectedBoundaryStones[world.GetIdx(middlePt)][0] = 1u;
         BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
 
-        BOOST_FOREACH(MapPoint pt, radius1Pts)
+        for(MapPoint pt : radius1Pts)
             world.SetOwner(pt, 1);
         // Midle pt lost its stone
         expectedBoundaryStones[world.GetIdx(middlePt)][0] = 0u;
         // Each border node should have a boundary stone at the center
-        BOOST_FOREACH(MapPoint pt, radius1Pts)
+        for(MapPoint pt : radius1Pts)
             expectedBoundaryStones[world.GetIdx(pt)][0] = 1u;
         expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][2] = 1u;
         expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][1] = 1u;

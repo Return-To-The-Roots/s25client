@@ -74,7 +74,7 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& toolti
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 /**

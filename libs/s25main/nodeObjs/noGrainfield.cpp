@@ -134,7 +134,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
         {
             // Selbst zerstören
             event = 0;
-            gwg->SetNO(pos, NULL);
+            gwg->SetNO(pos, nullptr);
             GetEvMgr().AddToKillList(this);
         }
         break;

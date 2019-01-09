@@ -34,9 +34,9 @@ struct DescriptionContainer
     unsigned size() const { return static_cast<unsigned>(items.size()); }
     /// Return the index of the item with the given name
     DescIdx<T> getIndex(const std::string& name) const;
-    /// Return the entry with the given name or NULL
+    /// Return the entry with the given name or nullptr
     const T* tryGet(const std::string& name) const;
-    /// Return the entry with the given idx or NULL
+    /// Return the entry with the given idx or nullptr
     const T* tryGet(const DescIdx<T> idx) const;
     /// Return the item at the given index
     const T& get(const DescIdx<T> idx) const;
@@ -76,7 +76,7 @@ template<typename T>
 inline const T* DescriptionContainer<T>::tryGet(const DescIdx<T> idx) const
 {
     if(!idx || idx.value >= size())
-        return NULL;
+        return nullptr;
     return &items[idx.value];
 }
 

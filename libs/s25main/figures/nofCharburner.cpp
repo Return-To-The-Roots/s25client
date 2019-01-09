@@ -28,7 +28,6 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noCharburnerPile.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/bind.hpp>
 
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)
@@ -169,8 +168,7 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
     }
 
     // Terrain untersuchen (need walkable land)
-    if(gwg->IsOfTerrain(pt,
-                        boost::bind(&TerrainDesc::Is, _1, ETerrain::Walkable) && boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND))
+    if(gwg->IsOfTerrain(pt, [](const auto& desc) { return desc.Is(ETerrain::Walkable) && desc.kind == TerrainKind::LAND; }))
         return PQ_CLASS3;
     else
         return PQ_NOTPOSSIBLE;

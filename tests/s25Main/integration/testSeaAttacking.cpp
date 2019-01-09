@@ -36,7 +36,6 @@
 #include "nodeObjs/noShip.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -51,10 +50,10 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
     using Parent::world;
 
     /// Positions of the players HQ
-    boost::array<MapPoint, 3> hqPos;
+    std::array<MapPoint, 3> hqPos;
     /// Tested positions for military buildings
     MapPoint milBld1NearPos, milBld1FarPos, milBld2Pos;
-    boost::array<MapPoint, 3> harborPos;
+    std::array<MapPoint, 3> harborPos;
     /// Military buildings of players 1 and 2 (for 1, one is close and one far away from player 1)
     const nobMilitary *milBld1Near, *milBld1Far, *milBld2;
     GameWorldViewer gwv;
@@ -363,7 +362,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
     BOOST_REQUIRE_EQUAL(world.GetNode(bldPos).bq, BQ_CASTLE);
     std::vector<MapPoint> pts = world.GetPointsInRadius(bldPos, 3);
     pts.push_back(bldPos);
-    BOOST_FOREACH(const MapPoint& pt, pts)
+    for(const MapPoint& pt : pts)
         world.SetOwner(pt, 1 + 1);
     const noBuilding* bld = BuildingFactory::CreateBuilding(world, BLD_BARRACKS, bldPos, 1, NAT_ROMANS);
     BOOST_REQUIRE(bld);
@@ -466,7 +465,7 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     BOOST_REQUIRE_GE(numSoldiersForAttack, 2u);
     // Note: This might be off by one if the ship arrived in the same GF a soldier arrived. But this is unlikely
     BOOST_REQUIRE_EQUAL(ship.GetFigures().size(), numSoldiersForAttack); //-V807
-    BOOST_FOREACH(const noFigure* attacker, ship.GetFigures())
+    for(const noFigure* attacker : ship.GetFigures())
     {
         BOOST_REQUIRE(!dynamic_cast<const nofAttacker&>(*attacker).IsSeaAttackCompleted());
     }
@@ -521,9 +520,9 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     pts.push_back(harborPos[1]);
     std::vector<nofAttacker*> attackers;
     std::vector<unsigned> attackerIds;
-    BOOST_FOREACH(const MapPoint& pt, pts)
+    for(const MapPoint& pt : pts)
     {
-        BOOST_FOREACH(noBase* fig, world.GetFigures(pt))
+        for(noBase* fig : world.GetFigures(pt))
         {
             nofAttacker* attacker = dynamic_cast<nofAttacker*>(fig);
             if(attacker)
@@ -544,7 +543,7 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     BOOST_REQUIRE(ship.IsOnAttackMission());
     BOOST_REQUIRE(ship.IsGoingToHarbor(hbSrc));
     BOOST_REQUIRE_EQUAL(ship.GetFigures().size(), attackers.size());
-    BOOST_FOREACH(const noFigure* attacker, ship.GetFigures())
+    for(const noFigure* attacker : ship.GetFigures())
     {
         BOOST_REQUIRE(dynamic_cast<const nofAttacker&>(*attacker).IsSeaAttackCompleted());
     }
@@ -563,7 +562,7 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     // All troups should have returned home
     std::vector<nofPassiveSoldier*> soldiers(milBld2->GetTroops().begin(), milBld2->GetTroops().end());
     unsigned numTroopsFound = 0;
-    BOOST_FOREACH(const nofPassiveSoldier* soldier, soldiers)
+    for(const nofPassiveSoldier* soldier : soldiers)
     {
         if(helpers::contains(attackerIds, soldier->GetObjId()))
             numTroopsFound++;

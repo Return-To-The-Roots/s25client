@@ -18,8 +18,6 @@
 #ifndef Handle_h__
 #define Handle_h__
 
-#include <boost/move/move.hpp>
-
 /// Class similar to shared_pointer but with a deleter like unqiue_ptr.
 /// Not thread safe!
 /// Expects:
@@ -34,11 +32,11 @@ public:
 private:
     unsigned* refCt_;
     Pointer handle_;
-    BOOST_COPYABLE_AND_MOVABLE(shared_handle)
+
 public:
     explicit shared_handle(Pointer handle) : refCt_(new unsigned(1)), handle_(handle) {}
     shared_handle(const shared_handle& other) : refCt_(other.refCt_), handle_(other.handle_) { ++*refCt_; }
-    shared_handle(BOOST_RV_REF(shared_handle) other) : refCt_(other.refCt_), handle_(other.handle_) { other.refCt_ = NULL; }
+    shared_handle(shared_handle&& other) : refCt_(other.refCt_), handle_(other.handle_) { other.refCt_ = nullptr; }
     ~shared_handle()
     {
         RTTR_Assert(!refCt_ || *refCt_ > 0u);

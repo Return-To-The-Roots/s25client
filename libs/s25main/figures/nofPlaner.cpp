@@ -92,7 +92,7 @@ void nofPlaner::AbrogateWorkplace()
     {
         state = STATE_FIGUREWORK;
         building_site->Abrogate();
-        building_site = NULL;
+        building_site = nullptr;
     }
 }
 

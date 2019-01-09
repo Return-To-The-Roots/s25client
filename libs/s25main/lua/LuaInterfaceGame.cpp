@@ -34,7 +34,7 @@
 #include "libutil/Serializer.h"
 #include <boost/nowide/fstream.hpp>
 
-LuaInterfaceGame::LuaInterfaceGame(boost::weak_ptr<Game> gameInstance) : gw(gameInstance.lock()->world), game(gameInstance)
+LuaInterfaceGame::LuaInterfaceGame(std::weak_ptr<Game> gameInstance) : gw(gameInstance.lock()->world), game(gameInstance)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name
@@ -364,7 +364,7 @@ void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggest
 {
     Game& gameInst = *game.lock();
     AIPlayer* ai = gameInst.GetAIPlayer(targetPlayerId);
-    if(ai != NULL)
+    if(ai != nullptr)
     {
         kaguya::LuaRef onPactCancel = lua["onSuggestPact"];
         if(onPactCancel.type() == LUA_TFUNCTION)

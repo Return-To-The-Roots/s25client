@@ -19,4 +19,4 @@
 #include "gameTypes/PactTypes.h"
 #include "mygettext/mygettext.h"
 
-const boost::array<const char*, NUM_PACTS> PACT_NAMES = {{gettext_noop("Treaty of alliance"), gettext_noop("Non-aggression pact")}};
+const std::array<const char*, NUM_PACTS> PACT_NAMES = {{gettext_noop("Treaty of alliance"), gettext_noop("Non-aggression pact")}};

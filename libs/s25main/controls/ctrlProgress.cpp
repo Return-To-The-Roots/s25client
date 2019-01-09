@@ -22,7 +22,7 @@
 #include "WindowManager.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
-#include <boost/math/special_functions/round.hpp>
+#include <cmath>
 #include <sstream>
 
 ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
@@ -155,7 +155,7 @@ bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
     Extent progressSize = GetSize() - Extent((GetSize().y + 1) * 2, 8) - padding_ * 2u;
     if(IsPointInRect(mc.GetPos(), Rect(progressOrigin, progressSize)))
     {
-        position = boost::math::iround(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x);
+        position = static_cast<uint16_t>(std::lround(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x));
 
         if(GetParent())
             GetParent()->Msg_ProgressChange(GetID(), position);

@@ -21,7 +21,7 @@
 #include "nofFlagWorker.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
-#include <boost/array.hpp>
+#include <array>
 #include <vector>
 
 class SerializedGameData;
@@ -40,7 +40,7 @@ private:
     /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
     static const unsigned short MAX_RADIUS = 10;
 
-    boost::array<bool, Resource::TypeCount> resAlreadyFound;
+    std::array<bool, Resource::TypeCount> resAlreadyFound;
 
 private:
     void GoalReached() override;

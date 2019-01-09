@@ -70,8 +70,8 @@ nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsi
         attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
     } else
     {
-        attacker = NULL;
-        attacked_goal = NULL;
+        attacker = nullptr;
+        attacked_goal = nullptr;
     }
 }
 
@@ -90,12 +90,12 @@ void nofAggressiveDefender::Walked()
 /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
 void nofAggressiveDefender::HomeDestroyed()
 {
-    building = NULL;
+    building = nullptr;
 }
 
 void nofAggressiveDefender::HomeDestroyedAtBegin()
 {
-    building = NULL;
+    building = nullptr;
 
     // angegriffenem Gebäude Bescheid sagen, dass wir doch nicht mehr kommen
     InformTargetsAboutCancelling();
@@ -112,7 +112,7 @@ void nofAggressiveDefender::CancelAtAttackedBld()
     if(attacked_goal)
     {
         attacked_goal->UnlinkAggressiveDefender(this);
-        attacked_goal = NULL;
+        attacked_goal = nullptr;
     }
 }
 
@@ -182,7 +182,7 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
 void nofAggressiveDefender::AttackedGoalDestroyed()
 {
     CancelAtAttacker();
-    attacked_goal = NULL;
+    attacked_goal = nullptr;
 
     /*// Stehen wir? Dann losgehen
     if(state == STATE_WAITINGFORFIGHT)
@@ -272,7 +272,7 @@ void nofAggressiveDefender::ReturnHomeMissionAggressiveDefending()
 void nofAggressiveDefender::AttackerLost()
 {
     RTTR_Assert(attacker);
-    attacker = NULL;
+    attacker = nullptr;
 }
 
 void nofAggressiveDefender::NeedForHomeDefence()
@@ -296,7 +296,7 @@ void nofAggressiveDefender::CancelAtAttacker()
     {
         RTTR_Assert(attacker->GetHuntingDefender() == this);
         attacker->AggressiveDefenderLost();
-        attacker = NULL;
+        attacker = nullptr;
     }
 }
 

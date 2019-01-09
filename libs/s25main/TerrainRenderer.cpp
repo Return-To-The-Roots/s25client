@@ -34,8 +34,6 @@
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "libutil/Log.h"
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/foreach.hpp>
-#include <boost/smart_ptr/scoped_array.hpp>
 #include <cstdlib>
 #include <glad/glad.h>
 #include <set>
@@ -95,13 +93,13 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     edgeTextures.clear();
     roadTextures.clear();
 
-    std::set<DescIdx<LandscapeDesc> > usedLandscapes;
-    std::set<DescIdx<TerrainDesc> > usedTerrains;
-    std::set<DescIdx<EdgeDesc> > usedEdges;
-    typedef boost::array<DescIdx<TerrainDesc>, 2> TerrainPair;
-    BOOST_FOREACH(const TerrainPair& ts, terrain)
+    std::set<DescIdx<LandscapeDesc>> usedLandscapes;
+    std::set<DescIdx<TerrainDesc>> usedTerrains;
+    std::set<DescIdx<EdgeDesc>> usedEdges;
+    typedef std::array<DescIdx<TerrainDesc>, 2> TerrainPair;
+    for(const TerrainPair& ts : terrain)
     {
-        BOOST_FOREACH(const DescIdx<TerrainDesc>& tIdx, ts)
+        for(const DescIdx<TerrainDesc>& tIdx : ts)
         {
             if(!helpers::contains(usedTerrains, tIdx))
             {
@@ -119,7 +117,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     edgeTextures.resize(usedEdges.rbegin()->value + 1);
     roadTextures.resize((usedLandscapes.rbegin()->value + 1) * LandscapeDesc::NUM_ROADTYPES);
 
-    BOOST_FOREACH(DescIdx<TerrainDesc> curIdx, usedTerrains)
+    for(DescIdx<TerrainDesc> curIdx : usedTerrains)
     {
         const TerrainDesc& cur = desc.get(curIdx);
         std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
@@ -136,7 +134,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
             } else
             {
                 libsiedler2::ArchivItem_PaletteAnimation& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
-                libutil::unique_ptr<libsiedler2::Archiv> textures =
+                std::unique_ptr<libsiedler2::Archiv> textures =
                   LOADER.ExtractAnimatedTexture(*texBmp, cur.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
                 for(unsigned i = 0; i < textures->size(); i++)
                 {
@@ -148,7 +146,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
             terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
         }
         // Initialize OpenGL textures
-        BOOST_FOREACH(glArchivItem_Bitmap& bmp, terrainTextures[curIdx.value].textures)
+        for(glArchivItem_Bitmap& bmp : terrainTextures[curIdx.value].textures)
             bmp.GetTexture();
         TerrainDesc::Triangle trianglePos = cur.GetRSUTriangle();
         Position texOrigin = cur.posInTexture.getOrigin();
@@ -171,7 +169,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
         for(unsigned i = 0; i < 3; i++)
             usdCoord[i] /= texSize;
     }
-    BOOST_FOREACH(DescIdx<EdgeDesc> curIdx, usedEdges)
+    for(DescIdx<EdgeDesc> curIdx : usedEdges)
     {
         const EdgeDesc& cur = desc.get(curIdx);
         std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
@@ -181,7 +179,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
         edgeTextures[curIdx.value].reset(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
         edgeTextures[curIdx.value]->GetTexture(); // Init texture
     }
-    BOOST_FOREACH(DescIdx<LandscapeDesc> curIdx, usedLandscapes)
+    for(DescIdx<LandscapeDesc> curIdx : usedLandscapes)
     {
         const LandscapeDesc& cur = desc.get(curIdx);
         for(unsigned i = 0; i < cur.roadTexDesc.size(); i++)
@@ -674,8 +672,8 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     RTTR_Assert(!borders.empty());
 
     // nach Texture in Listen sortieren
-    std::vector<std::vector<MapTile> > sorted_textures(terrainTextures.size());
-    std::vector<std::vector<BorderTile> > sorted_borders(edgeTextures.size());
+    std::vector<std::vector<MapTile>> sorted_textures(terrainTextures.size());
+    std::vector<std::vector<BorderTile>> sorted_borders(edgeTextures.size());
     PreparedRoads sorted_roads(roadTextures.size());
 
     Position lastOffset(0, 0);
@@ -717,13 +715,13 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
             lastTerrain = t;
 
             const Borders& curBorders = borders[GetVertexIdx(tP)];
-            boost::array<unsigned char, 6> tiles = {{curBorders.left_right[0], curBorders.left_right[1], curBorders.right_left[0],
-                                                     curBorders.right_left[1], curBorders.top_down[0], curBorders.top_down[1]}};
+            std::array<unsigned char, 6> tiles = {{curBorders.left_right[0], curBorders.left_right[1], curBorders.right_left[0],
+                                                   curBorders.right_left[1], curBorders.top_down[0], curBorders.top_down[1]}};
 
             // Offsets into gl_* arrays
-            boost::array<unsigned, 6> offsets = {{curBorders.left_right_offset[0], curBorders.left_right_offset[1],
-                                                  curBorders.right_left_offset[0], curBorders.right_left_offset[1],
-                                                  curBorders.top_down_offset[0], curBorders.top_down_offset[1]}};
+            std::array<unsigned, 6> offsets = {{curBorders.left_right_offset[0], curBorders.left_right_offset[1],
+                                                curBorders.right_left_offset[0], curBorders.right_left_offset[1],
+                                                curBorders.top_down_offset[0], curBorders.top_down_offset[1]}};
 
             for(unsigned char i = 0; i < 6; ++i)
             {
@@ -758,7 +756,7 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
         {
             if(desc.get(t).kind != TerrainKind::WATER)
                 continue;
-            BOOST_FOREACH(const MapTile& tile, sorted_textures[t.value])
+            for(const MapTile& tile : sorted_textures[t.value])
                 water_count += tile.count;
         }
 
@@ -969,18 +967,18 @@ struct Tex2C3Ver2
 void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 {
     // 2D Array: [3][4]
-    static const boost::array<Position, 12> begin_end_coords = {{Position(0, -3), Position(0, 3), Position(3, 3), Position(3, -3),
-                                                                 Position(2, -4), Position(-4, 2), Position(0, 6), Position(6, 0),
-                                                                 Position(4, 2), Position(-2, -4), Position(-6, 0), Position(0, 6)}};
+    static const std::array<Position, 12> begin_end_coords = {{Position(0, -3), Position(0, 3), Position(3, 3), Position(3, -3),
+                                                               Position(2, -4), Position(-4, 2), Position(0, 6), Position(6, 0),
+                                                               Position(4, 2), Position(-2, -4), Position(-6, 0), Position(0, 6)}};
 
     size_t maxSize = 0;
-    BOOST_FOREACH(const boost::container::vector<PreparedRoad>& sorted_road, sorted_roads)
+    for(const std::vector<PreparedRoad>& sorted_road : sorted_roads)
         maxSize = std::max(maxSize, sorted_road.size());
 
     if(maxSize == 0)
         return;
 
-    boost::scoped_array<Tex2C3Ver2> vertexData(new Tex2C3Ver2[maxSize * 4]);
+    auto vertexData = std::make_unique<Tex2C3Ver2[]>(maxSize * 4);
     // These should still be enabled
     RTTR_Assert(glIsEnabled(GL_VERTEX_ARRAY));
     RTTR_Assert(glIsEnabled(GL_TEXTURE_COORD_ARRAY));

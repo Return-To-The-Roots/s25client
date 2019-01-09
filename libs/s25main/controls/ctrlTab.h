@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Window.h"
-#include <boost/array.hpp>
+#include <array>
 
 class ctrlGroup;
 class MouseCoords;
@@ -72,7 +72,7 @@ private:
     unsigned short tab_count;
     unsigned short tab_selection;
 
-    boost::array<unsigned, 20> tabs; //-V730_NOINIT
+    std::array<unsigned, 20> tabs; //-V730_NOINIT
 };
 
 #endif // !CTRLTAB_H_INCLUDED

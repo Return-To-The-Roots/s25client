@@ -113,7 +113,8 @@ iwMusicPlayer::~iwMusicPlayer()
         {
             if(!pl.SaveAs(GetFullPlaylistPath(str), true))
                 // Fehler, konnte nicht gespeichert werden
-                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
+                WINDOWMANAGER.Show(
+                  new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         } catch(std::exception&)
         {
         }
@@ -378,7 +379,7 @@ void iwMusicPlayer::SetSegments(const std::vector<std::string>& segments)
 }
 void iwMusicPlayer::SetRepeats(unsigned repeats)
 {
-    GetCtrl<ctrlTextDeepening>(12)->SetText(boost::lexical_cast<std::string>(repeats));
+    GetCtrl<ctrlTextDeepening>(12)->SetText(std::to_string(repeats));
 }
 
 void iwMusicPlayer::SetRandomPlayback(const bool random_playback)

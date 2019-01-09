@@ -24,7 +24,7 @@
 #include <algorithm>
 #include <limits>
 
-using boost::chrono::seconds;
+using std::chrono::seconds;
 
 namespace {
 template<class T_Duration>
@@ -62,7 +62,7 @@ unsigned GameServerPlayer::calcPingTime()
 {
     if(!isPinging)
         return 0u;
-    int result = durationToInt(boost::chrono::duration_cast<boost::chrono::milliseconds>(pingTimer.getElapsed()));
+    int result = durationToInt(std::chrono::duration_cast<std::chrono::milliseconds>(pingTimer.getElapsed()));
     isPinging = false;
     pingTimer.restart();
     unsigned curPing = static_cast<unsigned>(std::max(1, result));
@@ -84,7 +84,7 @@ unsigned GameServerPlayer::getLagTimeOut() const
 {
     if(!lagTimer.isRunning())
         return LAG_TIMEOUT;
-    int timeout = durationToInt(boost::chrono::duration_cast<seconds>(seconds(LAG_TIMEOUT) - lagTimer.getElapsed()));
+    int timeout = durationToInt(std::chrono::duration_cast<seconds>(seconds(LAG_TIMEOUT) - lagTimer.getElapsed()));
     return static_cast<unsigned>(std::max(0, timeout));
 }
 

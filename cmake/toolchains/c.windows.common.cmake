@@ -21,8 +21,6 @@ endforeach()
 
 # set search prefix
 set(CMAKE_FIND_ROOT_PATH /usr/${COMPILER_PREFIX})
-# CMake <= 3.0 workaround -.-
-set(ENV{SDLDIR} ${CMAKE_FIND_ROOT_PATH})
 
 # search for programs in the build host directories
 # for libraries and headers in the target directories

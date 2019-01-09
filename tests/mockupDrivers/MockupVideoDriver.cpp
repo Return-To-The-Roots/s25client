@@ -110,5 +110,5 @@ KeyEvent MockupVideoDriver::GetModKeyState() const
 
 void* MockupVideoDriver::GetMapPointer() const
 {
-    return NULL;
+    return nullptr;
 }

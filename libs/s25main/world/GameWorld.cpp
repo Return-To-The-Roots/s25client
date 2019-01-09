@@ -36,7 +36,7 @@ GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGam
 {}
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(boost::shared_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath)
+bool GameWorld::LoadMap(std::shared_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;
@@ -52,7 +52,7 @@ bool GameWorld::LoadMap(boost::shared_ptr<Game> game, const std::string& mapFile
         SetLua(new LuaInterfaceGame(game));
         if(!GetLua().LoadScript(luaFilePath) || !GetLua().CheckScriptVersion())
         {
-            SetLua(NULL);
+            SetLua(nullptr);
             return false;
         }
     }
@@ -94,7 +94,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     }
 }
 
-void GameWorld::Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sgd)
+void GameWorld::Deserialize(std::shared_ptr<Game> game, SerializedGameData& sgd)
 {
     MapSerializer::Deserialize(*this, GetNumPlayers(), sgd);
 
@@ -117,12 +117,12 @@ void GameWorld::Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sg
         SetLua(new LuaInterfaceGame(game));
         if(!GetLua().LoadScriptString(luaScript))
         {
-            SetLua(NULL);
+            SetLua(nullptr);
             throw SerializedGameData::Error(_("Lua script failed to load."));
         }
         if(!GetLua().CheckScriptVersion())
         {
-            SetLua(NULL);
+            SetLua(nullptr);
             throw SerializedGameData::Error(_("Wrong version for lua script."));
         }
         try

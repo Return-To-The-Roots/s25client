@@ -19,7 +19,7 @@
 #define HarborPos_h__
 
 #include "gameTypes/MapCoordinates.h"
-#include <boost/array.hpp>
+#include <array>
 #include <vector>
 
 struct HarborPos
@@ -31,7 +31,7 @@ struct HarborPos
         unsigned short seaId;
         CoastalPoint() : seaId(0) {}
     };
-    boost::array<CoastalPoint, 6> cps;
+    std::array<CoastalPoint, 6> cps;
 
     struct Neighbor
     {
@@ -44,7 +44,7 @@ struct HarborPos
         bool operator<(const Neighbor& two) const { return (distance < two.distance) || (distance == two.distance && id < two.id); }
     };
 
-    boost::array<std::vector<Neighbor>, 6> neighbors;
+    std::array<std::vector<Neighbor>, 6> neighbors;
 
     HarborPos() {} //-V730
     HarborPos(const MapPoint pt) : pos(pt) {}

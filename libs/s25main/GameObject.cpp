@@ -31,7 +31,7 @@
 unsigned GameObject::objIdCounter_ = 0;
 unsigned GameObject::objCounter_ = 0;
 
-GameWorldGame* GameObject::gwg = NULL;
+GameWorldGame* GameObject::gwg = nullptr;
 
 GameObject::GameObject() : objId(++objIdCounter_)
 {
@@ -80,7 +80,7 @@ void GameObject::SendPostMessage(unsigned player, PostMsg* msg)
 void GameObject::DetachWorld(GameWorldGame* gameWorld)
 {
     if(gwg == gameWorld)
-        gwg = NULL;
+        gwg = nullptr;
 }
 
 void GameObject::AttachWorld(GameWorldGame* gameWorld)

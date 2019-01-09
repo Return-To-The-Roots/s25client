@@ -21,7 +21,7 @@
 
 #include "MouseCoords.h"
 #include "VideoInterface.h"
-#include <boost/array.hpp>
+#include <array>
 
 class VideoDriverLoaderInterface;
 
@@ -55,7 +55,7 @@ protected:
     VideoDriverLoaderInterface* CallBack; /// Das DriverCallback für Rückmeldungen.
     bool initialized;                     /// Initialisierungsstatus.
     MouseCoords mouse_xy;                 /// Status der Maus.
-    boost::array<bool, 512> keyboard;     /// Status der Tastatur;
+    std::array<bool, 512> keyboard;       /// Status der Tastatur;
     VideoMode screenSize_;
     bool isFullscreen_; /// Vollbild an/aus?
 };

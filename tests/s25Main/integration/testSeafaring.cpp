@@ -28,7 +28,6 @@
 #include "worldFixtures/SeaWorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
 #include "nodeObjs/noShip.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -525,7 +524,7 @@ void destroyBldAndFire(GameWorldBase& world, const MapPoint& pos)
     // Remove fire
     world.DestroyNO(pos);
     // Remove burned wh if existing
-    BOOST_FOREACH(noBase* fig, world.GetFigures(pos))
+    for(noBase* fig : world.GetFigures(pos))
     {
         if(fig->GetGOT() == GOT_BURNEDWAREHOUSE)
         {

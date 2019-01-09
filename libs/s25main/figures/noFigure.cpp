@@ -58,7 +58,7 @@ const unsigned short WANDER_TRYINGS_SOLDIERS = 6;
 const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
-    : noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(NULL), rs_pos(0), rs_dir(0), on_ship(false),
+    : noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(0), on_ship(false),
       goal_(goal), waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
       burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {
@@ -70,8 +70,8 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 }
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
-    : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(NULL), rs_pos(0), rs_dir(0), on_ship(false), goal_(NULL),
-      waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
+    : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(0), on_ship(false),
+      goal_(nullptr), waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
       burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {}
 
@@ -119,7 +119,7 @@ noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
     if(fs == FS_GOTOGOAL || fs == FS_GOHOME)
         goal_ = sgd.PopObject<noRoadNode>(GOT_UNKNOWN);
     else
-        goal_ = NULL;
+        goal_ = nullptr;
 
     waiting_for_free_node = sgd.PopBool();
 
@@ -166,8 +166,8 @@ void noFigure::ActAtFirst()
                 RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
                 // Reset goal before re-adding to wh
                 nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(goal_);
-                goal_ = NULL;
-                cur_rs = NULL;
+                goal_ = nullptr;
+                cur_rs = nullptr;
                 wh->AddFigure(this);
             } else
                 // ansonsten ganz normal rausgehen
@@ -304,8 +304,8 @@ void noFigure::WalkToGoal()
         {
             noRoadNode* goal = goal_;
             // Zeug nullen
-            cur_rs = NULL;
-            goal_ = NULL;
+            cur_rs = nullptr;
+            goal_ = nullptr;
             rs_dir = 0;
             rs_pos = 0;
             if(fs == FS_GOHOME)
@@ -325,7 +325,7 @@ void noFigure::WalkToGoal()
             MapPoint next_harbor;
             // Neuen Weg berechnen
             noRoadNode* const curRoadNode = gwg->GetSpecObj<noRoadNode>(pos);
-            unsigned char route = curRoadNode ? gwg->FindHumanPathOnRoads(*curRoadNode, *goal_, NULL, &next_harbor) : 0xFF;
+            unsigned char route = curRoadNode ? gwg->FindHumanPathOnRoads(*curRoadNode, *goal_, nullptr, &next_harbor) : 0xFF;
             // Kein Weg zum Ziel... nächstes Lagerhaus suchen
             if(route == 0xFF)
             {
@@ -360,7 +360,7 @@ void noFigure::WalkToGoal()
                 } else
                 {
                     // Uns in den Hafen einquartieren
-                    cur_rs = NULL; // wir laufen nicht mehr auf einer Straße
+                    cur_rs = nullptr; // wir laufen nicht mehr auf einer Straße
                     gwg->RemoveFigure(pos, this);
                     static_cast<nobHarborBuilding*>(hb)->AddFigureForShip(this, next_harbor);
                 }
@@ -389,7 +389,7 @@ void noFigure::HandleEvent(const unsigned id)
         HandleDerivedEvent(id);
     } else
     {
-        current_ev = NULL;
+        current_ev = nullptr;
         WalkFigure();
 
         // Alte Richtung und Position für die Berechnung der Sichtbarkeiten merken
@@ -421,7 +421,7 @@ void noFigure::HandleEvent(const unsigned id)
         {
             // Use old position (don't use this->x/y because it might be different now
             // Figure could be in a ship etc.)
-            gwg->RecalcMovingVisibilities(old_pos, player, GetVisualRange(), old_dir, NULL);
+            gwg->RecalcMovingVisibilities(old_pos, player, GetVisualRange(), old_dir, nullptr);
 
             // Wenn Figur verschwunden ist, muss ihr ehemaliger gesamter Sichtbereich noch einmal
             // neue berechnet werden
@@ -436,19 +436,19 @@ void noFigure::GoHome(noRoadNode* goal)
     if(on_ship)
     {
         // Wir befinden uns gerade an Deck, also einfach goal auf Null setzen und dann sehen wir, was so passiert
-        this->goal_ = NULL;
+        this->goal_ = nullptr;
         return;
     }
     // Nächstes Lagerhaus suchen
     else if(!goal)
     {
         // Wenn wir cur_rs == 0, dann hängen wir wahrscheinlich noch im Lagerhaus in der Warteschlange
-        if(cur_rs == NULL)
+        if(cur_rs == nullptr)
         {
             RTTR_Assert(gwg->GetNO(pos)->GetGOT() == GOT_NOB_HQ || //-V807
                         gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE || gwg->GetNO(pos)->GetGOT() == GOT_NOB_HARBORBUILDING);
 
-            goal_ = NULL;
+            goal_ = nullptr;
             gwg->GetSpecObj<nobBaseWarehouse>(pos)->CancelFigure(this);
             return;
         } else
@@ -475,7 +475,7 @@ void noFigure::GoHome(noRoadNode* goal)
     {
         // Kein Lagerhaus gefunden --> Rumirren
         StartWandering();
-        cur_rs = NULL;
+        cur_rs = nullptr;
     }
 }
 
@@ -483,7 +483,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
 {
     RTTR_Assert(HasNoGoal());
     fs = FS_WANDER;
-    cur_rs = NULL;
+    cur_rs = nullptr;
     rs_pos = 0;
     this->burned_wh_id = burned_wh_id;
     // eine bestimmte Strecke rumirren und dann eine Flagge suchen
@@ -545,7 +545,7 @@ void noFigure::Wander()
         const std::vector<noFlag*> flags = gwg->GetPointsInRadius<-1>(pos, wander_radius, Point2Flag(*gwg), IsValidFlag(player));
 
         unsigned best_way = 0xFFFFFFFF;
-        noFlag const* best_flag = NULL;
+        noFlag const* best_flag = nullptr;
 
         for(std::vector<noFlag*>::const_iterator it = flags.begin(); it != flags.end(); ++it)
         {
@@ -672,7 +672,7 @@ void noFigure::WanderToFlag()
         {
             // ja, dann können wir ja hingehen
             goal_ = wh;
-            cur_rs = NULL;
+            cur_rs = nullptr;
             rs_pos = 0;
             fs = FS_GOHOME;
             wh->AddDependentFigure(this);
@@ -909,12 +909,12 @@ void noFigure::Abrogate()
     // Arbeisplatz oder Laghaus Bescheid sagen
     if(fs == FS_GOHOME)
     {
-        // goal might by NULL if goal was a harbor that got destroyed during sea travel
+        // goal might by nullptr if goal was a harbor that got destroyed during sea travel
         if(goal_)
         {
             RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
             static_cast<nobBaseWarehouse*>(goal_)->RemoveDependentFigure(this);
-            goal_ = NULL;
+            goal_ = nullptr;
         } else
         {
             if(!on_ship) // no goal but going home - should not happen
@@ -926,7 +926,7 @@ void noFigure::Abrogate()
         }
     } else
     {
-        goal_ = NULL;
+        goal_ = nullptr;
         AbrogateWorkplace();
     }
 }
@@ -953,7 +953,7 @@ void noFigure::CalcVisibilities(const MapPoint pt)
     // Sichtbarkeiten neu berechnen für Erkunder und Soldaten
     if(GetVisualRange())
         // An alter Position neu berechnen
-        gwg->RecalcVisibilitiesAroundPoint(pt, GetVisualRange(), player, NULL);
+        gwg->RecalcVisibilitiesAroundPoint(pt, GetVisualRange(), player, nullptr);
 }
 
 /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
@@ -983,7 +983,7 @@ MapPoint noFigure::ExamineRouteBeforeShipping(unsigned char& newDir)
     if(!roadNode || !goal_)
         newDir = INVALID_DIR;
     else
-        newDir = gwg->FindHumanPathOnRoads(*roadNode, *goal_, NULL, &next_harbor);
+        newDir = gwg->FindHumanPathOnRoads(*roadNode, *goal_, nullptr, &next_harbor);
 
     if(newDir == 0xff)
         Abrogate();

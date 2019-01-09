@@ -32,7 +32,7 @@
 /**
  *  Zeiger auf die aktuelle Instanz.
  */
-static VideoWinAPI* pVideoWinAPI = NULL;
+static VideoWinAPI* pVideoWinAPI = nullptr;
 
 /**
  *  Instanzierungsfunktion von @p VideoWinAPI.
@@ -87,7 +87,7 @@ DRIVERDLLAPI const char* GetDriverName()
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack)
-    : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), screen(NULL), screen_dc(NULL), screen_rc(NULL),
+    : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), screen(nullptr), screen_dc(nullptr), screen_rc(nullptr),
       isWindowResizable(false), isMinimized(true)
 {
     pVideoWinAPI = this;
@@ -96,7 +96,7 @@ VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack)
 VideoWinAPI::~VideoWinAPI()
 {
     DestroyScreen();
-    pVideoWinAPI = NULL;
+    pVideoWinAPI = nullptr;
 }
 
 /**
@@ -116,11 +116,11 @@ const char* VideoWinAPI::GetName() const
  */
 bool VideoWinAPI::Initialize()
 {
-    screen = NULL;
-    screen_dc = NULL;
-    screen_rc = NULL;
+    screen = nullptr;
+    screen_dc = nullptr;
+    screen_rc = nullptr;
 
-    if(CallBack != NULL)
+    if(CallBack != nullptr)
         initialized = true;
 
     return initialized;
@@ -166,7 +166,7 @@ bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode& newSiz
         return false;
 
     // Hide mouse cursor by resetting the texture. This way we still have the resize mouse cursor etc.
-    SetCursor(NULL);
+    SetCursor(nullptr);
 
     ShowWindow(screen, SW_SHOW);
     SetForegroundWindow(screen);
@@ -200,7 +200,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     // Try to switch full screen first
     if(isFullscreen_ && !fullscreen)
     {
-        if(ChangeDisplaySettings(NULL, 0) != DISP_CHANGE_SUCCESSFUL)
+        if(ChangeDisplaySettings(nullptr, 0) != DISP_CHANGE_SUCCESSFUL)
             return false;
     } else if(isFullscreen_ || fullscreen)
     {
@@ -275,11 +275,11 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
     wc.lpfnWndProc = WindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
-    wc.hInstance = GetModuleHandle(NULL);
-    wc.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL));
-    wc.hCursor = NULL;
-    wc.hbrBackground = NULL;
-    wc.lpszMenuName = NULL;
+    wc.hInstance = GetModuleHandle(nullptr);
+    wc.hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_SYMBOL));
+    wc.hCursor = nullptr;
+    wc.hbrBackground = nullptr;
+    wc.lpszMenuName = nullptr;
     wc.lpszClassName = windowClassName.c_str();
 
     if(!RegisterClassW(&wc))
@@ -291,9 +291,9 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
 
     std::pair<DWORD, DWORD> style = GetStyleFlags(fullscreen);
     screen = CreateWindowExW(style.second, windowClassName.c_str(), wTitle.c_str(), style.first, wRect.left, wRect.top,
-                             wRect.right - wRect.left, wRect.bottom - wRect.top, NULL, NULL, GetModuleHandle(NULL), NULL);
+                             wRect.right - wRect.left, wRect.bottom - wRect.top, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
 
-    if(screen == NULL)
+    if(screen == nullptr)
         return false;
 
     SetClipboardViewer(screen);
@@ -335,7 +335,7 @@ bool VideoWinAPI::InitOGL()
                                         0}; // reserved and masks 0
 
     screen_dc = GetDC(screen);
-    if(screen_dc == NULL)
+    if(screen_dc == nullptr)
         return false;
 
     // Pixelformat auswaehlen
@@ -349,7 +349,7 @@ bool VideoWinAPI::InitOGL()
 
     // Renderingkontext erstellen
     screen_rc = wglCreateContext(screen_dc);
-    if(screen_rc == NULL)
+    if(screen_rc == nullptr)
         return false;
 
     // Renderingkontext aktivieren
@@ -388,30 +388,30 @@ void VideoWinAPI::DestroyScreen()
     EndDialog(screen, 0);
 
     // Reset display settings to defaults
-    ChangeDisplaySettings(NULL, 0);
+    ChangeDisplaySettings(nullptr, 0);
 
     if(screen_rc)
     {
-        if(!wglMakeCurrent(NULL, NULL))
+        if(!wglMakeCurrent(nullptr, nullptr))
             return;
 
         if(!wglDeleteContext(screen_rc))
             return;
 
-        screen_rc = NULL;
+        screen_rc = nullptr;
     }
 
     if(screen_dc && !ReleaseDC(screen, screen_dc))
         return;
 
-    screen_dc = NULL;
+    screen_dc = nullptr;
 
     if(screen && !DestroyWindow(screen))
         return;
 
-    screen = NULL;
+    screen = nullptr;
 
-    UnregisterClassW(windowClassName.c_str(), GetModuleHandle(NULL));
+    UnregisterClassW(windowClassName.c_str(), GetModuleHandle(nullptr));
 
     isFullscreen_ = false;
 }
@@ -440,7 +440,7 @@ bool VideoWinAPI::SwapBuffers()
 bool VideoWinAPI::MessageLoop()
 {
     MSG msg;
-    if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
     {
         if(msg.message == WM_QUIT)
             return false;
@@ -484,7 +484,7 @@ void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
     memset(&dm, 0, sizeof(dm));
     dm.dmSize = sizeof(dm);
     unsigned m = 0;
-    while(EnumDisplaySettings(NULL, m++, &dm))
+    while(EnumDisplaySettings(nullptr, m++, &dm))
     {
         VideoMode vm(static_cast<unsigned short>(dm.dmPelsWidth), static_cast<unsigned short>(dm.dmPelsHeight));
         if(!helpers::contains(video_modes, vm))
@@ -588,7 +588,7 @@ void VideoWinAPI::OnWMPaste()
     if(!IsClipboardFormatAvailable(CF_UNICODETEXT))
         return;
 
-    OpenClipboard(NULL);
+    OpenClipboard(nullptr);
 
     HANDLE hData = GetClipboardData(CF_UNICODETEXT);
     const wchar_t* pData = (const wchar_t*)GlobalLock(hData);
@@ -648,7 +648,7 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             break;
         case WM_SETCURSOR:
             // Set no cursor again
-            SetCursor(NULL);
+            SetCursor(nullptr);
             break;
         case WM_MOUSEMOVE:
             pVideoWinAPI->mouse_xy.pos.x = LOWORD(lParam);

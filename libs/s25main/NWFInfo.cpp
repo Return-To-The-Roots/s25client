@@ -41,22 +41,20 @@ void NWFInfo::init(unsigned nextNWF, unsigned cmdDelay)
 
 void NWFInfo::addPlayer(unsigned playerId)
 {
-    if(!helpers::containsPred(playerInfos_, boost::bind(&NWFPlayerInfo::id, _1) == playerId))
+    if(!helpers::containsPred(playerInfos_, [playerId](const auto& info) { return info.id == playerId; }))
         playerInfos_.push_back(NWFPlayerInfo(playerId));
 }
 
 void NWFInfo::removePlayer(unsigned playerId)
 {
-    std::vector<NWFPlayerInfo>::iterator it =
-      std::find_if(playerInfos_.begin(), playerInfos_.end(), boost::bind(&NWFPlayerInfo::id, _1) == playerId);
+    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(), [playerId](const auto& info) { return info.id == playerId; });
     if(it != playerInfos_.end())
         playerInfos_.erase(it);
 }
 
 bool NWFInfo::addPlayerCmds(unsigned playerId, const PlayerGameCommands& cmds)
 {
-    std::vector<NWFPlayerInfo>::iterator it =
-      std::find_if(playerInfos_.begin(), playerInfos_.end(), boost::bind(&NWFPlayerInfo::id, _1) == playerId);
+    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(), [playerId](const auto& info) { return info.id == playerId; });
     if(it == playerInfos_.end())
         throw std::runtime_error("Player with given player id does not exist");
     // Commands in NWF n are sent for NWF n + cmdDelay. Clients can only execute an NWF (and send their cmds) when all others are received.
@@ -87,7 +85,7 @@ bool NWFInfo::addServerInfo(const NWFServerInfo& info)
 bool NWFInfo::isReady()
 {
     bool result = true;
-    BOOST_FOREACH(NWFPlayerInfo& player, playerInfos_)
+    for(NWFPlayerInfo& player : playerInfos_)
     {
         player.checkLagging();
         result &= !player.isLagging;
@@ -97,8 +95,7 @@ bool NWFInfo::isReady()
 
 const NWFPlayerInfo& NWFInfo::getPlayerInfo(unsigned playerId) const
 {
-    std::vector<NWFPlayerInfo>::const_iterator it =
-      std::find_if(playerInfos_.begin(), playerInfos_.end(), boost::bind(&NWFPlayerInfo::id, _1) == playerId);
+    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(), [playerId](const auto& info) { return info.id == playerId; });
     if(it == playerInfos_.end())
         throw std::runtime_error("Player with given player id does not exist");
     else
@@ -126,7 +123,7 @@ void NWFInfo::execute(FramesInfo& info)
         throw std::runtime_error("Cannot execute NWF if not ready");
     const NWFServerInfo serverInfo = getServerInfo();
     serverInfos_.pop();
-    BOOST_FOREACH(NWFPlayerInfo& player, playerInfos_)
+    for(NWFPlayerInfo& player : playerInfos_)
     {
         if(player.commands.empty())
             throw std::runtime_error("Cannot execute NWF if not ready");

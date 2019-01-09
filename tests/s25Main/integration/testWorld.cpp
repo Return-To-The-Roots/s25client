@@ -36,7 +36,6 @@
 #include "gameTypes/Nation.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/tmpFile.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -189,9 +188,9 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::SOUTHWEST));
 
     // Place land in radius 2
-    BOOST_FOREACH(const MapPoint& pt, hbPos)
+    for(const MapPoint& pt : hbPos)
     {
-        BOOST_FOREACH(const MapPoint& curPt, world.GetPointsInRadius(pt, 1))
+        for(const MapPoint& curPt : world.GetPointsInRadius(pt, 1))
         {
             for(unsigned dir = 0; dir < Direction::COUNT; dir++)
                 setRightTerrain(world, curPt, Direction::fromInt(dir), tLand);
@@ -207,7 +206,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[7], Direction::SOUTHWEST), Direction::SOUTHWEST));
     waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[9], Direction::SOUTHEAST), Direction::SOUTHEAST));
 
-    BOOST_FOREACH(const MapPoint& pt, waterPts)
+    for(const MapPoint& pt : waterPts)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; dir++)
             setRightTerrain(world, pt, Direction::fromInt(dir), tWater);
@@ -232,7 +231,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
                 if(!destPt.isValid())
                     continue;
                 std::vector<Direction> route;
-                BOOST_REQUIRE(startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, NULL));
+                BOOST_REQUIRE(startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, nullptr));
                 BOOST_REQUIRE_EQUAL(route.size(), world.CalcHarborDistance(startHb, targetHb));
             }
         }

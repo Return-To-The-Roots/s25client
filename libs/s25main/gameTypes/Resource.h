@@ -37,7 +37,7 @@ public:
         Water,
         Fish
     };
-    BOOST_STATIC_CONSTEXPR int TypeCount = Fish + 1;
+    static constexpr int TypeCount = Fish + 1;
 
     Resource(Type type, uint8_t amount);
     explicit Resource(uint8_t value = 0);

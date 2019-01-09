@@ -20,7 +20,6 @@
 #include "RescaleWindowProp.h"
 #include "Window.h"
 #include "drivers/ScreenResizeEvent.h"
-#include <boost/math/special_functions/round.hpp>
 #include <cmath>
 
 MoveAnimation::MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat)
@@ -45,7 +44,7 @@ void MoveAnimation::doUpdate(Window* element, double nextFramepartTime)
     DrawPoint totalDiff = newPos_ - origPos_;
     Point<double> curDiff = Point<double>(totalDiff) * getCurLinearInterpolationFactor(nextFramepartTime);
     DrawPoint curDiffInt;
-    curDiffInt.x = boost::math::iround(curDiff.x);
-    curDiffInt.y = boost::math::iround(curDiff.y);
+    curDiffInt.x = std::lround(curDiff.x);
+    curDiffInt.y = std::lround(curDiff.y);
     element->SetPos(curDiffInt + origPos_);
 }

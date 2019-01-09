@@ -36,24 +36,20 @@
 #include "world/GameWorldGame.h"
 #include "gameData/ToolConsts.h"
 #include "libutil/Log.h"
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/if.hpp>
-#include <boost/lambda/lambda.hpp>
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)
 {
-    namespace bl = boost::lambda;
-    using bl::_1;
-    toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>(
-      bl::if_((bl::bind(&ToolNote::type, _1) == ToolNote::OrderPlaced || bl::bind(&ToolNote::type, _1) == ToolNote::SettingsChanged)
-              && bl::bind(&ToolNote::player, _1) == boost::ref(this->player))[bl::bind(&nofMetalworker::CheckForOrders, this)]);
+    toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
+        if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged) && note.player == this->player)
+            CheckForOrders();
+    });
 }
 
 nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
     : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd.PopUnsignedChar()))
 {
-    if(state == STATE_ENTERBUILDING && current_ev == NULL && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
+    if(state == STATE_ENTERBUILDING && current_ev == nullptr && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
     {
         LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, "
                   "report this!");
@@ -61,11 +57,10 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         current_ev = GetEvMgr().AddEvent(this, 1000, 2);
     }
-    namespace bl = boost::lambda;
-    using bl::_1;
-    toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>(
-      bl::if_((bl::bind(&ToolNote::type, _1) == ToolNote::OrderPlaced || bl::bind(&ToolNote::type, _1) == ToolNote::SettingsChanged)
-              && bl::bind(&ToolNote::player, _1) == boost::ref(player))[bl::bind(&nofMetalworker::CheckForOrders, this)]);
+    toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
+        if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged) && note.player == this->player)
+            CheckForOrders();
+    });
 }
 
 void nofMetalworker::Serialize(SerializedGameData& sgd) const

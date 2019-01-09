@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(PreviewMinimap)
 {
     DrawPoint pos(5, 12);
     Extent size(20, 10);
-    ctrlPreviewMinimap mm(NULL, 1, pos, size, NULL);
+    ctrlPreviewMinimap mm(nullptr, 1, pos, size, nullptr);
     BOOST_REQUIRE_EQUAL(mm.GetCurMapSize(), Extent::all(0));
     BOOST_REQUIRE_EQUAL(mm.GetBoundaryRect().getSize(), Extent::all(4)); // Padding
     // Remove padding

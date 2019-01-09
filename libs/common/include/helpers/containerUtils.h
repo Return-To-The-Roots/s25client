@@ -20,103 +20,34 @@
 #ifndef containerUtils_h__
 #define containerUtils_h__
 
-#include "traits.h"
-#include <boost/foreach.hpp>
+#include <boost/type_traits/make_void.hpp>
 #include <algorithm>
 
 namespace helpers {
 
 namespace detail {
-    template<class T, EEraseIterValidy::Type T_EraseIterValidy = EraseIterValidy<T>::value>
-    struct EraseImpl;
 
-    template<class T>
-    struct EraseImpl<T, EEraseIterValidy::IterReturned>
-    {
-        typedef typename T::iterator iterator;
-        typedef typename T::const_iterator const_iterator;
-        static iterator erase(T& container, iterator it) { return container.erase(it); }
-    };
-    template<class T>
-    struct EraseImpl<T, EEraseIterValidy::NextValid>
-    {
-        // This one gets used for e.g. std::set whos erase does not return
-        // an iterator until C++11
-        typedef typename T::iterator iterator;
-        typedef typename T::const_iterator const_iterator;
-        static iterator erase(T& container, iterator it)
-        {
-            container.erase(it++);
-            return it;
-        }
-    };
-
-    template<class T>
-    struct EraseImpl<T, EEraseIterValidy::PrevValid>
-    {
-        typedef typename T::iterator iterator;
-        typedef typename T::const_iterator const_iterator;
-        static iterator erase(T& container, iterator it)
-        {
-            // If only previous iterators remain valid, store the predecessor
-            // and return this after incrementing it after the erase
-            // Corner case: If we erase the first element there is no previous one and we return begin()
-            bool isBegin = it == container.begin();
-            iterator tmp = it;
-            if(!isBegin)
-                --tmp;
-            container.erase(it);
-            if(isBegin)
-                tmp = container.begin();
-            else
-                ++tmp;
-            return tmp;
-        }
-    };
-
-    template<class T, bool T_hasPopFront = helpers::has_member_function_pop_front<T, void>::value>
+    template<class T, typename = void>
     struct PopFrontImpl
-    {
-        static void pop(T& container) { container.pop_front(); }
-    };
-    template<class T>
-    struct PopFrontImpl<T, false>
     {
         static void pop(T& container) { container.erase(container.begin()); }
     };
-
-    template<class T_Container, class T_Type,
-             bool T_hasKeyType = HasAnyMemberCalled_key_type<T_Container>::value&& HasAnyMemberCalled_find<T_Container>::value>
-    struct HasCorrectFindMember
+    template<class T>
+    struct PopFrontImpl<T, boost::void_t<decltype(T::pop_front())>>
     {
-        enum
-        {
-            value = boost::is_convertible<T_Type, typename T_Container::key_type>::value
-        };
+        static void pop(T& container) { container.pop_front(); }
     };
 
-    template<class T_Container, class T_Type>
-    struct HasCorrectFindMember<T_Container, T_Type, false>
-    {
-        enum
-        {
-            value = false
-        };
-    };
-
-    template<class T, class U, bool T_useFind = HasCorrectFindMember<T, U>::value>
+    template<class T, class U, typename = void>
     struct FindImpl
     {
-        static typename GetIteratorType<T>::type find(T& container, const U& value) { return container.find(value); }
+        static auto find(T& container, const U& value) { return std::find(container.begin(), container.end(), value); }
     };
 
     template<class T, class U>
-    struct FindImpl<T, U, false>
+    struct FindImpl<T, U, boost::void_t<decltype(std::declval<T>().find(std::declval<U>()))>>
     {
-        static typename GetIteratorType<T>::type find(T& container, const U& value)
-        {
-            return std::find(container.begin(), container.end(), value);
-        }
+        static auto find(T& container, const U& value) { return container.find(value); }
     };
 } // namespace detail
 
@@ -126,7 +57,7 @@ namespace detail {
 template<typename T>
 inline typename T::iterator erase(T& container, typename T::iterator it)
 {
-    return detail::EraseImpl<T>::erase(container, it);
+    return container.erase(it);
 }
 
 template<typename T>
@@ -146,7 +77,7 @@ inline void pop_front(T& container)
 
 /// Effective implementation of find. Uses the containers find function if available
 template<typename T, typename U>
-inline typename GetIteratorType<T>::type find(T& container, const U& value)
+inline auto find(T& container, const U& value)
 {
     return detail::FindImpl<T, U>::find(container, value);
 }
@@ -192,7 +123,7 @@ template<class T_Container, class T_Element>
 inline int indexOf(const T_Container& container, const T_Element element)
 {
     int index = 0;
-    BOOST_FOREACH(const typename T_Container::value_type& curEl, container)
+    for(const auto& curEl : container)
     {
         if(curEl == element)
             return index;

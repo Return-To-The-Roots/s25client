@@ -138,7 +138,7 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
 
     RTTR_Assert(IsMoving() || IsStoppedBetweenNodes());
 
-    typedef boost::chrono::duration<int32_t, boost::milli> milliseconds_i32_t;
+    typedef std::chrono::duration<int32_t, std::milli> milliseconds_i32_t;
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
     EventState curState;

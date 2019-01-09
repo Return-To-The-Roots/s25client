@@ -73,10 +73,10 @@ enum CtrlIds
 };
 }
 
-dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gameLobby, unsigned playerId,
-                         libutil::unique_ptr<ILobbyClient> lobbyClient)
+dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId,
+                         std::unique_ptr<ILobbyClient> lobbyClient)
     : Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(gameLobby), localPlayerId_(playerId),
-      lobbyClient_(boost::move(lobbyClient)), hasCountdown_(false), wasActivated(false), gameChat(NULL), lobbyChat(NULL),
+      lobbyClient_(std::move(lobbyClient)), hasCountdown_(false), wasActivated(false), gameChat(nullptr), lobbyChat(nullptr),
       lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
     if(gameLobby->isHost())
@@ -422,7 +422,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 
         // Bereit (nicht bei KIs und Host)
         if(player.ps == PS_OCCUPIED && !player.isHost)
-            group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, "", NULL, (localPlayerId_ != row));
+            group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, "", nullptr, (localPlayerId_ != row));
 
         // Ping ( "%d" )
         ctrlVarDeepening* ping =
@@ -933,7 +933,7 @@ void dskHostGame::CI_PlayerLeft(const unsigned playerId)
         lua->EventPlayerLeft(playerId);
 }
 
-void dskHostGame::CI_GameLoading(boost::shared_ptr<Game> game)
+void dskHostGame::CI_GameLoading(std::shared_ptr<Game> game)
 {
     // Desktop wechseln
     WINDOWMANAGER.Switch(new dskGameLoader(game));

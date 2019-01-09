@@ -76,7 +76,7 @@ BlockingManner noStaticObject::GetBM() const
  */
 void noStaticObject::Draw(DrawPoint drawPt)
 {
-    glArchivItem_Bitmap *bitmap = NULL, *shadow = NULL;
+    glArchivItem_Bitmap *bitmap = nullptr, *shadow = nullptr;
 
     if((file == 0xFFFF) && (id == 561))
     {

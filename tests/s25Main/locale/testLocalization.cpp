@@ -25,7 +25,6 @@
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libutil/StringConversion.h"
 #include <boost/assign/std/vector.hpp>
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <rttr/test/LocaleResetter.hpp>
 #include <rttr/test/LogAccessor.hpp>
@@ -37,7 +36,7 @@ struct LocaleFixture
     {
         rttr::test::LogAccessor logAcc;
         LANGUAGES.setLanguage("en");
-        LOADER.LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", NULL, true);
+        LOADER.LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", nullptr, true);
         RTTR_REQUIRE_LOG_CONTAINS("Loading", true);
     }
     std::vector<std::string> getLanguageCodes()
@@ -55,7 +54,7 @@ BOOST_FIXTURE_TEST_SUITE(Locales, LocaleFixture)
 
 BOOST_AUTO_TEST_CASE(ConvertToString)
 {
-    BOOST_FOREACH(const std::string& curLang, getLanguageCodes())
+    for(const std::string& curLang : getLanguageCodes())
     {
         rttr::test::LocaleResetter resetter(curLang.c_str());
         BOOST_REQUIRE_EQUAL(s25util::toStringClassic(0), "0");
@@ -90,7 +89,7 @@ BOOST_AUTO_TEST_CASE(ConvertFromString)
     // std::vector<std::string> partials;
     // partials += "1.", "1,", "1a", "1-", "1 2", "1,1";
 
-    BOOST_FOREACH(const std::string& curLang, getLanguageCodes())
+    for(const std::string& curLang : getLanguageCodes())
     {
         rttr::test::LocaleResetter resetter(curLang.c_str());
         BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<int32_t>("+0"), 0);
@@ -112,7 +111,7 @@ BOOST_AUTO_TEST_CASE(ConvertFromString)
         BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("12345678.5"), 12345678.5);
         BOOST_REQUIRE_EQUAL(s25util::fromStringClassic<double>("+12345678.5"), 12345678.5);
 
-        BOOST_FOREACH(const std::string& val, invalidInts)
+        for(const std::string& val : invalidInts)
         {
             int32_t outVal;
             BOOST_REQUIRE_THROW(s25util::fromStringClassic<int32_t>(val), s25util::ConversionError);
@@ -120,7 +119,7 @@ BOOST_AUTO_TEST_CASE(ConvertFromString)
             int32_t outValDef = rand();
             BOOST_REQUIRE_EQUAL(s25util::fromStringClassicDef<int32_t>(val, outValDef), outValDef);
         }
-        BOOST_FOREACH(const std::string& val, invalidUints)
+        for(const std::string& val : invalidUints)
         {
             uint32_t outVal;
             BOOST_REQUIRE_THROW(s25util::fromStringClassic<uint32_t>(val), s25util::ConversionError);
@@ -128,7 +127,7 @@ BOOST_AUTO_TEST_CASE(ConvertFromString)
             uint32_t outValDef = rand();
             BOOST_REQUIRE_EQUAL(s25util::fromStringClassicDef<uint32_t>(val, outValDef), outValDef);
         }
-        BOOST_FOREACH(const std::string& val, invalidFloats)
+        for(const std::string& val : invalidFloats)
         {
             double outVal;
             BOOST_REQUIRE_THROW(s25util::fromStringClassic<double>(val), s25util::ConversionError);
@@ -142,7 +141,7 @@ BOOST_AUTO_TEST_CASE(ConvertFromString)
 BOOST_AUTO_TEST_CASE(IniValues)
 {
     libsiedler2::ArchivItem_Ini ini;
-    BOOST_FOREACH(const std::string& curLang, getLanguageCodes())
+    for(const std::string& curLang : getLanguageCodes())
     {
         rttr::test::LocaleResetter resetter(curLang.c_str());
         ini.setValue("int", 123456);

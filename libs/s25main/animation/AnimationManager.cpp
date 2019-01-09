@@ -20,8 +20,6 @@
 #include "Window.h"
 #include "animation/Animation.h"
 #include "helpers/containerUtils.h"
-#include "helpers/mapTraits.h"
-#include <boost/foreach.hpp>
 #include <boost/range/adaptor/map.hpp>
 
 AnimationManager::AnimationManager(Window* parent) : parent_(parent)
@@ -32,7 +30,7 @@ AnimationManager::AnimationManager(Window* parent) : parent_(parent)
 
 AnimationManager::~AnimationManager()
 {
-    BOOST_FOREACH(Animation* animation, animations_ | boost::adaptors::map_values)
+    for(Animation* animation : animations_ | boost::adaptors::map_values)
         delete animation;
 }
 
@@ -77,14 +75,14 @@ bool AnimationManager::isAnimationActive(unsigned animId) const
 Animation* AnimationManager::getAnimation(unsigned animId)
 {
     if(!animId)
-        return NULL;
+        return nullptr;
     AnimationMap::iterator it = animations_.find(animId);
-    return it == animations_.end() ? NULL : it->second;
+    return it == animations_.end() ? nullptr : it->second;
 }
 
 unsigned AnimationManager::getAnimationId(const Animation* animation) const
 {
-    BOOST_FOREACH(const AnimationMap::value_type& val, animations_)
+    for(const AnimationMap::value_type& val : animations_)
     {
         if(val.second == animation)
             return val.first;
@@ -95,7 +93,7 @@ unsigned AnimationManager::getAnimationId(const Animation* animation) const
 std::vector<Animation*> AnimationManager::getElementAnimations(unsigned elementId) const
 {
     std::vector<Animation*> result;
-    BOOST_FOREACH(Animation* animation, animations_ | boost::adaptors::map_values)
+    for(Animation* animation : animations_ | boost::adaptors::map_values)
     {
         if(animation->getElementId() == elementId)
             result.push_back(animation);
@@ -106,7 +104,7 @@ std::vector<Animation*> AnimationManager::getElementAnimations(unsigned elementI
 void AnimationManager::removeElementAnimations(unsigned elementId)
 {
     std::vector<Animation*> elAnims = getElementAnimations(elementId);
-    BOOST_FOREACH(Animation* anim, elAnims)
+    for(Animation* anim : elAnims)
     {
         removeAnimation(getAnimationId(anim));
     }
@@ -115,7 +113,7 @@ void AnimationManager::removeElementAnimations(unsigned elementId)
 void AnimationManager::finishElementAnimations(unsigned elementId, bool finishImmediately)
 {
     std::vector<Animation*> elAnims = getElementAnimations(elementId);
-    BOOST_FOREACH(Animation* anim, elAnims)
+    for(Animation* anim : elAnims)
     {
         finishAnimation(getAnimationId(anim), finishImmediately);
     }
@@ -148,6 +146,6 @@ unsigned AnimationManager::getNumActiveAnimations() const
 
 void AnimationManager::onRescale(const ScreenResizeEvent& rs)
 {
-    BOOST_FOREACH(Animation* animation, animations_ | boost::adaptors::map_values)
+    for(Animation* animation : animations_ | boost::adaptors::map_values)
         animation->onRescale(rs);
 }

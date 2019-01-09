@@ -33,7 +33,7 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/RoadBuildState.h"
 #include "liblobby/LobbyInterface.h"
-#include <boost/array.hpp>
+#include <array>
 
 class iwRoadWindow;
 class glArchivItem_Bitmap;
@@ -49,8 +49,7 @@ class NWFInfo;
 class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface, public IChatCmdListener
 {
 public:
-    dskGameInterface(boost::shared_ptr<Game> game, const boost::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx,
-                     bool initOGL = true);
+    dskGameInterface(std::shared_ptr<Game> game, const std::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx, bool initOGL = true);
     ~dskGameInterface() override;
 
     void Resize(const Extent& newSize) override;
@@ -144,14 +143,14 @@ private:
     void StartScrolling(const Position& mousePos);
 
     PostBox& GetPostBox();
-    boost::shared_ptr<const Game> game_;
-    boost::shared_ptr<const NWFInfo> nwfInfo_;
+    std::shared_ptr<const Game> game_;
+    std::shared_ptr<const NWFInfo> nwfInfo_;
     GameWorldViewer worldViewer;
     GameWorldView gwv;
 
     CustomBorderBuilder cbb;
 
-    boost::array<glArchivItem_Bitmap*, 4> borders;
+    std::array<glArchivItem_Bitmap*, 4> borders;
 
     /// Straßenbauzeug
     RoadBuildState road;

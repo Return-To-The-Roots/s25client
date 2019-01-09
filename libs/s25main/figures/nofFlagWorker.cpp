@@ -66,7 +66,7 @@ void nofFlagWorker::AbrogateWorkplace()
     {
         /// uns entfernen, da wir wieder umdrehen müssen
         gwg->GetPlayer(player).RemoveFlagWorker(this);
-        flag = NULL;
+        flag = nullptr;
     } else
         RTTR_Assert(!gwg->GetPlayer(player).IsFlagWorker(this));
 }
@@ -100,7 +100,7 @@ void nofFlagWorker::GoToFlag()
         // "abmelden"
         gwg->GetPlayer(player).RemoveFlagWorker(this);
         state = STATE_FIGUREWORK;
-        flag = NULL;
+        flag = nullptr;
     } else
     {
         // Weg suchen
@@ -114,7 +114,7 @@ void nofFlagWorker::GoToFlag()
             Wander();
             state = STATE_FIGUREWORK;
 
-            flag = NULL;
+            flag = nullptr;
         } else
         {
             StartWalking(Direction::fromInt(dir));

@@ -54,7 +54,6 @@
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
 #include "libutil/Log.h"
-#include <boost/foreach.hpp>
 #include <limits>
 
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg)
@@ -160,9 +159,9 @@ void GamePlayer::LoadStandardDistribution()
     }
 
     // Standardverteilung der Waren
-    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    for(const DistributionMapping& mapping : distributionMap)
     {
-        distribution[mapping.get<0>()].percent_buildings[mapping.get<1>()] = mapping.get<2>();
+        distribution[std::get<0>(mapping)].percent_buildings[std::get<1>(mapping)] = std::get<2>(mapping);
     }
 }
 
@@ -184,7 +183,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     sgd.PushObjectContainer(roads, true);
 
     sgd.PushUnsignedInt(jobs_wanted.size());
-    BOOST_FOREACH(JobNeeded job, jobs_wanted)
+    for(JobNeeded job : jobs_wanted)
     {
         sgd.PushUnsignedChar(job.job);
         sgd.PushObject(job.workplace, false);
@@ -198,15 +197,15 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
 
     sgd.PushMapPoint(hqPos);
 
-    BOOST_FOREACH(const Distribution& dist, distribution)
+    for(const Distribution& dist : distribution)
     {
-        BOOST_FOREACH(uint8_t p, dist.percent_buildings)
+        for(uint8_t p : dist.percent_buildings)
             sgd.PushUnsignedChar(p);
         sgd.PushUnsignedInt(dist.client_buildings.size());
-        BOOST_FOREACH(BuildingType bld, dist.client_buildings)
+        for(BuildingType bld : dist.client_buildings)
             sgd.PushUnsignedChar(bld);
         sgd.PushUnsignedInt(unsigned(dist.goals.size()));
-        BOOST_FOREACH(BuildingType goal, dist.goals)
+        for(BuildingType goal : dist.goals)
             sgd.PushUnsignedChar(goal);
         sgd.PushUnsignedInt(dist.selected_goal);
     }
@@ -216,7 +215,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     for(unsigned i = 0; i < build_order.size(); ++i)
         sgd.PushUnsignedChar(build_order[i]);
 
-    sgd.PushRawData(transportPrio.elems, transportPrio.size());
+    sgd.PushRawData(transportPrio.data(), transportPrio.size());
 
     for(unsigned i = 0; i < militarySettings_.size(); ++i)
         sgd.PushUnsignedChar(militarySettings_[i]);
@@ -301,15 +300,15 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     hqPos = sgd.PopMapPoint();
 
-    BOOST_FOREACH(Distribution& dist, distribution)
+    for(Distribution& dist : distribution)
     {
-        BOOST_FOREACH(uint8_t& p, dist.percent_buildings)
+        for(uint8_t& p : dist.percent_buildings)
             p = sgd.PopUnsignedChar();
         dist.client_buildings.resize(sgd.PopUnsignedInt());
-        BOOST_FOREACH(BuildingType& bld, dist.client_buildings)
+        for(BuildingType& bld : dist.client_buildings)
             bld = BuildingType(sgd.PopUnsignedChar());
         dist.goals.resize(sgd.PopUnsignedInt());
-        BOOST_FOREACH(BuildingType& goal, dist.goals)
+        for(BuildingType& goal : dist.goals)
             goal = BuildingType(sgd.PopUnsignedChar());
         dist.selected_goal = sgd.PopUnsignedInt();
     }
@@ -319,7 +318,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     for(unsigned i = 0; i < build_order.size(); ++i)
         build_order[i] = BuildingType(sgd.PopUnsignedChar());
 
-    sgd.PopRawData(transportPrio.elems, transportPrio.size());
+    sgd.PopRawData(transportPrio.data(), transportPrio.size());
 
     for(unsigned i = 0; i < militarySettings_.size(); ++i)
         militarySettings_[i] = sgd.PopUnsignedChar();
@@ -378,11 +377,11 @@ template<class T_IsWarehouseGood>
 nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh,
                                             const bool use_boat_roads, unsigned* const length, const RoadSegment* const forbidden) const
 {
-    nobBaseWarehouse* best = NULL;
+    nobBaseWarehouse* best = nullptr;
 
     unsigned best_length = std::numeric_limits<unsigned>::max();
 
-    BOOST_FOREACH(nobBaseWarehouse* wh, buildings.GetStorehouses())
+    for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         // Lagerhaus geeignet?
         RTTR_Assert(wh);
@@ -439,7 +438,7 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
     if(bldType == BLD_HARBORBUILDING)
     {
         // Schiff durchgehen und denen Bescheid sagen
-        BOOST_FOREACH(noShip* ship, ships)
+        for(noShip* ship : ships)
             ship->NewHarborBuilt(static_cast<nobHarborBuilding*>(bld));
     } else if(bldType == BLD_HEADQUARTERS)
         hqPos = bld->GetPos();
@@ -464,7 +463,7 @@ void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
     } else if(bldType == BLD_HEADQUARTERS)
     {
         hqPos = MapPoint::Invalid();
-        BOOST_FOREACH(const noBaseBuilding* bld, buildings.GetStorehouses())
+        for(const noBaseBuilding* bld : buildings.GetStorehouses())
         {
             if(bld->GetBuildingType() == BLD_HEADQUARTERS)
             {
@@ -486,7 +485,7 @@ void GamePlayer::NewRoadConnection(RoadSegment* rs)
     FindCarrierForAllRoads();
 
     // Alle Straßen müssen gucken, ob sie einen Esel bekommen können
-    BOOST_FOREACH(RoadSegment* rs, roads)
+    for(RoadSegment* rs : roads)
         rs->TryGetDonkey();
 
     // Alle Arbeitsplätze müssen nun gucken, ob sie einen Weg zu einem Lagerhaus mit entsprechender Arbeitskraft finden
@@ -500,7 +499,7 @@ void GamePlayer::NewRoadConnection(RoadSegment* rs)
 
     // Alle Militärgebäude müssen ihre Truppen überprüfen und können nun ggf. neue bestellen
     // und müssen prüfen, ob sie evtl Gold bekommen
-    BOOST_FOREACH(nobMilitary* mil, buildings.GetMilitaryBuildings())
+    for(nobMilitary* mil : buildings.GetMilitaryBuildings())
     {
         mil->RegulateTroops();
         mil->SearchCoins();
@@ -521,7 +520,7 @@ void GamePlayer::DeleteRoad(RoadSegment* rs)
 void GamePlayer::FindClientForLostWares()
 {
     // Alle Lost-Wares müssen gucken, ob sie ein Lagerhaus finden
-    BOOST_FOREACH(Ware* ware, ware_list)
+    for(Ware* ware : ware_list)
     {
         if(ware->IsLostWare())
         {
@@ -606,7 +605,7 @@ void GamePlayer::RoadDestroyed()
     }
 
     // Alle Häfen müssen ihre Figuren den Weg überprüfen lassen
-    BOOST_FOREACH(nobHarborBuilding* hb, buildings.GetHarbors())
+    for(nobHarborBuilding* hb : buildings.GetHarbors())
     {
         hb->ExamineShipRouteOfPeople();
     }
@@ -614,9 +613,9 @@ void GamePlayer::RoadDestroyed()
 
 bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
 {
-    RTTR_Assert(rs->GetF1() != NULL && rs->GetF2() != NULL);
-    boost::array<unsigned, 2> length;
-    boost::array<nobBaseWarehouse*, 2> best;
+    RTTR_Assert(rs->GetF1() != nullptr && rs->GetF2() != nullptr);
+    std::array<unsigned, 2> length;
+    std::array<nobBaseWarehouse*, 2> best;
 
     // Braucht der ein Boot?
     if(rs->GetRoadType() == RoadSegment::RT_BOAT)
@@ -652,12 +651,12 @@ bool GamePlayer::IsWarehouseValid(nobBaseWarehouse* wh) const
 void GamePlayer::RecalcDistribution()
 {
     GoodType lastWare = GD_NOTHING;
-    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    for(const DistributionMapping& mapping : distributionMap)
     {
-        if(lastWare == mapping.get<0>())
+        if(lastWare == std::get<0>(mapping))
             continue;
-        lastWare = mapping.get<0>();
-        RecalcDistributionOfWare(mapping.get<0>());
+        lastWare = std::get<0>(mapping);
+        RecalcDistributionOfWare(std::get<0>(mapping));
     }
 }
 
@@ -695,7 +694,7 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
 
     // just drop them in the list, the distribution will be handled by going through this list using a prime as step (see
     // GameClientPlayer::FindClientForWare)
-    BOOST_FOREACH(const BldEntry& bldEntry, bldPercentageMap)
+    for(const BldEntry& bldEntry : bldPercentageMap)
     {
         for(unsigned char i = 0; i < bldEntry.second; ++i)
             wareGoals.push_back(bldEntry.first);
@@ -706,7 +705,7 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
 
 void GamePlayer::FindCarrierForAllRoads()
 {
-    BOOST_FOREACH(RoadSegment* rs, roads)
+    for(RoadSegment* rs : roads)
     {
         if(!rs->hasCarrier(0))
             FindCarrierForRoad(rs);
@@ -715,7 +714,7 @@ void GamePlayer::FindCarrierForAllRoads()
 
 void GamePlayer::FindMaterialForBuildingSites()
 {
-    BOOST_FOREACH(noBuildingSite* bldSite, buildings.GetBuildingSites())
+    for(noBuildingSite* bldSite : buildings.GetBuildingSites())
         bldSite->OrderConstructionMaterial();
 }
 
@@ -847,13 +846,13 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
                || goal->GetBuildingType() == BLD_SAWMILL)
                 return wh->OrderWare(ware, goal);
             else
-                return NULL;
+                return nullptr;
         }
     } else // no warehouse can deliver the ware -> check all our wares for lost wares that might match the order
     {
         unsigned bestLength = std::numeric_limits<unsigned>::max();
-        Ware* bestWare = NULL;
-        BOOST_FOREACH(Ware* curWare, ware_list)
+        Ware* bestWare = nullptr;
+        for(Ware* curWare : ware_list)
         {
             if(curWare->IsLostWare() && curWare->type == ware)
             {
@@ -872,7 +871,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
             return bestWare;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 nofCarrier* GamePlayer::OrderDonkey(RoadSegment* road)
@@ -892,18 +891,18 @@ nofCarrier* GamePlayer::OrderDonkey(RoadSegment* road)
     else if(best[1])
         return best[1]->OrderDonkey(road, road->GetF2());
     else
-        return NULL;
+        return nullptr;
 }
 
 RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
 {
     // Bisher höchste Trägerproduktivität und die entsprechende Straße dazu
     unsigned best_productivity = 0;
-    RoadSegment* best_road = NULL;
+    RoadSegment* best_road = nullptr;
     // Beste Flagge dieser Straße
-    *goal = NULL;
+    *goal = nullptr;
 
-    BOOST_FOREACH(RoadSegment* roadSeg, roads)
+    for(RoadSegment* roadSeg : roads)
     {
         // Braucht die Straße einen Esel?
         if(roadSeg->NeedDonkey())
@@ -912,12 +911,12 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
             noRoadNode* current_best_goal = 0;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
-            bool isF1Reachable = gwg->FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, NULL, roadSeg) != 0xFF;
-            bool isF2Reachable = gwg->FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, NULL, roadSeg) != 0xFF;
+            bool isF1Reachable = gwg->FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, nullptr, roadSeg) != 0xFF;
+            bool isF2Reachable = gwg->FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, nullptr, roadSeg) != 0xFF;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
             if(!isF1Reachable)
-                current_best_goal = (isF2Reachable) ? roadSeg->GetF2() : NULL;
+                current_best_goal = (isF2Reachable) ? roadSeg->GetF2() : nullptr;
             else if(!isF2Reachable)
                 current_best_goal = roadSeg->GetF1();
             else
@@ -989,7 +988,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
     // Bretter und Steine können evtl. auch Häfen für Expeditionen gebrauchen
     if(gt == GD_STONES || gt == GD_BOARDS)
     {
-        BOOST_FOREACH(nobHarborBuilding* harbor, buildings.GetHarbors())
+        for(nobHarborBuilding* harbor : buildings.GetHarbors())
         {
             unsigned points = harbor->CalcDistributionPoints(gt);
             if(!points)
@@ -1008,7 +1007,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         if(*it == BLD_HEADQUARTERS)
         {
             // Bei Baustellen die Extraliste abfragen
-            BOOST_FOREACH(noBuildingSite* bldSite, buildings.GetBuildingSites())
+            for(noBuildingSite* bldSite : buildings.GetBuildingSites())
             {
                 unsigned points = bldSite->CalcDistributionPoints(ware->GetLocation(), gt);
                 if(!points)
@@ -1021,7 +1020,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         } else
         {
             // Für übrige Gebäude
-            BOOST_FOREACH(nobUsual* bld, buildings.GetBuildings(*it))
+            for(nobUsual* bld : buildings.GetBuildings(*it))
             {
                 unsigned points = bld->CalcDistributionPoints(ware->GetLocation(), gt);
                 if(!points)
@@ -1046,8 +1045,8 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
     // sort our clients, highest score first
     std::sort(possibleClients.begin(), possibleClients.end());
 
-    noBaseBuilding* lastBld = NULL;
-    noBaseBuilding* bestBld = NULL;
+    noBaseBuilding* lastBld = nullptr;
+    noBaseBuilding* bestBld = nullptr;
     unsigned best_points = 0;
     for(std::vector<ClientForWare>::iterator it = possibleClients.begin(); it != possibleClients.end(); ++it)
     {
@@ -1071,7 +1070,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a better score.
         // This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
         // to conclude that there is no possible path.
-        if(gwg->FindPathForWareOnRoads(*start, *it->bld, &path_length, NULL, (it->points - best_points) * 2 - 1) != 0xFF)
+        if(gwg->FindPathForWareOnRoads(*start, *it->bld, &path_length, nullptr, (it->points - best_points) * 2 - 1) != 0xFF)
         {
             unsigned score = it->points - (path_length / 2);
 
@@ -1113,11 +1112,11 @@ nobBaseWarehouse* GamePlayer::FindWarehouseForWare(const Ware& ware) const
 
 nobBaseMilitary* GamePlayer::FindClientForCoin(Ware* ware) const
 {
-    nobBaseMilitary* bb = NULL;
+    nobBaseMilitary* bb = nullptr;
     unsigned best_points = 0, points;
 
     // Militärgebäude durchgehen
-    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
     {
         unsigned way_points;
 
@@ -1163,7 +1162,7 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
     {
         // Reihenfolge der Bauaufträge, also was zuerst in Auftrag gegeben wurde, wird zuerst gebaut
         unsigned i = 0;
-        BOOST_FOREACH(noBuildingSite* bldSite, buildings.GetBuildingSites())
+        for(noBuildingSite* bldSite : buildings.GetBuildingSites())
         {
             if(building_site == bldSite)
                 return i;
@@ -1220,15 +1219,15 @@ void GamePlayer::OrderTroops(nobMilitary* goal, unsigned count, bool ignoresetti
 
 void GamePlayer::RegulateAllTroops()
 {
-    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
         milBld->RegulateTroops();
 }
 
 /// Prüft von allen Militärgebäuden die Fahnen neu
 void GamePlayer::RecalcMilitaryFlags()
 {
-    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
-        milBld->LookForEnemyBuildings(NULL);
+    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
+        milBld->LookForEnemyBuildings(nullptr);
 }
 
 /// Sucht für Soldaten ein neues Militärgebäude, als Argument wird Referenz auf die
@@ -1238,7 +1237,7 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     RTTR_Assert(soldier_count > 0);
     // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde
     // Zuerst nach unbesetzten Militärgebäude schauen
-    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
     {
         if(milBld->IsNewBuilt())
         {
@@ -1250,7 +1249,7 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     }
 
     // Als nächstes Gebäude in Grenznähe
-    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
     {
         if(milBld->GetFrontierDistance() == 2)
         {
@@ -1262,7 +1261,7 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     }
 
     // Und den Rest ggf.
-    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
     {
         // already checked? -> skip
         if(milBld->GetFrontierDistance() == 2 || milBld->IsNewBuilt())
@@ -1331,7 +1330,7 @@ void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_setting
 }
 
 /// Setzt neue Werkzeugeinstellungen
-void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<int8_t, NUM_TOOLS>& orderChanges)
+void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const std::array<int8_t, NUM_TOOLS>& orderChanges)
 {
     const bool settingsChanged = toolsSettings_ != tools_settings;
     toolsSettings_ = tools_settings;
@@ -1356,9 +1355,9 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const b
 void GamePlayer::ChangeDistribution(const Distributions& distribution_settings)
 {
     unsigned idx = 0;
-    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    for(const DistributionMapping& mapping : distributionMap)
     {
-        distribution[mapping.get<0>()].percent_buildings[mapping.get<1>()] = distribution_settings[idx++];
+        distribution[std::get<0>(mapping)].percent_buildings[std::get<1>(mapping)] = distribution_settings[idx++];
     }
 
     RecalcDistribution();
@@ -1753,7 +1752,7 @@ bool GamePlayer::IsWareRegistred(Ware* ware)
 
 bool GamePlayer::IsWareDependent(Ware* ware)
 {
-    BOOST_FOREACH(nobBaseWarehouse* wh, buildings.GetStorehouses())
+    for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         if(wh->IsWareDependent(ware))
             return true;
@@ -1801,14 +1800,14 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     // we need more ships than those that are already on their way? limit search to idle ships
     if(GetShipsToHarbor(hb) < hb.GetNumNeededShips())
     {
-        BOOST_FOREACH(noShip* ship, ships)
+        for(noShip* ship : ships)
         {
             if(ship->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), ship->GetSeaID()))
                 sfh.push_back(ShipForHarbor(ship, gwg->CalcDistance(hb.GetPos(), ship->GetPos())));
         }
     } else
     {
-        BOOST_FOREACH(noShip* ship, ships)
+        for(noShip* ship : ships)
         {
             if((ship->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), ship->GetSeaID())) || ship->IsGoingToHarbor(hb))
             {
@@ -1819,7 +1818,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 
     std::sort(sfh.begin(), sfh.end());
 
-    noShip* best_ship = NULL;
+    noShip* best_ship = nullptr;
     uint32_t best_distance = std::numeric_limits<uint32_t>::max();
     std::vector<Direction> best_route;
 
@@ -1900,7 +1899,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
     std::vector<Direction> best_route;
 
     // Beste Weglänge, die ein Schiff zurücklegen muss, welches gerade nichts zu tun hat
-    BOOST_FOREACH(nobHarborBuilding* harbor, buildings.GetHarbors())
+    for(nobHarborBuilding* harbor : buildings.GetHarbors())
     {
         // Braucht der Hafen noch Schiffe?
         if(harbor->GetNumNeededShips() == 0)
@@ -1958,11 +1957,11 @@ unsigned GamePlayer::GetShipID(const noShip* const ship) const
     return 0xFFFFFFFF;
 }
 
-/// Gibt ein Schiff anhand der ID zurück bzw. NULL, wenn keines mit der ID existiert
+/// Gibt ein Schiff anhand der ID zurück bzw. nullptr, wenn keines mit der ID existiert
 noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
 {
     if(ship_id >= ships.size())
-        return NULL;
+        return nullptr;
     else
         return ships[ship_id];
 }
@@ -1970,7 +1969,7 @@ noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
 /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
 void GamePlayer::GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const
 {
-    BOOST_FOREACH(nobHarborBuilding* harbor, buildings.GetHarbors())
+    for(nobHarborBuilding* harbor : buildings.GetHarbors())
     {
         if(helpers::contains(harbor_buildings, harbor))
             continue;
@@ -1998,10 +1997,10 @@ unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
 bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId, std::vector<Direction>* route,
                                         nobHarborBuilding* exception)
 {
-    nobHarborBuilding* best = NULL;
+    nobHarborBuilding* best = nullptr;
     unsigned best_distance = 0xffffffff;
 
-    BOOST_FOREACH(nobHarborBuilding* hb, buildings.GetHarbors())
+    for(nobHarborBuilding* hb : buildings.GetHarbors())
     {
         // Bestimmten Hafen ausschließen
         if(hb == exception)
@@ -2029,7 +2028,7 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
         route->clear();
         *goal_harborId = best->GetHarborPosID();
         const MapPoint coastPt = gwg->GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
-        if(start == coastPt || gwg->FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, NULL))
+        if(start == coastPt || gwg->FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, nullptr))
             return true;
     }
 
@@ -2045,7 +2044,7 @@ void GamePlayer::TestForEmergencyProgramm()
     // In Lagern vorhandene Bretter und Steine zählen
     unsigned boards = 0;
     unsigned stones = 0;
-    BOOST_FOREACH(nobBaseWarehouse* wh, buildings.GetStorehouses())
+    for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         boards += wh->GetInventory().goods[GD_BOARDS];
         stones += wh->GetInventory().goods[GD_STONES];
@@ -2122,7 +2121,7 @@ bool GamePlayer::CanBuildCatapult() const
                   + bc.buildings[BLD_FORTRESS] + 0.111); // to avoid rounding errors
     } else if(gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
     {
-        const boost::array<unsigned, 6> limits = {{0, 3, 5, 10, 20, 30}};
+        const std::array<unsigned, 6> limits = {{0, 3, 5, 10, 20, 30}};
         max = limits[gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
     }
 
@@ -2150,7 +2149,7 @@ bool GamePlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
 /// For debug only
 bool GamePlayer::IsDependentFigure(noFigure* fig)
 {
-    BOOST_FOREACH(const nobBaseWarehouse* wh, buildings.GetStorehouses())
+    for(const nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         if(wh->IsDependentFigure(fig))
             return true;
@@ -2168,7 +2167,7 @@ std::vector<nobBaseWarehouse*> GamePlayer::GetWarehousesForTrading(const nobBase
 
     const MapPoint goalFlagPos = goalWh.GetFlag()->GetPos();
 
-    BOOST_FOREACH(nobBaseWarehouse* wh, buildings.GetStorehouses())
+    for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         // Is there a trade path from this warehouse to wh? (flag to flag)
         if(TradePathCache::inst().PathExists(*gwg, wh->GetFlag()->GetPos(), goalFlagPos, GetPlayerId()))
@@ -2216,7 +2215,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
 
     std::vector<nobBaseWarehouse*> whs(buildings.GetStorehouses().begin(), buildings.GetStorehouses().end());
     std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, *gwg));
-    BOOST_FOREACH(nobBaseWarehouse* wh, whs)
+    for(nobBaseWarehouse* wh : whs)
     {
         // Get available wares
         unsigned available = 0;
@@ -2253,9 +2252,9 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
 {
     Distributions& visDistribution = visualSettings.distribution;
     unsigned visIdx = 0;
-    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    for(const DistributionMapping& mapping : distributionMap)
     {
-        visDistribution[visIdx++] = distribution[mapping.get<0>()].percent_buildings[mapping.get<1>()];
+        visDistribution[visIdx++] = distribution[std::get<0>(mapping)].percent_buildings[std::get<1>(mapping)];
     }
 
     visualSettings.useCustomBuildOrder = useCustomBuildOrder_;

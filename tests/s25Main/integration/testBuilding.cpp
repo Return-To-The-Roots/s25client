@@ -31,8 +31,6 @@
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include <boost/assign/std/vector.hpp>
-#include <boost/foreach.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/test/unit_test.hpp>
 
 // Test stuff related to building/building quality
@@ -60,7 +58,7 @@ typedef std::map<MapPoint, BuildingQuality, MapPointLess> ReducedBQMap;
 /// Check that the BQ at all points is BQ_CASTLE except the points in the reducedBQs map which have given BQs
 boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const std::vector<MapPoint>& pts, const ReducedBQMap& reducedBQs)
 {
-    BOOST_FOREACH(MapPoint pt, pts)
+    for(MapPoint pt : pts)
     {
         BuildingQuality bqReq;
         if(helpers::contains(reducedBQs, pt))
@@ -119,7 +117,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, bldPos));
-    BOOST_FOREACH(MapPoint pt, radius1Pts)
+    for(MapPoint pt : radius1Pts)
         BOOST_REQUIRE(pt == flagPos || world.IsRoadAvailable(false, pt));
 
     // Remove -> BQ reset
@@ -132,7 +130,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, bldPos));
-    BOOST_FOREACH(MapPoint pt, radius1Pts)
+    for(MapPoint pt : radius1Pts)
         BOOST_REQUIRE(pt == flagPos || world.IsRoadAvailable(false, pt));
 
     // Remove -> BQ reset
@@ -189,7 +187,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
     // Normally this is done by the flag
     world.RecalcBQForRoad(curPt);
 
-    BOOST_FOREACH(MapPoint pt, roadPts)
+    for(MapPoint pt : roadPts)
     {
         BOOST_REQUIRE(world.IsOnRoad(pt));
         // On the road we only allow flags
@@ -210,12 +208,12 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
         world.SetOwner(pt, 1);
 
-    dskGameInterface gameDesktop(this->game, boost::shared_ptr<NWFInfo>(), 0, false);
+    dskGameInterface gameDesktop(this->game, std::shared_ptr<NWFInfo>(), 0, false);
     const GameWorldViewer& gwv = gameDesktop.GetView().GetViewer();
     // Start at a position a bit away from the HQ so all points are castles
     const MapPoint roadPt = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(6, 6));
     const std::vector<MapPoint> roadRadiusPts = world.GetPointsInRadiusWithCenter(roadPt, 6);
-    BOOST_FOREACH(const MapPoint& pt, roadRadiusPts)
+    for(const MapPoint& pt : roadRadiusPts)
     {
         BuildingQuality bq = world.GetNode(pt).bq;
         BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bq << "!=" << BQ_CASTLE << " at " << pt);
@@ -239,7 +237,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     gameDesktop.BuildRoadPart(curRoadEndPt);
     BOOST_REQUIRE_EQUAL(curRoadEndPt, curPt);
 
-    BOOST_FOREACH(MapPoint pt, roadPts)
+    for(MapPoint pt : roadPts)
     {
         BOOST_REQUIRE(gwv.IsOnRoad(pt));
         // On the road we only allow flags
@@ -263,7 +261,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     BOOST_REQUIRE(!gwv.IsOnRoad(roadPts[0]));
     BOOST_REQUIRE(!gwv.IsOnRoad(roadPts[1]));
     // BQ should be restored
-    BOOST_FOREACH(const MapPoint& pt, roadRadiusPts)
+    for(const MapPoint& pt : roadRadiusPts)
     {
         BuildingQuality bq = gwv.GetBQ(pt);
         BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bq << "!=" << BQ_CASTLE << " at " << pt);
@@ -287,7 +285,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     gameDesktop.BuildRoadPart(curRoadEndPt);
     BOOST_REQUIRE_EQUAL(curRoadEndPt, curPt);
 
-    BOOST_FOREACH(MapPoint pt, roadPts)
+    for(MapPoint pt : roadPts)
     {
         BOOST_REQUIRE(gwv.IsOnRoad(pt));
         // On the road we only allow flags
@@ -302,10 +300,10 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
 
     // Destroy road
     gameDesktop.GI_CancelRoadBuilding();
-    BOOST_FOREACH(MapPoint pt, roadPts)
+    for(MapPoint pt : roadPts)
         BOOST_REQUIRE(!gwv.IsOnRoad(pt));
     // BQ should be restored
-    BOOST_FOREACH(const MapPoint& pt, roadRadiusPts)
+    for(const MapPoint& pt : roadRadiusPts)
     {
         BuildingQuality bq = gwv.GetBQ(pt);
         BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bq << "!=" << BQ_CASTLE << " at " << pt);
@@ -321,7 +319,7 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1P)
     const unsigned hqRadius = hq->GetMilitaryRadius();
     BOOST_REQUIRE_GT(hqRadius, 4u);
     std::vector<MapPoint> pts = world.GetPointsInRadius(hqPos, hq->GetMilitaryRadius() + 1);
-    BOOST_FOREACH(const MapPoint pt, pts)
+    for(const MapPoint pt : pts)
     {
         const unsigned distance = world.CalcDistance(pt, hqPos);
         if(distance < 3)
@@ -392,7 +390,7 @@ BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
     addStaticObj(world, objPos, 0);
     BOOST_REQUIRE(checkBQs(world, ptsAroundObj, ReducedBQMap()));
     BOOST_REQUIRE(world.IsRoadAvailable(false, objPos));
-    BOOST_FOREACH(MapPoint pt, radius1Pts)
+    for(MapPoint pt : radius1Pts)
         BOOST_REQUIRE(world.IsRoadAvailable(false, pt));
 
     // Size=1 -> Block only point
@@ -404,7 +402,7 @@ BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
         reducedBQs[world.GetNeighbour(objPos, dir)] = BQ_HOUSE;
     BOOST_REQUIRE(checkBQs(world, ptsAroundObj, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, objPos));
-    BOOST_FOREACH(MapPoint pt, radius1Pts)
+    for(MapPoint pt : radius1Pts)
         BOOST_REQUIRE(world.IsRoadAvailable(false, pt));
 
     // Size=2 -> Block like a castle
@@ -445,7 +443,7 @@ BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
     // Place these env objs
     ids += 505, 506, 507, 508, 509, 510, 512, 513, 514, 515, 531, 536, 541, 542, 543, 544, 545, 546, 547, 548, 550, 551, 552, 553, 554, 555,
       556, 557, 558, 559;
-    BOOST_FOREACH(unsigned curId, ids)
+    for(unsigned curId : ids)
     {
         MapPoint curPos = startPos;
         for(unsigned i = 0; i < 4; i++)

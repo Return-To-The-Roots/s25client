@@ -22,8 +22,8 @@
 #include "Point.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "libutil/Singleton.h"
-#include "libutil/unique_ptr.h"
 #include <list>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -110,9 +110,9 @@ private:
     /// Actually close all ingame windows marked for closing
     void CloseMarkedIngameWnds();
 
-    libutil::unique_ptr<Desktop> curDesktop;  /// aktueller Desktop
-    libutil::unique_ptr<Desktop> nextdesktop; /// der nächste Desktop
-    bool disable_mouse;                       /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
+    std::unique_ptr<Desktop> curDesktop;  /// aktueller Desktop
+    std::unique_ptr<Desktop> nextdesktop; /// der nächste Desktop
+    bool disable_mouse;                   /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
 
     IgwList windows; /// Fensterliste
     /// Windows that will be shown after desktop switch

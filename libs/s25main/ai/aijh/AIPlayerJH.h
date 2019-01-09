@@ -26,10 +26,10 @@
 #include "ai/aijh/AIResourceMap.h"
 #include "ai/aijh/PositionSearch.h"
 #include "gameTypes/MapCoordinates.h"
-#include "libutil/unique_ptr.h"
-#include <boost/array.hpp>
 #include <boost/container/static_vector.hpp>
+#include <array>
 #include <list>
+#include <memory>
 #include <queue>
 
 class noFlag;
@@ -237,16 +237,13 @@ public:
 
     bool NoEnemyHarbor();
 
-    void SetResourceMap(AIResource res, const MapPoint pt, int newvalue)
-    {
-        resourceMaps[boost::underlying_cast<unsigned>(res)][pt] = newvalue;
-    }
+    void SetResourceMap(AIResource res, const MapPoint pt, int newvalue) { resourceMaps[static_cast<unsigned>(res)][pt] = newvalue; }
 
     MapPoint UpgradeBldPos;
 
 private:
     /// The current job the AI is working on
-    libutil::unique_ptr<Job> currentJob;
+    std::unique_ptr<Job> currentJob;
     /// List of coordinates at which military buildings should be
     std::list<MapPoint> milBuildings;
     /// List of coordinates at which military buildingsites should be

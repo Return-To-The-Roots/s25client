@@ -1,6 +1,6 @@
 FIND_PACKAGE(BZip2 REQUIRED)
 gather_dll(BZIP2)
-FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams locale chrono)
+FIND_PACKAGE(Boost 1.64.0 REQUIRED COMPONENTS filesystem iostreams locale)
 
 SET(SOURCES_SUBDIRS )
 MACRO(AddDirectory dir)
@@ -44,6 +44,8 @@ SET(s25Main_SRCS
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(s25Main SYSTEM PRIVATE ${BZIP2_INCLUDE_DIR})
+set_target_properties(s25Main PROPERTIES CXX_EXTENSIONS OFF)
+target_compile_features(s25Main PUBLIC cxx_std_14)
 
 target_link_libraries(s25Main PUBLIC
 	siedler2
@@ -56,7 +58,7 @@ target_link_libraries(s25Main PUBLIC
     glad
     driver
 	${BZIP2_LIBRARIES}
-	Boost::filesystem Boost::chrono Boost::disable_autolinking
+	Boost::filesystem Boost::disable_autolinking
 	PRIVATE utf8 Boost::iostreams Boost::locale nowide::static
 )
 

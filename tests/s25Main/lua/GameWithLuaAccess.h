@@ -36,11 +36,8 @@
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
-#include <boost/foreach.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <rttr/test/LogAccessor.hpp>
 #include <vector>
 
@@ -66,7 +63,7 @@ public:
             world.GetEvMgr().ExecuteNextGF();
             ai->RunGF(world.GetEvMgr().GetCurrentGF(), i == 0);
         }
-        BOOST_FOREACH(gc::GameCommandPtr& gc, aiGcs)
+        for(gc::GameCommandPtr& gc : aiGcs)
         {
             gc->Execute(world, 1);
         }
@@ -97,7 +94,7 @@ public:
 struct LuaTestsFixture : public rttr::test::LogAccessor, public LuaBaseFixture, GCExecutor
 {
 public:
-    boost::shared_ptr<GameWithLuaAccess> game;
+    std::shared_ptr<GameWithLuaAccess> game;
     GameWorld& world;
     std::vector<MapPoint> hqPositions;
 

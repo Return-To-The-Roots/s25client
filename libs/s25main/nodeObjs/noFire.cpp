@@ -44,7 +44,7 @@ void noFire::Destroy_noFire()
     GetEvMgr().RemoveEvent(dead_event);
 
     // nix mehr hier
-    gwg->SetNO(pos, NULL);
+    gwg->SetNO(pos, nullptr);
     // Bauplätze drumrum neu berechnen
     gwg->RecalcBQAroundPoint(pos);
 
@@ -98,6 +98,6 @@ void noFire::Draw(DrawPoint drawPt)
 void noFire::HandleEvent(const unsigned /*id*/)
 {
     // Todesevent --> uns vernichten
-    dead_event = NULL;
+    dead_event = nullptr;
     GetEvMgr().AddToKillList(this);
 }

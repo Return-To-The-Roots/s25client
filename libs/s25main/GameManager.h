@@ -36,7 +36,7 @@ enum CursorType
 class GameManager : public Singleton<GameManager, SingletonPolicies::WithLongevity>
 {
 public:
-    BOOST_STATIC_CONSTEXPR unsigned Longevity = 15;
+    static constexpr unsigned Longevity = 15;
 
     GameManager();
 

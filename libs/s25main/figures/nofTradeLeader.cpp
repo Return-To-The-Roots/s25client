@@ -32,7 +32,7 @@
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos,
                                const MapPoint goalPos)
-    : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), homePos(homePos), goalPos(goalPos)
+    : noFigure(JOB_HELPER, pos, player), tr(tr), successor(nullptr), homePos(homePos), goalPos(goalPos)
 {}
 
 nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
@@ -61,7 +61,7 @@ void nofTradeLeader::GoalReached()
         Job jobType = successor->GetJobType();
         GoodType goodType = successor->GetCarriedWare();
         nofTradeDonkey* successorDonkey = successor;
-        while(successorDonkey != NULL)
+        while(successorDonkey != nullptr)
         {
             amountWares++;
             successorDonkey = successorDonkey->GetSuccessor();
@@ -73,7 +73,7 @@ void nofTradeLeader::GoalReached()
         SendPostMessage(targetWarehouse->GetPlayer(),
                         new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), text, PostCategory::Economy, *targetWarehouse));
         successor->AddNextDir(REACHED_GOAL);
-        successor = NULL;
+        successor = nullptr;
     }
 
     gwg->GetPlayer(targetWarehouse->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
@@ -154,6 +154,6 @@ void nofTradeLeader::CancelTradeCaravane()
     if(successor)
     {
         successor->CancelTradeCaravane();
-        successor = NULL;
+        successor = nullptr;
     }
 }

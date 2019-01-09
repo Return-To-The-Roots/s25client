@@ -66,7 +66,7 @@ protected:
 class MusicPlayer : public Singleton<MusicPlayer, SingletonPolicies::WithLongevity>
 {
 public:
-    BOOST_STATIC_CONSTEXPR unsigned Longevity = 31; // After AudioDriverWrapper
+    static constexpr unsigned Longevity = 31; // After AudioDriverWrapper
 
     MusicPlayer();
 

@@ -150,8 +150,8 @@ public:
 
     /// Gets the current state
     SoldierState GetState() const { return state; }
-    /// Sets the home (building) to NULL e.g. after the soldier was removed from the homes list but it was not destroyed
-    void ResetHome() { building = NULL; }
+    /// Sets the home (building) to nullptr e.g. after the soldier was removed from the homes list but it was not destroyed
+    void ResetHome() { building = nullptr; }
     void FightVsDefenderStarted() { state = STATE_ATTACKING_FIGHTINGVSDEFENDER; }
 
     // For debugging

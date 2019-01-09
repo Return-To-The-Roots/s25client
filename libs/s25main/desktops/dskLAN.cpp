@@ -136,10 +136,10 @@ void dskLAN::UpdateServerList()
     unsigned curId = 0;
     for(std::vector<GameInfo>::const_iterator it = openGames.begin(); it != openGames.end(); ++it)
     {
-        std::string id = boost::lexical_cast<std::string>(curId++);
+        std::string id = std::to_string(curId++);
         std::string name = (it->info.hasPwd ? "(pwd) " : "") + it->info.name; //-V807
-        std::string player = boost::lexical_cast<std::string>(static_cast<unsigned>(it->info.curNumPlayers)) + "/"
-                             + boost::lexical_cast<std::string>(static_cast<unsigned>(it->info.maxNumPlayers));
+        std::string player = std::to_string(static_cast<unsigned>(it->info.curNumPlayers)) + "/"
+                             + std::to_string(static_cast<unsigned>(it->info.maxNumPlayers));
         servertable->AddRow(0, id.c_str(), name.c_str(), it->info.map.c_str(), player.c_str(), it->info.version.c_str());
     }
 

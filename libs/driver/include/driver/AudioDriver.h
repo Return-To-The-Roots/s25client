@@ -18,7 +18,7 @@
 #define AUDIODRIVER_H_INCLUDED
 
 #include "AudioInterface.h"
-#include <boost/array.hpp>
+#include <array>
 #include <vector>
 class IAudioDriverCallback;
 
@@ -35,7 +35,7 @@ public:
 
 protected:
     /// Maximum number of channels
-    BOOST_STATIC_CONSTEXPR unsigned MAX_NUM_CHANNELS = 64;
+    static constexpr unsigned MAX_NUM_CHANNELS = 64;
     /// Sets the actual number of channels used. Must be called before using channels and numChannels <= MAX_NUM_CHANNELS
     void SetNumChannels(unsigned numChannels);
     /// Adds an effect to a channel
@@ -63,7 +63,7 @@ private:
     std::vector<SoundDesc*> sounds_;
     unsigned numChannels_;
     /// Which effect is played on which channel
-    boost::array<EffectPlayId, MAX_NUM_CHANNELS> channels_; //-V730_NOINIT
+    std::array<EffectPlayId, MAX_NUM_CHANNELS> channels_; //-V730_NOINIT
 };
 
 #endif // !AUDIODRIVER_H_INCLUDED

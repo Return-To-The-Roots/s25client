@@ -28,7 +28,6 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/bind.hpp>
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FORESTER, pos, player, workplace)
@@ -130,7 +129,7 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     }
 
     // Terrain untersuchen
-    if(gwg->IsOfTerrain(pt, boost::bind(&TerrainDesc::IsVital, _1)))
+    if(gwg->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
         return PQ_CLASS1;
     else
         return PQ_NOTPOSSIBLE;

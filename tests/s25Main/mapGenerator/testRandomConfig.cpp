@@ -17,9 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomConfig.h"
-#include <boost/array.hpp>
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
+#include <array>
 
 BOOST_AUTO_TEST_SUITE(RandomConfigTest)
 
@@ -29,13 +28,13 @@ BOOST_AUTO_TEST_SUITE(RandomConfigTest)
  */
 BOOST_AUTO_TEST_CASE(MaxHeightBelowTextureCount)
 {
-    boost::array<MapStyle, 7> mapStyles = {{MapStyle::Greenland, MapStyle::Riverland, MapStyle::Ringland, MapStyle::Migration,
-                                            MapStyle::Islands, MapStyle::Continent, MapStyle::Random}};
-    BOOST_FOREACH(MapStyle mapStyle, mapStyles)
+    std::array<MapStyle, 7> mapStyles = {{MapStyle::Greenland, MapStyle::Riverland, MapStyle::Ringland, MapStyle::Migration,
+                                          MapStyle::Islands, MapStyle::Continent, MapStyle::Random}};
+    for(MapStyle mapStyle : mapStyles)
     {
         RandomConfig config;
         BOOST_REQUIRE(config.Init(mapStyle, DescIdx<LandscapeDesc>(0), 0x1337));
-        BOOST_FOREACH(const AreaDesc& area, config.areas)
+        for(const AreaDesc& area : config.areas)
         {
             BOOST_REQUIRE_LT(area.maxElevation, config.textures.size());
         }

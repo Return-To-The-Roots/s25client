@@ -19,7 +19,7 @@
 #define PostManager_h__
 
 #include "gameData/MaxPlayers.h"
-#include <boost/array.hpp>
+#include <array>
 #include <string>
 
 class PostMsg;
@@ -37,7 +37,7 @@ public:
     void SetMissionGoal(unsigned player, const std::string& newGoal);
 
 private:
-    boost::array<PostBox*, MAX_PLAYERS> postBoxes;
+    std::array<PostBox*, MAX_PLAYERS> postBoxes;
 };
 
 #endif // PostManager_h__

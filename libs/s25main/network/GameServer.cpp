@@ -40,12 +40,10 @@
 #include "libutil/SocketSet.h"
 #include "libutil/colors.h"
 #include "libutil/ucString.h"
-#include <boost/bind.hpp>
-#include <boost/chrono/system_clocks.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
-#include <boost/math/special_functions/round.hpp>
 #include <boost/nowide/fstream.hpp>
+#include <cmath>
+#include <helpers/chronoIO.h>
 #include <iomanip>
 
 inline std::ostream& operator<<(std::ostream& os, const AsyncChecksum& checksum)
@@ -98,7 +96,7 @@ bool GameServer::CountDown::Update()
     SteadyClock::time_point curTime = SteadyClock::now();
 
     // Check if 1s has passed
-    if(curTime - lasttime < boost::chrono::seconds(1))
+    if(curTime - lasttime < std::chrono::seconds(1))
         return false;
     if(remainingSecs == 0)
     {
@@ -234,7 +232,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path,
 unsigned GameServer::GetNumFilledSlots() const
 {
     unsigned numFilled = 0;
-    BOOST_FOREACH(const JoinPlayerInfo& player, playerInfos)
+    for(const JoinPlayerInfo& player : playerInfos)
     {
         if(player.ps != PS_FREE)
             ++numFilled;
@@ -301,7 +299,7 @@ void GameServer::Run()
     FillPlayerQueues();
 
     // Execute messages
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    for(GameServerPlayer& player : networkPlayers)
     {
         // Ignore kicked players
         if(!player.socket.isValid())
@@ -309,7 +307,7 @@ void GameServer::Run()
         player.executeMsgs(*this);
     }
     // Send afterwards as most messages are relayed which should be done as fast as possible
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    for(GameServerPlayer& player : networkPlayers)
     {
         // Ignore kicked players
         if(!player.socket.isValid())
@@ -350,9 +348,9 @@ void GameServer::RunStateLoading()
 {
     if(!nwfInfo.isReady())
     {
-        if(SteadyClock::now() - loadStartTime > boost::chrono::seconds(LOAD_TIMEOUT))
+        if(SteadyClock::now() - loadStartTime > std::chrono::seconds(LOAD_TIMEOUT))
         {
-            BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo.getPlayerInfos())
+            for(const NWFPlayerInfo& player : nwfInfo.getPlayerInfos())
             {
                 if(player.isLagging)
                     KickPlayer(player.id, NP_PINGTIMEOUT, __LINE__);
@@ -361,14 +359,14 @@ void GameServer::RunStateLoading()
         return;
     }
     LOG.write("SERVER: Game loaded by all players after %1%\n")
-      % boost::chrono::duration_cast<boost::chrono::seconds>(SteadyClock::now() - loadStartTime);
+      % std::chrono::duration_cast<std::chrono::seconds>(SteadyClock::now() - loadStartTime);
     // The first NWF is ready. Server has to set up "missing" commands so every future command is for the correct NWF as specified with
     // cmdDelay. We have commands for NWF 0. When clients execute this they will send the commands for NWF cmdDelay. So commands for
     // NWF 1..cmdDelay-1 are missing. Do this here and before the NWFDone is sent, otherwise we might get them in a wrong order when
     // messages are sent asynchronously
     for(unsigned i = 1; i < nwfInfo.getCmdDelay(); i++)
     {
-        BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo.getPlayerInfos())
+        for(const NWFPlayerInfo& player : nwfInfo.getPlayerInfos())
         {
             GameMessage_GameCommand msg(player.id, nwfInfo.getPlayerCmds(player.id).checksum, std::vector<gc::GameCommandPtr>());
             SendToAll(msg);
@@ -449,7 +447,7 @@ bool GameServer::StartGame()
     if(mapinfo.type == MAPTYPE_SAVEGAME)
         random_init = 0;
     else
-        random_init = static_cast<unsigned>(boost::chrono::high_resolution_clock::now().time_since_epoch().count());
+        random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
     nwfInfo.init(currentGF, 3);
 
@@ -459,7 +457,7 @@ bool GameServer::StartGame()
 
     // Höchsten Ping ermitteln
     unsigned highest_ping = 0;
-    BOOST_FOREACH(const JoinPlayerInfo& player, playerInfos)
+    for(const JoinPlayerInfo& player : playerInfos)
     {
         if(player.ps == PS_OCCUPIED)
         {
@@ -495,7 +493,7 @@ bool GameServer::StartGame()
 
 unsigned GameServer::CalcNWFLenght(FramesInfo::milliseconds32_t minDuration)
 {
-    BOOST_CONSTEXPR_OR_CONST unsigned maxNumGF = 20;
+    constexpr unsigned maxNumGF = 20;
     for(unsigned i = 1; i < maxNumGF; ++i)
     {
         if(i * framesinfo.gf_length >= minDuration)
@@ -515,7 +513,7 @@ void GameServer::SendNWFDone(const NWFServerInfo& info)
  */
 void GameServer::SendToAll(const GameMessage& msg)
 {
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    for(GameServerPlayer& player : networkPlayers)
     {
         // ist der Slot Belegt, dann Nachricht senden
         if(player.isConnected())
@@ -558,13 +556,13 @@ void GameServer::ClientWatchDog()
     set.Clear();
 
     // sockets zum set hinzufügen
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    for(GameServerPlayer& player : networkPlayers)
         set.Add(player.socket);
 
     // auf fehler prüfen
     if(set.Select(0, 2) > 0)
     {
-        BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
+        for(const GameServerPlayer& player : networkPlayers)
         {
             if(set.InSet(player.socket))
             {
@@ -574,7 +572,7 @@ void GameServer::ClientWatchDog()
         }
     }
 
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    for(GameServerPlayer& player : networkPlayers)
     {
         if(player.hasTimedOut())
         {
@@ -590,7 +588,7 @@ void GameServer::ExecuteGameFrame()
     RTTR_Assert(state == SS_GAME);
 
     FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
-    FramesInfo::milliseconds32_t passedTime = boost::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
+    FramesInfo::milliseconds32_t passedTime = std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
 
     // prüfen ob GF vergangen
     if(passedTime >= framesinfo.gf_length || skiptogf > currentGF)
@@ -602,7 +600,7 @@ void GameServer::ExecuteGameFrame()
             {
                 // Check for kicking every second
                 static FramesInfo::UsedClock::time_point lastLagKickTime;
-                if(currentTime - lastLagKickTime >= boost::chrono::seconds(1))
+                if(currentTime - lastLagKickTime >= std::chrono::seconds(1))
                 {
                     lastLagKickTime = currentTime;
                     CheckAndKickLaggingPlayers();
@@ -637,12 +635,12 @@ void GameServer::ExecuteNWF()
 
         // Notify players
         std::vector<unsigned> checksumHashes;
-        BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
+        for(const GameServerPlayer& player : networkPlayers)
             checksumHashes.push_back(nwfInfo.getPlayerCmds(player.playerId).checksum.getHash());
         SendToAll(GameMessage_Server_Async(checksumHashes));
 
         // Request async logs
-        BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+        for(GameServerPlayer& player : networkPlayers)
         {
             asyncLogs.push_back(AsyncLog(player.playerId, nwfInfo.getPlayerCmds(player.playerId).checksum));
             player.sendMsgAsync(new GameMessage_GetAsyncLog());
@@ -664,10 +662,10 @@ void GameServer::ExecuteNWF()
     if(framesinfo.gfLengthReq != framesinfo.gf_length)
     {
         // Speed will change, adjust nwf length so the time will stay constant
-        using namespace boost::chrono;
-        typedef duration<double, boost::milli> MsDouble;
+        using namespace std::chrono;
+        typedef duration<double, std::milli> MsDouble;
         double newNWFLen = framesinfo.nwf_length * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
-        newInfo.nextNWF = lastNWF + std::max(1, boost::math::iround(newNWFLen));
+        newInfo.nextNWF = lastNWF + std::max(1l, std::lround(newNWFLen));
     }
     SendNWFDone(newInfo);
 }
@@ -678,7 +676,7 @@ bool GameServer::CheckForAsync()
         return false;
     bool isAsync = false;
     const AsyncChecksum& refChecksum = nwfInfo.getPlayerCmds(networkPlayers.front().playerId).checksum;
-    BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
+    for(const GameServerPlayer& player : networkPlayers)
     {
         const AsyncChecksum& curChecksum = nwfInfo.getPlayerCmds(player.playerId).checksum;
 
@@ -695,7 +693,7 @@ bool GameServer::CheckForAsync()
 
 void GameServer::CheckAndKickLaggingPlayers()
 {
-    BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
+    for(const GameServerPlayer& player : networkPlayers)
     {
         const unsigned timeOut = player.getLagTimeOut();
         if(timeOut == 0)
@@ -710,7 +708,7 @@ bool GameServer::CheckForLaggingPlayers()
 {
     if(nwfInfo.isReady())
         return false;
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    for(GameServerPlayer& player : networkPlayers)
     {
         if(nwfInfo.getPlayerInfo(player.playerId).isLagging)
             player.setLagging();
@@ -766,7 +764,7 @@ void GameServer::FillPlayerQueues()
     do
     {
         // sockets zum set hinzufügen
-        BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
+        for(const GameServerPlayer& player : networkPlayers)
             set.Add(player.socket);
 
         msgReceived = false;
@@ -774,7 +772,7 @@ void GameServer::FillPlayerQueues()
         // ist eines der Sockets im Set lesbar?
         if(set.Select(0, 0) > 0)
         {
-            BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+            for(GameServerPlayer& player : networkPlayers)
             {
                 if(set.InSet(player.socket))
                 {
@@ -1193,7 +1191,7 @@ bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
         return true;
     }
     bool foundPlayer = false;
-    BOOST_FOREACH(AsyncLog& log, asyncLogs)
+    for(AsyncLog& log : asyncLogs)
     {
         if(log.playerId != msg.senderPlayerID)
             continue;
@@ -1216,7 +1214,7 @@ bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
     }
 
     // Check if we have all logs
-    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+    for(const AsyncLog& log : asyncLogs)
     {
         if(!log.done)
             return true;
@@ -1230,7 +1228,7 @@ bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
 
     // Kick all players that have a different checksum from the host
     AsyncChecksum hostChecksum;
-    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+    for(const AsyncLog& log : asyncLogs)
     {
         if(playerInfos.at(log.playerId).isHost)
         {
@@ -1238,7 +1236,7 @@ bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
             break;
         }
     }
-    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+    for(const AsyncLog& log : asyncLogs)
     {
         if(log.checksum != hostChecksum)
             KickPlayer(log.playerId, NP_ASYNC, __LINE__);
@@ -1347,7 +1345,7 @@ void GameServer::CancelCountdown()
 bool GameServer::ArePlayersReady() const
 {
     // Alle Spieler da?
-    BOOST_FOREACH(const JoinPlayerInfo& player, playerInfos)
+    for(const JoinPlayerInfo& player : playerInfos)
     {
         // noch nicht alle spieler da -> feierabend!
         if(player.ps == PS_FREE)
@@ -1359,7 +1357,7 @@ bool GameServer::ArePlayersReady() const
     std::set<unsigned> takenColors;
 
     // Check all players have different colors
-    BOOST_FOREACH(const JoinPlayerInfo& player, playerInfos)
+    for(const JoinPlayerInfo& player : playerInfos)
     {
         if(player.isUsed())
         {
@@ -1386,17 +1384,16 @@ std::string GameServer::SaveAsyncLog()
 {
     // Get the highest common counter number and start from there (remove all others)
     unsigned maxCtr = 0;
-    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+    for(const AsyncLog& log : asyncLogs)
     {
         if(!log.randEntries.empty() && log.randEntries[0].counter > maxCtr)
             maxCtr = log.randEntries[0].counter;
     }
     // Number of entries = max(asyncLogs[0..n].randEntries.size())
     unsigned numEntries = 0;
-    BOOST_FOREACH(AsyncLog& log, asyncLogs)
+    for(AsyncLog& log : asyncLogs)
     {
-        std::vector<RandomEntry>::iterator it =
-          std::find_if(log.randEntries.begin(), log.randEntries.end(), boost::bind(&RandomEntry::counter, _1) == maxCtr);
+        auto it = std::find_if(log.randEntries.begin(), log.randEntries.end(), [maxCtr](const auto& e) { return e.counter == maxCtr; });
         log.randEntries.erase(log.randEntries.begin(), it);
         if(numEntries < log.randEntries.size())
             numEntries = log.randEntries.size();
@@ -1413,7 +1410,7 @@ std::string GameServer::SaveAsyncLog()
         if(i >= asyncLogs[0].randEntries.size())
             break;
         const RandomEntry& refEntry = asyncLogs[0].randEntries[i];
-        BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+        for(const AsyncLog& log : asyncLogs)
         {
             if(i >= log.randEntries.size())
             {
@@ -1445,7 +1442,7 @@ std::string GameServer::SaveAsyncLog()
     {
         file << "Map: " << mapinfo.title << std::endl;
         file << std::setfill(' ');
-        BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+        for(const AsyncLog& log : asyncLogs)
         {
             const JoinPlayerInfo& plInfo = playerInfos.at(log.playerId);
             file << "Player " << std::setw(2) << unsigned(log.playerId) << (plInfo.isHost ? '#' : ' ') << "\t\"" << plInfo.name << '"'
@@ -1453,7 +1450,7 @@ std::string GameServer::SaveAsyncLog()
             file << "System info: " << log.addData << std::endl;
             file << "\tChecksum: " << std::setw(0) << log.checksum << std::endl;
         }
-        BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+        for(const AsyncLog& log : asyncLogs)
             file << "Checksum " << std::setw(2) << unsigned(log.playerId) << std::setw(0) << ": " << log.checksum << std::endl;
 
         // print identical lines, they help in tracing the bug
@@ -1461,7 +1458,7 @@ std::string GameServer::SaveAsyncLog()
             file << "[ I ]: " << asyncLogs[0].randEntries[i] << "\n";
         for(unsigned i = numIdentical; i < numEntries; i++)
         {
-            BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+            for(const AsyncLog& log : asyncLogs)
             {
                 if(i < log.randEntries.size())
                     file << "[C" << std::setw(2) << unsigned(log.playerId) << std::setw(0) << "]: " << log.randEntries[i] << '\n';
@@ -1481,7 +1478,7 @@ void GameServer::SendAsyncLog(const std::string& asyncLogFilePath)
 {
     if(SETTINGS.global.submit_debug_data == 1
 #ifdef _WIN32
-       || (MessageBoxW(NULL,
+       || (MessageBoxW(nullptr,
                        cvUTF8ToWideString(
                          _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in "
                            "the future? Thank you very much!"))
@@ -1603,7 +1600,7 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
     GameServerPlayer::PendingSwap pSwap;
     pSwap.playerId1 = player1;
     pSwap.playerId2 = player2;
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    for(GameServerPlayer& player : networkPlayers)
     {
         if(!player.isConnected())
             continue;
@@ -1613,12 +1610,12 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
 
 GameServerPlayer* GameServer::GetNetworkPlayer(unsigned playerId)
 {
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    for(GameServerPlayer& player : networkPlayers)
     {
         if(player.playerId == playerId)
             return &player;
     }
-    return NULL;
+    return nullptr;
 }
 
 void GameServer::SetPaused(bool paused)
@@ -1627,7 +1624,7 @@ void GameServer::SetPaused(bool paused)
         return;
     framesinfo.isPaused = paused;
     SendToAll(GameMessage_Pause(framesinfo.isPaused));
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    for(GameServerPlayer& player : networkPlayers)
         player.setNotLagging();
 }
 
@@ -1649,7 +1646,7 @@ int GameServer::GetTargetPlayer(const GameMessageWithPlayer& msg)
         {
             unsigned result = msg.player;
             // Apply pending swaps
-            BOOST_FOREACH(GameServerPlayer::PendingSwap& pSwap, GetNetworkPlayer(msg.senderPlayerID)->pendingSwaps) //-V522
+            for(GameServerPlayer::PendingSwap& pSwap : GetNetworkPlayer(msg.senderPlayerID)->pendingSwaps) //-V522
             {
                 if(pSwap.playerId1 == result)
                     result = pSwap.playerId2;

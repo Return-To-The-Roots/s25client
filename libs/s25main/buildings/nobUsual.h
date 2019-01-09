@@ -20,7 +20,7 @@
 
 #include "noBuilding.h"
 #include "gameTypes/GoodTypes.h"
-#include <boost/array.hpp>
+#include <array>
 #include <list>
 #include <vector>
 
@@ -43,15 +43,15 @@ class nobUsual : public noBuilding
     /// Warentyp, den er zuletzt bestellt hatte (bei >1 Waren)
     unsigned char last_ordered_ware;
     /// Rohstoffe, die zur Produktion benötigt werden
-    boost::array<unsigned char, 3> numWares;
+    std::array<unsigned char, 3> numWares;
     /// Bestellte Waren
-    std::vector<std::list<Ware*> > ordered_wares;
+    std::vector<std::list<Ware*>> ordered_wares;
     /// Bestell-Ware-Event
     const GameEvent* orderware_ev;
     /// Rechne-Produktivität-aus-Event
     const GameEvent* productivity_ev;
     /// Letzte Produktivitäten (Durchschnitt = Gesamt produktivität), vorne das neuste !
-    boost::array<unsigned short, 6> last_productivities;
+    std::array<unsigned short, 6> last_productivities;
     /// How many GFs he did not work since the last productivity calculation
     unsigned short numGfNotWorking;
     /// Since which GF he did not work (0xFFFFFFFF = currently working)
@@ -116,7 +116,7 @@ public:
     /// Bestellte Waren
     bool AreThereAnyOrderedWares() const
     {
-        for(std::vector<std::list<Ware*> >::const_iterator it = ordered_wares.begin(); it != ordered_wares.end(); ++it)
+        for(std::vector<std::list<Ware*>>::const_iterator it = ordered_wares.begin(); it != ordered_wares.end(); ++it)
             if(!it->empty())
                 return true;
         return false;

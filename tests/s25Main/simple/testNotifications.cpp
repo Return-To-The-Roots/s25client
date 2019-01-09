@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "notifications/NotificationManager.h"
 #include "notifications/notifications.h"
-#include <boost/bind.hpp>
 #include <boost/test/unit_test.hpp>
 #include <string>
 #include <vector>
@@ -33,21 +32,16 @@ struct TestNote
     std::string text;
 };
 
-struct PushToVec
-{
-    static void push(std::vector<TestNote>& vec, const TestNote& note) { vec.push_back(note); }
-};
-
 BOOST_AUTO_TEST_CASE(SubscribeAndNotify)
 {
     NotificationManager mgr;
     std::vector<TestNote> notes1;
-    Subscribtion subscribtion1 = mgr.subscribe<TestNote>(boost::bind(&PushToVec::push, boost::ref(notes1), _1));
+    Subscribtion subscribtion1 = mgr.subscribe<TestNote>([&notes1](const auto& note) { notes1.push_back(note); });
 
     mgr.publish(TestNote("Hello"));
 
     std::vector<TestNote> notes2;
-    Subscribtion subscribtion2 = mgr.subscribe<TestNote>(boost::bind(&PushToVec::push, boost::ref(notes2), _1));
+    Subscribtion subscribtion2 = mgr.subscribe<TestNote>([&notes2](const auto& note) { notes2.push_back(note); });
 
     mgr.publish(TestNote("World"));
 
@@ -63,10 +57,10 @@ BOOST_AUTO_TEST_CASE(Unsubscribe)
 {
     NotificationManager mgr;
     std::vector<TestNote> notes1, notes2;
-    Subscribtion subscribtion1 = mgr.subscribe<TestNote>(boost::bind(&PushToVec::push, boost::ref(notes1), _1));
+    Subscribtion subscribtion1 = mgr.subscribe<TestNote>([&notes1](const auto& note) { notes1.push_back(note); });
 
     {
-        Subscribtion subscribtion2 = mgr.subscribe<TestNote>(boost::bind(&PushToVec::push, boost::ref(notes2), _1));
+        Subscribtion subscribtion2 = mgr.subscribe<TestNote>([&notes2](const auto& note) { notes2.push_back(note); });
         mgr.publish(TestNote("Test"));
         BOOST_REQUIRE_EQUAL(notes1.size(), 1u);
         BOOST_REQUIRE_EQUAL(notes2.size(), 1u);
@@ -89,7 +83,7 @@ BOOST_AUTO_TEST_CASE(DestroyManager)
     std::vector<TestNote> notes;
     {
         NotificationManager mgr;
-        subscribtion = mgr.subscribe<TestNote>(boost::bind(&PushToVec::push, boost::ref(notes), _1));
+        subscribtion = mgr.subscribe<TestNote>([&notes](const auto& note) { notes.push_back(note); });
         mgr.publish(TestNote("Test"));
         BOOST_REQUIRE_EQUAL(notes.size(), 1u);
         // Manager goes out of scope

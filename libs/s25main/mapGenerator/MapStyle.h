@@ -18,28 +18,28 @@
 #ifndef MapStyle_h__
 #define MapStyle_h__
 
-#include <boost/core/scoped_enum.hpp>
-
 /**
  * Random map types for map generation. A map type describes the basic high-level look of a map.
  */
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(MapStyle){/** Greenland maps are covered by grass and mountains with very few lakes. */
-                                          Greenland,
-                                          /** Riverland maps are close to greenland maps but with plenty of water. */
-                                          Riverland,
-                                          /** Ringland maps usually covered by water apart from a ring-shaped piece of land. */
-                                          Ringland,
-                                          /** On migration style maps players are starting on their own little island.
-                                           *  The main resources (mountains), however, are available only on one large
-                                           *  island in the center of the map. */
-                                          Migration,
-                                          /** Each player starts on its own island which contains all relevant resources
-                                           *  (trees, stone piles, mountains). */
-                                          Islands,
-                                          /** Continent maps are big islands surrounded by water.
-                                           *  Each player starts on the same big island. */
-                                          Continent,
-                                          /** full random map */
-                                          Random} BOOST_SCOPED_ENUM_DECLARE_END(MapStyle)
+enum class MapStyle
+{ /** Greenland maps are covered by grass and mountains with very few lakes. */
+  Greenland,
+  /** Riverland maps are close to greenland maps but with plenty of water. */
+  Riverland,
+  /** Ringland maps usually covered by water apart from a ring-shaped piece of land. */
+  Ringland,
+  /** On migration style maps players are starting on their own little island.
+   *  The main resources (mountains), however, are available only on one large
+   *  island in the center of the map. */
+  Migration,
+  /** Each player starts on its own island which contains all relevant resources
+   *  (trees, stone piles, mountains). */
+  Islands,
+  /** Continent maps are big islands surrounded by water.
+   *  Each player starts on the same big island. */
+  Continent,
+  /** full random map */
+  Random
+};
 
 #endif // MapStyle_h__

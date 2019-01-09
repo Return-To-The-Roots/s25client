@@ -37,7 +37,6 @@
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/MilitaryConsts.h"
-#include <boost/foreach.hpp>
 #include <set>
 #include <sstream>
 
@@ -94,8 +93,8 @@ void iwMilitaryBuilding::Draw_()
     }
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
-    std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> > soldiers(building->GetTroops().begin(), building->GetTroops().end());
-    BOOST_FOREACH(const noFigure* fig, building->GetLeavingFigures())
+    std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>> soldiers(building->GetTroops().begin(), building->GetTroops().end());
+    for(const noFigure* fig : building->GetLeavingFigures())
     {
         const GO_Type figType = fig->GetGOT();
         if(figType == GOT_NOF_ATTACKER || figType == GOT_NOF_AGGRESSIVEDEFENDER || figType == GOT_NOF_DEFENDER
@@ -112,7 +111,7 @@ void iwMilitaryBuilding::Draw_()
 
     // Soldaten zeichnen
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
-    for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it)
+    for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it)
     {
         LOADER.GetMapImageN(2321 + (*it)->GetRank())->DrawFull(curTroopsPos);
         curTroopsPos.x += 22;
@@ -127,7 +126,7 @@ void iwMilitaryBuilding::Draw_()
         DrawRectangle(Rect(healthPos, Extent(22 * maxSoldierCt, 14)), 0x96000000);
 
         healthPos += DrawPoint(12, 2);
-        for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end();
+        for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>>::const_iterator it = soldiers.begin(); it != soldiers.end();
             ++it)
         {
             int hitpoints = static_cast<int>((*it)->GetHitpoints());
@@ -239,5 +238,5 @@ void iwMilitaryBuilding::DemolitionNotAllowed(const GlobalGameSettings& ggs)
         case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
     }
 
-    WINDOWMANAGER.Show(new iwMsgbox(_("Demolition not possible"), msg, NULL, MSB_OK, MSB_EXCLAMATIONRED));
+    WINDOWMANAGER.Show(new iwMsgbox(_("Demolition not possible"), msg, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
 }

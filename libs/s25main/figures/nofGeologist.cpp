@@ -465,7 +465,7 @@ void nofGeologist::SetSign(Resource resources)
 
 void nofGeologist::LostWork()
 {
-    flag = NULL;
+    flag = nullptr;
 
     switch(state)
     {

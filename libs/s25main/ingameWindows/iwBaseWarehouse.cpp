@@ -312,7 +312,7 @@ void iwBaseWarehouse::OnChange(unsigned changeId)
 {
     if(changeId == 0)
     {
-        wh = NULL;
+        wh = nullptr;
         Close();
     } else if(changeId == 1)
         UpdateOverlays();

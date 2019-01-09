@@ -60,7 +60,7 @@ struct DefaultGetPosMarker
     typename T_Heap::PosMarker& operator()(typename T_Heap::value_type* el) { return el->posMarker; }
 };
 
-template<typename T, class T_GetKey, class GetPosMarker = DefaultGetPosMarker<OpenListBinaryHeapBase<T> > >
+template<typename T, class T_GetKey, class GetPosMarker = DefaultGetPosMarker<OpenListBinaryHeapBase<T>>>
 class OpenListBinaryHeap : public OpenListBinaryHeapBase<T>
 {
     typedef OpenListBinaryHeapBase<T> Parent;

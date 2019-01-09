@@ -21,15 +21,15 @@
 #include "network/IGameLobbyController.h"
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/PlayerState.h"
-#include <boost/smart_ptr/shared_ptr.hpp>
+#include <memory>
 
 class GameLobby;
 class GlobalGameSettings;
 
 struct GameLobbyController : public IGameLobbyController
 {
-    boost::shared_ptr<GameLobby> lobby;
-    GameLobbyController(boost::shared_ptr<GameLobby> lobby);
+    std::shared_ptr<GameLobby> lobby;
+    GameLobbyController(std::shared_ptr<GameLobby> lobby);
     ~GameLobbyController() override;
 
     unsigned GetMaxNumPlayers() const override;

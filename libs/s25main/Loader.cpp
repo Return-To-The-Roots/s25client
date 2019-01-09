@@ -48,21 +48,20 @@
 #include "libutil/Log.h"
 #include "libutil/StringConversion.h"
 #include "libutil/System.h"
-#include "libutil/unique_ptr.h"
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <algorithm>
 #include <cstdio>
 #include <iomanip>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 
-Loader::Loader() : isWinterGFX_(false), map_gfx(NULL), stp(NULL)
+Loader::Loader() : isWinterGFX_(false), map_gfx(nullptr), stp(nullptr)
 {
-    std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::Archiv*>(NULL));
+    std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::Archiv*>(nullptr));
 }
 
 Loader::~Loader()
@@ -162,7 +161,7 @@ void Loader::AddOverrideFolder(std::string path, bool atBack)
     if(!bfs::exists(path))
         throw std::runtime_error(std::string("Path ") + path + " does not exist");
     // Don't add folders twice although it is not an error
-    BOOST_FOREACH(const OverrideFolder& cur, overrideFolders_)
+    for(const OverrideFolder& cur : overrideFolders_)
     {
         if(bfs::equivalent(cur.path, path))
             return;
@@ -174,7 +173,7 @@ void Loader::AddOverrideFolder(std::string path, bool atBack)
 
     std::sort(folder.files.begin(), folder.files.end());
 
-    BOOST_FOREACH(FileEntry& entry, files_ | boost::adaptors::map_values)
+    for(FileEntry& entry : files_ | boost::adaptors::map_values)
         entry.loadedAfterOverrideChange = false;
     if(atBack)
         overrideFolders_.push_back(folder);
@@ -397,7 +396,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
 bool Loader::LoadOverrideFiles()
 {
-    BOOST_FOREACH(const OverrideFolder& overrideFolder, overrideFolders_)
+    for(const OverrideFolder& overrideFolder : overrideFolders_)
     {
         if(!LoadOverrideDirectory(overrideFolder.path))
             return false;
@@ -409,7 +408,7 @@ bool Loader::LoadFiles(const std::vector<std::string>& files)
 {
     const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
     // load the files
-    BOOST_FOREACH(const std::string& curFile, files)
+    for(const std::string& curFile : files)
     {
         std::string filePath = RTTRCONFIG.ExpandPath(curFile);
         if(!LoadFile(filePath, pal5))
@@ -811,7 +810,7 @@ void Loader::fillCaches()
 /**
  *  Extrahiert eine Textur aus den Daten.
  */
-libutil::unique_ptr<glArchivItem_Bitmap> Loader::ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect)
+std::unique_ptr<glArchivItem_Bitmap> Loader::ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect)
 {
     Extent texSize = rect.getSize();
     if(texSize.x == 0 && rect.right < srcImg.getWidth())
@@ -820,22 +819,22 @@ libutil::unique_ptr<glArchivItem_Bitmap> Loader::ExtractTexture(const glArchivIt
         texSize.y = srcImg.getHeight() - rect.bottom;
     libsiedler2::PixelBufferPaletted buffer(texSize.x, texSize.y);
 
-    if(int ec = srcImg.print(buffer, NULL, 0, 0, rect.left, rect.top))
+    if(int ec = srcImg.print(buffer, nullptr, 0, 0, rect.left, rect.top))
         throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
 
-    libutil::unique_ptr<glArchivItem_Bitmap> bitmap(new glArchivItem_Bitmap_Raw());
+    std::unique_ptr<glArchivItem_Bitmap> bitmap = std::make_unique<glArchivItem_Bitmap_Raw>();
     if(int ec = bitmap->create(buffer, srcImg.getPalette()))
     {
         throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
     }
-    return RTTR_MOVE_RET(bitmap);
+    return bitmap;
 }
 
 /**
  *  Extrahiert mehrere (animierte) Texturen aus den Daten.
  */
-libutil::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
-                                                                        uint8_t start_index, uint8_t color_count)
+std::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
+                                                                    uint8_t start_index, uint8_t color_count)
 {
     Extent texSize = rect.getSize();
     if(texSize.x == 0 && rect.right < srcImg.getWidth())
@@ -844,22 +843,22 @@ libutil::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const gl
         texSize.y = srcImg.getHeight() - rect.bottom;
     libsiedler2::PixelBufferPaletted buffer(texSize.x, texSize.y);
 
-    srcImg.print(buffer, NULL, 0, 0, rect.left, rect.top);
+    srcImg.print(buffer, nullptr, 0, 0, rect.left, rect.top);
 
-    libutil::unique_ptr<libsiedler2::Archiv> destination(new libsiedler2::Archiv());
+    auto destination = std::make_unique<libsiedler2::Archiv>();
     libsiedler2::ArchivItem_PaletteAnimation anim;
     anim.isActive = true;
     anim.moveUp = false;
     anim.firstClr = start_index;
     anim.lastClr = start_index + color_count - 1u;
-    libsiedler2::ArchivItem_Palette* curPal = NULL;
+    libsiedler2::ArchivItem_Palette* curPal = nullptr;
     for(unsigned i = 0; i < color_count; ++i)
     {
         if(i == 0)
             curPal = srcImg.getPalette()->clone();
         else
             curPal = anim.apply(*curPal);
-        libutil::unique_ptr<glArchivItem_Bitmap_Raw> bitmap(new glArchivItem_Bitmap_Raw);
+        auto bitmap = std::make_unique<glArchivItem_Bitmap_Raw>();
 
         bitmap->setPalette(curPal);
 
@@ -867,7 +866,7 @@ libutil::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const gl
             throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
         destination->push(bitmap.release());
     }
-    return RTTR_MOVE_RET(destination);
+    return destination;
 }
 
 std::vector<std::string> Loader::GetFilesToLoad(const std::string& filepath)
@@ -875,9 +874,9 @@ std::vector<std::string> Loader::GetFilesToLoad(const std::string& filepath)
     std::vector<std::string> result;
     result.push_back(filepath);
     const std::string filename = bfs::path(filepath).filename().string();
-    BOOST_FOREACH(const OverrideFolder& overrideFolder, overrideFolders_)
+    for(const OverrideFolder& overrideFolder : overrideFolders_)
     {
-        BOOST_FOREACH(const std::string& overrideFile, overrideFolder.files)
+        for(const std::string& overrideFile : overrideFolder.files)
         {
             if(overrideFile == filename)
             {
@@ -928,7 +927,7 @@ bool Loader::LoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, cons
 {
     archiv.clear();
     const std::vector<std::string> filesToLoad = GetFilesToLoad(pfad);
-    BOOST_FOREACH(const std::string& curFilepath, filesToLoad)
+    for(const std::string& curFilepath : filesToLoad)
     {
         libsiedler2::Archiv newEntries;
         if(!LoadSingleFile(newEntries, curFilepath, palette))
@@ -1054,7 +1053,7 @@ bool Loader::LoadOverrideDirectory(const std::string& path)
     filesAndFolders = ListDir(path, "ini", true, &filesAndFolders);
 
     const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
-    BOOST_FOREACH(const std::string& i, filesAndFolders)
+    for(const std::string& i : filesAndFolders)
     {
         if(!LoadFile(i, pal5, true))
             return false;
@@ -1072,7 +1071,7 @@ bool Loader::LoadFilesFromArray(const std::vector<unsigned>& files)
 {
     std::vector<std::string> sFiles;
     sFiles.reserve(files.size());
-    BOOST_FOREACH(unsigned curFileIdx, files)
+    for(unsigned curFileIdx : files)
         sFiles.push_back(FILE_PATHS[curFileIdx]);
     return LoadFiles(sFiles);
 }

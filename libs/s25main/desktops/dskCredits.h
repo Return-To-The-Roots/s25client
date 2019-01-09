@@ -56,7 +56,8 @@ private:
         std::string lastLine;
         glArchivItem_Bitmap* pic;
         std::vector<Line> lines;
-        explicit CreditsEntry(const std::string& title, const std::string& lastLine = "") : title(title), lastLine(lastLine), pic(NULL) {}
+        explicit CreditsEntry(const std::string& title, const std::string& lastLine = "") : title(title), lastLine(lastLine), pic(nullptr)
+        {}
         CreditsEntry(const std::string& title, glArchivItem_Bitmap* pic, const std::string& lastLine = "")
             : title(title), lastLine(lastLine), pic(pic)
         {}

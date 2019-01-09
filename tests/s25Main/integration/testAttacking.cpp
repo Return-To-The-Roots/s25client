@@ -35,7 +35,6 @@
 #include "gameTypes/Direction_Output.h"
 #include "gameData/GameConsts.h"
 #include "gameData/SettingTypeConv.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -43,15 +42,15 @@ BOOST_AUTO_TEST_SUITE(AttackSuite)
 
 struct AttackDefaults
 {
-    BOOST_STATIC_CONSTEXPR unsigned width = 20;
-    BOOST_STATIC_CONSTEXPR unsigned height = 12;
+    static constexpr unsigned width = 20;
+    static constexpr unsigned height = 12;
 };
 
 /// Reschedule the walk event of the obj to be executed in numGFs GFs
 void rescheduleWalkEvent(TestEventManager& em, noMovable& obj, unsigned numGFs)
 {
     std::vector<const GameEvent*> evts = em.GetObjEvents(obj);
-    BOOST_FOREACH(const GameEvent* ev, evts)
+    for(const GameEvent* ev : evts)
     {
         if(ev->id == 0)
         {
@@ -81,7 +80,7 @@ template<unsigned T_numPlayers, unsigned T_width, unsigned T_height>
 struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_height>
 {
     /// Positions of the players HQ
-    boost::array<MapPoint, T_numPlayers> hqPos;
+    std::array<MapPoint, T_numPlayers> hqPos;
     typedef WorldWithGCExecution<T_numPlayers, T_width, T_height> Parent;
     using Parent::curPlayer;
     using Parent::world;
@@ -431,7 +430,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
 
     // Points around bld should be ours
     const std::vector<MapPoint> pts = world.GetPointsInRadius(milBld1Pos, 3);
-    BOOST_FOREACH(const MapPoint& pt, pts)
+    for(const MapPoint& pt : pts)
     {
         BOOST_REQUIRE_EQUAL(world.GetNode(pt).owner, curPlayer + 1u);
     }
@@ -521,7 +520,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     nofDefender* defender = const_cast<nofDefender*>(milBld1->GetDefender());
     while(defender->GetHitpoints() > 1u)
         defender->TakeHit();
-    RTTR_EXEC_TILL(500, milBld1->GetDefender() == NULL);
+    RTTR_EXEC_TILL(500, milBld1->GetDefender() == nullptr);
     // Defender defeated. Attacker moving in.
     BOOST_REQUIRE(attacker->IsMoving());
     BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NORTHWEST);
@@ -600,7 +599,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     defender = const_cast<nofDefender*>(milBld1->GetDefender());
     while(defender->GetHitpoints() > 1u)
         defender->TakeHit();
-    RTTR_EXEC_TILL(500, milBld1->GetDefender() == NULL);
+    RTTR_EXEC_TILL(500, milBld1->GetDefender() == nullptr);
     // Defender defeated. Attacker moving in.
     BOOST_REQUIRE(attacker->IsMoving());
     BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NORTHWEST);
@@ -631,19 +630,19 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     rescheduleWalkEvent(em, *secAttacker, 1);
     rescheduleWalkEvent(em, *aggDefender, 2);
     RTTR_SKIP_GFS(2);
-    BOOST_REQUIRE(aggDefender->GetAttacker() == NULL);
-    BOOST_REQUIRE(secAttacker->GetHuntingDefender() == NULL);
+    BOOST_REQUIRE(aggDefender->GetAttacker() == nullptr);
+    BOOST_REQUIRE(secAttacker->GetHuntingDefender() == nullptr);
     BOOST_REQUIRE(aggDefender->IsWandering());
     RTTR_EXEC_TILL(270, milBld1->GetNumTroops() == 2u);
     // 3. Allied aggressor towards this bld
     // Abort attack and return home
     rescheduleWalkEvent(em, *alliedAttacker, 1);
-    RTTR_EXEC_TILL(1, alliedAttacker->GetAttackedGoal() == NULL);
+    RTTR_EXEC_TILL(1, alliedAttacker->GetAttackedGoal() == nullptr);
     RTTR_EXEC_TILL(90, alliedBld->GetNumTroops() == 2u);
     // 4. Hostile aggressor towards this bld
     // Continue attack and fight
     rescheduleWalkEvent(em, *hostileAttacker, 1);
-    BOOST_REQUIRE(hostileAttacker->GetAttackedGoal() != NULL);
+    BOOST_REQUIRE(hostileAttacker->GetAttackedGoal() != nullptr);
     RTTR_EXEC_TILL(220, hostileAttacker->GetPos() == milBld1FlagPos);
     RTTR_EXEC_TILL(50, world.GetFigures(milBld1FlagPos).front()->GetGOT() == GOT_FIGHTING);
 }
@@ -752,7 +751,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     nofDefender* defender = const_cast<nofDefender*>(milBld1->GetDefender());
     while(defender->GetHitpoints() > 1u)
         defender->TakeHit();
-    RTTR_EXEC_TILL(500, milBld1->GetDefender() == NULL);
+    RTTR_EXEC_TILL(500, milBld1->GetDefender() == nullptr);
     // Defender defeated. Attacker moving in.
     BOOST_REQUIRE(attacker->IsMoving());
     BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NORTHWEST);
@@ -801,11 +800,11 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
     curPlayer = 0;
     this->Attack(milBld1Pos, 5, true);
     RTTR_EXEC_TILL(2000, milBld1->GetPlayer() == curPlayer);
-    boost::array<MapPoint, 3> bldPts = {{leftBldPos, rightBldPos, milBld1Pos}};
-    BOOST_FOREACH(const MapPoint& bldPt, bldPts)
+    std::array<MapPoint, 3> bldPts = {{leftBldPos, rightBldPos, milBld1Pos}};
+    for(const MapPoint& bldPt : bldPts)
     {
         MapPoint flagPt = world.GetNeighbour(bldPt, Direction::SOUTHEAST);
-        BOOST_FOREACH(Direction i, Direction())
+        for(Direction i : Direction())
         {
             // No routes except the main road
             if(i != Direction::NORTHWEST)

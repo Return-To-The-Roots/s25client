@@ -1,4 +1,4 @@
-FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem)
+FIND_PACKAGE(Boost 1.64.0 REQUIRED COMPONENTS filesystem)
 
 set(ALL_SOURCES
     src/files.h

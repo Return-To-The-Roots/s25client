@@ -67,7 +67,7 @@ enum ButtonIds
 
 iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
     : IngameWindow(CGI_POSTOFFICE, IngameWindow::posLastOrCenter, Extent(254, 295), _("Post office"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(NULL), lastHasMissionGoal(true)
+      gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(nullptr), lastHasMissionGoal(true)
 {
     AddImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 190));  // Viewer: 191 - Papier
     AddImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 30));   // Viewer:  31 - Soldat
@@ -264,7 +264,7 @@ void iwPostWindow::DisplayPostMessage()
     {
         SetMessageText(_("No letters!"));
         GetCtrl<Window>(ID_TEXT)->SetPos(textCenter);
-        curMsg = NULL;
+        curMsg = nullptr;
         return;
     }
 
@@ -368,7 +368,7 @@ const PostMsg* iwPostWindow::GetMsg(unsigned id) const
     if(id < curMsgIdxs.size())
         return postBox.GetMsg(curMsgIdxs[id]);
     else
-        return NULL;
+        return nullptr;
 }
 
 void iwPostWindow::SwitchCategory(PostCategory cat)

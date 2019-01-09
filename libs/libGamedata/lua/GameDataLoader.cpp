@@ -26,7 +26,6 @@
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
 #include "libutil/Log.h"
-#include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <stdexcept>
 
@@ -36,7 +35,7 @@ GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& b
     Register(lua);
 
     lua["rttr"] = this;
-    lua["include"] = kaguya::function<void(const std::string&)>(boost::bind(&GameDataLoader::Include, this, _1));
+    lua["include"] = kaguya::function([this](const std::string& file) { Include(file); });
 }
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc)
@@ -46,7 +45,7 @@ GameDataLoader::GameDataLoader(WorldDescription& worldDesc)
     Register(lua);
 
     lua["rttr"] = this;
-    lua["include"] = kaguya::function<void(const std::string&)>(boost::bind(&GameDataLoader::Include, this, _1));
+    lua["include"] = kaguya::function([this](const std::string& file) { Include(file); });
 }
 
 GameDataLoader::~GameDataLoader() {}
@@ -78,7 +77,7 @@ void GameDataLoader::Register(kaguya::State& state)
 
 void GameDataLoader::Include(const std::string& filepath)
 {
-    BOOST_CONSTEXPR_OR_CONST int maxIncludeDepth = 10;
+    constexpr int maxIncludeDepth = 10;
     // Protect against cycles and stack overflows
     if(++curIncludeDepth_ >= maxIncludeDepth)
         throw std::runtime_error("Include file '" + filepath + "' cannot be included as the maximum include depth of 10 is reached!");

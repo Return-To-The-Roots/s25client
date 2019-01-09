@@ -18,8 +18,13 @@
 #ifndef PostCategory_h__
 #define PostCategory_h__
 
-#include <boost/core/scoped_enum.hpp>
-
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(PostCategory){General, Military, Geologist, Economy, Diplomacy} BOOST_SCOPED_ENUM_DECLARE_END(PostCategory)
+enum class PostCategory
+{
+    General,
+    Military,
+    Geologist,
+    Economy,
+    Diplomacy
+};
 
 #endif // PostCategory_h__

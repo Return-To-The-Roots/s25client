@@ -24,5 +24,5 @@
 bool DoesReachablePathExist(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt, unsigned maxLen)
 {
     RTTR_Assert(startPt != endPt);
-    return world.GetFreePathFinder().FindPath(startPt, endPt, false, maxLen, NULL, NULL, NULL, PathConditionReachable(world));
+    return world.GetFreePathFinder().FindPath(startPt, endPt, false, maxLen, nullptr, nullptr, nullptr, PathConditionReachable(world));
 }

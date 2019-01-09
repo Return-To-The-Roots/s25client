@@ -22,11 +22,10 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
-#include "libutil/unique_ptr.h"
-#include <boost/array.hpp>
-#include <boost/container/vector.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <array>
+#include <memory>
 #include <vector>
 
 struct Direction;
@@ -102,8 +101,8 @@ private:
     {
         PointF pos; // Position vom jeweiligen Punkt
         float color;
-        boost::array<PointF, 2> borderPos; // Mittelpunkt für Ränder
-        boost::array<float, 2> borderColor;
+        std::array<PointF, 2> borderPos; // Mittelpunkt für Ränder
+        std::array<float, 2> borderColor;
     };
 
     struct Color
@@ -113,17 +112,17 @@ private:
         float b;
     };
 
-    typedef boost::array<PointF, 3> Triangle;
-    typedef boost::array<Color, 3> ColorTriangle;
+    typedef std::array<PointF, 3> Triangle;
+    typedef std::array<Color, 3> ColorTriangle;
 
     struct Borders
     {
-        boost::array<unsigned char, 2> left_right;
-        boost::array<unsigned char, 2> right_left;
-        boost::array<unsigned char, 2> top_down;
-        boost::array<unsigned, 2> left_right_offset;
-        boost::array<unsigned, 2> right_left_offset;
-        boost::array<unsigned, 2> top_down_offset;
+        std::array<unsigned char, 2> left_right;
+        std::array<unsigned char, 2> right_left;
+        std::array<unsigned char, 2> top_down;
+        std::array<unsigned, 2> left_right_offset;
+        std::array<unsigned, 2> right_left_offset;
+        std::array<unsigned, 2> top_down_offset;
     };
 
     struct TerrainTexture
@@ -132,14 +131,14 @@ private:
         Triangle usdCoords, rsuCoords;
     };
 
-    typedef boost::container::vector<boost::container::vector<PreparedRoad> > PreparedRoads;
+    typedef std::vector<std::vector<PreparedRoad>> PreparedRoads;
 
     /// Size of the map
     MapExtent size_;
     /// Map sized array of vertex related data
     std::vector<Vertex> vertices;
     /// Map sized array with terrain indices/textures (bottom, bottom right of node)
-    std::vector<boost::array<DescIdx<TerrainDesc>, 2> > terrain;
+    std::vector<std::array<DescIdx<TerrainDesc>, 2>> terrain;
 
     std::vector<Triangle> gl_vertices;
     std::vector<Triangle> gl_texcoords;
@@ -151,11 +150,11 @@ private:
 
     std::vector<Borders> borders;
 
-    typedef libutil::unique_ptr<glArchivItem_Bitmap> BmpPtr;
-    boost::container::vector<TerrainTexture> terrainTextures;
-    boost::container::vector<BmpPtr> edgeTextures;
+    typedef std::unique_ptr<glArchivItem_Bitmap> BmpPtr;
+    std::vector<TerrainTexture> terrainTextures;
+    std::vector<BmpPtr> edgeTextures;
     /// Flat 2D array: [Landscape][RoadType]
-    boost::container::vector<BmpPtr> roadTextures;
+    std::vector<BmpPtr> roadTextures;
 
     /// Returns the index of a vertex. Used to access vertices and borders
     unsigned GetVertexIdx(const MapPoint pt) const

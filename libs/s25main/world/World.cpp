@@ -29,12 +29,10 @@
 #include "helpers/containerUtils.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <set>
 #include <stdexcept>
 
-World::World() : noNodeObj(NULL) {}
+World::World() : noNodeObj(nullptr) {}
 
 World::~World()
 {
@@ -157,7 +155,7 @@ const noBase* World::GetNO(const MapPoint pt) const
 
 void World::SetNO(const MapPoint pt, noBase* obj, const bool replace /* = false*/)
 {
-    RTTR_Assert(replace || obj == NULL || GetNode(pt).obj == NULL);
+    RTTR_Assert(replace || obj == nullptr || GetNode(pt).obj == nullptr);
 #if RTTR_ENABLE_ASSERTS
     RTTR_Assert(!dynamic_cast<noMovable*>(obj)); // It should be a static, non-movable object
 #endif
@@ -171,7 +169,7 @@ void World::DestroyNO(const MapPoint pt, const bool checkExists /* = true*/)
     {
         // Destroy may remove the NO already from the map or replace it (e.g. building -> fire)
         // So remove from map, then destroy and free
-        GetNodeInt(pt).obj = NULL;
+        GetNodeInt(pt).obj = nullptr;
         obj->Destroy();
         deletePtr(obj);
     } else
@@ -311,12 +309,12 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
 
 bool World::IsSeaPoint(const MapPoint pt) const
 {
-    return World::IsOfTerrain(pt, boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
+    return World::IsOfTerrain(pt, [](const auto& desc) { return desc.Is(ETerrain::Shippable); });
 }
 
 bool World::IsWaterPoint(const MapPoint pt) const
 {
-    return World::IsOfTerrain(pt, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER);
+    return World::IsOfTerrain(pt, [](const auto& desc) { return desc.kind == TerrainKind::WATER; });
 }
 
 unsigned World::GetSeaSize(const unsigned seaId) const
@@ -410,7 +408,7 @@ unsigned World::CalcHarborDistance(unsigned habor_id1, unsigned harborId2) const
         return 0;
     for(unsigned i = 0; i < 6; ++i)
     {
-        BOOST_FOREACH(const HarborPos::Neighbor& n, harbor_pos[habor_id1].neighbors[i])
+        for(const HarborPos::Neighbor& n : harbor_pos[habor_id1].neighbors[i])
         {
             if(n.id == harborId2)
                 return n.distance;

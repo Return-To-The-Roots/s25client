@@ -96,7 +96,7 @@ struct ignore_assign
                 return names_[index];                                    \
         }                                                                \
                                                                          \
-        return NULL;                                                     \
+        return nullptr;                                                  \
     }                                                                    \
                                                                          \
     const int* EnumName::values_()                                       \
@@ -126,7 +126,7 @@ struct ignore_assign
         for(size_t index = 0; index < count_; ++index)                   \
         {                                                                \
             delete[] names_[index];                                      \
-            names_[index] = NULL;                                        \
+            names_[index] = nullptr;                                     \
         }                                                                \
     }                                                                    \
     namespace {                                                          \

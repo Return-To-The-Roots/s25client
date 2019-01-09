@@ -248,7 +248,7 @@ void noFighting::HandleEvent(const unsigned id)
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
                         gwg->AddFigure(soldiers[turn]->GetPos(), soldiers[turn]);
                         soldiers[turn]->WonFighting();
-                        soldiers[turn] = NULL;
+                        soldiers[turn] = nullptr;
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
                         turn = 3 + (1 - turn);
                         // Event zum Sterben des einen Soldaten anmelden
@@ -288,8 +288,8 @@ void noFighting::HandleEvent(const unsigned id)
                 }
 
                 // Sichtradius ausblenden am Ende des Kampfes, an jeweiligen Soldaten dann übergeben, welcher überlebt hat
-                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->GetPlayer(), NULL);
-                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, NULL);
+                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->GetPlayer(), nullptr);
+                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, nullptr);
 
                 // Soldaten endgültig umbringen
                 gwg->GetPlayer(soldiers[player_lost]->GetPlayer()).DecreaseInventoryJob(soldiers[player_lost]->GetJobType(), 1);

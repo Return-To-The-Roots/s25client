@@ -25,9 +25,9 @@
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
-#include <boost/array.hpp>
 #include <boost/filesystem/path.hpp>
 #include <algorithm>
+#include <array>
 #include <iostream>
 
 class SwitchOnStart : public ClientInterface
@@ -36,7 +36,7 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameLoading(boost::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
+    void CI_GameLoading(std::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
 };
 
 bool QuickStartGame(const std::string& filePath, bool singlePlayer)

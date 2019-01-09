@@ -24,7 +24,6 @@
 #include "lua/LuaInterfaceSettings.h"
 #include "network/IGameLobbyController.h"
 #include "libutil/colors.h"
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>

@@ -70,7 +70,7 @@ void iwShip::Draw_()
     IngameWindow::Draw_();
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     // Schiff holen
-    noShip* ship = (player == 0xff) ? NULL : owner.GetShipByID(ship_id);
+    noShip* ship = (player == 0xff) ? nullptr : owner.GetShipByID(ship_id);
 
     // Kein Schiff gefunden? Dann erstes Schiff holen
     if(!ship)

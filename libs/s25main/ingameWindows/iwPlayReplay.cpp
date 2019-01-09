@@ -35,7 +35,6 @@
 #include "gameData/const_gui_ids.h"
 #include "libutil/Log.h"
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
 class SwitchOnStart : public ClientInterface
@@ -44,7 +43,7 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameLoading(boost::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
+    void CI_GameLoading(std::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
 };
 
 std::vector<std::string> GetReplays()
@@ -109,7 +108,7 @@ void iwPlayReplay::PopulateTable()
 
         // Spielernamen auslesen
         std::string tmp_players;
-        BOOST_FOREACH(const std::string& playerName, replay.GetPlayerNames())
+        for(const std::string& playerName : replay.GetPlayerNames())
         {
             if(!tmp_players.empty())
                 tmp_players += ", ";

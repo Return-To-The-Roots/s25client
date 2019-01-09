@@ -34,7 +34,7 @@
 #include <stdexcept>
 
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(STATE_BUILDING), planer(NULL), builder(NULL), boards(0), stones(0),
+    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(STATE_BUILDING), planer(nullptr), builder(nullptr), boards(0), stones(0),
       used_boards(0), used_stones(0), build_progress(0)
 {
     // Überprüfen, ob die Baustelle erst noch planiert werden muss (nur bei mittleren/großen Gebäuden)
@@ -67,7 +67,7 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
 
 /// Konstruktor für Hafenbaustellen vom Schiff aus
 noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player), state(STATE_BUILDING), planer(NULL),
+    : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player), state(STATE_BUILDING), planer(nullptr),
       boards(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards), stones(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), used_boards(0),
       used_stones(0), build_progress(0)
 {
@@ -91,11 +91,11 @@ void noBuildingSite::Destroy_noBuildingSite()
     if(builder)
     {
         builder->LostWork();
-        builder = NULL;
+        builder = nullptr;
     } else if(planer)
     {
         planer->LostWork();
-        planer = NULL;
+        planer = nullptr;
     } else
         gwg->GetPlayer(player).JobNotWanted(this);
 
@@ -111,7 +111,7 @@ void noBuildingSite::Destroy_noBuildingSite()
     ordered_stones.clear();
 
     // und Feld wird leer
-    gwg->SetNO(pos, NULL);
+    gwg->SetNO(pos, nullptr);
 
     // Baustelle wieder aus der Liste entfernen - dont forget about expedition harbor status
     bool expeditionharbor = IsHarborBuildingSiteFromSea();
@@ -259,8 +259,8 @@ void noBuildingSite::GotWorker(Job /*job*/, noFigure* worker)
 
 void noBuildingSite::Abrogate()
 {
-    planer = NULL;
-    builder = NULL;
+    planer = nullptr;
+    builder = nullptr;
 
     gwg->GetPlayer(player).AddJobWanted((state == STATE_PLANING) ? JOB_PLANER : JOB_BUILDER, this);
 }
@@ -286,7 +286,7 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
         return 0;
 
     // 10000 als Basis wählen, damit man auch noch was abziehen kann
-    BOOST_CONSTEXPR_OR_CONST unsigned basePoints = 10000;
+    constexpr unsigned basePoints = 10000;
     unsigned points = basePoints;
 
     // Baumaterial mit einberechnen (wer noch am wenigsten braucht, soll mehr Punkte kriegen, da ja möglichst

@@ -85,12 +85,7 @@
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/if.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <algorithm>
 #include <cstdio>
 #include <sstream>
@@ -106,11 +101,11 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, const boost::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx,
+dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, const std::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx,
                                    bool initOGL)
-    : Desktop(NULL), game_(game), nwfInfo_(nwfInfo), worldViewer(playerIdx, game->world),
-      gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL), roadwindow(NULL),
-      minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
+    : Desktop(nullptr), game_(game), nwfInfo_(nwfInfo), worldViewer(playerIdx, game->world),
+      gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(nullptr),
+      roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -136,7 +131,7 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, const boost::sh
 
     game->world.SetGameInterface(this);
 
-    std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(NULL));
+    std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(nullptr));
     cbb.loadEdges(LOADER.GetInfoN("resource"));
     cbb.buildBorder(VIDEODRIVER.GetScreenSize(), borders);
 
@@ -153,13 +148,13 @@ void dskGameInterface::InitPlayer()
     if(worldViewer.GetPlayer().GetHQPos().isValid())
         gwv.MoveToMapPt(worldViewer.GetPlayer().GetHQPos());
 
-    namespace bl = boost::lambda;
-    using bl::_1;
-    evBld = worldViewer.GetWorld().GetNotifications().subscribe<BuildingNote>(
-      bl::if_(bl::bind(&BuildingNote::player, _1) == worldViewer.GetPlayerId())[bl::bind(&dskGameInterface::OnBuildingNote, this, _1)]);
+    evBld = worldViewer.GetWorld().GetNotifications().subscribe<BuildingNote>([this](const auto& note) {
+        if(note.player == worldViewer.GetPlayerId())
+            this->OnBuildingNote(note);
+    });
     PostBox& postBox = GetPostBox();
-    postBox.ObserveNewMsg(boost::bind(&dskGameInterface::NewPostMessage, this, _1, _2));
-    postBox.ObserveDeletedMsg(boost::bind(&dskGameInterface::PostMessageDeleted, this, _1));
+    postBox.ObserveNewMsg([this](const auto& msg, auto msgCt) { this->NewPostMessage(msg, msgCt); });
+    postBox.ObserveDeletedMsg([this](auto msgCt) { this->PostMessageDeleted(msgCt); });
     UpdatePostIcon(postBox.GetNumMsgs(), true);
 }
 
@@ -168,7 +163,7 @@ PostBox& dskGameInterface::GetPostBox()
     PostBox* postBox = worldViewer.GetWorld().GetPostMgr().GetPostBox(worldViewer.GetPlayerId());
     if(!postBox)
         postBox = worldViewer.GetWorldNonConst().GetPostMgr().AddPostBox(worldViewer.GetPlayerId());
-    RTTR_Assert(postBox != NULL);
+    RTTR_Assert(postBox != nullptr);
     return *postBox;
 }
 
@@ -341,7 +336,7 @@ void dskGameInterface::Msg_PaintAfter()
     {
         // Laggende Spieler anzeigen in Form von Schnecken
         DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
-        BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo_->getPlayerInfos())
+        for(const NWFPlayerInfo& player : nwfInfo_->getPlayerInfos())
         {
             if(player.isLagging)
             {
@@ -364,7 +359,7 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Draw speed indicator icon
     const int startSpeed = SPEED_GF_LENGTHS[game_->ggs.speed];
-    const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength() / boost::chrono::milliseconds(10));
+    const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength() / std::chrono::milliseconds(10));
 
     if(speedStep != 0)
     {
@@ -549,7 +544,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             if(selObj.GetType() != NOP_FLAG && selObj.GetType() != NOP_BUILDING)
             {
                 // Check if there are roads
-                BOOST_FOREACH(Direction dir, Direction())
+                for(Direction dir : Direction())
                 {
                     uint8_t curRoad = worldViewer.GetVisiblePointRoad(cSel, dir);
                     if(curRoad)
@@ -886,8 +881,8 @@ void dskGameInterface::Run()
 
     unsigned water_percent;
     // Draw mouse only if not on window
-    bool drawMouse = WINDOWMANAGER.FindWindowAtPos(VIDEODRIVER.GetMousePos()) == NULL;
-    gwv.Draw(road, actionwindow != NULL ? actionwindow->GetSelectedPt() : MapPoint::Invalid(), drawMouse, &water_percent);
+    bool drawMouse = WINDOWMANAGER.FindWindowAtPos(VIDEODRIVER.GetMousePos()) == nullptr;
+    gwv.Draw(road, actionwindow != nullptr ? actionwindow->GetSelectedPt() : MapPoint::Invalid(), drawMouse, &water_percent);
 
     // Evtl Meeresrauschen-Sounds abspieln
     SOUNDMANAGER.PlayOceanBrawling(water_percent);
@@ -998,7 +993,8 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Sind wir am Wasser?
     if(action_tabs.setflag)
     {
-        if(world.HasTerrain(cSel, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER))
+        auto isWater = [](const auto& desc) { return desc.kind == TerrainKind::WATER; };
+        if(world.HasTerrain(cSel, isWater))
             params = iwAction::AWFT_WATERFLAG;
     }
 
@@ -1034,7 +1030,7 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
         (void)RANDOM.Rand(__FILE__, __LINE__, 0, 255);
     else if(cmd == "segfault")
     {
-        char* x = NULL;
+        char* x = nullptr;
         *x = 1; //-V522 // NOLINT
     } else if(cmd == "reload")
     {
@@ -1058,9 +1054,9 @@ void dskGameInterface::GI_BuildRoad()
 void dskGameInterface::GI_WindowClosed(Window* wnd)
 {
     if(actionwindow == wnd)
-        actionwindow = NULL;
+        actionwindow = nullptr;
     else if(roadwindow == wnd)
-        roadwindow = NULL;
+        roadwindow = nullptr;
 }
 
 void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
@@ -1135,7 +1131,7 @@ void dskGameInterface::CI_GamePaused()
         if(roadwindow)
         {
             roadwindow->Close();
-            roadwindow = NULL;
+            roadwindow = nullptr;
         }
         GI_CancelRoadBuilding();
     }
@@ -1274,7 +1270,7 @@ void dskGameInterface::NewPostMessage(const PostMsg& msg, const unsigned msgCt)
 {
     UpdatePostIcon(msgCt, true);
     SoundEffect soundEffect = msg.GetSoundEffect();
-    switch(boost::native_value(soundEffect))
+    switch(soundEffect)
     {
         case SoundEffect::Pidgeon: LOADER.GetSoundN("sound", 114)->Play(100, false); break;
         case SoundEffect::Fanfare: LOADER.GetSoundN("sound", 110)->Play(100, false);

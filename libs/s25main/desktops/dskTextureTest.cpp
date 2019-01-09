@@ -28,8 +28,8 @@
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/array.hpp>
 #include <boost/filesystem/path.hpp>
+#include <array>
 #include <glad/glad.h>
 
 namespace {
@@ -55,7 +55,7 @@ void dskTextureTest::Load()
     GameDataLoader gdLoader(newDesc);
     if(!gdLoader.Load())
     {
-        WINDOWMANAGER.ShowAfterSwitch(new iwMsgbox(_("Error"), "Failed to load game data!", NULL, MSB_OK, MSB_EXCLAMATIONRED));
+        WINDOWMANAGER.ShowAfterSwitch(new iwMsgbox(_("Error"), "Failed to load game data!", nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         return;
     }
     desc = newDesc;
@@ -92,7 +92,7 @@ void dskTextureTest::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 }
 
 typedef Point<GLfloat> PointF;
-typedef boost::array<PointF, 3> Triangle;
+typedef std::array<PointF, 3> Triangle;
 
 void dskTextureTest::Msg_PaintAfter()
 {
@@ -106,7 +106,7 @@ void dskTextureTest::Msg_PaintAfter()
     PointF texSize(curTexture->GetTexSize());
 
     TerrainDesc::Triangle trianglePos = cur.GetRSUTriangle();
-    boost::array<Triangle, 2> texCoords;
+    std::array<Triangle, 2> texCoords;
 
     Triangle& rsuCoord = texCoords[0];
     rsuCoord[0] = PointF(trianglePos.tip - texOrigin);
@@ -125,7 +125,7 @@ void dskTextureTest::Msg_PaintAfter()
     for(unsigned i = 0; i < 3; i++)
         usdCoord[i] /= texSize;
 
-    boost::array<Triangle, 2> vertexCoords;
+    std::array<Triangle, 2> vertexCoords;
     PointF triangleSize(448, 224);
     vertexCoords[0][0] = PointF(triangleSize.x / 2 + 10, 60);
     vertexCoords[0][1] = vertexCoords[0][0] + PointF(-triangleSize.x / 2, triangleSize.y);

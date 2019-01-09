@@ -74,7 +74,7 @@ libsiedler2::Archiv* Map::CreateArchiv()
     map->push(new libsiedler2::ArchivItem_Raw(unknown2));
     map->push(new libsiedler2::ArchivItem_Raw(unknown3));
     map->push(new libsiedler2::ArchivItem_Raw(resource));
-    map->push(NULL); // No shading
+    map->push(nullptr); // No shading
     map->push(new libsiedler2::ArchivItem_Raw(unknown5));
 
     info->push(map);

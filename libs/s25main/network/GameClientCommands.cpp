@@ -22,7 +22,6 @@
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
 #include "network/GameMessages.h"
-#include <boost/bind.hpp>
 
 /**
  *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
@@ -105,7 +104,7 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
         if(IsHost())
         {
             // Switch AIs
-            game->aiPlayers.erase_if(boost::bind(&AIPlayer::GetPlayerId, _1) == playerId2);
+            game->aiPlayers.erase_if([playerId2](const auto& player) { return player.GetPlayerId() == playerId2; });
             game->aiPlayers.push_back(CreateAIPlayer(playerId1, AI::Info(AI::DUMMY)));
         }
         GetPlayer(playerId1).ps = PS_AI;

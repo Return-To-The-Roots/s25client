@@ -21,7 +21,7 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/MapCoordinates.h"
-#include <boost/array.hpp>
+#include <array>
 
 class GameInterface;
 class GameWorldView;
@@ -75,7 +75,7 @@ private:
     unsigned selected_soldiers_count_sea;
     unsigned available_soldiers_count_sea;
     /// Die einzelnen Höhen für die einzelnen Tabs im Bautab
-    boost::array<unsigned short, 4> building_tab_heights;
+    std::array<unsigned short, 4> building_tab_heights;
 
 public:
     iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos, unsigned params,

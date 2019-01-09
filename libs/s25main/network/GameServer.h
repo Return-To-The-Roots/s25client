@@ -32,8 +32,8 @@
 #include "liblobby/LobbyInterface.h"
 #include "libutil/LANDiscoveryService.h"
 #include "libutil/Singleton.h"
-#include "libutil/unique_ptr.h"
-#include <boost/chrono.hpp>
+#include <chrono>
+#include <memory>
 #include <vector>
 
 class AIPlayer;
@@ -47,8 +47,8 @@ struct AIServerPlayer;
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface, public LobbyInterface
 {
 public:
-    BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
-    typedef boost::chrono::steady_clock SteadyClock;
+    static constexpr unsigned Longevity = 6;
+    typedef std::chrono::steady_clock SteadyClock;
 
     GameServer();
     ~GameServer() override;
@@ -179,7 +179,7 @@ private:
     {
         bool isActive;
         unsigned remainingSecs;
-        boost::chrono::steady_clock::time_point lasttime;
+        std::chrono::steady_clock::time_point lasttime;
 
     public:
         CountDown();
@@ -196,7 +196,7 @@ private:
     /// AsyncLogs of all players
     std::vector<AsyncLog> asyncLogs;
     /// Time at which the loading started
-    boost::chrono::steady_clock::time_point loadStartTime;
+    std::chrono::steady_clock::time_point loadStartTime;
 
     LANDiscoveryService lanAnnouncer;
     void RunStateLoading();

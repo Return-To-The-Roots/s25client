@@ -36,11 +36,11 @@
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
 #include "libutil/colors.h"
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <set>
 
-dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWnd(NULL), createServerWnd(NULL), lobbyRankingWnd(NULL)
+dskLobby::dskLobby()
+    : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWnd(nullptr), createServerWnd(nullptr), lobbyRankingWnd(nullptr)
 {
     RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
@@ -209,18 +209,18 @@ void dskLobby::UpdateServerList()
 void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
 {
     if(&wnd == serverInfoWnd)
-        serverInfoWnd = NULL;
+        serverInfoWnd = nullptr;
     else if(&wnd == createServerWnd)
-        createServerWnd = NULL;
+        createServerWnd = nullptr;
     else if(&wnd == lobbyRankingWnd)
-        lobbyRankingWnd = NULL;
+        lobbyRankingWnd = nullptr;
 }
 
 bool dskLobby::ConnectToSelectedGame()
 {
     ctrlTable* table = GetCtrl<ctrlTable>(10);
     unsigned selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
-    BOOST_FOREACH(const LobbyServerInfo& server, LOBBYCLIENT.GetServerList())
+    for(const LobbyServerInfo& server : LOBBYCLIENT.GetServerList())
     {
         if(server.getId() != selection)
             continue;
@@ -315,7 +315,7 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
     servertable->DeleteAllItems();
 
     std::set<unsigned> ids;
-    BOOST_FOREACH(const LobbyServerInfo& server, servers)
+    for(const LobbyServerInfo& server : servers)
     {
         if(server.getName().empty())
             continue;
@@ -326,11 +326,10 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
             continue;
         }
         ids.insert(server.getId());
-        std::string id = boost::lexical_cast<std::string>(server.getId());
+        std::string id = std::to_string(server.getId());
         std::string name = (server.hasPassword() ? "(pwd) " : "") + server.getName();
-        std::string ping = boost::lexical_cast<std::string>(server.getPing());
-        std::string player =
-          boost::lexical_cast<std::string>(server.getCurPlayers()) + "/" + boost::lexical_cast<std::string>(server.getMaxPlayers());
+        std::string ping = std::to_string(server.getPing());
+        std::string player = std::to_string(server.getCurPlayers()) + "/" + std::to_string(server.getMaxPlayers());
         servertable->AddRow(0, id.c_str(), name.c_str(), server.getMap().c_str(), player.c_str(), server.getVersion().c_str(),
                             ping.c_str());
     }
@@ -360,11 +359,11 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
     bool direction = playertable->GetSortDirection();
     playertable->DeleteAllItems();
 
-    BOOST_FOREACH(const LobbyPlayerInfo& player, players)
+    for(const LobbyPlayerInfo& player : players)
     {
         if(player.getId() != 0xFFFFFFFF)
         {
-            std::string punkte = boost::lexical_cast<std::string>(player.getPunkte());
+            std::string punkte = std::to_string(player.getPunkte());
             std::string name = player.getName();
             if(player.isIngame)
                 name += _(" (playing)");

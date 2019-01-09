@@ -18,7 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "FrameCounter.h"
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
-#include <boost/math/special_functions/round.hpp>
+#include <algorithm>
+#include <cmath>
 #include <cstdlib>
 
 //-V:clock::time_point:813
@@ -47,8 +48,8 @@ unsigned FrameCounter::getCurFrameRate() const
     clock::duration timeDiff = lastUpdateTime_ - curStartTime_;
     if(timeDiff == clock::duration::zero())
         return 0;
-    typedef boost::chrono::duration<double> dSeconds;
-    return boost::math::iround(curNumFrames_ / boost::chrono::duration_cast<dSeconds>(timeDiff).count());
+    typedef std::chrono::duration<double> dSeconds;
+    return std::lround(curNumFrames_ / std::chrono::duration_cast<dSeconds>(timeDiff).count());
 }
 
 FrameTimer::FrameTimer(int targetFramerate, unsigned maxLagFrames, clock::time_point curTime)
@@ -59,7 +60,7 @@ FrameTimer::FrameTimer(int targetFramerate, unsigned maxLagFrames, clock::time_p
 
 void FrameTimer::setTargetFramerate(int targetFramerate)
 {
-    using namespace boost::chrono;
+    using namespace std::chrono;
     nextFrameTime_ -= targetFrameDuration_;
     if(targetFramerate <= 0)
         targetFrameDuration_ = duration_t::zero(); // Disabled
@@ -70,7 +71,7 @@ void FrameTimer::setTargetFramerate(int targetFramerate)
 
 FrameTimer::duration_t FrameTimer::calcTimeToNextFrame(clock::time_point curTime) const
 {
-    using namespace boost::chrono;
+    using namespace std::chrono;
     if(targetFrameDuration_ == duration_t::zero())
         return clock::duration::zero();
 
@@ -112,7 +113,7 @@ void FrameLimiter::update(clock::time_point curTime)
 
 void FrameLimiter::sleepTillNextFrame(clock::time_point curTime)
 {
-    using namespace boost::chrono;
+    using namespace std::chrono;
     nanoseconds waitTime = duration_cast<nanoseconds>(frameTimer_.calcTimeToNextFrame(curTime));
     // No time to waste?
     if(waitTime <= nanoseconds::zero())

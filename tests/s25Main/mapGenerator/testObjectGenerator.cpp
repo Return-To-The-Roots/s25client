@@ -19,7 +19,6 @@
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "libsiedler2/enumTypes.h"
-#include <boost/bind.hpp>
 #include <boost/test/unit_test.hpp>
 
 namespace {
@@ -84,8 +83,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjGenFixture)
 {
     Map map(MapExtent(16, 8), "name", "author");
 
-    DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER
-                                                && boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
+    DescIdx<TerrainDesc> t =
+      config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::WATER && desc.Is(ETerrain::Shippable); });
     uint8_t water = config.worldDesc.get(t).s2Id;
 
     /**
@@ -106,8 +105,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjGenFixture)
     BOOST_REQUIRE_EQUAL(map.textureRsu[0], water);
     BOOST_REQUIRE_EQUAL(map.textureLsd[0], water);
 
-    t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND
-                           && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    t = config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
     uint8_t meadow = config.worldDesc.get(t).s2Id;
     /**
      * Tests the ObjectGenerator::CreateTexture method with harbor.

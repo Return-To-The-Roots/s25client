@@ -28,8 +28,8 @@ class ctrlProgress : public Window, public ctrlBaseTooltip
 public:
     ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                  unsigned short button_minus, unsigned short button_plus, const unsigned short maximum, const Extent& padding,
-                 const unsigned force_color, const std::string& tooltip, const std::string& button_minus_tooltip = NULL,
-                 const std::string& button_plus_tooltip = NULL, unsigned short* const write_val = NULL);
+                 const unsigned force_color, const std::string& tooltip, const std::string& button_minus_tooltip = nullptr,
+                 const std::string& button_plus_tooltip = nullptr, unsigned short* const write_val = nullptr);
 
     void Resize(const Extent& newSize) override;
     void SetPosition(unsigned short position);

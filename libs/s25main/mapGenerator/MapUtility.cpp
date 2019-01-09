@@ -24,7 +24,6 @@
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 #include "gameData/TerrainDesc.h"
-#include <boost/bind.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -162,7 +161,7 @@ void MapUtility::Smooth(Map& map)
             std::vector<int> neighbors = VertexUtility::GetNeighbors(pt, map.size, 1);
             for(std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
             {
-                if(objGen.IsTexture(map, *it, boost::bind(&TerrainDesc::Is, _1, ETerrain::Mineable)))
+                if(objGen.IsTexture(map, *it, [](const auto& desc) { return desc.Is(ETerrain::Mineable); }))
                 {
                     mountainNeighbor = true;
                     break;
@@ -177,9 +176,9 @@ void MapUtility::Smooth(Map& map)
 
 void MapUtility::SetHarbour(Map& map, const Position& center, int waterLevel)
 {
-    DescIdx<TerrainDesc> buildable = cfg.FindTerrain(boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
-    DescIdx<TerrainDesc> buildable2 = cfg.FindTerrain(boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable)
-                                                      && boost::bind(&TerrainDesc::name, _1) != cfg.worldDesc.get(buildable).name);
+    DescIdx<TerrainDesc> buildable = cfg.FindTerrain([](const auto& desc) { return desc.Is(ETerrain::Buildable); });
+    DescIdx<TerrainDesc> buildable2 = cfg.FindTerrain(
+      [this, buildable](const auto& desc) { return desc.Is(ETerrain::Buildable) && desc.name != cfg.worldDesc.get(buildable).name; });
     if(!buildable2)
         buildable2 = buildable;
 
@@ -188,7 +187,7 @@ void MapUtility::SetHarbour(Map& map, const Position& center, int waterLevel)
         for(int y = center.y - 3; y <= center.y + 3; y++)
         {
             int index = VertexUtility::GetIndexOf(Position(x, y), map.size);
-            if(!objGen.IsTexture(map, index, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER))
+            if(!objGen.IsTexture(map, index, [](const auto& desc) { return desc.kind == TerrainKind::WATER; }))
             {
                 if(VertexUtility::Distance(Position(x, y), center, map.size) <= 1.7)
                 {
@@ -212,10 +211,11 @@ void MapUtility::SetTree(Map& map, const Position& position)
 {
     int index = VertexUtility::GetIndexOf(position, map.size);
 
-    if(ObjectGenerator::IsEmpty(map, index) && !objGen.IsTexture(map, index, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER)
-       && !objGen.IsTexture(map, index, boost::bind(&TerrainDesc::Is, _1, ETerrain::Unreachable)))
+    if(ObjectGenerator::IsEmpty(map, index)
+       && !objGen.IsTexture(map, index, [](const auto& desc) { return desc.kind == TerrainKind::WATER; })
+       && !objGen.IsTexture(map, index, [](const auto& desc) { return desc.Is(ETerrain::Unreachable); }))
     {
-        if(objGen.IsTexture(map, index, boost::bind(&TerrainDesc::humidity, _1) < 90))
+        if(objGen.IsTexture(map, index, [](const auto& desc) { return desc.humidity < 90; }))
             objGen.CreateRandomPalm(map, index);
         else
             objGen.CreateRandomTree(map, index);
@@ -245,8 +245,9 @@ void MapUtility::SetStone(Map& map, const Position& position)
 {
     int index = VertexUtility::GetIndexOf(position, map.size);
 
-    if(ObjectGenerator::IsEmpty(map, index) && !objGen.IsTexture(map, index, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER)
-       && !objGen.IsTexture(map, index, boost::bind(&TerrainDesc::Is, _1, ETerrain::Unreachable)))
+    if(ObjectGenerator::IsEmpty(map, index)
+       && !objGen.IsTexture(map, index, [](const auto& desc) { return desc.kind == TerrainKind::WATER; })
+       && !objGen.IsTexture(map, index, [](const auto& desc) { return desc.Is(ETerrain::Unreachable); }))
     {
         objGen.CreateRandomStone(map, index);
     }

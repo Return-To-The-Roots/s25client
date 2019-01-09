@@ -79,9 +79,9 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
 noShip::~noShip()
 {
     // Delete everything on board
-    BOOST_FOREACH(noFigure* figure, figures)
+    for(noFigure* figure : figures)
         deletePtr(figure);
-    BOOST_FOREACH(Ware* ware, wares)
+    for(Ware* ware : wares)
         deletePtr(ware);
 }
 
@@ -122,9 +122,9 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
 
 void noShip::Destroy()
 {
-    BOOST_FOREACH(const noFigure* figure, figures)
+    for(const noFigure* figure : figures)
         RTTR_Assert(!figure);
-    BOOST_FOREACH(const Ware* ware, wares)
+    for(const Ware* ware : wares)
         RTTR_Assert(!ware);
     gwg->GetNotifications().publish(ShipNote(ShipNote::Destroyed, ownerId_, pos));
     // Schiff wieder abmelden
@@ -227,7 +227,7 @@ void noShip::HandleEvent(const unsigned id)
 {
     RTTR_Assert(current_ev);
     RTTR_Assert(current_ev->id == id);
-    current_ev = NULL;
+    current_ev = nullptr;
 
     if(id == 0)
     {
@@ -261,7 +261,7 @@ void noShip::HandleEvent(const unsigned id)
             case STATE_EXPEDITION_UNLOADING:
             {
                 // Hafen herausfinden
-                noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : NULL;
+                noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : nullptr;
 
                 if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
                 {
@@ -285,7 +285,7 @@ void noShip::HandleEvent(const unsigned id)
             case STATE_EXPLORATIONEXPEDITION_UNLOADING:
             {
                 // Hafen herausfinden
-                noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : NULL;
+                noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : nullptr;
 
                 unsigned old_visual_range = GetVisualRange();
 
@@ -306,7 +306,7 @@ void noShip::HandleEvent(const unsigned id)
                 }
 
                 // Sichtbarkeiten neu berechnen
-                gwg->RecalcVisibilitiesAroundPoint(pos, old_visual_range, ownerId_, NULL);
+                gwg->RecalcVisibilitiesAroundPoint(pos, old_visual_range, ownerId_, nullptr);
 
                 break;
             }
@@ -316,7 +316,7 @@ void noShip::HandleEvent(const unsigned id)
             {
                 // Hafen herausfinden
                 RTTR_Assert(state == STATE_SEAATTACK_UNLOADING || remaining_sea_attackers == 0);
-                noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : NULL;
+                noBase* hb = goal_harborId ? gwg->GetNO(gwg->GetHarborPoint(goal_harborId)) : nullptr;
                 if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
                 {
                     static_cast<nobHarborBuilding*>(hb)->ReceiveGoodsFromShip(figures, wares);
@@ -504,7 +504,7 @@ noShip::Result noShip::DriveToHarbourPlace()
     if(!gwg->CheckShipRoute(pos, route_, curRouteIdx, &goalRoutePos))
     {
         // Route kann nicht mehr passiert werden --> neue Route suchen
-        if(!gwg->FindShipPathToHarbor(pos, goal_harborId, seaId_, &route_, NULL))
+        if(!gwg->FindShipPathToHarbor(pos, goal_harborId, seaId_, &route_, nullptr))
         {
             // Wieder keine gefunden -> raus
             return NO_ROUTE_FOUND;
@@ -519,7 +519,7 @@ noShip::Result noShip::DriveToHarbourPlace()
         RTTR_Assert(route_.size() >= curRouteIdx);
         if(route_.size() - curRouteIdx < 10)
         {
-            if(!gwg->FindShipPathToHarbor(pos, goal_harborId, seaId_, &route_, NULL))
+            if(!gwg->FindShipPathToHarbor(pos, goal_harborId, seaId_, &route_, nullptr))
                 // Keiner gefunden -> raus
                 return NO_ROUTE_FOUND;
 
@@ -561,7 +561,7 @@ void noShip::ContinueExpedition(const ShipDirection dir)
         return;
 
     // Versuchen, Weg zu finden
-    if(!gwg->FindShipPathToHarbor(pos, new_goal, seaId_, &route_, NULL))
+    if(!gwg->FindShipPathToHarbor(pos, new_goal, seaId_, &route_, nullptr))
         return;
 
     // Dann fahren wir da mal hin
@@ -640,7 +640,7 @@ void noShip::HandleState_GoToHarbor()
             // Go idle here (if harbor does not need it)
             StartIdling();
             // Hafen Bescheid sagen, dass wir da sind (falls er überhaupt noch existiert)
-            noBase* hb = goal.isValid() ? gwg->GetNO(goal) : NULL;
+            noBase* hb = goal.isValid() ? gwg->GetNO(goal) : nullptr;
             if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
                 static_cast<nobHarborBuilding*>(hb)->ShipArrived(this);
         }
@@ -775,7 +775,7 @@ void noShip::HandleState_TransportDriving()
             for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
             {
                 (*it)->Abrogate();
-                (*it)->SetGoalToNULL();
+                (*it)->SetGoalTonullptr();
             }
 
             for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
@@ -990,9 +990,9 @@ void noShip::StartDrivingToHarborPlace()
         {
             // Use the maximum distance between the harbors plus 6 fields
             unsigned maxDistance = gwg->CalcHarborDistance(home_harbor, goal_harborId) + 6;
-            routeFound = gwg->FindShipPath(pos, coastalPos, maxDistance, &route_, NULL);
+            routeFound = gwg->FindShipPath(pos, coastalPos, maxDistance, &route_, nullptr);
         } else
-            routeFound = gwg->FindShipPathToHarbor(pos, goal_harborId, seaId_, &route_, NULL);
+            routeFound = gwg->FindShipPathToHarbor(pos, goal_harborId, seaId_, &route_, nullptr);
         if(!routeFound)
         {
             // todo
@@ -1024,7 +1024,7 @@ void noShip::FindUnloadGoal(State newState)
     state = newState;
     // Das Schiff muss einen Notlandeplatz ansteuern
     // Neuen Hafen suchen
-    if(gwg->GetPlayer(ownerId_).FindHarborForUnloading(this, pos, &goal_harborId, &route_, NULL))
+    if(gwg->GetPlayer(ownerId_).FindHarborForUnloading(this, pos, &goal_harborId, &route_, nullptr))
     {
         curRouteIdx = 0;
         home_harbor = goal_harborId; // To allow unloading here
@@ -1084,7 +1084,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
             for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
             {
                 (*it)->Abrogate();
-                (*it)->SetGoalToNULL();
+                (*it)->SetGoalTonullptr();
             }
             for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
             {
@@ -1092,7 +1092,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
                 if((*it)->GetGoal() != hb)
                     (*it)->NotifyGoalAboutLostWare();
                 else
-                    (*it)->SetGoal(NULL);
+                    (*it)->SetGoal(nullptr);
             }
             break;
         case noShip::STATE_SEAATTACK_LOADING:
@@ -1129,7 +1129,7 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
     }
 }
 
-/// Fängt an mit idlen und setzt nötigen Sachen auf NULL
+/// Fängt an mit idlen und setzt nötigen Sachen auf nullptr
 void noShip::StartIdling()
 {
     // If those are not empty, then we are lost, not idling!

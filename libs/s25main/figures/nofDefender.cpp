@@ -115,7 +115,7 @@ void nofDefender::HomeDestroyed()
         case STATE_DEFENDING_WAITING:
         {
             // Hier muss sofort reagiert werden, da man steht
-            attacker = NULL;
+            attacker = nullptr;
             // Rumirren
             state = STATE_FIGUREWORK;
             StartWandering();
@@ -125,7 +125,7 @@ void nofDefender::HomeDestroyed()
         case STATE_DEFENDING_WALKINGTO:
         case STATE_DEFENDING_WALKINGFROM:
         {
-            attacker = NULL;
+            attacker = nullptr;
             // Rumirren
             StartWandering();
             state = STATE_FIGUREWORK;
@@ -143,7 +143,7 @@ void nofDefender::HomeDestroyed()
 
 void nofDefender::HomeDestroyedAtBegin()
 {
-    building = NULL;
+    building = nullptr;
 
     state = STATE_FIGUREWORK;
 
@@ -159,7 +159,7 @@ void nofDefender::WonFighting()
     if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
         IncreaseRank();
     // Angreifer tot
-    attacker = NULL;
+    attacker = nullptr;
 
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)
@@ -189,7 +189,7 @@ void nofDefender::WonFighting()
 /// Wenn ein Kampf verloren wurde (Tod)
 void nofDefender::LostFighting()
 {
-    attacker = NULL;
+    attacker = nullptr;
 
     // Gebäude Bescheid sagen, falls es noch existiert
     if(building)
@@ -203,7 +203,7 @@ void nofDefender::LostFighting()
             if(static_cast<nobMilitary*>(building)->GetNumTroops())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
         }
-        building = NULL;
+        building = nullptr;
     }
 }
 

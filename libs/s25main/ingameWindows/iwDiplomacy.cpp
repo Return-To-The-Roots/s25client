@@ -164,7 +164,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(gwv.GetWorld().GetGGS().lockedTeams)
     {
-        WINDOWMANAGER.Show(new iwMsgbox(_("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), NULL,
+        WINDOWMANAGER.Show(new iwMsgbox(_("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), nullptr,
                                         MSB_OK, MSB_EXCLAMATIONGREEN, 1));
         return;
     }
@@ -220,7 +220,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
     {
         case TREATY_OF_ALLIANCE: image = LOADER.GetImageN("io", 61); break;
         case NON_AGGRESSION_PACT: image = LOADER.GetImageN("io", 100); break;
-        default: image = NULL;
+        default: image = nullptr;
     }
 
     // Bild als Orientierung, welchen Vertrag wir gerade bearbeiten

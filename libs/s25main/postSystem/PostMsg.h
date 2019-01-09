@@ -45,8 +45,8 @@ public:
     /// Get position related to this message (optional, defaults to invalid)
     MapPoint GetPos() const { return pt_; }
     SoundEffect GetSoundEffect() const { return soundEffect_; }
-    /// Get Associated image or NULL if none exists
-    virtual ITexture* GetImage_() const { return NULL; }
+    /// Get Associated image or nullptr if none exists
+    virtual ITexture* GetImage_() const { return nullptr; }
 
 protected:
     void SetText(const std::string& text) { text_ = text; }

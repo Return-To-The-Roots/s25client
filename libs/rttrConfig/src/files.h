@@ -20,12 +20,12 @@
 #pragma once
 
 #include "helpers/SimpleMultiArray.h"
-#include <boost/array.hpp>
+#include <array>
 #include <string>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstanten
-const boost::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
+const std::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
   /*  0 */ "<RTTR_CONFIG>/CONFIG.INI",         // die Einstellungsdatei
   /*  1 */ "<RTTR_RTTR>/gamedata",             // Path to the gamedata
   /*  2 */ "",                                 // unused
@@ -132,23 +132,23 @@ const boost::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
   /*103 */ "<RTTR_GAME>/GFX/PICS/SETUP015.LBM"  // Freies Spiel
 }};
 
-BOOST_CONSTEXPR_OR_CONST unsigned FILE_SPLASH_ID = 104;
+constexpr unsigned FILE_SPLASH_ID = 104;
 
-const boost::array<const std::string, 21> SUPPRESS_UNUSED LOAD_SCREENS = {
+const std::array<const std::string, 21> SUPPRESS_UNUSED LOAD_SCREENS = {
   {"setup666", "setup667", "setup801", "setup802", "setup803", "setup804", "setup805", "setup806", "setup810", "setup811", "setup895",
    "setup896", "africa",   "austra",   "europe",   "green",    "japan",    "namerica", "nasia",    "samerica", "sasia"}};
 
-BOOST_CONSTEXPR_OR_CONST unsigned NUM_GFXSETS = 3;
-BOOST_CONSTEXPR_OR_CONST unsigned NUM_NATIONS = 5;
+constexpr unsigned NUM_GFXSETS = 3;
+constexpr unsigned NUM_NATIONS = 5;
 
-const boost::array<const std::string, NUM_NATIONS> SUPPRESS_UNUSED NATION_ICON_IDS = {
+const std::array<const std::string, NUM_NATIONS> SUPPRESS_UNUSED NATION_ICON_IDS = {
   {"afr_icon", "jap_icon", "rom_icon", "vik_icon", "bab_icon"}};
 
 const helpers::SimpleMultiArray<const std::string, 2, NUM_NATIONS> SUPPRESS_UNUSED NATION_GFXSET_Z = {
   {{"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"}, {"wafr_z", "wjap_z", "wrom_z", "wvik_z", "wbab_z"}}};
 
-const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED MAP_GFXSET_Z = {{"MAP_0_Z", "MAP_1_Z", "MAP_2_Z"}};
+const std::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED MAP_GFXSET_Z = {{"MAP_0_Z", "MAP_1_Z", "MAP_2_Z"}};
 
-const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED TEX_GFXSET = {{"TEX5", "TEX6", "TEX7"}};
+const std::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED TEX_GFXSET = {{"TEX5", "TEX6", "TEX7"}};
 
 #endif // FILES_H_INCLUDED

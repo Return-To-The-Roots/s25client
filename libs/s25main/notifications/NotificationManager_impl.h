@@ -19,6 +19,7 @@
 #ifdef __INTELLISENSE__
 #include "notifications/NotificationManager.h"
 #endif
+#include <algorithm>
 #include <stdexcept>
 
 template<class T_Note>
@@ -55,7 +56,7 @@ private:
 template<class T_Note>
 struct NotificationManager::NoteCallback : NoteCallbackBase
 {
-    typedef boost::function<void(const T_Note&)> Callback;
+    typedef std::function<void(const T_Note&)> Callback;
     explicit NoteCallback(Callback callback) : execute(callback) {}
     const Callback execute;
 };
@@ -78,7 +79,7 @@ inline void NotificationManager::unsubscribe(Subscribtion& subscription)
 }
 
 template<class T_Note>
-Subscribtion NotificationManager::subscribe(boost::function<void(T_Note)> callback)
+Subscribtion NotificationManager::subscribe(std::function<void(T_Note)> callback)
 {
     if(isPublishing)
         throw std::runtime_error("Cannot subscribe during publishing of messages");

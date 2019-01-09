@@ -23,7 +23,6 @@
 #include "gameTypes/MapInfo.h"
 #include "libendian/ConvertEndianess.h"
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 
 std::string Replay::GetSignature() const
 {

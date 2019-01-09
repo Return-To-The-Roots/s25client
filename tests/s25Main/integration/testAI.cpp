@@ -27,11 +27,10 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/BuildingProperties.h"
-#include "libutil/unique_ptr.h"
-#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
+#include <memory>
 
-typedef libutil::unique_ptr<AIPlayer> AIPointer;
+typedef std::unique_ptr<AIPlayer> AIPointer;
 // We need border land
 typedef WorldWithGCExecution<1, 24, 22> BiggerWorldWithGCExecution;
 
@@ -143,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
 {
     // Place a few trees
-    BOOST_FOREACH(const MapPoint& pt, world.GetPointsInRadius(hqPos + MapPoint(4, 0), 2))
+    for(const MapPoint& pt : world.GetPointsInRadius(hqPos + MapPoint(4, 0), 2))
     {
         if(!world.GetNode(pt).obj)
             world.SetNO(pt, new noTree(pt, 0, 3));
@@ -159,7 +158,7 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
             em.ExecuteNextGF();
             ai->RunGF(em.GetCurrentGF(), i == 0);
         }
-        BOOST_FOREACH(gc::GameCommandPtr& gc, aiGcs)
+        for(gc::GameCommandPtr& gc : aiGcs)
         {
             gc->Execute(world, curPlayer);
         }
@@ -195,7 +194,7 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
             em.ExecuteNextGF();
             ai->RunGF(em.GetCurrentGF(), i == 0);
         }
-        BOOST_FOREACH(gc::GameCommandPtr& gc, aiGcs)
+        for(gc::GameCommandPtr& gc : aiGcs)
         {
             gc->Execute(world, curPlayer);
         }

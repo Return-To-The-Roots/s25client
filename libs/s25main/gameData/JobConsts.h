@@ -21,9 +21,9 @@
 #include "DrawPointInit.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
-#include <boost/array.hpp>
+#include <array>
 
-extern const boost::array<std::string, NUM_JOB_TYPES> JOB_NAMES;
+extern const std::array<std::string, NUM_JOB_TYPES> JOB_NAMES;
 
 /// Berufsstruktur
 struct JobConst

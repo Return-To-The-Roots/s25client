@@ -22,7 +22,7 @@
 
 LandscapeDesc::LandscapeDesc(CheckedLuaTable luaData, const WorldDescription&)
 {
-    static const boost::array<std::string, NUM_ROADTYPES> roadTypeNames = {{"normal", "upgraded", "boat", "mountain"}};
+    static const std::array<std::string, NUM_ROADTYPES> roadTypeNames = {{"normal", "upgraded", "boat", "mountain"}};
     luaData.getOrThrow(name, "name");
     luaData.getOrThrow(mapGfxPath, "mapGfx");
     lua::validatePath(mapGfxPath);

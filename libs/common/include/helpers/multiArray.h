@@ -18,48 +18,47 @@
 #ifndef multiArray_h__
 #define multiArray_h__
 
-#include <boost/array.hpp>
-#include <boost/static_assert.hpp>
+#include <array>
 
 namespace helpers {
 
-/// Wrapper around boost::array to allow multi-dimensional fixed-size arrays
+/// Wrapper around std::array to allow multi-dimensional fixed-size arrays
 /// The declaration 'FooBar myVar[N1][N2][N3]' can be replaced with 'MultiArray<FooBar, N1, N2, N3> myVar'
 /// The given dimensions must be greater than 0
 template<typename T, size_t T_n1, size_t T_n2 = 0, size_t T_n3 = 0, size_t T_n4 = 0, size_t T_n5 = 0>
-struct MultiArray : public boost::array<MultiArray<T, T_n2, T_n3, T_n4, T_n5>, T_n1>
+struct MultiArray : public std::array<MultiArray<T, T_n2, T_n3, T_n4, T_n5>, T_n1>
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0);
+    static_assert(T_n1 > 0, "");
 };
 
 /* Specialisations for MultiArray
  * A recursive definition is used: T[N1][N2][N3]
- *          -> MultiArray<T, N1, N2, N3> = boost::array<T[N2][N3], N1>
- *          -> boost::array<MultiArray<T, N2, N3>, N1> = boost::array<boost::array<T[N3], N2>, N1>
- *          -> boost::array<boost::array<MultiArray<T, N3>, N2>, N1> = boost::array<boost::array<boost::array<T, N3>, N2>, N1>
+ *          -> MultiArray<T, N1, N2, N3> = std::array<T[N2][N3], N1>
+ *          -> std::array<MultiArray<T, N2, N3>, N1> = std::array<std::array<T[N3], N2>, N1>
+ *          -> std::array<std::array<MultiArray<T, N3>, N2>, N1> = std::array<std::array<std::array<T, N3>, N2>, N1>
  */
 template<typename T, size_t T_n1>
-struct MultiArray<T, T_n1, 0, 0, 0, 0> : public boost::array<T, T_n1>
+struct MultiArray<T, T_n1, 0, 0, 0, 0> : public std::array<T, T_n1>
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0);
+    static_assert(T_n1 > 0, "");
 };
 
 template<typename T, size_t T_n1, size_t T_n2>
-struct MultiArray<T, T_n1, T_n2, 0, 0, 0> : public boost::array<MultiArray<T, T_n2>, T_n1>
+struct MultiArray<T, T_n1, T_n2, 0, 0, 0> : public std::array<MultiArray<T, T_n2>, T_n1>
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0);
+    static_assert(T_n1 > 0, "");
 };
 
 template<typename T, size_t T_n1, size_t T_n2, size_t T_n3>
-struct MultiArray<T, T_n1, T_n2, T_n3, 0, 0> : public boost::array<MultiArray<T, T_n2, T_n3>, T_n1>
+struct MultiArray<T, T_n1, T_n2, T_n3, 0, 0> : public std::array<MultiArray<T, T_n2, T_n3>, T_n1>
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0);
+    static_assert(T_n1 > 0, "");
 };
 
 template<typename T, size_t T_n1, size_t T_n2, size_t T_n3, size_t T_n4>
-struct MultiArray<T, T_n1, T_n2, T_n3, T_n4, 0> : public boost::array<MultiArray<T, T_n2, T_n3, T_n4>, T_n1>
+struct MultiArray<T, T_n1, T_n2, T_n3, T_n4, 0> : public std::array<MultiArray<T, T_n2, T_n3, T_n4>, T_n1>
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0);
+    static_assert(T_n1 > 0, "");
 };
 
 } // namespace helpers

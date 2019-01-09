@@ -20,25 +20,14 @@
 #include "lua/GameDataLoader.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
-#include <boost/bind.hpp>
-#include <boost/random/uniform_real_distribution.hpp>
-
-#ifdef _WIN32
-// Fix stupid conversion warning in boost
-#pragma warning(push)
-#pragma warning(disable : 4244)
-#endif
-#include <boost/random/uniform_smallint.hpp>
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
 #include "libsiedler2/enumTypes.h"
 #include <ctime>
+#include <random>
 #include <stdexcept>
 
 bool RandomConfig::Init(MapStyle mapStyle, DescIdx<LandscapeDesc> landscape)
 {
-    uint64_t seed = static_cast<uint64_t>(time(NULL));
+    uint64_t seed = static_cast<uint64_t>(time(nullptr));
     return Init(mapStyle, landscape, seed);
 }
 
@@ -53,7 +42,7 @@ bool RandomConfig::Init(MapStyle mapStyle, DescIdx<LandscapeDesc> landscape, uin
             landscapeTerrains.push_back(t);
     }
     rng_.seed(static_cast<UsedRNG::result_type>(seed));
-    switch(boost::native_value(mapStyle))
+    switch(mapStyle)
     {
         case MapStyle::Greenland: CreateGreenland(); break;
         case MapStyle::Riverland: CreateRiverland(); break;
@@ -90,18 +79,17 @@ void RandomConfig::CreateGreenland()
 void RandomConfig::CreateDefaultTextures(bool snowOrLava)
 {
     // Water
-    std::vector<DescIdx<TerrainDesc> > terrains =
-      FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER && boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
+    std::vector<DescIdx<TerrainDesc>> terrains =
+      FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::WATER && desc.Is(ETerrain::Shippable); });
     if(!terrains.empty())
     {
         for(int i = 0; i < 4; i++)
             textures.push_back(terrains[Rand(terrains.size())]);
     }
     // Walkable land
-    terrains =
-      FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND && boost::bind(&TerrainDesc::Is, _1, ETerrain::Walkable));
+    terrains = FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Walkable); });
     // Desert or similar
-    terrains = FilterTerrains(terrains, boost::bind(&TerrainDesc::GetBQ, _1) == TerrainBQ::FLAG);
+    terrains = FilterTerrains(terrains, [](const auto& desc) { return desc.GetBQ() == TerrainBQ::FLAG; });
     if(!terrains.empty())
     {
         for(unsigned i = 1; i < terrains.size(); i++)
@@ -112,8 +100,7 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
         textures.push_back(terrains.front());
     }
     // Buildable land ordered by humidity
-    terrains =
-      FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    terrains = FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
     if(terrains.empty())
         throw std::runtime_error("No buildable land found");
     bool swapped;
@@ -134,8 +121,7 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
         textures.push_back(terrains[i]);
 
     // Buildable, humid mountain
-    terrains = FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
-                               && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    terrains = FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Buildable); });
     if(!terrains.empty())
     {
         for(unsigned i = 1; i < terrains.size(); i++)
@@ -147,20 +133,20 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
     }
     // Mountain
     DescIdx<TerrainDesc> t =
-      FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN && boost::bind(&TerrainDesc::Is, _1, ETerrain::Mineable));
+      FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Mineable); });
     if(!t)
         throw std::runtime_error("No mineable mountain found");
     for(int i = 0; i < 3; i++)
         textures.push_back(t);
 
     if(snowOrLava)
-        t = FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
+        t = FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::SNOW; });
     else
         t = DescIdx<TerrainDesc>();
     if(!t)
-        t = FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAVA);
+        t = FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::LAVA; });
     if(!t)
-        t = FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
+        t = FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::SNOW; });
     if(!!t)
     {
         for(int i = 0; i < 10; i++)
@@ -298,18 +284,18 @@ int RandomConfig::Rand(const int max)
 int RandomConfig::Rand(const int min, const int max)
 {
     RTTR_Assert(max > min);
-    boost::random::uniform_smallint<> distr(min, max - 1);
+    std::uniform_int_distribution<> distr(min, max - 1);
     return distr(rng_);
 }
 
 double RandomConfig::DRand(const double min, const double max)
 {
-    boost::random::uniform_real_distribution<double> distr(min, max);
+    std::uniform_real_distribution<double> distr(min, max);
     return distr(rng_);
 }
 
 const TerrainDesc& RandomConfig::GetTerrainByS2Id(uint8_t s2Id) const
 {
     s2Id &= ~(libsiedler2::HARBOR_MASK | 0x80); // Exclude harbor mask and highest bit
-    return worldDesc.get(FindTerrain(boost::bind(&TerrainDesc::s2Id, _1) == s2Id));
+    return worldDesc.get(FindTerrain([s2Id](const auto& desc) { return desc.s2Id == s2Id; }));
 }

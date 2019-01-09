@@ -19,7 +19,7 @@
 #define BufferedWriter_h__
 
 #include <libutil/TextWriterInterface.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 
 namespace rttr { namespace test {
@@ -27,12 +27,12 @@ namespace rttr { namespace test {
     class BufferedWriter : public TextWriterInterface
     {
     public:
-        BufferedWriter(boost::shared_ptr<TextWriterInterface> writer) : origWriter(writer) {}
+        BufferedWriter(std::shared_ptr<TextWriterInterface> writer) : origWriter(writer) {}
         ~BufferedWriter() override { flush(); }
         void writeText(const std::string& txt, unsigned color) override;
         void flush();
 
-        boost::shared_ptr<TextWriterInterface> origWriter;
+        std::shared_ptr<TextWriterInterface> origWriter;
         std::string curText;
     };
 

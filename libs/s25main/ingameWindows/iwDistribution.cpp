@@ -31,7 +31,6 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
-#include <boost/foreach.hpp>
 
 struct iwDistribution::DistributionGroup
 {
@@ -64,7 +63,7 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
         ctrlGroup* tabGrp = tab->AddTab(group.img, group.name, groupId);
         txtPos.y = progPos.y = 60;
         unsigned curId = 0;
-        BOOST_FOREACH(const std::string& entry, group.entries)
+        for(const std::string& entry : group.entries)
         {
             unsigned txtId = group.entries.size() + curId;
             tabGrp->AddText(txtId, txtPos, entry, COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, SmallFont);
@@ -154,7 +153,7 @@ void iwDistribution::UpdateSettings()
         for(unsigned i = 0; i < group.entries.size(); ++i, ++distIdx)
             tab->GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.distribution[distIdx]);
     }
-    RTTR_Assert(distIdx == Distributions::static_size);
+    RTTR_Assert(distIdx == std::tuple_size<Distributions>::value);
 }
 
 void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
@@ -189,15 +188,15 @@ void iwDistribution::CreateGroups()
         return;
 
     GoodType lastGood = GD_NOTHING;
-    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    for(const DistributionMapping& mapping : distributionMap)
     {
         // New group?
-        if(lastGood != mapping.get<0>())
+        if(lastGood != std::get<0>(mapping))
         {
-            lastGood = mapping.get<0>();
+            lastGood = std::get<0>(mapping);
             // Fish = all foodstuff
             std::string name = lastGood == GD_FISH ? gettext_noop("Foodstuff") : WARE_NAMES[lastGood];
-            glArchivItem_Bitmap* img = NULL;
+            glArchivItem_Bitmap* img = nullptr;
             switch(lastGood)
             {
                 case GD_FISH: img = LOADER.GetImageN("io", 80); break;
@@ -214,7 +213,7 @@ void iwDistribution::CreateGroups()
             groups.push_back(DistributionGroup(_(name), img));
         }
         // HQ = Construction
-        std::string name = mapping.get<1>() == BLD_HEADQUARTERS ? gettext_noop("Construction") : BUILDING_NAMES[mapping.get<1>()];
+        std::string name = std::get<1>(mapping) == BLD_HEADQUARTERS ? gettext_noop("Construction") : BUILDING_NAMES[std::get<1>(mapping)];
         groups.back().entries.push_back(_(name));
     }
 }

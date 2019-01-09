@@ -18,7 +18,7 @@
 #ifndef PactTypes_h__
 #define PactTypes_h__
 
-#include <boost/array.hpp>
+#include <array>
 
 /// Types of pacts
 enum PactType
@@ -31,6 +31,6 @@ enum PactType
 const unsigned NUM_PACTS = 2;
 
 /// Names of the possible pacts
-extern const boost::array<const char*, NUM_PACTS> PACT_NAMES;
+extern const std::array<const char*, NUM_PACTS> PACT_NAMES;
 
 #endif // PactTypes_h__

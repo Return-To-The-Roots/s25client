@@ -39,7 +39,6 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/const_gui_ids.h"
-#include <boost/foreach.hpp>
 #include <cstdio>
 
 const unsigned NUM_BUILDINGSS = 32;
@@ -145,7 +144,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 template<class T_Window, class T_Building>
 void iwBuildings::GoToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds)
 {
-    BOOST_FOREACH(T_Building* bld, blds)
+    for(T_Building* bld : blds)
     {
         if(bld->GetBuildingType() == bldType)
         {

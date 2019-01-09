@@ -65,13 +65,12 @@
 #include "libutil/fileFuncs.h"
 #include "libutil/strFuncs.h"
 #include "libutil/ucString.h"
-#include "libutil/unique_ptr.h"
-#include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
-#include <boost/smart_ptr/scoped_array.hpp>
 #include <cerrno>
+#include <helpers/chronoIO.h>
 #include <iostream>
+#include <memory>
 
 void GameClient::ClientConfig::Clear()
 {
@@ -82,7 +81,7 @@ void GameClient::ClientConfig::Clear()
     isHost = false;
 }
 
-GameClient::GameClient() : skiptogf(0), mainPlayer(0), state(CS_STOPPED), ci(NULL), replayMode(false) {}
+GameClient::GameClient() : skiptogf(0), mainPlayer(0), state(CS_STOPPED), ci(nullptr), replayMode(false) {}
 
 GameClient::~GameClient()
 {
@@ -233,7 +232,7 @@ void GameClient::Stop()
     LOG.write("client state changed to stop\n");
 }
 
-boost::shared_ptr<GameLobby> GameClient::GetGameLobby()
+std::shared_ptr<GameLobby> GameClient::GetGameLobby()
 {
     RTTR_Assert(state == CS_CONFIG);
     RTTR_Assert(gameLobby);
@@ -243,7 +242,7 @@ boost::shared_ptr<GameLobby> GameClient::GetGameLobby()
 const AIPlayer* GameClient::GetAIPlayer(unsigned id) const
 {
     if(!game)
-        return NULL;
+        return nullptr;
     return game->GetAIPlayer(id);
 }
 
@@ -1290,7 +1289,7 @@ void GameClient::ExecuteGameFrame()
     } else
     {
         // Next GF not yet reached, just update the time in the current one for drawing
-        framesinfo.frameTime = boost::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
+        framesinfo.frameTime = std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
         RTTR_Assert(framesinfo.frameTime < framesinfo.gf_length);
     }
 }
@@ -1324,14 +1323,14 @@ void GameClient::HandleAutosave()
 /// Führt notwendige Dinge für nächsten GF aus
 void GameClient::NextGF(bool wasNWF)
 {
-    BOOST_FOREACH(AIPlayer& ai, game->aiPlayers)
+    for(AIPlayer& ai : game->aiPlayers)
         ai.RunGF(GetGFNumber(), wasNWF);
     game->RunGF();
 }
 
 void GameClient::ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs)
 {
-    BOOST_FOREACH(const gc::GameCommandPtr& gc, gcs.gcs)
+    for(const gc::GameCommandPtr& gc : gcs.gcs)
         gc->Execute(game->world, playerId);
 }
 
@@ -1360,7 +1359,7 @@ void GameClient::OnGameStart()
     } else if(state == CS_GAME && !game->IsStarted())
     {
         framesinfo.isPaused = replayMode;
-        game->Start(mapinfo.savegame);
+        game->Start(!!mapinfo.savegame);
     }
 }
 
@@ -1493,9 +1492,9 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
     const unsigned unit = 630 /*ms*/ * factor_numerator / factor_denumerator;
     // Good approximation of current time in ms
     // (Accuracy of a possibly expensive VideoDriverWrapper::GetTicks() isn't needed here):
-    using namespace boost::chrono;
+    using namespace std::chrono;
     const unsigned currenttime =
-      boost::chrono::duration_cast<FramesInfo::milliseconds32_t>((framesinfo.lastTime + framesinfo.frameTime).time_since_epoch()).count();
+      std::chrono::duration_cast<FramesInfo::milliseconds32_t>((framesinfo.lastTime + framesinfo.frameTime).time_since_epoch()).count();
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
@@ -1518,7 +1517,7 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 {
     RTTR_Assert(ev);
-    typedef boost::chrono::duration<int32_t, boost::milli> milliseconds32_t;
+    typedef std::chrono::duration<int32_t, std::milli> milliseconds32_t;
     milliseconds32_t elapsedTime;
     if(state == CS_GAME)
         elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
@@ -1706,10 +1705,10 @@ AIPlayer* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
 std::string GameClient::FormatGFTime(const unsigned gf) const
 {
-    typedef boost::chrono::duration<uint32_t, boost::chrono::seconds::period> seconds;
-    typedef boost::chrono::duration<uint32_t, boost::chrono::hours::period> hours;
-    typedef boost::chrono::duration<uint32_t, boost::chrono::minutes::period> minutes;
-    using boost::chrono::duration_cast;
+    typedef std::chrono::duration<uint32_t, std::chrono::seconds::period> seconds;
+    typedef std::chrono::duration<uint32_t, std::chrono::hours::period> hours;
+    typedef std::chrono::duration<uint32_t, std::chrono::minutes::period> minutes;
+    using std::chrono::duration_cast;
 
     // In Sekunden umrechnen
     seconds numSeconds = duration_cast<seconds>(gf * framesinfo.gf_length);
@@ -1739,10 +1738,10 @@ const std::string& GameClient::GetReplayFileName() const
 
 Replay* GameClient::GetReplay()
 {
-    return replayinfo ? &replayinfo->replay : NULL;
+    return replayinfo ? &replayinfo->replay : nullptr;
 }
 
-boost::shared_ptr<const NWFInfo> GameClient::GetNWFInfo() const
+std::shared_ptr<const NWFInfo> GameClient::GetNWFInfo() const
 {
     return nwfInfo;
 }
@@ -1750,7 +1749,7 @@ boost::shared_ptr<const NWFInfo> GameClient::GetNWFInfo() const
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {
-    using namespace boost::chrono;
+    using namespace std::chrono;
     if(game && unsigned(game->ggs.objective) >= NUM_OBJECTIVESS)
         return minutes(TOURNAMENT_MODES_DURATION[game->ggs.objective - NUM_OBJECTIVESS]) / framesinfo.gf_length;
     else
@@ -1760,8 +1759,8 @@ unsigned GameClient::GetTournamentModeDuration() const
 void GameClient::ToggleHumanAIPlayer()
 {
     RTTR_Assert(!IsReplayModeOn());
-    boost::ptr_vector<AIPlayer>::iterator it =
-      std::find_if(game->aiPlayers.begin(), game->aiPlayers.end(), boost::bind(&AIPlayer::GetPlayerId, _1) == GetPlayerId());
+    auto it = std::find_if(game->aiPlayers.begin(), game->aiPlayers.end(),
+                           [this](const auto& player) { return player.GetPlayerId() == this->GetPlayerId(); });
     if(it != game->aiPlayers.end())
         game->aiPlayers.erase(it);
     else

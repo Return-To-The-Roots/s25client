@@ -140,7 +140,7 @@ public:
     void HandleEvent(const unsigned id) override;
 
     /// Ziel setzen
-    void SetGoalToNULL() { goal_ = NULL; }
+    void SetGoalTonullptr() { goal_ = nullptr; }
     /// Ziel zurückgeben
     noRoadNode* GetGoal() const { return goal_; }
 
@@ -175,9 +175,9 @@ public:
     /// Umherirren starten (frei rumlaufen)
     void StartWandering(const unsigned burned_wh_id = 0xFFFFFFFF);
     /// Auf Straßen(!) nach Hause laufen
-    void GoHome(noRoadNode* goal = NULL);
+    void GoHome(noRoadNode* goal = nullptr);
     /// Aktuellen Weg, auf dem er läuft, fr ungültig erklären
-    void CutCurrentRoad() { cur_rs = NULL; }
+    void CutCurrentRoad() { cur_rs = nullptr; }
     /// Auf Straßen zur Zielflagge laufen
     void WalkToGoal();
     /// Gibt die Straße zurück, auf der man gerade läuft
@@ -219,7 +219,7 @@ public:
     void ArrivedByShip(const MapPoint harborPos);
     /// Gibt zurück, ob die Figur kein Ziel mehr hat und damit nach einer Schifffahrt im
     /// Lagerhaus interniert werden muss
-    bool HasNoGoal() const { return (goal_ == NULL); }
+    bool HasNoGoal() const { return (goal_ == nullptr); }
     /// Gibt zurück, ob die Figur auf Straßen läuft zu ihrem Arbeitsplatz o.Ä.
     bool IsWalkingOnRoad() const
     {

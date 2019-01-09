@@ -18,8 +18,7 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "driver/AudioDriver.h"
 #include "driver/SoundHandle.h"
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
+#include <algorithm>
 #include <limits>
 #include <stdexcept>
 
@@ -41,7 +40,7 @@ AudioDriver::~AudioDriver()
 
 void AudioDriver::CleanUp()
 {
-    BOOST_FOREACH(SoundDesc* sound, sounds_)
+    for(SoundDesc* sound : sounds_)
     {
         RTTR_Assert(sound->isValid());
         // Note: Don't call UnloadSound as it would also remove it from sounds invalidating the iterator
@@ -103,7 +102,7 @@ SoundHandle AudioDriver::CreateSoundHandle(SoundDesc* sound)
 {
     RTTR_Assert(sound->isValid());
     sounds_.push_back(sound);
-    return SoundHandle(SoundHandle::Descriptor(sound, boost::bind(&AudioDriver::UnloadSound, boost::ref(*this), _1)));
+    return SoundHandle(SoundHandle::Descriptor(sound, [this](auto* sound) { UnloadSound(*this, sound); }));
 }
 
 EffectPlayId AudioDriver::GeneratePlayID()

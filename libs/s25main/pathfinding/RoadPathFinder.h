@@ -41,12 +41,12 @@ public:
     /// many wares)
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)
     /// @param forbidden RoadSegment that will be ignored
-    /// @param length If != NULL will receive the final costs
-    /// @param firstDir If != NULL will receive the first direction to travel
-    /// @param firstNodePos If != NULL will receive the position of the first node
+    /// @param length If != nullptr will receive the final costs
+    /// @param firstDir If != nullptr will receive the first direction to travel
+    /// @param firstNodePos If != nullptr will receive the position of the first node
     bool FindPath(const noRoadNode& start, const noRoadNode& goal, const bool wareMode,
-                  const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = NULL,
-                  unsigned* const length = NULL, unsigned char* const firstDir = NULL, MapPoint* const firstNodePos = NULL);
+                  const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = nullptr,
+                  unsigned* const length = nullptr, unsigned char* const firstDir = nullptr, MapPoint* const firstNodePos = nullptr);
 
     /// Checks if there is ANY path from start to goal
     ///
@@ -54,13 +54,13 @@ public:
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)
     /// @param forbidden RoadSegment that will be ignored
     bool PathExists(const noRoadNode& start, const noRoadNode& goal, const bool allowWaterRoads,
-                    const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = NULL);
+                    const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = nullptr);
 
 private:
     template<class T_AdditionalCosts, class T_SegmentConstraints>
     bool FindPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max, const T_AdditionalCosts addCosts,
-                      const T_SegmentConstraints isSegmentAllowed, unsigned* const length = NULL, unsigned char* const firstDir = NULL,
-                      MapPoint* const firstNodePos = NULL);
+                      const T_SegmentConstraints isSegmentAllowed, unsigned* const length = nullptr,
+                      unsigned char* const firstDir = nullptr, MapPoint* const firstNodePos = nullptr);
 };
 
 #endif // RoadPathFinder_h__

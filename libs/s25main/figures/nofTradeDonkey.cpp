@@ -31,7 +31,7 @@
 #include "libutil/colors.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
-    : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(NULL), gt(gt)
+    : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(nullptr), gt(gt)
 {}
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
@@ -52,7 +52,7 @@ void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 void nofTradeDonkey::GoalReached()
 {
     RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
-    successor = NULL;
+    successor = nullptr;
     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
     GamePlayer& whOwner = gwg->GetPlayer(wh->GetPlayer());
 
@@ -133,6 +133,6 @@ void nofTradeDonkey::CancelTradeCaravane()
     if(successor)
     {
         successor->CancelTradeCaravane();
-        successor = NULL;
+        successor = nullptr;
     }
 }

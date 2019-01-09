@@ -18,14 +18,13 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PlayerGameCommands.h"
 #include "libutil/Serializer.h"
-#include <boost/foreach.hpp>
 
 void PlayerGameCommands::Serialize(Serializer& ser) const
 {
     checksum.Serialize(ser);
 
     ser.PushUnsignedInt(gcs.size());
-    BOOST_FOREACH(const gc::GameCommandPtr& gc, gcs)
+    for(const gc::GameCommandPtr& gc : gcs)
         gc->Serialize(ser);
 }
 
@@ -34,6 +33,6 @@ void PlayerGameCommands::Deserialize(Serializer& ser)
     checksum.Deserialize(ser);
 
     gcs.resize(ser.PopUnsignedInt());
-    BOOST_FOREACH(gc::GameCommandPtr& gc, gcs)
+    for(gc::GameCommandPtr& gc : gcs)
         gc = gc::GameCommand::Deserialize(ser);
 }

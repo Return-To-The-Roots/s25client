@@ -18,11 +18,10 @@
 #ifndef XorShift_h__
 #define XorShift_h__
 
-#include <boost/array.hpp>
-#include <boost/limits.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <array>
 #include <iosfwd>
+#include <limits>
+#include <type_traits>
 
 class Serializer;
 
@@ -32,14 +31,14 @@ class XorShift
 public:
     typedef uint64_t result_type;
 
-    static result_type min() { return 1; }
-    static result_type max() { return std::numeric_limits<uint64_t>::max(); }
-    static const char* getName() { return "XorShift"; }
+    static constexpr result_type min() { return 1; }
+    static constexpr result_type max() { return std::numeric_limits<uint64_t>::max(); }
+    static constexpr const char* getName() { return "XorShift"; }
 
     XorShift() { seed(); }
     explicit XorShift(uint64_t initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit XorShift(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* = 0)
+    explicit XorShift(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = 0)
     {
         seed(seedSeq);
     }
@@ -47,7 +46,7 @@ public:
     void seed() { seed(0x1337); }
     void seed(uint64_t newSeed);
     template<class T_SeedSeq>
-    void seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0);
+    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = 0);
 
     /// Return random value in [min, max]
     result_type operator()();
@@ -67,9 +66,9 @@ private:
 };
 
 template<class T_SeedSeq>
-inline void XorShift::seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type*)
+inline void XorShift::seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>*)
 {
-    boost::array<uint32_t, 2> seeds;
+    std::array<uint32_t, 2> seeds;
     seedSeq.generate(seeds.begin(), seeds.end());
     // Interpret 2 32 bit values as one 64 bit value
     seed((static_cast<uint64_t>(seeds[0]) << 32) | seeds[1]);
