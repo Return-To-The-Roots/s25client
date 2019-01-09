@@ -16,7 +16,7 @@ platform:
   - x64
 
 environment:
-  BOOST_ROOT: C:\Libraries\boost_1_65_1
+  BOOST_DIR: C:\Libraries\boost_1_65_1
   GENERATOR: Visual Studio 14 2015
   MSVC: 14.0
   RTTR_DISABLE_ASSERT_BREAKPOINT: 1
@@ -33,7 +33,7 @@ for:
       only:
         - image: Visual Studio 2017
     environment:
-      BOOST_ROOT: C:\Libraries\boost_1_67_0
+      BOOST_DIR: C:\Libraries\boost_1_67_0
       GENERATOR: Visual Studio 15 2017
       MSVC: 14.1
 
@@ -50,17 +50,15 @@ before_build:
   - if exist %INSTALL_DIR%\ (rmdir /S /Q %INSTALL_DIR%)
   - mkdir build
   - cd build
-  - if %platform% == Win32 (set BOOST_LIBDIR=lib32-msvc-%MSVC%) else ((set BOOST_LIBDIR=lib64-msvc-%MSVC%) && (set GENERATOR=%GENERATOR% Win64))
-  - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_ROOT%\%BOOST_LIBDIR%"
-  - cmake -G "%GENERATOR%" -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR%" ..
+  - if %platform% == x64 (set GENERATOR=%GENERATOR% Win64)
+  # Enable LTCG for release builds (speeds up linking as /GL compiled modules are used)
+  - if %configuration% == Release (set cmakeFlags="-DCMAKE_EXE_LINKER_FLAGS=/LTCG -DCMAKE_SHARED_LINKER_FLAGS=/LTCG")
+  - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_DIR%"
+  - cmake -G "%GENERATOR%" -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DBOOST_ROOT="%BOOST_DIR%" %cmakeFlags% ..
 
 build:
-
-build_script:
-  - echo "Building for %configuration% on %platform%"
-  - dir .
-  - cmake --build . --target ALL_BUILD --config "%configuration%" --parallel
-  - if %configuration% == Release (cmake --build . --target INSTALL --config "%configuration%" --parallel)
+  project: build/s25client.sln
+  parallel: true
 
 test_script:
-  - ctest --output-on-failure -C %configuration%
+  - ctest --output-on-failure -C %configuration% --parallel 4

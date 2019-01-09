@@ -42,10 +42,6 @@ else()
     endif()
 endif()
 
-if(NOT EXISTS ${CUR_OUTPUT_DIR})
-    message(FATAL_ERROR "Output directory '${CUR_OUTPUT_DIR}' not found. Configuration error?")
-endif()
-
 IF(CMAKE_HOST_UNIX)
     message(STATUS "Creating symlinks in ${CUR_OUTPUT_DIR} to ease debugging.")
 	file(MAKE_DIRECTORY "${CUR_OUTPUT_DIR}/${RTTR_DATADIR}")
