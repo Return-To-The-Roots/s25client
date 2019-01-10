@@ -40,6 +40,8 @@ cmake \
     -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
     -DRTTR_ENABLE_WERROR=ON \
     -DRTTR_USE_STATIC_BOOST=ON \
+    -DRTTR_VERSION=OFF \
+    -DRTTR_REVISION=OFF \
     $src_dir
 
 make -j4 package
