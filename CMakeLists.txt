@@ -374,9 +374,18 @@ add_subdirectory("tools/release")
 # Packing
 ################################################################################
 
+MESSAGE(STATUS "RTTR Version will be: ${RTTR_VERSION}-${RTTR_REVISION}")
+
 set(CPACK_GENERATOR "TBZ2")
 if(WIN32)
     set(CPACK_GENERATOR "ZIP")
+endif()
+
+# stable build?
+if(${RTTR_VERSION} MATCHES "([0-9]+)\.([0-9]+)\.([0-9]+)")
+    set(CPACK_PACKAGE_VERSION_MAJOR "${CMAKE_MATCH_1}")
+    set(CPACK_PACKAGE_VERSION_MINOR "${CMAKE_MATCH_2}")
+    set(CPACK_PACKAGE_VERSION_PATCH "${CMAKE_MATCH_3}")
 endif()
 
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)

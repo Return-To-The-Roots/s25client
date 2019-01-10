@@ -7,6 +7,7 @@
 #
 # Parameter marker (replaced by Jenkins): 
 # - %architecture% : i.e "windows.i686"
+# - %deploy_to% : i.e "nightly" "stable"
 #
 # Directory structure:
 # /.ccache            : CCACHE directory
@@ -24,9 +25,12 @@ fi
 ###############################################################################
 
 export CCACHE_DIR=/.ccache
+
+deploy_to="%deploy_to%"
+architecture="%architecture%"
+
 src_dir=/source
 result_dir=/result
-architecture="%architecture%"
 
 TOOLCHAIN_FILE=
 if [ "$(uname -s | tr "[:upper:]" "[:lower:]").$(uname -m)" != "$architecture" ] ; then
@@ -37,12 +41,22 @@ BUILD_TYPE=Release
 
 rm -rf _CPack_Packages *.tar.bz2 *.zip
 
+RTTR_VERSION=OFF
+if [ "$deploy_to" == "stable" ] ; then
+    GIT_TAG=$(git describe --exact-match 2>/dev/null || true)
+    if [ -z "$GIT_TAG" ] || [[ ! "$GIT_TAG" =~ v[0-9]+\.[0-9]+\.[0-9]+ ]] ; then
+        echo "Tried to publish to stable, but no Git TAG 'vX.Y.Z' was found" >&2
+        exit 1
+    fi
+    RTTR_VERSION=${GIT_TAG#"v"}
+fi
+
 cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
     -DRTTR_ENABLE_WERROR=ON \
     -DRTTR_USE_STATIC_BOOST=ON \
-    -DRTTR_VERSION=OFF \
+    -DRTTR_VERSION=$RTTR_VERSION \
     -DRTTR_REVISION=OFF \
     $src_dir
 

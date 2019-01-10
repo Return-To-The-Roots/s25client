@@ -93,6 +93,7 @@ pipeline {
                 script {
                     def parallel_map = [:]
                     def buildScript = readTrusted("tools/ci/jenkins/build.sh")
+                    buildScript = buildScript.replace("%deploy_to%", params.DEPLOY_TO)
 
                     dockerImages.each { architecture, image ->
                         echo "Adding Job ${architecture} (${image})"
@@ -100,6 +101,7 @@ pipeline {
                     }
 
                     // todo: mirror launchpad
+
                     parallel_map.failFast = true
                     parallel parallel_map
                 }
