@@ -35,6 +35,8 @@ fi
 
 BUILD_TYPE=Release
 
+rm -rf _CPack_Packages
+
 cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
