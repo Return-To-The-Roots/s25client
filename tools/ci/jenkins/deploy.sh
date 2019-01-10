@@ -67,8 +67,8 @@ for artifact in $artifacts ; do
         echo "- Uploading files."
 
         rsync -e 'ssh -i $SSH_KEYFILE' -av $result_dir/*.tar.bz2 $result_dir/*.zip $result_dir/*.txt tyra4.ra-doersch.de:/www/siedler25.org/www/uploads/$deploy_to/
-        ssh -i $SSH_KEYFILE "php -q /www/siedler25.org/www/docs/cron/${deploy_to}sql.php"
-        ssh -i $SSH_KEYFILE "php -q /www/siedler25.org/www/docs/cron/changelogsql.php"
+        ssh -i $SSH_KEYFILE tyra4.ra-doersch.de "php -q /www/siedler25.org/www/docs/cron/${deploy_to}sql.php"
+        ssh -i $SSH_KEYFILE tyra4.ra-doersch.de "php -q /www/siedler25.org/www/docs/cron/changelogsql.php"
 
         echo "- Rotating tree."
 
