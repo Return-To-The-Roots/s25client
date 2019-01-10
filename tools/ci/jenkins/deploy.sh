@@ -50,6 +50,7 @@ for artifact in $artifacts ; do
     echo "- Platform: $arch_dir"
     echo ""
 
+    set -x
     unpacked_dir=$arch_dir/unpacked/s25rttr_${VERSION}
     unpacked_remote_dir=$updater_dir/$unpacked_dir
 
@@ -58,10 +59,19 @@ for artifact in $artifacts ; do
         diff -qrN $unpacked_remote_dir $unpacked_dir && _changed=0 || _changed=1
     fi
 
+    set +x
+
     if [ $_changed -eq 0 ] ; then
         echo "- Skipping rotation. Nothing has been changed."
     else
+        echo "- Uploading files."
+
+        rsync -e 'ssh -i $SSH_KEYFILE' -av $result_dir/*.tar.bz2 $result_dir/*.zip $result_dir/*.txt tyra4.ra-doersch.de:/www/siedler25.org/www/uploads/$deploy_to/
+        ssh -i $SSH_KEYFILE "php -q /www/siedler25.org/www/docs/cron/${deploy_to}sql.php"
+        ssh -i $SSH_KEYFILE "php -q /www/siedler25.org/www/docs/cron/changelogsql.php"
+
         echo "- Rotating tree."
+
         rm -rf $updater_dir/$arch_dir.5
         [ -d $updater_dir/$arch_dir.4 ] && mv -v $updater_dir/$arch_dir.4 $updater_dir/$arch_dir.5 || true
         [ -d $updater_dir/$arch_dir.3 ] && mv -v $updater_dir/$arch_dir.3 $updater_dir/$arch_dir.4 || true

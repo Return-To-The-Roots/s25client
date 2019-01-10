@@ -116,52 +116,12 @@ pipeline {
                     prepareDeployScript = prepareDeployScript.replace("%deploy_to%", params.DEPLOY_TO)
                     sh prepareDeployScript
                 }
-                dir('result') {
-                    sshPublisher alwaysPublishFromMaster: true,
-                        failOnError: true,
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: 'tyra.ra-doersch.de (www.siedler25.org)',
-                                transfers: [
-                                    sshTransfer(
-                                        cleanRemote: false,
-                                        excludes: 'rapidshare-build.txt',
-                                        execCommand: "php -q /www/siedler25.org/www/docs/cron/${params.DEPLOY_TO}sql.php",
-                                        execTimeout: 120000,
-                                        flatten: true,
-                                        makeEmptyDirs: false,
-                                        noDefaultExcludes: false,
-                                        patternSeparator: '[, ]+',
-                                        remoteDirectory: "uploads/${params.DEPLOY_TO}/",
-                                        remoteDirectorySDF: false,
-                                        removePrefix: '',
-                                        sourceFiles: "*.tar.bz2,*.zip,*.txt"
-                                    ),
-                                    sshTransfer(
-                                        cleanRemote: false,
-                                        excludes: '',
-                                        execCommand: "php -q /www/siedler25.org/www/docs/cron/changelogsql.php",
-                                        execTimeout: 120000,
-                                        flatten: true,
-                                        makeEmptyDirs: false,
-                                        noDefaultExcludes: false,
-                                        patternSeparator: '[, ]+',
-                                        remoteDirectory: "",
-                                        remoteDirectorySDF: false,
-                                        removePrefix: '',
-                                        sourceFiles: ""
-                                    )
-                                ],
-                                usePromotionTimestamp: false,
-                                useWorkspaceInPromotion: false,
-                                verbose: true
-                            )
-                        ]
-                }
-                script {
-                    def deployScript = readTrusted("tools/ci/jenkins/deploy.sh")
-                    deployScript = deployScript.replace("%deploy_to%", params.DEPLOY_TO)
-                    sh deployScript
+                withCredentials([sshUserPrivateKey(credentialsId: "fcc603fd-9ecf-4307-9204-acf55a09e734", keyFileVariable: 'SSH_KEYFILE']) {
+                    script {
+                        def deployScript = readTrusted("tools/ci/jenkins/deploy.sh")
+                        deployScript = deployScript.replace("%deploy_to%", params.DEPLOY_TO)
+                        sh deployScript
+                    }
                 }
             }
         }
