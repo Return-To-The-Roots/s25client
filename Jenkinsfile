@@ -136,6 +136,20 @@ pipeline {
                                         remoteDirectorySDF: false,
                                         removePrefix: '',
                                         sourceFiles: "*.tar.bz2,*.zip,*.txt"
+                                    ),
+                                    sshTransfer(
+                                        cleanRemote: false,
+                                        excludes: '',
+                                        execCommand: "php -q /www/siedler25.org/www/docs/cron/changelogsql.php",
+                                        execTimeout: 120000,
+                                        flatten: true,
+                                        makeEmptyDirs: false,
+                                        noDefaultExcludes: false,
+                                        patternSeparator: '[, ]+',
+                                        remoteDirectory: "",
+                                        remoteDirectorySDF: false,
+                                        removePrefix: '',
+                                        sourceFiles: ""
                                     )
                                 ],
                                 usePromotionTimestamp: false,
