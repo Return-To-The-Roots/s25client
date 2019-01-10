@@ -35,7 +35,7 @@ fi
 
 BUILD_TYPE=Release
 
-rm -rf _CPack_Packages
+rm -rf _CPack_Packages *.tar.bz2 *.zip
 
 cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
