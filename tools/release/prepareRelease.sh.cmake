@@ -68,11 +68,17 @@ echo "## Using Library Dir \"${RTTR_LIBDIR}\""
 
 # strip ending slash from $DESTDIR
 DESTDIR=${DESTDIR%/}
+[ -n "$CMAKE_INSTALL_PREFIX" ] && CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX%/}
 
 # adding the slash again if DESTDIR is not empty
-if [ ! -z "$DESTDIR" ] ; then
+if [ -n "$DESTDIR" ] ; then
 	DESTDIR=${DESTDIR}/
 	mecho --red "## Using Destination Dir \"${DESTDIR}\""
+fi
+
+if [ -n "$CMAKE_INSTALL_PREFIX" ] ; then
+	DESTDIR=${DESTDIR}${CMAKE_INSTALL_PREFIX}/
+	mecho --red "## Updating Destination Dir with CMake-Install-Prefix \"${DESTDIR}\""
 fi
 
 ###############################################################################
@@ -92,13 +98,13 @@ extract_debug_symbols()
 	fi
 
 	pushd ${DESTDIR}
-	mkdir -vp dbg/$(dirname $FILE)
-	echo "$OBJCOPY --only-keep-debug $FILE dbg/$FILE.dbg"
-	$OBJCOPY --only-keep-debug $FILE dbg/$FILE.dbg
+	#mkdir -vp dbg/$(dirname $FILE)
+	#echo "$OBJCOPY --only-keep-debug $FILE dbg/$FILE.dbg"
+	#$OBJCOPY --only-keep-debug $FILE dbg/$FILE.dbg
 	echo "$OBJCOPY --strip-debug $FILE"
 	$OBJCOPY --strip-debug $FILE
-	echo "$OBJCOPY --add-gnu-debuglink=dbg/$FILE.dbg $FILE"
-	$OBJCOPY --add-gnu-debuglink=dbg/$FILE.dbg $FILE
+	#echo "$OBJCOPY --add-gnu-debuglink=dbg/$FILE.dbg $FILE"
+	#$OBJCOPY --add-gnu-debuglink=dbg/$FILE.dbg $FILE
 	popd
 }
 
