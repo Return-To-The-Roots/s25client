@@ -125,7 +125,7 @@ pipeline {
                                 transfers: [
                                     sshTransfer(
                                         cleanRemote: false,
-                                        excludes: '',
+                                        excludes: 'rapidshare-build.txt',
                                         execCommand: "php -q /www/siedler25.org/www/docs/cron/${params.DEPLOY_TO}sql.php",
                                         execTimeout: 120000,
                                         flatten: true,
