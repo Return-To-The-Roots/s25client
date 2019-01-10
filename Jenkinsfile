@@ -115,11 +115,10 @@ pipeline {
                     def prepareDeployScript = readTrusted("tools/ci/jenkins/prepare-deploy.sh")
                     prepareDeployScript = prepareDeployScript.replace("%deploy_to%", params.DEPLOY_TO)
                     sh prepareDeployScript
-                }
-                withCredentials([sshUserPrivateKey(credentialsId: "fcc603fd-9ecf-4307-9204-acf55a09e734", keyFileVariable: 'SSH_KEYFILE')]) {
-                    script {
-                        def deployScript = readTrusted("tools/ci/jenkins/deploy.sh")
-                        deployScript = deployScript.replace("%deploy_to%", params.DEPLOY_TO)
+
+                    def deployScript = readTrusted("tools/ci/jenkins/deploy.sh")
+                    deployScript = deployScript.replace("%deploy_to%", params.DEPLOY_TO)
+                    withCredentials([sshUserPrivateKey(credentialsId: "fcc603fd-9ecf-4307-9204-acf55a09e734", keyFileVariable: 'SSH_KEYFILE')]) {
                         sh deployScript
                     }
                 }

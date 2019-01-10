@@ -25,7 +25,10 @@ deploy_to="%deploy_to%"
 
 result_dir=$(pwd)/result
 archive_dir=/srv/backup/www/s25client/$deploy_to/$(date +%Y)
-updater_dir=/www/siedler25.org/nightly/s25client/$deploy_to/
+updater_dir=/www/siedler25.org/nightly/s25client/$deploy_to
+remote_url=https://www.siedler25.org/uploads/$deploy_to
+cron_dir=/www/siedler25.org/www/docs/cron
+upload_dir=/www/siedler25.org/www/uploads/$deploy_to
 
 pushd $result_dir
 
@@ -64,12 +67,6 @@ for artifact in $artifacts ; do
     if [ $_changed -eq 0 ] ; then
         echo "- Skipping rotation. Nothing has been changed."
     else
-        echo "- Uploading files."
-
-        rsync -e 'ssh -i $SSH_KEYFILE' -av $result_dir/*.tar.bz2 $result_dir/*.zip $result_dir/*.txt tyra4.ra-doersch.de:/www/siedler25.org/www/uploads/$deploy_to/
-        ssh -i $SSH_KEYFILE tyra4.ra-doersch.de "php -q /www/siedler25.org/www/docs/cron/${deploy_to}sql.php"
-        ssh -i $SSH_KEYFILE tyra4.ra-doersch.de "php -q /www/siedler25.org/www/docs/cron/changelogsql.php"
-
         echo "- Rotating tree."
 
         rm -rf $updater_dir/$arch_dir.5
@@ -80,5 +77,16 @@ for artifact in $artifacts ; do
         [ -d $updater_dir/$arch_dir ]   && mv -v $updater_dir/$arch_dir   $updater_dir/$arch_dir.1 || true
         cp -a $arch_dir $updater_dir/$arch_dir.tmp
         mv -v $updater_dir/$arch_dir.tmp $updater_dir/$arch_dir
+
+        echo "$(date +%s);$remote_url/$(basename $artifact)" >> rapidshare-build.txt
     fi
 done
+
+cat rapidshare-build.txt >> $updater_dir/rapidshare.txt
+cp $updater_dir/rapidshare.txt rapidshare.txt
+
+echo "Uploading files."
+
+rsync -e 'ssh -i $SSH_KEYFILE' -av $result_dir/*.tar.bz2 $result_dir/*.zip $result_dir/*.txt tyra4.ra-doersch.de:$upload_dir/
+ssh -i $SSH_KEYFILE tyra4.ra-doersch.de "php -q ${cron_dir}/${deploy_to}sql.php"
+ssh -i $SSH_KEYFILE tyra4.ra-doersch.de "php -q ${cron_dir}/changelogsql.php"
