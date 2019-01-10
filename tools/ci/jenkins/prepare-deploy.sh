@@ -100,7 +100,7 @@ for artifact in $artifacts ; do
     mkdir -p $updater_dir
 
     # fastcopy files (only dirs and files, no symlinks)
-    (cd $unpacked_dir && find -type d -a -exec mkdir -vp $updater_dir/{} \;)
+    (cd $unpacked_dir && find -type d -a -exec mkdir -p $updater_dir/{} \;)
     (cd $unpacked_dir && find -type f -a -exec cp {} $updater_dir/{} \;)
 
     # note symlinks
