@@ -5,6 +5,9 @@
 #
 # Create nightly updater tree's for each architecture
 #
+# Parameter marker (replaced by Jenkins):
+# - %deploy_to% : i.e "nightly" "stable"
+#
 # Directory structure:
 # $pwd/source : directory for source files
 # $pwd/result : directory for result files
@@ -19,8 +22,11 @@ fi
 
 ###############################################################################
 
+deploy_to="%deploy_to%"
+
 src_dir=$(pwd)/source
 result_dir=$(pwd)/result
+remote_url=https://www.siedler25.org/uploads/$deploy_to/
 
 pushd $result_dir
 
@@ -126,4 +132,8 @@ for artifact in $artifacts ; do
     echo "${RTTR_VERSION}-${RTTR_REVISION}" > $arch_dir/full-version
 
     echo ""
+
+    echo "$(date +%s);$remote_url/$artifact" >> rapidshare.txt
 done
+
+cat rapidshare.txt >> $updater_dir/rapidshare.txt

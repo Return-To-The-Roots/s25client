@@ -113,6 +113,7 @@ pipeline {
             steps {
                 script {
                     def prepareDeployScript = readTrusted("tools/ci/jenkins/prepare-deploy.sh")
+                    prepareDeployScript = prepareDeployScript.replace("%deploy_to%", params.DEPLOY_TO)
                     sh prepareDeployScript
                 }
                 dir('result') {

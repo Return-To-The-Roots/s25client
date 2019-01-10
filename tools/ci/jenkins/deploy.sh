@@ -26,7 +26,6 @@ deploy_to="%deploy_to%"
 result_dir=$(pwd)/result
 archive_dir=/srv/backup/www/s25client/$deploy_to/$(date +%Y)
 updater_dir=/www/siedler25.org/nightly/s25client/$deploy_to/
-remote_url=https://www.siedler25.org/uploads/$deploy_to/
 
 pushd $result_dir
 
@@ -72,8 +71,4 @@ for artifact in $artifacts ; do
         cp -a $arch_dir $updater_dir/$arch_dir.tmp
         mv -v $updater_dir/$arch_dir.tmp $updater_dir/$arch_dir
     fi
-
-    echo "$(date +%s);$remote_url/$artifact" >> rapidshare.txt
 done
-
-cat rapidshare.txt >> $updater_dir/rapidshare.txt
