@@ -87,6 +87,6 @@ cp $updater_dir/rapidshare.txt rapidshare.txt
 
 echo "Uploading files."
 
-rsync -e 'ssh -i $SSH_KEYFILE' -av *.tar.bz2 *.zip *.txt tyra4.ra-doersch.de:$upload_dir/
-ssh -i $SSH_KEYFILE tyra4.ra-doersch.de "php -q ${cron_dir}/${deploy_to}sql.php"
-ssh -i $SSH_KEYFILE tyra4.ra-doersch.de "php -q ${cron_dir}/changelogsql.php"
+rsync -av *.tar.bz2 *.zip *.txt tyra4.ra-doersch.de:$upload_dir/
+ssh tyra4.ra-doersch.de "php -q ${cron_dir}/${deploy_to}sql.php"
+ssh tyra4.ra-doersch.de "php -q ${cron_dir}/changelogsql.php"
