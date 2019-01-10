@@ -120,9 +120,9 @@ for artifact in $artifacts ; do
 
     # move file lists
     echo "  - finalize tree"
-    mv -v $symlink_file $updater_dir/links
-    mv -v $files_file $updater_dir/files
-    echo $RTTR_SAVEGAME_VERSION $updater_dir/savegameversion
+    mv $symlink_file $updater_dir/links
+    mv $files_file $updater_dir/files
+    echo $RTTR_SAVEGAME_VERSION > $updater_dir/savegameversion
 
     # create human version notifier
     echo "$RTTR_VERSION"  > $arch_dir/version-${RTTR_VERSION}
@@ -135,6 +135,8 @@ for artifact in $artifacts ; do
 
     echo "$(date +%s);$remote_url/$artifact" >> rapidshare.txt
 done
+
+set -x
 
 updater_dir=/www/siedler25.org/nightly/s25client/$deploy_to/
 cat rapidshare.txt >> $updater_dir/rapidshare.txt
