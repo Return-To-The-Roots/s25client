@@ -112,11 +112,11 @@ for artifact in $artifacts ; do
     # note hashes
     echo "  - get file hashes"
     files_file=/tmp/files.$$
-    (cd $updater_dir && md5deep -r -l .) | tee $files_file
+    (cd $updater_dir && md5deep -r -l .) > $files_file
 
     # bzip files
     echo "  - compress files"
-    find $updater_dir -type f -exec bzip2 -v {} \;
+    find $updater_dir -type f -exec bzip2 {} \;
 
     # move file lists
     echo "  - finalize tree"
