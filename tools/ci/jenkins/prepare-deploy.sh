@@ -134,7 +134,7 @@ for artifact in $artifacts ; do
 
     echo ""
 
-    echo "$(date +%s);$remote_url/$artifact" >> rapidshare-build.txt
+    echo "$(date +%s);$remote_url$(basename artifact)" >> rapidshare-build.txt
 done
 
 updater_dir=/www/siedler25.org/nightly/s25client/$deploy_to/
