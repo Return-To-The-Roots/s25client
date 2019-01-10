@@ -100,6 +100,7 @@ for artifact in $artifacts ; do
     mkdir -p $updater_dir
 
     # fastcopy files (only dirs and files, no symlinks)
+    echo "  - copying directories and files"
     (cd $unpacked_dir && find -type d -a -exec mkdir -p $updater_dir/{} \;)
     (cd $unpacked_dir && find -type f -a -exec cp {} $updater_dir/{} \;)
 
@@ -133,10 +134,9 @@ for artifact in $artifacts ; do
 
     echo ""
 
-    echo "$(date +%s);$remote_url/$artifact" >> rapidshare.txt
+    echo "$(date +%s);$remote_url/$artifact" >> rapidshare-build.txt
 done
 
-set -x
-
 updater_dir=/www/siedler25.org/nightly/s25client/$deploy_to/
-cat rapidshare.txt >> $updater_dir/rapidshare.txt
+cat rapidshare-build.txt >> $updater_dir/rapidshare.txt
+cp $updater_dir/rapidshare.txt rapidshare.txt
