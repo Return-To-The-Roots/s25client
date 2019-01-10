@@ -135,7 +135,7 @@ pipeline {
                                         remoteDirectory: "uploads/${params.DEPLOY_TO}/",
                                         remoteDirectorySDF: false,
                                         removePrefix: '',
-                                        sourceFiles: "*.tar.bz2,*.zip,changelog.txt,/www/siedler25.org/nightly/s25client/${params.DEPLOY_TO}/rapidshare.txt"
+                                        sourceFiles: "*.tar.bz2,*.zip,*.txt"
                                     )
                                 ],
                                 usePromotionTimestamp: false,
