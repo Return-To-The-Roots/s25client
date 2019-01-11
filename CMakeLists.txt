@@ -355,13 +355,16 @@ install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
 if(WIN32)
 	install(PROGRAMS "tools/release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
 elseif(APPLE)
-	if(COMMAND rttr_create_bundle)
-		rttr_create_bundle()
-	endif()
+    # No-Op
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
 	install(PROGRAMS "tools/release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
 else()
 	message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
+endif()
+
+# As last item
+if(RTTR_OSX_BUNDLE)
+	add_subdirectory(extras/createBundle)
 endif()
 
 ################################################################################
