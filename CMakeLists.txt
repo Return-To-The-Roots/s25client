@@ -49,7 +49,7 @@ endif()
 string(TOLOWER ${CMAKE_SYSTEM_NAME} LOWER_SYSTEM_NAME)
 if(CMAKE_CROSSCOMPILING)
     message(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
-	#Include cross-compile platform config
+    #Include cross-compile platform config
     set(_config "cmake/c.${LOWER_SYSTEM_NAME}.cmake")
     if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/${_config}")
         message(STATUS "Using cross-platform config ${_config}")
@@ -95,7 +95,7 @@ find_package(ClangFormat 5.0.0)
 ################################################################################
 
 if(WIN32)
-	# Windows uses one directory only
+    # Windows uses one directory only
     set(RTTR_BINDIR "." CACHE INTERNAL "")
     set(RTTR_DATADIR "." CACHE INTERNAL "")
     set(RTTR_GAMEDIR "." CACHE INTERNAL "")
@@ -104,44 +104,44 @@ if(WIN32)
     set(RTTR_EXTRA_BINDIR "./RTTR" CACHE INTERNAL "")
     set(RTTR_DRIVERDIR "./driver" CACHE INTERNAL "")
 else()
-	if(APPLE)
+    if(APPLE)
         option(RTTR_OSX_BUNDLE "Create an Apple/OSX bundle directory (=clickable application)" ON)
-	endif()
+    endif()
 
     if(APPLE AND RTTR_OSX_BUNDLE)
-		set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.app)
-		set(RTTR_MACOS_DIR Contents/MacOS CACHE INTERNAL "")
-		set(RTTR_DATADIR ${RTTR_MACOS_DIR}/share/s25rttr CACHE INTERNAL "")
-		set(RTTR_LIBDIR ${RTTR_MACOS_DIR} CACHE INTERNAL "")
-		set(RTTR_DOCDIR ${RTTR_MACOS_DIR}/share/doc CACHE INTERNAL "")
-		# (At least) bundling assumes, that all executables are in same folder inside MacOS
-		# Additionally main executable is assumed to be in MacOS
-		set(RTTR_BINDIR ${RTTR_MACOS_DIR} CACHE INTERNAL "")
-		set(RTTR_EXTRA_BINDIR ${RTTR_BINDIR} CACHE INTERNAL "")
-		set(RTTR_GAMEDIR ${RTTR_DATADIR}/S2 CACHE INTERNAL "")
-		set(RTTR_DRIVERDIR ${RTTR_LIBDIR}/driver CACHE INTERNAL "")
-	else()
-		include(GNUInstallDirs)
+        set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.app)
+        set(RTTR_MACOS_DIR Contents/MacOS CACHE INTERNAL "")
+        set(RTTR_DATADIR ${RTTR_MACOS_DIR}/share/s25rttr CACHE INTERNAL "")
+        set(RTTR_LIBDIR ${RTTR_MACOS_DIR} CACHE INTERNAL "")
+        set(RTTR_DOCDIR ${RTTR_MACOS_DIR}/share/doc CACHE INTERNAL "")
+        # (At least) bundling assumes, that all executables are in same folder inside MacOS
+        # Additionally main executable is assumed to be in MacOS
+        set(RTTR_BINDIR ${RTTR_MACOS_DIR} CACHE INTERNAL "")
+        set(RTTR_EXTRA_BINDIR ${RTTR_BINDIR} CACHE INTERNAL "")
+        set(RTTR_GAMEDIR ${RTTR_DATADIR}/S2 CACHE INTERNAL "")
+        set(RTTR_DRIVERDIR ${RTTR_LIBDIR}/driver CACHE INTERNAL "")
+    else()
+        include(GNUInstallDirs)
         set(RTTR_BINDIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Directory for the binaries")
         set(RTTR_DATADIR "${CMAKE_INSTALL_DATAROOTDIR}/s25rttr" CACHE STRING "Data directory")
-		if("${RTTR_DATADIR}" STREQUAL "")
-			# Avoid using absolute path accidentally
+        if("${RTTR_DATADIR}" STREQUAL "")
+            # Avoid using absolute path accidentally
             set(DEFAULT_GAMEDIR "S2")
-		else()
+        else()
             set(DEFAULT_GAMEDIR "${RTTR_DATADIR}/S2")
-		endif()
+        endif()
         set(RTTR_GAMEDIR "${DEFAULT_GAMEDIR}" CACHE STRING "(Original) Settlers 2 data directory")
         set(RTTR_LIBDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Directory for shared binaries")
 
-		# The default contains PROJECTNAME which would be "s25client"
-		string(REPLACE "${PROJECT_NAME}" "s25rttr" DEFAULT_DOCDIR "${CMAKE_INSTALL_DOCDIR}")
+        # The default contains PROJECTNAME which would be "s25client"
+        string(REPLACE "${PROJECT_NAME}" "s25rttr" DEFAULT_DOCDIR "${CMAKE_INSTALL_DOCDIR}")
         set(RTTR_DOCDIR "${DEFAULT_DOCDIR}" CACHE STRING "Directory for documentation files")
-		if("${RTTR_LIBDIR}" STREQUAL "")
-			# Avoid using absolute path accidentally
+        if("${RTTR_LIBDIR}" STREQUAL "")
+            # Avoid using absolute path accidentally
             set(DEFAULT_DRIVERDIR "driver")
-		else()
+        else()
             set(DEFAULT_DRIVERDIR "${RTTR_LIBDIR}/driver")
-		endif()
+        endif()
         set(RTTR_EXTRA_BINDIR "${CMAKE_INSTALL_LIBEXECDIR}/s25rttr" CACHE STRING "Path to binaries used internally")
         set(RTTR_DRIVERDIR "${DEFAULT_DRIVERDIR}" CACHE STRING "Directory for driver objects")
     endif()
@@ -200,36 +200,14 @@ endif()
 
 # Clang bug workaround
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
-	if(NOT ${CHECK_CLANG_INLINE})
-		add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
-	endif()
+    try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
+    if(NOT ${CHECK_CLANG_INLINE})
+        add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
+    endif()
 endif()
 
-################################################################################
 # Code coverage
-################################################################################
-
-# VS does not support coverage analysis
-if(NOT MSVC)
-	option(RTTR_ENABLE_COVERAGE "Generate coverage build" OFF)
-	if(RTTR_ENABLE_COVERAGE)
-		if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-			message(FATAL_ERROR "Coverage requires a debug build or you get false positives")
-		endif()
-		# Note: "--coverage" instead of "-coverage" makes this work with ccache
-		add_compile_options(-O0 --coverage)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-		if(CMAKE_COMPILER_IS_GNUCXX)
-			# Inlining makes the coverage statistic much harder to read and may lead to lots of partials
-			# However expect a slowdown!
-			message(STATUS "Enabled no-inline for better coverage statistics")
-			add_compile_options(-fno-inline -fno-inline-small-functions -fno-default-inline)
-		else()
-			message(STATUS "Using default inlining which probably influences coverage statistics")
-		endif()
-	endif()
-endif()
+include(RttrCoverageCfg)
 
 ################################################################################
 # Configure files
@@ -247,9 +225,9 @@ file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 # is not recommended as it most likely won't work
 set(RTTR_BUILD_UPDATER_DEF ON)
 foreach(curDirVar BINDIR DATADIR LIBDIR DOCDIR DRIVERDIR)
-	if(IS_ABSOLUTE ${RTTR_${curDirVar}})
-		set(RTTR_BUILD_UPDATER_DEF OFF)
-	endif()
+    if(IS_ABSOLUTE ${RTTR_${curDirVar}})
+        set(RTTR_BUILD_UPDATER_DEF OFF)
+    endif()
 endforeach()
 option(RTTR_BUILD_UPDATER "Build auto-updater. Not advised when changing the default paths as the updater is configured specifically for the official builds." ${RTTR_BUILD_UPDATER_DEF})
 
@@ -271,9 +249,9 @@ if(WIN32)
         message(FATAL_ERROR "Unknown architecture for sizeof(void*)=${CMAKE_SIZEOF_VOID_P}")
     endif()
 else()
-	if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
+    if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
         set(PLATFORM_ARCH "i386")
-	elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
+    elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
         set(PLATFORM_ARCH "x86_64")
     elseif(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "universal" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "") AND APPLE)
         set(PLATFORM_ARCH "universal")
@@ -298,22 +276,19 @@ endif()
 find_package(Boost 1.64.0 QUIET)
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "You have to install boost (>=1.64) into contrib/boost or set (as CMake or environment variable) "
-	"BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
-	"BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}') "
-	"since cmake was unable to find boost!")
+    "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
+    "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}') "
+    "since cmake was unable to find boost!")
 endif()
 
 add_subdirectory(external)
 add_subdirectory(libs)
 add_subdirectory(extras)
 
-include(CTest)
+# include Test
+include(RttrTestingCfg)
 if(BUILD_TESTING)
-    message(STATUS "Testing ('make test') is enabled. Add -DBUILD_TESTING=OFF to disable tests.")
-    enable_testing()
     add_subdirectory(tests)
-else()
-    message(STATUS "Testing ('make test') is disabled. Add -DBUILD_TESTING=ON to enable tests.")
 endif()
 
 find_package(Gettext REQUIRED)
@@ -338,9 +313,9 @@ endif()
 
 # RTTR directory, but exclude language input files
 install(DIRECTORY "data/RTTR" DESTINATION "${RTTR_DATADIR}"
-		PATTERN "*.po" EXCLUDE
-		PATTERN "*.pot" EXCLUDE
-		PATTERN ".*" EXCLUDE
+        PATTERN "*.po" EXCLUDE
+        PATTERN "*.pot" EXCLUDE
+        PATTERN ".*" EXCLUDE
 )
 
 # Documentation. TODO: Avoid recursive entries?
@@ -353,15 +328,15 @@ install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
 
 # Start script
 if(WIN32)
-	install(PROGRAMS "tools/release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
+    install(PROGRAMS "tools/release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
 elseif(APPLE)
-	if(COMMAND rttr_create_bundle)
-		rttr_create_bundle()
-	endif()
+    if(COMMAND rttr_create_bundle)
+        rttr_create_bundle()
+    endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
-	install(PROGRAMS "tools/release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
+    install(PROGRAMS "tools/release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
 else()
-	message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
+    message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
 endif()
 
 ################################################################################
