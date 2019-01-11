@@ -54,12 +54,10 @@ for artifact in $artifacts ; do
     echo ""
 
     set -x
-    unpacked_dir=$arch_dir/unpacked/s25rttr_${VERSION}
-    unpacked_remote_dir=$updater_dir/$unpacked_dir
 
     _changed=1
-    if [ -d $unpacked_remote_dir ] && [ -d $unpacked_dir ] ; then
-        diff -qrN $unpacked_remote_dir $unpacked_dir && _changed=0 || _changed=1
+    if [ -f $updater_dir/$arch_dir/revision ] && [ -f $arch_dir/revision ] ; then
+        diff -qrN $updater_dir/$arch_dir/revision $arch_dir/revision && _changed=0 || _changed=1
     fi
 
     set +x
@@ -82,11 +80,15 @@ for artifact in $artifacts ; do
     fi
 done
 
-cat rapidshare-build.txt >> $updater_dir/rapidshare.txt
-cp $updater_dir/rapidshare.txt rapidshare.txt
+if [ -f rapidshare-build.txt] ; then
+    cat rapidshare-build.txt >> $updater_dir/rapidshare.txt
+    cp $updater_dir/rapidshare.txt rapidshare.txt
 
-echo "Uploading files."
+    echo "Uploading files."
 
-rsync -av *.tar.bz2 *.zip *.txt tyra4.ra-doersch.de:$upload_dir/
-ssh tyra4.ra-doersch.de "php -q ${cron_dir}/${deploy_to}sql.php"
+    rsync -av *.tar.bz2 *.zip *.txt tyra4.ra-doersch.de:$upload_dir/
+    ssh tyra4.ra-doersch.de "php -q ${cron_dir}/${deploy_to}sql.php"
+fi
+
+rsync -av changelog.txt tyra4.ra-doersch.de:$upload_dir/
 ssh tyra4.ra-doersch.de "php -q ${cron_dir}/changelogsql.php"
