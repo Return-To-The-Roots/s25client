@@ -34,22 +34,24 @@ Coverage:
 ## On Linux or Darwin/MacOSX
 
 ### Prerequisite Linux:
+- C++14 compatible compiler (e.g. GCC-6)
 - cmake
 - git
-- boost / libboost1.55-dev (i.e https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
+- boost / libboost1.64-dev (i.e http://www.boost.org/)
 - libsdl1.2-dev
 - libsdl-mixer1.2-dev
+- libsdl2-dev (optional)
+- libsdl-mixer2-dev (optional)
 - licurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
 - libminiupnpc-dev (linux)
-- liblua5.2-dev (linux, i.e from contrib)   
 Most of them can be installed with the package manager.
 
 ### Prerequisite MacOSX:
 - cmake
 - git
 - boost
-- sdl
+- sdl(2)
 - sdl_mixer
 - gettext (make sure it is in your path with e.g. `brew link --force gettext`)
 - miniupnpc
@@ -78,9 +80,9 @@ Note that due to the use of submodules you always need to `git pull && git submo
 ## On Windows
 
 ### Prerequisites:
-- cmake (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.cmake.org/download/)
-- boost (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
-- Visual Studio (at least 2010, you can get 2015 community for free)
+- cmake (i.e from http://www.cmake.org/download/)
+- boost (i.e from http://www.boost.org/)
+- Visual Studio (at least 2015, you can get the community edition for free)
 - Git Client (i.e TortoiseGit)
 
 ### Steps:
@@ -98,11 +100,11 @@ Note that due to the use of submodules you always need to `git pull && git submo
      - Rightclick on the newly created folder -> TortoiseGit-> Submodule Update
      - Make sure all modules are selected and "Initialize submodules (--init)" is checked
      - press OK
-- Extract contrib/full-contrib-msvc.rar to contrib 
-  (so that contrib/full-contrib-msvc/bin, contrib/full-contrib-msvc/include and contrib/full-contrib-msvc/lib exist)
+- Extract external/full-contrib-msvc.rar to external 
+  (so that external/full-contrib-msvc/bin, external/full-contrib-msvc/include and external/full-contrib-msvc/lib exist)
 - If you havent installed boost, install boost
   Fast Way:
-  - extract boost-1.55.zip (i.e to contrib/boost, so that contrib/boost/bootstrap.bat exist)
+  - extract boost-1.64.zip (i.e to external/boost, so that external/boost/bootstrap.bat exist)
   - run that "bootstrap.bat"
   - run created "b2.exe": this should build boost
     Notice: if you have multiple Visual Studio versions installed, use the latest one with the "toolset"-parameter. 
@@ -113,7 +115,7 @@ Note that due to the use of submodules you always need to `git pull && git submo
   - "Where is the source code": Select checked out directory
   - "Where to build the binaries": Select "build" directory (create if required)
   - Press configure
-  - Select your compiler version (i.e Visual Studio 2010 x86)
+  - Select your compiler version (i.e Visual Studio 2015 x64)
   - If it can't find boost:
     - "Add Entry"
     - Enter as "Name" "BOOST_ROOT" (exact casing!)
