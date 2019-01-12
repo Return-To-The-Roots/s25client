@@ -292,8 +292,13 @@ if(BUILD_TESTING)
 endif()
 
 find_package(Gettext REQUIRED)
-file(GLOB RTTR_PO_FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/RTTR/languages/*.po)
-gettext_create_translations(${CMAKE_CURRENT_SOURCE_DIR}/data/RTTR/languages/rttr.pot ALL DESTINATION ${RTTR_DATADIR}/RTTR/languages ${RTTR_PO_FILES})
+file(GLOB RTTR_PO_FILES external/languages/*.po)
+set(RTTR_TRANSLATION_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${RTTR_DATADIR}/RTTR/languages) # Used by copyDepsToBuildDir
+gettext_create_translations(external/languages/rttr.pot ALL
+    DESTINATION ${RTTR_TRANSLATION_OUTPUT}
+    INSTALL_DESTINATION ${RTTR_DATADIR}/RTTR/languages
+    FILES ${RTTR_PO_FILES}
+)
 
 # Copy the RTTR folder with the updated translations to the directory of the client.
 configure_file(copyDepsToBuildDir.cmake . @ONLY)
@@ -313,8 +318,6 @@ endif()
 
 # RTTR directory, but exclude language input files
 install(DIRECTORY "data/RTTR" DESTINATION "${RTTR_DATADIR}"
-        PATTERN "*.po" EXCLUDE
-        PATTERN "*.pot" EXCLUDE
         PATTERN ".*" EXCLUDE
 )
 
