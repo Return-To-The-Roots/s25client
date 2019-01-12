@@ -26,9 +26,4 @@
 struct Fixture : rttr::test::BaseFixture
 {};
 
-#if BOOST_VERSION >= 105900
 BOOST_GLOBAL_FIXTURE(Fixture);
-#else
-// Boost < 1.59 got the semicolon inside the macro causing an "extra ;" warning
-BOOST_GLOBAL_FIXTURE(Fixture)
-#endif

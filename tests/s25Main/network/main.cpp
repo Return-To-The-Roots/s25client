@@ -30,9 +30,4 @@ struct NetworkFixture : rttr::test::Fixture
     ~NetworkFixture() { Socket::Shutdown(); }
 };
 
-#if BOOST_VERSION >= 105900
 BOOST_GLOBAL_FIXTURE(NetworkFixture);
-#else
-// Boost < 1.59 got the semicolon inside the macro causing an "extra ;" warning
-BOOST_GLOBAL_FIXTURE(NetworkFixture)
-#endif
