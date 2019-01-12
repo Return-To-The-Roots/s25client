@@ -33,13 +33,14 @@ jobs:
     - &linux-gcc6
       os: linux
       compiler: gcc
-      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6 BUILD_TYPE=Debug RTTR_COVERAGE=1
+      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" BUILD_TYPE=Release
       addons:
         apt:
           <<: *defApt
           packages: [*defPackages, g++-6]
     - <<: *linux-gcc6
-      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" BUILD_TYPE=Release
+      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6 BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_ENABLE_COVERAGE=ON"
+      after_success: external/libutil/tools/ci/uploadCoverageData.sh '*/external/*' '*/tests/*'
     - &linux-clang
       # GCC6 headers required
       <<: *linux-gcc6
@@ -76,38 +77,14 @@ install:
   # Minimum requirements: CMake 3.8.2, Boost 1.64
   - |
     CMAKE_DIR="${DEPS_DIR}/cmake"
-    tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}"
+    external/libutil/tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}"
     export PATH="${CMAKE_DIR}/bin:${PATH}"
   - |
     BOOST_VERSION=1.64.0
     BOOST_DIR="${DEPS_DIR}/boost${BOOST_VERSION}"
     export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBOOST_ROOT=${BOOST_DIR} -DBoost_NO_SYSTEM_PATHS=ON"
-    tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_DIR}"
-  - |
-    if [ "${RTTR_COVERAGE}" = "1" ]; then
-      # Install newer lcov (1.9 seems to fail: http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/)
-      export LCOV_ROOT="${DEPS_DIR}/lcov"
-      LCOV_URL="http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.13.orig.tar.gz"
-      mkdir "${LCOV_ROOT}" && travis_retry wget --quiet -O - "${LCOV_URL}" | tar --strip-components=1 -xz -C "${LCOV_ROOT}"
-      export PATH="${LCOV_ROOT}/bin:${PATH}"
+    external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_DIR}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
 
-      # Install coveralls tool
-      gem install coveralls-lcov
-
-      # Enable
-      export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
-    fi
-
-before_script:
-  - "export DISPLAY=:99.0"
-  - |
-    if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
-      ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )&
-    else
-      sh -e /etc/init.d/xvfb start
-    fi
-  - sleep 3 # give xvfb some time to start
+before_script: source external/libutil/tools/ci/setupXServer.sh
 
 script: tools/ci/travisBuild.sh
-
-after_success: if [ "${RTTR_COVERAGE}" = "1" ]; then tools/ci/uploadCoverageData.sh; fi
