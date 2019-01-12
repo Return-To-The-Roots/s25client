@@ -44,7 +44,7 @@ jobs:
       # GCC6 headers required
       <<: *linux-gcc6
       compiler: clang
-      env: BUILD_TYPE=Debug
+      env: BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS=-DRTTR_EXTERNAL_BUILD_TESTING=ON
     - <<: *linux-clang
       env: BUILD_TYPE=Release
     - os: osx
