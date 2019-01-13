@@ -37,7 +37,7 @@ Coverage:
 - cmake
 - git
 - gcc-5 or clang-6 (or newer)
-- boost / libboost1.64-dev (i.e https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
+- boost / libboost1.64-dev (i.e https://github.com/Return-To-The-Roots/external or http://www.boost.org/)
 - libsdl1.2-dev
 - libsdl-mixer1.2-dev
 - libsdl2-dev
@@ -45,7 +45,7 @@ Coverage:
 - licurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
 - libminiupnpc-dev (linux)
-- liblua5.2-dev (linux, i.e from contrib)
+- liblua5.2-dev (linux, i.e from external)
 Most of them can be installed with the package manager.
 
 ### Prerequisite MacOSX:
@@ -81,8 +81,8 @@ Note that due to the use of submodules you always need to `git pull && git submo
 ## On Windows
 
 ### Prerequisites:
-- cmake (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.cmake.org/download/)
-- boost (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
+- cmake (i.e from https://github.com/Return-To-The-Roots/external or http://www.cmake.org/download/)
+- boost (i.e from https://github.com/Return-To-The-Roots/external or http://www.boost.org/)
 - Visual Studio (at least 2010, you can get 2015 community for free)
 - Git Client (i.e TortoiseGit)
 
