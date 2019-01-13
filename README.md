@@ -36,13 +36,14 @@ Coverage:
 ### Prerequisite Linux:
 - cmake
 - git
-- boost / libboost1.55-dev (i.e https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
+- gcc-5 or clang-6 (or newer)
+- boost / libboost1.64-dev (i.e https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
 - libsdl1.2-dev
 - libsdl-mixer1.2-dev
 - licurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
 - libminiupnpc-dev (linux)
-- liblua5.2-dev (linux, i.e from contrib)   
+- liblua5.2-dev (linux, i.e from contrib)
 Most of them can be installed with the package manager.
 
 ### Prerequisite MacOSX:
