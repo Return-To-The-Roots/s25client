@@ -15,7 +15,7 @@ Appveyor: [![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status
 
 Coverage:
 [![Coverage Status](https://coveralls.io/repos/github/Return-To-The-Roots/s25client/badge.svg?branch=master)](https://coveralls.io/github/Return-To-The-Roots/s25client?branch=master)
- / 
+ /
 [![codecov](https://codecov.io/gh/Return-To-The-Roots/s25client/branch/master/graph/badge.svg)](https://codecov.io/gh/Return-To-The-Roots/s25client)
 
 # How to install
@@ -69,8 +69,8 @@ make
 ### Optimizations:
 There are various CMake options to control the build and optimization including ARM (Rasberry PI etc.) related ones. Examples:
 - RTTR_ENABLE_OPTIMIZATIONS/RTTR_ENABLE_WERROR
-- RTTR_OPTIMZATION_VECTOR_EXT (Non-Windows x86/x64 only)
-- RTTR_OPTIMZATION_TUNE (Non-Windows only)
+- RTTR_OPTIMIZATION_VECTOR_EXT (Non-Windows x86/x64 only)
+- RTTR_OPTIMIZATION_TUNE (Non-Windows only)
 - RTTR_TARGET_BOARD (ARM only)
 See the description in CMake-GUI/ccmake for details.
 
@@ -100,14 +100,14 @@ Note that due to the use of submodules you always need to `git pull && git submo
      - Rightclick on the newly created folder -> TortoiseGit-> Submodule Update
      - Make sure all modules are selected and "Initialize submodules (--init)" is checked
      - press OK
-- Extract external/full-contrib-msvc.rar to external 
+- Extract external/full-contrib-msvc.rar to external
   (so that external/full-contrib-msvc/bin, external/full-contrib-msvc/include and external/full-contrib-msvc/lib exist)
 - If you havent installed boost, install boost
   Fast Way:
   - extract boost-1.64.zip (i.e to external/boost, so that external/boost/bootstrap.bat exist)
   - run that "bootstrap.bat"
   - run created "b2.exe": this should build boost
-    Notice: if you have multiple Visual Studio versions installed, use the latest one with the "toolset"-parameter. 
+    Notice: if you have multiple Visual Studio versions installed, use the latest one with the "toolset"-parameter.
     i.e "b2 toolset=msvc-14.0" for Visual Studio 2015
   - run "b2 install --prefix=%CD%": this should install everything so the system can find it
     Notice: Don't forget to add the toolset parameter if you already used it before
@@ -127,4 +127,4 @@ Note that due to the use of submodules you always need to `git pull && git submo
 
 --
 
-for advanced info or help see [FAQ in the wiki](https://github.com/Return-To-The-Roots/s25client/wiki/How-to-install-RttR) or http://www.rttr.info 
+for advanced info or help see [FAQ in the wiki](https://github.com/Return-To-The-Roots/s25client/wiki/How-to-install-RttR) or http://www.rttr.info
