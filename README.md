@@ -40,6 +40,8 @@ Coverage:
 - boost / libboost1.64-dev (i.e https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
 - libsdl1.2-dev
 - libsdl-mixer1.2-dev
+- libsdl2-dev
+- libsdl2-mixer2-dev
 - licurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
 - libminiupnpc-dev (linux)
