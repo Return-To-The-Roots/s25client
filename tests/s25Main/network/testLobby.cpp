@@ -20,6 +20,7 @@
 #include "liblobby/LobbyClient.h"
 #include "liblobby/LobbyInterface.h"
 #include "liblobby/LobbyMessages.h"
+#include "libutil/md5.hpp"
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/test/unit_test.hpp>
 #include <memory>
@@ -64,7 +65,7 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
                          const std::string& /*version*/) override
     {
         BOOST_REQUIRE_EQUAL(user, testUser);
-        BOOST_REQUIRE_EQUAL(pass, testPw);
+        BOOST_REQUIRE_EQUAL(pass, s25util::md5(testPw).toString());
         connections[id].sendQueue.push(new LobbyMessage_Login_Done(testMail));
         return true;
     }
