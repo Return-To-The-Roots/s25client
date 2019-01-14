@@ -1,7 +1,0 @@
-coverage:
-    range: "65..95"
-    ignore:
-        - contrib/*
-        - src/test/*
-comment: false
-
