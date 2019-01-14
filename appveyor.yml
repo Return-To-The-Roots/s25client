@@ -46,13 +46,13 @@ install:
 
 before_build:
   - if exist build\ (rmdir /S /Q build)
-  - set INSTALL_DIR=%APPVEYOR_BUILD_FOLDER%\installed
+  - set "INSTALL_DIR=%APPVEYOR_BUILD_FOLDER%\installed"
   - if exist %INSTALL_DIR%\ (rmdir /S /Q %INSTALL_DIR%)
   - mkdir build
   - cd build
-  - if %platform% == x64 (set GENERATOR=%GENERATOR% Win64)
+  - if %platform% == x64 (set "GENERATOR=%GENERATOR% Win64")
   # Enable LTCG for release builds (speeds up linking as /GL compiled modules are used)
-  - if %configuration% == Release (set cmakeFlags="-DCMAKE_EXE_LINKER_FLAGS=/LTCG -DCMAKE_SHARED_LINKER_FLAGS=/LTCG")
+  - if %configuration% == Release (set "cmakeFlags=-DCMAKE_EXE_LINKER_FLAGS=/LTCG -DCMAKE_SHARED_LINKER_FLAGS=/LTCG")
   - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_DIR%"
   - cmake -G "%GENERATOR%" -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DBOOST_ROOT="%BOOST_DIR%" %cmakeFlags% ..
 

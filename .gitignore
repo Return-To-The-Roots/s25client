@@ -12,4 +12,5 @@
 /build
 /external/boost*
 /external/full-contrib-msvc
+/data/RTTR/languages
 /win32/*.aps

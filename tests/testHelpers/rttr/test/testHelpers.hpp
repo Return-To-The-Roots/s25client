@@ -18,7 +18,6 @@
 #ifndef testHelpers_h__
 #define testHelpers_h__
 
-#if BOOST_VERSION >= 105900
 namespace boost { namespace test_tools { namespace tt_detail {
     // Allow printing of pairs
     template<typename T, typename U>
@@ -27,16 +26,6 @@ namespace boost { namespace test_tools { namespace tt_detail {
         void operator()(std::ostream& os, std::pair<T, U> const& v) { os << "(" << v.first << "," << v.second << ")"; }
     };
 }}} // namespace boost::test_tools::tt_detail
-#else
-// Note: Actually UB, but no other choice for clang...
-namespace std {
-template<typename T, typename U>
-inline ostream& operator<<(ostream& os, pair<T, U> const& v)
-{
-    return os << "(" << v.first << "," << v.second << ")";
-}
-} // namespace std
-#endif
 
 template<typename T1, typename T2>
 inline boost::test_tools::predicate_result testCmp(const char* cmp, const T1& l, const T2& r, bool equal)

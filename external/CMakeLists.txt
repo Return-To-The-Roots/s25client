@@ -1,3 +1,7 @@
+include(RttrTestingCfg)
+option(RTTR_EXTERNAL_BUILD_TESTING "Enabe tests of external dependencies" OFF)
+set(BUILD_TESTING ${RTTR_EXTERNAL_BUILD_TESTING})
+
 ################################################################################
 # MSVC
 ################################################################################
@@ -23,9 +27,6 @@ IF (MSVC)
 		file(GLOB CONTRIB_DLLS ${_dllDir}/*.dll)
 		include(GatherDll)
 		gather_dll_add(${CONTRIB_DLLS})
-	endif()
-	if(MSVC_VERSION GREATER 1800) # MSVC 2015
-		list(APPEND CMAKE_PREFIX_PATH ${msvcContribDir}/VS2015)
 	endif()
 	list(APPEND CMAKE_PREFIX_PATH ${msvcContribDir})
 	list(APPEND CMAKE_PROGRAM_PATH ${msvcContribDir}/buildTools ${_dllDir})
