@@ -80,7 +80,7 @@ for artifact in $artifacts ; do
     fi
 done
 
-if [ -f rapidshare-build.txt] ; then
+if [ -f rapidshare-build.txt ] ; then
     cat rapidshare-build.txt >> $updater_dir/rapidshare.txt
     cp $updater_dir/rapidshare.txt rapidshare.txt
 
