@@ -20,7 +20,7 @@ Coverage:
 
 # How to install
 
-- Download the game for your OS at [siedler25.org](https://www.siedler25.org/index.php?com=dynamic&mod=2)
+- Download the game for your OS at [Downloads](https://www.rttr.info/index.php?com=dynamic&mod=2)
     - stable: Usually more stable
     - nightly: Latest features and bug fixes, but might be broken sometimes
 - Extract into a folder of your choice
