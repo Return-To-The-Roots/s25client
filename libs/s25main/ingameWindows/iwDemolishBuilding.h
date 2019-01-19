@@ -32,10 +32,10 @@ class iwDemolishBuilding : public IngameWindow
     const bool flag;
 
 public:
-    iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag = false);
+    iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, bool flag = false);
 
 private:
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
 };
 
 #endif // !iwDEMOLISHBUILDING_H_INCLUDED

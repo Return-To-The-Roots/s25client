@@ -50,8 +50,8 @@ protected:
     void GoToFlag();
 
 public:
-    nofFlagWorker(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* goal);
-    nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id);
+    nofFlagWorker(const Job job, const MapPoint pt, unsigned char player, noRoadNode* goal);
+    nofFlagWorker(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden
 protected:

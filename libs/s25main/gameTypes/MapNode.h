@@ -67,8 +67,8 @@ struct MapNode
     std::list<noBase*> figures;
 
     MapNode();
-    void Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const;
-    void Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
+    void Serialize(SerializedGameData& sgd, unsigned numPlayers, const WorldDescription& desc) const;
+    void Deserialize(SerializedGameData& sgd, unsigned numPlayers, const WorldDescription& desc,
                      const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains);
 };
 

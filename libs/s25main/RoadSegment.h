@@ -42,7 +42,7 @@ public:
 
 public:
     RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<Direction>& route);
-    RoadSegment(SerializedGameData& sgd, const unsigned obj_id);
+    RoadSegment(SerializedGameData& sgd, unsigned obj_id);
 
     /// zerstört das Objekt.
     void Destroy() override { Destroy_RoadSegment(); }
@@ -101,7 +101,7 @@ public:
     /// zerteilt die Straße in 2 Teile.
     void SplitRoad(noFlag* splitflag);
     /// Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
-    bool AreWareJobs(const bool flag, unsigned carrier_type, const bool take_ware_immediately) const;
+    bool AreWareJobs(const bool flag, unsigned carrier_type, bool take_ware_immediately) const;
     /// Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
     void AddWareJob(const noRoadNode* rn);
     /// Eine Ware will nicht mehr befördert werden.

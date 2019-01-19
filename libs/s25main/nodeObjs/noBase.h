@@ -42,7 +42,7 @@ class noBase : public GameObject
 {
 public:
     noBase(const NodalObjectType nop) : nop(nop) {}
-    noBase(SerializedGameData& sgd, const unsigned obj_id);
+    noBase(SerializedGameData& sgd, unsigned obj_id);
 
     /// An x,y zeichnen.
     virtual void Draw(DrawPoint drawPt) = 0;

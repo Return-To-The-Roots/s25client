@@ -33,7 +33,7 @@ class nofScout_Free : public nofFlagWorker
 private:
     void GoalReached() override;
     void Walked() override;
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
     /// Erkundet (quasi ein Umherirren)
     void Scout();
@@ -45,8 +45,8 @@ private:
     unsigned GetVisualRange() const override;
 
 public:
-    nofScout_Free(const MapPoint pt, const unsigned char player, noRoadNode* goal);
-    nofScout_Free(SerializedGameData& sgd, const unsigned obj_id);
+    nofScout_Free(const MapPoint pt, unsigned char player, noRoadNode* goal);
+    nofScout_Free(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen
 protected:

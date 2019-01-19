@@ -31,7 +31,7 @@ class Window;
 class Addon
 {
 public:
-    Addon(const AddonId id, const unsigned groups, const std::string& name, const std::string& description, const unsigned default_status)
+    Addon(const AddonId id, unsigned groups, const std::string& name, const std::string& description, unsigned default_status)
         : id_(id), groups_(groups), name_(name), description_(description), defaultStatus_(default_status)
     {}
     virtual ~Addon() {}

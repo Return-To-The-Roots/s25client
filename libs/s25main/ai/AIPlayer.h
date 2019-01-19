@@ -30,14 +30,14 @@ class GlobalGameSettings;
 class AIPlayer
 {
 public:
-    AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
+    AIPlayer(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
         : playerId(playerId), player(gwb.GetPlayer(playerId)), gwb(gwb), ggs(gwb.GetGGS()), level(level), aii(gwb, gcs, playerId)
     {}
 
     virtual ~AIPlayer() {}
 
     /// Called for every GF
-    virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
+    virtual void RunGF(unsigned gf, bool gfisnwf) = 0;
 
     const std::string& GetPlayerName() const { return player.name; }
     unsigned char GetPlayerId() const { return playerId; }

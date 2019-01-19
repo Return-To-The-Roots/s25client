@@ -191,7 +191,7 @@ public:
     uint32_t random_init, firstNwf, cmdDelay;
 
     GameMessage_Server_Start() : GameMessage(NMS_SERVER_START) {} //-V730
-    GameMessage_Server_Start(const unsigned random_init, const unsigned firstNwf, const unsigned cmdDelay)
+    GameMessage_Server_Start(unsigned random_init, unsigned firstNwf, unsigned cmdDelay)
         : GameMessage(NMS_SERVER_START), random_init(random_init), firstNwf(firstNwf), cmdDelay(cmdDelay)
     {}
 
@@ -627,7 +627,7 @@ public:
     bool ready;
 
     GameMessage_Player_Ready() : GameMessageWithPlayer(NMS_PLAYER_READY) {} //-V730
-    GameMessage_Player_Ready(uint8_t player, const bool ready) : GameMessageWithPlayer(NMS_PLAYER_READY, player), ready(ready)
+    GameMessage_Player_Ready(uint8_t player, bool ready) : GameMessageWithPlayer(NMS_PLAYER_READY, player), ready(ready)
     {
         LOG.writeToFile(">>> NMS_PLAYER_READY\n");
     }
@@ -719,8 +719,8 @@ public:
     uint32_t luaLen, luaCompressedLen;
 
     GameMessage_Map_Info() : GameMessage(NMS_MAP_INFO) {} //-V730
-    GameMessage_Map_Info(const std::string& filename, const MapType mt, const unsigned mapLen, const unsigned mapCompressedLen,
-                         const unsigned luaLen, const unsigned luaCompressedLen)
+    GameMessage_Map_Info(const std::string& filename, const MapType mt, unsigned mapLen, unsigned mapCompressedLen, const unsigned luaLen,
+                         unsigned luaCompressedLen)
         : GameMessage(NMS_MAP_INFO), filename(filename), mt(mt), mapLen(mapLen), mapCompressedLen(mapCompressedLen), luaLen(luaLen),
           luaCompressedLen(luaCompressedLen)
     {
@@ -790,7 +790,7 @@ public:
     /// True for map data, false for luaData
 
     GameMessage_Map_Data() : GameMessage(NMS_MAP_DATA) {} //-V730
-    GameMessage_Map_Data(bool isMapData, const uint32_t offset, const char* const data, const unsigned length)
+    GameMessage_Map_Data(bool isMapData, const uint32_t offset, const char* const data, unsigned length)
         : GameMessage(NMS_MAP_DATA), isMapData(isMapData), offset(offset), data(data, data + length)
     {
         LOG.writeToFile(">>> NMS_MAP_DATA\n");
@@ -959,7 +959,7 @@ public:
     uint32_t gf, gf_length, nextNWF;
 
     GameMessage_Server_NWFDone() : GameMessage(NMS_SERVER_NWF_DONE) {} //-V730
-    GameMessage_Server_NWFDone(const unsigned gf, const unsigned gf_length, const unsigned nextNWF)
+    GameMessage_Server_NWFDone(unsigned gf, unsigned gf_length, unsigned nextNWF)
         : GameMessage(NMS_SERVER_NWF_DONE), gf(gf), gf_length(gf_length), nextNWF(nextNWF)
     {
         LOG.writeToFile(">>> NMS_NWF_DONE(%d, %d, %d)\n") % gf % gf_length % nextNWF;

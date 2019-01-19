@@ -46,7 +46,7 @@ private:
 
 public:
     noGrainfield(const MapPoint pt);
-    noGrainfield(SerializedGameData& sgd, const unsigned obj_id);
+    noGrainfield(SerializedGameData& sgd, unsigned obj_id);
 
     ~noGrainfield() override;
 
@@ -67,7 +67,7 @@ public:
     GO_Type GetGOT() const override { return GOT_GRAINFIELD; }
 
     void Draw(DrawPoint drawPt) override;
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
 

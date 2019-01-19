@@ -39,9 +39,9 @@ private:
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
     void TransmitSettings();
 
-    void Msg_Timer(const unsigned ctrl_id) override;
-    void Msg_ListSelectItem(const unsigned ctrl_id, const int selection) override;
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_Timer(unsigned ctrl_id) override;
+    void Msg_ListSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
 };
 
 #endif // !iwBUILDORDER_H_INCLUDED

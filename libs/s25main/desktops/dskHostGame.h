@@ -48,42 +48,42 @@ private:
     // GGS von den Controls auslesen
     void UpdateGGS();
     /// Aktualisiert eine Spielerreihe (löscht Controls und legt neue an)
-    void UpdatePlayerRow(const unsigned row);
+    void UpdatePlayerRow(unsigned row);
 
     /// Füllt die Felder einer Reihe aus
-    void ChangeTeam(const unsigned i, const unsigned char nr);
-    void ChangeReady(const unsigned i, const bool ready);
-    void ChangeNation(const unsigned i, const Nation nation);
+    void ChangeTeam(unsigned i, unsigned char nr);
+    void ChangeReady(unsigned i, bool ready);
+    void ChangeNation(unsigned i, const Nation nation);
     void ChangePing(unsigned playerId);
-    void ChangeColor(const unsigned i, const unsigned color);
+    void ChangeColor(unsigned i, unsigned color);
 
     void Msg_PaintBefore() override;
-    void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
-    void Msg_Group_CheckboxChange(const unsigned group_id, const unsigned ctrl_id, const bool checked) override;
-    void Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_EditEnter(const unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-    void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
-    void Msg_CheckboxChange(const unsigned ctrl_id, const bool checked) override;
-    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void Msg_Group_CheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;
+    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, int selection) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_EditEnter(unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
 
     void LC_RankingInfo(const LobbyPlayerInfo& player) override;
 
     void CI_Error(const ClientError ce) override;
 
-    void CI_NewPlayer(const unsigned playerId) override;
-    void CI_PlayerLeft(const unsigned playerId) override;
+    void CI_NewPlayer(unsigned playerId) override;
+    void CI_PlayerLeft(unsigned playerId) override;
 
     void CI_GameLoading(std::shared_ptr<Game> game) override;
 
     void CI_PlayerDataChanged(unsigned playerId) override;
-    void CI_PingChanged(const unsigned playerId, const unsigned short ping) override;
-    void CI_ReadyChanged(const unsigned playerId, const bool ready) override;
-    void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
+    void CI_PingChanged(unsigned playerId, unsigned short ping) override;
+    void CI_ReadyChanged(unsigned playerId, bool ready) override;
+    void CI_PlayersSwapped(unsigned player1, unsigned player2) override;
     void CI_GGSChanged(const GlobalGameSettings& ggs) override;
 
-    void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
+    void CI_Chat(unsigned playerId, const ChatDestination cd, const std::string& msg) override;
     void CI_Countdown(unsigned remainingTimeInSec) override;
     void CI_CancelCountdown(bool error) override;
 

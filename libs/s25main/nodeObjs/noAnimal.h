@@ -60,7 +60,7 @@ private:
 
 public:
     noAnimal(const Species species, const MapPoint pt);
-    noAnimal(SerializedGameData& sgd, const unsigned obj_id);
+    noAnimal(SerializedGameData& sgd, unsigned obj_id);
 
     ~noAnimal() override {}
 
@@ -88,7 +88,7 @@ public:
     // An x,y zeichnen
     void Draw(DrawPoint drawPt) override;
     // Benachrichtigen, wenn neuer gf erreicht wurde
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugefügt wurde
     void StartLiving();

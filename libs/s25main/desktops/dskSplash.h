@@ -32,7 +32,7 @@ public:
     void SetActive(bool activate) override;
 
 private:
-    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_Timer(unsigned ctrl_id) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
     void LoadFiles();
 

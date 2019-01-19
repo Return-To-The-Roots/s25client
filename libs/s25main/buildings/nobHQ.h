@@ -28,8 +28,8 @@ class nobHQ : public nobBaseWarehouse
     bool isTent_;
 
 public:
-    nobHQ(const MapPoint pt, const unsigned char player, const Nation nation, const bool isTent = false);
-    nobHQ(SerializedGameData& sgd, const unsigned obj_id);
+    nobHQ(const MapPoint pt, unsigned char player, const Nation nation, bool isTent = false);
+    nobHQ(SerializedGameData& sgd, unsigned obj_id);
 
 protected:
     void DestroyBuilding() override;
@@ -44,7 +44,7 @@ public:
 
     unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
 
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
     bool IsTent() const { return isTent_; }
     void SetIsTent(const bool isTent) { isTent_ = isTent; }
 };

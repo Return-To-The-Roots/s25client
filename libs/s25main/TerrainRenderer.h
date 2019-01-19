@@ -59,7 +59,7 @@ public:
     /// Get position of node in pixels (VertexPos)
     PointF GetVertexPos(const MapPoint pt) const { return GetVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to GetNodePos(pt)
-    PointF GetNeighbourVertexPos(MapPoint pt, const unsigned dir) const;
+    PointF GetNeighbourVertexPos(MapPoint pt, unsigned dir) const;
 
     /// Callback function for altitude changes
     void AltitudeChanged(const MapPoint pt, const GameWorldViewer& gwv);
@@ -195,7 +195,7 @@ private:
     /// liefert den Rand-Vertex an der Stelle X,Y
     PointF GetBorderPos(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderPos[triangle]; }
     /// Get neighbour border position of a node (VertexPos) potentially shifted so that the returned value is next to GetBorderPos(pt)
-    PointF GetNeighbourBorderPos(const MapPoint pt, const unsigned char triangle, const unsigned char dir) const;
+    PointF GetNeighbourBorderPos(const MapPoint pt, unsigned char triangle, unsigned char dir) const;
     /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
     float GetBorderColor(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderColor[triangle]; }
 

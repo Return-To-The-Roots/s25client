@@ -44,7 +44,7 @@ public:
     void EventPlayerLeft(unsigned playerIdx);
     void EventPlayerReady(unsigned playerIdx);
     /// Return whether the named change is allowed
-    bool IsChangeAllowed(const std::string& name, const bool defaultVal = false);
+    bool IsChangeAllowed(const std::string& name, bool defaultVal = false);
     /// Get addons that are allowed to be changed
     std::vector<AddonId> GetAllowedAddons();
 

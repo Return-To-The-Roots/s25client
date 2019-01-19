@@ -105,7 +105,7 @@ private:
     friend class gc::SetInventorySetting;
     friend class gc::SetAllInventorySettings;
     /// Verändert Ein/Auslagerungseinstellungen
-    void SetInventorySetting(const bool isJob, const unsigned char type, InventorySetting state);
+    void SetInventorySetting(const bool isJob, unsigned char type, InventorySetting state);
 
     /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
     void SetAllInventorySettings(const bool isJob, const std::vector<InventorySetting>& states);
@@ -122,7 +122,7 @@ protected:
     /// Stellt Verteidiger zur Verfügung
     nofDefender* ProvideDefender(nofAttacker* const attacker) override;
 
-    void HandleBaseEvent(const unsigned id);
+    void HandleBaseEvent(unsigned id);
 
     /// Versucht ein Rekrutierungsevent anzumelden, falls ausreichend Waffen und Bier sowie genügend Gehilfen
     /// vorhanden sind (je nach Militäreinstellungen)
@@ -135,8 +135,8 @@ protected:
     /// Recruts a worker of the given job if possible
     bool TryRecruitJob(const Job job);
 
-    nobBaseWarehouse(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-    nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_id);
+    nobBaseWarehouse(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    nobBaseWarehouse(SerializedGameData& sgd, unsigned obj_id);
 
 public:
     void Clear();
@@ -180,12 +180,12 @@ public:
     bool IsInventorySetting(const Job job, const EInventorySetting setting) const { return GetInventorySetting(job).IsSet(setting); }
     bool IsInventorySetting(const GoodType ware, const EInventorySetting setting) const { return GetInventorySetting(ware).IsSet(setting); }
 
-    void SetInventorySettingVisual(const bool isJob, const unsigned char type, InventorySetting state);
+    void SetInventorySettingVisual(const bool isJob, unsigned char type, InventorySetting state);
 
     /// Bestellt einen Träger
     void OrderCarrier(noRoadNode& goal, RoadSegment& workplace);
     /// Bestellt irgendeinen Beruf (ggf. stellt er ihn noch mit einem Werkzeug her)
-    bool OrderJob(const Job job, noRoadNode* const goal, const bool allow_recruiting);
+    bool OrderJob(const Job job, noRoadNode* const goal, bool allow_recruiting);
     /// Bestellt einen Esel
     nofCarrier* OrderDonkey(RoadSegment* road, noRoadNode* const goal_flag);
     /// "Bestellt" eine Ware --> gibt den Pointer auf die Ware zurück
@@ -205,7 +205,7 @@ public:
     /// Legt eine Ware im Lagerhaus ab
     void AddWare(Ware*& ware) override;
     /// Eine Figur geht ins Lagerhaus
-    virtual void AddFigure(noFigure* figure, const bool increase_visual_counts = true);
+    virtual void AddFigure(noFigure* figure, bool increase_visual_counts = true);
 
     /// Eine bestellte Ware konnte doch nicht kommen
     void WareLost(Ware* ware) override;
@@ -271,7 +271,7 @@ public:
     /// Verändert Reserveeinstellung - visuell (nur das geforderte natürlich) und gibt neue Anzahl zurück
     unsigned IncreaseReserveVisual(unsigned rank);
     unsigned DecreaseReserveVisual(unsigned rank);
-    void SetRealReserve(const unsigned rank, const unsigned count);
+    void SetRealReserve(unsigned rank, unsigned count);
 
     /// Versucht, die geforderten Reserve-Soldaten bereitzustellen
     void RefreshReserve(unsigned rank);
@@ -286,7 +286,7 @@ public:
     /// Available figures of a specific type that can be used for trading
     unsigned GetAvailableFiguresForTrading(const Job job) const;
     /// Starts a trade caravane from this warehouse
-    void StartTradeCaravane(const GoodType gt, Job job, const unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal);
+    void StartTradeCaravane(const GoodType gt, Job job, unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal);
 
     /// For debug only
     bool IsDependentFigure(noFigure* fig) const;

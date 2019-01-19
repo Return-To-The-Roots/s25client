@@ -65,7 +65,7 @@ public:
 
     /// Write a GameObject
     template<class T>
-    void PushObject(const T* go, const bool known)
+    void PushObject(const T* go, bool known)
     {
         /* The assert below basically checks the virtual function table.
            If the dynamic_cast fails, we tried to push an object of another type or it was deleted */
@@ -78,7 +78,7 @@ public:
 
     /// Write a container of GameObjects
     template<typename T>
-    void PushObjectContainer(const T& gos, const bool known);
+    void PushObjectContainer(const T& gos, bool known);
 
     /// Push a container of values
     template<typename T>
@@ -158,16 +158,16 @@ private:
     /// Starts reading or writing according to the param
     void Prepare(bool reading);
     /// Erzeugt GameObject
-    GameObject* Create_GameObject(const GO_Type got, const unsigned obj_id);
+    GameObject* Create_GameObject(const GO_Type got, unsigned obj_id);
     /// Erzeugt FOWObject
     FOWObject* Create_FOWObject(const FOW_Type fowtype);
 
-    void PushObject_(const GameObject* go, const bool known);
+    void PushObject_(const GameObject* go, bool known);
     /// Objekt(referenzen) lesen
     GameObject* PopObject_(GO_Type got);
 
     /// Returns the object with the given id when it was read, nullptr otherwise (only valid during reading)
-    GameObject* GetReadGameObject(const unsigned obj_id) const;
+    GameObject* GetReadGameObject(unsigned obj_id) const;
     /// Returns whether the object with the given id was already serialized (only valid during writing)
     bool IsObjectSerialized(unsigned obj_id) const;
 };
@@ -177,7 +177,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-void SerializedGameData::PushObjectContainer(const T& gos, const bool known)
+void SerializedGameData::PushObjectContainer(const T& gos, bool known)
 {
     // Anzahl
     PushVarSize(gos.size());

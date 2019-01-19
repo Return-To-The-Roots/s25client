@@ -33,15 +33,15 @@ public:
     void SetHost(const std::string& host);
     void SetPort(unsigned short port);
     /// Connects to the given server or fills in the info if it has a password
-    void Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6, const bool hasPwd);
+    void Connect(const std::string& hostOrIp, unsigned short port, bool isIPv6, bool hasPwd);
 
 private:
     void SetStatus(const std::string& text, unsigned color);
 
-    void Msg_EditChange(const unsigned ctrl_id) override;
-    void Msg_EditEnter(const unsigned ctrl_id) override;
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_EditChange(unsigned ctrl_id) override;
+    void Msg_EditEnter(unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
 
     void CI_Error(const ClientError ce) override;
     void CI_NextConnectState(const ConnectState cs) override;

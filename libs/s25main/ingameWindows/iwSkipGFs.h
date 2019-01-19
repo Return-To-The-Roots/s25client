@@ -34,8 +34,8 @@ private:
     /// Teilt dem GameClient den Wert mit
     void SkipGFs();
 
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_EditEnter(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_EditEnter(unsigned ctrl_id) override;
 };
 
 #endif // !iwSKIPGFS_H_INCLUDED

@@ -88,7 +88,7 @@ private:
     virtual void Walked() = 0;      // man gelaufen ist
 
     /// Für alle restlichen Events, die nicht von noFigure behandelt werden
-    virtual void HandleDerivedEvent(const unsigned id) = 0;
+    virtual void HandleDerivedEvent(unsigned id) = 0;
 
     /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
     virtual unsigned GetVisualRange() const;
@@ -105,7 +105,7 @@ protected:
     /// In aktueller Richtung ein Stück zurcklegen
     void WalkFigure();
     /// Schatten der Figur malen
-    void DrawShadow(DrawPoint drawPt, const unsigned char anistep, Direction dir);
+    void DrawShadow(DrawPoint drawPt, unsigned char anistep, Direction dir);
 
     /// Herumirren
     void Wander();
@@ -117,11 +117,11 @@ protected:
 
 public:
     /// Konstruktor für Figuren, die auf dem Wegenetz starten
-    noFigure(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* const goal);
+    noFigure(const Job job, const MapPoint pt, unsigned char player, noRoadNode* const goal);
     /// Konstruktor für Figuren, die im Job-Modus starten
-    noFigure(const Job job, const MapPoint pt, const unsigned char player);
+    noFigure(const Job job, const MapPoint pt, unsigned char player);
 
-    noFigure(SerializedGameData& sgd, const unsigned obj_id);
+    noFigure(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden
 protected:
@@ -137,7 +137,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noFigure(sgd); }
 
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     /// Ziel setzen
     void SetGoalTonullptr() { goal_ = nullptr; }
@@ -151,7 +151,7 @@ public:
     /// Tut was, nachdem er rausgehen soll
     void ActAtFirst();
     /// Legt die Anfangsdaten für das Laufen auf Wegen fest
-    void InitializeRoadWalking(const RoadSegment* const road, const unsigned short rs_pos, const bool rs_dir);
+    void InitializeRoadWalking(const RoadSegment* const road, unsigned short rs_pos, bool rs_dir);
     /// Gibt Job-Typ zurück
     Job GetJobType() const { return job_; }
     /// Returns true if this is a soldier (they get some special handling at some points)
@@ -173,7 +173,7 @@ public:
     /// Starts walking in a random dir and returns whether this was possible
     bool WalkInRandomDir();
     /// Umherirren starten (frei rumlaufen)
-    void StartWandering(const unsigned burned_wh_id = 0xFFFFFFFF);
+    void StartWandering(unsigned burned_wh_id = 0xFFFFFFFF);
     /// Auf Straßen(!) nach Hause laufen
     void GoHome(noRoadNode* goal = nullptr);
     /// Aktuellen Weg, auf dem er läuft, fr ungültig erklären

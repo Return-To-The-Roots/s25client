@@ -45,7 +45,7 @@ private:
 private:
     void GoalReached() override;
     void Walked() override;
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
     /// Kann man an diesem Punkt ein Schild aufstellen?
     bool IsNodeGood(const MapPoint pt) const;
@@ -65,8 +65,8 @@ private:
     bool IsSignInArea(Resource::Type type) const;
 
 public:
-    nofGeologist(const MapPoint pt, const unsigned char player, noRoadNode* goal);
-    nofGeologist(SerializedGameData& sgd, const unsigned obj_id);
+    nofGeologist(const MapPoint pt, unsigned char player, noRoadNode* goal);
+    nofGeologist(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen
 protected:

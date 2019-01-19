@@ -47,7 +47,7 @@ public:
     CatapultStone(const MapPoint dest_building, const MapPoint dest_map, const DrawPoint start, const DrawPoint dest,
                   const unsigned fly_duration);
 
-    CatapultStone(SerializedGameData& sgd, const unsigned obj_id);
+    CatapultStone(SerializedGameData& sgd, unsigned obj_id);
 
     /// Zerstören
     void Destroy() override;
@@ -63,7 +63,7 @@ public:
     void Draw(DrawPoint drawOffset);
 
     /// Event-Handler
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     GO_Type GetGOT() const override { return GOT_CATAPULTSTONE; }
 };

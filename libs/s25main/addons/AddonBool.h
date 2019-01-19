@@ -28,8 +28,7 @@
 class AddonBool : public Addon
 {
 public:
-    AddonBool(const AddonId id, const unsigned groups, const std::string& name, const std::string& description,
-              const unsigned default_status)
+    AddonBool(const AddonId id, unsigned groups, const std::string& name, const std::string& description, const unsigned default_status)
         : Addon(id, groups, name, description, default_status)
     {}
 

@@ -44,21 +44,21 @@ public:
     /// @param length If != nullptr will receive the final costs
     /// @param firstDir If != nullptr will receive the first direction to travel
     /// @param firstNodePos If != nullptr will receive the position of the first node
-    bool FindPath(const noRoadNode& start, const noRoadNode& goal, const bool wareMode,
-                  const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = nullptr,
-                  unsigned* const length = nullptr, unsigned char* const firstDir = nullptr, MapPoint* const firstNodePos = nullptr);
+    bool FindPath(const noRoadNode& start, const noRoadNode& goal, bool wareMode, const unsigned max = std::numeric_limits<unsigned>::max(),
+                  const RoadSegment* const forbidden = nullptr, unsigned* const length = nullptr, unsigned char* const firstDir = nullptr,
+                  MapPoint* const firstNodePos = nullptr);
 
     /// Checks if there is ANY path from start to goal
     ///
     /// @param allowWaterRoads True to allow boat roads (mostly: Ware=true, Person=false)
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)
     /// @param forbidden RoadSegment that will be ignored
-    bool PathExists(const noRoadNode& start, const noRoadNode& goal, const bool allowWaterRoads,
+    bool PathExists(const noRoadNode& start, const noRoadNode& goal, bool allowWaterRoads,
                     const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = nullptr);
 
 private:
     template<class T_AdditionalCosts, class T_SegmentConstraints>
-    bool FindPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max, const T_AdditionalCosts addCosts,
+    bool FindPathImpl(const noRoadNode& start, const noRoadNode& goal, unsigned max, const T_AdditionalCosts addCosts,
                       const T_SegmentConstraints isSegmentAllowed, unsigned* const length = nullptr,
                       unsigned char* const firstDir = nullptr, MapPoint* const firstNodePos = nullptr);
 };

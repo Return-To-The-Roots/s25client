@@ -28,7 +28,7 @@ class glArchivItem_Font;
 class ctrlBaseText
 {
 public:
-    ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font);
+    ctrlBaseText(const std::string& text, unsigned color, glArchivItem_Font* font);
 
     void SetText(const std::string& text);
     const std::string& GetText() const { return text; }

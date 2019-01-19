@@ -40,8 +40,8 @@ public:
     void Clear();
     unsigned GetNumLines() { return unsigned(lines.size()); }
     /// Gibt den index-ten Eintrag zurück
-    const std::string& GetLine(const unsigned index) const { return lines[index].str; }
-    void SetLine(const unsigned index, const std::string& str, unsigned color);
+    const std::string& GetLine(unsigned index) const { return lines[index].str; }
+    void SetLine(unsigned index, const std::string& str, unsigned color);
     /// Resizes the height such that the given number of lines can be shown
     void SetNumVisibleLines(unsigned numLines);
     /// Return the currently used size including padding and the (possible) scrollbar (<=width,  <= height)

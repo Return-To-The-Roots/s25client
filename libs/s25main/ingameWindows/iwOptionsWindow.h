@@ -26,8 +26,8 @@ public:
     iwOptionsWindow();
 
 private:
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_ProgressChange(unsigned ctrl_id, unsigned short position) override;
 };
 
 #endif

@@ -59,8 +59,8 @@ public:
     bool Msg_WheelUp(const MouseCoords& mc) override;
     bool Msg_WheelDown(const MouseCoords& mc) override;
     bool Msg_MouseMove(const MouseCoords& mc) override;
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_ScrollShow(const unsigned ctrl_id, const bool visible) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_ScrollShow(unsigned ctrl_id, bool visible) override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
 
     enum SortType

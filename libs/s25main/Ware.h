@@ -58,7 +58,7 @@ private:
 
 public:
     Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location);
-    Ware(SerializedGameData& sgd, const unsigned obj_id);
+    Ware(SerializedGameData& sgd, unsigned obj_id);
 
     ~Ware() override;
 
@@ -93,13 +93,13 @@ public:
     /// Gibt dem Ziel der Ware bekannt, dass diese nicht mehr kommen kann
     void NotifyGoalAboutLostWare();
     /// Wenn die Ware vernichtet werden muss
-    void WareLost(const unsigned char player);
+    void WareLost(unsigned char player);
     /// Gibt Status der Ware zurück
     bool IsWaitingAtFlag() const { return (state == STATE_WAITATFLAG); }
     bool IsWaitingInWarehouse() const { return (state == STATE_WAITINWAREHOUSE); }
     bool IsWaitingForShip() const { return (state == STATE_WAITFORSHIP); }
     /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
-    void RemoveWareJobForDir(const unsigned char last_next_dir);
+    void RemoveWareJobForDir(unsigned char last_next_dir);
     /// Überprüft, ob es noch ein Weg zum Ziel gibt
     bool IsRouteToGoal();
     /// Tells the ware that it should look for a warehouse to go to and notifies that (if found)

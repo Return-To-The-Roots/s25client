@@ -36,13 +36,13 @@ protected:
     unsigned short GetCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
     GoodType ProduceWare() override;
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
     bool AreWaresAvailable() const override;
 
 public:
-    nofArmorer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofArmorer(SerializedGameData& sgd, const unsigned obj_id);
+    nofArmorer(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofArmorer(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen
 protected:

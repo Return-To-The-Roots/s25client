@@ -33,14 +33,14 @@ struct Inventory
     unsigned operator[](Job job) const { return people[job]; }
     /// Sets everything to 0
     void clear();
-    void Add(const GoodType good, const unsigned amount = 1) { goods[good] += amount; }
-    void Add(const Job job, const unsigned amount = 1) { people[job] += amount; }
-    void Remove(const GoodType good, const unsigned amount = 1)
+    void Add(const GoodType good, unsigned amount = 1) { goods[good] += amount; }
+    void Add(const Job job, unsigned amount = 1) { people[job] += amount; }
+    void Remove(const GoodType good, unsigned amount = 1)
     {
         RTTR_Assert(goods[good] >= amount);
         goods[good] -= amount;
     }
-    void Remove(const Job job, const unsigned amount = 1)
+    void Remove(const Job job, unsigned amount = 1)
     {
         RTTR_Assert(people[job] >= amount);
         people[job] -= amount;

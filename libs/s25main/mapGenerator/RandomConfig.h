@@ -59,7 +59,7 @@ public:
      * @param max maximum value
      * @return a new random number
      */
-    int Rand(const int max);
+    int Rand(int max);
 
     /**
      * Generates a random number between min and max-1.
@@ -67,7 +67,7 @@ public:
      * @param max maximum value
      * @return a new random number
      */
-    int Rand(const int min, const int max);
+    int Rand(int min, int max);
 
     /**
      * Generates a random number between min and max.

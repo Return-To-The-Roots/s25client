@@ -26,7 +26,7 @@ class Minimap;
 class ctrlMinimap : public Window
 {
 public:
-    ctrlMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding, const Extent& mapSize);
+    ctrlMinimap(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding, const Extent& mapSize);
 
     Extent GetCurMapSize() const { return drawnMapSize; }
 

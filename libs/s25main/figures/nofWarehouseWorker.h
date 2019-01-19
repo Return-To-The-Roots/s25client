@@ -53,11 +53,11 @@ private:
 
     void LooseWare();
 
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
 public:
-    nofWarehouseWorker(const MapPoint pt, const unsigned char player, Ware* ware, const bool task);
-    nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id);
+    nofWarehouseWorker(const MapPoint pt, unsigned char player, Ware* ware, bool task);
+    nofWarehouseWorker(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofWarehouseWorker() override;
 

@@ -41,10 +41,10 @@ protected:
 
 public:
     /// Ctor for sending the figure to its workplace
-    nofWellguy(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofWellguy(const MapPoint pt, unsigned char player, nobUsual* workplace);
     /// Ctor for sending the figure to a warehouse (harbor, HQ,...)
-    nofWellguy(const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
-    nofWellguy(SerializedGameData& sgd, const unsigned obj_id);
+    nofWellguy(const MapPoint pt, unsigned char player, nobBaseWarehouse* goalWh);
+    nofWellguy(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_WELLGUY; }
 };

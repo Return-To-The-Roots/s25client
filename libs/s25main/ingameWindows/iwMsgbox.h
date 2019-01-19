@@ -48,9 +48,9 @@ public:
 private:
     void Init(const std::string& text, const std::string& iconFile, unsigned iconIdx);
 
-    void AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc);
+    void AddButton(unsigned short id, int x, const std::string& text, TextureColor tc);
 
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
 };
 
 #endif // !iwMSGBOX_H_INCLUDED

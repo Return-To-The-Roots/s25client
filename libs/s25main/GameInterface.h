@@ -37,8 +37,8 @@ public:
     /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
     virtual void GI_TreatyOfAllianceChanged(unsigned playerId) = 0;
 
-    virtual void GI_Winner(const unsigned playerId) = 0;
-    virtual void GI_TeamWinner(const unsigned playerId) = 0;
+    virtual void GI_Winner(unsigned playerId) = 0;
+    virtual void GI_TeamWinner(unsigned playerId) = 0;
 
     /// An important window was closed (currently iwAction, iwRoad)
     virtual void GI_WindowClosed(Window* wnd) = 0;

@@ -62,16 +62,16 @@ public:
 
     RoadBuildMode GetRoadMode() const { return road.mode; }
 
-    void CI_PlayerLeft(const unsigned playerId) override;
+    void CI_PlayerLeft(unsigned playerId) override;
     void CI_GGSChanged(const GlobalGameSettings& ggs) override;
-    void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
+    void CI_Chat(unsigned playerId, const ChatDestination cd, const std::string& msg) override;
     void CI_Async(const std::string& checksums_list) override;
     void CI_ReplayAsync(const std::string& msg) override;
     void CI_ReplayEndReached(const std::string& msg) override;
     void CI_GamePaused() override;
     void CI_GameResumed() override;
     void CI_Error(const ClientError ce) override;
-    void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
+    void CI_PlayersSwapped(unsigned player1, unsigned player2) override;
 
     void NewPostMessage(const PostMsg& msg, unsigned msgCt);
     void PostMessageDeleted(unsigned msgCt);
@@ -84,8 +84,8 @@ public:
     void GI_UpdateMinimap(const MapPoint pt) override;
     /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
     void GI_TreatyOfAllianceChanged(unsigned playerId) override;
-    void GI_Winner(const unsigned playerId) override;
-    void GI_TeamWinner(const unsigned playerId) override;
+    void GI_Winner(unsigned playerId) override;
+    void GI_TeamWinner(unsigned playerId) override;
     void GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad) override;
     void GI_CancelRoadBuilding() override;
     /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
@@ -101,7 +101,7 @@ public:
     // If pt is not on the road, return 0
     unsigned GetIdInCurBuildRoad(const MapPoint pt);
     /// Baut Weg zurück von Ende bis zu start_id
-    void DemolishRoad(const unsigned start_id);
+    void DemolishRoad(unsigned start_id);
     // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
     // ansonsten gibt's nur nen Button zum Abbrechen
     void ShowRoadWindow(const DrawPoint& mousePos);
@@ -121,9 +121,9 @@ private:
     void Run();
 
     /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
-    void UpdatePostIcon(const unsigned postmessages_count, bool showPigeon);
+    void UpdatePostIcon(unsigned postmessages_count, bool showPigeon);
 
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_PaintBefore() override;
     void Msg_PaintAfter() override;
     bool Msg_LeftDown(const MouseCoords& mc) override;

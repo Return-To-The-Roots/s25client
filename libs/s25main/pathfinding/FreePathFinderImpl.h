@@ -52,7 +52,7 @@ struct GetEstimatedDistance
 typedef OpenListBinaryHeap<FreePathNode, GetEstimatedDistance> QueueImpl;
 
 template<class TNodeChecker>
-bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, const bool randomRoute, const unsigned maxLength,
+bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool randomRoute, unsigned maxLength,
                               std::vector<Direction>* route, unsigned* length, Direction* firstDir, const TNodeChecker& nodeChecker)
 {
     RTTR_Assert(start != dest);
@@ -179,8 +179,8 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, const b
 
 /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
 template<class TNodeChecker>
-bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos,
-                                const TNodeChecker& nodeChecker, MapPoint* dest) const
+bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<Direction>& route, unsigned pos, const TNodeChecker& nodeChecker,
+                                MapPoint* dest) const
 {
     RTTR_Assert(pos < route.size());
 

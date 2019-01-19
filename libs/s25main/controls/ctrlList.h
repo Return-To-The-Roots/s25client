@@ -38,7 +38,7 @@ public:
     /// Neuen String zur Listbox hinzufügen.
     void AddString(const std::string& text);
     /// Verändert einen String
-    void SetString(const std::string& text, const unsigned id);
+    void SetString(const std::string& text, unsigned id);
     /// Listbox leeren.
     void DeleteAllItems();
     /// liefert den Wert einer Zeile.
@@ -48,7 +48,7 @@ public:
     /// Vertauscht zwei Zeilen.
     void Swap(unsigned short first, unsigned short second);
     /// Löscht ein Element
-    void Remove(const unsigned short index);
+    void Remove(unsigned short index);
 
     unsigned short GetNumLines() const { return static_cast<unsigned short>(lines.size()); }
     int GetSelection() const { return selection_; };

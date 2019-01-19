@@ -24,8 +24,8 @@ class SerializedGameData;
 class noDisappearingMapEnvObject : public noDisappearingEnvObject
 {
 public:
-    noDisappearingMapEnvObject(const MapPoint pt, const unsigned short map_id);
-    noDisappearingMapEnvObject(SerializedGameData& sgd, const unsigned obj_id);
+    noDisappearingMapEnvObject(const MapPoint pt, unsigned short map_id);
+    noDisappearingMapEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen
 protected:

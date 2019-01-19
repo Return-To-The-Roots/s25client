@@ -42,7 +42,7 @@ public:
     const std::string getNextSong();
 
     /// Playlist in Datei speichern
-    bool SaveAs(const std::string& filename, const bool overwrite);
+    bool SaveAs(const std::string& filename, bool overwrite);
     /// Playlist laden
     bool Load(const std::string& filename);
 
@@ -52,7 +52,7 @@ public:
     void ReadMusicPlayer(const iwMusicPlayer* const window);
 
     /// Wählt den Start-Song aus
-    void SetStartSong(const unsigned id);
+    void SetStartSong(unsigned id);
 
 protected:
     int current;

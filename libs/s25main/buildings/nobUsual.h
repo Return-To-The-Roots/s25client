@@ -62,8 +62,8 @@ class nobUsual : public noBuilding
 protected:
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobUsual(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-    nobUsual(SerializedGameData& sgd, const unsigned obj_id);
+    nobUsual(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    nobUsual(SerializedGameData& sgd, unsigned obj_id);
 
 public:
     /// Wird gerade gearbeitet oder nicht?
@@ -86,7 +86,7 @@ public:
     bool HasWorker() const;
 
     /// Event-Handler
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
     /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
     void AddWare(Ware*& ware) override;
     /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde

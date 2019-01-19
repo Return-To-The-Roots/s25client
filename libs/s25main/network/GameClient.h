@@ -100,7 +100,7 @@ public:
     const std::string& GetLuaFilePath() const { return mapinfo.luaFilepath; }
 
     // Initialisiert und startet das Spiel
-    void StartGame(const unsigned random_init);
+    void StartGame(unsigned random_init);
     /// Called when the game is loaded
     void GameLoaded();
 
@@ -117,7 +117,7 @@ public:
     FramesInfo::milliseconds32_t GetGFLength() const { return framesinfo.gf_length; }
     unsigned GetNWFLength() const { return framesinfo.nwf_length; }
     FramesInfo::milliseconds32_t GetFrameTime() const { return framesinfo.frameTime; }
-    unsigned GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator,
+    unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
                                 const unsigned offset);
     unsigned Interpolate(unsigned max_val, const GameEvent* ev);
     int Interpolate(int x1, int x2, const GameEvent* ev);
@@ -146,7 +146,7 @@ public:
     /// Gibt Replay-Ende (GF) zurück
     unsigned GetLastReplayGF() const;
     /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
-    std::string FormatGFTime(const unsigned gf) const;
+    std::string FormatGFTime(unsigned gf) const;
 
     /// Gibt Replay-Dateiname zurück
     const std::string& GetReplayFileName() const;
@@ -159,9 +159,9 @@ public:
     void SkipGF(unsigned gf, GameWorldView& gwv);
 
     /// Changes the player ingame (for replay or debugging)
-    void ChangePlayerIngame(const unsigned char player1, const unsigned char player2);
+    void ChangePlayerIngame(unsigned char player1, unsigned char player2);
     /// Sends a request to swap places with the requested player. Only for debugging!
-    void RequestSwapToPlayer(const unsigned char newId);
+    void RequestSwapToPlayer(unsigned char newId);
 
     /// Spiel pausiert?
     bool IsPaused() const { return framesinfo.isPaused; }
@@ -187,7 +187,7 @@ private:
 
     unsigned GetNumPlayers() const;
     /// Liefert einen Player zurück
-    GamePlayer& GetPlayer(const unsigned id);
+    GamePlayer& GetPlayer(unsigned id);
 
     /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
     void ExecuteGameFrame();
@@ -253,7 +253,7 @@ private:
     // Replaymethoden
 
     /// Schreibt den Header der Replaydatei
-    void StartReplayRecording(const unsigned random_init);
+    void StartReplayRecording(unsigned random_init);
     void WritePlayerInfo(SavedFile& file);
 
 public:

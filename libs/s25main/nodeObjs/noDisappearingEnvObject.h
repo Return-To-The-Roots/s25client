@@ -25,8 +25,8 @@ class GameEvent;
 class noDisappearingEnvObject : public noCoordBase
 {
 public:
-    noDisappearingEnvObject(const MapPoint pt, const unsigned living_time, const unsigned add_var_living_time);
-    noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id);
+    noDisappearingEnvObject(const MapPoint pt, unsigned living_time, unsigned add_var_living_time);
+    noDisappearingEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
 public:
     void Destroy() override;
@@ -35,7 +35,7 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Benachrichtigen, wenn neuer GF erreicht wurde.
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
 protected:
     /// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll

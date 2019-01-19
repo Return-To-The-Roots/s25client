@@ -96,8 +96,8 @@ private:
 
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobMilitary(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-    nobMilitary(SerializedGameData& sgd, const unsigned obj_id);
+    nobMilitary(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    nobMilitary(SerializedGameData& sgd, unsigned obj_id);
 
 public:
     ~nobMilitary() override;
@@ -112,7 +112,7 @@ public:
     GO_Type GetGOT() const override { return GOT_NOB_MILITARY; }
 
     void Draw(DrawPoint drawPt) override;
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     /// Wurde das Militärgebäude neu gebaut und noch nicht besetzt und kann somit abgerissen werden bei Land-verlust?
     bool IsNewBuilt() const { return new_built; }
@@ -128,7 +128,7 @@ public:
 
     /// Wird von gegnerischem Gebäude aufgerufen, wenn sie neu gebaut worden sind und es so ein neues Gebäude im Umkreis gibt
     /// setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung
-    void NewEnemyMilitaryBuilding(const unsigned short distance);
+    void NewEnemyMilitaryBuilding(unsigned short distance);
     bool IsUseless() const;
     bool IsAttackable(unsigned playerIdx) const override;
     /// Gibt Distanz zurück
@@ -180,7 +180,7 @@ public:
     unsigned GetSoldiersStrength() const;
 
     /// Gebäude wird vom Gegner eingenommen, player ist die neue Spieler-ID
-    void Capture(const unsigned char new_owner);
+    void Capture(unsigned char new_owner);
     /// Das Gebäude wurde bereits eingenommen, hier wird geprüft, ob noch weitere Soldaten für die Besetzung
     /// notwendig sind, wenn ja wird ein neuer Soldat gerufen, wenn nein, werden alle restlichen nach Hause geschickt
     void NeedOccupyingTroops();

@@ -62,8 +62,8 @@ protected:
     void DrawOtherStates(DrawPoint drawPt) override;
 
 public:
-    nofFarmhand(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofFarmhand(SerializedGameData& sgd, const unsigned obj_id);
+    nofFarmhand(const Job job, const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofFarmhand(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden
 protected:
@@ -79,7 +79,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmhand(sgd); }
 
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
     /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann
     bool IsPointAvailable(const MapPoint pt) const;
     /// Returns the quality of this working point or determines if the worker can work here at all

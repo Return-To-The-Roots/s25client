@@ -27,7 +27,7 @@ public:
     iwEndgame();
 
 private:
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
 };
 
 #endif // !iwENDGAME_H_INCLUDED

@@ -27,9 +27,9 @@ class iwPlayReplay : public IngameWindow
 public:
     iwPlayReplay();
 
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
 private:
     void PopulateTable();

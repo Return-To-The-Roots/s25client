@@ -109,8 +109,8 @@ private:
 
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobHarborBuilding(const MapPoint pt, const unsigned char player, const Nation nation);
-    nobHarborBuilding(SerializedGameData& sgd, const unsigned obj_id);
+    nobHarborBuilding(const MapPoint pt, unsigned char player, const Nation nation);
+    nobHarborBuilding(SerializedGameData& sgd, unsigned obj_id);
 
 protected:
     void DestroyBuilding() override;
@@ -122,14 +122,14 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
     GO_Type GetGOT() const override { return GOT_NOB_HARBORBUILDING; }
     void Draw(DrawPoint drawPt) override;
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     /// Eine bestellte Ware konnte doch nicht kommen
     void WareLost(Ware* ware) override;
     /// Legt eine Ware im Lagerhaus ab
     void AddWare(Ware*& ware) override;
     /// Eine Figur geht ins Lagerhaus
-    void AddFigure(noFigure* figure, const bool increase_visual_counts) override;
+    void AddFigure(noFigure* figure, bool increase_visual_counts) override;
     /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
     /// benötigt!)
     unsigned CalcDistributionPoints(const GoodType type) const;

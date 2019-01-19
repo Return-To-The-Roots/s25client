@@ -40,9 +40,9 @@ protected:
     bool AreWaresAvailable() const override;
 
 public:
-    nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
-    nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id);
+    nofScout_LookoutTower(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofScout_LookoutTower(const MapPoint pt, unsigned char player, nobBaseWarehouse* goalWh);
+    nofScout_LookoutTower(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen
 protected:
@@ -53,7 +53,7 @@ public:
 
     GO_Type GetGOT() const override { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
 
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 };
 
 #endif //! NOF_SCOUT_LOOKOUTTOWER

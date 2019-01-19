@@ -29,7 +29,7 @@ struct HasMinWares
 {
     const GoodType type;
     const unsigned count;
-    HasMinWares(const GoodType type, const unsigned count = 1) : type(type), count(count) {}
+    HasMinWares(const GoodType type, unsigned count = 1) : type(type), count(count) {}
     bool operator()(const nobBaseWarehouse& wh) const;
 };
 
@@ -37,14 +37,13 @@ struct HasFigure
 {
     const Job type;
     const bool recruitingAllowed;
-    HasFigure(const Job type, const bool recruitingAllowed) : type(type), recruitingAllowed(recruitingAllowed) {}
+    HasFigure(const Job type, bool recruitingAllowed) : type(type), recruitingAllowed(recruitingAllowed) {}
     bool operator()(const nobBaseWarehouse& wh) const;
 };
 
 struct HasWareAndFigure : protected HasMinWares, protected HasFigure
 {
-    HasWareAndFigure(const GoodType good, const Job job, const bool recruitingAllowed)
-        : HasMinWares(good, 1), HasFigure(job, recruitingAllowed)
+    HasWareAndFigure(const GoodType good, const Job job, bool recruitingAllowed) : HasMinWares(good, 1), HasFigure(job, recruitingAllowed)
     {}
     bool operator()(const nobBaseWarehouse& wh) const;
 };
@@ -52,7 +51,7 @@ struct HasWareAndFigure : protected HasMinWares, protected HasFigure
 struct HasMinSoldiers
 {
     const unsigned count;
-    HasMinSoldiers(const unsigned count) : count(count) {}
+    HasMinSoldiers(unsigned count) : count(count) {}
     bool operator()(const nobBaseWarehouse& wh) const;
 };
 
@@ -93,7 +92,7 @@ struct HasWareButNoCollect : protected HasMinWares, protected CollectsWare
 
 struct HasFigureButNoCollect : protected HasFigure, protected CollectsFigure
 {
-    HasFigureButNoCollect(const Job type, const bool recruitingAllowed) : HasFigure(type, recruitingAllowed), CollectsFigure(type) {}
+    HasFigureButNoCollect(const Job type, bool recruitingAllowed) : HasFigure(type, recruitingAllowed), CollectsFigure(type) {}
     bool operator()(const nobBaseWarehouse& wh) const;
 };
 

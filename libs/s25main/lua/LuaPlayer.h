@@ -62,7 +62,7 @@ public:
     std::tuple<unsigned, unsigned> GetHQPos() const;
     bool IsAlly(unsigned char otherPlayerId);
     bool IsAttackable(unsigned char otherPlayerId);
-    void SuggestPact(unsigned char otherPlayerId, PactType pt, const unsigned duration);
+    void SuggestPact(unsigned char otherPlayerId, PactType pt, unsigned duration);
     void CancelPact(const PactType pt, unsigned char otherPlayerId);
 };
 

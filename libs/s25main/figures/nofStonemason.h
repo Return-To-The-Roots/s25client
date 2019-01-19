@@ -39,8 +39,8 @@ private:
     PointQuality GetPointQuality(const MapPoint pt) const override;
 
 public:
-    nofStonemason(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofStonemason(SerializedGameData& sgd, const unsigned obj_id);
+    nofStonemason(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofStonemason(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_STONEMASON; }
 };

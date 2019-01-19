@@ -29,7 +29,7 @@ class noSkeleton : public noCoordBase
 {
 public:
     noSkeleton(const MapPoint pt);
-    noSkeleton(SerializedGameData& sgd, const unsigned obj_id);
+    noSkeleton(SerializedGameData& sgd, unsigned obj_id);
 
     ~noSkeleton() override;
 
@@ -48,7 +48,7 @@ protected:
     void Destroy_noSkeleton();
 
     void Draw(DrawPoint drawPt) override;
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
 private:
     /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)

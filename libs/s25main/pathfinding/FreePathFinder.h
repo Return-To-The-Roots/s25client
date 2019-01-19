@@ -44,16 +44,16 @@ public:
     /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool IsNodeToDestOk(MapPoint pt, unsigned
     /// char dirFromPrevPt)
     template<class TNodeChecker>
-    bool FindPath(const MapPoint start, const MapPoint dest, const bool randomRoute, const unsigned maxLength,
-                  std::vector<Direction>* route, unsigned* length, Direction* firstDir, const TNodeChecker& nodeChecker);
+    bool FindPath(const MapPoint start, const MapPoint dest, bool randomRoute, unsigned maxLength, std::vector<Direction>* route,
+                  unsigned* length, Direction* firstDir, const TNodeChecker& nodeChecker);
 
-    bool FindPathAlternatingConditions(const MapPoint start, const MapPoint dest, const bool randomRoute, const unsigned maxLength,
+    bool FindPathAlternatingConditions(const MapPoint start, const MapPoint dest, bool randomRoute, unsigned maxLength,
                                        std::vector<Direction>* route, unsigned* length, Direction* firstDir, FP_Node_OK_Callback IsNodeOK,
                                        FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param);
 
     /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
     template<class TNodeChecker>
-    bool CheckRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos, const TNodeChecker& nodeChecker,
+    bool CheckRoute(const MapPoint start, const std::vector<Direction>& route, unsigned pos, const TNodeChecker& nodeChecker,
                     MapPoint* dest) const;
 
 private:

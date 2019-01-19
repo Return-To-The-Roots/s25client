@@ -29,7 +29,7 @@ class iwMinimap : public IngameWindow
     bool extended;
 
 private:
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
 
 public:
     iwMinimap(IngameMinimap& minimap, GameWorldView& gwv);

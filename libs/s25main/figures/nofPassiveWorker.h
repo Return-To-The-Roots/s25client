@@ -32,11 +32,11 @@ private:
     void Walked() override;      // wenn man gelaufen ist
     void GoalReached() override; // wenn das Ziel erreicht wurde
     void AbrogateWorkplace() override;
-    void HandleDerivedEvent(const unsigned id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
+    void HandleDerivedEvent(unsigned id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 
 public:
-    nofPassiveWorker(const Job job, const MapPoint pt, const unsigned char player, noRoadNode* goal);
-    nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id);
+    nofPassiveWorker(const Job job, const MapPoint pt, unsigned char player, noRoadNode* goal);
+    nofPassiveWorker(SerializedGameData& sgd, unsigned obj_id);
 
     /// Zeichnen
     void Draw(DrawPoint drawPt) override;

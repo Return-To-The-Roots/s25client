@@ -29,7 +29,7 @@ struct PathConditionTrade : public PathConditionHuman
 {
     const GamePlayer& player;
 
-    PathConditionTrade(const GameWorldBase& gwb, const unsigned char player) : PathConditionHuman(gwb), player(gwb.GetPlayer(player)) {}
+    PathConditionTrade(const GameWorldBase& gwb, unsigned char player) : PathConditionHuman(gwb), player(gwb.GetPlayer(player)) {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
     BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const

@@ -36,7 +36,7 @@ class nofTradeLeader : public noFigure
 private:
     void GoalReached() override;
     void Walked() override;
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
     void AbrogateWorkplace() override;
 
     /// Tries to go to the home ware house and returns whether this is possible
@@ -45,8 +45,8 @@ private:
     void CancelTradeCaravane();
 
 public:
-    nofTradeLeader(const MapPoint pt, const unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos);
-    nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id);
+    nofTradeLeader(const MapPoint pt, unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos);
+    nofTradeLeader(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override
     {

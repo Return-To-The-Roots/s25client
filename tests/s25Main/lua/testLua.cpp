@@ -181,7 +181,7 @@ struct StoreChat : public ClientInterface
         lastMsg.clear();
     }
 
-    void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override
+    void CI_Chat(unsigned playerId, const ChatDestination cd, const std::string& msg) override
     {
         lastPlayerId = playerId;
         lastCD = cd;
