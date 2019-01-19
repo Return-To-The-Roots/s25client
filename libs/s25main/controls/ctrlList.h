@@ -52,7 +52,7 @@ public:
 
     unsigned short GetNumLines() const { return static_cast<unsigned short>(lines.size()); }
     int GetSelection() const { return selection_; };
-    void SetSelection(unsigned selection);
+    void SetSelection(int selection);
 
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -66,6 +66,7 @@ protected:
     void Draw_() override;
 
 private:
+    int GetItemFromPos(const Position& pos) const;
     Rect GetFullDrawArea() const;
     Rect GetListDrawArea() const;
 

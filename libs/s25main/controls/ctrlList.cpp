@@ -35,12 +35,14 @@ ctrlList::~ctrlList()
     DeleteAllItems();
 }
 
-void ctrlList::SetSelection(unsigned selection)
+void ctrlList::SetSelection(int selection)
 {
-    if(static_cast<int>(selection) != selection_ && selection < lines.size())
+    if(selection < 0)
+        selection = -1;
+    if(selection != selection_ && selection < static_cast<int>(lines.size()))
     {
         selection_ = selection;
-        if(GetParent())
+        if(selection >= 0 && GetParent())
             GetParent()->Msg_ListSelectItem(GetID(), selection);
     }
 }
@@ -49,18 +51,15 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
+    mouseover = GetItemFromPos(mc.pos);
     // Wenn Maus in der Liste
-    if(IsPointInRect(mc.GetPos(), GetListDrawArea()))
+    if(mouseover >= 0)
     {
-        // Neue Selektierung
-        mouseover = (mc.pos.y - (GetDrawPos().y + 2)) / font->getHeight();
-        const std::string itemTxt = GetItemText(mouseover);
+        const std::string itemTxt = GetItemText(mouseover + scrollbar->GetScrollPos());
         tooltip_.ShowTooltip((font->getWidth(itemTxt) > GetListDrawArea().getSize().x) ? itemTxt : "");
         return true;
     }
 
-    // Mouse-Over deaktivieren und Tooltip entfernen
-    mouseover = -1;
     tooltip_.HideTooltip();
 
     // Für die Scrollbar weiterleiten
@@ -71,18 +70,11 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-    // Wenn Maus in der Liste
-    if(IsPointInRect(mc.GetPos(), GetListDrawArea()))
+    auto itemIdx = GetItemFromPos(mc.pos);
+    if(itemIdx >= 0)
     {
-        // Tooltip löschen, sonst bleibt er ewig
         tooltip_.HideTooltip();
-
-        // aktuellen Eintrag selektieren
-        selection_ = mouseover + scrollbar->GetScrollPos();
-
-        if(GetParent())
-            GetParent()->Msg_ListSelectItem(GetID(), selection_);
-
+        SetSelection(itemIdx + scrollbar->GetScrollPos());
         return true;
     }
 
@@ -94,16 +86,11 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-    // Wenn Maus in der Liste
-    if(IsPointInRect(mc.GetPos(), GetListDrawArea()))
+    auto itemIdx = GetItemFromPos(mc.pos);
+    if(itemIdx >= 0)
     {
-        // Tooltip löschen, sonst bleibt er ewig
         tooltip_.HideTooltip();
-
-        // aktuellen Eintrag selektieren
-        selection_ = mouseover + scrollbar->GetScrollPos();
-        GetParent()->Msg_ListSelectItem(GetID(), selection_);
-
+        SetSelection(itemIdx + scrollbar->GetScrollPos());
         return true;
     }
 
@@ -282,11 +269,18 @@ void ctrlList::Remove(const unsigned short index)
     {
         lines.erase(lines.begin() + index);
 
-        // Ggf. selection korrigieren
-        if(selection_)
+        // Keep current item selected
+        if(selection_ > index)
             --selection_;
-        else
+        else if(selection_ == index)
+        {
+            // Current item deleted -> clear selection
             selection_ = -1;
+            if(index < GetNumLines())
+                SetSelection(index); // select item now at deleted position
+            else
+                SetSelection(index - 1); // or previous if item at end deleted
+        }
     }
 }
 
@@ -298,6 +292,15 @@ Rect ctrlList::GetListDrawArea() const
     size.x -= 20;
     result.setSize(size);
     return result;
+}
+
+int ctrlList::GetItemFromPos(const Position& pos) const
+{
+    const Rect listDrawArea = GetListDrawArea();
+    if(IsPointInRect(pos, listDrawArea))
+        return (pos.y - listDrawArea.getOrigin().y) / font->getHeight();
+    else
+        return -1;
 }
 
 Rect ctrlList::GetFullDrawArea() const

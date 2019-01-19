@@ -59,9 +59,8 @@ private:
     TextureColor tc;
     glArchivItem_Font* font;
     unsigned short max_list_height;
-    unsigned short selectionOnListOpen; // What was selected when the combo was opened?
     bool readonly;
-    bool last_show;
+    bool suppressSelectEvent;
 };
 
 #endif // CTRLCOMBOBOX_H_INCLUDED
