@@ -6,19 +6,26 @@ set -euo pipefail
 cmake --version
 $CXX --version
 
+if [[ "${BUILD_TYPE}" == "Release" ]]; then
+    RTTR_BUNDLE="ON"
+    MAKE_TARGET="install"
+else
+    RTTR_BUNDLE="OFF"
+    MAKE_TARGET="all"
+fi
+
 INSTALL_DIR="${TRAVIS_BUILD_DIR}/installed"
 rm -rf "${INSTALL_DIR}"
 mkdir -p build && cd build
 cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
     -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-    -DRTTR_ENABLE_WERROR=ON -DRTTR_EDITOR_ADMINMODE=ON \
+    -DRTTR_ENABLE_WERROR=ON \
+    -DRTTR_EDITOR_ADMINMODE=ON \
+    -DRTTR_BUNDLE="${RTTR_BUNDLE}" \
     -G "Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
+
 # Travis uses 2 cores
-if [[ "${BUILD_TYPE}" == "Release" ]]; then
-    make -j2 install
-else
-    make -j2
-fi
+make -j2 ${MAKE_TARGET}
 
 # Set runtime path for boost libraries
 boostLibDir=`cmake -LA -N . | grep Boost_LIBRARY_DIR_DEBUG | cut -d "=" -f2`
