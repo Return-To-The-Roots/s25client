@@ -45,8 +45,8 @@ private:
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
     void TransmitSettings();
 
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_Timer(unsigned ctrl_id) override;
 };
 
 #endif // !iwTRANSPORT_H_INCLUDED

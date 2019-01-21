@@ -49,10 +49,10 @@ class nofAggressiveDefender : public nofActiveSoldier
     void FreeFightEnded() override;
 
 public:
-    nofAggressiveDefender(const MapPoint pt, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
+    nofAggressiveDefender(const MapPoint pt, unsigned char player, nobBaseMilitary* const home, unsigned char rank,
                           nofAttacker* const attacker);
     nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
-    nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id);
+    nofAggressiveDefender(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofAggressiveDefender() override;
 

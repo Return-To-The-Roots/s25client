@@ -27,7 +27,7 @@
 #endif
 #endif // !RTTR_ENABLE_ASSERTS
 
-void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function, bool throwException = true);
+void RTTR_AssertFailure(const char* condition, const char* file, int line, const char* function, bool throwException = true);
 bool RTTR_IsBreakOnAssertFailureEnabled();
 /// If true(default), a breakpoint is triggered on assert (if available)
 /// Note: This breakpoint can be globally disabled by setting the environment variable

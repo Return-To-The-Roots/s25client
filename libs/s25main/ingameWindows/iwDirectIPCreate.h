@@ -30,10 +30,10 @@ public:
     void LC_Status_Error(const std::string& error);
 
 protected:
-    void Msg_EditChange(const unsigned ctrl_id) override;
-    void Msg_EditEnter(const unsigned ctrl_id) override;
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_EditChange(unsigned ctrl_id) override;
+    void Msg_EditEnter(unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
 
 private:
     void SetText(const std::string& text, unsigned color, bool button);

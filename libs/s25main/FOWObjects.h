@@ -41,7 +41,7 @@ const unsigned FOW_DRAW_COLOR_BRIGHTNESS = 0x80;
 const unsigned FOW_DRAW_COLOR = 0xFF808080;
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
-unsigned CalcPlayerFOWDrawColor(const unsigned color);
+unsigned CalcPlayerFOWDrawColor(unsigned color);
 
 /// Visuelles Objekt im Nebel, nur zur sichtbaren "Erinnerung",
 /// was ein bestimmter Spieler gesehen hat
@@ -88,7 +88,7 @@ private:
     const unsigned char build_progress;
 
 public:
-    fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress);
+    fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, unsigned char build_progress);
     fowBuildingSite(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
@@ -105,7 +105,7 @@ private:
     const FlagType flag_type;
 
 public:
-    fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type);
+    fowFlag(unsigned playerColor, const Nation nation, const FlagType flag_type);
     fowFlag(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
@@ -122,7 +122,7 @@ private:
     const unsigned char size;
 
 public:
-    fowTree(const unsigned char type, const unsigned char size);
+    fowTree(unsigned char type, unsigned char size);
     fowTree(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
@@ -137,7 +137,7 @@ private:
     const unsigned char state; /// Status, 0 - 5, von sehr wenig bis sehr viel
 
 public:
-    fowGranite(const GraniteType type, const unsigned char state);
+    fowGranite(const GraniteType type, unsigned char state);
     fowGranite(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;

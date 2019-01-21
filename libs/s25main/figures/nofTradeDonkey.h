@@ -36,7 +36,7 @@ class nofTradeDonkey : public noFigure
 private:
     void GoalReached() override;
     void Walked() override;
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
     void AbrogateWorkplace() override;
 
     /// Returns next direction
@@ -48,8 +48,8 @@ private:
     }
 
 public:
-    nofTradeDonkey(const MapPoint pt, const unsigned char player, const GoodType gt, const Job job);
-    nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id);
+    nofTradeDonkey(const MapPoint pt, unsigned char player, const GoodType gt, const Job job);
+    nofTradeDonkey(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override
     {
@@ -67,7 +67,7 @@ public:
     void LostWork();
 
     /// Adds the next direction, this is usually done by the predecessor
-    void AddNextDir(const unsigned char dir) { next_dirs.push_back(dir); }
+    void AddNextDir(unsigned char dir) { next_dirs.push_back(dir); }
 
     /// Gets the type of ware this donkey is carrying
     GoodType GetCarriedWare() const { return gt; }

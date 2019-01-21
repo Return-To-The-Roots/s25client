@@ -27,7 +27,7 @@ public:
     iwSurrender();
 
 private:
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
 };
 
 #endif // !iwSURRENDER_H_INCLUDED

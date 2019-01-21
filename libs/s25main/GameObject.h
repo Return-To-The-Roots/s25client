@@ -33,7 +33,7 @@ class GameObject
 {
 public:
     GameObject();
-    GameObject(SerializedGameData& sgd, const unsigned obj_id);
+    GameObject(SerializedGameData& sgd, unsigned obj_id);
     GameObject(const GameObject& go);
     virtual ~GameObject();
 
@@ -41,7 +41,7 @@ public:
     virtual void Destroy() = 0;
 
     /// Benachrichtigen, wenn neuer GF erreicht wurde.
-    virtual void HandleEvent(const unsigned /*id*/) {}
+    virtual void HandleEvent(unsigned /*id*/) {}
 
     /// Return the unique ID of an object. Always non-zero!
     unsigned GetObjId() const { return objId; }

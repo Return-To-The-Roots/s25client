@@ -36,7 +36,7 @@ public:
     void UpdateServerInfo();
 
 protected:
-    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_Timer(unsigned ctrl_id) override;
 };
 
 #endif // iwLOBBYSERVERINFO_H_INCLUDED

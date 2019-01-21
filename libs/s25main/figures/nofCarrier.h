@@ -83,7 +83,7 @@ private:
     /// Make the carrier loose/destroy the ware if he has any
     void LooseWare();
 
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
     /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht ansonsten wieder in die
     /// Mitte
@@ -107,8 +107,8 @@ private:
     void WanderOnWater();
 
 public:
-    nofCarrier(const CarrierType ct, const MapPoint pt, const unsigned char player, RoadSegment* workplace, noRoadNode* const goal);
-    nofCarrier(SerializedGameData& sgd, const unsigned obj_id);
+    nofCarrier(const CarrierType ct, const MapPoint pt, unsigned char player, RoadSegment* workplace, noRoadNode* const goal);
+    nofCarrier(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofCarrier() override;
 

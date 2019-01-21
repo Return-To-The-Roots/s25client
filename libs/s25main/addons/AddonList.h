@@ -30,8 +30,7 @@
 class AddonList : public Addon
 {
 public:
-    AddonList(const AddonId id, const unsigned groups, const std::string& name, const std::string& description,
-              const unsigned default_status)
+    AddonList(const AddonId id, unsigned groups, const std::string& name, const std::string& description, const unsigned default_status)
         : Addon(id, groups, name, description, default_status)
     {}
 

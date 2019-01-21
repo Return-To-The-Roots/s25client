@@ -42,8 +42,8 @@ private:
     void WorkAborted() override;
 
 public:
-    nofWoodcutter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id);
+    nofWoodcutter(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofWoodcutter(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_WOODCUTTER; }
 };

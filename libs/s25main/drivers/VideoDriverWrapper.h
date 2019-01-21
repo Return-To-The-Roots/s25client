@@ -47,9 +47,9 @@ public:
     IVideoDriver* GetDriver() const { return videodriver; }
 
     /// Erstellt das Fenster.
-    bool CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
+    bool CreateScreen(unsigned short screen_width, unsigned short screen_height, bool fullscreen);
     /// Verändert Auflösung, Fenster/Fullscreen
-    bool ResizeScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
+    bool ResizeScreen(unsigned short screen_width, unsigned short screen_height, bool fullscreen);
     /// Viewport (neu) setzen
     void RenewViewport();
     /// zerstört das Fenster.
@@ -85,7 +85,7 @@ public:
     bool IsLeftDown();
     bool IsRightDown();
     // setzt den Mausstatus
-    void SetMousePos(const int x, const int y);
+    void SetMousePos(int x, int y);
     void SetMousePos(const Position& newPos);
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const;

@@ -35,8 +35,8 @@ class BurnedWarehouse : public noCoordBase
 public:
     typedef std::array<unsigned, NUM_JOB_TYPES> PeopleArray;
 
-    BurnedWarehouse(const MapPoint pt, const unsigned char player, const PeopleArray& people);
-    BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id);
+    BurnedWarehouse(const MapPoint pt, unsigned char player, const PeopleArray& people);
+    BurnedWarehouse(SerializedGameData& sgd, unsigned obj_id);
 
     ~BurnedWarehouse() override;
 
@@ -52,7 +52,7 @@ public:
     GO_Type GetGOT() const override { return GOT_BURNEDWAREHOUSE; }
 
     /// Benachrichtigen, wenn neuer GF erreicht wurde.
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     void Draw(DrawPoint /*drawPt*/) override {}
 };

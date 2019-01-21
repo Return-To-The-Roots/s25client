@@ -27,7 +27,7 @@
 class ctrlTextButton : public ctrlButton, public ctrlBaseText
 {
 public:
-    ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const std::string& text,
+    ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
                    glArchivItem_Font* font, const std::string& tooltip);
 
 protected:

@@ -48,7 +48,7 @@ public:
     bool Msg_WheelUp(const MouseCoords& mc) override;
     bool Msg_WheelDown(const MouseCoords& mc) override;
 
-    void Msg_ListSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_ListSelectItem(unsigned ctrl_id, int selection) override;
 
 protected:
     void Draw_() override;
@@ -59,9 +59,8 @@ private:
     TextureColor tc;
     glArchivItem_Font* font;
     unsigned short max_list_height;
-    unsigned short selectionOnListOpen; // What was selected when the combo was opened?
     bool readonly;
-    bool last_show;
+    bool suppressSelectEvent;
 };
 
 #endif // CTRLCOMBOBOX_H_INCLUDED

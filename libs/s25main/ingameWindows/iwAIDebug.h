@@ -35,9 +35,9 @@ public:
     ~iwAIDebug() override;
 
 private:
-    void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
-    // void Msg_ButtonClick(const unsigned ctrl_id);
-    // void Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position);
+    void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
+    // void Msg_ButtonClick(unsigned ctrl_id);
+    // void Msg_ProgressChange(unsigned ctrl_id, unsigned short position);
     void Msg_PaintBefore() override;
 
     class DebugPrinter;

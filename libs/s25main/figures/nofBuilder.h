@@ -57,7 +57,7 @@ private:
     void GoalReached() override;
     void Walked() override;
     void AbrogateWorkplace() override;
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
     /// In neue Richtung laufen (Freewalk)
     void StartFreewalk();
@@ -66,8 +66,8 @@ private:
     bool ChooseWare();
 
 public:
-    nofBuilder(const MapPoint pt, const unsigned char player, noRoadNode* building_site);
-    nofBuilder(SerializedGameData& sgd, const unsigned obj_id);
+    nofBuilder(const MapPoint pt, unsigned char player, noRoadNode* building_site);
+    nofBuilder(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override
     {

@@ -101,9 +101,9 @@ private:
 public:
     State GetState() { return state; }
 
-    nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
-    nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id);
+    nofBuildingWorker(const Job job, const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofBuildingWorker(const Job job, const MapPoint pt, unsigned char player, nobBaseWarehouse* goalWh);
+    nofBuildingWorker(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden
 protected:

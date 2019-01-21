@@ -92,7 +92,7 @@ public:
     nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal);
     /// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen
     nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor);
-    nofAttacker(SerializedGameData& sgd, const unsigned obj_id);
+    nofAttacker(SerializedGameData& sgd, unsigned obj_id);
     ~nofAttacker() override;
 
     /// Aufräummethoden
@@ -112,7 +112,7 @@ public:
     GO_Type GetGOT() const override { return GOT_NOF_ATTACKER; }
     const nofAggressiveDefender* GetHuntingDefender() const { return huntingDefender; }
 
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
     /// Blockt der Angreifer noch?
     bool IsBlockingRoads() const;
 
@@ -160,7 +160,7 @@ public:
     nobBaseMilitary* GetAttackedGoal() const { return attacked_goal; }
 
     /// Startet den Angriff am Landungspunkt vom Schiff
-    void StartAttackOnOtherIsland(const MapPoint shipPos, const unsigned ship_id);
+    void StartAttackOnOtherIsland(const MapPoint shipPos, unsigned ship_id);
     /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
     void StartReturnViaShip(noShip& ship);
     /// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: return home soon on a road

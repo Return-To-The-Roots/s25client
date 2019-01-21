@@ -34,10 +34,10 @@ public:
     /// Größe ändern
     void Resize(const Extent& newSize) override;
     /// Fügt eine Chatnachricht hinzu.
-    void AddMessage(const std::string& time_string, const std::string& player, const unsigned player_color, const std::string& msg,
+    void AddMessage(const std::string& time_string, const std::string& player, unsigned player_color, const std::string& msg,
                     unsigned msg_color);
     /// Setzt Farbe der Zeitangaben.
-    void SetTimeColor(const unsigned color) { time_color = color; }
+    void SetTimeColor(unsigned color) { time_color = color; }
 
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;

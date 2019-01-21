@@ -34,8 +34,8 @@ class nofButcher : public nofWorkman
     GoodType ProduceWare() override;
 
 public:
-    nofButcher(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofButcher(SerializedGameData& sgd, const unsigned obj_id);
+    nofButcher(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofButcher(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_BUTCHER; }
 };

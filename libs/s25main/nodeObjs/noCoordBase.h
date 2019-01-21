@@ -27,7 +27,7 @@ class noCoordBase : public noBase
 {
 public:
     noCoordBase(const NodalObjectType nop, const MapPoint pt) : noBase(nop), pos(pt) {}
-    noCoordBase(SerializedGameData& sgd, const unsigned obj_id);
+    noCoordBase(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden
 protected:

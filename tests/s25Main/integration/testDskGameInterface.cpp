@@ -40,14 +40,13 @@ struct dskGameInterfaceMock : public dskGameInterface
     void Msg_PaintBefore() override {}
     void Msg_PaintAfter() override {}
 };
-struct GameInterfaceFixture
+struct GameInterfaceFixture : uiHelper::Fixture
 {
     WorldFixture<CreateEmptyWorld, 1> worldFixture;
     dskGameInterface* gameDesktop;
     const GameWorldView* view;
     GameInterfaceFixture()
     {
-        uiHelper::initGUITests();
         gameDesktop = new dskGameInterfaceMock(worldFixture.game);
         WINDOWMANAGER.Switch(gameDesktop);
         WINDOWMANAGER.Draw();

@@ -53,8 +53,8 @@ protected:
     nofDefender* defender_;
 
 public:
-    nobBaseMilitary(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-    nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id);
+    nobBaseMilitary(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    nobBaseMilitary(SerializedGameData& sgd, unsigned obj_id);
     ~nobBaseMilitary() override;
 
 protected:
@@ -109,7 +109,7 @@ public:
     /// warten
     MapPoint FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier);
     /// Sucht einen Nachrücker, der weiter hinten steht, auf diesen Posten und schickt diesen auch los
-    bool SendSuccessor(const MapPoint pt, const unsigned short radius);
+    bool SendSuccessor(const MapPoint pt, unsigned short radius);
 
     /// Gibt zurück, ob es noch einenen Verteidiger in dieser Hütte gibt, wenn ja wird dieser losgeschickt,
     /// aggressor ist der Angreifer an der Fahne, mit dem er kämpfen soll

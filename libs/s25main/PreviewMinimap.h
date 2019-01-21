@@ -35,7 +35,7 @@ public:
 
 protected:
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
-    unsigned CalcPixelColor(const MapPoint pt, const unsigned t) override;
+    unsigned CalcPixelColor(const MapPoint pt, unsigned t) override;
 
 private:
     unsigned char CalcShading(const MapPoint t, const std::vector<unsigned char>& altitudes) const;

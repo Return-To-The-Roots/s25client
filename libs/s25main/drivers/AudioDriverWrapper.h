@@ -51,9 +51,9 @@ public:
     SoundHandle LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension);
 
     /// Spielt einen Sound
-    EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, const bool loop);
+    EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop);
     /// Stoppt einen Sound
-    void StopEffect(const unsigned play_id);
+    void StopEffect(unsigned play_id);
 
     /// Spielt Midi ab
     void PlayMusic(const SoundHandle& sound, unsigned repeats);

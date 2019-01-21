@@ -28,6 +28,11 @@ namespace uiHelper {
 /// Mockup VideoDriver loaded, Dummy files in LOADER, Dummy Desktop activated
 void initGUITests();
 
+struct Fixture
+{
+    Fixture() { initGUITests(); }
+};
+
 /// Return the video driver. Initializes the GUI tests if required
 MockupVideoDriver* GetVideoDriver();
 } // namespace uiHelper

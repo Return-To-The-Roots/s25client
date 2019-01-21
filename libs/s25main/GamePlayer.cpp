@@ -374,8 +374,8 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 }
 
 template<class T_IsWarehouseGood>
-nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh,
-                                            const bool use_boat_roads, unsigned* const length, const RoadSegment* const forbidden) const
+nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh,
+                                            bool use_boat_roads, unsigned* length, const RoadSegment* forbidden) const
 {
     nobBaseWarehouse* best = nullptr;
 
@@ -2266,9 +2266,8 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
     visualSettings.tools_settings = toolsSettings_;
 }
 
-#define INSTANTIATE_FINDWH(Cond)                                                                                                  \
-    template nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode&, const Cond&, const bool, const bool, unsigned* const, \
-                                                         const RoadSegment* const) const
+#define INSTANTIATE_FINDWH(Cond) \
+    template nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode&, const Cond&, bool, bool, unsigned*, const RoadSegment*) const
 
 INSTANTIATE_FINDWH(FW::HasMinWares);
 INSTANTIATE_FINDWH(FW::HasFigure);

@@ -101,10 +101,10 @@ private:
     unsigned GetVisualRange() const override;
 
 public:
-    nofActiveSoldier(const MapPoint pt, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
+    nofActiveSoldier(const MapPoint pt, unsigned char player, nobBaseMilitary* const home, unsigned char rank,
                      const SoldierState init_state);
     nofActiveSoldier(const nofSoldier& other, const SoldierState init_state);
-    nofActiveSoldier(SerializedGameData& sgd, const unsigned obj_id);
+    nofActiveSoldier(SerializedGameData& sgd, unsigned obj_id);
 
     /// Tidy up
 protected:
@@ -128,7 +128,7 @@ public:
     void Draw(DrawPoint drawPt) override;
 
     /// Event handling
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
     /// Informs the different things that we are not coming anymore
     virtual void InformTargetsAboutCancelling();

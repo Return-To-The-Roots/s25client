@@ -41,7 +41,7 @@ class TestEventHandler : public GameObject
 public:
     std::vector<unsigned> handledEventIds;
 
-    void HandleEvent(const unsigned evId) override { handledEventIds.push_back(evId); }
+    void HandleEvent(unsigned evId) override { handledEventIds.push_back(evId); }
 
     void Destroy() override {}
     void Serialize(SerializedGameData&) const override {}
@@ -149,7 +149,7 @@ public:
 
     static unsigned killNum, destroyNum;
     ~TestLogKill() { killNum++; }
-    void HandleEvent(const unsigned /*evId*/) override
+    void HandleEvent(unsigned /*evId*/) override
     {
         BOOST_REQUIRE(!em.IsObjectInKillList(*this));
         // Kill this on event
@@ -187,7 +187,7 @@ public:
     const GameEvent* ev2Remove;
     TestRemoveEvent(EventManager& em) : em(em), ev2Remove(nullptr) {}
 
-    void HandleEvent(const unsigned evId) override
+    void HandleEvent(unsigned evId) override
     {
         TestEventHandler::HandleEvent(evId);
         if(evId == 42 && ev2Remove)

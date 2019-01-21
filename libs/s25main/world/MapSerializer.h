@@ -24,8 +24,8 @@ class SerializedGameData;
 class MapSerializer
 {
 public:
-    static void Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd);
-    static void Deserialize(World& world, const unsigned numPlayers, SerializedGameData& sgd);
+    static void Serialize(const World& world, unsigned numPlayers, SerializedGameData& sgd);
+    static void Deserialize(World& world, unsigned numPlayers, SerializedGameData& sgd);
 };
 
 #endif // MapSerializer_h__

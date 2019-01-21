@@ -50,7 +50,7 @@ class World : public MapBase
         unsigned nodes_count;
 
         Sea() : nodes_count(0) {}
-        Sea(const unsigned nodes_count) : nodes_count(nodes_count) {}
+        Sea(unsigned nodes_count) : nodes_count(nodes_count) {}
     };
 
     friend class MapLoader;
@@ -103,27 +103,27 @@ public:
     /// Return the NO from that point or a "nothing"-object if there is none
     const noBase* GetNO(const MapPoint pt) const;
     /// Places a NO at a given position. If replace is true, the old object is replaced, else it is assumed as non-existent
-    void SetNO(const MapPoint pt, noBase* obj, const bool replace = false);
+    void SetNO(const MapPoint pt, noBase* obj, bool replace = false);
     /// Destroys the object at the given node and removes it from the map. If checkExists is false than it is ok, if there is no obj
-    void DestroyNO(const MapPoint pt, const bool checkExists = true);
+    void DestroyNO(const MapPoint pt, bool checkExists = true);
     /// Return the game object type of the object at that point or GOT_NONE of there is none
     GO_Type GetGOT(const MapPoint pt) const;
     void ReduceResource(const MapPoint pt);
     void SetResource(const MapPoint pt, Resource newResource) { GetNodeInt(pt).resources = newResource; }
-    void SetOwner(const MapPoint pt, const unsigned char newOwner) { GetNodeInt(pt).owner = newOwner; }
-    void SetReserved(const MapPoint pt, const bool reserved);
+    void SetOwner(const MapPoint pt, unsigned char newOwner) { GetNodeInt(pt).owner = newOwner; }
+    void SetReserved(const MapPoint pt, bool reserved);
     /// Sets the visibility and fires a Visibility Changed event if different
     /// fowTime is only used if visibility gets changed to FoW
     void SetVisibility(const MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime = 0);
 
-    void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
+    void ChangeAltitude(const MapPoint pt, unsigned char altitude);
 
     /// Checks if the point completely belongs to a player (if false but point itself belongs to player then it is a border)
     /// if owner is != 0 it checks if the points specific ownership
-    bool IsPlayerTerritory(const MapPoint pt, const unsigned char owner = 0) const;
+    bool IsPlayerTerritory(const MapPoint pt, unsigned char owner = 0) const;
 
     /// Return the BQ for the given player at the point (including ownership constraints)
-    BuildingQuality GetBQ(const MapPoint pt, const unsigned char player) const;
+    BuildingQuality GetBQ(const MapPoint pt, unsigned char player) const;
     /// Incorporates node ownership into the given BQ
     BuildingQuality AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const;
 
@@ -149,7 +149,7 @@ public:
     /// Return the terrain to the left when walking from the point in the given direction
     DescIdx<TerrainDesc> GetLeftTerrain(const MapPoint pt, Direction dir) const;
     /// Create the FOW-objects, -streets, etc for a point and player
-    void SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime);
+    void SaveFOWNode(const MapPoint pt, unsigned player, unsigned curTime);
     unsigned GetNumSeas() const { return seas.size(); }
     /// Return whether a node is inside a (shippable) sea (surrounded by shippable water)
     bool IsSeaPoint(const MapPoint pt) const;
@@ -162,20 +162,20 @@ public:
     template<class T_Predicate>
     bool HasTerrain(const MapPoint pt, T_Predicate predicate) const;
 
-    unsigned GetSeaSize(const unsigned seaId) const;
+    unsigned GetSeaSize(unsigned seaId) const;
     /// Return the id of the sea at which the coast in the given direction of the harbor lies. 0 = None
-    unsigned short GetSeaId(const unsigned harborId, const Direction dir) const;
+    unsigned short GetSeaId(unsigned harborId, const Direction dir) const;
     /// Is the harbor at the given sea
-    bool IsHarborAtSea(const unsigned harborId, const unsigned short seaId) const;
+    bool IsHarborAtSea(unsigned harborId, unsigned short seaId) const;
     /// Return the coast pt for a given harbor (where ships can land) if any
-    MapPoint GetCoastalPoint(const unsigned harborId, const unsigned short seaId) const;
+    MapPoint GetCoastalPoint(unsigned harborId, unsigned short seaId) const;
     /// Return the number of harbor points
     unsigned GetNumHarborPoints() const { return harbor_pos.size() - 1; }
     /// Return the coordinates for a given harbor point
-    MapPoint GetHarborPoint(const unsigned harborId) const;
+    MapPoint GetHarborPoint(unsigned harborId) const;
     /// Return the ID of the harbor point on that node or 0 if there is none
     unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harborId; }
-    const std::vector<HarborPos::Neighbor>& GetHarborNeighbors(const unsigned harborId, const ShipDirection& dir) const;
+    const std::vector<HarborPos::Neighbor>& GetHarborNeighbors(unsigned harborId, const ShipDirection& dir) const;
     /// Berechnet die Entfernung zwischen 2 Hafenpunkten
     unsigned CalcHarborDistance(unsigned habor_id1, unsigned harborId2) const;
     /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
@@ -186,7 +186,7 @@ public:
     /// Return the road type from this point in the given direction (Full circle direction)
     unsigned char GetPointRoad(const MapPoint pt, Direction dir) const;
     /// Return the FOW road type for a player
-    unsigned char GetPointFOWRoad(MapPoint pt, Direction dir, const unsigned char viewing_player) const;
+    unsigned char GetPointFOWRoad(MapPoint pt, Direction dir, unsigned char viewing_player) const;
 
     /// Adds a catapult stone currently flying
     void AddCatapultStone(CatapultStone* cs);

@@ -39,8 +39,8 @@ class TradeRoute
     unsigned char RecalcRoute();
 
 public:
-    TradeRoute(const GameWorldGame& gwg, const unsigned char player, const MapPoint& start, const MapPoint& goal);
-    TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, const unsigned char player);
+    TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal);
+    TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, unsigned char player);
 
     void Serialize(SerializedGameData& sgd) const;
 

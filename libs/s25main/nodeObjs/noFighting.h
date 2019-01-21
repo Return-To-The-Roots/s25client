@@ -45,7 +45,7 @@ private:
 
 public:
     noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2);
-    noFighting(SerializedGameData& sgd, const unsigned obj_id);
+    noFighting(SerializedGameData& sgd, unsigned obj_id);
     ~noFighting() override;
 
     /// Aufräummethoden
@@ -65,14 +65,14 @@ public:
     GO_Type GetGOT() const override { return GOT_FIGHTING; }
 
     void Draw(DrawPoint drawPt) override;
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     /// Dürfen andern Figuren diesen Kampf schon durchqueren?
     bool IsActive() const;
     bool IsFighter(nofActiveSoldier* as) { return as == soldiers[0] || as == soldiers[1]; }
 
     /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
-    bool IsSoldierOfPlayer(const unsigned char player) const;
+    bool IsSoldierOfPlayer(unsigned char player) const;
 };
 
 #endif

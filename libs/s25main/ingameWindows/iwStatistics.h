@@ -43,9 +43,9 @@ private:
     std::vector<bool> activePlayers;
     unsigned numPlayingPlayers;
 
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
     void Draw_() override;
-    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
     void DrawStatistic(StatisticType type);
     void DrawAxis();
 };

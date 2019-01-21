@@ -113,7 +113,7 @@ private:
     Result DriveToHarbourPlace();
 
     /// Zeichnet das Schiff stehend mit oder ohne Waren
-    void DrawFixed(DrawPoint drawPt, const bool draw_wares);
+    void DrawFixed(DrawPoint drawPt, bool draw_wares);
     /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
     void DrawDriving(DrawPoint& drawPt);
     /// Zeichnet normales Fahren auf dem Meer mit Gütern
@@ -137,8 +137,8 @@ private:
     void AbortSeaAttack();
 
 public:
-    noShip(const MapPoint pt, const unsigned char player);
-    noShip(SerializedGameData& sgd, const unsigned obj_id);
+    noShip(const MapPoint pt, unsigned char player);
+    noShip(SerializedGameData& sgd, unsigned obj_id);
 
     ~noShip() override;
 
@@ -150,7 +150,7 @@ public:
     // An x,y zeichnen
     void Draw(DrawPoint drawPt) override;
     // Benachrichtigen, wenn neuer gf erreicht wurde
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     /// Gibt den Besitzer zurück
     unsigned char GetPlayerId() const { return ownerId_; }

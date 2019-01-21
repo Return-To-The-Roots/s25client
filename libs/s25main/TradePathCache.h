@@ -36,14 +36,14 @@ class TradePathCache : public Singleton<TradePathCache>
     std::array<Entry, 10> pathes; //-V730_NOINIT
     unsigned curSize;
 
-    unsigned FindEntry(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player) const;
+    unsigned FindEntry(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, unsigned char player) const;
 
 public:
     TradePathCache() : curSize(0) {}
 
     void Clear() { curSize = 0; }
-    bool PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player);
-    void AddEntry(const GameWorldGame& gwg, const TradePath& path, const unsigned char player);
+    bool PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, unsigned char player);
+    void AddEntry(const GameWorldGame& gwg, const TradePath& path, unsigned char player);
 };
 
 #endif // TradePathCache_h__

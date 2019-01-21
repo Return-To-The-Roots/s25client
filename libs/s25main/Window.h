@@ -138,16 +138,16 @@ public:
     template<typename T>
     T* AddCtrl(T* ctrl);
 
-    ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, const Nation nation, unsigned short size = 36,
+    ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation, unsigned short size = 36,
                                       const std::string& tooltip_ = "");
-    ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const std::string& text,
+    ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
                               glArchivItem_Font* font, const std::string& tooltip = "");
-    ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const unsigned fillColor,
+    ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor,
                                const std::string& tooltip = "");
-    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, ITexture* const image,
+    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* const image,
                                const std::string& tooltip = "");
-    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
-                               glArchivItem_Bitmap* const image, const std::string& tooltip = "");
+    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Bitmap* const image,
+                               const std::string& tooltip = "");
     ctrlChat* AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
     ctrlCheck* AddCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
                            glArchivItem_Font* font, bool readonly = false);
@@ -189,7 +189,7 @@ public:
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
     ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format,
                             glArchivItem_Font* font, unsigned parameters, ...);
-    ctrlPreviewMinimap* AddPreviewMinimap(const unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* const map);
+    ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* map);
 
     /// Draw a 3D rectangle (e.g. button)
     static void Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false, bool illuminated = false,
@@ -218,42 +218,42 @@ public:
     virtual void Msg_ScreenResize(const ScreenResizeEvent& sr);
 
     // Nachrichten, die von unten (Controls) nach oben (Fenster) gereicht werden
-    virtual void Msg_ButtonClick(const unsigned /*ctrl_id*/) {}
-    virtual void Msg_EditEnter(const unsigned /*ctrl_id*/) {}
-    virtual void Msg_EditChange(const unsigned /*ctrl_id*/) {}
-    virtual void Msg_TabChange(const unsigned /*ctrl_id*/, const unsigned short /*tab_id*/) {}
-    virtual void Msg_ListSelectItem(const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/) {}
-    virtual void Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_CheckboxChange(const unsigned /*ctrl_id*/, const bool /*checked*/) {}
-    virtual void Msg_ProgressChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/) {}
-    virtual void Msg_ScrollChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/) {}
-    virtual void Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool /*visible*/) {}
-    virtual void Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_Timer(const unsigned /*ctrl_id*/) {}
-    virtual void Msg_TableSelectItem(const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/) {}
-    virtual void Msg_TableRightButton(const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_TableLeftButton(const unsigned /*ctrl_id*/, const int /*selection*/) {}
+    virtual void Msg_ButtonClick(unsigned /*ctrl_id*/) {}
+    virtual void Msg_EditEnter(unsigned /*ctrl_id*/) {}
+    virtual void Msg_EditChange(unsigned /*ctrl_id*/) {}
+    virtual void Msg_TabChange(unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
+    virtual void Msg_ListSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_ListChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void Msg_ComboSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_CheckboxChange(unsigned /*ctrl_id*/, bool /*checked*/) {}
+    virtual void Msg_ProgressChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
+    virtual void Msg_ScrollChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
+    virtual void Msg_ScrollShow(unsigned /*ctrl_id*/, bool /*visible*/) {}
+    virtual void Msg_OptionGroupChange(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_Timer(unsigned /*ctrl_id*/) {}
+    virtual void Msg_TableSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_TableChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void Msg_TableRightButton(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_TableLeftButton(unsigned /*ctrl_id*/, int /*selection*/) {}
 
     // Sonstiges
-    virtual void Msg_MsgBoxResult(const unsigned /*msgbox_id*/, const MsgboxResult /*mbr*/) {}
+    virtual void Msg_MsgBoxResult(unsigned /*msgbox_id*/, MsgboxResult /*mbr*/) {}
 
     // Nachrichten, die von Controls von ctrlGroup weitergeleitet werden
-    virtual void Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_EditEnter(const unsigned /*group_id*/, const unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_EditChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const unsigned short /*tab_id*/) {}
-    virtual void Msg_Group_ListSelectItem(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_Group_ComboSelectItem(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_Group_CheckboxChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const bool /*checked*/) {}
-    virtual void Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const unsigned short /*position*/) {}
-    virtual void Msg_Group_ScrollShow(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const bool /*visible*/) {}
-    virtual void Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_Group_Timer(const unsigned /*group_id*/, const unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_TableSelectItem(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_Group_TableRightButton(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const int /*selection*/) {}
-    virtual void Msg_Group_TableLeftButton(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const int /*selection*/) {}
+    virtual void Msg_Group_ButtonClick(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void Msg_Group_EditEnter(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void Msg_Group_EditChange(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void Msg_Group_TabChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
+    virtual void Msg_Group_ListSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_Group_ComboSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_Group_CheckboxChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*checked*/) {}
+    virtual void Msg_Group_ProgressChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*position*/) {}
+    virtual void Msg_Group_ScrollShow(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*visible*/) {}
+    virtual void Msg_Group_OptionGroupChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_Group_Timer(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void Msg_Group_TableSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_Group_TableRightButton(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_Group_TableLeftButton(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
 
 protected:
     enum ButtonState
@@ -281,7 +281,7 @@ protected:
 
 private:
     Window* const parent_; /// Handle auf das Parentfenster.
-    const unsigned id_;    /// ID des Fensters.
+    unsigned id_;          /// ID des Fensters.
     DrawPoint pos_;        /// Position des Fensters.
     Extent size_;          /// Höhe des Fensters.
     bool active_;          /// Fenster aktiv?

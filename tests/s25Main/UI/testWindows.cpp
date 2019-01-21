@@ -29,15 +29,7 @@
 //-V:MOCK_METHOD:813
 //-V:MOCK_EXPECT:807
 
-namespace {
-
-struct WindowsFixture
-{
-    WindowsFixture() { uiHelper::initGUITests(); }
-};
-} // namespace
-
-BOOST_FIXTURE_TEST_SUITE(Windows, WindowsFixture)
+BOOST_FIXTURE_TEST_SUITE(Windows, uiHelper::Fixture)
 
 BOOST_AUTO_TEST_CASE(Victory)
 {

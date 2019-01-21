@@ -49,11 +49,11 @@ private:
     void GoalReached() override;
     void Walked() override;
     void AbrogateWorkplace() override;
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
 public:
-    nofPlaner(const MapPoint pt, const unsigned char player, noBuildingSite* building_site);
-    nofPlaner(SerializedGameData& sgd, const unsigned obj_id);
+    nofPlaner(const MapPoint pt, unsigned char player, noBuildingSite* building_site);
+    nofPlaner(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen
 protected:

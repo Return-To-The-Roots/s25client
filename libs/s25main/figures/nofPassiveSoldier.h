@@ -32,7 +32,7 @@ private:
 
 private:
     /// Eventhandling
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
     // informieren, wenn ...
     void GoalReached() override; // das Ziel erreicht wurde
@@ -44,9 +44,9 @@ private:
 
 public:
     nofPassiveSoldier(const nofSoldier& soldier);
-    nofPassiveSoldier(const MapPoint pt, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
+    nofPassiveSoldier(const MapPoint pt, unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
                       const unsigned char rank);
-    nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id);
+    nofPassiveSoldier(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofPassiveSoldier() override;
 

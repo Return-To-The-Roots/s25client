@@ -60,8 +60,8 @@ private:
     void HandleStateEviscerating();
 
 public:
-    nofHunter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofHunter(SerializedGameData& sgd, const unsigned obj_id);
+    nofHunter(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofHunter(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override
     {
@@ -78,7 +78,7 @@ public:
 
     GO_Type GetGOT() const override { return GOT_NOF_HUNTER; }
 
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
     void TryStartHunting();
 

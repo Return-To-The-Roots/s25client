@@ -27,7 +27,7 @@ class noExtension : public noBase
 {
 public:
     noExtension(noBase* const base) : noBase(NOP_EXTENSION), base(base) {}
-    noExtension(SerializedGameData& sgd, const unsigned obj_id);
+    noExtension(SerializedGameData& sgd, unsigned obj_id);
     ~noExtension() override;
 
     void Destroy() override { Destroy_noExtension(); }

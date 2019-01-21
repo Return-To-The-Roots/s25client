@@ -53,7 +53,7 @@ protected:
 
 public:
     noMovable(const NodalObjectType nop, const MapPoint pt);
-    noMovable(SerializedGameData& sgd, const unsigned obj_id);
+    noMovable(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override { noCoordBase::Destroy(); }
     void Serialize(SerializedGameData& sgd) const override;

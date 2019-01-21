@@ -46,10 +46,10 @@ public:
 protected:
     unsigned GetMMIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * mapSize.x + static_cast<unsigned>(pt.x); }
     /// Variiert die übergebene Farbe zufällig in der Helligkeit
-    unsigned VaryBrightness(const unsigned color, const int range) const;
+    unsigned VaryBrightness(unsigned color, int range) const;
     /// Erstellt die Textur
     void CreateMapTexture();
-    virtual unsigned CalcPixelColor(const MapPoint pt, const unsigned t) = 0;
+    virtual unsigned CalcPixelColor(const MapPoint pt, unsigned t) = 0;
     /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
     virtual void BeforeDrawing();
 };

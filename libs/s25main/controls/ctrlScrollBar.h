@@ -40,7 +40,7 @@ public:
     bool Msg_LeftUp(const MouseCoords& mc) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
     bool Msg_MouseMove(const MouseCoords& mc) override;
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
 
 protected:
     void Draw_() override;

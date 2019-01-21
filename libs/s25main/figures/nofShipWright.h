@@ -36,7 +36,7 @@ private:
     GoodType ProduceWare() override { return GD_BOAT; }
 
     /// Startet das Laufen zu der Arbeitsstelle, dem Schiff
-    void StartWalkingToShip(const unsigned char first_dir);
+    void StartWalkingToShip(unsigned char first_dir);
 
     /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
     bool IsPointGood(const MapPoint pt) const;
@@ -54,10 +54,10 @@ private:
     void DrawOtherStates(DrawPoint drawPt) override;
 
 public:
-    nofShipWright(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofShipWright(SerializedGameData& sgd, const unsigned obj_id);
+    nofShipWright(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofShipWright(SerializedGameData& sgd, unsigned obj_id);
     GO_Type GetGOT() const override { return GOT_NOF_SHIPWRIGHT; }
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
     void Serialize(SerializedGameData& sgd) const override;
 };
 

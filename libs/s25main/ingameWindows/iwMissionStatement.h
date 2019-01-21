@@ -51,7 +51,7 @@ public:
         IM_AVATAR12
     };
     iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame, HelpImage image = IM_SWORDSMAN);
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
     void SetActive(bool activate) override;
 
 private:

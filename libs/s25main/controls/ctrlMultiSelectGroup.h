@@ -52,7 +52,7 @@ public:
     // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
     ctrlButton* GetButton(unsigned id) { return GetCtrl<ctrlButton>(id); }
 
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
     bool Msg_LeftUp(const MouseCoords& mc) override;
     bool Msg_WheelUp(const MouseCoords& mc) override;

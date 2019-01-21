@@ -38,7 +38,7 @@ class nofCatapultMan : public nofBuildingWorker
         unsigned distance;
 
         PossibleTarget() : pos(0, 0), distance(0) {}
-        PossibleTarget(const MapPoint pt, const unsigned distance) : pos(pt), distance(distance) {}
+        PossibleTarget(const MapPoint pt, unsigned distance) : pos(pt), distance(distance) {}
         PossibleTarget(SerializedGameData& sgd);
 
         void Serialize_PossibleTarget(SerializedGameData& sgd) const;
@@ -54,8 +54,8 @@ private:
     unsigned short GetCarryID() const override { return 0; }
 
 public:
-    nofCatapultMan(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id);
+    nofCatapultMan(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofCatapultMan(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen
 protected:
@@ -66,7 +66,7 @@ public:
 
     GO_Type GetGOT() const override { return GOT_NOF_CATAPULTMAN; }
 
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 
     /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
     void WorkAborted() override;

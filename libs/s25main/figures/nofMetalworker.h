@@ -49,8 +49,8 @@ protected:
     void CheckForOrders();
 
 public:
-    nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-    nofMetalworker(SerializedGameData& sgd, const unsigned obj_id);
+    nofMetalworker(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofMetalworker(SerializedGameData& sgd, unsigned obj_id);
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GOT_NOF_METALWORKER; }

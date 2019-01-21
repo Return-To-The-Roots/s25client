@@ -74,7 +74,7 @@ public:
 
     /// Gibt Infos, über die Unterbrechungspunkte in einem Text, versucht Wörter nicht zu trennen, tut dies aber, falls
     /// es unumgänglich ist (Wort länger als die Zeile)
-    WrapInfo GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width);
+    WrapInfo GetWrapInfo(const std::string& text, unsigned short primary_width, unsigned short secondary_width);
 
     struct CharInfo
     {

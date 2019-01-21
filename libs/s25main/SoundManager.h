@@ -59,7 +59,7 @@ public:
     ~SoundManager() override;
 
     /// Versucht ggf. Objekt-Sound abzuspielen
-    void PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned id, unsigned char volume = 255);
+    void PlayNOSound(unsigned sound_lst_id, noBase* const obj, unsigned id, unsigned char volume = 255);
     /// Wenn die Arbeit (wo er Sounds von sich gegeben hat) von einem Objekt fertig ist bzw. abgebrochen wurde,
     /// wird diese Funktion aufgerufen, die alle Sounds von diesem Objekt entfernt
     void WorkingFinished(noBase* const obj);
@@ -67,9 +67,9 @@ public:
     /////////////////////////////////
 
     /// Wird immer aufgerufen, wenn der GameWorld alles gezeichnet hat und die Vögel abgespielt werden
-    void PlayBirdSounds(const unsigned short tree_count);
+    void PlayBirdSounds(unsigned short tree_count);
     /// Spielt Meeresrauschen ab (wird der Anteil von Wasser an der aktuell gezeichneten Fläche in % angegeben)
-    void PlayOceanBrawling(const unsigned water_percent);
+    void PlayOceanBrawling(unsigned water_percent);
 
     void StopAll();
 };

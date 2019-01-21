@@ -38,8 +38,8 @@ private:
 
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobShipYard(const MapPoint pt, const unsigned char player, const Nation nation);
-    nobShipYard(SerializedGameData& sgd, const unsigned obj_id);
+    nobShipYard(const MapPoint pt, unsigned char player, const Nation nation);
+    nobShipYard(SerializedGameData& sgd, unsigned obj_id);
 
 public:
     /// Serialisierungsfunktionen

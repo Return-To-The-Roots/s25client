@@ -35,25 +35,25 @@ struct VirtualInventory
         real.clear();
     }
     /// Adds goods to both inventories
-    void Add(const GoodType good, const unsigned amount = 1)
+    void Add(const GoodType good, unsigned amount = 1)
     {
         visual.Add(good, amount);
         real.Add(good, amount);
     }
     /// Adds figures to both inventories
-    void Add(const Job job, const unsigned amount = 1)
+    void Add(const Job job, unsigned amount = 1)
     {
         visual.Add(job, amount);
         real.Add(job, amount);
     }
     /// Removes goods from both inventories
-    void Remove(const GoodType good, const unsigned amount = 1)
+    void Remove(const GoodType good, unsigned amount = 1)
     {
         visual.Remove(good, amount);
         real.Remove(good, amount);
     }
     /// Removes jobs from both inventories
-    void Remove(const Job job, const unsigned amount = 1)
+    void Remove(const Job job, unsigned amount = 1)
     {
         visual.Remove(job, amount);
         real.Remove(job, amount);

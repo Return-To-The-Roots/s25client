@@ -60,10 +60,10 @@ public:
     unsigned char getBoards() const { return boards; }
     unsigned char getStones() const { return stones; }
 
-    noBuildingSite(const BuildingType type, const MapPoint pt, const unsigned char player);
+    noBuildingSite(const BuildingType type, const MapPoint pt, unsigned char player);
     /// Konstruktor für Hafenbaustellen vom Schiff aus
-    noBuildingSite(const MapPoint pt, const unsigned char player);
-    noBuildingSite(SerializedGameData& sgd, const unsigned obj_id);
+    noBuildingSite(const MapPoint pt, unsigned char player);
+    noBuildingSite(SerializedGameData& sgd, unsigned obj_id);
 
     ~noBuildingSite() override;
 

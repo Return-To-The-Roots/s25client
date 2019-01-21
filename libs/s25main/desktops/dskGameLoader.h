@@ -38,8 +38,8 @@ public:
     void CI_Error(const ClientError ce) override;
 
 private:
-    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void Msg_Timer(unsigned ctrl_id) override;
 
     unsigned position;
     GameLoader loader_;

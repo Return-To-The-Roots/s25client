@@ -38,7 +38,7 @@ public:
     /// Neuen String zur Listbox hinzufügen.
     void AddString(const std::string& text);
     /// Verändert einen String
-    void SetString(const std::string& text, const unsigned id);
+    void SetString(const std::string& text, unsigned id);
     /// Listbox leeren.
     void DeleteAllItems();
     /// liefert den Wert einer Zeile.
@@ -48,11 +48,11 @@ public:
     /// Vertauscht zwei Zeilen.
     void Swap(unsigned short first, unsigned short second);
     /// Löscht ein Element
-    void Remove(const unsigned short index);
+    void Remove(unsigned short index);
 
     unsigned short GetNumLines() const { return static_cast<unsigned short>(lines.size()); }
     int GetSelection() const { return selection_; };
-    void SetSelection(unsigned selection);
+    void SetSelection(int selection);
 
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -66,6 +66,7 @@ protected:
     void Draw_() override;
 
 private:
+    int GetItemFromPos(const Position& pos) const;
     Rect GetFullDrawArea() const;
     Rect GetListDrawArea() const;
 

@@ -28,7 +28,7 @@
 
 ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
                            unsigned short max_list_height, bool readonly)
-    : Window(parent, id, pos, size), tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), last_show(false)
+    : Window(parent, id, pos, size), tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), suppressSelectEvent(false)
 {
     ctrlList* liste = AddList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font);
 
@@ -152,7 +152,7 @@ bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
 
     if(IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
-        // Scrolled without list opened
+        // Don't scroll too far down
         if(list->GetSelection() > 0)
             list->SetSelection(list->GetSelection() - 1);
         return true;
@@ -176,9 +176,8 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
 
     if(IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
-        // Scrolled without list opened
-        if(list->GetSelection() + 1 < list->GetNumLines())
-            Msg_ListSelectItem(GetID(), list->GetSelection() + 1);
+        // Will be ignored by the list if to high
+        list->SetSelection(list->GetSelection() + 1);
         return true;
     }
 
@@ -192,15 +191,13 @@ Rect ctrlComboBox::GetFullDrawRect(const ctrlList* list)
     return myRect;
 }
 
-void ctrlComboBox::Msg_ListSelectItem(const unsigned ctrl_id, const int selection)
+void ctrlComboBox::Msg_ListSelectItem(unsigned, const int selection)
 {
     // Liste wieder ausblenden
     ShowList(false);
 
-    ctrlList* list = GetCtrl<ctrlList>(ctrl_id);
-
     // ist in der Liste überhaupt was drin?
-    if(selection != selectionOnListOpen && list->GetNumLines() > 0)
+    if(selection >= 0 && !suppressSelectEvent)
     {
         // Nachricht an übergeordnetes Fenster verschicken
         GetParent()->Msg_ComboSelectItem(GetID(), selection);
@@ -231,8 +228,9 @@ void ctrlComboBox::DeleteAllItems()
 void ctrlComboBox::SetSelection(unsigned short selection)
 {
     // Avoid sending the change method when this is invoked intentionally
-    selectionOnListOpen = selection;
+    suppressSelectEvent = true;
     GetCtrl<ctrlList>(0)->SetSelection(selection);
+    suppressSelectEvent = false;
 }
 
 /**
@@ -262,12 +260,9 @@ void ctrlComboBox::Draw_()
  */
 void ctrlComboBox::ShowList(bool show)
 {
-    if(last_show == show)
-        return;
-
-    last_show = show;
-
     ctrlList* liste = GetCtrl<ctrlList>(0);
+    if(liste->IsVisible() == show)
+        return;
 
     // Liste entsprechend
     liste->SetVisible(show);
@@ -277,13 +272,9 @@ void ctrlComboBox::ShowList(bool show)
 
     // Region sperren für die Liste, oder freigeben
     if(show)
-    {
         GetParent()->LockRegion(this, liste->GetDrawRect());
-        selectionOnListOpen = GetSelection();
-    } else
-    {
+    else
         GetParent()->FreeRegion(this);
-    }
 
     LOADER.GetSoundN("sound", 113)->Play(255, false);
 }

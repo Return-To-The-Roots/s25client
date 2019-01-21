@@ -43,7 +43,7 @@ public:
     ~Messenger();
 
     void Draw();
-    void AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg,
+    void AddMessage(const std::string& author, unsigned color_author, const ChatDestination cd, const std::string& msg,
                     const unsigned color_msg = COLOR_YELLOW);
 };
 

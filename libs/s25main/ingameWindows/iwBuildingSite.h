@@ -30,7 +30,7 @@ public:
     iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite);
 
 protected:
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_PaintAfter() override;
 
 private:

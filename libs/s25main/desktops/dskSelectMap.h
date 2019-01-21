@@ -43,11 +43,11 @@ private:
 
     void FillTable(const std::vector<std::string>& files);
 
-    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-    void Msg_TableSelectItem(const unsigned ctrl_id, const int selection) override;
-    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void Msg_TableSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
     void CI_NextConnectState(const ConnectState cs) override;
     void CI_Error(const ClientError ce) override;

@@ -86,21 +86,21 @@ public:
     const MapPoint& GetSelectedPt() const { return selectedPt; }
 
 private:
-    void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
-    void Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id) override;
-    void Msg_Group_TabChange(const unsigned group_id, const unsigned ctrl_id, const unsigned short tab_id) override;
+    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void Msg_TabChange(unsigned ctrl_id, unsigned short tab_id) override;
+    void Msg_Group_TabChange(unsigned group_id, unsigned ctrl_id, unsigned short tab_id) override;
     void Msg_PaintAfter() override;
 
-    inline void Msg_ButtonClick_TabBuild(const unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabFlag(const unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabAttack(const unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabWatch(const unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabBuild(unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabCutRoad(unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabFlag(unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabAttack(unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabSeaAttack(unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabSetFlag(unsigned ctrl_id);
+    inline void Msg_ButtonClick_TabWatch(unsigned ctrl_id);
 
     /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
-    void AddAttackControls(ctrlGroup* group, const unsigned attackers_count);
+    void AddAttackControls(ctrlGroup* group, unsigned attackers_count);
     void AddUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
     void DoUpgradeRoad();
 };

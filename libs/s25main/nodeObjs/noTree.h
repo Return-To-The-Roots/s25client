@@ -77,8 +77,8 @@ private:
     void ProduceAnimal();
 
 public:
-    noTree(const MapPoint pt, const unsigned char type, const unsigned char size);
-    noTree(SerializedGameData& sgd, const unsigned obj_id);
+    noTree(const MapPoint pt, unsigned char type, unsigned char size);
+    noTree(SerializedGameData& sgd, unsigned obj_id);
 
     ~noTree() override;
 
@@ -100,7 +100,7 @@ public:
 
     void Draw(DrawPoint drawPt) override;
 
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     BlockingManner GetBM() const override { return BlockingManner::Tree; }
 

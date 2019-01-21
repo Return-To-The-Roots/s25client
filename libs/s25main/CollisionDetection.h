@@ -22,8 +22,8 @@
 #include "Rect.h"
 
 bool IsPointInRect(const Position& pt, const Rect& rect);
-bool IsPointInRect(const int x, const int y, const Rect& rect);
-bool IsPointInRect(const int x, const int y, const int rx, const int ry, const int rwidth, const int rheight);
+bool IsPointInRect(int x, int y, const Rect& rect);
+bool IsPointInRect(int x, int y, int rx, int ry, int rwidth, int rheight);
 bool DoRectsIntersect(const Rect& rect1, const Rect& rect2);
 
 #endif // COLLISIONDETECTION_H_INCLUDED

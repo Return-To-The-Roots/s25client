@@ -39,7 +39,7 @@ class noFire : public noCoordBase
 
 public:
     noFire(const MapPoint pt, bool isBig);
-    noFire(SerializedGameData& sgd, const unsigned obj_id);
+    noFire(SerializedGameData& sgd, unsigned obj_id);
 
     ~noFire() override;
     /// Aufräummethoden
@@ -63,7 +63,7 @@ public:
     /// Zeichnen
     void Draw(DrawPoint drawPt) override;
     /// Benachrichtigen, wenn neuer gf erreicht wurde
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 };
 
 #endif

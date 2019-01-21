@@ -50,7 +50,7 @@ private:
 
 public:
     noCharburnerPile(const MapPoint pt);
-    noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id);
+    noCharburnerPile(SerializedGameData& sgd, unsigned obj_id);
 
     ~noCharburnerPile() override;
 
@@ -71,7 +71,7 @@ public:
     GO_Type GetGOT() const override { return GOT_CHARBURNERPILE; }
 
     void Draw(DrawPoint drawPt) override;
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 
     BlockingManner GetBM() const override { return BlockingManner::NothingAround; }
 

@@ -25,8 +25,8 @@ class nobStorehouse : public nobBaseWarehouse
 {
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobStorehouse(const MapPoint pt, const unsigned char player, const Nation nation);
-    nobStorehouse(SerializedGameData& sgd, const unsigned obj_id);
+    nobStorehouse(const MapPoint pt, unsigned char player, const Nation nation);
+    nobStorehouse(SerializedGameData& sgd, unsigned obj_id);
 
 protected:
     void Serialize_nobStorehouse(SerializedGameData& sgd) const;
@@ -40,7 +40,7 @@ public:
 
     void Draw(DrawPoint drawPt) override;
 
-    void HandleEvent(const unsigned id) override;
+    void HandleEvent(unsigned id) override;
 };
 
 #endif

@@ -53,10 +53,10 @@ protected:
 
 public:
     /// Going to workplace
-    nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofWorkman(const Job job, const MapPoint pt, unsigned char player, nobUsual* workplace);
     /// Going to warehouse
-    nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
-    nofWorkman(SerializedGameData& sgd, const unsigned obj_id);
+    nofWorkman(const Job job, const MapPoint pt, unsigned char player, nobBaseWarehouse* goalWh);
+    nofWorkman(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen
 protected:
@@ -65,7 +65,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofWorkman(sgd); }
 
-    void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(unsigned id) override;
 };
 
 #endif

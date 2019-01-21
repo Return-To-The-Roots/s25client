@@ -84,7 +84,7 @@ class BuildRoad : public Coords
     std::vector<Direction> route;
 
 protected:
-    BuildRoad(const MapPoint pt, const bool boat_road, const std::vector<Direction>& route)
+    BuildRoad(const MapPoint pt, bool boat_road, const std::vector<Direction>& route)
         : Coords(BUILD_ROAD, pt), boat_road(boat_road), route(route)
     {}
     BuildRoad(Serializer& ser) : Coords(BUILD_ROAD, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
@@ -397,7 +397,7 @@ protected:
     const bool strong_soldiers;
 
 protected:
-    BaseAttack(const Type gst, const MapPoint pt, const uint32_t soldiers_count, const bool strong_soldiers)
+    BaseAttack(const Type gst, const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers)
         : Coords(gst, pt), soldiers_count(soldiers_count), strong_soldiers(strong_soldiers)
     {}
     BaseAttack(const Type gst, Serializer& ser) : Coords(gst, ser), soldiers_count(ser.PopUnsignedInt()), strong_soldiers(ser.PopBool()) {}
@@ -418,8 +418,7 @@ class Attack : public BaseAttack
     GC_FRIEND_DECL;
 
 protected:
-    Attack(const MapPoint pt, const uint32_t soldiers_count, const bool strong_soldiers)
-        : BaseAttack(ATTACK, pt, soldiers_count, strong_soldiers)
+    Attack(const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers) : BaseAttack(ATTACK, pt, soldiers_count, strong_soldiers)
     {}
     Attack(Serializer& ser) : BaseAttack(ATTACK, ser) {}
 
@@ -433,7 +432,7 @@ class SeaAttack : public BaseAttack
     GC_FRIEND_DECL;
 
 protected:
-    SeaAttack(const MapPoint pt, const uint32_t soldiers_count, const bool strong_soldiers)
+    SeaAttack(const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers)
         : BaseAttack(SEA_ATTACK, pt, soldiers_count, strong_soldiers)
     {}
     SeaAttack(Serializer& ser) : BaseAttack(SEA_ATTACK, ser) {}
@@ -449,7 +448,7 @@ class SetCoinsAllowed : public Coords
     const bool enabled;
 
 protected:
-    SetCoinsAllowed(const MapPoint pt, const bool enabled) : Coords(SET_COINS_ALLOWED, pt), enabled(enabled) {}
+    SetCoinsAllowed(const MapPoint pt, bool enabled) : Coords(SET_COINS_ALLOWED, pt), enabled(enabled) {}
     SetCoinsAllowed(Serializer& ser) : Coords(SET_COINS_ALLOWED, ser), enabled(ser.PopBool()) {}
 
 public:
@@ -468,7 +467,7 @@ class SetProductionEnabled : public Coords
     const bool enabled;
 
 protected:
-    SetProductionEnabled(const MapPoint pt, const bool enabled) : Coords(SET_PRODUCTION_ENABLED, pt), enabled(enabled) {}
+    SetProductionEnabled(const MapPoint pt, bool enabled) : Coords(SET_PRODUCTION_ENABLED, pt), enabled(enabled) {}
     SetProductionEnabled(Serializer& ser) : Coords(SET_PRODUCTION_ENABLED, ser), enabled(ser.PopBool()) {}
 
 public:
@@ -503,7 +502,7 @@ class SetInventorySetting : public Coords
     const InventorySetting state;
 
 protected:
-    SetInventorySetting(const MapPoint pt, const bool isJob, const uint8_t type, const InventorySetting state)
+    SetInventorySetting(const MapPoint pt, bool isJob, const uint8_t type, const InventorySetting state)
         : Coords(SET_INVENTORY_SETTING, pt), isJob(isJob), type(type), state(state)
     {}
     SetInventorySetting(Serializer& ser)
@@ -533,7 +532,7 @@ class SetAllInventorySettings : public Coords
     std::vector<InventorySetting> states;
 
 protected:
-    SetAllInventorySettings(const MapPoint pt, const bool isJob, const std::vector<InventorySetting>& states)
+    SetAllInventorySettings(const MapPoint pt, bool isJob, const std::vector<InventorySetting>& states)
         : Coords(SET_ALL_INVENTORY_SETTINGS, pt), isJob(isJob), states(states)
     {}
     SetAllInventorySettings(Serializer& ser) : Coords(SET_ALL_INVENTORY_SETTINGS, ser), isJob(ser.PopBool())

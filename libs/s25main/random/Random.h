@@ -73,7 +73,7 @@ public:
     /// Reset the Random class to start from a given state
     void ResetState(const PRNG& newState);
     /// Return a random number in the range [0, max)
-    int Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max);
+    int Rand(const char* const src_name, unsigned src_line, unsigned obj_id, int max);
 
     /// Get a checksum of the RNG
     unsigned GetChecksum() const;

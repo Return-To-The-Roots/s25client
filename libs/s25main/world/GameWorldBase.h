@@ -82,7 +82,7 @@ public:
     /// Berechnet BQ bei einer gebauten Stra�e
     void RecalcBQForRoad(const MapPoint pt);
     /// Pr�ft, ob sich in unmittelbarer N�he (im Radius von 4) Milit�rgeb�ude befinden
-    bool IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const;
+    bool IsMilitaryBuildingNearNode(const MapPoint nPt, unsigned char player) const;
     /// Return true if there is a military building or building site on the node
     /// If attackBldsOnly is true, then only troop buildings are returned
     /// Otherwise it includes e.g. HQ and harbour which cannot attack itself but hold land
@@ -117,15 +117,15 @@ public:
     void RecalcBQAroundPointBig(const MapPoint pt);
 
     /// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verbündeten des jeweiligen Spielers
-    Visibility CalcVisiblityWithAllies(const MapPoint pt, const unsigned char player) const;
+    Visibility CalcVisiblityWithAllies(const MapPoint pt, unsigned char player) const;
 
     /// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
-    bool IsHarborPointFree(const unsigned harborId, const unsigned char player) const;
+    bool IsHarborPointFree(unsigned harborId, unsigned char player) const;
     /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer, an dem auch mindestens 1 Hafenplatz liegt, hat
     /// und gibt ggf. die Meeres-ID zurück, ansonsten 0
     bool IsCoastalPointToSeaWithHarbor(const MapPoint pt) const;
     /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
-    unsigned GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
+    unsigned GetNextFreeHarborPoint(const MapPoint pt, unsigned origin_harborId, const ShipDirection& dir,
                                     const unsigned char player) const;
     /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
     unsigned CalcDistanceToNearestHarbor(const MapPoint pos) const;
@@ -133,8 +133,8 @@ public:
     bool IsAHarborInSeaAttackDistance(const MapPoint pos) const;
 
     /// Return the player with the given index
-    GamePlayer& GetPlayer(const unsigned id);
-    const GamePlayer& GetPlayer(const unsigned id) const;
+    GamePlayer& GetPlayer(unsigned id);
+    const GamePlayer& GetPlayer(unsigned id) const;
     unsigned GetNumPlayers() const;
     bool IsSinglePlayer() const;
     /// Return the game settings
@@ -181,9 +181,9 @@ public:
                                                            const unsigned char player_attacker) const;
     /// Return all soldiers (in no specific order) that can be used to attack the given point via a sea.
     /// Checks all preconditions for a sea attack (addon, attackable...)
-    std::vector<PotentialSeaAttacker> GetSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint targetPt) const;
+    std::vector<PotentialSeaAttacker> GetSoldiersForSeaAttack(unsigned char player_attacker, const MapPoint targetPt) const;
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
-    unsigned GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount = true) const;
+    unsigned GetNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, unsigned short seaid, bool returnCount = true) const;
 
     /// Recalculates the BQ for the given point
     void RecalcBQ(const MapPoint pt);
@@ -202,7 +202,7 @@ private:
     /// Returns the harbor ID of the next matching harbor in the given direction (0 = None)
     /// T_IsHarborOk must be a predicate taking a harbor Id and returning a bool if the harbor is valid to return
     template<typename T_IsHarborOk>
-    unsigned GetHarborInDir(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir, T_IsHarborOk isHarborOk) const;
+    unsigned GetHarborInDir(const MapPoint pt, unsigned origin_harborId, const ShipDirection& dir, T_IsHarborOk isHarborOk) const;
 };
 
 #endif // GameWorldBase_h__

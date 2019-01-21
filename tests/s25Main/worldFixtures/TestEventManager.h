@@ -33,7 +33,7 @@ public:
     /// Return all events of the given object
     std::vector<const GameEvent*> GetObjEvents(const GameObject& obj) const;
     /// Check if there is already an event of the given id for this object
-    bool IsEventActive(const GameObject& obj, const unsigned id) const;
+    bool IsEventActive(const GameObject& obj, unsigned id) const;
     /// Remove the event and add a copy that is executed at the given GF
     const GameEvent* RescheduleEvent(const GameEvent* event, unsigned targetGF);
     std::vector<const GameEvent*> GetEvents() const;

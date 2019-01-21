@@ -42,7 +42,7 @@ protected:
     /// Add a new page and return it. ID will be in range 100+
     ctrlGroup& AddPage();
 
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_PaintBefore() override;
 
     unsigned GetCurPage() const { return curPage_; }

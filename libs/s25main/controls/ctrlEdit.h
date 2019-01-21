@@ -32,7 +32,7 @@ public:
              unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
     /// setzt den Text.
     void SetText(const std::string& text);
-    void SetText(const unsigned text);
+    void SetText(unsigned text);
 
     std::string GetText() const;
     void SetFocus(bool focus = true) { newFocus_ = focus; }

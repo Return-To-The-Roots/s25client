@@ -122,9 +122,8 @@ public:
     /// considered - to_wh true if path to wh is searched, false for path from wh - length is optional for the path length - forbidden
     /// optional roadSegment that must not be used
     template<class T_IsWarehouseGood>
-    nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh,
-                                    const bool use_boat_roads, unsigned* const length = 0,
-                                    const RoadSegment* const forbidden = nullptr) const;
+    nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh, bool use_boat_roads,
+                                    unsigned* length = nullptr, const RoadSegment* forbidden = nullptr) const;
     /// Für alle unbesetzen Straßen Weg neu berechnen
     void FindCarrierForAllRoads();
     /// Versucht für alle Arbeitsplätze eine Arbeitskraft zu suchen
@@ -178,10 +177,10 @@ public:
     bool IsWareDependent(Ware* ware);
 
     /// Fügt Waren zur Inventur hinzu
-    void IncreaseInventoryWare(const GoodType ware, const unsigned count);
-    void DecreaseInventoryWare(const GoodType ware, const unsigned count);
-    void IncreaseInventoryJob(const Job job, const unsigned count) { global_inventory.Add(job, count); }
-    void DecreaseInventoryJob(const Job job, const unsigned count) { global_inventory.Remove(job, count); }
+    void IncreaseInventoryWare(const GoodType ware, unsigned count);
+    void DecreaseInventoryWare(const GoodType ware, unsigned count);
+    void IncreaseInventoryJob(const Job job, unsigned count) { global_inventory.Add(job, count); }
+    void DecreaseInventoryJob(const Job job, unsigned count) { global_inventory.Remove(job, count); }
 
     /// Gibt Inventory-Settings zurück
     const Inventory& GetInventory() const { return global_inventory; }
@@ -196,9 +195,9 @@ public:
     void ChangeBuildOrder(bool order_type, const BuildOrders& oder_data);
 
     /// Can this player and the other attack each other?
-    bool IsAttackable(const unsigned char playerId) const;
+    bool IsAttackable(unsigned char playerId) const;
     /// Are these players allied? (-> Teamview, attack support, ...)
-    bool IsAlly(const unsigned char playerId) const;
+    bool IsAlly(unsigned char playerId) const;
     /// Truppen bestellen
     void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false);
     /// Prüft die Besatzung von allen Militärgebäuden und reguliert entsprechend (bei Veränderung der Militäreinstellungen)
@@ -239,13 +238,13 @@ public:
     /// Gibt die ID eines Schiffes zurück
     unsigned GetShipID(const noShip* const ship) const;
     /// Gibt ein Schiff anhand der ID zurück bzw. nullptr, wenn keines mit der ID existiert
-    noShip* GetShipByID(const unsigned ship_id) const;
+    noShip* GetShipByID(unsigned ship_id) const;
     /// Gibt die Gesamtanzahl von Schiffen zurück
     unsigned GetNumShips() const { return ships.size(); }
     /// Gibt liste der Schiffe zurück
     const std::vector<noShip*>& GetShips() const { return ships; }
     /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
-    void GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const;
+    void GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, unsigned short seaId) const;
     /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
     unsigned GetShipsToHarbor(const nobHarborBuilding& hb) const;
     /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
@@ -264,12 +263,12 @@ public:
     void NotifyAlliesOfLocation(const MapPoint pt);
 
     /// This player suggests a pact to target player
-    void SuggestPact(const unsigned char targetPlayerId, const PactType pt, const unsigned duration);
+    void SuggestPact(unsigned char targetPlayerId, const PactType pt, unsigned duration);
     /// Accepts a pact, that this player suggested target player
-    void AcceptPact(const unsigned id, const PactType pt, const unsigned char targetPlayer);
+    void AcceptPact(unsigned id, const PactType pt, unsigned char targetPlayer);
     /// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will
     /// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
-    void CancelPact(const PactType pt, const unsigned char other_player);
+    void CancelPact(const PactType pt, unsigned char other_player);
     /// Zeigt an, ob ein Pakt besteht
     enum PactState
     {
@@ -277,9 +276,9 @@ public:
         IN_PROGRESS, /// Pakt angeboten, aber noch nicht akzeptiert
         ACCEPTED     /// Bündnis in Kraft
     };
-    PactState GetPactState(const PactType pt, const unsigned char other_player) const;
+    PactState GetPactState(const PactType pt, unsigned char other_player) const;
     /// Gibt die verbleibende Dauer zurück, die ein Bündnis noch laufen wird (0xFFFFFFFF = für immer)
-    unsigned GetRemainingPactTime(const PactType pt, const unsigned char other_player) const;
+    unsigned GetRemainingPactTime(const PactType pt, unsigned char other_player) const;
     /// Setzt die initialen Bündnisse anhand der Teams
     void MakeStartPacts();
     /// returns fixed team number for randomteam players
@@ -432,7 +431,7 @@ private:
     void LoadStandardMilitarySettings();
     void LoadStandardDistribution();
     /// Bündnis (real, d.h. spielentscheidend) abschließen
-    void MakePact(const PactType pt, const unsigned char other_player, const unsigned duration);
+    void MakePact(const PactType pt, unsigned char other_player, unsigned duration);
     /// Called after a pact was changed(added/removed) in both players
     void PactChanged(const PactType pt);
     // Sucht Weg für Job zu entsprechenden noRoadNode

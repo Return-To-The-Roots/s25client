@@ -39,7 +39,7 @@ struct HarborPos
         unsigned distance;
 
         Neighbor() {} //-V730
-        Neighbor(const unsigned id, const unsigned distance) : id(id), distance(distance) {}
+        Neighbor(unsigned id, unsigned distance) : id(id), distance(distance) {}
 
         bool operator<(const Neighbor& two) const { return (distance < two.distance) || (distance == two.distance && id < two.id); }
     };

@@ -26,7 +26,7 @@ class noSign : public noDisappearingEnvObject
 {
 public:
     noSign(const MapPoint pt, Resource resource);
-    noSign(SerializedGameData& sgd, const unsigned obj_id);
+    noSign(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen
 protected:

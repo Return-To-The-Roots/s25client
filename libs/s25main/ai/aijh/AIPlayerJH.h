@@ -49,7 +49,7 @@ class Job;
 class AIPlayerJH : public AIPlayer
 {
 public:
-    AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level);
+    AIPlayerJH(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level);
     ~AIPlayerJH() override;
 
     AIInterface& GetInterface() { return aii; }
@@ -61,7 +61,7 @@ public:
     const Job* GetCurrentJob() const { return currentJob.get(); }
     unsigned GetNumJobs() const;
 
-    void RunGF(const unsigned gf, bool gfisnwf) override;
+    void RunGF(unsigned gf, bool gfisnwf) override;
 
     /// Test whether the player should resign or not
     bool TestDefeat();
@@ -90,7 +90,7 @@ public:
     unsigned AmountInStorage(GoodType good) const;
     unsigned AmountInStorage(::Job job) const;
 
-    void PlanNewBuildings(const unsigned gf);
+    void PlanNewBuildings(unsigned gf);
 
     void SendAIEvent(AIEvent::Base* ev);
 

@@ -43,7 +43,7 @@ struct Inventory;
 class AIInterface : public GameCommandFactory
 {
 public:
-    AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, const unsigned char playerID)
+    AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, unsigned char playerID)
         : gwb(gwb), player_(gwb.GetPlayer(playerID)), gcs(gcs), playerID_(playerID)
     {}
 
@@ -94,9 +94,8 @@ public:
     bool IsPlayerAttackable(unsigned char playerID) const { return player_.IsAttackable(playerID); }
     /// player.FindWarehouse
     template<class T_IsWarehouseGood>
-    nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh,
-                                    const bool use_boat_roads, unsigned* const length = 0,
-                                    const RoadSegment* const forbidden = nullptr) const
+    nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh, bool use_boat_roads,
+                                    unsigned* length = nullptr, const RoadSegment* forbidden = nullptr) const
     {
         return player_.FindWarehouse(start, isWarehouseGood, to_wh, use_boat_roads, length, forbidden);
     }
@@ -136,7 +135,7 @@ public:
     bool IsExplorationDirectionPossible(const MapPoint pt, unsigned originHarborID, ShipDirection direction) const;
     unsigned GetNation() { return player_.nation; }
 
-    bool SetCoinsAllowed(const nobMilitary* building, const bool enabled);
+    bool SetCoinsAllowed(const nobMilitary* building, bool enabled);
     using GameCommandFactory::SetCoinsAllowed;
 
     bool StartStopExpedition(const nobHarborBuilding* harbor, bool start);
