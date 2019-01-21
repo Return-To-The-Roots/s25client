@@ -58,6 +58,7 @@ cmake \
     -DRTTR_USE_STATIC_BOOST=ON \
     -DRTTR_VERSION=$RTTR_VERSION \
     -DRTTR_REVISION=OFF \
+    -DRTTR_BUNDLE=ON \
     $src_dir
 
 make -j4 package

@@ -94,6 +94,7 @@ find_package(ClangFormat 5.0.0)
 # Example: RTTR_BINDIR="bin", RTTR_DATADIR="data" executed in "/foo/bar/bin/rttr.exe" -> FULL_DATADIR=/foo/bar/data
 ################################################################################
 
+option(RTTR_BUNDLE "Create a bundle directory (contains all required dependencies)" ${APPLE})
 if(WIN32)
     # Windows uses one directory only
     set(RTTR_BINDIR "." CACHE INTERNAL "")
@@ -104,11 +105,7 @@ if(WIN32)
     set(RTTR_EXTRA_BINDIR "./RTTR" CACHE INTERNAL "")
     set(RTTR_DRIVERDIR "./driver" CACHE INTERNAL "")
 else()
-    if(APPLE)
-        option(RTTR_OSX_BUNDLE "Create an Apple/OSX bundle directory (=clickable application)" ON)
-    endif()
-
-    if(APPLE AND RTTR_OSX_BUNDLE)
+    if(APPLE AND RTTR_BUNDLE)
         set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.app)
         set(RTTR_MACOS_DIR Contents/MacOS CACHE INTERNAL "")
         set(RTTR_DATADIR ${RTTR_MACOS_DIR}/share/s25rttr CACHE INTERNAL "")
@@ -329,24 +326,13 @@ endif()
 # Placeholder for S2 installation
 install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
 
-# Start script
-if(WIN32)
-    install(PROGRAMS "tools/release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
-elseif(APPLE)
-    if(COMMAND rttr_create_bundle)
-        rttr_create_bundle()
-    endif()
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
-    install(PROGRAMS "tools/release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
-else()
-    message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
-endif()
-
 ################################################################################
 # Postbuild
 ################################################################################
 
-add_subdirectory("tools/release")
+if(RTTR_BUNDLE)
+    add_subdirectory("tools/release")
+endif()
 
 ################################################################################
 # Packing
