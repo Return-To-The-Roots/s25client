@@ -21,6 +21,12 @@
 #include "Point.h"
 #include <type_traits>
 
+#ifdef RTTR_ENABLE_ASSERTS
+#define CONSTEXPR_IF_NOASSERT
+#else
+#define CONSTEXPR_IF_NOASSERT constexpr
+#endif
+
 /// Describe a rectangular shape with dimensions:
 /// x: [left, right), y: [top, bottom)
 template<typename T>
@@ -37,7 +43,7 @@ struct RectBase
     position_type getOrigin() const { return position_type(left, top); }
     position_type getEndPt() const { return position_type(right, bottom); }
     void setOrigin(const position_type&);
-    extent_type getSize() const;
+    CONSTEXPR_IF_NOASSERT extent_type getSize() const;
     void setSize(const extent_type& newSize);
     void move(const position_type& offset);
     static RectBase move(RectBase rect, const position_type& offset);
@@ -66,7 +72,7 @@ void RectBase<T>::setOrigin(const position_type& pos)
     move(pos - getOrigin());
 }
 template<typename T>
-typename RectBase<T>::extent_type RectBase<T>::getSize() const
+CONSTEXPR_IF_NOASSERT typename RectBase<T>::extent_type RectBase<T>::getSize() const
 {
     RTTR_Assert(left <= right);
     RTTR_Assert(top <= bottom);
