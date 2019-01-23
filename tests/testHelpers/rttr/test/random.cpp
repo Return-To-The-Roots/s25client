@@ -48,7 +48,7 @@ namespace rttr { namespace test {
         void test_unit_finish(boost::unit_test::test_unit const& test, unsigned long) override
         {
             if(test.p_type == boost::unit_test::TUT_CASE && failedLastTest)
-                std::cerr << "Random seed was " << lastSeed;
+                std::cerr << "Random seed was " << lastSeed << std::endl;
         }
         void assertion_result(boost::unit_test::assertion_result ar) override
         {
