@@ -25,11 +25,12 @@
 namespace rttr { namespace test {
     std::mt19937& getRandState();
     template<typename T>
-    auto randomValue(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max())
+    T randomValue(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max())
     {
-        std::conditional_t<std::is_floating_point<T>::value, std::uniform_real_distribution<T>, std::uniform_int_distribution<T>> distr(
-          min, max);
-        return distr(getRandState());
+        // 1 byte types are not supported, expand to 2 bytes instead
+        using IntDistribution = std::uniform_int_distribution<std::conditional_t<sizeof(T) == 1, int16_t, T>>;
+        std::conditional_t<std::is_floating_point<T>::value, std::uniform_real_distribution<T>, IntDistribution> distr(min, max);
+        return static_cast<T>(distr(getRandState()));
     }
     template<typename T>
     auto randomPoint(typename T::ElementType min = std::numeric_limits<typename T::ElementType>::min(),
