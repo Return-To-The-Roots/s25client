@@ -179,7 +179,7 @@ constexpr auto operator-(const Point<T>& pt)
 
 /// Add and subtract operations
 template<typename T, typename U>
-constexpr auto operator+(const Point<T>& lhs, const Point<U>& rhs)
+constexpr auto operator+(const Point<T>& lhs, const Point<U>& rhs) -> Point<detail::MixedType_t<T, U>>
 {
     return Point<detail::MixedType_t<T, U>>(lhs.x + rhs.x, lhs.y + rhs.y);
 }
@@ -191,7 +191,7 @@ constexpr Point<T>& operator+=(Point<T>& lhs, const Point<T>& rhs)
 }
 
 template<typename T, typename U>
-constexpr auto operator-(const Point<T>& lhs, const Point<U>& rhs)
+constexpr auto operator-(const Point<T>& lhs, const Point<U>& rhs) -> Point<detail::MixedType_t<T, U>>
 {
     return Point<detail::MixedType_t<T, U>>(lhs.x - rhs.x, lhs.y - rhs.y);
 }
