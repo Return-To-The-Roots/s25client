@@ -528,7 +528,7 @@ void GameServer::KickPlayer(uint8_t playerId, KickReason cause, uint32_t param)
     JoinPlayerInfo& playerInfo = playerInfos[playerId];
     GameServerPlayer* player = GetNetworkPlayer(playerId);
     if(player)
-        player->closeConnection(true);
+        player->closeConnection();
     // Non-existing or connecting player
     if(!playerInfo.isUsed())
         return;

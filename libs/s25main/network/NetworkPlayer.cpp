@@ -23,10 +23,8 @@ NetworkPlayer::NetworkPlayer(unsigned playerId)
     : playerId(playerId), recvQueue(GameMessage::create_game), sendQueue(GameMessage::create_game)
 {}
 
-void NetworkPlayer::closeConnection(bool flushMsgsFirst)
+void NetworkPlayer::closeConnection()
 {
-    if(flushMsgsFirst && socket.isValid())
-        sendQueue.flush(socket);
     // Close socket and clear queues
     socket.Close();
     sendQueue.clear();
