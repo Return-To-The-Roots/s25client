@@ -516,7 +516,7 @@ void GameServer::SendToAll(const GameMessage& msg)
     for(GameServerPlayer& player : networkPlayers)
     {
         // ist der Slot Belegt, dann Nachricht senden
-        if(player.isConnected())
+        if(player.isActive())
             player.sendMsgAsync(msg.clone());
     }
 }
@@ -1057,7 +1057,7 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
     {
         player->sendMsgAsync(new GameMessage_Map_Info(bfs::path(mapinfo.filepath).filename().string(), mapinfo.type, mapinfo.mapData.length,
                                                       mapinfo.mapData.data.size(), mapinfo.luaData.length, mapinfo.luaData.data.size()));
-    } else if(player->mapDataSent)
+    } else if(player->isMapSending())
     {
         // Don't send again
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
@@ -1088,7 +1088,9 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
             curPos += chunkSize;
             remainingSize -= chunkSize;
         }
-        player->mapDataSent = true;
+        // estimate time. max 60 chunks/s (currently limited by framerate), assume 50 (~25kb/s)
+        auto numChunks = (mapinfo.mapData.data.size() + mapinfo.luaData.data.size()) / MAP_PART_SIZE;
+        player->setMapSending(std::chrono::seconds(numChunks / 50 + 1));
     }
     return true;
 }
@@ -1110,13 +1112,13 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
       % mapinfo.mapChecksum % (checksumok ? "yes" : "no");
 
     // Send response. If map data was not sent yet, the client may retry
-    player->sendMsgAsync(new GameMessage_Map_ChecksumOK(checksumok, !player->mapDataSent));
+    player->sendMsgAsync(new GameMessage_Map_ChecksumOK(checksumok, !player->isMapSending()));
 
     LOG.writeToFile("SERVER >>> CLIENT%d: NMS_MAP_CHECKSUM(%d)\n") % unsigned(msg.senderPlayerID) % checksumok;
 
     if(!checksumok)
     {
-        if(player->mapDataSent)
+        if(player->isMapSending())
             KickPlayer(msg.senderPlayerID, NP_WRONGCHECKSUM, __LINE__);
     } else
     {
@@ -1133,7 +1135,7 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 
             // belegt markieren
             playerInfo.ps = PS_OCCUPIED;
-            player->setConnected();
+            player->setActive();
 
             // Servername senden
             player->sendMsgAsync(new GameMessage_Server_Name(config.gamename));
@@ -1550,11 +1552,11 @@ bool GameServer::OnGameMessage(const GameMessage_Player_SwapConfirm& msg)
     GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
     if(!player)
         return true;
-    for(std::vector<GameServerPlayer::PendingSwap>::iterator it = player->pendingSwaps.begin(); it != player->pendingSwaps.end(); ++it)
+    for(auto it = player->getPendingSwaps().begin(); it != player->getPendingSwaps().end(); ++it)
     {
-        if(it->playerId1 == msg.player && it->playerId2 == msg.player2)
+        if(it->first == msg.player && it->second == msg.player2)
         {
-            player->pendingSwaps.erase(it);
+            player->getPendingSwaps().erase(it);
             break;
         }
     }
@@ -1597,14 +1599,12 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
     if(oldPlayer)
         oldPlayer->playerId = player2;
     SendToAll(GameMessage_Player_Swap(player1, player2));
-    GameServerPlayer::PendingSwap pSwap;
-    pSwap.playerId1 = player1;
-    pSwap.playerId2 = player2;
+    const auto pSwap = std::make_pair(player1, player2);
     for(GameServerPlayer& player : networkPlayers)
     {
-        if(!player.isConnected())
+        if(!player.isActive())
             continue;
-        player.pendingSwaps.push_back(pSwap);
+        player.getPendingSwaps().push_back(pSwap);
     }
 }
 
@@ -1644,14 +1644,17 @@ int GameServer::GetTargetPlayer(const GameMessageWithPlayer& msg)
     {
         if(msg.player < playerInfos.size() && (msg.player == msg.senderPlayerID || IsHost(msg.senderPlayerID)))
         {
+            GameServerPlayer* networkPlayer = GetNetworkPlayer(msg.senderPlayerID);
+            if(networkPlayer->isActive())
+                return msg.player;
             unsigned result = msg.player;
             // Apply pending swaps
-            for(GameServerPlayer::PendingSwap& pSwap : GetNetworkPlayer(msg.senderPlayerID)->pendingSwaps) //-V522
+            for(auto& pSwap : networkPlayer->getPendingSwaps()) //-V522
             {
-                if(pSwap.playerId1 == result)
-                    result = pSwap.playerId2;
-                else if(pSwap.playerId2 == result)
-                    result = pSwap.playerId1;
+                if(pSwap.first == result)
+                    result = pSwap.second;
+                else if(pSwap.second == result)
+                    result = pSwap.first;
             }
             return result;
         }

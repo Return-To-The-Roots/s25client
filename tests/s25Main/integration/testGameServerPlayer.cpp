@@ -33,7 +33,7 @@ BOOST_FIXTURE_TEST_CASE(Ping, rttr::test::MockClockFixture)
     player.doPing();
     // Not connected
     BOOST_REQUIRE(player.sendQueue.empty());
-    player.setConnected();
+    player.setActive();
     player.doPing();
     // Cmd sent
     BOOST_REQUIRE(!player.sendQueue.empty());
