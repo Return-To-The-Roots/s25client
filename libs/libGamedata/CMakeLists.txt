@@ -11,50 +11,6 @@ AddDirectory(lua)
 FILE(GLOB SOURCES_OTHER *.cpp *.h)
 SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 
-################################################################################
-# LUA
-################################################################################
-
-# Here we set hints to lua libraries used for official builds Normally those should be
-# on the build server but we make them available here for convenience.
-# As this will be appended to CMAKE_PREFIX_PATH one can use other version by setting
-# that appropriately
-
-set(_contrib_lua_path ${CMAKE_SOURCE_DIR}/external/lua)
-
-if(MSVC)
-	# Library is in contrib archive which is in prefix path.
-	# We just need the includes (which we did not duplicate in the msvc-contrib
-	list(APPEND CMAKE_PREFIX_PATH ${_contrib_lua_path})
-elseif(WIN32 OR CYGWIN)
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set(_contrib_lua_libpath ${_contrib_lua_path}/win64)
-	elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-		set(_contrib_lua_libpath ${_contrib_lua_path}/win32)
-	endif()
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
-		set(_contrib_lua_libpath ${_contrib_lua_path}/lin32)
-	elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
-		set(_contrib_lua_libpath ${_contrib_lua_path}/lin64)
-	endif()
-elseif(APPLE)
-	set(_contrib_lua_libpath ${_contrib_lua_path}/mac)
-endif()
-
-# Set only if we have a library for this arch
-if(_contrib_lua_libpath)
-	if(NOT EXISTS ${_contrib_lua_path}/include/lua.h)
-		message(WARNING "Could not find lua.h in contrib")
-	endif()
-	# For cross compilation we must set CMAKE_FIND_ROOT_PATH instead
-	if(CMAKE_CROSSCOMPILING)
-		list(APPEND CMAKE_FIND_ROOT_PATH ${_contrib_lua_path} ${_contrib_lua_libpath})
-	else()
-		list(APPEND CMAKE_PREFIX_PATH ${_contrib_lua_path} ${_contrib_lua_libpath})
-	endif()
-endif()
-
 # CMake < 3.2 treats version 5.2.x as not equal to 5.2 but we want to allow all 5.2 versions
 find_package(Lua 5.2 EXACT REQUIRED)
 
