@@ -31,7 +31,7 @@ public:
     NetworkPlayer(unsigned playerId);
     virtual ~NetworkPlayer() {}
     /// Close the socket and clear queues
-    virtual void closeConnection(bool flushMsgsFirst);
+    virtual void closeConnection();
     /// Receive all waiting messages from the socket. Return false on error
     bool receiveMsgs();
     /// Send at most maxNumMsgs (if non-negative). Return false on error

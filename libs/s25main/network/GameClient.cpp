@@ -219,7 +219,7 @@ void GameClient::Stop()
         replayinfo.reset();
     }
 
-    mainPlayer.closeConnection(false);
+    mainPlayer.closeConnection();
 
     // clear jump target
     skiptogf = 0;

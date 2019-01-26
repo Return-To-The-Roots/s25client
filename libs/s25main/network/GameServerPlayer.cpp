@@ -35,65 +35,75 @@ int durationToInt(const T_Duration& duration)
 } // namespace
 
 GameServerPlayer::GameServerPlayer(unsigned id, const Socket& socket) //-V818
-    : NetworkPlayer(id), isPinging(false), ping(3), mapDataSent(false)
+    : NetworkPlayer(id), state_(JustConnectedState())
 {
-    connectTimer.start();
+    boost::get<JustConnectedState>(state_).timer.start();
     this->socket = socket;
 }
 
 GameServerPlayer::~GameServerPlayer() {}
 
-void GameServerPlayer::setConnected()
+void GameServerPlayer::setMapSending(std::chrono::seconds estimatedSendTime)
 {
-    connectTimer.stop();
+    MapSendingState state;
+    state.timer.start();
+    state.estimatedSendTime = estimatedSendTime;
+    state_ = state;
+}
+
+void GameServerPlayer::setActive()
+{
+    state_ = ActiveState(3);
 }
 
 void GameServerPlayer::doPing()
 {
-    if(isConnected() && !isPinging && (!pingTimer.isRunning() || pingTimer.getElapsed() >= seconds(PING_RATE)))
+    ActiveState* state = boost::get<ActiveState>(&state_);
+    if(state && !state->isPinging && (!state->pingTimer.isRunning() || state->pingTimer.getElapsed() >= seconds(PING_RATE)))
     {
-        isPinging = true;
-        pingTimer.restart();
+        state->isPinging = true;
+        state->pingTimer.restart();
         sendQueue.push(new GameMessage_Ping(0xFF));
     }
 }
 
 unsigned GameServerPlayer::calcPingTime()
 {
-    if(!isPinging)
+    ActiveState& state = boost::get<ActiveState>(state_);
+    if(!state.isPinging)
         return 0u;
-    int result = durationToInt(std::chrono::duration_cast<std::chrono::milliseconds>(pingTimer.getElapsed()));
-    isPinging = false;
-    pingTimer.restart();
+    int result = durationToInt(std::chrono::duration_cast<std::chrono::milliseconds>(state.pingTimer.getElapsed()));
+    state.isPinging = false;
+    state.pingTimer.restart();
     unsigned curPing = static_cast<unsigned>(std::max(1, result));
-    ping.add(curPing);
-    return ping.get();
+    state.ping.add(curPing);
+    return state.ping.get();
 }
 
 bool GameServerPlayer::hasTimedOut() const
 {
-    if(!isConnected())
-        return connectTimer.getElapsed() > seconds(CONNECT_TIMEOUT);
-    else if(isPinging)
-        return pingTimer.getElapsed() > seconds(PING_TIMEOUT);
-    else
-        return false;
+    return boost::apply_visitor(
+      composeVisitor([](const JustConnectedState& s) { return s.timer.getElapsed() > seconds(CONNECT_TIMEOUT); },
+                     [](const MapSendingState& s) { return s.timer.getElapsed() > seconds(CONNECT_TIMEOUT) + s.estimatedSendTime; },
+                     [](const ActiveState& s) { return s.isPinging && s.pingTimer.getElapsed() > seconds(PING_TIMEOUT); }),
+      state_);
 }
 
 unsigned GameServerPlayer::getLagTimeOut() const
 {
-    if(!lagTimer.isRunning())
+    const ActiveState& state = boost::get<ActiveState>(state_);
+    if(!state.lagTimer.isRunning())
         return LAG_TIMEOUT;
-    int timeout = durationToInt(std::chrono::duration_cast<seconds>(seconds(LAG_TIMEOUT) - lagTimer.getElapsed()));
+    int timeout = durationToInt(std::chrono::duration_cast<seconds>(seconds(LAG_TIMEOUT) - state.lagTimer.getElapsed()));
     return static_cast<unsigned>(std::max(0, timeout));
 }
 
 void GameServerPlayer::setLagging()
 {
-    lagTimer.restart();
+    boost::get<ActiveState>(state_).lagTimer.restart();
 }
 
 void GameServerPlayer::setNotLagging()
 {
-    lagTimer.stop();
+    boost::get<ActiveState>(state_).lagTimer.stop();
 }

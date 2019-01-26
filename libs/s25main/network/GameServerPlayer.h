@@ -24,18 +24,45 @@
 #include "Timer.h"
 #include "helpers/SmoothedValue.hpp"
 #include <queue>
+#include <variant.h>
 
 class Serializer;
 
 /// Player connected to the server
 class GameServerPlayer : public NetworkPlayer
 {
+    struct JustConnectedState
+    {
+        Timer timer;
+    };
+    struct MapSendingState
+    {
+        Timer timer;
+        std::chrono::seconds estimatedSendTime;
+    };
+    struct ActiveState
+    {
+        /// Are we waiting for a ping reply
+        bool isPinging;
+        /// Timer for the current sent ping command or the last received ping reply
+        Timer pingTimer;
+        /// Timer started when the player started lagging
+        Timer lagTimer;
+        helpers::SmoothedValue<unsigned> ping;
+        /// These swaps are yet to be confirmed by the client
+        std::vector<std::pair<unsigned, unsigned>> pendingSwaps;
+        ActiveState(unsigned maxSmoothValues) : isPinging(false), ping(maxSmoothValues) {}
+    };
+
 public:
     GameServerPlayer(unsigned id, const Socket& socket);
     ~GameServerPlayer();
 
-    void setConnected();
-    bool isConnected() const { return !connectTimer.isRunning(); }
+    void setMapSending(std::chrono::seconds estimatedSendTime);
+    void setActive();
+    bool isMapSending() const { return holds_alternative<MapSendingState>(state_); }
+    bool isActive() const { return holds_alternative<ActiveState>(state_); }
+
     /// Get seconds till the player gets kicked due to lag
     unsigned getLagTimeOut() const;
     /// Ping the player if required
@@ -50,25 +77,10 @@ public:
     /// Set player not lagging (anymore)
     void setNotLagging();
 
-private:
-    /// Running if the player is connecting (reserved slot)
-    Timer connectTimer;
-    /// Are we waiting for a ping reply
-    bool isPinging;
-    /// Timer for the current sent ping command or the last received ping reply
-    Timer pingTimer;
-    /// Timer started when the player started lagging
-    Timer lagTimer;
-    helpers::SmoothedValue<unsigned> ping;
+    auto& getPendingSwaps() { return boost::get<ActiveState>(state_).pendingSwaps; }
 
-public:
-    bool mapDataSent;
-    /// These swaps are yet to be confirmed by the client
-    struct PendingSwap
-    {
-        unsigned playerId1, playerId2;
-    };
-    std::vector<PendingSwap> pendingSwaps;
+private:
+    boost::variant<JustConnectedState, MapSendingState, ActiveState> state_;
 };
 
 #endif // GAMESERVERPLAYER_H_INCLUDED
