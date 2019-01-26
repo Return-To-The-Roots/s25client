@@ -1,4 +1,4 @@
 include(AddMacros)
 add_testcase(NAME common
-    LIBS s25Common
+    LIBS s25Common testHelpers
 )

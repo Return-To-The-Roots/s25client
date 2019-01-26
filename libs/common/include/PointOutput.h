@@ -24,7 +24,7 @@
 template<typename T>
 std::ostream& operator<<(std::ostream& out, const Point<T>& point)
 {
-    return out << "(" << point.x << ", " << point.y << ")";
+    return out << "(" << point.x * 1 << ", " << point.y * 1 << ")"; // *1 to convert chars to int
 }
 
 #endif // PointOutput_h__

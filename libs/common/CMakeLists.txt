@@ -28,8 +28,5 @@ if(WIN32)
     target_compile_definitions(s25Common PUBLIC NOMINMAX WIN32_LEAN_AND_MEAN)
 endif()
 
-# Pre-C++11/C99  UINT64_C macros
-target_compile_definitions(s25Common PUBLIC __STDC_CONSTANT_MACROS)
-
 include(EnableWarnings)
 enable_warnings(s25Common)

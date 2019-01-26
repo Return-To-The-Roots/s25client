@@ -20,6 +20,7 @@
 #pragma once
 
 #include "helpers/SimpleMultiArray.h"
+#include "libutil/warningSuppression.h"
 #include <array>
 #include <string>
 

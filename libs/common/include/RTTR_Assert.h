@@ -27,6 +27,18 @@
 #endif
 #endif // !RTTR_ENABLE_ASSERTS
 
+#ifdef _MSC_VER
+extern void __cdecl __debugbreak();
+#define RTTR_BREAKPOINT __debugbreak()
+#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+#define RTTR_BREAKPOINT __asm__ __volatile__("int $3\n\t")
+#elif !defined(WIN32)
+#include <csignal>
+#define RTTR_BREAKPOINT raise(SIGTRAP)
+#else
+#define RTTR_BREAKPOINT
+#endif
+
 void RTTR_AssertFailure(const char* condition, const char* file, int line, const char* function, bool throwException = true);
 bool RTTR_IsBreakOnAssertFailureEnabled();
 /// If true(default), a breakpoint is triggered on assert (if available)
@@ -41,29 +53,29 @@ extern bool RTTR_AssertEnableBreak;
     - RTTR_AssertNoThrow which does just logging and triggers a breakpoint but does not throw (e.g. for dtors)
  */
 #if RTTR_ENABLE_ASSERTS
-#define RTTR_Assert(cond)                                                      \
-    do                                                                         \
-    {                                                                          \
-        if(!(cond))                                                            \
-        {                                                                      \
-            if(RTTR_IsBreakOnAssertFailureEnabled())                           \
-            {                                                                  \
-                RTTR_BREAKPOINT;                                               \
-            }                                                                  \
-            RTTR_AssertFailure(#cond, __FILE__, __LINE__, RTTR_FUNCTION_NAME); \
-        }                                                                      \
+#define RTTR_Assert(cond)                                            \
+    do                                                               \
+    {                                                                \
+        if(!(cond))                                                  \
+        {                                                            \
+            if(RTTR_IsBreakOnAssertFailureEnabled())                 \
+            {                                                        \
+                RTTR_BREAKPOINT;                                     \
+            }                                                        \
+            RTTR_AssertFailure(#cond, __FILE__, __LINE__, __func__); \
+        }                                                            \
     } while(false)
-#define RTTR_AssertNoThrow(cond)                                                      \
-    do                                                                                \
-    {                                                                                 \
-        if(!(cond))                                                                   \
-        {                                                                             \
-            if(RTTR_IsBreakOnAssertFailureEnabled())                                  \
-            {                                                                         \
-                RTTR_BREAKPOINT;                                                      \
-            }                                                                         \
-            RTTR_AssertFailure(#cond, __FILE__, __LINE__, RTTR_FUNCTION_NAME, false); \
-        }                                                                             \
+#define RTTR_AssertNoThrow(cond)                                            \
+    do                                                                      \
+    {                                                                       \
+        if(!(cond))                                                         \
+        {                                                                   \
+            if(RTTR_IsBreakOnAssertFailureEnabled())                        \
+            {                                                               \
+                RTTR_BREAKPOINT;                                            \
+            }                                                               \
+            RTTR_AssertFailure(#cond, __FILE__, __LINE__, __func__, false); \
+        }                                                                   \
     } while(false)
 #else
 #define RTTR_Assert(cond)   \

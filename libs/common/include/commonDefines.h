@@ -42,22 +42,11 @@
 #if !defined(snprintf) && _MSC_VER < 1900
 #define snprintf _snprintf
 #endif
-extern void __cdecl __debugbreak();
-#define RTTR_BREAKPOINT __debugbreak()
-#else
-// Not Visual Studio
-#define RTTR_BREAKPOINT
 #endif
 
 typedef int socklen_t;
 #else
 // Non-Windows
-#if(defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
-#define RTTR_BREAKPOINT __asm__ __volatile__("int $3\n\t")
-#else
-#include <csignal>
-#define RTTR_BREAKPOINT raise(SIGTRAP)
-#endif
 #define SOCKET int
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
@@ -83,15 +72,6 @@ typedef int socklen_t;
 #include <libutil/warningSuppression.h>
 
 // IWYU pragma: end_exports
-
-// RTTR_FUNCTION_NAME evaluates to the name of the current function if supported
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 supports __func__ as a standard. */
-#define RTTR_FUNCTION_NAME __func__
-#elif((__GNUC__ >= 2) || defined(_MSC_VER))
-#define RTTR_FUNCTION_NAME __FUNCTION__
-#else
-#define RTTR_FUNCTION_NAME "<Unknown Func>"
-#endif
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && defined RTTR_CRTDBG
 // Check for heap corruption
