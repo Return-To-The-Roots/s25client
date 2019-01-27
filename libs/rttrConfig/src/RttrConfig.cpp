@@ -119,7 +119,12 @@ std::string RttrConfig::ExpandPath(const std::string& path) const
 
     outPath = bfs::absolute(outPath, prefixPath_);
     if(bfs::exists(outPath))
-        outPath = bfs::canonical(outPath);
+    {
+        boost::system::error_code ec;
+        auto canonicalPath = bfs::canonical(outPath, ec);
+        if(!ec)
+            outPath = canonicalPath;
+    }
     return outPath.make_preferred().string();
 }
 
