@@ -39,8 +39,8 @@ jobs:
           <<: *defApt
           packages: [*defPackages, g++-6]
     - <<: *linux-gcc6
-      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6 BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_ENABLE_COVERAGE=ON"
-      after_success: external/libutil/tools/ci/uploadCoverageData.sh '*/external/*' '*/tests/*'
+      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6 BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_ENABLE_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON"
+      after_success: tools/ci/uploadCoverageData.sh
     - &linux-clang
       # GCC6 headers required
       <<: *linux-gcc6
