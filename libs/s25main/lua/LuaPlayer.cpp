@@ -314,8 +314,10 @@ bool LuaPlayer::IsAttackable(unsigned char otherPlayerId)
 
 void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, const unsigned duration)
 {
-    Game& gameInst = *game.lock();
-    AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
+    auto gameInst = game.lock();
+    if(!gameInst)
+        return;
+    AIPlayer* ai = gameInst->GetAIPlayer(player.GetPlayerId());
     if(ai != nullptr)
     {
         AIInterface aii = ai->getAIInterface();
@@ -325,8 +327,10 @@ void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, cons
 
 void LuaPlayer::CancelPact(const PactType pt, unsigned char otherPlayerId)
 {
-    Game& gameInst = *game.lock();
-    AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
+    auto gameInst = game.lock();
+    if(!gameInst)
+        return;
+    AIPlayer* ai = gameInst->GetAIPlayer(player.GetPlayerId());
     if(ai != nullptr)
     {
         AIInterface aii = ai->getAIInterface();

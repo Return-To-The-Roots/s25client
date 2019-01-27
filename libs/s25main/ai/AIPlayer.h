@@ -52,6 +52,7 @@ public:
 
     // access to ais CommandFactory
     const AIInterface& getAIInterface() const { return aii; }
+    AIInterface& getAIInterface() { return aii; }
 
     /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
     const unsigned char playerId;
