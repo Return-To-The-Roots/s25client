@@ -362,14 +362,16 @@ bool LuaInterfaceGame::EventCancelPactRequest(PactType pt, unsigned char cancele
 void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
                                         const unsigned duration)
 {
-    Game& gameInst = *game.lock();
-    AIPlayer* ai = gameInst.GetAIPlayer(targetPlayerId);
+    auto gameInst = game.lock();
+    if(!gameInst)
+        return;
+    AIPlayer* ai = gameInst->GetAIPlayer(targetPlayerId);
     if(ai != nullptr)
     {
         kaguya::LuaRef onPactCancel = lua["onSuggestPact"];
         if(onPactCancel.type() == LUA_TFUNCTION)
         {
-            AIInterface aii = ai->getAIInterface();
+            AIInterface& aii = ai->getAIInterface();
             bool luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
             if(luaResult)
                 aii.AcceptPact(gw.GetEvMgr().GetCurrentGF(), pt, suggestedByPlayerId);
