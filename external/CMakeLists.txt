@@ -1,5 +1,5 @@
 include(RttrTestingCfg)
-option(RTTR_EXTERNAL_BUILD_TESTING "Enabe tests of external dependencies" OFF)
+option(RTTR_EXTERNAL_BUILD_TESTING "Enable tests of external dependencies" OFF)
 set(BUILD_TESTING ${RTTR_EXTERNAL_BUILD_TESTING})
 
 ################################################################################
