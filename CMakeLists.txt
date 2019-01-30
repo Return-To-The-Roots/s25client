@@ -218,16 +218,6 @@ endif()
 file(COPY "bugle" DESTINATION ".")
 file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
-# Building the updater when using non-default paths (especially absolute paths)
-# is not recommended as it most likely won't work
-set(RTTR_BUILD_UPDATER_DEF ON)
-foreach(curDirVar BINDIR DATADIR LIBDIR DOCDIR DRIVERDIR)
-    if(IS_ABSOLUTE ${RTTR_${curDirVar}})
-        set(RTTR_BUILD_UPDATER_DEF OFF)
-    endif()
-endforeach()
-option(RTTR_BUILD_UPDATER "Build auto-updater. Not advised when changing the default paths as the updater is configured specifically for the official builds." ${RTTR_BUILD_UPDATER_DEF})
-
 ################################################################################
 # Set variables used by the release scripts and the updater:
 #   PLATFORM_NAME in lowercase (windows, linux,...)
