@@ -1,172 +1,90 @@
-sudo: false
 language: cpp
 dist: trusty
-branches:
-    only:
-        - master
-
-os:
-    - linux
-
-compiler:
-    - clang
-    - g++
-
-env:
-    - BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
-    - BUILD_TYPE=Debug CXX_FLAGS=-std=c++11
-    - BUILD_TYPE=Release CXX_FLAGS=-std=c++03
-    - BUILD_TYPE=Release CXX_FLAGS=-std=c++11
+if: branch = master
 
 addons:
-    apt:
-        sources:
-            - boost-latest
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-3.5
-            - george-edison55-trusty-backports # cmake 3.2.3
-        packages:
-            - libboost-filesystem1.55-dev
-            - libboost-thread1.55-dev
-            - libboost-iostreams1.55-dev
-            - libboost-program-options1.55-dev
-            - libboost-system1.55-dev
-            - libboost-random1.55-dev
-            - libboost-test1.55-dev
-            - libboost-locale1.55-dev
-            - g++-4.8
-            - clang-3.5
-            - llvm-3.5
-            - libsdl1.2-dev
-            - libsdl-mixer1.2-dev
-            - libcurl4-openssl-dev
-            - libbz2-dev
-            - libminiupnpc-dev
-            - liblua5.2-dev
+  apt: &defApt
+    sources: &defSrcs
+      - ubuntu-toolchain-r-test
+    packages: &defPackages
+      - libsdl1.2-dev
+      - libsdl-mixer1.2-dev
+      - libsdl2-dev
+      - libsdl2-mixer-dev
+      - libcurl4-openssl-dev
+      - libbz2-dev
+      - libminiupnpc-dev
+      - liblua5.2-dev
+  homebrew:
+    packages:
+      - ccache
+      - sdl
+      - sdl_mixer
+      - gettext
+      - miniupnpc
 
 cache:
-    directories:
-        - ${TRAVIS_BUILD_DIR}/deps/cmake
+  - ccache
+  - directories:
+    - ${HOME}/.cache
 
-matrix:
-    include:
-        - os: osx
-          compiler: clang
-          install:
-              - brew update
-              - brew install sdl
-              - brew install sdl_mixer
-              - brew install gettext
-              - brew install miniupnpc
-              - brew link --force gettext
-              - command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-              - rvm get head || true # https://github.com/travis-ci/travis-ci/issues/6307
-              - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-              - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-              - |
-                CMAKE_URL="http://www.cmake.org/files/v2.8/cmake-2.8.12.2-Darwin64-universal.tar.gz"
-                mkdir cmake && travis_retry wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-                export PATH=${DEPS_DIR}/cmake/bin:${PATH}
-              - cd ${TRAVIS_BUILD_DIR}
-          #                                                             Travis libs are x64 only
-          env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03 ADDITIONAL_CMAKE_FLAGS="-DRTTR_NOi386=ON" GCOV="gcov"
-    exclude:
-        - compiler: clang
-          env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
-        - compiler: clang
-          env: BUILD_TYPE=Release CXX_FLAGS=-std=c++03
+jobs:
+  include:
+    - &linux-gcc6
+      os: linux
+      compiler: gcc
+      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" BUILD_TYPE=Release
+      addons:
+        apt:
+          <<: *defApt
+          packages: [*defPackages, g++-6]
+    - <<: *linux-gcc6
+      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6 BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_ENABLE_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON"
+      after_success: tools/ci/uploadCoverageData.sh
+    - &linux-clang
+      # GCC6 headers required
+      <<: *linux-gcc6
+      compiler: clang
+      env: BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS=-DRTTR_EXTERNAL_BUILD_TESTING=ON
+    - <<: *linux-clang
+      env: BUILD_TYPE=Release
+    - os: osx
+      compiler: clang
+      env: BUILD_TYPE=Debug
+    # Latest versions of Clang and GCC
+    - os: linux
+      compiler: gcc
+      env: MATRIX_EVAL="CXX=g++-8 && CC=gcc-8" BUILD_TYPE=Debug
+      addons:
+        apt:
+          <<: *defApt
+          packages: [*defPackages, g++-8]
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: [*defSrcs, llvm-toolchain-trusty-7]
+          packages: [*defPackages, g++-7, clang-7]
+      env: MATRIX_EVAL="CXX=clang++-7 && CC=clang-7" BUILD_TYPE=Debug
+
+before_install:
+  - eval "${MATRIX_EVAL}"
+  - DEPS_DIR="${HOME}/.cache"
+  - mkdir -p "${DEPS_DIR}"
 
 install:
-    - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-    - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-    # Use CMake 2.8.12 (same as build server)
-    - |
-        CMAKE_DIR="${DEPS_DIR}/cmake"
-        if [ -z "$(ls -A ${CMAKE_DIR})" ]; then
-            CMAKE_URL="https://cmake.org/files/v2.8/cmake-2.8.12.tar.gz"
-            mkdir cmakeSrc && travis_retry wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmakeSrc
-            cd cmakeSrc && ./bootstrap --prefix=${CMAKE_DIR} && make -j2 && make install && cd ..
-        fi
-        export PATH=${CMAKE_DIR}/bin:${PATH}
-    # Enable coverage analysis only in debug and for g++
-    - |
-        if [ "$CXX" = "g++" ] && [ "$BUILD_TYPE" = "Debug" ]; then
-            # GCov 4.6 cannot handle the file structure
-            export CXX="g++-4.8"
-            export GCOV="gcov-4.8"
-            
-            # Install newer lcov (1.9 seems to fail: http://gronlier.fr/blog/2015/01/adding-code-coverage-to-your-c-project/)
-            export LCOV_ROOT="${DEPS_DIR}/lcov"
-            LCOV_URL="http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz"
-            mkdir "$LCOV_ROOT" && travis_retry wget --quiet -O - ${LCOV_URL} | tar --strip-components=1 -xz -C $LCOV_ROOT
-            export PATH=${LCOV_ROOT}/bin:${PATH}
-            which lcov
-            
-            # Install coveralls tool
-            gem install coveralls-lcov
-            
-            # Enable
-            export RTTR_COVERAGE="1"
-            export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DRTTR_ENABLE_COVERAGE=ON"
-        else
-            export GCOV="gcov" # Just to have anything valid
-            export RTTR_COVERAGE="0"
-        fi
-    # C++11 requires gcc-4.8 or newer
-    - if [ "$CXX" = "g++" ] && [ "$CXX_FLAGS" = "-std=c++11" ]; then export CXX="g++-4.8"; export CC="gcc-4.8"; fi
-    # Use clang 3.5
-    - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.5"; export CC="clang-3.5"; fi
-    - cd ${TRAVIS_BUILD_DIR}
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew link gettext --force; fi
+  # Minimum requirements: CMake 3.8.2, Boost 1.64
+  - |
+    CMAKE_DIR="${DEPS_DIR}/cmake"
+    external/libutil/tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}"
+    export PATH="${CMAKE_DIR}/bin:${PATH}"
+  - |
+    BOOST_VERSION=1.64.0
+    BOOST_DIR="${DEPS_DIR}/boost${BOOST_VERSION}"
+    export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBOOST_ROOT=${BOOST_DIR} -DBoost_NO_SYSTEM_PATHS=ON"
+    external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_DIR}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
 
-before_script:
-    - "export DISPLAY=:99.0"
-    - |
-        if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-            ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )&
-        else
-            sh -e /etc/init.d/xvfb start
-        fi
-    - sleep 3 # give xvfb some time to start
- 
-script:
-    # Information
-    - cmake --version
-    - $CXX --version
-    - $GCOV --version
-    - lcov --version 2>/dev/null || true
-    # Fail if any command failed
-    - set -e
-    - mkdir -p build && cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DRTTR_ENABLE_WERROR=ON -DRTTR_EDITOR_ADMINMODE=ON -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" -G "Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
-    # Travis uses 2 cores
-    - make -j2
-    # Execute tests
-    - export CTEST_OUTPUT_ON_FAILURE=1
-    - export BOOST_TEST_CATCH_SYSTEM_ERRORS="no"
-    - export RTTR_DISABLE_ASSERT_BREAKPOINT=1
-    - make test
-    # Reset environment
-    - cd ..
-    - set +e
+before_script: source external/libutil/tools/ci/setupXServer.sh
 
-after_success:
-    # Coverage.io
-    - |
-        if [ "$RTTR_COVERAGE" = "1" ]; then
-            bash -c "find . -type f -name '*.gcno' -exec ${GCOV} -lpb {} +" || true
-            files=$(find . -type f -name '*.gcov' -not -path '*/conftest_*.c.gcov')
-            if [ "$files" != "" ]; then
-                bash <(curl -s https://codecov.io/bash) -f "$files"
-            fi
-        fi
-    # Coveralls
-    - |
-        if [ "$RTTR_COVERAGE" = "1" ]; then
-            lcov --gcov-tool $GCOV --directory build --capture --output-file coverage.info --rc lcov_branch_coverage=1 > /dev/null
-            # Remove everything from /usr (unrelated), contrib folder (3rd party data), test code and submodules
-            lcov --gcov-tool $GCOV --remove coverage.info '/usr/*' 'contrib/*' 'src/test/*' 's25edit/*' 'lib*/src/*' 'mygettext/*' 'version/*' --output-file coverage.info > /dev/null
-            # Debug output
-            lcov --list coverage.info
-            coveralls-lcov coverage.info
-        fi
-
+script: tools/ci/travisBuild.sh

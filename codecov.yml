@@ -1,8 +1,7 @@
 coverage:
     range: "65..95"
     ignore:
-        - contrib/*
-        - src/test/*
-        - s25edit/*
+        - external/*
+        - tests/*
 comment: false
 

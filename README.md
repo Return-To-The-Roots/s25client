@@ -15,12 +15,12 @@ Appveyor: [![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status
 
 Coverage:
 [![Coverage Status](https://coveralls.io/repos/github/Return-To-The-Roots/s25client/badge.svg?branch=master)](https://coveralls.io/github/Return-To-The-Roots/s25client?branch=master)
- / 
+ /
 [![codecov](https://codecov.io/gh/Return-To-The-Roots/s25client/branch/master/graph/badge.svg)](https://codecov.io/gh/Return-To-The-Roots/s25client)
 
 # How to install
 
-- Download the game for your OS at [siedler25.org](https://www.siedler25.org/index.php?com=dynamic&mod=2)
+- Download the game for your OS at [Downloads](https://www.rttr.info/index.php?com=dynamic&mod=2)
     - stable: Usually more stable
     - nightly: Latest features and bug fixes, but might be broken sometimes
 - Extract into a folder of your choice
@@ -34,22 +34,24 @@ Coverage:
 ## On Linux or Darwin/MacOSX
 
 ### Prerequisite Linux:
+- C++14 compatible compiler (e.g. GCC-6)
 - cmake
 - git
-- boost / libboost1.55-dev (i.e https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
+- boost / libboost1.64-dev (i.e http://www.boost.org/)
 - libsdl1.2-dev
 - libsdl-mixer1.2-dev
+- libsdl2-dev (optional)
+- libsdl-mixer2-dev (optional)
 - licurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
 - libminiupnpc-dev (linux)
-- liblua5.2-dev (linux, i.e from contrib)   
 Most of them can be installed with the package manager.
 
 ### Prerequisite MacOSX:
 - cmake
 - git
 - boost
-- sdl
+- sdl(2)
 - sdl_mixer
 - gettext (make sure it is in your path with e.g. `brew link --force gettext`)
 - miniupnpc
@@ -67,8 +69,8 @@ make
 ### Optimizations:
 There are various CMake options to control the build and optimization including ARM (Rasberry PI etc.) related ones. Examples:
 - RTTR_ENABLE_OPTIMIZATIONS/RTTR_ENABLE_WERROR
-- RTTR_OPTIMZATION_VECTOR_EXT (Non-Windows x86/x64 only)
-- RTTR_OPTIMZATION_TUNE (Non-Windows only)
+- RTTR_OPTIMIZATION_VECTOR_EXT (Non-Windows x86/x64 only)
+- RTTR_OPTIMIZATION_TUNE (Non-Windows only)
 - RTTR_TARGET_BOARD (ARM only)
 See the description in CMake-GUI/ccmake for details.
 
@@ -78,9 +80,9 @@ Note that due to the use of submodules you always need to `git pull && git submo
 ## On Windows
 
 ### Prerequisites:
-- cmake (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.cmake.org/download/)
-- boost (i.e from https://github.com/Return-To-The-Roots/contrib or http://www.boost.org/)
-- Visual Studio (at least 2010, you can get 2015 community for free)
+- cmake (i.e from http://www.cmake.org/download/)
+- boost (i.e from http://www.boost.org/)
+- Visual Studio (at least 2015, you can get the community edition for free)
 - Git Client (i.e TortoiseGit)
 
 ### Steps:
@@ -98,14 +100,14 @@ Note that due to the use of submodules you always need to `git pull && git submo
      - Rightclick on the newly created folder -> TortoiseGit-> Submodule Update
      - Make sure all modules are selected and "Initialize submodules (--init)" is checked
      - press OK
-- Extract contrib/full-contrib-msvc.rar to contrib 
-  (so that contrib/full-contrib-msvc/bin, contrib/full-contrib-msvc/include and contrib/full-contrib-msvc/lib exist)
+- Extract external/full-contrib-msvc.rar to external
+  (so that external/full-contrib-msvc/bin, external/full-contrib-msvc/include and external/full-contrib-msvc/lib exist)
 - If you havent installed boost, install boost
   Fast Way:
-  - extract boost-1.55.zip (i.e to contrib/boost, so that contrib/boost/bootstrap.bat exist)
+  - extract boost-1.64.zip (i.e to external/boost, so that external/boost/bootstrap.bat exist)
   - run that "bootstrap.bat"
   - run created "b2.exe": this should build boost
-    Notice: if you have multiple Visual Studio versions installed, use the latest one with the "toolset"-parameter. 
+    Notice: if you have multiple Visual Studio versions installed, use the latest one with the "toolset"-parameter.
     i.e "b2 toolset=msvc-14.0" for Visual Studio 2015
   - run "b2 install --prefix=%CD%": this should install everything so the system can find it
     Notice: Don't forget to add the toolset parameter if you already used it before
@@ -113,7 +115,7 @@ Note that due to the use of submodules you always need to `git pull && git submo
   - "Where is the source code": Select checked out directory
   - "Where to build the binaries": Select "build" directory (create if required)
   - Press configure
-  - Select your compiler version (i.e Visual Studio 2010 x86)
+  - Select your compiler version (i.e Visual Studio 2015 x64)
   - If it can't find boost:
     - "Add Entry"
     - Enter as "Name" "BOOST_ROOT" (exact casing!)
@@ -125,4 +127,4 @@ Note that due to the use of submodules you always need to `git pull && git submo
 
 --
 
-for advanced info or help see [FAQ in the wiki](https://github.com/Return-To-The-Roots/s25client/wiki/How-to-install-RttR) or http://www.rttr.info 
+for advanced info or help see [FAQ in the wiki](https://github.com/Return-To-The-Roots/s25client/wiki/How-to-install-RttR) or http://www.rttr.info

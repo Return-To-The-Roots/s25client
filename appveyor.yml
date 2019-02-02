@@ -2,7 +2,7 @@ version: 0.8.3.{build}
 branches:
   only:
   - master
-  
+
 image:
   - Visual Studio 2015
   - Visual Studio 2017
@@ -10,20 +10,21 @@ image:
 configuration:
   - Debug
   - Release
-  
+
 platform:
   - Win32
   - x64
 
 environment:
-  BOOST_ROOT: C:\Libraries\boost_1_60_0
+  BOOST_DIR: C:\Libraries\boost_1_65_1
   GENERATOR: Visual Studio 14 2015
   MSVC: 14.0
   RTTR_DISABLE_ASSERT_BREAKPOINT: 1
 
 matrix:
-  allow_failures:
-    - platform: x64 # Fails for some reason (Lua?)
+  fast_finish: true
+  exclude:
+    - # Reduce build time, also VS2017,x64,Release Fails for some reason (Lua?)
       configuration: Release
       image: Visual Studio 2017
 
@@ -32,32 +33,32 @@ for:
       only:
         - image: Visual Studio 2017
     environment:
-      BOOST_ROOT: C:\Libraries\boost_1_67_0
+      BOOST_DIR: C:\Libraries\boost_1_67_0
       GENERATOR: Visual Studio 15 2017
       MSVC: 14.1
 
 install:
   - dir C:\Libraries
   - appveyor-retry git submodule update --init
-  - cd contrib
+  - cd external
   - 7z x full-contrib-msvc.rar
   - cd ..
 
 before_build:
+  - if exist build\ (rmdir /S /Q build)
+  - set "INSTALL_DIR=%APPVEYOR_BUILD_FOLDER%\installed"
+  - if exist %INSTALL_DIR%\ (rmdir /S /Q %INSTALL_DIR%)
   - mkdir build
   - cd build
-  - if %platform% == Win32 (set BOOST_LIBDIR=lib32-msvc-%MSVC%) else ((set BOOST_LIBDIR=lib64-msvc-%MSVC%) && (set GENERATOR=%GENERATOR% Win64))
-  - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_ROOT%\%BOOST_LIBDIR%"
-  - cmake -G "%GENERATOR%" -DRTTR_ENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR%" ..
-  - cd ..
-    
-build:
+  - if %platform% == x64 (set "GENERATOR=%GENERATOR% Win64")
+  # Enable LTCG for release builds (speeds up linking as /GL compiled modules are used)
+  - if %configuration% == Release (set "cmakeFlags=-DCMAKE_EXE_LINKER_FLAGS=/LTCG -DCMAKE_SHARED_LINKER_FLAGS=/LTCG")
+  - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_DIR%"
+  - cmake -G "%GENERATOR%" -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DBOOST_ROOT="%BOOST_DIR%" %cmakeFlags% ..
 
-build_script:
-  - echo "Building for %configuration% on %platform%"
-  - msbuild /m /p:Configuration="%configuration%" /p:Platform="%platform%" /v:n build/s25client.sln
+build:
+  project: build/s25client.sln
+  parallel: true
 
 test_script:
-  - cd build
-  - ctest --output-on-failure -C %configuration%
-  - cd ..
+  - ctest --output-on-failure -C %configuration% --parallel 4

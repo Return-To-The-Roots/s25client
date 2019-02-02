@@ -1,6 +1,5 @@
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
-
 #sources
 *.txt text
 *.cmake text
@@ -19,32 +18,27 @@
 *.def text
 *.depend text
 INSTALL text
-
 # Compiled Object files
 *.slo binary
 *.lo binary
 *.o binary
 *.obj binary
-
 # Precompiled Headers
 *.gch binary
 *.pch binary
-
 # Compiled Dynamic libraries
 *.so binary
 *.dylib binary
 *.dll binary
-
 # Compiled Static libraries
 *.lai binary
 *.la binary
 *.a binary
 *.lib binary
-
 # Executables
 *.exe binary
 *.out binary
 *.app binary
-
 *.bat text eol=crlf
 *.sh text eol=lf
+*.rar filter=lfs diff=lfs merge=lfs -text
