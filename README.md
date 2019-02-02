@@ -65,6 +65,8 @@ mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```
+Note: by using the `-G` option of `cmake` you can specify a generator, e.g. `cmake -G Xcode -DCMAKE_BUILD_TYPE=Release ..` will generate an Xcode project. 
+Please check `cmake --help` for more options. 
 
 ### Optimizations:
 There are various CMake options to control the build and optimization including ARM (Rasberry PI etc.) related ones. Examples:
