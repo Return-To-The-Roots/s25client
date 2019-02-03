@@ -28,6 +28,7 @@ Coverage:
 - Copy the DATA and GFX folder from the original The Settlers II Gold into the folder containing the above file
 - Start `rttr.bat`/`rttr.sh` or the bundle (OSX only) to auto-update and start the game
     - Alternatively start `s25client` directly, but updates and music might be missing
+- WARNING: Do not use symlinks/junction points/... for subfolders of your installation. Putting RttR in a symlinked folder should work though.
 
 # How to build
 

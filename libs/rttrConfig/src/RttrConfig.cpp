@@ -117,14 +117,7 @@ std::string RttrConfig::ExpandPath(const std::string& path) const
     if(*outPath.begin() == "~")
         outPath = homePath / outPath.string().substr(2);
 
-    outPath = bfs::absolute(outPath, prefixPath_);
-    if(bfs::exists(outPath))
-    {
-        boost::system::error_code ec;
-        auto canonicalPath = bfs::canonical(outPath, ec);
-        if(!ec)
-            outPath = canonicalPath;
-    }
+    outPath = bfs::absolute(outPath, prefixPath_).lexically_normal();
     return outPath.make_preferred().string();
 }
 
