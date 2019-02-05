@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Point.h"
+#include "driver/VideoMode.h"
 #include "libutil/ProxySettings.h"
 #include "libutil/Singleton.h"
 #include <boost/optional.hpp>
@@ -59,7 +60,7 @@ public:
 
     struct
     {
-        Extent fullscreenSize, windowedSize;
+        VideoMode fullscreenSize, windowedSize;
         signed short vsync; // <0 for unlimited, 0 for HW Vsync
         bool fullscreen;
         bool vbo;

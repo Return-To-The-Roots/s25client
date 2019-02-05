@@ -47,9 +47,9 @@ public:
     IVideoDriver* GetDriver() const { return videodriver; }
 
     /// Erstellt das Fenster.
-    bool CreateScreen(unsigned short screen_width, unsigned short screen_height, bool fullscreen);
+    bool CreateScreen(VideoMode size, bool fullscreen);
     /// Verändert Auflösung, Fenster/Fullscreen
-    bool ResizeScreen(unsigned short screen_width, unsigned short screen_height, bool fullscreen);
+    bool ResizeScreen(VideoMode size, bool fullscreen);
     /// Viewport (neu) setzen
     void RenewViewport();
     /// zerstört das Fenster.
@@ -78,8 +78,10 @@ public:
 
     /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
     void* GetMapPointer() const;
-
-    Extent GetScreenSize() const;
+    /// Get the size/resolution of the window in screen coordinates
+    VideoMode GetWindowSize() const;
+    /// Get the renderer size in pixels
+    Extent GetRenderSize() const;
     bool IsFullscreen() const;
 
     bool IsLeftDown();

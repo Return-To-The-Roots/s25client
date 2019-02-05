@@ -40,6 +40,7 @@ public:
 
     bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) override;
     bool ResizeScreen(const VideoMode& newSize, bool fullscreen) override;
+
     void DestroyScreen() override;
 
     /// Swap the OpenGL buffer
@@ -67,6 +68,7 @@ public:
 private:
     void PrintError(const std::string& msg) const;
     void HandlePaste();
+    void UpdateCurrentSizes();
 
     SDL_Window* window;
     SDL_GLContext context;

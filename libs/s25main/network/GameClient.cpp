@@ -1571,7 +1571,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             // text oben noch hinschreiben
             boost::format nwfString(_("current GF: %u - still fast forwarding: %d GFs left (%d %%)"));
             nwfString % GetGFNumber() % (gf - i) % (i * 100 / gf);
-            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize() / 2u), nwfString.str(), FontStyle::CENTER, 0xFFFFFF00);
+            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize() / 2u), nwfString.str(), FontStyle::CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();
         }

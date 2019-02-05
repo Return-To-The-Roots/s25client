@@ -20,6 +20,7 @@
 #pragma once
 
 #include "KeyEvent.h"
+#include "Point.h"
 #include "VideoMode.h"
 #include <string>
 #include <vector>
@@ -72,8 +73,10 @@ public:
 
     /// Return true when right mouse button is pressed
     virtual bool GetMouseStateR() const = 0;
-
-    virtual VideoMode GetScreenSize() const = 0;
+    /// Get the size of the window in screen coordinates
+    virtual VideoMode GetWindowSize() const = 0;
+    /// Get the size of the render region in pixels
+    virtual Extent GetRenderSize() const = 0;
     virtual bool IsFullscreen() const = 0;
 
     /// Get state of the modifier keys
@@ -82,9 +85,9 @@ public:
     /// Get pointer to window (device-dependent!), HWND unter Windows
     virtual void* GetMapPointer() const = 0;
 
-    virtual bool IsInitialized() = 0;
+    virtual bool IsInitialized() const = 0;
     /// Shall we support OpenGL? (Disabled for tests)
-    virtual bool IsOpenGL() = 0;
+    virtual bool IsOpenGL() const = 0;
 };
 
 class VideoDriverLoaderInterface;

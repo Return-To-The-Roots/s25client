@@ -74,12 +74,12 @@ void Settings::LoadDefaults()
     // {
     if(VIDEODRIVER.IsLoaded())
     {
-        video.fullscreenSize = VIDEODRIVER.GetScreenSize();
-        video.windowedSize = VIDEODRIVER.IsFullscreen() ? Extent(800, 600) : video.fullscreenSize;
+        video.fullscreenSize = VIDEODRIVER.GetWindowSize();
+        video.windowedSize = VIDEODRIVER.IsFullscreen() ? VideoMode(800, 600) : video.fullscreenSize;
         video.fullscreen = VIDEODRIVER.IsFullscreen();
     } else
     {
-        video.windowedSize = video.fullscreenSize = Extent(800, 600);
+        video.windowedSize = video.fullscreenSize = VideoMode(800, 600);
         video.fullscreen = false;
     }
     video.vsync = 0;
@@ -195,17 +195,18 @@ void Settings::Load()
 
         // video
         // {
-        video.windowedSize.x = iniVideo->getValueI("windowed_width");
-        video.windowedSize.y = iniVideo->getValueI("windowed_height");
-        video.fullscreenSize.x = iniVideo->getValueI("fullscreen_width");
-        video.fullscreenSize.y = iniVideo->getValueI("fullscreen_height");
+        video.windowedSize.width = iniVideo->getValueI("windowed_width");
+        video.windowedSize.height = iniVideo->getValueI("windowed_height");
+        video.fullscreenSize.width = iniVideo->getValueI("fullscreen_width");
+        video.fullscreenSize.height = iniVideo->getValueI("fullscreen_height");
         video.fullscreen = (iniVideo->getValueI("fullscreen") != 0);
         video.vsync = iniVideo->getValueI("vsync");
         video.vbo = (iniVideo->getValueI("vbo") != 0);
         video.shared_textures = (iniVideo->getValueI("shared_textures") != 0);
         // };
 
-        if(video.fullscreenSize.x == 0 || video.fullscreenSize.y == 0 || video.windowedSize.x == 0 || video.windowedSize.y == 0)
+        if(video.fullscreenSize.width == 0 || video.fullscreenSize.height == 0 || video.windowedSize.width == 0
+           || video.windowedSize.height == 0)
             throw std::runtime_error("Invalid video settings");
 
         // language
@@ -336,10 +337,10 @@ void Settings::Save()
 
     // video
     // {
-    iniVideo->setValue("fullscreen_width", video.fullscreenSize.x);
-    iniVideo->setValue("fullscreen_height", video.fullscreenSize.y);
-    iniVideo->setValue("windowed_width", video.windowedSize.x);
-    iniVideo->setValue("windowed_height", video.windowedSize.y);
+    iniVideo->setValue("fullscreen_width", video.fullscreenSize.width);
+    iniVideo->setValue("fullscreen_height", video.fullscreenSize.height);
+    iniVideo->setValue("windowed_width", video.windowedSize.width);
+    iniVideo->setValue("windowed_height", video.windowedSize.height);
     iniVideo->setValue("fullscreen", (video.fullscreen ? 1 : 0));
     iniVideo->setValue("vsync", video.vsync);
     iniVideo->setValue("vbo", (video.vbo ? 1 : 0));

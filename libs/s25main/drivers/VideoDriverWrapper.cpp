@@ -88,11 +88,11 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
 
     isOglEnabled_ = videodriver->IsOpenGL();
     if(isOglEnabled_)
-        renderer_.reset(new OpenGLRenderer);
+        renderer_ = std::make_unique<OpenGLRenderer>();
     else
-        renderer_.reset(new DummyRenderer);
-    frameCtr_.reset(new FrameCounter);
-    frameLimiter_.reset(new FrameLimiter);
+        renderer_ = std::make_unique<DummyRenderer>();
+    frameCtr_ = std::make_unique<FrameCounter>();
+    frameLimiter_ = std::make_unique<FrameLimiter>();
 
     return true;
 }
@@ -119,7 +119,7 @@ void VideoDriverWrapper::UnloadDriver()
  *
  *  @return Bei Erfolg @p true ansonsten @p false
  */
-bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen)
+bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscreen)
 {
     if(!videodriver)
     {
@@ -131,7 +131,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     title << RTTR_Version::GetTitle() << " - " << RTTR_Version::GetReadableVersion();
 
     // Fenster erstellen
-    if(!videodriver->CreateScreen(title.str(), VideoMode(screen_width, screen_height), fullscreen))
+    if(!videodriver->CreateScreen(title.str(), size, fullscreen))
     {
         s25util::fatal_error("Could not create window!\n");
         return false;
@@ -145,7 +145,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     }
 
     // WindowManager informieren
-    WINDOWMANAGER.Msg_ScreenResize(Extent(screen_width, screen_height));
+    WINDOWMANAGER.Msg_ScreenResize(GetRenderSize());
 
     // VSYNC ggf abschalten/einschalten
     setHwVSync(SETTINGS.video.vsync == 0);
@@ -162,7 +162,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
  *
  *  @return Bei Erfolg @p true ansonsten @p false
  */
-bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const unsigned short screenHeight, const bool fullscreen)
+bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const bool fullscreen)
 {
     if(!videodriver)
     {
@@ -170,7 +170,7 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
         return false;
     }
 
-    const bool result = videodriver->ResizeScreen(VideoMode(screenWidth, screenHeight), fullscreen);
+    const bool result = videodriver->ResizeScreen(size, fullscreen);
 #ifdef _WIN32
     if(!videodriver->IsFullscreen())
     {
@@ -182,11 +182,7 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
             ShowWindow((HWND)GetMapPointer(), SW_RESTORE);
     }
 #endif
-
-    RenewViewport();
-
-    WINDOWMANAGER.Msg_ScreenResize(GetScreenSize());
-
+    WINDOWMANAGER.WindowResized();
     return result;
 }
 
@@ -382,18 +378,18 @@ void VideoDriverWrapper::RenewViewport()
     if(!videodriver->IsOpenGL())
         return;
 
-    const VideoMode screenSize = videodriver->GetScreenSize();
+    const Extent renderSize = videodriver->GetRenderSize();
 
     // Viewport mit widthxheight setzen
-    glViewport(0, 0, screenSize.width, screenSize.height);
-    glScissor(0, 0, screenSize.width, screenSize.height);
+    glViewport(0, 0, renderSize.x, renderSize.y);
+    glScissor(0, 0, renderSize.x, renderSize.y);
 
     // Orthogonale Matrix erstellen
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
     // 0,0 should be top left corner
-    glOrtho(0, screenSize.width, screenSize.height, 0, -100, 100);
+    glOrtho(0, renderSize.x, renderSize.y, 0, -100, 100);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -574,10 +570,18 @@ void* VideoDriverWrapper::GetMapPointer() const
     return videodriver->GetMapPointer();
 }
 
-Extent VideoDriverWrapper::GetScreenSize() const
+VideoMode VideoDriverWrapper::GetWindowSize() const
 {
-    VideoMode screenSize = videodriver->GetScreenSize();
-    return elMax(Extent(screenSize.width, screenSize.height), Extent(800, 600));
+    // Always return at least 800x600 even if real window is smaller
+    VideoMode windowSize = videodriver->GetWindowSize();
+    windowSize.width = std::max<unsigned>(800, windowSize.width);
+    windowSize.height = std::max<unsigned>(600, windowSize.height);
+    return windowSize;
+}
+
+Extent VideoDriverWrapper::GetRenderSize() const
+{
+    return videodriver->GetRenderSize();
 }
 
 bool VideoDriverWrapper::IsFullscreen() const

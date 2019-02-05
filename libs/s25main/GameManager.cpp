@@ -60,8 +60,8 @@ bool GameManager::Start()
     }
 
     // Fenster erstellen
-    Extent screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
-    if(!VIDEODRIVER.CreateScreen(screenSize.x, screenSize.y, SETTINGS.video.fullscreen))
+    const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
+    if(!VIDEODRIVER.CreateScreen(screenSize, SETTINGS.video.fullscreen))
         return false;
 
     /// Audiodriver laden

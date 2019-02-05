@@ -266,16 +266,16 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
 
     bool enteredWndMode = !screen || (isFullscreen_ && !fullscreen);
 
-    screenSize_ = (fullscreen) ? FindClosestVideoMode(newSize) : newSize;
+    auto windowSize  = (fullscreen) ? FindClosestVideoMode(newSize) : newSize;
 
     if(enteredWndMode)
         SDL_putenv(CENTER_ENV);
 
-    screen = SDL_SetVideoMode(screenSize_.width, screenSize_.height, 32,
+    screen = SDL_SetVideoMode(windowSize.width, windowSize.height, 32,
                               SDL_HWSURFACE | SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE));
     // Fallback to non-fullscreen
     if(!screen && fullscreen)
-        screen = SDL_SetVideoMode(screenSize_.width, screenSize_.height, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_RESIZABLE);
+        screen = SDL_SetVideoMode(windowSize.width, windowSize.height, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_RESIZABLE);
 
     if(enteredWndMode)
         SDL_putenv(UNCENTER_ENV);
@@ -288,6 +288,7 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
     }
 
     isFullscreen_ = (screen->flags & SDL_FULLSCREEN) != 0;
+    SetNewSize(windowSize, Extent(windowSize.width, windowSize.height));
 
 #ifdef _WIN32
     // Grabbing input in fullscreen is very buggy on windows. For one the mouse might jump (#806) which can be fixed by patching SDL:
@@ -394,18 +395,18 @@ bool VideoSDL::MessageLoop()
                 if((ev.active.state & SDL_APPACTIVE) && ev.active.gain && !isFullscreen_)
                 {
                     // Window was restored. We need a resize to avoid a black screen
-                    ResizeScreen(VideoMode(screenSize_.width, screenSize_.height), isFullscreen_);
-                    CallBack->ScreenResized(screenSize_.width, screenSize_.height);
+                    ResizeScreen(GetWindowSize(), isFullscreen_);
+                    CallBack->WindowResized();
                 }
                 break;
 
             case SDL_VIDEORESIZE:
             {
                 VideoMode newSize(ev.resize.w, ev.resize.h);
-                if(newSize != screenSize_)
+                if(newSize != GetWindowSize())
                 {
                     ResizeScreen(newSize, isFullscreen_);
-                    CallBack->ScreenResized(screenSize_.width, screenSize_.height);
+                    CallBack->WindowResized();
                 }
             }
             break;

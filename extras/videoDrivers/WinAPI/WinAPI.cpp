@@ -158,7 +158,7 @@ bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode& newSiz
     if(!RegisterAndCreateWindow(title, newSize, fullscreen))
         return false;
 
-    if(fullscreen && !MakeFullscreen(screenSize_))
+    if(fullscreen && !MakeFullscreen(GetWindowSize()))
         return false;
     isFullscreen_ = fullscreen;
 
@@ -191,12 +191,12 @@ bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     if(!initialized || !isWindowResizable)
         return false;
 
-    if(isFullscreen_ == fullscreen && newSize == screenSize_)
+    if(isFullscreen_ == fullscreen && newSize == GetWindowSize())
         return true;
 
     ShowWindow(screen, SW_HIDE);
 
-    VideoMode adjScreenSize = fullscreen ? FindClosestVideoMode(newSize) : newSize;
+    VideoMode windowSize = fullscreen ? FindClosestVideoMode(newSize) : newSize;
     // Try to switch full screen first
     if(isFullscreen_ && !fullscreen)
     {
@@ -204,7 +204,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, bool fullscreen)
             return false;
     } else if(isFullscreen_ || fullscreen)
     {
-        if(!MakeFullscreen(adjScreenSize))
+        if(!MakeFullscreen(windowSize))
             return false;
     }
 
@@ -213,12 +213,12 @@ bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     SetWindowLongPtr(screen, GWL_STYLE, style.first);
     SetWindowLongPtr(screen, GWL_EXSTYLE, style.second);
 
-    screenSize_ = adjScreenSize;
-    RECT wRect = CalculateWindowRect(isFullscreen_, screenSize_);
+    RECT wRect = CalculateWindowRect(isFullscreen_, windowSize);
 
     // Fenstergröße ändern
     UINT flags = SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED;
     SetWindowPos(screen, HWND_TOP, wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top, flags);
+    SetNewSize(windowSize, Extent(windowSize.width, windowSize.height));
 
     ShowWindow(screen, SW_SHOW);
     SetForegroundWindow(screen);
@@ -286,8 +286,8 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
         return false;
 
     // Create window
-    screenSize_ = fullscreen ? FindClosestVideoMode(wndSize) : wndSize;
-    RECT wRect = CalculateWindowRect(fullscreen, screenSize_);
+    auto adjWindowSize = fullscreen ? FindClosestVideoMode(wndSize) : wndSize;
+    RECT wRect = CalculateWindowRect(fullscreen, adjWindowSize);
 
     std::pair<DWORD, DWORD> style = GetStyleFlags(fullscreen);
     screen = CreateWindowExW(style.second, windowClassName.c_str(), wTitle.c_str(), style.first, wRect.left, wRect.top,
@@ -295,6 +295,8 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
 
     if(screen == nullptr)
         return false;
+
+    SetNewSize(adjWindowSize, Extent(adjWindowSize.width, adjWindowSize.height));
 
     SetClipboardViewer(screen);
 
@@ -625,12 +627,12 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             if(wParam != SIZE_MAXIMIZED && wParam != SIZE_RESTORED)
                 break;
             VideoMode newSize(LOWORD(lParam), HIWORD(lParam));
-            if(pVideoWinAPI->screenSize_ != newSize || pVideoWinAPI->isMinimized)
+            if(pVideoWinAPI->GetWindowSize() != newSize || pVideoWinAPI->isMinimized)
             {
-                pVideoWinAPI->screenSize_ = newSize;
+                pVideoWinAPI->SetNewSize(newSize, Extent(newSize.width, newSize.height));
 
                 pVideoWinAPI->isWindowResizable = false;
-                pVideoWinAPI->CallBack->ScreenResized(pVideoWinAPI->screenSize_.width, pVideoWinAPI->screenSize_.height);
+                pVideoWinAPI->CallBack->WindowResized();
                 pVideoWinAPI->isWindowResizable = true;
             }
             pVideoWinAPI->isMinimized = false;

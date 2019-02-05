@@ -86,7 +86,7 @@ public:
     void SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip);
 
     /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
-    void ScreenResized(unsigned short width, unsigned short height) override;
+    void WindowResized() override;
     /// Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
     // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfängt
     void Msg_ScreenResize(const Extent& newSize);
@@ -120,7 +120,7 @@ private:
     std::vector<IngameWindow*> nextWnds;
     Position lastMousePos;
     std::string curTooltip;
-    Extent screenSize; /// last valid screen size
+    Extent curRenderSize; /// current render size
 
     // Für Doppelklick merken:
     unsigned lastLeftClickTime; /// Zeit des letzten Links-Klicks

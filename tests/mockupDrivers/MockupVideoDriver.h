@@ -40,7 +40,7 @@ public:
     void SetMousePos(int x, int y) override;
     KeyEvent GetModKeyState() const override;
     void* GetMapPointer() const override;
-    bool IsOpenGL() override { return false; }
+    bool IsOpenGL() const override { return false; }
 
     KeyEvent modKeyState_;
     unsigned long tickCount_;

@@ -51,8 +51,8 @@ public:
     {
     public:
         DriverItem(const bfs::path& file, const std::string& name) : file(file), name(name) {}
-        const bfs::path& GetFile() { return file; }
-        const std::string& GetName() { return name; }
+        const bfs::path& GetFile() const { return file; }
+        const std::string& GetName() const { return name; }
 
     private:
         bfs::path file;

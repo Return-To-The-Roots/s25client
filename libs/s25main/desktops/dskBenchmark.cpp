@@ -138,7 +138,7 @@ void dskBenchmark::Msg_PaintAfter()
 void dskBenchmark::SetActive(bool activate)
 {
     if(!IsActive() && activate)
-        VIDEODRIVER.ResizeScreen(1600, 900, false);
+        VIDEODRIVER.ResizeScreen(VideoMode(1600, 900), false);
     dskMenuBase::SetActive(activate);
 }
 
@@ -178,7 +178,7 @@ void dskBenchmark::startTest(Test test)
         }
         case TEST_PRIMITIVES:
         {
-            Extent screenSize = VIDEODRIVER.GetScreenSize();
+            Extent screenSize = VIDEODRIVER.GetRenderSize();
             std::uniform_int_distribution<unsigned> distSize(5, 50);
             std::uniform_int_distribution<unsigned> distClr(0, 0xFF);
             std::uniform_int_distribution<unsigned> distrMove(10, 50);
@@ -272,7 +272,7 @@ void dskBenchmark::startTest(Test test)
         }
     }
     if(game_)
-        gameView_.reset(new GameView(game_->world, VIDEODRIVER.GetScreenSize()));
+        gameView_.reset(new GameView(game_->world, VIDEODRIVER.GetRenderSize()));
     VIDEODRIVER.GetRenderer()->synchronize();
     VIDEODRIVER.setTargetFramerate(-1);
     curTest_ = test;

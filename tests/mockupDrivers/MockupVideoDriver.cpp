@@ -76,7 +76,7 @@ bool MockupVideoDriver::CreateScreen(const std::string& /*title*/, const VideoMo
 
 bool MockupVideoDriver::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 {
-    screenSize_ = newSize;
+    SetNewSize(newSize, Extent(newSize.width, newSize.height));
     isFullscreen_ = fullscreen;
     return true;
 }

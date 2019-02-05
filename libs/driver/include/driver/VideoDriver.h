@@ -31,7 +31,7 @@ class VideoDriver : public IVideoDriver
 public:
     VideoDriver(VideoDriverLoaderInterface* CallBack);
 
-    ~VideoDriver() override {}
+    ~VideoDriver() override = default;
 
     /// Funktion zum Auslesen der Mauskoordinaten.
     void GetMousePos(int& x, int& y) const override;
@@ -42,21 +42,26 @@ public:
     /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
     bool GetMouseStateR() const override;
 
-    VideoMode GetScreenSize() const override { return screenSize_; }
-    bool IsFullscreen() const override { return isFullscreen_; }
+    VideoMode GetWindowSize() const override final { return windowSize_; }
+    Extent GetRenderSize() const override final { return renderSize_; }
+    bool IsFullscreen() const override final { return isFullscreen_; }
 
     /// prüft auf Initialisierung.
-    bool IsInitialized() override { return initialized; }
-    bool IsOpenGL() override { return true; }
+    bool IsInitialized() const override final { return initialized; }
+    bool IsOpenGL() const override { return true; }
 
 protected:
     VideoMode FindClosestVideoMode(const VideoMode& mode) const;
+    void SetNewSize(VideoMode windowSize, Extent renderSize);
 
     VideoDriverLoaderInterface* CallBack; /// Das DriverCallback für Rückmeldungen.
     bool initialized;                     /// Initialisierungsstatus.
     MouseCoords mouse_xy;                 /// Status der Maus.
     std::array<bool, 512> keyboard;       /// Status der Tastatur;
-    VideoMode screenSize_;
-    bool isFullscreen_; /// Vollbild an/aus?
+    bool isFullscreen_;                   /// Vollbild an/aus?
+private:
+    // cached as possibly used often
+    VideoMode windowSize_;
+    Extent renderSize_;
 };
 #endif // !VIDEODRIVER_H_INCLUDED
