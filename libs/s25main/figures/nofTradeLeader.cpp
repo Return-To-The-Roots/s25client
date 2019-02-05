@@ -32,7 +32,7 @@
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos,
                                const MapPoint goalPos)
-    : noFigure(JOB_HELPER, pos, player), tr(tr), successor(nullptr), homePos(homePos), goalPos(goalPos)
+    : noFigure(JOB_SCOUT, pos, player), tr(tr), successor(nullptr), homePos(homePos), goalPos(goalPos)
 {}
 
 nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)

@@ -1416,24 +1416,28 @@ bool nobBaseWarehouse::IsDependentFigure(noFigure* fig) const
 /// Available goods of a specific type that can be used for trading
 unsigned nobBaseWarehouse::GetAvailableWaresForTrading(const GoodType gt) const
 {
-    // We need a helper as leader
-    if(!inventory[JOB_HELPER])
+    // We need a scout as leader or a bow to recruit
+    bool noScoutAvailable = !inventory[JOB_SCOUT];
+    if(noScoutAvailable && !CanRecruit(JOB_SCOUT))
         return 0;
 
-    return min(inventory[gt], inventory[JOB_PACKDONKEY]);
+    if(noScoutAvailable && gt == GD_BOW)
+        return min(inventory[GD_BOW] - 1, inventory[JOB_PACKDONKEY]); // need one for recruitment
+    else
+        return min(inventory[gt], inventory[JOB_PACKDONKEY]);
 }
 
 /// Available figures of a speciefic type that can be used for trading
 unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 {
-    // We need a helper as leader
-    if(!inventory[JOB_HELPER])
+    // We need a scout as leader or a bow to recruit
+    if(!inventory[JOB_SCOUT] && !CanRecruit(JOB_SCOUT))
         return 0;
 
-    if(job == JOB_HELPER)
-        return (inventory[JOB_HELPER] - 1) / 2; // need one as leader
+    if(job == JOB_SCOUT)
+        return inventory[JOB_SCOUT] - 1; // need one as leader
     else
-        return min(inventory[job], inventory[JOB_HELPER] - 1);
+        return inventory[job];
 }
 
 /// Starts a trade caravane from this warehouse
@@ -1459,8 +1463,8 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, Job job, const unsi
 
     GamePlayer& owner = gwg->GetPlayer(player);
     // Remove leader
-    inventory.real.Remove(JOB_HELPER);
-    owner.DecreaseInventoryJob(JOB_HELPER, 1);
+    inventory.real.Remove(JOB_SCOUT);
+    owner.DecreaseInventoryJob(JOB_SCOUT, 1);
 
     // Also diminish the count of donkeys
     if(job == JOB_NOTHING)
