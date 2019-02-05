@@ -568,13 +568,13 @@ OpenGL_Loader_Proc VideoSDL::GetLoaderFunction() const
  *  @param[in] x X-Koordinate
  *  @param[in] y Y-Koordinate
  */
-void VideoSDL::SetMousePos(int x, int y)
+void VideoSDL::SetMousePos(Position pos)
 {
     if(SDL_GetAppState() & SDL_APPMOUSEFOCUS)
     {
-        mouse_xy.pos.x = x;
-        mouse_xy.pos.y = y;
-        SDL_WarpMouse(x, y);
+        pos = elMax(pos, Position::all(0));
+        mouse_xy.pos = pos;
+        SDL_WarpMouse(pos.x, pos.y);
     }
 }
 

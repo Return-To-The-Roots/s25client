@@ -63,16 +63,16 @@ public:
     virtual void ListVideoModes(std::vector<VideoMode>& video_modes) const = 0;
 
     /// Funktion zum Auslesen der Mauskoordinaten.
-    virtual void GetMousePos(int& x, int& y) const = 0;
+    virtual Position GetMousePos() const = 0;
 
     /// Funktion zum Setzen der Mauskoordinaten.
-    virtual void SetMousePos(int x, int y) = 0;
+    virtual void SetMousePos(Position pos) = 0;
 
     /// Return true when left mouse button is pressed
     virtual bool GetMouseStateL() const = 0;
-
     /// Return true when right mouse button is pressed
     virtual bool GetMouseStateR() const = 0;
+
     /// Get the size of the window in screen coordinates
     virtual VideoMode GetWindowSize() const = 0;
     /// Get the size of the render region in pixels

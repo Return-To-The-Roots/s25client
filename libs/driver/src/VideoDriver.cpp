@@ -35,16 +35,9 @@ VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
 
-/**
- *  Funktion zum Auslesen der Mauskoordinaten.
- *
- *  @param[out] x X-Koordinate
- *  @param[out] y Y-Koordinate
- */
-void VideoDriver::GetMousePos(int& x, int& y) const
+Position VideoDriver::GetMousePos() const
 {
-    x = mouse_xy.pos.x;
-    y = mouse_xy.pos.y;
+    return mouse_xy.pos;
 }
 
 /**

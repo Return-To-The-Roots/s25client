@@ -410,7 +410,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
 iwAction::~iwAction()
 {
     if(mousePosAtOpen_.isValid())
-        VIDEODRIVER.SetMousePos(mousePosAtOpen_.x, mousePosAtOpen_.y);
+        VIDEODRIVER.SetMousePos(mousePosAtOpen_);
     gi.GI_WindowClosed(this);
 }
 

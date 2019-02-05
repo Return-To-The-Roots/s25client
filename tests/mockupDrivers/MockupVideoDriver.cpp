@@ -98,9 +98,9 @@ OpenGL_Loader_Proc MockupVideoDriver::GetLoaderFunction() const
 
 void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& /*video_modes*/) const {}
 
-void MockupVideoDriver::SetMousePos(int x, int y)
+void MockupVideoDriver::SetMousePos(Position pos)
 {
-    mouse_xy.pos = Position(x, y);
+    mouse_xy.pos = pos;
 }
 
 KeyEvent MockupVideoDriver::GetModKeyState() const

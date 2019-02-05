@@ -34,7 +34,7 @@ public:
     ~VideoDriver() override = default;
 
     /// Funktion zum Auslesen der Mauskoordinaten.
-    void GetMousePos(int& x, int& y) const override;
+    Position GetMousePos() const override;
 
     /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
     bool GetMouseStateL() const override;

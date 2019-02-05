@@ -430,10 +430,10 @@ OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
     return SDL_GL_GetProcAddress;
 }
 
-void VideoSDL2::SetMousePos(int x, int y)
+void VideoSDL2::SetMousePos(Position pos)
 {
-    mouse_xy.pos = Position(x, y);
-    SDL_WarpMouseInWindow(window, x, y);
+    mouse_xy.pos = pos;
+    SDL_WarpMouseInWindow(window, pos.x, pos.y);
 }
 
 KeyEvent VideoSDL2::GetModKeyState() const

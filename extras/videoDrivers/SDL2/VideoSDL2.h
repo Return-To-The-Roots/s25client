@@ -57,7 +57,7 @@ public:
     void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
 
     /// Set mouse position
-    void SetMousePos(int x, int y) override;
+    void SetMousePos(Position pos) override;
 
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const override;

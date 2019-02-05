@@ -977,7 +977,7 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
     return 0;
 }
 
-void dskGameInterface::ShowRoadWindow(const DrawPoint& mousePos)
+void dskGameInterface::ShowRoadWindow(const Position& mousePos)
 {
     roadwindow = new iwRoadWindow(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos);
     WINDOWMANAGER.Show(roadwindow, true);

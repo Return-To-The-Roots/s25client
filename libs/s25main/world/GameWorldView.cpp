@@ -125,7 +125,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     SetNextZoomFactor();
 
     int shortestDistToMouse = 100000;
-    Position mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
+    Position mousePos = VIDEODRIVER.GetMousePos();
     mousePos -= Position(origin_);
 
     glScissor(origin_.x, VIDEODRIVER.GetRenderSize().y - origin_.y - size_.y, size_.x, size_.y);

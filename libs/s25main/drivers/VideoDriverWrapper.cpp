@@ -497,23 +497,11 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
     return videodriver->GetLoaderFunction()(extension.c_str());
 }
 
-int VideoDriverWrapper::GetMouseX() const
-{
-    return GetMousePos().x;
-}
-
-int VideoDriverWrapper::GetMouseY() const
-{
-    return GetMousePos().y;
-}
-
 Position VideoDriverWrapper::GetMousePos() const
 {
     if(!videodriver)
         return Position::Invalid();
-    Position result;
-    videodriver->GetMousePos(result.x, result.y);
-    return result;
+    return videodriver->GetMousePos();
 }
 
 bool VideoDriverWrapper::IsLeftDown()
@@ -532,20 +520,12 @@ bool VideoDriverWrapper::IsRightDown()
     return videodriver->GetMouseStateR();
 }
 
-/**
- *  setzt die Mausposition
- */
-void VideoDriverWrapper::SetMousePos(const int x, const int y)
-{
-    SetMousePos(Position(x, y));
-}
-
 void VideoDriverWrapper::SetMousePos(const Position& newPos)
 {
     if(!videodriver || !SETTINGS.global.smartCursor)
         return;
 
-    videodriver->SetMousePos(newPos.x, newPos.y);
+    videodriver->SetMousePos(newPos);
 }
 
 /**

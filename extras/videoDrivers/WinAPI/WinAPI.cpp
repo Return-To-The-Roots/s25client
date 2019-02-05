@@ -500,14 +500,13 @@ void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
  *  @param[in] x X-Koordinate
  *  @param[in] y Y-Koordinate
  */
-void VideoWinAPI::SetMousePos(int x, int y)
+void VideoWinAPI::SetMousePos(Position pos)
 {
     if(GetActiveWindow())
     {
-        mouse_xy.pos.x = x;
-        mouse_xy.pos.y = y;
+        mouse_xy.pos = pos;
 
-        POINT p = {x, y};
+        POINT p = {pos.x, pos.y};
         ClientToScreen(screen, &p);
         SetCursorPos(p.x, p.y);
     }

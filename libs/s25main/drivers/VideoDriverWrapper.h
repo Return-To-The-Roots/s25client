@@ -67,10 +67,7 @@ public:
     void SwapBuffers();
     /// Clears the screen (glClear)
     void ClearScreen();
-    // liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, für alles andere die Mausmessages
-    // benutzen!!!)
-    int GetMouseX() const;
-    int GetMouseY() const;
+    // Should only be used to draw the mouse. For everything else use the events
     Position GetMousePos() const;
 
     /// Listet verfügbare Videomodi auf
@@ -87,7 +84,6 @@ public:
     bool IsLeftDown();
     bool IsRightDown();
     // setzt den Mausstatus
-    void SetMousePos(int x, int y);
     void SetMousePos(const Position& newPos);
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const;
