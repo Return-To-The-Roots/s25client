@@ -13,5 +13,7 @@ stdenv.mkDerivation {
     miniupnpc
     SDL
     SDL_mixer
+    SDL2
+    SDL2_mixer
   ];
 }
