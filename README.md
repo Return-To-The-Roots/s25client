@@ -58,10 +58,14 @@ Most of them can be installed with the package manager.
 - miniupnpc
 All of them can be installed via homebrew
 
+### Prerequesites with Nix
+Nix users can open a nix-shell to get a development environment with all packages ready.
+
 ### Steps:
 ```
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
+nix-shell # Optional, for Nix users only
 mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
