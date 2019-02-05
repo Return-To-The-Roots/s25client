@@ -28,6 +28,7 @@ Coverage:
 - Copy the DATA and GFX folder from the original The Settlers II Gold into the folder containing the above file
 - Start `rttr.bat`/`rttr.sh` or the bundle (OSX only) to auto-update and start the game
     - Alternatively start `s25client` directly, but updates and music might be missing
+- WARNING: Do not use symlinks/junction points/... for subfolders of your installation. Putting RttR in a symlinked folder should work though.
 
 # How to build
 
@@ -57,10 +58,14 @@ Most of them can be installed with the package manager.
 - miniupnpc
 All of them can be installed via homebrew
 
+### Prerequesites with Nix
+Nix users can open a nix-shell to get a development environment with all packages ready.
+
 ### Steps:
 ```
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
+nix-shell # Optional, for Nix users only
 mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make

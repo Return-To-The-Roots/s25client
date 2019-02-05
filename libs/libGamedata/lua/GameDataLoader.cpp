@@ -30,7 +30,7 @@
 #include <stdexcept>
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)
-    : worldDesc_(worldDesc), basePath_(bfs::canonical(basePath).make_preferred().string()), curIncludeDepth_(0), errorInIncludeFile_(false)
+    : worldDesc_(worldDesc), basePath_(bfs::path(basePath).lexically_normal().make_preferred().string()), curIncludeDepth_(0), errorInIncludeFile_(false)
 {
     Register(lua);
 
@@ -38,17 +38,9 @@ GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& b
     lua["include"] = kaguya::function([this](const std::string& file) { Include(file); });
 }
 
-GameDataLoader::GameDataLoader(WorldDescription& worldDesc)
-    : worldDesc_(worldDesc), basePath_(bfs::canonical(RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world").make_preferred().string()),
-      curIncludeDepth_(0), errorInIncludeFile_(false)
-{
-    Register(lua);
+GameDataLoader::GameDataLoader(WorldDescription& worldDesc) : GameDataLoader(worldDesc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world") {}
 
-    lua["rttr"] = this;
-    lua["include"] = kaguya::function([this](const std::string& file) { Include(file); });
-}
-
-GameDataLoader::~GameDataLoader() {}
+GameDataLoader::~GameDataLoader() = default;
 
 bool GameDataLoader::Load()
 {
@@ -84,7 +76,7 @@ void GameDataLoader::Include(const std::string& filepath)
     bfs::path absFilePath = bfs::absolute(filepath, bfs::path(curFile_).parent_path());
     if(!bfs::is_regular_file(absFilePath))
         throw std::runtime_error("Cannot find include file '" + filepath + "'!");
-    absFilePath = bfs::canonical(absFilePath).make_preferred();
+    absFilePath = absFilePath.lexically_normal().make_preferred();
     std::string cleanedFilepath = absFilePath.string();
     if(cleanedFilepath.find(basePath_) == std::string::npos)
         throw std::runtime_error("Cannot load include file '" + filepath + "' outside the lua data directory!");

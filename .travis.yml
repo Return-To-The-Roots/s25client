@@ -28,45 +28,6 @@ cache:
   - directories:
     - ${HOME}/.cache
 
-jobs:
-  include:
-    - &linux-gcc6
-      os: linux
-      compiler: gcc
-      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" BUILD_TYPE=Release
-      addons:
-        apt:
-          <<: *defApt
-          packages: [*defPackages, g++-6]
-    - <<: *linux-gcc6
-      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6 BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_ENABLE_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON"
-      after_success: tools/ci/uploadCoverageData.sh
-    - &linux-clang
-      # GCC6 headers required
-      <<: *linux-gcc6
-      compiler: clang
-      env: BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS=-DRTTR_EXTERNAL_BUILD_TESTING=ON
-    - <<: *linux-clang
-      env: BUILD_TYPE=Release
-    - os: osx
-      compiler: clang
-      env: BUILD_TYPE=Debug
-    # Latest versions of Clang and GCC
-    - os: linux
-      compiler: gcc
-      env: MATRIX_EVAL="CXX=g++-8 && CC=gcc-8" BUILD_TYPE=Debug
-      addons:
-        apt:
-          <<: *defApt
-          packages: [*defPackages, g++-8]
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: [*defSrcs, llvm-toolchain-trusty-7]
-          packages: [*defPackages, g++-7, clang-7]
-      env: MATRIX_EVAL="CXX=clang++-7 && CC=clang-7" BUILD_TYPE=Debug
-
 before_install:
   - eval "${MATRIX_EVAL}"
   - DEPS_DIR="${HOME}/.cache"
@@ -88,3 +49,47 @@ install:
 before_script: source external/libutil/tools/ci/setupXServer.sh
 
 script: tools/ci/travisBuild.sh
+
+jobs:
+  include:
+    - &linux-gcc6
+      os: linux
+      compiler: gcc
+      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" BUILD_TYPE=Release
+      addons:
+        apt:
+          <<: *defApt
+          packages: [*defPackages, g++-6]
+    # With coverage and external tests
+    - <<: *linux-gcc6
+      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6 BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON"
+      after_success: tools/ci/uploadCoverageData.sh
+    - &linux-clang
+      # GCC6 headers required
+      <<: *linux-gcc6
+      compiler: clang
+      env: BUILD_TYPE=Release
+    - <<: *linux-clang
+      env: BUILD_TYPE=Debug
+    - os: osx
+      compiler: clang
+      env: BUILD_TYPE=Debug
+    # Latest version GCC with static analysis
+    - os: linux
+      compiler: gcc
+      env: MATRIX_EVAL="CXX=g++-8 && CC=gcc-8" BUILD_TYPE=Debug
+      addons:
+        apt:
+          <<: *defApt
+          packages: [*defPackages, g++-8]
+      script:
+        - tools/ci/staticValidation.sh "$(pwd)"
+        - tools/ci/travisBuild.sh
+    # Latest Clang with externals
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: [*defSrcs, llvm-toolchain-trusty-7]
+          packages: [*defPackages, g++-7, clang-7]
+      env: MATRIX_EVAL="CXX=clang++-7 && CC=clang-7" BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON"
