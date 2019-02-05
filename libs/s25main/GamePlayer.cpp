@@ -2240,13 +2240,6 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
             // Add to cache for future searches
             TradePathCache::inst().AddEntry(*gwg, tr.GetTradePath(), GetPlayerId());
 
-            // try to get possible trade leader (scout from warehouse)
-            unsigned numScouts = wh->GetNumRealFigures(JOB_SCOUT);
-            if(numScouts == 0 && !wh->TryRecruitJob(JOB_SCOUT))
-            {
-                continue;
-            }
-
             wh->StartTradeCaravane(gt, job, available, tr, goalWh);
             count -= available;
             if(count == 0)

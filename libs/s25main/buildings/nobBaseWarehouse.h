@@ -132,14 +132,14 @@ protected:
     void TryStopRecruiting();
     /// Aktuellen Warenbestand zur aktuellen Inventur dazu addieren
     void AddToInventory();
+    /// Recruts a worker of the given job if possible
+    bool TryRecruitJob(const Job job);
 
     nobBaseWarehouse(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
     nobBaseWarehouse(SerializedGameData& sgd, unsigned obj_id);
 
 public:
     void Clear();
-    /// Recruts a worker of the given job if possible
-    bool TryRecruitJob(const Job job);
 
     ~nobBaseWarehouse() override;
 
