@@ -20,6 +20,7 @@
 #include "EventManager.h"
 #include "GameObject.h"
 #include "GamePlayer.h"
+#include "Loader.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "nofTradeDonkey.h"
@@ -125,7 +126,8 @@ void nofTradeLeader::AbrogateWorkplace() {}
 
 void nofTradeLeader::Draw(DrawPoint drawPt)
 {
-    DrawWalking(drawPt);
+    DrawWalking(drawPt, LOADER.GetBobN("jobs"), JOB_CONSTS[JOB_SCOUT].jobs_bob_id + NATION_RTTR_TO_S2[gwg->GetPlayer(player).nation] * 6,
+                false);
 }
 
 void nofTradeLeader::LostWork() {}
