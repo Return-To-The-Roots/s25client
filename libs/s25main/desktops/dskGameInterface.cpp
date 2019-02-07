@@ -104,7 +104,7 @@ enum
 dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, const std::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx,
                                    bool initOGL)
     : Desktop(nullptr), game_(game), nwfInfo_(nwfInfo), worldViewer(playerIdx, game->world),
-      gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(nullptr),
+      gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(nullptr),
       roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
     road.mode = RM_DISABLED;
@@ -133,7 +133,7 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, const std::shared
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(nullptr));
     cbb.loadEdges(LOADER.GetInfoN("resource"));
-    cbb.buildBorder(VIDEODRIVER.GetScreenSize(), borders);
+    cbb.buildBorder(VIDEODRIVER.GetRenderSize(), borders);
 
     InitPlayer();
     if(initOGL)
@@ -275,7 +275,7 @@ void dskGameInterface::Msg_PaintBefore()
 
     /// Padding of the figures
     const DrawPoint figPadding(12, 12);
-    const DrawPoint screenSize(VIDEODRIVER.GetScreenSize());
+    const DrawPoint screenSize(VIDEODRIVER.GetRenderSize());
     // Rahmen zeichnen
     borders[0]->DrawFull(DrawPoint(0, 0));                                      // oben (mit Ecken)
     borders[1]->DrawFull(DrawPoint(0, screenSize.y - figPadding.y));            // unten (mit Ecken)
@@ -331,11 +331,11 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenSize().y), GAMECLIENT.GetReplayFileName(), FontStyle::BOTTOM, 0xFFFFFF00);
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFileName(), FontStyle::BOTTOM, 0xFFFFFF00);
     else
     {
         // Laggende Spieler anzeigen in Form von Schnecken
-        DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
+        DrawPoint snailPos(VIDEODRIVER.GetRenderSize().x - 70, 35);
         for(const NWFPlayerInfo& player : nwfInfo_->getPlayerInfos())
         {
             if(player.isLagging)
@@ -347,7 +347,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Show icons in the upper right corner of the game interface
-    DrawPoint iconPos(VIDEODRIVER.GetScreenSize().x - 56, 32);
+    DrawPoint iconPos(VIDEODRIVER.GetRenderSize().x - 56, 32);
 
     // Draw cheating indicator icon (WINTER) - Single Player only!
     if(isCheatModeOn)
@@ -391,8 +391,8 @@ void dskGameInterface::Msg_PaintAfter()
 
 bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 {
-    DrawPoint btOrig(VIDEODRIVER.GetScreenSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-                     VIDEODRIVER.GetScreenSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    DrawPoint btOrig(VIDEODRIVER.GetRenderSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+                     VIDEODRIVER.GetRenderSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
     Extent btSize = Extent(37, 32) * 4u;
     if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
         return false;
@@ -891,7 +891,7 @@ void dskGameInterface::Run()
     // Indicate that the game is paused by darkening the screen (dark semi-transparent overlay)
     if(GAMECLIENT.IsPaused())
     {
-        DrawRectangle(Rect(DrawPoint(0, 0), VIDEODRIVER.GetScreenSize()), COLOR_SHADOW);
+        DrawRectangle(Rect(DrawPoint(0, 0), VIDEODRIVER.GetRenderSize()), COLOR_SHADOW);
     }
 
     messenger.Draw();
@@ -977,7 +977,7 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
     return 0;
 }
 
-void dskGameInterface::ShowRoadWindow(const DrawPoint& mousePos)
+void dskGameInterface::ShowRoadWindow(const Position& mousePos)
 {
     roadwindow = new iwRoadWindow(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos);
     WINDOWMANAGER.Show(roadwindow, true);

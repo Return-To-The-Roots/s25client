@@ -192,10 +192,10 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     std::vector<DriverWrapper::DriverItem> video_drivers = DriverWrapper::LoadDriverList(DriverWrapper::DT_VIDEO);
 
-    for(std::vector<DriverWrapper::DriverItem>::iterator it = video_drivers.begin(); it != video_drivers.end(); ++it)
+    for(const auto& video_driver : video_drivers)
     {
-        combo->AddString(it->GetName());
-        if(it->GetName() == SETTINGS.driver.video)
+        combo->AddString(video_driver.GetName());
+        if(video_driver.GetName() == SETTINGS.driver.video)
             combo->SetSelection(combo->GetNumItems() - 1);
     }
 
@@ -211,10 +211,10 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     std::vector<DriverWrapper::DriverItem> audio_drivers = DriverWrapper::LoadDriverList(DriverWrapper::DT_AUDIO);
 
-    for(std::vector<DriverWrapper::DriverItem>::iterator it = audio_drivers.begin(); it != audio_drivers.end(); ++it)
+    for(const auto& audio_driver : audio_drivers)
     {
-        combo->AddString(it->GetName());
-        if(it->GetName() == SETTINGS.driver.audio)
+        combo->AddString(audio_driver.GetName());
+        if(audio_driver.GetName() == SETTINGS.driver.audio)
             combo->SetSelection(combo->GetNumItems() - 1);
     }
 
@@ -250,11 +250,11 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // Und zu der Combobox hinzufügen
     ctrlComboBox& cbVideoModes = *groupGrafik->GetCtrl<ctrlComboBox>(41);
-    for(std::vector<VideoMode>::const_iterator it = video_modes.begin(); it != video_modes.end(); ++it)
+    for(const auto& videoMode : video_modes)
     {
-        VideoMode ratio = getAspectRatio(*it);
+        VideoMode ratio = getAspectRatio(videoMode);
         std::stringstream str;
-        str << it->width << "x" << it->height;
+        str << videoMode.width << "x" << videoMode.height;
         // Make the length always the same as 'iiiixiiii' to align the ratio
         int len = str.str().length();
         for(int i = len; i < 4 + 1 + 4; i++)
@@ -264,7 +264,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         cbVideoModes.AddString(str.str());
 
         // Ist das die aktuelle Auflösung? Dann selektieren
-        if(*it == VideoMode(SETTINGS.video.fullscreenSize.x, SETTINGS.video.fullscreenSize.y)) //-V807
+        if(videoMode == SETTINGS.video.fullscreenSize) //-V807
             cbVideoModes.SetSelection(cbVideoModes.GetNumItems() - 1);
     }
 
@@ -374,8 +374,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlButton>(302)->SetEnabled(true);
             break;
         case 41: // Auflösung
-            SETTINGS.video.fullscreenSize.x = video_modes[selection].width;
-            SETTINGS.video.fullscreenSize.y = video_modes[selection].height;
+            SETTINGS.video.fullscreenSize = video_modes[selection];
             break;
         case 51: // Limit Framerate
             if(GLOBALVARS.hasVSync)
@@ -537,11 +536,11 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 
             SETTINGS.Save();
 
-            if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetScreenSize()) //-V807
+            if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize()) //-V807
                || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
-                Extent screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
-                if(!VIDEODRIVER.ResizeScreen(screenSize.x, screenSize.y, SETTINGS.video.fullscreen))
+                const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+                if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
                 {
                     WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
                                                     MSB_OK, MSB_EXCLAMATIONGREEN, 1));

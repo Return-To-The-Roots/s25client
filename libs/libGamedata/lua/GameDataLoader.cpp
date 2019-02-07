@@ -30,7 +30,8 @@
 #include <stdexcept>
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)
-    : worldDesc_(worldDesc), basePath_(bfs::path(basePath).lexically_normal().make_preferred().string()), curIncludeDepth_(0), errorInIncludeFile_(false)
+    : worldDesc_(worldDesc), basePath_(bfs::path(basePath).lexically_normal().make_preferred().string()), curIncludeDepth_(0),
+      errorInIncludeFile_(false)
 {
     Register(lua);
 

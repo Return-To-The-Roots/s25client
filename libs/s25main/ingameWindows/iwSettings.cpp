@@ -61,7 +61,7 @@ iwSettings::iwSettings()
             GetCtrl<ctrlComboBox>(0)->AddString(str);
 
             // Ist das die aktuelle Auflösung? Dann selektieren
-            if(video_modes[i].width == SETTINGS.video.fullscreenSize.x && video_modes[i].height == SETTINGS.video.fullscreenSize.y)
+            if(video_modes[i] == SETTINGS.video.fullscreenSize)
                 GetCtrl<ctrlComboBox>(0)->SetSelection(i);
         } else
         {
@@ -74,14 +74,13 @@ iwSettings::iwSettings()
 iwSettings::~iwSettings()
 {
     ctrlComboBox* SizeCombo = GetCtrl<ctrlComboBox>(0);
-    SETTINGS.video.fullscreenSize.x = video_modes[SizeCombo->GetSelection()].width; //-V807
-    SETTINGS.video.fullscreenSize.y = video_modes[SizeCombo->GetSelection()].height;
+    SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection()];
 
-    if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetScreenSize())
+    if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
        || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
     {
-        Extent screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
-        if(!VIDEODRIVER.ResizeScreen(screenSize.x, screenSize.y, SETTINGS.video.fullscreen))
+        const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+        if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
         {
             // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
             //     MSB_OK, MSB_EXCLAMATIONGREEN, 1));

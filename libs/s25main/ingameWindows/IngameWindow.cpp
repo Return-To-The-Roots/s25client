@@ -178,7 +178,7 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
     {
         DrawPoint newPos = GetPos() + mc.GetPos() - lastMousePos;
         // Make sure we don't move outside window on either side
-        DrawPoint newPosBounded = elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetScreenSize() - GetSize()));
+        DrawPoint newPosBounded = elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetRenderSize() - GetSize()));
         // Fix mouse position if moved too far
         if(newPosBounded != newPos)
             VIDEODRIVER.SetMousePos(newPosBounded - GetPos() + lastMousePos);
@@ -337,7 +337,7 @@ void IngameWindow::Draw_()
 /// Verschiebt Fenster in die Bildschirmmitte
 void IngameWindow::MoveToCenter()
 {
-    SetPos(DrawPoint(VIDEODRIVER.GetScreenSize() - GetSize()) / 2);
+    SetPos(DrawPoint(VIDEODRIVER.GetRenderSize() - GetSize()) / 2);
 }
 
 /// Verschiebt Fenster neben die Maus
@@ -345,7 +345,7 @@ void IngameWindow::MoveNextToMouse()
 {
     // Center vertically and move slightly right
     DrawPoint newPos = VIDEODRIVER.GetMousePos() - DrawPoint(-20, GetSize().y / 2);
-    const Extent screenSize = VIDEODRIVER.GetScreenSize();
+    const Extent screenSize = VIDEODRIVER.GetRenderSize();
     // To far right?
     if(newPos.x + GetSize().x > screenSize.x)
         newPos.x = screenSize.x - GetSize().x;

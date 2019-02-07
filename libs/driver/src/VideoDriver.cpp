@@ -22,28 +22,22 @@
 
 // Do not inline! That would break DLL compatibility:
 // http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
-IVideoDriver::~IVideoDriver() {}
+IVideoDriver::~IVideoDriver() = default;
 
 /**
  *  Konstruktor von @p VideoDriver.
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
-VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack) : CallBack(CallBack), initialized(false), isFullscreen_(false)
+VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
+    : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0)
 {
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
 
-/**
- *  Funktion zum Auslesen der Mauskoordinaten.
- *
- *  @param[out] x X-Koordinate
- *  @param[out] y Y-Koordinate
- */
-void VideoDriver::GetMousePos(int& x, int& y) const
+Position VideoDriver::GetMousePos() const
 {
-    x = mouse_xy.pos.x;
-    y = mouse_xy.pos.y;
+    return mouse_xy.pos;
 }
 
 /**
@@ -84,4 +78,10 @@ VideoMode VideoDriver::FindClosestVideoMode(const VideoMode& mode) const
         }
     }
     return best;
+}
+
+void VideoDriver::SetNewSize(VideoMode windowSize, Extent renderSize)
+{
+    windowSize_ = windowSize;
+    renderSize_ = renderSize;
 }

@@ -536,7 +536,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
 template<class T_Pt>
 T_Pt Window::Scale(const T_Pt& pt) const
 {
-    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetScreenSize());
+    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetRenderSize());
 }
 
 template<class T_Pt>

@@ -47,9 +47,9 @@ public:
     IVideoDriver* GetDriver() const { return videodriver; }
 
     /// Erstellt das Fenster.
-    bool CreateScreen(unsigned short screen_width, unsigned short screen_height, bool fullscreen);
+    bool CreateScreen(VideoMode size, bool fullscreen);
     /// Verändert Auflösung, Fenster/Fullscreen
-    bool ResizeScreen(unsigned short screen_width, unsigned short screen_height, bool fullscreen);
+    bool ResizeScreen(VideoMode size, bool fullscreen);
     /// Viewport (neu) setzen
     void RenewViewport();
     /// zerstört das Fenster.
@@ -67,10 +67,7 @@ public:
     void SwapBuffers();
     /// Clears the screen (glClear)
     void ClearScreen();
-    // liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, für alles andere die Mausmessages
-    // benutzen!!!)
-    int GetMouseX() const;
-    int GetMouseY() const;
+    // Should only be used to draw the mouse. For everything else use the events
     Position GetMousePos() const;
 
     /// Listet verfügbare Videomodi auf
@@ -78,14 +75,15 @@ public:
 
     /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
     void* GetMapPointer() const;
-
-    Extent GetScreenSize() const;
+    /// Get the size/resolution of the window in screen coordinates
+    VideoMode GetWindowSize() const;
+    /// Get the renderer size in pixels
+    Extent GetRenderSize() const;
     bool IsFullscreen() const;
 
     bool IsLeftDown();
     bool IsRightDown();
     // setzt den Mausstatus
-    void SetMousePos(int x, int y);
     void SetMousePos(const Position& newPos);
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const;

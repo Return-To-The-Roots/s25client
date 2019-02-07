@@ -25,7 +25,7 @@
 class VideoDriverLoaderInterface
 {
 public:
-    virtual ~VideoDriverLoaderInterface(){};
+    virtual ~VideoDriverLoaderInterface() = default;
 
     virtual void Msg_LeftDown(MouseCoords mc) = 0;
     virtual void Msg_LeftUp(MouseCoords mc) = 0;
@@ -37,7 +37,7 @@ public:
 
     virtual void Msg_KeyDown(const KeyEvent& ke) = 0;
 
-    virtual void ScreenResized(unsigned short width, unsigned short height) = 0;
+    virtual void WindowResized() = 0;
 };
 
 #endif // !DRIVERLOADERINTERFACE_H_INCLUDED

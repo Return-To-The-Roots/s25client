@@ -342,9 +342,9 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
     DrawPoint adjPos = GetPos();
     DrawPoint outerPt = GetPos() + GetSize();
-    if(outerPt.x > static_cast<int>(VIDEODRIVER.GetScreenSize().x))
+    if(outerPt.x > static_cast<int>(VIDEODRIVER.GetRenderSize().x))
         adjPos.x = mousePos.x - GetSize().x - 40;
-    if(outerPt.y > static_cast<int>(VIDEODRIVER.GetScreenSize().y))
+    if(outerPt.y > static_cast<int>(VIDEODRIVER.GetRenderSize().y))
         adjPos.y = mousePos.y - GetSize().y - 40;
     if(adjPos != GetPos())
         SetPos(adjPos);
@@ -410,7 +410,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
 iwAction::~iwAction()
 {
     if(mousePosAtOpen_.isValid())
-        VIDEODRIVER.SetMousePos(mousePosAtOpen_.x, mousePosAtOpen_.y);
+        VIDEODRIVER.SetMousePos(mousePosAtOpen_);
     gi.GI_WindowClosed(this);
 }
 

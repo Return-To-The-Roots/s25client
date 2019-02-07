@@ -24,7 +24,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "gameData/const_gui_ids.h"
 
-iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, const DrawPoint& mousePos)
+iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, const Position& mousePos)
     : IngameWindow(CGI_ROADWINDOW, IngameWindow::posAtMouse, Extent(200, 100), _("Activity window"), LOADER.GetImageN("io", 1)), gi(gi),
       mousePosAtOpen_(mousePos)
 {
@@ -66,7 +66,7 @@ void iwRoadWindow::Msg_ButtonClick(const unsigned ctrl_id)
     }
 
     // Maus an vorherige Stelle setzen
-    VIDEODRIVER.SetMousePos(mousePosAtOpen_.x, mousePosAtOpen_.y);
+    VIDEODRIVER.SetMousePos(mousePosAtOpen_);
 
     // und fenster schließen
     Close();

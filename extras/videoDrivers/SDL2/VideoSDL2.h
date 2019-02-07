@@ -40,6 +40,7 @@ public:
 
     bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) override;
     bool ResizeScreen(const VideoMode& newSize, bool fullscreen) override;
+
     void DestroyScreen() override;
 
     /// Swap the OpenGL buffer
@@ -56,7 +57,7 @@ public:
     void ListVideoModes(std::vector<VideoMode>& video_modes) const override;
 
     /// Set mouse position
-    void SetMousePos(int x, int y) override;
+    void SetMousePos(Position pos) override;
 
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const override;
@@ -67,6 +68,7 @@ public:
 private:
     void PrintError(const std::string& msg) const;
     void HandlePaste();
+    void UpdateCurrentSizes();
 
     SDL_Window* window;
     SDL_GLContext context;

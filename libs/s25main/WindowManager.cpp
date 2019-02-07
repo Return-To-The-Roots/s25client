@@ -40,7 +40,7 @@
 #include <algorithm>
 
 WindowManager::WindowManager()
-    : disable_mouse(false), lastMousePos(Position::Invalid()), screenSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
+    : disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
 {}
 
 WindowManager::~WindowManager()
@@ -50,8 +50,8 @@ WindowManager::~WindowManager()
 
 void WindowManager::CleanUp()
 {
-    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
-        delete(*it);
+    for(auto window : windows)
+        delete window;
     windows.clear();
 
     curDesktop.reset();
@@ -224,8 +224,8 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
     curDesktop->SetActive(false);
 
     // alle anderen Fenster deaktivieren
-    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
-        (*it)->SetActive(false);
+    for(auto window : windows)
+        window->SetActive(false);
 
     // Fenster aktivieren
     window->SetActive(true);
@@ -671,8 +671,8 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
     if(ke.alt && (ke.kt == KT_RETURN))
     {
         // Switch Fullscreen/Windowed
-        Extent newScreenSize = !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
-        VIDEODRIVER.ResizeScreen(newScreenSize.x, newScreenSize.y, !SETTINGS.video.fullscreen);
+        const auto newScreenSize = !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
+        VIDEODRIVER.ResizeScreen(newScreenSize, !SETTINGS.video.fullscreen);
         SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
     } else if(ke.kt == KT_PRINT)
         TakeScreenshot();
@@ -681,39 +681,29 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
 }
 
 /**
- *  Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
- *  Liefert evtl. eine Größe die wir nicht wollen und daher korrigieren
- *  oder falls ok durchlassen.
- *  Eigentliche Verarbeitung dann in Msg_ScreenResize.
- *
- *  @param[in] width  neue Breite
- *  @param[in] height neue Höhe
+ *  Handle resize of the window or change of resolution
  */
-void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHeight)
+void WindowManager::WindowResized()
 {
     VIDEODRIVER.RenewViewport();
-    Msg_ScreenResize(Extent(newWidth, newHeight));
+    Msg_ScreenResize(VIDEODRIVER.GetRenderSize());
 }
 
 /**
- *  Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
- *  Liefert immer eine sinnvolle Größe, mind. 800x600.
- *
- *  @param[in] width  neue Breite
- *  @param[in] height neue Höhe
+ *  React to change of the render size
  */
 void WindowManager::Msg_ScreenResize(const Extent& newSize)
 {
-    // Falls sich nichts ändert, brauchen wir auch nicht reagieren
-    // (Evtl hat sich ja nur der Modus Fenster/Vollbild geändert)
-    if(newSize == screenSize)
+    // Don't handle it if nothing changed
+    if(newSize == curRenderSize)
         return;
 
-    ScreenResizeEvent sr(screenSize, elMax(Extent(800, 600), newSize));
-    screenSize = sr.newSize;
+    ScreenResizeEvent sr(curRenderSize, elMax(Extent(800, 600), newSize));
+    curRenderSize = sr.newSize;
 
+    // Don't change fullscreen size (only in menu)
     if(!SETTINGS.video.fullscreen)
-        SETTINGS.video.windowedSize = sr.newSize;
+        SETTINGS.video.windowedSize = VIDEODRIVER.GetWindowSize();
 
     // ist unser Desktop gültig?
     if(!curDesktop)
@@ -722,11 +712,11 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     curDesktop->Msg_ScreenResize(sr);
 
     // IngameWindow verschieben falls nötig, so dass sie komplett sichtbar sind
-    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
+    for(auto window : windows)
     {
-        DrawPoint delta = (*it)->GetPos() + DrawPoint((*it)->GetSize()) - DrawPoint(sr.newSize);
+        DrawPoint delta = window->GetPos() + DrawPoint(window->GetSize()) - DrawPoint(sr.newSize);
         if(delta.x > 0 || delta.y > 0)
-            (*it)->SetPos((*it)->GetPos() - elMax(delta, DrawPoint(0, 0)));
+            window->SetPos(window->GetPos() - elMax(delta, DrawPoint(0, 0)));
     }
 }
 
@@ -814,8 +804,8 @@ void WindowManager::DoDesktopSwitch()
     if(curDesktop)
     {
         // Alle (alten) Fenster zumachen
-        for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
-            delete(*it);
+        for(auto window : windows)
+            delete window;
         windows.clear();
     }
 
@@ -823,8 +813,8 @@ void WindowManager::DoDesktopSwitch()
     curDesktop.reset(nextdesktop.release());
     curDesktop->SetActive(true);
 
-    for(std::vector<IngameWindow*>::iterator it = nextWnds.begin(); it != nextWnds.end(); ++it)
-        Show(*it);
+    for(auto nextWnd : nextWnds)
+        Show(nextWnd);
     nextWnds.clear();
 
     if(!VIDEODRIVER.IsLeftDown())
@@ -851,8 +841,8 @@ void WindowManager::CloseMarkedIngameWnds()
 
 void WindowManager::TakeScreenshot()
 {
-    libsiedler2::PixelBufferARGB buffer(screenSize.x, screenSize.y);
-    glReadPixels(0, 0, screenSize.x, screenSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
+    libsiedler2::PixelBufferARGB buffer(curRenderSize.x, curRenderSize.y);
+    glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     libsiedler2::ArchivItem_Bitmap_Raw* bmp = new libsiedler2::ArchivItem_Bitmap_Raw;
     libsiedler2::Archiv archive;
     archive.push(bmp);
@@ -878,11 +868,11 @@ void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& to
         glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(tooltip, MAX_TOOLTIP_WIDTH, MAX_TOOLTIP_WIDTH);
         std::vector<std::string> lines = wi.CreateSingleStrings(tooltip);
         curTooltip.clear();
-        for(std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); ++it)
+        for(const auto& line : lines)
         {
             if(!curTooltip.empty())
                 curTooltip += "\n";
-            curTooltip += *it;
+            curTooltip += line;
         }
         lttw = ttw;
     }
@@ -901,7 +891,7 @@ void WindowManager::DrawToolTip()
         unsigned right_edge = ttPos.x + text_width + 2;
 
         // links neben der Maus, wenn es über den Rand gehen würde
-        if(right_edge > VIDEODRIVER.GetScreenSize().x)
+        if(right_edge > curRenderSize.x)
             ttPos.x = lastMousePos.x - leftSpacing - text_width;
 
         unsigned numLines = 1;

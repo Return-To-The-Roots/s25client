@@ -104,7 +104,7 @@ public:
     void DemolishRoad(unsigned start_id);
     // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
     // ansonsten gibt's nur nen Button zum Abbrechen
-    void ShowRoadWindow(const DrawPoint& mousePos);
+    void ShowRoadWindow(const Position& mousePos);
     /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
     void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
                           const bool enable_military_buildings);
