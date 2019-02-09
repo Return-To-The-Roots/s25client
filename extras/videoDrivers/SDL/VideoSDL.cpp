@@ -20,7 +20,9 @@
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
+#include "makeException.h"
 #include <boost/nowide/iostream.hpp>
+#include <boost/system/windows_error.hpp>
 #include <SDL.h>
 #include <algorithm>
 #include <memory>
@@ -45,7 +47,29 @@ struct DeleterDeleteRC
     void operator()(HGLRC rc) const { wglDeleteContext(rc); }
 };
 
+SDL_SysWMinfo GetWMInfo()
+{
+    SDL_SysWMinfo info;
+    SDL_VERSION(&info.version);
+    const int result = SDL_GetWMInfo(&info);
+    if(result == 1)
+        return info;
+    throw makeException("GetWMInfo failed with ", result);
+}
+auto CreateOGLContext(HDC deviceContext)
+{
+    std::unique_ptr<HGLRC, DeleterDeleteRC> context{wglCreateContext(deviceContext)};
+    if(!context)
+        throw makeLastSystemError("Failed to create OGL context");
+    return context;
+}
+void ShareOGLResources(HGLRC srcContext, HGLRC dstContext)
+{
+    if(!wglShareLists(srcContext, dstContext))
+        throw makeLastSystemError("Failed to share resources of OGL context");
+}
 } // namespace
+
 #endif // _WIN32
 
 /**
@@ -201,56 +225,35 @@ bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     if(!initialized)
         return false;
 
-        // On windows the current ogl context gets destroyed. Hence we have to save it to avoid having to reinitialize all resources
-        // Taken from http://www.bytehazard.com/articles/sdlres.html
 #ifdef _WIN32
-    SDL_SysWMinfo info;
-    // get window handle from SDL
-    SDL_VERSION(&info.version);
-    if(SDL_GetWMInfo(&info) != 1)
+    // On windows the current ogl context gets destroyed. Hence we have to save it to avoid having to reinitialize all resources
+    // Taken from http://www.bytehazard.com/articles/sdlres.html
+    try
     {
-        PrintError("SDL_GetWMInfo #1 failed");
+        SDL_SysWMinfo info = GetWMInfo();
+
+        // get device context handle
+        std::unique_ptr<HDC, DeleterReleaseDC> tempDC(GetDC(info.window), DeleterReleaseDC(info.window));
+
+        // create temporary context
+        auto tempRC = CreateOGLContext(tempDC.get());
+        // share resources to temporary context
+        ShareOGLResources(info.hglrc, tempRC.get());
+
+        // set video mode
+        if(!SetVideoMode(newSize, fullscreen))
+            return false;
+
+        // previously used structure may possibly be invalid, to be sure we get it again
+        info = GetWMInfo();
+
+        // share resources to new SDL-created context
+        ShareOGLResources(tempRC.get(), info.hglrc);
+    } catch(const std::exception& e)
+    {
+        PrintError(e.what());
         return false;
     }
-
-    // get device context handle
-    std::unique_ptr<HDC, DeleterReleaseDC> tempDC(GetDC(info.window), DeleterReleaseDC(info.window));
-
-    // create temporary context
-    std::unique_ptr<HGLRC, DeleterDeleteRC> tempRC(wglCreateContext(tempDC.get()));
-    if(!tempRC)
-    {
-        PrintError("wglCreateContext failed");
-        return false;
-    }
-
-    // share resources to temporary context
-    SetLastError(0);
-    if(!wglShareLists(info.hglrc, tempRC.get()))
-    {
-        PrintError("wglShareLists #1 failed");
-        return false;
-    }
-
-    // set video mode
-    if(!SetVideoMode(newSize, fullscreen))
-        return false;
-
-    // previously used structure may possibly be invalid, to be sure we get it again
-    SDL_VERSION(&info.version);
-    if(SDL_GetWMInfo(&info) != 1)
-    {
-        PrintError("SDL_GetWMInfo #2 failed\n");
-        return false;
-    }
-
-    // share resources to new SDL-created context
-    if(!wglShareLists(tempRC.get(), info.hglrc))
-    {
-        PrintError("wglShareLists #2 failed\n");
-        return false;
-    }
-
     // success
     return true;
 #else
@@ -304,14 +307,15 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
         screen->flags |= SDL_FULLSCREEN;
     }
 
-    SDL_SysWMinfo info;
-    // get window handle from SDL
-    SDL_VERSION(&info.version);
-    if(SDL_GetWMInfo(&info) == 1)
+    try
     {
+        SDL_SysWMinfo info = GetWMInfo();
         LPARAM icon = (LPARAM)LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_SYMBOL));
         SendMessage(info.window, WM_SETICON, ICON_BIG, icon);
         SendMessage(info.window, WM_SETICON, ICON_SMALL, icon);
+    } catch(const std::runtime_error& e)
+    {
+        PrintError(helpers::concat("Could not set icon: ", e.what()));
     }
 #endif // _WIN32
 
@@ -592,11 +596,7 @@ KeyEvent VideoSDL::GetModKeyState() const
 void* VideoSDL::GetMapPointer() const
 {
 #ifdef WIN32
-    SDL_SysWMinfo wmInfo;
-    SDL_VERSION(&wmInfo.version);
-    SDL_GetWMInfo(&wmInfo);
-    // return (void*)wmInfo.info.win.window;
-    return (void*)wmInfo.window;
+    return GetWMInfo().window;
 #else
     return nullptr;
 #endif
