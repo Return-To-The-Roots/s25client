@@ -17,20 +17,9 @@ SET_PROPERTY(TARGET rttrConfig PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake build_paths.h @ONLY)
 
-# Figure out RTTR_REVISION (git hash) and RTTR_VERSION (date)
-# Those can be manually set to override the default values
-if(NOT RTTR_REVISION)
-    include(GetGitRevisionDescription)
-    # Get git commit hash. Note: CMake will reconfigure if the git hash changes
-    get_git_head_revision(RTTR_GIT_REF RTTR_REVISION)
-    if(NOT RTTR_REVISION)
-        message(FATAL_ERROR "Could not get git revision. The source has to be in a git repo or you have to define RTTR_REVISION")
-    endif()
-    set(RTTR_REVISION ${RTTR_REVISION} CACHE STRING "Git revision" FORCE)
-endif()
-if(NOT RTTR_VERSION)
-    STRING(TIMESTAMP RTTR_VERSION "%Y%m%d")
-    set(RTTR_VERSION ${RTTR_VERSION} CACHE STRING "Version (yyyymmdd)" FORCE)
+# This should happen in the top-level CMakeLists
+if(NOT RTTR_REVISION OR NOT RTTR_VERSION)
+    message(FATAL_ERROR "Internal error: RTTR_REVISION or RTTR_VERSION not set")
 endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake build_version_defines.h @ONLY)
 
