@@ -171,10 +171,6 @@ void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc
 
 /**
  *  Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
- *
- *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
- *  @param[in] data          Daten für den neuen Desktop
- *  @param[in] disable_mouse Bei true wird bis zum nächsten Release die Maus deaktiviert (Switch-Anschließend-Drück-Bug)
  */
 void WindowManager::Show(IngameWindow* window, bool mouse)
 {
@@ -196,13 +192,13 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
         if((*it)->ShouldBeClosed())
             continue;
 
-        if(window->id_ == (*it)->id_)
+        if(window->GetID() == (*it)->GetID())
         {
             // Special cases:
             // 1) Help windows simply replace other help windows
-            if(window->id_ == CGI_HELP)
+            if(window->GetID() == CGI_HELP)
                 (*it)->Close();
-            else if(window->id_ == CGI_MISSION_STATEMENT || window->id_ == CGI_MSGBOX)
+            else if(window->GetID() == CGI_MISSION_STATEMENT || window->GetID() == CGI_MSGBOX)
             {
                 // 2) Mission statement and msg boxes get prepended (they are modal, so old needs to be closed first)
                 windows.insert(it, window);
@@ -267,7 +263,7 @@ IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
             return *it;
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
-        if((*it)->TestWindowInRegion(nullptr, pos))
+        if((*it)->IsInLockedRegion(pos))
             return *it;
     }
     return nullptr;

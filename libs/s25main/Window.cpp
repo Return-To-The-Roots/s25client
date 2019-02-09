@@ -127,15 +127,15 @@ bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
     for(Window* wnd : childIdToWnd_ | boost::adaptors::map_values | boost::adaptors::reversed)
     {
-        if(!lockedAreas_.empty() && TestWindowInRegion(wnd, mc.GetPos()))
+        if(!lockedAreas_.empty() && IsInLockedRegion(mc.GetPos(), wnd))
             continue;
 
         if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(mc))
             processed = true;
     }
 
-    for(std::vector<Window*>::iterator it = tofreeAreas_.begin(); it != tofreeAreas_.end(); ++it)
-        lockedAreas_.erase(*it);
+    for(auto tofreeArea : tofreeAreas_)
+        lockedAreas_.erase(tofreeArea);
     tofreeAreas_.clear();
     isInMouseRelay = false;
 
@@ -549,23 +549,14 @@ T_Pt Window::ScaleIf(const T_Pt& pt) const
 template DrawPoint Window::ScaleIf(const DrawPoint&) const;
 template Extent Window::ScaleIf(const Extent&) const;
 
-/**
- *  prüft ob Mauskoordinaten in einer gesperrten Region liegt.
- *
- *  @param[in] window das Fenster, welches die Region sperrt.
- *  @param[in] mc     Mauskoordinaten.
- *
- *  @return @p true falls Mausposition innerhalb der gesperrten Region,
- *          @p false falls außerhalb
- */
-bool Window::TestWindowInRegion(Window* window, const Position& pos) const
+bool Window::IsInLockedRegion(const Position& pos, const Window* exception) const
 {
-    for(std::map<Window*, Rect>::const_iterator it = lockedAreas_.begin(); it != lockedAreas_.end(); ++it)
+    for(const auto& lockEntry : lockedAreas_)
     {
-        if(it->first == window)
-            continue; // Locking window can always access its locked regions
-        // All others cannot:
-        if(IsPointInRect(pos, it->second))
+        // Ignore exception
+        if(lockEntry.first == exception)
+            continue;
+        if(IsPointInRect(pos, lockEntry.second))
             return true;
     }
     return false;
