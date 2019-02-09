@@ -19,6 +19,7 @@
 #define str_utils_h__
 
 #include <boost/lexical_cast.hpp>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -61,6 +62,26 @@ std::string join(const std::vector<std::string>& values, const std::string& deli
 inline std::string join(const std::vector<std::string>& values, const std::string& delimiter)
 {
     return join(values, delimiter, delimiter);
+}
+
+inline std::ostream& streamConcat(std::ostream& stream)
+{
+    return stream;
+}
+
+/// Concat arguments by passing them to a stream
+template<typename Arg, typename... Args>
+std::ostream& streamConcat(std::ostream& stream, Arg&& arg, Args&&... args)
+{
+    return streamConcat(stream << std::forward<Arg>(arg), std::forward<Args>(args)...);
+}
+
+template<class T_Stream = std::stringstream, typename... Args>
+std::string concat(Args&&... args)
+{
+    T_Stream stream;
+    streamConcat(stream, std::forward<Args>(args)...);
+    return stream.str();
 }
 
 } // namespace helpers
