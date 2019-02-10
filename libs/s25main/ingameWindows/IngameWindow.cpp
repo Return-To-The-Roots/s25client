@@ -114,13 +114,6 @@ void IngameWindow::SetMinimized(bool minimized)
     Resize(fullSize);
 }
 
-void IngameWindow::SetModal(bool modal)
-{
-    isModal_ = modal;
-    if(isModal_ && closeme)
-        closeme = false;
-}
-
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 {
     // Maus muss sich auf der Titelleiste befinden
