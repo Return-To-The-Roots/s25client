@@ -380,9 +380,9 @@ bool VideoSDL2::MessageLoop()
                 int y = ev.wheel.y;
                 if(ev.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
                     y = -y;
-                if(y < 0)
+                if(y > 0)
                     CallBack->Msg_WheelUp(mouse_xy);
-                else if(y > 0)
+                else if(y < 0)
                     CallBack->Msg_WheelDown(mouse_xy);
             }
             break;
