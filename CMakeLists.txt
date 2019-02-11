@@ -280,7 +280,7 @@ endif()
 
 find_package(Gettext REQUIRED)
 file(GLOB RTTR_PO_FILES external/languages/*.po)
-set(RTTR_TRANSLATION_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${RTTR_DATADIR}/RTTR/languages) # Used by copyDepsToBuildDir
+set(RTTR_TRANSLATION_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gen/languages) # Used by copyDepsToBuildDir
 gettext_create_translations(external/languages/rttr.pot ALL
     DESTINATION ${RTTR_TRANSLATION_OUTPUT}
     INSTALL_DESTINATION ${RTTR_DATADIR}/RTTR/languages
