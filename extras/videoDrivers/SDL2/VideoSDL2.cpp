@@ -181,9 +181,11 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     {
         if(isFullscreen_)
         {
+            // Use our algorithm to determine a size, then SDLs to fill in remaining data
+            auto const targetMode = FindClosestVideoMode(newSize);
             SDL_DisplayMode target, closest;
-            target.w = newSize.width;
-            target.h = newSize.height;
+            target.w = targetMode.width;
+            target.h = targetMode.height;
             target.format = 0;       // don't care
             target.refresh_rate = 0; // don't care
             target.driverdata = 0;   // initialize to 0
@@ -411,6 +413,8 @@ unsigned long VideoSDL2::GetTickCount() const
 void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     int display = SDL_GetWindowDisplayIndex(window);
+    if(display < 0)
+        display = 0;
     for(int i = SDL_GetNumDisplayModes(display) - 1; i >= 0; --i)
     {
         SDL_DisplayMode mode;
