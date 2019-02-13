@@ -411,7 +411,7 @@ unsigned long VideoSDL2::GetTickCount() const
 void VideoSDL2::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     int display = SDL_GetWindowDisplayIndex(window);
-    for(int i = SDL_GetNumDisplayModes(display); i > 0; --i)
+    for(int i = SDL_GetNumDisplayModes(display) - 1; i >= 0; --i)
     {
         SDL_DisplayMode mode;
         if(SDL_GetDisplayMode(display, i, &mode) != 0)
