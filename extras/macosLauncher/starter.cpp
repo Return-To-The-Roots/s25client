@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
             bfs::permissions(tmpPath, bfs::owner_all);
             bfs::current_path(RTTRCONFIG.ExpandPath("<RTTR_BIN>"));
             system("open rttr.terminal");
-        }catch(const std::exception& e)
+        } catch(const std::exception& e)
         {
             std::cerr << "Error: " << e.what() << std::endl;
         }
@@ -62,10 +62,10 @@ int main(int argc, char* argv[])
         const bfs::path S2CD = "/Volumes/S2_GOLD";
         while(!bfs::is_directory(S2CD) && !isS2Installed())
         {
-		    std::cerr << "Couldn't find data files for Settlers II" << std::endl;
-		    std::cerr << "Please copy the folders \"DATA\" and \"GFX\" from your Settlers II install to" << std::endl;
-		    std::cerr << "\"" << RTTRCONFIG.ExpandPath("<RTTR_GAME>") << "\" or" << std::endl;
-		    std::cerr << "insert the Settlers II Gold CD in your drive and hit \"Enter\"." << std::endl;
+            std::cerr << "Couldn't find data files for Settlers II" << std::endl;
+            std::cerr << "Please copy the folders \"DATA\" and \"GFX\" from your Settlers II install to" << std::endl;
+            std::cerr << "\"" << RTTRCONFIG.ExpandPath("<RTTR_GAME>") << "\" or" << std::endl;
+            std::cerr << "insert the Settlers II Gold CD in your drive and hit \"Enter\"." << std::endl;
             std::cin.ignore();
         }
         if(!isS2Installed())
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
             try
             {
                 copyDirectory(S2CD / "DATA", RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA"));
-            }catch(const std::runtime_error& e)
+            } catch(const std::runtime_error& e)
             {
                 std::cerr << "Error copying DATA dir: " << e.what() << std::endl;
                 return 1;
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
             try
             {
                 copyDirectory(S2CD / "GFX", RTTRCONFIG.ExpandPath("<RTTR_GAME>/GFX"));
-            }catch(const std::runtime_error& e)
+            } catch(const std::runtime_error& e)
             {
                 std::cerr << "Error copying GFX dir: " << e.what() << std::endl;
                 return 1;

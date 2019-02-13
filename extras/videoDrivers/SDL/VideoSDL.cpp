@@ -20,10 +20,10 @@
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
-#include <memory>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
+#include <memory>
 
 #ifdef _WIN32
 #include "s25clientResources.h"
@@ -266,13 +266,13 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
 
     bool enteredWndMode = !screen || (isFullscreen_ && !fullscreen);
 
-    auto windowSize  = (fullscreen) ? FindClosestVideoMode(newSize) : newSize;
+    auto windowSize = (fullscreen) ? FindClosestVideoMode(newSize) : newSize;
 
     if(enteredWndMode)
         SDL_putenv(CENTER_ENV);
 
-    screen = SDL_SetVideoMode(windowSize.width, windowSize.height, 32,
-                              SDL_HWSURFACE | SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE));
+    screen =
+      SDL_SetVideoMode(windowSize.width, windowSize.height, 32, SDL_HWSURFACE | SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE));
     // Fallback to non-fullscreen
     if(!screen && fullscreen)
         screen = SDL_SetVideoMode(windowSize.width, windowSize.height, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_RESIZABLE);

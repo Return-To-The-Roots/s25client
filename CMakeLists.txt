@@ -294,7 +294,7 @@ add_custom_command(TARGET translations POST_BUILD
 
 if(ClangFormat_FOUND)
     add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs TRUE)
-    add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extra TRUE)
+    add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extras TRUE)
     add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/tests TRUE)
     add_clangformat_target("file")
 endif()
