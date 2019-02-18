@@ -82,6 +82,12 @@ inline auto find(T& container, const U& value)
     return detail::FindImpl<T, U>::find(container, value);
 }
 
+template<typename T, class T_Predicate>
+inline auto findPred(T& container, T_Predicate&& predicate)
+{
+    return std::find_if(container.begin(), container.end(), std::forward<T_Predicate>(predicate));
+}
+
 /// Returns true if the container contains the given value
 /// Uses the find member function if applicable otherwise uses the std::find method
 template<typename T, typename U>
@@ -92,9 +98,9 @@ inline bool contains(const T& container, const U& value)
 
 /// Returns true if the container contains a value matching the predicate
 template<typename T, class T_Predicate>
-inline bool containsPred(const T& container, const T_Predicate& predicate)
+inline bool containsPred(const T& container, T_Predicate&& predicate)
 {
-    return std::find_if(container.begin(), container.end(), predicate) != container.end();
+    return findPred(container, std::forward<T_Predicate>(predicate)) != container.end();
 }
 
 /// Remove duplicate values from the given container without changing the order

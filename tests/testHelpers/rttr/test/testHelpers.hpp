@@ -18,6 +18,9 @@
 #ifndef testHelpers_h__
 #define testHelpers_h__
 
+#include <boost/test/unit_test.hpp>
+#include <utility>
+
 namespace boost { namespace test_tools { namespace tt_detail {
     // Allow printing of pairs
     template<typename T, typename U>
@@ -39,6 +42,23 @@ inline boost::test_tools::predicate_result testCmp(const char* cmp, const T1& l,
 
     return true;
 }
+
+/// Check that an exception of the given type is thrown and it contains the message
+/* clang-format off */
+#define RTTR_CHECK_THROW(S, E, MSG)                                          \
+do                                                                           \
+{                                                                            \
+    try                                                                      \
+    {                                                                        \
+        BOOST_TEST_PASSPOINT();                                              \
+        S;                                                                   \
+        BOOST_TEST_ERROR("Exception " << #E << " expected but not thrown"); \
+    } catch(const E& e)                                                      \
+    {                                                                        \
+        BOOST_TEST(e.what() == (MSG));                                       \
+    }                                                                        \
+} while(false)
+    /* clang-format on */
 
 #define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) BOOST_REQUIRE_EQUAL_COLLECTIONS(Col1.begin(), Col1.end(), Col2.begin(), Col2.end())
 

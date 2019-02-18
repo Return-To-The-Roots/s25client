@@ -18,14 +18,18 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwTextfile.h"
-
 #include "Loader.h"
 #include "RttrConfig.h"
-#include "Settings.h"
 #include "controls/ctrlMultiline.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
 #include "gameData/const_gui_ids.h"
+#include <boost/filesystem/operations.hpp>
+#include <boost/format.hpp>
 #include <boost/nowide/fstream.hpp>
+#include <mygettext/mygettext.h>
+#include <mygettext/utils.h>
+#include <sstream>
 
 /**
  *  Konstruktor von @p iwTextfile.
@@ -40,26 +44,25 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     ctrlMultiline* text = AddMultiline(2, DrawPoint(10, 20), Extent(GetSize().x - 20, 450), TC_GREEN1, NormalFont);
 
     // Pfad mit gewählter Sprache auswählen
-    std::string path = RTTRCONFIG.ExpandPath(FILE_PATHS[88]) + "/" + SETTINGS.language.language + "/" + filename;
+    std::vector<bfs::path> paths;
+    const bfs::path basePath = RTTRCONFIG.ExpandPath(FILE_PATHS[88]);
+    for(const auto& folderName : getPossibleFoldersForLangCode(mysetlocale(0, nullptr)))
+        paths.push_back(basePath / folderName / filename);
+    paths.push_back(basePath / filename);
 
-    bnw::ifstream file(path);
+    const auto existingFilePath = helpers::findPred(paths, [](const auto& path) { return bfs::exists(path); });
+    bnw::ifstream file;
+    if(existingFilePath != paths.end())
+        file.open(*existingFilePath);
     if(!file)
     {
-        // lokalisierte Vresion nicht gefunden, Standard öffnen
-        path = RTTRCONFIG.ExpandPath(FILE_PATHS[88]) + "/" + filename;
-        file.clear();
-        file.open(path);
-        if(!file)
-        {
-            // immer noch nichts gefunden? --> Dann Fehlermeldung
-            text->AddString(_("The readme file was not found!"), COLOR_RED, false);
-            return;
-        }
+        text->AddString((boost::format(_("The file was not found!")) % filename).str(), COLOR_RED, false);
+    } else
+    {
+        std::stringstream stream;
+        stream << file.rdbuf();
+        text->AddString(stream.str(), COLOR_YELLOW, false);
     }
-
-    std::string line; // buffer for one line
-    while(std::getline(file, line))
-        text->AddString(line, COLOR_YELLOW, false);
 
     text->SetWidth(text->GetContentSize().x);
     SetIwSize(Extent(text->GetSize().x, GetIwSize().y));

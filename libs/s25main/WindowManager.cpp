@@ -26,6 +26,7 @@
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
 #include "ingameWindows/IngameWindow.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
@@ -171,64 +172,48 @@ void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc
 
 /**
  *  Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
- *
- *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
- *  @param[in] data          Daten für den neuen Desktop
- *  @param[in] disable_mouse Bei true wird bis zum nächsten Release die Maus deaktiviert (Switch-Anschließend-Drück-Bug)
  */
 void WindowManager::Show(IngameWindow* window, bool mouse)
 {
     RTTR_Assert(window);
+    RTTR_Assert(!helpers::contains(windows, window));
+
     SetToolTip(nullptr, "");
 
-    // haben wir ein gültiges Fenster erhalten?
-    if(!window)
-        return;
-
-    // haben wir einen gültigen Desktop?
+    // No desktop -> Out
     if(!curDesktop)
         return;
 
-    // Check for already open windows with same ID
-    for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
+    // Non-Modal windows can only be opened once
+    if(!window->IsModal())
     {
-        // Skip ones that are about to be closed
-        if((*it)->ShouldBeClosed())
-            continue;
-
-        if(window->id_ == (*it)->id_)
+        // Check for already open windows with same ID (ignoring to-be-closed windows)
+        auto itOther = helpers::findPred(windows, [window](const IngameWindow* curWnd) {
+            return !curWnd->ShouldBeClosed() && !curWnd->IsModal() && curWnd->GetID() == window->GetID();
+        });
+        if(itOther != windows.end())
         {
-            // Special cases:
-            // 1) Help windows simply replace other help windows
-            if(window->id_ == CGI_HELP)
-                (*it)->Close();
-            else if(window->id_ == CGI_MISSION_STATEMENT || window->id_ == CGI_MSGBOX)
-            {
-                // 2) Mission statement and msg boxes get prepended (they are modal, so old needs to be closed first)
-                windows.insert(it, window);
-                return;
-            } else
+            // Special case:
+            // Help windows simply replace other help windows
+            if(window->GetID() == CGI_HELP)
+                (*itOther)->Close();
+            else
             {
                 // Same ID -> Close and don't open again
-                (*it)->Close();
+                (*itOther)->Close();
                 delete window;
                 return;
             }
         }
     }
 
-    // Fenster hinzufügen
-    windows.push_back(window);
+    // All windows are inserted before the first modal window (shown behind)
+    auto itModal = helpers::findPred(windows, [](const IngameWindow* curWnd) { return curWnd->IsModal(); });
+    // Note that if there is no other modal window it will be put at the back which is what we want
+    windows.insert(itModal, window);
 
-    // Desktop deaktivieren
-    curDesktop->SetActive(false);
-
-    // alle anderen Fenster deaktivieren
-    for(auto window : windows)
-        window->SetActive(false);
-
-    // Fenster aktivieren
-    window->SetActive(true);
+    // Make the new window active (special cases handled in the function)
+    SetActiveWindow(*window);
 
     // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschließend-Drück-Bugs)
     disable_mouse = mouse;
@@ -267,7 +252,7 @@ IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
             return *it;
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
-        if((*it)->TestWindowInRegion(nullptr, pos))
+        if((*it)->IsInLockedRegion(pos))
             return *it;
     }
     return nullptr;
@@ -293,7 +278,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     if(windows.empty())
     {
         // nein, dann Desktop aktivieren
-        curDesktop->SetActive(true);
+        SetActiveWindow(*curDesktop);
 
         // ist der Maus-Klick-Fix aktiv?
         if(!disable_mouse)
@@ -314,7 +299,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     if(lastActiveWnd.IsModal())
     {
         if(!lastActiveWnd.IsActive())
-            lastActiveWnd.SetActive();
+            SetActiveWindow(lastActiveWnd);
 
         // ja es ist modal, ist der Maus-Klick-Fix aktiv?
         if(!disable_mouse)
@@ -335,18 +320,10 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
 
     IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
 
-    // aktives Fenster deaktivieren
-    lastActiveWnd.SetActive(false);
-
     // Haben wir ein Fenster gefunden gehabt?
     if(foundWindow)
     {
-        // Fenster aus der Liste holen und vorne wieder anhängen
-        windows.remove(foundWindow);
-        windows.push_back(foundWindow);
-
-        // aktivieren
-        foundWindow->SetActive(true);
+        SetActiveWindow(*foundWindow);
 
         // ist der Maus-Klick-Fix aktiv?
         if(!disable_mouse)
@@ -360,13 +337,9 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
             // und noch MouseLeftDown vom Fenster aufrufen
             foundWindow->MouseLeftDown(mc);
         }
-
-        // Desktop deaktivieren, falls aktiviert
-        curDesktop->SetActive(false);
     } else
     {
-        // Desktop aktivieren
-        curDesktop->SetActive(true);
+        SetActiveWindow(*curDesktop);
 
         // ist der Maus-Klick-Fix aktiv?
         if(!disable_mouse)
@@ -451,8 +424,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
         if(windows.back()->IsModal())
         {
             // We have a modal window -> Activate it
-            curDesktop->SetActive(false);
-            windows.back()->SetActive(true);
+            SetActiveWindow(*windows.back());
             // Ignore actions in all other windows
             if(foundWindow != windows.back())
                 return;
@@ -464,18 +436,9 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
                 foundWindow->Close();
             else
             {
-                windows.back()->SetActive(false);
-
-                // Fenster aus der Liste holen und vorne wieder anhängen
-                windows.remove(foundWindow);
-                windows.push_back(foundWindow);
-
-                curDesktop->SetActive(false);
-
-                foundWindow->SetActive(true);
+                SetActiveWindow(*foundWindow);
                 foundWindow->Msg_RightDown(mc);
             }
-
             return;
         }
     }
@@ -494,12 +457,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
         windows.back()->RelayMouseMessage(&Window::Msg_RightDown, mc);
     }
 
-    // letztes Fenster deaktivieren, da ja nun der Desktop aktiv werden soll
-    if(!windows.empty())
-        windows.back()->SetActive(false);
-
-    // Desktop aktivieren
-    curDesktop->SetActive(true);
+    SetActiveWindow(*curDesktop);
 
     // ja, dann Msg_RightDown aufrufen
     curDesktop->Msg_RightDown(mc);
@@ -527,8 +485,7 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
     // haben wir überhaupt fenster?
     if(windows.empty())
     {
-        // nein, dann Desktop aktivieren
-        curDesktop->SetActive(true);
+        SetActiveWindow(*curDesktop);
 
         // nein, Msg_LeftDown aufrufen
         curDesktop->Msg_WheelUp(mc);
@@ -555,30 +512,19 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
     }
 
     IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
-    // ja, also aktives Fenster deaktivieren
-    activeWnd.SetActive(false);
 
     if(foundWindow)
     {
-        // Fenster aus der Liste holen und vorne wieder anhängen
-        windows.remove(foundWindow);
-        windows.push_back(foundWindow);
-
-        // ja, dann aktivieren
-        foundWindow->SetActive(true);
+        SetActiveWindow(*foundWindow);
 
         // dann Msg_WheelUp aufrufen
         foundWindow->Msg_WheelUp(mc);
 
         // und allen unten drunter auch Bescheid sagen
         foundWindow->RelayMouseMessage(&Window::Msg_WheelUp, mc);
-
-        // Desktop deaktivieren, falls aktiviert
-        curDesktop->SetActive(false);
     } else
     {
-        // Desktop aktivieren
-        curDesktop->SetActive(true);
+        SetActiveWindow(*curDesktop);
 
         // nein, dann Msg_WheelUpDown aufrufen
         curDesktop->Msg_WheelUp(mc);
@@ -599,7 +545,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         return;
     if(windows.empty())
     {
-        curDesktop->SetActive(true);
+        SetActiveWindow(*curDesktop);
         curDesktop->Msg_WheelDown(mc);
         curDesktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);
         // und raus
@@ -613,19 +559,15 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         return;
     }
     IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
-    activeWnd.SetActive(false);
 
     if(foundWindow)
     {
-        windows.remove(foundWindow);
-        windows.push_back(foundWindow);
-        foundWindow->SetActive(true);
+        SetActiveWindow(*foundWindow);
         foundWindow->Msg_WheelDown(mc);
         foundWindow->RelayMouseMessage(&Window::Msg_WheelDown, mc);
-        curDesktop->SetActive(false);
     } else
     {
-        curDesktop->SetActive(true);
+        SetActiveWindow(*curDesktop);
         curDesktop->Msg_WheelDown(mc);
         curDesktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);
     }
@@ -749,28 +691,18 @@ void WindowManager::Close(const IngameWindow* window)
     SetToolTip(nullptr, "");
 
     // War es an vorderster Stelle?
-    if(window == windows.back())
-    {
-        // haben wir noch Fenster zum aktivieren?
-        if(window != windows.front())
-        {
-            // ja, also das nächste aktivieren. Save it as we need it later!
-            IgwListIterator tmp = it;
-            --tmp;
-
-            // Activate window or desktop if window invalid
-            (*tmp)->SetActive(true); //-V783
-        } else
-        {
-            // nein, also Desktop aktivieren
-            curDesktop->SetActive(true);
-        }
-    }
+    const bool isActiveWnd = window == windows.back();
 
     // Remove from list and notify parent
     windows.erase(it);
+    if(isActiveWnd)
+    {
+        if(windows.empty())
+            SetActiveWindow(*curDesktop);
+        else
+            SetActiveWindow(*windows.back());
+    }
     curDesktop->Msg_WindowClosed(const_cast<IngameWindow&>(*window));
-
     // Then delete
     delete window;
 }
@@ -837,6 +769,36 @@ void WindowManager::CloseMarkedIngameWnds()
         Close(*it);
         it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
     }
+}
+
+template<class T_Windows>
+void SetActiveWindowImpl(Window& wnd, Desktop& desktop, T_Windows& windows)
+{
+    auto itWnd = helpers::find(windows, &wnd);
+    if(itWnd != windows.end())
+    {
+        // If we have a modal window, don't make this active unless it is the top most one
+        if(&wnd != windows.back() && helpers::containsPred(windows, [](const IngameWindow* wnd) { return wnd->IsModal(); }))
+        {
+            return;
+        }
+        desktop.SetActive(false);
+        // Move window to the end (itWnd+1 -> itWnd -> end())
+        std::rotate(itWnd, std::next(itWnd), windows.end());
+    } else if(&wnd == &desktop)
+        desktop.SetActive(true);
+    else
+        return;
+    for(auto curWnd : windows)
+        curWnd->SetActive(curWnd == &wnd);
+}
+
+void WindowManager::SetActiveWindow(Window& wnd)
+{
+    if(curDesktop)
+        SetActiveWindowImpl(wnd, *curDesktop, windows);
+    if(nextdesktop)
+        SetActiveWindowImpl(wnd, *nextdesktop, nextWnds);
 }
 
 void WindowManager::TakeScreenshot()

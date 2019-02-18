@@ -33,6 +33,21 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURC
 include(CheckGitSubmodules)
 check_git_submodules()
 
+# Figure out RTTR_REVISION (git hash) and RTTR_VERSION (date)
+# Those can be manually set to override the default values
+# By default those are non-Cache variables which regenerates them on every configure run
+if(NOT RTTR_REVISION)
+    include(GetGitRevisionDescription)
+    # Get git commit hash. Note: CMake will reconfigure if the git hash changes
+    get_git_head_revision(RTTR_GIT_REF RTTR_REVISION)
+    if(NOT RTTR_REVISION)
+        message(FATAL_ERROR "Could not get git revision. The source has to be in a git repo or you have to define RTTR_REVISION")
+    endif()
+endif()
+if(NOT RTTR_VERSION)
+    string(TIMESTAMP RTTR_VERSION "%Y%m%d")
+endif()
+
 # Just include required
 include(EnsureOutOfSourceBuild)
 
@@ -294,7 +309,7 @@ add_custom_command(TARGET translations POST_BUILD
 
 if(ClangFormat_FOUND)
     add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/libs TRUE)
-    add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extra TRUE)
+    add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/extras TRUE)
     add_clangformat_folder(${CMAKE_CURRENT_SOURCE_DIR}/tests TRUE)
     add_clangformat_target("file")
 endif()

@@ -77,12 +77,8 @@ public:
 
     /// Can we close the window on right-click?
     /// If this is false and the window is modal the close button at the title bar will be hidden
-    void SetCloseOnRightClick(bool closeOnRightClick) { closeOnRightClick_ = closeOnRightClick; }
     bool GetCloseOnRightClick() const { return closeOnRightClick_; }
 
-    /// Toggle the modal property. Modal windows disallow focus change.
-    /// To also disallow closing of the window via the title bar or right-click set close_on_right_click to false
-    void SetModal(bool modal = true);
     /// ist das Fenster ein modales Fenster?
     bool IsModal() const { return isModal_; }
 

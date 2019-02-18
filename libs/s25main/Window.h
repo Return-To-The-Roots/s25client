@@ -28,6 +28,7 @@
 #include "gameTypes/TextureColor.h"
 #include "gameData/NationConsts.h"
 #include "libutil/colors.h"
+#include <boost/range/adaptor/map.hpp>
 #include <map>
 #include <vector>
 
@@ -103,7 +104,8 @@ public:
     void LockRegion(Window* window, const Rect& rect);
     /// Gibt eine gesperrte Region wieder frei.
     void FreeRegion(Window* window);
-    /// Größe verändern oder überhaupt setzen
+    /// Check if the gicen point is in a region locked by any window other than exception
+    bool IsInLockedRegion(const Position& pos, const Window* exception = nullptr) const;
 
     /// Set the position for the window
     void SetPos(const DrawPoint& newPos);
@@ -272,8 +274,6 @@ protected:
     T_Pt ScaleIf(const T_Pt& pt) const;
     /// setzt Scale-Wert, ob neue Controls skaliert werden sollen oder nicht.
     void SetScale(bool scale = true) { this->scale_ = scale; }
-    /// prüft ob koordinaten in einer gesperrten Region liegt.
-    bool TestWindowInRegion(Window* window, const Position& pos) const;
     /// zeichnet das Fenster.
     virtual void Draw_();
     /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
@@ -293,8 +293,6 @@ private:
     bool isInMouseRelay;
     ControlMap childIdToWnd_; /// Die Steuerelemente des Fensters.
     AnimationManager animations_;
-
-    friend class WindowManager;
 };
 
 template<typename T>
@@ -333,9 +331,9 @@ template<typename T>
 inline std::vector<T*> Window::GetCtrls()
 {
     std::vector<T*> result;
-    for(ControlMap::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
+    for(auto wnd : childIdToWnd_ | boost::adaptors::map_values)
     {
-        T* ctrl = dynamic_cast<T*>(it->second);
+        T* ctrl = dynamic_cast<T*>(wnd);
         if(ctrl)
             result.push_back(ctrl);
     }
@@ -346,9 +344,9 @@ template<typename T>
 inline std::vector<const T*> Window::GetCtrls() const
 {
     std::vector<const T*> result;
-    for(ControlMap::const_iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
+    for(const auto wnd : childIdToWnd_ | boost::adaptors::map_values)
     {
-        const T* ctrl = dynamic_cast<const T*>(it->second);
+        const T* ctrl = dynamic_cast<const T*>(wnd);
         if(ctrl)
             result.push_back(ctrl);
     }
