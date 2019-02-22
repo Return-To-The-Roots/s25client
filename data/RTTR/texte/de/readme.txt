@@ -256,7 +256,7 @@ E. Übersicht: Updates und Änderungen
   - Einige Fehler und Abstürze behoben
 
   * 0.8.2 - 22.08.2017
-  --------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - Viele Async Fixes
   - Nutzung von UTF8 um mehr Sprachen zu unterstützen
   - Viele neue Addons
@@ -267,7 +267,7 @@ E. Übersicht: Updates und Änderungen
   - Verbesserung der Code Qualität
 
   * 0.8.1
-  --------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - Fehlerkorrekturen
   - Funktionierende KI
   - Vollständige Seefahrt
@@ -280,11 +280,11 @@ E. Übersicht: Updates und Änderungen
   - Beobachtungsfenster
 
   * 0.7.2 - 17.01.2011 *
-  --------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - Kritische Fehlerkorrekturen
 
   * 0.7 - Seventh version - 24.12.2010 *
-  --------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - OpenSource!
   - Übersetzung: Niederländisch
   - Übersetzung: Russisch (Zeichensatz fehlt)
@@ -303,7 +303,7 @@ E. Übersicht: Updates und Änderungen
   - Addon Menü
 
   * 0.6 - Sechste Version - 25.01.2009 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - viele Bugs behoben
   - Fog of War (mit Teamview-Option)
   - Spähturm
@@ -325,7 +325,7 @@ E. Übersicht: Updates und Änderungen
   - Einige Hausanimationen hinzugefügt
 
   * 0.5 - Fünfte Version - 27.01.2008 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - sehr viele Bugs behoben
   - Eselstraßen, Eselzüchter
   - Bootsstraßen mit Booten und Werft (baut nur Boote)
@@ -340,16 +340,16 @@ E. Übersicht: Updates und Änderungen
   - Sound an/aus Buttons im Spiel
 
   * 0.4 - Vierte Version - 09.10.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - Speichern und Laden von Spielen eingebaut, inklusive Autosave
   - zig zum Teil schwere Bugs behoben
 
   * 0.3 - Dritte Version Fix01 -  13.09.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - kritischen Absturz behoben
 
   * 0.3 - Dritte Version - 12.09.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - diverse Absturzbugs behoben
   - Siedler warten nun, falls der Platz vor ihnen besetzt ist
     (durch Kämpfe z.B.)
@@ -361,7 +361,7 @@ E. Übersicht: Updates und Änderungen
   - Vorbereitungen für Speichern und Laden getroffen
 
   * 0.2 - Zweite Version - 15.07.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - diverse Bugs behoben und diverse Verzögerungsbugs unterdrückt
   - Menüs in variabler Auflösung
   - Prüfen der Synchronität und Rausschmiss asynchroner Spieler
@@ -378,7 +378,7 @@ E. Übersicht: Updates und Änderungen
   - RoadWindow schließt sich nun, wenn man woanders hinklickt
 
   * 0.1 - Erster Release - 01.07.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - alles ;-)
 
 --------------------------------------------------------------------------------
