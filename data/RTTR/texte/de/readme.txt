@@ -40,7 +40,7 @@ B. Installation
     "Put your S2-Files in here" befindet). Diese können sowohl von einer
     Installation als auch direkt von der CD kommen.
 
-    Alternativ könenn auch symbolische Verknüpfungen als Admin erstellt werden:
+    Alternativ können symbolische Verknüpfungen als Admin erstellt werden:
     mklink /D DATA "C:\S2\DATA"
     mklink /D GFX "C:\S2\GFX"
 
@@ -75,7 +75,7 @@ B. Installation
 
     mkdir -p /opt/s25rttr
     cd /opt/s25rttr
-    tar -jxvf s25rttr_???.tar.bz2
+    tar -jxvf s25rttr_*.tar.bz2
 
     Nun muss man entweder nur noch die original "Siedler 2"-Installation
     nach /opt/s25rttr/share/s25rttr/S2 kopieren, oder einen Symlink dorthin
@@ -102,7 +102,7 @@ B. Installation
     Linux:   ~/.s25rttr
     Mac OSX: ~/Library/Application Support/Return To The Roots
     
-    Er wird beim 1. Start erstellt, sofern er nicht existiert.
+    Er wird beim ersten Start erstellt, sofern er nicht existiert.
     Alle Logs, Einstellungen, Savegames und Replays befinden sich in Unterordnern.
     
 --------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ C. Spiel
        "Spielername").
        
     Im Einzelspieler-Modus klickt man auf "Endlosspiel" und folgt dann
-    obigen Schritten ab Schritt 5.
+    den obigen Schritten ab Schritt 5.
 
   2. Multiplayer-Spiele
 
@@ -153,7 +153,7 @@ C. Spiel
 
     c) LAN Spiele
        Der LAN-Bereich ist ähnlich der Internet-Lobby, funktioniert aber über das
-       lokale Netz und benötigt kein Login. Es können auch Programme wie Hamachi
+       lokale Netz und benötigt keinen Login. Es können auch Programme wie Hamachi
        verwendet werden, um virtuelle LANs über das Internet zu erstellen.
 
     Für das Spiel wird Port 3665 (TCP) genutzt. Dieser muss, falls man selbst
@@ -213,7 +213,7 @@ D. Abstürze und Fehler
   Durch Replays können Fehler leicht rekonstruiert werden. Ihr könnt uns
   mit dem Zusenden euer Replays helfen, weitere zu finden. Bitte stellt
   dabei sicher, dass ihr immer die neuste Nightly-Version verwendet. Fehler
-  aus möglicherweise veralteten Versionen sind mitunter schon lange behoben.
+  aus veralteten Versionen sind mitunter schon lange behoben.
 
   Falls ein Async aufgetreten ist, findet ihr im LOGS-Verzeichnis
   Log-Dateien. Schickt uns diese bitte von JEDEM(!) Spieler einschließlich
@@ -365,7 +365,7 @@ E. Übersicht: Updates und Änderungen
   - Bereit-Button im Host-Menü
   - Verteilung korrigiert
   - diverse fehlende Zierobjekte (z.B Stalagmiten, Ruinen) eingebaut
-  - zu allen GebÃ¤uden kann nun gesprungen werden
+  - zu allen Gebäuden kann nun gesprungen werden
   - einige Zierobjekte werden beim Wegbau nun abgerissen
   - Produktivitätsanzeige und Namenanzeige (C, S) teilweise schon korrekt
    implementiert
