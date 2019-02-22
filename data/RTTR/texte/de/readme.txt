@@ -49,8 +49,8 @@ B. Installation
 
     (In Nightlies kann man mit RTTR.BAT updaten.)
 
-    Es werden KEINE originalen Spieldateien verändert. Man kann weiterhin das
-    Original ohne Beeinträchtigung spielen.
+    Es werden KEINE originalen Spieldateien verändert. Man kann weiterhin
+    das Original ohne Beeinträchtigung spielen.
       
   ------------------------------------------------------------------------------
 
@@ -96,6 +96,7 @@ B. Installation
   ------------------------------------------------------------------------------
     
   4. Settings-Ordner
+
     Der Settings-Ordner befindet sich unter:
     
     Windows: <Benutzer-Ordner>/My Games/Return To The Roots
@@ -103,7 +104,8 @@ B. Installation
     Mac OSX: ~/Library/Application Support/Return To The Roots
     
     Er wird beim ersten Start erstellt, sofern er nicht existiert.
-    Alle Logs, Einstellungen, Savegames und Replays befinden sich in Unterordnern.
+    Alle Logs, Einstellungen, Savegames und Replays befinden sich 
+    in den jeweiligen Unterordnern.
     
 --------------------------------------------------------------------------------
 
@@ -111,10 +113,10 @@ C. Spiel
 
   1. Erstellen eines Spiels
 
-    Es gibt sowohl einen Einzelspieler- als auch einen Mehrspieler-Modus. Die
-    Einzelspieler-Modi sind unter dem entsprechenden Menüpunkt zu finden und
-    weitestgehend selbsterklärend. Man kann auch alleine im Mehrspieler-Modus
-    spielen:
+    Es gibt sowohl einen Einzelspieler- als auch einen Mehrspieler-Modus.
+    Die Einzelspieler-Modi sind unter dem entsprechenden Menüpunkt zu 
+    finden und weitestgehend selbsterklärend. Man kann auch alleine im 
+    Mehrspieler-Modus spielen:
 
     1. Im Hauptmenü auf Mehrspieler gehen
     2. Direkte IP
@@ -152,9 +154,10 @@ C. Spiel
        Login-Daten für den Login in die Spiel-Lobby verwendet werden.
 
     c) LAN Spiele
-       Der LAN-Bereich ist ähnlich der Internet-Lobby, funktioniert aber über das
-       lokale Netz und benötigt keinen Login. Es können auch Programme wie Hamachi
-       verwendet werden, um virtuelle LANs über das Internet zu erstellen.
+       Der LAN-Bereich ist ähnlich der Internet-Lobby, funktioniert aber über
+       das lokale Netz und benötigt keinen Login. Es können auch Programme 
+       wie Hamachi verwendet werden, um virtuelle LANs über das Internet 
+       zu erstellen.
 
     Für das Spiel wird Port 3665 (TCP) genutzt. Dieser muss, falls man selbst
     das Spiel eröffnen möchte, u.a. bei Verwendung eines Routers, einer
@@ -163,7 +166,8 @@ C. Spiel
     "Port Forwarding". Dort ist dann Port 3665 vom Typ TCP auf die interne IP
     des Spiel-PCs weiterzuleiten. Bei der Verwendung einer lokalen Firewall
     muss auch hier der Zugriff zugelassen werden.
-    Im LAN Modus werden Ports 3666 und 3667 (UDP) zum Finden von Spielen verwendet.
+    Im LAN Modus werden die Ports 3666 und 3667 (UDP) zum Finden von Spielen 
+    verwendet.
     
     Es ist nicht notwendig, dass jeder Spieler die Karte hat. Diese wird bei
     Spielbegin automatisch vom Host übertragen.
@@ -192,8 +196,9 @@ C. Spiel
 
     Speichern ist im Spielmenü an der "originalen" Stelle möglich.
     Speichern ist auch aus dem Replaymodus an beliebiger Stelle möglich.
-    Laden von gespeicherten Spieleständen erfolgt im Mehrspieler-Modus über die
-    Kartenauswahl und im Einzelspieler-Modus über den entsprechenden Menüpunkt.
+    Laden von gespeicherten Spieleständen erfolgt im Mehrspieler-Modus
+    über die Kartenauswahl und im Einzelspieler-Modus über den
+    entsprechenden Menüpunkt.
     Mitspieler benötigen kein eigenes Savegame, dieses wird automatisch
     beim Verbinden übertragen.
 
@@ -206,14 +211,14 @@ C. Spiel
 
 D. Abstürze und Fehler
 
-  Wir arbeiten hart daran das Spiel immer weiter zu verbessern. Leider lassen
-  sich Abstürze, Asyncs, Speicherzugriffs- und sonstige Fehler nicht ganz
-  ausschließen.
+  Wir arbeiten hart daran das Spiel immer weiter zu verbessern. Leider
+  lassen sich Abstürze, Asyncs, Speicherzugriffs- und sonstige Fehler 
+  nicht ganz ausschließen.
 
   Durch Replays können Fehler leicht rekonstruiert werden. Ihr könnt uns
   mit dem Zusenden euer Replays helfen, weitere zu finden. Bitte stellt
-  dabei sicher, dass ihr immer die neuste Nightly-Version verwendet. Fehler
-  aus veralteten Versionen sind mitunter schon lange behoben.
+  dabei sicher, dass ihr immer die neuste Nightly-Version verwendet.
+  Fehler aus veralteten Versionen sind mitunter schon lange behoben.
 
   Falls ein Async aufgetreten ist, findet ihr im LOGS-Verzeichnis
   Log-Dateien. Schickt uns diese bitte von JEDEM(!) Spieler einschließlich
@@ -225,10 +230,10 @@ D. Abstürze und Fehler
 
       https://github.com/Return-To-The-Roots/s25client
 
-  Github erhöht die Übersichtlichkeit für Bugs und ermöglicht euch zudem selber
-  einsehen zu können, wann der Bug gefixt wurde. Außerdem bietet es eine gute
-  Möglichkeit der Kommunikation zwischen uns und euch, insbesondere, wenn wir
-  noch weitere Informationen von euch benötigen.
+  Github erhöht die Übersichtlichkeit für Bugs und ermöglicht euch zudem
+  selber einsehen zu können, wann der Bug gefixt wurde. Außerdem bietet
+  es eine gute Möglichkeit der Kommunikation zwischen uns und euch, vor
+  allem wenn wir noch weitere Informationen von euch benötigen.
 
   Alternativ könnt ihr euch auch im Forum oder im IRC-Channel unter
   irc.freenode.net:6667/#siedler2.5 melden.
