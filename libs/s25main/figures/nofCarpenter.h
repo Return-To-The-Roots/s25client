@@ -34,7 +34,7 @@ class nofCarpenter : public nofWorkman
     GoodType ProduceWare() override;
 
 public:
-    nofCarpenter(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofCarpenter(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofCarpenter(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_CARPENTER; }

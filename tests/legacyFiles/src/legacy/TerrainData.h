@@ -69,7 +69,7 @@ public:
     /// Returns whether the given terrain is any kind of lava
     static bool IsLava(TerrainType t);
     /// Returns whether the given terrain is any kind of snow
-    static bool IsSnow(Landscape landsCape, TerrainType t);
+    static bool IsSnow(Landscape lt, TerrainType t);
     /// Returns whether the given terrain is a mountain
     static bool IsMountain(TerrainType t);
     /// Returns whether the given terrain is a mineable mountain

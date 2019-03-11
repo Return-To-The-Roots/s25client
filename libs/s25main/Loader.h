@@ -166,7 +166,7 @@ private:
     bool LoadSounds();
 
     /// Load a file into the archiv
-    bool LoadSingleFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool LoadSingleFile(libsiedler2::Archiv& to, const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadArchiv(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadOverrideDirectory(const std::string& path);
     bool LoadFilesFromArray(const std::vector<unsigned>& files);

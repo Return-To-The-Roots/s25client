@@ -46,7 +46,7 @@ public:
     /// Direction to previous node, includes SHIP_DIR
     mutable unsigned dir_; //-V730_NOINIT
 public:
-    noRoadNode(const NodalObjectType nop, const MapPoint pt, unsigned char player);
+    noRoadNode(const NodalObjectType nop, const MapPoint pos, unsigned char player);
     noRoadNode(SerializedGameData& sgd, unsigned obj_id);
 
     ~noRoadNode() override;

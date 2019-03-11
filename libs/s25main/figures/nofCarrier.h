@@ -107,7 +107,7 @@ private:
     void WanderOnWater();
 
 public:
-    nofCarrier(const CarrierType ct, const MapPoint pt, unsigned char player, RoadSegment* workplace, noRoadNode* const goal);
+    nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char player, RoadSegment* workplace, noRoadNode* const goal);
     nofCarrier(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofCarrier() override;

@@ -45,7 +45,7 @@ private:
     void CancelTradeCaravane();
 
 public:
-    nofTradeLeader(const MapPoint pt, unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos);
+    nofTradeLeader(const MapPoint pos, unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos);
     nofTradeLeader(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override

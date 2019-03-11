@@ -31,7 +31,7 @@ private:
     uint8_t master_music_volume;
 
 public:
-    AudioSDL(IAudioDriverCallback* driverCallback);
+    AudioSDL(IAudioDriverCallback* adli);
     ~AudioSDL() override;
 
     /// Return the name of the driver

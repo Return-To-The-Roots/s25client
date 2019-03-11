@@ -37,7 +37,7 @@ public:
 
     void SetPadding(const Extent& padding);
     /// Größe ändern
-    void Resize(const Extent& size) override;
+    void Resize(const Extent& newSize) override;
     void SetMapSize(const Extent& newMapSize);
 
     /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box

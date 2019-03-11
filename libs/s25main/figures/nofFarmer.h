@@ -45,7 +45,7 @@ private:
     PointQuality GetPointQuality(const MapPoint pt) const override;
 
 public:
-    nofFarmer(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofFarmer(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmer(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

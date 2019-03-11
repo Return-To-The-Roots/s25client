@@ -60,7 +60,7 @@ private:
     void HandleStateEviscerating();
 
 public:
-    nofHunter(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofHunter(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofHunter(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override

@@ -44,7 +44,7 @@ private:
 
 public:
     nofPassiveSoldier(const nofSoldier& soldier);
-    nofPassiveSoldier(const MapPoint pt, unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
+    nofPassiveSoldier(const MapPoint pos, unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
                       const unsigned char rank);
     nofPassiveSoldier(SerializedGameData& sgd, unsigned obj_id);
 

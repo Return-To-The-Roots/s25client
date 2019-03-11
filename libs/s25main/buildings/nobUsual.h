@@ -62,7 +62,7 @@ class nobUsual : public noBuilding
 protected:
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobUsual(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    nobUsual(const BuildingType type, const MapPoint pos, unsigned char player, const Nation nation);
     nobUsual(SerializedGameData& sgd, unsigned obj_id);
 
 public:

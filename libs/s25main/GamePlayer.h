@@ -192,7 +192,7 @@ public:
     /// Setzt neue Verteilungseinstellungen
     void ChangeDistribution(const Distributions& distribution_settings);
     /// Setzt neue Baureihenfolge-Einstellungen
-    void ChangeBuildOrder(bool order_type, const BuildOrders& oder_data);
+    void ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& order_data);
 
     /// Can this player and the other attack each other?
     bool IsAttackable(unsigned char playerId) const;
@@ -268,7 +268,7 @@ public:
     void AcceptPact(unsigned id, const PactType pt, unsigned char targetPlayer);
     /// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will
     /// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
-    void CancelPact(const PactType pt, unsigned char other_player);
+    void CancelPact(const PactType pt, unsigned char otherPlayerIdx);
     /// Zeigt an, ob ein Pakt besteht
     enum PactState
     {
@@ -290,7 +290,7 @@ public:
     /// IMPORTANT: Warehouses can be destroyed. So check them first before using!
     std::vector<nobBaseWarehouse*> GetWarehousesForTrading(const nobBaseWarehouse& goalWh) const;
     /// Send wares to warehouse wh
-    void Trade(nobBaseWarehouse* wh, const GoodType gt, const Job job, unsigned count) const;
+    void Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job job, unsigned count) const;
 
     void EnableBuilding(BuildingType type) { building_enabled[type] = true; }
     void DisableBuilding(BuildingType type) { building_enabled[type] = false; }

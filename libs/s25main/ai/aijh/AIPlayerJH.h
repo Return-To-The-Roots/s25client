@@ -201,7 +201,7 @@ public:
     /// at least 1 other free harborid
     bool HarborPosRelevant(unsigned harborid, bool onlyempty = false) const;
     /// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no warehouse/military))
-    bool BuildingNearby(const MapPoint pt, BuildingType bld, unsigned min);
+    bool BuildingNearby(const MapPoint pt, BuildingType bldType, unsigned min);
     /// Update BQ and farming ground around new building site + road
     void RecalcGround(const MapPoint buildingPos, std::vector<Direction>& route_road);
 

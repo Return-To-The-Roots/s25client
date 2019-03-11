@@ -54,7 +54,7 @@ private:
     void DrawOtherStates(DrawPoint drawPt) override;
 
 public:
-    nofShipWright(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofShipWright(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofShipWright(SerializedGameData& sgd, unsigned obj_id);
     GO_Type GetGOT() const override { return GOT_NOF_SHIPWRIGHT; }
     void HandleDerivedEvent(unsigned id) override;

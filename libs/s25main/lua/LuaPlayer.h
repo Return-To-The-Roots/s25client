@@ -46,7 +46,7 @@ public:
     void DisableBuilding(BuildingType bld);
     void EnableAllBuildings();
     void DisableAllBuildings();
-    void SetRestrictedArea(kaguya::VariadicArgType points);
+    void SetRestrictedArea(kaguya::VariadicArgType inPoints);
     bool IsInRestrictedArea(unsigned x, unsigned y) const;
     void ClearResources();
     bool AddWares(const std::map<GoodType, unsigned>& wares);

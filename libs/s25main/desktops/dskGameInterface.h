@@ -85,7 +85,7 @@ public:
     /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
     void GI_TreatyOfAllianceChanged(unsigned playerId) override;
     void GI_Winner(unsigned playerId) override;
-    void GI_TeamWinner(unsigned playerId) override;
+    void GI_TeamWinner(unsigned playerMask) override;
     void GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad) override;
     void GI_CancelRoadBuilding() override;
     /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)

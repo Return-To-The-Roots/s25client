@@ -159,7 +159,7 @@ public:
     void SkipGF(unsigned gf, GameWorldView& gwv);
 
     /// Changes the player ingame (for replay or debugging)
-    void ChangePlayerIngame(unsigned char player1, unsigned char player2);
+    void ChangePlayerIngame(unsigned char playerId1, unsigned char playerId2);
     /// Sends a request to swap places with the requested player. Only for debugging!
     void RequestSwapToPlayer(unsigned char newId);
 

@@ -41,7 +41,7 @@ protected:
     bool AreWaresAvailable() const override;
 
 public:
-    nofArmorer(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofArmorer(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofArmorer(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

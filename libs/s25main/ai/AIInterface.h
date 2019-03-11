@@ -78,7 +78,7 @@ public:
     /// Test whether the ai player can see a point
     bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == VIS_VISIBLE; }
     /// Return true when the building quality at the 2nd point is lower than the bq on the first point
-    bool CalcBQSumDifference(const MapPoint pt, const MapPoint t);
+    bool CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2);
     /// Return building quality on a given spot
     BuildingQuality GetBuildingQuality(const MapPoint pt) const;
     BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const;
@@ -138,7 +138,7 @@ public:
     bool SetCoinsAllowed(const nobMilitary* building, bool enabled);
     using GameCommandFactory::SetCoinsAllowed;
 
-    bool StartStopExpedition(const nobHarborBuilding* harbor, bool start);
+    bool StartStopExpedition(const nobHarborBuilding* hb, bool start);
     using GameCommandFactory::StartStopExpedition;
 
     bool FoundColony(const noShip* ship) { return FoundColony(GetShipID(ship)); }
@@ -150,7 +150,7 @@ public:
     bool CancelExpedition(const noShip* ship) { return CancelExpedition(GetShipID(ship)); }
     using GameCommandFactory::CancelExpedition;
 
-    bool SetShipYardMode(const nobShipYard* yard, bool buildShips);
+    bool SetShipYardMode(const nobShipYard* shipyard, bool buildShips);
     using GameCommandFactory::SetShipYardMode;
 
     bool DestroyBuilding(const noBuilding* building);

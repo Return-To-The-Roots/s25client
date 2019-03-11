@@ -62,7 +62,7 @@ protected:
     void DrawOtherStates(DrawPoint drawPt) override;
 
 public:
-    nofFarmhand(const Job job, const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofFarmhand(const Job job, const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmhand(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden

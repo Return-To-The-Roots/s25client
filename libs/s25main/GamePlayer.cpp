@@ -1373,10 +1373,10 @@ void GamePlayer::ChangeDistribution(const Distributions& distribution_settings)
 }
 
 /// Setzt neue Baureihenfolge-Einstellungen
-void GamePlayer::ChangeBuildOrder(bool useCustomBuidOrder, const BuildOrders& oder_data)
+void GamePlayer::ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& order_data)
 {
-    this->useCustomBuildOrder_ = useCustomBuidOrder;
-    this->build_order = oder_data;
+    this->useCustomBuildOrder_ = useCustomBuildOrder;
+    this->build_order = order_data;
 }
 
 bool GamePlayer::ShouldSendDefender()

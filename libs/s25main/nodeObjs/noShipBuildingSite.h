@@ -24,7 +24,7 @@ class SerializedGameData;
 class noShipBuildingSite : public noCoordBase
 {
 public:
-    noShipBuildingSite(const MapPoint pt, unsigned char player);
+    noShipBuildingSite(const MapPoint pos, unsigned char player);
     noShipBuildingSite(SerializedGameData& sgd, unsigned obj_id);
     ~noShipBuildingSite() override;
     void Destroy() override;

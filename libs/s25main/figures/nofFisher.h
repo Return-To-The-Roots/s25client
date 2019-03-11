@@ -44,7 +44,7 @@ private:
     PointQuality GetPointQuality(const MapPoint pt) const override;
 
 public:
-    nofFisher(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofFisher(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFisher(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofFisher() override {}

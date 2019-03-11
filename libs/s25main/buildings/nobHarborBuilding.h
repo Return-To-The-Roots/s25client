@@ -109,7 +109,7 @@ private:
 
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobHarborBuilding(const MapPoint pt, unsigned char player, const Nation nation);
+    nobHarborBuilding(const MapPoint pos, unsigned char player, const Nation nation);
     nobHarborBuilding(SerializedGameData& sgd, unsigned obj_id);
 
 protected:

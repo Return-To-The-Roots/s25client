@@ -39,7 +39,7 @@ private:
     PointQuality GetPointQuality(const MapPoint pt) const override;
 
 public:
-    nofForester(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofForester(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofForester(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_FORESTER; }

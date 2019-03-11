@@ -52,7 +52,7 @@ protected:
     void PauseWalking();
 
 public:
-    noMovable(const NodalObjectType nop, const MapPoint pt);
+    noMovable(const NodalObjectType nop, const MapPoint pos);
     noMovable(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override { noCoordBase::Destroy(); }

@@ -31,7 +31,7 @@ class AIFactory
     AIFactory();
 
 public:
-    static AIPlayer* Create(const AI::Info& info, unsigned playerId, const GameWorldBase& world);
+    static AIPlayer* Create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world);
 };
 
 #endif // AIFactory_h__

@@ -38,7 +38,7 @@ protected:
     unsigned CalcPixelColor(const MapPoint pt, unsigned t) override;
 
 private:
-    unsigned char CalcShading(const MapPoint t, const std::vector<unsigned char>& altitudes) const;
+    unsigned char CalcShading(const MapPoint pt, const std::vector<unsigned char>& altitudes) const;
     void CalcShadows(const std::vector<unsigned char>& altitudes);
 };
 

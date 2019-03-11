@@ -72,7 +72,7 @@ public:
     typedef bool (Window::*KeyboardMsgHandler)(const KeyEvent&);
     typedef bool (Window::*MouseMsgHandler)(const MouseCoords&);
 
-    Window(Window* parent, unsigned id, const DrawPoint& position, const Extent& size = Extent(0, 0));
+    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0));
     virtual ~Window();
     /// zeichnet das Fenster.
     void Draw();
@@ -141,7 +141,7 @@ public:
     T* AddCtrl(T* ctrl);
 
     ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation, unsigned short size = 36,
-                                      const std::string& tooltip_ = "");
+                                      const std::string& tooltip = "");
     ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
                               glArchivItem_Font* font, const std::string& tooltip = "");
     ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor,

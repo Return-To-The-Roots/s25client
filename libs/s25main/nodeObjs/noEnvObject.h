@@ -25,7 +25,7 @@ class SerializedGameData;
 class noEnvObject : public noStaticObject
 {
 public:
-    noEnvObject(const MapPoint pt, unsigned short id, unsigned short file = 0xFFFF);
+    noEnvObject(const MapPoint pos, unsigned short id, unsigned short file = 0xFFFF);
     noEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_ENVOBJECT; }

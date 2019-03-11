@@ -117,9 +117,9 @@ protected:
 
 public:
     /// Konstruktor für Figuren, die auf dem Wegenetz starten
-    noFigure(const Job job, const MapPoint pt, unsigned char player, noRoadNode* const goal);
+    noFigure(const Job job, const MapPoint pos, unsigned char player, noRoadNode* const goal);
     /// Konstruktor für Figuren, die im Job-Modus starten
-    noFigure(const Job job, const MapPoint pt, unsigned char player);
+    noFigure(const Job job, const MapPoint pos, unsigned char player);
 
     noFigure(SerializedGameData& sgd, unsigned obj_id);
 
@@ -159,9 +159,9 @@ public:
     /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
     void DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat);
     /// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
-    void DrawWalkingBobJobs(DrawPoint drawPt, unsigned id);
+    void DrawWalkingBobJobs(DrawPoint drawPt, unsigned job);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft
-    void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned item, bool fat, bool waitingsoldier = false);
+    void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat, bool waitingsoldier = false);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
     void DrawWalking(DrawPoint drawPt, const char* const file, unsigned id);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft, nimmt automatisch richtige Job-ID/Datei

@@ -121,7 +121,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
             unsigned stones = (percent * BUILDING_COSTS[nation][bldType_].stones) / 1000;
 
             GoodType goods[2] = {GD_BOARDS, GD_STONES};
-            bool which = 0;
+            bool which = false;
             while(flag->IsSpaceForWare() && (boards > 0 || stones > 0))
             {
                 if((!which && boards > 0) || (which && stones > 0))

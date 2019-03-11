@@ -73,7 +73,7 @@ protected:
     void CreateTradeGraphs();
 
 public:
-    GameWorldGame(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
+    GameWorldGame(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldGame() override;
 
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
@@ -95,7 +95,7 @@ public:
     /// Baustelle setzen
     void SetBuildingSite(const BuildingType type, const MapPoint pt, unsigned char player);
     /// Gebäude bzw Baustelle abreißen
-    void DestroyBuilding(const MapPoint pt, unsigned char playe);
+    void DestroyBuilding(const MapPoint pt, unsigned char player);
 
     /// Find a path for people using roads. Result will be a direction, INVALID_DIR or SHIP_DIR
     unsigned char FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = nullptr,
@@ -110,7 +110,7 @@ public:
                                 bool random_route = false, std::vector<Direction>* route = nullptr, unsigned* length = nullptr) const;
     /// Check whether trade path (starting from point @param start and at index @param startRouteIdx) is still valid. Optionally returns
     /// destination pt
-    bool CheckTradeRoute(const MapPoint start, const std::vector<Direction>& route, unsigned startRouteIdx, unsigned char player,
+    bool CheckTradeRoute(const MapPoint start, const std::vector<Direction>& route, unsigned pos, unsigned char player,
                          MapPoint* dest = nullptr) const;
 
     /// setzt den Straßen-Wert um den Punkt X,Y.

@@ -81,7 +81,7 @@ public:
     virtual ~World();
 
     /// Initialize the world
-    virtual void Init(const MapExtent& size, DescIdx<LandscapeDesc> lt);
+    virtual void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt);
     /// Clean up (free objects and reset world to uninitialized state)
     virtual void Unload();
 

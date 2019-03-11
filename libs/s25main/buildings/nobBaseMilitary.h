@@ -53,7 +53,7 @@ protected:
     nofDefender* defender_;
 
 public:
-    nobBaseMilitary(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    nobBaseMilitary(const BuildingType type, const MapPoint pos, unsigned char player, const Nation nation);
     nobBaseMilitary(SerializedGameData& sgd, unsigned obj_id);
     ~nobBaseMilitary() override;
 

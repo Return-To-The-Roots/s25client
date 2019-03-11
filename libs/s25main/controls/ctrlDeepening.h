@@ -26,7 +26,7 @@
 class ctrlDeepening : public Window
 {
 public:
-    ctrlDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size, TextureColor tc);
+    ctrlDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc);
 
 protected:
     void Draw_() override;

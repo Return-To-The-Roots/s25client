@@ -52,7 +52,7 @@ private:
 
     /// Füllt die Felder einer Reihe aus
     void ChangeTeam(unsigned i, unsigned char nr);
-    void ChangeReady(unsigned i, bool ready);
+    void ChangeReady(unsigned player, bool ready);
     void ChangeNation(unsigned i, const Nation nation);
     void ChangePing(unsigned playerId);
     void ChangeColor(unsigned i, unsigned color);

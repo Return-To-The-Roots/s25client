@@ -26,7 +26,7 @@ class glArchivItem_BitmapBase : public virtual libsiedler2::ArchivItem_BitmapBas
 {
 public:
     glArchivItem_BitmapBase();
-    glArchivItem_BitmapBase(const glArchivItem_BitmapBase& other);
+    glArchivItem_BitmapBase(const glArchivItem_BitmapBase& item);
     ~glArchivItem_BitmapBase() override;
 
     /// liefert das GL-Textur-Handle.

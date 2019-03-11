@@ -77,7 +77,7 @@ public:
 class IAudioDriverCallback;
 
 /// Instanzierungsfunktion der Treiber.
-DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* CallBack, void* device_dependent);
+DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* device_dependent);
 DRIVERDLLAPI void FreeAudioInstance(IAudioDriver* driver);
 
 ///

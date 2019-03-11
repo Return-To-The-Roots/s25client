@@ -32,7 +32,7 @@ public:
 private:
     class DebugPrinter;
 
-    void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, int select) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
 
     GameWorldView& gwv;

@@ -181,7 +181,7 @@ public:
                                                            const unsigned char player_attacker) const;
     /// Return all soldiers (in no specific order) that can be used to attack the given point via a sea.
     /// Checks all preconditions for a sea attack (addon, attackable...)
-    std::vector<PotentialSeaAttacker> GetSoldiersForSeaAttack(unsigned char player_attacker, const MapPoint targetPt) const;
+    std::vector<PotentialSeaAttacker> GetSoldiersForSeaAttack(unsigned char player_attacker, const MapPoint pt) const;
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
     unsigned GetNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, unsigned short seaid, bool returnCount = true) const;
 

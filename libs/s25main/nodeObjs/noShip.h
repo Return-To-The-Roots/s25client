@@ -137,7 +137,7 @@ private:
     void AbortSeaAttack();
 
 public:
-    noShip(const MapPoint pt, unsigned char player);
+    noShip(const MapPoint pos, unsigned char player);
     noShip(SerializedGameData& sgd, unsigned obj_id);
 
     ~noShip() override;

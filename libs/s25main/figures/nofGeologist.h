@@ -65,7 +65,7 @@ private:
     bool IsSignInArea(Resource::Type type) const;
 
 public:
-    nofGeologist(const MapPoint pt, unsigned char player, noRoadNode* goal);
+    nofGeologist(const MapPoint pos, unsigned char player, noRoadNode* goal);
     nofGeologist(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

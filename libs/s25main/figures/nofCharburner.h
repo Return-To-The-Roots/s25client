@@ -60,7 +60,7 @@ protected:
     bool AreWaresAvailable() const override;
 
 public:
-    nofCharburner(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofCharburner(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofCharburner(SerializedGameData& sgd, unsigned obj_id);
 
     void Serialize(SerializedGameData& sgd) const override;

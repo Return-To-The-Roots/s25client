@@ -25,7 +25,7 @@ class GameEvent;
 class noDisappearingEnvObject : public noCoordBase
 {
 public:
-    noDisappearingEnvObject(const MapPoint pt, unsigned living_time, unsigned add_var_living_time);
+    noDisappearingEnvObject(const MapPoint pos, unsigned living_time, unsigned add_var_living_time);
     noDisappearingEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
 public:

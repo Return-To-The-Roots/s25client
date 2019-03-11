@@ -32,9 +32,9 @@ static AudioSDL* nthis = nullptr;
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  */
-DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* adli, void* /*device_dependent*/)
+DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* /*device_dependent*/)
 {
-    nthis = new AudioSDL(adli);
+    nthis = new AudioSDL(callback);
     return nthis;
 }
 

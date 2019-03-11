@@ -50,7 +50,7 @@ protected:
     void DestroyBuildingExtensions();
 
 public:
-    noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pt, unsigned char player);
+    noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, unsigned char player);
     noBaseBuilding(SerializedGameData& sgd, unsigned obj_id);
 
     ~noBaseBuilding() override;

@@ -40,8 +40,8 @@ protected:
     bool AreWaresAvailable() const override;
 
 public:
-    nofScout_LookoutTower(const MapPoint pt, unsigned char player, nobUsual* workplace);
-    nofScout_LookoutTower(const MapPoint pt, unsigned char player, nobBaseWarehouse* goalWh);
+    nofScout_LookoutTower(const MapPoint pos, unsigned char player, nobUsual* workplace);
+    nofScout_LookoutTower(const MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofScout_LookoutTower(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

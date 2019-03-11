@@ -135,7 +135,7 @@ protected:
     /// Recruts a worker of the given job if possible
     bool TryRecruitJob(const Job job);
 
-    nobBaseWarehouse(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    nobBaseWarehouse(const BuildingType type, const MapPoint pos, unsigned char player, const Nation nation);
     nobBaseWarehouse(SerializedGameData& sgd, unsigned obj_id);
 
 public:

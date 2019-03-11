@@ -37,7 +37,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font //-V690
 {
 public:
     glArchivItem_Font();
-    glArchivItem_Font(const glArchivItem_Font& item);
+    glArchivItem_Font(const glArchivItem_Font& obj);
     RTTR_CLONEABLE(glArchivItem_Font)
 
     /// Draw the the text at the given position with format (alignment) and color.
@@ -66,7 +66,7 @@ public:
     {
     public:
         /// Erzeugt ein Arrays aus eigenständigen Strings aus den Unterbrechungsinfos.
-        std::vector<std::string> CreateSingleStrings(const std::string& origin_text);
+        std::vector<std::string> CreateSingleStrings(const std::string& text);
 
         /// Array von Positionen, wo der Text umbrochen werden soll (jeweils der Anfang vom String)
         std::vector<unsigned> positions;

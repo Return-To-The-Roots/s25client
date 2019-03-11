@@ -28,7 +28,7 @@ class nobUsual;
 class nofDonkeybreeder : public nofWorkman
 {
 public:
-    nofDonkeybreeder(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofDonkeybreeder(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_DONKEYBREEDER; }

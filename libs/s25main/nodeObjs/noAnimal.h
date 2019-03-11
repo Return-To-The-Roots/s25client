@@ -59,7 +59,7 @@ private:
     void StandardWalking();
 
 public:
-    noAnimal(const Species species, const MapPoint pt);
+    noAnimal(const Species species, const MapPoint pos);
     noAnimal(SerializedGameData& sgd, unsigned obj_id);
 
     ~noAnimal() override {}

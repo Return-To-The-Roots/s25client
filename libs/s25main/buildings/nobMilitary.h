@@ -96,7 +96,7 @@ private:
 
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobMilitary(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    nobMilitary(const BuildingType type, const MapPoint pos, unsigned char player, const Nation nation);
     nobMilitary(SerializedGameData& sgd, unsigned obj_id);
 
 public:

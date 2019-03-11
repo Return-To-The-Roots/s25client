@@ -29,7 +29,7 @@ class noFigure;
 class noFlag : public noRoadNode
 {
 public:
-    noFlag(const MapPoint pt, unsigned char player, unsigned char dis_dir = 0xFF);
+    noFlag(const MapPoint pos, unsigned char player, unsigned char dis_dir = 0xFF);
     noFlag(SerializedGameData& sgd, unsigned obj_id);
     ~noFlag() override;
 
@@ -52,7 +52,7 @@ public:
     /// Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
     unsigned GetNumWares() const;
     /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.
-    Ware* SelectWare(const Direction dir, bool swap_wares, const noFigure* const carrier);
+    Ware* SelectWare(const Direction roadDir, bool swap_wares, const noFigure* const carrier);
     /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
     unsigned GetNumWaresForRoad(const Direction dir) const;
     /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen.

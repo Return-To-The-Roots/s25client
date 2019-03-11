@@ -58,7 +58,7 @@ const unsigned short WANDER_TRYINGS_SOLDIERS = 6;
 const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
-    : noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(0), on_ship(false),
+    : noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false), on_ship(false),
       goal_(goal), waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
       burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {
@@ -70,7 +70,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 }
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
-    : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(0), on_ship(false),
+    : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false), on_ship(false),
       goal_(nullptr), waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
       burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {}
@@ -306,7 +306,7 @@ void noFigure::WalkToGoal()
             // Zeug nullen
             cur_rs = nullptr;
             goal_ = nullptr;
-            rs_dir = 0;
+            rs_dir = false;
             rs_pos = 0;
             if(fs == FS_GOHOME)
             {
@@ -745,7 +745,7 @@ void noFigure::CorrectSplitData(const RoadSegment* const rs2)
             // dann einfach auf das 2. gehen
             cur_rs = rs2;
             rs_pos = 0;
-            rs_dir = 0;
+            rs_dir = false;
         }
     }
 

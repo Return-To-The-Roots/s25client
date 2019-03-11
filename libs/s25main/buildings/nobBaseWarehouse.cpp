@@ -540,7 +540,7 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
     TryRecruiting();
 
     // Evtl die Typen gleich wieder auslagern, falls erforderlich
-    CheckOuthousing(1, JOB_HELPER);
+    CheckOuthousing(true, JOB_HELPER);
 }
 
 void nobBaseWarehouse::HandleLeaveEvent()
@@ -642,7 +642,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
         {
             // Dann Ware raustragen lassen
             Ware* ware = waiting_wares.front();
-            nofWarehouseWorker* worker = new nofWarehouseWorker(pos, player, ware, 0);
+            nofWarehouseWorker* worker = new nofWarehouseWorker(pos, player, ware, false);
             gwg->AddFigure(pos, worker);
             inventory.visual.Remove(ConvertShields(ware->type));
             worker->WalkToGoal();

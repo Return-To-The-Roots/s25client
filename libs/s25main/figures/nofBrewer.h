@@ -34,7 +34,7 @@ class nofBrewer : public nofWorkman
     GoodType ProduceWare() override;
 
 public:
-    nofBrewer(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofBrewer(const MapPoint pos, unsigned char player, nobUsual* workplace);
     nofBrewer(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_BREWER; }

@@ -34,7 +34,7 @@ public:
     static void Register(kaguya::State& state);
 
 private:
-    void Include(const std::string& filePath);
+    void Include(const std::string& filepath);
     void AddLandscape(const kaguya::LuaTable& data);
     void AddTerrainEdge(const kaguya::LuaTable& data);
     void AddTerrain(const kaguya::LuaTable& data);
