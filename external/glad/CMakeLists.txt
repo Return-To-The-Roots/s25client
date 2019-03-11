@@ -1,19 +1,15 @@
 # Note: Sources and headers are generated using http://glad.dav1d.de/ on 07.07.2018
 # See glad.h for details
 
-set(rttr_available_gl OGL2.1Compat OGL2.1 OGL3.3 GLES2.0)
-set(RTTR_OPENGL "OGL2.1Compat" CACHE STRING "The OpenGL version to use")
-set_property(CACHE RTTR_OPENGL PROPERTY STRINGS ${rttr_available_gl})
-list(FIND rttr_available_gl ${RTTR_OPENGL} _index)
-if(_index GREATER -1)
-    message(STATUS "Used OpenGL version: ${RTTR_OPENGL}")
-else()
-    message(FATAL_ERROR "Set RTTR_OPENGL to any of ${rttr_available_gl}")
-endif()
+include(ConstrainedOption)
+constrained_option(RTTR_OPENGL
+    DEFAULT "OGL2.0Compat"
+    DESCRIPTION "The OpenGL version to use"
+    VALUES OGL2.0Compat OGL2.0 OGL2.1Compat OGL2.1 OGL3.3 GLES2.0)
 
 string(REGEX MATCH "^(OGL|GLES)([0-9])\\.([0-9])(Compat)?$" ogl_match ${RTTR_OPENGL})
 if(NOT ogl_match)
-    message(FATAL_ERROR "Invalid value for RTTR_OPENGL: ${RTTR_OPENGL}. Use any of ${rttr_available_gl}")
+    message(FATAL_ERROR "Invalid value for RTTR_OPENGL: ${RTTR_OPENGL}.")
 endif()
 set(RTTR_OGL_MAJOR ${CMAKE_MATCH_2})
 set(RTTR_OGL_MINOR ${CMAKE_MATCH_3})
@@ -31,10 +27,12 @@ else()
 endif()
 get_filename_component(rttr_glad_folder "${rttr_glad_folder}${RTTR_OGL_MAJOR}.${RTTR_OGL_MINOR}${CMAKE_MATCH_4}" ABSOLUTE)
 configure_file(openglCfg.hpp.cmake include/openglCfg.hpp @ONLY)
-configure_file(glad.h.cmake include/glad/glad.h @ONLY)
 
 add_library(glad STATIC ${rttr_glad_folder}/src/glad.c)
-target_include_directories(glad PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/include)
+set(includeFolder ${CMAKE_CURRENT_BINARY_DIR}/include)
+file(REMOVE ${includeFolder})
+file(COPY ${rttr_glad_folder}/include DESTINATION .)
+target_include_directories(glad PUBLIC ${includeFolder})
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	TARGET_LINK_LIBRARIES(glad PUBLIC ${CMAKE_DL_LIBS})
+	target_link_libraries(glad PUBLIC ${CMAKE_DL_LIBS})
 endif()
