@@ -34,10 +34,10 @@ B. Installation
     Windows 7 and 10 are supported. Windows Vista or older might work but
     are not officially supported.
 
-    To play the game search for the "DATA" und "GFX" directories in the original
-    S2 Gold (or S2 + Mission CD) game (from a valid installation or directly from
-    the CD) and copy them into the nightly folder (where you find the file
-    "Put your S2-Files in here").
+    To play the game search for the "DATA" und "GFX" directories in the
+    original S2 Gold (or S2 + Mission CD) game (from a valid installation
+    or directly from the CD) and copy them into the nightly folder
+    (where you find the file "Put your S2-Files in here").
 
     Alternatively you can make NTFS symbolic links as Administrator:
     mklink /D DATA "C:\S2\DATA"
@@ -48,7 +48,7 @@ B. Installation
     (In Nightly's you can update with RTTR.BAT)
 
     Note: RTTR does not change any files from the original game. 
-    It acts like a game-mod. 
+    It acts as a game-mod. 
 
    -----------------------------------------------------------------------------
    
@@ -73,7 +73,7 @@ B. Installation
 
     mkdir -p /opt/s25rttr
     cd /opt/s25rttr
-    tar -jxvf s25rttr_???.tar.bz2
+    tar -jxvf s25rttr_*.tar.bz2
 
     Now all you have to do is copying your original files to:
     /opt/s25rttr/share/s25rttr/S2
@@ -94,6 +94,7 @@ B. Installation
   ------------------------------------------------------------------------------
     
   4. Settings directory
+
     The settings directory is found in:
     
     Windows: <UserDir>/My Games/Return To The Roots
@@ -109,8 +110,8 @@ C. Game
 
   1. Create a game
    
-    There is a Singleplayer- and a Multiplayer-Modus which can be found in the
-    main menu. You can also play alone in the Multiplayer-Modus:      
+    There is a Singleplayer- and a Multiplayer-Modus which can be found in 
+    the main menu. You can also play alone in the Multiplayer-Modus:
 
     1. Choose "Multiplayer"
     2. "Direct IP"
@@ -122,7 +123,7 @@ C. Game
     6. After choosing your map, click on "Continue" which leads you
        to the host-menu.
        The top part of this menu shows you the players and their
-       configuration.     
+       configuration.
        Notice: To start the game you have to fill all player slots with 
        computer players or human players.
        Alternatively you can close the slots by clicking on them.
@@ -185,8 +186,8 @@ C. Game
     
     Saving a game works just like in the original game. It also works at any
     position in a replay.
-    To load a multiplayer savegame choose "Load game" in the map menu. For
-    singleplayer there is a button in the singleplayer menu.
+    To load a multiplayer savegame choose "Load game" in the map menu. 
+    For singleplayer there is a button in the singleplayer menu.
     It is sufficient if only one player has the savegame file.
 
 
@@ -202,15 +203,15 @@ D. Crash and bugs
   in the game. We are currently working on this very hard.
 
   We can reproduce bugs better if there is a replay available. You
-  can help us by sending your replays (subfolder Replays in the settings folder)
-  with a describtion of the bug. Be sure you used the latest nightly-build
-  version.
+  can help us by sending your replays (subfolder Replays in the settings 
+  folder) with a describtion of the bug. Be sure you used the latest 
+  nightly-build version.
 
   If there is an async-bug you will find additional logs in the folder "Logs"
-  in the settings folder. Please send us the logs of EVERY player and for sure
-  every replay too. 
+  in the settings folder. Please send us the logs of EVERY player and all
+  of the replays accordingly.
   It is important that you tell us which version of RTTR you used.
-  For example: "20170630-49c9bb8(nightly) or 0.8.2"   
+  For example: "20170630-49c9bb8(nightly) or 0.8.2"
 
   Also make sure you did not make the async on purpose by cheating
   or using different versions.
@@ -219,9 +220,10 @@ D. Crash and bugs
 
       https://github.com/Return-To-The-Roots/s25client
 
-  By using Github we can keep the bug reports organized and it makes it easy for
-  you to see if your bug is already fixed. It also allows further communication
-  between you and us, e.g. when we need more information from you.
+  By using Github we can keep the bug reports organized. Also it makes it
+  easier for you to see if your bug is already fixed. It also allows further
+  communication between you and us, e.g. when we need more information
+  from you.
 
   Alternatively you can post the bug in the forum or visit us on IRC
   channel: irc.freenode.net:6667/#siedler2.5
