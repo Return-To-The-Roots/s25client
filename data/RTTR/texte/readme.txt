@@ -34,10 +34,10 @@ B. Installation
     Windows 7 and 10 are supported. Windows Vista or older might work but
     are not officially supported.
 
-    To play the game search for the "DATA" und "GFX" directories in the original
-    S2 Gold (or S2 + Mission CD) game (from a valid installation or directly from
-    the CD) and copy them into the nightly folder (where you find the file
-    "Put your S2-Files in here").
+    To play the game search for the "DATA" und "GFX" directories in the
+    original S2 Gold (or S2 + Mission CD) game (from a valid installation
+    or directly from the CD) and copy them into the nightly folder
+    (where you find the file "Put your S2-Files in here").
 
     Alternatively you can make NTFS symbolic links as Administrator:
     mklink /D DATA "C:\S2\DATA"
@@ -73,7 +73,7 @@ B. Installation
 
     mkdir -p /opt/s25rttr
     cd /opt/s25rttr
-    tar -jxvf s25rttr_???.tar.bz2
+    tar -jxvf s25rttr_*.tar.bz2
 
     Now all you have to do is copying your original files to:
     /opt/s25rttr/share/s25rttr/S2
@@ -94,6 +94,7 @@ B. Installation
   ------------------------------------------------------------------------------
     
   4. Settings directory
+
     The settings directory is found in:
     
     Windows: <UserDir>/My Games/Return To The Roots
@@ -109,8 +110,8 @@ C. Game
 
   1. Create a game
    
-    There is a Singleplayer- and a Multiplayer-Modus which can be found in the
-    main menu. You can also play alone in the Multiplayer-Modus:
+    There is a Singleplayer- and a Multiplayer-Modus which can be found in 
+    the main menu. You can also play alone in the Multiplayer-Modus:
 
     1. Choose "Multiplayer"
     2. "Direct IP"
@@ -185,8 +186,8 @@ C. Game
     
     Saving a game works just like in the original game. It also works at any
     position in a replay.
-    To load a multiplayer savegame choose "Load game" in the map menu. For
-    singleplayer there is a button in the singleplayer menu.
+    To load a multiplayer savegame choose "Load game" in the map menu. 
+    For singleplayer there is a button in the singleplayer menu.
     It is sufficient if only one player has the savegame file.
 
 
@@ -202,9 +203,9 @@ D. Crash and bugs
   in the game. We are currently working on this very hard.
 
   We can reproduce bugs better if there is a replay available. You
-  can help us by sending your replays (subfolder Replays in the settings folder)
-  with a describtion of the bug. Be sure you used the latest nightly-build
-  version.
+  can help us by sending your replays (subfolder Replays in the settings 
+  folder) with a describtion of the bug. Be sure you used the latest 
+  nightly-build version.
 
   If there is an async-bug you will find additional logs in the folder "Logs"
   in the settings folder. Please send us the logs of EVERY player and all
