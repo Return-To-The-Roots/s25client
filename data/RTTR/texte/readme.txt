@@ -48,7 +48,7 @@ B. Installation
     (In Nightly's you can update with RTTR.BAT)
 
     Note: RTTR does not change any files from the original game. 
-    It acts like a game-mod. 
+    It acts as a game-mod. 
 
    -----------------------------------------------------------------------------
    
@@ -110,7 +110,7 @@ C. Game
   1. Create a game
    
     There is a Singleplayer- and a Multiplayer-Modus which can be found in the
-    main menu. You can also play alone in the Multiplayer-Modus:      
+    main menu. You can also play alone in the Multiplayer-Modus:
 
     1. Choose "Multiplayer"
     2. "Direct IP"
@@ -122,7 +122,7 @@ C. Game
     6. After choosing your map, click on "Continue" which leads you
        to the host-menu.
        The top part of this menu shows you the players and their
-       configuration.     
+       configuration.
        Notice: To start the game you have to fill all player slots with 
        computer players or human players.
        Alternatively you can close the slots by clicking on them.
@@ -207,10 +207,10 @@ D. Crash and bugs
   version.
 
   If there is an async-bug you will find additional logs in the folder "Logs"
-  in the settings folder. Please send us the logs of EVERY player and for sure
-  every replay too. 
+  in the settings folder. Please send us the logs of EVERY player and all
+  of the replays accordingly.
   It is important that you tell us which version of RTTR you used.
-  For example: "20170630-49c9bb8(nightly) or 0.8.2"   
+  For example: "20170630-49c9bb8(nightly) or 0.8.2"
 
   Also make sure you did not make the async on purpose by cheating
   or using different versions.
@@ -219,9 +219,10 @@ D. Crash and bugs
 
       https://github.com/Return-To-The-Roots/s25client
 
-  By using Github we can keep the bug reports organized and it makes it easy for
-  you to see if your bug is already fixed. It also allows further communication
-  between you and us, e.g. when we need more information from you.
+  By using Github we can keep the bug reports organized. Also it makes it
+  easier for you to see if your bug is already fixed. It also allows further
+  communication between you and us, e.g. when we need more information
+  from you.
 
   Alternatively you can post the bug in the forum or visit us on IRC
   channel: irc.freenode.net:6667/#siedler2.5
