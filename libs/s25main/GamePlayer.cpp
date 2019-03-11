@@ -49,6 +49,7 @@
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/VisualSettings.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
@@ -435,6 +436,14 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
     RTTR_Assert(bld->GetPlayer() == GetPlayerId());
     buildings.Add(bld, bldType);
     ChangeStatisticValue(STAT_BUILDINGS, 1);
+
+    // Order a worker if needed
+    const auto& description = BLD_WORK_DESC[bldType];
+    if(description.job != JOB_NOTHING && description.job != JOB_PRIVATE)
+    {
+        AddJobWanted(description.job, bld);
+    }
+
     if(bldType == BLD_HARBORBUILDING)
     {
         // Schiff durchgehen und denen Bescheid sagen
