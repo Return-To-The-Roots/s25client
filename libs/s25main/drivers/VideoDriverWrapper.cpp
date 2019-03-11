@@ -434,7 +434,7 @@ void VideoDriverWrapper::RenewViewport()
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
-#if RTTR_OPENGL_ES
+#if RTTR_OGL_ES
     if(!gladLoadGLES2Loader(videodriver->GetLoaderFunction()))
     {
         return false;
