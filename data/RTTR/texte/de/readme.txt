@@ -49,8 +49,8 @@ B. Installation
 
     (In Nightlies kann man mit RTTR.BAT updaten.)
 
-    Es werden KEINE originalen Spieldateien verändert. Man kann weiterhin das
-    Original ohne Beeinträchtigung spielen.
+    Es werden KEINE originalen Spieldateien verändert. Man kann weiterhin
+    das Original ohne Beeinträchtigung spielen.
       
   ------------------------------------------------------------------------------
 
@@ -96,6 +96,7 @@ B. Installation
   ------------------------------------------------------------------------------
     
   4. Settings-Ordner
+
     Der Settings-Ordner befindet sich unter:
     
     Windows: <Benutzer-Ordner>/My Games/Return To The Roots
@@ -103,7 +104,8 @@ B. Installation
     Mac OSX: ~/Library/Application Support/Return To The Roots
     
     Er wird beim ersten Start erstellt, sofern er nicht existiert.
-    Alle Logs, Einstellungen, Savegames und Replays befinden sich in Unterordnern.
+    Alle Logs, Einstellungen, Savegames und Replays befinden sich 
+    in den jeweiligen Unterordnern.
     
 --------------------------------------------------------------------------------
 
@@ -111,10 +113,10 @@ C. Spiel
 
   1. Erstellen eines Spiels
 
-    Es gibt sowohl einen Einzelspieler- als auch einen Mehrspieler-Modus. Die
-    Einzelspieler-Modi sind unter dem entsprechenden Menüpunkt zu finden und
-    weitestgehend selbsterklärend. Man kann auch alleine im Mehrspieler-Modus
-    spielen:
+    Es gibt sowohl einen Einzelspieler- als auch einen Mehrspieler-Modus.
+    Die Einzelspieler-Modi sind unter dem entsprechenden Menüpunkt zu 
+    finden und weitestgehend selbsterklärend. Man kann auch alleine im 
+    Mehrspieler-Modus spielen:
 
     1. Im Hauptmenü auf Mehrspieler gehen
     2. Direkte IP
@@ -152,9 +154,10 @@ C. Spiel
        Login-Daten für den Login in die Spiel-Lobby verwendet werden.
 
     c) LAN Spiele
-       Der LAN-Bereich ist ähnlich der Internet-Lobby, funktioniert aber über das
-       lokale Netz und benötigt keinen Login. Es können auch Programme wie Hamachi
-       verwendet werden, um virtuelle LANs über das Internet zu erstellen.
+       Der LAN-Bereich ist ähnlich der Internet-Lobby, funktioniert aber über
+       das lokale Netz und benötigt keinen Login. Es können auch Programme 
+       wie Hamachi verwendet werden, um virtuelle LANs über das Internet 
+       zu erstellen.
 
     Für das Spiel wird Port 3665 (TCP) genutzt. Dieser muss, falls man selbst
     das Spiel eröffnen möchte, u.a. bei Verwendung eines Routers, einer
@@ -163,7 +166,8 @@ C. Spiel
     "Port Forwarding". Dort ist dann Port 3665 vom Typ TCP auf die interne IP
     des Spiel-PCs weiterzuleiten. Bei der Verwendung einer lokalen Firewall
     muss auch hier der Zugriff zugelassen werden.
-    Im LAN Modus werden Ports 3666 und 3667 (UDP) zum Finden von Spielen verwendet.
+    Im LAN Modus werden die Ports 3666 und 3667 (UDP) zum Finden von Spielen 
+    verwendet.
     
     Es ist nicht notwendig, dass jeder Spieler die Karte hat. Diese wird bei
     Spielbegin automatisch vom Host übertragen.
@@ -192,8 +196,9 @@ C. Spiel
 
     Speichern ist im Spielmenü an der "originalen" Stelle möglich.
     Speichern ist auch aus dem Replaymodus an beliebiger Stelle möglich.
-    Laden von gespeicherten Spieleständen erfolgt im Mehrspieler-Modus über die
-    Kartenauswahl und im Einzelspieler-Modus über den entsprechenden Menüpunkt.
+    Laden von gespeicherten Spieleständen erfolgt im Mehrspieler-Modus
+    über die Kartenauswahl und im Einzelspieler-Modus über den
+    entsprechenden Menüpunkt.
     Mitspieler benötigen kein eigenes Savegame, dieses wird automatisch
     beim Verbinden übertragen.
 
@@ -206,14 +211,14 @@ C. Spiel
 
 D. Abstürze und Fehler
 
-  Wir arbeiten hart daran das Spiel immer weiter zu verbessern. Leider lassen
-  sich Abstürze, Asyncs, Speicherzugriffs- und sonstige Fehler nicht ganz
-  ausschließen.
+  Wir arbeiten hart daran das Spiel immer weiter zu verbessern. Leider
+  lassen sich Abstürze, Asyncs, Speicherzugriffs- und sonstige Fehler 
+  nicht ganz ausschließen.
 
   Durch Replays können Fehler leicht rekonstruiert werden. Ihr könnt uns
   mit dem Zusenden euer Replays helfen, weitere zu finden. Bitte stellt
-  dabei sicher, dass ihr immer die neuste Nightly-Version verwendet. Fehler
-  aus veralteten Versionen sind mitunter schon lange behoben.
+  dabei sicher, dass ihr immer die neuste Nightly-Version verwendet.
+  Fehler aus veralteten Versionen sind mitunter schon lange behoben.
 
   Falls ein Async aufgetreten ist, findet ihr im LOGS-Verzeichnis
   Log-Dateien. Schickt uns diese bitte von JEDEM(!) Spieler einschließlich
@@ -225,10 +230,10 @@ D. Abstürze und Fehler
 
       https://github.com/Return-To-The-Roots/s25client
 
-  Github erhöht die Übersichtlichkeit für Bugs und ermöglicht euch zudem selber
-  einsehen zu können, wann der Bug gefixt wurde. Außerdem bietet es eine gute
-  Möglichkeit der Kommunikation zwischen uns und euch, insbesondere, wenn wir
-  noch weitere Informationen von euch benötigen.
+  Github erhöht die Übersichtlichkeit für Bugs und ermöglicht euch zudem
+  selber einsehen zu können, wann der Bug gefixt wurde. Außerdem bietet
+  es eine gute Möglichkeit der Kommunikation zwischen uns und euch, vor
+  allem wenn wir noch weitere Informationen von euch benötigen.
 
   Alternativ könnt ihr euch auch im Forum oder im IRC-Channel unter
   irc.freenode.net:6667/#siedler2.5 melden.
@@ -251,7 +256,7 @@ E. Übersicht: Updates und Änderungen
   - Einige Fehler und Abstürze behoben
 
   * 0.8.2 - 22.08.2017
-  --------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - Viele Async Fixes
   - Nutzung von UTF8 um mehr Sprachen zu unterstützen
   - Viele neue Addons
@@ -262,7 +267,7 @@ E. Übersicht: Updates und Änderungen
   - Verbesserung der Code Qualität
 
   * 0.8.1
-  --------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - Fehlerkorrekturen
   - Funktionierende KI
   - Vollständige Seefahrt
@@ -275,11 +280,11 @@ E. Übersicht: Updates und Änderungen
   - Beobachtungsfenster
 
   * 0.7.2 - 17.01.2011 *
-  --------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - Kritische Fehlerkorrekturen
 
   * 0.7 - Seventh version - 24.12.2010 *
-  --------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - OpenSource!
   - Übersetzung: Niederländisch
   - Übersetzung: Russisch (Zeichensatz fehlt)
@@ -298,7 +303,7 @@ E. Übersicht: Updates und Änderungen
   - Addon Menü
 
   * 0.6 - Sechste Version - 25.01.2009 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - viele Bugs behoben
   - Fog of War (mit Teamview-Option)
   - Spähturm
@@ -320,7 +325,7 @@ E. Übersicht: Updates und Änderungen
   - Einige Hausanimationen hinzugefügt
 
   * 0.5 - Fünfte Version - 27.01.2008 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - sehr viele Bugs behoben
   - Eselstraßen, Eselzüchter
   - Bootsstraßen mit Booten und Werft (baut nur Boote)
@@ -335,16 +340,16 @@ E. Übersicht: Updates und Änderungen
   - Sound an/aus Buttons im Spiel
 
   * 0.4 - Vierte Version - 09.10.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - Speichern und Laden von Spielen eingebaut, inklusive Autosave
   - zig zum Teil schwere Bugs behoben
 
   * 0.3 - Dritte Version Fix01 -  13.09.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - kritischen Absturz behoben
 
   * 0.3 - Dritte Version - 12.09.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - diverse Absturzbugs behoben
   - Siedler warten nun, falls der Platz vor ihnen besetzt ist
     (durch Kämpfe z.B.)
@@ -356,7 +361,7 @@ E. Übersicht: Updates und Änderungen
   - Vorbereitungen für Speichern und Laden getroffen
 
   * 0.2 - Zweite Version - 15.07.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - diverse Bugs behoben und diverse Verzögerungsbugs unterdrückt
   - Menüs in variabler Auflösung
   - Prüfen der Synchronität und Rausschmiss asynchroner Spieler
@@ -373,7 +378,7 @@ E. Übersicht: Updates und Änderungen
   - RoadWindow schließt sich nun, wenn man woanders hinklickt
 
   * 0.1 - Erster Release - 01.07.2007 *
-  -------------------------------------------------------------------------
+  ------------------------------------------------------------------------------
   - alles ;-)
 
 --------------------------------------------------------------------------------
