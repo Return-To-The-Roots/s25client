@@ -47,13 +47,10 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
 
     ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.getNum());
 
-    // Arbeiter bestellen
-    GamePlayer& owner = gwg->GetPlayer(player);
-    owner.AddJobWanted(BLD_WORK_DESC[bldType_].job, this);
-
     // Tür aufmachen,bis Gebäude besetzt ist
     OpenDoor();
 
+    GamePlayer& owner = gwg->GetPlayer(player);
     // New building gets half the average productivity from all buildings of the same type
     productivity = owner.GetBuildingRegister().CalcAverageProductivity(type) / 2u;
     // Set last productivities to current to avoid resetting it on first recalculation event
