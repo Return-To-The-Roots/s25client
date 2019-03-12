@@ -19,7 +19,7 @@ E. Übersicht: Updates und Änderungen
 
 A. Allgemeine Hinweise
 
-  Das Spiel benötigt eine OpenGL2.1-fähige Grafikkarte mit mindestens
+  Das Spiel benötigt eine OpenGL2.0-fähige Grafikkarte mit mindestens
   64 MB Grafikspeicher. Ein Prozessor mit 800 MHz reicht aus.
 
   Weiterhin benötigt man eine installierte "Siedler 2 Gold-Edition" oder die
@@ -51,7 +51,7 @@ B. Installation
 
     Es werden KEINE originalen Spieldateien verändert. Man kann weiterhin
     das Original ohne Beeinträchtigung spielen.
-      
+
   ------------------------------------------------------------------------------
 
   2. Linux
@@ -88,25 +88,25 @@ B. Installation
     Option noupdate startet, wird kein Update durchgeführt.)
 
   ------------------------------------------------------------------------------
-   
+
   3. Mac OSX
 
     Das Spiel kann direkt aus dem App-Bundle gestartet werden.
-    
+
   ------------------------------------------------------------------------------
-    
+
   4. Settings-Ordner
 
     Der Settings-Ordner befindet sich unter:
-    
+
     Windows: <Benutzer-Ordner>/My Games/Return To The Roots
     Linux:   ~/.s25rttr
     Mac OSX: ~/Library/Application Support/Return To The Roots
-    
+
     Er wird beim ersten Start erstellt, sofern er nicht existiert.
-    Alle Logs, Einstellungen, Savegames und Replays befinden sich 
+    Alle Logs, Einstellungen, Savegames und Replays befinden sich
     in den jeweiligen Unterordnern.
-    
+
 --------------------------------------------------------------------------------
 
 C. Spiel
@@ -114,8 +114,8 @@ C. Spiel
   1. Erstellen eines Spiels
 
     Es gibt sowohl einen Einzelspieler- als auch einen Mehrspieler-Modus.
-    Die Einzelspieler-Modi sind unter dem entsprechenden Menüpunkt zu 
-    finden und weitestgehend selbsterklärend. Man kann auch alleine im 
+    Die Einzelspieler-Modi sind unter dem entsprechenden Menüpunkt zu
+    finden und weitestgehend selbsterklärend. Man kann auch alleine im
     Mehrspieler-Modus spielen:
 
     1. Im Hauptmenü auf Mehrspieler gehen
@@ -134,7 +134,7 @@ C. Spiel
        mit menschlichen oder KI-Spielern besetzt werden, oder die Slots
        müssen geschlossen werden (mit Klick auf die Buttons unter
        "Spielername").
-       
+
     Im Einzelspieler-Modus klickt man auf "Endlosspiel" und folgt dann
     den obigen Schritten ab Schritt 5.
 
@@ -155,8 +155,8 @@ C. Spiel
 
     c) LAN Spiele
        Der LAN-Bereich ist ähnlich der Internet-Lobby, funktioniert aber über
-       das lokale Netz und benötigt keinen Login. Es können auch Programme 
-       wie Hamachi verwendet werden, um virtuelle LANs über das Internet 
+       das lokale Netz und benötigt keinen Login. Es können auch Programme
+       wie Hamachi verwendet werden, um virtuelle LANs über das Internet
        zu erstellen.
 
     Für das Spiel wird Port 3665 (TCP) genutzt. Dieser muss, falls man selbst
@@ -166,9 +166,9 @@ C. Spiel
     "Port Forwarding". Dort ist dann Port 3665 vom Typ TCP auf die interne IP
     des Spiel-PCs weiterzuleiten. Bei der Verwendung einer lokalen Firewall
     muss auch hier der Zugriff zugelassen werden.
-    Im LAN Modus werden die Ports 3666 und 3667 (UDP) zum Finden von Spielen 
+    Im LAN Modus werden die Ports 3666 und 3667 (UDP) zum Finden von Spielen
     verwendet.
-    
+
     Es ist nicht notwendig, dass jeder Spieler die Karte hat. Diese wird bei
     Spielbegin automatisch vom Host übertragen.
 
@@ -212,7 +212,7 @@ C. Spiel
 D. Abstürze und Fehler
 
   Wir arbeiten hart daran das Spiel immer weiter zu verbessern. Leider
-  lassen sich Abstürze, Asyncs, Speicherzugriffs- und sonstige Fehler 
+  lassen sich Abstürze, Asyncs, Speicherzugriffs- und sonstige Fehler
   nicht ganz ausschließen.
 
   Durch Replays können Fehler leicht rekonstruiert werden. Ihr könnt uns

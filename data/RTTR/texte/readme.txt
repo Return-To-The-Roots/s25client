@@ -19,11 +19,11 @@ E. Summary: Updates and changelog
 
 A. Reference Note
 
-  The game requires an OpenGL2.1-compatible graphics card with at
+  The game requires an OpenGL2.0-compatible graphics card with at
   least 64 MB graphics-memory. A CPU with 800Mhz will suffice.
 
-  Further on you will need an installed version of "The Settlers 2 
-  Gold-Edition" or the original version + Mission-CD. 
+  Further on you will need an installed version of "The Settlers 2
+  Gold-Edition" or the original version + Mission-CD.
 
 --------------------------------------------------------------------------------
 
@@ -47,11 +47,11 @@ B. Installation
 
     (In Nightly's you can update with RTTR.BAT)
 
-    Note: RTTR does not change any files from the original game. 
-    It acts as a game-mod. 
+    Note: RTTR does not change any files from the original game.
+    It acts as a game-mod.
 
    -----------------------------------------------------------------------------
-   
+
   2. Linux
 
     You will need the following packages:
@@ -63,7 +63,7 @@ B. Installation
 
     glxinfo | grep direct
 
-    When the output "direct rendering: Yes" appears, you are ok. 
+    When the output "direct rendering: Yes" appears, you are ok.
     If not, your performance will be lousy. Please check your
     graphics acceleration.
 
@@ -86,37 +86,37 @@ B. Installation
      Use "sh rttr.sh noupdate" to keep the actual version.)
 
   ------------------------------------------------------------------------------
-   
+
   3. Mac OSX
 
     Start the game directly from the downloaded app bundle.
-    
+
   ------------------------------------------------------------------------------
-    
+
   4. Settings directory
 
     The settings directory is found in:
-    
+
     Windows: <UserDir>/My Games/Return To The Roots
     Linux:   ~/.s25rttr
     Mac OSX: ~/Library/Application Support/Return To The Roots
-    
+
     This folder is created on first start if it does not exist.
     All logs, settings, saves and replays are in subfolders to that.
-    
+
 --------------------------------------------------------------------------------
 
 C. Game
 
   1. Create a game
-   
-    There is a Singleplayer- and a Multiplayer-Modus which can be found in 
+
+    There is a Singleplayer- and a Multiplayer-Modus which can be found in
     the main menu. You can also play alone in the Multiplayer-Modus:
 
     1. Choose "Multiplayer"
     2. "Direct IP"
     3. "Create game"
-    4. In the next window choose the name of the game, no password needed. 
+    4. In the next window choose the name of the game, no password needed.
     5. In the map screen you can choose from one of the categories on the
        left side (similar to the original) and then a map or you can load
        a game ("Load Game" button)
@@ -124,13 +124,13 @@ C. Game
        to the host-menu.
        The top part of this menu shows you the players and their
        configuration.
-       Notice: To start the game you have to fill all player slots with 
+       Notice: To start the game you have to fill all player slots with
        computer players or human players.
        Alternatively you can close the slots by clicking on them.
-       
+
     For a quick Singleplayer-Game click "Unlimited Play" in the
     Singleplayer-Menu and follow the steps 5 & 6 above.
-   
+
   2. Multiplayer game
 
     a) Direct game
@@ -144,7 +144,7 @@ C. Game
 
        You need to create a forum account on http://www.siedler25.org
        and use that to login into the game lobby.
-       
+
     c) LAN games
        The LAN area is similar to the lobby but shows only maps created
        in the current LAN and does not require a login to join. You can
@@ -165,10 +165,10 @@ C. Game
 
     A coloured snail symbol in the top right of the display indicates
     a bad connection to the player with same colour.
-    
+
     The game will be stopped when the host leaves and cannot be
     continued.
-    
+
     To pause the game, press "P" (Host only) and again to unpause.
     To chat with other players press "Enter".
 
@@ -179,11 +179,11 @@ C. Game
 
     The keys [+] and [-] will raise or lower the replay-speed. "J" will make
     you able to jump to a specific gameframe.
-    
+
     All replays can be found in the subfolder Replays in the game settings dir.
 
   4. Save
-    
+
     Saving a game works just like in the original game. It also works at any
     position in a replay.
     To load a multiplayer savegame choose "Load game" in the map menu. 
@@ -227,7 +227,7 @@ D. Crash and bugs
 
   Alternatively you can post the bug in the forum or visit us on IRC
   channel: irc.freenode.net:6667/#siedler2.5
-  You can also join the irc-channel by visiting our homepage. 
+  You can also join the irc-channel by visiting our homepage.
 
   Thanks a lot
 
@@ -291,13 +291,13 @@ E. Summary: Updates and changelog
   - First AI (jh)
   - Seafaring (not finished yet)
   - Addon Menu
- 
+
   * 0.6 - Sixth version - 25.01.2009 *
   ------------------------------------------------------------------------------
   - Fixed a lot of bugs
   - Fog of War (with Teamview-option)
   - Watchout tower added
-  - Minimap 
+  - Minimap
   - Minimap in hostgame-menu
   - Planer
   - Balancing
