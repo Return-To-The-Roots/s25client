@@ -141,7 +141,7 @@ void showCrashMessage()
 #endif
 }
 
-void terminateProgramm()
+[[noreturn]] void terminateProgramm()
 {
 #ifdef _DEBUG
     abort();
@@ -150,7 +150,7 @@ void terminateProgramm()
 #endif
 }
 
-void handleException(void* pCtx = nullptr)
+[[noreturn]] void handleException(void* pCtx = nullptr)
 {
     std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
     try
@@ -181,13 +181,13 @@ void handleException(void* pCtx = nullptr)
 }
 
 #ifdef _MSC_VER
-LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
+[[noreturn]] LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
 {
     handleException(info->ContextRecord);
     return EXCEPTION_EXECUTE_HANDLER;
 }
 #else
-void ExceptionHandler(int /*sig*/)
+[[noreturn]] void ExceptionHandler(int /*sig*/)
 {
     handleException();
 }

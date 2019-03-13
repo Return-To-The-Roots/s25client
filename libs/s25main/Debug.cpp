@@ -204,7 +204,7 @@ std::vector<void*> DebugInfo::GetStackTrace(void* ctx)
 
 bool DebugInfo::Send(const void* buffer, size_t length)
 {
-    char* ptr = (char*)buffer;
+    auto* ptr = (const char*)buffer;
 
     while(length > 0)
     {

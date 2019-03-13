@@ -109,9 +109,9 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, RTTR_OGL_MAJOR));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, RTTR_OGL_MINOR));
     SDL_GLprofile profile;
-    if(RTTR_OGL_ES)
+    if((RTTR_OGL_ES))
         profile = SDL_GL_CONTEXT_PROFILE_ES;
-    else if(RTTR_OGL_COMPAT)
+    else if((RTTR_OGL_COMPAT))
         profile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
     else
         profile = SDL_GL_CONTEXT_PROFILE_CORE;

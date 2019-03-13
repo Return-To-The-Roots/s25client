@@ -290,5 +290,5 @@ void AudioSDL::DoUnloadSound(SoundDesc& sound)
         Mix_FreeMusic(music.music);
         music.setInvalid();
     } else
-        RTTR_Assert(false && "Invalid type");
+        RTTR_Assert(false);
 }

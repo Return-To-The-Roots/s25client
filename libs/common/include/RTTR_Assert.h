@@ -18,6 +18,8 @@
 #ifndef RTTRAssert_h__
 #define RTTRAssert_h__
 
+#include <libutil/warningSuppression.h>
+
 /// Define this to 1 if you want assertions enabled
 #ifndef RTTR_ENABLE_ASSERTS
 #ifdef NDEBUG
@@ -56,6 +58,7 @@ extern bool RTTR_AssertEnableBreak;
 #define RTTR_Assert(cond)                                            \
     do                                                               \
     {                                                                \
+        RTTR_IGNORE_UNREACHABLE_CODE                                 \
         if(!(cond))                                                  \
         {                                                            \
             if(RTTR_IsBreakOnAssertFailureEnabled())                 \
@@ -64,6 +67,7 @@ extern bool RTTR_AssertEnableBreak;
             }                                                        \
             RTTR_AssertFailure(#cond, __FILE__, __LINE__, __func__); \
         }                                                            \
+        RTTR_POP_DIAGNOSTIC                                          \
     } while(false)
 #define RTTR_AssertNoThrow(cond)                                            \
     do                                                                      \

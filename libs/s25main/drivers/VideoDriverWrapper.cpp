@@ -449,7 +449,7 @@ bool VideoDriverWrapper::LoadAllExtensions()
     if(GLVersion.major < RTTR_OGL_MAJOR || (GLVersion.major == RTTR_OGL_MAJOR && GLVersion.minor < RTTR_OGL_MINOR))
     {
         boost::format errorMsg(_("OpenGL %1% %2%.%3% is not supported. Try updating your GPU drivers or hardware!"));
-        errorMsg % (RTTR_OGL_ES ? "ES" : "") % RTTR_OGL_MAJOR % RTTR_OGL_MINOR;
+        errorMsg % ((RTTR_OGL_ES) ? "ES" : "") % RTTR_OGL_MAJOR % RTTR_OGL_MINOR;
         s25util::fatal_error(errorMsg.str());
         return false;
     }

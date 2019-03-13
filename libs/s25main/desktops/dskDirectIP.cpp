@@ -17,11 +17,9 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskDirectIP.h"
-
 #include "Loader.h"
 #include "Settings.h"
 #include "WindowManager.h"
-
 #include "dskMultiPlayer.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwDirectIPCreate.h"

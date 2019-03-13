@@ -43,6 +43,7 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
+#include "libutil/warningSuppression.h"
 #include <boost/format.hpp>
 #include <glad/glad.h>
 #include <stdexcept>
@@ -496,9 +497,10 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
 
     return;
     // TODO: military aid - display icon overlay of attack possibility
-
+    RTTR_IGNORE_UNREACHABLE_CODE
     if(gwv.GetNumSoldiersForAttack(pt) > 0) // soldiers available for attack?
         LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
+    RTTR_POP_DIAGNOSTIC
 }
 
 void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis)

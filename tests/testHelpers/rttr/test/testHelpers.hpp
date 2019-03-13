@@ -18,6 +18,7 @@
 #ifndef testHelpers_h__
 #define testHelpers_h__
 
+#include "libutil/warningSuppression.h"
 #include <boost/test/unit_test.hpp>
 #include <utility>
 
@@ -52,13 +53,15 @@ do                                                                           \
     {                                                                        \
         BOOST_TEST_PASSPOINT();                                              \
         S;                                                                   \
-        BOOST_TEST_ERROR("Exception " << #E << " expected but not thrown"); \
+        RTTR_IGNORE_UNREACHABLE_CODE                                         \
+        BOOST_TEST_ERROR("Exception " << #E << " expected but not thrown");  \
+        RTTR_POP_DIAGNOSTIC                                                  \
     } catch(const E& e)                                                      \
     {                                                                        \
         BOOST_TEST(e.what() == (MSG));                                       \
     }                                                                        \
 } while(false)
-    /* clang-format on */
+/* clang-format on */
 
 #define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) BOOST_REQUIRE_EQUAL_COLLECTIONS(Col1.begin(), Col1.end(), Col2.begin(), Col2.end())
 

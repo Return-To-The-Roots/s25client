@@ -38,6 +38,7 @@
 #include "gameTypes/Inventory.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/BuildingProperties.h"
+#include "libutil/warningSuppression.h"
 #include <boost/container/flat_set.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <algorithm>
@@ -383,39 +384,34 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route)
 {
     return BuildRoad(start, target, route);
+    // TODO: Enable later after checking for performance and correctness
+    RTTR_IGNORE_UNREACHABLE_CODE
     MapPoint pStart = start->GetPos(); //-V779
     for(unsigned i = 0; i + 1 < route.size(); i++)
     {
-        if((route[i] + 1u == route[i + 1])
-           || (route[i] - 1u
-               == route[i + 1])) // switching current and next route element will result in the same position after building both
+        // switching current and next route element will result in the same position after building both
+        if((route[i] + 1u == route[i + 1]) || (route[i] - 1u == route[i + 1]))
         {
             MapPoint t(pStart);
             t = aii.gwb.GetNeighbour(t, route[i + 1]);
             pStart = aii.gwb.GetNeighbour(pStart, route[i]);
-            if(aii.gwb.IsRoadAvailable(false, t) && aii.IsOwnTerritory(t)) // can the alternative road be build?
+            // can the alternative road be build?
+            if(aii.gwb.IsRoadAvailable(false, t) && aii.IsOwnTerritory(t))
             {
-                if(aii.CalcBQSumDifference(
-                     pStart, t)) // does the alternative road block a lower buildingquality point than the normal planned route?
+                // does the alternative road block a lower buildingquality point than the normal planned route?
+                if(aii.CalcBQSumDifference(pStart, t))
                 {
                     // LOG.write(("AIConstruction::road improvements p%i from %i,%i moved node %i,%i to %i,%i i:%i, i+1:%i\n",playerID,
                     // start->GetX(), start->GetY(), ptx, pt.y, t.x, t.y,route[i],route[i+1]);
                     pStart = t; // we move the alternative path so move x&y and switch the route entries
-                    if(route[i] + 1u == route[i + 1])
-                    {
-                        ++route[i];
-                        --route[i + 1];
-                    } else
-                    {
-                        --route[i];
-                        ++route[i + 1];
-                    }
+                    std::swap(route[i], route[i + 1]);
                 }
             }
         } else
             pStart = aii.gwb.GetNeighbour(pStart, route[i]);
     }
     return BuildRoad(start, target, route);
+    RTTR_POP_DIAGNOSTIC
 }
 
 bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route)
