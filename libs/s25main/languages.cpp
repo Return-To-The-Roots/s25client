@@ -25,7 +25,7 @@
 #include "libsiedler2/ArchivItem_Text.h"
 #include <algorithm>
 
-bool operator<(const Language& o1, const Language& o2)
+static bool operator<(const Language& o1, const Language& o2)
 {
     if(o1.name < o2.name)
         return true;

@@ -22,7 +22,7 @@
 #include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
 
-std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
+static std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
 {
     return out << dir.toUInt();
 }

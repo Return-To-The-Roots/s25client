@@ -27,7 +27,7 @@
 #include <array>
 #include <rttr/test/LogAccessor.hpp>
 
-std::ostream& operator<<(std::ostream& os, const PostCategory& cat)
+static std::ostream& operator<<(std::ostream& os, const PostCategory& cat)
 {
     return os << static_cast<unsigned>(cat);
 }

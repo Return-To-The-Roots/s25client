@@ -478,6 +478,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), targetHbId);
 }
 
+namespace {
 template<unsigned T_numPlayers = 2, unsigned T_width = SmallSeaWorldDefault<T_numPlayers>::width,
          unsigned T_height = SmallSeaWorldDefault<T_numPlayers>::height>
 struct ShipAndHarborsReadyFixture : public WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height>, public GCExecutor
@@ -536,6 +537,7 @@ void destroyBldAndFire(GameWorldBase& world, const MapPoint& pos)
         }
     }
 }
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
 {

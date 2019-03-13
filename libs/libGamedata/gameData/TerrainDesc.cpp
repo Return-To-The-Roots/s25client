@@ -22,6 +22,7 @@
 #include "lua/CheckedLuaTable.h"
 #include "lua/LuaHelpers.h"
 
+namespace {
 TerrainKind strToTerrainKind(const std::string& name)
 {
     if(name == "land")
@@ -50,19 +51,6 @@ ETexType strToTexType(const std::string& name)
         throw GameDataError("Invalid texture type: " + name);
 }
 
-TerrainBQ getDefaultBQ(TerrainKind kind)
-{
-    switch(kind)
-    {
-        case TerrainKind::LAND: return TerrainBQ::CASTLE;
-        case TerrainKind::WATER: return TerrainBQ::NOTHING;
-        case TerrainKind::LAVA:
-        case TerrainKind::SNOW: return TerrainBQ::DANGER;
-        case TerrainKind::MOUNTAIN: return TerrainBQ::MINE;
-    }
-    throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
-}
-
 ETerrain getDefaultFlags(TerrainKind kind)
 {
     switch(kind)
@@ -88,6 +76,7 @@ uint8_t getDefaultHumidity(TerrainKind kind)
     }
     throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
 }
+} // namespace
 
 TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
 {

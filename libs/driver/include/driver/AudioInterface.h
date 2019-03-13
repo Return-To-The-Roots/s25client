@@ -19,6 +19,7 @@
 
 #include "EffectPlayId.h"
 #include "SoundHandle.h"
+#include "exportImport.h"
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -61,24 +62,11 @@ public:
     virtual void SetMusicVolume(uint8_t volume) = 0;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#undef DRIVERDLLAPI
-#ifdef _WIN32
-#ifdef BUILD_DLL
-#define DRIVERDLLAPI extern "C" __declspec(dllexport)
-#else
-#define DRIVERDLLAPI extern "C" __declspec(dllimport)
-#endif // !_USRDLL
-#else
-#define DRIVERDLLAPI extern "C"
-#endif // !_WIN32
-
 class IAudioDriverCallback;
 
 /// Instanzierungsfunktion der Treiber.
-DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* device_dependent);
-DRIVERDLLAPI void FreeAudioInstance(IAudioDriver* driver);
+RTTR_DECL IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* device_dependent);
+RTTR_DECL void FreeAudioInstance(IAudioDriver* driver);
 
 ///
 typedef IAudioDriver* (*PDRIVER_CREATEAUDIOINSTANCE)(IAudioDriverCallback*, void*);

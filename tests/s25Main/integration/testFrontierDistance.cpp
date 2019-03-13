@@ -26,6 +26,7 @@
 
 BOOST_AUTO_TEST_SUITE(FrontierDistance)
 
+namespace {
 template<unsigned T_width, unsigned T_height>
 struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
 {
@@ -64,6 +65,7 @@ DescIdx<TerrainDesc> GetWaterTerrain(const GameWorld& world)
     }
     throw std::logic_error("No water");
 }
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
 {

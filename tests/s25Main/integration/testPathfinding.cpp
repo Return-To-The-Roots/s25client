@@ -37,6 +37,7 @@ using namespace boost::assign;
 // differently colored start/end points if multiple tests are performed on the same landscape
 BOOST_AUTO_TEST_SUITE(PathfindingSuite)
 
+namespace {
 typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
 typedef WorldFixture<CreateEmptyWorld, 1> WorldFixtureEmpty1P;
 
@@ -84,6 +85,7 @@ void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, DescIdx<Te
     if(bothTerrain)
         setRightTerrain(world, terrainPt, dir, tOther);
 }
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
 {

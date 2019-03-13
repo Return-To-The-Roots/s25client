@@ -35,7 +35,7 @@
 #include "network/GameClient.h"
 #include <boost/filesystem.hpp>
 
-CreateServerInfo createLocalGameInfo(const std::string& name)
+static CreateServerInfo createLocalGameInfo(const std::string& name)
 {
     return CreateServerInfo(ServerType::LOCAL, SETTINGS.server.localPort, name);
 }

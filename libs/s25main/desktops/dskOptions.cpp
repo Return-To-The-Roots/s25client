@@ -504,7 +504,7 @@ void dskOptions::Msg_OptionGroupChange(const unsigned ctrl_id, const int selecti
 }
 
 /// Check that the port is valid and sets outPort to it. Shows an error otherwise
-bool validatePort(const std::string& sPort, uint16_t& outPort)
+static bool validatePort(const std::string& sPort, uint16_t& outPort)
 {
     boost::optional<uint16_t> port = validate::checkPort(sPort);
     if(port)

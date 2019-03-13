@@ -439,7 +439,7 @@ unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, Terr
     return EDGE_TABLE[static_cast<uint8_t>(landsCape)][t1][t2];
 }
 
-void CheckPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrainPrios)
+static void CheckPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrainPrios)
 {
     for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
         std::cout << iT1 << ": " << terrainPrios[iT1] << std::endl;

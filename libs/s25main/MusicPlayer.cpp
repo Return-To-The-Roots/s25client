@@ -89,7 +89,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
     return true;
 }
 
-bool isNewline(char c)
+static constexpr bool isNewline(char c)
 {
     return c == '\r' || c == '\n';
 }

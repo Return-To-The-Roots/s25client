@@ -223,6 +223,7 @@ bool Loader::LoadFilesAtStart()
     return LoadOverrideFiles();
 }
 
+namespace {
 bool ConvertSounds(const std::string& outputFilepath)
 {
     bfs::path soundConverterPath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[57])) / "sound-convert";
@@ -247,6 +248,7 @@ bool ConvertSounds(const std::string& outputFilepath)
 
     return bfs::exists(outputFilepath);
 }
+} // namespace
 
 /**
  *  Lädt alle Sounds.

@@ -23,6 +23,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
 #include "pathfinding/FreePathFinder.h"
+#include "pathfinding/PathConditionRoad.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
@@ -30,11 +31,35 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/TerrainDesc.h"
 #include <limits>
+
 class noRoadNode;
 
-// from Pathfinding.cpp TODO: in nice
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
-bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
+namespace {
+/// Param for road-build pathfinding
+struct Param_RoadPath
+{
+    /// Boat or normal road
+    bool boat_road;
+};
+
+bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
+{
+    const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
+    return makePathConditionRoad(gwb, prp->boat_road).IsNodeOk(pt);
+}
+
+/// Condition for comfort road construction with a possible flag every 2 steps
+bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param)
+{
+    if(!IsPointOK_RoadPath(gwb, pt, dir, param))
+        return false;
+    const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
+    if(!prp->boat_road && gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) == BQ_NOTHING)
+        return false;
+
+    return true;
+}
+} // namespace
 
 AIResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 {

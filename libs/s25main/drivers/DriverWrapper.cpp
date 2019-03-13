@@ -100,7 +100,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     return true;
 }
 
-void* GetDLLFunction2(HINSTANCE dll, const std::string& name)
+static void* GetDLLFunction2(HINSTANCE dll, const std::string& name)
 {
     if(!dll)
         return nullptr;

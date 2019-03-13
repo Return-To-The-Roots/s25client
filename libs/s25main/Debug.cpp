@@ -63,6 +63,7 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 #include <execinfo.h>
 #endif
 
+namespace {
 #ifdef RTTR_USE_WIN_API
 #ifdef HAVE_DBGHELP_H
 bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr)
@@ -152,6 +153,7 @@ void captureBacktrace(std::vector<void*>& stacktrace)
     stacktrace.resize(num_frames);
 }
 #endif
+} // namespace
 
 DebugInfo::DebugInfo()
 {

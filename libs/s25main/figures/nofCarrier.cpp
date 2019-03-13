@@ -59,7 +59,7 @@ const unsigned FRAME_GF = 3;
 /// Animation indices, 1st Dim: small or big, 2nd Dim: Animation, 3rd Dim: Index in map.lst of the frame
 typedef std::array<std::vector<std::vector<unsigned short>>, 2> AnimationsType;
 
-AnimationsType fillAnimations()
+static AnimationsType fillAnimations()
 {
     AnimationsType animations;
     using namespace boost::assign; // Adds the vector += operator

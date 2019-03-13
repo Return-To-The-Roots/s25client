@@ -22,6 +22,7 @@
 #include "gameTypes/FoWNode.h"
 #include <boost/test/unit_test.hpp>
 
+namespace {
 typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
 boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, const std::vector<BoundaryStones>& expected)
 {
@@ -42,6 +43,7 @@ boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, co
     }
     return true;
 }
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
 {

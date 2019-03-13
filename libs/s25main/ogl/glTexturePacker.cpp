@@ -24,7 +24,7 @@
 #include <algorithm>
 #include <glad/glad.h>
 
-bool isSizeGreater(glSmartBitmap* a, glSmartBitmap* b)
+static bool isSizeGreater(glSmartBitmap* a, glSmartBitmap* b)
 {
     const Extent sizeA = a->getRequiredTexSize();
     const Extent sizeB = b->getRequiredTexSize();

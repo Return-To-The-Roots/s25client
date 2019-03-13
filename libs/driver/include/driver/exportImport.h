@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,17 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#ifndef EXPORT_IMPORT_H_INCLUDED
+#define EXPORT_IMPORT_H_INCLUDED
 
-#define RTTR_DLLEXPORT
-#include "driver/DriverInterfaceVersion.h"
-#include "driver/Interface.h"
+#include <boost/config.hpp>
 
-/**
- *  API-Versions-Lieferfunktion
- *
- *  @return liefert die API-Version des Treibers
- */
-unsigned GetDriverAPIVersion()
-{
-    return DRIVERAPIVERSION;
-}
+#ifdef BUILD_DLL
+#define RTTR_DECL extern "C" BOOST_SYMBOL_EXPORT
+#else
+#define RTTR_DECL extern "C" BOOST_SYMBOL_IMPORT
+#endif
+
+#endif

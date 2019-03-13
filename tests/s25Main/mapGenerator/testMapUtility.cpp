@@ -24,7 +24,7 @@
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-std::ostream& operator<<(std::ostream& os, const TerrainKind& t)
+static std::ostream& operator<<(std::ostream& os, const TerrainKind& t)
 {
     return os << unsigned(static_cast<uint8_t>(t));
 }

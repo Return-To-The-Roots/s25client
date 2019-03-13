@@ -45,6 +45,7 @@ void Game::Start(bool startFromSave)
         world.GetLua().EventStart(!startFromSave);
 }
 
+namespace {
 unsigned getNumAlivePlayers(const GameWorldBase& world)
 {
     unsigned numPlayersAlive = 0;
@@ -55,6 +56,7 @@ unsigned getNumAlivePlayers(const GameWorldBase& world)
     }
     return numPlayersAlive;
 }
+} // namespace
 
 void Game::RunGF()
 {

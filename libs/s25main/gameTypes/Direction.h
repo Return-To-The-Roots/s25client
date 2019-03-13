@@ -18,6 +18,7 @@
 #ifndef Direction_h__
 #define Direction_h__
 
+#include "RTTR_Assert.h"
 #include <iterator>
 
 /// "Enum" to represent one of the 6 directions from each node
@@ -42,6 +43,7 @@ struct Direction
     /// Convert an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static Direction fromInt(unsigned t) { return Type(t); }
     static Direction fromInt(int t) { return Type(t); }
+    static Direction fromInt(unsigned char t) { return Type(t); }
     /// Use this for use in switches
     Type native_value() const { return t_; }
     /// Return the Direction as an UInt

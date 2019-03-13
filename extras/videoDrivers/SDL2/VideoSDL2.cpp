@@ -17,6 +17,7 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "VideoSDL2.h"
+#include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
@@ -39,17 +40,17 @@
             PrintError(SDL_GetError()); \
     } while(false)
 
-DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
+IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
     return new VideoSDL2(CallBack);
 }
 
-DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
+void FreeVideoInstance(IVideoDriver* driver)
 {
     delete driver;
 }
 
-DRIVERDLLAPI const char* GetDriverName()
+const char* GetDriverName()
 {
     return "(SDL2) OpenGL via SDL2-Library";
 }

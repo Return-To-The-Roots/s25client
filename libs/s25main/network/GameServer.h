@@ -92,6 +92,7 @@ private:
     void LC_Status_Error(const std::string& error) override;
     void LC_Created() override;
 
+    RTTR_IGNORE_OVERLOADED_VIRTUAL
     bool OnGameMessage(const GameMessage_Pong& msg) override;
     bool OnGameMessage(const GameMessage_Server_Type& msg) override;
     bool OnGameMessage(const GameMessage_Server_Password& msg) override;
@@ -115,6 +116,8 @@ private:
     bool OnGameMessage(const GameMessage_CancelCountdown& msg) override;
     bool OnGameMessage(const GameMessage_Pause& msg) override;
     bool OnGameMessage(const GameMessage_SkipToGF& msg) override;
+    RTTR_POP_DIAGNOSTIC
+
     void CancelCountdown();
     bool ArePlayersReady() const;
     /// Some player data has changed. Set non-ready and cancel countdown

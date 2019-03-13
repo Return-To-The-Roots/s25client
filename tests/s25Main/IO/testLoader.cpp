@@ -26,7 +26,7 @@
 
 BOOST_AUTO_TEST_SUITE(LoaderTests)
 
-boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv& archive, const std::string& expectedContents)
+static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv& archive, const std::string& expectedContents)
 {
     std::vector<std::string> txts = Tokenizer(expectedContents, "|").explode();
     if(txts.size() != archive.size())

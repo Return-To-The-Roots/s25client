@@ -20,6 +20,7 @@
 #pragma once
 
 #include "libutil/MessageInterface.h"
+#include "libutil/warningSuppression.h"
 #include <boost/preprocessor.hpp>
 
 #define __GENERATE_FWD_DECL_SINGLE(s, data, expression) class expression;
@@ -46,7 +47,9 @@
         ~GameMessageInterface() override {}              \
                                                          \
     public:                                              \
+        RTTR_IGNORE_OVERLOADED_VIRTUAL                   \
         __GENERATE_CALLBACKS(__VA_ARGS__)                \
+        RTTR_POP_DIAGNOSTIC                              \
     };
 
 GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,

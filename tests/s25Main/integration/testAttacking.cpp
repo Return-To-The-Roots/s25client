@@ -40,6 +40,7 @@
 
 BOOST_AUTO_TEST_SUITE(AttackSuite)
 
+namespace {
 struct AttackDefaults
 {
     static constexpr unsigned width = 20;
@@ -226,6 +227,7 @@ struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
         BOOST_REQUIRE_EQUAL(attackSrc.GetNumTroops(), numSoldiersLeft);
     }
 };
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, NumSoldierTestFixture)
 {

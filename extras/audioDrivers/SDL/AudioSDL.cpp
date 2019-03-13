@@ -21,6 +21,7 @@
 #include "SoundSDL_Music.h"
 #include "driver/AudioInterface.h"
 #include "driver/IAudioDriverCallback.h"
+#include "driver/Interface.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <iostream>
@@ -32,18 +33,18 @@ static AudioSDL* nthis = nullptr;
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  */
-DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* /*device_dependent*/)
+IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* /*device_dependent*/)
 {
     nthis = new AudioSDL(callback);
     return nthis;
 }
 
-DRIVERDLLAPI void FreeAudioInstance(IAudioDriver* driver)
+void FreeAudioInstance(IAudioDriver* driver)
 {
     delete driver;
 }
 
-DRIVERDLLAPI const char* GetDriverName()
+const char* GetDriverName()
 {
     return "(SDL) Audio via SDL_mixer-Library";
 }

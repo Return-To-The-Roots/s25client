@@ -205,6 +205,7 @@ private:
     void HandleAutosave();
 
     //  Netzwerknachrichten
+    RTTR_IGNORE_OVERLOADED_VIRTUAL
     bool OnGameMessage(const GameMessage_Ping& msg) override;
 
     bool OnGameMessage(const GameMessage_Server_TypeOK& msg) override;
@@ -242,6 +243,7 @@ private:
     bool OnGameMessage(const GameMessage_RemoveLua& msg) override;
 
     bool OnGameMessage(const GameMessage_GetAsyncLog& msg) override;
+    RTTR_POP_DIAGNOSTIC
 
     /// Report the error and stop
     void OnError(ClientError error);

@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "random.hpp"
+#include "libutil/warningSuppression.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/test/framework.hpp>
 #include <boost/test/tree/observer.hpp>
@@ -50,6 +51,7 @@ namespace rttr { namespace test {
             if(test.p_type == boost::unit_test::TUT_CASE && failedLastTest)
                 std::cerr << "Random seed was " << lastSeed << std::endl;
         }
+        RTTR_IGNORE_OVERLOADED_VIRTUAL
         void assertion_result(boost::unit_test::assertion_result ar) override
         {
             if(ar != boost::unit_test::AR_PASSED)
@@ -57,6 +59,8 @@ namespace rttr { namespace test {
                 failedLastTest = true;
             }
         }
+        RTTR_POP_DIAGNOSTIC
+
         std::mt19937 randState;
         uint64_t lastSeed = 0;
         bool failedLastTest = false;

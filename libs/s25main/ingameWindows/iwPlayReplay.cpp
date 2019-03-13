@@ -37,6 +37,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
+namespace {
 class SwitchOnStart : public ClientInterface
 {
 public:
@@ -50,6 +51,7 @@ std::vector<std::string> GetReplays()
 {
     return ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[51]), "rpl");
 }
+} // namespace
 
 iwPlayReplay::iwPlayReplay()
     : IngameWindow(CGI_PLAYREPLAY, IngameWindow::posLastOrCenter, Extent(600, 330), _("Play Replay"), LOADER.GetImageN("resource", 41))

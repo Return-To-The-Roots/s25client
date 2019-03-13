@@ -285,18 +285,6 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-bool ValidateFile(const std::string& filename)
-{
-    FILE* file = bnw::fopen(filename.c_str(), "r");
-    if(!file)
-        return false;
-    else
-    {
-        fclose(file);
-        return true;
-    }
-}
-
 void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
 {
     switch(win_id)
@@ -307,7 +295,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
             bool valid = false;
 
             // Existiert diese Datei nicht?
-            if(ValidateFile(msg))
+            if(bfs::exists(msg))
                 valid = true;
             else
             {

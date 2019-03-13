@@ -37,7 +37,7 @@
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
-std::ostream& operator<<(std::ostream& out, const InventorySetting& setting)
+static std::ostream& operator<<(std::ostream& out, const InventorySetting& setting)
 {
     return out << setting.ToUnsignedChar();
 }

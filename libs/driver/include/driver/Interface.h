@@ -19,6 +19,11 @@
 
 #pragma once
 
+#include "exportImport.h"
+
+RTTR_DECL unsigned GetDriverAPIVersion();
+RTTR_DECL const char* GetDriverName();
+
 /// Definition des GetDriverAPIVersion-Zeigers
 typedef unsigned (*PDRIVER_GETDRIVERAPIVERSION)();
 /// Definition des GetDriverName

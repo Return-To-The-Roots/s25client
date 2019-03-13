@@ -24,7 +24,7 @@
 
 BOOST_AUTO_TEST_SUITE(Controls)
 
-void resizeMap(glArchivItem_Map& glMap, const Extent& size)
+static void resizeMap(glArchivItem_Map& glMap, const Extent& size)
 {
     libsiedler2::ArchivItem_Map map;
     libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header;

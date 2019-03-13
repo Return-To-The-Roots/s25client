@@ -45,8 +45,6 @@ MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
 };
 /* clang-format on */
 
-void deleteNoting(void*) {}
-
 BOOST_AUTO_TEST_CASE(LobbyChat)
 {
     rttr::test::LogAccessor logAcc;
@@ -66,7 +64,7 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
     MOCK_EXPECT(client->SendServerJoinRequest).exactly(1).in(s2);
     MOCK_EXPECT(client->SendRankingInfoRequest).at_least(1);
 
-    dskHostGame* desktop = new dskHostGame(ServerType::LOBBY, std::shared_ptr<GameLobby>(&gameLobby, &deleteNoting), 0, std::move(client));
+    dskHostGame* desktop = new dskHostGame(ServerType::LOBBY, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client));
     ClientInterface* ci = dynamic_cast<ClientInterface*>(desktop);
     LobbyInterface* li = dynamic_cast<LobbyInterface*>(desktop);
     BOOST_REQUIRE(ci && li);

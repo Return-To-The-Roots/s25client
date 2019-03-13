@@ -80,6 +80,7 @@ struct RttrExitException : std::exception
     RttrExitException(int code) : code(code) {}
 };
 
+namespace {
 void WaitForEnter()
 {
     static bool waited = false;
@@ -411,6 +412,7 @@ int RunProgram(po::variables_map& options)
     }
     return 0;
 }
+} // namespace
 
 /**
  *  Hauptfunktion von Siedler II.5 Return to the Roots

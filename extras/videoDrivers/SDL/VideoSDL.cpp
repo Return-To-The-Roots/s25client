@@ -17,6 +17,7 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "VideoSDL.h"
+#include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
@@ -79,12 +80,12 @@ void ShareOGLResources(HGLRC srcContext, HGLRC dstContext)
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  */
-DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
+IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
     return new VideoSDL(CallBack);
 }
 
-DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
+void FreeVideoInstance(IVideoDriver* driver)
 {
     delete driver;
 }
@@ -94,7 +95,7 @@ DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
  *
  *  @return liefert den Namen des Treibers.
  */
-DRIVERDLLAPI const char* GetDriverName()
+const char* GetDriverName()
 {
     return "(SDL) OpenGL via SDL-Library";
 }
