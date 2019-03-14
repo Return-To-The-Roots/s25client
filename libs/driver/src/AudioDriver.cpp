@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "driver/AudioDriver.h"
+#include "RTTR_Assert.h"
 #include "driver/SoundHandle.h"
 #include <algorithm>
 #include <limits>

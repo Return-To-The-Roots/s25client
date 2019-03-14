@@ -47,11 +47,10 @@
         ~GameMessageInterface() override {}              \
                                                          \
     public:                                              \
-        RTTR_IGNORE_OVERLOADED_VIRTUAL                   \
         __GENERATE_CALLBACKS(__VA_ARGS__)                \
-        RTTR_POP_DIAGNOSTIC                              \
     };
 
+RTTR_IGNORE_OVERLOADED_VIRTUAL
 GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
 
                                 GameMessage_Server_Type, GameMessage_Server_TypeOK, GameMessage_Server_Password, GameMessage_Server_Name,
@@ -68,5 +67,6 @@ GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
                                 GameMessage_SkipToGF, GameMessage_Server_NWFDone, GameMessage_GameCommand, GameMessage_Speed,
 
                                 GameMessage_GetAsyncLog, GameMessage_AsyncLog)
+RTTR_POP_DIAGNOSTIC
 
 #endif //! GAMEMESSAGEINTERFACE_H_INCLUDED

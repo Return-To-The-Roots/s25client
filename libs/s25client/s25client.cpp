@@ -182,7 +182,7 @@ void showCrashMessage()
 }
 
 #ifdef _MSC_VER
-[[noreturn]] LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
+LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
 {
     handleException(info->ContextRecord);
     return EXCEPTION_EXECUTE_HANDLER;

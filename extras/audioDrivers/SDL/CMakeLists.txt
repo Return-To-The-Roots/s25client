@@ -7,11 +7,10 @@ IF(NOT SDL_FOUND)
 ELSEIF(NOT SDLMIXER_FOUND)
 	MESSAGE(WARNING ": SDL_mixer library not found: Not building SDL audiodriver")
 ELSE()
-	FIND_PACKAGE(Boost 1.64.0 REQUIRED COMPONENTS filesystem)
     include(CorrectLib)
 	CORRECT_LIB(SDL_LIBRARY SDL)
 	CORRECT_LIB(SDLMIXER_LIBRARY SDL_mixer)
-	
+
 	IF (WIN32)
         include(GatherDll)
         gather_dll(SDLMIXER)
@@ -19,10 +18,10 @@ ELSE()
         gather_dll_by_name(VORBISFILE libvorbisfile-3.dll)
         gather_dll_by_name(OGG libogg-0.dll)
 	ENDIF ()
-		
+
 	ADD_LIBRARY(audioSDL SHARED ${RTTR_DRIVER_INTERFACE} AudioSDL.cpp AudioSDL.h SoundSDL_Effect.h SoundSDL_Music.h)
     target_include_directories(audioSDL SYSTEM PRIVATE ${SDL_INCLUDE_DIR} ${SDLMIXER_INCLUDE_DIR})
-	TARGET_LINK_LIBRARIES(audioSDL PRIVATE audiodrv s25util ${SDL_LIBRARY} ${SDLMIXER_LIBRARY} Boost::filesystem)
+	TARGET_LINK_LIBRARIES(audioSDL PRIVATE audiodrv ${SDL_LIBRARY} ${SDLMIXER_LIBRARY})
 
 	INSTALL(TARGETS audioSDL DESTINATION ${RTTR_DRIVERDIR}/audio)
 ENDIF ()

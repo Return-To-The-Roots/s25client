@@ -463,7 +463,7 @@ unsigned long VideoWinAPI::GetTickCount() const
     return ::GetTickCount();
 }
 
-void* wglGetProcAddress_Wrapper(const char* name)
+static void* wglGetProcAddress_Wrapper(const char* name)
 {
     union
     {
