@@ -120,7 +120,7 @@ TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldD
     luaData.checkUnused();
 }
 
-TerrainDesc::~TerrainDesc() {}
+TerrainDesc::~TerrainDesc() = default;
 
 TerrainBQ TerrainDesc::GetBQ() const
 {

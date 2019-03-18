@@ -33,7 +33,7 @@ LuaInterfaceSettings::LuaInterfaceSettings(IGameLobbyController& lobbyServerCont
     lua["rttr"] = this;
 }
 
-LuaInterfaceSettings::~LuaInterfaceSettings() {}
+LuaInterfaceSettings::~LuaInterfaceSettings() = default;
 
 void LuaInterfaceSettings::Register(kaguya::State& state)
 {

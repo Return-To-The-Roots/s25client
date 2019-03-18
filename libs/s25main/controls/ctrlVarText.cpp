@@ -38,7 +38,7 @@ ctrlVarText::ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, cons
     : Window(parent, id, pos), ctrlBaseVarText(formatstr, color, font, count, fmtArgs), format_(format)
 {}
 
-ctrlVarText::~ctrlVarText() {}
+ctrlVarText::~ctrlVarText() = default;
 
 Rect ctrlVarText::GetBoundaryRect() const
 {

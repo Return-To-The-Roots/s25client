@@ -19,7 +19,7 @@
 #include "AIEventManager.h"
 #include "AIEvents.h"
 
-AIEventManager::AIEventManager() {}
+AIEventManager::AIEventManager() = default;
 
 AIEventManager::~AIEventManager()
 {

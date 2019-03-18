@@ -46,7 +46,7 @@ noCharburnerPile::noCharburnerPile(const MapPoint pos)
     : noCoordBase(NOP_CHARBURNERPILE, pos), state(STATE_WOOD), step(0), sub_step(1), event(nullptr)
 {}
 
-noCharburnerPile::~noCharburnerPile() {}
+noCharburnerPile::~noCharburnerPile() = default;
 
 void noCharburnerPile::Destroy_noCharburnerPile()
 {

@@ -55,7 +55,7 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, co
     MoveTo(0, 0);
 }
 
-GameWorldView::~GameWorldView() {}
+GameWorldView::~GameWorldView() = default;
 
 const GameWorldBase& GameWorldView::GetWorld() const
 {

@@ -20,7 +20,7 @@
 #include "JoinPlayerInfo.h"
 
 GameLobby::GameLobby(bool isSavegame, bool isHost, unsigned numPlayers) : isSavegame_(isSavegame), isHost_(isHost), players_(numPlayers) {}
-GameLobby::~GameLobby() {}
+GameLobby::~GameLobby() = default;
 
 JoinPlayerInfo& GameLobby::getPlayer(unsigned playerId)
 {

@@ -27,7 +27,7 @@
 
 SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(-1) {}
 
-SoundManager::~SoundManager() {}
+SoundManager::~SoundManager() = default;
 
 void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned id, unsigned char volume)
 {

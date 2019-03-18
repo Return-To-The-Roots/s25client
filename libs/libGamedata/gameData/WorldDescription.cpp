@@ -20,6 +20,6 @@
 #include "EdgeDesc.h"
 #include "TerrainDesc.h"
 
-WorldDescription::~WorldDescription() {}
+WorldDescription::~WorldDescription() = default;
 
-WorldDescription::WorldDescription() {}
+WorldDescription::WorldDescription() = default;

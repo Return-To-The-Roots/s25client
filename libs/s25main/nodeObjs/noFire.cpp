@@ -36,7 +36,7 @@ noFire::noFire(const MapPoint pos, bool isBig)
     const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370, 5550, 7400};
     dead_event = GetEvMgr().AddEvent(this, FIREDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)]);
 }
-noFire::~noFire() {}
+noFire::~noFire() = default;
 
 void noFire::Destroy_noFire()
 {

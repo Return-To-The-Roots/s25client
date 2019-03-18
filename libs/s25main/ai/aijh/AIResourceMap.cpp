@@ -29,7 +29,7 @@ AIResourceMap::AIResourceMap(const AIResource res, const AIInterface& aii, const
     : res(res), resRadius(RES_RADIUS[static_cast<unsigned>(res)]), aii(aii), aiMap(aiMap)
 {}
 
-AIResourceMap::~AIResourceMap() {}
+AIResourceMap::~AIResourceMap() = default;
 
 void AIResourceMap::Init()
 {

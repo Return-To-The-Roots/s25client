@@ -49,7 +49,7 @@ Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
         goal->TakeWare(this);
 }
 
-Ware::~Ware() {}
+Ware::~Ware() = default;
 
 void Ware::Destroy()
 {

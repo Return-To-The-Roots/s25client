@@ -106,7 +106,7 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
     GAMEMANAGER.SetCursor();
 }
 
-iwMsgbox::~iwMsgbox() {}
+iwMsgbox::~iwMsgbox() = default;
 
 void iwMsgbox::MoveIcon(const DrawPoint& pos)
 {

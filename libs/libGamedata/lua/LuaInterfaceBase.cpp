@@ -40,7 +40,7 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), errorOccured_(f
     lua["__"] = gettext_noop;
 }
 
-LuaInterfaceBase::~LuaInterfaceBase() {}
+LuaInterfaceBase::~LuaInterfaceBase() = default;
 
 void LuaInterfaceBase::Register(kaguya::State& state)
 {

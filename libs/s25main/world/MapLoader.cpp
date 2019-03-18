@@ -509,7 +509,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 // class for finding harbor neighbors
 struct CalcHarborPosNeighborsNode
 {
-    CalcHarborPosNeighborsNode() {} //-V730
+    CalcHarborPosNeighborsNode() = default; //-V730
     CalcHarborPosNeighborsNode(const MapPoint pt, unsigned distance) : pos(pt), distance(distance) {}
 
     MapPoint pos;

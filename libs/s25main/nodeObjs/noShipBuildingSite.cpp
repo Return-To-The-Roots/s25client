@@ -33,7 +33,7 @@ noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char p
     : noCoordBase(NOP_ENVIRONMENT, pos), player(player), progress(0)
 {}
 
-noShipBuildingSite::~noShipBuildingSite() {}
+noShipBuildingSite::~noShipBuildingSite() = default;
 
 void noShipBuildingSite::Destroy()
 {

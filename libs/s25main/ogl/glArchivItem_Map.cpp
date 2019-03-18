@@ -24,7 +24,7 @@
 
 glArchivItem_Map::glArchivItem_Map() : ArchivItem_Map(), header(nullptr) {}
 
-glArchivItem_Map::~glArchivItem_Map() {}
+glArchivItem_Map::~glArchivItem_Map() = default;
 
 /**
  *  lädt die Mapdaten aus einer Datei.

@@ -166,7 +166,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
         curSong->Play(0);
 }
 
-dskCredits::~dskCredits() {}
+dskCredits::~dskCredits() = default;
 
 void dskCredits::Draw_()
 {

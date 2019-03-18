@@ -36,7 +36,7 @@ uint16_t Savegame::GetVersion() const
 
 Savegame::Savegame() : SavedFile(), start_gf(0) {}
 
-Savegame::~Savegame() {}
+Savegame::~Savegame() = default;
 
 bool Savegame::Save(const std::string& filename, const std::string& mapName)
 {

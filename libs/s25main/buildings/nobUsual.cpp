@@ -97,7 +97,7 @@ void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
         sgd.PushUnsignedShort(last_productivitie);
 }
 
-nobUsual::~nobUsual() {}
+nobUsual::~nobUsual() = default;
 
 void nobUsual::DestroyBuilding()
 {

@@ -27,7 +27,7 @@
 
 GameLoader::GameLoader(std::shared_ptr<Game> game) : game(game) {}
 
-GameLoader::~GameLoader() {}
+GameLoader::~GameLoader() = default;
 
 void GameLoader::initNations()
 {

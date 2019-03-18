@@ -106,7 +106,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     Reset();
 }
 
-iwMapGenerator::~iwMapGenerator() {}
+iwMapGenerator::~iwMapGenerator() = default;
 
 void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 {

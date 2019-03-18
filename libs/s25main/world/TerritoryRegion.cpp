@@ -33,7 +33,7 @@ TerritoryRegion::TerritoryRegion(const Position& startPt, const Extent& size, co
     nodes.resize(size.x * size.y);
 }
 
-TerritoryRegion::~TerritoryRegion() {}
+TerritoryRegion::~TerritoryRegion() = default;
 
 bool TerritoryRegion::IsPointInPolygon(const std::vector<Position>& polygon, const Position& pt)
 {

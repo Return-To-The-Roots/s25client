@@ -42,7 +42,7 @@ nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttack
     attacked_goal->LinkAggressiveDefender(this);
 }
 
-nofAggressiveDefender::~nofAggressiveDefender() {}
+nofAggressiveDefender::~nofAggressiveDefender() = default;
 
 void nofAggressiveDefender::Destroy_nofAggressiveDefender()
 {

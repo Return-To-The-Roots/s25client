@@ -27,7 +27,7 @@ GameMessage_Player_List::GameMessage_Player_List(const std::vector<JoinPlayerInf
     LOG.writeToFile(">>> NMS_PLAYER_LIST(%u)\n") % playerInfos.size();
 }
 
-GameMessage_Player_List::~GameMessage_Player_List() {}
+GameMessage_Player_List::~GameMessage_Player_List() = default;
 
 void GameMessage_Player_List::Serialize(Serializer& ser) const
 {

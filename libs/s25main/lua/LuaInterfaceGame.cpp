@@ -177,7 +177,7 @@ LuaInterfaceGame::LuaInterfaceGame(std::weak_ptr<Game> gameInstance) : gw(gameIn
     lua["rttr"] = this;
 }
 
-LuaInterfaceGame::~LuaInterfaceGame() {}
+LuaInterfaceGame::~LuaInterfaceGame() = default;
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMissionGoal, 1, 2)
 

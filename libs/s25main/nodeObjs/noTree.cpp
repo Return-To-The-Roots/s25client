@@ -56,7 +56,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
         produce_animal_event = GetEvMgr().AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
 }
 
-noTree::~noTree() {}
+noTree::~noTree() = default;
 
 void noTree::Destroy_noTree()
 {

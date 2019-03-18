@@ -30,7 +30,7 @@ noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsi
     last_visit = 0;
 }
 
-noRoadNode::~noRoadNode() {}
+noRoadNode::~noRoadNode() = default;
 
 void noRoadNode::Destroy_noRoadNode()
 {

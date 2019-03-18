@@ -62,7 +62,7 @@ glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp)
 }
 
 TerrainRenderer::TerrainRenderer() : size_(0, 0) {}
-TerrainRenderer::~TerrainRenderer() {}
+TerrainRenderer::~TerrainRenderer() = default;
 
 TerrainRenderer::PointF TerrainRenderer::GetNeighbourVertexPos(MapPoint pt, const unsigned dir) const
 {

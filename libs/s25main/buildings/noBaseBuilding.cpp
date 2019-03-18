@@ -81,7 +81,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 }
 
-noBaseBuilding::~noBaseBuilding() {}
+noBaseBuilding::~noBaseBuilding() = default;
 
 void noBaseBuilding::Destroy_noBaseBuilding()
 {

@@ -65,7 +65,7 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy,
     optiongroup->SetSelection(ADDONGROUP_ALL, true);
 }
 
-iwAddons::~iwAddons() {}
+iwAddons::~iwAddons() = default;
 
 void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 {

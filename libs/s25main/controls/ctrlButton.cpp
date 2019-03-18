@@ -28,7 +28,7 @@ ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const 
       isIlluminated(false), isEnabled(true)
 {}
 
-ctrlButton::~ctrlButton() {}
+ctrlButton::~ctrlButton() = default;
 
 void ctrlButton::SetEnabled(bool enable /*= true*/)
 {

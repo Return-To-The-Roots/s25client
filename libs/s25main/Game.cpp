@@ -30,7 +30,7 @@ Game::Game(const GlobalGameSettings& settings, EventManager* em, const std::vect
     : ggs(settings), em(em), world(players, ggs, *em), started(false), finished(false)
 {}
 
-Game::~Game() {}
+Game::~Game() = default;
 
 void Game::Start(bool startFromSave)
 {

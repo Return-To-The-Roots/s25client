@@ -40,7 +40,7 @@ nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char pla
     : nofSoldier(pos, player, goal, home, rank), healing_event(nullptr)
 {}
 
-nofPassiveSoldier::~nofPassiveSoldier() {}
+nofPassiveSoldier::~nofPassiveSoldier() = default;
 
 void nofPassiveSoldier::Destroy_nofPassiveSoldier()
 {

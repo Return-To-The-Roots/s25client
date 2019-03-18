@@ -48,7 +48,7 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
     UpdateFps(VIDEODRIVER.GetFPS());
 }
 
-Desktop::~Desktop() {}
+Desktop::~Desktop() = default;
 
 /**
  *  Zeichenmethode zum Zeichnen des Desktops

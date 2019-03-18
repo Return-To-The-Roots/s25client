@@ -24,7 +24,7 @@ ctrlImage::ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, ITexture
     : Window(parent, id, pos), ctrlBaseTooltip(tooltip), ctrlBaseImage(image)
 {}
 
-ctrlImage::~ctrlImage() {}
+ctrlImage::~ctrlImage() = default;
 
 /**
  *  zeichnet das Fenster.

@@ -29,7 +29,7 @@ noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NOP_ENVIRONMENT, pos), 
     current_event = GetEvMgr().AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
 }
 
-noSkeleton::~noSkeleton() {}
+noSkeleton::~noSkeleton() = default;
 
 void noSkeleton::Destroy_noSkeleton()
 {

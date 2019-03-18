@@ -24,7 +24,7 @@
 
 GameLobbyController::GameLobbyController(std::shared_ptr<GameLobby> lobby) : lobby(lobby) {}
 
-GameLobbyController::~GameLobbyController() {}
+GameLobbyController::~GameLobbyController() = default;
 
 unsigned GameLobbyController::GetMaxNumPlayers() const
 {

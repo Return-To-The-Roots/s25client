@@ -22,7 +22,7 @@
 
 MapBase::MapBase() : size_(MapExtent::all(0)) {}
 
-MapBase::~MapBase() {}
+MapBase::~MapBase() = default;
 
 void MapBase::Resize(const MapExtent& newSize)
 {

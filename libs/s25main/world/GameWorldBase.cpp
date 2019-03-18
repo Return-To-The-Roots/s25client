@@ -43,7 +43,7 @@ GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const Globa
       em(em), gi(nullptr)
 {}
 
-GameWorldBase::~GameWorldBase() {}
+GameWorldBase::~GameWorldBase() = default;
 
 void GameWorldBase::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {

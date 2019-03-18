@@ -101,7 +101,7 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
                        LOADER.GetFontN("resource", 0));
 }
 
-iwMerchandiseStatistics::~iwMerchandiseStatistics() {}
+iwMerchandiseStatistics::~iwMerchandiseStatistics() = default;
 
 void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {

@@ -41,7 +41,7 @@ GameServerPlayer::GameServerPlayer(unsigned id, const Socket& socket) //-V818
     this->socket = socket;
 }
 
-GameServerPlayer::~GameServerPlayer() {}
+GameServerPlayer::~GameServerPlayer() = default;
 
 void GameServerPlayer::setMapSending(std::chrono::seconds estimatedSendTime)
 {

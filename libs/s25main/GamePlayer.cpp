@@ -166,7 +166,7 @@ void GamePlayer::LoadStandardDistribution()
     }
 }
 
-GamePlayer::~GamePlayer() {}
+GamePlayer::~GamePlayer() = default;
 
 void GamePlayer::Serialize(SerializedGameData& sgd) const
 {

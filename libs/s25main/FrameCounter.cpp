@@ -97,7 +97,7 @@ void FrameTimer::update(clock::time_point curTime)
     }
 }
 
-FrameLimiter::FrameLimiter() {}
+FrameLimiter::FrameLimiter() = default;
 
 FrameLimiter::FrameLimiter(FrameTimer frameTimer) : frameTimer_(frameTimer) {}
 

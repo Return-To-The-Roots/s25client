@@ -24,7 +24,7 @@ MapInfo::MapInfo()
     Clear();
 }
 
-MapInfo::~MapInfo() {}
+MapInfo::~MapInfo() = default;
 
 void MapInfo::Clear()
 {

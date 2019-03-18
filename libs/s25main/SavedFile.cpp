@@ -32,7 +32,7 @@ SavedFile::SavedFile() : saveTime_(0)
     std::copy(rev.begin(), rev.begin() + revision.size(), revision.begin());
 }
 
-SavedFile::~SavedFile() {}
+SavedFile::~SavedFile() = default;
 
 void SavedFile::WriteFileHeader(BinaryFile& file)
 {

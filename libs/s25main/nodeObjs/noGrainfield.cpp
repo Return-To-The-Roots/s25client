@@ -38,7 +38,7 @@ noGrainfield::noGrainfield(const MapPoint pos)
     event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
 }
 
-noGrainfield::~noGrainfield() {}
+noGrainfield::~noGrainfield() = default;
 
 void noGrainfield::Destroy_noGrainfield()
 {
