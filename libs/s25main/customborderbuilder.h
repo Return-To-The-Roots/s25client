@@ -30,7 +30,7 @@ class Archiv;
 } // namespace libsiedler2
 
 /// Position in an image
-typedef Point<unsigned> ImgPos;
+using ImgPos = Point<unsigned>;
 
 class CustomBorderBuilder
 {

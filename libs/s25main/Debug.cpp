@@ -269,7 +269,7 @@ bool DebugInfo::SendStackTrace(const std::vector<void*>& stacktrace)
     if(!SendString("StackTrace"))
         return false;
 
-    typedef std::conditional_t<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t> littleVoid_t;
+    using littleVoid_t = std::conditional_t<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>;
     static_assert(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
     std::vector<littleVoid_t> endStacktrace;
     endStacktrace.reserve(stacktrace.size());

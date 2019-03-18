@@ -27,7 +27,7 @@ template<typename T_Deleter>
 class shared_handle
 {
 public:
-    typedef typename T_Deleter::pointer Pointer;
+    using Pointer = typename T_Deleter::pointer;
 
 private:
     unsigned* refCt_;

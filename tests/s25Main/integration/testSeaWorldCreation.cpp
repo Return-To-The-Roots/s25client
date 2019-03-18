@@ -41,7 +41,7 @@ ShipDirection getShipDir(const MapBase& world, MapPoint fromPt, const Position& 
 /// Test getting the ship dir for the various cases coming from a single point
 void testShipDir(const MapBase& world, const MapPoint fromPt)
 {
-    typedef Position DiffPt;
+    using DiffPt = Position;
     // General cases
     BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(0, -10)), ShipDirection::NORTH);
     BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(10, -1)), ShipDirection::NORTHEAST);

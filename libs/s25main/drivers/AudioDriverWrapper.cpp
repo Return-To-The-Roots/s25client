@@ -28,7 +28,7 @@
 #include <ostream>
 #include <vector>
 
-typedef boost::interprocess::basic_ovectorstream<std::vector<char>> ovectorstream;
+using ovectorstream = boost::interprocess::basic_ovectorstream<std::vector<char>>;
 
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(nullptr), loadedFromDll(false) {}
 

@@ -25,7 +25,7 @@ struct BQCalculator
 {
     BQCalculator(const World& world) : world(world) {}
 
-    typedef BuildingQuality result_type;
+    using result_type = BuildingQuality;
 
     template<typename T_IsOnRoad>
     inline BuildingQuality operator()(const MapPoint pt, T_IsOnRoad isOnRoad, bool flagOnly = false) const;

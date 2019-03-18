@@ -37,14 +37,14 @@
 namespace {
 struct DeleterReleaseDC
 {
-    typedef HDC pointer;
+    using pointer = HDC;
     HWND wnd;
     DeleterReleaseDC(HWND wnd) : wnd(wnd) {}
     void operator()(HDC dc) const { ReleaseDC(wnd, dc); }
 };
 struct DeleterDeleteRC
 {
-    typedef HGLRC pointer;
+    using pointer = HGLRC;
     void operator()(HGLRC rc) const { wglDeleteContext(rc); }
 };
 
@@ -197,7 +197,7 @@ bool VideoSDL::CreateScreen(const std::string& title, const VideoMode& newSize, 
     if(!SetVideoMode(newSize, fullscreen))
         return false;
 
-    SDL_WM_SetCaption(title.c_str(), 0);
+    SDL_WM_SetCaption(title.c_str(), nullptr);
 
 #ifdef _WIN32
     SetWindowTextW(GetConsoleWindow(), cvUTF8ToWideString(title).c_str());

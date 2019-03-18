@@ -98,7 +98,7 @@ private:
     void CreateContinent();
     void CreateRandom();
 
-    typedef XorShift UsedRNG;
+    using UsedRNG = XorShift;
     UsedRNG rng_;
 };
 

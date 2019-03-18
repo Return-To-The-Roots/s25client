@@ -23,6 +23,6 @@
 #include <stdint.h>
 
 /// Id of a played effect
-typedef int32_t EffectPlayId;
+using EffectPlayId = int32_t;
 
 #endif // EffectPlayId_h__

@@ -56,7 +56,7 @@ private:
 template<class T_Note>
 struct NotificationManager::NoteCallback : NoteCallbackBase
 {
-    typedef std::function<void(const T_Note&)> Callback;
+    using Callback = std::function<void(const T_Note&)>;
     explicit NoteCallback(Callback callback) : execute(callback) {}
     const Callback execute;
 };

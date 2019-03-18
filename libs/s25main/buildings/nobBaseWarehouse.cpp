@@ -59,7 +59,8 @@ const unsigned LEAVE_INTERVAL = 20;
 const unsigned LEAVE_INTERVAL_RAND = 10;
 
 nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(0), empty_event(0), store_event(0)
+    : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(nullptr), empty_event(nullptr),
+      store_event(nullptr)
 {
     producinghelpers_event =
       GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
@@ -859,7 +860,7 @@ void nobBaseWarehouse::AddFigure(noFigure* figure, const bool increase_visual_co
 void nobBaseWarehouse::FetchWare()
 {
     if(!fetch_double_protection)
-        AddLeavingFigure(new nofWarehouseWorker(pos, player, 0, true));
+        AddLeavingFigure(new nofWarehouseWorker(pos, player, nullptr, true));
 
     fetch_double_protection = false;
 }
@@ -1107,7 +1108,7 @@ void nobBaseWarehouse::TryStopRecruiting()
         if(!AreRecruitingConditionsComply())
         {
             GetEvMgr().RemoveEvent(recruiting_event);
-            recruiting_event = 0;
+            recruiting_event = nullptr;
         }
     }
 }

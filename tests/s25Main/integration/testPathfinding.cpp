@@ -38,8 +38,8 @@ using namespace boost::assign;
 BOOST_AUTO_TEST_SUITE(PathfindingSuite)
 
 namespace {
-typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
-typedef WorldFixture<CreateEmptyWorld, 1> WorldFixtureEmpty1P;
+using WorldFixtureEmpty0P = WorldFixture<CreateEmptyWorld, 0>;
+using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1>;
 
 /// Sets all terrain to the given terrain
 void clearWorld(GameWorldGame& world, DescIdx<TerrainDesc> terrain)

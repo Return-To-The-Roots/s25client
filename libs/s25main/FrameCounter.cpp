@@ -48,7 +48,7 @@ unsigned FrameCounter::getCurFrameRate() const
     clock::duration timeDiff = lastUpdateTime_ - curStartTime_;
     if(timeDiff == clock::duration::zero())
         return 0;
-    typedef std::chrono::duration<double> dSeconds;
+    using dSeconds = std::chrono::duration<double>;
     return std::lround(curNumFrames_ / std::chrono::duration_cast<dSeconds>(timeDiff).count());
 }
 

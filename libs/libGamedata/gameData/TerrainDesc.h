@@ -69,7 +69,7 @@ enum class ETexType : uint8_t
 
 struct TerrainDesc
 {
-    typedef Point<float> PointF;
+    using PointF = Point<float>;
     struct Triangle
     {
         PointF tip, left, right;

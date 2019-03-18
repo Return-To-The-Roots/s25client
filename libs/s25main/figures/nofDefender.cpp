@@ -52,7 +52,7 @@ nofDefender::nofDefender(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     if(state != STATE_FIGUREWORK)
         attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
     else
-        attacker = 0;
+        attacker = nullptr;
 }
 
 /// wenn man gelaufen ist
@@ -75,7 +75,7 @@ void nofDefender::Walked()
             if(!building)
             {
                 // Rumirren
-                attacker = 0;
+                attacker = nullptr;
                 state = STATE_FIGUREWORK;
                 StartWandering();
                 Wander();
@@ -108,7 +108,7 @@ void nofDefender::Walked()
 /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
 void nofDefender::HomeDestroyed()
 {
-    building = 0;
+    building = nullptr;
 
     switch(state)
     {

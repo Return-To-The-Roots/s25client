@@ -25,7 +25,7 @@ class FOWObject;
 class SerializedGameData;
 
 /// Border stones on 1 node: Directly on Point and halfway to E, SE and SW
-typedef std::array<uint8_t, 4> BoundaryStones;
+using BoundaryStones = std::array<uint8_t, 4>;
 
 /// How a player sees the point in FoW
 struct FoWNode

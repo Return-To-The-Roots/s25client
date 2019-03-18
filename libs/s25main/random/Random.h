@@ -42,7 +42,7 @@ class Random : public Singleton<Random<T_PRNG>>
 {
 public:
     /// The used random number generator type
-    typedef T_PRNG PRNG;
+    using PRNG = T_PRNG;
 
     /// Class for storing the invocation of the rng
     struct RandomEntry
@@ -96,9 +96,9 @@ private:
 };
 
 /// The actual PRNG used for the ingame RNG
-typedef XorShift UsedPRNG;
-typedef Random<UsedPRNG> UsedRandom;
-typedef UsedRandom::RandomEntry RandomEntry;
+using UsedPRNG = XorShift;
+using UsedRandom = Random<UsedPRNG>;
+using RandomEntry = UsedRandom::RandomEntry;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Macros / Defines

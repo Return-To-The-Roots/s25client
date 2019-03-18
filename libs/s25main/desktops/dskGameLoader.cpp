@@ -20,6 +20,7 @@
 #include "Game.h"
 #include "GameManager.h"
 #include "Loader.h"
+
 #include "WindowManager.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
@@ -32,6 +33,7 @@
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "liblobby/LobbyClient.h"
+#include <memory>
 
 /**
  *  Konstruktor von @p dskGameLoader.
@@ -111,7 +113,7 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             try
             {
                 // Do this here as it will init OGL
-                gameInterface.reset(new dskGameInterface(loader_.getGame(), GAMECLIENT.GetNWFInfo(), GAMECLIENT.GetPlayerId()));
+                gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.GetNWFInfo(), GAMECLIENT.GetPlayerId());
             } catch(std::runtime_error& e)
             {
                 LC_Status_Error(std::string(_("Failed to init GUI: ")) + e.what());

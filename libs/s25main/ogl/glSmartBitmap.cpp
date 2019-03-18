@@ -217,7 +217,7 @@ void glSmartBitmap::generateTexture()
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufSize.x, bufSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 
-    typedef Point<float> PointF;
+    using PointF = Point<float>;
 
     /* 0--3/4--7
      * |  |    |

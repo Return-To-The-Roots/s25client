@@ -1007,7 +1007,7 @@ bool GameClient::CreateLobby()
         }
         break;
         case MAPTYPE_SAVEGAME:
-            mapinfo.savegame.reset(new Savegame);
+            mapinfo.savegame = std::make_unique<Savegame>();
             if(!mapinfo.savegame->Load(mapinfo.filepath, true, false))
                 return false;
 
@@ -1370,7 +1370,7 @@ void GameClient::SetTestPlayerId(unsigned id)
 
 void GameClient::StartReplayRecording(const unsigned random_init)
 {
-    replayinfo.reset(new ReplayInfo);
+    replayinfo = std::make_unique<ReplayInfo>();
     replayinfo->fileName = s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
     replayinfo->replay.random_init = random_init;
 
@@ -1389,7 +1389,7 @@ bool GameClient::StartReplay(const std::string& path)
 {
     RTTR_Assert(state == CS_STOPPED);
     mapinfo.Clear();
-    replayinfo.reset(new ReplayInfo);
+    replayinfo = std::make_unique<ReplayInfo>();
 
     if(!replayinfo->replay.LoadHeader(path, true) || !replayinfo->replay.LoadGameData(mapinfo)) //-V807
     {
@@ -1517,7 +1517,7 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 {
     RTTR_Assert(ev);
-    typedef std::chrono::duration<int32_t, std::milli> milliseconds32_t;
+    using milliseconds32_t = std::chrono::duration<int32_t, std::milli>;
     milliseconds32_t elapsedTime;
     if(state == CS_GAME)
         elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
@@ -1705,9 +1705,9 @@ AIPlayer* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
 std::string GameClient::FormatGFTime(const unsigned gf) const
 {
-    typedef std::chrono::duration<uint32_t, std::chrono::seconds::period> seconds;
-    typedef std::chrono::duration<uint32_t, std::chrono::hours::period> hours;
-    typedef std::chrono::duration<uint32_t, std::chrono::minutes::period> minutes;
+    using seconds = std::chrono::duration<uint32_t, std::chrono::seconds::period>;
+    using hours = std::chrono::duration<uint32_t, std::chrono::hours::period>;
+    using minutes = std::chrono::duration<uint32_t, std::chrono::minutes::period>;
     using std::chrono::duration_cast;
 
     // In Sekunden umrechnen

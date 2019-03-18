@@ -50,6 +50,7 @@
 #include "gameData/TerrainDesc.h"
 #include <algorithm>
 #include <array>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 
@@ -809,7 +810,7 @@ void AIPlayerJH::ExecuteAIJob()
     while(eventManager.EventAvailable() && quota) // handle all new events - some will add new orders but they can all be handled instantly
     {
         quota--;
-        currentJob.reset(new EventJob(*this, eventManager.GetEvent()));
+        currentJob = std::make_unique<EventJob>(*this, eventManager.GetEvent());
         currentJob->ExecuteJob();
     }
     // how many construction & connect jobs the ai will attempt every gf, the ai gets new orders from events and every 200 gf

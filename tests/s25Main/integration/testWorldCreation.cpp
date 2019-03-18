@@ -22,7 +22,7 @@
 #include <boost/test/unit_test.hpp>
 
 /// HQ radius is 9 -> min size is 20
-typedef WorldFixture<CreateEmptyWorld, 1, 20, 20> WorldFixtureEmpty1P;
+using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 20, 20>;
 BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldFixtureEmpty1P)
 {
     GamePlayer& player = world.GetPlayer(0);

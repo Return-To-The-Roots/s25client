@@ -82,7 +82,7 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
 {
     /// Positions of the players HQ
     std::array<MapPoint, T_numPlayers> hqPos;
-    typedef WorldWithGCExecution<T_numPlayers, T_width, T_height> Parent;
+    using Parent = WorldWithGCExecution<T_numPlayers, T_width, T_height>;
     using Parent::curPlayer;
     using Parent::world;
 
@@ -189,7 +189,7 @@ struct NumSoldierTestFixture : public AttackFixtureBase<3, 56, 38>
 template<unsigned T_numPlayers = 2, unsigned T_width = AttackDefaults::width, unsigned T_height = AttackDefaults::height>
 struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
 {
-    typedef AttackFixtureBase<T_numPlayers, T_width, T_height> Parent;
+    using Parent = AttackFixtureBase<T_numPlayers, T_width, T_height>;
     using Parent::MakeVisible;
     using Parent::curPlayer;
     using Parent::hqPos;
@@ -486,7 +486,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonDisable, AttackFixture<>)
     BOOST_REQUIRE(milBld1->IsGoldDisabled());
 }
 
-typedef AttackFixture<4, 32, 34> AttackFixture4P;
+using AttackFixture4P = AttackFixture<4, 32, 34>;
 BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 {
     initGameRNG();
@@ -770,7 +770,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     RTTR_EXEC_TILL(40, !milBld1->IsDoorOpen());
 }
 
-typedef AttackFixture<2, 24> DestroyRoadsOnConquerFixture;
+using DestroyRoadsOnConquerFixture = AttackFixture<2, 24>;
 BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
 {
     MapPoint leftBldPos = world.MakeMapPoint(milBld1Pos + Position(-5, 2));

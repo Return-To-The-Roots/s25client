@@ -105,7 +105,7 @@ template<int T_maxResults, class T_TransformPt, class T_IsValidPt>
 inline std::vector<typename T_TransformPt::result_type>
 MapBase::GetPointsInRadius(const MapPoint pt, unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid, bool includePt) const
 {
-    typedef typename T_TransformPt::result_type Element;
+    using Element = typename T_TransformPt::result_type;
     std::vector<Element> result;
     if(includePt)
     {

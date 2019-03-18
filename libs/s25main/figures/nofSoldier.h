@@ -87,6 +87,6 @@ struct ComparatorSoldiersByRank
 };
 
 class nofPassiveSoldier;
-typedef boost::container::flat_set<nofPassiveSoldier*, ComparatorSoldiersByRank<true>> SortedTroops;
+using SortedTroops = boost::container::flat_set<nofPassiveSoldier*, ComparatorSoldiersByRank<true>>;
 
 #endif

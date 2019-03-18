@@ -48,7 +48,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 {
 public:
     static constexpr unsigned Longevity = 6;
-    typedef std::chrono::steady_clock SteadyClock;
+    using SteadyClock = std::chrono::steady_clock;
 
     GameServer();
     ~GameServer() override;

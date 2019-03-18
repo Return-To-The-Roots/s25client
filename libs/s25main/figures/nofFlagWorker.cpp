@@ -25,7 +25,7 @@
 #include "nodeObjs/noFlag.h"
 
 nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
-    : noFigure(job, pos, player, goal), flag(0), state(STATE_FIGUREWORK)
+    : noFigure(job, pos, player, goal), flag(nullptr), state(STATE_FIGUREWORK)
 {
     // Flagge als Ziel, dann arbeiten wir auch, ansonsten kanns aber auch nur ein Lagerhaus oder Null sein, wenn ein
     // Lagerhaus abgerissen wurde oder ausgelagert wurde etc., dann auch den nicht als Flag-Worker registrieren
@@ -36,9 +36,9 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
             this->flag = static_cast<noFlag*>(goal);
             gwg->GetPlayer(player).RegisterFlagWorker(this);
         } else
-            this->flag = 0;
+            this->flag = nullptr;
     } else
-        this->flag = 0;
+        this->flag = nullptr;
 }
 
 nofFlagWorker::nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id)

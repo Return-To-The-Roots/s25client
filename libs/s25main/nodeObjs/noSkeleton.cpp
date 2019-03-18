@@ -69,7 +69,7 @@ void noSkeleton::HandleEvent(const unsigned /*id*/)
     } else
     {
         // ganz weg damit
-        current_event = 0;
+        current_event = nullptr;
         GetEvMgr().AddToKillList(this);
     }
 }

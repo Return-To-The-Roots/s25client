@@ -28,7 +28,7 @@
 template<typename T>
 struct Point //-V690
 {
-    typedef T ElementType;
+    using ElementType = T;
 
     T x, y;
     constexpr Point(const T x, const T y) : x(x), y(y) {}
@@ -47,9 +47,9 @@ struct Point //-V690
 };
 
 /// Type for describing a position/offset etc. (signed type)
-typedef Point<int> Position;
+using Position = Point<int>;
 /// Type for describing an extent/size etc. (unsigned type)
-typedef Point<unsigned> Extent;
+using Extent = Point<unsigned>;
 //-V:all:810
 
 //////////////////////////////////////////////////////////////////////////
@@ -107,7 +107,7 @@ constexpr Point<T> elMax(const Point<T>& lhs, const Point<T>& rhs)
 template<typename T, bool T_isFloat = std::is_floating_point<T>::value>
 struct PointProductType
 {
-    typedef T type;
+    using type = T;
 };
 
 template<typename T>
@@ -115,7 +115,7 @@ struct PointProductType<T, false>
 {
     static constexpr bool is64Bit = sizeof(T) > 4u;
     using type32Bit = std::conditional_t<std::is_signed<T>::value, int32_t, uint32_t>;
-    typedef std::conditional_t<is64Bit, T, type32Bit> type;
+    using type = std::conditional_t<is64Bit, T, type32Bit>;
 };
 
 /// Compute pt.x * pt.y
@@ -152,7 +152,7 @@ struct MixedType<T, U, true>
                                       std::conditional_t<std::is_floating_point<T>::value, T, U> // Take the floating point type
                                       >;
     // Convert to signed iff at least one value is signed
-    typedef std::conditional_t<std::is_signed<T>::value || std::is_signed<U>::value, TryMakeSigned_t<Common>, Common> type;
+    using type = std::conditional_t<std::is_signed<T>::value || std::is_signed<U>::value, TryMakeSigned_t<Common>, Common>;
 };
 template<typename T, typename U>
 using MixedType_t = typename MixedType<T, U>::type;

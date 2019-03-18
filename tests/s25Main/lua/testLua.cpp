@@ -748,7 +748,7 @@ BOOST_AUTO_TEST_CASE(onOccupied)
         occupied[player_id] = points\n\
     end");
     initWorld();
-    typedef std::vector<std::pair<int, int>> Points;
+    using Points = std::vector<std::pair<int, int>>;
     std::map<int, Points> gamePtsPerPlayer;
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
@@ -777,7 +777,7 @@ BOOST_AUTO_TEST_CASE(onExplored)
         explored[player_id] = points\n\
     end");
     initWorld();
-    typedef std::vector<std::pair<int, int>> Points;
+    using Points = std::vector<std::pair<int, int>>;
     std::map<int, Points> gamePtsPerPlayer;
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {

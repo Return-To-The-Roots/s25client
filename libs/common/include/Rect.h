@@ -33,9 +33,9 @@
 template<typename T>
 struct RectBase
 {
-    typedef Point<T> position_type;
-    typedef typename std::conditional_t<std::is_integral<T>::value, std::make_unsigned<T>, std::common_type<T>>::type extent_elem_type;
-    typedef Point<extent_elem_type> extent_type;
+    using position_type = Point<T>;
+    using extent_elem_type = typename std::conditional_t<std::is_integral<T>::value, std::make_unsigned<T>, std::common_type<T>>::type;
+    using extent_type = Point<extent_elem_type>;
     T left, top, right, bottom;
     constexpr RectBase() : RectBase(position_type::all(0), extent_type::all(0)) {}
     constexpr RectBase(T left, T top, extent_elem_type width, extent_elem_type height)
@@ -54,7 +54,7 @@ struct RectBase
     static RectBase move(RectBase rect, const position_type& offset);
 };
 
-typedef RectBase<int> Rect;
+using Rect = RectBase<int>;
 
 template<typename T>
 constexpr RectBase<T>::RectBase(const position_type& lt, const extent_type& size)

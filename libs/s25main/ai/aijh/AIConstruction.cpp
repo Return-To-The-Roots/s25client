@@ -209,7 +209,7 @@ void AIConstruction::ConstructionsExecuted()
 namespace {
     struct Point2FlagAI
     {
-        typedef const noFlag* result_type;
+        using result_type = const noFlag*;
         const GameWorldBase& world_;
 
         Point2FlagAI(const GameWorldBase& world) : world_(world) {}

@@ -264,7 +264,7 @@ protected:
         BUTTON_HOVER,
         BUTTON_PRESSED
     };
-    typedef std::map<unsigned, Window*> ControlMap;
+    using ControlMap = std::map<unsigned, Window*>;
 
     /// scales X- und Y values to fit the screen
     template<class T_Pt>

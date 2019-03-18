@@ -43,7 +43,7 @@ namespace gc {
 
 class GameCommand;
 // Use this for safely using Pointers to GameCommands
-typedef boost::intrusive_ptr<GameCommand> GameCommandPtr;
+using GameCommandPtr = boost::intrusive_ptr<GameCommand>;
 
 class GameCommand
 {

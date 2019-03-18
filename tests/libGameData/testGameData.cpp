@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(TextureCoords)
     WorldDescription desc;
     GameDataLoader loader(desc, basePath.string());
     BOOST_REQUIRE(loader.Load());
-    typedef TerrainDesc::PointF PointF;
+    using PointF = TerrainDesc::PointF;
     // Border points are inset by half a pixel for OpenGL (sample middle of pixel!)
     // Overlapped uses the full rectangle
     const TerrainDesc::Triangle rsuO = desc.terrain.tryGet("terrain1")->GetRSUTriangle();

@@ -25,7 +25,7 @@
 #include "worldFixtures/WorldFixture.h"
 #include <boost/test/unit_test.hpp>
 
-typedef WorldFixture<CreateEmptyWorld, 2> WorldFixtureEmpty2P;
+using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2>;
 
 BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
 {

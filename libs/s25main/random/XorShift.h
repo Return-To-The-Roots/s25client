@@ -29,7 +29,7 @@ class Serializer;
 class XorShift
 {
 public:
-    typedef uint64_t result_type;
+    using result_type = uint64_t;
 
     static constexpr result_type min() { return 1; }
     static constexpr result_type max() { return std::numeric_limits<uint64_t>::max(); }

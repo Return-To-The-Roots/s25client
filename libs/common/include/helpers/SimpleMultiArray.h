@@ -38,8 +38,8 @@ namespace detail {
     struct MultiArrayRef
     {
         static constexpr bool is1D = T_n2 == 0;
-        typedef std::conditional_t<is1D, T&, MultiArrayRef<T, T_n2, T_n3, T_n4>> reference;
-        typedef std::add_const_t<reference> const_reference;
+        using reference = std::conditional_t<is1D, T&, MultiArrayRef<T, T_n2, T_n3, T_n4>>;
+        using const_reference = std::add_const_t<reference>;
         static constexpr size_t stride = (T_n2 == 0 ? 1 : T_n2) * (T_n3 == 0 ? 1 : T_n3) * (T_n4 == 0 ? 1 : T_n4);
 
         T* elems;
@@ -66,8 +66,8 @@ template<typename T, size_t T_n1, size_t T_n2, size_t T_n3, size_t T_n4, size_t 
 struct SimpleMultiArray
 {
     static_assert(T_n1 > 0 && T_n2 > 0 && T_n3 > 0 && T_n4 > 0 && T_n5 > 0, "");
-    typedef detail::MultiArrayRef<T, T_n2, T_n3, T_n4, T_n5> reference;
-    typedef detail::MultiArrayRef<const T, T_n2, T_n3, T_n4, T_n5> const_reference;
+    using reference = detail::MultiArrayRef<T, T_n2, T_n3, T_n4, T_n5>;
+    using const_reference = detail::MultiArrayRef<const T, T_n2, T_n3, T_n4, T_n5>;
 
     T elems[T_n1][T_n2][T_n3][T_n4][T_n5];
 
@@ -90,8 +90,8 @@ template<typename T, size_t T_n1, size_t T_n2, size_t T_n3, size_t T_n4>
 struct SimpleMultiArray<T, T_n1, T_n2, T_n3, T_n4>
 {
     static_assert(T_n1 > 0 && T_n2 > 0 && T_n3 > 0 && T_n4 > 0, "");
-    typedef detail::MultiArrayRef<T, T_n2, T_n3, T_n4> reference;
-    typedef detail::MultiArrayRef<const T, T_n2, T_n3, T_n4> const_reference;
+    using reference = detail::MultiArrayRef<T, T_n2, T_n3, T_n4>;
+    using const_reference = detail::MultiArrayRef<const T, T_n2, T_n3, T_n4>;
 
     T elems[T_n1][T_n2][T_n3][T_n4];
 
@@ -114,8 +114,8 @@ template<typename T, size_t T_n1, size_t T_n2, size_t T_n3>
 struct SimpleMultiArray<T, T_n1, T_n2, T_n3>
 {
     static_assert(T_n1 > 0 && T_n2 > 0 && T_n3 > 0, "");
-    typedef detail::MultiArrayRef<T, T_n2, T_n3> reference;
-    typedef detail::MultiArrayRef<const T, T_n2, T_n3> const_reference;
+    using reference = detail::MultiArrayRef<T, T_n2, T_n3>;
+    using const_reference = detail::MultiArrayRef<const T, T_n2, T_n3>;
 
     T elems[T_n1][T_n2][T_n3];
 
@@ -138,8 +138,8 @@ template<typename T, size_t T_n1, size_t T_n2>
 struct SimpleMultiArray<T, T_n1, T_n2>
 {
     static_assert(T_n1 > 0 && T_n2 > 0, "");
-    typedef detail::MultiArrayRef<T, T_n2> reference;
-    typedef detail::MultiArrayRef<const T, T_n2> const_reference;
+    using reference = detail::MultiArrayRef<T, T_n2>;
+    using const_reference = detail::MultiArrayRef<const T, T_n2>;
 
     T elems[T_n1][T_n2];
 

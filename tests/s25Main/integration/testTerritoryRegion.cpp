@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
 }
 
 // HQ radius = 9, HQs 2 + 5 + 6 = 13 fields apart
-typedef WorldFixture<CreateEmptyWorld, 2, 26, 10> WorldFixtureEmpty2P;
+using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2, 26, 10>;
 
 BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
 {

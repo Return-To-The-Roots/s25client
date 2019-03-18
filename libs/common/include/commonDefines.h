@@ -44,7 +44,7 @@
 #endif
 #endif
 
-typedef int socklen_t;
+using socklen_t = int;
 #else
 // Non-Windows
 #define SOCKET int

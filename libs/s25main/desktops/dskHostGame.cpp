@@ -55,6 +55,7 @@
 #include "libsiedler2/prototypen.h"
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
+#include <memory>
 #include <set>
 #include <sstream>
 
@@ -80,11 +81,11 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
       lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
     if(gameLobby->isHost())
-        lobbyHostController.reset(new GameLobbyController(gameLobby));
+        lobbyHostController = std::make_unique<GameLobbyController>(gameLobby);
 
     if(!GAMECLIENT.GetLuaFilePath().empty() && gameLobby->isHost())
     {
-        lua.reset(new LuaInterfaceSettings(*lobbyHostController));
+        lua = std::make_unique<LuaInterfaceSettings>(*lobbyHostController);
         if(!lua->LoadScript(GAMECLIENT.GetLuaFilePath()))
         {
             WINDOWMANAGER.ShowAfterSwitch(new iwMsgbox(_("Error"),

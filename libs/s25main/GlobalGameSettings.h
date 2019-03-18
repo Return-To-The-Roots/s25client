@@ -88,7 +88,7 @@ private:
         inline bool operator<(const AddonWithState& rhs) const;
     };
 
-    typedef std::vector<AddonWithState> AddonContainer;
+    using AddonContainer = std::vector<AddonWithState>;
 
     AddonContainer addons;
 };

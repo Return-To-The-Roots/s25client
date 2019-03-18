@@ -23,11 +23,11 @@
 #include "Point.h"
 
 /// Data type for map coordinates (unsigned, as we can't have negative map coordinates)
-typedef unsigned short MapCoord;
+using MapCoord = unsigned short;
 /// Point on map
-typedef Point<MapCoord> MapPoint;
+using MapPoint = Point<MapCoord>;
 /// Extent/Size of maps
-typedef Point<MapCoord> MapExtent;
+using MapExtent = Point<MapCoord>;
 
 // Surpress warnings for pass by value of those (small) types
 //-V:MapPoint:801

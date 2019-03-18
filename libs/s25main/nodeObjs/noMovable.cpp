@@ -29,7 +29,7 @@
 EventState::EventState(SerializedGameData& sgd) : elapsed(sgd.PopUnsignedInt()), length(sgd.PopUnsignedInt()) {}
 
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
-    : noCoordBase(nop, pos), curMoveDir(4), ascent(0), moving(false), current_ev(0)
+    : noCoordBase(nop, pos), curMoveDir(4), ascent(0), moving(false), current_ev(nullptr)
 {}
 
 void noMovable::Serialize(SerializedGameData& sgd) const
@@ -138,7 +138,7 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
 
     RTTR_Assert(IsMoving() || IsStoppedBetweenNodes());
 
-    typedef std::chrono::duration<int32_t, std::milli> milliseconds_i32_t;
+    using milliseconds_i32_t = std::chrono::duration<int32_t, std::milli>;
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
     EventState curState;

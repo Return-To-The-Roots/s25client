@@ -289,7 +289,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
         break;
         case STATE_CATAPULT_BACKOFF:
         {
-            current_ev = 0;
+            current_ev = nullptr;
             // wir arbeiten nicht mehr
             workplace->is_working = false;
             // Wieder versuchen, zu arbeiten

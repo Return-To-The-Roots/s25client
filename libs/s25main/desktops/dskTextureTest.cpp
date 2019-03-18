@@ -91,8 +91,8 @@ void dskTextureTest::Msg_ButtonClick(const unsigned /*ctrl_id*/)
     WINDOWMANAGER.Switch(new dskMainMenu);
 }
 
-typedef Point<GLfloat> PointF;
-typedef std::array<PointF, 3> Triangle;
+using PointF = Point<GLfloat>;
+using Triangle = std::array<PointF, 3>;
 
 void dskTextureTest::Msg_PaintAfter()
 {

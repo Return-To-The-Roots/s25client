@@ -189,8 +189,8 @@ void SerializedGameData::PushObjectContainer(const T& gos, bool known)
 template<typename T>
 void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
 {
-    typedef typename T::value_type ObjectPtr;
-    typedef std::remove_pointer_t<ObjectPtr> Object;
+    using ObjectPtr = typename T::value_type;
+    using Object = std::remove_pointer_t<ObjectPtr>;
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     gos.clear();
@@ -203,7 +203,7 @@ void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
 template<typename T>
 void SerializedGameData::PushContainer(const T& container)
 {
-    typedef typename T::value_type Type;
+    using Type = typename T::value_type;
     static_assert(std::is_integral<Type>::value, "Only integral types are possible");
     PushVarSize(container.size());
     for(typename T::const_iterator it = container.begin(); it != container.end(); ++it)
@@ -216,7 +216,7 @@ void SerializedGameData::PushContainer(const T& container)
 template<typename T>
 void SerializedGameData::PopContainer(T& result)
 {
-    typedef typename T::value_type Type;
+    using Type = typename T::value_type;
     static_assert(std::is_integral<Type>::value, "Only integral types are possible");
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();

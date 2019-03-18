@@ -29,6 +29,7 @@
 #include "helpers/containerUtils.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainDesc.h"
+#include <memory>
 #include <set>
 #include <stdexcept>
 
@@ -51,7 +52,7 @@ void World::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 
     // Dummy so that the harbor "0" might be used for ships with no particular destination
     harbor_pos.push_back(MapPoint::Invalid());
-    noNodeObj.reset(new noNothing);
+    noNodeObj = std::make_unique<noNothing>();
 }
 
 void World::Unload()
@@ -79,9 +80,9 @@ void World::Unload()
     {
         deletePtr(node.obj);
 
-        for(unsigned z = 0; z < node.fow.size(); ++z)
+        for(auto& z : node.fow)
         {
-            deletePtr(node.fow[z].object);
+            deletePtr(z.object);
         }
     }
 

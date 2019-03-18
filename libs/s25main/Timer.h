@@ -25,7 +25,7 @@
 class Timer
 {
 public:
-    typedef Clock::duration duration;
+    using duration = Clock::duration;
     /// Start timer, throws when already running
     void start();
     /// Stop timer even when not running

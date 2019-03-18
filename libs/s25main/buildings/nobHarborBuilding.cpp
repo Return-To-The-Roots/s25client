@@ -459,12 +459,12 @@ void nobHarborBuilding::OrderExpeditionWares()
         return;
     // Waren in der Bestellungsliste mit beachten
     unsigned boards = 0, stones = 0;
-    for(auto it = dependent_wares.begin(); it != dependent_wares.end(); ++it)
+    for(const auto* ware : dependent_wares)
     {
-        RTTR_Assert(*it);
-        if((*it)->type == GD_BOARDS)
+        RTTR_Assert(ware);
+        if(ware->type == GD_BOARDS)
             ++boards;
-        if((*it)->type == GD_STONES)
+        else if(ware->type == GD_STONES)
             ++stones;
     }
 

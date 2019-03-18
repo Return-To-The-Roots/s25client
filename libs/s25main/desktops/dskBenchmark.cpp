@@ -43,6 +43,7 @@
 #include "libutil/Log.h"
 #include "libutil/strFuncs.h"
 #include <helpers/chronoIO.h>
+#include <memory>
 #include <random>
 
 namespace {
@@ -272,7 +273,7 @@ void dskBenchmark::startTest(Test test)
         }
     }
     if(game_)
-        gameView_.reset(new GameView(game_->world, VIDEODRIVER.GetRenderSize()));
+        gameView_ = std::make_unique<GameView>(game_->world, VIDEODRIVER.GetRenderSize());
     VIDEODRIVER.GetRenderer()->synchronize();
     VIDEODRIVER.setTargetFramerate(-1);
     curTest_ = test;

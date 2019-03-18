@@ -187,9 +187,9 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
             SDL_DisplayMode target, closest;
             target.w = targetMode.width;
             target.h = targetMode.height;
-            target.format = 0;       // don't care
-            target.refresh_rate = 0; // don't care
-            target.driverdata = 0;   // initialize to 0
+            target.format = 0;           // don't care
+            target.refresh_rate = 0;     // don't care
+            target.driverdata = nullptr; // initialize to 0
             if(!SDL_GetClosestDisplayMode(SDL_GetWindowDisplayIndex(window), &target, &closest))
             {
                 PrintError(SDL_GetError());
@@ -338,7 +338,7 @@ bool VideoSDL2::MessageLoop()
             break;
             case SDL_TEXTINPUT:
             {
-                typedef utf8::iterator<std::string::const_iterator> iterator;
+                using iterator = utf8::iterator<std::string::const_iterator>;
                 const std::string text = ev.text.text;
                 iterator end(text.end(), text.begin(), text.end());
                 SDL_Keymod mod = SDL_GetModState();

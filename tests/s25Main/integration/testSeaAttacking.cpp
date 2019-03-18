@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
 // Size is chosen based on current maximum attacking distances!
 struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
 {
-    typedef SeaWorldWithGCExecution<3, 62, 64> Parent;
+    using Parent = SeaWorldWithGCExecution<3, 62, 64>;
     using Parent::curPlayer;
     using Parent::ggs;
     using Parent::world;

@@ -72,7 +72,7 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
         // "Heilungs-Event"
         case 1:
         {
-            healing_event = 0;
+            healing_event = nullptr;
 
             // Sind wir noch im Haus?
             if(fs == FS_JOB)

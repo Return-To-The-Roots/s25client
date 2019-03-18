@@ -33,7 +33,7 @@
 #include <boost/test/unit_test.hpp>
 
 namespace {
-typedef boost::test_tools::predicate_result PredRes;
+using PredRes = boost::test_tools::predicate_result;
 struct TestAnimation;
 
 struct TestWindow : public Window

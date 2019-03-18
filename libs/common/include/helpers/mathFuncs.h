@@ -41,7 +41,7 @@ T clamp(T val, T min, T max)
 template<typename T, typename U>
 U clamp(T val, U min, U max)
 {
-    typedef std::common_type_t<T, U> Common;
+    using Common = std::common_type_t<T, U>;
     if(std::is_signed<T>::value && !std::is_signed<U>::value)
     {
         // min/max is unsigned -> No negative values possible

@@ -26,10 +26,10 @@
 template<class T, class Pr = std::less<T>>
 class OpenListPrioQueue : public std::priority_queue<T, std::vector<T>, Pr>
 {
-    typedef std::priority_queue<T, std::vector<T>, Pr> Parent;
+    using Parent = std::priority_queue<T, std::vector<T>, Pr>;
 
 public:
-    typedef typename std::vector<T>::iterator iterator;
+    using iterator = typename std::vector<T>::iterator;
 
     OpenListPrioQueue() : Parent() { Parent::c.reserve(255); }
 

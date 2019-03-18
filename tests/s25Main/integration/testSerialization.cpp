@@ -426,7 +426,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     map.title = "MapTitle";
     map.filepath = "Map.swd";
     map.luaFilepath = "Map.lua";
-    map.savegame.reset(new Savegame);
+    map.savegame = std::make_unique<Savegame>();
     for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         map.savegame->AddPlayer(world.GetPlayer(i));
     // We can change players

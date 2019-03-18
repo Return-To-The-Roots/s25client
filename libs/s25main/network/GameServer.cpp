@@ -663,7 +663,7 @@ void GameServer::ExecuteNWF()
     {
         // Speed will change, adjust nwf length so the time will stay constant
         using namespace std::chrono;
-        typedef duration<double, std::milli> MsDouble;
+        using MsDouble = duration<double, std::milli>;
         double newNWFLen = framesinfo.nwf_length * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
         newInfo.nextNWF = lastNWF + std::max(1l, std::lround(newNWFLen));
     }

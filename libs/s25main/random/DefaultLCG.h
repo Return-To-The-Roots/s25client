@@ -27,7 +27,7 @@ class Serializer;
 class DefaultLCG
 {
 public:
-    typedef uint32_t result_type;
+    using result_type = uint32_t;
 
     static constexpr result_type min() { return 0; }
     static constexpr result_type max() { return 0xFFFF; }

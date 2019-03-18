@@ -30,9 +30,9 @@
 #include <boost/test/unit_test.hpp>
 #include <memory>
 
-typedef std::unique_ptr<AIPlayer> AIPointer;
+using AIPointer = std::unique_ptr<AIPlayer>;
 // We need border land
-typedef WorldWithGCExecution<1, 24, 22> BiggerWorldWithGCExecution;
+using BiggerWorldWithGCExecution = WorldWithGCExecution<1, 24, 22>;
 
 struct IsBldType
 {

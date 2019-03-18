@@ -74,7 +74,7 @@ void nofPlaner::Walked()
         rs_pos = 0;
         rs_dir = true;
         cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SOUTHEAST);
-        building_site = 0;
+        building_site = nullptr;
 
         GoHome();
         StartWalking(Direction::SOUTHEAST);
@@ -98,7 +98,7 @@ void nofPlaner::AbrogateWorkplace()
 
 void nofPlaner::LostWork()
 {
-    building_site = 0;
+    building_site = nullptr;
 
     if(state == STATE_FIGUREWORK)
         GoHome();

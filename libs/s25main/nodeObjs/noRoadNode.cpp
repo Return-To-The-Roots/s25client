@@ -26,7 +26,7 @@
 noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player) : noCoordBase(nop, pos), player(player)
 {
     for(unsigned i = 0; i < 6; ++i)
-        routes[i] = 0;
+        routes[i] = nullptr;
     last_visit = 0;
 }
 

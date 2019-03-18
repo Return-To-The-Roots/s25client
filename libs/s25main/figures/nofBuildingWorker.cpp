@@ -65,7 +65,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
         was_sounding = sgd.PopBool();
     } else
     {
-        workplace = 0;
+        workplace = nullptr;
         ware = GD_NOTHING;
         was_sounding = false;
     }
@@ -154,7 +154,7 @@ void nofBuildingWorker::WorkingReady()
         if(flag->GetNumWares() < 8)
         {
             // Ware erzeugen
-            auto* real_ware = new Ware(ware, 0, flag);
+            auto* real_ware = new Ware(ware, nullptr, flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
             GoodType ware_type = ConvertShields(real_ware->type);
             gwg->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
@@ -310,7 +310,7 @@ void nofBuildingWorker::ProductionStopped()
     if(state == STATE_WAITING1)
     {
         GetEvMgr().RemoveEvent(current_ev);
-        current_ev = 0;
+        current_ev = nullptr;
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         workplace->StartNotWorking();
     }

@@ -35,7 +35,7 @@
 
 //#define RTTR_PRINT_FONTS
 
-typedef utf8::iterator<std::string::const_iterator> utf8Iterator;
+using utf8Iterator = utf8::iterator<std::string::const_iterator>;
 
 template<typename T>
 struct GetNextCharAndIncIt;
@@ -136,7 +136,7 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
 
 void glArchivItem_Font::ClearCharInfoMapping()
 {
-    typedef std::pair<bool, CharInfo> CharPair;
+    using CharPair = std::pair<bool, CharInfo>;
     for(CharPair& entry : asciiMapping)
         entry.first = false;
     utf8_mapping.clear();

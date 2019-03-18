@@ -21,7 +21,7 @@
 #include "Point.h"
 
 /// Type used for specifying drawing offsets and coordinates. Signed base type!
-typedef Position DrawPoint;
+using DrawPoint = Position;
 //-V:DrawPoint:801
 //-V:DrawPoint:813
 

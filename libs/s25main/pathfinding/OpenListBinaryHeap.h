@@ -25,9 +25,9 @@ template<typename T>
 class OpenListBinaryHeapBase
 {
 public:
-    typedef unsigned size_type;
-    typedef T value_type;
-    typedef unsigned key_type;
+    using size_type = unsigned;
+    using value_type = T;
+    using key_type = unsigned;
     struct Element
     {
         key_type key;
@@ -63,12 +63,12 @@ struct DefaultGetPosMarker
 template<typename T, class T_GetKey, class GetPosMarker = DefaultGetPosMarker<OpenListBinaryHeapBase<T>>>
 class OpenListBinaryHeap : public OpenListBinaryHeapBase<T>
 {
-    typedef OpenListBinaryHeapBase<T> Parent;
-    typedef typename Parent::Element Element;
+    using Parent = OpenListBinaryHeapBase<T>;
+    using Element = typename Parent::Element;
 
 public:
-    typedef typename Parent::size_type size_type;
-    typedef typename Parent::key_type key_type;
+    using size_type = typename Parent::size_type;
+    using key_type = typename Parent::key_type;
 
     T* top() const;
     void push(T* newEl);

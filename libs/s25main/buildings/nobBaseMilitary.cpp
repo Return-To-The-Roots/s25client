@@ -32,7 +32,7 @@
 #include <limits>
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
-    : noBuilding(type, pos, player, nation), leaving_event(0), go_out(false), defender_(0)
+    : noBuilding(type, pos, player, nation), leaving_event(nullptr), go_out(false), defender_(nullptr)
 {}
 
 nobBaseMilitary::~nobBaseMilitary()
@@ -178,7 +178,7 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
 
 struct GetMapPointWithRadius
 {
-    typedef std::pair<MapPoint, unsigned> result_type;
+    using result_type = std::pair<MapPoint, unsigned>;
 
     result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
 };
@@ -272,7 +272,7 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
 {
     // Alle angreifenden Soldaten durchgehen
     // Den Soldaten, der am nächsten dran steht, nehmen
-    nofAttacker* best_attacker = 0;
+    nofAttacker* best_attacker = nullptr;
     unsigned best_radius = 0xFFFFFFFF;
 
     for(auto& aggressor : aggressors)

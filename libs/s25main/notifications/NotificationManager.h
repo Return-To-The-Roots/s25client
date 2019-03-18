@@ -55,8 +55,8 @@ public:
 private:
     /// We cannot store the real type of the callback in C++ (no mixed type list) so we store it as a void*
     /// and use a cast based on the NoteId
-    typedef std::vector<void*> CallbackList;
-    typedef std::unordered_map<uint32_t, CallbackList> SubscriberMap;
+    using CallbackList = std::vector<void*>;
+    using SubscriberMap = std::unordered_map<uint32_t, CallbackList>;
     SubscriberMap noteId2Subscriber;
     /// True when we are in the publish method (used for error checking)
     bool isPublishing;

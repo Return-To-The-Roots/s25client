@@ -677,7 +677,7 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
     // 1. Anteile der einzelnen Waren ausrechnen
 
     /// Mapping of buildings that want the current ware to its percentage
-    typedef std::pair<BuildingType, uint8_t> BldEntry;
+    using BldEntry = std::pair<BuildingType, uint8_t>;
     std::vector<BldEntry> bldPercentageMap;
 
     unsigned goal_count = 0;
@@ -917,7 +917,7 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
         if(roadSeg->NeedDonkey())
         {
             // Beste Flagge von diesem Weg, und beste Wegstrecke
-            noRoadNode* current_best_goal = 0;
+            noRoadNode* current_best_goal = nullptr;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
             bool isF1Reachable = gwg->FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, nullptr, roadSeg) != 0xFF;
@@ -1904,7 +1904,7 @@ void GamePlayer::RemoveShip(noShip* ship)
 void GamePlayer::GetJobForShip(noShip* ship)
 {
     // Evtl. steht irgendwo eine Expedition an und das Schiff kann diese übernehmen
-    nobHarborBuilding* best = 0;
+    nobHarborBuilding* best = nullptr;
     int best_points = 0;
     std::vector<Direction> best_route;
 

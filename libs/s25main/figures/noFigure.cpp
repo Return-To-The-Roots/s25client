@@ -45,7 +45,7 @@
 #include "libutil/Log.h"
 #include "libutil/colors.h"
 
-const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, 0, 0, std::vector<Direction>(0, Direction::EAST));
+const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, nullptr, nullptr, std::vector<Direction>(0, Direction::EAST));
 /// Welche Strecke soll minimal und maximal zurückgelegt werden beim Rumirren, bevor eine Flagge gesucht wird
 const unsigned short WANDER_WAY_MIN = 20;
 const unsigned short WANDER_WAY_MAX = 40;
@@ -507,7 +507,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
 namespace {
 struct Point2Flag
 {
-    typedef noFlag* result_type;
+    using result_type = noFlag*;
     World& gwb;
 
     Point2Flag(World& gwb) : gwb(gwb) {}

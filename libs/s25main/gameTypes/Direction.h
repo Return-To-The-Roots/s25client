@@ -56,7 +56,7 @@ struct Direction
     Direction operator--(int);
 
     struct iterator;
-    typedef iterator const_iterator;
+    using const_iterator = iterator;
     const_iterator begin() const;
     const_iterator end() const;
 
@@ -147,11 +147,11 @@ inline bool operator!=(const Direction& lhs, const Direction::Type& rhs)
 
 struct Direction::iterator
 {
-    typedef std::forward_iterator_tag iterator_category;
-    typedef Direction value_type;
-    typedef Direction reference;
-    typedef const Direction* pointer;
-    typedef std::ptrdiff_t difference_type;
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = Direction;
+    using reference = Direction;
+    using pointer = const Direction*;
+    using difference_type = std::ptrdiff_t;
 
     explicit iterator(unsigned value) : value_(value) {}
     iterator& operator++()

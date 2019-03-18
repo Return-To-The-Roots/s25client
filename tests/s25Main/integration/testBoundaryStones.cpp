@@ -23,7 +23,7 @@
 #include <boost/test/unit_test.hpp>
 
 namespace {
-typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
+using WorldFixtureEmpty0P = WorldFixture<CreateEmptyWorld, 0>;
 boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, const std::vector<BoundaryStones>& expected)
 {
     world.RecalcBorderStones(Position(0, 0), Extent(world.GetSize()));

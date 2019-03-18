@@ -57,7 +57,7 @@ const unsigned NEXT_ANIMATION_RANDOM = 200; // was noch dazu zufälliges addiert
 const unsigned FRAME_GF = 3;
 
 /// Animation indices, 1st Dim: small or big, 2nd Dim: Animation, 3rd Dim: Index in map.lst of the frame
-typedef std::array<std::vector<std::vector<unsigned short>>, 2> AnimationsType;
+using AnimationsType = std::array<std::vector<std::vector<unsigned short>>, 2>;
 
 static AnimationsType fillAnimations()
 {
@@ -112,7 +112,7 @@ const std::array<Job, 3> JOB_TYPES = {{JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRI
 
 nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char player, RoadSegment* workplace, noRoadNode* const goal)
     : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct), state(CARRS_FIGUREWORK),
-      fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0)), workplace(workplace), carried_ware(nullptr), productivity_ev(0),
+      fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0)), workplace(workplace), carried_ware(nullptr), productivity_ev(nullptr),
       productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0)
 {}
 
@@ -369,7 +369,7 @@ void nofCarrier::Walked()
                 else
                     FaceDir(Direction::SOUTHEAST);
 
-                current_ev = 0;
+                current_ev = nullptr;
 
                 // Jetzt wird wieder nur rumgegammelt, dann kriegen wir aber evtl keinen schönen IH-AH!
                 StopWorking();
@@ -436,7 +436,7 @@ void nofCarrier::Walked()
                         // Ware ablegen
                         this_flag->AddWare(carried_ware);
                         // Wir tragen erstmal keine Ware mehr
-                        carried_ware = 0;
+                        carried_ware = nullptr;
                         // Gibts an den Flaggen etwas, was ich tragen muss, ansonsten wieder in die Mitte gehen und warten
                         LookForWares();
                     } else if(workplace->AreWareJobs(!rs_dir, ct, true))
@@ -491,7 +491,7 @@ void nofCarrier::Walked()
             // Ware ablegen
             gwg->GetSpecObj<noRoadNode>(pos)->AddWare(carried_ware);
             // Ich trag' keine Ware mehr
-            carried_ware = 0;
+            carried_ware = nullptr;
             // Wieder zurück zu meinem Weg laufen
             state = CARRS_LEAVEBUILDING;
             StartWalking(Direction::SOUTHEAST);
@@ -755,7 +755,7 @@ void nofCarrier::HandleDerivedEvent(const unsigned id)
         // Produktivitätsevent
         case 1:
         {
-            productivity_ev = 0;
+            productivity_ev = nullptr;
 
             // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzählen
             if(since_working_gf != 0xFFFFFFFF)

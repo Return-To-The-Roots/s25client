@@ -40,7 +40,7 @@ glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp);
 class TerrainRenderer : private boost::noncopyable
 {
 public:
-    typedef Point<float> PointF;
+    using PointF = Point<float>;
 
     TerrainRenderer();
     ~TerrainRenderer();
@@ -112,8 +112,8 @@ private:
         float b;
     };
 
-    typedef std::array<PointF, 3> Triangle;
-    typedef std::array<Color, 3> ColorTriangle;
+    using Triangle = std::array<PointF, 3>;
+    using ColorTriangle = std::array<Color, 3>;
 
     struct Borders
     {
@@ -131,7 +131,7 @@ private:
         Triangle usdCoords, rsuCoords;
     };
 
-    typedef std::vector<std::vector<PreparedRoad>> PreparedRoads;
+    using PreparedRoads = std::vector<std::vector<PreparedRoad>>;
 
     /// Size of the map
     MapExtent size_;
@@ -150,7 +150,7 @@ private:
 
     std::vector<Borders> borders;
 
-    typedef std::unique_ptr<glArchivItem_Bitmap> BmpPtr;
+    using BmpPtr = std::unique_ptr<glArchivItem_Bitmap>;
     std::vector<TerrainTexture> terrainTextures;
     std::vector<BmpPtr> edgeTextures;
     /// Flat 2D array: [Landscape][RoadType]

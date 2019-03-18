@@ -386,7 +386,7 @@ void noBuildingSite::PlaningFinished()
 {
     /// Normale Baustelle
     state = STATE_BUILDING;
-    planer = 0;
+    planer = nullptr;
 
     // Wir hätten gerne einen Bauarbeiter...
     gwg->GetPlayer(player).AddJobWanted(JOB_BUILDER, this);

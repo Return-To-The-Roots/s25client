@@ -47,7 +47,7 @@ protected:
 class SoundHandle
 {
 public:
-    typedef std::shared_ptr<SoundDesc> Descriptor;
+    using Descriptor = std::shared_ptr<SoundDesc>;
 
     explicit SoundHandle(Descriptor descriptor = Descriptor()) : descriptor_(descriptor) {}
     SoundType getType() const { return isValid() ? descriptor_->type_ : SD_UNKNOWN; }

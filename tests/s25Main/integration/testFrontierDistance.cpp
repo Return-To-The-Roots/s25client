@@ -50,9 +50,9 @@ struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
         milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
     }
 };
-typedef FrontierWorld<34u, 20u> FrontierWorldSmall;
-typedef FrontierWorld<38u, 20u> FrontierWorldMiddle;
-typedef FrontierWorld<60u, 20u> FrontierWorldBig;
+using FrontierWorldSmall = FrontierWorld<34u, 20u>;
+using FrontierWorldMiddle = FrontierWorld<38u, 20u>;
+using FrontierWorldBig = FrontierWorld<60u, 20u>;
 
 DescIdx<TerrainDesc> GetWaterTerrain(const GameWorld& world)
 {
@@ -277,7 +277,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
 //  |                   ||                      |
 //  ---------------------------------------------
 //
-typedef WorldWithGCExecution<2u, 60u, 60u> WorldBig;
+using WorldBig = WorldWithGCExecution<2u, 60u, 60u>;
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 {
     this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, 1);

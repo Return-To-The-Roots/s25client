@@ -41,7 +41,7 @@
 #ifdef _WIN32
 typedef BOOL(APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
 #else
-typedef int (*PFNWGLSWAPINTERVALFARPROC)(int);
+using PFNWGLSWAPINTERVALFARPROC = int (*)(int);
 #endif
 
 PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = nullptr;

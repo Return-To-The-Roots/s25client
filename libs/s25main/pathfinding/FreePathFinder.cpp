@@ -28,8 +28,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 /// MapNodes
-typedef std::vector<NewNode> MapNodes;
-typedef std::vector<FreePathNode> FreePathNodes;
+using MapNodes = std::vector<NewNode>;
+using FreePathNodes = std::vector<FreePathNode>;
 MapNodes nodes;
 FreePathNodes fpNodes;
 

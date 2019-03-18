@@ -26,7 +26,7 @@
 /// Implicitly convertible to DrawPoint
 struct DrawPointInit
 {
-    typedef DrawPoint::ElementType ElementType;
+    using ElementType = DrawPoint::ElementType;
     const ElementType x;
     const ElementType y;
     operator DrawPoint() const { return DrawPoint(x, y); }

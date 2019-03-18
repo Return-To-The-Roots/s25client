@@ -131,7 +131,7 @@ template<unsigned T_numPlayers = 3, unsigned T_hbId = 1, unsigned T_width = SeaW
          unsigned T_height = SeaWorldDefault::height>
 struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, T_height>
 {
-    typedef SeaWorldWithGCExecution<T_numPlayers, T_width, T_height> Parent;
+    using Parent = SeaWorldWithGCExecution<T_numPlayers, T_width, T_height>;
     using Parent::curPlayer;
     using Parent::world;
 
@@ -445,7 +445,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(player.GetBuildingRegister().GetHarbors().size(), 2u);
 }
 
-typedef ShipReadyFixture<1, 2, 64, 800> ShipReadyFixtureBig;
+using ShipReadyFixtureBig = ShipReadyFixture<1, 2, 64, 800>;
 
 BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
 {
@@ -483,7 +483,7 @@ template<unsigned T_numPlayers = 2, unsigned T_width = SmallSeaWorldDefault<T_nu
 struct ShipAndHarborsReadyFixture : public WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height>, public GCExecutor
 {
 public:
-    typedef WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height> Parent;
+    using Parent = WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height>;
     using Parent::world;
 
     GameWorldGame& GetWorld() override { return world; }

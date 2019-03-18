@@ -82,7 +82,7 @@ void noDisappearingEnvObject::HandleEvent(const unsigned id)
     {
         // endgültig vernichten
         GetEvMgr().AddToKillList(this);
-        dead_event = 0;
+        dead_event = nullptr;
     } else
     {
         // Jetzt verschwinden

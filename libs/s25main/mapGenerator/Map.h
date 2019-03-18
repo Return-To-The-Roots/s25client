@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-typedef std::vector<unsigned char> VecUChar;
+using VecUChar = std::vector<unsigned char>;
 
 /**
  * Data type for reading, writing and generating maps.

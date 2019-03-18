@@ -49,10 +49,10 @@ struct MapPointLess
 };
 
 namespace {
-typedef WorldFixture<CreateEmptyWorld, 0> EmptyWorldFixture0P;
-typedef WorldFixture<CreateEmptyWorld, 1> EmptyWorldFixture1P;
-typedef WorldFixture<CreateEmptyWorld, 1, 18, 16> EmptyWorldFixture1PBigger;
-typedef std::map<MapPoint, BuildingQuality, MapPointLess> ReducedBQMap;
+using EmptyWorldFixture0P = WorldFixture<CreateEmptyWorld, 0>;
+using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
+using EmptyWorldFixture1PBigger = WorldFixture<CreateEmptyWorld, 1, 18, 16>;
+using ReducedBQMap = std::map<MapPoint, BuildingQuality, MapPointLess>;
 
 /// Check that the BQ at all points is BQ_CASTLE except the points in the reducedBQs map which have given BQs
 boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const std::vector<MapPoint>& pts, const ReducedBQMap& reducedBQs)

@@ -96,7 +96,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     std::set<DescIdx<LandscapeDesc>> usedLandscapes;
     std::set<DescIdx<TerrainDesc>> usedTerrains;
     std::set<DescIdx<EdgeDesc>> usedEdges;
-    typedef std::array<DescIdx<TerrainDesc>, 2> TerrainPair;
+    using TerrainPair = std::array<DescIdx<TerrainDesc>, 2>;
     for(const TerrainPair& ts : terrain)
     {
         for(const DescIdx<TerrainDesc>& tIdx : ts)
@@ -775,13 +775,13 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     if(vbo_vertices.isValid())
     {
         vbo_vertices.bind();
-        glVertexPointer(2, GL_FLOAT, 0, 0);
+        glVertexPointer(2, GL_FLOAT, 0, nullptr);
 
         vbo_texcoords.bind();
-        glTexCoordPointer(2, GL_FLOAT, 0, 0);
+        glTexCoordPointer(2, GL_FLOAT, 0, nullptr);
 
         vbo_colors.bind();
-        glColorPointer(3, GL_FLOAT, 0, 0);
+        glColorPointer(3, GL_FLOAT, 0, nullptr);
     } else
     {
         glVertexPointer(2, GL_FLOAT, 0, &gl_vertices.front());

@@ -28,7 +28,7 @@ template<unsigned T_numPlayers, unsigned T_width = WorldDefault<T_numPlayers>::w
 class WorldWithGCExecution : public WorldFixture<CreateEmptyWorld, T_numPlayers, T_width, T_height>, public GCExecutor
 {
 public:
-    typedef WorldFixture<CreateEmptyWorld, T_numPlayers, T_width, T_height> Parent;
+    using Parent = WorldFixture<CreateEmptyWorld, T_numPlayers, T_width, T_height>;
     using Parent::world;
 
     MapPoint hqPos;

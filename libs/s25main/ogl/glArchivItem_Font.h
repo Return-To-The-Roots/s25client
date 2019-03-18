@@ -90,7 +90,7 @@ public:
     unsigned CharWidth(unsigned c) const { return GetCharInfo(c).width; }
 
 private:
-    typedef Point<GLfloat> GlPoint;
+    using GlPoint = Point<GLfloat>;
     struct VertexArrays
     {
         std::vector<GlPoint> texCoords;

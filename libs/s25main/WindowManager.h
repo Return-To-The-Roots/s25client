@@ -101,8 +101,8 @@ protected:
     void DrawToolTip();
 
 private:
-    typedef std::list<IngameWindow*> IgwList;                   /// Fensterlistentyp
-    typedef std::list<IngameWindow*>::iterator IgwListIterator; /// Fensterlistentypiterator
+    using IgwList = std::list<IngameWindow*>;                   /// Fensterlistentyp
+    using IgwListIterator = std::list<IngameWindow*>::iterator; /// Fensterlistentypiterator
 
     void TakeScreenshot();
     /// wechselt einen Desktop

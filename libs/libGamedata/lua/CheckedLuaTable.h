@@ -55,8 +55,8 @@ namespace kaguya {
 template<>
 struct lua_type_traits<CheckedLuaTable>
 {
-    typedef lua_type_traits<kaguya::LuaTable> Base;
-    typedef CheckedLuaTable get_type;
+    using Base = lua_type_traits<kaguya::LuaTable>;
+    using get_type = CheckedLuaTable;
 
     static bool strictCheckType(lua_State* l, int index) { return Base::strictCheckType(l, index); }
     static bool checkType(lua_State* l, int index) { return Base::checkType(l, index); }

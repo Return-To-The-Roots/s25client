@@ -33,7 +33,7 @@ class BurnedWarehouse : public noCoordBase
     std::array<unsigned, NUM_JOB_TYPES> people;
 
 public:
-    typedef std::array<unsigned, NUM_JOB_TYPES> PeopleArray;
+    using PeopleArray = std::array<unsigned, NUM_JOB_TYPES>;
 
     BurnedWarehouse(const MapPoint pos, unsigned char player, const PeopleArray& people);
     BurnedWarehouse(SerializedGameData& sgd, unsigned obj_id);

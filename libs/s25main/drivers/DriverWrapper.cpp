@@ -34,12 +34,12 @@
 namespace {
 struct DeleterFreeLib
 {
-    typedef HINSTANCE pointer;
+    using pointer = void*;
     void operator()(HINSTANCE dll) const { FreeLibrary(dll); }
 };
 } // namespace
 
-DriverWrapper::DriverWrapper() : dll(0) {}
+DriverWrapper::DriverWrapper() : dll(nullptr) {}
 
 DriverWrapper::~DriverWrapper()
 {
@@ -51,7 +51,7 @@ void DriverWrapper::Unload()
     if(dll)
     {
         FreeLibrary(dll);
-        dll = 0;
+        dll = nullptr;
     }
 }
 

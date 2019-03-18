@@ -36,7 +36,7 @@
 unsigned short noTree::DRAW_COUNTER = 0;
 
 noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char size)
-    : noCoordBase(NOP_TREE, pos), type(type), size(size), event(0), produce_animal_event(0)
+    : noCoordBase(NOP_TREE, pos), type(type), size(size), event(nullptr), produce_animal_event(nullptr)
 {
     // Wenn der Baum klein ist, muss später mal wachsen
     if(!size)
@@ -173,7 +173,7 @@ void noTree::HandleEvent(const unsigned id)
             {
                 // bin nun ausgewachsen
                 state = STATE_NOTHING;
-                event = 0;
+                event = nullptr;
             }
         }
         break;
@@ -195,7 +195,7 @@ void noTree::HandleEvent(const unsigned id)
         case STATE_FALLING_FALLEN:
         {
             // Baum verschwindet nun und es bleibt ein Baumstumpf zurück
-            event = 0;
+            event = nullptr;
             GetEvMgr().AddToKillList(this);
             gwg->SetNO(pos, new noDisappearingMapEnvObject(pos, 531), true);
             gwg->RecalcBQAroundPoint(pos);

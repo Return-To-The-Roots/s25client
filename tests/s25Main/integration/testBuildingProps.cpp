@@ -26,7 +26,7 @@
 #include <boost/test/unit_test.hpp>
 
 namespace {
-typedef WorldFixture<CreateEmptyWorld, 1> EmptyWorldFixture1P;
+using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
 }
 
 BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)

@@ -67,10 +67,10 @@ public:
 
 protected:
     // Use list to allow removing of events while iterating (Event A can cause Event B in the same GF to be removed)
-    typedef std::list<const GameEvent*> EventList;
-    typedef std::map<unsigned, EventList> EventMap;
+    using EventList = std::list<const GameEvent*>;
+    using EventMap = std::map<unsigned, EventList>;
     // Use list to allow adding events while iterating (Destroying 1 object may lead to destruction of another)
-    typedef std::list<GameObject*> GameObjList;
+    using GameObjList = std::list<GameObject*>;
     unsigned numActiveEvents;
     /// Instances created. Must be != 0
     unsigned eventInstanceCtr;

@@ -147,7 +147,7 @@ bool TerritoryRegion::AdjustCoords(Position& pt) const
 namespace {
 struct GetMapPointWithRadius
 {
-    typedef std::pair<MapPoint, unsigned> result_type;
+    using result_type = std::pair<MapPoint, unsigned>;
 
     result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
 };
