@@ -119,7 +119,7 @@ void Random<T_PRNG>::SaveLog(const std::string& filename)
     const std::vector<RandomEntry> log = GetAsyncLog();
     bnw::ofstream file(filename);
 
-    for(typename std::vector<RandomEntry>::const_iterator it = log.begin(); it != log.end(); ++it)
+    for(auto it = log.begin(); it != log.end(); ++it)
         file << *it << std::endl;
 }
 

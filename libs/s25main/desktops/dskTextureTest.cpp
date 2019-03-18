@@ -60,7 +60,7 @@ void dskTextureTest::Load()
     }
     desc = newDesc;
 
-    ctrlComboBox* cb = GetCtrl<ctrlComboBox>(ID_cbTexture);
+    auto* cb = GetCtrl<ctrlComboBox>(ID_cbTexture);
     int selection = cb->GetSelection();
     if(selection < 0)
         selection = 0;

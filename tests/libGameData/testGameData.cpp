@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
     BOOST_REQUIRE_GE(worldDesc.terrain.size(), 3u * NUM_TTS);
     for(unsigned l = 0; l < NUM_LTS; l++)
     {
-        Landscape lt = Landscape(l);
+        auto lt = Landscape(l);
         // indexOf(name) in these arrays should be the original RTTR index as in TerrainData
         std::vector<std::string> tNames, eNames;
         for(DescIdx<TerrainDesc> i(0); i.value < worldDesc.terrain.size(); i.value++)
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
         }
         for(unsigned i = 0; i < NUM_TTS; i++)
         {
-            TerrainType t = TerrainType(i);
+            auto t = TerrainType(i);
             const TerrainDesc& desc = worldDesc.terrain.get(worldDesc.terrain.getIndex(tNames[i]));
             BOOST_REQUIRE_EQUAL(desc.s2Id, TerrainData::GetTextureIdentifier(t));
             EdgeType newEdge = !desc.edgeType ? ET_NONE : EdgeType((helpers::indexOf(eNames, worldDesc.get(desc.edgeType).name) + 1));

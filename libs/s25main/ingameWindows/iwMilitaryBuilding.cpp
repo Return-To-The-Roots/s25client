@@ -128,8 +128,8 @@ void iwMilitaryBuilding::Draw_()
         healthPos += DrawPoint(12, 2);
         for(auto soldier : soldiers)
         {
-            int hitpoints = static_cast<int>(soldier->GetHitpoints());
-            int maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][soldier->GetRank()]);
+            auto hitpoints = static_cast<int>(soldier->GetHitpoints());
+            auto maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][soldier->GetRank()]);
             unsigned hitpointsColour;
             if(hitpoints <= maxHitpoints / 2)
                 hitpointsColour = COLOR_RED;
@@ -200,7 +200,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobMilitary*>& militaryBuildings =
               gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetMilitaryBuildings();
             // go through list once we get to current building -> open window for the next one and go to next location
-            for(std::list<nobMilitary*>::const_iterator it = militaryBuildings.begin(); it != militaryBuildings.end(); ++it)
+            for(auto it = militaryBuildings.begin(); it != militaryBuildings.end(); ++it)
             {
                 if((*it)->GetPos() == building->GetPos()) // got to current building in the list?
                 {
@@ -210,7 +210,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                     if(it == militaryBuildings.end()) // was last entry in list -> goto first
                         it = militaryBuildings.begin();
                     gwv.MoveToMapPt((*it)->GetPos());
-                    iwMilitaryBuilding* nextscrn = new iwMilitaryBuilding(gwv, gcFactory, *it);
+                    auto* nextscrn = new iwMilitaryBuilding(gwv, gcFactory, *it);
                     nextscrn->SetPos(GetPos());
                     WINDOWMANAGER.Show(nextscrn);
                     break;

@@ -40,10 +40,10 @@ void glArchivItem_Bob::Draw(unsigned item, unsigned direction, bool fat, unsigne
         body -= 6 * 8; // 48
     }
 
-    glArchivItem_Bitmap_Player* koerper = dynamic_cast<glArchivItem_Bitmap_Player*>(get(body));
+    auto* koerper = dynamic_cast<glArchivItem_Bitmap_Player*>(get(body));
     if(koerper)
         koerper->DrawFull(drawPt, COLOR_WHITE, color);
-    glArchivItem_Bitmap_Player* ware = dynamic_cast<glArchivItem_Bitmap_Player*>(get(96 + links[good]));
+    auto* ware = dynamic_cast<glArchivItem_Bitmap_Player*>(get(96 + links[good]));
     if(ware)
         ware->DrawFull(drawPt, COLOR_WHITE, color);
 }

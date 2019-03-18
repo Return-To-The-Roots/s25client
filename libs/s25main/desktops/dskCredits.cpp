@@ -161,7 +161,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 
     this->itCurEntry = entries.begin();
 
-    MusicItem* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[8]);
+    auto* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[8]);
     if(curSong)
         curSong->Play(0);
 }

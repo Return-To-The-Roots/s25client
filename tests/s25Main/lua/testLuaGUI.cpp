@@ -51,14 +51,14 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
 
     // Show it to us
     executeLua("rttr:MissionStatement(1, 'Title', 'Text')");
-    const iwMissionStatement* wnd = dynamic_cast<const iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
+    const auto* wnd = dynamic_cast<const iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_REQUIRE(wnd);
     BOOST_REQUIRE(wnd->IsActive());
     BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
 
     // double windows stack
     executeLua("rttr:MissionStatement(1, 'Title2', 'Text')");
-    const iwMissionStatement* wnd2 = dynamic_cast<const iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
+    const auto* wnd2 = dynamic_cast<const iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_REQUIRE(wnd2);
     // Other window still on top
     BOOST_REQUIRE_EQUAL(wnd2, wnd);
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     uiHelper::initGUITests();
     // Default Info
     executeLua("rttr:MsgBox('Title', string.rep('Text\\n', 15))");
-    const iwMsgbox* wnd = dynamic_cast<const iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
+    const auto* wnd = dynamic_cast<const iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_REQUIRE(wnd);
     BOOST_REQUIRE(wnd->IsActive());
     BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");

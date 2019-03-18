@@ -128,7 +128,7 @@ bool GameManager::Run()
                 if(curGF > skipgf_last_report_gf)
                 {
                     // Elapsed time in ms
-                    double timeDiff = static_cast<double>(current_time - skipgf_last_time);
+                    auto timeDiff = static_cast<double>(current_time - skipgf_last_time);
                     LOG.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF
                       % curGF % (timeDiff / 1000) % (timeDiff / (curGF - skipgf_last_time));
                 } else
@@ -140,7 +140,7 @@ bool GameManager::Run()
         {
             // Jump just completed
             RTTR_Assert(!GAMECLIENT.skiptogf);
-            double timeDiff = static_cast<double>(current_time - skipgf_last_time);
+            auto timeDiff = static_cast<double>(current_time - skipgf_last_time);
             unsigned numGFPassed = curGF - skipgf_last_report_gf;
             LOG.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % numGFPassed
               % (timeDiff / 1000) % (timeDiff / numGFPassed);
@@ -168,7 +168,7 @@ bool GameManager::ShowSplashscreen()
     libsiedler2::Archiv arSplash;
     if(!LOADER.LoadFile(arSplash, RTTRCONFIG.ExpandPath("<RTTR_RTTR>/splash.bmp")))
         return false;
-    glArchivItem_Bitmap* image = dynamic_cast<glArchivItem_Bitmap*>(arSplash[0]);
+    auto* image = dynamic_cast<glArchivItem_Bitmap*>(arSplash[0]);
     if(!image)
         return false;
     arSplash.release(0);

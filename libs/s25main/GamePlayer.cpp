@@ -130,7 +130,7 @@ BuildOrders GamePlayer::GetStandardBuildOrder()
     unsigned curPrio = 0;
     for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
     {
-        BuildingType bld = BuildingType(i);
+        auto bld = BuildingType(i);
         if(bld == BLD_HEADQUARTERS || !BuildingProperties::IsValid(bld))
             continue;
 
@@ -272,7 +272,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 
     // Ehemaligen PS auslesen
-    PlayerState origin_ps = PlayerState(sgd.PopUnsignedChar());
+    auto origin_ps = PlayerState(sgd.PopUnsignedChar());
     // Nur richtige Spieler serialisieren
     if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_AI))
         return;
@@ -453,7 +453,7 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
         hqPos = bld->GetPos();
     else if(BuildingProperties::IsMilitary(bldType))
     {
-        nobMilitary* milBld = static_cast<nobMilitary*>(bld);
+        auto* milBld = static_cast<nobMilitary*>(bld);
         // New built? -> Calculate frontier distance
         if(milBld->IsNewBuilt())
             milBld->LookForEnemyBuildings();
@@ -543,7 +543,7 @@ void GamePlayer::RoadDestroyed()
 {
     // Alle Waren, die an Flagge liegen und in Lagerhäusern, müssen gucken, ob sie ihr Ziel noch erreichen können, jetzt wo eine Straße
     // fehlt
-    for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end();)
+    for(auto it = ware_list.begin(); it != ware_list.end();)
     {
         Ware* ware = *it;
         if(ware->IsWaitingAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
@@ -739,7 +739,7 @@ void GamePlayer::AddJobWanted(const Job job, noRoadNode* workplace)
 
 void GamePlayer::JobNotWanted(noRoadNode* workplace, bool all)
 {
-    for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end();)
+    for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
         if(it->workplace == workplace)
         {
@@ -755,7 +755,7 @@ void GamePlayer::JobNotWanted(noRoadNode* workplace, bool all)
 
 void GamePlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 {
-    for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
+    for(auto it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
     {
         if(it->workplace == workplace && it->job == job)
         {
@@ -825,7 +825,7 @@ bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode* goal)
 
 void GamePlayer::FindWarehouseForAllJobs(const Job job)
 {
-    for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end();)
+    for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
         if(job == JOB_NOTHING || it->job == job)
         {
@@ -1284,7 +1284,7 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 
 void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
 {
-    noFlag* flag = gwg->GetSpecObj<noFlag>(pt);
+    auto* flag = gwg->GetSpecObj<noFlag>(pt);
     if(!flag)
         return;
     /// Find wh with given job type (e.g. geologist, scout, ...)
@@ -1303,7 +1303,7 @@ bool GamePlayer::IsFlagWorker(nofFlagWorker* flagworker)
 void GamePlayer::FlagDestroyed(noFlag* flag)
 {
     // Alle durchgehen und ggf. sagen, dass sie keine Flagge mehr haben, wenn das ihre Flagge war, die zerstört wurde
-    for(std::list<nofFlagWorker*>::iterator it = flagworkers.begin(); it != flagworkers.end();)
+    for(auto it = flagworkers.begin(); it != flagworkers.end();)
     {
         if((*it)->GetFlag() == flag)
         {

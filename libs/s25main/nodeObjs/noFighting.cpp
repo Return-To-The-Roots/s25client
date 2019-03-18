@@ -131,7 +131,7 @@ void noFighting::Draw(DrawPoint drawPt)
         case 2:
         {
             // Erste Phase des Kampfes, die Soldaten gehen jeweils nach links bzw. rechts
-            int x_diff = int(GAMECLIENT.Interpolate(12, current_ev));
+            auto x_diff = int(GAMECLIENT.Interpolate(12, current_ev));
             drawPt.x -= x_diff;
             for(unsigned i = 0; i < 2; ++i)
             {

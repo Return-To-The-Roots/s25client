@@ -125,7 +125,7 @@ void testRange(const T_Seeds& seeds)
         {
             for(std::vector<unsigned>& result : results)
             {
-                const unsigned maxVal = static_cast<unsigned>(result.size());
+                const auto maxVal = static_cast<unsigned>(result.size());
                 unsigned val = rng() % maxVal;
                 ++result[val];
             }

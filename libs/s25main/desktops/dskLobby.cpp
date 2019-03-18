@@ -150,7 +150,7 @@ void dskLobby::Msg_EditEnter(const unsigned ctrl_id)
     {
         case 21: // Chattext senden
         {
-            ctrlEdit* edit = GetCtrl<ctrlEdit>(21);
+            auto* edit = GetCtrl<ctrlEdit>(21);
             LOBBYCLIENT.SendChat(edit->GetText());
             edit->SetText("");
         }
@@ -160,7 +160,7 @@ void dskLobby::Msg_EditEnter(const unsigned ctrl_id)
 
 void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const int selection)
 {
-    ctrlTable* table = GetCtrl<ctrlTable>(ctrl_id);
+    auto* table = GetCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
     {
         case 10: // Server list
@@ -218,8 +218,8 @@ void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
 
 bool dskLobby::ConnectToSelectedGame()
 {
-    ctrlTable* table = GetCtrl<ctrlTable>(10);
-    unsigned selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
+    auto* table = GetCtrl<ctrlTable>(10);
+    auto selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
     for(const LobbyServerInfo& server : LOBBYCLIENT.GetServerList())
     {
         if(server.getId() != selection)
@@ -230,7 +230,7 @@ bool dskLobby::ConnectToSelectedGame()
             serverRevision = serverRevision.substr(std::string("v20001011 - ").size());
         if(serverRevision == RTTR_Version::GetShortRevision())
         {
-            iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LOBBY);
+            auto* connect = new iwDirectIPConnect(ServerType::LOBBY);
             connect->Connect(server.getHost(), server.getPort(), false, server.hasPassword());
             WINDOWMANAGER.Show(connect);
             return true;
@@ -302,7 +302,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 
 void dskLobby::LC_ServerList(const LobbyServerList& servers)
 {
-    ctrlTable* servertable = GetCtrl<ctrlTable>(10);
+    auto* servertable = GetCtrl<ctrlTable>(10);
     bool first = servertable->GetNumRows() == 0;
 
     unsigned selection = servertable->GetSelection();
@@ -342,7 +342,7 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
 
 void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
 {
-    ctrlTable* playertable = GetCtrl<ctrlTable>(11);
+    auto* playertable = GetCtrl<ctrlTable>(11);
     bool first = playertable->GetNumRows() == 0;
 
     if((playertable->GetNumRows() > 0) && (playertable->GetNumRows() < players.size()))

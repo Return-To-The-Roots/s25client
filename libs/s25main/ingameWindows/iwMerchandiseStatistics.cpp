@@ -119,9 +119,9 @@ void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
         case 17: // Alle abwählen
         {
             const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
-            for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end();)
+            for(auto it = active.begin(); it != active.end();)
             {
-                std::set<unsigned short>::const_iterator curIt = it++;
+                auto curIt = it++;
                 GetCtrl<ctrlMultiSelectGroup>(22)->RemoveSelection(*curIt);
             }
         }

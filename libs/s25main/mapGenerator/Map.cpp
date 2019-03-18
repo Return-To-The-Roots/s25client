@@ -43,9 +43,9 @@ Map::Map(const MapExtent& size, const std::string& name, const std::string& auth
 
 libsiedler2::Archiv* Map::CreateArchiv()
 {
-    libsiedler2::Archiv* info = new libsiedler2::Archiv();
-    libsiedler2::ArchivItem_Map* map = new libsiedler2::ArchivItem_Map();
-    libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header();
+    auto* info = new libsiedler2::Archiv();
+    auto* map = new libsiedler2::ArchivItem_Map();
+    auto* header = new libsiedler2::ArchivItem_Map_Header();
 
     // create header information for the archiv
     header->setName(name);

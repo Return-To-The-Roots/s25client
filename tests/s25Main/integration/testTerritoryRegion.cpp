@@ -269,8 +269,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
         {
             milBlds[j] = world.GetSpecObj<nobBaseMilitary>(milBldPos[j]);
             MapPoint flagPt = milBlds[j]->GetFlagPos();
-            nofPassiveSoldier* sld = new nofPassiveSoldier(flagPt, milBlds[j]->GetPlayer(), static_cast<nobBaseMilitary*>(milBlds[j]),
-                                                           static_cast<nobBaseMilitary*>(milBlds[j]), 0);
+            auto* sld = new nofPassiveSoldier(flagPt, milBlds[j]->GetPlayer(), static_cast<nobBaseMilitary*>(milBlds[j]),
+                                              static_cast<nobBaseMilitary*>(milBlds[j]), 0);
             world.AddFigure(flagPt, sld);
             sld->ActAtFirst();
         }

@@ -227,7 +227,7 @@ void dskGameInterface::Resize(const Extent& newSize)
     DrawPoint barPos((newSize.x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
                      newSize.y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
 
-    ctrlButton* button = GetCtrl<ctrlButton>(ID_btMap);
+    auto* button = GetCtrl<ctrlButton>(ID_btMap);
     button->SetPos(barPos);
 
     barPos.x += button->GetSize().x;
@@ -243,7 +243,7 @@ void dskGameInterface::Resize(const Extent& newSize)
     button->SetPos(barPos);
 
     barPos += DrawPoint(18, 24);
-    ctrlText* text = GetCtrl<ctrlText>(ID_txtNumMsg);
+    auto* text = GetCtrl<ctrlText>(ID_txtNumMsg);
     text->SetPos(barPos);
 
     gwv.Resize(newSize);
@@ -560,7 +560,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         {
             if(selObj.GetType() == NOP_BUILDING)
             {
-                const noBuilding* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel); //-V807
+                const auto* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel); //-V807
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled

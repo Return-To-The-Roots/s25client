@@ -88,7 +88,7 @@ void CatapultStone::Draw(DrawPoint drawOffset)
         double y_diff = 0.5 * 0.5;
 
         // Verschiebung ausrechnen von Y
-        int diff = int((dx * dx - y_diff) * 200);
+        auto diff = int((dx * dx - y_diff) * 200);
 
         // Stein auf Parabel zeichnen
         drawPos.y = (drawPos.y + diff) % worldSize.y;
@@ -113,7 +113,7 @@ void CatapultStone::HandleEvent(const unsigned /*id*/)
         if(dest_building == dest_map)
         {
             // Steht an der Stelle noch ein Militärgebäude zum Bombardieren?
-            nobMilitary* milBld = gwg->GetSpecObj<nobMilitary>(dest_building);
+            auto* milBld = gwg->GetSpecObj<nobMilitary>(dest_building);
             if(milBld)
             {
                 milBld->HitOfCatapultStone();

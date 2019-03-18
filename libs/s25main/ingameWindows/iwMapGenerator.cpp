@@ -188,7 +188,7 @@ void iwMapGenerator::Apply()
 
 void iwMapGenerator::Reset()
 {
-    ctrlComboBox* combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER);
+    auto* combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER);
     const uint16_t playersSelection = mapSettings.numPlayers - 2;
     if(playersSelection < MAX_PLAYERS - 2)
     {

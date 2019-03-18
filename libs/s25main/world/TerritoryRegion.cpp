@@ -42,8 +42,8 @@ bool TerritoryRegion::IsPointInPolygon(const std::vector<Position>& polygon, con
 
     bool inside = false;
 
-    std::vector<Position>::const_iterator it = polygon.begin();
-    std::vector<Position>::const_iterator prev = polygon.end() - 1;
+    auto it = polygon.begin();
+    auto prev = polygon.end() - 1;
     // Check each edge if a ray from the point to the right crosses the edge
     for(; it != polygon.end(); prev = it, ++it)
     {

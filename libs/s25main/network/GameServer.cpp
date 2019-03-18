@@ -315,7 +315,7 @@ void GameServer::Run()
         player.sendMsgs(10);
     }
 
-    for(std::vector<GameServerPlayer>::iterator it = networkPlayers.begin(); it != networkPlayers.end();)
+    for(auto it = networkPlayers.begin(); it != networkPlayers.end();)
     {
         if(!it->socket.isValid())
             it = networkPlayers.erase(it);
@@ -1539,7 +1539,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
     int targetPlayer = GetTargetPlayer(msg);
     if(targetPlayer < 0)
         return true;
-    uint8_t player1 = static_cast<uint8_t>(targetPlayer);
+    auto player1 = static_cast<uint8_t>(targetPlayer);
     if(player1 == msg.player2 || msg.player2 >= playerInfos.size())
         return true;
 

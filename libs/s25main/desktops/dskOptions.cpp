@@ -273,7 +273,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->SetSelection((SETTINGS.video.fullscreen ? 48 : 49)); //-V807
 
     // "Limit Framerate" füllen
-    ctrlComboBox* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
+    auto* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
     if(GLOBALVARS.hasVSync)
         cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
     for(int framerate : Settings::SCREEN_REFRESH_RATES)
@@ -340,8 +340,8 @@ void dskOptions::Msg_Group_ProgressChange(const unsigned /*group_id*/, const uns
 
 void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection)
 {
-    ctrlGroup* group = GetCtrl<ctrlGroup>(group_id);
-    ctrlComboBox* combo = group->GetCtrl<ctrlComboBox>(ctrl_id);
+    auto* group = GetCtrl<ctrlGroup>(group_id);
+    auto* combo = group->GetCtrl<ctrlComboBox>(ctrl_id);
 
     switch(ctrl_id)
     {
@@ -523,7 +523,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 0: // "Zurück"
         {
-            ctrlGroup* groupAllgemein = GetCtrl<ctrlGroup>(21);
+            auto* groupAllgemein = GetCtrl<ctrlGroup>(21);
 
             // Name abspeichern
             SETTINGS.lobby.name = groupAllgemein->GetCtrl<ctrlEdit>(31)->GetText();
@@ -623,7 +623,7 @@ void dskOptions::loadVideoModes()
     // Get available modes
     VIDEODRIVER.ListVideoModes(video_modes);
     // Remove everything below 800x600
-    for(std::vector<VideoMode>::iterator it = video_modes.begin(); it != video_modes.end();)
+    for(auto it = video_modes.begin(); it != video_modes.end();)
     {
         if(it->width < 800 && it->height < 600)
             it = video_modes.erase(it);

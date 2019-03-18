@@ -29,8 +29,8 @@
 #define RTTR_FOREACH_PT(TYPE, SIZE)                                           \
     /* Create scoped temporaries holding width and height by */               \
     /* using assignment in if to save potential accesses */                   \
-    if(TYPE::ElementType rttrForeachPtWidth = TYPE::ElementType(SIZE.x))      \
-        if(TYPE::ElementType rttrForeachPtHeight = TYPE::ElementType(SIZE.y)) \
+    if(auto rttrForeachPtWidth = static_cast<TYPE::ElementType>(SIZE.x))      \
+        if(auto rttrForeachPtHeight = static_cast<TYPE::ElementType>(SIZE.y)) \
             for(TYPE pt(0, 0); pt.y < rttrForeachPtHeight; ++pt.y)            \
                 for(pt.x = 0; pt.x < rttrForeachPtWidth; ++pt.x)
 

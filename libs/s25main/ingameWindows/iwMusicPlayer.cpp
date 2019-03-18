@@ -406,7 +406,7 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
     std::vector<std::string> playlists = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[90]), "pll");
 
     unsigned i = 0;
-    for(std::vector<std::string>::iterator it = playlists.begin(); it != playlists.end(); ++it, ++i)
+    for(auto it = playlists.begin(); it != playlists.end(); ++it, ++i)
     {
         bfs::path playlistPath(*it);
         // Reduce to pure filename

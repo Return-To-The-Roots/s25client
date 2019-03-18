@@ -459,7 +459,7 @@ void nobHarborBuilding::OrderExpeditionWares()
         return;
     // Waren in der Bestellungsliste mit beachten
     unsigned boards = 0, stones = 0;
-    for(std::list<Ware*>::iterator it = dependent_wares.begin(); it != dependent_wares.end(); ++it)
+    for(auto it = dependent_wares.begin(); it != dependent_wares.end(); ++it)
     {
         RTTR_Assert(*it);
         if((*it)->type == GD_BOARDS)
@@ -527,7 +527,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         std::list<noFigure*> attackers;
         MapPoint ship_dest = soldiers_for_ships.begin()->dest;
 
-        for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end();)
+        for(auto it = soldiers_for_ships.begin(); it != soldiers_for_ships.end();)
         {
             if(it->dest == ship_dest)
             {
@@ -581,7 +581,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
                 break;
             }
         }
-        for(std::list<Ware*>::iterator it = wares_for_ships.begin(); !gotdest && it != wares_for_ships.end(); ++it)
+        for(auto it = wares_for_ships.begin(); !gotdest && it != wares_for_ships.end(); ++it)
         {
             noBase* nb = gwg->GetNO((*it)->GetNextHarbor());
             if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode((*it)->GetNextHarbor()).owner == player + 1)
@@ -596,8 +596,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
             std::list<noFigure*> figures;
 
             // Figuren auswählen, die zu diesem Ziel wollen
-            for(std::list<FigureForShip>::iterator it = figures_for_ships.begin();
-                it != figures_for_ships.end() && figures.size() < SHIP_CAPACITY;)
+            for(auto it = figures_for_ships.begin(); it != figures_for_ships.end() && figures.size() < SHIP_CAPACITY;)
             {
                 if(it->dest == dest)
                 {
@@ -617,8 +616,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
 
             // Und noch die Waren auswählen
             std::list<Ware*> wares;
-            for(std::list<Ware*>::iterator it = wares_for_ships.begin();
-                it != wares_for_ships.end() && figures.size() + wares.size() < SHIP_CAPACITY;)
+            for(auto it = wares_for_ships.begin(); it != wares_for_ships.end() && figures.size() + wares.size() < SHIP_CAPACITY;)
             {
                 if((*it)->GetNextHarbor() == dest)
                 {
@@ -1112,7 +1110,7 @@ void nobHarborBuilding::CancelFigure(noFigure* figure)
     // Merken, ob sie entfernt wurde
     bool removed = false;
     // Figur ggf. aus der List entfernen
-    for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
+    for(auto it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
     {
         if(it->fig == figure)
         {
@@ -1190,8 +1188,7 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
         }
 
         // Gebäude suchen, vielleicht schon vorhanden?
-        std::vector<SeaAttackerBuilding>::iterator it2 =
-          std::find(buildings.begin(), buildings.end(), static_cast<nobMilitary*>(all_building));
+        auto it2 = std::find(buildings.begin(), buildings.end(), static_cast<nobMilitary*>(all_building));
         // Noch nicht vorhanden?
         if(it2 == buildings.end())
         {
@@ -1249,7 +1246,7 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
 void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
 {
     bool found = false;
-    for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
+    for(auto it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
     {
         if(it->attacker == attacker)
         {
@@ -1342,7 +1339,7 @@ nofDefender* nobHarborBuilding::ProvideDefender(nofAttacker* const attacker)
 /// People waiting for a ship have to examine their route if a road was destroyed
 void nobHarborBuilding::ExamineShipRouteOfPeople()
 {
-    for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end();)
+    for(auto it = figures_for_ships.begin(); it != figures_for_ships.end();)
     {
         noFigure* const fig = it->fig;
         unsigned char nextDir;

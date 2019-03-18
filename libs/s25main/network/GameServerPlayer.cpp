@@ -69,7 +69,7 @@ void GameServerPlayer::doPing()
 
 unsigned GameServerPlayer::calcPingTime()
 {
-    ActiveState& state = boost::get<ActiveState>(state_);
+    auto& state = boost::get<ActiveState>(state_);
     if(!state.isPinging)
         return 0u;
     int result = durationToInt(std::chrono::duration_cast<std::chrono::milliseconds>(state.pingTimer.getElapsed()));

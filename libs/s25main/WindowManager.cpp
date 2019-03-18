@@ -241,7 +241,7 @@ void WindowManager::Switch(Desktop* desktop)
 IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
 {
     // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprüft werden müssen !! )
-    for(std::list<IngameWindow*>::const_reverse_iterator it = windows.rbegin(); it != windows.rend(); ++it)
+    for(auto it = windows.rbegin(); it != windows.rend(); ++it)
     {
         // FensterRect für Kollisionsabfrage
         Rect window_rect = (*it)->GetDrawRect();
@@ -684,7 +684,7 @@ void WindowManager::Close(const IngameWindow* window)
     if(!window)
         return;
 
-    IgwListIterator it = std::find(windows.begin(), windows.end(), window);
+    auto it = std::find(windows.begin(), windows.end(), window);
     if(it == windows.end())
         return; // Window already closed -> Out
 
@@ -714,7 +714,7 @@ void WindowManager::Close(const IngameWindow* window)
  */
 void WindowManager::Close(unsigned id)
 {
-    IgwListIterator it = std::find_if(windows.begin(), windows.end(), IsWindowId(id));
+    auto it = std::find_if(windows.begin(), windows.end(), IsWindowId(id));
     while(it != windows.end())
     {
         Close(*it);
@@ -763,7 +763,7 @@ struct IsWndMarkedForClose
 
 void WindowManager::CloseMarkedIngameWnds()
 {
-    IgwListIterator it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
+    auto it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
     while(it != windows.end())
     {
         Close(*it);
@@ -805,7 +805,7 @@ void WindowManager::TakeScreenshot()
 {
     libsiedler2::PixelBufferARGB buffer(curRenderSize.x, curRenderSize.y);
     glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
-    libsiedler2::ArchivItem_Bitmap_Raw* bmp = new libsiedler2::ArchivItem_Bitmap_Raw;
+    auto* bmp = new libsiedler2::ArchivItem_Bitmap_Raw;
     libsiedler2::Archiv archive;
     archive.push(bmp);
     bmp->create(buffer);

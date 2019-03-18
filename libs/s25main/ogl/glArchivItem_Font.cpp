@@ -127,7 +127,7 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
             return asciiMapping[c].second;
     } else
     {
-        std::map<unsigned, CharInfo>::const_iterator it = utf8_mapping.find(c);
+        auto it = utf8_mapping.find(c);
         if(it != utf8_mapping.end())
             return it->second;
     }
@@ -565,7 +565,7 @@ void glArchivItem_Font::initFont()
     if(numChars == 0)
         return;
 
-    const unsigned numCharsPerLine = static_cast<unsigned>(std::sqrt(static_cast<double>(numChars)));
+    const auto numCharsPerLine = static_cast<unsigned>(std::sqrt(static_cast<double>(numChars)));
     // Calc lines required (rounding up)
     const unsigned numLines = (numChars + numCharsPerLine - 1) / numCharsPerLine;
 
@@ -579,7 +579,7 @@ void glArchivItem_Font::initFont()
     numChars = 0;
     for(unsigned i = 0; i < size(); ++i)
     {
-        const libsiedler2::ArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
+        const auto* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
         if(!c)
             continue;
 

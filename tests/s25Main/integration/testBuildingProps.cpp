@@ -34,7 +34,7 @@ BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
     const MapPoint bldPos(0, 0);
     for(unsigned i = 0; i < NUM_BUILDING_TYPES; i++)
     {
-        BuildingType bldType = BuildingType(i);
+        auto bldType = BuildingType(i);
         if(!BuildingProperties::IsValid(bldType))
             continue;
         noBuilding* bld = BuildingFactory::CreateBuilding(world, bldType, bldPos, 0, NAT_ROMANS);

@@ -369,13 +369,13 @@ bool nobBaseMilitary::IsOnMission(nofActiveSoldier* soldier) const
 void nobBaseMilitary::CancelJobs()
 {
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
-    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end();)
+    for(auto it = leave_house.begin(); it != leave_house.end();)
     {
         // Nur Soldaten nehmen (Job-Arbeiten) und keine (normalen) Verteidiger, da diese ja rauskommen
         // sollen zum Kampf
         if((*it)->DoJobWorks() && (*it)->GetGOT() != GOT_NOF_DEFENDER)
         {
-            nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(*it);
+            auto* soldier = dynamic_cast<nofActiveSoldier*>(*it);
             RTTR_Assert(soldier);
 
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier --> dem muss extra noch Bescheid gesagt werden!

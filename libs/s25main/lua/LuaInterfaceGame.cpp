@@ -372,7 +372,7 @@ void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggest
         if(onPactCancel.type() == LUA_TFUNCTION)
         {
             AIInterface& aii = ai->getAIInterface();
-            bool luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
+            auto luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
             if(luaResult)
                 aii.AcceptPact(gw.GetEvMgr().GetCurrentGF(), pt, suggestedByPlayerId);
             else

@@ -231,7 +231,7 @@ void MusicPlayer::PlayNext()
         if(nr <= 14)
         {
             // Siedlerstück abspielen (falls es geladen wurde)
-            MusicItem* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[nr - 1]);
+            auto* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[nr - 1]);
             if(curSong)
                 curSong->Play(1);
         }
@@ -254,7 +254,7 @@ void MusicPlayer::PlayNext()
     LOG.write(_("OK\n"));
 
     // Und abspielen
-    MusicItem* curSong = dynamic_cast<MusicItem*>(sng[0]);
+    auto* curSong = dynamic_cast<MusicItem*>(sng[0]);
     if(curSong)
         curSong->Play(1);
 }

@@ -53,7 +53,7 @@ void nofTradeDonkey::GoalReached()
 {
     RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
     successor = nullptr;
-    nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
+    auto* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
     GamePlayer& whOwner = gwg->GetPlayer(wh->GetPlayer());
 
     if(gt != GD_NOTHING)

@@ -31,7 +31,7 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 
     // Alle Weltpunkte serialisieren
-    for(std::vector<MapNode>::const_iterator it = world.nodes.begin(); it != world.nodes.end(); ++it)
+    for(auto it = world.nodes.begin(); it != world.nodes.end(); ++it)
     {
         it->Serialize(sgd, numPlayers, world.GetDescription());
     }
@@ -107,7 +107,7 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
     }
     // Alle Weltpunkte
     MapPoint curPos(0, 0);
-    for(std::vector<MapNode>::iterator it = world.nodes.begin(); it != world.nodes.end(); ++it)
+    for(auto it = world.nodes.begin(); it != world.nodes.end(); ++it)
     {
         it->Deserialize(sgd, numPlayers, world.GetDescription(), landscapeTerrains);
         if(it->harborId)

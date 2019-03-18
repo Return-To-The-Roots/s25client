@@ -93,7 +93,7 @@ void iwTrade::Msg_PaintBefore()
 
     if(bitmap)
     {
-        ctrlImage* img = GetCtrl<ctrlImage>(0);
+        auto* img = GetCtrl<ctrlImage>(0);
         bitmap->DrawFull(img->GetDrawPos(), COLOR_SHADOW);
     }
 }
@@ -123,7 +123,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
         // Change ware/figure mode
         case 2:
         {
-            ctrlComboBox* names = this->GetCtrl<ctrlComboBox>(4);
+            auto* names = this->GetCtrl<ctrlComboBox>(4);
             names->DeleteAllItems();
             if(selection == 0)
             {

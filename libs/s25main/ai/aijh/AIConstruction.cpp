@@ -236,10 +236,10 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
         helpers::makeUnique(flags);
         // If at this pos is a flag, then it might be included due to wrapping.
         // This is wrong and needs to be removed
-        const noFlag* flag = aii.gwb.GetSpecObj<noFlag>(pt);
+        const auto* flag = aii.gwb.GetSpecObj<noFlag>(pt);
         if(flag)
         {
-            std::vector<const noFlag*>::iterator it = std::find(flags.begin(), flags.end(), flag);
+            auto it = std::find(flags.begin(), flags.end(), flag);
             if(it != flags.end())
                 flags.erase(it);
         }
@@ -288,7 +288,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 
     // flag of a military building? -> check if we really want to connect this right now
     const MapPoint bldPos = aii.gwb.GetNeighbour(flag->GetPos(), Direction::NORTHWEST);
-    if(const nobMilitary* milBld = aii.gwb.GetSpecObj<const nobMilitary>(bldPos))
+    if(const auto* milBld = aii.gwb.GetSpecObj<const nobMilitary>(bldPos))
     {
         if(!MilitaryBuildingWantsRoad(*milBld))
             return false;
@@ -610,7 +610,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
     {
         t = aii.gwb.GetNeighbour(t, i);
     }
-    const noFlag* mainflag = aii.gwb.GetSpecObj<noFlag>(t);
+    const auto* mainflag = aii.gwb.GetSpecObj<noFlag>(t);
 
     // Jede Flagge testen...
     for(auto& i : flags)

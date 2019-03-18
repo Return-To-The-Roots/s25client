@@ -494,7 +494,7 @@ struct IsSignOfType
 
     bool operator()(const MapPoint& pt, unsigned /*distance*/)
     {
-        const noSign* sign = gwb.GetSpecObj<noSign>(pt);
+        const auto* sign = gwb.GetSpecObj<noSign>(pt);
         return sign && sign->GetSignType() == type;
     }
 };

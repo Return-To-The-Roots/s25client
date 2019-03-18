@@ -506,7 +506,7 @@ void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned c
 void iwAction::Msg_PaintAfter()
 {
     IngameWindow::Msg_PaintAfter();
-    ctrlTab* tab = GetCtrl<ctrlTab>(0);
+    auto* tab = GetCtrl<ctrlTab>(0);
     if(tab)
     {
         // Anzeige Soldaten/mögliche Soldatenanzahl bei Angriffstab
@@ -553,7 +553,7 @@ void iwAction::Msg_ButtonClick_TabAttack(const unsigned ctrl_id)
         break;
         case 4: // Angriff!
         {
-            ctrlOptionGroup* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_ATTACK)->GetCtrl<ctrlOptionGroup>(3);
+            auto* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_ATTACK)->GetCtrl<ctrlOptionGroup>(3);
 
             GAMECLIENT.Attack(selectedPt, selected_soldiers_count, (ogroup->GetSelection() == 1));
 
@@ -592,7 +592,7 @@ void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id)
         break;
         case 4: // Angriff!
         {
-            ctrlOptionGroup* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_SEAATTACK)->GetCtrl<ctrlOptionGroup>(3);
+            auto* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_SEAATTACK)->GetCtrl<ctrlOptionGroup>(3);
 
             GAMECLIENT.SeaAttack(selectedPt, selected_soldiers_count_sea, (ogroup->GetSelection() == 1));
 
@@ -627,7 +627,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
             {
                 // Abreißen?
                 Close();
-                const noBaseBuilding* building = world.GetSpecObj<noBaseBuilding>(world.GetNeighbour(selectedPt, Direction::NORTHWEST));
+                const auto* building = world.GetSpecObj<noBaseBuilding>(world.GetNeighbour(selectedPt, Direction::NORTHWEST));
 
                 // Militärgebäude?
                 if(building->GetGOT() == GOT_NOB_MILITARY)

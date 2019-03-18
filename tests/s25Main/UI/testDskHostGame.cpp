@@ -65,8 +65,8 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
     MOCK_EXPECT(client->SendRankingInfoRequest).at_least(1);
 
     dskHostGame* desktop = new dskHostGame(ServerType::LOBBY, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client));
-    ClientInterface* ci = dynamic_cast<ClientInterface*>(desktop);
-    LobbyInterface* li = dynamic_cast<LobbyInterface*>(desktop);
+    auto* ci = dynamic_cast<ClientInterface*>(desktop);
+    auto* li = dynamic_cast<LobbyInterface*>(desktop);
     BOOST_REQUIRE(ci && li);
     std::vector<ctrlOptionGroup*> chatTab = desktop->GetCtrls<ctrlOptionGroup>();
     BOOST_REQUIRE_EQUAL(chatTab.size(), 1u);

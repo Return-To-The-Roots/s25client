@@ -43,7 +43,7 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
                 std::unique_ptr<Message> msg(con.recvQueue.popFront());
                 if(!msg->run(this, id))
                 {
-                    LobbyMessage* lobbyMsg = dynamic_cast<LobbyMessage*>(msg.get());
+                    auto* lobbyMsg = dynamic_cast<LobbyMessage*>(msg.get());
                     if(lobbyMsg)
                     {
                         messages.push_back(lobbyMsg);

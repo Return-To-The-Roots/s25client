@@ -110,7 +110,7 @@ iwMsgbox::~iwMsgbox() = default;
 
 void iwMsgbox::MoveIcon(const DrawPoint& pos)
 {
-    ctrlImage* icon = GetCtrl<ctrlImage>(ID_ICON);
+    auto* icon = GetCtrl<ctrlImage>(ID_ICON);
     if(icon)
     {
         icon->SetPos(elMax(pos, DrawPoint(0, 0)));
@@ -146,7 +146,7 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
         }
-        ctrlMultiline* multiline = GetCtrl<ctrlMultiline>(ID_TEXT);
+        auto* multiline = GetCtrl<ctrlMultiline>(ID_TEXT);
         multiline->SetPos(textPos);
         multiline->Resize(textMaxSize);
         multiline->Resize(multiline->GetContentSize());
@@ -158,7 +158,7 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
         btMoveDelta.x /= 2;
         for(unsigned i = 0; i < 3; i++)
         {
-            Window* bt = GetCtrl<Window>(i + ID_BT_0);
+            auto* bt = GetCtrl<Window>(i + ID_BT_0);
             if(bt)
                 bt->SetPos(bt->GetPos() + btMoveDelta);
         }

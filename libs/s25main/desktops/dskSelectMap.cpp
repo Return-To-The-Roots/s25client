@@ -145,7 +145,7 @@ dskSelectMap::~dskSelectMap()
 
 void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int selection)
 {
-    ctrlTable* table = GetCtrl<ctrlTable>(1);
+    auto* table = GetCtrl<ctrlTable>(1);
 
     // Tabelle leeren
     table->DeleteAllItems();
@@ -304,11 +304,11 @@ void dskSelectMap::OnMapCreated(const std::string& mapPath)
         waitWnd = nullptr;
     }
     // select the "played maps" entry
-    ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);
+    auto* optionGroup = GetCtrl<ctrlOptionGroup>(10);
     optionGroup->SetSelection(8, true);
 
     // search for the random map entry and select it in the table
-    ctrlTable* table = GetCtrl<ctrlTable>(1);
+    auto* table = GetCtrl<ctrlTable>(1);
     for(int i = 0; i < table->GetNumRows(); i++)
     {
         std::string entryPath = table->GetItemText(i, 5);
@@ -324,7 +324,7 @@ void dskSelectMap::OnMapCreated(const std::string& mapPath)
 /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
 void dskSelectMap::StartServer()
 {
-    ctrlTable* table = GetCtrl<ctrlTable>(1);
+    auto* table = GetCtrl<ctrlTable>(1);
     unsigned short selection = table->GetSelection();
 
     // Ist die Auswahl gültig?
@@ -409,7 +409,7 @@ void dskSelectMap::Draw_()
 
 void dskSelectMap::FillTable(const std::vector<std::string>& files)
 {
-    ctrlTable* table = GetCtrl<ctrlTable>(1);
+    auto* table = GetCtrl<ctrlTable>(1);
 
     for(const std::string& filePath : files)
     {

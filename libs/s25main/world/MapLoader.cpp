@@ -393,7 +393,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
 
         if(species != SPEC_NOTHING)
         {
-            noAnimal* animal = new noAnimal(species, pt);
+            auto* animal = new noAnimal(species, pt);
             world_.AddFigure(pt, animal);
             // Loslaufen
             animal->StartLiving();
@@ -453,7 +453,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 
     /// Die Meere herausfinden, an die die Hafenpunkte grenzen
     unsigned curHarborId = 1;
-    for(std::vector<HarborPos>::iterator it = world.harbor_pos.begin() + 1; it != world.harbor_pos.end();)
+    for(auto it = world.harbor_pos.begin() + 1; it != world.harbor_pos.end();)
     {
         std::vector<bool> hasCoastAtSea(world.seas.size() + 1, false);
         bool foundCoast = false;

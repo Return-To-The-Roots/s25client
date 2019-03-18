@@ -407,7 +407,7 @@ void nofCarrier::Walked()
             if(rs_pos == cur_rs->GetLength())
             {
                 // Flagge, an der wir gerade stehen
-                noFlag* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
+                auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
                 bool calculated = false;
 
@@ -468,7 +468,7 @@ void nofCarrier::Walked()
             } else if(rs_pos == cur_rs->GetLength() - 1)
             {
                 // Wenn wir fast da sind, gucken, ob an der Flagge noch ein freier Platz ist
-                noFlag* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
+                auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
                 if(this_flag->IsSpaceForWare() || WantInBuilding(nullptr) || cur_rs->AreWareJobs(!rs_dir, ct, true))
                 {
@@ -551,7 +551,7 @@ void nofCarrier::GoalReached()
     // Wir arbeiten schonmal
     StartWorking();
 
-    noRoadNode* rn = gwg->GetSpecObj<noRoadNode>(pos);
+    auto* rn = gwg->GetSpecObj<noRoadNode>(pos);
     for(unsigned char i = 0; i < 6; ++i)
     {
         // noRoadNode * rn = gwg->GetSpecObj<noRoadNode>(x,y);

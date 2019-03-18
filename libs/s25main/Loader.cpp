@@ -106,7 +106,7 @@ SoundEffectItem* Loader::GetSoundN(const std::string& file, unsigned nr)
 
 std::string Loader::GetTextN(const std::string& file, unsigned nr)
 {
-    libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv[nr]);
+    auto* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv[nr]);
     return archiv ? archiv->getText() : "text missing";
 }
 
@@ -300,7 +300,7 @@ bool Loader::LoadSounds()
 void Loader::LoadDummyGUIFiles()
 {
     // Palettes
-    libsiedler2::ArchivItem_Palette* palette = new libsiedler2::ArchivItem_Palette;
+    auto* palette = new libsiedler2::ArchivItem_Palette;
     files_["colors"].archiv.pushC(*palette);
     files_["pal5"].archiv.push(palette);
     // GUI elements
@@ -308,14 +308,14 @@ void Loader::LoadDummyGUIFiles()
     resource.alloc(57);
     for(unsigned id = 4; id < 36; id++)
     {
-        glArchivItem_Bitmap_RLE* bmp = new glArchivItem_Bitmap_RLE();
+        auto* bmp = new glArchivItem_Bitmap_RLE();
         libsiedler2::PixelBufferARGB buffer(1, 1);
         bmp->create(buffer);
         resource.set(id, bmp);
     }
     for(unsigned id = 36; id < 57; id++)
     {
-        glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
+        auto* bmp = new glArchivItem_Bitmap_Raw();
         libsiedler2::PixelBufferARGB buffer(1, 1);
         bmp->create(buffer);
         resource.set(id, bmp);
@@ -323,7 +323,7 @@ void Loader::LoadDummyGUIFiles()
     libsiedler2::Archiv& io = files_["io"].archiv;
     for(unsigned id = 0; id < 264; id++)
     {
-        glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
+        auto* bmp = new glArchivItem_Bitmap_Raw();
         libsiedler2::PixelBufferARGB buffer(1, 1);
         bmp->create(buffer);
         io.push(bmp);
@@ -334,7 +334,7 @@ void Loader::LoadDummyGUIFiles()
     libsiedler2::PixelBufferARGB buffer(15, 16);
     for(unsigned i = 0; i < 3; i++)
     {
-        glArchivItem_Font* font = new glArchivItem_Font();
+        auto* font = new glArchivItem_Font();
         const unsigned dx = 9 + i * 3;
         const unsigned dy = 10 + i * 3;
         font->setDx(dx);
@@ -342,7 +342,7 @@ void Loader::LoadDummyGUIFiles()
         font->alloc(255);
         for(unsigned id = 0x21; id < 255; id++)
         {
-            glArchivItem_Bitmap_Player* bmp = new glArchivItem_Bitmap_Player();
+            auto* bmp = new glArchivItem_Bitmap_Player();
             bmp->create(dx, dy, buffer, palette, 0);
             font->set(id, bmp);
         }
@@ -780,7 +780,7 @@ void Loader::fillCaches()
                     }
                 }
 
-                glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
+                auto* bitmap = new glArchivItem_Bitmap_Raw();
                 bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
                 bitmap->setNx(image->getNx());
                 bitmap->setNy(image->getNy());
@@ -906,11 +906,11 @@ bool Loader::MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archi
             targetArchiv.set(i, otherArchiv.release(i));
         else
         {
-            libsiedler2::Archiv* subArchiv = dynamic_cast<libsiedler2::Archiv*>(targetArchiv[i]);
+            auto* subArchiv = dynamic_cast<libsiedler2::Archiv*>(targetArchiv[i]);
             if(subArchiv)
             {
                 // We have a sub-archiv -> Merge
-                libsiedler2::Archiv* otherSubArchiv = dynamic_cast<libsiedler2::Archiv*>(otherArchiv[i]);
+                auto* otherSubArchiv = dynamic_cast<libsiedler2::Archiv*>(otherArchiv[i]);
                 if(!otherSubArchiv)
                 {
                     LOG.write(_("Failed to merge entry %1%. Archive expected!\n")) % i;

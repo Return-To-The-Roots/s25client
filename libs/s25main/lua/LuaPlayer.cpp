@@ -279,7 +279,7 @@ void LuaPlayer::ModifyHQ(bool isTent)
     const MapPoint hqPos = player.GetHQPos();
     if(hqPos.isValid())
     {
-        nobHQ* hq = player.GetGameWorld().GetSpecObj<nobHQ>(hqPos);
+        auto* hq = player.GetGameWorld().GetSpecObj<nobHQ>(hqPos);
         if(hq)
             hq->SetIsTent(isTent);
     }

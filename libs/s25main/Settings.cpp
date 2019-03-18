@@ -284,7 +284,7 @@ void Settings::Load()
         // {
         for(unsigned addon = 0; addon < iniAddons->size(); ++addon)
         {
-            const libsiedler2::ArchivItem_Text* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
+            const auto* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
 
             if(item)
                 addons.configuration.insert(std::make_pair(s25util::fromStringClassic<unsigned>(item->getName()),

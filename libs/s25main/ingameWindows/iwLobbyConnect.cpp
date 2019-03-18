@@ -140,9 +140,9 @@ void iwLobbyConnect::Msg_EditChange(const unsigned /*ctrl_id*/)
 
 void iwLobbyConnect::Msg_EditEnter(const unsigned ctrl_id)
 {
-    ctrlEdit* user = GetCtrl<ctrlEdit>(ID_edtUser);
-    ctrlEdit* pass = GetCtrl<ctrlEdit>(ID_edtPw);
-    ctrlEdit* email = GetCtrl<ctrlEdit>(ID_edtEmail);
+    auto* user = GetCtrl<ctrlEdit>(ID_edtUser);
+    auto* pass = GetCtrl<ctrlEdit>(ID_edtPw);
+    auto* email = GetCtrl<ctrlEdit>(ID_edtEmail);
 
     switch(ctrl_id)
     {
@@ -237,9 +237,9 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int sel
  */
 void iwLobbyConnect::SetText(const std::string& text, unsigned color, bool button)
 {
-    ctrlText* t = GetCtrl<ctrlText>(ID_txtStatus);
-    ctrlButton* b = GetCtrl<ctrlButton>(ID_btConnect);
-    ctrlButton* b2 = GetCtrl<ctrlButton>(ID_btRegister);
+    auto* t = GetCtrl<ctrlText>(ID_txtStatus);
+    auto* b = GetCtrl<ctrlButton>(ID_btConnect);
+    auto* b2 = GetCtrl<ctrlButton>(ID_btRegister);
 
     // Text setzen
     t->SetTextColor(color);
@@ -262,7 +262,7 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& email)
     GetCtrl<ctrlEdit>(ID_edtEmail)->SetText(email);
     ReadFromEditAndSaveLobbyData(user, pass, email2);
 
-    ctrlButton* btRegister = GetCtrl<ctrlButton>(ID_btRegister);
+    auto* btRegister = GetCtrl<ctrlButton>(ID_btRegister);
     if(btRegister)
         btRegister->SetEnabled(false);
 
@@ -277,7 +277,7 @@ void iwLobbyConnect::LC_Registered()
     // Registrierung erfolgreich
     SetText(_("Registration successful!"), COLOR_YELLOW, true);
 
-    ctrlButton* btRegister = GetCtrl<ctrlButton>(ID_btRegister);
+    auto* btRegister = GetCtrl<ctrlButton>(ID_btRegister);
     if(btRegister)
         btRegister->SetEnabled(false);
 }

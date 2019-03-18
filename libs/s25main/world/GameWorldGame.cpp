@@ -105,7 +105,7 @@ void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
     // Let's see if there is a flag
     if(GetNO(pt)->GetType() == NOP_FLAG)
     {
-        noFlag* flag = GetSpecObj<noFlag>(pt);
+        auto* flag = GetSpecObj<noFlag>(pt);
         if(flag->GetPlayer() != playerId)
             return;
 
@@ -180,7 +180,7 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
     // Steht da auch ein Gebäude oder eine Baustelle, nicht dass wir aus Verzögerung Feuer abreißen wollen, das geht schief
     if(GetNO(pt)->GetType() == NOP_BUILDING || GetNO(pt)->GetType() == NOP_BUILDINGSITE)
     {
-        noBaseBuilding* nbb = GetSpecObj<noBaseBuilding>(pt);
+        auto* nbb = GetSpecObj<noBaseBuilding>(pt);
 
         // Ist das Gebäude auch von dem Spieler, der es abreißen will?
         if(nbb->GetPlayer() != player)
@@ -271,7 +271,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
             DestroyNO(end);
     }
 
-    RoadSegment* rs =
+    auto* rs =
       new RoadSegment(boat_road ? RoadSegment::RT_BOAT : RoadSegment::RT_NORMAL, GetSpecObj<noFlag>(start), GetSpecObj<noFlag>(end), route);
 
     GetSpecObj<noFlag>(start)->SetRoute(route.front(), rs);
@@ -284,7 +284,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
 
 bool GameWorldGame::HasRemovableObjForRoad(const MapPoint pt) const
 {
-    const noStaticObject* obj = GetSpecObj<noStaticObject>(pt);
+    const auto* obj = GetSpecObj<noStaticObject>(pt);
     if(obj && obj->GetSize() == 0)
         return true;
     return false;
@@ -764,7 +764,7 @@ struct PotentialAttacker
 void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count,
                            const bool strong_soldiers)
 {
-    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
+    auto* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     if(!attacked_building || !attacked_building->IsAttackable(player_attacker))
         return;
 
@@ -794,7 +794,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
             for(SortedTroops::const_reverse_iterator it2 = troops.rbegin(); it2 != troops.rend() && i < soldiers_count; ++it2, ++i) //-V127
             {
                 bool inserted = false;
-                for(std::list<PotentialAttacker>::iterator it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
+                for(auto it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
                 {
                     /* Insert new soldier before current one if:
                             new soldiers rank is greater
@@ -820,7 +820,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
             for(SortedTroops::const_iterator it2 = troops.begin(); it2 != troops.end() && i < soldiers_count; ++it2, ++i) //-V127
             {
                 bool inserted = false;
-                for(std::list<PotentialAttacker>::iterator it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
+                for(auto it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
                 {
                     /* Insert new soldier before current one if:
                             new soldiers rank is less
@@ -890,7 +890,7 @@ void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapP
     else
         std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::less<unsigned>>());
 
-    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
+    auto* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     unsigned counter = 0;
     for(GameWorldBase::PotentialSeaAttacker& pa : attackers)
     {
@@ -982,7 +982,7 @@ void GameWorldGame::Armageddon()
 {
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
-        noFlag* flag = GetSpecObj<noFlag>(pt);
+        auto* flag = GetSpecObj<noFlag>(pt);
         if(flag)
         {
             flag->DestroyAttachedBuilding();
@@ -995,7 +995,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
 {
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
-        noFlag* flag = GetSpecObj<noFlag>(pt);
+        auto* flag = GetSpecObj<noFlag>(pt);
         if(flag && flag->GetPlayer() == player)
         {
             flag->DestroyAttachedBuilding();
@@ -1398,7 +1398,7 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
     DestroyNO(pos, false);
 
     // Hafenbaustelle errichten
-    noBuildingSite* bs = new noBuildingSite(pos, player);
+    auto* bs = new noBuildingSite(pos, player);
     SetNO(pos, bs);
     AddHarborBuildingSiteFromSea(bs);
 

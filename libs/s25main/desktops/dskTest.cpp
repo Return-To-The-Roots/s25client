@@ -140,7 +140,7 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {
-                ctrlButton* bt = GetCtrl<ctrlButton>(i);
+                auto* bt = GetCtrl<ctrlButton>(i);
                 if(bt)
                     bt->SetEnabled(!bt->GetEnabled());
             }
@@ -149,8 +149,8 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btAnimateOscillate:
         case ID_btAnimateRepeat:
         {
-            ctrlButton* btAniBg = GetCtrl<ctrlButton>(ID_btAniBg);
-            ctrlButton* btAni = GetCtrl<ctrlButton>(ID_btAni);
+            auto* btAniBg = GetCtrl<ctrlButton>(ID_btAniBg);
+            auto* btAni = GetCtrl<ctrlButton>(ID_btAni);
             // Stop all
             GetAnimationManager().removeElementAnimations(btAni->GetID());
             GetAnimationManager().finishElementAnimations(ID_btAnimate, false);
@@ -192,7 +192,7 @@ void dskTest::ToggleCtrlVisibility()
 {
     for(int i = ID_txtTitle; i <= ID_btHideCtrls; i++)
     {
-        Window* ctrl = GetCtrl<Window>(i);
+        auto* ctrl = GetCtrl<Window>(i);
         if(ctrl)
             ctrl->SetVisible(!ctrl->IsVisible());
     }

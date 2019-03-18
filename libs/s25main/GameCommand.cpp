@@ -26,7 +26,7 @@ namespace gc {
 
 GameCommandPtr GameCommand::Deserialize(Serializer& ser)
 {
-    Type gcType = static_cast<Type>(ser.PopUnsignedChar());
+    auto gcType = static_cast<Type>(ser.PopUnsignedChar());
     GameCommand* gc;
     switch(gcType)
     {

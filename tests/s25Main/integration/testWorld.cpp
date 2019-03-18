@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
     world.InitAfterLoad();
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BuildingQuality s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
+        auto s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
         BuildingQuality bq = world.GetNode(pt).bq;
         BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt
                                                       << " original:" << worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y));

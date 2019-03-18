@@ -28,7 +28,7 @@ std::string join(const std::vector<std::string>& values, const std::string& deli
     if(values.size() == 1u)
         return values.front();
     std::ostringstream ss(values.front(), std::ostream::ate);
-    for(std::vector<std::string>::const_iterator it = values.begin() + 1; it != values.end() - 1; ++it)
+    for(auto it = values.begin() + 1; it != values.end() - 1; ++it)
         ss << delimiter << *it;
     ss << endDelimiter << values.back();
     return ss.str();

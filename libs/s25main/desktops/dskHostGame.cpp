@@ -236,7 +236,7 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
               new iwMsgbox(_("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
         } else
         {
-            glArchivItem_Map* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
+            auto* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
             ctrlPreviewMinimap* preview = AddPreviewMinimap(70, DrawPoint(560, 40), Extent(220, 220), map);
 
             // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
@@ -304,8 +304,8 @@ void dskHostGame::Resize(const Extent& newSize)
 
     // Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der
     // PreviewMinimap abhängt, welche sich gerade geändert hat.
-    ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(70);
-    ctrlText* text = GetCtrl<ctrlText>(71);
+    auto* preview = GetCtrl<ctrlPreviewMinimap>(70);
+    auto* text = GetCtrl<ctrlText>(71);
     if(preview && text)
     {
         DrawPoint txtPos = text->GetPos();
@@ -370,7 +370,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         group->AddTextButton(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont);
     else
         group->AddTextDeepening(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont, COLOR_YELLOW);
-    ctrlBaseText* text = group->GetCtrl<ctrlBaseText>(1);
+    auto* text = group->GetCtrl<ctrlBaseText>(1);
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)
@@ -641,7 +641,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
 
         case 2: // Starten
         {
-            ctrlTextButton* ready = GetCtrl<ctrlTextButton>(2);
+            auto* ready = GetCtrl<ctrlTextButton>(2);
             if(gameLobby->isHost())
             {
                 SetPlayerReady(localPlayerId_, true);
@@ -679,7 +679,7 @@ void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
 {
     if(ctrl_id != ID_CHAT_INPUT)
         return;
-    ctrlEdit* edit = GetCtrl<ctrlEdit>(ctrl_id);
+    auto* edit = GetCtrl<ctrlEdit>(ctrl_id);
     const std::string msg = edit->GetText();
     edit->SetText("");
     if(gameChat->IsVisible())
@@ -739,8 +739,8 @@ void dskHostGame::FlashGameChat()
 {
     if(!gameChat->IsVisible())
     {
-        Window* tab = GetCtrl<Window>(ID_CHAT_TAB);
-        ctrlButton* bt = tab->GetCtrl<ctrlButton>(TAB_GAMECHAT);
+        auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
+        auto* bt = tab->GetCtrl<ctrlButton>(TAB_GAMECHAT);
         if(!localChatTabAnimId)
             localChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }
@@ -806,7 +806,7 @@ void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const int select
     {
         gameChat->SetVisible(selection == TAB_GAMECHAT);
         lobbyChat->SetVisible(selection == TAB_LOBBYCHAT);
-        Window* tab = GetCtrl<Window>(ID_CHAT_TAB);
+        auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
         tab->GetCtrl<ctrlButton>(selection)->SetTexture(TC_GREEN2);
         if(selection == TAB_GAMECHAT)
         {
@@ -854,13 +854,13 @@ void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
 
 void dskHostGame::ChangeReady(const unsigned player, const bool ready)
 {
-    ctrlCheck* check = GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlCheck>(6);
+    auto* check = GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlCheck>(6);
     if(check)
         check->SetCheck(ready);
 
     if(player == localPlayerId_)
     {
-        ctrlTextButton* start = GetCtrl<ctrlTextButton>(2);
+        auto* start = GetCtrl<ctrlTextButton>(2);
         if(gameLobby->isHost())
             start->SetText(hasCountdown_ ? _("Cancel start") : _("Start game"));
         else
@@ -1040,8 +1040,8 @@ void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
     lobbyChat->AddMessage("", player, ctrlChat::CalcUniqueColor(player), text, COLOR_YELLOW);
     if(!lobbyChat->IsVisible())
     {
-        Window* tab = GetCtrl<Window>(ID_CHAT_TAB);
-        ctrlButton* bt = tab->GetCtrl<ctrlButton>(TAB_LOBBYCHAT);
+        auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
+        auto* bt = tab->GetCtrl<ctrlButton>(TAB_LOBBYCHAT);
         if(!lobbyChatTabAnimId)
             lobbyChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }

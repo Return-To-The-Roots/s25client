@@ -258,11 +258,11 @@ void dskBenchmark::startTest(Test test)
                       BuildingFactory::CreateBuilding(game_->world, bldType, pt, i, distEqual(rng) ? NAT_AFRICANS : NAT_JAPANESE);
                     if(bldType == BLD_BARRACKS)
                     {
-                        nobMilitary* mil = static_cast<nobMilitary*>(bld);
-                        nofPassiveSoldier* sld = new nofPassiveSoldier(pt, i, mil, mil, 0);
+                        auto* mil = static_cast<nobMilitary*>(bld);
+                        auto* sld = new nofPassiveSoldier(pt, i, mil, mil, 0);
                         mil->AddPassiveSoldier(sld);
                     }
-                    nofPassiveWorker* figure = new nofPassiveWorker(Job(getJob(rng)), flagPt, i, nullptr);
+                    auto* figure = new nofPassiveWorker(Job(getJob(rng)), flagPt, i, nullptr);
                     game_->world.AddFigure(flagPt, figure);
                     figure->StartWandering();
                     figure->StartWalking(Direction::fromInt(getDir(rng)));

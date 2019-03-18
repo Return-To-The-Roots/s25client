@@ -72,7 +72,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
         return false;
 
     /// Suche, ob der Treiber dabei ist, den wir wünschen
-    for(std::vector<DriverItem>::iterator it = drivers.begin(); it != drivers.end(); ++it)
+    for(auto it = drivers.begin(); it != drivers.end(); ++it)
     {
         if(it->GetName() == preference)
         {
@@ -132,8 +132,7 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
         return false;
     }
 
-    PDRIVER_GETDRIVERAPIVERSION GetDriverAPIVersion =
-      pto2ptf<PDRIVER_GETDRIVERAPIVERSION>(GetDLLFunction2(dll.get(), "GetDriverAPIVersion"));
+    auto GetDriverAPIVersion = pto2ptf<PDRIVER_GETDRIVERAPIVERSION>(GetDLLFunction2(dll.get(), "GetDriverAPIVersion"));
     if(!GetDriverAPIVersion)
     {
         nameOrError = _("Not a RTTR driver library!");
@@ -145,7 +144,7 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
         return false;
     }
 
-    PDRIVER_GETDRIVERNAME GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>(GetDLLFunction2(dll.get(), "GetDriverName"));
+    auto GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>(GetDLLFunction2(dll.get(), "GetDriverName"));
     std::string createName, freeName;
     if(dt == DT_VIDEO)
     {

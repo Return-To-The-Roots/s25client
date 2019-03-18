@@ -190,7 +190,7 @@ iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")), cs
 void iwLoad::SaveLoad()
 {
     // Server starten
-    ctrlTable* table = GetCtrl<ctrlTable>(0);
+    auto* table = GetCtrl<ctrlTable>(0);
 
     if(!GAMECLIENT.HostGame(csi, table->GetItemText(table->GetSelection(), 4), MAPTYPE_SAVEGAME))
     {

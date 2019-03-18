@@ -105,7 +105,7 @@ uint8_t ObjectGenerator::CreateRandomAnimal(int likelihood)
 
 uint8_t ObjectGenerator::CreateRandomResource(unsigned ratioGold, unsigned ratioIron, unsigned ratioCoal, unsigned ratioGranite)
 {
-    unsigned rnd = (unsigned)config.Rand(ratioGold + ratioIron + ratioCoal + ratioGranite);
+    auto rnd = (unsigned)config.Rand(ratioGold + ratioIron + ratioCoal + ratioGranite);
 
     if(rnd < ratioGold)
         return libsiedler2::R_Gold + config.Rand(8);

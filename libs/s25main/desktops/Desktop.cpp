@@ -90,7 +90,7 @@ void Desktop::SetFpsDisplay(bool show)
 
 void Desktop::UpdateFps(unsigned newFps)
 {
-    ctrlText* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
+    auto* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
     if(fpsDisplay)
         fpsDisplay->SetText(helpers::toString(newFps) + " fps");
     lastFPS_ = newFps;

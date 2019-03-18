@@ -176,7 +176,7 @@ unsigned short BuildingRegister::CalcAverageProductivity() const
     unsigned numBlds = 0;
     for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
     {
-        BuildingType bldType = BuildingType(i);
+        auto bldType = BuildingType(i);
         if(BLD_WORK_DESC[bldType].producedWare == GD_NOTHING)
             continue;
 

@@ -351,7 +351,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             Position curOffset;
             MapPoint pt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
 
-            const noBaseBuilding* no = GetWorld().GetSpecObj<noBaseBuilding>(pt);
+            const auto* no = GetWorld().GetSpecObj<noBaseBuilding>(pt);
             if(!no)
                 continue;
 
@@ -388,7 +388,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         SmallFont->Draw(curPos, (boost::format("(%1% %%)") % p).str(), FontStyle::CENTER | FontStyle::VCENTER, color);
     } else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
     {
-        const nobUsual& n = static_cast<const nobUsual&>(no);
+        const auto& n = static_cast<const nobUsual&>(no);
         std::string text;
         unsigned color = COLOR_0_PERCENT;
 
@@ -604,7 +604,7 @@ void GameWorldView::AddDrawNodeCallback(IDrawNodeCallback* newCallback)
 
 void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
 {
-    std::vector<IDrawNodeCallback*>::iterator itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
+    auto itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
     RTTR_Assert(itPos != drawNodeCallbacks.end());
     drawNodeCallbacks.erase(itPos);
 }

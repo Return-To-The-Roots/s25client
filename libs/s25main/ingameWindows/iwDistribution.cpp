@@ -109,7 +109,7 @@ void iwDistribution::TransmitSettings()
             // Werte der Gruppen auslesen
             for(unsigned j = 0; j < group.entries.size(); ++j, ++distIdx)
             {
-                uint8_t value = static_cast<uint8_t>(tab->GetCtrl<ctrlProgress>(j)->GetPosition());
+                auto value = static_cast<uint8_t>(tab->GetCtrl<ctrlProgress>(j)->GetPosition());
                 newDistribution[distIdx] = value;
             }
         }

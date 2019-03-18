@@ -167,7 +167,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(!ValidateMessages() || !curMsg)
                 return;
-            const DiplomacyPostQuestion* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(curMsg);
+            const auto* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(curMsg);
             if(dcurMsg)
             {
                 // If it is a question about a new contract, tell the other player we denied it
@@ -183,7 +183,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(!ValidateMessages())
                 return;
-            const DiplomacyPostQuestion* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(GetMsg(curMsgId));
+            const auto* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(GetMsg(curMsgId));
             if(dcurMsg)
             {
                 // New contract?
@@ -309,7 +309,7 @@ void iwPostWindow::DisplayPostMessage()
 
 void iwPostWindow::SetMessageText(const std::string& message)
 {
-    ctrlMultiline* text = GetCtrl<ctrlMultiline>(ID_TEXT);
+    auto* text = GetCtrl<ctrlMultiline>(ID_TEXT);
     text->Clear();
     text->AddString(message, COLOR_WINDOWBROWN);
 }

@@ -92,7 +92,7 @@ void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
-                iwDirectIPCreate* servercreate = new iwDirectIPCreate(ServerType::LAN);
+                auto* servercreate = new iwDirectIPCreate(ServerType::LAN);
                 WINDOWMANAGER.Show(servercreate, true);
             }
     }
@@ -122,7 +122,7 @@ void dskLAN::UpdateServerList()
 {
     ReadOpenGames();
 
-    ctrlTable* servertable = GetCtrl<ctrlTable>(ID_tblServer);
+    auto* servertable = GetCtrl<ctrlTable>(ID_tblServer);
 
     unsigned selection = servertable->GetSelection();
     if(selection == 0xFFFF)
@@ -152,15 +152,15 @@ bool dskLAN::ConnectToSelectedGame()
     if(openGames.empty())
         return false;
 
-    ctrlTable* table = GetCtrl<ctrlTable>(ID_tblServer);
-    unsigned selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
+    auto* table = GetCtrl<ctrlTable>(ID_tblServer);
+    auto selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
     if(selection >= openGames.size())
         return false;
 
     GameInfo game = openGames[selection];
     if(game.info.revision == RTTR_Version::GetRevision())
     {
-        iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LAN);
+        auto* connect = new iwDirectIPConnect(ServerType::LAN);
         connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);
         WINDOWMANAGER.Show(connect);
         return true;

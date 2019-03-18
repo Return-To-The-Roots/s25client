@@ -51,7 +51,7 @@ void initGUITests()
 
 MockupVideoDriver* GetVideoDriver()
 {
-    MockupVideoDriver* video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
+    auto* video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
     if(!video)
     {
         initGUITests();

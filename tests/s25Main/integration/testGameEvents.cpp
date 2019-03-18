@@ -167,7 +167,7 @@ unsigned TestLogKill::destroyNum = 0;
 BOOST_AUTO_TEST_CASE(KillList)
 {
     EventManager evMgr(0);
-    TestLogKill* obj = new TestLogKill(evMgr);
+    auto* obj = new TestLogKill(evMgr);
     evMgr.AddEvent(obj, 2);
     // Nothing should happened yet
     evMgr.ExecuteNextGF();

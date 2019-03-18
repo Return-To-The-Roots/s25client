@@ -54,7 +54,7 @@ bool LuaInterfaceGameBase::CheckScriptVersion()
     kaguya::LuaRef func = lua["getRequiredLuaVersion"];
     if(func.type() == LUA_TFUNCTION)
     {
-        const unsigned scriptVersion = func.call<unsigned>();
+        const auto scriptVersion = func.call<unsigned>();
         if(scriptVersion == GetVersion())
             return true;
         else

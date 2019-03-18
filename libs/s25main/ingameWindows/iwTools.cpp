@@ -113,7 +113,7 @@ void iwTools::TransmitSettings()
             const GamePlayer& localPlayer = gwv.GetPlayer();
             for(unsigned i = 0; i < NUM_TOOLS; ++i)
             {
-                int curOrder = static_cast<int>(localPlayer.GetToolsOrderedVisual(i));
+                auto curOrder = static_cast<int>(localPlayer.GetToolsOrderedVisual(i));
                 pendingOrderChanges[i] = helpers::clamp<int>(pendingOrderChanges[i], -curOrder, 100 - curOrder);
             }
         }
@@ -141,7 +141,7 @@ void iwTools::UpdateTexts()
         const GamePlayer& localPlayer = gwv.GetPlayer();
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
         {
-            ctrlBaseText* field = GetCtrl<ctrlBaseText>(200 + i);
+            auto* field = GetCtrl<ctrlBaseText>(200 + i);
             int curOrders = isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i) + pendingOrderChanges[i];
             field->SetText(helpers::toString(curOrders));
         }

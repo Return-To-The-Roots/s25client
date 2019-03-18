@@ -112,7 +112,7 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P) //, *utf::depends_
     this->SuggestPact(2, NON_AGGRESSION_PACT, duration);
     // Suggesting a pact must send a post message to the target player
     BOOST_REQUIRE_EQUAL(postbox2.GetNumMsgs(), 1u);
-    const DiplomacyPostQuestion* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(0));
+    const auto* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(0));
     BOOST_REQUIRE(msg);
     BOOST_REQUIRE_EQUAL(msg->GetPactType(), NON_AGGRESSION_PACT); //-V522
     BOOST_REQUIRE_EQUAL(msg->GetPlayerId(), curPlayer);

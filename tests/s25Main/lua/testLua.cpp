@@ -853,7 +853,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     // Suggest Pact from Lua
     executeLua("player:SuggestPact(0, TREATY_OF_ALLIANCE, DURATION_INFINITE)");
     game->executeAICommands();
-    const DiplomacyPostQuestion* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox->GetMsg(0));
+    const auto* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox->GetMsg(0));
     this->AcceptPact(msg->GetPactId(), TREATY_OF_ALLIANCE, 1);
     BOOST_REQUIRE(!player.IsAttackable(1));
     executeLua("assert(not player:IsAttackable(0))");

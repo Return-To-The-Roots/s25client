@@ -146,7 +146,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     for(unsigned i = 0; i < length2; ++i)
         second_route[i] = this->route[length1 + i];
 
-    RoadSegment* second = new RoadSegment(rt, splitflag, f2, second_route);
+    auto* second = new RoadSegment(rt, splitflag, f2, second_route);
 
     // Eselstraße? Dann prächtige Flagge, da sie ja wieder zwischen Eselstraßen ist
     if(rt == RT_DONKEY)

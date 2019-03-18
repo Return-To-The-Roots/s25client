@@ -133,7 +133,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
                 terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
             } else
             {
-                libsiedler2::ArchivItem_PaletteAnimation& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
+                auto& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
                 std::unique_ptr<libsiedler2::Archiv> textures =
                   LOADER.ExtractAnimatedTexture(*texBmp, cur.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
                 for(unsigned i = 0; i < textures->size(); i++)
@@ -218,7 +218,7 @@ void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& 
 
 void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer& gwv)
 {
-    float shadow = static_cast<float>(gwv.GetNode(pt).shadow);
+    auto shadow = static_cast<float>(gwv.GetNode(pt).shadow);
     float clr = -1.f / (256.f * 256.f) * shadow * shadow + 1.f / 90.f * shadow + 0.38f;
     switch(gwv.GetVisibility(pt))
     {
@@ -810,7 +810,7 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 
         VIDEODRIVER.BindTexture(terrainTextures[t].textures[animationFrame].GetTextureNoCreate());
 
-        for(std::vector<MapTile>::iterator it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
+        for(auto it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
         {
             if(it->posOffset != lastOffset)
             {
@@ -835,7 +835,7 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
             continue;
         VIDEODRIVER.BindTexture(edgeTextures[i]->GetTextureNoCreate());
 
-        for(std::vector<BorderTile>::iterator it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
+        for(auto it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
         {
             if(it->posOffset != lastOffset)
             {
@@ -927,7 +927,7 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
                 endPos.y += totalHeight;
         }
 
-        RoadSegment::RoadType rt = RoadSegment::RoadType(type - 1);
+        auto rt = RoadSegment::RoadType(type - 1);
         // The gfx road type is:
         // Boat for boat roads
         // else Mountain left or right is a mountain terrain
@@ -988,7 +988,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     glColorPointer(3, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].r);
 
     size_t type = 0;
-    for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
+    for(auto itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
     {
         if(itRoad->empty())
             continue;
@@ -996,7 +996,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
         const glArchivItem_Bitmap& texture = *roadTextures[type];
         PointF scaledTexSize = texture.GetSize() / PointF(texture.GetTexSize());
 
-        for(PreparedRoads::value_type::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
+        for(auto it = itRoad->begin(); it != itRoad->end(); ++it)
         {
             RTTR_Assert(it->dir < 3); // begin_end_coords has 3 dir entries
             curVertexData->tx = 0.0f;

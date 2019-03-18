@@ -65,8 +65,7 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
         if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
             return false;
 
-        PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance =
-          pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
+        auto CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
 
         // Instanz erzeugen
         videodriver = CreateVideoInstance(&WINDOWMANAGER);
@@ -101,8 +100,7 @@ void VideoDriverWrapper::UnloadDriver()
 {
     if(loadedFromDll)
     {
-        PDRIVER_FREEVIDEOINSTANCE FreeVideoInstance =
-          pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
+        auto FreeVideoInstance = pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
         if(FreeVideoInstance)
             FreeVideoInstance(videodriver);
         driver_wrapper.Unload();

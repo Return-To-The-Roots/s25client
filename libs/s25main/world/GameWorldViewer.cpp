@@ -81,7 +81,7 @@ unsigned GameWorldViewer::GetNumPlayers() const
 
 unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
 {
-    const nobBaseMilitary* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
+    const auto* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
     // Can we actually attack this bld?
     if(!attacked_building || !attacked_building->IsAttackable(playerId_))
         return 0;
@@ -213,7 +213,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
         {
             if(figure->GetGOT() != GOT_SHIP)
                 continue;
-            noShip* curShip = static_cast<noShip*>(figure);
+            auto* curShip = static_cast<noShip*>(figure);
 
             if(curShip->GetPlayerId() == playerId_ && (curShip->GetPos() == pt || curShip->GetDestinationForCurrentMove() == pt))
             {

@@ -169,7 +169,7 @@ void ctrlScrollBar::Resize(const Extent& newSize)
     Extent btSize = Extent(newSize.x, button_height);
     GetCtrl<ctrlButton>(0)->Resize(btSize);
     // Down button
-    ctrlButton* downButton = GetCtrl<ctrlButton>(1);
+    auto* downButton = GetCtrl<ctrlButton>(1);
     downButton->Resize(btSize);
 
     if(newSize.y >= button_height)

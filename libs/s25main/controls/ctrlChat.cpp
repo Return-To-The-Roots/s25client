@@ -63,7 +63,7 @@ void ctrlChat::Resize(const Extent& newSize)
     const bool x_changed = (GetSize().x != newSize.x && !chat_lines.empty());
     Window::Resize(newSize);
 
-    ctrlScrollBar* scroll = GetCtrl<ctrlScrollBar>(0);
+    auto* scroll = GetCtrl<ctrlScrollBar>(0);
     scroll->SetPos(DrawPoint(newSize.x - SCROLLBAR_WIDTH, 0));
     scroll->Resize(Extent(SCROLLBAR_WIDTH, newSize.y));
 
@@ -228,7 +228,7 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
     WrapLine(raw_chat_lines.size() - 1);
 
     // Scrollbar Bescheid sagen
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
     scrollbar->SetRange(unsigned(chat_lines.size()));
 
     // Waren wir am Ende? Dann mit runterscrollen
@@ -255,7 +255,7 @@ bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-3);
         return true;
     } else
@@ -266,7 +266,7 @@ bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+3);
         return true;
     } else

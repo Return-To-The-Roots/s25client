@@ -117,7 +117,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(GAMECLIENT.IsReplayModeOn())
         return;
-    ctrlList* list = GetCtrl<ctrlList>(0);
+    auto* list = GetCtrl<ctrlList>(0);
     unsigned short auswahl = list->GetSelection();
     unsigned short anzahl = list->GetNumLines();
 
@@ -176,7 +176,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
             // Baureihenfolge vom Spieler kopieren
             GAMECLIENT.visual_settings.build_order = GAMECLIENT.default_settings.build_order;
 
-            ctrlList* list = GetCtrl<ctrlList>(0);
+            auto* list = GetCtrl<ctrlList>(0);
             list->DeleteAllItems();
 
             // Liste füllen

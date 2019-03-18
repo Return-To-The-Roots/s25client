@@ -73,7 +73,7 @@ iwSettings::iwSettings()
 
 iwSettings::~iwSettings()
 {
-    ctrlComboBox* SizeCombo = GetCtrl<ctrlComboBox>(0);
+    auto* SizeCombo = GetCtrl<ctrlComboBox>(0);
     SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection()];
 
     if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())

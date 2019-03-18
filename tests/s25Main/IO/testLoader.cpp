@@ -52,7 +52,7 @@ static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv
             return res;
         } else
         {
-            const libsiedler2::ArchivItem_Text* arTxt = static_cast<const libsiedler2::ArchivItem_Text*>(archive[i]);
+            const auto* arTxt = static_cast<const libsiedler2::ArchivItem_Text*>(archive[i]);
             if(arTxt->getText() != txts[i])
             {
                 boost::test_tools::predicate_result res(false);

@@ -172,7 +172,7 @@ SoundHandle AudioSDL::LoadMusic(const std::string& filepath)
 SoundHandle AudioSDL::LoadMusic(const std::vector<char>& data, const std::string& /*ext*/)
 {
     // Need to copy data as it is used by SDL
-    SoundSDL_Music* handle = new SoundSDL_Music(data);
+    auto* handle = new SoundSDL_Music(data);
     SDL_RWops* rwOps = SDL_RWFromConstMem(&handle->data[0], static_cast<int>(data.size()));
     Mix_Music* music = Mix_LoadMUS_RW(rwOps);
     if(music == nullptr)
@@ -282,12 +282,12 @@ void AudioSDL::DoUnloadSound(SoundDesc& sound)
 {
     if(sound.type_ == SD_EFFECT)
     {
-        SoundSDL_Effect& effect = static_cast<SoundSDL_Effect&>(sound);
+        auto& effect = static_cast<SoundSDL_Effect&>(sound);
         Mix_FreeChunk(effect.sound);
         effect.setInvalid();
     } else if(sound.type_ == SD_MUSIC)
     {
-        SoundSDL_Music& music = static_cast<SoundSDL_Music&>(sound);
+        auto& music = static_cast<SoundSDL_Music&>(sound);
         Mix_FreeMusic(music.music);
         music.setInvalid();
     } else

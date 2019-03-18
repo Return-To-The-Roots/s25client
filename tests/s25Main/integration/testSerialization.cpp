@@ -188,7 +188,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 {
     MapPoint hqPos = world.GetPlayer(0).GetHQPos();
     MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
-    nobUsual* usualBld = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, usualBldPos, 0, NAT_VIKINGS));
+    auto* usualBld = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, usualBldPos, 0, NAT_VIKINGS));
     world.BuildRoad(0, false, world.GetNeighbour(hqPos, Direction::SOUTHEAST), std::vector<Direction>(3, Direction::EAST));
     usualBld->is_working = true;
 
@@ -269,7 +269,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             std::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
             GameWorld& newWorld = sharedGame->world;
             save.sgd.ReadSnapshot(sharedGame);
-            TestEventManager& newEm = static_cast<TestEventManager&>(sharedGame->world.GetEvMgr());
+            auto& newEm = static_cast<TestEventManager&>(sharedGame->world.GetEvMgr());
 
             BOOST_REQUIRE_EQUAL(newWorld.GetSize(), world.GetSize());
             BOOST_REQUIRE_EQUAL(newEm.GetCurrentGF(), em.GetCurrentGF());

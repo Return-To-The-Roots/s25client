@@ -99,7 +99,7 @@ void noShipBuildingSite::MakeBuildStep()
         // Replace me by ship
         GetEvMgr().AddToKillList(this);
         gwg->SetNO(pos, nullptr);
-        noShip* ship = new noShip(pos, player);
+        auto* ship = new noShip(pos, player);
         gwg->AddFigure(pos, ship);
 
         // Schiff registrieren lassen

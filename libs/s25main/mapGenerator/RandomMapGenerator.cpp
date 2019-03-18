@@ -93,7 +93,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
     {
         for(int y = 0; y < map.size.y; y++)
         {
-            double distanceToPlayer = (double)(map.size.x + map.size.y);
+            auto distanceToPlayer = (double)(map.size.x + map.size.y);
             Position tile(x, y);
 
             for(int i = 0; i < players; i++)
@@ -105,12 +105,12 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
             {
                 if(area.IsInArea(tile, distanceToPlayer, map.size))
                 {
-                    const int pr = (int)area.likelyhoodHill;
+                    const auto pr = (int)area.likelyhoodHill;
                     const int maxZ = area.maxElevation;
 
                     if(maxZ > 0 && config.Rand(101) <= pr)
                     {
-                        unsigned z = (unsigned)config.Rand(area.minElevation, maxZ + 1);
+                        auto z = (unsigned)config.Rand(area.minElevation, maxZ + 1);
                         helper.SetHill(map, tile, z);
                     }
                 }
@@ -133,7 +133,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
         // create texture for current height value
         helper.objGen.CreateTexture(map, index, textures[level]);
 
-        double distanceToPlayer = (double)(map.size.x + map.size.y);
+        auto distanceToPlayer = (double)(map.size.x + map.size.y);
 
         for(int i = 0; i < players; i++)
             distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(pt, Position(map.hqPositions[i]), map.size));
@@ -279,7 +279,7 @@ void RandomMapGenerator::SetResources(const MapSettings& settings, Map& map)
 Map* RandomMapGenerator::Create(MapSettings settings)
 {
     settings.Validate();
-    Map* map = new Map(settings.size, settings.name, settings.author);
+    auto* map = new Map(settings.size, settings.name, settings.author);
 
     // configuration of the map settings
     map->type = config.worldDesc.get(settings.type).s2Id;

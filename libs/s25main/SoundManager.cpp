@@ -73,7 +73,7 @@ void SoundManager::WorkingFinished(noBase* const obj)
     if(!SETTINGS.sound.effekte)
         return;
     // Alle Sounds von diesem Objekt stoppen und löschen
-    for(std::list<NOSound>::iterator it = no_sounds.begin(); it != no_sounds.end();)
+    for(auto it = no_sounds.begin(); it != no_sounds.end();)
     {
         if(it->obj == obj)
         {

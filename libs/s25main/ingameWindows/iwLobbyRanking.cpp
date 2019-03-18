@@ -27,7 +27,7 @@
  */
 void iwLobbyRanking::UpdateRankings(const LobbyPlayerList& rankinglist)
 {
-    ctrlTable* rankingtable = GetCtrl<ctrlTable>(0);
+    auto* rankingtable = GetCtrl<ctrlTable>(0);
     bool first = rankingtable->GetNumRows() == 0;
 
     rankingtable->DeleteAllItems();

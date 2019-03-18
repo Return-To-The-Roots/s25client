@@ -368,7 +368,7 @@ void nobHQ::Draw(DrawPoint drawPt)
         const unsigned numSoldiers =
           std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetNumSoldiers());
         DrawPoint flagsPos = drawPt + TROOPS_FLAG_HQ_OFFSET[nation];
-        for(unsigned i = min<unsigned>(numSoldiers, 4); i; --i)
+        for(auto i = min<unsigned>(numSoldiers, 4); i; --i)
         {
             glArchivItem_Bitmap_Player* bitmap =
               LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));

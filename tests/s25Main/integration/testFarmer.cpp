@@ -84,7 +84,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 7)));
     // On or next to grain field is not allowed
     const MapPoint grainFieldPos = world.GetNeighbour2(farmPt, 0);
-    noGrainfield* grainField = new noGrainfield(grainFieldPos);
+    auto* grainField = new noGrainfield(grainFieldPos);
     world.SetNO(grainFieldPos, grainField);
     BOOST_REQUIRE(!farmer->IsPointAvailable(grainFieldPos));
     BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 1)));

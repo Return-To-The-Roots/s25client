@@ -220,7 +220,7 @@ void nobBaseWarehouse::OrderCarrier(noRoadNode& goal, RoadSegment& workplace)
     if(isBoatRequired)
         RTTR_Assert(inventory[GD_BOAT]);
 
-    nofCarrier* carrier = new nofCarrier(isBoatRequired ? nofCarrier::CT_BOAT : nofCarrier::CT_NORMAL, pos, player, &workplace, &goal);
+    auto* carrier = new nofCarrier(isBoatRequired ? nofCarrier::CT_BOAT : nofCarrier::CT_NORMAL, pos, player, &workplace, &goal);
     workplace.setCarrier(0, carrier);
 
     if(!UseFigureAtOnce(carrier, goal))
@@ -271,7 +271,7 @@ nofCarrier* nobBaseWarehouse::OrderDonkey(RoadSegment* road, noRoadNode* const g
     if(!inventory[JOB_PACKDONKEY])
         return nullptr;
 
-    nofCarrier* donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, goal_flag);
+    auto* donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, goal_flag);
     AddLeavingFigure(donkey);
     inventory.real.Remove(JOB_PACKDONKEY);
 
@@ -405,7 +405,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     if(selectedId < NUM_WARE_TYPES)
     {
         // Ware
-        Ware* ware = new Ware(GoodType(selectedId), nullptr, this);
+        auto* ware = new Ware(GoodType(selectedId), nullptr, this);
         noBaseBuilding* wareGoal = gwg->GetPlayer(player).FindClientForWare(ware);
         if(wareGoal != this)
         {
@@ -434,7 +434,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
         nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(Job(selectedId)), true, false);
         if(wh != this)
         {
-            nofPassiveWorker* fig = new nofPassiveWorker(Job(selectedId), pos, player, nullptr);
+            auto* fig = new nofPassiveWorker(Job(selectedId), pos, player, nullptr);
 
             if(wh)
                 fig->GoHome(wh);
@@ -579,7 +579,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
         bool found = false;
 
         // try to find a defender and make him leave the house first
-        for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
+        for(auto it = leave_house.begin(); it != leave_house.end(); ++it)
         {
             if(((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER) || ((*it)->GetGOT() == GOT_NOF_DEFENDER))
             {
@@ -642,7 +642,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
         {
             // Dann Ware raustragen lassen
             Ware* ware = waiting_wares.front();
-            nofWarehouseWorker* worker = new nofWarehouseWorker(pos, player, ware, false);
+            auto* worker = new nofWarehouseWorker(pos, player, ware, false);
             gwg->AddFigure(pos, worker);
             inventory.visual.Remove(ConvertShields(ware->type));
             worker->WalkToGoal();
@@ -686,7 +686,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
         return nullptr;
     }
 
-    Ware* ware = new Ware(good, goal, this);
+    auto* ware = new Ware(good, goal, this);
     inventory.Remove(good);
 
     // Abgeleitete Klasse fragen, ob die irgend etwas besonderes mit dieser Ware anfangen will
@@ -881,7 +881,7 @@ void nobBaseWarehouse::CancelWare(Ware* ware)
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
 void nobBaseWarehouse::CancelFigure(noFigure* figure)
 {
-    std::list<noFigure*>::iterator it = std::find(leave_house.begin(), leave_house.end(), figure);
+    auto it = std::find(leave_house.begin(), leave_house.end(), figure);
     RTTR_Assert(it != leave_house.end()); // TODO: Is this true in all cases? If yes, remove the check below
 
     // Figure aus den Waiting-Wares entfernen
@@ -953,7 +953,7 @@ nofAggressiveDefender* nobBaseWarehouse::SendAggressiveDefender(nofAttacker* att
         return nullptr;
 
     // Dann den Stärksten rausschicken
-    nofAggressiveDefender* soldier = new nofAggressiveDefender(pos, player, this, rank - 1, attacker);
+    auto* soldier = new nofAggressiveDefender(pos, player, this, rank - 1, attacker);
     inventory.real.Remove(SOLDIER_JOBS[rank - 1]);
     AddLeavingFigure(soldier);
 
@@ -1026,7 +1026,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
                 {
                     // diesen Soldaten wollen wir
                     inventory.real.Remove(SOLDIER_JOBS[i]);
-                    nofDefender* soldier = new nofDefender(pos, player, this, i, attacker);
+                    auto* soldier = new nofDefender(pos, player, this, i, attacker);
                     return soldier;
                 }
                 ++r;
@@ -1041,7 +1041,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
                     // bei der visuellen Warenanzahl wieder hinzufügen, da er dann wiederrum von der abgezogen wird, wenn
                     // er rausgeht und es so ins minus rutschen würde
                     inventory.visual.Add(SOLDIER_JOBS[i]);
-                    nofDefender* soldier = new nofDefender(pos, player, this, i, attacker);
+                    auto* soldier = new nofDefender(pos, player, this, i, attacker);
                     return soldier;
                 }
                 ++r;
@@ -1050,13 +1050,13 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
     }
 
     // Kein Soldat gefunden, als letzten Hoffnung die Soldaten nehmen, die ggf in der Warteschlange noch hängen
-    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
+    for(auto it = leave_house.begin(); it != leave_house.end(); ++it)
     {
         nofSoldier* soldier;
         // Soldat?
         if((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER)
         {
-            nofAggressiveDefender* aggDefender = static_cast<nofAggressiveDefender*>(*it);
+            auto* aggDefender = static_cast<nofAggressiveDefender*>(*it);
             aggDefender->NeedForHomeDefence();
             soldier = aggDefender;
         } else if((*it)->GetGOT() == GOT_NOF_PASSIVESOLDIER)
@@ -1067,7 +1067,7 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
         leave_house.erase(it); // Only allowed in the loop as we return now
         soldier->Abrogate();
 
-        nofDefender* defender = new nofDefender(pos, player, this, soldier->GetRank(), attacker);
+        auto* defender = new nofDefender(pos, player, this, soldier->GetRank(), attacker);
         soldier->Destroy();
         delete soldier;
         return defender;
@@ -1446,7 +1446,7 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, Job job, const unsi
     nofTradeDonkey* last = nullptr;
     for(unsigned i = 0; i < count; ++i)
     {
-        nofTradeDonkey* next = new nofTradeDonkey(pos, player, gt, job);
+        auto* next = new nofTradeDonkey(pos, player, gt, job);
 
         if(last)
             last->SetSuccessor(next);

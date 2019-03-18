@@ -55,7 +55,7 @@ void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 void nofTradeLeader::GoalReached()
 {
     noBase* nob = gwg->GetNO(goalPos);
-    nobBaseWarehouse* targetWarehouse = checkedCast<nobBaseWarehouse*>(nob);
+    auto* targetWarehouse = checkedCast<nobBaseWarehouse*>(nob);
     if(successor)
     {
         unsigned amountWares = 0;

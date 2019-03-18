@@ -140,7 +140,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     {
         RTTR_FOREACH_PT(MapPoint, gwb_.GetSize())
         {
-            noRoadNode* const node = gwb_.GetSpecObj<noRoadNode>(pt);
+            auto* const node = gwb_.GetSpecObj<noRoadNode>(pt);
             if(node)
                 node->last_visit = 0;
         }

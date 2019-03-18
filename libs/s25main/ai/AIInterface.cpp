@@ -44,7 +44,7 @@ struct Param_RoadPath
 
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
 {
-    const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
+    const auto* prp = static_cast<const Param_RoadPath*>(param);
     return makePathConditionRoad(gwb, prp->boat_road).IsNodeOk(pt);
 }
 
@@ -53,7 +53,7 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
 {
     if(!IsPointOK_RoadPath(gwb, pt, dir, param))
         return false;
-    const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
+    const auto* prp = static_cast<const Param_RoadPath*>(param);
     if(!prp->boat_road && gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) == BQ_NOTHING)
         return false;
 

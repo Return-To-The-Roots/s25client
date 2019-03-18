@@ -176,7 +176,7 @@ void BuildJob::TryToBuild()
 void BuildJob::BuildMainRoad()
 {
     AIInterface& aiInterface = aijh.GetInterface();
-    const noBuildingSite* bld = aiInterface.gwb.GetSpecObj<noBuildingSite>(target);
+    const auto* bld = aiInterface.gwb.GetSpecObj<noBuildingSite>(target);
     if(!bld)
     {
         // We don't have a building site where it should be. Maybe the BQ has changed due to another object next to it
@@ -263,7 +263,7 @@ void BuildJob::BuildMainRoad()
 
 void BuildJob::TryToBuildSecondaryRoad()
 {
-    const noFlag* houseFlag = aijh.GetWorld().GetSpecObj<noFlag>(aijh.GetWorld().GetNeighbour(target, Direction::SOUTHEAST));
+    const auto* houseFlag = aijh.GetWorld().GetSpecObj<noFlag>(aijh.GetWorld().GetNeighbour(target, Direction::SOUTHEAST));
 
     if(!houseFlag)
     {
@@ -295,21 +295,21 @@ void EventJob::ExecuteJob() // for now it is assumed that all these will be fini
     {
         case AIEvent::BuildingConquered:
         {
-            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
+            auto* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleNewMilitaryBuilingOccupied(evb->GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::BuildingLost:
         {
-            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
+            auto* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleMilitaryBuilingLost(evb->GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::LostLand:
         {
-            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
+            auto* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleLostLand(evb->GetPos());
             state = JOB_FINISHED;
         }
@@ -317,77 +317,77 @@ void EventJob::ExecuteJob() // for now it is assumed that all these will be fini
         case AIEvent::BuildingDestroyed:
         {
             // todo maybe do sth about it?
-            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
+            auto* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleBuilingDestroyed(evb->GetPos(), evb->GetBuildingType());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::NoMoreResourcesReachable:
         {
-            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
+            auto* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleNoMoreResourcesReachable(evb->GetPos(), evb->GetBuildingType());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::BorderChanged:
         {
-            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
+            auto* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleBorderChanged(evb->GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::BuildingFinished:
         {
-            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
+            auto* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleBuildingFinished(evb->GetPos(), evb->GetBuildingType());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::ExpeditionWaiting:
         {
-            AIEvent::Location* lvb = checkedCast<AIEvent::Location*>(ev);
+            auto* lvb = checkedCast<AIEvent::Location*>(ev);
             aijh.HandleExpedition(lvb->GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::TreeChopped:
         {
-            AIEvent::Location* lvb = checkedCast<AIEvent::Location*>(ev);
+            auto* lvb = checkedCast<AIEvent::Location*>(ev);
             aijh.HandleTreeChopped(lvb->GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::NewColonyFounded:
         {
-            AIEvent::Location* lvb = checkedCast<AIEvent::Location*>(ev);
+            auto* lvb = checkedCast<AIEvent::Location*>(ev);
             aijh.HandleNewColonyFounded(lvb->GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::ShipBuilt:
         {
-            AIEvent::Location* lvb = checkedCast<AIEvent::Location*>(ev);
+            auto* lvb = checkedCast<AIEvent::Location*>(ev);
             aijh.HandleShipBuilt(lvb->GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::RoadConstructionComplete:
         {
-            AIEvent::Direction* dvb = checkedCast<AIEvent::Direction*>(ev);
+            auto* dvb = checkedCast<AIEvent::Direction*>(ev);
             aijh.HandleRoadConstructionComplete(dvb->GetPos(), dvb->GetDirection());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::RoadConstructionFailed:
         {
-            AIEvent::Direction* dvb = checkedCast<AIEvent::Direction*>(ev);
+            auto* dvb = checkedCast<AIEvent::Direction*>(ev);
             aijh.HandleRoadConstructionFailed(dvb->GetPos(), dvb->GetDirection());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::LuaConstructionOrder:
         {
-            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
+            auto* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.ExecuteLuaConstructionOrder(evb->GetPos(), evb->GetBuildingType(), true);
             state = JOB_FINISHED;
         }
@@ -413,7 +413,7 @@ void ConnectJob::ExecuteJob()
         return;
 
     const GameWorldBase& world = aijh.GetWorld();
-    const noFlag* flag = world.GetSpecObj<noFlag>(flagPos);
+    const auto* flag = world.GetSpecObj<noFlag>(flagPos);
 
     if(!flag)
     {

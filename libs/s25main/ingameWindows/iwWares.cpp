@@ -192,14 +192,14 @@ void iwWares::Msg_PaintBefore()
     if(curPage_ != pagePeople && curPage_ != pageWares)
         return;
 
-    ctrlGroup* group = GetCtrl<ctrlGroup>(100 + curPage_);
+    auto* group = GetCtrl<ctrlGroup>(100 + curPage_);
     if(group)
     {
         unsigned count = (curPage_ == pageWares) ? 36 : 32;
 
         for(unsigned i = 0; i < count; ++i)
         {
-            ctrlVarText* text = group->GetCtrl<ctrlVarText>(600 + i);
+            auto* text = group->GetCtrl<ctrlVarText>(600 + i);
             if(text)
                 text->SetTextColor((((curPage_ == pageWares) ? inventory.goods[i] : inventory.people[i]) == 0) ? COLOR_RED : COLOR_YELLOW);
         }
@@ -214,7 +214,7 @@ void iwWares::Msg_PaintBefore()
 void iwWares::SetPage(unsigned page)
 {
     // alte Page verstecken
-    ctrlGroup* group = GetCtrl<ctrlGroup>(100 + curPage_);
+    auto* group = GetCtrl<ctrlGroup>(100 + curPage_);
     if(group)
         group->SetVisible(false);
 

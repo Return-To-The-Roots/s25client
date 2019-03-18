@@ -72,7 +72,7 @@ void Animation::execFrame(Window* parent, unsigned remainingTime)
 {
     RTTR_Assert(curFrame_ < numFrames_);
     RTTR_Assert(remainingTime < frameRate_);
-    Window* element = parent->GetCtrl<Window>(elementId_);
+    auto* element = parent->GetCtrl<Window>(elementId_);
     // Element missing -> Done
     if(!element)
     {

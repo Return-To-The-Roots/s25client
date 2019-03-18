@@ -167,7 +167,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 // Special handling for warehouses
                 if(BuildingProperties::IsWareHouse(building_type))
                 {
-                    nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
+                    auto* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
                     wh->AddFigure(this);
                     gwg->RemoveFigure(pos, this);

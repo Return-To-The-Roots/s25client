@@ -176,7 +176,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
     DrawBaseBuilding(drawPt);
 
     // (max 4) Besatzungs-Fähnchen zeichnen
-    unsigned flags = min<unsigned>(troops.size() + this->leave_house.size(), 4);
+    auto flags = min<unsigned>(troops.size() + this->leave_house.size(), 4);
 
     for(unsigned i = 0; i < flags; ++i)
     {
@@ -341,7 +341,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
                 newFrontierDistance = DIST_MID;
             } else if(building->GetGOT() == GOT_NOB_MILITARY)
             {
-                nobMilitary* mil = static_cast<nobMilitary*>(building);
+                auto* mil = static_cast<nobMilitary*>(building);
                 if(distance < BASE_ATTACKING_DISTANCE + (mil->GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
                 {
                     newFrontierDistance = DIST_MID;
@@ -616,7 +616,7 @@ bool nobMilitary::FreePlaceAtFlag()
 void nobMilitary::GotWorker(Job /*job*/, noFigure* worker)
 {
     RTTR_Assert(dynamic_cast<nofPassiveSoldier*>(worker));
-    nofPassiveSoldier* soldier = static_cast<nofPassiveSoldier*>(worker);
+    auto* soldier = static_cast<nofPassiveSoldier*>(worker);
     RTTR_Assert(soldier->GetPlayer() == player);
     ordered_troops.insert(soldier);
 }
@@ -640,7 +640,7 @@ void nobMilitary::AddActiveSoldier(nofActiveSoldier* soldier)
 {
     // aktiver Soldat, eingetroffen werden --> dieser muss erst in einen passiven Soldaten
     // umoperiert werden (neu erzeugt und alter zerstört) werden
-    nofPassiveSoldier* passive_soldier = new nofPassiveSoldier(*soldier);
+    auto* passive_soldier = new nofPassiveSoldier(*soldier);
 
     // neuen Soldaten einhängen
     AddPassiveSoldier(passive_soldier);
@@ -707,7 +707,7 @@ void nobMilitary::SoldierLost(nofSoldier* soldier)
         ordered_troops.erase(static_cast<nofPassiveSoldier*>(soldier));
     } else
     {
-        nofActiveSoldier* actSoldier = dynamic_cast<nofActiveSoldier*>(soldier);
+        auto* actSoldier = dynamic_cast<nofActiveSoldier*>(soldier);
         RTTR_Assert(actSoldier);
         RTTR_Assert(helpers::contains(troops_on_mission, actSoldier));
         troops_on_mission.remove(actSoldier);
@@ -773,7 +773,7 @@ nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker* attacker
     if(soldier)
     {
         // neuen aggressiven Verteidiger daraus erzeugen
-        nofAggressiveDefender* defender = new nofAggressiveDefender(soldier, attacker);
+        auto* defender = new nofAggressiveDefender(soldier, attacker);
         SoldierOnMission(soldier, defender);
         // alten passiven Soldaten vernichten
         destroyAndDelete(soldier);
@@ -882,7 +882,7 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
     }
 
     // neuen Verteidiger erzeugen
-    nofDefender* defender = new nofDefender(soldier, attacker);
+    auto* defender = new nofDefender(soldier, attacker);
 
     // aus der Liste entfernen
     troops.erase(soldier);
@@ -966,7 +966,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     }
 
     // Send all allied aggressors home (we own the building now!)
-    for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end();)
+    for(auto it = aggressors.begin(); it != aggressors.end();)
     {
         nofAttacker* attacker = *it;
         // dont remove attackers owned by players not allied with the new owner!
@@ -1046,8 +1046,7 @@ void nobMilitary::NeedOccupyingTroops()
         }
 
         // If necessary look for further soldiers who are not standing around the building
-        for(std::list<nofAttacker*>::iterator it = aggressors.begin();
-            it != aggressors.end() && needed_soldiers > currentSoldiers + far_away_capturers.size();)
+        for(auto it = aggressors.begin(); it != aggressors.end() && needed_soldiers > currentSoldiers + far_away_capturers.size();)
         {
             nofAttacker* attacker = *it;
 
@@ -1068,7 +1067,7 @@ void nobMilitary::NeedOccupyingTroops()
     // At this point agressors contains only soldiers, that cannot capture the building (from other player or without a path to flag),
     // the one(s) that is currently walking to capture the building and possibly some more from other (non-allied) players
     // So send those home, who cannot capture the building
-    for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end();)
+    for(auto it = aggressors.begin(); it != aggressors.end();)
     {
         nofAttacker* attacker = *it;
         // Nicht gerade Soldaten löschen, die das Gebäude noch einnehmen!
@@ -1099,7 +1098,7 @@ void nobMilitary::SetCoinsAllowed(const bool enabled)
     else
     {
         // send coins back if just deactivated
-        for(std::list<Ware*>::iterator it = ordered_coins.begin(); it != ordered_coins.end();)
+        for(auto it = ordered_coins.begin(); it != ordered_coins.end();)
         {
             // But only those, that are not just Being carried in
             if((*it)->GetLocation() != this)

@@ -77,8 +77,8 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResul
 
 void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 {
-    ctrlTimer* timer = GetCtrl<ctrlTimer>(1);
-    ctrlText* text = GetCtrl<ctrlText>(10 + position);
+    auto* timer = GetCtrl<ctrlTimer>(1);
+    auto* text = GetCtrl<ctrlText>(10 + position);
     int interval = 50;
 
     timer->Stop();

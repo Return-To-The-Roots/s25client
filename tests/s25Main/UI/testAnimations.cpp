@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(AnimationSetterGetter)
 BOOST_AUTO_TEST_CASE(EnsureTiming)
 {
     // Animation with 5 frames and 10 ms each
-    TestAnimation* anim = new TestAnimation(*this, bt, 5, 10, Animation::RPT_None);
+    auto* anim = new TestAnimation(*this, bt, 5, 10, Animation::RPT_None);
     unsigned animId = animMgr.addAnimation(anim);
     // Any start time
     unsigned time = 100;
@@ -367,7 +367,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
 BOOST_AUTO_TEST_CASE(SkipFrames)
 {
     // Animation with 15 frames and 10 ms each
-    TestAnimation* anim = new TestAnimation(*this, bt, 15, 10, Animation::RPT_None);
+    auto* anim = new TestAnimation(*this, bt, 15, 10, Animation::RPT_None);
     unsigned animId = animMgr.addAnimation(anim);
     // Init with any start time
     unsigned time = 100;
@@ -410,7 +410,7 @@ BOOST_AUTO_TEST_CASE(SkipFrames)
 BOOST_AUTO_TEST_CASE(Oscillate)
 {
     // Animation with 6 frames and 10 steps each
-    TestAnimation* anim = new TestAnimation(*this, bt, 6, 10, Animation::RPT_Oscillate);
+    auto* anim = new TestAnimation(*this, bt, 6, 10, Animation::RPT_Oscillate);
     animMgr.addAnimation(anim);
     // Init with any start time
     unsigned time = 100;
@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE(Oscillate)
 BOOST_AUTO_TEST_CASE(OscillateOnce)
 {
     // Animation with 6 frames and 10 steps each
-    TestAnimation* anim = new TestAnimation(*this, bt, 6, 10, Animation::RPT_OscillateOnce);
+    auto* anim = new TestAnimation(*this, bt, 6, 10, Animation::RPT_OscillateOnce);
     animMgr.addAnimation(anim);
     // Init with any start time
     unsigned time = 100;
@@ -528,7 +528,7 @@ BOOST_AUTO_TEST_CASE(OscillateOnce)
 BOOST_AUTO_TEST_CASE(Repeat)
 {
     // Animation with 6 frames and 10 steps each
-    TestAnimation* anim = new TestAnimation(*this, bt, 6, 10, Animation::RPT_Repeat);
+    auto* anim = new TestAnimation(*this, bt, 6, 10, Animation::RPT_Repeat);
     animMgr.addAnimation(anim);
     // Init with any start time
     unsigned time = 100;
@@ -570,7 +570,7 @@ BOOST_AUTO_TEST_CASE(Repeat)
 BOOST_AUTO_TEST_CASE(LinearInterpolationFactor)
 {
     // 11 frames with 100ms
-    TestAnimation* anim = new TestAnimation(*this, bt, 11, 100, Animation::RPT_None);
+    auto* anim = new TestAnimation(*this, bt, 11, 100, Animation::RPT_None);
     animMgr.addAnimation(anim);
     // Init with any start time
     unsigned time = 100;
@@ -640,7 +640,7 @@ BOOST_AUTO_TEST_CASE(MoveAni)
 BOOST_AUTO_TEST_CASE(MoveAniScale)
 {
     MockupVideoDriver* video = uiHelper::GetVideoDriver();
-    Desktop* dsk = new Desktop(nullptr);
+    auto* dsk = new Desktop(nullptr);
     WINDOWMANAGER.Switch(dsk);
     WINDOWMANAGER.Draw();
     bt = dsk->AddTextButton(0, DrawPoint(10, 20), Extent(100, 150), TC_RED1, "", NormalFont);

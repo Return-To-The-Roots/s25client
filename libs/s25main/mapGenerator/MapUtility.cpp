@@ -226,7 +226,7 @@ void MapUtility::SetStones(Map& map, const Position& center, double radius)
 {
     int cx = center.x;
     int cy = center.y;
-    int r = (int)radius;
+    auto r = (int)radius;
 
     for(int x = cx - r; x < cx + r; x++)
     {

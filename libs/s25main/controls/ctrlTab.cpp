@@ -145,7 +145,7 @@ void ctrlTab::Draw_()
 
     Draw3D(Rect(GetDrawPos() + DrawPoint(0, 32), Extent(GetSize().x, 13)), TC_GREEN1, true);
 
-    ctrlButton* button = GetCtrl<ctrlButton>(tab_selection);
+    auto* button = GetCtrl<ctrlButton>(tab_selection);
     if(button)
         button->Draw();
 }

@@ -31,8 +31,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
 {
     MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
     MapPoint whPos(flagPos.x + 5, flagPos.y);
-    nobBaseWarehouse* wh =
-      static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_ROMANS));
+    auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_ROMANS));
     Inventory inv;
     inv.Add(JOB_HELPER, 1);
     wh->AddGoods(inv, true);
@@ -79,7 +78,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
     // Request people and wares
     this->SetInventorySetting(whPos, GD_WOOD, EInventorySetting::COLLECT);
     this->SetInventorySetting(whPos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
-    noFlag* flag = world.GetSpecObj<noFlag>(flagPos);
+    auto* flag = world.GetSpecObj<noFlag>(flagPos);
     RTTR_EXEC_TILL(200, flag->GetNumWares() > 0);
     // Destroy wh -> Cancel wares and figures
     this->DestroyFlag(whFlagPos);

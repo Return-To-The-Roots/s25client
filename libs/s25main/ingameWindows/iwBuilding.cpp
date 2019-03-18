@@ -193,7 +193,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                 else
                     GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 196));
 
-                ctrlText* text = GetCtrl<ctrlText>(10);
+                auto* text = GetCtrl<ctrlText>(10);
                 if(building->IsProductionDisabledVirtual() && building->HasWorker())
                     text->SetText(_("(House unoccupied)"));
                 else if(building->HasWorker())
@@ -211,7 +211,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             if(gcFactory.SetShipYardMode(building->GetPos(), static_cast<const nobShipYard*>(building)->GetMode() == nobShipYard::BOATS))
             {
                 // Auch optisch den Button umstellen
-                ctrlImageButton* button = GetCtrl<ctrlImageButton>(11);
+                auto* button = GetCtrl<ctrlImageButton>(11);
                 if(button->GetImage() == LOADER.GetImageN("io", IODAT_BOAT_ID))
                     button->SetImage(LOADER.GetImageN("io", IODAT_SHIP_ID));
                 else
@@ -224,7 +224,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobUsual*>& buildings =
               gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetBuildings(building->GetBuildingType());
             // go through list once we get to current building -> open window for the next one and go to next location
-            for(std::list<nobUsual*>::const_iterator it = buildings.begin(); it != buildings.end(); ++it)
+            for(auto it = buildings.begin(); it != buildings.end(); ++it)
             {
                 if((*it)->GetPos() == building->GetPos()) // got to current building in the list?
                 {
@@ -234,7 +234,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                     if(it == buildings.end()) // was last entry in list -> goto first
                         it = buildings.begin();
                     gwv.MoveToMapPt((*it)->GetPos());
-                    iwBuilding* nextscrn = new iwBuilding(gwv, gcFactory, *it);
+                    auto* nextscrn = new iwBuilding(gwv, gcFactory, *it);
                     nextscrn->SetPos(GetPos());
                     WINDOWMANAGER.Show(nextscrn);
                     break;

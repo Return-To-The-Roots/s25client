@@ -173,7 +173,7 @@ void Window::ActivateControls(bool activate)
 void Window::LockRegion(Window* window, const Rect& rect)
 {
     lockedAreas_[window] = rect;
-    std::vector<Window*>::iterator it = std::find(tofreeAreas_.begin(), tofreeAreas_.end(), window);
+    auto it = std::find(tofreeAreas_.begin(), tofreeAreas_.end(), window);
     if(it != tofreeAreas_.end())
         tofreeAreas_.erase(it);
 }
@@ -205,7 +205,7 @@ bool Window::IsMessageRelayAllowed() const
 
 void Window::DeleteCtrl(unsigned id)
 {
-    std::map<unsigned, Window*>::iterator it = childIdToWnd_.find(id);
+    auto it = childIdToWnd_.find(id);
 
     if(it == childIdToWnd_.end())
         return;

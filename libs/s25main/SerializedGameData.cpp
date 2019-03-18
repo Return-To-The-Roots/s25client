@@ -399,7 +399,7 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
 FOWObject* SerializedGameData::PopFOWObject()
 {
     // Typ auslesen
-    FOW_Type type = FOW_Type(PopUnsignedChar());
+    auto type = FOW_Type(PopUnsignedChar());
 
     // Kein Objekt?
     if(type == FOW_NOTHING)
@@ -490,7 +490,7 @@ GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
 {
     RTTR_Assert(isReading);
     RTTR_Assert(obj_id <= GameObject::GetObjIDCounter());
-    std::map<unsigned, GameObject*>::const_iterator foundObj = readObjects.find(obj_id);
+    auto foundObj = readObjects.find(obj_id);
     if(foundObj == readObjects.end())
         return nullptr;
     else

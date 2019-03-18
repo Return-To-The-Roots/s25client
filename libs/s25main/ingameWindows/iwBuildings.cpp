@@ -149,7 +149,7 @@ void iwBuildings::GoToFirstMatching(BuildingType bldType, const std::list<T_Buil
         if(bld->GetBuildingType() == bldType)
         {
             gwv.MoveToMapPt(bld->GetPos());
-            T_Window* nextscrn = new T_Window(gwv, gcFactory, static_cast<T_Building*>(bld));
+            auto* nextscrn = new T_Window(gwv, gcFactory, static_cast<T_Building*>(bld));
             nextscrn->SetPos(GetPos());
             WINDOWMANAGER.Show(nextscrn);
             return;

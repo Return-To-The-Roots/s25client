@@ -27,7 +27,7 @@ void AddonList::hideGui(Window* window, unsigned id) const
 {
     Addon::hideGui(window, id);
 
-    ctrlComboBox* combo = window->GetCtrl<ctrlComboBox>(id + 2);
+    auto* combo = window->GetCtrl<ctrlComboBox>(id + 2);
     if(combo)
         combo->SetVisible(false);
 }
@@ -37,7 +37,7 @@ void AddonList::createGui(Window* window, unsigned id, unsigned short& y, bool r
     Addon::createGui(window, id, y, readonly, status);
     DrawPoint cbPos(430, y);
 
-    ctrlComboBox* combo = window->GetCtrl<ctrlComboBox>(id + 2);
+    auto* combo = window->GetCtrl<ctrlComboBox>(id + 2);
     if(!combo)
     {
         combo = window->AddComboBox(id + 2, DrawPoint(0, 0), Extent(220, 20), TC_GREY, NormalFont, 100, readonly);
@@ -55,7 +55,7 @@ void AddonList::createGui(Window* window, unsigned id, unsigned short& y, bool r
 
 void AddonList::setGuiStatus(Window* window, unsigned id, unsigned status) const
 {
-    ctrlComboBox* combo = window->GetCtrl<ctrlComboBox>(id + 2);
+    auto* combo = window->GetCtrl<ctrlComboBox>(id + 2);
 
     if(combo)
         combo->SetSelection(status);
@@ -63,7 +63,7 @@ void AddonList::setGuiStatus(Window* window, unsigned id, unsigned status) const
 
 unsigned AddonList::getGuiStatus(Window* window, unsigned id, bool& failed) const
 {
-    ctrlComboBox* combo = window->GetCtrl<ctrlComboBox>(id + 2);
+    auto* combo = window->GetCtrl<ctrlComboBox>(id + 2);
     if(!combo)
     {
         failed = true;

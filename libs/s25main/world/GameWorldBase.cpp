@@ -446,7 +446,7 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
         if(targetPt != harborPt && GetGGS().getSelection(AddonId::SEA_ATTACK) == 1)
         {
             // Does an enemy harbor exist at current harbor spot? -> Can't attack through this harbor spot
-            const nobHarborBuilding* hb = GetSpecObj<nobHarborBuilding>(harborPt);
+            const auto* hb = GetSpecObj<nobHarborBuilding>(harborPt);
             if(hb && GetPlayer(player_attacker).IsAttackable(hb->GetPlayer()))
                 continue;
         }
@@ -507,7 +507,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
         if(targetPt != harborPt && GetGGS().getSelection(AddonId::SEA_ATTACK) == 1)
         {
             // Does an enemy harbor exist at current harbor spot? -> Can't attack through this harbor spot
-            const nobHarborBuilding* hb = GetSpecObj<nobHarborBuilding>(harborPt);
+            const auto* hb = GetSpecObj<nobHarborBuilding>(harborPt);
             if(hb && GetPlayer(player_attacker).IsAttackable(hb->GetPlayer()))
                 continue;
         }
@@ -621,7 +621,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
     if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
         return attackers;
     // Do we have an attackble military building?
-    const nobBaseMilitary* milBld = GetSpecObj<nobBaseMilitary>(pt);
+    const auto* milBld = GetSpecObj<nobBaseMilitary>(pt);
     if(!milBld || !milBld->IsAttackable(player_attacker))
         return attackers;
     std::vector<bool> use_seas(GetNumSeas());
@@ -656,7 +656,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
         for(auto& itBld : tmp)
         {
             // Check if the building was already inserted
-            std::vector<nobHarborBuilding::SeaAttackerBuilding>::iterator oldBldIt =
+            auto oldBldIt =
               std::find_if(buildings.begin(), buildings.end(), nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld.building));
             if(oldBldIt == buildings.end())
             {

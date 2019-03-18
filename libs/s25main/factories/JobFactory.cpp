@@ -97,7 +97,7 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
                 return new nofWellguy(pt, player, static_cast<nobBaseWarehouse*>(goal));
             else if(goal->GetGOT() == GOT_NOB_USUAL)
             {
-                nobUsual* goalBld = static_cast<nobUsual*>(goal);
+                auto* goalBld = static_cast<nobUsual*>(goal);
                 if(goalBld->GetBuildingType() == BLD_WELL)
                     return new nofWellguy(pt, player, goalBld);
                 else if(goalBld->GetBuildingType() == BLD_CATAPULT)

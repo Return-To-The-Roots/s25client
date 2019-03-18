@@ -25,7 +25,7 @@
 void AddonBool::hideGui(Window* window, unsigned id) const
 {
     Addon::hideGui(window, id);
-    ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
+    auto* check = window->GetCtrl<ctrlCheck>(id + 2);
     if(check)
         check->SetVisible(false);
 }
@@ -35,7 +35,7 @@ void AddonBool::createGui(Window* window, unsigned id, unsigned short& y, bool r
     Addon::createGui(window, id, y, readonly, status);
     DrawPoint cbPos(430, y);
 
-    ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
+    auto* check = window->GetCtrl<ctrlCheck>(id + 2);
     if(!check)
     {
         check = window->AddCheckBox(id + 2, DrawPoint(0, 0), Extent(220, 20), TC_GREY, _("Use"), NormalFont, readonly);
@@ -50,7 +50,7 @@ void AddonBool::createGui(Window* window, unsigned id, unsigned short& y, bool r
 
 void AddonBool::setGuiStatus(Window* window, unsigned id, unsigned status) const
 {
-    ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
+    auto* check = window->GetCtrl<ctrlCheck>(id + 2);
 
     if(check)
         check->SetCheck((status != 0));
@@ -58,7 +58,7 @@ void AddonBool::setGuiStatus(Window* window, unsigned id, unsigned status) const
 
 unsigned AddonBool::getGuiStatus(Window* window, unsigned id, bool& failed) const
 {
-    ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
+    auto* check = window->GetCtrl<ctrlCheck>(id + 2);
     if(!check)
     {
         failed = true;

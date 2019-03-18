@@ -31,7 +31,7 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
     // Aktuellen ausgewählten Button wieder normal machen
     if(this->selection_ != 0xFFFF)
     {
-        ctrlButton* button = GetCtrl<ctrlButton>(this->selection_);
+        auto* button = GetCtrl<ctrlButton>(this->selection_);
         RTTR_Assert(button);
         switch(select_type)
         {
@@ -44,7 +44,7 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
     // Neuen Button auswählen
     if(selection != 0xFFFF)
     {
-        ctrlButton* button = GetCtrl<ctrlButton>(selection);
+        auto* button = GetCtrl<ctrlButton>(selection);
         RTTR_Assert(button);
         switch(select_type)
         {

@@ -155,13 +155,13 @@ const Addon* GlobalGameSettings::getAddon(unsigned nr) const
 
 bool GlobalGameSettings::isEnabled(AddonId id) const
 {
-    AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
+    auto it = std::find(addons.begin(), addons.end(), id);
     return it != addons.end() && it->status != it->addon->getDefaultStatus();
 }
 
 unsigned GlobalGameSettings::getSelection(AddonId id) const
 {
-    AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
+    auto it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
         return 0;
     return it->status;
@@ -187,7 +187,7 @@ void GlobalGameSettings::LoadSettings()
 {
     resetAddons();
 
-    for(std::map<unsigned, unsigned>::iterator it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
+    for(auto it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
         setSelection((AddonId::type_)it->first, it->second);
 }
 
@@ -257,7 +257,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
 void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
 {
-    AddonContainer::iterator it = std::find(addons.begin(), addons.end(), id);
+    auto it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
         LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % id;
     else

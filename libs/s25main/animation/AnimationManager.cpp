@@ -36,7 +36,7 @@ AnimationManager::~AnimationManager()
 
 void AnimationManager::update(unsigned time)
 {
-    for(AnimationMap::iterator it = animations_.begin(); it != animations_.end(); /* no inc */)
+    for(auto it = animations_.begin(); it != animations_.end(); /* no inc */)
     {
         it->second->update(time, parent_);
         if(it->second->isFinished())
@@ -76,7 +76,7 @@ Animation* AnimationManager::getAnimation(unsigned animId)
 {
     if(!animId)
         return nullptr;
-    AnimationMap::iterator it = animations_.find(animId);
+    auto it = animations_.find(animId);
     return it == animations_.end() ? nullptr : it->second;
 }
 
@@ -121,7 +121,7 @@ void AnimationManager::finishElementAnimations(unsigned elementId, bool finishIm
 
 void AnimationManager::removeAnimation(unsigned animId)
 {
-    AnimationMap::iterator it = animations_.find(animId);
+    auto it = animations_.find(animId);
     if(it != animations_.end())
     {
         delete it->second;

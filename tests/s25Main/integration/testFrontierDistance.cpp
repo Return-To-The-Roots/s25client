@@ -330,13 +330,13 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 
     // p1 s building, which should cause a frontier distance "near"
     MapPoint p1Near(middle + 5, 15);
-    nobMilitary* milBld1 =
+    auto* milBld1 =
       dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Near, p1.GetPlayerId(), NAT_ROMANS));
 
     // p0 s building, should be near, like p1 s but, will be far cause p1Far cant be reached (patch is longer then 40 units).
     // It will override the NEAR-Distance from P1Near, when evaluating P1Far
     MapPoint p0Near(middle - 5, 15);
-    nobMilitary* milBld0 =
+    auto* milBld0 =
       dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p0Near, p0.GetPlayerId(), NAT_ROMANS));
 
     nobMilitary::FrontierDistance distance0 = milBld0->GetFrontierDistance();

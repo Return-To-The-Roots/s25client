@@ -49,7 +49,7 @@ void ctrlList::SetSelection(int selection)
 
 bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     mouseover = GetItemFromPos(mc.pos);
     // Wenn Maus in der Liste
@@ -68,7 +68,7 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
 
 bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     auto itemIdx = GetItemFromPos(mc.pos);
     if(itemIdx >= 0)
@@ -84,7 +84,7 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
 
 bool ctrlList::Msg_RightDown(const MouseCoords& mc)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     auto itemIdx = GetItemFromPos(mc.pos);
     if(itemIdx >= 0)
@@ -100,7 +100,7 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
 
 bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
     if(IsPointInRect(mc.GetPos(), GetListDrawArea()))
@@ -121,7 +121,7 @@ bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
     // If mouse in list or scrollbar
     if(IsPointInRect(mc.GetPos(), GetFullDrawArea()))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-1);
         return true;
     }
@@ -134,7 +134,7 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
     // If mouse in list
     if(IsPointInRect(mc.GetPos(), GetFullDrawArea()))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+1);
         return true;
     }
@@ -228,7 +228,7 @@ const std::string& ctrlList::GetItemText(unsigned short line) const
  */
 void ctrlList::Resize(const Extent& newSize)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
     scrollbar->SetPos(DrawPoint(newSize.x - 20, 0));
     scrollbar->Resize(Extent(20, newSize.y));
 

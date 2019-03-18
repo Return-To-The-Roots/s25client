@@ -173,7 +173,7 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
 {
     // Note: We check the state after a Draw call as this is when a user notices it
 
-    TestIngameWnd* wnd = new TestIngameWnd(CGI_NEXT + 42);
+    auto* wnd = new TestIngameWnd(CGI_NEXT + 42);
     MOCK_EXPECT(wnd->Draw_).once();
     WINDOWMANAGER.Show(wnd);
     WINDOWMANAGER.Draw();
@@ -189,7 +189,7 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     // Opening a window with the same ID closes the old and frees both
     wnd = new TestIngameWnd(CGI_NEXT + 42);
     WINDOWMANAGER.Show(wnd);
-    TestIngameWnd* wnd2 = new TestIngameWnd(wnd->GetID());
+    auto* wnd2 = new TestIngameWnd(wnd->GetID());
     WINDOWMANAGER.Show(wnd2);
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd);
@@ -256,14 +256,14 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.Show(wnd2);
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    TestIngameWnd* wnd3 = new TestIngameWnd(CGI_MISSION_STATEMENT, true);
+    auto* wnd3 = new TestIngameWnd(CGI_MISSION_STATEMENT, true);
     MOCK_EXPECT(wnd->Draw_).once();
     MOCK_EXPECT(wnd2->Draw_).once();
     MOCK_EXPECT(wnd3->Draw_).once();
     WINDOWMANAGER.Show(wnd3);
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    TestIngameWnd* wnd4 = new TestIngameWnd(CGI_MSGBOX);
+    auto* wnd4 = new TestIngameWnd(CGI_MSGBOX);
     MOCK_EXPECT(wnd->Draw_).once();
     MOCK_EXPECT(wnd2->Draw_).once();
     MOCK_EXPECT(wnd3->Draw_).once();
@@ -271,7 +271,7 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.Show(wnd4);
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    TestIngameWnd* wnd5 = new TestIngameWnd(CGI_NEXT + 42, true);
+    auto* wnd5 = new TestIngameWnd(CGI_NEXT + 42, true);
     MOCK_EXPECT(wnd->Draw_).once();
     MOCK_EXPECT(wnd2->Draw_).once();
     MOCK_EXPECT(wnd3->Draw_).once();
@@ -280,7 +280,7 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.Show(wnd5);
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    TestIngameWnd* wnd6 = new TestIngameWnd(CGI_NEXT + 43);
+    auto* wnd6 = new TestIngameWnd(CGI_NEXT + 43);
     MOCK_EXPECT(wnd->Draw_).once();
     MOCK_EXPECT(wnd2->Draw_).once();
     MOCK_EXPECT(wnd3->Draw_).once();

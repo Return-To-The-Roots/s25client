@@ -83,7 +83,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
         if((curSize.x * curSize.y >= total) || maxTex)
         {
             // texture packer
-            glTexturePackerNode* root = new glTexturePackerNode(curSize);
+            auto* root = new glTexturePackerNode(curSize);
 
             // list to store bitmaps we could not fit in our current texture
             std::vector<glSmartBitmap*> left;

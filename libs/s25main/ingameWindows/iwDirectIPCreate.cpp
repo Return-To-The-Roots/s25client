@@ -85,9 +85,9 @@ void iwDirectIPCreate::Msg_EditChange(const unsigned /*ctrl_id*/)
  */
 void iwDirectIPCreate::Msg_EditEnter(const unsigned ctrl_id)
 {
-    ctrlEdit* name = GetCtrl<ctrlEdit>(1);
-    ctrlEdit* port = GetCtrl<ctrlEdit>(3);
-    ctrlEdit* pass = GetCtrl<ctrlEdit>(5);
+    auto* name = GetCtrl<ctrlEdit>(1);
+    auto* port = GetCtrl<ctrlEdit>(3);
+    auto* pass = GetCtrl<ctrlEdit>(5);
 
     switch(ctrl_id)
     {
@@ -135,9 +135,9 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 7: // "Starten"
         {
-            ctrlEdit* edtName = GetCtrl<ctrlEdit>(1);
-            ctrlEdit* edtPort = GetCtrl<ctrlEdit>(3);
-            ctrlEdit* edtPw = GetCtrl<ctrlEdit>(5);
+            auto* edtName = GetCtrl<ctrlEdit>(1);
+            auto* edtPort = GetCtrl<ctrlEdit>(3);
+            auto* edtPw = GetCtrl<ctrlEdit>(5);
 
             if(edtName->GetText().empty())
             {
@@ -189,9 +189,9 @@ void iwDirectIPCreate::SetText(const std::string& text, unsigned color, bool but
  */
 void iwDirectIPCreate::LC_Status_Error(const std::string& error)
 {
-    ctrlEdit* name = GetCtrl<ctrlEdit>(1);
-    ctrlEdit* port = GetCtrl<ctrlEdit>(3);
-    ctrlEdit* pass = GetCtrl<ctrlEdit>(5);
+    auto* name = GetCtrl<ctrlEdit>(1);
+    auto* port = GetCtrl<ctrlEdit>(3);
+    auto* pass = GetCtrl<ctrlEdit>(5);
 
     name->SetFocus(true);
     port->SetFocus(false);

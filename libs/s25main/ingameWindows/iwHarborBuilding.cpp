@@ -55,7 +55,7 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
  */
 void iwHarborBuilding::AdjustExpeditionButton(bool flip)
 {
-    ctrlImageButton* button = GetCtrl<ctrlGroup>(grpIdExpedition)->GetCtrl<ctrlImageButton>(1);
+    auto* button = GetCtrl<ctrlGroup>(grpIdExpedition)->GetCtrl<ctrlImageButton>(1);
 
     // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
     // Jeweils umgekehrte Farbe nehmen, da die änderung ja spielerisch noch nicht
@@ -82,7 +82,7 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
  */
 void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
 {
-    ctrlImageButton* button = GetCtrl<ctrlGroup>(grpIdExpedition)->GetCtrl<ctrlImageButton>(3);
+    auto* button = GetCtrl<ctrlGroup>(grpIdExpedition)->GetCtrl<ctrlImageButton>(3);
 
     // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
     // Jeweils umgekehrte Farbe nehmen, da die änderung ja spielerisch noch nicht

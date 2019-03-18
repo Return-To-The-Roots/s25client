@@ -211,7 +211,7 @@ void nofActiveSoldier::ExpelEnemies()
             // Don't disturb hedgehogs and rabbits!
             if(fieldFigure->GetType() == NOP_FIGURE)
             {
-                noFigure* fig = static_cast<noFigure*>(fieldFigure);
+                auto* fig = static_cast<noFigure*>(fieldFigure);
                 // The people have to be either on the point itself or they have to walk there
                 if(fig->GetPos() == pos)
                     figures.push_back(fig);
@@ -270,7 +270,7 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     {
         for(noBase* object : gwg->GetFigures(*itPos))
         {
-            nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(object);
+            auto* soldier = dynamic_cast<nofActiveSoldier*>(object);
             if(!soldier || soldier->GetPlayer() == excludedOwner)
                 continue;
             if(soldier->IsReadyForFight() && !gwg->GetPlayer(soldier->GetPlayer()).IsAlly(player))

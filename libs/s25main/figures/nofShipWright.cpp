@@ -286,7 +286,7 @@ void nofShipWright::WorkFinished()
     if(gwg->GetGOT(pos) != GOT_SHIPBUILDINGSITE)
     {
         // Ggf Zierobjekte löschen
-        noBase* obj = gwg->GetSpecObj<noBase>(pos);
+        auto* obj = gwg->GetSpecObj<noBase>(pos);
         if(obj)
         {
             if(obj->GetType() != NOP_ENVIRONMENT)

@@ -351,7 +351,7 @@ void noShip::HandleEvent(const unsigned id)
                 if(figures.empty())
                     break;
 
-                nofAttacker* attacker = static_cast<nofAttacker*>(figures.front());
+                auto* attacker = static_cast<nofAttacker*>(figures.front());
                 // Evtl. ist ein Angreifer schon fertig und wieder an Board gegangen
                 // der darf dann natürlich nicht noch einmal raus, sonst kann die schöne Reise
                 // böse enden

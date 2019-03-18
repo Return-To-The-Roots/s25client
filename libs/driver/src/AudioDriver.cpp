@@ -55,7 +55,7 @@ void AudioDriver::UnloadSound(AudioDriver& driver, SoundDesc* sound)
 {
     if(sound->isValid())
     {
-        std::vector<SoundDesc*>::iterator it = std::find(driver.sounds_.begin(), driver.sounds_.end(), sound);
+        auto it = std::find(driver.sounds_.begin(), driver.sounds_.end(), sound);
         RTTR_Assert(it != driver.sounds_.end());
         driver.DoUnloadSound(*sound);
         RTTR_Assert(!sound->isValid());

@@ -165,7 +165,7 @@ void noFigure::ActAtFirst()
                 gwg->RemoveFigure(pos, this);
                 RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
                 // Reset goal before re-adding to wh
-                nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(goal_);
+                auto* wh = static_cast<nobBaseWarehouse*>(goal_);
                 goal_ = nullptr;
                 cur_rs = nullptr;
                 wh->AddFigure(this);
@@ -205,12 +205,12 @@ DrawPoint noFigure::CalcFigurRelative() const
     if(GetCurMoveDir() == Direction::NORTHWEST
        && (gwg->GetNO(targetPt)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(targetPt)->GetType() == NOP_BUILDING))
     {
-        noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(targetPt);
+        auto* const bld = gwg->GetSpecObj<noBaseBuilding>(targetPt);
         nextPt += bld->GetDoorPoint();
     } else if(GetCurMoveDir() == Direction::SOUTHEAST
               && (gwg->GetNO(pos)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(pos)->GetType() == NOP_BUILDING))
     {
-        noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(pos);
+        auto* const bld = gwg->GetSpecObj<noBaseBuilding>(pos);
         curPt += bld->GetDoorPoint();
         offset = bld->GetDoorPoint();
     }
@@ -286,7 +286,7 @@ void noFigure::WalkToGoal()
         if(GetGOT() == GOT_NOF_CARRIER && fs == FS_GOTOGOAL)
         {
             RTTR_Assert(dynamic_cast<nofCarrier*>(this));
-            nofCarrier* carrier = static_cast<nofCarrier*>(this);
+            auto* carrier = static_cast<nofCarrier*>(this);
             noRoadNode* flag = carrier->GetFirstFlag();
             if(flag && flag->GetPos() == pos)
                 reachedGoal = true;
@@ -324,7 +324,7 @@ void noFigure::WalkToGoal()
         {
             MapPoint next_harbor;
             // Neuen Weg berechnen
-            noRoadNode* const curRoadNode = gwg->GetSpecObj<noRoadNode>(pos);
+            auto* const curRoadNode = gwg->GetSpecObj<noRoadNode>(pos);
             unsigned char route = curRoadNode ? gwg->FindHumanPathOnRoads(*curRoadNode, *goal_, nullptr, &next_harbor) : 0xFF;
             // Kein Weg zum Ziel... nächstes Lagerhaus suchen
             if(route == 0xFF)

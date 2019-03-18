@@ -56,13 +56,13 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         // immer von Flagge ZU Gebäude (!)
         std::vector<Direction> route(1, Direction::NORTHWEST);
         // Straße zuweisen
-        RoadSegment* rs = new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
+        auto* rs = new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
         gwg->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NORTHWEST, rs); // der Flagge
         SetRoute(Direction::SOUTHEAST, rs);                                      // dem Gebäude
     } else
     {
         // vorhandene Straße der Flagge nutzen
-        noFlag* flag = gwg->GetSpecObj<noFlag>(flagPt);
+        auto* flag = gwg->GetSpecObj<noFlag>(flagPt);
 
         RTTR_Assert(flag->GetRoute(Direction::NORTHWEST));
         SetRoute(Direction::SOUTHEAST, flag->GetRoute(Direction::NORTHWEST));
@@ -127,7 +127,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                 if((!which && boards > 0) || (which && stones > 0))
                 {
                     // Ware erzeugen
-                    Ware* ware = new Ware(goods[which], nullptr, flag);
+                    auto* ware = new Ware(goods[which], nullptr, flag);
                     // Inventur anpassen
                     gwg->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden

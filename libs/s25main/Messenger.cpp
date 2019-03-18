@@ -37,7 +37,7 @@ void Messenger::Draw()
 {
     const unsigned curTime = VIDEODRIVER.GetTickCount();
     DrawPoint textPos(20, 100);
-    for(std::list<Messenger::Msg>::iterator it = messages.begin(); it != messages.end(); textPos.y += LargeFont->getHeight())
+    for(auto it = messages.begin(); it != messages.end(); textPos.y += LargeFont->getHeight())
     {
         unsigned diff = curTime - it->starttime;
         if(diff > 20000)

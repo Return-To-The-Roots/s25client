@@ -127,7 +127,7 @@ void iwDiplomacy::Msg_PaintBefore()
         // Farben der Bündnis-Buttons setzen, je nachdem wie der Status ist
 
         // Existiert der Button auch?
-        ctrlImageButton* button = GetCtrl<ctrlImageButton>(300 + i);
+        auto* button = GetCtrl<ctrlImageButton>(300 + i);
         // Bündnisvertrag
         if(button)
             // Farbe je nach Bündnisstatus setzen
@@ -139,7 +139,7 @@ void iwDiplomacy::Msg_PaintBefore()
             button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(NON_AGGRESSION_PACT, i)]);
 
         // Ggf. Ping aktualisieren
-        if(ctrlTextDeepening* pingfield = GetCtrl<ctrlTextDeepening>(200 + i))
+        if(auto* pingfield = GetCtrl<ctrlTextDeepening>(200 + i))
             pingfield->SetText(helpers::toString(gwv.GetWorld().GetPlayer(i).ping));
 
         // Verbleibende Zeit der Bündnisse in den Text-Ctrls anzeigen
@@ -172,7 +172,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
     // Bündnisverträge
     if(ctrl_id >= 300 && ctrl_id < 400)
     {
-        unsigned char playerId = static_cast<unsigned char>(ctrl_id - 300);
+        auto playerId = static_cast<unsigned char>(ctrl_id - 300);
         // Noch kein Bündnis abgeschlossen?
         if(gwv.GetPlayer().GetPactState(TREATY_OF_ALLIANCE, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
@@ -184,7 +184,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
     // Nichtangriffspakte
     if(ctrl_id >= 400 && ctrl_id < 500)
     {
-        unsigned char playerId = static_cast<unsigned char>(ctrl_id - 400);
+        auto playerId = static_cast<unsigned char>(ctrl_id - 400);
         // Noch kein Bündnis abgeschlossen?
         if(gwv.GetPlayer().GetPactState(NON_AGGRESSION_PACT, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen

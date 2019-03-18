@@ -154,7 +154,7 @@ void nofBuildingWorker::WorkingReady()
         if(flag->GetNumWares() < 8)
         {
             // Ware erzeugen
-            Ware* real_ware = new Ware(ware, 0, flag);
+            auto* real_ware = new Ware(ware, 0, flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
             GoodType ware_type = ConvertShields(real_ware->type);
             gwg->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);

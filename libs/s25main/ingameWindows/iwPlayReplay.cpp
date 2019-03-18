@@ -78,7 +78,7 @@ void iwPlayReplay::PopulateTable()
 {
     static bool loadedOnce = false;
 
-    ctrlTable* table = GetCtrl<ctrlTable>(0);
+    auto* table = GetCtrl<ctrlTable>(0);
     unsigned short sortCol = table->GetSortColumn();
     if(sortCol == 0xFFFF)
         sortCol = 0;
@@ -132,7 +132,7 @@ void iwPlayReplay::PopulateTable()
     // Erst einmal nach Dateiname sortieren
     table->SortRows(sortCol, &sortDir);
 
-    ctrlTextButton* btDelInvalid = GetCtrl<ctrlTextButton>(5);
+    auto* btDelInvalid = GetCtrl<ctrlTextButton>(5);
     if(numInvalid == 0)
         btDelInvalid->SetVisible(false);
     else
@@ -154,7 +154,7 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
             break;
         case 3:
         {
-            ctrlTable* table = GetCtrl<ctrlTable>(0);
+            auto* table = GetCtrl<ctrlTable>(0);
             if(table->GetSelection() < table->GetNumRows())
                 WINDOWMANAGER.Show(new iwMsgbox(_("Delete selected"), _("Are you sure you want to remove the selected replay?"), this,
                                                 MSB_YESNO, MSB_QUESTIONRED, 2));
@@ -180,7 +180,7 @@ void iwPlayReplay::StartReplay()
     LOADER.GetImageN("resource", 33)->DrawFull(VIDEODRIVER.GetMousePos() - DrawPoint(0, 40));
     VIDEODRIVER.SwapBuffers();
 
-    ctrlTable* table = GetCtrl<ctrlTable>(0);
+    auto* table = GetCtrl<ctrlTable>(0);
     if(table->GetSelection() < table->GetNumRows())
     {
         SwitchOnStart switchOnStart;
@@ -220,7 +220,7 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         PopulateTable();
     } else if(msgbox_id == 2 && mbr == MSR_YES)
     {
-        ctrlTable* table = GetCtrl<ctrlTable>(0);
+        auto* table = GetCtrl<ctrlTable>(0);
         if(table->GetSelection() < table->GetNumRows())
         {
             boost::system::error_code ec;

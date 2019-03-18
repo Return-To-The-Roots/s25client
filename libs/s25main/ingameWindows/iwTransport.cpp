@@ -116,7 +116,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 1: // Standardbelegung
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             GAMECLIENT.visual_settings.transport_order = GAMECLIENT.default_settings.transport_order;
 
@@ -134,7 +134,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 2: // ganz hoch
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz oben sind, gehts nicht weiter höher
             while(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
@@ -153,7 +153,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 3: // hoch
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz oben sind, gehts nicht weiter höher
             if(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
@@ -172,7 +172,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 4: // runter
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz unten sind, gehts nicht weiter runter
             if(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
@@ -191,7 +191,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 5: // ganz runter
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz unten sind, gehts nicht weiter runter
             while(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
@@ -225,7 +225,7 @@ void iwTransport::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+    auto* group = GetCtrl<ctrlOptionGroup>(6);
 
     // Einstellungen festlegen
     for(unsigned char i = 0; i < 14; ++i)

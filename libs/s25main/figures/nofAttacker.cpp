@@ -249,7 +249,7 @@ void nofAttacker::Walked()
                     if(ship_obj_id)
                         CancelAtShip();
                     // Gebäude einnehmen
-                    nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+                    auto* goal = static_cast<nobMilitary*>(attacked_goal);
                     goal->Capture(player);
                     // This is the new home
                     building = attacked_goal;
@@ -590,7 +590,7 @@ void nofAttacker::ReachedDestination()
         {
             state = STATE_ATTACKING_CAPTURINGNEXT;
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
-            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            auto* goal = static_cast<nobMilitary*>(attacked_goal);
             RTTR_Assert(goal->IsFarAwayCapturer(this));
             // Start walking first so the flag is free
             StartWalking(Direction::NORTHWEST);
@@ -663,7 +663,7 @@ void nofAttacker::ReachedDestination()
             // Building already captured? -> Then we might be a far-away-capturer
             // -> Tell the building, that we are here
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
-            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            auto* goal = static_cast<nobMilitary*>(attacked_goal);
             if(goal->IsFarAwayCapturer(this))
                 goal->FarAwayCapturerReachedGoal(this);
         }
@@ -742,7 +742,7 @@ void nofAttacker::AttackedGoalDestroyed()
     else if(state == STATE_SEAATTACKING_WAITINHARBOR)
     {
         // We don't need to wait anymore, target was destroyed
-        nobHarborBuilding* harbor = gwg->GetSpecObj<nobHarborBuilding>(harborPos);
+        auto* harbor = gwg->GetSpecObj<nobHarborBuilding>(harborPos);
         RTTR_Assert(harbor);
         // go home
         goal_ = building;
@@ -837,7 +837,7 @@ void nofAttacker::CapturingWalking()
         if(BuildingProperties::IsMilitary(attacked_goal->GetBuildingType()))
         {
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
-            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            auto* goal = static_cast<nobMilitary*>(attacked_goal);
             // If we are still a far-away-capturer at this point, then the building belongs to us and capturing was already finished
             if(!goal->IsFarAwayCapturer(this))
             {
@@ -867,7 +867,7 @@ void nofAttacker::CapturingWalking()
             // Wenn noch das Ziel existiert (könnte ja zeitgleich abgebrannt worden sein)
             if(attacked_goal)
             {
-                nobMilitary* attackedBld = static_cast<nobMilitary*>(attacked_goal);
+                auto* attackedBld = static_cast<nobMilitary*>(attacked_goal);
                 RemoveFromAttackedGoal();
                 // Evtl. neue Besatzer rufen
                 RTTR_Assert(attackedBld->GetPlayer() == player);
@@ -1079,7 +1079,7 @@ void nofAttacker::CancelAtShip()
     {
         if(figure->GetObjId() == ship_obj_id)
         {
-            noShip* ship = static_cast<noShip*>(figure);
+            auto* ship = static_cast<noShip*>(figure);
             ship->SeaAttackerWishesNoReturn();
             break;
         }

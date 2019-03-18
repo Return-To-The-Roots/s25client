@@ -140,7 +140,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 /// Aktualisiert die Addons, die angezeigt werden sollen
 void iwAddons::UpdateView(const unsigned short selection)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
     unsigned short y = 90;
     unsigned short numAddonsInCurCategory = 0;
     for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
@@ -179,7 +179,7 @@ void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection
     {
         case 5: // richtige Kategorie anzeigen
         {
-            ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
+            auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
             scrollbar->SetScrollPos(0);
             UpdateView(selection);
         }
@@ -192,20 +192,20 @@ void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection
  */
 void iwAddons::Msg_ScrollChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
-    ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(5);
+    auto* optiongroup = GetCtrl<ctrlOptionGroup>(5);
     UpdateView(optiongroup->GetSelection());
 }
 
 bool iwAddons::Msg_WheelUp(const MouseCoords& /*mc*/)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
     scrollbar->Scroll(-2);
     return true;
 }
 
 bool iwAddons::Msg_WheelDown(const MouseCoords& /*mc*/)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
     scrollbar->Scroll(+2);
     return true;
 }

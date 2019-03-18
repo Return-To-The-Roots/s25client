@@ -123,7 +123,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             for(unsigned z = 0; z < numPeopleInDir; ++z)
             {
                 // Job erzeugen
-                nofPassiveWorker* figure = new nofPassiveWorker(Job(iJob), pos, player, nullptr);
+                auto* figure = new nofPassiveWorker(Job(iJob), pos, player, nullptr);
                 // Auf die Map setzen
                 gwg->AddFigure(pos, figure);
                 // Losrumirren in die jeweilige Richtung

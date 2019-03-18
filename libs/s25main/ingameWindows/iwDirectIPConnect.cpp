@@ -90,9 +90,9 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
     {
         case 1:
         {
-            ctrlEdit* host = GetCtrl<ctrlEdit>(1);
-            ctrlEdit* port = GetCtrl<ctrlEdit>(3);
-            ctrlEdit* pass = GetCtrl<ctrlEdit>(5);
+            auto* host = GetCtrl<ctrlEdit>(1);
+            auto* port = GetCtrl<ctrlEdit>(3);
+            auto* pass = GetCtrl<ctrlEdit>(5);
             host->SetFocus(false);
             port->SetFocus(true);
             pass->SetFocus(false);
@@ -100,9 +100,9 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
         break;
         case 3:
         {
-            ctrlEdit* host = GetCtrl<ctrlEdit>(1);
-            ctrlEdit* port = GetCtrl<ctrlEdit>(3);
-            ctrlEdit* pass = GetCtrl<ctrlEdit>(5);
+            auto* host = GetCtrl<ctrlEdit>(1);
+            auto* port = GetCtrl<ctrlEdit>(3);
+            auto* pass = GetCtrl<ctrlEdit>(5);
             host->SetFocus(false);
             port->SetFocus(false);
             pass->SetFocus(true);
@@ -120,9 +120,9 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 7: // "Verbinden"
         {
-            ctrlEdit* edtHost = GetCtrl<ctrlEdit>(1);
-            ctrlEdit* edtPort = GetCtrl<ctrlEdit>(3);
-            ctrlEdit* edtPw = GetCtrl<ctrlEdit>(5);
+            auto* edtHost = GetCtrl<ctrlEdit>(1);
+            auto* edtPort = GetCtrl<ctrlEdit>(3);
+            auto* edtPw = GetCtrl<ctrlEdit>(5);
             boost::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
             if(!port)
             {
@@ -182,7 +182,7 @@ void iwDirectIPConnect::SetStatus(const std::string& text, unsigned color)
  */
 void iwDirectIPConnect::SetHost(const std::string& hostIp)
 {
-    ctrlEdit* host = GetCtrl<ctrlEdit>(1);
+    auto* host = GetCtrl<ctrlEdit>(1);
     host->SetText(hostIp);
 }
 
@@ -191,7 +191,7 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
     SetHost(hostOrIp);
     SetPort(port);
     GetCtrl<ctrlOptionGroup>(12)->SetSelection(isIPv6 ? 1 : 0, true);
-    ctrlButton* btConnect = GetCtrl<ctrlButton>(7);
+    auto* btConnect = GetCtrl<ctrlButton>(7);
     VIDEODRIVER.SetMousePos(btConnect->GetDrawPos() + DrawPoint(btConnect->GetSize()) / 2);
     if(!hasPwd)
         Msg_ButtonClick(7);
