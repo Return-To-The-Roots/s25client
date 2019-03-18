@@ -45,7 +45,7 @@ public:
     /// liefert den Wert eines Feldes.
     const std::string& GetItemText(unsigned short row, unsigned short column) const;
     /// sortiert die Zeilen.
-    void SortRows(int column, bool* direction = nullptr);
+    void SortRows(int column, const bool* direction = nullptr);
     int GetSortColumn() const { return sort_column; }
     bool GetSortDirection() const { return sort_direction; }
     unsigned short GetNumRows() const { return static_cast<unsigned short>(rows.size()); }

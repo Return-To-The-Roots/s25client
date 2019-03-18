@@ -148,7 +148,7 @@ public:
     TestLogKill(EventManager& em) : em(em) {}
 
     static unsigned killNum, destroyNum;
-    ~TestLogKill() { killNum++; }
+    ~TestLogKill() override { killNum++; }
     void HandleEvent(unsigned /*evId*/) override
     {
         BOOST_REQUIRE(!em.IsObjectInKillList(*this));

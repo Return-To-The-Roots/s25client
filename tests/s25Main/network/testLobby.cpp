@@ -93,7 +93,7 @@ namespace {
         {
             LOBBYCLIENT.AddListener(this);
         }
-        ~MockLobbyInterface()
+        ~MockLobbyInterface() override
         {
             LOBBYCLIENT.RemoveListener(this);
         }

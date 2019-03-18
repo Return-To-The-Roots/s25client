@@ -486,7 +486,7 @@ public:
     typedef WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height> Parent;
     using Parent::world;
 
-    virtual GameWorldGame& GetWorld() override { return world; }
+    GameWorldGame& GetWorld() override { return world; }
 
     nobHarborBuilding& createHarbor(unsigned hbPosId)
     {

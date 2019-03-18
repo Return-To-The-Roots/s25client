@@ -172,7 +172,7 @@ struct StoreChat : public ClientInterface
         GAMECLIENT.SetInterface(this);
     }
 
-    ~StoreChat() { GAMECLIENT.RemoveInterface(this); }
+    ~StoreChat() override { GAMECLIENT.RemoveInterface(this); }
 
     void Clear()
     {

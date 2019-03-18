@@ -201,7 +201,7 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  *                         @p true  - A-Z,
  *                         @p false - Z-A
  */
-void ctrlTable::SortRows(int column, bool* direction)
+void ctrlTable::SortRows(int column, const bool* direction)
 {
     if(columns.empty())
         return;
