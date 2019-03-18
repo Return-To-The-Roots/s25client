@@ -71,26 +71,26 @@ void World::Unload()
         }
     }
 
-    for(std::set<RoadSegment*>::iterator it = roadsegments.begin(); it != roadsegments.end(); ++it)
-        delete(*it);
+    for(auto roadsegment : roadsegments)
+        delete roadsegment;
 
     // Objekte vernichten
-    for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    for(auto& node : nodes)
     {
-        deletePtr(it->obj);
+        deletePtr(node.obj);
 
-        for(unsigned z = 0; z < it->fow.size(); ++z)
+        for(unsigned z = 0; z < node.fow.size(); ++z)
         {
-            deletePtr(it->fow[z].object);
+            deletePtr(node.fow[z].object);
         }
     }
 
     // Figuren vernichten
-    for(std::vector<MapNode>::iterator itNode = nodes.begin(); itNode != nodes.end(); ++itNode)
+    for(auto& node : nodes)
     {
-        std::list<noBase*>& nodeFigures = itNode->figures;
-        for(std::list<noBase*>::iterator it = nodeFigures.begin(); it != nodeFigures.end(); ++it)
-            delete(*it);
+        std::list<noBase*>& nodeFigures = node.figures;
+        for(auto& nodeFigure : nodeFigures)
+            delete nodeFigure;
 
         nodeFigures.clear();
     }

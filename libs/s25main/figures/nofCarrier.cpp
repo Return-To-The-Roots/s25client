@@ -124,8 +124,8 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
         shore_path.resize(sgd.PopUnsignedInt());
-        for(std::vector<Direction>::iterator it = shore_path.begin(); it != shore_path.end(); ++it)
-            *it = Direction::fromInt(sgd.PopUnsignedChar());
+        for(auto& it : shore_path)
+            it = Direction::fromInt(sgd.PopUnsignedChar());
     }
 }
 
@@ -146,8 +146,8 @@ void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
         sgd.PushUnsignedInt(shore_path.size());
-        for(std::vector<Direction>::const_iterator it = shore_path.begin(); it != shore_path.end(); ++it)
-            sgd.PushUnsignedChar(it->toUInt());
+        for(auto it : shore_path)
+            sgd.PushUnsignedChar(it.toUInt());
     }
 }
 

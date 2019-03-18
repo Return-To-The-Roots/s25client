@@ -299,8 +299,8 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
     for(; curPlayer < 2; curPlayer++)
     {
         Distributions inDist;
-        for(unsigned i = 0; i < inDist.size(); i++)
-            inDist[i] = rand();
+        for(unsigned char& i : inDist)
+            i = rand();
         this->ChangeDistribution(inDist);
 
         bool orderType = rand() % 2 == 0;
@@ -320,8 +320,8 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
         this->ChangeMilitary(militarySettings);
 
         ToolSettings toolPrios;
-        for(unsigned i = 0; i < toolPrios.size(); ++i)
-            toolPrios[i] = rand() % 11;
+        for(unsigned char& toolPrio : toolPrios)
+            toolPrio = rand() % 11;
         this->ChangeTools(toolPrios);
 
         const GamePlayer& player = world.GetPlayer(curPlayer);
@@ -864,8 +864,8 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     Inventory goods;
 
     // Add enough soldiers per rank
-    for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
-        goods.Add(SOLDIER_JOBS[i], 50);
+    for(auto i : SOLDIER_JOBS)
+        goods.Add(i, 50);
     wh->AddGoods(goods, true); //-V522
 
     // Use more

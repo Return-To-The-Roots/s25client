@@ -109,14 +109,14 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         polygon[i] += MapPoint(0, 0);
     }
 
-    for(int i = 0; i < 8; ++i)
+    for(const auto& i : polygon)
     {
         // check the whole area
         RTTR_FOREACH_PT(MapPoint, worldSize)
         {
             // Result for this particular point
             bool result = helpers::contains(results, pt);
-            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(worldSize, polygon[i], pt), result);
+            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(worldSize, i, pt), result);
         }
     }
 
@@ -176,12 +176,12 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         for(int x = 0; x <= 3; x++)
             borderPts += MapPoint(x + 11, y), MapPoint(x + 16, y);
     }
-    for(unsigned i = 0; i < rectAreas.size(); i++)
+    for(const auto& rectArea : rectAreas)
     {
         // Those must be outside
         for(MapPoint pt : outsidePts)
         {
-            BOOST_REQUIRE(!TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt));
+            BOOST_REQUIRE(!TerritoryRegion::IsPointValid(worldSize, rectArea, pt));
         }
     }
     // Border points are unspecified, but must be consistently either inside or outside

@@ -111,9 +111,9 @@ void iwMilitaryBuilding::Draw_()
 
     // Soldaten zeichnen
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
-    for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it)
+    for(auto soldier : soldiers)
     {
-        LOADER.GetMapImageN(2321 + (*it)->GetRank())->DrawFull(curTroopsPos);
+        LOADER.GetMapImageN(2321 + soldier->GetRank())->DrawFull(curTroopsPos);
         curTroopsPos.x += 22;
     }
 
@@ -126,11 +126,10 @@ void iwMilitaryBuilding::Draw_()
         DrawRectangle(Rect(healthPos, Extent(22 * maxSoldierCt, 14)), 0x96000000);
 
         healthPos += DrawPoint(12, 2);
-        for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>>::const_iterator it = soldiers.begin(); it != soldiers.end();
-            ++it)
+        for(auto soldier : soldiers)
         {
-            int hitpoints = static_cast<int>((*it)->GetHitpoints());
-            int maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][(*it)->GetRank()]);
+            int hitpoints = static_cast<int>(soldier->GetHitpoints());
+            int maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][soldier->GetRank()]);
             unsigned hitpointsColour;
             if(hitpoints <= maxHitpoints / 2)
                 hitpointsColour = COLOR_RED;

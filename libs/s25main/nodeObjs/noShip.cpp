@@ -101,8 +101,8 @@ void noShip::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(remaining_sea_attackers);
     sgd.PushUnsignedInt(home_harbor);
     sgd.PushUnsignedInt(covered_distance);
-    for(unsigned i = 0; i < route_.size(); ++i)
-        sgd.PushUnsignedChar(route_[i].toUInt());
+    for(auto i : route_)
+        sgd.PushUnsignedChar(i.toUInt());
     sgd.PushObjectContainer(figures, false);
     sgd.PushObjectContainer(wares, true);
 }
@@ -114,8 +114,8 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
       route_(sgd.PopUnsignedInt()), lost(sgd.PopBool()), remaining_sea_attackers(sgd.PopUnsignedInt()), home_harbor(sgd.PopUnsignedInt()),
       covered_distance(sgd.PopUnsignedInt())
 {
-    for(unsigned i = 0; i < route_.size(); ++i)
-        route_[i] = Direction::fromInt(sgd.PopUnsignedChar());
+    for(auto& i : route_)
+        i = Direction::fromInt(sgd.PopUnsignedChar());
     sgd.PopObjectContainer(figures, GOT_UNKNOWN);
     sgd.PopObjectContainer(wares, GOT_WARE);
 }
@@ -772,15 +772,15 @@ void noShip::HandleState_TransportDriving()
             // nun nicht mehr kommen
             // Das Schiff muss einen Notlandeplatz ansteuern
             // LOG.write(("transport goal harbor doesnt exist player %i state %i pos %u,%u \n",player,state,x,y);
-            for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+            for(auto& figure : figures)
             {
-                (*it)->Abrogate();
-                (*it)->SetGoalTonullptr();
+                figure->Abrogate();
+                figure->SetGoalTonullptr();
             }
 
-            for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
+            for(auto& ware : wares)
             {
-                (*it)->NotifyGoalAboutLostWare();
+                ware->NotifyGoalAboutLostWare();
             }
 
             FindUnloadGoal(STATE_TRANSPORT_DRIVING);
@@ -902,10 +902,10 @@ void noShip::PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::l
     this->goal_harborId = gwg->GetHarborPointID(goal);
     RTTR_Assert(goal_harborId);
     this->figures = figures;
-    for(std::list<noFigure*>::iterator it = this->figures.begin(); it != this->figures.end(); ++it)
+    for(auto& figure : this->figures)
     {
-        static_cast<nofAttacker*>(*it)->StartShipJourney();
-        static_cast<nofAttacker*>(*it)->SeaAttackStarted();
+        static_cast<nofAttacker*>(figure)->StartShipJourney();
+        static_cast<nofAttacker*>(figure)->SeaAttackStarted();
     }
     state = STATE_SEAATTACK_LOADING;
     current_ev = GetEvMgr().AddEvent(this, LOADING_TIME, 1);
@@ -930,10 +930,10 @@ void noShip::AbortSeaAttack()
         // We did not start the attack yet and we can (possibly) go back to our home harbor
         // -> tell the soldiers we go back (like after an attack)
         goal_harborId = home_harbor;
-        for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+        for(auto& figure : figures)
         {
-            RTTR_Assert(dynamic_cast<nofAttacker*>(*it));
-            static_cast<nofAttacker*>(*it)->StartReturnViaShip(*this);
+            RTTR_Assert(dynamic_cast<nofAttacker*>(figure));
+            static_cast<nofAttacker*>(figure)->StartReturnViaShip(*this);
         }
         if(state == STATE_SEAATTACK_LOADING)
         {
@@ -951,10 +951,10 @@ void noShip::AbortSeaAttack()
     {
         // attack failed and we cannot go back to our home harbor
         // -> Tell figures that they won't go to their planned destination
-        for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+        for(auto& figure : figures)
         {
-            RTTR_Assert(dynamic_cast<nofAttacker*>(*it));
-            static_cast<nofAttacker*>(*it)->CancelSeaAttack();
+            RTTR_Assert(dynamic_cast<nofAttacker*>(figure));
+            static_cast<nofAttacker*>(figure)->CancelSeaAttack();
         }
 
         if(state == STATE_SEAATTACK_LOADING)
@@ -1081,18 +1081,18 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
         case noShip::STATE_TRANSPORT_LOADING:
         case noShip::STATE_TRANSPORT_UNLOADING:
             // Tell wares and figures that they won't reach their goal
-            for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+            for(auto& figure : figures)
             {
-                (*it)->Abrogate();
-                (*it)->SetGoalTonullptr();
+                figure->Abrogate();
+                figure->SetGoalTonullptr();
             }
-            for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
+            for(auto& ware : wares)
             {
                 // Notify goal only, if it is not the destroyed harbor. It already knows about that ;)
-                if((*it)->GetGoal() != hb)
-                    (*it)->NotifyGoalAboutLostWare();
+                if(ware->GetGoal() != hb)
+                    ware->NotifyGoalAboutLostWare();
                 else
-                    (*it)->SetGoal(nullptr);
+                    ware->SetGoal(nullptr);
             }
             break;
         case noShip::STATE_SEAATTACK_LOADING:

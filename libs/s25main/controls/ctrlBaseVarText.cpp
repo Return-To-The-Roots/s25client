@@ -34,12 +34,12 @@ std::string ctrlBaseVarText::GetFormatedText() const
     unsigned curVar = 0;
     bool isInFormat = false;
 
-    for(std::string::const_iterator it = text.begin(); it != text.end(); ++it)
+    for(char it : text)
     {
         if(isInFormat)
         {
             isInFormat = false;
-            switch(*it)
+            switch(it)
             {
                 case 'd':
                     str << *reinterpret_cast<int*>(vars[curVar]); //-V206
@@ -56,13 +56,13 @@ std::string ctrlBaseVarText::GetFormatedText() const
                 case '%': str << '%'; break;
                 default:
                     RTTR_Assert(false); // Invalid format string
-                    str << '%' << *it;
+                    str << '%' << it;
                     break;
             }
-        } else if(*it == '%')
+        } else if(it == '%')
             isInFormat = true;
         else
-            str << *it;
+            str << it;
     }
 
     if(isInFormat)

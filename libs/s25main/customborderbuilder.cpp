@@ -265,8 +265,8 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, std::array<unsig
                     {
                         // Finde, ob mehr verschiedene Stücken benutzt würden als bisher
                         unsigned char wouldNumDifferentTiles = 3;
-                        for(unsigned char i = 0; i < 3; i++)
-                            if(wouldCounts[i] == 0)
+                        for(unsigned char wouldCount : wouldCounts)
+                            if(wouldCount == 0)
                                 wouldNumDifferentTiles--;
                         // wenn mehr Stücke benutzt würden oder weniger Freifläche bleibt
                         if((wouldNumDifferentTiles > shouldNumDifferentTiles) || (wouldBeFilled > shouldBeFilled))

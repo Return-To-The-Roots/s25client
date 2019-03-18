@@ -39,11 +39,11 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, c
 
     // Wird Sound schon gespielt?
     unsigned numPlayedCt = 0;
-    for(std::list<NOSound>::iterator it = no_sounds.begin(); it != no_sounds.end(); ++it)
+    for(auto& no_sound : no_sounds)
     {
-        if(it->id == id)
+        if(no_sound.id == id)
         {
-            if(it->obj == obj)
+            if(no_sound.obj == obj)
                 return;
             numPlayedCt++;
         }

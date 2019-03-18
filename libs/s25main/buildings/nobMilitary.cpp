@@ -84,8 +84,8 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
 nobMilitary::~nobMilitary()
 {
     // Soldaten vernichten
-    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
-        delete(*it);
+    for(auto& troop : troops)
+        delete troop;
 }
 
 size_t nobMilitary::GetTotalSoldiers() const
@@ -106,13 +106,13 @@ void nobMilitary::DestroyBuilding()
     CancelOrders();
 
     // Soldaten rausschicken
-    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
-        (*it)->InBuildingDestroyed();
+    for(auto& troop : troops)
+        troop->InBuildingDestroyed();
     troops.clear();
 
     // Inform far-away capturers
-    for(std::list<nofAttacker*>::iterator it = far_away_capturers.begin(); it != far_away_capturers.end(); ++it)
-        (*it)->AttackedGoalDestroyed();
+    for(auto& far_away_capturer : far_away_capturers)
+        far_away_capturer->AttackedGoalDestroyed();
     far_away_capturers.clear();
 
     // Events ggf. entfernen
@@ -282,8 +282,8 @@ void nobMilitary::HandleEvent(const unsigned id)
             if(!upgradedSoldiers.empty())
             {
                 // Reinsert upgraded soldiers
-                for(std::vector<nofPassiveSoldier*>::iterator it = upgradedSoldiers.begin(); it != upgradedSoldiers.end(); ++it)
-                    troops.insert(*it);
+                for(auto& upgradedSoldier : upgradedSoldiers)
+                    troops.insert(upgradedSoldier);
 
                 // Goldmünze verbrauchen
                 --numCoins;
@@ -323,15 +323,15 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 
     const bool frontierDistanceCheck = gwg->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE);
 
-    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(auto& building : buildings)
     {
         // feindliches Militärgebäude?
-        if(*it != exception && (*it)->GetPlayer() != player && gwg->GetPlayer((*it)->GetPlayer()).IsAttackable(player))
+        if(building != exception && building->GetPlayer() != player && gwg->GetPlayer(building->GetPlayer()).IsAttackable(player))
         {
-            unsigned distance = gwg->CalcDistance(pos, (*it)->GetPos());
+            unsigned distance = gwg->CalcDistance(pos, building->GetPos());
             FrontierDistance newFrontierDistance = DIST_FAR;
 
-            if(distance <= MILITARY_RADIUS[size] + (*it)->GetMilitaryRadius())
+            if(distance <= MILITARY_RADIUS[size] + building->GetMilitaryRadius())
             {
                 newFrontierDistance = DIST_NEAR;
             }
@@ -339,9 +339,9 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             else if(distance < BASE_ATTACKING_DISTANCE + (GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
             {
                 newFrontierDistance = DIST_MID;
-            } else if((*it)->GetGOT() == GOT_NOB_MILITARY)
+            } else if(building->GetGOT() == GOT_NOB_MILITARY)
             {
-                nobMilitary* mil = static_cast<nobMilitary*>(*it);
+                nobMilitary* mil = static_cast<nobMilitary*>(building);
                 if(distance < BASE_ATTACKING_DISTANCE + (mil->GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
                 {
                     newFrontierDistance = DIST_MID;
@@ -350,7 +350,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 
             // if new frontier distance is in military range, check if its reachable.
             if(frontierDistanceCheck && newFrontierDistance >= DIST_MID
-               && !DoesReachablePathExist(*gwg, (*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
+               && !DoesReachablePathExist(*gwg, building->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             {
                 // building is not reachable, so its "far" away.
                 newFrontierDistance = DIST_FAR;
@@ -361,8 +361,8 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
                 frontier_distance = newFrontierDistance;
 
             // set calculated frontier distance to checked building.
-            if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
-                static_cast<nobMilitary*>(*it)->NewEnemyMilitaryBuilding(newFrontierDistance);
+            if(BuildingProperties::IsMilitary(building->GetBuildingType()))
+                static_cast<nobMilitary*>(building)->NewEnemyMilitaryBuilding(newFrontierDistance);
         }
     }
     // check for harbor points
@@ -434,9 +434,9 @@ void nobMilitary::RegulateTroops()
         }
 
         // send the not-needed-soldiers away
-        for(std::vector<nofPassiveSoldier*>::iterator it = notNeededSoldiers.begin(); it != notNeededSoldiers.end(); ++it)
+        for(auto& notNeededSoldier : notNeededSoldiers)
         {
-            (*it)->NotNeeded();
+            notNeededSoldier->NotNeeded();
         }
 
         // Nur rausschicken, wenn es einen Weg zu einem Lagerhaus gibt!
@@ -624,14 +624,14 @@ void nobMilitary::GotWorker(Job /*job*/, noFigure* worker)
 void nobMilitary::CancelOrders()
 {
     // Soldaten zurückschicken
-    for(SortedTroops::iterator it = ordered_troops.begin(); it != ordered_troops.end(); ++it)
-        (*it)->NotNeeded();
+    for(auto& ordered_troop : ordered_troops)
+        ordered_troop->NotNeeded();
 
     ordered_troops.clear();
 
     // Goldmünzen zurückschicken
-    for(std::list<Ware*>::iterator it = ordered_coins.begin(); it != ordered_coins.end(); ++it)
-        WareNotNeeded(*it);
+    for(auto& ordered_coin : ordered_coins)
+        WareNotNeeded(ordered_coin);
 
     ordered_coins.clear();
 }
@@ -734,12 +734,12 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
     // how many ranks
     unsigned rank_count = 0;
 
-    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
+    for(auto& troop : troops)
     {
-        if(!candidates[(*it)->GetRank()])
+        if(!candidates[troop->GetRank()])
         {
             ++rank_count;
-            candidates[(*it)->GetRank()] = *it;
+            candidates[troop->GetRank()] = troop;
         }
     }
 
@@ -749,13 +749,13 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
     unsigned r = 0;
 
     // richtigen Rang suchen
-    for(unsigned i = 0; i < 5; ++i)
+    for(auto& candidate : candidates)
     {
-        if(candidates[i])
+        if(candidate)
         {
             if(r == rank)
                 // diesen Soldaten wollen wir
-                return candidates[i];
+                return candidate;
 
             ++r;
         }
@@ -848,9 +848,9 @@ unsigned nobMilitary::GetSoldiersStrength() const
 {
     unsigned strength = 0;
 
-    for(SortedTroops::const_iterator it = troops.begin(); it != troops.end(); ++it)
+    for(auto troop : troops)
     {
-        strength += HITPOINTS[nation][(*it)->GetRank()];
+        strength += HITPOINTS[nation][troop->GetRank()];
     }
 
     return (strength);
@@ -904,15 +904,15 @@ void nobMilitary::Capture(const unsigned char new_owner)
     gwg->GetPlayer(new_owner).IncreaseInventoryWare(GD_COINS, numCoins);
 
     // Soldaten, die auf Mission sind, Bescheid sagen
-    for(std::list<nofActiveSoldier*>::iterator it = troops_on_mission.begin(); it != troops_on_mission.end(); ++it)
-        (*it)->HomeDestroyed();
+    for(auto& it : troops_on_mission)
+        it->HomeDestroyed();
 
     // Bestellungen die hierher unterwegs sind canceln
     CancelOrders();
 
     // Aggressiv-Verteidigenden Soldaten Bescheid sagen, dass sie nach Hause gehen können
-    for(std::list<nofAggressiveDefender*>::iterator it = aggressive_defenders.begin(); it != aggressive_defenders.end(); ++it)
-        (*it)->AttackedGoalDestroyed();
+    for(auto& aggressive_defender : aggressive_defenders)
+        aggressive_defender->AttackedGoalDestroyed();
 
     troops_on_mission.clear();
     aggressive_defenders.clear();
@@ -938,27 +938,28 @@ void nobMilitary::Capture(const unsigned char new_owner)
     LookForEnemyBuildings();
     // und von den Verbündeten (da ja ein Feindgebäude weg ist)!
     sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 4);
-    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(auto& building : buildings)
     {
         // verbündetes Gebäude?
-        if(gwg->GetPlayer((*it)->GetPlayer()).IsAttackable(old_player) && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
+        if(gwg->GetPlayer(building->GetPlayer()).IsAttackable(old_player) && BuildingProperties::IsMilitary(building->GetBuildingType()))
             // Grenzflaggen von dem neu berechnen
-            static_cast<nobMilitary*>(*it)->LookForEnemyBuildings();
+            static_cast<nobMilitary*>(building)->LookForEnemyBuildings();
     }
 
     // ehemalige Leute dieses Gebäudes nach Hause schicken, die ggf. grad auf dem Weg rein/raus waren
     MapPoint coords[2] = {pos, gwg->GetNeighbour(pos, Direction::SOUTHEAST)};
-    for(unsigned short i = 0; i < 2; ++i)
+    for(const auto& coord : coords)
     {
-        const std::list<noBase*>& figures = gwg->GetFigures(coords[i]);
-        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+        const std::list<noBase*>& figures = gwg->GetFigures(coord);
+        for(auto figure : figures)
         {
-            if((*it)->GetType() == NOP_FIGURE)
+            if(figure->GetType() == NOP_FIGURE)
             {
-                if(static_cast<noFigure*>(*it)->GetCurrentRoad() == routes[4] && static_cast<noFigure*>(*it)->GetPlayer() != new_owner)
+                if(static_cast<noFigure*>(figure)->GetCurrentRoad() == routes[4]
+                   && static_cast<noFigure*>(figure)->GetPlayer() != new_owner)
                 {
-                    static_cast<noFigure*>(*it)->Abrogate();
-                    static_cast<noFigure*>(*it)->StartWandering();
+                    static_cast<noFigure*>(figure)->Abrogate();
+                    static_cast<noFigure*>(figure)->StartWandering();
                 }
             }
         }
@@ -1017,19 +1018,19 @@ void nobMilitary::NeedOccupyingTroops()
     if(needed_soldiers > currentSoldiers)
     {
         // Soldaten absuchen
-        for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
+        for(auto& aggressor : aggressors)
         {
             // Is the soldier standing around and owned by the player?
-            if(!(*it)->IsAttackerReady() || (*it)->GetPlayer() != player)
+            if(!aggressor->IsAttackerReady() || aggressor->GetPlayer() != player)
                 continue;
             // Näher als der bisher beste?
-            if((*it)->GetRadius() >= best_radius)
+            if(aggressor->GetRadius() >= best_radius)
                 continue;
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 10, false) != 0xFF)
+            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 10, false) != 0xFF)
             {
                 // Dann is das der bisher beste
-                best_attacker = *it;
+                best_attacker = aggressor;
                 best_radius = best_attacker->GetRadius();
             }
         }
@@ -1186,9 +1187,9 @@ void nobMilitary::PrepareUpgrading()
     bool soldiers_available = false;
 
     const unsigned maxRank = gwg->GetGGS().GetMaxMilitaryRank();
-    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
+    for(auto& troop : troops)
     {
-        if((*it)->GetRank() < maxRank)
+        if(troop->GetRank() < maxRank)
         {
             // es wurde ein Soldat gefunden, der befördert werden kann
             soldiers_available = true;
@@ -1310,21 +1311,21 @@ void nobMilitary::CallNextFarAwayCapturer(nofAttacker* attacker)
     const MapPoint flagPos = GetFlag()->GetPos();
     unsigned minLength = std::numeric_limits<unsigned>::max();
     nofAttacker* bestAttacker = nullptr;
-    for(std::list<nofAttacker*>::iterator it = far_away_capturers.begin(); it != far_away_capturers.end(); ++it)
+    for(auto& far_away_capturer : far_away_capturers)
     {
         // Skip us and possible capturers at the building
-        if(*it == attacker || (*it)->GetPos() == pos)
+        if(far_away_capturer == attacker || far_away_capturer->GetPos() == pos)
             continue;
-        if(!(*it)->IsAttackerReady())
+        if(!far_away_capturer->IsAttackerReady())
             continue;
-        RTTR_Assert((*it)->GetPos() != flagPos); // Impossible. This should be the current attacker
+        RTTR_Assert(far_away_capturer->GetPos() != flagPos); // Impossible. This should be the current attacker
         unsigned length;
-        if(gwg->FindHumanPath((*it)->GetPos(), flagPos, MAX_FAR_AWAY_CAPTURING_DISTANCE, false, &length) == INVALID_DIR)
+        if(gwg->FindHumanPath(far_away_capturer->GetPos(), flagPos, MAX_FAR_AWAY_CAPTURING_DISTANCE, false, &length) == INVALID_DIR)
             continue;
         if(length < minLength)
         {
             minLength = length;
-            bestAttacker = *it;
+            bestAttacker = far_away_capturer;
         }
     }
     if(bestAttacker)

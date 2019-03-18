@@ -175,9 +175,8 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         }
 
         // FOW-Zeug initialisieren
-        for(unsigned i = 0; i < node.fow.size(); ++i)
+        for(auto& fow : node.fow)
         {
-            FoWNode& fow = node.fow[i];
             fow.last_update_time = 0;
             fow.visibility = fowVisibility;
             fow.object = nullptr;

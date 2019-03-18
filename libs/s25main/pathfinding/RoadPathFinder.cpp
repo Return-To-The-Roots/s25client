@@ -256,15 +256,15 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         {
             std::vector<nobHarborBuilding::ShipConnection> scs = static_cast<const nobHarborBuilding&>(best).GetShipConnections();
 
-            for(unsigned i = 0; i < scs.size(); ++i)
+            for(auto& sc : scs)
             {
                 // Neuer Weg für diesen neuen Knoten berechnen
-                unsigned cost = best.cost + scs[i].way_costs;
+                unsigned cost = best.cost + sc.way_costs;
 
                 if(cost > max)
                     continue;
 
-                noRoadNode& dest = *scs[i].dest;
+                noRoadNode& dest = *sc.dest;
                 // Was node already visited?
                 if(dest.last_visit == currentVisit)
                 {

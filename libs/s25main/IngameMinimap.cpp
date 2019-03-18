@@ -224,15 +224,15 @@ void IngameMinimap::BeforeDrawing()
         {
             map.beginUpdate();
             // Entsprechende Pixel updaten
-            for(std::vector<MapPoint>::iterator it = nodesToUpdate.begin(); it != nodesToUpdate.end(); ++it)
+            for(auto& it : nodesToUpdate)
             {
                 for(unsigned t = 0; t < 2; ++t)
                 {
-                    unsigned color = CalcPixelColor(*it, t);
-                    DrawPoint texPos((it->x * 2 + t + (it->y & 1)) % (GetMapSize().x * 2), it->y);
+                    unsigned color = CalcPixelColor(it, t);
+                    DrawPoint texPos((it.x * 2 + t + (it.y & 1)) % (GetMapSize().x * 2), it.y);
                     map.updatePixel(texPos, libsiedler2::ColorARGB(color));
                 }
-                nodes_updated[GetMMIdx(*it)] = false;
+                nodes_updated[GetMMIdx(it)] = false;
             }
             map.endUpdate();
         }

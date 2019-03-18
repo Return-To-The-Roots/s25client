@@ -200,17 +200,17 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     BOOST_REQUIRE_GT(hqs[0]->GetNumRealWares(GD_BOARDS), 0u);
 
     executeLua("rttr:ClearResources()");
-    for(unsigned i = 0; i < hqs.size(); i++)
+    for(auto& hq : hqs)
     {
         for(unsigned gd = 0; gd < NUM_WARE_TYPES; gd++)
         {
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumRealWares(GoodType(gd)), 0u);
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumVisualWares(GoodType(gd)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumRealWares(GoodType(gd)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumVisualWares(GoodType(gd)), 0u);
         }
         for(unsigned job = 0; job < NUM_JOB_TYPES; job++)
         {
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumRealFigures(Job(job)), 0u);
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumVisualFigures(Job(job)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumRealFigures(Job(job)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumVisualFigures(Job(job)), 0u);
         }
     }
 

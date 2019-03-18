@@ -108,11 +108,11 @@ void dskLAN::ReadOpenGames()
 {
     openGames.clear();
     const LANDiscoveryClient::ServiceMap& services = discovery.GetServices();
-    for(LANDiscoveryClient::ServiceMap::const_iterator it = services.begin(); it != services.end(); ++it)
+    for(const auto& service : services)
     {
-        Serializer ser(&it->second.info.GetPayload().front(), it->second.info.GetPayload().size()); //-V807
+        Serializer ser(&service.second.info.GetPayload().front(), service.second.info.GetPayload().size()); //-V807
         GameInfo info;
-        info.ip = it->second.ip;
+        info.ip = service.second.ip;
         info.info.Deserialize(ser);
         openGames.push_back(info);
     }

@@ -349,8 +349,8 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
         {
             std::vector<std::string> oggFiles = ListDir(msg, "ogg");
 
-            for(std::vector<std::string>::iterator it = oggFiles.begin(); it != oggFiles.end(); ++it)
-                GetCtrl<ctrlList>(0)->AddString(*it);
+            for(auto& oggFile : oggFiles)
+                GetCtrl<ctrlList>(0)->AddString(oggFile);
 
             changed = true;
         }
@@ -362,8 +362,8 @@ void iwMusicPlayer::SetSegments(const std::vector<std::string>& segments)
 {
     GetCtrl<ctrlList>(0)->DeleteAllItems();
 
-    for(unsigned i = 0; i < segments.size(); ++i)
-        GetCtrl<ctrlList>(0)->AddString(segments[i]);
+    for(const auto& segment : segments)
+        GetCtrl<ctrlList>(0)->AddString(segment);
 }
 void iwMusicPlayer::SetRepeats(unsigned repeats)
 {

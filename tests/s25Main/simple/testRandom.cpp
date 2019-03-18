@@ -69,8 +69,8 @@ BOOST_AUTO_TEST_CASE(RandomTest)
         {
             const unsigned average = numSamples / result.size();
             const unsigned minCt = average * minPercentage / 100u;
-            for(unsigned i = 0; i < result.size(); i++)
-                BOOST_REQUIRE_GT(result[i], minCt);
+            for(unsigned int i : result)
+                BOOST_REQUIRE_GT(i, minCt);
         }
     }
 }
@@ -139,8 +139,8 @@ void testRange(const T_Seeds& seeds)
         {
             const unsigned average = numSamples / result.size();
             const unsigned minCt = average * minPercentage / 100u;
-            for(unsigned i = 0; i < result.size(); i++)
-                BOOST_REQUIRE_GT(result[i], minCt);
+            for(unsigned int i : result)
+                BOOST_REQUIRE_GT(i, minCt);
         }
     }
 }

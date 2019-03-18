@@ -352,10 +352,10 @@ unsigned GameWorldBase::GetHarborInDir(const MapPoint pt, const unsigned origin_
     unsigned short seaId = GetSeaId(origin_harborId, Direction::fromInt(coastal_point_dir));
     const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(origin_harborId, dir);
 
-    for(unsigned i = 0; i < neighbors.size(); ++i)
+    for(auto neighbor : neighbors)
     {
-        if(IsHarborAtSea(neighbors[i].id, seaId) && isHarborOk(neighbors[i].id))
-            return neighbors[i].id;
+        if(IsHarborAtSea(neighbor.id, seaId) && isHarborOk(neighbor.id))
+            return neighbor.id;
     }
 
     // Nichts gefunden
@@ -579,34 +579,34 @@ unsigned GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char play
     unsigned attackercount = 0;
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
     const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetBuildingRegister().GetHarbors();
-    for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
+    for(auto harbor : harbors)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen
-        if(!IsHarborAtSea((*it)->GetHarborPosID(), seaid))
+        if(!IsHarborAtSea(harbor->GetHarborPosID(), seaid))
             continue;
 
-        std::vector<nobHarborBuilding::SeaAttackerBuilding> tmp = (*it)->GetAttackerBuildingsForSeaIdAttack();
+        std::vector<nobHarborBuilding::SeaAttackerBuilding> tmp = harbor->GetAttackerBuildingsForSeaIdAttack();
         buildings.insert(buildings.begin(), tmp.begin(), tmp.end());
     }
 
     // Die Soldaten aus allen Militärgebäuden sammeln
-    for(unsigned i = 0; i < buildings.size(); ++i)
+    for(auto& building : buildings)
     {
         // Soldaten holen
-        std::vector<nofPassiveSoldier*> tmp_soldiers = buildings[i].building->GetSoldiersForAttack(buildings[i].harbor->GetPos());
+        std::vector<nofPassiveSoldier*> tmp_soldiers = building.building->GetSoldiersForAttack(building.harbor->GetPos());
 
         // Überhaupt welche gefunden?
         if(tmp_soldiers.empty())
             continue;
 
         // Soldaten hinzufügen
-        for(unsigned j = 0; j < tmp_soldiers.size(); ++j)
+        for(auto& tmp_soldier : tmp_soldiers)
         {
             if(returnCount)
                 attackercount++;
             else
-                attackercount += (tmp_soldiers[j]->GetRank() + 1); // private is rank 0 -> increase by 1-5
+                attackercount += (tmp_soldier->GetRank() + 1); // private is rank 0 -> increase by 1-5
         }
     }
     return attackercount;
@@ -634,14 +634,14 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
 
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
     const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetBuildingRegister().GetHarbors();
-    for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
+    for(auto harbor : harbors)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen
         bool is_at_sea = false;
         for(unsigned i = 0; i < 6; ++i)
         {
-            const unsigned short seaId = GetSeaId((*it)->GetHarborPosID(), Direction::fromInt(i));
+            const unsigned short seaId = GetSeaId(harbor->GetHarborPosID(), Direction::fromInt(i));
             if(seaId && use_seas[seaId - 1])
             {
                 is_at_sea = true;
@@ -652,21 +652,21 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
         if(!is_at_sea)
             continue;
 
-        std::vector<nobHarborBuilding::SeaAttackerBuilding> tmp = (*it)->GetAttackerBuildingsForSeaAttack(defender_harbors);
-        for(std::vector<nobHarborBuilding::SeaAttackerBuilding>::iterator itBld = tmp.begin(); itBld != tmp.end(); ++itBld)
+        std::vector<nobHarborBuilding::SeaAttackerBuilding> tmp = harbor->GetAttackerBuildingsForSeaAttack(defender_harbors);
+        for(auto& itBld : tmp)
         {
             // Check if the building was already inserted
             std::vector<nobHarborBuilding::SeaAttackerBuilding>::iterator oldBldIt =
-              std::find_if(buildings.begin(), buildings.end(), nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld->building));
+              std::find_if(buildings.begin(), buildings.end(), nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld.building));
             if(oldBldIt == buildings.end())
             {
                 // Not found -> Add
-                buildings.push_back(*itBld);
-            } else if(oldBldIt->distance > itBld->distance
-                      || (oldBldIt->distance == itBld->distance && oldBldIt->harbor->GetObjId() > itBld->harbor->GetObjId()))
+                buildings.push_back(itBld);
+            } else if(oldBldIt->distance > itBld.distance
+                      || (oldBldIt->distance == itBld.distance && oldBldIt->harbor->GetObjId() > itBld.harbor->GetObjId()))
             {
                 // New distance is smaller (with tie breaker for async prevention) -> update
-                *oldBldIt = *itBld;
+                *oldBldIt = itBld;
             }
         }
     }

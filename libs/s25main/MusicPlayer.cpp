@@ -81,8 +81,8 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
     out << (random ? "random" : "ordered") << std::endl;
 
     // songs reinschreiben
-    for(unsigned i = 0; i < songs.size(); ++i)
-        out << songs[i] << "\n";
+    for(const auto& song : songs)
+        out << song << "\n";
 
     out.close();
 
@@ -170,11 +170,11 @@ void Playlist::ReadMusicPlayer(const iwMusicPlayer* const window)
 // Wählt den Start-Song aus
 void Playlist::SetStartSong(const unsigned id)
 {
-    for(unsigned i = 0; i < order.size(); ++i)
+    for(unsigned int& i : order)
     {
-        if(order[i] == id)
+        if(i == id)
         {
-            std::swap(order[0], order[i]);
+            std::swap(order[0], i);
             return;
         }
     }

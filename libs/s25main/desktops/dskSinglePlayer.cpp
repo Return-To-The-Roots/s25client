@@ -74,18 +74,18 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
 
             bfs::path path;
             s25util::time64_t recent = 0;
-            for(std::vector<std::string>::iterator it = savFiles.begin(); it != savFiles.end(); ++it)
+            for(auto& savFile : savFiles)
             {
                 Savegame save;
 
                 // Datei öffnen
-                if(!save.Load(*it, false, false))
+                if(!save.Load(savFile, false, false))
                     continue;
 
                 if(save.GetSaveTime() > recent)
                 {
                     recent = save.GetSaveTime();
-                    path = *it;
+                    path = savFile;
                 }
             }
 

@@ -132,11 +132,11 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             if(points_found)
             {
                 // Prefer 1st class objects and use only 2nd class objects if there are no more other objects anymore
-                for(unsigned i = 0; i < 3; ++i)
+                for(auto& available_point : available_points)
                 {
-                    if(!available_points[i].empty())
+                    if(!available_point.empty())
                     {
-                        dest = available_points[i][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_points[i].size())];
+                        dest = available_point[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_point.size())];
                         break;
                     }
                 }

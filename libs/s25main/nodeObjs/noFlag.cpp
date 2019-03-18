@@ -34,14 +34,14 @@
 noFlag::noFlag(const MapPoint pos, const unsigned char player, const unsigned char dis_dir)
     : noRoadNode(NOP_FLAG, pos, player), ani_offset(rand() % 20000)
 {
-    for(unsigned i = 0; i < wares.size(); ++i)
-        wares[i] = nullptr;
+    for(auto& ware : wares)
+        ware = nullptr;
 
     // BWUs nullen
-    for(unsigned i = 0; i < bwus.size(); ++i)
+    for(auto& bwu : bwus)
     {
-        bwus[i].id = 0xFFFFFFFF;
-        bwus[i].last_gf = 0;
+        bwu.id = 0xFFFFFFFF;
+        bwu.last_gf = 0;
     }
 
     // Gucken, ob die Flagge auf einen bereits bestehenden Weg gesetzt wurde
@@ -61,22 +61,22 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player, const unsigned ch
 noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
     : noRoadNode(sgd, obj_id), ani_offset(rand() % 20000), flagtype(FlagType(sgd.PopUnsignedChar()))
 {
-    for(unsigned i = 0; i < wares.size(); ++i)
-        wares[i] = sgd.PopObject<Ware>(GOT_WARE);
+    for(auto& ware : wares)
+        ware = sgd.PopObject<Ware>(GOT_WARE);
 
     // BWUs laden
-    for(unsigned i = 0; i < bwus.size(); ++i)
+    for(auto& bwu : bwus)
     {
-        bwus[i].id = sgd.PopUnsignedInt();
-        bwus[i].last_gf = sgd.PopUnsignedInt();
+        bwu.id = sgd.PopUnsignedInt();
+        bwu.last_gf = sgd.PopUnsignedInt();
     }
 }
 
 noFlag::~noFlag()
 {
     // Waren vernichten
-    for(unsigned i = 0; i < wares.size(); ++i)
-        delete wares[i];
+    for(auto& ware : wares)
+        delete ware;
 }
 
 void noFlag::Destroy_noFlag()
@@ -85,14 +85,14 @@ void noFlag::Destroy_noFlag()
     gwg->SetNO(pos, nullptr);
 
     // Waren vernichten
-    for(unsigned i = 0; i < wares.size(); ++i)
+    for(auto& ware : wares)
     {
-        if(wares[i])
+        if(ware)
         {
             // Inventur entsprechend verringern
-            wares[i]->WareLost(player);
-            wares[i]->Destroy();
-            deletePtr(wares[i]);
+            ware->WareLost(player);
+            ware->Destroy();
+            deletePtr(ware);
         }
     }
 
@@ -107,14 +107,14 @@ void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
     Serialize_noRoadNode(sgd);
 
     sgd.PushUnsignedChar(static_cast<unsigned char>(flagtype));
-    for(unsigned i = 0; i < wares.size(); ++i)
-        sgd.PushObject(wares[i], true);
+    for(auto ware : wares)
+        sgd.PushObject(ware, true);
 
     // BWUs speichern
-    for(unsigned i = 0; i < bwus.size(); ++i)
+    for(auto bwu : bwus)
     {
-        sgd.PushUnsignedInt(bwus[i].id);
-        sgd.PushUnsignedInt(bwus[i].last_gf);
+        sgd.PushUnsignedInt(bwu.id);
+        sgd.PushUnsignedInt(bwu.last_gf);
     }
 }
 
@@ -150,12 +150,12 @@ FOWObject* noFlag::CreateFOWObject() const
  */
 void noFlag::AddWare(Ware*& ware)
 {
-    for(unsigned i = 0; i < wares.size(); ++i)
+    for(auto& i : wares)
     {
-        if(wares[i])
+        if(i)
             continue;
 
-        wares[i] = ware;
+        i = ware;
         // Träger Bescheid sagen
         if(ware->GetNextDir() != 0xFF)
             routes[ware->GetNextDir()]->AddWareJob(this);
@@ -170,8 +170,8 @@ void noFlag::AddWare(Ware*& ware)
 unsigned noFlag::GetNumWares() const
 {
     unsigned count = 0;
-    for(unsigned i = 0; i < wares.size(); ++i)
-        if(wares[i])
+    for(auto ware : wares)
+        if(ware)
             ++count;
 
     return count;
@@ -261,9 +261,9 @@ unsigned noFlag::GetNumWaresForRoad(const Direction dir) const
 {
     unsigned ret = 0;
 
-    for(unsigned i = 0; i < wares.size(); i++)
+    for(auto ware : wares)
     {
-        if(wares[i] && (wares[i]->GetNextDir() == dir.toUInt()))
+        if(ware && (ware->GetNextDir() == dir.toUInt()))
             ret++;
     }
     return ret;
@@ -326,13 +326,13 @@ void noFlag::Capture(const unsigned char new_owner)
     }
 
     // Waren vernichten
-    for(unsigned i = 0; i < wares.size(); ++i)
+    for(auto& ware : wares)
     {
-        if(wares[i])
+        if(ware)
         {
-            wares[i]->WareLost(player);
-            wares[i]->Destroy();
-            deletePtr(wares[i]);
+            ware->WareLost(player);
+            ware->Destroy();
+            deletePtr(ware);
         }
     }
 
@@ -348,12 +348,12 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
     const unsigned MAX_BWU_INTERVAL = 2000;
 
     // BWU-ID erstmal suchen
-    for(unsigned i = 0; i < bwus.size(); ++i)
+    for(auto bwu : bwus)
     {
-        if(bwus[i].id == bwu_id)
+        if(bwu.id == bwu_id)
         {
             // Wenn letzter TÜV noch nicht zu lange zurückliegt, können wir sie als unzugänglich zurückgeben
-            if(GetEvMgr().GetCurrentGF() - bwus[i].last_gf <= MAX_BWU_INTERVAL)
+            if(GetEvMgr().GetCurrentGF() - bwu.last_gf <= MAX_BWU_INTERVAL)
                 return true;
 
             // ansonsten nicht, evtl ist sie ja jetzt mal wieder zugänglich, sollte also mal neu geprüft werden
@@ -371,11 +371,11 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 void noFlag::ImpossibleForBWU(const unsigned bwu_id)
 {
     // Evtl gibts BWU schon --> Dann einfach GF-Zahl aktualisieren
-    for(unsigned i = 0; i < bwus.size(); ++i)
+    for(auto& bwu : bwus)
     {
-        if(bwus[i].id == bwu_id)
+        if(bwu.id == bwu_id)
         {
-            bwus[i].last_gf = GetEvMgr().GetCurrentGF();
+            bwu.last_gf = GetEvMgr().GetCurrentGF();
             return;
         }
     }

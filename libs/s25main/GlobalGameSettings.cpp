@@ -71,8 +71,8 @@ GlobalGameSettings::~GlobalGameSettings()
  */
 void GlobalGameSettings::clearAddons()
 {
-    for(AddonContainer::iterator it = addons.begin(); it != addons.end(); ++it)
-        delete it->addon;
+    for(auto& addon : addons)
+        delete addon.addon;
 
     addons.clear();
 }

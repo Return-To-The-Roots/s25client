@@ -50,9 +50,9 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData& sgd) const
     sgd.PushUnsignedShort(signs);
 
     sgd.PushUnsignedInt(available_nodes.size());
-    for(std::vector<MapPoint>::const_iterator it = available_nodes.begin(); it != available_nodes.end(); ++it)
+    for(const auto& available_node : available_nodes)
     {
-        sgd.PushMapPoint(*it);
+        sgd.PushMapPoint(available_node);
     }
 
     sgd.PushMapPoint(node_goal);

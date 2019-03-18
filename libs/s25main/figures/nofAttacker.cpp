@@ -169,15 +169,15 @@ void nofAttacker::Walked()
             nofDefender* defender = nullptr;
             // Look for defenders at this position
             const std::list<noBase*>& figures = gwg->GetFigures(goalFlagPos);
-            for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+            for(auto figure : figures)
             {
-                if((*it)->GetGOT() == GOT_NOF_DEFENDER)
+                if(figure->GetGOT() == GOT_NOF_DEFENDER)
                 {
                     // Is the defender waiting at the flag?
                     // (could be wandering around or something)
-                    if(static_cast<nofDefender*>(*it)->IsWaitingAtFlag())
+                    if(static_cast<nofDefender*>(figure)->IsWaitingAtFlag())
                     {
-                        defender = static_cast<nofDefender*>(*it);
+                        defender = static_cast<nofDefender*>(figure);
                     }
                 }
             }
@@ -1010,9 +1010,8 @@ void nofAttacker::RemoveFromAttackedGoal()
     RTTR_Assert(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || !attacked_goal->GetDefender()
                 || (attacked_goal->GetDefender()->GetAttacker() != this && attacked_goal->GetDefender()->GetEnemy() != this));
     // No defender should be chasing us at this point
-    for(std::list<nofAggressiveDefender*>::const_iterator it = attacked_goal->GetAggresiveDefenders().begin();
-        it != attacked_goal->GetAggresiveDefenders().end(); ++it)
-        RTTR_Assert((*it)->GetAttacker() != this);
+    for(auto it : attacked_goal->GetAggresiveDefenders())
+        RTTR_Assert(it->GetAttacker() != this);
     attacked_goal->UnlinkAggressor(this);
     attacked_goal = nullptr;
 }

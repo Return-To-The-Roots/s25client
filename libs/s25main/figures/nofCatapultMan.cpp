@@ -119,23 +119,23 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             std::vector<PossibleTarget> possibleTargets;
 
             sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
-            for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
+            for(auto& building : buildings)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
-                if((*it)->GetGOT() == GOT_NOB_MILITARY && gwg->GetPlayer(player).IsAttackable((*it)->GetPlayer()))
+                if(building->GetGOT() == GOT_NOB_MILITARY && gwg->GetPlayer(player).IsAttackable(building->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
-                    if(gwg->GetNode((*it)->GetPos()).fow[player].visibility == VIS_VISIBLE
-                       && !static_cast<nobMilitary*>((*it))->IsNewBuilt())
+                    if(gwg->GetNode(building->GetPos()).fow[player].visibility == VIS_VISIBLE
+                       && !static_cast<nobMilitary*>(building)->IsNewBuilt())
                     {
                         // Entfernung ausrechnen
-                        unsigned distance = gwg->CalcDistance(pos, (*it)->GetPos());
+                        unsigned distance = gwg->CalcDistance(pos, building->GetPos());
 
                         // Entfernung nicht zu hoch?
                         if(distance < 14)
                         {
                             // Mit in die Liste aufnehmen
-                            possibleTargets.push_back(PossibleTarget((*it)->GetPos(), distance));
+                            possibleTargets.push_back(PossibleTarget(building->GetPos(), distance));
                         }
                     }
                 }

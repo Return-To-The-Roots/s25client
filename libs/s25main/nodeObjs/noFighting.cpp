@@ -73,8 +73,8 @@ void noFighting::Serialize_noFighting(SerializedGameData& sgd) const
     sgd.PushEvent(current_ev);
     sgd.PushUnsignedChar(player_won);
 
-    for(unsigned i = 0; i < 2; ++i)
-        sgd.PushObject(soldiers[i], false);
+    for(auto soldier : soldiers)
+        sgd.PushObject(soldier, false);
 }
 
 noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
@@ -82,8 +82,8 @@ noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
       player_won(sgd.PopUnsignedChar())
 
 {
-    for(unsigned i = 0; i < 2; ++i)
-        soldiers[i] = sgd.PopObject<nofActiveSoldier>(GOT_UNKNOWN);
+    for(auto& soldier : soldiers)
+        soldier = sgd.PopObject<nofActiveSoldier>(GOT_UNKNOWN);
 }
 
 void noFighting::Destroy_noFighting()

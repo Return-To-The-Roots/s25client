@@ -57,14 +57,14 @@ void FreePathFinder::IncreaseCurrentVisit()
     // if the counter reaches its maxium, tidy up
     if(currentVisit == std::numeric_limits<unsigned>::max())
     {
-        for(MapNodes::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        for(auto& node : nodes)
         {
-            it->lastVisited = 0;
-            it->lastVisitedEven = 0;
+            node.lastVisited = 0;
+            node.lastVisitedEven = 0;
         }
-        for(FreePathNodes::iterator it = fpNodes.begin(); it != fpNodes.end(); ++it)
+        for(auto& fpNode : fpNodes)
         {
-            it->lastVisited = 0;
+            fpNode.lastVisited = 0;
         }
         currentVisit = 1;
     } else

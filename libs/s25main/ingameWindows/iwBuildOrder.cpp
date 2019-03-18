@@ -35,8 +35,8 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 
     // Liste füllen
     BuildOrders buildOrders = GAMECLIENT.visual_settings.build_order;
-    for(unsigned char i = 0; i < buildOrders.size(); ++i)
-        list->AddString(_(BUILDING_NAMES[buildOrders[i]])); //-V807
+    for(auto& buildOrder : buildOrders)
+        list->AddString(_(BUILDING_NAMES[buildOrder])); //-V807
 
     // Nach ganz oben
     AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 215), _("Top"));

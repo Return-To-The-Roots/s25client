@@ -189,8 +189,8 @@ bool LuaPlayer::IsInRestrictedArea(unsigned x, unsigned y) const
 void LuaPlayer::ClearResources()
 {
     const std::list<nobBaseWarehouse*> warehouses = player.GetBuildingRegister().GetStorehouses();
-    for(std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
-        (*wh)->Clear();
+    for(auto warehouse : warehouses)
+        warehouse->Clear();
 }
 
 bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
@@ -202,12 +202,12 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
 
     Inventory goods;
 
-    for(std::map<GoodType, unsigned>::const_iterator it = wares.begin(); it != wares.end(); ++it)
+    for(auto ware : wares)
     {
-        if(unsigned(it->first) < NUM_WARE_TYPES)
-            goods.Add(it->first, it->second);
+        if(unsigned(ware.first) < NUM_WARE_TYPES)
+            goods.Add(ware.first, ware.second);
         else
-            throw LuaExecutionError((std::string("Invalid ware in AddWares: ") + helpers::toString(it->first)).c_str());
+            throw LuaExecutionError((std::string("Invalid ware in AddWares: ") + helpers::toString(ware.first)).c_str());
     }
 
     warehouse->AddGoods(goods, true);
@@ -223,12 +223,12 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
 
     Inventory goods;
 
-    for(std::map<Job, unsigned>::const_iterator it = people.begin(); it != people.end(); ++it)
+    for(auto it : people)
     {
-        if(unsigned(it->first) < NUM_JOB_TYPES)
-            goods.Add(it->first, it->second);
+        if(unsigned(it.first) < NUM_JOB_TYPES)
+            goods.Add(it.first, it.second);
         else
-            throw LuaExecutionError((std::string("Invalid job in AddPeople: ") + helpers::toString(it->first)).c_str());
+            throw LuaExecutionError((std::string("Invalid job in AddPeople: ") + helpers::toString(it.first)).c_str());
     }
 
     warehouse->AddGoods(goods, true);

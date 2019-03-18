@@ -278,10 +278,10 @@ bool Loader::LoadSounds()
 
     unsigned i = 0;
     sng_lst.alloc(oggFiles.size());
-    for(std::vector<std::string>::iterator it = oggFiles.begin(); it != oggFiles.end(); ++it)
+    for(auto& oggFile : oggFiles)
     {
         libsiedler2::Archiv sng;
-        if(!LoadArchiv(sng, *it))
+        if(!LoadArchiv(sng, oggFile))
             return false;
         sng_lst.set(i++, sng.release(0));
     }

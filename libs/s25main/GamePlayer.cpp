@@ -213,16 +213,16 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
 
     sgd.PushBool(useCustomBuildOrder_);
 
-    for(unsigned i = 0; i < build_order.size(); ++i)
-        sgd.PushUnsignedChar(build_order[i]);
+    for(auto i : build_order)
+        sgd.PushUnsignedChar(i);
 
     sgd.PushRawData(transportPrio.data(), transportPrio.size());
 
-    for(unsigned i = 0; i < militarySettings_.size(); ++i)
-        sgd.PushUnsignedChar(militarySettings_[i]);
+    for(unsigned char militarySetting : militarySettings_)
+        sgd.PushUnsignedChar(militarySetting);
 
-    for(unsigned i = 0; i < toolsSettings_.size(); ++i)
-        sgd.PushUnsignedChar(toolsSettings_[i]);
+    for(unsigned char toolsSetting : toolsSettings_)
+        sgd.PushUnsignedChar(toolsSetting);
 
     // qx:tools
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
@@ -316,16 +316,16 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     useCustomBuildOrder_ = sgd.PopBool();
 
-    for(unsigned i = 0; i < build_order.size(); ++i)
-        build_order[i] = BuildingType(sgd.PopUnsignedChar());
+    for(auto& i : build_order)
+        i = BuildingType(sgd.PopUnsignedChar());
 
     sgd.PopRawData(transportPrio.data(), transportPrio.size());
 
-    for(unsigned i = 0; i < militarySettings_.size(); ++i)
-        militarySettings_[i] = sgd.PopUnsignedChar();
+    for(unsigned char& militarySetting : militarySettings_)
+        militarySetting = sgd.PopUnsignedChar();
 
-    for(unsigned i = 0; i < toolsSettings_.size(); ++i)
-        toolsSettings_[i] = sgd.PopUnsignedChar();
+    for(unsigned char& toolsSetting : toolsSettings_)
+        toolsSetting = sgd.PopUnsignedChar();
 
     // qx:tools
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
@@ -467,8 +467,8 @@ void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
     ChangeStatisticValue(STAT_BUILDINGS, -1);
     if(bldType == BLD_HARBORBUILDING)
     { // Schiffen Bescheid sagen
-        for(unsigned i = 0; i < ships.size(); ++i)
-            ships[i]->HarborDestroyed(static_cast<nobHarborBuilding*>(bld));
+        for(auto& ship : ships)
+            ship->HarborDestroyed(static_cast<nobHarborBuilding*>(bld));
     } else if(bldType == BLD_HEADQUARTERS)
     {
         hqPos = MapPoint::Invalid();
@@ -1057,38 +1057,39 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
     noBaseBuilding* lastBld = nullptr;
     noBaseBuilding* bestBld = nullptr;
     unsigned best_points = 0;
-    for(std::vector<ClientForWare>::iterator it = possibleClients.begin(); it != possibleClients.end(); ++it)
+    for(auto& possibleClient : possibleClients)
     {
         unsigned path_length;
 
         // If our estimate is worse (or equal) best_points, the real value cannot be better.
         // As our list is sorted, further entries cannot be better either, so stop searching.
-        if(it->estimate <= best_points)
+        if(possibleClient.estimate <= best_points)
             break;
 
         // get rid of double building entries. TODO: why are there double entries!?
-        if(it->bld == lastBld)
+        if(possibleClient.bld == lastBld)
             continue;
 
-        lastBld = it->bld;
+        lastBld = possibleClient.bld;
 
         // Just to be sure no underflow happens...
-        if(it->points < best_points + 1)
+        if(possibleClient.points < best_points + 1)
             continue;
 
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a better score.
         // This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
         // to conclude that there is no possible path.
-        if(gwg->FindPathForWareOnRoads(*start, *it->bld, &path_length, nullptr, (it->points - best_points) * 2 - 1) != 0xFF)
+        if(gwg->FindPathForWareOnRoads(*start, *possibleClient.bld, &path_length, nullptr, (possibleClient.points - best_points) * 2 - 1)
+           != 0xFF)
         {
-            unsigned score = it->points - (path_length / 2);
+            unsigned score = possibleClient.points - (path_length / 2);
 
             // As we have limited our pathfinding to take a maximum of (points - best_points) * 2 - 1 steps,
             // path_length / 2 can at most be points - best_points - 1, so the score will be greater than best_points. :)
             RTTR_Assert(score > best_points);
 
             best_points = score;
-            bestBld = it->bld;
+            bestBld = possibleClient.bld;
         }
     }
 
@@ -1831,16 +1832,16 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     uint32_t best_distance = std::numeric_limits<uint32_t>::max();
     std::vector<Direction> best_route;
 
-    for(std::vector<ShipForHarbor>::iterator it = sfh.begin(); it != sfh.end(); ++it)
+    for(auto& it : sfh)
     {
         uint32_t distance;
         std::vector<Direction> route;
 
         // the estimate (air-line distance) for this and all other ships in the list is already worse than what we found? disregard the rest
-        if(it->estimate >= best_distance)
+        if(it.estimate >= best_distance)
             break;
 
-        noShip* ship = it->ship;
+        noShip* ship = it.ship;
 
         MapPoint dest = gwg->GetCoastalPoint(hb.GetHarborPosID(), ship->GetSeaID());
 
@@ -1992,9 +1993,9 @@ void GamePlayer::GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildin
 unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
 {
     unsigned count = 0;
-    for(unsigned i = 0; i < ships.size(); ++i)
+    for(auto ship : ships)
     {
-        if(ships[i]->IsGoingToHarbor(hb))
+        if(ship->IsGoingToHarbor(hb))
             ++count;
     }
 
@@ -2143,9 +2144,9 @@ bool GamePlayer::CanBuildCatapult() const
 bool GamePlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
 {
     // Prüfen, ob Abstand zu bisherigen Punkten nicht zu klein
-    for(unsigned i = 0; i < enemies_discovered_by_ships.size(); ++i)
+    for(const auto& enemies_discovered_by_ship : enemies_discovered_by_ships)
     {
-        if(gwg->CalcDistance(enemies_discovered_by_ships[i], location) < 30)
+        if(gwg->CalcDistance(enemies_discovered_by_ship, location) < 30)
             return false;
     }
 

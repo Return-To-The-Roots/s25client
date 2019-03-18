@@ -41,8 +41,8 @@ void AddonList::createGui(Window* window, unsigned id, unsigned short& y, bool r
     if(!combo)
     {
         combo = window->AddComboBox(id + 2, DrawPoint(0, 0), Extent(220, 20), TC_GREY, NormalFont, 100, readonly);
-        for(std::vector<std::string>::const_iterator it = options.begin(); it != options.end(); ++it)
-            combo->AddString(*it);
+        for(const auto& option : options)
+            combo->AddString(option);
 
         setGuiStatus(window, id, status);
     }

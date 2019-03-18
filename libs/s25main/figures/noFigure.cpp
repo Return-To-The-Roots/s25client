@@ -547,13 +547,13 @@ void noFigure::Wander()
         unsigned best_way = 0xFFFFFFFF;
         noFlag const* best_flag = nullptr;
 
-        for(std::vector<noFlag*>::const_iterator it = flags.begin(); it != flags.end(); ++it)
+        for(auto flag : flags)
         {
             // Ist das ein Flüchtling aus einem abgebrannten Lagerhaus?
             if(burned_wh_id != 0xFFFFFFFF)
             {
                 // Dann evtl gucken, ob anderen Mitglieder schon gesagt haben, dass die Flagge nicht zugänglich ist
-                if((*it)->IsImpossibleForBWU(burned_wh_id))
+                if(flag->IsImpossibleForBWU(burned_wh_id))
                 {
                     // Dann können wir die Flagge überspringen
                     continue;
@@ -561,18 +561,18 @@ void noFigure::Wander()
             }
 
             // würde die die bisher beste an Weg unterbieten?
-            unsigned way = gwg->CalcDistance(pos, (*it)->GetPos());
+            unsigned way = gwg->CalcDistance(pos, flag->GetPos());
             if(way < best_way)
             {
                 // Are we at that flag or is there a path to it?
-                if(way == 0 || gwg->FindHumanPath(pos, (*it)->GetPos(), wander_radius, false, &way) != 0xFF)
+                if(way == 0 || gwg->FindHumanPath(pos, flag->GetPos(), wander_radius, false, &way) != 0xFF)
                 {
                     // gucken, ob ein Weg zu einem Warenhaus führt
-                    if(gwg->GetPlayer(player).FindWarehouse(**it, FW::AcceptsFigure(job_), true, false))
+                    if(gwg->GetPlayer(player).FindWarehouse(*flag, FW::AcceptsFigure(job_), true, false))
                     {
                         // dann nehmen wir die doch glatt
                         best_way = way;
-                        best_flag = *it;
+                        best_flag = flag;
                         if(way == 0)
                             break; // Can't get better
                     }
@@ -584,7 +584,7 @@ void noFigure::Wander()
 
                     // TODO: Actually it is possible! E.g. between us and the flag is a river, so we won't find a path within the radius
                     // but others (on the other side) could --> Remove ImpossibleForBWU?
-                    (*it)->ImpossibleForBWU(burned_wh_id);
+                    flag->ImpossibleForBWU(burned_wh_id);
                 }
             }
         }

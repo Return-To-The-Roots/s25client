@@ -103,11 +103,11 @@ void noBuildingSite::Destroy_noBuildingSite()
     RTTR_Assert(!planer);
 
     // Bestellte Waren Bescheid sagen
-    for(std::list<Ware*>::iterator it = ordered_boards.begin(); it != ordered_boards.end(); ++it)
-        WareNotNeeded(*it);
+    for(auto& ordered_board : ordered_boards)
+        WareNotNeeded(ordered_board);
     ordered_boards.clear();
-    for(std::list<Ware*>::iterator it = ordered_stones.begin(); it != ordered_stones.end(); ++it)
-        WareNotNeeded(*it);
+    for(auto& ordered_stone : ordered_stones)
+        WareNotNeeded(ordered_stone);
     ordered_stones.clear();
 
     // und Feld wird leer

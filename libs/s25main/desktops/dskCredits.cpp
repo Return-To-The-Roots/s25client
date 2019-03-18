@@ -199,10 +199,10 @@ void dskCredits::DrawCredit()
 
     std::array<unsigned, 2> columnToY = {{150, 150}};
 
-    for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
+    for(auto& line : itCurEntry->lines)
     {
-        LargeFont->Draw(DrawPoint(60 + line->column * 350, columnToY[line->column]), line->line, 0, SetAlpha(COLOR_YELLOW, transparency));
-        columnToY[line->column] += LargeFont->getHeight() + 5;
+        LargeFont->Draw(DrawPoint(60 + line.column * 350, columnToY[line.column]), line.line, 0, SetAlpha(COLOR_YELLOW, transparency));
+        columnToY[line.column] += LargeFont->getHeight() + 5;
     }
 
     LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, SetAlpha(COLOR_RED, transparency));
@@ -273,30 +273,30 @@ void dskCredits::DrawBobs()
     }
 
     // draw bobs
-    for(std::vector<Bob>::iterator bob = bobs.begin(); bob != bobs.end(); ++bob)
+    for(auto& bob : bobs)
     {
-        if(!bob->hasWare)
-            LOADER.GetBobN("jobs")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->pos, bob->color);
+        if(!bob.hasWare)
+            LOADER.GetBobN("jobs")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
         else
-            LOADER.GetBobN("carrier")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->pos, bob->color);
+            LOADER.GetBobN("carrier")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
 
         if(msSinceLastBobAnim > (1000 / bobAnimStepsPerSec))
         {
             bobTime = VIDEODRIVER.GetTickCount();
 
-            bob->animationStep++;
-            if(bob->animationStep > 7)
-                bob->animationStep = 0;
-            if(bob->direction == 3)
+            bob.animationStep++;
+            if(bob.animationStep > 7)
+                bob.animationStep = 0;
+            if(bob.direction == 3)
             {
-                bob->pos.x += bob->speed;
-                if(bob->pos.x > static_cast<int>(VIDEODRIVER.GetRenderSize().x))
-                    bob->direction = 6;
-            } else if(bob->direction == 6)
+                bob.pos.x += bob.speed;
+                if(bob.pos.x > static_cast<int>(VIDEODRIVER.GetRenderSize().x))
+                    bob.direction = 6;
+            } else if(bob.direction == 6)
             {
-                bob->pos.x -= bob->speed;
-                if(bob->pos.x < 0)
-                    bob->direction = 3;
+                bob.pos.x -= bob.speed;
+                if(bob.pos.x < 0)
+                    bob.direction = 3;
             }
         }
     }

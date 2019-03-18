@@ -35,11 +35,11 @@
 void MapUtility::SetHill(Map& map, const Position& center, int z)
 {
     std::vector<int> neighbors = VertexUtility::GetNeighbors(center, map.size, z);
-    for(std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
+    for(int& it : neighbors)
     {
-        const Position neighbor = VertexUtility::GetPosition(*it, map.size);
+        const Position neighbor = VertexUtility::GetPosition(it, map.size);
         const double d = VertexUtility::Distance(center, neighbor, map.size);
-        map.z[*it] = std::max((unsigned char)(z - d), (unsigned char)map.z[*it]);
+        map.z[it] = std::max((unsigned char)(z - d), (unsigned char)map.z[it]);
     }
 }
 
@@ -159,9 +159,9 @@ void MapUtility::Smooth(Map& map)
         {
             bool mountainNeighbor = false;
             std::vector<int> neighbors = VertexUtility::GetNeighbors(pt, map.size, 1);
-            for(std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
+            for(int& neighbor : neighbors)
             {
-                if(objGen.IsTexture(map, *it, [](const auto& desc) { return desc.Is(ETerrain::Mineable); }))
+                if(objGen.IsTexture(map, neighbor, [](const auto& desc) { return desc.Is(ETerrain::Mineable); }))
                 {
                     mountainNeighbor = true;
                     break;

@@ -71,17 +71,17 @@ void iwSaveLoad::RefreshTable()
     GetCtrl<ctrlTable>(0)->DeleteAllItems();
 
     std::vector<std::string> saveFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
-    for(std::vector<std::string>::iterator it = saveFiles.begin(); it != saveFiles.end(); ++it)
+    for(auto& saveFile : saveFiles)
     {
         Savegame save;
 
         // Datei öffnen
-        if(!save.Load(*it, false, false))
+        if(!save.Load(saveFile, false, false))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
             {
-                LOG.write(_("Invalid Savegame %1%! Reason: %2%\n")) % *it
+                LOG.write(_("Invalid Savegame %1%! Reason: %2%\n")) % saveFile
                   % (save.GetLastErrorMsg().empty() ? _("Unknown") : save.GetLastErrorMsg());
             }
             continue;
@@ -91,7 +91,7 @@ void iwSaveLoad::RefreshTable()
         std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
 
         // Dateiname noch rausextrahieren aus dem Pfad
-        bfs::path path = *it;
+        bfs::path path = saveFile;
         if(!path.has_filename())
             continue;
         // Just filename w/o extension
@@ -101,7 +101,7 @@ void iwSaveLoad::RefreshTable()
 
         // Und das Zeug zur Tabelle hinzufügen
         GetCtrl<ctrlTable>(0)->AddRow(0, fileName.string().c_str(), save.GetMapName().c_str(), dateStr.c_str(), startGF.c_str(),
-                                      it->c_str());
+                                      saveFile.c_str());
     }
 
     // Nach Zeit Sortieren

@@ -191,16 +191,16 @@ void iwShip::DrawCargo()
 
     // Alle Figuren in Gruppen zählen
     const std::list<noFigure*> figures = ship->GetFigures();
-    for(std::list<noFigure*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+    for(auto figure : figures)
     {
-        orderedFigures[(*it)->GetJobType()]++;
+        orderedFigures[figure->GetJobType()]++;
     }
 
     // Alle Waren in Gruppen zählen
     const std::list<Ware*> wares = ship->GetWares();
-    for(std::list<Ware*>::const_iterator it = wares.begin(); it != wares.end(); ++it)
+    for(auto ware : wares)
     {
-        orderedWares[(*it)->type]++;
+        orderedWares[ware->type]++;
     }
 
     // Spezialfall Expedition:

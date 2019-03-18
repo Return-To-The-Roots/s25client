@@ -59,8 +59,8 @@ Rect ctrlPreviewMinimap::GetBoundaryRect() const
 
 void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
 {
-    for(unsigned i = 0; i < players.size(); i++)
-        players[i].pos = MapPoint::Invalid();
+    for(auto& player : players)
+        player.pos = MapPoint::Invalid();
     if(!s2map)
     {
         SetMapSize(Extent::all(0));

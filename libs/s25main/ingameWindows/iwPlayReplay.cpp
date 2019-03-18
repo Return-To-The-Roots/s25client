@@ -88,17 +88,17 @@ void iwPlayReplay::PopulateTable()
     unsigned numInvalid = 0;
 
     std::vector<std::string> replays = GetReplays();
-    for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
+    for(auto& it : replays)
     {
         Replay replay;
 
         // Datei laden
-        if(!replay.LoadHeader(*it, false))
+        if(!replay.LoadHeader(it, false))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
             {
-                LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % *it
+                LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % it
                   % (replay.GetLastErrorMsg().empty() ? _("Unknown") : replay.GetLastErrorMsg());
             }
             numInvalid++;
@@ -119,14 +119,14 @@ void iwPlayReplay::PopulateTable()
         }
 
         // Dateiname noch rausextrahieren aus dem Pfad
-        bfs::path path = *it;
+        bfs::path path = it;
         if(!path.has_filename())
             continue;
         std::string fileName = path.filename().string();
         std::string lastGF = helpers::toString(replay.GetLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
-        table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), it->c_str());
+        table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), it.c_str());
     }
 
     // Erst einmal nach Dateiname sortieren
@@ -195,10 +195,10 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     if(msgbox_id == 1 && mbr == MSR_YES)
     {
         std::vector<std::string> replays = GetReplays();
-        for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
+        for(auto& replay : replays)
         {
             boost::system::error_code ec;
-            bfs::remove(*it, ec);
+            bfs::remove(replay, ec);
         }
 
         // Tabelle leeren
@@ -206,14 +206,14 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     } else if(msgbox_id == 3 && mbr == MSR_YES)
     {
         std::vector<std::string> replays = GetReplays();
-        for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
+        for(auto& it : replays)
         {
             Replay replay;
-            if(!replay.LoadHeader(*it, false))
+            if(!replay.LoadHeader(it, false))
             {
                 replay.Close();
                 boost::system::error_code ec;
-                bfs::remove(*it, ec);
+                bfs::remove(it, ec);
             }
         }
 

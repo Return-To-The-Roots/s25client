@@ -33,9 +33,9 @@ EventManager::~EventManager()
 
 void EventManager::Clear()
 {
-    for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
+    for(auto& event : events)
     {
-        for(const GameEvent* ev : it->second)
+        for(const GameEvent* ev : event.second)
         {
             delete ev;
             RTTR_Assert(numActiveEvents > 0u);
@@ -45,10 +45,10 @@ void EventManager::Clear()
     events.clear();
     RTTR_Assert(numActiveEvents == 0u);
 
-    for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
+    for(auto& it : killList)
     {
-        GameObject* obj = *it;
-        *it = nullptr;
+        GameObject* obj = it;
+        it = nullptr;
         delete obj;
     }
     killList.clear();
@@ -103,11 +103,11 @@ void EventManager::ExecuteNextGF()
 void EventManager::DestroyCurrentObjects()
 {
     // Remove all objects
-    for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
+    for(auto& it : killList)
     {
-        GameObject* obj = *it;
+        GameObject* obj = it;
         // Object is no longer in the kill list (some may check this upon destruction)
-        *it = nullptr;
+        it = nullptr;
         obj->Destroy();
         delete obj;
     }
@@ -118,8 +118,8 @@ void EventManager::DestroyCurrentObjects()
 std::vector<const GameEvent*> EventManager::GetEvents() const
 {
     std::vector<const GameEvent*> nextEv;
-    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
-        nextEv.insert(nextEv.end(), it->second.begin(), it->second.end());
+    for(const auto& event : events)
+        nextEv.insert(nextEv.end(), event.second.begin(), event.second.end());
     return nextEv;
 }
 
@@ -209,9 +209,9 @@ void EventManager::Deserialize(SerializedGameData& sgd)
 
 bool EventManager::ObjectHasEvents(const GameObject& obj)
 {
-    for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
+    for(auto& event : events)
     {
-        for(const GameEvent* ev : it->second)
+        for(const GameEvent* ev : event.second)
         {
             if(ev->obj == &obj)
                 return true;

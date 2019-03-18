@@ -256,9 +256,9 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
     std::array<Animation::RepeatType, 4> rpts = {
       {Animation::RPT_None, Animation::RPT_Repeat, Animation::RPT_Oscillate, Animation::RPT_OscillateOnce}};
 
-    for(unsigned i = 0; i < rpts.size(); i++)
+    for(auto& rpt : rpts)
     {
-        bool isOscillate = rpts[i] == Animation::RPT_Oscillate || rpts[i] == Animation::RPT_OscillateOnce;
+        bool isOscillate = rpt == Animation::RPT_Oscillate || rpt == Animation::RPT_OscillateOnce;
         unsigned expectedLastFrame = 5;
         // Those have to go back
         if(isOscillate)
@@ -266,14 +266,14 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
 
         // Finish before it started -> 1 frame executed right away
         lastFrame = 9999;
-        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpts[i]));
+        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.finishElementAnimations(bt->GetID(), false);
         BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
         BOOST_REQUIRE_EQUAL(lastFrame, expectedLastFrame);
 
         // Start animation, then finish it before 1st (actually 2nd) frame is run
         lastFrame = 9999;
-        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpts[i]));
+        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.update(time += 10);
         animMgr.finishElementAnimations(bt->GetID(), false);
         // Non-oscillating have to go to end, oscillate already are
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
         BOOST_REQUIRE_EQUAL(lastFrame, expectedLastFrame);
         // Force
         lastFrame = 9999;
-        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpts[i]));
+        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.update(time += 10);
         animMgr.finishElementAnimations(bt->GetID(), true);
         BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
 
         // Start animation and run to 2nd frame, finish and run to end
         lastFrame = 9999;
-        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpts[i]));
+        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.update(time += 10);
         animMgr.update(time += 10);
         animMgr.finishElementAnimations(bt->GetID(), false);
@@ -311,7 +311,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
 
         // Go through whole animation -> oscillate are half way, others finished
         lastFrame = 9999;
-        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpts[i]));
+        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.update(time += 10);
         animMgr.update(time += 50);
         animMgr.finishElementAnimations(bt->GetID(), false);
@@ -326,27 +326,27 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
 
         // Go twice through except repeat which needs another frame -> all are finished
         lastFrame = 9999;
-        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpts[i]));
+        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.update(time += 10);
         animMgr.update(time += 100);
         // Another frame for repeat mode
-        if(rpts[i] == Animation::RPT_Repeat)
+        if(rpt == Animation::RPT_Repeat)
             animMgr.update(time += 10);
         animMgr.finishElementAnimations(bt->GetID(), false);
         BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
         BOOST_REQUIRE_EQUAL(lastFrame, expectedLastFrame);
     }
     // Test finish immediately for all dts
-    for(unsigned i = 0; i < rpts.size(); i++)
+    for(auto& rpt : rpts)
     {
-        bool isOscillate = rpts[i] == Animation::RPT_Oscillate || rpts[i] == Animation::RPT_OscillateOnce;
+        bool isOscillate = rpt == Animation::RPT_Oscillate || rpt == Animation::RPT_OscillateOnce;
         unsigned expectedLastFrame = 5;
         // Those have to go back
         if(isOscillate)
             expectedLastFrame = 0;
         // Unstarted
         lastFrame = 9999;
-        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpts[i]));
+        animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.finishElementAnimations(bt->GetID(), true);
         BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
         BOOST_REQUIRE_EQUAL(lastFrame, expectedLastFrame);
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
         for(unsigned dt = 0; dt < 200; dt++)
         {
             lastFrame = 9999;
-            animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpts[i]));
+            animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
             animMgr.update(time += 1);
             animMgr.update(time += dt);
             animMgr.finishElementAnimations(bt->GetID(), true);

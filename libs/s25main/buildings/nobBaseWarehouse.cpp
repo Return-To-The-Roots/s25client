@@ -71,18 +71,18 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, 
 nobBaseWarehouse::~nobBaseWarehouse()
 {
     // Waiting Wares löschen
-    for(std::list<Ware*>::iterator it = waiting_wares.begin(); it != waiting_wares.end(); ++it)
-        delete(*it);
+    for(auto& waiting_ware : waiting_wares)
+        delete waiting_ware;
 }
 
 void nobBaseWarehouse::DestroyBuilding()
 {
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
-    for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
-        (*it)->GoHome();
+    for(auto& dependent_figure : dependent_figures)
+        dependent_figure->GoHome();
     dependent_figures.clear();
-    for(std::list<Ware*>::iterator it = dependent_wares.begin(); it != dependent_wares.end(); ++it)
-        WareNotNeeded(*it);
+    for(auto& dependent_ware : dependent_wares)
+        WareNotNeeded(dependent_ware);
     dependent_wares.clear();
 
     // ggf. Events abmelden
@@ -92,10 +92,10 @@ void nobBaseWarehouse::DestroyBuilding()
     GetEvMgr().RemoveEvent(store_event);
 
     // Waiting Wares löschen
-    for(std::list<Ware*>::iterator it = waiting_wares.begin(); it != waiting_wares.end(); ++it)
+    for(auto& waiting_ware : waiting_wares)
     {
-        (*it)->WareLost(player);
-        delete(*it);
+        waiting_ware->WareLost(player);
+        delete waiting_ware;
     }
     waiting_wares.clear();
 
@@ -192,11 +192,11 @@ void nobBaseWarehouse::Clear()
 
     inventory.clear();
 
-    for(std::list<Ware*>::iterator it = waiting_wares.begin(); it != waiting_wares.end(); ++it)
+    for(auto& waiting_ware : waiting_wares)
     {
-        (*it)->WareLost(player);
-        (*it)->Destroy();
-        delete(*it);
+        waiting_ware->WareLost(player);
+        waiting_ware->Destroy();
+        delete waiting_ware;
     }
 
     waiting_wares.clear();
@@ -550,15 +550,15 @@ void nobBaseWarehouse::HandleLeaveEvent()
     if(GetGOT() != GOT_NOB_HARBORBUILDING)
     {
         Inventory should = inventory.real;
-        for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
+        for(auto& it : leave_house)
         {
             // Don't count warehouse workers
-            if(!(*it)->MemberOfWarehouse())
+            if(!it->MemberOfWarehouse())
             {
-                if((*it)->GetJobType() == JOB_BOATCARRIER)
+                if(it->GetJobType() == JOB_BOATCARRIER)
                     should.Add(JOB_HELPER);
                 else
-                    should.Add((*it)->GetJobType());
+                    should.Add(it->GetJobType());
             }
         }
         RTTR_Assert(should.people == inventory.visual.people);

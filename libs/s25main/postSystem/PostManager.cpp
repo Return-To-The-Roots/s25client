@@ -29,8 +29,8 @@ PostManager::PostManager()
 
 PostManager::~PostManager()
 {
-    for(unsigned i = 0; i < postBoxes.size(); i++)
-        delete postBoxes[i];
+    for(auto& postBoxe : postBoxes)
+        delete postBoxe;
 }
 
 PostBox* PostManager::AddPostBox(unsigned player)

@@ -188,10 +188,8 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
     LOG.write(_("Searching for drivers in %s\n")) % path;
     std::vector<std::string> driver_files = ListDir(path, extension, false);
 
-    for(std::vector<std::string>::iterator it = driver_files.begin(); it != driver_files.end(); ++it)
+    for(auto path : driver_files)
     {
-        std::string path(*it);
-
 #ifdef _WIN32
         // check filename to "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
         size_t filepos = path.find_last_of("/\\");

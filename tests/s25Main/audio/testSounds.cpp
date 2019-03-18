@@ -95,10 +95,10 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
     BOOST_REQUIRE(AUDIODRIVER.IsEffectPlaying(id));
     AUDIODRIVER.StopEffect(id);
     BOOST_REQUIRE(!AUDIODRIVER.IsEffectPlaying(id));
-    for(unsigned i = 0; i < musicFiles.size(); i++)
+    for(const auto& musicFile : musicFiles)
     {
         libsiedler2::Archiv musicArchiv;
-        BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR + musicFiles[i], musicArchiv), 0);
+        BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR + musicFile, musicArchiv), 0);
         MusicItem* music = dynamic_cast<MusicItem*>(musicArchiv[0]);
         BOOST_REQUIRE(music);
         BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);

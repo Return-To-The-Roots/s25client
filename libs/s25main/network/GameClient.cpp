@@ -1188,9 +1188,9 @@ bool GameClient::OnGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 
     // stückeln...
     std::vector<RandomEntry> part;
-    for(std::vector<RandomEntry>::iterator it = async_log.begin(); it != async_log.end(); ++it)
+    for(auto& it : async_log)
     {
-        part.push_back(*it);
+        part.push_back(it);
 
         if(part.size() == 10)
         {

@@ -195,23 +195,23 @@ void nofActiveSoldier::ExpelEnemies()
 
     // At the position of the soldier
     const std::list<noBase*>& fieldFigures = gwg->GetFigures(pos);
-    for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
+    for(auto fieldFigure : fieldFigures)
     {
-        if((*it)->GetType() == NOP_FIGURE)
-            figures.push_back(static_cast<noFigure*>(*it));
+        if(fieldFigure->GetType() == NOP_FIGURE)
+            figures.push_back(static_cast<noFigure*>(fieldFigure));
     }
 
     // And around this point
     for(unsigned i = 0; i < 6; ++i)
     {
         const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetNeighbour(pos, Direction::fromInt(i)));
-        for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
+        for(auto fieldFigure : fieldFigures)
         {
             // Normal settler?
             // Don't disturb hedgehogs and rabbits!
-            if((*it)->GetType() == NOP_FIGURE)
+            if(fieldFigure->GetType() == NOP_FIGURE)
             {
-                noFigure* fig = static_cast<noFigure*>(*it);
+                noFigure* fig = static_cast<noFigure*>(fieldFigure);
                 // The people have to be either on the point itself or they have to walk there
                 if(fig->GetPos() == pos)
                     figures.push_back(fig);
@@ -223,9 +223,8 @@ void nofActiveSoldier::ExpelEnemies()
 
     // Let's see which things are netted and sort the wrong things out
     // ( Don't annoy Erika Steinbach! )
-    for(std::vector<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+    for(auto fig : figures)
     {
-        noFigure* fig = *it;
         // Enemy of us and no soldier?
         // And he has to walking on the road (don't disturb free workers like woodcutters etc.)
         if(!gwg->GetPlayer(player).IsAlly(fig->GetPlayer()) && !fig->IsSoldier() && fig->IsWalkingOnRoad())

@@ -42,8 +42,8 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
 {
-    for(PeopleArray::iterator it = people.begin(); it != people.end(); ++it)
-        *it = sgd.PopUnsignedInt();
+    for(unsigned int& it : people)
+        it = sgd.PopUnsignedInt();
 }
 
 BurnedWarehouse::~BurnedWarehouse() {}
@@ -61,8 +61,8 @@ void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedInt(go_out_phase);
 
-    for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
-        sgd.PushUnsignedInt(*it);
+    for(unsigned int it : people)
+        sgd.PushUnsignedInt(it);
 }
 
 void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
@@ -142,8 +142,8 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         // fertig, sich selbst töten
         GetEvMgr().AddToKillList(this);
         // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
-        for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
-            RTTR_Assert(*it == 0);
+        for(unsigned int it : people)
+            RTTR_Assert(it == 0);
     } else
     {
         // Nächstes Event anmelden

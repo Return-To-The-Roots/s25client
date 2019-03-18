@@ -197,8 +197,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         }
 
         // Figuren zwischen den Zeilen zeichnen
-        for(unsigned i = 0; i < between_lines.size(); ++i)
-            between_lines[i].obj->Draw(between_lines[i].pos);
+        for(auto& between_line : between_lines)
+            between_line.obj->Draw(between_line.pos);
     }
 
     if(show_names || show_productivity)
@@ -207,10 +207,10 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
     // Umherfliegende Katapultsteine zeichnen
-    for(std::list<CatapultStone*>::const_iterator it = GetWorld().catapult_stones.begin(); it != GetWorld().catapult_stones.end(); ++it)
+    for(auto catapult_stone : GetWorld().catapult_stones)
     {
-        if(gwv.GetVisibility((*it)->dest_building) == VIS_VISIBLE || gwv.GetVisibility((*it)->dest_map) == VIS_VISIBLE)
-            (*it)->Draw(offset);
+        if(gwv.GetVisibility(catapult_stone->dest_building) == VIS_VISIBLE || gwv.GetVisibility(catapult_stone->dest_map) == VIS_VISIBLE)
+            catapult_stone->Draw(offset);
     }
 
     if(zoomFactor_ != 1.f) //-V550

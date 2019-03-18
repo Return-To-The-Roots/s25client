@@ -70,8 +70,8 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
 
     for(std::list<Ware*>& orderedWare : ordered_wares)
         sgd.PopObjectContainer(orderedWare, GOT_WARE);
-    for(unsigned i = 0; i < last_productivities.size(); ++i)
-        last_productivities[i] = sgd.PopUnsignedShort();
+    for(unsigned short& last_productivitie : last_productivities)
+        last_productivitie = sgd.PopUnsignedShort();
 }
 
 void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
@@ -93,8 +93,8 @@ void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
         sgd.PushUnsignedChar(numWares[i]);
     for(const std::list<Ware*>& orderedWare : ordered_wares)
         sgd.PushObjectContainer(orderedWare, true);
-    for(unsigned i = 0; i < last_productivities.size(); ++i)
-        sgd.PushUnsignedShort(last_productivities[i]);
+    for(unsigned short last_productivitie : last_productivities)
+        sgd.PushUnsignedShort(last_productivitie);
 }
 
 nobUsual::~nobUsual() {}

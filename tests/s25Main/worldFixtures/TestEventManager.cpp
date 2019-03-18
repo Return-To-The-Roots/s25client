@@ -41,9 +41,9 @@ unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
 std::vector<const GameEvent*> TestEventManager::GetObjEvents(const GameObject& obj) const
 {
     std::vector<const GameEvent*> objEvnts;
-    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
+    for(const auto& event : events)
     {
-        for(const GameEvent* ev : it->second)
+        for(const GameEvent* ev : event.second)
         {
             if(ev->obj == &obj)
                 objEvnts.push_back(ev);
@@ -54,9 +54,9 @@ std::vector<const GameEvent*> TestEventManager::GetObjEvents(const GameObject& o
 
 bool TestEventManager::IsEventActive(const GameObject& obj, const unsigned id) const
 {
-    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
+    for(const auto& event : events)
     {
-        for(const GameEvent* ev : it->second)
+        for(const GameEvent* ev : event.second)
         {
             if(ev->id == id && ev->obj == &obj)
                 return true;

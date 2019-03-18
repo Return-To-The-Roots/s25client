@@ -34,11 +34,11 @@ void FoWNode::Serialize(SerializedGameData& sgd) const
     {
         sgd.PushUnsignedInt(last_update_time);
         sgd.PushFOWObject(object);
-        for(unsigned r = 0; r < roads.size(); ++r)
-            sgd.PushUnsignedChar(roads[r]);
+        for(unsigned char road : roads)
+            sgd.PushUnsignedChar(road);
         sgd.PushUnsignedChar(owner);
-        for(unsigned b = 0; b < boundary_stones.size(); ++b)
-            sgd.PushUnsignedChar(boundary_stones[b]);
+        for(unsigned char boundary_stone : boundary_stones)
+            sgd.PushUnsignedChar(boundary_stone);
     }
 }
 
@@ -50,19 +50,19 @@ void FoWNode::Deserialize(SerializedGameData& sgd)
     {
         last_update_time = sgd.PopUnsignedInt();
         object = sgd.PopFOWObject();
-        for(unsigned r = 0; r < roads.size(); ++r)
-            roads[r] = sgd.PopUnsignedChar();
+        for(unsigned char& road : roads)
+            road = sgd.PopUnsignedChar();
         owner = sgd.PopUnsignedChar();
-        for(unsigned b = 0; b < boundary_stones.size(); ++b)
-            boundary_stones[b] = sgd.PopUnsignedChar();
+        for(unsigned char& boundary_stone : boundary_stones)
+            boundary_stone = sgd.PopUnsignedChar();
     } else
     {
         last_update_time = 0;
         object = nullptr;
-        for(unsigned r = 0; r < roads.size(); ++r)
-            roads[r] = 0;
+        for(unsigned char& road : roads)
+            road = 0;
         owner = 0;
-        for(unsigned b = 0; b < boundary_stones.size(); ++b)
-            boundary_stones[b] = 0;
+        for(unsigned char& boundary_stone : boundary_stones)
+            boundary_stone = 0;
     }
 }

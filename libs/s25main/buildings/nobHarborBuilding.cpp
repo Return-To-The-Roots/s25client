@@ -122,18 +122,18 @@ void nobHarborBuilding::DestroyBuilding()
     // cancel all jobs wanted for this building
     owner.JobNotWanted(this, true);
     // Waiting Wares löschen
-    for(std::list<Ware*>::iterator it = wares_for_ships.begin(); it != wares_for_ships.end(); ++it)
+    for(auto& wares_for_ship : wares_for_ships)
     {
-        (*it)->WareLost(player);
-        (*it)->Destroy();
-        delete(*it);
+        wares_for_ship->WareLost(player);
+        wares_for_ship->Destroy();
+        delete wares_for_ship;
     }
     wares_for_ships.clear();
 
     // Leute, die noch aufs Schiff warten, rausschicken
-    for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
+    for(auto& figures_for_ship : figures_for_ships)
     {
-        noFigure* figure = it->fig;
+        noFigure* figure = figures_for_ship.fig;
         gwg->AddFigure(pos, figure);
 
         figure->Abrogate();
@@ -142,9 +142,9 @@ void nobHarborBuilding::DestroyBuilding()
     }
     figures_for_ships.clear();
 
-    for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
+    for(auto& soldiers_for_ship : soldiers_for_ships)
     {
-        nofAttacker* soldier = it->attacker;
+        nofAttacker* soldier = soldiers_for_ship.attacker;
         gwg->AddFigure(pos, soldier);
 
         soldier->CancelSeaAttack();
@@ -169,20 +169,20 @@ void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
     expedition.Serialize(sgd);
     exploration_expedition.Serialize(sgd);
     sgd.PushEvent(orderware_ev);
-    for(unsigned i = 0; i < 6; ++i)
-        sgd.PushUnsignedShort(seaIds[i]);
+    for(unsigned short seaId : seaIds)
+        sgd.PushUnsignedShort(seaId);
     sgd.PushObjectContainer(wares_for_ships, true);
     sgd.PushUnsignedInt(figures_for_ships.size());
-    for(std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
+    for(const auto& figures_for_ship : figures_for_ships)
     {
-        sgd.PushMapPoint(it->dest);
-        sgd.PushObject(it->fig, false);
+        sgd.PushMapPoint(figures_for_ship.dest);
+        sgd.PushObject(figures_for_ship.fig, false);
     }
     sgd.PushUnsignedInt(soldiers_for_ships.size());
-    for(std::list<SoldierForShip>::const_iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
+    for(const auto& soldiers_for_ship : soldiers_for_ships)
     {
-        sgd.PushMapPoint(it->dest);
-        sgd.PushObject(it->attacker, true);
+        sgd.PushMapPoint(soldiers_for_ship.dest);
+        sgd.PushObject(soldiers_for_ship.attacker, true);
     }
 }
 
@@ -192,8 +192,8 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
 
-    for(unsigned i = 0; i < 6; ++i)
-        seaIds[i] = sgd.PopUnsignedShort();
+    for(unsigned short& seaId : seaIds)
+        seaId = sgd.PopUnsignedShort();
 
     sgd.PopObjectContainer(wares_for_ships, GOT_WARE);
 
@@ -570,13 +570,13 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         // figure/ware with a valid target instead
         MapPoint dest;
         bool gotdest = false;
-        for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
+        for(auto& figures_for_ship : figures_for_ships)
         {
-            noBase* nb = gwg->GetNO(it->dest);
+            noBase* nb = gwg->GetNO(figures_for_ship.dest);
             if(nb->GetGOT() == GOT_NOB_HARBORBUILDING
-               && gwg->GetNode(it->dest).owner == player + 1) // target is a harbor and owned by the same player
+               && gwg->GetNode(figures_for_ship.dest).owner == player + 1) // target is a harbor and owned by the same player
             {
-                dest = it->dest;
+                dest = figures_for_ship.dest;
                 gotdest = true;
                 break;
             }
@@ -788,9 +788,9 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
     {
         // Alle Figuren durchkommen, die noch hierher kommen wollen und gucken, ob ein
         // Bauarbeiter dabei ist
-        for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
+        for(auto& dependent_figure : dependent_figures)
         {
-            if((*it)->GetJobType() == JOB_BUILDER)
+            if(dependent_figure->GetJobType() == JOB_BUILDER)
                 // Brauchen keinen bestellen, also raus
                 return;
         }
@@ -803,9 +803,9 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
     else if(figure->GetJobType() == JOB_SCOUT && exploration_expedition.active)
     {
         unsigned scouts_coming = 0;
-        for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
+        for(auto& dependent_figure : dependent_figures)
         {
-            if((*it)->GetJobType() == JOB_SCOUT)
+            if(dependent_figure->GetJobType() == JOB_SCOUT)
                 ++scouts_coming;
         }
 
@@ -832,19 +832,19 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
         return connections;
 
     std::vector<nobHarborBuilding*> harbor_buildings;
-    for(unsigned short dir = 0; dir < Direction::COUNT; ++dir)
+    for(unsigned short seaId : seaIds)
     {
-        if(seaIds[dir] != 0)
-            gwg->GetPlayer(player).GetHarborsAtSea(harbor_buildings, seaIds[dir]);
+        if(seaId != 0)
+            gwg->GetPlayer(player).GetHarborsAtSea(harbor_buildings, seaId);
     }
 
-    for(unsigned i = 0; i < harbor_buildings.size(); ++i)
+    for(auto& harbor_building : harbor_buildings)
     {
         ShipConnection sc;
-        sc.dest = harbor_buildings[i];
+        sc.dest = harbor_building;
         // Als Kantengewicht nehmen wir die doppelte Entfernung (evtl muss ja das Schiff erst kommen)
         // plus einer Kopfpauschale (Ein/Ausladen usw. dauert ja alles)
-        sc.way_costs = 2 * gwg->CalcHarborDistance(GetHarborPosID(), harbor_buildings[i]->GetHarborPosID()) + 10;
+        sc.way_costs = 2 * gwg->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 10;
         connections.push_back(sc);
     }
     return connections;
@@ -896,20 +896,20 @@ unsigned nobHarborBuilding::GetNumNeededShips() const
         // Die verschiedenen Zielhäfen -> Für jeden Hafen ein Schiff ordern
         std::vector<MapPoint> destinations;
 
-        for(std::list<FigureForShip>::const_iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
+        for(const auto& figures_for_ship : figures_for_ships)
         {
-            if(!helpers::contains(destinations, it->dest))
+            if(!helpers::contains(destinations, figures_for_ship.dest))
             {
-                destinations.push_back(it->dest);
+                destinations.push_back(figures_for_ship.dest);
                 ++count;
             }
         }
 
-        for(std::list<Ware*>::const_iterator it = wares_for_ships.begin(); it != wares_for_ships.end(); ++it)
+        for(auto wares_for_ship : wares_for_ships)
         {
-            if(!helpers::contains(destinations, (*it)->GetNextHarbor()))
+            if(!helpers::contains(destinations, wares_for_ship->GetNextHarbor()))
             {
-                destinations.push_back((*it)->GetNextHarbor());
+                destinations.push_back(wares_for_ship->GetNextHarbor());
                 ++count;
             }
         }
@@ -919,11 +919,11 @@ unsigned nobHarborBuilding::GetNumNeededShips() const
     {
         // Die verschiedenen Zielhäfen -> Für jeden Hafen ein Schiff ordern
         std::vector<MapPoint> different_dests;
-        for(std::list<SoldierForShip>::const_iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
+        for(const auto& soldiers_for_ship : soldiers_for_ships)
         {
-            if(!helpers::contains(different_dests, it->dest))
+            if(!helpers::contains(different_dests, soldiers_for_ship.dest))
             {
-                different_dests.push_back(it->dest);
+                different_dests.push_back(soldiers_for_ship.dest);
                 ++count;
             }
         }
@@ -1072,10 +1072,10 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
     figures.clear();
 
     // Waren zur Warteliste hinzufügen
-    for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
+    for(auto& ware : wares)
     {
-        (*it)->ShipJorneyEnded(this);
-        AddWare(*it);
+        ware->ShipJorneyEnded(this);
+        AddWare(ware);
     }
     wares.clear();
 }
@@ -1139,25 +1139,25 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     sortedMilitaryBlds all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
     // Und zählen
-    for(sortedMilitaryBlds::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
+    for(auto& all_building : all_buildings)
     {
-        if((*it)->GetGOT() != GOT_NOB_MILITARY)
+        if(all_building->GetGOT() != GOT_NOB_MILITARY)
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
-        if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
+        if(all_building->GetPlayer() != player || gwg->CalcDistance(all_building->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
         // Gebäude suchen, vielleicht schon vorhanden? Dann können wir uns den pathfinding Aufwand sparen!
-        if(helpers::contains(buildings, static_cast<nobMilitary*>(*it)))
+        if(helpers::contains(buildings, static_cast<nobMilitary*>(all_building)))
         {
             // Dann zum nächsten test
             continue;
         }
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!gwg->FindHumanPath((*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
+        if(!gwg->FindHumanPath(all_building->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             continue;
         // neues Gebäude mit weg und allem -> in die Liste!
-        SeaAttackerBuilding sab = {static_cast<nobMilitary*>(*it), this, 0};
+        SeaAttackerBuilding sab = {static_cast<nobMilitary*>(all_building), this, 0};
         buildings.push_back(sab);
     }
     return buildings;
@@ -1169,33 +1169,34 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     sortedMilitaryBlds all_buildings = gwg->LookForMilitaryBuildings(pos, 3);
     // Und zählen
-    for(sortedMilitaryBlds::iterator it = all_buildings.begin(); it != all_buildings.end(); ++it)
+    for(auto& all_building : all_buildings)
     {
-        if((*it)->GetGOT() != GOT_NOB_MILITARY)
+        if(all_building->GetGOT() != GOT_NOB_MILITARY)
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
-        if((*it)->GetPlayer() != player || gwg->CalcDistance((*it)->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
+        if(all_building->GetPlayer() != player || gwg->CalcDistance(all_building->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
 
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(gwg->FindHumanPath((*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE) == 0xFF)
+        if(gwg->FindHumanPath(all_building->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE) == 0xFF)
             continue;
 
         // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
         unsigned min_distance = 0xffffffff;
-        for(unsigned i = 0; i < defender_harbors.size(); ++i)
+        for(unsigned int defender_harbor : defender_harbors)
         {
-            min_distance = std::min(min_distance, gwg->CalcHarborDistance(GetHarborPosID(), defender_harbors.at(i)));
+            min_distance = std::min(min_distance, gwg->CalcHarborDistance(GetHarborPosID(), defender_harbor));
         }
 
         // Gebäude suchen, vielleicht schon vorhanden?
-        std::vector<SeaAttackerBuilding>::iterator it2 = std::find(buildings.begin(), buildings.end(), static_cast<nobMilitary*>(*it));
+        std::vector<SeaAttackerBuilding>::iterator it2 =
+          std::find(buildings.begin(), buildings.end(), static_cast<nobMilitary*>(all_building));
         // Noch nicht vorhanden?
         if(it2 == buildings.end())
         {
             // Dann neu hinzufügen
-            SeaAttackerBuilding sab = {static_cast<nobMilitary*>(*it), this, min_distance};
+            SeaAttackerBuilding sab = {static_cast<nobMilitary*>(all_building), this, min_distance};
             buildings.push_back(sab);
         }
         // Oder vorhanden und jetzige Distanz ist kleiner?
@@ -1216,13 +1217,13 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
     unsigned best_harbor_point = 0xffffffff;
     RTTR_Assert(attacker->GetAttackedGoal());
     std::vector<unsigned> harbor_points = gwg->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos());
-    for(unsigned i = 0; i < harbor_points.size(); ++i)
+    for(unsigned int harbor_point : harbor_points)
     {
-        unsigned tmp_distance = gwg->CalcHarborDistance(this->GetHarborPosID(), harbor_points[i]);
+        unsigned tmp_distance = gwg->CalcHarborDistance(this->GetHarborPosID(), harbor_point);
         if(tmp_distance < best_distance)
         {
             best_distance = tmp_distance;
-            best_harbor_point = harbor_points[i];
+            best_harbor_point = harbor_point;
         }
     }
 
@@ -1275,11 +1276,11 @@ unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type) const
 
     unsigned ordered_boards = 0, ordered_stones = 0;
     // Ermitteln, wiviele Bretter und Steine auf dem Weg zum Lagerhaus sind
-    for(std::list<Ware*>::const_iterator it = dependent_wares.begin(); it != dependent_wares.end(); ++it)
+    for(auto dependent_ware : dependent_wares)
     {
-        if((*it)->type == GD_BOARDS)
+        if(dependent_ware->type == GD_BOARDS)
             ++ordered_boards;
-        else if((*it)->type == GD_STONES)
+        else if(dependent_ware->type == GD_STONES)
             ++ordered_stones;
     }
 

@@ -162,9 +162,9 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     std::vector<DrawPoint> imgPts;
     // Left, right, top, bottom
     imgPts += DrawPoint(30, 30), DrawPoint(300, 30), DrawPoint(150, 30), DrawPoint(150, 300);
-    for(unsigned i = 0; i < imgPts.size(); i++)
+    for(const auto& imgPt : imgPts)
     {
-        const_cast<iwMsgbox*>(wnd)->MoveIcon(imgPts[i]);
+        const_cast<iwMsgbox*>(wnd)->MoveIcon(imgPt);
         Rect imgRect(img->GetPos() - actImg->GetOrigin(), actImg->GetSize());
         // Image must be in wnd
         BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), imgRect.right);

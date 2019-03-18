@@ -169,8 +169,8 @@ PostBox& dskGameInterface::GetPostBox()
 
 dskGameInterface::~dskGameInterface()
 {
-    for(unsigned i = 0; i < borders.size(); i++)
-        deletePtr(borders[i]);
+    for(auto& border : borders)
+        deletePtr(border);
     GAMECLIENT.RemoveInterface(this);
     LOBBYCLIENT.RemoveListener(this);
 }
@@ -219,8 +219,8 @@ void dskGameInterface::Resize(const Extent& newSize)
     Window::Resize(newSize);
 
     // recreate borders
-    for(unsigned i = 0; i < borders.size(); i++)
-        deletePtr(borders[i]);
+    for(auto& border : borders)
+        deletePtr(border);
     cbb.buildBorder(newSize, borders);
 
     // move buttons
@@ -948,11 +948,11 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
     }
 
     // Weg (visuell) bauen
-    for(unsigned i = 0; i < new_route.size(); ++i)
+    for(auto i : new_route)
     {
-        worldViewer.SetVisiblePointRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
+        worldViewer.SetVisiblePointRoad(road.point, i, (road.mode == RM_BOAT) ? 3 : 1);
         worldViewer.RecalcBQForRoad(road.point);
-        road.point = worldViewer.GetWorld().GetNeighbour(road.point, new_route[i]);
+        road.point = worldViewer.GetWorld().GetNeighbour(road.point, i);
     }
     worldViewer.RecalcBQForRoad(road.point);
 

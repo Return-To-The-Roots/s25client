@@ -101,16 +101,16 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
                 distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(tile, Position(map.hqPositions[i]), map.size));
             }
 
-            for(std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
+            for(auto& area : areas)
             {
-                if(it->IsInArea(tile, distanceToPlayer, map.size))
+                if(area.IsInArea(tile, distanceToPlayer, map.size))
                 {
-                    const int pr = (int)it->likelyhoodHill;
-                    const int maxZ = it->maxElevation;
+                    const int pr = (int)area.likelyhoodHill;
+                    const int maxZ = area.maxElevation;
 
                     if(maxZ > 0 && config.Rand(101) <= pr)
                     {
-                        unsigned z = (unsigned)config.Rand(it->minElevation, maxZ + 1);
+                        unsigned z = (unsigned)config.Rand(area.minElevation, maxZ + 1);
                         helper.SetHill(map, tile, z);
                     }
                 }
@@ -138,13 +138,13 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
         for(int i = 0; i < players; i++)
             distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(pt, Position(map.hqPositions[i]), map.size));
 
-        for(std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
+        for(auto& area : areas)
         {
-            if(it->IsInArea(pt, distanceToPlayer, map.size))
+            if(area.IsInArea(pt, distanceToPlayer, map.size))
             {
-                if(static_cast<unsigned>(config.Rand(0, 100)) < it->likelyhoodTree)
+                if(static_cast<unsigned>(config.Rand(0, 100)) < area.likelyhoodTree)
                     helper.SetTree(map, pt);
-                else if(static_cast<unsigned>(config.Rand(0, 100)) < it->likelyhoodStone)
+                else if(static_cast<unsigned>(config.Rand(0, 100)) < area.likelyhoodStone)
                     helper.SetStone(map, pt);
             }
         }
@@ -201,12 +201,12 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
             // ensure there's water close to the coast texture
             bool waterNeighbor = false;
             std::vector<int> neighbors = VertexUtility::GetNeighbors(pt, map.size, 1);
-            for(std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
+            for(int& neighbor : neighbors)
             {
-                if(helper.objGen.IsTexture(map, *it, textures[maxWaterIndex]))
+                if(helper.objGen.IsTexture(map, neighbor, textures[maxWaterIndex]))
                 {
                     waterNeighbor = true;
-                    water = VertexUtility::GetPosition(*it, map.size);
+                    water = VertexUtility::GetPosition(neighbor, map.size);
                     break;
                 }
             }
@@ -215,9 +215,9 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
 
             // ensure there's no other harbor nearby
             double closestHarbor = MIN_HARBOR_DISTANCE + 1.0;
-            for(std::vector<Position>::iterator it = harbors.begin(); it != harbors.end(); ++it)
+            for(auto& harbor : harbors)
             {
-                closestHarbor = std::min(closestHarbor, VertexUtility::Distance(pt, *it, map.size));
+                closestHarbor = std::min(closestHarbor, VertexUtility::Distance(pt, harbor, map.size));
             }
 
             if(closestHarbor < MIN_HARBOR_DISTANCE)

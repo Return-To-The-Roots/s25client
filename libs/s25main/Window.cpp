@@ -160,8 +160,8 @@ void Window::SetActive(bool activate)
  */
 void Window::ActivateControls(bool activate)
 {
-    for(std::map<unsigned, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-        it->second->SetActive(activate);
+    for(auto& it : childIdToWnd_)
+        it.second->SetActive(activate);
 }
 
 /**

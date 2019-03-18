@@ -289,11 +289,11 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
         std::advance(it, randomStore);
         const MapPoint whPos = (*it)->GetPos();
         UpdateNodesAround(whPos, 15); // update the area we want to build in first
-        for(unsigned i = 0; i < bldToTest.size(); i++)
+        for(auto& i : bldToTest)
         {
-            if(construction->Wanted(bldToTest[i]))
+            if(construction->Wanted(i))
             {
-                AddBuildJobAroundEveryWarehouse(bldToTest[i]); // add a buildorder for the picked buildingtype at every warehouse
+                AddBuildJobAroundEveryWarehouse(i); // add a buildorder for the picked buildingtype at every warehouse
             }
         }
         if(gf > 1500 || aii.GetInventory().goods[GD_BOARDS] > 11)
@@ -1883,9 +1883,9 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction>
     }
 
     // along the road
-    for(unsigned i = 0; i < route_road.size(); ++i)
+    for(auto i : route_road)
     {
-        pt = gwb.GetNeighbour(pt, route_road[i]);
+        pt = gwb.GetNeighbour(pt, i);
         RecalcBQAround(pt);
         // Auch Plantspace entsprechend anpassen:
         if(aiMap[pt].res == AIResource::PLANTSPACE)
@@ -1975,10 +1975,10 @@ void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
     std::vector<const noFlag*> flags = construction->FindFlags(pt, 25);
     // Jede Flagge testen...
     std::vector<const noFlag*> reconnectflags;
-    for(unsigned i = 0; i < flags.size(); ++i)
+    for(auto& flag : flags)
     {
-        if(RemoveUnusedRoad(*flags[i], 255, true, false))
-            reconnectflags.push_back(flags[i]);
+        if(RemoveUnusedRoad(*flag, 255, true, false))
+            reconnectflags.push_back(flag);
     }
     UpdateNodesAround(pt, 25);
     for(const noFlag* flag : reconnectflags)
@@ -2571,8 +2571,8 @@ unsigned AIPlayerJH::CalcMilSettings()
     unsigned InlandTroops[5] = {0, 0, 0, 0, 0}; // how many troops are required to fill inland buildings at settings 4,5,6,7,8
     /// first sum up all soldiers we have
     unsigned numSoldiers = 0;
-    for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
-        numSoldiers += aii.GetInventory().people[SOLDIER_JOBS[i]];
+    for(auto i : SOLDIER_JOBS)
+        numSoldiers += aii.GetInventory().people[i];
 
     // now add up all counts of soldiers that are fixed in use and those that depend on whatever we have as a result
     const unsigned numShouldStayConnected = GetNumPlannedConnectedInlandMilitaryBlds();

@@ -170,13 +170,13 @@ void iwMerchandiseStatistics::DrawStatistic()
 
     // Maximalwert suchen
     unsigned short max = 1;
-    for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); ++it)
+    for(unsigned short it : active)
     {
         for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
         {
-            if(max < stat.merchandiseData[(*it) - 1][i])
+            if(max < stat.merchandiseData[it - 1][i])
             {
-                max = stat.merchandiseData[(*it) - 1][i];
+                max = stat.merchandiseData[it - 1][i];
             }
         }
     }
@@ -189,7 +189,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     DrawPoint previous(0, 0);
     unsigned short currentIndex = stat.currentIndex;
 
-    for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); ++it)
+    for(unsigned short it : active)
     {
         // Testing only:
         // DrawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft + DrawPoint(sizeX, 3 * (*it)), 2, BarColors[(*it) - 1]);
@@ -200,11 +200,11 @@ void iwMerchandiseStatistics::DrawStatistic()
             drawPos.x += (NUM_STAT_STEPS - i) * stepX;
             drawPos.y +=
               sizeY
-              - ((stat.merchandiseData[(*it) - 1][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)]) * sizeY)
+              - ((stat.merchandiseData[it - 1][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)]) * sizeY)
                   / max;
             if(i != 0)
             {
-                DrawLine(drawPos, previous, 2, BarColors[(*it) - 1]);
+                DrawLine(drawPos, previous, 2, BarColors[it - 1]);
             }
             previous = drawPos;
         }

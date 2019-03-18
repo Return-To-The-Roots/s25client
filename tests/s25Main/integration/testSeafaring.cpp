@@ -88,9 +88,9 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
     MapPoint curPt = hqFlagPos;
-    for(unsigned i = 0; i < road.size(); i++)
+    for(auto i : road)
     {
-        curPt = world.GetNeighbour(curPt, road[i]);
+        curPt = world.GetNeighbour(curPt, i);
         this->SetFlag(curPt);
     }
     BOOST_REQUIRE_EQUAL(world.GetBQ(shipyardPos, curPlayer), BQ_CASTLE);
@@ -154,9 +154,9 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(hqFlagPos, false, road);
         MapPoint curPt = hqFlagPos;
-        for(unsigned i = 0; i < road.size(); i++)
+        for(auto& i : road)
         {
-            curPt = world.GetNeighbour(curPt, road[i]);
+            curPt = world.GetNeighbour(curPt, i);
             this->SetFlag(curPt);
         }
 
