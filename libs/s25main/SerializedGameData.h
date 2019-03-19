@@ -52,10 +52,10 @@ public:
     SerializedGameData();
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-    void MakeSnapshot(std::shared_ptr<Game> game);
+    void MakeSnapshot(const std::shared_ptr<Game>& game);
 
     /// Reads the snapshot from the internal buffer
-    void ReadSnapshot(std::shared_ptr<Game> game);
+    void ReadSnapshot(const std::shared_ptr<Game>& game);
 
     unsigned GetGameDataVersion() const { return gameDataVersion; }
 

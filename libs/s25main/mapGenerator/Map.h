@@ -41,7 +41,7 @@ struct Map
      * @param name name of the map
      * @param author author of the map
      */
-    Map(const MapExtent& size, const std::string& name, const std::string& author);
+    Map(const MapExtent& size, std::string name, std::string author);
 
     /**
      * size of the map in vertices.

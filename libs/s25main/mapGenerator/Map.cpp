@@ -15,13 +15,15 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/Map.h"
+
 #include "gameData/MaxPlayers.h"
 #include "libsiedler2/enumTypes.h"
+#include <utility>
 
 Map::Map() : size(0, 0), type(0), numPlayers(0) {}
 
-Map::Map(const MapExtent& size, const std::string& name, const std::string& author)
-    : size(size), name(name), author(author), type(0), numPlayers(0), hqPositions(MAX_PLAYERS, MapPoint::Invalid())
+Map::Map(const MapExtent& size, std::string name, std::string author)
+    : size(size), name(std::move(name)), author(std::move(author)), type(0), numPlayers(0), hqPositions(MAX_PLAYERS, MapPoint::Invalid())
 {
     const unsigned numNodes = size.x * size.y;
 

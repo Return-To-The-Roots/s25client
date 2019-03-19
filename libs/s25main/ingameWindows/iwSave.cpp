@@ -35,6 +35,7 @@
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
 #include <boost/filesystem.hpp>
+#include <utility>
 
 const unsigned NUM_AUTO_SAVE_INTERVALSS = 7;
 
@@ -176,7 +177,7 @@ void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const int selection
         SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1];
 }
 
-iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")), csi(csi)
+iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(0, _("Load game!")), csi(std::move(csi))
 {
     AddEdit(1, DrawPoint(20, 350), Extent(510, 22), TC_GREEN2, NormalFont);
     AddImageButton(2, DrawPoint(540, 346), Extent(40, 40), TC_GREEN2, LOADER.GetImageN("io", 48));

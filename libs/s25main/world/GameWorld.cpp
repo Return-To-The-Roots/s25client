@@ -36,7 +36,7 @@ GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGam
 {}
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(std::shared_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath)
+bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, const std::string& mapFilePath, const std::string& luaFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;
@@ -94,7 +94,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     }
 }
 
-void GameWorld::Deserialize(std::shared_ptr<Game> game, SerializedGameData& sgd)
+void GameWorld::Deserialize(const std::shared_ptr<Game>& game, SerializedGameData& sgd)
 {
     MapSerializer::Deserialize(*this, GetNumPlayers(), sgd);
 

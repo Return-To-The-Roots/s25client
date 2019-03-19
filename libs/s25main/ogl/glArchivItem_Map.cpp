@@ -22,7 +22,7 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 
-glArchivItem_Map::glArchivItem_Map() : ArchivItem_Map(), header(nullptr) {}
+glArchivItem_Map::glArchivItem_Map() : header(nullptr) {}
 
 glArchivItem_Map::~glArchivItem_Map() = default;
 

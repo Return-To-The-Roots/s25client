@@ -20,8 +20,9 @@
 #include "libutil/Log.h"
 #include <boost/algorithm/string/join.hpp>
 #include <algorithm>
+#include <utility>
 
-CheckedLuaTable::CheckedLuaTable(const kaguya::LuaTable& luaTable) : table(luaTable), checkEnabled(false) {}
+CheckedLuaTable::CheckedLuaTable(kaguya::LuaTable luaTable) : table(std::move(luaTable)), checkEnabled(false) {}
 
 CheckedLuaTable::~CheckedLuaTable()
 {

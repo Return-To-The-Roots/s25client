@@ -144,7 +144,7 @@ std::string LuaInterfaceBase::Translate(const std::string& key)
     if(entry == translations_.end())
         return key;
     else
-        return entry->second.c_str();
+        return entry->second;
 }
 
 bool LuaInterfaceBase::ValidateUTF8(const std::string& scriptTxt)

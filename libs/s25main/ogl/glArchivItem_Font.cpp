@@ -98,7 +98,7 @@ T_Iterator nextIt(T_Iterator it)
 
 //////////////////////////////////////////////////////////////////////////
 
-glArchivItem_Font::glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(nullptr), fontWithOutline(nullptr)
+glArchivItem_Font::glArchivItem_Font() : fontNoOutline(nullptr), fontWithOutline(nullptr)
 {
     ClearCharInfoMapping();
 }

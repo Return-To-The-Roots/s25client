@@ -190,14 +190,14 @@ void iwShip::DrawCargo()
     std::vector<unsigned short> orderedFigures = std::vector<unsigned short>(NUM_JOB_TYPES);
 
     // Alle Figuren in Gruppen zählen
-    const std::list<noFigure*> figures = ship->GetFigures();
+    const std::list<noFigure*>& figures = ship->GetFigures();
     for(auto figure : figures)
     {
         orderedFigures[figure->GetJobType()]++;
     }
 
     // Alle Waren in Gruppen zählen
-    const std::list<Ware*> wares = ship->GetWares();
+    const std::list<Ware*>& wares = ship->GetWares();
     for(auto ware : wares)
     {
         orderedWares[ware->type]++;

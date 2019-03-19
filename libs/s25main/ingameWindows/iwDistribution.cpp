@@ -18,6 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDistribution.h"
 
+#include <utility>
+
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -34,7 +36,7 @@
 
 struct iwDistribution::DistributionGroup
 {
-    DistributionGroup(const std::string& name, glArchivItem_Bitmap* img) : name(name), img(img) {}
+    DistributionGroup(std::string name, glArchivItem_Bitmap* img) : name(std::move(name)), img(img) {}
     std::string name;
     glArchivItem_Bitmap* img;
     std::vector<std::string> entries;

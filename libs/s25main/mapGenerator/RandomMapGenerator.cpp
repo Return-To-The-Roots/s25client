@@ -61,13 +61,13 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     for(unsigned i = 0; i < settings.numPlayers; i++)
     {
         // compute headquarter position
-        Position position = helper.ComputePointOnCircle(i, settings.numPlayers, center, rnd);
+        Position position = MapUtility::ComputePointOnCircle(i, settings.numPlayers, center, rnd);
 
         // store headquarter position
         map.hqPositions[i] = MapPoint(position);
 
         // create headquarter
-        helper.objGen.CreateHeadquarter(map, VertexUtility::GetIndexOf(position, map.size), i);
+        ObjectGenerator::CreateHeadquarter(map, VertexUtility::GetIndexOf(position, map.size), i);
     }
 }
 
@@ -79,8 +79,8 @@ void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map& 
         int offset2 = config.Rand(180, 360);
         const Position p(map.hqPositions[i]);
 
-        helper.SetStones(map, helper.ComputePointOnCircle(offset1, 360, p, 12), 2.0F);
-        helper.SetStones(map, helper.ComputePointOnCircle(offset2, 360, p, 12), 2.7F);
+        helper.SetStones(map, MapUtility::ComputePointOnCircle(offset1, 360, p, 12), 2.0F);
+        helper.SetStones(map, MapUtility::ComputePointOnCircle(offset2, 360, p, 12), 2.7F);
     }
 }
 
@@ -111,7 +111,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
                     if(maxZ > 0 && config.Rand(101) <= pr)
                     {
                         auto z = (unsigned)config.Rand(area.minElevation, maxZ + 1);
-                        helper.SetHill(map, tile, z);
+                        MapUtility::SetHill(map, tile, z);
                     }
                 }
             }
@@ -165,7 +165,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
             bool treeFound = false;
             for(int curIdx : positions)
             {
-                if(helper.objGen.IsTree(map, curIdx))
+                if(ObjectGenerator::IsTree(map, curIdx))
                 {
                     treeFound = true;
                     break;
@@ -224,7 +224,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
                 continue;
 
             // setup harbor position
-            if(helper.GetBodySize(map, water, MIN_HARBOR_WATER) >= MIN_HARBOR_WATER)
+            if(MapUtility::GetBodySize(map, water, MIN_HARBOR_WATER) >= MIN_HARBOR_WATER)
             {
                 helper.SetHarbour(map, pt, maxWaterIndex);
                 harbors.push_back(pt);

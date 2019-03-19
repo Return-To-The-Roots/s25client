@@ -32,7 +32,7 @@ void iwLobbyRanking::UpdateRankings(const LobbyPlayerList& rankinglist)
 
     rankingtable->DeleteAllItems();
 
-    if(rankinglist.size() > 0)
+    if(!rankinglist.empty())
     {
         for(unsigned i = 0; i < rankinglist.size() && i < 10; ++i)
         {

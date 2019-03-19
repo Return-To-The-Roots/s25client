@@ -1519,7 +1519,7 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
     }
 
     // Look for a unique color
-    int newColorIdx = player.GetColorIdx(newColor);
+    int newColorIdx = JoinPlayerInfo::GetColorIdx(newColor);
     while(helpers::contains(takenColors, newColor))
         newColor = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
 

@@ -680,15 +680,15 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
                 {
                     if(res == AIResource::FISH)
                     {
-                        if(!gwb.IsOfTerrain(curPt, [](TerrainDesc desc) { return desc.kind == TerrainKind::WATER; }))
+                        if(!gwb.IsOfTerrain(curPt, [](const TerrainDesc& desc) { return desc.kind == TerrainKind::WATER; }))
                             resMapVal = 0;
                     } else if(res == AIResource::STONES)
                     {
-                        if(!gwb.IsOfTerrain(curPt, [](TerrainDesc desc) { return desc.Is(ETerrain::Buildable); }))
+                        if(!gwb.IsOfTerrain(curPt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Buildable); }))
                             resMapVal = 0;
                     } else //= granite,gold,iron,coal
                     {
-                        if(!gwb.IsOfTerrain(curPt, [](TerrainDesc desc) { return desc.Is(ETerrain::Mineable); }))
+                        if(!gwb.IsOfTerrain(curPt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Mineable); }))
                             resMapVal = 0;
                     }
                 }

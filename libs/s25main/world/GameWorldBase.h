@@ -59,7 +59,7 @@ protected:
     std::list<noBuildingSite*> harbor_building_sites_from_sea;
 
 public:
-    GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em);
+    GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen

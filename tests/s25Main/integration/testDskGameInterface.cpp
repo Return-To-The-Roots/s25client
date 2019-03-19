@@ -29,6 +29,7 @@
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include <boost/test/unit_test.hpp>
+#include <utility>
 
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(GameInterfaceDesktop)
@@ -36,7 +37,7 @@ BOOST_AUTO_TEST_SUITE(GameInterfaceDesktop)
 namespace {
 struct dskGameInterfaceMock : public dskGameInterface
 {
-    dskGameInterfaceMock(std::shared_ptr<Game> game) : dskGameInterface(game, std::shared_ptr<NWFInfo>(), 0, false) {}
+    dskGameInterfaceMock(const std::shared_ptr<Game>& game) : dskGameInterface(std::move(game), std::shared_ptr<NWFInfo>(), 0, false) {}
     void Msg_PaintBefore() override {}
     void Msg_PaintAfter() override {}
 };

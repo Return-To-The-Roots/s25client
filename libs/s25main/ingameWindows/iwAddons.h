@@ -43,7 +43,7 @@ public:
 
 public:
     iwAddons(GlobalGameSettings& ggs, Window* parent = nullptr, ChangePolicy policy = SETDEFAULTS,
-             const std::vector<AddonId>& addonIds = std::vector<AddonId>());
+             std::vector<AddonId> addonIds = std::vector<AddonId>());
     ~iwAddons() override;
 
 protected:

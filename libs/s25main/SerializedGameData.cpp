@@ -210,7 +210,7 @@ void SerializedGameData::Prepare(bool reading)
     isReading = reading;
 }
 
-void SerializedGameData::MakeSnapshot(std::shared_ptr<Game> game)
+void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
 {
     Prepare(false);
 
@@ -249,7 +249,7 @@ void SerializedGameData::MakeSnapshot(std::shared_ptr<Game> game)
     writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(std::shared_ptr<Game> game)
+void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game)
 {
     Prepare(true);
 

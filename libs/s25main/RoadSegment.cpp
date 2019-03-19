@@ -29,9 +29,10 @@
 #include "gameData/BuildingProperties.h"
 #include "libutil/Log.h"
 #include <stdexcept>
+#include <utility>
 
-RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<Direction>& route)
-    : rt(rt), f1(f1), f2(f2), route(route)
+RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, std::vector<Direction> route)
+    : rt(rt), f1(f1), f2(f2), route(std::move(route))
 {
     carriers_[0] = carriers_[1] = nullptr;
 }

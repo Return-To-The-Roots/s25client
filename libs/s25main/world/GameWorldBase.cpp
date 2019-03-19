@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldBase.h"
+
 #include "BQCalculator.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -37,10 +38,11 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
+#include <utility>
 
-GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em)
-    : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(players), gameSettings(gameSettings),
-      em(em), gi(nullptr)
+GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em)
+    : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(std::move(players)),
+      gameSettings(gameSettings), em(em), gi(nullptr)
 {}
 
 GameWorldBase::~GameWorldBase() = default;

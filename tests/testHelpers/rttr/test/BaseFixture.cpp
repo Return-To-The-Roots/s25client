@@ -26,8 +26,6 @@
 #include <cstdlib>
 #include <ctime>
 
-namespace bfs = boost::filesystem;
-
 rttr::test::BaseFixture::BaseFixture()
 {
     if(!LocaleHelper::init())

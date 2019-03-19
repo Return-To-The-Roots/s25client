@@ -76,7 +76,7 @@ dskBenchmark::dskBenchmark() : curTest_(TEST_NONE), runAll_(false), numInstances
             FontStyle::LEFT, LargeFont);
     AddText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
     for(std::chrono::milliseconds& t : testDurations_)
-        t = t.zero();
+        t = std::chrono::milliseconds::zero();
 }
 
 dskBenchmark::~dskBenchmark()

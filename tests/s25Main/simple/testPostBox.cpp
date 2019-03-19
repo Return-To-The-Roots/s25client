@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(AddMsg)
     std::vector<PostMsg*> msgs;
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
     BOOST_REQUIRE_EQUAL(box.GetMsg(0u), (PostMsg*)nullptr);
-    for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
+    for(unsigned i = 0; i < PostBox::GetMaxMsgs(); i++)
     {
         PostMsg* msg = new PostMsg(0, "Test", PostCategory::General);
         box.AddMsg(msg);
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(AddMsg)
         msgs.push_back(msg);
     }
     // Check that messages are still in their correct positions
-    for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
+    for(unsigned i = 0; i < PostBox::GetMaxMsgs(); i++)
         BOOST_REQUIRE_EQUAL(box.GetMsg(i), msgs[i]);
     // Overfill
     PostMsg* msg = new PostMsg(0, "Test2", PostCategory::General);
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(AddMsg)
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), box.GetMaxMsgs());
     BOOST_REQUIRE_EQUAL(box.GetMsg(box.GetMaxMsgs() - 1), msg);
     // Check that messages have been shifted
-    for(unsigned i = 0; i + 1 < box.GetMaxMsgs(); i++)
+    for(unsigned i = 0; i + 1 < PostBox::GetMaxMsgs(); i++)
         BOOST_REQUIRE_EQUAL(box.GetMsg(i), msgs[i + 1]);
 }
 
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(DeleteMsg)
     // Add 1 msg
     box.AddMsg(new PostMsg(0, "", PostCategory::General));
     // Deleting only this msg should succeed
-    for(unsigned i = 1; i < box.GetMaxMsgs(); i++)
+    for(unsigned i = 1; i < PostBox::GetMaxMsgs(); i++)
         BOOST_REQUIRE_EQUAL(box.DeleteMsg(i), false);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 1u);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(0u), true);
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(DeleteMsg)
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(msg), true);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
     // Now fill it
-    for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
+    for(unsigned i = 0; i < PostBox::GetMaxMsgs(); i++)
         box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(0u), true);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(5u), true);
@@ -108,11 +108,11 @@ BOOST_AUTO_TEST_CASE(MsgCallbacks)
     CallbackChecker cb(box);
     box.ObserveNewMsg([&cb](const auto& msg, auto ct) { cb.OnNew(msg, ct); });
     box.ObserveDeletedMsg([&cb](auto ct) { cb.OnDel(ct); });
-    for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
+    for(unsigned i = 0; i < PostBox::GetMaxMsgs(); i++)
         box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
     BOOST_REQUIRE_EQUAL(cb.newCalls, box.GetMaxMsgs());
     BOOST_REQUIRE_EQUAL(cb.delCalls, 0u);
-    for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
+    for(unsigned i = 0; i < PostBox::GetMaxMsgs(); i++)
         box.DeleteMsg(0u);
     BOOST_REQUIRE_EQUAL(cb.newCalls, box.GetMaxMsgs());
     BOOST_REQUIRE_EQUAL(cb.delCalls, box.GetMaxMsgs());
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(ClearMsgs)
     PostBox box;
     CallbackChecker cb(box);
     box.ObserveDeletedMsg([&cb](auto ct) { cb.OnDel(ct); });
-    for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
+    for(unsigned i = 0; i < PostBox::GetMaxMsgs(); i++)
         box.AddMsg(new PostMsg(i, "Test", PostCategory::General));
     // Deleting should delete all messages and call delete callback for each one
     box.Clear();

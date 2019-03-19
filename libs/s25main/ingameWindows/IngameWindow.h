@@ -43,7 +43,7 @@ public:
 
     static const Extent borderSize;
 
-    IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, glArchivItem_Bitmap* background,
+    IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title, glArchivItem_Bitmap* background,
                  bool modal = false, bool closeOnRightClick = true, Window* parent = nullptr);
     ~IngameWindow() override;
 

@@ -18,6 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwAddons.h"
 
+#include <utility>
+
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "addons/Addon.h"
@@ -27,10 +29,10 @@
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
 
-iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy, const std::vector<AddonId>& addonIds)
+iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy, std::vector<AddonId> addonIds)
     : IngameWindow(CGI_ADDONS, IngameWindow::posLastOrCenter, Extent(700, 500), _("Addon Settings"), LOADER.GetImageN("resource", 41), true,
                    false, parent),
-      ggs(ggs), policy(policy), addonIds(addonIds)
+      ggs(ggs), policy(policy), addonIds(std::move(addonIds))
 {
     AddText(0, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, 0, NormalFont);
 

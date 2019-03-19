@@ -165,7 +165,7 @@ void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const int selection)
     {
         case 10: // Server list
         {
-            const std::string item = table->GetItemText(selection, 0);
+            const std::string& item = table->GetItemText(selection, 0);
 
             if(boost::lexical_cast<unsigned>(item.c_str()) != 0)
             {

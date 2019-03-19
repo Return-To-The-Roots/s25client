@@ -101,11 +101,11 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     executeLua("function getRequiredLuaVersion()\n return 0\n end");
     BOOST_REQUIRE(!lua.CheckScriptVersion());
     BOOST_REQUIRE_NE(getLog(), "");
-    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % (lua.GetVersion() + 1));
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % (LuaInterfaceGameBase::GetVersion() + 1));
     BOOST_REQUIRE(!lua.CheckScriptVersion());
     BOOST_REQUIRE_NE(getLog(), "");
     // Correct version
-    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % lua.GetVersion());
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % LuaInterfaceGameBase::GetVersion());
     BOOST_REQUIRE(lua.CheckScriptVersion());
 
     BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));

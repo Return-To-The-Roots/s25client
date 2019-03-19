@@ -64,11 +64,7 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
     attacked_goal->LinkAggressor(this);
 }
 
-nofAttacker::~nofAttacker()
-{
-    // unsigned char oplayer = (player == 0) ? 1 : 0;
-    // RTTR_Assert(!gwg->GetPlayer(oplayer).GetFirstWH()->Test(this));
-}
+nofAttacker::~nofAttacker() = default;
 
 void nofAttacker::Destroy_nofAttacker()
 {

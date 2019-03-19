@@ -36,7 +36,8 @@ struct GameLobbyController;
 class dskHostGame : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId, std::unique_ptr<ILobbyClient> lobbyClient);
+    dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>& gameLobby, unsigned playerId,
+                std::unique_ptr<ILobbyClient> lobbyClient);
     ~dskHostGame();
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.

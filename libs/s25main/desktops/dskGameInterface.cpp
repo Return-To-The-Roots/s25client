@@ -89,6 +89,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <sstream>
+#include <utility>
 
 namespace {
 enum
@@ -101,9 +102,9 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, const std::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx,
+dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx,
                                    bool initOGL)
-    : Desktop(nullptr), game_(game), nwfInfo_(nwfInfo), worldViewer(playerIdx, game->world),
+    : Desktop(nullptr), game_(game), nwfInfo_(std::move(nwfInfo)), worldViewer(playerIdx, game->world),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(nullptr),
       roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {

@@ -33,7 +33,7 @@ class CheckedLuaTable
     bool checkEnabled; // When this is a movable only class this can be true on ctor
 
 public:
-    CheckedLuaTable(const kaguya::LuaTable& luaTable);
+    CheckedLuaTable(kaguya::LuaTable luaTable);
     ~CheckedLuaTable();
 
     /// Check and report unused entries

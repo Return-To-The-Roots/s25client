@@ -67,8 +67,9 @@ BOOST_FIXTURE_TEST_CASE(SoundHandles, LoadMockupAudio)
     BOOST_REQUIRE_EQUAL(handle.getType(), SD_EFFECT);
     {
         // Copy handle
-        SoundHandle localHandle = handle;
+        const SoundHandle localHandle = handle;
         BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
+        RTTR_UNUSED(localHandle);
         // Copy goes out of scope
     }
     BOOST_REQUIRE(handle.isValid());

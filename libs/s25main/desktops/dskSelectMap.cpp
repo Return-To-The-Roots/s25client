@@ -52,6 +52,7 @@
 #include "libsiedler2/prototypen.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
+#include <utility>
 //#include <boost/thread.hpp>
 
 /**
@@ -61,8 +62,8 @@
  *  @param[in] name Server-Name
  *  @param[in] pass Server-Passwort
  */
-dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
-    : Desktop(LOADER.GetImageN("setup015", 0)), csi(csi), mapGenThread(nullptr), waitWnd(nullptr)
+dskSelectMap::dskSelectMap(CreateServerInfo csi)
+    : Desktop(LOADER.GetImageN("setup015", 0)), csi(std::move(csi)), mapGenThread(nullptr), waitWnd(nullptr)
 {
     WorldDescription desc;
     GameDataLoader gdLoader(desc);

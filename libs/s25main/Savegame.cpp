@@ -34,7 +34,7 @@ uint16_t Savegame::GetVersion() const
 
 //////////////////////////////////////////////////////////////////////////
 
-Savegame::Savegame() : SavedFile(), start_gf(0) {}
+Savegame::Savegame() : start_gf(0) {}
 
 Savegame::~Savegame() = default;
 

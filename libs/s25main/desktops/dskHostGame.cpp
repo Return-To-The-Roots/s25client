@@ -74,7 +74,7 @@ enum CtrlIds
 };
 }
 
-dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId,
+dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>& gameLobby, unsigned playerId,
                          std::unique_ptr<ILobbyClient> lobbyClient)
     : Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(gameLobby), localPlayerId_(playerId),
       lobbyClient_(std::move(lobbyClient)), hasCountdown_(false), wasActivated(false), gameChat(nullptr), lobbyChat(nullptr),
@@ -524,7 +524,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
 
                 // Look for a unique color
                 JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-                int newColorIdx = player.GetColorIdx(player.color);
+                int newColorIdx = JoinPlayerInfo::GetColorIdx(player.color);
                 do
                 {
                     player.color = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];

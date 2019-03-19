@@ -207,7 +207,7 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
         if(unsigned(ware.first) < NUM_WARE_TYPES)
             goods.Add(ware.first, ware.second);
         else
-            throw LuaExecutionError((std::string("Invalid ware in AddWares: ") + helpers::toString(ware.first)).c_str());
+            throw LuaExecutionError(std::string("Invalid ware in AddWares: ") + helpers::toString(ware.first));
     }
 
     warehouse->AddGoods(goods, true);
@@ -228,7 +228,7 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
         if(unsigned(it.first) < NUM_JOB_TYPES)
             goods.Add(it.first, it.second);
         else
-            throw LuaExecutionError((std::string("Invalid job in AddPeople: ") + helpers::toString(it.first)).c_str());
+            throw LuaExecutionError(std::string("Invalid job in AddPeople: ") + helpers::toString(it.first));
     }
 
     warehouse->AddGoods(goods, true);

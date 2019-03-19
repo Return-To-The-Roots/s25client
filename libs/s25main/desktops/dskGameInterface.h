@@ -49,7 +49,7 @@ class NWFInfo;
 class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface, public IChatCmdListener
 {
 public:
-    dskGameInterface(std::shared_ptr<Game> game, const std::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx, bool initOGL = true);
+    dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx, bool initOGL = true);
     ~dskGameInterface() override;
 
     void Resize(const Extent& newSize) override;

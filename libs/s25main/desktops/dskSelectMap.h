@@ -35,7 +35,7 @@ class thread;
 class dskSelectMap : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskSelectMap(const CreateServerInfo& csi);
+    dskSelectMap(CreateServerInfo csi);
     ~dskSelectMap() override;
 
 private:

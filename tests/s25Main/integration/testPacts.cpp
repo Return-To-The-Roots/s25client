@@ -22,8 +22,6 @@
 #include "worldFixtures/WorldWithGCExecution.h"
 #include <boost/test/unit_test.hpp>
 
-namespace utf = boost::unit_test;
-
 BOOST_AUTO_TEST_SUITE(PactTestSuite)
 
 BOOST_FIXTURE_TEST_CASE(InitialPactStates, WorldWithGCExecution3P)

@@ -24,8 +24,9 @@
 #include "desktops/dskGameInterface.h"
 #include "helpers/containerUtils.h"
 #include <set>
+#include <utility>
 
-GameLoader::GameLoader(std::shared_ptr<Game> game) : game(game) {}
+GameLoader::GameLoader(std::shared_ptr<Game> game) : game(std::move(game)) {}
 
 GameLoader::~GameLoader() = default;
 

@@ -189,9 +189,9 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
             if(!texBmp)
                 throw std::runtime_error("Invalid texture '" + cur.roadTexDesc[i].texturePath + "' for road in landscape '" + cur.name
                                          + "'");
-            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i].reset(
+            roadTextures[curIdx.value * LandscapeDesc::NUM_ROADTYPES + i].reset(
               LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture).release());
-            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i]->GetTexture(); // Init texture
+            roadTextures[curIdx.value * LandscapeDesc::NUM_ROADTYPES + i]->GetTexture(); // Init texture
         }
     }
 }

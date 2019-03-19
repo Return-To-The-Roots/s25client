@@ -34,13 +34,14 @@
 #include "ogl/FontStyle.h"
 #include "liblobby/LobbyClient.h"
 #include <memory>
+#include <utility>
 
 /**
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
  */
 dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
-    : Desktop(LOADER.GetImageN(LOAD_SCREENS[rand() % LOAD_SCREENS.size()], 0)), position(0), loader_(game)
+    : Desktop(LOADER.GetImageN(LOAD_SCREENS[rand() % LOAD_SCREENS.size()], 0)), position(0), loader_(std::move(game))
 {
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 

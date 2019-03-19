@@ -17,9 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlText.h"
-#include "ogl/glArchivItem_Font.h"
 
-ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font) : text(text), color_(color), font(font)
+#include "ogl/glArchivItem_Font.h"
+#include <utility>
+
+ctrlBaseText::ctrlBaseText(std::string text, const unsigned color, glArchivItem_Font* font)
+    : text(std::move(text)), color_(color), font(font)
 {}
 
 void ctrlBaseText::SetText(const std::string& text)

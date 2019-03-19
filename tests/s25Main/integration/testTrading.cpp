@@ -78,7 +78,7 @@ struct TradeFixture : public WorldWithGCExecution3P
     void testAfterLeaving(unsigned numTradeItems)
     {
         // Run enough GFs so all trade caravans are out (~numTradeItems + 1 people need to leave taking 30GFs max each)
-        RTTR_EXEC_TILL(30 * (numTradeItems + 1), curWh->GetLeavingFigures().size() == 0u);
+        RTTR_EXEC_TILL(30 * (numTradeItems + 1), curWh->GetLeavingFigures().empty());
         // Real count should not be changed
         // But helpers can be produced in the meantime
         BOOST_REQUIRE_GE(curWh->GetNumRealFigures(JOB_HELPER), numHelpers);

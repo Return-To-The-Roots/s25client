@@ -20,13 +20,14 @@
 #include "BasePlayerInfo.h"
 #include "mygettext/mygettext.h"
 #include <boost/format.hpp>
+#include <utility>
 
-PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt, SoundEffect soundEffect)
-    : sendFrame_(sendFrame), text_(text), cat_(cat), pt_(pt), soundEffect_(soundEffect)
+PostMsg::PostMsg(unsigned sendFrame, std::string text, PostCategory cat, const MapPoint& pt, SoundEffect soundEffect)
+    : sendFrame_(sendFrame), text_(std::move(text)), cat_(cat), pt_(pt), soundEffect_(soundEffect)
 {}
 
-PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, SoundEffect soundEffect)
-    : sendFrame_(sendFrame), text_(text), cat_(cat), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
+PostMsg::PostMsg(unsigned sendFrame, std::string text, PostCategory cat, SoundEffect soundEffect)
+    : sendFrame_(sendFrame), text_(std::move(text)), cat_(cat), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
 {}
 
 PostMsg::PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled, SoundEffect soundEffect)
