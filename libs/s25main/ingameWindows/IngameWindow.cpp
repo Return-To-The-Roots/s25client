@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/SimpleMultiArray.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -132,7 +133,7 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
     }
 
     // beiden Buttons oben links und rechts prfen
-    const Rect rec[2] = {GetLeftButtonRect(), GetRightButtonRect()};
+    const std::array<Rect, 2> rec = {GetLeftButtonRect(), GetRightButtonRect()};
 
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -147,7 +148,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
     isMoving = false;
 
     // beiden Buttons oben links und rechts prfen
-    const Rect rec[2] = {GetLeftButtonRect(), GetRightButtonRect()};
+    const std::array<Rect, 2> rec = {GetLeftButtonRect(), GetRightButtonRect()};
 
     for(unsigned i = 0; i < 2; ++i)
     {
@@ -182,7 +183,7 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
     }
 
     // beiden Buttons oben links und rechts prfen
-    const Rect rec[2] = {GetLeftButtonRect(), GetRightButtonRect()};
+    const std::array<Rect, 2> rec = {GetLeftButtonRect(), GetRightButtonRect()};
 
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -231,7 +232,7 @@ void IngameWindow::Draw_()
     rightUpperImg->DrawFull(GetPos() + DrawPoint(GetSize().x - rightUpperImg->getWidth(), 0));
 
     // Die beiden Buttons oben
-    static const unsigned short ids[2][3] = {{47, 55, 50}, {48, 56, 52}};
+    static const helpers::SimpleMultiArray<unsigned short, 2, 3> ids = {{{47, 55, 50}, {48, 56, 52}}};
 
     // Titelleiste
     if(closeOnRightClick_ || !IsModal())

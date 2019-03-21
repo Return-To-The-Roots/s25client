@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     results += MapPoint(19, 19);
 
     // check the whole area
-    std::vector<MapPoint> polygon[8];
+    std::array<std::vector<MapPoint>, 8> polygon;
 
     // Generate polygons for all eight cases of ordering
     for(int i = 0; i < 8; ++i)

@@ -885,8 +885,8 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
 
 nofCarrier* GamePlayer::OrderDonkey(RoadSegment* road)
 {
-    unsigned length[2];
-    nobBaseWarehouse* best[2];
+    std::array<unsigned, 2> length;
+    std::array<nobBaseWarehouse*, 2> best;
 
     // 1. Flagge des Weges
     best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(JOB_PACKDONKEY, false), false, false, &length[0], road);

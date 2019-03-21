@@ -29,10 +29,10 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
 
-const std::string TOOLTIPS[14] = {gettext_noop("Coins"),  gettext_noop("Weapons"),  gettext_noop("Beer"),  gettext_noop("Iron"),
-                                  gettext_noop("Gold"),   gettext_noop("Iron ore"), gettext_noop("Coal"),  gettext_noop("Boards"),
-                                  gettext_noop("Stones"), gettext_noop("Wood"),     gettext_noop("Water"), gettext_noop("Food"),
-                                  gettext_noop("Tools"),  gettext_noop("Boats")};
+const std::array<std::string, 14> TOOLTIPS = {
+  gettext_noop("Coins"),    gettext_noop("Weapons"), gettext_noop("Beer"),   gettext_noop("Iron"),   gettext_noop("Gold"),
+  gettext_noop("Iron ore"), gettext_noop("Coal"),    gettext_noop("Boards"), gettext_noop("Stones"), gettext_noop("Wood"),
+  gettext_noop("Water"),    gettext_noop("Food"),    gettext_noop("Tools"),  gettext_noop("Boats")};
 
 iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"), LOADER.GetImageN("io", 5)), gwv(gwv),
@@ -71,8 +71,20 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     TRANSPORT_SPRITES[13] = LOADER.GetMapTexN(2250 + GD_BOAT);
 
     // Positionen der einzelnen Buttons
-    const DrawPointInit BUTTON_POS[14] = {{20, 25},  {52, 42},  {84, 59},   {116, 76}, {84, 93},  {52, 110}, {20, 127},
-                                          {52, 144}, {84, 161}, {116, 178}, {84, 195}, {52, 212}, {20, 229}, {52, 246}};
+    const std::array<DrawPointInit, 14> BUTTON_POS = {{{20, 25},
+                                                       {52, 42},
+                                                       {84, 59},
+                                                       {116, 76},
+                                                       {84, 93},
+                                                       {52, 110},
+                                                       {20, 127},
+                                                       {52, 144},
+                                                       {84, 161},
+                                                       {116, 178},
+                                                       {84, 195},
+                                                       {52, 212},
+                                                       {20, 229},
+                                                       {52, 246}}};
 
     // Einstellungen festlegen
     for(unsigned char i = 0; i < 14; ++i)

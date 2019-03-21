@@ -113,14 +113,14 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                 percent_index = 2;
 
             // wieviel kriegt man von jeder Ware wieder?
-            const unsigned percents[5] = {0, 25, 50, 75, 100};
+            const std::array<unsigned, 5> percents = {0, 25, 50, 75, 100};
             const unsigned percent = 10 * percents[percent_index];
 
             // zurückgaben berechnen (abgerundet)
             unsigned boards = (percent * BUILDING_COSTS[nation][bldType_].boards) / 1000;
             unsigned stones = (percent * BUILDING_COSTS[nation][bldType_].stones) / 1000;
 
-            GoodType goods[2] = {GD_BOARDS, GD_STONES};
+            std::array<GoodType, 2> goods = {GD_BOARDS, GD_STONES};
             bool which = false;
             while(flag->IsSpaceForWare() && (boards > 0 || stones > 0))
             {

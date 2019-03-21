@@ -167,11 +167,11 @@ void nobUsual::Draw(DrawPoint drawPt)
     {
         // Für alle Völker jeweils
         // X-Position der Esel
-        const DrawPointInit DONKEY_OFFSETS[NUM_NATS][3] = {{{13, -9}, {26, -9}, {39, -9}},
-                                                           {{3, -17}, {16, -17}, {30, -17}},
-                                                           {{2, -21}, {15, -21}, {29, -21}},
-                                                           {{7, -17}, {18, -17}, {30, -17}},
-                                                           {{3, -22}, {16, -22}, {30, -22}}};
+        const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, 3> DONKEY_OFFSETS = {{{{13, -9}, {26, -9}, {39, -9}},
+                                                                                       {{3, -17}, {16, -17}, {30, -17}},
+                                                                                       {{2, -21}, {15, -21}, {29, -21}},
+                                                                                       {{7, -17}, {18, -17}, {30, -17}},
+                                                                                       {{3, -22}, {16, -22}, {30, -22}}}};
         // Animations-IDS des Esels
         const std::array<unsigned char, 25> DONKEY_ANIMATION = {
           {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0}};
@@ -205,14 +205,14 @@ void nobUsual::Draw(DrawPoint drawPt)
     else if(bldType_ == BLD_PIGFARM && this->HasWorker())
     {
         // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
-        const DrawPointInit PIG_POSITIONS[NUM_NATS][5] = {
+        const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, 5> PIG_POSITIONS = {{
           //  gr. S. 1.klS 2. klS usw
           {{3, -8}, {17, 3}, {-12, 4}, {-2, 10}, {-22, 11}},    // Afrikaner
           {{-16, 0}, {-37, 0}, {-32, 8}, {-16, 10}, {-22, 18}}, // Japaner
           {{-15, 0}, {-4, 9}, {-22, 10}, {2, 19}, {-15, 20}},   // Römer
           {{5, -5}, {25, -12}, {-7, 7}, {-23, 11}, {-10, 14}},  // Wikinger
           {{-16, 5}, {-37, 5}, {-32, -1}, {-16, 15}, {-27, 18}} // Babylonier
-        };
+        }};
 
         /// Großes Schwein zeichnen
         LOADER.GetMapImageN(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][0], COLOR_SHADOW);
@@ -224,9 +224,9 @@ void nobUsual::Draw(DrawPoint drawPt)
         {
             // A random (really, dice-rolled by hand:) ) order of the four possible pig animations, with eating three times as much as the
             // others ones  To get random-looking, non synchronous, sweet little pigs
-            const unsigned char smallpig_animations[63] = {0, 0, 3, 2, 0, 0, 1, 3, 0, 3, 1, 3, 2, 0, 0, 1, 0, 0, 1, 3, 2,
-                                                           0, 1, 1, 0, 0, 2, 1, 0, 1, 0, 2, 2, 0, 0, 2, 2, 0, 1, 0, 3, 1,
-                                                           2, 0, 1, 2, 2, 0, 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0};
+            const std::array<unsigned char, 63> smallpig_animations = {0, 0, 3, 2, 0, 0, 1, 3, 0, 3, 1, 3, 2, 0, 0, 1, 0, 0, 1, 3, 2,
+                                                                       0, 1, 1, 0, 0, 2, 1, 0, 1, 0, 2, 2, 0, 0, 2, 2, 0, 1, 0, 3, 1,
+                                                                       2, 0, 1, 2, 2, 0, 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0};
             const unsigned short animpos =
               GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * GetObjId() + GetY() * i);
             LOADER.GetMapImageN(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][i], COLOR_SHADOW);

@@ -37,9 +37,9 @@
 #include <boost/filesystem.hpp>
 #include <utility>
 
-const unsigned NUM_AUTO_SAVE_INTERVALSS = 7;
+const unsigned NUM_AUTO_SAVE_INTERVALS = 7;
 
-const unsigned AUTO_SAVE_INTERVALS[NUM_AUTO_SAVE_INTERVALSS] = {500, 1000, 5000, 10000, 50000, 100000, 1};
+const std::array<unsigned, NUM_AUTO_SAVE_INTERVALS> AUTO_SAVE_INTERVALS = {500, 1000, 5000, 10000, 50000, 100000, 1 /*  */};
 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
     : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title, LOADER.GetImageN("resource", 41))
@@ -141,7 +141,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     combo->AddString(_("Disabled")); // deaktiviert
 
     // Last entry is only for debugging
-    const unsigned numIntervalls = SETTINGS.global.debugMode ? NUM_AUTO_SAVE_INTERVALSS : NUM_AUTO_SAVE_INTERVALSS - 1;
+    const unsigned numIntervalls = SETTINGS.global.debugMode ? NUM_AUTO_SAVE_INTERVALS : NUM_AUTO_SAVE_INTERVALS - 1;
 
     // Die Intervalle
     for(unsigned i = 0; i < numIntervalls; ++i)

@@ -244,8 +244,8 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, std::array<unsig
     shouldCounts[0] = 0;
     shouldCounts[1] = 0;
     shouldCounts[2] = 0;
-    unsigned char wouldCounts[3];
-    unsigned char maxCounts[3]; // wieviel mal passt jedes Teil maximal in die Freifläche?
+    std::array<unsigned char, 3> wouldCounts;
+    std::array<unsigned char, 3> maxCounts; // wieviel mal passt jedes Teil maximal in die Freifläche?
     for(unsigned char i = 0; i < 3; i++)
         maxCounts[i] = toFill / lengths[i];
     unsigned shouldBeFilled = 0;

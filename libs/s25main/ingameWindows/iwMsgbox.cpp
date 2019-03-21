@@ -22,6 +22,7 @@
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/SimpleMultiArray.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
 #include "libsiedler2/ArchivItem_BitmapBase.h"
@@ -166,8 +167,8 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
     }
 }
 
-const MsgboxResult RET_IDS[MSB_YESNOCANCEL + 1][3] = {
-  {MSR_OK, MSR_NOTHING, MSR_NOTHING}, {MSR_OK, MSR_CANCEL, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_CANCEL}};
+const helpers::MultiArray<MsgboxResult, MSB_YESNOCANCEL + 1, 3> RET_IDS = {
+  {{MSR_OK, MSR_NOTHING, MSR_NOTHING}, {MSR_OK, MSR_CANCEL, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_CANCEL}}};
 
 void iwMsgbox::Msg_ButtonClick(const unsigned ctrl_id)
 {

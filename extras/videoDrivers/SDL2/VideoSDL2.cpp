@@ -146,7 +146,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
     UpdateCurrentSizes();
 
-    SDL_Surface* iconSurf = SDL_CreateRGBSurfaceFrom(image, 48, 48, 32, 48 * 4, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+    SDL_Surface* iconSurf = SDL_CreateRGBSurfaceFrom(image.data(), 48, 48, 32, 48 * 4, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
     if(iconSurf)
     {
         SDL_SetWindowIcon(window, iconSurf);

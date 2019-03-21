@@ -55,7 +55,7 @@ noShipBuildingSite::noShipBuildingSite(SerializedGameData& sgd, const unsigned o
 {}
 
 /// Progress-Anteile für die 3 Baustufen
-const unsigned PROGRESS_PARTS[3] = {4, 2, 3};
+const std::array<unsigned, 3> PROGRESS_PARTS = {4, 2, 3};
 
 // const unsigned TOTAL_PROGRESS = PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2];
 

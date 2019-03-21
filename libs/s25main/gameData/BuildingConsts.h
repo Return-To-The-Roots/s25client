@@ -56,7 +56,7 @@ const std::array<BuildingQuality, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_S
    BQ_HUT,     BQ_HOUSE, BQ_HUT,   BQ_HOUSE,   BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HOUSE,
    BQ_NOTHING, BQ_HOUSE, BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE, BQ_HUT,     BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HARBOR}};
 
-const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WORK_DESC = {{
+const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WORK_DESC = {
   BldWorkDescription(), // HQ
   BldWorkDescription(JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 1),
   BldWorkDescription(JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 2),
@@ -97,7 +97,7 @@ const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WOR
   BldWorkDescription(JOB_FARMER, GD_GRAIN),
   BldWorkDescription(JOB_DONKEYBREEDER, GD_INVALID, WaresNeeded(GD_GRAIN, GD_WATER)), // Produces a job. TODO: Better way
   BldWorkDescription(),                                                               // Harbour
-}};
+};
 
 /// Smoke consts for all buildings and nations
 const helpers::SimpleMultiArray<SmokeConst, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SMOKE_CONSTS = {

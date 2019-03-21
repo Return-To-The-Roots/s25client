@@ -24,9 +24,9 @@
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlOptionGroup.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/format.hpp"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
-#include <cstdio>
 
 iwSettings::iwSettings()
     : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"), LOADER.GetImageN("resource", 41))
@@ -55,10 +55,7 @@ iwSettings::iwSettings()
         // >=800x600, alles andere macht keinen Sinn
         if(video_modes[i].width >= 800 && video_modes[i].height >= 600)
         {
-            char str[64];
-            sprintf(str, "%ux%u", video_modes[i].width, video_modes[i].height);
-
-            GetCtrl<ctrlComboBox>(0)->AddString(str);
+            GetCtrl<ctrlComboBox>(0)->AddString(helpers::format("%ux%u", video_modes[i].width, video_modes[i].height));
 
             // Ist das die aktuelle Auflösung? Dann selektieren
             if(video_modes[i] == SETTINGS.video.fullscreenSize)

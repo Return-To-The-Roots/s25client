@@ -61,7 +61,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     Unload();
 
     /// Verfügbare Treiber auflisten
-    const std::string DIRECTORY[2] = {"video", "audio"};
+    const std::array<std::string, 2> DIRECTORY = {"video", "audio"};
 
     std::vector<DriverItem> drivers = LoadDriverList(dt);
 
@@ -170,7 +170,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 {
     std::vector<DriverItem> driver_list;
 
-    const std::string DIRECTORY[2] = {"/video", "/audio"};
+    const std::array<std::string, 2> DIRECTORY = {"/video", "/audio"};
 
     std::string path = RTTRCONFIG.ExpandPath(FILE_PATHS[46]) + DIRECTORY[dt];
     std::string extension =

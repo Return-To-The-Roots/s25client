@@ -104,7 +104,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
                 }
             }
             /*
-            char tmp[100];
+            std::array<char, 100> tmp;
             snprintf(tmp, sizeof(tmp), "%u-%ux%u.rgba", texture, curSize.x, curSize.y);
 
             FILE *f = fopen(tmp, "w+");

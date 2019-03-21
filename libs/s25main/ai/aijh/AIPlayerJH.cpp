@@ -1180,8 +1180,8 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
 
     // try to build one the following buildings around the new military building
 
-    BuildingType bldToTest[] = {BLD_STOREHOUSE,  BLD_WOODCUTTER, BLD_QUARRY, BLD_GOLDMINE, BLD_COALMINE, BLD_IRONMINE,
-                                BLD_GRANITEMINE, BLD_FISHERY,    BLD_FARM,   BLD_HUNTER,   BLD_FORESTER};
+    std::array<BuildingType, 11> bldToTest = {BLD_STOREHOUSE,  BLD_WOODCUTTER, BLD_QUARRY, BLD_GOLDMINE, BLD_COALMINE, BLD_IRONMINE,
+                                              BLD_GRANITEMINE, BLD_FISHERY,    BLD_FARM,   BLD_HUNTER,   BLD_FORESTER};
     unsigned bldToTestStartIdx = 0;
     // remove the storehouse from the building test list if we are close to another storehouse already
     for(const nobBaseWarehouse* bldSite : aii.GetStorehouses())
@@ -1205,7 +1205,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
         }
     }
 
-    for(unsigned i = bldToTestStartIdx; i < 11; ++i)
+    for(unsigned i = bldToTestStartIdx; i < bldToTest.size(); ++i)
     {
         if(construction->Wanted(bldToTest[i]))
         {
@@ -2569,7 +2569,7 @@ void AIPlayerJH::AdjustSettings()
 
 unsigned AIPlayerJH::CalcMilSettings()
 {
-    unsigned InlandTroops[5] = {0, 0, 0, 0, 0}; // how many troops are required to fill inland buildings at settings 4,5,6,7,8
+    std::array<unsigned, 5> InlandTroops = {0, 0, 0, 0, 0}; // how many troops are required to fill inland buildings at settings 4,5,6,7,8
     /// first sum up all soldiers we have
     unsigned numSoldiers = 0;
     for(auto i : SOLDIER_JOBS)

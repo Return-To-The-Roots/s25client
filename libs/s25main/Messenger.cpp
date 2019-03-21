@@ -19,16 +19,18 @@
 #include "Messenger.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/format.hpp"
 #include "mygettext/mygettext.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "libutil/Log.h"
+#include <array>
 
 /// Chat-Destination-String, der entsprechend angezeigt wird
-const std::string CD_STRINGS[4] = {"", "(All) ", "(Team) ", "(Enemies) "};
+const std::array<std::string, 4> CD_STRINGS = {"", "(All) ", "(Team) ", "(Enemies) "};
 
 /// Farbe für die einzelnen CDs
-const unsigned CD_COLORS[4] = {0, COLOR_WHITE, COLOR_GREEN, COLOR_RED};
+const std::array<unsigned, 4> CD_COLORS = {0, COLOR_WHITE, COLOR_GREEN, COLOR_RED};
 
 Messenger::~Messenger() = default;
 
@@ -66,7 +68,8 @@ void Messenger::Draw()
 void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg,
                            const unsigned color_msg)
 {
-    LOG.writeColored(author, color_author);
+    if(!author.empty())
+        LOG.writeColored("%1% ", color_author) % author;
     LOG.writeColored(CD_STRINGS[cd], CD_COLORS[cd]);
     LOG.write(msg + "\n");
 
@@ -86,7 +89,8 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
         // Nur in erster Zeile den Autor und die ChatDest.!
         if(i == 0)
         {
-            tmp.author = author;
+            if(!author.empty())
+                tmp.author = helpers::format(_("<%s> "));
             tmp.cd = cd;
         } else
             tmp.cd = CD_SYSTEM;

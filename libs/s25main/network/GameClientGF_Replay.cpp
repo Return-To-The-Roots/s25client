@@ -20,6 +20,7 @@
 #include "GlobalVars.h"
 #include "PlayerGameCommands.h"
 #include "ReplayInfo.h"
+#include "helpers/format.hpp"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
 #include "random/Random.h"
@@ -65,11 +66,11 @@ void GameClient::ExecuteGameFrame_Replay()
                 // Show message if this is the first async GF
                 if(replayinfo->async == 0)
                 {
-                    char text[256];
-                    sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF);
-
                     if(ci)
-                        ci->CI_ReplayAsync(text);
+                    {
+                        ci->CI_ReplayAsync(
+                          helpers::format(_("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF));
+                    }
 
                     LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF % msgChecksum.randChecksum
                       % checksum.randChecksum % msgChecksum.objCt % checksum.objCt % msgChecksum.objIdCt % checksum.objIdCt;
@@ -110,11 +111,11 @@ void GameClient::ExecuteGameFrame_Replay()
 
         if(replayinfo->async != 0)
         {
-            char text[256];
-            sprintf(text, _("Notice: Overall asynchronous frame count: %u"), replayinfo->async);
             // Messenger im Game
             if(ci)
-                ci->CI_ReplayEndReached(text);
+            {
+                ci->CI_ReplayEndReached(helpers::format(_("Notice: Overall asynchronous frame count: %u"), replayinfo->async));
+            }
         }
 
         replayinfo->end = true;

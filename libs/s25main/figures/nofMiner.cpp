@@ -33,14 +33,15 @@ nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NUM_NATS][4] = // work animation offset per nation and (granite, coal, iron, gold)
-      {
+    const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, 4>
+      offsets = // work animation offset per nation and (granite, coal, iron, gold)
+      {{
         {{5, 3}, {5, 3}, {5, 3}, {5, 3}},     // africans
         {{4, 1}, {4, 1}, {4, 1}, {4, 1}},     // japanese
         {{9, 4}, {9, 4}, {9, 4}, {9, 4}},     // romans
         {{10, 3}, {10, 3}, {10, 3}, {10, 3}}, // vikings
         {{8, 3}, {8, 3}, {8, 3}, {8, 3}}      // babylonians
-      };
+      }};
 
     unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
     unsigned texture;

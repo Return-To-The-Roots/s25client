@@ -186,7 +186,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
                 LOADER.GetPlayerImage("rom_bobs", 357 + i)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
             } else
             {
-                unsigned char ids[9] = {1, 0, 1, 2, 1, 0, 1, 2, 1};
+                std::array<unsigned char, 9> ids = {1, 0, 1, 2, 1, 0, 1, 2, 1};
                 LOADER.GetPlayerImage("rom_bobs", 361 + ids[i - 7])->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
             }
 
@@ -196,7 +196,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
         break;
     }
 
-    /*char number[256];
+    /*std::array<char, 256> number;
     sprintf(number,"%u",obj_id);
     NormalFont->Draw(x,y,number,0,0xFFFF0000);*/
 }

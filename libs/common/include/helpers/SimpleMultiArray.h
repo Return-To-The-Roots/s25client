@@ -18,6 +18,7 @@
 #ifndef SimpleMultiArray_h__
 #define SimpleMultiArray_h__
 
+#include <cstddef>
 #include <type_traits>
 
 #ifndef RTTR_Assert_Msg

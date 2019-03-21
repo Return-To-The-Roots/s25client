@@ -41,7 +41,7 @@
 #include "nodeObjs/noFlag.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
-#include <cstdio>
+#include <boost/format.hpp>
 #include <sstream>
 
 // Tab - Flags
@@ -111,49 +111,49 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         }
 
         // add building icons to TabCtrl
-        const unsigned char building_count_max = 14;
-        const unsigned building_count[4] = {9, 13, 6, 4};
-        const BuildingType building_icons[4][building_count_max] = {{/* 0 */
-                                                                     /* 0 */ BLD_WOODCUTTER,
-                                                                     /* 1 */ BLD_FORESTER,
-                                                                     /* 2 */ BLD_QUARRY,
-                                                                     /* 3 */ BLD_FISHERY,
-                                                                     /* 4 */ BLD_HUNTER,
-                                                                     /* 5 */ BLD_BARRACKS,
-                                                                     /* 6 */ BLD_GUARDHOUSE,
-                                                                     /* 7 */ BLD_LOOKOUTTOWER,
-                                                                     /* 8 */ BLD_WELL},
-                                                                    {/* 1 */
-                                                                     /*  0 */ BLD_SAWMILL,
-                                                                     /*  1 */ BLD_SLAUGHTERHOUSE,
-                                                                     /*  2 */ BLD_MILL,
-                                                                     /*  3 */ BLD_BAKERY,
-                                                                     /*  4 */ BLD_IRONSMELTER,
-                                                                     /*  5 */ BLD_METALWORKS,
-                                                                     /*  6 */ BLD_ARMORY,
-                                                                     /*  7 */ BLD_MINT,
-                                                                     /*  8 */ BLD_SHIPYARD,
-                                                                     /*  9 */ BLD_BREWERY,
-                                                                     /* 10 */ BLD_STOREHOUSE,
-                                                                     /* 11 */ BLD_WATCHTOWER,
-                                                                     /* 12 */ BLD_CATAPULT},
-                                                                    {/* 2 */
-                                                                     /* 0 */ BLD_FARM,
-                                                                     /* 1 */ BLD_PIGFARM,
-                                                                     /* 2 */ BLD_DONKEYBREEDER,
-                                                                     /* 3 */ BLD_CHARBURNER,
-                                                                     /* 4 */ BLD_FORTRESS,
-                                                                     /* 5 */ BLD_HARBORBUILDING},
-                                                                    {/* 3 */
-                                                                     /* 0 */ BLD_GOLDMINE,
-                                                                     /* 1 */ BLD_IRONMINE,
-                                                                     /* 2 */ BLD_COALMINE,
-                                                                     /* 3 */ BLD_GRANITEMINE}};
-
-        const unsigned NUM_TABSS[5] = {1, 2, 3, 1, 3};
+        const unsigned char building_count_max = 13;
+        const std::array<unsigned, 4> building_count = {9, 13, 6, 4};
+        const helpers::SimpleMultiArray<BuildingType, building_count.size(), building_count_max> building_icons = {
+          // Linebreak
+          {{/* 0 */
+            /* 0 */ BLD_WOODCUTTER,
+            /* 1 */ BLD_FORESTER,
+            /* 2 */ BLD_QUARRY,
+            /* 3 */ BLD_FISHERY,
+            /* 4 */ BLD_HUNTER,
+            /* 5 */ BLD_BARRACKS,
+            /* 6 */ BLD_GUARDHOUSE,
+            /* 7 */ BLD_LOOKOUTTOWER,
+            /* 8 */ BLD_WELL},
+           {/* 1 */
+            /*  0 */ BLD_SAWMILL,
+            /*  1 */ BLD_SLAUGHTERHOUSE,
+            /*  2 */ BLD_MILL,
+            /*  3 */ BLD_BAKERY,
+            /*  4 */ BLD_IRONSMELTER,
+            /*  5 */ BLD_METALWORKS,
+            /*  6 */ BLD_ARMORY,
+            /*  7 */ BLD_MINT,
+            /*  8 */ BLD_SHIPYARD,
+            /*  9 */ BLD_BREWERY,
+            /* 10 */ BLD_STOREHOUSE,
+            /* 11 */ BLD_WATCHTOWER,
+            /* 12 */ BLD_CATAPULT},
+           {/* 2 */
+            /* 0 */ BLD_FARM,
+            /* 1 */ BLD_PIGFARM,
+            /* 2 */ BLD_DONKEYBREEDER,
+            /* 3 */ BLD_CHARBURNER,
+            /* 4 */ BLD_FORTRESS,
+            /* 5 */ BLD_HARBORBUILDING},
+           {/* 3 */
+            /* 0 */ BLD_GOLDMINE,
+            /* 1 */ BLD_IRONMINE,
+            /* 2 */ BLD_COALMINE,
+            /* 3 */ BLD_GRANITEMINE}}};
 
         /// Flexible what-buildings-are-available handling
-        bool building_available[4][building_count_max];
+        helpers::SimpleMultiArray<bool, 4, building_count_max> building_available;
 
         // First enable all buildings
         for(unsigned char i = 0; i < 4; ++i)
@@ -200,7 +200,9 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
             building_available[2][3] = false;
 
-        for(unsigned char i = 0; i < NUM_TABSS[tabs.build_tabs]; ++i)
+        const std::array<unsigned, 5> NUM_TABS = {1, 2, 3, 1, 3};
+
+        for(unsigned char i = 0; i < NUM_TABS[tabs.build_tabs]; ++i)
         {
             unsigned char k = 0;
             Tabs::BuildTab bt = (tabs.build_tabs == Tabs::BT_MINE) ? Tabs::BT_MINE : Tabs::BuildTab(i);
@@ -509,17 +511,16 @@ void iwAction::Msg_PaintAfter()
     auto* tab = GetCtrl<ctrlTab>(0);
     if(tab)
     {
+        static boost::format fmt("%u/%u");
         // Anzeige Soldaten/mögliche Soldatenanzahl bei Angriffstab
         if(tab->GetCurrentTab() == TAB_ATTACK && available_soldiers_count > 0)
         {
-            char str[32];
-            sprintf(str, "%u/%u", selected_soldiers_count, available_soldiers_count);
-            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), str, FontStyle::CENTER, COLOR_YELLOW);
+            fmt % selected_soldiers_count % available_soldiers_count;
+            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
         } else if(tab->GetCurrentTab() == TAB_SEAATTACK && available_soldiers_count_sea > 0)
         {
-            char str[32];
-            sprintf(str, "%u/%u", selected_soldiers_count_sea, available_soldiers_count_sea);
-            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), str, FontStyle::CENTER, COLOR_YELLOW);
+            fmt % selected_soldiers_count_sea % available_soldiers_count_sea;
+            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
         }
     }
 }

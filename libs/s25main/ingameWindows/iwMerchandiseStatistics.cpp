@@ -29,7 +29,7 @@
 #include <sstream>
 
 // Farben für die einzelnen Balken
-const unsigned iwMerchandiseStatistics::BarColors[14] = {
+const std::array<unsigned, 14> iwMerchandiseStatistics::BarColors = {
   0xFF00D3F7, // türkis
   0xFFFB9E49, // gelb
   0xFFDF6161, // orange

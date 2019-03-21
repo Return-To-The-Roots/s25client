@@ -41,10 +41,8 @@
 #include "gameData/const_gui_ids.h"
 #include <cstdio>
 
-const unsigned NUM_BUILDINGSS = 32;
-
 /// Reihenfolge der Gebäude
-const BuildingType bts[NUM_BUILDINGSS] = {
+const std::array<BuildingType, 32> bts = {
   BLD_BARRACKS,       BLD_GUARDHOUSE,   BLD_WATCHTOWER, BLD_FORTRESS,   BLD_GRANITEMINE, BLD_COALMINE,    BLD_IRONMINE,
   BLD_GOLDMINE,       BLD_LOOKOUTTOWER, BLD_CATAPULT,   BLD_WOODCUTTER, BLD_FISHERY,     BLD_QUARRY,      BLD_FORESTER,
   BLD_SLAUGHTERHOUSE, BLD_HUNTER,       BLD_BREWERY,    BLD_ARMORY,     BLD_METALWORKS,  BLD_IRONSMELTER, BLD_PIGFARM,
@@ -67,11 +65,11 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 {
     const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
     // Symbole für die einzelnen Gebäude erstellen
-    for(unsigned y = 0; y < NUM_BUILDINGSS / 4 + (NUM_BUILDINGSS % 4 > 0 ? 1 : 0); ++y)
+    for(unsigned y = 0; y < bts.size() / 4 + (bts.size() % 4 > 0 ? 1 : 0); ++y)
     {
         for(unsigned x = 0; x < 4; ++x)
         {
-            if(y * 4 + x >= NUM_BUILDINGSS) //-V547
+            if(y * 4 + x >= bts.size()) //-V547
                 break;
             glArchivItem_Bitmap* img;
             if(bts[y * 4 + x] != BLD_CHARBURNER)
@@ -92,22 +90,22 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 /// Anzahlen der Gebäude zeichnen
 void iwBuildings::Msg_PaintAfter()
 {
+    static boost::format fmt("%1%/%2%");
     IngameWindow::Msg_PaintAfter();
     // Anzahlen herausfinden
     BuildingCount bc = gwv.GetViewer().GetPlayer().GetBuildingRegister().GetBuildingNums();
 
     // Anzahlen unter die Gebäude schreiben
     DrawPoint rowPos = GetDrawPos() + iconPadding + DrawPoint(0, font_distance_y);
-    for(unsigned y = 0; y < NUM_BUILDINGSS / 4 + (NUM_BUILDINGSS % 4 > 0 ? 1 : 0); ++y)
+    for(unsigned y = 0; y < bts.size() / 4 + (bts.size() % 4 > 0 ? 1 : 0); ++y)
     {
         DrawPoint curPos = rowPos;
         for(unsigned x = 0; x < 4; ++x)
         {
-            if(y * 4 + x >= NUM_BUILDINGSS) //-V547
+            if(y * 4 + x >= bts.size()) //-V547
                 break;
-            char txt[64];
-            sprintf(txt, "%u/%u", bc.buildings[bts[y * 4 + x]], bc.buildingSites[bts[y * 4 + x]]);
-            NormalFont->Draw(curPos, txt, FontStyle::CENTER, COLOR_YELLOW);
+            fmt % bc.buildings[bts[y * 4 + x]] % bc.buildingSites[bts[y * 4 + x]];
+            NormalFont->Draw(curPos, fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
             curPos.x += iconSpacing.x;
         }
         rowPos.y += iconSpacing.y;

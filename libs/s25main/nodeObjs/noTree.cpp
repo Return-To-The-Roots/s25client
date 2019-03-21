@@ -47,7 +47,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
         state = STATE_NOTHING;
 
     // Every nth tree produces animals, but no palm and pineapple trees
-    const unsigned TREESPERANIMALSPAWN[] = {20, 13, 10, 6, 4, 2};
+    const std::array<unsigned, 6> TREESPERANIMALSPAWN = {20, 13, 10, 6, 4, 2};
     produce_animals =
       (type < 3 || type > 5) && (RANDOM_RAND(GetObjId(), TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)]) == 0);
 

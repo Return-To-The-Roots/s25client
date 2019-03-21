@@ -34,7 +34,7 @@ nofIronfounder::nofIronfounder(SerializedGameData& sgd, const unsigned obj_id) :
 
 void nofIronfounder::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[5] = {{-22, 12}, {-23, 3}, {-19, 8}, {-18, 4}, {-33, 7}};
+    const std::array<DrawPointInit, 5> offsets = {{{-22, 12}, {-23, 3}, {-19, 8}, {-18, 4}, {-33, 7}}};
 
     unsigned now_id = GAMECLIENT.Interpolate(272, current_ev);
 

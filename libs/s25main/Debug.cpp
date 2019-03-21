@@ -334,9 +334,9 @@ bool DebugInfo::SendFile(BinaryFile& file)
 
     LOG.write("- File size: %u\n") % fileSize;
 
-    auto fileData = std::make_unique<char[]>(fileSize);
+    auto fileData = std::unique_ptr<char[]>(new char[fileSize]);
     unsigned compressed_len = fileSize * 2 + 600;
-    auto compressed = std::make_unique<char[]>(compressed_len);
+    auto compressed = std::unique_ptr<char[]>(new char[compressed_len]);
 
     file.Seek(0, SEEK_SET);
     file.ReadRawData(fileData.get(), fileSize);

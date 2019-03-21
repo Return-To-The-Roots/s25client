@@ -165,9 +165,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
                 number = GetPossibleTradeAmount(jobs[selection]);
             }
 
-            char str[256];
-            sprintf(str, "/ %u", number);
-            GetCtrl<ctrlText>(7)->SetText(str);
+            GetCtrl<ctrlText>(7)->SetText("/ " + std::to_string(number));
         }
         break;
     }

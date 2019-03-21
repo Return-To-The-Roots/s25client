@@ -55,7 +55,7 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
     // Die Expeditionsweiterfahrbuttons
     AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))->SetVisible(false);
 
-    const DrawPointInit BUTTON_POS[6] = {{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}};
+    const std::array<DrawPointInit, 6> BUTTON_POS = {{{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}}};
 
     // Expedition abbrechen
     AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))->SetVisible(false);
@@ -67,6 +67,7 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
 
 void iwShip::Draw_()
 {
+    static boost::format valByValFmt{"%1%/%2%"};
     IngameWindow::Draw_();
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     // Schiff holen
@@ -91,9 +92,8 @@ void iwShip::Draw_()
     // Schiffsname
     NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
-    char str[32];
-    sprintf(str, "%u/%u", ship_id + 1, owner.GetNumShips());
-    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, FontStyle::RIGHT | FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
+    valByValFmt % (ship_id + 1) % owner.GetNumShips();
+    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), valByValFmt.str(), FontStyle::RIGHT | FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
     LOADER.GetImageN("boot_z", 12)->DrawFull(GetDrawPos() + DrawPoint(138, 117));
 

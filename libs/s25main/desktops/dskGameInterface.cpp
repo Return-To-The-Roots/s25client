@@ -38,6 +38,7 @@
 #include "controls/ctrlText.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/format.hpp"
 #include "helpers/strUtils.h"
 #include "ingameWindows/iwAction.h"
 #include "ingameWindows/iwBaseWarehouse.h"
@@ -302,17 +303,19 @@ void dskGameInterface::Msg_PaintAfter()
     Desktop::Msg_PaintAfter();
 
     /* NWF-Anzeige (vorläufig)*/
-    char nwf_string[256];
+    std::array<char, 256> nwf_string;
 
     const GameWorldBase& world = worldViewer.GetWorld();
     if(GAMECLIENT.IsReplayModeOn())
     {
-        snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
+        snprintf(nwf_string.data(), nwf_string.size() - 1,
+                 _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
                  world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
                  GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
     } else
-        snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
-                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
+        snprintf(nwf_string.data(), nwf_string.size() - 1,
+                 _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), world.GetEvMgr().GetCurrentGF(),
+                 GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
                  GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), worldViewer.GetPlayer().ping);
 
     // tournament mode?
@@ -325,10 +328,10 @@ void dskGameInterface::Msg_PaintAfter()
         if(curGF >= tmd)
             tournamentNotice = _("Tournament finished");
         else
-            tournamentNotice = (boost::format("Tournament mode: %1% remaining") % GAMECLIENT.FormatGFTime(tmd - curGF)).str();
+            tournamentNotice = helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tmd - curGF));
     }
 
-    NormalFont->Draw(DrawPoint(30, 1), nwf_string, 0, 0xFFFFFF00);
+    NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), 0, 0xFFFFFF00);
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
@@ -1079,27 +1082,23 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
 void dskGameInterface::CI_PlayerLeft(const unsigned playerId)
 {
     // Info-Meldung ausgeben
-    char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' left the game!"), worldViewer.GetWorld().GetPlayer(playerId).name.c_str());
+    std::string text = helpers::format(_("Player '%s' left the game!"), worldViewer.GetWorld().GetPlayer(playerId).name);
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
     // Im Spiel anzeigen, dass die KI das Spiel betreten hat
-    snprintf(text, sizeof(text), _("Player '%s' joined the game!"), "KI");
+    text = helpers::format(_("Player '%s' joined the game!"), "KI");
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_GREEN);
 }
 
 void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
 {
     // TODO: print what has changed
-    char text[256];
-    snprintf(text, sizeof(text), _("Note: Game settings changed by the server%s"), "");
+    const std::string text = helpers::format(_("Note: Game settings changed by the server%s"), "");
     messenger.AddMessage("", 0, CD_SYSTEM, text);
 }
 
 void dskGameInterface::CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg)
 {
-    char from[256];
-    snprintf(from, sizeof(from), _("<%s> "), worldViewer.GetWorld().GetPlayer(playerId).name.c_str());
-    messenger.AddMessage(from, worldViewer.GetWorld().GetPlayer(playerId).color, cd, msg);
+    messenger.AddMessage(worldViewer.GetWorld().GetPlayer(playerId).name, worldViewer.GetWorld().GetPlayer(playerId).color, cd, msg);
 }
 
 void dskGameInterface::CI_Async(const std::string& checksums_list)
@@ -1121,9 +1120,7 @@ void dskGameInterface::CI_ReplayEndReached(const std::string& msg)
 
 void dskGameInterface::CI_GamePaused()
 {
-    char from[256];
-    snprintf(from, sizeof(from), _("<%s> "), _("SYSTEM"));
-    messenger.AddMessage(from, COLOR_GREY, CD_SYSTEM, _("Game was paused."));
+    messenger.AddMessage(_("SYSTEM"), COLOR_GREY, CD_SYSTEM, _("Game was paused."));
 
     /// Straßenbau ggf. abbrechen, wenn aktiviert
     if(road.mode != RM_DISABLED)
@@ -1140,9 +1137,7 @@ void dskGameInterface::CI_GamePaused()
 
 void dskGameInterface::CI_GameResumed()
 {
-    char from[256];
-    snprintf(from, sizeof(from), _("<%s> "), _("SYSTEM"));
-    messenger.AddMessage(from, COLOR_GREY, CD_SYSTEM, _("Game was resumed."));
+    messenger.AddMessage(_("SYSTEM"), COLOR_GREY, CD_SYSTEM, _("Game was resumed."));
 }
 
 void dskGameInterface::CI_Error(const ClientError ce)
@@ -1191,8 +1186,7 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
  */
 void dskGameInterface::GI_PlayerDefeated(const unsigned playerId)
 {
-    char text[256];
-    snprintf(text, sizeof(text), _("Player '%s' was defeated!"), worldViewer.GetWorld().GetPlayer(playerId).name.c_str());
+    const std::string text = helpers::format(_("Player '%s' was defeated!"), worldViewer.GetWorld().GetPlayer(playerId).name);
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?

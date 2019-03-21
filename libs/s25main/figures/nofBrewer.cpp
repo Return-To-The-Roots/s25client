@@ -32,7 +32,7 @@ nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofBrewer::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPointInit offsets[NUM_NATS] = {{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}};
+    static const std::array<DrawPointInit, NUM_NATS> offsets = {{{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}}};
 
     unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 

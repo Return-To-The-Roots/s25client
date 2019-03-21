@@ -121,7 +121,7 @@ void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
 void noFlag::Draw(DrawPoint drawPt)
 {
     // Positionen der Waren an der Flagge relativ zur Flagge
-    static const DrawPointInit WARES_POS[8] = {{0, 0}, {-4, 0}, {3, -1}, {-7, -1}, {6, -2}, {-10, -2}, {9, -5}, {-13, -5}};
+    static const std::array<DrawPointInit, 8> WARES_POS = {{{0, 0}, {-4, 0}, {3, -1}, {-7, -1}, {6, -2}, {-10, -2}, {9, -5}, {-13, -5}}};
 
     unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
 

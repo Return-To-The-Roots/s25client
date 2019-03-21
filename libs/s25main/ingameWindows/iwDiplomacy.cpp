@@ -25,6 +25,7 @@
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTextDeepening.h"
+#include "helpers/format.hpp"
 #include "helpers/strUtils.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
@@ -112,7 +113,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
 void iwDiplomacy::Msg_PaintBefore()
 {
     // Farben, die zu den 3 Bündnisstates gesetzt werden (0-kein Bündnis, 1-in Arbeit, 2-Bündnis abgeschlossen)
-    const unsigned PACT_COLORS[3] = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
+    const std::array<unsigned, 3> PACT_COLORS = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
 
     IngameWindow::Msg_PaintBefore();
     // Die farbigen Zeilen malen
@@ -199,16 +200,18 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
 /////////////////////////////
 
 /// Titel für die Fenster für unterschiedliche Bündnistypen
-const char* const PACT_TITLES[NUM_PACTS] = {gettext_noop("Suggest treaty of alliance"), gettext_noop("Suggest non-aggression pact")};
+const std::array<const char*, NUM_PACTS> PACT_TITLES = {gettext_noop("Suggest treaty of alliance"),
+                                                        gettext_noop("Suggest non-aggression pact")};
 
 /// Anzahl der unterschiedlich möglichen Längen ("für immer" nicht mit eingerechnet!)
 const unsigned NUM_DURATIONS = 3;
 
 /// Längen für die Dauer des Vertrages (kurz-, mittel- und langfristig)
-const unsigned DURATIONS[NUM_DURATIONS] = {5000, 30000, 100000};
+const std::array<unsigned, NUM_DURATIONS> DURATIONS = {5000, 30000, 100000};
 
 /// Namen für diese Vertragsdauern
-const char* const DURATION_NAMES[NUM_DURATIONS] = {gettext_noop("Short-run"), gettext_noop("Medium-term"), gettext_noop("Long-run")};
+const std::array<const char*, NUM_DURATIONS> DURATION_NAMES = {gettext_noop("Short-run"), gettext_noop("Medium-term"),
+                                                               gettext_noop("Long-run")};
 
 iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter, Extent(320, 215), _(PACT_TITLES[pt]), LOADER.GetImageN("resource", 41)),
@@ -237,9 +240,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
     // Zeiten zur Combobox hinzufügen
     for(unsigned i = 0; i < NUM_DURATIONS; ++i)
     {
-        char str[256];
-        sprintf(str, "%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i]).c_str());
-        combo->AddString(str);
+        combo->AddString(helpers::format("%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i])));
     }
     // Erstes Item in der Combobox vorerst auswählen
     combo->SetSelection(0);

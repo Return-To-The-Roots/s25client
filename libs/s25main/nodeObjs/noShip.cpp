@@ -53,11 +53,11 @@ const unsigned MAX_EXPLORATION_EXPEDITION_DISTANCE = 100;
 const unsigned EXPLORATION_EXPEDITION_WAITING_TIME = 300;
 
 /// Positionen der Flaggen am Schiff für die 6 unterschiedlichen Richtungen jeweils
-const DrawPointInit SHIPS_FLAG_POS[2][6] = {
-  // Standing (sails down)
-  {{-3, -77}, {-6, -71}, {-3, -71}, {-1, -71}, {5, -63}, {-1, -70}},
-  // Driving
-  {{3, -70}, {0, -64}, {3, -64}, {-1, -70}, {5, -63}, {5, -63}}};
+const helpers::SimpleMultiArray<DrawPointInit, 2, 6> SHIPS_FLAG_POS = { // break
+  {                                                                     /* Standing (sails down) */
+   {{-3, -77}, {-6, -71}, {-3, -71}, {-1, -71}, {5, -63}, {-1, -70}},
+   // Driving
+   {{3, -70}, {0, -64}, {3, -64}, {-1, -70}, {5, -63}, {5, -63}}}};
 
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos), ownerId_(player), state(STATE_IDLE), seaId_(0), goal_harborId(0), goal_dir(0),
@@ -371,7 +371,7 @@ void noShip::HandleEvent(const unsigned id)
 
 void noShip::StartDriving(const Direction dir)
 {
-    const unsigned SHIP_SPEEDS[] = {35, 25, 20, 10, 5};
+    const std::array<unsigned, 5> SHIP_SPEEDS = {35, 25, 20, 10, 5};
 
     StartMoving(dir, SHIP_SPEEDS[gwg->GetGGS().getSelection(AddonId::SHIP_SPEED)]);
 }

@@ -41,7 +41,7 @@ private:
     void DrawStatistic();
 
     // Die Farben für die einzelnen Warenlinien
-    static const unsigned BarColors[14];
+    static const std::array<unsigned, 14> BarColors;
     const GamePlayer& player;
 
     // Aktueller Zeitbereich

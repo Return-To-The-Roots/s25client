@@ -43,6 +43,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "factories/AIFactory.h"
 #include "files.h"
+#include "helpers/format.hpp"
 #include "lua/LuaInterfaceBase.h"
 #include "network/ClientInterface.h"
 #include "network/GameMessages.h"
@@ -1719,15 +1720,11 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
     minutes numMinutes = duration_cast<hours>(numSeconds);
     numSeconds -= numMinutes;
 
-    char str[64];
-
     // ganze Stunden mit dabei? Dann entsprechend anderes format, ansonsten ignorieren wir die einfach
     if(numHours.count())
-        sprintf(str, "%02u:%02u:%02u", numHours.count(), numMinutes.count(), numSeconds.count());
+        return helpers::format("%02u:%02u:%02u", numHours.count(), numMinutes.count(), numSeconds.count());
     else
-        sprintf(str, "%02u:%02u", numMinutes.count(), numSeconds.count());
-
-    return str;
+        return helpers::format("%02u:%02u", numMinutes.count(), numSeconds.count());
 }
 
 const std::string& GameClient::GetReplayFileName() const

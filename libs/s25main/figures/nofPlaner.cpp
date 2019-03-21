@@ -140,8 +140,8 @@ void nofPlaner::Draw(DrawPoint drawPt)
             unsigned now_id = GAMECLIENT.Interpolate(69, current_ev);
 
             // spezielle Animation am Ende
-            const unsigned ANIMATION[21] = {273, 273, 273, 273, 273, 274, 274, 275, 276, 276, 276,
-                                            276, 276, 276, 276, 276, 276, 276, 277, 277, 278};
+            const std::array<unsigned, 21> ANIMATION = {273, 273, 273, 273, 273, 274, 274, 275, 276, 276, 276,
+                                                        276, 276, 276, 276, 276, 276, 276, 277, 277, 278};
 
             unsigned bobId;
             if(now_id < 20)

@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
+#include <array>
 #include <stdexcept>
 
 Position GetNeighbour(const Position& p, const Direction dir)
@@ -48,7 +49,7 @@ Position GetNeighbour2(Position pt, unsigned dir)
     if(dir >= 12)
         throw std::logic_error("Invalid direction!");
 
-    static const int ADD_Y[12] = {0, -1, -2, -2, -2, -1, 0, 1, 2, 2, 2, 1};
+    static constexpr std::array<int, 12> ADD_Y = {0, -1, -2, -2, -2, -1, 0, 1, 2, 2, 2, 1};
 
     switch(dir)
     {

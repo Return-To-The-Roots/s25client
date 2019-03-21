@@ -59,7 +59,6 @@ void ctrlPercent::Draw_()
     DrawRectangle(Rect(GetDrawPos() + DrawPoint(4, 4), progSize), color);
 
     // Text zeichnen
-    char caption[256];
-    sprintf(caption, "%u%%", percentage);
+    std::string caption = std::to_string(static_cast<unsigned>(percentage)) + "%";
     font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, caption, FontStyle::CENTER | FontStyle::VCENTER, text_color);
 }

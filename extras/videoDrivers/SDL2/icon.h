@@ -1,8 +1,9 @@
 #ifndef icon_h__
 
-#include <stdint.h>
+#include <array>
+#include <cstdint>
 
 /// RTTR Icon
-extern uint32_t image[48 * 48];
+extern std::array<uint32_t, 48 * 48> image;
 
 #endif // icon_h__

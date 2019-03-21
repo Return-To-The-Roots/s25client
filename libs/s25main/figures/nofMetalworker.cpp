@@ -71,7 +71,7 @@ void nofMetalworker::Serialize(SerializedGameData& sgd) const
 
 void nofMetalworker::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NUM_NATS] = {{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}};
+    const std::array<DrawPointInit, NUM_NATS> offsets = {{{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}}};
 
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
@@ -99,7 +99,7 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
 }
 
 // Zuordnungnen Richtige IDs - Trage-IDs in der JOBS.BOB
-const unsigned short CARRYTOOLS_IDS[NUM_TOOLS] = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 90};
+const std::array<uint8_t, NUM_TOOLS> CARRYTOOLS_IDS = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 90};
 
 unsigned short nofMetalworker::GetCarryID() const
 {

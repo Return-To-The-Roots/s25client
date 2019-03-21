@@ -21,13 +21,14 @@
 #include "noCoordBase.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
+#include <array>
 #include <stdint.h>
 
 class SerializedGameData;
 class GameEvent;
 
 /// Anzahl Animationsschritte bei dem jeweiligen Anstieg
-const unsigned short ASCENT_ANIMATION_STEPS[7] = {16, 16, 16, 16, 24, 32, 48};
+const std::array<unsigned short, 7> ASCENT_ANIMATION_STEPS = {16, 16, 16, 16, 24, 32, 48};
 
 struct EventState
 {

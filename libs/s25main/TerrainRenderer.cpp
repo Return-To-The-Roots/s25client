@@ -978,7 +978,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     if(maxSize == 0)
         return;
 
-    auto vertexData = std::make_unique<Tex2C3Ver2[]>(maxSize * 4);
+    auto vertexData = std::unique_ptr<Tex2C3Ver2[]>(new Tex2C3Ver2[maxSize * 4]);
     // These should still be enabled
     RTTR_Assert(glIsEnabled(GL_VERTEX_ARRAY));
     RTTR_Assert(glIsEnabled(GL_TEXTURE_COORD_ARRAY));

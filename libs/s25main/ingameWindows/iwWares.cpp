@@ -38,7 +38,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         font = SmallFont;
 
     // Zuordnungs-IDs
-    const unsigned short INVENTORY_IDS[2][31] = {
+    const helpers::SimpleMultiArray<unsigned short, 2, 31> INVENTORY_IDS = {{
       {// Waren
        22, 23, 24, 33, 27, 18, 19, 32, 20, 11, 0, 31, 30, 29, 17, 28, 1, 3, 4, 5, 2, 6, 7, 8, 9, 12, 13, 14, 16, GD_SHIELDROMANS,
        15}, // GD_SHIELDROMANS = Völkerspezifisches Schild
@@ -46,7 +46,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
       {// Figuren
        0,  19, 20, 1,  3, 5, 2, 6, 4, 7, 13, 14, 8, 9, 10, 12, 11, 15, 18, 16, 17, 27, 26, 28, 29, JOB_CHARBURNER,
        21, 22, 23, 24, 25}, // 0xFFFF = unused
-    };
+    }};
 
     // Warenseite hinzufügen
     ctrlGroup& wares = AddPage();

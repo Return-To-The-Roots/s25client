@@ -307,7 +307,7 @@ void noFighting::StartAttack()
     // "Auswürfeln", ob der Angreifer (also der, der gerade den Angriff vollzieht) trifft oder ob sich der andere
     // erfolgreich verteidigt
 
-    unsigned char results[2];
+    std::array<unsigned char, 2> results;
     for(unsigned i = 0; i < 2; ++i)
     {
         switch(gwg->GetGGS().getSelection(AddonId::ADJUST_MILITARY_STRENGTH))

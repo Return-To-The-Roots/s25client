@@ -28,6 +28,13 @@
 #include <glad/glad.h>
 #include <limits>
 
+namespace {
+struct GL_RGBAColor
+{
+    GLbyte r, g, b, a;
+};
+} // namespace
+
 glSmartBitmap::glSmartBitmap() : origin_(0, 0), size_(0, 0), sharedTexture(false), texture(0), hasPlayer(false) {}
 
 glSmartBitmap::~glSmartBitmap()
@@ -261,11 +268,8 @@ void glSmartBitmap::drawPercent(DrawPoint drawPt, unsigned percent, unsigned col
     RTTR_Assert(percent <= 100);
 
     const float partDrawn = percent / 100.f;
-    Point<GLfloat> vertices[8], curTexCoords[8];
-    struct
-    {
-        GLbyte r, g, b, a;
-    } colors[8];
+    std::array<Point<GLfloat>, 8> vertices, curTexCoords;
+    std::array<GL_RGBAColor, 8> colors;
 
     drawPt -= origin_;
     vertices[2] = Point<GLfloat>(drawPt) + size_;
@@ -291,7 +295,7 @@ void glSmartBitmap::drawPercent(DrawPoint drawPt, unsigned percent, unsigned col
     int numQuads;
     if(player_color && hasPlayer)
     {
-        std::copy(vertices, vertices + 4, vertices + 4);
+        std::copy(vertices.begin(), vertices.begin() + 4, vertices.begin() + 4);
 
         colors[4].r = GetRed(player_color);
         colors[4].g = GetGreen(player_color);
@@ -310,9 +314,9 @@ void glSmartBitmap::drawPercent(DrawPoint drawPt, unsigned percent, unsigned col
         numQuads = 4;
 
     glEnableClientState(GL_COLOR_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glTexCoordPointer(2, GL_FLOAT, 0, curTexCoords);
-    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+    glVertexPointer(2, GL_FLOAT, 0, vertices.data());
+    glTexCoordPointer(2, GL_FLOAT, 0, curTexCoords.data());
+    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
     VIDEODRIVER.BindTexture(texture);
     glDrawArrays(GL_QUADS, 0, numQuads);
     glDisableClientState(GL_COLOR_ARRAY);

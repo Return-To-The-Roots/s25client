@@ -36,7 +36,7 @@ const unsigned SMOLDERING_LENGTH = 3000;
 const unsigned SELFDESTRUCT_DELAY = 12000;
 
 /// Work steps for the construction of the wood pile and the cover
-const unsigned short CONSTRUCTION_WORKING_STEPS[2] = {6, 6};
+const std::array<unsigned short, 2> CONSTRUCTION_WORKING_STEPS = {6, 6};
 /// Work steps for one graphical step during the remove of the cover
 const unsigned short REMOVECOVER_WORK_STEPS = 1;
 /// Work steps for one graphical step during the "harvest"

@@ -42,6 +42,7 @@
 #include "desktops/dskSinglePlayer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/LuaInterfaceSettings.h"
@@ -210,9 +211,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         // Then add tournament modes as possible "objectives"
         for(unsigned i = 0; i < NUM_TOURNAMENT_MODESS; ++i)
         {
-            char str[512];
-            sprintf(str, _("Tournament: %u minutes"), TOURNAMENT_MODES_DURATION[i]);
-            combo->AddString(str);
+            combo->AddString(helpers::format(_("Tournament: %u minutes"), TOURNAMENT_MODES_DURATION[i]));
         }
     }
 
@@ -696,8 +695,7 @@ void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
 
     if(!hasCountdown_)
     {
-        char startMsg[100];
-        sprintf(startMsg, _("You have %u seconds until game starts"), remainingTimeInSec);
+        const std::string startMsg = helpers::format(_("You have %u seconds until game starts"), remainingTimeInSec);
         gameChat->AddMessage("", "", 0, startMsg, COLOR_RED);
         gameChat->AddMessage("", "", 0, _("Don't forget to check the addon configuration!"), 0xFFFFDD00);
         gameChat->AddMessage("", "", 0, "", 0xFFFFCC00);
@@ -848,7 +846,7 @@ void dskHostGame::UpdateGGS()
 
 void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
 {
-    const std::string teams[9] = {"-", "?", "1", "2", "3", "4", "?", "?", "?"};
+    const std::array<std::string, 9> teams = {"-", "?", "1", "2", "3", "4", "?", "?", "?"};
 
     GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + i)->GetCtrl<ctrlBaseText>(5)->SetText(teams[nr]);
 }

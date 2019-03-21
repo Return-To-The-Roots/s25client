@@ -312,7 +312,7 @@ unsigned nobMilitary::GetMaxCoinCt() const
 
 unsigned nobMilitary::GetMaxTroopsCt() const
 {
-    return NUM_TROOPSS[nation][size];
+    return NUM_TROOPS[nation][size];
 }
 
 void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
@@ -729,7 +729,7 @@ nofPassiveSoldier* nobMilitary::ChooseSoldier()
     if(troops.empty())
         return nullptr;
 
-    nofPassiveSoldier* candidates[5] = {nullptr, nullptr, nullptr, nullptr, nullptr}; // candidates per rank
+    std::array<nofPassiveSoldier*, 5> candidates = {nullptr, nullptr, nullptr, nullptr, nullptr}; // candidates per rank
 
     // how many ranks
     unsigned rank_count = 0;
@@ -947,7 +947,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     }
 
     // ehemalige Leute dieses Gebäudes nach Hause schicken, die ggf. grad auf dem Weg rein/raus waren
-    MapPoint coords[2] = {pos, gwg->GetNeighbour(pos, Direction::SOUTHEAST)};
+    std::array<MapPoint, 2> coords = {pos, gwg->GetNeighbour(pos, Direction::SOUTHEAST)};
     for(const auto& coord : coords)
     {
         const std::list<noBase*>& figures = gwg->GetFigures(coord);
