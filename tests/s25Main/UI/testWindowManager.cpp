@@ -165,7 +165,7 @@ std::vector<TestIngameWnd*> TestIngameWnd::closed;
 #define REQUIRE_WINDOW_ALIVE(wnd) BOOST_TEST_REQUIRE(!helpers::contains(TestIngameWnd::closed, wnd))
 #define REQUIRE_WINDOW_ACTIVE(wnd) \
     REQUIRE_WINDOW_ALIVE(wnd);     \
-    BOOST_TEST_REQUIRE(wnd->IsActive())
+    BOOST_TEST_REQUIRE((wnd)->IsActive())
 #define REQUIRE_WINDOW_DESTROYED(wnd) BOOST_TEST_REQUIRE(helpers::contains(TestIngameWnd::closed, wnd))
 } // namespace
 
