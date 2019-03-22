@@ -25,6 +25,7 @@
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
 #include "postSystem/PostBox.h"
+#include "rttr/test/random.hpp"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
 #include "nodeObjs/noBase.h"
@@ -305,13 +306,13 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
 
         bool orderType = rand() % 2 == 0;
         BuildOrders inBuildOrder = GamePlayer::GetStandardBuildOrder();
-        std::random_shuffle(inBuildOrder.begin(), inBuildOrder.end());
+        std::shuffle(inBuildOrder.begin(), inBuildOrder.end(), rttr::test::getRandState());
         this->ChangeBuildOrder(orderType, inBuildOrder);
 
         TransportOrders inTransportOrder;
         for(unsigned i = 0; i < inTransportOrder.size(); i++)
             inTransportOrder[i] = i;
-        std::random_shuffle(inTransportOrder.begin(), inTransportOrder.end());
+        std::shuffle(inTransportOrder.begin(), inTransportOrder.end(), rttr::test::getRandState());
         this->ChangeTransport(inTransportOrder);
 
         MilitarySettings militarySettings;

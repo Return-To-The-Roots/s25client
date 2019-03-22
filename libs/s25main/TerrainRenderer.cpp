@@ -176,7 +176,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
         glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
         if(!texBmp)
             throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for edge '" + cur.name + "'");
-        edgeTextures[curIdx.value].reset(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
+        edgeTextures[curIdx.value] = LOADER.ExtractTexture(*texBmp, cur.posInTexture);
         edgeTextures[curIdx.value]->GetTexture(); // Init texture
     }
     for(DescIdx<LandscapeDesc> curIdx : usedLandscapes)
@@ -189,8 +189,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
             if(!texBmp)
                 throw std::runtime_error("Invalid texture '" + cur.roadTexDesc[i].texturePath + "' for road in landscape '" + cur.name
                                          + "'");
-            roadTextures[curIdx.value * LandscapeDesc::NUM_ROADTYPES + i].reset(
-              LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture).release());
+            roadTextures[curIdx.value * LandscapeDesc::NUM_ROADTYPES + i] = LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture);
             roadTextures[curIdx.value * LandscapeDesc::NUM_ROADTYPES + i]->GetTexture(); // Init texture
         }
     }

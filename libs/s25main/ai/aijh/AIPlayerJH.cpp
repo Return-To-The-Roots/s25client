@@ -51,6 +51,7 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <random>
 #include <sstream>
 #include <stdexcept>
 
@@ -1667,7 +1668,7 @@ void AIPlayerJH::TryToAttack()
     }
 
     // shuffle everything but headquarters and harbors without any troops in them
-    std::random_shuffle(potentialTargets.begin() + hq_or_harbor_without_soldiers, potentialTargets.end());
+    std::shuffle(potentialTargets.begin() + hq_or_harbor_without_soldiers, potentialTargets.end(), std::mt19937(std::random_device()()));
 
     // check for each potential attacking target the number of available attacking soldiers
     for(const nobBaseMilitary* target : potentialTargets)
@@ -1778,10 +1779,11 @@ void AIPlayerJH::TrySeaAttack()
             // \n",gwb.GetHarborPoint(i).x,gwb.GetHarborPoint(i).y);
         }
     }
+    auto prng = std::mt19937(std::random_device()());
     // any undefendedTargets? -> pick one by random
     if(!undefendedTargets.empty())
     {
-        std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
+        std::shuffle(undefendedTargets.begin(), undefendedTargets.end(), prng);
         for(const nobBaseMilitary* targetMilBld : undefendedTargets)
         {
             std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetSoldiersForSeaAttack(playerId, targetMilBld->GetPos());
@@ -1827,11 +1829,11 @@ void AIPlayerJH::TrySeaAttack()
             } // not attackable or no vision of region - do nothing
         }
     }
-    // now we have a deque full of available and maybe undefended targets that are available for attack -> shuffle and attack the first one
-    // we can attack("should" be the first we check...)  any undefendedTargets? -> pick one by random
+    // now we have a deque full of available and maybe undefended targets that are available for attack -> shuffle and attack the first
+    // one we can attack("should" be the first we check...)  any undefendedTargets? -> pick one by random
     if(!undefendedTargets.empty())
     {
-        std::random_shuffle(undefendedTargets.begin(), undefendedTargets.end());
+        std::shuffle(undefendedTargets.begin(), undefendedTargets.end(), prng);
         for(const nobBaseMilitary* targetMilBld : undefendedTargets)
         {
             std::vector<GameWorldBase::PotentialSeaAttacker> attackers = gwb.GetSoldiersForSeaAttack(playerId, targetMilBld->GetPos());
@@ -1842,7 +1844,7 @@ void AIPlayerJH::TrySeaAttack()
             }
         }
     }
-    std::random_shuffle(potentialTargets.begin(), potentialTargets.end());
+    std::shuffle(potentialTargets.begin(), potentialTargets.end(), prng);
     for(const nobBaseMilitary* ship : potentialTargets)
     {
         // TODO: decide if it is worth attacking the target and not just "possible"

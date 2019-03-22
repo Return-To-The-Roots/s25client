@@ -742,7 +742,7 @@ void WindowManager::DoDesktopSwitch()
     }
 
     // Desktop auf Neuen umstellen
-    curDesktop.reset(nextdesktop.release());
+    curDesktop = std::move(nextdesktop);
     curDesktop->SetActive(true);
 
     for(auto nextWnd : nextWnds)

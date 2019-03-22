@@ -406,8 +406,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
     // random locations? -> randomize them :)
     if(randomStartPos)
     {
-        RANDOM_FUNCTOR(random);
-        std::random_shuffle(hqPositions.begin(), hqPositions.end(), random);
+        RANDOM_SHUFFLE(hqPositions);
     }
 
     for(unsigned i = 0; i < world.GetNumPlayers(); ++i)

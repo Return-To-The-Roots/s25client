@@ -36,10 +36,10 @@ public:
     void Prepare();
 
     /// liefert den Dateinamen des aktuellen Songs
-    const std::string getCurrentSong() const;
+    std::string getCurrentSong() const;
 
     /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-    const std::string getNextSong();
+    std::string getNextSong();
 
     /// Playlist in Datei speichern
     bool SaveAs(const std::string& filename, bool overwrite);

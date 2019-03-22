@@ -107,21 +107,35 @@ using RandomEntry = UsedRandom::RandomEntry;
 /// Note: maxVal has to be small (at least <= 32768)
 #define RANDOM_RAND(objId, maxVal) RANDOM.Rand(__FILE__, __LINE__, objId, maxVal)
 
-/// functor using RANDOM.Rand(...) e.g. for std::random_shuffle
-struct RandomFunctor
+/// functor using RANDOM.Rand(...) e.g. for std::shuffle
+class RandomFunctor
 {
     const char* file_;
     unsigned line_;
-    RandomFunctor(const char* file, unsigned line) : file_(file), line_(line) {}
+
+public:
+    constexpr RandomFunctor(const char* file, unsigned line) : file_(file), line_(line) {}
 
     ptrdiff_t operator()(ptrdiff_t max) const
     {
         RTTR_Assert(max < std::numeric_limits<int>::max());
         return RANDOM.Rand(file_, line_, 0, static_cast<int>(max));
     }
+    template<class T>
+    static void shuffleContainer(T& container, const char* file, unsigned line)
+    {
+        if(container.empty())
+            return;
+        const RandomFunctor getIdx(file, line);
+        for(auto i = container.size() - 1; i > 0; --i)
+        {
+            using std::swap;
+            swap(container[i], container[getIdx(i + 1)]);
+        }
+    }
 };
 
 /// Shortcut for creating an instance of RandomFunctor
-#define RANDOM_FUNCTOR(varName) RandomFunctor varName(__FILE__, __LINE__)
+#define RANDOM_SHUFFLE(container) RandomFunctor::shuffleContainer(container, __FILE__, __LINE__)
 
 #endif // !RANDOM_H_INCLUDED

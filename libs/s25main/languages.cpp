@@ -90,7 +90,7 @@ void Languages::setLanguage(const std::string& lang_code)
     mysetlocale(LC_ALL, lang_code.c_str());
 }
 
-const std::string Languages::setLanguage(unsigned i)
+std::string Languages::setLanguage(unsigned i)
 {
     const Language& l = getLanguage(i);
     setLanguage(l.code);

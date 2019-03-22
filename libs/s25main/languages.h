@@ -37,7 +37,7 @@ public:
     Languages();
 
     void setLanguage(const std::string& lang_code);
-    const std::string setLanguage(unsigned i);
+    std::string setLanguage(unsigned i);
 
     unsigned size();
     const Language& getLanguage(unsigned i);

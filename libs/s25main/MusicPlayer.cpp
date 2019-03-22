@@ -30,6 +30,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
+#include <random>
 #include <sstream>
 
 Playlist::Playlist() : current(-1), repeats(1), random(false) {}
@@ -47,10 +48,10 @@ void Playlist::Prepare()
 
     // Shuffle if requested
     if(random)
-        std::random_shuffle(order.begin(), order.end());
+        std::shuffle(order.begin(), order.end(), std::mt19937(std::random_device()()));
 }
 
-const std::string Playlist::getCurrentSong() const
+std::string Playlist::getCurrentSong() const
 {
     if(order.empty() || order.front() >= songs.size())
         return "";
@@ -181,7 +182,7 @@ void Playlist::SetStartSong(const unsigned id)
 }
 
 /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-const std::string Playlist::getNextSong()
+std::string Playlist::getNextSong()
 {
     const std::string tmp = getCurrentSong();
     current = tmp.empty() ? -1 : static_cast<int>(order.front());

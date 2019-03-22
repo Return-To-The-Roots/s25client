@@ -1321,8 +1321,7 @@ void GamePlayer::RefreshDefenderList()
     for(unsigned i = 0; i < MILITARY_SETTINGS_SCALE[2]; ++i)
         shouldSendDefenderList.push_back(i < militarySettings_[2]);
     // und ordentlich schütteln
-    RANDOM_FUNCTOR(random);
-    std::random_shuffle(shouldSendDefenderList.begin(), shouldSendDefenderList.end(), random);
+    RANDOM_SHUFFLE(shouldSendDefenderList);
 }
 
 void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_settings)
