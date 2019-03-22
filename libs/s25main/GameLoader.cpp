@@ -100,7 +100,5 @@ bool GameLoader::load()
 {
     initNations();
     initTextures();
-    if(!loadTextures())
-        return false;
-    return true;
+    return loadTextures();
 }

@@ -79,10 +79,7 @@ bool GameManager::Start()
     SETTINGS.Save();
 
     LOG.write(_("\nStarting the game\n"));
-    if(!ShowSplashscreen())
-        return false;
-
-    return true;
+    return ShowSplashscreen();
 }
 
 /**

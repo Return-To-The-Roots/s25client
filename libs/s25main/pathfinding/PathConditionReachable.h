@@ -49,9 +49,7 @@ struct PathConditionReachable
         const TerrainDesc& tLeft = world.GetDescription().get(world.GetLeftTerrain(fromPt, dir));
         const TerrainDesc& tRight = world.GetDescription().get(world.GetRightTerrain(fromPt, dir));
         // Don't go next to danger terrain
-        if(tLeft.Is(ETerrain::Unreachable) || tRight.Is(ETerrain::Unreachable))
-            return false;
-        return true;
+        return !tLeft.Is(ETerrain::Unreachable) && !tRight.Is(ETerrain::Unreachable);
     }
 };
 

@@ -117,18 +117,20 @@ void CExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_p
 }
 #endif // _WIN32 && _DEBUG && RTTR_HWETRANS
 
-bool shouldSendDebugData()
+bool askForDebugData()
 {
-    if(SETTINGS.global.submit_debug_data == 1)
-        return true;
 #ifdef _WIN32
     std::wstring title = cvUTF8ToWideString(_("Error"));
     std::wstring text = cvUTF8ToWideString(_(
       "RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"));
-    if(MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
-        return true;
-#endif
+    return (MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES);
+#else
     return false;
+#endif
+}
+bool shouldSendDebugData()
+{
+    return (SETTINGS.global.submit_debug_data == 1) || askForDebugData();
 }
 
 void showCrashMessage()

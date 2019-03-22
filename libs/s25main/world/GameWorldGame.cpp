@@ -285,47 +285,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
 bool GameWorldGame::HasRemovableObjForRoad(const MapPoint pt) const
 {
     const auto* obj = GetSpecObj<noStaticObject>(pt);
-    if(obj && obj->GetSize() == 0)
-        return true;
-    return false;
-    /*if(GetNO(pt)->GetGOT() == GOT_ENVOBJECT)
-    {
-        const noEnvObject* no = GetSpecObj<noEnvObject>(pt);
-        unsigned short type = no->GetItemID();
-        switch(no->GetItemFile())
-        {
-            case 0xFFFF: // map_?_z.lst
-                if(type == 505 || type == 506 || type == 507 || type == 508 || type == 510 || (type >= 542 && type <= 546) || type == 512
-                   || type == 513 ||           // Kakteen
-                   type == 536 || type == 541) // abgeerntete Getreidefelder
-                    return true;
-                break;
-            case 0:
-                // todo:
-                break;
-            case 1:
-                if(type <= 12)
-                    return true;
-                // todo:
-                break;
-            case 2:
-                // todo:
-                break;
-            case 3:
-                // todo:
-                break;
-            case 4:
-                // todo:
-                break;
-            case 5:
-                // todo:
-                break;
-            // Charburner rests
-            case 6: return true; break;
-        }
-    }
-
-    return false;*/
+    return obj && obj->GetSize() == 0;
 }
 
 // When defined the game tries to remove "blocks" of border stones that look ugly (TODO: Example?)

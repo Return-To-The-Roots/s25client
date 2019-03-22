@@ -353,12 +353,7 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
         if(bwu.id == bwu_id)
         {
             // Wenn letzter TÜV noch nicht zu lange zurückliegt, können wir sie als unzugänglich zurückgeben
-            if(GetEvMgr().GetCurrentGF() - bwu.last_gf <= MAX_BWU_INTERVAL)
-                return true;
-
-            // ansonsten nicht, evtl ist sie ja jetzt mal wieder zugänglich, sollte also mal neu geprüft werden
-            else
-                return false;
+            return GetEvMgr().GetCurrentGF() - bwu.last_gf <= MAX_BWU_INTERVAL;
         }
     }
 

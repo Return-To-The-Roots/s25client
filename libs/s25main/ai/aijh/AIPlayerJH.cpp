@@ -970,19 +970,8 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWare
         // if understaffed was found block in all with >=limit else unblock in all
         for(const nobBaseWarehouse* wh : storehouses)
         {
-            bool shouldBlock;
-            if(helpers::contains(frontierWhs, wh)) // frontier wh?
-            {
-                if(hasUnderstaffedWh)
-                {
-                    if(wh->GetInventory().people[maxRankJob] < limit)
-                        shouldBlock = false;
-                    else // more than limit
-                        shouldBlock = true;
-                } else // no understaffedwh
-                    shouldBlock = false;
-            } else // not frontier wh! block it
-                shouldBlock = true;
+            const bool shouldBlock = !helpers::contains(frontierWhs, wh) // Not a frontier wh or:
+                                     || (hasUnderstaffedWh && wh->GetInventory().people[maxRankJob] >= limit);
             if(shouldBlock != wh->IsInventorySetting(maxRankJob, EInventorySetting::STOP))
                 aii.SetInventorySetting(wh->GetPos(), maxRankJob, wh->GetInventorySetting(maxRankJob).Toggle(EInventorySetting::STOP));
         }
@@ -1010,10 +999,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWare
                 shouldBlock = true;
             } else if(hasUnderstaffedWh)
             {
-                if(wh->GetInventory().people[maxRankJob] < limit)
-                    shouldBlock = false;
-                else // more than limit
-                    shouldBlock = true;
+                shouldBlock = wh->GetInventory().people[maxRankJob] >= limit;
             } else // no understaffedwh
                 shouldBlock = false;
             if(shouldBlock != wh->IsInventorySetting(maxRankJob, EInventorySetting::STOP))

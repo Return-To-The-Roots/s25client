@@ -274,9 +274,7 @@ bool AIConstruction::MilitaryBuildingWantsRoad(const nobMilitary& milbld)
         return true;
     // TODO: This probably does not do what is wanted...
     int bldIdx = helpers::indexOf(aii.GetMilitaryBuildings(), &milbld);
-    if(bldIdx > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds()))
-        return true;
-    return false;
+    return bldIdx > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds());
 }
 
 bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned maxSearchRadius /*= 14*/)

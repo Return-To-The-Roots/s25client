@@ -54,10 +54,7 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
     if(!IsPointOK_RoadPath(gwb, pt, dir, param))
         return false;
     const auto* prp = static_cast<const Param_RoadPath*>(param);
-    if(!prp->boat_road && gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) == BQ_NOTHING)
-        return false;
-
-    return true;
+    return prp->boat_road || gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) != BQ_NOTHING;
 }
 } // namespace
 
