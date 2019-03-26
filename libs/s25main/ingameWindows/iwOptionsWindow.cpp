@@ -53,11 +53,11 @@ iwOptionsWindow::iwOptionsWindow()
 
     // "Tastaturbelegung"
     AddImageButton(4, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
-    AddText(5, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
+    AddText(5, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
     // "'Lies mich'-Datei laden"
     AddImageButton(6, DrawPoint(35, 160), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
-    AddText(7, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
+    AddText(7, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
     // "Spiel laden!"
     // TODO: Implement
@@ -67,7 +67,7 @@ iwOptionsWindow::iwOptionsWindow()
     // "Spiel speichern!"
     // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
     AddImageButton(10, DrawPoint(35, 230), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 47));
-    AddText(11, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
+    AddText(11, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
     // Geräusche an/aus
     AddImageButton(12, DrawPoint(35, 300), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807

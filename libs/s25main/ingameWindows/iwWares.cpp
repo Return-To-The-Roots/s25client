@@ -150,10 +150,10 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
 
         // die jeweilige Anzahl (Texte)
         DrawPoint txtPos = btPos + DrawPoint(btSize.x, 40);
-        wares.AddVarText(600 + INVENTORY_IDS[0][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font, 1,
+        wares.AddVarText(600 + INVENTORY_IDS[0][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font, 1,
                          &inventory.goods[INVENTORY_IDS[0][ware_idx]]);
         if(INVENTORY_IDS[1][ware_idx] != 0xFFFF)
-            figures.AddVarText(600 + INVENTORY_IDS[1][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font,
+            figures.AddVarText(600 + INVENTORY_IDS[1][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font,
                                1, &inventory.people[INVENTORY_IDS[1][ware_idx]]);
     }
 

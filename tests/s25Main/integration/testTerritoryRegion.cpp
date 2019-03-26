@@ -302,16 +302,18 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
                     bestID = bld->GetObjId();
                 }
             }
-            RTTR_REQUIRE_EQUAL_MSG(region.GetOwner(Position(pt)), owner, " on " << pt << " iteration " << i);
+            BOOST_TEST_CHECKPOINT(" on " << pt << " iteration " << i);
+            BOOST_TEST_REQUIRE(region.GetOwner(Position(pt)) == owner);
         }
         // Check that all world points that should have an owner do have one
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             uint8_t owner = region.GetOwner(Position(pt));
+            BOOST_TEST_CHECKPOINT(" on " << pt << " iteration " << i);
             if(!owner)
-                RTTR_REQUIRE_EQUAL_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
+                BOOST_TEST_REQUIRE(world.GetNode(pt).owner == 0u);
             else
-                RTTR_REQUIRE_NE_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
+                BOOST_TEST_REQUIRE(world.GetNode(pt).owner != 0u);
         }
         for(const MapPoint pt : milBldPos)
         {

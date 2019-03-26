@@ -31,8 +31,8 @@
 iwSettings::iwSettings()
     : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"), LOADER.GetImageN("resource", 41))
 {
-    AddText(46, DrawPoint(15, 40), _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(47, DrawPoint(15, 85), _("Mode:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(46, DrawPoint(15, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(47, DrawPoint(15, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddCheckBox(4, DrawPoint(200, 124), Extent(150, 26), TC_GREY, _("Statistics Scale"), NormalFont, false);
     GetCtrl<ctrlCheck>(4)->SetCheck(SETTINGS.ingame.scale_statistics);
 
@@ -70,18 +70,24 @@ iwSettings::iwSettings()
 
 iwSettings::~iwSettings()
 {
-    auto* SizeCombo = GetCtrl<ctrlComboBox>(0);
-    SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection()];
-
-    if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
-       || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
+    try
     {
-        const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
-        if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
+        auto* SizeCombo = GetCtrl<ctrlComboBox>(0);
+        SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection()];
+
+        if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
+           || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
         {
-            // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
-            //     MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+            const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+            if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
+            {
+                // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
+                //     MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+            }
         }
+    } catch(...)
+    {
+        // ignored
     }
 }
 

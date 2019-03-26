@@ -50,7 +50,7 @@ dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
     AddText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     for(unsigned i = 0; i < 8; ++i)
-        AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, 0, LargeFont);
+        AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, FontStyle{}, LargeFont);
 
     LOBBYCLIENT.AddListener(this);
     GAMECLIENT.SetInterface(this);

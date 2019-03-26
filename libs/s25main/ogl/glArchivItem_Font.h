@@ -21,6 +21,7 @@
 
 #include "DrawPoint.h"
 #include "Rect.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libsiedler2/ArchivItem_Font.h"
 #include "libutil/colors.h"
@@ -44,9 +45,9 @@ public:
     /// If length is given, only that many chars (not glyphs!) will be used
     /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is appended (included in
     /// maxWidth)
-    void Draw(DrawPoint pos, const ucString& wtext, unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0,
+    void Draw(DrawPoint pos, const ucString& wtext, FontStyle format, unsigned color = COLOR_WHITE, unsigned short length = 0,
               unsigned short maxWidth = 0xFFFF, const ucString& end = cvWideStringToUnicode(L"..."));
-    void Draw(DrawPoint pos, const std::string& text, unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0,
+    void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE, unsigned short length = 0,
               unsigned short maxWidth = 0xFFFF, const std::string& end = "...");
 
     /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will be set to the
@@ -59,7 +60,7 @@ public:
     unsigned short getHeight() const { return dy + 1; }
 
     /// Return the bounds of the text when draw at the specified position with the specified format
-    Rect getBounds(DrawPoint pos, const std::string& text, unsigned format) const;
+    Rect getBounds(DrawPoint pos, const std::string& text, FontStyle format) const;
 
     /// Gibt Infos, über die Unterbrechungspunkte in einem Text
     class WrapInfo

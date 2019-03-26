@@ -34,7 +34,8 @@ class CheckedLuaTable
 
 public:
     CheckedLuaTable(kaguya::LuaTable luaTable);
-    ~CheckedLuaTable();
+    // NOLINTNEXTLINE(bugprone-exception-escape)
+    ~CheckedLuaTable() noexcept(false);
 
     /// Check and report unused entries
     bool checkUnused(bool throwError = true);

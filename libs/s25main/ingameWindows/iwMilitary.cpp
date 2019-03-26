@@ -71,7 +71,13 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
 
 iwMilitary::~iwMilitary()
 {
-    TransmitSettings();
+    try
+    {
+        TransmitSettings();
+    } catch(...)
+    {
+        // Ignore
+    }
 }
 
 /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden

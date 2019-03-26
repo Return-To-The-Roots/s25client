@@ -18,7 +18,9 @@
 #define CTRL_MULTILINE_H_INCLUDED
 
 #include "Window.h"
+#include "ogl/FontStyle.h"
 #include <vector>
+
 class MouseCoords;
 class glArchivItem_Font;
 
@@ -32,7 +34,7 @@ public:
     /// Creates a multiline control with automatic/transparent wrapping of long lines and automatic scrollbar
     /// Note: Using non-default font-formats may cause issues when the scrollbar is shown
     ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
-                  unsigned format);
+                  FontStyle format);
 
     void Resize(const Extent& newSize) override;
     void AddString(const std::string& str, unsigned color, bool scroll = true);
@@ -75,7 +77,7 @@ private:
 
     TextureColor tc_;
     glArchivItem_Font* font;
-    unsigned format_;
+    FontStyle format_;
     bool showBackground_;
     bool scrollbarAllowed_;
     /// Lines to show

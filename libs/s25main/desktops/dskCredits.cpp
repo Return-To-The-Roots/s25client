@@ -195,17 +195,18 @@ void dskCredits::DrawCredit()
         transparency = (0xFF - 0xFF * (time - (PAGE_TIME - FADING_TIME)) / FADING_TIME);
 
     // draw text
-    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, SetAlpha(COLOR_RED, transparency));
+    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, FontStyle{}, SetAlpha(COLOR_RED, transparency));
 
     std::array<unsigned, 2> columnToY = {{150, 150}};
 
     for(auto& line : itCurEntry->lines)
     {
-        LargeFont->Draw(DrawPoint(60 + line.column * 350, columnToY[line.column]), line.line, 0, SetAlpha(COLOR_YELLOW, transparency));
+        LargeFont->Draw(DrawPoint(60 + line.column * 350, columnToY[line.column]), line.line, FontStyle{},
+                        SetAlpha(COLOR_YELLOW, transparency));
         columnToY[line.column] += LargeFont->getHeight() + 5;
     }
 
-    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, SetAlpha(COLOR_RED, transparency));
+    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, FontStyle{}, SetAlpha(COLOR_RED, transparency));
 
     if(itCurEntry->pic)
         itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetRenderSize().x - 300, 70), SetAlpha(COLOR_WHITE, transparency));

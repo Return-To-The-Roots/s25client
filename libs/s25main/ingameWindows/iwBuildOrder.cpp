@@ -68,9 +68,15 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 
 iwBuildOrder::~iwBuildOrder()
 {
-    GAMECLIENT.visual_settings.useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() == 1;
+    try
+    {
+        GAMECLIENT.visual_settings.useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() == 1;
 
-    TransmitSettings();
+        TransmitSettings();
+    } catch(...)
+    {
+        // Ignored
+    }
 }
 
 void iwBuildOrder::TransmitSettings()

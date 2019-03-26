@@ -33,7 +33,7 @@
  *  @param[in] count     Anzahl der nachfolgenden Pointer
  *  @param[in] liste     Pointerliste der variablen Inhalte
  */
-ctrlVarText::ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format,
+ctrlVarText::ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, FontStyle format,
                          glArchivItem_Font* font, unsigned count, va_list fmtArgs)
     : Window(parent, id, pos), ctrlBaseVarText(formatstr, color, font, count, fmtArgs), format_(format)
 {}

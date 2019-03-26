@@ -134,7 +134,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     AddImageButton(2, DrawPoint(540, 386), Extent(40, 40), TC_GREEN2, LOADER.GetImageN("io", 47));
 
     // Autospeicherzeug
-    AddText(3, DrawPoint(20, 350), _("Auto-Save every:"), 0xFFFFFF00, 0, NormalFont);
+    AddText(3, DrawPoint(20, 350), _("Auto-Save every:"), 0xFFFFFF00, FontStyle{}, NormalFont);
     ctrlComboBox* combo = AddComboBox(4, DrawPoint(270, 345), Extent(130, 22), TC_GREEN2, NormalFont, 100);
 
     /// Combobox füllen

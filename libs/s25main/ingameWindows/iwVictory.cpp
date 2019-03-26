@@ -40,7 +40,7 @@ iwVictory::iwVictory(const std::vector<std::string>& winnerNames)
 {
     AddText(ID_TITLE, DrawPoint(120, 40), winnerNames.size() > 1u ? _("The winners:") : _("The winner:"), COLOR_YELLOW, FontStyle::CENTER,
             NormalFont);
-    ctrlText* names = AddText(ID_NAMES, DrawPoint(0, 70), helpers::join(winnerNames, "\n"), COLOR_YELLOW, 0, NormalFont);
+    ctrlText* names = AddText(ID_NAMES, DrawPoint(0, 70), helpers::join(winnerNames, "\n"), COLOR_YELLOW, FontStyle{}, NormalFont);
     Rect txtBounds = names->GetBoundaryRect();
     txtBounds.setOrigin(names->GetPos());
     Extent iwSize = GetIwSize();

@@ -33,6 +33,7 @@ struct ignore_assign
 };
 } // namespace detail
 
+// NOLINTNEXTLINE(bugprone-macro-parentheses)
 #define IGNORE_ASSIGN_SINGLE(s, data, expression) (detail::ignore_assign) expression,
 #define IGNORE_ASSIGN(...) BOOST_PP_SEQ_FOR_EACH(IGNORE_ASSIGN_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 

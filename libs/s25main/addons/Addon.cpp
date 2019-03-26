@@ -47,7 +47,7 @@ void Addon::createGui(Window* window, unsigned id, unsigned short& y, bool /*rea
 
     auto* text = window->GetCtrl<ctrlText>(id);
     if(!text)
-        text = window->AddText(id, txtPos, name_, COLOR_YELLOW, 0, NormalFont);
+        text = window->AddText(id, txtPos, name_, COLOR_YELLOW, FontStyle{}, NormalFont);
 
     text->SetVisible(true);
     text->SetPos(txtPos);

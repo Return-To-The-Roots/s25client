@@ -55,20 +55,20 @@ iwLobbyConnect::iwLobbyConnect()
     : IngameWindow(CGI_LOBBYCONNECT, IngameWindow::posLastOrCenter, Extent(500, 260), _("Connecting to Lobby"),
                    LOADER.GetImageN("resource", 41))
 {
-    AddText(ID_txtUser, DrawPoint(20, 40), _("Username:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(ID_txtUser, DrawPoint(20, 40), _("Username:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* user = AddEdit(ID_edtUser, DrawPoint(260, 40), Extent(220, 22), TC_GREEN2, NormalFont, 15);
     user->SetFocus();
     user->SetText(SETTINGS.lobby.name); //-V807
 
-    AddText(ID_txtPw, DrawPoint(20, 70), _("Password:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(ID_txtPw, DrawPoint(20, 70), _("Password:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* pass = AddEdit(ID_edtPw, DrawPoint(260, 70), Extent(220, 22), TC_GREEN2, NormalFont, 0, true);
     pass->SetText(SETTINGS.lobby.password);
 
-    AddText(ID_txtEmail, DrawPoint(20, 100), _("Email Address:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(ID_txtEmail, DrawPoint(20, 100), _("Email Address:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* email = AddEdit(ID_edtEmail, DrawPoint(260, 100), Extent(220, 22), TC_GREEN2, NormalFont);
     email->SetText(SETTINGS.lobby.email);
 
-    AddText(ID_txtSavePw, DrawPoint(20, 130), _("Save Password?"), COLOR_YELLOW, 0, NormalFont);
+    AddText(ID_txtSavePw, DrawPoint(20, 130), _("Save Password?"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     Extent btSize = Extent(105, 22);
     ctrlOptionGroup* savepassword = AddOptionGroup(ID_optSavePw, ctrlOptionGroup::CHECK);
@@ -76,7 +76,7 @@ iwLobbyConnect::iwLobbyConnect()
     savepassword->AddTextButton(1, DrawPoint(375, 130), btSize, TC_GREEN2, _("Yes"), NormalFont);
     savepassword->SetSelection((SETTINGS.lobby.save_password ? 1 : 0));
 
-    AddText(ID_txtProtocol, DrawPoint(20, 160), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(ID_txtProtocol, DrawPoint(20, 160), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = AddOptionGroup(ID_optProtocol, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(0, DrawPoint(260, 160), btSize, TC_GREEN2, _("IPv4"), NormalFont);
@@ -95,13 +95,19 @@ iwLobbyConnect::iwLobbyConnect()
 
 iwLobbyConnect::~iwLobbyConnect()
 {
-    // Form abrufen und ggf in settings speichern
-    std::string user, pass, email;
-    ReadFromEditAndSaveLobbyData(user, pass, email);
+    try
+    {
+        // Form abrufen und ggf in settings speichern
+        std::string user, pass, email;
+        ReadFromEditAndSaveLobbyData(user, pass, email);
 
-    LOBBYCLIENT.RemoveListener(this);
-    if(!LOBBYCLIENT.IsLoggedIn())
-        LOBBYCLIENT.Stop();
+        LOBBYCLIENT.RemoveListener(this);
+        if(!LOBBYCLIENT.IsLoggedIn())
+            LOBBYCLIENT.Stop();
+    } catch(...)
+    {
+        // Ignored
+    }
 }
 
 /**

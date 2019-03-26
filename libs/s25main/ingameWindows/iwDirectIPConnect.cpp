@@ -42,19 +42,19 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     ctrlEdit *host, *port;
 
     // "IP - Adresse vom Host"
-    AddText(0, DrawPoint(20, 30), _("IP Address of Host:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(0, DrawPoint(20, 30), _("IP Address of Host:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     host = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT), true);
 
     // "Server-Port"
-    AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT), true);
 
     // "Passwort (falls vorhanden)"
-    AddText(4, DrawPoint(20, 130), _("Password (if needed):"), COLOR_YELLOW, 0, NormalFont);
+    AddText(4, DrawPoint(20, 130), _("Password (if needed):"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // ipv6 oder ipv4 benutzen
-    AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = AddOptionGroup(12, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TC_GREEN2, _("IPv4"), NormalFont);

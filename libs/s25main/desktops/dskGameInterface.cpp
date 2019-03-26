@@ -331,7 +331,7 @@ void dskGameInterface::Msg_PaintAfter()
             tournamentNotice = helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tmd - curGF));
     }
 
-    NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), 0, 0xFFFFFF00);
+    NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, 0xFFFFFF00);
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())

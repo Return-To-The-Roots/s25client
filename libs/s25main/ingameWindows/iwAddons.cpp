@@ -34,7 +34,7 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy,
                    false, parent),
       ggs(ggs), policy(policy), addonIds(std::move(addonIds))
 {
-    AddText(0, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(0, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     Extent btSize(200, 22);
     if(policy != READONLY)

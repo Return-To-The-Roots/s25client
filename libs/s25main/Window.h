@@ -24,6 +24,7 @@
 #include "Rect.h"
 #include "TextFormatSetter.h"
 #include "animation/AnimationManager.h"
+#include "ogl/FontStyle.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/NationConsts.h"
@@ -165,7 +166,7 @@ public:
     ctrlImage* AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip = "");
     ctrlList* AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
     ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
-                                unsigned format = 0);
+                                FontStyle format = {});
     ctrlOptionGroup* AddOptionGroup(unsigned id, int select_type);
     ctrlMultiSelectGroup* AddMultiSelectGroup(unsigned id, int select_type);
     ctrlPercent* AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
@@ -179,8 +180,9 @@ public:
     ctrlTab* AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
     ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned columns,
                         ...);
-    ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format, glArchivItem_Font* font);
-    TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+    ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
+                      glArchivItem_Font* font);
+    TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                                       glArchivItem_Font* font);
     ctrlTimer* AddTimer(unsigned id, unsigned timeout);
     /// fügt ein vertieftes variables TextCtrl hinzu.
@@ -189,7 +191,7 @@ public:
                                       glArchivItem_Font* font, unsigned color, unsigned parameters, ...);
     /// fügt ein variables TextCtrl hinzu.
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-    ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format,
+    ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, FontStyle format,
                             glArchivItem_Font* font, unsigned parameters, ...);
     ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* map);
 

@@ -171,7 +171,8 @@ void ctrlList::Draw_()
             DrawRectangle(Rect(curPos, Extent(GetSize().x - 22, font->getHeight())), 0x80000000);
 
         // Text an sich
-        font->Draw(curPos, lines[i + scrollbarPos], 0, (selection_ == i + scrollbarPos ? 0xFFFFAA00 : COLOR_YELLOW), 0, GetSize().x - 22);
+        font->Draw(curPos, lines[i + scrollbarPos], FontStyle{}, (selection_ == i + scrollbarPos ? 0xFFFFAA00 : COLOR_YELLOW), 0,
+                   GetSize().x - 22);
         curPos.y += font->getHeight();
     }
 }

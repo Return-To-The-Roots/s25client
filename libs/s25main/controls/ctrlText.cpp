@@ -35,7 +35,7 @@ void ctrlBaseText::SetFont(glArchivItem_Font* font)
     this->font = font;
 }
 
-ctrlText::ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+ctrlText::ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                    glArchivItem_Font* font)
     : Window(parent, id, pos), ctrlBaseText(text, color, font), format(format)
 {}

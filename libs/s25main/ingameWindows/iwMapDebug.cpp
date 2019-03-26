@@ -70,10 +70,10 @@ public:
         if(showCoords)
         {
             std::string coord = helpers::toString(pt.x) + ":" + helpers::toString(pt.y);
-            font->Draw(displayPt, coord, 0, coordsColor);
+            font->Draw(displayPt, coord, FontStyle{}, coordsColor);
         }
         if(!data.empty())
-            font->Draw(displayPt, data, 0, dataColor);
+            font->Draw(displayPt, data, FontStyle{}, dataColor);
     }
 
     bool showCoords;

@@ -26,12 +26,12 @@
 ///     RTTR_FOREACH_PT(Position, world.GetSize()) {
 ///         std::cout << pt.x << "/" << pt.y;
 ///     }
-#define RTTR_FOREACH_PT(TYPE, SIZE)                                           \
-    /* Create scoped temporaries holding width and height by */               \
-    /* using assignment in if to save potential accesses */                   \
-    if(auto rttrForeachPtWidth = static_cast<TYPE::ElementType>(SIZE.x))      \
-        if(auto rttrForeachPtHeight = static_cast<TYPE::ElementType>(SIZE.y)) \
-            for(TYPE pt(0, 0); pt.y < rttrForeachPtHeight; ++pt.y)            \
+#define RTTR_FOREACH_PT(TYPE, SIZE)                                             \
+    /* Create scoped temporaries holding width and height by */                 \
+    /* using assignment in if to save potential accesses */                     \
+    if(auto rttrForeachPtWidth = static_cast<TYPE::ElementType>((SIZE).x))      \
+        if(auto rttrForeachPtHeight = static_cast<TYPE::ElementType>((SIZE).y)) \
+            for(TYPE pt(0, 0); pt.y < rttrForeachPtHeight; ++pt.y)              \
                 for(pt.x = 0; pt.x < rttrForeachPtWidth; ++pt.x)
 
 #endif // !MACROS_H_INCLUDED

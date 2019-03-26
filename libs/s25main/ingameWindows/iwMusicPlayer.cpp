@@ -65,7 +65,7 @@ iwMusicPlayer::iwMusicPlayer()
       changed(false)
 {
     AddList(0, DrawPoint(20, 30), Extent(330, 200), TC_GREEN1, NormalFont);
-    AddText(1, DrawPoint(20, 240), _("Playlist:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(1, DrawPoint(20, 240), _("Playlist:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddComboBox(2, DrawPoint(20, 260), Extent(330, 22), TC_GREEN1, NormalFont, 200);
 
     // Playlistbuttons

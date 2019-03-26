@@ -300,7 +300,7 @@ ctrlList* Window::AddList(unsigned id, const DrawPoint& pos, const Extent& size,
 }
 
 ctrlMultiline* Window::AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
-                                    unsigned format)
+                                    FontStyle format)
 {
     return AddCtrl(new ctrlMultiline(this, id, ScaleIf(pos), ScaleIf(size), tc, font, format));
 }
@@ -397,13 +397,13 @@ ctrlTimer* Window::AddTimer(unsigned id, unsigned timeout)
  *                      @p FontStyle::BOTTOM  - Text unten
  *  @param[in] font   Schriftart
  */
-ctrlText* Window::AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+ctrlText* Window::AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                           glArchivItem_Font* font)
 {
     return AddCtrl(new ctrlText(this, id, ScaleIf(pos), text, color, format, font));
 }
 
-TextFormatSetter Window::AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+TextFormatSetter Window::AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                                           glArchivItem_Font* font)
 {
     return AddText(id, pos, text, color, format, font);
@@ -440,7 +440,7 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned id, const DrawPoint& pos, con
  *  @param[in] parameters Anzahl der nachfolgenden Parameter
  *  @param[in] ...        die variablen Parameter
  */
-ctrlVarText* Window::AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format,
+ctrlVarText* Window::AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, FontStyle format,
                                 glArchivItem_Font* font, unsigned parameters, ...)
 {
     va_list liste;

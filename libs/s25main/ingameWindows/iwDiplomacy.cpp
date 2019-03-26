@@ -230,11 +230,11 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
     if(image)
         this->AddImage(0, DrawPoint(55, 100), image);
 
-    AddText(1, DrawPoint(100, 30), _("Contract type:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(2, DrawPoint(100, 45), _(PACT_NAMES[pt]), COLOR_GREEN, 0, NormalFont);
-    AddText(3, DrawPoint(100, 70), _("To player:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(4, DrawPoint(100, 85), player.name, player.color, 0, NormalFont);
-    AddText(5, DrawPoint(100, 110), _("Duration:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(1, DrawPoint(100, 30), _("Contract type:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(2, DrawPoint(100, 45), _(PACT_NAMES[pt]), COLOR_GREEN, FontStyle{}, NormalFont);
+    AddText(3, DrawPoint(100, 70), _("To player:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(4, DrawPoint(100, 85), player.name, player.color, FontStyle{}, NormalFont);
+    AddText(5, DrawPoint(100, 110), _("Duration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(100, 125), Extent(190, 22), TC_GREEN2, NormalFont, 100);
 
     // Zeiten zur Combobox hinzufügen

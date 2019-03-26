@@ -175,7 +175,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     AddCheckBox(23, DrawPoint(600, 430), Extent(180, 26), TC_GREY, _("Random start locations"), NormalFont, readonlySettings);
 
     // "Enhancements"
-    AddText(21, DrawPoint(400, 499), _("Addons:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(21, DrawPoint(400, 499), _("Addons:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddTextButton(22, DrawPoint(600, 495), Extent(180, 22), TC_GREEN2, allowAddonChange ? _("Change Settings...") : _("View Settings..."),
                   NormalFont);
 
@@ -184,7 +184,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     // umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
 
     // "Aufklärung"
-    AddText(30, DrawPoint(400, 405), _("Exploration:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(30, DrawPoint(400, 405), _("Exploration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(40, DrawPoint(600, 400), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("Off (all visible)"));
     combo->AddString(_("Classic (Settlers 2)"));
@@ -192,7 +192,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     combo->AddString(_("FoW - all explored"));
 
     // "Waren zu Beginn"
-    AddText(31, DrawPoint(400, 375), _("Goods at start:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(31, DrawPoint(400, 375), _("Goods at start:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(41, DrawPoint(600, 370), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("Very Low"));
     combo->AddString(_("Low"));
@@ -200,7 +200,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     combo->AddString(_("A lot"));
 
     // "Spielziel"
-    AddText(32, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(32, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(42, DrawPoint(600, 340), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("None"));               // Kein Spielziel
     combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
@@ -216,7 +216,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     }
 
     // "Geschwindigkeit"
-    AddText(33, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(33, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(43, DrawPoint(600, 310), Extent(180, 20), TC_GREY, NormalFont, 100, !gameLobby->isHost());
     combo->AddString(_("Very slow")); // Sehr Langsam
     combo->AddString(_("Slow"));      // Langsam

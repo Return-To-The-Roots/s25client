@@ -24,7 +24,7 @@
 #include <algorithm>
 
 ctrlMultiline::ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                             glArchivItem_Font* font, unsigned format)
+                             glArchivItem_Font* font, FontStyle format)
     : Window(parent, id, pos, size), tc_(tc), font(font), format_(format), showBackground_(true), scrollbarAllowed_(true),
       cachedContentWidth(0)
 {

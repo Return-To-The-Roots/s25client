@@ -24,7 +24,8 @@
 
 CheckedLuaTable::CheckedLuaTable(kaguya::LuaTable luaTable) : table(std::move(luaTable)), checkEnabled(false) {}
 
-CheckedLuaTable::~CheckedLuaTable()
+// NOLINTNEXTLINE(bugprone-exception-escape)
+CheckedLuaTable::~CheckedLuaTable() noexcept(false)
 {
     if(checkEnabled)
         checkUnused(false);

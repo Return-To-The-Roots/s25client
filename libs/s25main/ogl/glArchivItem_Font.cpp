@@ -176,7 +176,7 @@ inline void glArchivItem_Font::DrawChar(unsigned curChar, VertexArrays& vertices
     curPos.x += ci.width;
 }
 
-void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, unsigned format, unsigned color, unsigned short length,
+void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, FontStyle format, unsigned color, unsigned short length,
                              unsigned short maxWidth, const ucString& end)
 {
     // etwas dämlich, aber einfach ;)
@@ -204,7 +204,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, unsigned form
  *  @param[in] max    maximale Länge
  *  @param     end    Suffix for displaying a truncation of the text (...)
  */
-void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned format, unsigned color, unsigned short length,
+void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short length,
                              unsigned short maxWidth, const std::string& end)
 {
     if(!fontNoOutline)
@@ -249,16 +249,16 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
     std::advance(itEnd, maxNumChars);
 
     // Vertical alignment (assumes 1 line only!)
-    if(format & FontStyle::BOTTOM)
+    if(format.is(FontStyle::BOTTOM))
         pos.y -= dy;
-    else if(format & FontStyle::VCENTER)
+    else if(format.is(FontStyle::VCENTER))
         pos.y -= dy / 2;
     // Horizontal center must change current line only. Everything else changes the start point
     DrawPoint curPos(pos);
     // Horizontal alignment
-    if(format & FontStyle::RIGHT)
+    if(format.is(FontStyle::RIGHT))
         curPos.x = pos.x -= textWidth;
-    else if(format & FontStyle::CENTER)
+    else if(format.is(FontStyle::CENTER))
     {
         unsigned short line_width;
         std::string::const_iterator itNl = std::find(text.begin(), itEnd, '\n');
@@ -277,7 +277,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
         const uint32_t curChar = utf8::next(it, itEnd);
         if(curChar == '\n')
         {
-            if(format & FontStyle::CENTER)
+            if(format.is(FontStyle::CENTER))
             {
                 unsigned short line_width;
                 std::string::const_iterator itNl = std::find(it, itEnd, '\n');
@@ -308,7 +308,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
         return;
 
     // Get texture first as it might need to be created
-    glArchivItem_Bitmap& usedFont = (format & FontStyle::NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
+    glArchivItem_Bitmap& usedFont = format.is(FontStyle::NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
     unsigned texture = usedFont.GetTexture();
     if(!texture)
         return;
@@ -395,7 +395,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
     return getWidthInternal(text.begin(), length ? text.begin() + length : text.end());
 }
 
-Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsigned format) const
+Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, FontStyle format) const
 {
     if(text.empty())
         return Rect(Position(pos), 0, 0);
@@ -403,13 +403,13 @@ Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsign
     unsigned numLines = static_cast<unsigned>(std::count(text.begin(), text.end(), '\n')) + 1;
     Rect result(Position(pos), width, numLines * getHeight());
     Position offset(0, 0);
-    if((format & 3) == FontStyle::RIGHT)
+    if(format.is(FontStyle::RIGHT))
         offset.x = width;
-    else if((format & 3) == FontStyle::CENTER)
+    else if(format.is(FontStyle::CENTER))
         offset.x = width / 2;
-    if((format & 12) == FontStyle::BOTTOM)
+    if(format.is(FontStyle::BOTTOM))
         offset.y = getHeight();
-    else if((format & 12) == FontStyle::VCENTER)
+    else if(format.is(FontStyle::VCENTER))
         offset.y = getHeight() / 2;
     result.move(-offset);
     return result;

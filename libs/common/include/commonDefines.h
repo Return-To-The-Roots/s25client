@@ -44,15 +44,8 @@
 #endif
 #endif
 
-using socklen_t = int;
 #else
-// Non-Windows
-#define SOCKET int
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
-#define HINSTANCE void*
 
-#define closesocket close
 #define LoadLibrary(lib) dlopen(lib, RTLD_LAZY)
 #define LoadLibraryW LoadLibrary
 #define LoadLibraryA LoadLibrary

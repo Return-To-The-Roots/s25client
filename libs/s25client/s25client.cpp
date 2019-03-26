@@ -424,9 +424,11 @@ int RunProgram(po::variables_map& options)
  *
  *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
  */
+// Exceptions handled by registred global handlers
+// NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int argc, char** argv)
 {
-    bnw::args(argc, argv);
+    bnw::args _(argc, argv);
 
     po::options_description desc("Allowed options");
     desc.add_options()("help,h", "Show help")("map,m", po::value<std::string>(),

@@ -110,11 +110,11 @@ BOOST_AUTO_TEST_CASE(TextureCoords)
     // Border points are inset by half a pixel for OpenGL (sample middle of pixel!)
     // Overlapped uses the full rectangle
     const TerrainDesc::Triangle rsuO = desc.terrain.tryGet("terrain1")->GetRSUTriangle();
-    BOOST_REQUIRE_EQUAL(rsuO.tip, PointF(10 + 32 / 2, 20 + 0.5f));
+    BOOST_REQUIRE_EQUAL(rsuO.tip, PointF(10 + 32 / 2.f, 20 + 0.5f));
     BOOST_REQUIRE_EQUAL(rsuO.left, PointF(10 + 0.5f, 20 + 31 - 0.5f));
     BOOST_REQUIRE_EQUAL(rsuO.right, PointF(10 + 32 - 0.5f, 20 + 31 - 0.5f));
     const TerrainDesc::Triangle usdO = desc.terrain.tryGet("terrain1")->GetUSDTriangle();
-    BOOST_REQUIRE_EQUAL(usdO.tip, PointF(10 + 32 / 2, 20 + 31 - 0.5f));
+    BOOST_REQUIRE_EQUAL(usdO.tip, PointF(10 + 32 / 2.f, 20 + 31 - 0.5f));
     BOOST_REQUIRE_EQUAL(usdO.left, PointF(10 + 0.5f, 20 + 0.5f));
     BOOST_REQUIRE_EQUAL(usdO.right, PointF(10 + 32 - 0.5f, 20 + 0.5f));
 

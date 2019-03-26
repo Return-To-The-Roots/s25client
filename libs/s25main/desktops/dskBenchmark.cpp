@@ -81,7 +81,12 @@ dskBenchmark::dskBenchmark() : curTest_(TEST_NONE), runAll_(false), numInstances
 
 dskBenchmark::~dskBenchmark()
 {
-    printTimes();
+    try
+    {
+        printTimes();
+    } catch(...)
+    {
+    }
 }
 
 bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)

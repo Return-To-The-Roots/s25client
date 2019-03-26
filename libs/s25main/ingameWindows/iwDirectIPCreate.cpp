@@ -38,19 +38,19 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
     ctrlEdit *name, *port;
 
     // "Name des Spiels"
-    AddText(0, DrawPoint(20, 30), _("Game's Name:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(0, DrawPoint(20, 30), _("Game's Name:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     name = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // "Server-Port"
-    AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // "Passwort"
-    AddText(4, DrawPoint(20, 130), _("Password:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(4, DrawPoint(20, 130), _("Password:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // ipv6 oder ipv4 benutzen
-    AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = AddOptionGroup(12, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TC_GREEN2, _("IPv4"), NormalFont);

@@ -130,7 +130,7 @@ void ctrlChat::Draw_()
     {
         // eine zweite oder n-nte Zeile?
         if(chat_lines[i + pos].secondary)
-            font->Draw(textPos, chat_lines[i + pos].msg, 0, chat_lines[i + pos].msg_color);
+            font->Draw(textPos, chat_lines[i + pos].msg, FontStyle{}, chat_lines[i + pos].msg_color);
         else
         {
             DrawPoint curTextPos = textPos;
@@ -138,24 +138,24 @@ void ctrlChat::Draw_()
             // Zeit, Spieler und danach Textnachricht
             if(!chat_lines[i + pos].time_string.empty())
             {
-                font->Draw(curTextPos, chat_lines[i + pos].time_string, 0, time_color);
+                font->Draw(curTextPos, chat_lines[i + pos].time_string, FontStyle{}, time_color);
                 curTextPos.x += font->getWidth(chat_lines[i + pos].time_string);
             }
 
             if(!chat_lines[i + pos].player.empty())
             {
                 // Klammer 1 (<)
-                font->Draw(curTextPos, "<", 0, chat_lines[i + pos].player_color);
+                font->Draw(curTextPos, "<", FontStyle{}, chat_lines[i + pos].player_color);
                 curTextPos.x += bracket1_size;
                 // Spielername
-                font->Draw(curTextPos, chat_lines[i + pos].player, 0, chat_lines[i + pos].player_color);
+                font->Draw(curTextPos, chat_lines[i + pos].player, FontStyle{}, chat_lines[i + pos].player_color);
                 curTextPos.x += font->getWidth(chat_lines[i + pos].player);
                 // Klammer 2 (>)
-                font->Draw(curTextPos, "> ", 0, chat_lines[i + pos].player_color);
+                font->Draw(curTextPos, "> ", FontStyle{}, chat_lines[i + pos].player_color);
                 curTextPos.x += bracket2_size;
             }
 
-            font->Draw(curTextPos, chat_lines[i + pos].msg, 0, chat_lines[i + pos].msg_color);
+            font->Draw(curTextPos, chat_lines[i + pos].msg, FontStyle{}, chat_lines[i + pos].msg_color);
         }
         textPos.y += font->getHeight() + 2;
     }

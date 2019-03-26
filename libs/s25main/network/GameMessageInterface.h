@@ -23,6 +23,7 @@
 #include "libutil/warningSuppression.h"
 #include <boost/preprocessor.hpp>
 
+// NOLINTNEXTLINE(bugprone-macro-parentheses)
 #define __GENERATE_FWD_DECL_SINGLE(s, data, expression) class expression;
 #define __GENERATE_FWD_DECL(...) BOOST_PP_SEQ_FOR_EACH(__GENERATE_FWD_DECL_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 

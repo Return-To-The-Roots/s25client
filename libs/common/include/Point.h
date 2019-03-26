@@ -31,19 +31,23 @@ struct Point //-V690
     using ElementType = T;
 
     T x, y;
+    constexpr Point() : x(getInvalidValue()), y(getInvalidValue()) {}
     constexpr Point(const T x, const T y) : x(x), y(y) {}
-    constexpr Point(const Point& other = Invalid()) : x(other.x), y(other.y) {}
+    constexpr Point(const Point&) = default;
     template<typename U>
     constexpr explicit Point(const Point<U>& pt) : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
     {}
 
-    static constexpr Point Invalid();
+    static constexpr Point Invalid() { return Point(); }
     /// Create a new point with all coordinates set to value
     static constexpr Point all(const T& value);
     constexpr bool isValid() const;
 
     constexpr bool operator==(const Point& second) const;
     constexpr bool operator!=(const Point& second) const;
+
+private:
+    static constexpr T getInvalidValue();
 };
 
 /// Type for describing a position/offset etc. (signed type)
@@ -55,9 +59,9 @@ using Extent = Point<unsigned>;
 //////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-constexpr Point<T> Point<T>::Invalid()
+constexpr T Point<T>::getInvalidValue()
 {
-    return Point::all(std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max());
+    return std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max();
 }
 
 template<typename T>
