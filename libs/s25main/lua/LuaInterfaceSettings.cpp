@@ -48,12 +48,11 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
         // Old name
         .addFunction("GetPlayerCount", &LuaInterfaceSettings::GetNumPlayers));
 
-    state["AddonId"].setClass(kaguya::UserdataMetatable<AddonId>());
+    // state["AddonId"].setClass(kaguya::UserdataMetatable<AddonId>());
 
-    for(unsigned i = 0; i < AddonId::count_; ++i)
+    for(auto id : rttrEnum::values<AddonId>)
     {
-        AddonId id = AddonId::type_(AddonId::values_()[i]);
-        state[std::string("ADDON_") + id.toString()] = id;
+        state[std::string("ADDON_") + rttrEnum::toString(id)] = id;
     }
 
 #pragma region ConstDefs

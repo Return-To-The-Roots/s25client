@@ -29,6 +29,11 @@
 #include <rttr/test/LogAccessor.hpp>
 #include <vector>
 
+static std::ostream& operator<<(std::ostream& os, AddonId id)
+{
+    return os << rttrEnum::toString(id);
+}
+
 namespace {
 
 /// Fixture for the settings tests, implements IGameLobbyController

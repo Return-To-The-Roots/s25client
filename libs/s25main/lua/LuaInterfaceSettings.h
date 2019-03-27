@@ -24,7 +24,7 @@
 
 class LuaServerPlayer;
 class IGameLobbyController;
-struct AddonId;
+enum class AddonId;
 
 class LuaInterfaceSettings : public LuaInterfaceGameBase
 {
