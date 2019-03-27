@@ -60,7 +60,7 @@
 // Include to use e.g. boost macros like constexpr
 #include <boost/config.hpp>
 // Fixed width types like uint32_t shall be treated like build-in types
-#include <stdint.h>
+#include <cstdint>
 
 #include <libutil/warningSuppression.h>
 

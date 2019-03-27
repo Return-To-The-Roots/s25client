@@ -34,7 +34,7 @@ public:
     Addon(const AddonId id, unsigned groups, const std::string& name, const std::string& description, unsigned default_status)
         : id_(id), groups_(groups), name_(name), description_(description), defaultStatus_(default_status)
     {}
-    virtual ~Addon() {}
+    virtual ~Addon() = default;
 
     virtual void hideGui(Window* window, unsigned id) const;
     virtual void createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const;

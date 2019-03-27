@@ -28,8 +28,8 @@ private:
     void Msg_PaintBefore() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
-    unsigned GetPossibleTradeAmount(const Job job) const;
-    unsigned GetPossibleTradeAmount(const GoodType good) const;
+    unsigned GetPossibleTradeAmount(Job job) const;
+    unsigned GetPossibleTradeAmount(GoodType good) const;
 };
 
 #endif // !IW_TRADE_H_

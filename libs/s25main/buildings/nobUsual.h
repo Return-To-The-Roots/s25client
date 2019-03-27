@@ -62,7 +62,7 @@ class nobUsual : public noBuilding
 protected:
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobUsual(const BuildingType type, const MapPoint pos, unsigned char player, const Nation nation);
+    nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation);
     nobUsual(SerializedGameData& sgd, unsigned obj_id);
 
 public:
@@ -108,7 +108,7 @@ public:
     void ConsumeWares();
 
     /// Berechnet Punktewertung für Ware type, start ist der Produzent, von dem die Ware kommt
-    unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type);
+    unsigned CalcDistributionPoints(noRoadNode* start, GoodType type);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
     void TakeWare(Ware* ware) override;
@@ -130,7 +130,7 @@ public:
     /// Stoppt/Erlaubt Produktion (visuell)
     void ToggleProductionVirtual() { disable_production_virtual = !disable_production_virtual; }
     /// Stoppt/Erlaubt Produktion (real)
-    void SetProductionEnabled(const bool enabled);
+    void SetProductionEnabled(bool enabled);
     /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
     bool IsProductionDisabledVirtual() const { return disable_production_virtual; }
     /// Fragt ab, ob Produktion ausgeschaltet ist (real)

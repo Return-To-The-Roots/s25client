@@ -117,12 +117,11 @@ public:
     FramesInfo::milliseconds32_t GetGFLength() const { return framesinfo.gf_length; }
     unsigned GetNWFLength() const { return framesinfo.nwf_length; }
     FramesInfo::milliseconds32_t GetFrameTime() const { return framesinfo.frameTime; }
-    unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
-                                const unsigned offset);
+    unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator, unsigned offset);
     unsigned Interpolate(unsigned max_val, const GameEvent* ev);
     int Interpolate(int x1, int x2, const GameEvent* ev);
 
-    void Command_Chat(const std::string& text, const ChatDestination cd);
+    void Command_Chat(const std::string& text, ChatDestination cd);
     void Command_SetNation(Nation newNation);
     void Command_SetTeam(Team newTeam);
     void Command_SetColor(unsigned newColor);

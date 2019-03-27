@@ -35,7 +35,7 @@ public:
 
     void LC_Status_Error(const std::string& error) override;
     void CI_GameStarted(std::shared_ptr<Game> game) override;
-    void CI_Error(const ClientError ce) override;
+    void CI_Error(ClientError ce) override;
 
 private:
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;

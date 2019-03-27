@@ -36,13 +36,13 @@ private:
     void WorkFinished() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(const MapPoint pt) const override;
+    PointQuality GetPointQuality(MapPoint pt) const override;
 
     /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
     void WorkAborted() override;
 
 public:
-    nofWoodcutter(const MapPoint pos, unsigned char player, nobUsual* workplace);
+    nofWoodcutter(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofWoodcutter(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_WOODCUTTER; }

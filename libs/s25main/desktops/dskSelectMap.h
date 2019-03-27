@@ -49,8 +49,8 @@ private:
     void Msg_TableSelectItem(unsigned ctrl_id, int selection) override;
     void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
-    void CI_NextConnectState(const ConnectState cs) override;
-    void CI_Error(const ClientError ce) override;
+    void CI_NextConnectState(ConnectState cs) override;
+    void CI_Error(ClientError ce) override;
 
     void LC_Status_Error(const std::string& error) override;
 

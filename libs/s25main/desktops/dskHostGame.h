@@ -54,7 +54,7 @@ private:
     /// Füllt die Felder einer Reihe aus
     void ChangeTeam(unsigned i, unsigned char nr);
     void ChangeReady(unsigned player, bool ready);
-    void ChangeNation(unsigned i, const Nation nation);
+    void ChangeNation(unsigned i, Nation nation);
     void ChangePing(unsigned playerId);
     void ChangeColor(unsigned i, unsigned color);
 
@@ -71,7 +71,7 @@ private:
 
     void LC_RankingInfo(const LobbyPlayerInfo& player) override;
 
-    void CI_Error(const ClientError ce) override;
+    void CI_Error(ClientError ce) override;
 
     void CI_NewPlayer(unsigned playerId) override;
     void CI_PlayerLeft(unsigned playerId) override;
@@ -84,7 +84,7 @@ private:
     void CI_PlayersSwapped(unsigned player1, unsigned player2) override;
     void CI_GGSChanged(const GlobalGameSettings& ggs) override;
 
-    void CI_Chat(unsigned playerId, const ChatDestination cd, const std::string& msg) override;
+    void CI_Chat(unsigned playerId, ChatDestination cd, const std::string& msg) override;
     void CI_Countdown(unsigned remainingTimeInSec) override;
     void CI_CancelCountdown(bool error) override;
 

@@ -64,14 +64,14 @@ public:
     ~DriverWrapper();
 
     /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
-    bool Load(const DriverType dt, std::string& preference);
+    bool Load(DriverType dt, std::string& preference);
     /// Gibt eine Treiber-Handle wieder frei
     void Unload();
     /// Gibt Adresse auf eine bestimmte Funktion zurück
     void* GetDLLFunction(const std::string& name);
 
     /// Läd eine Liste von verfügbaren Treibern
-    static std::vector<DriverItem> LoadDriverList(const DriverType dt);
+    static std::vector<DriverItem> LoadDriverList(DriverType dt);
 
 private:
     /// Handle auf die DLL

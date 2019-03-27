@@ -75,7 +75,7 @@ public:
      * @param max maximum value
      * @return a new random number
      */
-    double DRand(const double min, const double max);
+    double DRand(double min, double max);
 
     const TerrainDesc& GetTerrainByS2Id(uint8_t s2Id) const;
 

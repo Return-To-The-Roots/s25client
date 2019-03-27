@@ -32,7 +32,7 @@ class iwBuilding : public IngameWindow
     nobUsual* const building; /// Das zugehörige Gebäudeobjekt
 
 public:
-    iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building);
+    iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* building);
 
 private:
     void Msg_PaintBefore() override;

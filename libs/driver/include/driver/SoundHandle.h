@@ -34,7 +34,7 @@ enum SoundType
 struct SoundDesc : boost::noncopyable
 {
     SoundDesc() : type_(SD_UNKNOWN), isValid_(false) {}
-    virtual ~SoundDesc() {}
+    virtual ~SoundDesc() = default;
     const SoundType type_;
     bool isValid() const { return isValid_; }
 

@@ -32,14 +32,14 @@ class AIMap;
 class AIResourceMap
 {
 public:
-    AIResourceMap(const AIResource res, const AIInterface& aii, const AIMap& aiMap);
+    AIResourceMap(AIResource res, const AIInterface& aii, const AIMap& aiMap);
     ~AIResourceMap();
 
     /// Initialize the resource map
     void Init();
     void Recalc();
     /// Changes every point around pt in radius; to every point around pt distanceFromCenter * value is added
-    void Change(const MapPoint pt, unsigned radius, int value);
+    void Change(MapPoint pt, unsigned radius, int value);
     void Change(const MapPoint pt, int value) { Change(pt, resRadius, value); }
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found

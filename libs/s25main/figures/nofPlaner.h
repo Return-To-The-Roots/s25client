@@ -52,7 +52,7 @@ private:
     void HandleDerivedEvent(unsigned id) override;
 
 public:
-    nofPlaner(const MapPoint pos, unsigned char player, noBuildingSite* building_site);
+    nofPlaner(MapPoint pos, unsigned char player, noBuildingSite* building_site);
     nofPlaner(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

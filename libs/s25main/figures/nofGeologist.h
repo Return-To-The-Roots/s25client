@@ -48,11 +48,11 @@ private:
     void HandleDerivedEvent(unsigned id) override;
 
     /// Kann man an diesem Punkt ein Schild aufstellen?
-    bool IsNodeGood(const MapPoint pt) const;
+    bool IsNodeGood(MapPoint pt) const;
     /// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
     void LookForNewNodes();
     /// Checks if the node is valid as a new target
-    inline bool IsValidTargetNode(const MapPoint pt) const;
+    inline bool IsValidTargetNode(MapPoint pt) const;
     /// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungültiger
     /// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurück
     unsigned char GetNextNode();
@@ -65,7 +65,7 @@ private:
     bool IsSignInArea(Resource::Type type) const;
 
 public:
-    nofGeologist(const MapPoint pos, unsigned char player, noRoadNode* goal);
+    nofGeologist(MapPoint pos, unsigned char player, noRoadNode* goal);
     nofGeologist(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

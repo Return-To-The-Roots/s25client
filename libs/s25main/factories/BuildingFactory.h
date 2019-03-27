@@ -33,8 +33,7 @@ class BuildingFactory
     BuildingFactory();
 
 public:
-    static noBuilding* CreateBuilding(GameWorldBase& gwg, const BuildingType type, const MapPoint pt, unsigned char player,
-                                      const Nation nation);
+    static noBuilding* CreateBuilding(GameWorldBase& gwg, BuildingType type, MapPoint pt, unsigned char player, Nation nation);
 };
 
 #endif // BuildingFactory_h__

@@ -38,7 +38,7 @@ class noFire : public noCoordBase
     unsigned next_interval;
 
 public:
-    noFire(const MapPoint pos, bool isBig);
+    noFire(MapPoint pos, bool isBig);
     noFire(SerializedGameData& sgd, unsigned obj_id);
 
     ~noFire() override;

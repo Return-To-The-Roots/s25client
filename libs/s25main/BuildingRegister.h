@@ -47,7 +47,7 @@ public:
     void Remove(noBuilding* bld, BuildingType bldType);
 
     const std::list<noBuildingSite*>& GetBuildingSites() const { return building_sites; }
-    const std::list<nobUsual*>& GetBuildings(const BuildingType type) const;
+    const std::list<nobUsual*>& GetBuildings(BuildingType type) const;
     const std::list<nobMilitary*>& GetMilitaryBuildings() const { return military_buildings; }
     const std::list<nobHarborBuilding*>& GetHarbors() const { return harbors; }
     const std::list<nobBaseWarehouse*>& GetStorehouses() const { return warehouses; }

@@ -27,8 +27,8 @@ struct BasePlayerInfo;
 class LuaPlayerBase
 {
 protected:
-    LuaPlayerBase() {}
-    virtual ~LuaPlayerBase() {}
+    LuaPlayerBase() = default;
+    virtual ~LuaPlayerBase() = default;
 
     virtual const BasePlayerInfo& GetPlayer() const = 0;
 

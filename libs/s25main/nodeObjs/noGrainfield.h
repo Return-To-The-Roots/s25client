@@ -45,7 +45,7 @@ private:
     const GameEvent* event;
 
 public:
-    noGrainfield(const MapPoint pos);
+    noGrainfield(MapPoint pos);
     noGrainfield(SerializedGameData& sgd, unsigned obj_id);
 
     ~noGrainfield() override;

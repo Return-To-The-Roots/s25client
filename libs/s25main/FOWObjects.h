@@ -67,7 +67,7 @@ private:
     const Nation nation;
 
 public:
-    fowBuilding(const BuildingType type, const Nation nation);
+    fowBuilding(BuildingType type, Nation nation);
     fowBuilding(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
@@ -88,7 +88,7 @@ private:
     const unsigned char build_progress;
 
 public:
-    fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, unsigned char build_progress);
+    fowBuildingSite(bool planing, BuildingType type, Nation nation, unsigned char build_progress);
     fowBuildingSite(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
@@ -105,7 +105,7 @@ private:
     const FlagType flag_type;
 
 public:
-    fowFlag(unsigned playerColor, const Nation nation, const FlagType flag_type);
+    fowFlag(unsigned playerColor, Nation nation, FlagType flag_type);
     fowFlag(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
@@ -137,7 +137,7 @@ private:
     const unsigned char state; /// Status, 0 - 5, von sehr wenig bis sehr viel
 
 public:
-    fowGranite(const GraniteType type, unsigned char state);
+    fowGranite(GraniteType type, unsigned char state);
     fowGranite(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;

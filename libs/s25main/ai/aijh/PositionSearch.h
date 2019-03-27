@@ -41,8 +41,7 @@ enum PositionSearchState
 class PositionSearch
 {
 public:
-    PositionSearch(const AIPlayerJH& player, const MapPoint pt, AIResource res, int minimum, BuildingType bld,
-                   bool searchGlobalOptimum = false);
+    PositionSearch(const AIPlayerJH& player, MapPoint pt, AIResource res, int minimum, BuildingType bld, bool searchGlobalOptimum = false);
 
     PositionSearchState execute(const AIPlayerJH& player);
     BuildingType GetBld() const { return bld; }

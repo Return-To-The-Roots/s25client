@@ -19,8 +19,8 @@
 #define Point_h__
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
-#include <stdint.h>
 #include <type_traits>
 
 /// Type for describing a 2D value (position, size, offset...)
@@ -223,7 +223,7 @@ constexpr Point<T>& operator*=(Point<T>& lhs, const Point<T>& rhs)
 }
 
 template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
-constexpr Point<T>& operator*=(Point<T>& lhs, const U factor)
+constexpr Point<T>& operator*=(Point<T>& lhs, U factor)
 {
     return lhs *= Point<T>::all(factor);
 }
@@ -257,7 +257,7 @@ constexpr Point<T>& operator/=(Point<T>& lhs, const Point<T>& rhs)
 }
 
 template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
-constexpr Point<T>& operator/=(Point<T>& lhs, const U div)
+constexpr Point<T>& operator/=(Point<T>& lhs, U div)
 {
     return lhs /= Point<T>::all(div);
 }

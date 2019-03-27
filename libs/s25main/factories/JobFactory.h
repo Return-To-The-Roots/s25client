@@ -31,7 +31,7 @@ class JobFactory
 
 public:
     // Erstellt Job anhand der job-id
-    static noFigure* CreateJob(const Job job_id, const MapPoint pt, unsigned char player, noRoadNode* const goal);
+    static noFigure* CreateJob(Job job_id, MapPoint pt, unsigned char player, noRoadNode* goal);
 };
 
 #endif // JobFactory_h__

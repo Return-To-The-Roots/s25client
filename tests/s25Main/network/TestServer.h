@@ -34,7 +34,8 @@ struct Connection
 class TestServer
 {
 public:
-    virtual ~TestServer(){};
+    virtual ~TestServer() = default;
+    ;
     bool listen(int16_t port);
     bool run();
     bool stop();

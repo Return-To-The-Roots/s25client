@@ -29,16 +29,16 @@ class PreviewMinimap : public Minimap
     std::map<uint8_t, uint32_t> terrain2Clr;
 
 public:
-    explicit PreviewMinimap(const glArchivItem_Map* const s2map);
+    explicit PreviewMinimap(const glArchivItem_Map* s2map);
 
     void SetMap(const glArchivItem_Map& s2map);
 
 protected:
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
-    unsigned CalcPixelColor(const MapPoint pt, unsigned t) override;
+    unsigned CalcPixelColor(MapPoint pt, unsigned t) override;
 
 private:
-    unsigned char CalcShading(const MapPoint pt, const std::vector<unsigned char>& altitudes) const;
+    unsigned char CalcShading(MapPoint pt, const std::vector<unsigned char>& altitudes) const;
     void CalcShadows(const std::vector<unsigned char>& altitudes);
 };
 

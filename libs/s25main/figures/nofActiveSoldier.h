@@ -82,7 +82,7 @@ protected:
     /// Returns true if it found one
     bool FindEnemiesNearby(unsigned char excludedOwner = 255);
     /// Informs this soldier that another soldier starts meeting him
-    void MeetEnemy(nofActiveSoldier* other, const MapPoint figh_spot);
+    void MeetEnemy(nofActiveSoldier* other, MapPoint figh_spot);
     /// Handle state "meet enemy" after each walking step
     void MeetingEnemy();
     /// Looks for an appropriate fighting spot between the two soldiers
@@ -101,9 +101,8 @@ private:
     unsigned GetVisualRange() const override;
 
 public:
-    nofActiveSoldier(const MapPoint pos, unsigned char player, nobBaseMilitary* const home, unsigned char rank,
-                     const SoldierState init_state);
-    nofActiveSoldier(const nofSoldier& other, const SoldierState init_state);
+    nofActiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank, SoldierState init_state);
+    nofActiveSoldier(const nofSoldier& other, SoldierState init_state);
     nofActiveSoldier(SerializedGameData& sgd, unsigned obj_id);
 
     /// Tidy up

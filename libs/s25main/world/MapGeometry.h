@@ -21,7 +21,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 
-Position GetNeighbour(const Position& p, const Direction dir);
+Position GetNeighbour(const Position& p, Direction dir);
 Position GetNeighbour2(Position pt, unsigned dir);
 MapPoint MakeMapPoint(Position pt, const MapExtent& size);
 /// Return the position of the node on a flat map

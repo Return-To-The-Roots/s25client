@@ -39,7 +39,7 @@ private:
     void StartWalkingToShip(unsigned char first_dir);
 
     /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
-    bool IsPointGood(const MapPoint pt) const;
+    bool IsPointGood(MapPoint pt) const;
 
     /// Der Schiffsbauer hat einen Bauschritt bewältigt und geht wieder zurück zum Haus
     void WorkFinished() override;
@@ -54,7 +54,7 @@ private:
     void DrawOtherStates(DrawPoint drawPt) override;
 
 public:
-    nofShipWright(const MapPoint pos, unsigned char player, nobUsual* workplace);
+    nofShipWright(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofShipWright(SerializedGameData& sgd, unsigned obj_id);
     GO_Type GetGOT() const override { return GOT_NOF_SHIPWRIGHT; }
     void HandleDerivedEvent(unsigned id) override;

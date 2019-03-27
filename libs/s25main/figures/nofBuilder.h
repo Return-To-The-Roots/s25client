@@ -66,7 +66,7 @@ private:
     bool ChooseWare();
 
 public:
-    nofBuilder(const MapPoint pos, unsigned char player, noRoadNode* building_site);
+    nofBuilder(MapPoint pos, unsigned char player, noRoadNode* building_site);
     nofBuilder(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override

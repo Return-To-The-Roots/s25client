@@ -43,7 +43,7 @@ class MapLoader
 
     /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
     /// Wasserpunkte mit der gleichen seaId belegt und die Anzahl zurückgibt
-    static unsigned MeasureSea(World& world, const MapPoint start, unsigned short seaId);
+    static unsigned MeasureSea(World& world, MapPoint start, unsigned short seaId);
     static void CalcHarborPosNeighbors(World& world);
 
 public:

@@ -24,7 +24,7 @@
 /// Interface for lobby clients
 struct ILobbyClient
 {
-    virtual ~ILobbyClient() {}
+    virtual ~ILobbyClient() = default;
     virtual bool IsLoggedIn() const = 0;
     virtual void AddListener(LobbyInterface* listener) = 0;
     virtual void RemoveListener(LobbyInterface* listener) = 0;

@@ -45,7 +45,7 @@ class iwSuggestPact : public IngameWindow
     GameCommandFactory& gcFactory;
 
 public:
-    iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory);
+    iwSuggestPact(PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory);
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };

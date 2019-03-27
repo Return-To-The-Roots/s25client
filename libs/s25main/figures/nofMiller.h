@@ -40,7 +40,7 @@ private:
     GoodType ProduceWare() override;
 
 public:
-    nofMiller(const MapPoint pos, unsigned char player, nobUsual* workplace);
+    nofMiller(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMiller(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

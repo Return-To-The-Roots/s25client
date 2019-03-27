@@ -36,7 +36,7 @@ public:
     /// Response to a diplomacy question. Last parameter states if the pact was accepted(true) or canceled(false)
     PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled,
             SoundEffect soundEffect = SoundEffect::Pidgeon);
-    virtual ~PostMsg() {}
+    virtual ~PostMsg() = default;
 
     unsigned GetSendFrame() const { return sendFrame_; }
     const std::string& GetText() const { return text_; }

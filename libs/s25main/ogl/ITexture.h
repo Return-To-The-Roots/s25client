@@ -23,7 +23,8 @@
 class ITexture
 {
 protected:
-    virtual ~ITexture(){};
+    virtual ~ITexture() = default;
+    ;
 
 public:
     virtual Position GetOrigin() const = 0;

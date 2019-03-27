@@ -57,8 +57,8 @@ struct RectBase
 using Rect = RectBase<int>;
 
 template<typename T>
-constexpr RectBase<T>::RectBase(const position_type& lt, const extent_type& size)
-    : left(lt.x), top(lt.y), right(lt.x + size.x), bottom(lt.y + size.y)
+constexpr RectBase<T>::RectBase(const position_type& origin, const extent_type& size)
+    : left(origin.x), top(origin.y), right(origin.x + size.x), bottom(origin.y + size.y)
 {}
 template<typename T>
 void RectBase<T>::setOrigin(const position_type& pos)

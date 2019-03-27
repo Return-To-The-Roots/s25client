@@ -22,7 +22,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 #include <array>
-#include <stdint.h>
+#include <cstdint>
 
 class SerializedGameData;
 class GameEvent;
@@ -53,7 +53,7 @@ protected:
     void PauseWalking();
 
 public:
-    noMovable(const NodalObjectType nop, const MapPoint pos);
+    noMovable(NodalObjectType nop, MapPoint pos);
     noMovable(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override { noCoordBase::Destroy(); }
@@ -71,7 +71,7 @@ public:
     /// In aktueller Richtung ein Stück zurücklegen
     void Walk();
     // Starten zu Laufen, Event anmelden
-    void StartMoving(const Direction dir, unsigned gf_length);
+    void StartMoving(Direction dir, unsigned gf_length);
     // Interpoliert die Position zwischen zwei Knoten punkten
     DrawPoint CalcRelative(DrawPoint curPt, DrawPoint nextPt) const;
     /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten

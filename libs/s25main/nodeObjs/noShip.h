@@ -90,7 +90,7 @@ private:
     /// entscheidet, was nach einem gefahrenen Abschnitt weiter zu tun ist
     void Driven();
     /// Fängt an zu fahren
-    void StartDriving(const Direction dir);
+    void StartDriving(Direction dir);
 
     void HandleState_GoToHarbor();
     void HandleState_ExpeditionDriving();
@@ -137,7 +137,7 @@ private:
     void AbortSeaAttack();
 
 public:
-    noShip(const MapPoint pos, unsigned char player);
+    noShip(MapPoint pos, unsigned char player);
     noShip(SerializedGameData& sgd, unsigned obj_id);
 
     ~noShip() override;
@@ -202,7 +202,7 @@ public:
     /// Startet eine Erkundungs-Expedition
     void StartStopExplorationExpedition(unsigned homeHarborId);
     /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
-    void ContinueExpedition(const ShipDirection dir);
+    void ContinueExpedition(ShipDirection dir);
     /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
     /// Hafen zurückzukehren
     void CancelExpedition();

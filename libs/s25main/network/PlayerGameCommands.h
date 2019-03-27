@@ -32,7 +32,7 @@ struct PlayerGameCommands
     /// The game gammands for this NWF
     std::vector<gc::GameCommandPtr> gcs;
 
-    PlayerGameCommands() {}
+    PlayerGameCommands() = default;
     PlayerGameCommands(const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs) : checksum(checksum), gcs(gcs) {}
     void Serialize(Serializer& ser) const;
     void Deserialize(Serializer& ser);

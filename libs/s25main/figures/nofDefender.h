@@ -37,8 +37,8 @@ class nofDefender : public nofActiveSoldier
     void FreeFightEnded() override;
 
 public:
-    nofDefender(const MapPoint pos, unsigned char player, nobBaseMilitary* const home, unsigned char rank, nofAttacker* const attacker);
-    nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
+    nofDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank, nofAttacker* attacker);
+    nofDefender(nofPassiveSoldier* other, nofAttacker* attacker);
     nofDefender(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden

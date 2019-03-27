@@ -35,7 +35,7 @@ public:
     TerritoryRegion(const Position& startPt, const Extent& size, const GameWorldBase& gwb);
     ~TerritoryRegion();
 
-    static bool IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt);
+    static bool IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, MapPoint pt);
 
     /// Adds the territory of the building
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);

@@ -54,7 +54,7 @@ private:
     unsigned short GetCarryID() const override { return 0; }
 
 public:
-    nofCatapultMan(const MapPoint pos, unsigned char player, nobUsual* workplace);
+    nofCatapultMan(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofCatapultMan(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

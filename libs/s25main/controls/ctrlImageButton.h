@@ -29,7 +29,7 @@ class glArchivItem_Bitmap;
 class ctrlImageButton : public ctrlButton, public ctrlBaseImage
 {
 public:
-    ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* const image,
+    ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
                     const std::string& tooltip);
 
 protected:

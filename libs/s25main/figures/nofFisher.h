@@ -41,13 +41,13 @@ private:
     void WorkFinished() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(const MapPoint pt) const override;
+    PointQuality GetPointQuality(MapPoint pt) const override;
 
 public:
-    nofFisher(const MapPoint pos, unsigned char player, nobUsual* workplace);
+    nofFisher(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFisher(SerializedGameData& sgd, unsigned obj_id);
 
-    ~nofFisher() override {}
+    ~nofFisher() override = default;
 
     /// Serialisierungsfunktionen
 protected:

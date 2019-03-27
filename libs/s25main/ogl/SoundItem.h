@@ -26,7 +26,7 @@
 class SoundItem
 {
 public:
-    virtual ~SoundItem() {}
+    virtual ~SoundItem() = default;
     SoundType getLoadedType() const { return handle.getType(); }
 
 protected:

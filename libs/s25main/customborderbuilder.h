@@ -64,7 +64,7 @@ private:
     void FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths, std::array<unsigned char, 3>& shouldCounts);
     template<size_t T_numEdges, size_t T_numFillers>
     void WriteEdgeDistribution(const ImgPos& pos, unsigned toFill,
-                               const bool direction, // false = waagerecht, true = senkrecht
+                               bool direction, // false = waagerecht, true = senkrecht
                                const std::array<unsigned short, 3>& edgeLengths,
                                std::array<unsigned char, 3>& edgeCounts, // wird verändert, nicht weiterbenutzen
                                const std::array<BdrBitmap, T_numEdges>& edges, const std::array<BdrBitmap, T_numFillers>& fillers,

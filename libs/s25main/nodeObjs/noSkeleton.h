@@ -28,7 +28,7 @@ class GameEvent;
 class noSkeleton : public noCoordBase
 {
 public:
-    noSkeleton(const MapPoint pos);
+    noSkeleton(MapPoint pos);
     noSkeleton(SerializedGameData& sgd, unsigned obj_id);
 
     ~noSkeleton() override;

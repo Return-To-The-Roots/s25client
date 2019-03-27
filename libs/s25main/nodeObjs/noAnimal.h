@@ -54,15 +54,15 @@ private:
     /// Sucht eine Richtung, in die das Tier gehen kann
     unsigned char FindDir();
     /// Fängt an zu laufen
-    void StartWalking(const Direction dir);
+    void StartWalking(Direction dir);
     /// Sucht eine neue Richtung und läuft in diese, ansonsten stirbt es
     void StandardWalking();
 
 public:
-    noAnimal(const Species species, const MapPoint pos);
+    noAnimal(Species species, MapPoint pos);
     noAnimal(SerializedGameData& sgd, unsigned obj_id);
 
-    ~noAnimal() override {}
+    ~noAnimal() override = default;
 
     /// Serialisierungsfunktionen
 protected:

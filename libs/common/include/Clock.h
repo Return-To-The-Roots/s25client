@@ -28,7 +28,7 @@ public:
     using rep = duration::rep;
     using period = duration::period;
 
-    virtual ~BaseClock() {}
+    virtual ~BaseClock() = default;
     virtual duration time_since_epoch()
     {
         return std::chrono::duration_cast<duration>(std::chrono::steady_clock::now().time_since_epoch());

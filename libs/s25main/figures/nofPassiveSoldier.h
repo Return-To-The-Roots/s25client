@@ -44,8 +44,7 @@ private:
 
 public:
     nofPassiveSoldier(const nofSoldier& soldier);
-    nofPassiveSoldier(const MapPoint pos, unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
-                      const unsigned char rank);
+    nofPassiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobBaseMilitary* home, unsigned char rank);
     nofPassiveSoldier(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofPassiveSoldier() override;

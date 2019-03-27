@@ -53,9 +53,9 @@ protected:
 
 public:
     /// Going to workplace
-    nofWorkman(const Job job, const MapPoint pos, unsigned char player, nobUsual* workplace);
+    nofWorkman(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     /// Going to warehouse
-    nofWorkman(const Job job, const MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
+    nofWorkman(Job job, MapPoint pos, unsigned char player, nobBaseWarehouse* goalWh);
     nofWorkman(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

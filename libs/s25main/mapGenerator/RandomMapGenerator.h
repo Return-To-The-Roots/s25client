@@ -60,7 +60,7 @@ private:
      * @param textures set of textures used for different height values
      * @return the maximum height value for the terrain
      */
-    unsigned GetMaxTerrainHeight(const DescIdx<TerrainDesc> terrain);
+    unsigned GetMaxTerrainHeight(DescIdx<TerrainDesc> terrain);
 
     /**
      * Gets the minimum height to be considered as specified terrain.
@@ -68,7 +68,7 @@ private:
      * @param textures set of textures used for different height values
      * @return the minimum height value for the terrain
      */
-    unsigned GetMinTerrainHeight(const DescIdx<TerrainDesc> terrain);
+    unsigned GetMinTerrainHeight(DescIdx<TerrainDesc> terrain);
 
     /**
      * Create player positions (headquarters) for the specified map.

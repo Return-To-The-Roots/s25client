@@ -59,7 +59,7 @@ public:
 
     bool BuildJobAvailable() const { return !buildJobs.empty(); }
     /// Finds flags in the area around pt
-    std::vector<const noFlag*> FindFlags(const MapPoint pt, unsigned short radius);
+    std::vector<const noFlag*> FindFlags(MapPoint pt, unsigned short radius);
     /// returns true if the military building should be connected to the roadsystem
     bool MilitaryBuildingWantsRoad(const nobMilitary& milbld);
     /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the future road.
@@ -75,7 +75,7 @@ public:
     BuildingType GetSmallestAllowedMilBuilding() const;
     BuildingType GetBiggestAllowedMilBuilding() const;
     /// Randomly chooses a military building, preferring bigger buildings if enemy nearby
-    BuildingType ChooseMilitaryBuilding(const MapPoint pt);
+    BuildingType ChooseMilitaryBuilding(MapPoint pt);
     /// Checks whether a building type is wanted atm
     bool Wanted(BuildingType type) const;
     /// Tries to build a second road to a flag, which is in any way better than the first one
@@ -85,9 +85,9 @@ public:
 
     bool OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt);
 
-    noFlag* FindTargetStoreHouseFlag(const MapPoint pt) const;
+    noFlag* FindTargetStoreHouseFlag(MapPoint pt) const;
 
-    bool CanStillConstructHere(const MapPoint pt) const;
+    bool CanStillConstructHere(MapPoint pt) const;
 
     void ExecuteJobs(unsigned limit);
     /// Set flags along the road starting at the given node in the given direction

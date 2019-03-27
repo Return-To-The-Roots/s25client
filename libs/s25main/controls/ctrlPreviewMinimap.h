@@ -51,7 +51,7 @@ public:
     /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
     void SetPlayerColor(unsigned id, unsigned color) { players[id].color = color; }
 
-    void SetMap(const glArchivItem_Map* const s2map);
+    void SetMap(const glArchivItem_Map* s2map);
 };
 
 #endif // !MapPreview_H_

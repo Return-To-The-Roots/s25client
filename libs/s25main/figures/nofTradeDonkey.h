@@ -48,7 +48,7 @@ private:
     }
 
 public:
-    nofTradeDonkey(const MapPoint pos, unsigned char player, const GoodType gt, const Job job);
+    nofTradeDonkey(MapPoint pos, unsigned char player, GoodType gt, Job job);
     nofTradeDonkey(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override

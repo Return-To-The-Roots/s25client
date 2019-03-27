@@ -31,9 +31,9 @@
 #include "libsiedler2/Archiv.h"
 #include "libutil/Singleton.h"
 #include <array>
+#include <cstdint>
 #include <map>
 #include <memory>
-#include <stdint.h>
 #include <string>
 #include <vector>
 

@@ -63,7 +63,7 @@ public:
     bool IsAlly(unsigned char otherPlayerId);
     bool IsAttackable(unsigned char otherPlayerId);
     void SuggestPact(unsigned char otherPlayerId, PactType pt, unsigned duration);
-    void CancelPact(const PactType pt, unsigned char otherPlayerId);
+    void CancelPact(PactType pt, unsigned char otherPlayerId);
 };
 
 #endif // LuaPlayer_h__

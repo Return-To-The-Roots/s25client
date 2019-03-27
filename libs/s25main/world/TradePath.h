@@ -30,7 +30,7 @@ struct TradePath
     MapPoint start, goal;
     std::vector<Direction> route;
 
-    TradePath() {}
+    TradePath() = default;
     TradePath(const MapPoint& start, const MapPoint& goal, const std::vector<Direction>& route) : start(start), goal(goal), route(route) {}
     TradePath(SerializedGameData& sgd);
 

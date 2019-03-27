@@ -33,7 +33,7 @@ struct JoinPlayerInfo;
 class IGameLobbyController
 {
 public:
-    virtual ~IGameLobbyController() {}
+    virtual ~IGameLobbyController() = default;
     virtual unsigned GetMaxNumPlayers() const = 0;
     virtual JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) = 0;
     virtual void CloseSlot(unsigned playerIdx) = 0;

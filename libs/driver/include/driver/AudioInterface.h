@@ -20,7 +20,7 @@
 #include "EffectPlayId.h"
 #include "SoundHandle.h"
 #include "exportImport.h"
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 

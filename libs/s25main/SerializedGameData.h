@@ -158,9 +158,9 @@ private:
     /// Starts reading or writing according to the param
     void Prepare(bool reading);
     /// Erzeugt GameObject
-    GameObject* Create_GameObject(const GO_Type got, unsigned obj_id);
+    GameObject* Create_GameObject(GO_Type got, unsigned obj_id);
     /// Erzeugt FOWObject
-    FOWObject* Create_FOWObject(const FOW_Type fowtype);
+    FOWObject* Create_FOWObject(FOW_Type fowtype);
 
     void PushObject_(const GameObject* go, bool known);
     /// Objekt(referenzen) lesen

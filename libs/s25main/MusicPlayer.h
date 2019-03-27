@@ -49,7 +49,7 @@ public:
     /// Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
     void FillMusicPlayer(iwMusicPlayer* window) const;
     /// Liest die Werte aus dem iwMusicPlayer-Fenster
-    void ReadMusicPlayer(const iwMusicPlayer* const window);
+    void ReadMusicPlayer(const iwMusicPlayer* window);
 
     /// Wählt den Start-Song aus
     void SetStartSong(unsigned id);

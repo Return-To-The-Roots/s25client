@@ -43,8 +43,8 @@ private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
 
-    void CI_Error(const ClientError ce) override;
-    void CI_NextConnectState(const ConnectState cs) override;
+    void CI_Error(ClientError ce) override;
+    void CI_NextConnectState(ConnectState cs) override;
 };
 
 #endif // !iwDIRECTIPCONNECT_H_INCLUDED

@@ -18,7 +18,7 @@
 #ifndef VertexUtility_h__
 #define VertexUtility_h__
 
-#include "stdint.h"
+#include "cstdint"
 #include "gameTypes/MapCoordinates.h"
 #include <vector>
 

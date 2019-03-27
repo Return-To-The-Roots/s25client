@@ -27,9 +27,9 @@ class ctrlProgress : public Window, public ctrlBaseTooltip
 {
 public:
     ctrlProgress(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned short button_minus,
-                 unsigned short button_plus, unsigned short maximum, const Extent& padding, const unsigned force_color,
+                 unsigned short button_plus, unsigned short maximum, const Extent& padding, unsigned force_color,
                  const std::string& tooltip, const std::string& button_minus_tooltip = "", const std::string& button_plus_tooltip = "",
-                 unsigned short* const write_val = nullptr);
+                 unsigned short* write_val = nullptr);
 
     void Resize(const Extent& newSize) override;
     void SetPosition(unsigned short position);

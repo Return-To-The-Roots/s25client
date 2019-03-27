@@ -41,9 +41,8 @@ protected:
     void AbrogateWorkplace() override;
 
 public:
-    nofSoldier(const MapPoint pos, unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
-               const unsigned char rank);
-    nofSoldier(const MapPoint pos, unsigned char player, nobBaseMilitary* const home, unsigned char rank);
+    nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobBaseMilitary* home, unsigned char rank);
+    nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank);
     nofSoldier(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden

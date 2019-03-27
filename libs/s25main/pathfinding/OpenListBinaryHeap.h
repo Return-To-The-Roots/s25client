@@ -32,7 +32,7 @@ public:
     {
         key_type key;
         value_type* el;
-        Element() {} //-V730
+        Element() = default; //-V730
         Element(key_type key, value_type* el) : key(key), el(el) {}
     };
 

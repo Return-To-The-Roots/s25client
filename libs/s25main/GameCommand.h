@@ -97,7 +97,7 @@ private:
 public:
     GameCommand(const GameCommand& obj) : gcType(obj.gcType), refCounter_(0) // Do not copy refCounter!
     {}
-    virtual ~GameCommand() {}
+    virtual ~GameCommand() = default;
 
     GameCommand& operator=(const GameCommand& obj)
     {

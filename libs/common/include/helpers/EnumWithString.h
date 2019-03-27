@@ -27,7 +27,7 @@ struct ignore_assign
     ignore_assign(int value) : value_(value) {}
     operator int() const { return value_; }
 
-    const ignore_assign& operator=(int) { return *this; }
+    ignore_assign& operator=(int) { return *this; }
 
     int value_;
 };

@@ -37,11 +37,11 @@ struct DescriptionContainer
     /// Return the entry with the given name or nullptr
     const T* tryGet(const std::string& name) const;
     /// Return the entry with the given idx or nullptr
-    const T* tryGet(const DescIdx<T> idx) const;
+    const T* tryGet(DescIdx<T> idx) const;
     /// Return the item at the given index
-    const T& get(const DescIdx<T> idx) const;
+    const T& get(DescIdx<T> idx) const;
     /// Return a mutable reference to the given item
-    T& getMutable(const DescIdx<T> idx);
+    T& getMutable(DescIdx<T> idx);
 
 private:
     std::vector<T> items;
@@ -49,18 +49,18 @@ private:
 };
 
 template<typename T>
-inline DescIdx<T> DescriptionContainer<T>::add(T item)
+inline DescIdx<T> DescriptionContainer<T>::add(T desc)
 {
-    if(!getIndex(item.name))
+    if(!getIndex(desc.name))
     {
         if(size() >= DescIdx<T>::INVALID)
             throw std::runtime_error("To many entries!");
         DescIdx<T> idx(size());
-        items.push_back(item);
-        name2Idx[item.name] = idx.value;
+        items.push_back(desc);
+        name2Idx[desc.name] = idx.value;
         return idx;
     }
-    throw std::runtime_error(std::string("Duplicate entry with name ") + item.name + " added!");
+    throw std::runtime_error(std::string("Duplicate entry with name ") + desc.name + " added!");
 }
 
 template<typename T>

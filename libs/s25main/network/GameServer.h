@@ -71,7 +71,7 @@ private:
 
     GameServerPlayer* GetNetworkPlayer(unsigned playerId);
     /// Swap players ingame or during config
-    void SwapPlayer(const uint8_t player1, const uint8_t player2);
+    void SwapPlayer(uint8_t player1, uint8_t player2);
 
     void SendToAll(const GameMessage& msg);
     void SendNWFDone(const NWFServerInfo& info);

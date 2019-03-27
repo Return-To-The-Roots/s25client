@@ -44,7 +44,7 @@ enum ConnectState
 class ClientInterface
 {
 public:
-    virtual ~ClientInterface() {}
+    virtual ~ClientInterface() = default;
 
     virtual void CI_NextConnectState(const ConnectState) {}
     virtual void CI_Error(const ClientError) {}
