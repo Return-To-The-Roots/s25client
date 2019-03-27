@@ -22,6 +22,7 @@
 
 namespace helpers {
 template<typename... T>
+// NOLINTNEXTLINE(performance-unnecessary-value-param])
 std::string format(boost::format fmt, T&&... args)
 {
     // Pre C++17 expansion (fmt % arg1 % arg2)

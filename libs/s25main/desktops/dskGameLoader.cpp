@@ -147,7 +147,7 @@ void dskGameLoader::LC_Status_Error(const std::string& error)
     GetCtrl<ctrlTimer>(1)->Stop();
 }
 
-void dskGameLoader::CI_GameStarted(std::shared_ptr<Game>)
+void dskGameLoader::CI_GameStarted(const std::shared_ptr<Game>&)
 {
     RTTR_Assert(gameInterface);
     WINDOWMANAGER.Switch(gameInterface.release());

@@ -20,6 +20,7 @@
 
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
+#include <utility>
 #include <vector>
 
 class SerializedGameData;
@@ -31,7 +32,8 @@ struct TradePath
     std::vector<Direction> route;
 
     TradePath() = default;
-    TradePath(const MapPoint& start, const MapPoint& goal, const std::vector<Direction>& route) : start(start), goal(goal), route(route) {}
+    TradePath(const MapPoint& start, const MapPoint& goal, std::vector<Direction> route) : start(start), goal(goal), route(std::move(route))
+    {}
     TradePath(SerializedGameData& sgd);
 
     void Serialize(SerializedGameData& sgd) const;

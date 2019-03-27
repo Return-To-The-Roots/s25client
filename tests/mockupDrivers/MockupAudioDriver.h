@@ -31,8 +31,6 @@ struct MockupSoundDesc : public SoundDesc
     void setInvalid() { isValid_ = false; }
 };
 
-int MockupSoundDesc::numAlive = 0;
-
 struct MockupAudioDriver : public AudioDriver, IAudioDriverCallback
 {
 protected:

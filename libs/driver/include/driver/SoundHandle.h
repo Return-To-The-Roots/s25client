@@ -22,6 +22,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <memory>
+#include <utility>
 
 enum SoundType
 {
@@ -49,7 +50,7 @@ class SoundHandle
 public:
     using Descriptor = std::shared_ptr<SoundDesc>;
 
-    explicit SoundHandle(Descriptor descriptor = Descriptor()) : descriptor_(descriptor) {}
+    explicit SoundHandle(Descriptor descriptor = Descriptor()) : descriptor_(std::move(descriptor)) {}
     SoundType getType() const { return isValid() ? descriptor_->type_ : SD_UNKNOWN; }
     bool isMusic() const { return getType() == SD_MUSIC; }
     bool isEffect() const { return getType() == SD_EFFECT; }

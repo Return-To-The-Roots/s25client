@@ -12,6 +12,7 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ToolConsts.h"
 #include "libutil/Serializer.h"
+#include <utility>
 #include <vector>
 
 class GameWorldGame;
@@ -84,8 +85,8 @@ class BuildRoad : public Coords
     std::vector<Direction> route;
 
 protected:
-    BuildRoad(const MapPoint pt, bool boat_road, const std::vector<Direction>& route)
-        : Coords(BUILD_ROAD, pt), boat_road(boat_road), route(route)
+    BuildRoad(const MapPoint pt, bool boat_road, std::vector<Direction> route)
+        : Coords(BUILD_ROAD, pt), boat_road(boat_road), route(std::move(route))
     {}
     BuildRoad(Serializer& ser) : Coords(BUILD_ROAD, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
     {
@@ -532,8 +533,8 @@ class SetAllInventorySettings : public Coords
     std::vector<InventorySetting> states;
 
 protected:
-    SetAllInventorySettings(const MapPoint pt, bool isJob, const std::vector<InventorySetting>& states)
-        : Coords(SET_ALL_INVENTORY_SETTINGS, pt), isJob(isJob), states(states)
+    SetAllInventorySettings(const MapPoint pt, bool isJob, std::vector<InventorySetting> states)
+        : Coords(SET_ALL_INVENTORY_SETTINGS, pt), isJob(isJob), states(std::move(states))
     {}
     SetAllInventorySettings(Serializer& ser) : Coords(SET_ALL_INVENTORY_SETTINGS, ser), isJob(ser.PopBool())
     {

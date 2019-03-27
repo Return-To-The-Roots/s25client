@@ -37,7 +37,7 @@
 #include <string>
 #include <vector>
 
-struct AddonId;
+enum class AddonId;
 class ITexture;
 class glArchivItem_Bitmap;
 class glArchivItem_BitmapBase;

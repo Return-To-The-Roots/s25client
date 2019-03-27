@@ -23,7 +23,7 @@
 
 class Serializer;
 class Addon;
-struct AddonId;
+enum class AddonId;
 
 class GlobalGameSettings
 {
@@ -88,9 +88,7 @@ private:
         inline bool operator<(const AddonWithState& rhs) const;
     };
 
-    using AddonContainer = std::vector<AddonWithState>;
-
-    AddonContainer addons;
+    std::vector<AddonWithState> addons;
 };
 
 #endif // !GlobalGameSettings_H_INCLUDED

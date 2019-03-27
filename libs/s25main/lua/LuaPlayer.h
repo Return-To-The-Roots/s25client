@@ -26,6 +26,7 @@
 #include <kaguya/kaguya.hpp>
 #include <map>
 #include <memory>
+#include <utility>
 
 class GamePlayer;
 class Game;
@@ -39,7 +40,7 @@ protected:
     const BasePlayerInfo& GetPlayer() const override;
 
 public:
-    LuaPlayer(std::weak_ptr<Game> game, GamePlayer& player) : game(game), player(player) {}
+    LuaPlayer(std::weak_ptr<Game> game, GamePlayer& player) : game(std::move(game)), player(player) {}
     static void Register(kaguya::State& state);
 
     void EnableBuilding(BuildingType bld, bool notify);

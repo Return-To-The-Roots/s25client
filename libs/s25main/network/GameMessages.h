@@ -17,6 +17,8 @@
 #ifndef GAMEMESSAGES_H_INCLUDED
 #define GAMEMESSAGES_H_INCLUDED
 
+#include <utility>
+
 #include "GameMessage.h"
 #include "GameMessageInterface.h"
 #include "GameProtocol.h"
@@ -134,7 +136,7 @@ public:
     std::string password;
 
     GameMessage_Server_Password() : GameMessage(NMS_SERVER_PASSWORD) {}
-    GameMessage_Server_Password(const std::string& password) : GameMessage(NMS_SERVER_PASSWORD), password(password) {}
+    GameMessage_Server_Password(std::string password) : GameMessage(NMS_SERVER_PASSWORD), password(std::move(password)) {}
 
     void Serialize(Serializer& ser) const override
     {
@@ -162,7 +164,7 @@ public:
     std::string name;
 
     GameMessage_Server_Name() : GameMessage(NMS_SERVER_NAME) {}
-    GameMessage_Server_Name(const std::string& name) : GameMessage(NMS_SERVER_NAME), name(name) {}
+    GameMessage_Server_Name(std::string name) : GameMessage(NMS_SERVER_NAME), name(std::move(name)) {}
 
     void Serialize(Serializer& ser) const override
     {
@@ -278,8 +280,8 @@ public:
     std::string text;
 
     GameMessage_Chat() : GameMessageWithPlayer(NMS_CHAT) {} //-V730
-    GameMessage_Chat(uint8_t player, const ChatDestination destination, const std::string& text)
-        : GameMessageWithPlayer(NMS_CHAT, player), destination(destination), text(text)
+    GameMessage_Chat(uint8_t player, const ChatDestination destination, std::string text)
+        : GameMessageWithPlayer(NMS_CHAT, player), destination(destination), text(std::move(text))
     {}
 
     void Serialize(Serializer& ser) const override
@@ -595,7 +597,7 @@ public:
     std::string name;
 
     GameMessage_Player_New() : GameMessageWithPlayer(NMS_PLAYER_NEW) {}
-    GameMessage_Player_New(uint8_t player, const std::string& name) : GameMessageWithPlayer(NMS_PLAYER_NEW, player), name(name)
+    GameMessage_Player_New(uint8_t player, std::string name) : GameMessageWithPlayer(NMS_PLAYER_NEW, player), name(std::move(name))
     {
         LOG.writeToFile(">>> NMS_PLAYER_NEW\n");
     }
@@ -719,10 +721,10 @@ public:
     uint32_t luaLen, luaCompressedLen;
 
     GameMessage_Map_Info() : GameMessage(NMS_MAP_INFO) {} //-V730
-    GameMessage_Map_Info(const std::string& filename, const MapType mt, unsigned mapLen, unsigned mapCompressedLen, const unsigned luaLen,
+    GameMessage_Map_Info(std::string filename, const MapType mt, unsigned mapLen, unsigned mapCompressedLen, const unsigned luaLen,
                          unsigned luaCompressedLen)
-        : GameMessage(NMS_MAP_INFO), filename(filename), mt(mt), mapLen(mapLen), mapCompressedLen(mapCompressedLen), luaLen(luaLen),
-          luaCompressedLen(luaCompressedLen)
+        : GameMessage(NMS_MAP_INFO), filename(std::move(filename)), mt(mt), mapLen(mapLen), mapCompressedLen(mapCompressedLen),
+          luaLen(luaLen), luaCompressedLen(luaCompressedLen)
     {
         LOG.writeToFile(">>> NMS_MAP_INFO\n");
     }
@@ -1060,12 +1062,13 @@ public:
 
     GameMessage_AsyncLog() : GameMessage(NMS_ASYNC_LOG) {} //-V730
 
-    GameMessage_AsyncLog(const std::string& addData) : GameMessage(NMS_ASYNC_LOG), addData(addData), last(false)
+    GameMessage_AsyncLog(std::string addData) : GameMessage(NMS_ASYNC_LOG), addData(std::move(addData)), last(false)
     {
         LOG.writeToFile(">>> NMS_SEND_ASYNC_LOG\n");
     }
 
-    GameMessage_AsyncLog(const std::vector<RandomEntry>& async_log, bool last) : GameMessage(NMS_ASYNC_LOG), entries(async_log), last(last)
+    GameMessage_AsyncLog(std::vector<RandomEntry> async_log, bool last)
+        : GameMessage(NMS_ASYNC_LOG), entries(std::move(async_log)), last(last)
     {
         LOG.writeToFile(">>> NMS_SEND_ASYNC_LOG\n");
     }

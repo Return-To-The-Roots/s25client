@@ -76,7 +76,7 @@ private:
     void CI_NewPlayer(unsigned playerId) override;
     void CI_PlayerLeft(unsigned playerId) override;
 
-    void CI_GameLoading(std::shared_ptr<Game> game) override;
+    void CI_GameLoading(const std::shared_ptr<Game>& game) override;
 
     void CI_PlayerDataChanged(unsigned playerId) override;
     void CI_PingChanged(unsigned playerId, unsigned short ping) override;

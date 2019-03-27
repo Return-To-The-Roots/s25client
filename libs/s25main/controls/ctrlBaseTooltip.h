@@ -19,12 +19,13 @@
 #define ctrlBaseTooltip_h__
 
 #include <string>
+#include <utility>
 
 /// Base class for controls with a tooltip
 class ctrlBaseTooltip
 {
 public:
-    ctrlBaseTooltip(const std::string& tooltip = "") : tooltip_(tooltip) {}
+    ctrlBaseTooltip(std::string tooltip = "") : tooltip_(std::move(tooltip)) {}
     virtual ~ctrlBaseTooltip();
 
     void SetTooltip(const std::string& tooltip) { tooltip_ = tooltip; }

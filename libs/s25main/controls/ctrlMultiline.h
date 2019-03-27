@@ -19,6 +19,7 @@
 
 #include "Window.h"
 #include "ogl/FontStyle.h"
+#include <utility>
 #include <vector>
 
 class MouseCoords;
@@ -70,7 +71,7 @@ private:
         std::string str;
         unsigned color;
         Line() : color(0) {}
-        Line(const std::string& str, unsigned color) : str(str), color(color) {}
+        Line(std::string str, unsigned color) : str(std::move(str)), color(color) {}
     };
 
     unsigned GetContentWidth() const;

@@ -184,7 +184,7 @@ void Loader::AddOverrideFolder(std::string path, bool atBack)
 void Loader::AddAddonFolder(AddonId id)
 {
     std::stringstream s;
-    s << RTTRCONFIG.ExpandPath(FILE_PATHS[96]) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id;
+    s << RTTRCONFIG.ExpandPath(FILE_PATHS[96]) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned>(id);
     std::string path = s.str();
     if(bfs::exists(path))
         AddOverrideFolder(path);

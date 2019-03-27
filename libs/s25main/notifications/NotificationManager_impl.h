@@ -21,6 +21,7 @@
 #endif
 #include <algorithm>
 #include <stdexcept>
+#include <utility>
 
 template<class T_Note>
 class NotificationManager::CallbackUnregistrar
@@ -57,7 +58,7 @@ template<class T_Note>
 struct NotificationManager::NoteCallback : NoteCallbackBase
 {
     using Callback = std::function<void(const T_Note&)>;
-    explicit NoteCallback(Callback callback) : execute(callback) {}
+    explicit NoteCallback(Callback callback) : execute(std::move(callback)) {}
     const Callback execute;
 };
 

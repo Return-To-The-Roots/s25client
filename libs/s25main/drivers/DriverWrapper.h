@@ -34,6 +34,7 @@
 #endif
 
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace bfs = boost::filesystem;
@@ -50,7 +51,7 @@ public:
     class DriverItem
     {
     public:
-        DriverItem(const bfs::path& file, const std::string& name) : file(file), name(name) {}
+        DriverItem(bfs::path file, std::string name) : file(std::move(file)), name(std::move(name)) {}
         const bfs::path& GetFile() const { return file; }
         const std::string& GetName() const { return name; }
 

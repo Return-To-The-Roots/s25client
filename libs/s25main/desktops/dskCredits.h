@@ -21,6 +21,7 @@
 
 #include "Desktop.h"
 
+#include <utility>
 #include <vector>
 struct KeyEvent;
 class glArchivItem_Bitmap;
@@ -48,7 +49,7 @@ private:
         struct Line
         {
             Line(const char* text, unsigned c = 0) : line(text), column(c) {}
-            Line(const std::string& text, unsigned c = 0) : line(text), column(c) {}
+            Line(std::string text, unsigned c = 0) : line(std::move(text)), column(c) {}
             std::string line;
             unsigned column;
         };
@@ -56,10 +57,11 @@ private:
         std::string lastLine;
         glArchivItem_Bitmap* pic;
         std::vector<Line> lines;
-        explicit CreditsEntry(const std::string& title, const std::string& lastLine = "") : title(title), lastLine(lastLine), pic(nullptr)
+        explicit CreditsEntry(std::string title, std::string lastLine = "")
+            : title(std::move(title)), lastLine(std::move(lastLine)), pic(nullptr)
         {}
-        CreditsEntry(const std::string& title, glArchivItem_Bitmap* pic, const std::string& lastLine = "")
-            : title(title), lastLine(lastLine), pic(pic)
+        CreditsEntry(std::string title, glArchivItem_Bitmap* pic, std::string lastLine = "")
+            : title(std::move(title)), lastLine(std::move(lastLine)), pic(pic)
         {}
     };
 
