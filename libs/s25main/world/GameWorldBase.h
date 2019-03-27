@@ -187,8 +187,8 @@ public:
     /// Recalculates the BQ for the given point
     void RecalcBQ(MapPoint pt);
 
-    bool HasLua() const { return lua.get() != nullptr; }
-    LuaInterfaceGame& GetLua() const { return *lua.get(); }
+    bool HasLua() const { return lua != nullptr; }
+    LuaInterfaceGame& GetLua() const { return *lua; }
     void SetLua(LuaInterfaceGame* newLua) { lua.reset(newLua); }
 
 protected:
