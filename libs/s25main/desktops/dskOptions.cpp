@@ -31,6 +31,7 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
+#include "helpers/containerUtils.h"
 #include "helpers/mathFuncs.h"
 #include "helpers/strUtils.h"
 #include "ingameWindows/iwAddons.h"
@@ -623,13 +624,7 @@ void dskOptions::loadVideoModes()
     // Get available modes
     VIDEODRIVER.ListVideoModes(video_modes);
     // Remove everything below 800x600
-    for(auto it = video_modes.begin(); it != video_modes.end();)
-    {
-        if(it->width < 800 && it->height < 600)
-            it = video_modes.erase(it);
-        else
-            ++it;
-    }
+    helpers::remove_if(video_modes, [](const auto& it) { return it.width < 800 && it.height < 600; });
     // Sort by aspect ratio
     std::sort(video_modes.begin(), video_modes.end(), cmpVideoModes);
 }

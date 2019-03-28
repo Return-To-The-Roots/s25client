@@ -406,13 +406,13 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
     std::vector<std::string> playlists = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[90]), "pll");
 
     unsigned i = 0;
-    for(auto it = playlists.begin(); it != playlists.end(); ++it, ++i)
+    for(bfs::path playlistPath : playlists)
     {
-        bfs::path playlistPath(*it);
         // Reduce to pure filename
         playlistPath = playlistPath.stem();
         GetCtrl<ctrlComboBox>(2)->AddString(playlistPath.string());
         if(playlistPath == highlight_entry)
             GetCtrl<ctrlComboBox>(2)->SetSelection(i);
+        ++i;
     }
 }

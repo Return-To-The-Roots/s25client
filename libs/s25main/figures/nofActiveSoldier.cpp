@@ -266,9 +266,9 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     // Get all points in a radius of 2
     std::vector<MapPoint> pts = gwg->GetPointsInRadiusWithCenter(pos, 2);
 
-    for(std::vector<MapPoint>::const_iterator itPos = pts.begin(); itPos != pts.end(); ++itPos)
+    for(const auto& curPos : pts)
     {
-        for(noBase* object : gwg->GetFigures(*itPos))
+        for(noBase* object : gwg->GetFigures(curPos))
         {
             auto* soldier = dynamic_cast<nofActiveSoldier*>(object);
             if(!soldier || soldier->GetPlayer() == excludedOwner)
@@ -487,16 +487,16 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
     // TODO: Put the condition below into a functor and pass it as the condition to GetPointsInRadius with a limit of 1 (much easier in
     // C++11)
     std::vector<MapPoint> pts = gwg->GetPointsInRadius(middle, MEET_FOR_FIGHT_DISTANCE);
-    for(std::vector<MapPoint>::const_iterator pt = pts.begin(); pt != pts.end(); ++pt)
+    for(const auto& pt : pts)
     {
         // Did we find a good spot?
-        if(gwg->ValidPointForFighting(*pt, true, nullptr)
-           && (pos == *pt || gwg->FindHumanPath(pos, *pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff)
-           && (other->GetPos() == *pt || gwg->FindHumanPath(other->GetPos(), *pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff))
+        if(gwg->ValidPointForFighting(pt, true, nullptr)
+           && (pos == pt || gwg->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff)
+           && (other->GetPos() == pt || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff))
 
         {
             // Great, then let's take this one
-            *fight_spot = *pt;
+            *fight_spot = pt;
             return true;
         }
     }

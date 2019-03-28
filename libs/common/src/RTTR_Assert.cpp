@@ -43,7 +43,7 @@ bool RTTR_IsBreakOnAssertFailureEnabled()
     return true;
 }
 
-void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function, bool throwException)
+void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function)
 {
     static const std::string thisFilePath = __FILE__;
     static bool inAssertFailure = false;
@@ -74,8 +74,7 @@ void RTTR_AssertFailure(const char* condition, const char* file, const int line,
         OutputDebugStringA(msg.c_str());
 #endif
         inAssertFailure = false;
-        if(throwException)
-            throw RTTR_AssertError(msg);
-    } else if(throwException)
+        throw RTTR_AssertError(msg);
+    } else
         throw RTTR_AssertError(std::string(condition) + " failed while handling an assertion");
 }

@@ -26,10 +26,10 @@
 /// Static class to query properties of buildings (building types)
 class BuildingProperties
 {
-    /// Private ctor: Static class only!
-    BuildingProperties();
-
 public:
+    /// Static class only!
+    BuildingProperties() = delete;
+
     static void Init();
     /// Stores the bld types that are military blds as a cache. Assumes that at most 1/4 of the blds are military
     static boost::container::static_vector<BuildingType, NUM_BUILDING_TYPES / 4u> militaryBldTypes;

@@ -314,14 +314,7 @@ void GameServer::Run()
             continue;
         player.sendMsgs(10);
     }
-
-    for(auto it = networkPlayers.begin(); it != networkPlayers.end();)
-    {
-        if(!it->socket.isValid())
-            it = networkPlayers.erase(it);
-        else
-            ++it;
-    }
+    helpers::remove_if(networkPlayers, [](const auto& player) { return player.socket.isValid(); });
 
     lanAnnouncer.Run();
 }

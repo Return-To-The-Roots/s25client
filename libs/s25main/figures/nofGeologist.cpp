@@ -320,18 +320,18 @@ void nofGeologist::LookForNewNodes()
     std::vector<GetMapPointWithRadius::result_type> pts = gwg->GetPointsInRadius(flag->GetPos(), 15, GetMapPointWithRadius());
     unsigned curMaxRadius = 15;
     bool found = false;
-    for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
+    for(const auto& it : pts)
     {
-        if(it->second > curMaxRadius)
+        if(it.second > curMaxRadius)
             break;
-        if(IsValidTargetNode(it->first))
+        if(IsValidTargetNode(it.first))
         {
-            available_nodes.push_back(it->first);
+            available_nodes.push_back(it.first);
             if(!found)
             {
                 found = true;
                 // if we found a valid node, look only in other nodes within 2 more "circles"
-                curMaxRadius = std::min(10u, it->second + 2);
+                curMaxRadius = std::min(10u, it.second + 2);
             }
         }
     }

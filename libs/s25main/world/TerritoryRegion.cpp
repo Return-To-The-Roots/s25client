@@ -172,8 +172,8 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
     AdjustNode(bldPos, building.GetPlayer(), 0, nullptr); // no need to check barriers here. this point is on our territory.
 
     std::vector<GetMapPointWithRadius::result_type> pts = world.GetPointsInRadius(bldPos, radius, GetMapPointWithRadius());
-    for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
-        AdjustNode(it->first, building.GetPlayer(), it->second, allowedArea);
+    for(const auto& ptWithRadius : pts)
+        AdjustNode(ptWithRadius.first, building.GetPlayer(), ptWithRadius.second, allowedArea);
 }
 
 uint8_t TerritoryRegion::SafeGetOwner(const Position& pt) const

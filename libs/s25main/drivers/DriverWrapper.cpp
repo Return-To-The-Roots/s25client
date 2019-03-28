@@ -22,6 +22,7 @@
 #include "driver/DriverInterfaceVersion.h"
 #include "driver/Interface.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
 #include "mygettext/mygettext.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
@@ -72,23 +73,20 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
         return false;
 
     /// Suche, ob der Treiber dabei ist, den wir wünschen
-    for(auto it = drivers.begin(); it != drivers.end(); ++it)
+    const auto it = helpers::findPred(drivers, [preference](const auto& it) { return it.GetName() == preference; });
+    if(it != drivers.end())
     {
-        if(it->GetName() == preference)
-        {
-            // Dann den gleich nehmen
-            dll = LoadLibraryW(it->GetFile().c_str());
-            break;
-        }
+        // Dann den gleich nehmen
+        dll = LoadLibraryW(it->GetFile().c_str());
     }
 
     // ersten Treiber laden
     if(!dll)
     {
-        dll = LoadLibraryW(drivers.begin()->GetFile().c_str());
+        dll = LoadLibraryW(drivers.front().GetFile().c_str());
 
         // Standardwert zuweisen
-        preference = drivers.begin()->GetName();
+        preference = drivers.front().GetName();
     }
 
     if(!dll)

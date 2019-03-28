@@ -42,12 +42,12 @@ std::vector<std::string> ListDir(const std::string& path, std::string extension,
             extension = "." + extension;
     }
 
-    for(bfs::directory_iterator it = bfs::directory_iterator(fullPath); it != bfs::directory_iterator(); ++it)
+    for(const auto& it : bfs::directory_iterator(fullPath))
     {
-        if(bfs::is_directory(it->status()) && !includeDirectories)
+        if(bfs::is_directory(it.status()) && !includeDirectories)
             continue;
 
-        bfs::path curPath = it->path();
+        bfs::path curPath = it.path();
         curPath.make_preferred();
 
         if(!extension.empty())

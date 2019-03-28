@@ -661,11 +661,11 @@ void nofCarrier::LostWork()
             const unsigned maxNodeDistance = 5;
             std::vector<MapPoint> coastPoints =
               gwg->GetPointsInRadius<-1>(tmpPos, maxNodeDistance, Identity<MapPoint>(), IsCoastalAndForFigs(*gwg));
-            for(std::vector<MapPoint>::const_iterator it = coastPoints.begin(); it != coastPoints.end(); ++it)
+            for(const auto& it : coastPoints)
             {
                 // 10x the node distance should be enough, otherwise it would be to far to paddle
                 const unsigned maxDistance = maxNodeDistance * 10;
-                if(gwg->FindShipPath(tmpPos, *it, maxDistance, &shore_path, nullptr))
+                if(gwg->FindShipPath(tmpPos, it, maxDistance, &shore_path, nullptr))
                 {
                     // Ok let's paddle to the coast
                     rs_pos = 0;

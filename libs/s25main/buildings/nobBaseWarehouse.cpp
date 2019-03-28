@@ -577,29 +577,22 @@ void nobBaseWarehouse::HandleLeaveEvent()
     if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, Direction::SOUTHEAST)))
     {
         // there's a fight
-        bool found = false;
 
-        // try to find a defender and make him leave the house first
-        for(auto it = leave_house.begin(); it != leave_house.end(); ++it)
-        {
-            if(((*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER) || ((*it)->GetGOT() == GOT_NOF_DEFENDER))
-            {
-                // remove defender from list, insert him again in front of all others
-                leave_house.push_front(*it);
-                leave_house.erase(it);
-
-                found = true;
-                break;
-            }
-        }
-
+        // try to find a defender
+        const auto it = std::find_if(leave_house.begin(), leave_house.end(), [](const auto* sld) {
+            return sld->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER || sld->GetGOT() == GOT_NOF_DEFENDER;
+        });
         // no defender found? trigger next leaving event :)
-        if(!found)
+        if(it == leave_house.end())
         {
             go_out = false;
             AddLeavingEvent();
             return;
         }
+        // and make him leave the house first
+        // remove defender from list, insert him again in front of all others
+        leave_house.push_front(*it);
+        leave_house.erase(it);
     }
 
     // Figuren kommen zuerst raus

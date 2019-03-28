@@ -245,7 +245,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
 
     if(maxNumChars == 0)
         return;
-    std::string::const_iterator itEnd = text.begin();
+    auto itEnd = text.cbegin();
     std::advance(itEnd, maxNumChars);
 
     // Vertical alignment (assumes 1 line only!)
@@ -261,9 +261,9 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
     else if(format.is(FontStyle::CENTER))
     {
         unsigned short line_width;
-        std::string::const_iterator itNl = std::find(text.begin(), itEnd, '\n');
+        const auto itNl = std::find(text.cbegin(), itEnd, '\n');
         if(itNl != itEnd)
-            line_width = getWidthInternal(text.begin(), itNl);
+            line_width = getWidthInternal(text.cbegin(), itNl);
         else
             line_width = textWidth;
         curPos.x = pos.x - line_width / 2;
@@ -272,7 +272,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
     texList.texCoords.clear();
     texList.vertices.clear();
 
-    for(std::string::const_iterator it = text.begin(); it != itEnd;)
+    for(auto it = text.begin(); it != itEnd;)
     {
         const uint32_t curChar = utf8::next(it, itEnd);
         if(curChar == '\n')
@@ -280,7 +280,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
             if(format.is(FontStyle::CENTER))
             {
                 unsigned short line_width;
-                std::string::const_iterator itNl = std::find(it, itEnd, '\n');
+                const auto itNl = std::find(it, itEnd, '\n');
                 line_width = getWidthInternal(it, itNl);
                 curPos.x = pos.x - line_width / 2;
             } else
@@ -292,7 +292,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
 
     if(drawEnd)
     {
-        for(std::string::const_iterator it = end.begin(); it != end.end();)
+        for(auto it = end.begin(); it != end.end();)
         {
             const uint32_t curChar = utf8::next(it, end.end());
             if(curChar == '\n')
@@ -428,7 +428,7 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
 
     destStrings.reserve(positions.size());
     unsigned curStart = positions.front();
-    for(std::vector<unsigned>::const_iterator it = positions.begin() + 1; it != positions.end(); ++it)
+    for(auto it = positions.begin() + 1; it != positions.end(); ++it)
     {
         RTTR_Assert(*it >= curStart);
         std::string curLine = text.substr(curStart, *it - curStart);

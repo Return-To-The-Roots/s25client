@@ -32,6 +32,7 @@
 #include "figures/nofDefender.h"
 #include "figures/nofPassiveSoldier.h"
 #include "helpers/containerUtils.h"
+#include "helpers/reverse.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -260,7 +261,7 @@ void nobMilitary::HandleEvent(const unsigned id)
             std::vector<nofPassiveSoldier*> upgradedSoldiers;
             // Rang des letzten beförderten Soldaten, 4-MaxRank am Anfang setzen, damit keiner über den maximalen Rang befördert wird
             unsigned char last_rank = gwg->GetGGS().GetMaxMilitaryRank();
-            for(SortedTroops::reverse_iterator it = troops.rbegin(); it != troops.rend();)
+            for(auto it = troops.rbegin(); it != troops.rend();)
             {
                 // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
                 // als der letzte haben, damit er auch noch befördert werden kann
@@ -417,7 +418,7 @@ void nobMilitary::RegulateTroops()
         GamePlayer& owner = gwg->GetPlayer(player);
         if(owner.GetMilitarySetting(1) > MILITARY_SETTINGS_SCALE[1] / 2)
         {
-            for(SortedTroops::iterator it = ordered_troops.begin(); diff && !ordered_troops.empty(); ++diff)
+            for(auto it = ordered_troops.begin(); diff && !ordered_troops.empty(); ++diff)
             {
                 notNeededSoldiers.push_back(*it);
                 it = helpers::erase(ordered_troops, it);
@@ -426,7 +427,7 @@ void nobMilitary::RegulateTroops()
         // Strong ones first
         else
         {
-            for(SortedTroops::reverse_iterator it = ordered_troops.rbegin(); diff && !ordered_troops.empty(); ++diff)
+            for(auto it = ordered_troops.rbegin(); diff && !ordered_troops.empty(); ++diff)
             {
                 notNeededSoldiers.push_back(*it);
                 it = helpers::erase(ordered_troops, it);
@@ -446,7 +447,7 @@ void nobMilitary::RegulateTroops()
             // erst die schwachen Soldaten raus
             if(owner.GetMilitarySetting(1) > MILITARY_SETTINGS_SCALE[1] / 2)
             {
-                for(SortedTroops::iterator it = troops.begin(); diff && troops.size() > 1; ++diff)
+                for(auto it = troops.begin(); diff && troops.size() > 1; ++diff)
                 {
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(*it);
@@ -456,7 +457,7 @@ void nobMilitary::RegulateTroops()
             // erst die starken Soldaten raus
             else
             {
-                for(SortedTroops::reverse_iterator it = troops.rbegin(); diff && troops.size() > 1; ++diff)
+                for(auto it = troops.rbegin(); diff && troops.size() > 1; ++diff)
                 {
                     (*it)->LeaveBuilding();
                     AddLeavingFigure(*it);
@@ -513,7 +514,7 @@ void nobMilitary::SendSoldiersHome()
         if(!gwg->GetPlayer(player).FindWarehouse(*this, FW::NoCondition(), true, false))
             return;
         int mrank = -1;
-        for(SortedTroops::reverse_iterator it = troops.rbegin(); diff && troops.size() > 1; ++diff)
+        for(auto it = troops.rbegin(); diff && troops.size() > 1; ++diff)
         {
             if(mrank < 0) // set mrank = highest rank
                 mrank = (*it)->GetRank();
@@ -536,7 +537,7 @@ void nobMilitary::OrderNewSoldiers()
         return;
     // cancel all max ranks on their way to this building
     std::vector<nofPassiveSoldier*> noNeed;
-    for(SortedTroops::iterator it = ordered_troops.begin(); it != ordered_troops.end();)
+    for(auto it = ordered_troops.begin(); it != ordered_troops.end();)
     {
         if((*it)->GetRank() >= ggs.GetMaxMilitaryRank())
         {
@@ -562,8 +563,8 @@ void nobMilitary::OrderNewSoldiers()
     }
     // now notify the max ranks we no longer wanted (they will pick a new target which may be the same building that is why we cancel them
     // after ordering new ones in the hope to get low ranks instead)
-    for(std::vector<nofPassiveSoldier*>::const_iterator it = noNeed.begin(); it != noNeed.end(); ++it)
-        (*it)->NotNeeded();
+    for(auto* sld : noNeed)
+        sld->NotNeeded();
 }
 
 bool nobMilitary::IsUseless() const
@@ -819,9 +820,12 @@ std::vector<nofPassiveSoldier*> nobMilitary::GetSoldiersForAttack(const MapPoint
 {
     std::vector<nofPassiveSoldier*> soldiers;
     unsigned soldiers_count = GetNumSoldiersForAttack(dest);
-    for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && soldiers_count; ++it, --soldiers_count)
+    for(auto* sld : helpers::reverse(troops))
     {
-        soldiers.push_back(*it);
+        if(soldiers_count--)
+            soldiers.push_back(sld);
+        else
+            break;
     }
     return soldiers;
 }
@@ -834,13 +838,15 @@ unsigned nobMilitary::GetSoldiersStrengthForAttack(const MapPoint dest, unsigned
     soldiers_count = GetNumSoldiersForAttack(dest);
     unsigned numRemainingSoldiers = soldiers_count;
 
-    for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend() && numRemainingSoldiers;
-        ++it, --numRemainingSoldiers)
+    for(const auto* sld : helpers::reverse(troops))
     {
-        strength += HITPOINTS[nation][(*it)->GetRank()];
+        if(numRemainingSoldiers--)
+            strength += HITPOINTS[nation][sld->GetRank()];
+        else
+            break;
     }
 
-    return (strength);
+    return strength;
 }
 
 /// Gibt die Stärke eines Militärgebäudes zurück
@@ -848,7 +854,7 @@ unsigned nobMilitary::GetSoldiersStrength() const
 {
     unsigned strength = 0;
 
-    for(auto troop : troops)
+    for(auto* troop : troops)
     {
         strength += HITPOINTS[nation][troop->GetRank()];
     }
@@ -860,12 +866,7 @@ unsigned nobMilitary::GetSoldiersStrength() const
 bool nobMilitary::HasMaxRankSoldier() const
 {
     const unsigned maxRank = gwg->GetGGS().GetMaxMilitaryRank();
-    for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
-    {
-        if((*it)->GetRank() >= maxRank)
-            return true;
-    }
-    return false;
+    return helpers::containsPred(helpers::reverse(troops), [maxRank](const auto* it) { return it->GetRank() >= maxRank; });
 }
 
 nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)

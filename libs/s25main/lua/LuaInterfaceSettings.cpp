@@ -26,6 +26,13 @@
 #include "gameTypes/GameSettingTypes.h"
 #include "libutil/Log.h"
 
+/// Wrapper used to make sure LUA can only return on of the predefined values
+struct AddonIdWrapper
+{
+    AddonId value;
+    constexpr operator AddonId() const { return value; }
+};
+
 LuaInterfaceSettings::LuaInterfaceSettings(IGameLobbyController& lobbyServerController) : lobbyServerController_(lobbyServerController)
 {
     Register(lua);
@@ -48,11 +55,11 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
         // Old name
         .addFunction("GetPlayerCount", &LuaInterfaceSettings::GetNumPlayers));
 
-    // state["AddonId"].setClass(kaguya::UserdataMetatable<AddonId>());
+    state["AddonId"].setClass(kaguya::UserdataMetatable<AddonIdWrapper>());
 
     for(auto id : rttrEnum::values<AddonId>)
     {
-        state[std::string("ADDON_") + rttrEnum::toString(id)] = id;
+        state[std::string("ADDON_") + rttrEnum::toString(id)] = AddonIdWrapper{id};
     }
 
 #pragma region ConstDefs
@@ -93,14 +100,14 @@ LuaServerPlayer LuaInterfaceSettings::GetPlayer(unsigned idx)
     return LuaServerPlayer(lobbyServerController_, idx);
 }
 
-void LuaInterfaceSettings::SetAddon(AddonId id, unsigned value)
+void LuaInterfaceSettings::SetAddon(AddonIdWrapper id, unsigned value)
 {
     GlobalGameSettings ggs = lobbyServerController_.GetGGS();
     ggs.setSelection(id, value);
     lobbyServerController_.ChangeGlobalGameSettings(ggs);
 }
 
-void LuaInterfaceSettings::SetBoolAddon(AddonId id, bool value)
+void LuaInterfaceSettings::SetBoolAddon(AddonIdWrapper id, bool value)
 {
     SetAddon(id, value ? 1 : 0);
 }
@@ -230,9 +237,11 @@ std::vector<AddonId> LuaInterfaceSettings::GetAllowedAddons()
     if(getAllowedAddons.type() == LUA_TFUNCTION)
     {
         kaguya::LuaRef addons = getAllowedAddons();
-        if(addons.typeTest<std::vector<AddonId>>())
-            return addons;
-        else
+        if(addons.typeTest<std::vector<AddonIdWrapper>>())
+        {
+            const std::vector<AddonIdWrapper> wrappers = addons;
+            return {wrappers.begin(), wrappers.end()};
+        } else
             LOG.write("Invalid type returned by getAllowedAddons");
     }
     return std::vector<AddonId>();

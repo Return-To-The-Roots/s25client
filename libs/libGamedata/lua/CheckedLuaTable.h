@@ -38,7 +38,7 @@ public:
     ~CheckedLuaTable() noexcept(false);
 
     /// Check and report unused entries
-    bool checkUnused(bool throwError = true);
+    void checkUnused();
 
     /// Return the value from lua or throw an error
     template<typename T>

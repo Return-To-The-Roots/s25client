@@ -33,8 +33,8 @@ static bool isSizeGreater(glSmartBitmap* a, glSmartBitmap* b)
 
 glTexturePacker::~glTexturePacker()
 {
-    for(std::vector<unsigned>::const_iterator it = textures.begin(); it != textures.end(); ++it)
-        VIDEODRIVER.DeleteTexture((*it));
+    for(unsigned texture : textures)
+        VIDEODRIVER.DeleteTexture(texture);
 }
 
 bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)

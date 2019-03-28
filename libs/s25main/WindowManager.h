@@ -38,8 +38,8 @@ class ctrlBaseTooltip;
 class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderInterface
 {
 public:
-    typedef bool (Window::*KeyboardMsgHandler)(const KeyEvent&);
-    typedef bool (Window::*MouseMsgHandler)(const MouseCoords&);
+    using KeyboardMsgHandler = bool (Window::*)(const KeyEvent&);
+    using MouseMsgHandler = bool (Window::*)(const MouseCoords&);
 
     WindowManager();
     ~WindowManager() override;

@@ -69,7 +69,7 @@ RTTR_DECL IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void
 RTTR_DECL void FreeAudioInstance(IAudioDriver* driver);
 
 ///
-typedef IAudioDriver* (*PDRIVER_CREATEAUDIOINSTANCE)(IAudioDriverCallback*, void*);
-typedef void (*PDRIVER_FREEAUDIOINSTANCE)(IAudioDriver*);
+using PDRIVER_CREATEAUDIOINSTANCE = IAudioDriver* (*)(IAudioDriverCallback*, void*);
+using PDRIVER_FREEAUDIOINSTANCE = void (*)(IAudioDriver*);
 
 #endif // !AUDIOINTERFACE_H_INCLUDED

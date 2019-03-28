@@ -55,7 +55,7 @@ public:
 
     /// Converts given point into a MapPoint (0 <= x < width and 0 <= y < height)
     /// Optionally returns offset of returned point to original point in pixels (for drawing)
-    MapPoint ConvertCoords(Position pt, Position* offset = 0) const;
+    MapPoint ConvertCoords(Position pt, Position* offset = nullptr) const;
     /// Get position of node in pixels (VertexPos)
     PointF GetVertexPos(const MapPoint pt) const { return GetVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to GetNodePos(pt)

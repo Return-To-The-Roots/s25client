@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2019 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,26 +15,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GetInsertIterator_h__
-#define GetInsertIterator_h__
-
-#include <boost/type_traits/make_void.hpp>
+#ifndef Reverse_h__
+#define Reverse_h__
 
 namespace helpers {
 
-/// Returns the most efficient insert operator
-template<class T, typename = void>
-struct GetInsertIterator
+template<typename T>
+struct ReverseAdapter
 {
-    static auto get(T& collection) { return std::insert_iterator<T>(collection, collection.end()); }
+    T& range;
 };
 
-template<class T>
-struct GetInsertIterator<T, boost::void_t<decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))>>
+template<typename T>
+constexpr auto begin(ReverseAdapter<T> w)
 {
-    static auto get(T& collection) { return std::back_insert_iterator<T>(collection); }
-};
+    return w.range.rbegin();
+}
 
+template<typename T>
+constexpr auto end(ReverseAdapter<T> w)
+{
+    return w.range.rend();
+}
+
+/// Reverse a range: for(auto i: reverse(container))
+template<typename T>
+constexpr ReverseAdapter<T> reverse(T&& range)
+{
+    return {range};
+}
 } // namespace helpers
 
-#endif // GetInsertIterator_h__
+#endif

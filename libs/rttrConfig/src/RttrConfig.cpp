@@ -68,9 +68,9 @@ bfs::path RttrConfig::GetPrefixPath()
     {
         // Go up one level for each entry (folder) in rttrBinDir
         prefixPath = fullExeFilepath.parent_path();
-        for(bfs::path::const_iterator it = rttrBinDir.begin(); it != rttrBinDir.end(); ++it)
+        for(const auto& part : rttrBinDir)
         {
-            if(*it == ".")
+            if(part == ".")
                 continue;
             prefixPath = prefixPath.parent_path();
         }

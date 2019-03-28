@@ -194,9 +194,9 @@ void EventManager::Deserialize(SerializedGameData& sgd)
         boost::format eventCtError(_("Event count mismatch. Read events: %1%. Expected: %2%.\n"));
         throw SerializedGameData::Error((eventCtError % numActiveEvents % numEvents).str());
     }
-    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
+    for(const auto& it : events)
     {
-        for(const GameEvent* ev : it->second)
+        for(const GameEvent* ev : it.second)
         {
             if(ev->GetInstanceId() >= eventInstanceCtr)
             {

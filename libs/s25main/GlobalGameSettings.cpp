@@ -247,7 +247,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     for(unsigned i = 0; i < count; ++i)
     {
-        AddonId addon = static_cast<AddonId>(ser.PopUnsignedInt());
+        auto addon = static_cast<AddonId>(ser.PopUnsignedInt());
         unsigned status = ser.PopUnsignedInt();
         setSelection(addon, status);
 

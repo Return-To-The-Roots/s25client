@@ -25,7 +25,7 @@ template<class T>
 class ToggleAnimation : public Animation
 {
 public:
-    typedef void (T::*BoolFunc)(bool);
+    using BoolFunc = void (T::*)(bool);
 
     ToggleAnimation(T* element, BoolFunc animFunc, bool startValue, unsigned frameRate, RepeatType repeat = Animation::RPT_Repeat);
 

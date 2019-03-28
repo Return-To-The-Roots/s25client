@@ -47,8 +47,8 @@ void ctrlEdit::SetText(const std::string& text)
     text_.clear();
     ucString tmp = cvUTF8ToUnicode(text);
 
-    for(ucString::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
-        AddChar(*it);
+    for(const auto c : tmp)
+        AddChar(c);
 }
 
 void ctrlEdit::SetText(const unsigned text)

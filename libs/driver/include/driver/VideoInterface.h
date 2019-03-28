@@ -27,7 +27,7 @@
 #include <vector>
 
 /// Function type for loading OpenGL methods
-typedef void* (*OpenGL_Loader_Proc)(const char* name);
+using OpenGL_Loader_Proc = void* (*)(const char*);
 
 class IVideoDriver
 {
@@ -98,7 +98,7 @@ RTTR_DECL IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack
 RTTR_DECL void FreeVideoInstance(IVideoDriver* driver);
 
 ///
-typedef IVideoDriver* (*PDRIVER_CREATEVIDEOINSTANCE)(VideoDriverLoaderInterface*);
-typedef void (*PDRIVER_FREEVIDEOINSTANCE)(IVideoDriver*);
+using PDRIVER_CREATEVIDEOINSTANCE = IVideoDriver* (*)(VideoDriverLoaderInterface*);
+using PDRIVER_FREEVIDEOINSTANCE = void (*)(IVideoDriver*);
 
 #endif // !VIDEOINTERFACE_H_INCLUDED

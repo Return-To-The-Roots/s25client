@@ -317,8 +317,8 @@ public:
     {
         GameMessage::Serialize(ser);
         ser.PushUnsignedInt(unsigned(checksums.size()));
-        for(unsigned i = 0; i < checksums.size(); ++i)
-            ser.PushUnsignedInt(checksums[i]);
+        for(unsigned int checksum : checksums)
+            ser.PushUnsignedInt(checksum);
     }
 
     void Deserialize(Serializer& ser) override

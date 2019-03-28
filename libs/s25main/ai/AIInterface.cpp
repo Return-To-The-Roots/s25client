@@ -31,6 +31,7 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/TerrainDesc.h"
 #include <limits>
+#include <numeric>
 
 class noRoadNode;
 
@@ -139,16 +140,14 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
 
 int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t direction, int lastval) const
 {
-    int returnVal;
     if(direction == -1) // calculate complete value from scratch (3n^2+3n+1)
     {
-        returnVal = 0;
         std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, RES_RADIUS[static_cast<unsigned>(res)]);
-        for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
-            returnVal += GetResourceRating(*it, res);
+        return std::accumulate(pts.begin(), pts.end(), 0,
+                               [this, res](int lhs, const auto& curPt) { return lhs + GetResourceRating(curPt, res); });
     } else // calculate different nodes only (4n+2 ?anyways much faster)
     {
-        returnVal = lastval;
+        int returnVal = lastval;
         // add new points
         // first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
@@ -186,10 +185,10 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
                 tmpPt = gwb.GetNeighbour(tmpPt, Direction(i));
             }
         }
+        return returnVal;
     }
     // if(returnval<0&&lastval>=0&&res==AIResource::BORDERLAND)
     // LOG.write(("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction, lastval);
-    return returnVal;
 }
 
 bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route /*= nullptr*/,

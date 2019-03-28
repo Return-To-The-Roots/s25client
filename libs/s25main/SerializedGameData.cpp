@@ -363,7 +363,7 @@ const GameEvent* SerializedGameData::PopEvent()
         return nullptr;
 
     // Note: em->GetEventInstanceCtr() might not be set yet
-    std::map<unsigned, GameEvent*>::const_iterator foundObj = readEvents.find(instanceId);
+    const auto foundObj = readEvents.find(instanceId);
     if(foundObj != readEvents.end())
         return foundObj->second;
     std::unique_ptr<GameEvent> ev = std::make_unique<GameEvent>(*this, instanceId);

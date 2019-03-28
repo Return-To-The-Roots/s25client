@@ -130,8 +130,8 @@ void SavedFile::WritePlayerData(BinaryFile& file)
 {
     Serializer ser;
     ser.PushUnsignedChar(players.size());
-    for(std::vector<BasePlayerInfo>::const_iterator it = players.begin(); it != players.end(); ++it)
-        it->Serialize(ser, true);
+    for(const auto& player : players)
+        player.Serialize(ser, true);
 
     ser.WriteToFile(file);
 }

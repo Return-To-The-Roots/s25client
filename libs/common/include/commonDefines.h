@@ -81,7 +81,7 @@ template<typename T>
 inline void deletePtr(T*& ptr)
 {
     delete ptr;
-    ptr = 0;
+    ptr = nullptr;
 }
 
 /// Calculate |a-b| of 2 unsigned values

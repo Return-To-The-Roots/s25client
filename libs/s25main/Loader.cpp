@@ -168,8 +168,8 @@ void Loader::AddOverrideFolder(std::string path, bool atBack)
     }
     OverrideFolder folder;
     folder.path = path;
-    for(bfs::directory_iterator it = bfs::directory_iterator(path); it != bfs::directory_iterator(); ++it)
-        folder.files.push_back(it->path().filename().string());
+    for(const auto& it : bfs::directory_iterator(path))
+        folder.files.push_back(it.path().filename().string());
 
     std::sort(folder.files.begin(), folder.files.end());
 

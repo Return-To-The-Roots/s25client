@@ -403,8 +403,8 @@ void Settings::Save()
     // addons
     // {
     iniAddons->clear();
-    for(std::map<unsigned, unsigned>::const_iterator it = addons.configuration.begin(); it != addons.configuration.end(); ++it)
-        iniAddons->addValue(s25util::toStringClassic(it->first), s25util::toStringClassic(it->second));
+    for(const auto& it : addons.configuration)
+        iniAddons->addValue(s25util::toStringClassic(it.first), s25util::toStringClassic(it.second));
     // }
 
     bfs::path settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);

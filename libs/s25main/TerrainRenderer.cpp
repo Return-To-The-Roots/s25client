@@ -34,6 +34,7 @@
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "libutil/Log.h"
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
 #include <glad/glad.h>
 #include <set>
@@ -809,17 +810,17 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 
         VIDEODRIVER.BindTexture(terrainTextures[t].textures[animationFrame].GetTextureNoCreate());
 
-        for(auto it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
+        for(const auto& texture : sorted_textures[t])
         {
-            if(it->posOffset != lastOffset)
+            if(texture.posOffset != lastOffset)
             {
-                Position trans = it->posOffset - lastOffset;
+                Position trans = texture.posOffset - lastOffset;
                 glTranslatef(float(trans.x), float(trans.y), 0.0f);
-                lastOffset = it->posOffset;
+                lastOffset = texture.posOffset;
             }
 
-            RTTR_Assert(it->tileOffset + it->count <= size_.x * size_.y * 2u);
-            glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
+            RTTR_Assert(texture.tileOffset + texture.count <= size_.x * size_.y * 2u);
+            glDrawArrays(GL_TRIANGLES, texture.tileOffset * 3, texture.count * 3); // Arguments are in Elements. 1 triangle has 3 values
         }
     }
     glPopMatrix();
@@ -834,16 +835,16 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
             continue;
         VIDEODRIVER.BindTexture(edgeTextures[i]->GetTextureNoCreate());
 
-        for(auto it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
+        for(const auto& texture : sorted_borders[i])
         {
-            if(it->posOffset != lastOffset)
+            if(texture.posOffset != lastOffset)
             {
-                Position trans = it->posOffset - lastOffset;
+                Position trans = texture.posOffset - lastOffset;
                 glTranslatef(float(trans.x), float(trans.y), 0.0f);
-                lastOffset = it->posOffset;
+                lastOffset = texture.posOffset;
             }
-            RTTR_Assert(it->tileOffset + it->count <= gl_vertices.size());
-            glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
+            RTTR_Assert(texture.tileOffset + texture.count <= gl_vertices.size());
+            glDrawArrays(GL_TRIANGLES, texture.tileOffset * 3, texture.count * 3); // Arguments are in Elements. 1 triangle has 3 values
         }
     }
     glPopMatrix();
@@ -986,22 +987,21 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     glTexCoordPointer(2, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].tx);
     glColorPointer(3, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].r);
 
-    size_t type = 0;
-    for(auto itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
+    for(const auto& itRoad : sorted_roads | boost::adaptors::indexed())
     {
-        if(itRoad->empty())
+        if(itRoad.value().empty())
             continue;
         Tex2C3Ver2* curVertexData = vertexData.get();
-        const glArchivItem_Bitmap& texture = *roadTextures[type];
+        const glArchivItem_Bitmap& texture = *roadTextures[itRoad.index()];
         PointF scaledTexSize = texture.GetSize() / PointF(texture.GetTexSize());
 
-        for(auto it = itRoad->begin(); it != itRoad->end(); ++it)
+        for(const auto& it : itRoad.value())
         {
-            RTTR_Assert(it->dir < 3); // begin_end_coords has 3 dir entries
+            RTTR_Assert(it.dir < 3); // begin_end_coords has 3 dir entries
             curVertexData->tx = 0.0f;
             curVertexData->ty = 0.0f;
-            curVertexData->r = curVertexData->g = curVertexData->b = it->color1;
-            Position tmpP = it->pos + begin_end_coords[it->dir * 4];
+            curVertexData->r = curVertexData->g = curVertexData->b = it.color1;
+            Position tmpP = it.pos + begin_end_coords[it.dir * 4];
             curVertexData->x = GLfloat(tmpP.x);
             curVertexData->y = GLfloat(tmpP.y);
 
@@ -1009,8 +1009,8 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 
             curVertexData->tx = 0.0f;
             curVertexData->ty = scaledTexSize.y;
-            curVertexData->r = curVertexData->g = curVertexData->b = it->color1;
-            tmpP = it->pos + begin_end_coords[it->dir * 4 + 1];
+            curVertexData->r = curVertexData->g = curVertexData->b = it.color1;
+            tmpP = it.pos + begin_end_coords[it.dir * 4 + 1];
             curVertexData->x = GLfloat(tmpP.x);
             curVertexData->y = GLfloat(tmpP.y);
 
@@ -1018,25 +1018,24 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 
             curVertexData->tx = scaledTexSize.x;
             curVertexData->ty = scaledTexSize.y;
-            curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
-            tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 2];
+            curVertexData->r = curVertexData->g = curVertexData->b = it.color2;
+            tmpP = it.pos2 + begin_end_coords[it.dir * 4 + 2];
             curVertexData->x = GLfloat(tmpP.x);
             curVertexData->y = GLfloat(tmpP.y);
 
             curVertexData++;
-
             curVertexData->tx = scaledTexSize.x;
             curVertexData->ty = 0.0f;
-            curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
-            tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 3];
+            curVertexData->r = curVertexData->g = curVertexData->b = it.color2;
+            tmpP = it.pos2 + begin_end_coords[it.dir * 4 + 3];
             curVertexData->x = GLfloat(tmpP.x);
             curVertexData->y = GLfloat(tmpP.y);
 
             curVertexData++;
         }
 
-        VIDEODRIVER.BindTexture(roadTextures[type]->GetTextureNoCreate());
-        glDrawArrays(GL_QUADS, 0, itRoad->size() * 4);
+        VIDEODRIVER.BindTexture(texture.GetTextureNoCreate());
+        glDrawArrays(GL_QUADS, 0, itRoad.value().size() * 4);
     }
     // Note: No glDisableClientState as we did not enable it
 }

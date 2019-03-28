@@ -90,8 +90,8 @@ protected:
     {}
     BuildRoad(Serializer& ser) : Coords(BUILD_ROAD, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
     {
-        for(unsigned i = 0; i < route.size(); ++i)
-            route[i] = Direction(ser.PopUnsignedChar());
+        for(auto& i : route)
+            i = Direction(ser.PopUnsignedChar());
     }
 
 public:
@@ -101,8 +101,8 @@ public:
 
         ser.PushBool(boat_road);
         ser.PushUnsignedInt(route.size());
-        for(unsigned i = 0; i < route.size(); ++i)
-            ser.PushUnsignedChar(route[i].toUInt());
+        for(auto i : route)
+            ser.PushUnsignedChar(i.toUInt());
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -162,16 +162,16 @@ protected:
     ChangeDistribution(const Distributions& data) : GameCommand(CHANGE_DISTRIBUTION), data(data) {}
     ChangeDistribution(Serializer& ser) : GameCommand(CHANGE_DISTRIBUTION)
     {
-        for(unsigned i = 0; i < data.size(); ++i)
-            data[i] = ser.PopUnsignedChar();
+        for(unsigned char& i : data)
+            i = ser.PopUnsignedChar();
     }
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        for(unsigned i = 0; i < data.size(); ++i)
-            ser.PushUnsignedChar(data[i]);
+        for(unsigned char i : data)
+            ser.PushUnsignedChar(i);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -192,8 +192,8 @@ protected:
     {}
     ChangeBuildOrder(Serializer& ser) : GameCommand(CHANGE_BUILDORDER), useCustomBuildOrder(ser.PopBool())
     {
-        for(unsigned i = 0; i < data.size(); ++i)
-            data[i] = BuildingType(ser.PopUnsignedChar());
+        for(auto& i : data)
+            i = BuildingType(ser.PopUnsignedChar());
     }
 
 public:
@@ -201,8 +201,8 @@ public:
     {
         GameCommand::Serialize(ser);
         ser.PushBool(useCustomBuildOrder);
-        for(unsigned i = 0; i < data.size(); ++i)
-            ser.PushUnsignedChar(data[i]);
+        for(auto i : data)
+            ser.PushUnsignedChar(i);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -280,16 +280,16 @@ protected:
     ChangeTransport(const TransportOrders& data) : GameCommand(CHANGE_TRANSPORT), data(data) {}
     ChangeTransport(Serializer& ser) : GameCommand(CHANGE_TRANSPORT)
     {
-        for(unsigned i = 0; i < data.size(); ++i)
-            data[i] = ser.PopUnsignedChar();
+        for(unsigned char& i : data)
+            i = ser.PopUnsignedChar();
     }
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        for(unsigned i = 0; i < data.size(); ++i)
-            ser.PushUnsignedChar(data[i]);
+        for(unsigned char i : data)
+            ser.PushUnsignedChar(i);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -306,16 +306,16 @@ protected:
     ChangeMilitary(const MilitarySettings& data) : GameCommand(CHANGE_MILITARY), data(data) {}
     ChangeMilitary(Serializer& ser) : GameCommand(CHANGE_MILITARY)
     {
-        for(unsigned i = 0; i < data.size(); ++i)
-            data[i] = ser.PopUnsignedChar();
+        for(unsigned char& i : data)
+            i = ser.PopUnsignedChar();
     }
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        for(unsigned i = 0; i < data.size(); ++i)
-            ser.PushUnsignedChar(data[i]);
+        for(unsigned char i : data)
+            ser.PushUnsignedChar(i);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -331,9 +331,9 @@ class ChangeTools : public GameCommand
     std::array<int8_t, NUM_TOOLS> orders;
 
 protected:
-    ChangeTools(const ToolSettings& data, const int8_t* order_delta = 0) : GameCommand(CHANGE_TOOLS), data(data)
+    ChangeTools(const ToolSettings& data, const int8_t* order_delta = nullptr) : GameCommand(CHANGE_TOOLS), data(data)
     {
-        if(order_delta != 0)
+        if(order_delta != nullptr)
         {
             for(unsigned i = 0; i < NUM_TOOLS; ++i)
                 orders[i] = order_delta[i];
@@ -346,8 +346,8 @@ protected:
 
     ChangeTools(Serializer& ser) : GameCommand(CHANGE_TOOLS)
     {
-        for(unsigned i = 0; i < data.size(); ++i)
-            data[i] = ser.PopUnsignedChar();
+        for(unsigned char& i : data)
+            i = ser.PopUnsignedChar();
 
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
             orders[i] = ser.PopSignedChar();
@@ -357,8 +357,8 @@ public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        for(unsigned i = 0; i < data.size(); ++i)
-            ser.PushUnsignedChar(data[i]);
+        for(unsigned char i : data)
+            ser.PushUnsignedChar(i);
 
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
             ser.PushSignedChar(orders[i]);
@@ -551,8 +551,8 @@ public:
 
         ser.PushBool(isJob);
         RTTR_Assert(states.size() == (isJob ? NUM_JOB_TYPES : NUM_WARE_TYPES));
-        for(std::vector<InventorySetting>::const_iterator it = states.begin(); it != states.end(); ++it)
-            ser.PushUnsignedChar(it->ToUnsignedChar());
+        for(auto state : states)
+            ser.PushUnsignedChar(state.ToUnsignedChar());
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;

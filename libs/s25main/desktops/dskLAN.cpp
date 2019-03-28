@@ -134,13 +134,13 @@ void dskLAN::UpdateServerList()
     servertable->DeleteAllItems();
 
     unsigned curId = 0;
-    for(std::vector<GameInfo>::const_iterator it = openGames.begin(); it != openGames.end(); ++it)
+    for(const auto& gameInfo : openGames)
     {
         std::string id = std::to_string(curId++);
-        std::string name = (it->info.hasPwd ? "(pwd) " : "") + it->info.name; //-V807
-        std::string player = std::to_string(static_cast<unsigned>(it->info.curNumPlayers)) + "/"
-                             + std::to_string(static_cast<unsigned>(it->info.maxNumPlayers));
-        servertable->AddRow(0, id.c_str(), name.c_str(), it->info.map.c_str(), player.c_str(), it->info.version.c_str());
+        std::string name = (gameInfo.info.hasPwd ? "(pwd) " : "") + gameInfo.info.name; //-V807
+        std::string player = std::to_string(static_cast<unsigned>(gameInfo.info.curNumPlayers)) + "/"
+                             + std::to_string(static_cast<unsigned>(gameInfo.info.maxNumPlayers));
+        servertable->AddRow(0, id.c_str(), name.c_str(), gameInfo.info.map.c_str(), player.c_str(), gameInfo.info.version.c_str());
     }
 
     servertable->SortRows(column, &direction);
@@ -157,7 +157,7 @@ bool dskLAN::ConnectToSelectedGame()
     if(selection >= openGames.size())
         return false;
 
-    GameInfo game = openGames[selection];
+    const GameInfo& game = openGames[selection];
     if(game.info.revision == RTTR_Version::GetRevision())
     {
         auto* connect = new iwDirectIPConnect(ServerType::LAN);

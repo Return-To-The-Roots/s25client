@@ -751,7 +751,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         if(strong_soldiers)
         {
             // Strong soldiers first
-            for(SortedTroops::const_reverse_iterator it2 = troops.rbegin(); it2 != troops.rend() && i < soldiers_count; ++it2, ++i) //-V127
+            for(auto it2 = troops.crbegin(); it2 != troops.crend() && i < soldiers_count; ++it2, ++i) //-V127
             {
                 bool inserted = false;
                 for(auto it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
@@ -777,7 +777,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         } else
         {
             // Weak soldiers first
-            for(SortedTroops::const_iterator it2 = troops.begin(); it2 != troops.end() && i < soldiers_count; ++it2, ++i) //-V127
+            for(auto it2 = troops.cbegin(); it2 != troops.cend() && i < soldiers_count; ++it2, ++i) //-V127
             {
                 bool inserted = false;
                 for(auto it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)

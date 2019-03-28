@@ -29,10 +29,10 @@
 /// Static class returning properties of terrain types
 class TerrainData
 {
-    // Disallow construction, only static methods
-    TerrainData();
-
 public:
+    // Disallow construction, only static methods
+    TerrainData() = delete;
+
     /// Returns the terrain type for a given map terrain index
     static TerrainType MapIdx2Terrain(unsigned char mapIdx);
     /// Returns the position in the texture image

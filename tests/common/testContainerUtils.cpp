@@ -17,6 +17,7 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "helpers/containerUtils.h"
+#include "helpers/reverse.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
@@ -79,4 +80,31 @@ BOOST_AUTO_TEST_CASE(IndexOf)
     BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (int*)1337), 1);        //-V566
     BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (const int*)1337), 1);  //-V566
 }
+
+BOOST_AUTO_TEST_CASE(Reverse)
+{
+    std::vector<int> vecIn, vecOut;
+    for(int i : helpers::reverse(vecIn))
+        vecOut.push_back(i);
+    std::reverse(vecIn.begin(), vecIn.end());
+    BOOST_TEST(vecIn == vecOut, boost::test_tools::per_element());
+
+    vecIn = {1, 2, 3, 4, 5};
+    for(int i : helpers::reverse(vecIn))
+        vecOut.push_back(i);
+    std::reverse(vecIn.begin(), vecIn.end());
+    BOOST_TEST(vecIn == vecOut, boost::test_tools::per_element());
+}
+
+BOOST_AUTO_TEST_CASE(RemoveIf)
+{
+    std::vector<int> vecIn = {1, 2, 3, 4, 5, 6}, vecExp = {1, 3, 5};
+    helpers::remove_if(vecIn, [](int i) { return i % 2 == 0; });
+    BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
+
+    vecIn = {1, 2, 3, 4, 5, 6}, vecExp = {2, 4, 6};
+    helpers::remove_if(vecIn, [](int i) { return i % 2 != 0; });
+    BOOST_TEST(vecIn == vecExp, boost::test_tools::per_element());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

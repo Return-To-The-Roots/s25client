@@ -432,8 +432,8 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x + 2) + 30;
     RTTR_SKIP_GFS(numGFtillAllArrive);
     // Now we should have 1 each of ranks 0-3 and 2 rank 4s
-    BOOST_REQUIRE_EQUAL(bld->GetNumTroops(), 6u);                     //-V522
-    SortedTroops::const_iterator itTroops = bld->GetTroops().begin(); //-V807
+    BOOST_REQUIRE_EQUAL(bld->GetNumTroops(), 6u); //-V522
+    auto itTroops = bld->GetTroops().cbegin();    //-V807
     for(unsigned i = 0; i < 4; i++, ++itTroops)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
     for(unsigned i = 0; i < 2; i++, ++itTroops)

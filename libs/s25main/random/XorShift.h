@@ -38,7 +38,7 @@ public:
     XorShift() { seed(); }
     explicit XorShift(uint64_t initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit XorShift(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = 0)
+    explicit XorShift(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr)
     {
         seed(seedSeq);
     }
@@ -46,7 +46,7 @@ public:
     void seed() { seed(0x1337); }
     void seed(uint64_t newSeed);
     template<class T_SeedSeq>
-    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = 0);
+    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr);
 
     /// Return random value in [min, max]
     result_type operator()();

@@ -647,7 +647,6 @@ bool noFigure::WalkInRandomDir()
 void noFigure::WanderFailedTrade()
 {
     DieFailedTrade();
-    return;
 }
 
 void noFigure::WanderToFlag()

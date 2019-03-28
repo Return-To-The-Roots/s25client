@@ -36,7 +36,7 @@ public:
     DefaultLCG() { seed(); }
     explicit DefaultLCG(result_type initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit DefaultLCG(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = 0)
+    explicit DefaultLCG(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr)
     {
         seed(seedSeq);
     }
@@ -44,7 +44,7 @@ public:
     void seed() { seed(0x1337); }
     void seed(unsigned newSeed) { state_ = newSeed; }
     template<class T_SeedSeq>
-    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = 0);
+    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr);
 
     /// Return random value in [min, max]
     result_type operator()();

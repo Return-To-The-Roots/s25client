@@ -31,9 +31,9 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 
     // Alle Weltpunkte serialisieren
-    for(auto it = world.nodes.begin(); it != world.nodes.end(); ++it)
+    for(const auto& node : world.nodes)
     {
-        it->Serialize(sgd, numPlayers, world.GetDescription());
+        node.Serialize(sgd, numPlayers, world.GetDescription());
     }
 
     // Katapultsteine serialisieren
@@ -107,10 +107,10 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
     }
     // Alle Weltpunkte
     MapPoint curPos(0, 0);
-    for(auto it = world.nodes.begin(); it != world.nodes.end(); ++it)
+    for(auto& node : world.nodes)
     {
-        it->Deserialize(sgd, numPlayers, world.GetDescription(), landscapeTerrains);
-        if(it->harborId)
+        node.Deserialize(sgd, numPlayers, world.GetDescription(), landscapeTerrains);
+        if(node.harborId)
         {
             HarborPos p(curPos);
             world.harbor_pos.push_back(p);

@@ -24,7 +24,7 @@
 
 class GameWorldBase;
 
-typedef bool (*FP_Node_OK_Callback)(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
+using FP_Node_OK_Callback = bool (*)(const GameWorldBase&, const MapPoint, const Direction, const void*);
 
 // There are 2 callback types:
 // IsNodeToDestOk: Called for every point to check if this node is usable

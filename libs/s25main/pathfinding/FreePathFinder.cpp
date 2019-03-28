@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "pathfinding/FreePathFinder.h"
 #include "EventManager.h"
+#include "helpers/containerUtils.h"
 #include "pathfinding/NewNode.h"
 #include "pathfinding/PathfindingPoint.h"
 #include "world/GameWorldBase.h"
@@ -221,18 +222,8 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                         back_id = alternate ? nodes[back_id].prevEven : nodes[back_id].prev;
                         alternate = !alternate;
                     }
-                    bool tooClose = false;
-                    // LOG.write(("pf from %i, %i to %i, %i now %i, %i ", x_start, y_start, x_dest, y_dest, xa, ya);//\n
-                    for(std::vector<MapPoint>::const_iterator it = evenLocationsOnRoute.begin(); it != evenLocationsOnRoute.end(); ++it)
-                    {
-                        // LOG.write(("dist to %i, %i ", temp, *it);
-                        if(gwb_.CalcDistance(neighbourPos, (*it)) < 2)
-                        {
-                            tooClose = true;
-                            break;
-                        }
-                    }
-                    // LOG.write(("\n");
+                    bool tooClose = helpers::containsPred(
+                      evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) { return gwb_.CalcDistance(neighbourPos, it) < 2; });
                     if(tooClose)
                         continue;
                     if(gwb_.CalcDistance(neighbourPos, start) < 2)

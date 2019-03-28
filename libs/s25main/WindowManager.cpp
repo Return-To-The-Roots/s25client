@@ -27,6 +27,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
+#include "helpers/reverse.h"
 #include "ingameWindows/IngameWindow.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
@@ -241,19 +242,19 @@ void WindowManager::Switch(Desktop* desktop)
 IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
 {
     // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprüft werden müssen !! )
-    for(auto it = windows.rbegin(); it != windows.rend(); ++it)
+    for(auto* window : helpers::reverse(windows))
     {
         // FensterRect für Kollisionsabfrage
-        Rect window_rect = (*it)->GetDrawRect();
+        Rect window_rect = window->GetDrawRect();
 
         // trifft die Maus auf ein Fenster?
         if(IsPointInRect(pos, window_rect))
         {
-            return *it;
+            return window;
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
-        if((*it)->IsInLockedRegion(pos))
-            return *it;
+        if(window->IsInLockedRegion(pos))
+            return window;
     }
     return nullptr;
 }
@@ -797,7 +798,7 @@ void WindowManager::SetActiveWindow(Window& wnd)
 {
     if(curDesktop)
         SetActiveWindowImpl(wnd, *curDesktop, windows);
-    if(nextdesktop)
+    if(nextdesktop) // NOLINTNEXTLINE(clang-analyzer-cplusplus.Move)
         SetActiveWindowImpl(wnd, *nextdesktop, nextWnds);
 }
 

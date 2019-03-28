@@ -573,23 +573,23 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         // figure/ware with a valid target instead
         MapPoint dest;
         bool gotdest = false;
-        for(auto& figures_for_ship : figures_for_ships)
+        for(const auto& figureForShip : figures_for_ships)
         {
-            noBase* nb = gwg->GetNO(figures_for_ship.dest);
+            noBase* nb = gwg->GetNO(figureForShip.dest);
             if(nb->GetGOT() == GOT_NOB_HARBORBUILDING
-               && gwg->GetNode(figures_for_ship.dest).owner == player + 1) // target is a harbor and owned by the same player
+               && gwg->GetNode(figureForShip.dest).owner == player + 1) // target is a harbor and owned by the same player
             {
-                dest = figures_for_ship.dest;
+                dest = figureForShip.dest;
                 gotdest = true;
                 break;
             }
         }
-        for(auto it = wares_for_ships.begin(); !gotdest && it != wares_for_ships.end(); ++it)
+        for(const auto* wareForShip : wares_for_ships)
         {
-            noBase* nb = gwg->GetNO((*it)->GetNextHarbor());
-            if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode((*it)->GetNextHarbor()).owner == player + 1)
+            noBase* nb = gwg->GetNO(wareForShip->GetNextHarbor());
+            if(nb->GetGOT() == GOT_NOB_HARBORBUILDING && gwg->GetNode(wareForShip->GetNextHarbor()).owner == player + 1)
             {
-                dest = (*it)->GetNextHarbor();
+                dest = wareForShip->GetNextHarbor();
                 gotdest = true;
                 break;
             }
@@ -1033,42 +1033,42 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
 void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std::list<Ware*>& wares)
 {
     // Menschen zur Ausgehliste hinzufügen
-    for(std::list<noFigure*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+    for(auto* figure : figures)
     {
-        (*it)->ArrivedByShip(pos);
+        figure->ArrivedByShip(pos);
 
         // Wenn es kein Ziel mehr hat, sprich keinen weiteren Weg, kann es direkt hier gelagert werden
-        if((*it)->GetGoal() == this)
-            (*it)->SetGoalTonullptr();
-        else if(!(*it)->HasNoGoal())
+        if(figure->GetGoal() == this)
+            figure->SetGoalTonullptr();
+        else if(!figure->HasNoGoal())
         {
             unsigned char nextDir;
-            MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping(nextDir); //-V821
+            MapPoint next_harbor = figure->ExamineRouteBeforeShipping(nextDir); //-V821
 
             if(nextDir == 4)
             {
                 // Increase visual count
-                if((*it)->GetJobType() == JOB_BOATCARRIER)
+                if(figure->GetJobType() == JOB_BOATCARRIER)
                 {
                     inventory.visual.Add(JOB_HELPER);
                     inventory.visual.Add(GD_BOAT);
                 } else
-                    inventory.visual.Add((*it)->GetJobType());
-                AddLeavingFigure(*it);
+                    inventory.visual.Add(figure->GetJobType());
+                AddLeavingFigure(figure);
             } else if(nextDir == SHIP_DIR)
             {
-                AddFigureForShip(*it, next_harbor);
+                AddFigureForShip(figure, next_harbor);
             } else
             {
                 // No or invalid path -> Store here
                 RTTR_Assert(nextDir == 0xFF);
-                (*it)->SetGoalTonullptr();
-                AddDependentFigure(*it);
+                figure->SetGoalTonullptr();
+                AddDependentFigure(figure);
             }
         } else
-            AddDependentFigure(*it); // No goal? We take it
-        if((*it)->HasNoGoal())
-            AddFigure(*it, true);
+            AddDependentFigure(figure); // No goal? We take it
+        if(figure->HasNoGoal())
+            AddFigure(figure, true);
     }
     figures.clear();
 
@@ -1110,23 +1110,13 @@ void nobHarborBuilding::CancelWareForShip(Ware* ware)
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
 void nobHarborBuilding::CancelFigure(noFigure* figure)
 {
-    // Merken, ob sie entfernt wurde
-    bool removed = false;
-    // Figur ggf. aus der List entfernen
-    for(auto it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
-    {
-        if(it->fig == figure)
-        {
-            figures_for_ships.erase(it);
-            removed = true;
-            break;
-        }
-    }
+    const auto it = std::find_if(figures_for_ships.begin(), figures_for_ships.end(), [figure](const auto& it) { return it.fig == figure; });
 
-    // Wurde sie entfernt?
-    if(removed)
+    // Figur ggf. aus der List entfernen
+    if(it != figures_for_ships.end())
     {
-        // Dann zu unserem Inventar hinzufügen und anschließend vernichten
+        figures_for_ships.erase(it);
+        // Dann zu unserem Inventar hinzufügen
         AddFigure(figure, false);
     }
     // An Basisklasse weiterdelegieren
@@ -1248,17 +1238,11 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
 
 void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
 {
-    bool found = false;
-    for(auto it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
-    {
-        if(it->attacker == attacker)
-        {
-            soldiers_for_ships.erase(it);
-            found = true;
-            break;
-        }
-    }
-    RTTR_Assert(found);
+    const auto it =
+      std::find_if(soldiers_for_ships.begin(), soldiers_for_ships.end(), [attacker](const auto& it) { return it.attacker == attacker; });
+
+    RTTR_Assert(it != soldiers_for_ships.end());
+    soldiers_for_ships.erase(it);
     if(attacker->HasNoGoal())
     {
         // No goal? We take it

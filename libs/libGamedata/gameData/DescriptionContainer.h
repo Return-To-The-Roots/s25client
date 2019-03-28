@@ -66,7 +66,7 @@ inline DescIdx<T> DescriptionContainer<T>::add(T desc)
 template<typename T>
 inline DescIdx<T> DescriptionContainer<T>::getIndex(const std::string& name) const
 {
-    std::map<std::string, unsigned>::const_iterator it = name2Idx.find(name);
+    auto it = name2Idx.find(name);
     if(it == name2Idx.end())
         return DescIdx<T>();
     return DescIdx<T>(it->second);

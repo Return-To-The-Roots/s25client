@@ -119,7 +119,7 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
     int lastNullPt = -1;
     // Do we have multiple polygons?
     bool isMultiPoly = false;
-    for(kaguya::VariadicArgType::const_iterator it = inPoints.begin(); it != inPoints.end(); ++it)
+    for(auto it = inPoints.begin(); it != inPoints.end(); ++it)
     {
         // Is this the separator between polygons?
         if(it->isNilref())

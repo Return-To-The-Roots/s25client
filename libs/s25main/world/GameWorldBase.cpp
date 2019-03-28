@@ -674,17 +674,16 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
     }
 
     // Die Soldaten aus allen Militärgebäuden sammeln
-    for(std::vector<nobHarborBuilding::SeaAttackerBuilding>::const_iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(const auto& bld : buildings)
     {
         // Soldaten holen
-        std::vector<nofPassiveSoldier*> tmp_soldiers = it->building->GetSoldiersForAttack(it->harbor->GetPos());
+        std::vector<nofPassiveSoldier*> tmp_soldiers = bld.building->GetSoldiersForAttack(bld.harbor->GetPos());
 
         // Soldaten hinzufügen
-        for(std::vector<nofPassiveSoldier*>::const_iterator itSoldier = tmp_soldiers.begin(); itSoldier != tmp_soldiers.end(); ++itSoldier)
+        for(nofPassiveSoldier* soldier : tmp_soldiers)
         {
-            RTTR_Assert(std::find_if(attackers.begin(), attackers.end(), PotentialSeaAttacker::CmpSoldier(*itSoldier)) == attackers.end());
-            PotentialSeaAttacker pa(*itSoldier, it->harbor, it->distance);
-            attackers.push_back(pa);
+            RTTR_Assert(std::find_if(attackers.begin(), attackers.end(), PotentialSeaAttacker::CmpSoldier(soldier)) == attackers.end());
+            attackers.push_back(PotentialSeaAttacker(soldier, bld.harbor, bld.distance));
         }
     }
 

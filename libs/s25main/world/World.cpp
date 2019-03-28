@@ -59,15 +59,15 @@ void World::Unload()
 {
     // Collect and destroy roads
     std::set<RoadSegment*> roadsegments;
-    for(std::vector<MapNode>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
+    for(const auto& node : nodes)
     {
-        if(!it->obj || it->obj->GetGOT() != GOT_FLAG)
+        if(!node.obj || node.obj->GetGOT() != GOT_FLAG)
             continue;
         for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            if(static_cast<noFlag*>(it->obj)->GetRoute(Direction::fromInt(dir)))
+            if(static_cast<noFlag*>(node.obj)->GetRoute(Direction::fromInt(dir)))
             {
-                roadsegments.insert(static_cast<noFlag*>(it->obj)->GetRoute(Direction::fromInt(dir)));
+                roadsegments.insert(static_cast<noFlag*>(node.obj)->GetRoute(Direction::fromInt(dir)));
             }
         }
     }

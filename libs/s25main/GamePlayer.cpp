@@ -755,14 +755,8 @@ void GamePlayer::JobNotWanted(noRoadNode* workplace, bool all)
 
 void GamePlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 {
-    for(auto it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
-    {
-        if(it->workplace == workplace && it->job == job)
-        {
-            jobs_wanted.erase(it);
-            return;
-        }
-    }
+    const auto it = helpers::findPred(jobs_wanted, [workplace, job](const auto& it) { return it.workplace == workplace && it.job == job; });
+    jobs_wanted.erase(it);
 }
 
 void GamePlayer::SendPostMessage(PostMsg* msg)
@@ -1009,11 +1003,10 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         }
     }
 
-    for(std::vector<BuildingType>::const_iterator it = wareDistribution.client_buildings.begin();
-        it != wareDistribution.client_buildings.end(); ++it)
+    for(const auto bldType : wareDistribution.client_buildings)
     {
         // BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
-        if(*it == BLD_HEADQUARTERS)
+        if(bldType == BLD_HEADQUARTERS)
         {
             // Bei Baustellen die Extraliste abfragen
             for(noBuildingSite* bldSite : buildings.GetBuildingSites())
@@ -1029,7 +1022,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         } else
         {
             // Für übrige Gebäude
-            for(nobUsual* bld : buildings.GetBuildings(*it))
+            for(nobUsual* bld : buildings.GetBuildings(bldType))
             {
                 unsigned points = bld->CalcDistributionPoints(ware->GetLocation(), gt);
                 if(!points)
@@ -1872,19 +1865,6 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 
     return (false);
 }
-//
-///// Meldet EIN bestelltes Schiff wieder ab
-// void GameClientPlayer::RemoveOrderedShip(nobHarborBuilding * hb)
-//{
-//  for(std::list<nobHarborBuilding*>::iterator it = ships_needed.begin();it!=ships_needed.end();++it)
-//  {
-//      if(*it == hb)
-//      {
-//          ships_needed.erase(it);
-//          return;
-//      }
-//  }
-//}
 
 /// Meldet das Schiff wieder ab
 void GamePlayer::RemoveShip(noShip* ship)

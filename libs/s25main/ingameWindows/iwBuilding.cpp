@@ -24,6 +24,7 @@
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
+#include "helpers/containerUtils.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
@@ -224,21 +225,19 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobUsual*>& buildings =
               gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetBuildings(building->GetBuildingType());
             // go through list once we get to current building -> open window for the next one and go to next location
-            for(auto it = buildings.begin(); it != buildings.end(); ++it)
+            auto it = helpers::findPred(buildings, [bldPos = building->GetPos()](const auto* it) { return it->GetPos() == bldPos; });
+            if(it != buildings.end()) // got to current building in the list?
             {
-                if((*it)->GetPos() == building->GetPos()) // got to current building in the list?
-                {
-                    // close old window, open new window (todo: only open if it isnt already open), move to location of next building
-                    Close();
-                    ++it;
-                    if(it == buildings.end()) // was last entry in list -> goto first
-                        it = buildings.begin();
-                    gwv.MoveToMapPt((*it)->GetPos());
-                    auto* nextscrn = new iwBuilding(gwv, gcFactory, *it);
-                    nextscrn->SetPos(GetPos());
-                    WINDOWMANAGER.Show(nextscrn);
-                    break;
-                }
+                // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                Close();
+                ++it;
+                if(it == buildings.end()) // was last entry in list -> goto first
+                    it = buildings.begin();
+                gwv.MoveToMapPt((*it)->GetPos());
+                auto* nextscrn = new iwBuilding(gwv, gcFactory, *it);
+                nextscrn->SetPos(GetPos());
+                WINDOWMANAGER.Show(nextscrn);
+                break;
             }
         }
         break;

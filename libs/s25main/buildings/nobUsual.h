@@ -116,8 +116,8 @@ public:
     /// Bestellte Waren
     bool AreThereAnyOrderedWares() const
     {
-        for(std::vector<std::list<Ware*>>::const_iterator it = ordered_wares.begin(); it != ordered_wares.end(); ++it)
-            if(!it->empty())
+        for(const auto& ordered_ware : ordered_wares)
+            if(!ordered_ware.empty())
                 return true;
         return false;
     }

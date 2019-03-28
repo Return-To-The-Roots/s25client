@@ -70,8 +70,8 @@ struct ScreenResizeEvent;
 class Window
 {
 public:
-    typedef bool (Window::*KeyboardMsgHandler)(const KeyEvent&);
-    typedef bool (Window::*MouseMsgHandler)(const MouseCoords&);
+    using KeyboardMsgHandler = bool (Window::*)(const KeyEvent&);
+    using MouseMsgHandler = bool (Window::*)(const MouseCoords&);
 
     Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0));
     virtual ~Window();
@@ -312,7 +312,7 @@ inline T* Window::AddCtrl(T* ctrl)
 template<typename T>
 inline T* Window::GetCtrl(unsigned id)
 {
-    ControlMap::iterator it = childIdToWnd_.find(id);
+    auto it = childIdToWnd_.find(id);
     if(it == childIdToWnd_.end())
         return nullptr;
 
@@ -322,7 +322,7 @@ inline T* Window::GetCtrl(unsigned id)
 template<typename T>
 inline const T* Window::GetCtrl(unsigned id) const
 {
-    ControlMap::const_iterator it = childIdToWnd_.find(id);
+    auto it = childIdToWnd_.find(id);
     if(it == childIdToWnd_.end())
         return nullptr;
 

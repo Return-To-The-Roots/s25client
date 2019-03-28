@@ -17,10 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBaseWarehouse.h"
-
-#include "Loader.h"
-
 #include "GamePlayer.h"
+#include "Loader.h"
 #include "WindowManager.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
@@ -29,6 +27,7 @@
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlOptionGroup.h"
+#include "helpers/containerUtils.h"
 #include "iwDemolishBuilding.h"
 #include "iwHQ.h"
 #include "iwHarborBuilding.h"
@@ -219,34 +218,32 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobBaseWarehouse*>& storehouses =
               gwv.GetWorld().GetPlayer(wh->GetPlayer()).GetBuildingRegister().GetStorehouses();
             // go through list once we get to current building -> open window for the next one and go to next location
-            for(auto it = storehouses.begin(); it != storehouses.end(); ++it)
+            auto it = helpers::findPred(storehouses, [whPos = wh->GetPos()](const auto* it) { return it->GetPos() == whPos; });
+            if(it != storehouses.end()) // got to current building in the list?
             {
-                if((*it)->GetPos() == wh->GetPos()) // got to current building in the list?
+                // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                Close();
+                ++it;
+                if(it == storehouses.end()) // was last entry in list -> goto first
+                    it = storehouses.begin();
+                gwv.MoveToMapPt((*it)->GetPos());
+                if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
                 {
-                    // close old window, open new window (todo: only open if it isnt already open), move to location of next building
-                    Close();
-                    ++it;
-                    if(it == storehouses.end()) // was last entry in list -> goto first
-                        it = storehouses.begin();
-                    gwv.MoveToMapPt((*it)->GetPos());
-                    if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
-                    {
-                        auto* nextscrn = new iwHQ(gwv, gcFactory, *it);
-                        nextscrn->SetPos(GetPos());
-                        WINDOWMANAGER.Show(nextscrn);
-                    } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
-                    {
-                        auto* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
-                        nextscrn->SetPos(GetPos());
-                        WINDOWMANAGER.Show(nextscrn);
-                    } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
-                    {
-                        auto* nextscrn = new iwBaseWarehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
-                        nextscrn->SetPos(GetPos());
-                        WINDOWMANAGER.Show(nextscrn);
-                    }
-                    break;
+                    auto* nextscrn = new iwHQ(gwv, gcFactory, *it);
+                    nextscrn->SetPos(GetPos());
+                    WINDOWMANAGER.Show(nextscrn);
+                } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
+                {
+                    auto* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
+                    nextscrn->SetPos(GetPos());
+                    WINDOWMANAGER.Show(nextscrn);
+                } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
+                {
+                    auto* nextscrn = new iwBaseWarehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
+                    nextscrn->SetPos(GetPos());
+                    WINDOWMANAGER.Show(nextscrn);
                 }
+                break;
             }
         }
         break;

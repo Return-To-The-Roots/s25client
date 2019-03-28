@@ -28,9 +28,9 @@ struct Info;
 
 class AIFactory
 {
-    AIFactory();
-
 public:
+    AIFactory() = delete;
+
     static AIPlayer* Create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world);
 };
 
