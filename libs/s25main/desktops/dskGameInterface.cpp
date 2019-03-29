@@ -685,9 +685,11 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case KT_F9: // Readme
             WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
             return true;
-        case KT_F10: { bool allowHumanAI = isCheatModeOn;
-#ifndef NDEBUG
-            allowHumanAI = true;
+        case KT_F10: {
+#ifdef NDEBUG
+            const bool allowHumanAI = isCheatModeOn;
+#else
+            const bool allowHumanAI = true;
 #endif // !NDEBUG
             if(GAMECLIENT.GetState() == GameClient::CS_GAME && allowHumanAI && !GAMECLIENT.IsReplayModeOn())
                 GAMECLIENT.ToggleHumanAIPlayer();
