@@ -18,6 +18,7 @@
 #ifndef DefaultLCG_h__
 #define DefaultLCG_h__
 
+#include <cstdint>
 #include <iosfwd>
 #include <type_traits>
 
@@ -67,7 +68,7 @@ template<class T_SeedSeq>
 inline void DefaultLCG::seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>*)
 {
     unsigned seedVal;
-    seedSeq.generate(&seedVal, &seedVal + 1);
+    seedSeq.generate(&seedVal, (&seedVal) + 1);
     seed(seedVal);
 }
 

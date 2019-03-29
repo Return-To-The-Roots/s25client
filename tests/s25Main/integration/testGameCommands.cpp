@@ -38,6 +38,13 @@
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
+#if defined(PVS_STUDIO) || defined(__clang_analyzer__)
+#undef BOOST_REQUIRE
+#define BOOST_REQUIRE(expr) \
+    if(!(expr))             \
+    throw "Silence static analyzer"
+#endif
+
 static std::ostream& operator<<(std::ostream& out, const InventorySetting& setting)
 {
     return out << setting.ToUnsignedChar();
@@ -510,9 +517,8 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     auto* bld = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
-    const std::list<noFigure*>& leavings = hq->GetLeavingFigures();
     nofPassiveSoldier* soldier = nullptr;
-    for(noFigure* fig : leavings)
+    for(noFigure* fig : hq->GetLeavingFigures())
     {
         soldier = dynamic_cast<nofPassiveSoldier*>(fig);
         if(soldier)
