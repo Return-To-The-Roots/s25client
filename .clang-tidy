@@ -1,0 +1,36 @@
+---
+Checks: >-
+  boost-*,
+  bugprone-*,
+  clang-analyzer-*,
+  clang-diagnostic-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -bugprone-narrowing-conversions,
+  -bugprone-too-small-loop-variable,
+  -misc-non-private-member-variables-in-classes,
+  -misc-unused-parameters,
+  -modernize-avoid-c-arrays,
+  -modernize-raw-string-literal,
+  -modernize-return-braced-init-list,
+  -modernize-use-default-member-init,
+  -modernize-use-emplace,
+  -modernize-use-override,
+  -readability-braces-around-statements,
+  -readability-else-after-return,
+  -readability-implicit-bool-conversion,
+  -readability-isolate-declaration,
+  -readability-magic-numbers,
+  -readability-named-parameter,
+  -readability-uppercase-literal-suffix
+CheckOptions:
+  - key: performance-for-range-copy.AllowedTypes
+    value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
+  - key: performance-unnecessary-copy-initialization.AllowedTypes
+    value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
+AnalyzeTemporaryDtors: false
+...
