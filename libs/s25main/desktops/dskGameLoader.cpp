@@ -71,7 +71,7 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResul
 
         if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(new dskLobby);
-        else if(loader_.getGame()->world.IsSinglePlayer())
+        else if(loader_.getGame()->world_.IsSinglePlayer())
             WINDOWMANAGER.Switch(new dskSinglePlayer);
         else
             WINDOWMANAGER.Switch(new dskDirectIP);

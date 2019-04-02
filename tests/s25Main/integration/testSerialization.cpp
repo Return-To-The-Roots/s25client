@@ -267,9 +267,9 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             for(unsigned j = 0; j < 4; j++)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
             std::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
-            GameWorld& newWorld = sharedGame->world;
+            GameWorld& newWorld = sharedGame->world_;
             save.sgd.ReadSnapshot(sharedGame);
-            auto& newEm = static_cast<TestEventManager&>(sharedGame->world.GetEvMgr());
+            auto& newEm = static_cast<TestEventManager&>(sharedGame->world_.GetEvMgr());
 
             BOOST_REQUIRE_EQUAL(newWorld.GetSize(), world.GetSize());
             BOOST_REQUIRE_EQUAL(newEm.GetCurrentGF(), em.GetCurrentGF());

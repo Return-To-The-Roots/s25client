@@ -19,7 +19,6 @@
 #ifndef Game_h__
 #define Game_h__
 
-#include "EventManager.h"
 #include "GlobalGameSettings.h"
 #include "world/GameWorld.h"
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -32,27 +31,28 @@ class Game
 {
 public:
     Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players);
-    Game(const GlobalGameSettings& settings, EventManager* em, const std::vector<PlayerInfo>& players);
+    Game(const GlobalGameSettings& settings, std::unique_ptr<EventManager> em, const std::vector<PlayerInfo>& players);
     ~Game();
 
-    const GlobalGameSettings ggs;
-    std::unique_ptr<EventManager> em;
-    GameWorld world;
-    boost::ptr_vector<AIPlayer> aiPlayers;
+    const GlobalGameSettings ggs_;
+    std::unique_ptr<EventManager> em_;
+    GameWorld world_;
+    boost::ptr_vector<AIPlayer> aiPlayers_;
 
     /// Does the remaining initializations for starting the game
     void Start(bool startFromSave);
     void RunGF();
-    bool IsStarted() const { return started; }
-    bool IsGameFinished() const { return finished; }
+    bool IsStarted() const { return started_; }
+    bool IsGameFinished() const { return finished_; }
     AIPlayer* GetAIPlayer(unsigned id);
+    void AddAIPlayer(std::unique_ptr<AIPlayer> newAI);
 
 private:
     /// Updates the statistics
     void StatisticStep();
     /// Check if the objective was reached (if set)
     void CheckObjective();
-    bool started, finished;
+    bool started_, finished_;
 };
 
 #endif // Game_h__

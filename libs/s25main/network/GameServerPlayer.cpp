@@ -48,7 +48,7 @@ void GameServerPlayer::setMapSending(std::chrono::seconds estimatedSendTime)
     MapSendingState state;
     state.timer.start();
     state.estimatedSendTime = estimatedSendTime;
-    state_ = state;
+    state_ = std::move(state);
 }
 
 void GameServerPlayer::setActive()

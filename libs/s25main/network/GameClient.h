@@ -179,7 +179,7 @@ public:
 
 private:
     /// Create an AI player for the current world
-    AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
+    std::unique_ptr<AIPlayer> CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
 
     /// Add the gamecommand. Return true in success, false otherwise (paused, or defeated)
     bool AddGC(gc::GameCommandPtr gc) override;

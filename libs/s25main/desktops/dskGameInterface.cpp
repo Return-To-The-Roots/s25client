@@ -105,7 +105,7 @@ enum
 
 dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx,
                                    bool initOGL)
-    : Desktop(nullptr), game_(game), nwfInfo_(std::move(nwfInfo)), worldViewer(playerIdx, game->world),
+    : Desktop(nullptr), game_(game), nwfInfo_(std::move(nwfInfo)), worldViewer(playerIdx, game->world_),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(nullptr),
       roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
@@ -131,7 +131,7 @@ dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::share
 
     AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, SmallFont);
 
-    game->world.SetGameInterface(this);
+    game->world_.SetGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(nullptr));
     cbb.loadEdges(LOADER.GetInfoN("resource"));
@@ -344,7 +344,7 @@ void dskGameInterface::Msg_PaintAfter()
         {
             if(player.isLagging)
             {
-                LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, game_->world.GetPlayer(player.id).color);
+                LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, game_->world_.GetPlayer(player.id).color);
                 snailPos.x -= 40;
             }
         }
@@ -362,7 +362,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Draw speed indicator icon
-    const int startSpeed = SPEED_GF_LENGTHS[game_->ggs.speed];
+    const int startSpeed = SPEED_GF_LENGTHS[game_->ggs_.speed];
     const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength() / std::chrono::milliseconds(10));
 
     if(speedStep != 0)
@@ -677,7 +677,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(new iwSave);
             return true;
         case KT_F3: // Map debug window/ Multiplayer coordinates
-            WINDOWMANAGER.Show(new iwMapDebug(gwv, game_->world.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
+            WINDOWMANAGER.Show(new iwMapDebug(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
             return true;
         case KT_F8: // Tastaturbelegung
             WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
@@ -728,11 +728,11 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     switch(ke.c)
     {
         case '+':
-            if(GAMECLIENT.IsReplayModeOn() || game_->world.IsSinglePlayer())
+            if(GAMECLIENT.IsReplayModeOn() || game_->world_.IsSinglePlayer())
                 GAMECLIENT.IncreaseSpeed();
             return true;
         case '-':
-            if(GAMECLIENT.IsReplayModeOn() || game_->world.IsSinglePlayer())
+            if(GAMECLIENT.IsReplayModeOn() || game_->world_.IsSinglePlayer())
                 GAMECLIENT.DecreaseSpeed();
             return true;
 
@@ -764,7 +764,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             gwv.MoveToLastPosition();
             return true;
         case 'v':
-            if(game_->world.IsSinglePlayer())
+            if(game_->world_.IsSinglePlayer())
                 GAMECLIENT.IncreaseSpeed();
             return true;
         case 'c': // Gebäudenamen anzeigen
@@ -789,7 +789,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(new iwInventory(worldViewer.GetPlayer()));
             return true;
         case 'j': // GFs überspringen
-            if(game_->world.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
+            if(game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
                 WINDOWMANAGER.Show(new iwSkipGFs(gwv));
             return true;
         case 'l': // Minimap anzeigen
@@ -1044,7 +1044,7 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
         GameDataLoader gdLoader(newDesc);
         if(gdLoader.Load())
         {
-            const_cast<GameWorld&>(game_->world).GetDescriptionWriteable() = newDesc;
+            const_cast<GameWorld&>(game_->world_).GetDescriptionWriteable() = newDesc;
             worldViewer.InitTerrainRenderer();
         }
     }

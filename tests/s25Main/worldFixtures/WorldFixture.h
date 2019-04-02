@@ -115,8 +115,9 @@ struct WorldFixture
     GameWorld& world;
     T_WorldCreator worldCreator;
     WorldFixture()
-        : game(new Game(GlobalGameSettings(), new TestEventManager, std::vector<PlayerInfo>(T_numPlayers, GetPlayer()))),
-          em(static_cast<TestEventManager&>(*game->em)), ggs(const_cast<GlobalGameSettings&>(game->ggs)), world(game->world),
+        : game(std::make_shared<Game>(GlobalGameSettings(), std::make_unique<TestEventManager>(),
+                                      std::vector<PlayerInfo>(T_numPlayers, GetPlayer()))),
+          em(static_cast<TestEventManager&>(*game->em_)), ggs(const_cast<GlobalGameSettings&>(game->ggs_)), world(game->world_),
           worldCreator(MapExtent(T_width, T_height))
     {
         // Fast moving ships

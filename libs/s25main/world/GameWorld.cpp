@@ -49,7 +49,7 @@ bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, const std::string& ma
 
     if(bfs::exists(luaFilePath))
     {
-        SetLua(new LuaInterfaceGame(game));
+        SetLua(std::make_unique<LuaInterfaceGame>(game));
         if(!GetLua().LoadScript(luaFilePath) || !GetLua().CheckScriptVersion())
         {
             SetLua(nullptr);
@@ -114,7 +114,7 @@ void GameWorld::Deserialize(const std::shared_ptr<Game>& game, SerializedGameDat
             throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 
         // Now init and load lua
-        SetLua(new LuaInterfaceGame(game));
+        SetLua(std::make_unique<LuaInterfaceGame>(game));
         if(!GetLua().LoadScriptString(luaScript))
         {
             SetLua(nullptr);

@@ -44,13 +44,13 @@
 class GameWithLuaAccess : public Game
 {
 public:
-    GameWithLuaAccess() : Game(GlobalGameSettings(), (unsigned int)0, CreatePlayers())
+    GameWithLuaAccess() : Game(GlobalGameSettings(), 0u, CreatePlayers())
     {
-        for(unsigned id = 0; id < world.GetNumPlayers(); id++)
+        for(unsigned id = 0; id < world_.GetNumPlayers(); id++)
         {
-            GamePlayer& player = world.GetPlayer(id);
+            GamePlayer& player = world_.GetPlayer(id);
             if(!player.isHuman() && player.isUsed())
-                aiPlayers.push_back(AIFactory::Create(world.GetPlayer(id).aiInfo, id, world));
+                AddAIPlayer(AIFactory::Create(world_.GetPlayer(id).aiInfo, id, world_));
         }
     }
 
@@ -60,12 +60,12 @@ public:
         std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
         for(unsigned i = 0; i < 5; i++)
         {
-            world.GetEvMgr().ExecuteNextGF();
-            ai->RunGF(world.GetEvMgr().GetCurrentGF(), i == 0);
+            em_->ExecuteNextGF();
+            ai->RunGF(em_->GetCurrentGF(), i == 0);
         }
         for(gc::GameCommandPtr& gc : aiGcs)
         {
-            gc->Execute(world, 1);
+            gc->Execute(world_, 1);
         }
     }
 
@@ -98,10 +98,10 @@ public:
     GameWorld& world;
     std::vector<MapPoint> hqPositions;
 
-    LuaTestsFixture() : game(new GameWithLuaAccess), world(game->world)
+    LuaTestsFixture() : game(std::make_shared<GameWithLuaAccess>()), world(game->world_)
     {
-        game->world.SetLua(new LuaInterfaceGame(game));
-        setLua(&game->world.GetLua());
+        game->world_.SetLua(std::make_unique<LuaInterfaceGame>(game));
+        setLua(&game->world_.GetLua());
     }
 
     void initWorld()

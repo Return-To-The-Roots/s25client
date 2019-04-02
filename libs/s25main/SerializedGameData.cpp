@@ -214,7 +214,7 @@ void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
 {
     Prepare(false);
 
-    GameWorld& gw = game->world;
+    GameWorld& gw = game->world_;
     writeEm = &gw.GetEvMgr();
 
     // Anzahl Objekte reinschreiben (used for safety checks only)
@@ -253,7 +253,7 @@ void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game)
 {
     Prepare(true);
 
-    GameWorld& gw = game->world;
+    GameWorld& gw = game->world_;
     em = &gw.GetEvMgr();
 
     expectedNumObjects = PopUnsignedInt();

@@ -189,7 +189,7 @@ public:
 
     bool HasLua() const { return lua != nullptr; }
     LuaInterfaceGame& GetLua() const { return *lua; }
-    void SetLua(LuaInterfaceGame* newLua) { lua.reset(newLua); }
+    void SetLua(std::unique_ptr<LuaInterfaceGame> newLua) { lua = std::move(newLua); }
 
 protected:
     /// Called when the visibility of point changed for a player

@@ -43,6 +43,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "factories/AIFactory.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
 #include "lua/LuaInterfaceBase.h"
 #include "network/ClientInterface.h"
@@ -281,8 +282,8 @@ void GameClient::StartGame(const unsigned random_init)
     // If we have a savegame, start at its first GF, else at 0
     unsigned startGF = (mapinfo.type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
     // Create the game
-    game.reset(
-      new Game(gameLobby->getSettings(), startGF, std::vector<PlayerInfo>(gameLobby->getPlayers().begin(), gameLobby->getPlayers().end())));
+    game = std::make_shared<Game>(gameLobby->getSettings(), startGF,
+                                  std::vector<PlayerInfo>(gameLobby->getPlayers().begin(), gameLobby->getPlayers().end()));
     if(!IsReplayModeOn())
     {
         for(unsigned id = 0; id < gameLobby->getNumPlayers(); id++)
@@ -302,7 +303,7 @@ void GameClient::StartGame(const unsigned random_init)
     // Get standard settings before they get overwritten
     GetPlayer(mainPlayer.playerId).FillVisualSettings(default_settings);
 
-    GameWorld& gameWorld = game->world;
+    GameWorld& gameWorld = game->world_;
     if(mapinfo.savegame)
         mapinfo.savegame->sgd.ReadSnapshot(game);
     else
@@ -320,7 +321,7 @@ void GameClient::StartGame(const unsigned random_init)
 
         /// Evtl. Goldvorkommen ändern
         Resource::Type target; // löschen
-        switch(game->ggs.getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
+        switch(game->ggs_.getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
         {
             case 0:
             default: target = Resource::Gold; break;
@@ -364,7 +365,7 @@ void GameClient::GameLoaded()
             {
                 if(GetPlayer(id).ps == PS_AI)
                 {
-                    game->aiPlayers.push_back(CreateAIPlayer(id, GetPlayer(id).aiInfo));
+                    game->AddAIPlayer(CreateAIPlayer(id, GetPlayer(id).aiInfo));
                     SendNothingNC(id);
                 }
             }
@@ -384,7 +385,7 @@ void GameClient::ExitGame()
 
 unsigned GameClient::GetGFNumber() const
 {
-    return game->em->GetCurrentGF();
+    return game->em_->GetCurrentGF();
 }
 
 /**
@@ -623,7 +624,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
             // Host has to handle it
             if(IsHost())
             {
-                game->aiPlayers.push_back(CreateAIPlayer(msg.player, player.aiInfo));
+                game->AddAIPlayer(CreateAIPlayer(msg.player, player.aiInfo));
                 SendNothingNC(msg.player);
             }
         }
@@ -747,7 +748,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
     if(state != CS_CONFIG)
         return true;
 
-    nwfInfo.reset(new NWFInfo());
+    nwfInfo = std::make_shared<NWFInfo>();
     nwfInfo->init(msg.firstNwf, msg.cmdDelay);
     try
     {
@@ -774,14 +775,14 @@ bool GameClient::OnGameMessage(const GameMessage_Chat& msg)
     if(state == CS_GAME)
     {
         // Ingame message: Do some checking and logging
-        if(msg.player >= game->world.GetNumPlayers())
+        if(msg.player >= game->world_.GetNumPlayers())
             return true;
 
         /// Mit im Replay aufzeichnen
         if(replayinfo && replayinfo->replay.IsRecording())
             replayinfo->replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
 
-        GamePlayer& player = game->world.GetPlayer(msg.player);
+        GamePlayer& player = game->world_.GetPlayer(msg.player);
 
         // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
         if(player.IsDefeated() && msg.destination != CD_ALL)
@@ -1021,7 +1022,7 @@ bool GameClient::CreateLobby()
     if(mainPlayer.playerId >= numPlayers)
         return false;
 
-    gameLobby.reset(new GameLobby(mapinfo.type == MAPTYPE_SAVEGAME, IsHost(), numPlayers));
+    gameLobby = std::make_shared<GameLobby>(mapinfo.type == MAPTYPE_SAVEGAME, IsHost(), numPlayers);
     return true;
 }
 
@@ -1324,7 +1325,7 @@ void GameClient::HandleAutosave()
 /// Führt notwendige Dinge für nächsten GF aus
 void GameClient::NextGF(bool wasNWF)
 {
-    for(AIPlayer& ai : game->aiPlayers)
+    for(AIPlayer& ai : game->aiPlayers_)
         ai.RunGF(GetGFNumber(), wasNWF);
     game->RunGF();
 }
@@ -1332,7 +1333,7 @@ void GameClient::NextGF(bool wasNWF)
 void GameClient::ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs)
 {
     for(const gc::GameCommandPtr& gc : gcs.gcs)
-        gc->Execute(game->world, playerId);
+        gc->Execute(game->world_, playerId);
 }
 
 void GameClient::SendNothingNC(uint8_t player)
@@ -1376,7 +1377,7 @@ void GameClient::StartReplayRecording(const unsigned random_init)
     replayinfo->replay.random_init = random_init;
 
     WritePlayerInfo(replayinfo->replay);
-    replayinfo->replay.ggs = game->ggs;
+    replayinfo->replay.ggs = game->ggs_;
 
     // Datei speichern
     if(!replayinfo->replay.StartRecording(RTTRCONFIG.ExpandPath(FILE_PATHS[51]) + "/" + replayinfo->fileName, mapinfo))
@@ -1402,7 +1403,7 @@ bool GameClient::StartReplay(const std::string& path)
     }
     replayinfo->fileName = bfs::path(replayinfo->replay.GetFile().getFilePath()).filename().string();
 
-    gameLobby.reset(new GameLobby(true, true, replayinfo->replay.GetNumPlayers()));
+    gameLobby = std::make_shared<GameLobby>(true, true, replayinfo->replay.GetNumPlayers());
 
     for(unsigned i = 0; i < replayinfo->replay.GetNumPlayers(); ++i)
         gameLobby->getPlayer(i) = JoinPlayerInfo(replayinfo->replay.GetPlayer(i));
@@ -1611,7 +1612,7 @@ bool GameClient::SaveToFile(const std::string& filename)
     WritePlayerInfo(save);
 
     // GGS-Daten
-    save.ggs = game->ggs;
+    save.ggs = game->ggs_;
 
     save.start_gf = GetGFNumber();
 
@@ -1688,19 +1689,19 @@ bool GameClient::AddGC(gc::GameCommandPtr gc)
 unsigned GameClient::GetNumPlayers() const
 {
     RTTR_Assert(state == CS_LOADING || state == CS_LOADED || state == CS_GAME);
-    return game->world.GetNumPlayers();
+    return game->world_.GetNumPlayers();
 }
 
 GamePlayer& GameClient::GetPlayer(const unsigned id)
 {
     RTTR_Assert(state == CS_LOADING || state == CS_LOADED || state == CS_GAME);
     RTTR_Assert(id < GetNumPlayers());
-    return game->world.GetPlayer(id);
+    return game->world_.GetPlayer(id);
 }
 
-AIPlayer* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
+std::unique_ptr<AIPlayer> GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 {
-    return AIFactory::Create(aiInfo, playerId, game->world);
+    return AIFactory::Create(aiInfo, playerId, game->world_);
 }
 
 /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
@@ -1747,8 +1748,8 @@ std::shared_ptr<const NWFInfo> GameClient::GetNWFInfo() const
 unsigned GameClient::GetTournamentModeDuration() const
 {
     using namespace std::chrono;
-    if(game && unsigned(game->ggs.objective) >= NUM_OBJECTIVESS)
-        return minutes(TOURNAMENT_MODES_DURATION[game->ggs.objective - NUM_OBJECTIVESS]) / framesinfo.gf_length;
+    if(game && unsigned(game->ggs_.objective) >= NUM_OBJECTIVES)
+        return minutes(TOURNAMENT_MODES_DURATION[game->ggs_.objective - NUM_OBJECTIVES]) / framesinfo.gf_length;
     else
         return 0;
 }
@@ -1756,12 +1757,11 @@ unsigned GameClient::GetTournamentModeDuration() const
 void GameClient::ToggleHumanAIPlayer()
 {
     RTTR_Assert(!IsReplayModeOn());
-    auto it = std::find_if(game->aiPlayers.begin(), game->aiPlayers.end(),
-                           [this](const auto& player) { return player.GetPlayerId() == this->GetPlayerId(); });
-    if(it != game->aiPlayers.end())
-        game->aiPlayers.erase(it);
+    auto it = helpers::findPred(game->aiPlayers_, [id = this->GetPlayerId()](const auto& player) { return player.GetPlayerId() == id; });
+    if(it != game->aiPlayers_.end())
+        game->aiPlayers_.erase(it);
     else
-        game->aiPlayers.push_back(CreateAIPlayer(mainPlayer.playerId, AI::Info(AI::DEFAULT, AI::EASY)));
+        game->AddAIPlayer(CreateAIPlayer(mainPlayer.playerId, AI::Info(AI::DEFAULT, AI::EASY)));
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)
