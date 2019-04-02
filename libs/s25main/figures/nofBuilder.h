@@ -24,7 +24,7 @@ class noBuildingSite;
 class SerializedGameData;
 class noRoadNode;
 
-class nofBuilder : public noFigure
+class nofBuilder final : public noFigure
 {
 private:
     // Wie weit der Bauarbeiter maximal in alle vier richtungen laufen darf (in Pixeln, rel..)

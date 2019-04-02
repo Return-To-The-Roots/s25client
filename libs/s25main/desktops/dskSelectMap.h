@@ -32,7 +32,7 @@ namespace boost {
 class thread;
 }
 
-class dskSelectMap : public Desktop, public ClientInterface, public LobbyInterface
+class dskSelectMap final : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
     dskSelectMap(CreateServerInfo csi);

@@ -403,7 +403,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
                 return;
 
             unsigned short p = n.GetProductivity();
-            text = helpers::toString(p) + " %";
+            text = std::to_string(p) + " %";
             if(p >= 60)
                 color = COLOR_60_PERCENT;
             else if(p >= 30)

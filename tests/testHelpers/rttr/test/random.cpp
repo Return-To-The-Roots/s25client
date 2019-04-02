@@ -27,7 +27,7 @@
 #include <iostream>
 
 namespace rttr { namespace test {
-    class randomObserver : public boost::unit_test::test_observer
+    class randomObserver final : public boost::unit_test::test_observer
     {
         auto getRandSeed() { return std::chrono::high_resolution_clock::now().time_since_epoch().count(); }
         void test_unit_start(boost::unit_test::test_unit const& test) override

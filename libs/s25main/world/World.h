@@ -70,7 +70,7 @@ class World : public MapBase
     WorldDescription description_;
 
     std::unique_ptr<noBase> noNodeObj;
-    void Resize(const MapExtent& newSize) override;
+    void Resize(const MapExtent& newSize) final;
 
 public:
     /// Currently flying catapult stones
@@ -83,7 +83,7 @@ public:
     /// Initialize the world
     virtual void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt);
     /// Clean up (free objects and reset world to uninitialized state)
-    virtual void Unload();
+    void Unload();
 
     /// Return the type of the landscape
     DescIdx<LandscapeDesc> GetLandscapeType() const { return lt; }

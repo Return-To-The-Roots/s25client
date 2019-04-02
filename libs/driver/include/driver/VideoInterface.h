@@ -39,8 +39,6 @@ public:
 
     virtual bool Initialize() = 0;
 
-    virtual void CleanUp() = 0;
-
     /// Erstellt das Fenster mit entsprechenden Werten.
     virtual bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) = 0;
 

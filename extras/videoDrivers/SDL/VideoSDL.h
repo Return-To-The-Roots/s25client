@@ -25,7 +25,7 @@ struct VideoMode;
 struct SDL_Surface;
 
 /// Klasse für den SDL Videotreiber.
-class VideoSDL : public VideoDriver
+class VideoSDL final : public VideoDriver
 {
 public:
     VideoSDL(VideoDriverLoaderInterface* CallBack);
@@ -37,9 +37,6 @@ public:
 
     /// Treiberinitialisierungsfunktion.
     bool Initialize() override;
-
-    /// Treiberaufräumfunktion.
-    void CleanUp() override;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
     bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) override;

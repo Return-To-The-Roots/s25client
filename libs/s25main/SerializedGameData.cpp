@@ -167,7 +167,7 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
         case GOT_NOTHING:
         case GOT_UNKNOWN: RTTR_Assert(false); break;
     }
-    throw Error("Invalid GameObjectType " + helpers::toString(got) + " for objId=" + helpers::toString(obj_id) + " found!");
+    throw Error("Invalid GameObjectType " + std::to_string(got) + " for objId=" + std::to_string(obj_id) + " found!");
 }
 
 FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)

@@ -61,7 +61,7 @@ ETerrain getDefaultFlags(TerrainKind kind)
         case TerrainKind::SNOW: return ETerrain::Unreachable;
         case TerrainKind::MOUNTAIN: return ETerrain::Mineable;
     }
-    throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
+    throw GameDataError("Invalid terrain kind: " + std::to_string(static_cast<unsigned>(kind)));
 }
 
 uint8_t getDefaultHumidity(TerrainKind kind)
@@ -74,7 +74,7 @@ uint8_t getDefaultHumidity(TerrainKind kind)
         case TerrainKind::SNOW:
         case TerrainKind::MOUNTAIN: return 0;
     }
-    throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
+    throw GameDataError("Invalid terrain kind: " + std::to_string(static_cast<unsigned>(kind)));
 }
 } // namespace
 

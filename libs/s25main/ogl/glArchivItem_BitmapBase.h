@@ -33,7 +33,7 @@ public:
     unsigned GetTexture();
     unsigned GetTextureNoCreate() const { return texture; }
     /// Löscht die GL-Textur (z.B fürs Neuerstellen)
-    virtual void DeleteTexture();
+    void DeleteTexture();
     /// Setzt den Texturfilter auf einen bestimmten Wert.
     virtual void setInterpolateTexture(bool interpolate);
 

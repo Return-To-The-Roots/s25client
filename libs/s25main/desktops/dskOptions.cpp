@@ -282,7 +282,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         if(framerate == -1)
             cbFrameRate->AddString(_("Disabled"));
         else
-            cbFrameRate->AddString(helpers::toString(framerate) + " FPS");
+            cbFrameRate->AddString(std::to_string(framerate) + " FPS");
         if(SETTINGS.video.vsync == framerate)
             cbFrameRate->SetSelection(cbFrameRate->GetNumItems() - 1);
     }

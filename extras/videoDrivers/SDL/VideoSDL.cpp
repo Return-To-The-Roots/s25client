@@ -119,7 +119,8 @@ VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack)
 
 VideoSDL::~VideoSDL()
 {
-    CleanUp();
+    if(initialized)
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 /**
@@ -155,21 +156,6 @@ bool VideoSDL::Initialize()
     SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
     return initialized;
-}
-
-/**
- *  Treiberaufräumfunktion.
- */
-void VideoSDL::CleanUp()
-{
-    if(!initialized)
-        return;
-
-    // Fenster vernichten
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-
-    // nun sind wir nicht mehr initalisiert
-    initialized = false;
 }
 
 /**
@@ -361,7 +347,11 @@ void VideoSDL::HandlePaste()
 void VideoSDL::DestroyScreen()
 {
     // Fenster schliessen
-    CleanUp();
+    if(initialized)
+    {
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
+        initialized = false;
+    }
     Initialize();
 }
 

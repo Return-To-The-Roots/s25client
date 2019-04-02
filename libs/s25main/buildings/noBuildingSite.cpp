@@ -322,7 +322,7 @@ void noBuildingSite::AddWare(Ware*& ware)
         ordered_stones.remove(ware);
         ++stones;
     } else
-        throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));
+        throw std::logic_error("Wrong ware type " + std::to_string(ware->type));
 
     // Inventur entsprechend verringern
     gwg->GetPlayer(player).DecreaseInventoryWare(ware->type, 1);
@@ -343,7 +343,7 @@ void noBuildingSite::WareLost(Ware* ware)
         RTTR_Assert(helpers::contains(ordered_stones, ware));
         ordered_stones.remove(ware);
     } else
-        throw std::logic_error("Wrong ware type lost " + helpers::toString(ware->type));
+        throw std::logic_error("Wrong ware type lost " + std::to_string(ware->type));
 
     OrderConstructionMaterial();
 }
@@ -362,7 +362,7 @@ void noBuildingSite::TakeWare(Ware* ware)
         RTTR_Assert(!helpers::contains(ordered_stones, ware));
         ordered_stones.push_back(ware);
     } else
-        throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));
+        throw std::logic_error("Wrong ware type " + std::to_string(ware->type));
 }
 
 bool noBuildingSite::IsBuildingComplete()

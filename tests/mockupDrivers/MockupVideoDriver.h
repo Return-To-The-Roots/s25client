@@ -26,9 +26,9 @@ class MockupVideoDriver : public VideoDriver
 {
 public:
     MockupVideoDriver(VideoDriverLoaderInterface* CallBack);
+    ~MockupVideoDriver() override;
     const char* GetName() const override;
     bool Initialize() override;
-    void CleanUp() override;
     bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) override;
     bool ResizeScreen(const VideoMode& newSize, bool fullscreen) override;
     void DestroyScreen() override {}

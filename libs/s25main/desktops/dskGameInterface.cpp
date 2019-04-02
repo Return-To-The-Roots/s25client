@@ -373,7 +373,7 @@ void dskGameInterface::Msg_PaintAfter()
 
         if(speedStep != 1)
         {
-            std::string multiplier = helpers::toString(std::abs(speedStep));
+            std::string multiplier = std::to_string(std::abs(speedStep));
             NormalFont->Draw(iconPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, FontStyle::LEFT,
                              speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
         }
@@ -387,7 +387,7 @@ void dskGameInterface::Msg_PaintAfter()
 
         magnifierImg->DrawFull(iconPos);
 
-        std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
+        std::string zoom_percent = std::to_string((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
         NormalFont->Draw(iconPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER, COLOR_YELLOW);
         iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
     }

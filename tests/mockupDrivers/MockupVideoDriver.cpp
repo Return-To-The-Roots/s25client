@@ -29,6 +29,12 @@ MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack) : Vid
     modKeyState_.alt = false;
 }
 
+MockupVideoDriver::~MockupVideoDriver()
+{
+    if(initialized)
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
+
 const char* MockupVideoDriver::GetName() const
 {
     return "Mockup Video Driver";
@@ -45,14 +51,6 @@ bool MockupVideoDriver::Initialize()
     }
     initialized = true;
     return true;
-}
-
-void MockupVideoDriver::CleanUp()
-{
-    if(!initialized)
-        return;
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-    initialized = false;
 }
 
 bool MockupVideoDriver::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)

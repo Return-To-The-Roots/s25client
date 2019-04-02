@@ -25,13 +25,6 @@
 
 namespace helpers {
 
-/// Locale dependent string conversion
-template<typename T>
-inline std::string toString(const T& value)
-{
-    return boost::lexical_cast<std::string>(value);
-}
-
 /// Convert to number and return true on success
 template<typename T>
 inline bool tryFromString(const std::string& value, T& outValue)

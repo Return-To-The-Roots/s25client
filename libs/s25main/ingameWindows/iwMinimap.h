@@ -23,7 +23,7 @@ class IngameMinimap;
 class GameWorldView;
 
 /// Fenster für die Minimap
-class iwMinimap : public IngameWindow
+class iwMinimap final : public IngameWindow
 {
     /// Fenster vergrößert?
     bool extended;

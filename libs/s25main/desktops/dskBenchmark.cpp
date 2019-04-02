@@ -109,7 +109,7 @@ bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
                 numInstances_ = (ke.c - '0') * 100;
                 if(numInstances_ == 0)
                     numInstances_ = 1000;
-                GetCtrl<ctrlText>(ID_txtAmount)->SetText("Instances: " + helpers::toString(numInstances_));
+                GetCtrl<ctrlText>(ID_txtAmount)->SetText("Instances: " + std::to_string(numInstances_));
                 break;
             } else
                 return dskMenuBase::Msg_KeyDown(ke);

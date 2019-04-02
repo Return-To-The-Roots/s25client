@@ -31,7 +31,7 @@ struct MockupSoundDesc : public SoundDesc
     void setInvalid() { isValid_ = false; }
 };
 
-struct MockupAudioDriver : public AudioDriver, IAudioDriverCallback
+struct MockupAudioDriver final : public AudioDriver, IAudioDriverCallback
 {
 protected:
     void DoUnloadSound(SoundDesc& sound) override { static_cast<MockupSoundDesc&>(sound).setInvalid(); }

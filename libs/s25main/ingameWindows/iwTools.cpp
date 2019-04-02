@@ -143,7 +143,7 @@ void iwTools::UpdateTexts()
         {
             auto* field = GetCtrl<ctrlBaseText>(200 + i);
             int curOrders = isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i) + pendingOrderChanges[i];
-            field->SetText(helpers::toString(curOrders));
+            field->SetText(std::to_string(curOrders));
         }
     }
 }
@@ -183,7 +183,7 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
             ++curOrders;
         }
         ordersChanged = true;
-        GetCtrl<ctrlBaseText>(200 + tool)->SetText(helpers::toString(curOrders));
+        GetCtrl<ctrlBaseText>(200 + tool)->SetText(std::to_string(curOrders));
     } else
         switch(ctrl_id)
         {

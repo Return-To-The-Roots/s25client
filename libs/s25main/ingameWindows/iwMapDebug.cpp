@@ -47,15 +47,15 @@ public:
                 if(node.reserved)
                     data = "R";
                 break;
-            case 2: data = helpers::toString(static_cast<unsigned>(node.altitude)); break;
-            case 3: data = helpers::toString(static_cast<unsigned>(node.resources.getValue())); break;
+            case 2: data = std::to_string(static_cast<unsigned>(node.altitude)); break;
+            case 3: data = std::to_string(static_cast<unsigned>(node.resources.getValue())); break;
             case 4:
                 if(node.seaId)
-                    data = helpers::toString(node.seaId);
+                    data = std::to_string(node.seaId);
                 else if(gw.GetSeaFromCoastalPoint(pt))
                     data = "C";
                 break;
-            case 5: data = helpers::toString(static_cast<unsigned>(node.owner)); break;
+            case 5: data = std::to_string(static_cast<unsigned>(node.owner)); break;
             case 6:
             {
                 bool isAllowed = TerritoryRegion::IsPointValid(gw.GetSize(), gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
@@ -69,7 +69,7 @@ public:
 
         if(showCoords)
         {
-            std::string coord = helpers::toString(pt.x) + ":" + helpers::toString(pt.y);
+            std::string coord = std::to_string(pt.x) + ":" + std::to_string(pt.y);
             font->Draw(displayPt, coord, FontStyle{}, coordsColor);
         }
         if(!data.empty())

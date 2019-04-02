@@ -98,7 +98,7 @@ void iwSaveLoad::RefreshTable()
         // Just filename w/o extension
         bfs::path fileName = path.stem();
 
-        std::string startGF = helpers::toString(save.start_gf);
+        std::string startGF = std::to_string(save.start_gf);
 
         // Und das Zeug zur Tabelle hinzufügen
         GetCtrl<ctrlTable>(0)->AddRow(0, fileName.string().c_str(), save.GetMapName().c_str(), dateStr.c_str(), startGF.c_str(),
@@ -145,7 +145,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 
     // Die Intervalle
     for(unsigned i = 0; i < numIntervalls; ++i)
-        combo->AddString(helpers::toString(AUTO_SAVE_INTERVALS[i]) + " GF");
+        combo->AddString(std::to_string(AUTO_SAVE_INTERVALS[i]) + " GF");
 
     // Richtigen Eintrag auswählen
     bool found = false;

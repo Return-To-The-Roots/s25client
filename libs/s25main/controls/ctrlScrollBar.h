@@ -22,7 +22,7 @@
 #include "Window.h"
 class MouseCoords;
 
-class ctrlScrollBar : public Window
+class ctrlScrollBar final : public Window
 {
 public:
     ctrlScrollBar(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height, TextureColor tc,

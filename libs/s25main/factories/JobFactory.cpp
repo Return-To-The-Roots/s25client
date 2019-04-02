@@ -103,7 +103,7 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
                 else if(goalBld->GetBuildingType() == BLD_CATAPULT)
                     return new nofCatapultMan(pt, player, goalBld);
             }
-            throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job " + helpers::toString(job_id));
+            throw std::runtime_error("Invalid goal type: " + std::to_string(goal->GetGOT()) + " for job " + std::to_string(job_id));
         case JOB_GEOLOGIST: RTTR_Assert(dynamic_cast<noFlag*>(goal)); return new nofGeologist(pt, player, static_cast<noFlag*>(goal));
         case JOB_SCOUT:
             // Im Spähturm arbeitet ein anderer Späher-Typ
@@ -118,7 +118,7 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
                 return new nofScout_LookoutTower(pt, player, static_cast<nobUsual*>(goal));
             } else if(goal->GetGOT() == GOT_FLAG)
                 return new nofScout_Free(pt, player, goal);
-            throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job " + helpers::toString(job_id));
+            throw std::runtime_error("Invalid goal type: " + std::to_string(goal->GetGOT()) + " for job " + std::to_string(job_id));
         case JOB_MINER: RTTR_Assert(dynamic_cast<nobUsual*>(goal)); return new nofMiner(pt, player, static_cast<nobUsual*>(goal));
         case JOB_FARMER: RTTR_Assert(dynamic_cast<nobUsual*>(goal)); return new nofFarmer(pt, player, static_cast<nobUsual*>(goal));
         case JOB_FORESTER: RTTR_Assert(dynamic_cast<nobUsual*>(goal)); return new nofForester(pt, player, static_cast<nobUsual*>(goal));
@@ -143,5 +143,5 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
         case JOB_BOATCARRIER: throw std::runtime_error("Cannot create a boat carrier job (try creating JOB_HELPER)."); break;
         case JOB_NOTHING: throw std::runtime_error("Cannot create a nothing job"); break;
     }
-    throw std::runtime_error("Invalid job type " + helpers::toString(job_id));
+    throw std::runtime_error("Invalid job type " + std::to_string(job_id));
 }
