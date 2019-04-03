@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/SimpleMultiArray.h"
+#include "helpers/MultiArray.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -232,7 +232,7 @@ void IngameWindow::Draw_()
     rightUpperImg->DrawFull(GetPos() + DrawPoint(GetSize().x - rightUpperImg->getWidth(), 0));
 
     // Die beiden Buttons oben
-    static const helpers::SimpleMultiArray<unsigned short, 2, 3> ids = {{{47, 55, 50}, {48, 56, 52}}};
+    static const helpers::MultiArray<unsigned short, 2, 3> ids = {{{47, 55, 50}, {48, 56, 52}}};
 
     // Titelleiste
     if(closeOnRightClick_ || !IsModal())

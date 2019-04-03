@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainData.h"
-#include "helpers/SimpleMultiArray.h"
+#include "helpers/MultiArray.h"
 #include <array>
 #include <iostream>
 #include <list>
@@ -186,8 +186,7 @@ unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
         case Landscape::WASTELAND:
             switch(t)
             {
-                case TT_SNOW:
-                    return 0xFF860000; // TT_SNOW is lava, too
+                case TT_SNOW: return 0xFF860000; // TT_SNOW is lava, too
                 case TT_DESERT: return 0xFF9c7c64;
                 case TT_SWAMPLAND: return 0xFF001820;
                 case TT_MEADOW_FLOWERS: return 0xFF444850;
@@ -333,7 +332,7 @@ EdgeType TerrainData::GetEdgeType(Landscape landsCape, TerrainType t)
 /// 0: Nothing is drawn above each other (hard edge)
 /// 1: T1 draws over T2 (If T1 is inside T2 then you'd get a "circle")
 /// -1: T2 draws over T1 (If T1 is inside T2 then you'd get a dented shape)
-const helpers::SimpleMultiArray<int8_t, NUM_LTS, NUM_TTS, NUM_TTS> TERRAIN_DRAW_PRIORITY{
+const helpers::MultiArray<int8_t, NUM_LTS, NUM_TTS, NUM_TTS> TERRAIN_DRAW_PRIORITY{
   {// Greenland
    {/*00 TT_SNOW*/ {},
     /*01 TT_DESERT*/ {-1},

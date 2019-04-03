@@ -53,8 +53,8 @@ const unsigned MAX_EXPLORATION_EXPEDITION_DISTANCE = 100;
 const unsigned EXPLORATION_EXPEDITION_WAITING_TIME = 300;
 
 /// Positionen der Flaggen am Schiff für die 6 unterschiedlichen Richtungen jeweils
-const helpers::SimpleMultiArray<DrawPoint, 2, 6> SHIPS_FLAG_POS = { // break
-  {                                                                 /* Standing (sails down) */
+const helpers::MultiArray<DrawPoint, 2, 6> SHIPS_FLAG_POS = { // break
+  {                                                           /* Standing (sails down) */
    {{-3, -77}, {-6, -71}, {-3, -71}, {-1, -71}, {5, -63}, {-1, -70}},
    // Driving
    {{3, -70}, {0, -64}, {3, -64}, {-1, -70}, {5, -63}, {5, -63}}}};

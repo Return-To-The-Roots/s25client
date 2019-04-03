@@ -19,7 +19,7 @@
 #define MILITARY_CONSTS_H_
 
 #include "DrawPoint.h"
-#include "helpers/SimpleMultiArray.h"
+#include "helpers/MultiArray.h"
 #include "gameData/NationConsts.h"
 #include <array>
 
@@ -46,11 +46,10 @@ const unsigned MAX_ATTACKING_RUN_DISTANCE = 40;
 const unsigned MEET_FOR_FIGHT_DISTANCE = 5;
 
 /// Besatzung in den einzelnen Militärgebäuden und nach Nation
-const helpers::SimpleMultiArray<int, NUM_NATS, 4> NUM_TROOPS = {{{2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}}};
+const helpers::MultiArray<int, NUM_NATS, 4> NUM_TROOPS = {{{2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}}};
 
 /// Gold in den einzelnen Militärgebäuden und nach Nation
-const helpers::SimpleMultiArray<unsigned short, NUM_NATS, 4> NUM_GOLDS = {
-  {{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}}};
+const helpers::MultiArray<unsigned short, NUM_NATS, 4> NUM_GOLDS = {{{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}}};
 
 /// Radien der Militärgebäude
 const std::array<unsigned, 4> SUPPRESS_UNUSED MILITARY_RADIUS = {{8, 9, 10, 11}};
@@ -59,24 +58,24 @@ const unsigned HARBOR_RADIUS = 8;
 const unsigned HQ_RADIUS = 9;
 
 /// Offset of the troop flag per nation and type from the buildings origin
-const helpers::SimpleMultiArray<DrawPoint, NUM_NATS, 4> TROOPS_FLAG_OFFSET = {{{{24, -41}, {19, -41}, {31, -88}, {35, -67}},
-                                                                               {{-9, -49}, {14, -59}, {16, -63}, {0, -44}},
-                                                                               {{-24, -36}, {9, -62}, {-2, -80}, {23, -75}},
-                                                                               {{-5, -50}, {-5, -51}, {-9, -74}, {-12, -58}},
-                                                                               {{-22, -37}, {-2, -51}, {20, -70}, {-46, -64}}}};
+const helpers::MultiArray<DrawPoint, NUM_NATS, 4> TROOPS_FLAG_OFFSET = {{{{24, -41}, {19, -41}, {31, -88}, {35, -67}},
+                                                                         {{-9, -49}, {14, -59}, {16, -63}, {0, -44}},
+                                                                         {{-24, -36}, {9, -62}, {-2, -80}, {23, -75}},
+                                                                         {{-5, -50}, {-5, -51}, {-9, -74}, {-12, -58}},
+                                                                         {{-22, -37}, {-2, -51}, {20, -70}, {-46, -64}}}};
 
 /// Offset of the troop flag per nation from the HQs origin
 const std::array<DrawPoint, NUM_NATS> TROOPS_FLAG_HQ_OFFSET = {{{-12, -102}, {-19, -94}, {-18, -112}, {20, -54}, {-33, -81}}};
 
 /// Offset of the border indicator flag per nation from the buildings origin
-const helpers::SimpleMultiArray<DrawPoint, NUM_NATS, 4> BORDER_FLAG_OFFSET = {{{{-6, -36}, {7, -48}, {-18, -28}, {-47, -64}},
-                                                                               {{17, -45}, {-3, -49}, {-30, -25}, {22, -53}},
-                                                                               {{28, -19}, {29, -18}, {-27, -12}, {-49, -62}},
-                                                                               {{24, -19}, {24, -19}, {17, -52}, {-37, -32}},
-                                                                               {{8, -26}, {13, -36}, {-1, -59}, {-10, -61}}}};
+const helpers::MultiArray<DrawPoint, NUM_NATS, 4> BORDER_FLAG_OFFSET = {{{{-6, -36}, {7, -48}, {-18, -28}, {-47, -64}},
+                                                                         {{17, -45}, {-3, -49}, {-30, -25}, {22, -53}},
+                                                                         {{28, -19}, {29, -18}, {-27, -12}, {-49, -62}},
+                                                                         {{24, -19}, {24, -19}, {17, -52}, {-37, -32}},
+                                                                         {{8, -26}, {13, -36}, {-1, -59}, {-10, -61}}}};
 
 /// maximale Hitpoints der Soldaten von jedem Volk
-const helpers::SimpleMultiArray<unsigned char, NUM_NATS, 5> HITPOINTS = {
+const helpers::MultiArray<unsigned char, NUM_NATS, 5> HITPOINTS = {
   {{3, 4, 5, 6, 7}, {3, 4, 5, 6, 7}, {3, 4, 5, 6, 7}, {3, 4, 5, 6, 7}, {3, 4, 5, 6, 7}}};
 
 /// Max distance for an attacker to reach a building and join in capturing
@@ -319,11 +318,11 @@ const FightAnimation FIGHT_ANIMATIONS[NUM_NATS][5][2] = {
 };
 
 /// IDs für die getroffenen (aufleuchtenden) Soldaten für jedes Volk
-const helpers::SimpleMultiArray<unsigned short, NUM_NATS, 5> HIT_SOLDIERS = {{{1556, 1558, 1560, 1562, 1564},
-                                                                              {1143, 1145, 1147, 1149, 1147},
-                                                                              {895, 897, 899, 901, 899},
-                                                                              {1372, 1374, 1376, 1378, 1380},
-                                                                              {1143, 1145, 1147, 1149, 1147}}};
+const helpers::MultiArray<unsigned short, NUM_NATS, 5> HIT_SOLDIERS = {{{1556, 1558, 1560, 1562, 1564},
+                                                                        {1143, 1145, 1147, 1149, 1147},
+                                                                        {895, 897, 899, 901, 899},
+                                                                        {1372, 1374, 1376, 1378, 1380},
+                                                                        {1143, 1145, 1147, 1149, 1147}}};
 
 /// Bestimmt den Aufblinkframe vom den Opfern der folgenden Angreifer (nach Rängen)
 const std::array<unsigned short, 5> SUPPRESS_UNUSED HIT_MOMENT = {{4, 4, 4, 4, 6}};

@@ -20,7 +20,7 @@
 
 #include "BuildingRegister.h"
 #include "GamePlayerInfo.h"
-#include "helpers/multiArray.h"
+#include "helpers/MultiArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Inventory.h"
 #include "gameTypes/MapCoordinates.h"

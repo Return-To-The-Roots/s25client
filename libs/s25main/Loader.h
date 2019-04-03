@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Rect.h"
-#include "helpers/multiArray.h"
+#include "helpers/MultiArray.h"
 #include "ogl/glSmartBitmap.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
@@ -149,13 +149,13 @@ public:
     /// Carrier w/ ware: Ware, Direction, Animation, NormalOrFat
     helpers::MultiArray<glSmartBitmap, NUM_WARE_TYPES, 6, 8, 2> carrier_cache;
     /// Boundary stones: Nation
-    helpers::MultiArray<glSmartBitmap, NUM_NATS> boundary_stone_cache;
+    std::array<glSmartBitmap, NUM_NATS> boundary_stone_cache;
     /// BoatCarrier: Direction, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 6, 8> boat_cache;
     /// Donkey: Direction, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 6, 8> donkey_cache;
     /// Gateway: AnimationFrame
-    helpers::MultiArray<glSmartBitmap, 5> gateway_cache;
+    std::array<glSmartBitmap, 5> gateway_cache;
 
 private:
     /// Get all files to load for a request of loading filepath

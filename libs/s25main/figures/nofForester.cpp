@@ -83,7 +83,7 @@ void nofForester::WorkFinished()
 
         // Je nach Landschaft andere Bäume pflanzbar!
         const std::array<unsigned char, 3> NUM_AVAILABLE_TREES = {6, 3, 4};
-        const helpers::SimpleMultiArray<unsigned char, 3, 6> AVAILABLE_TREES = {
+        const helpers::MultiArray<unsigned char, 3, 6> AVAILABLE_TREES = {
           {{0, 1, 2, 6, 7, 8}, {0, 1, 7, 0xFF, 0xFF, 0xFF}, {0, 1, 6, 8, 0xFF, 0xFF}}};
         uint8_t landscapeType = std::min<uint8_t>(gwg->GetLandscapeType().value, 2);
 

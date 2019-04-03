@@ -113,47 +113,46 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         // add building icons to TabCtrl
         const unsigned char building_count_max = 13;
         const std::array<unsigned, 4> building_count = {9, 13, 6, 4};
-        const helpers::SimpleMultiArray<BuildingType, building_count.size(), building_count_max> building_icons = {
-          // Linebreak
-          {{/* 0 */
-            /* 0 */ BLD_WOODCUTTER,
-            /* 1 */ BLD_FORESTER,
-            /* 2 */ BLD_QUARRY,
-            /* 3 */ BLD_FISHERY,
-            /* 4 */ BLD_HUNTER,
-            /* 5 */ BLD_BARRACKS,
-            /* 6 */ BLD_GUARDHOUSE,
-            /* 7 */ BLD_LOOKOUTTOWER,
-            /* 8 */ BLD_WELL},
-           {/* 1 */
-            /*  0 */ BLD_SAWMILL,
-            /*  1 */ BLD_SLAUGHTERHOUSE,
-            /*  2 */ BLD_MILL,
-            /*  3 */ BLD_BAKERY,
-            /*  4 */ BLD_IRONSMELTER,
-            /*  5 */ BLD_METALWORKS,
-            /*  6 */ BLD_ARMORY,
-            /*  7 */ BLD_MINT,
-            /*  8 */ BLD_SHIPYARD,
-            /*  9 */ BLD_BREWERY,
-            /* 10 */ BLD_STOREHOUSE,
-            /* 11 */ BLD_WATCHTOWER,
-            /* 12 */ BLD_CATAPULT},
-           {/* 2 */
-            /* 0 */ BLD_FARM,
-            /* 1 */ BLD_PIGFARM,
-            /* 2 */ BLD_DONKEYBREEDER,
-            /* 3 */ BLD_CHARBURNER,
-            /* 4 */ BLD_FORTRESS,
-            /* 5 */ BLD_HARBORBUILDING},
-           {/* 3 */
-            /* 0 */ BLD_GOLDMINE,
-            /* 1 */ BLD_IRONMINE,
-            /* 2 */ BLD_COALMINE,
-            /* 3 */ BLD_GRANITEMINE}}};
+        const helpers::MultiArray<BuildingType, building_count.size(), building_count_max> building_icons = {  // Linebreak
+                                                                                                             {{/* 0 */
+                                                                                                               /* 0 */ BLD_WOODCUTTER,
+                                                                                                               /* 1 */ BLD_FORESTER,
+                                                                                                               /* 2 */ BLD_QUARRY,
+                                                                                                               /* 3 */ BLD_FISHERY,
+                                                                                                               /* 4 */ BLD_HUNTER,
+                                                                                                               /* 5 */ BLD_BARRACKS,
+                                                                                                               /* 6 */ BLD_GUARDHOUSE,
+                                                                                                               /* 7 */ BLD_LOOKOUTTOWER,
+                                                                                                               /* 8 */ BLD_WELL},
+                                                                                                              {/* 1 */
+                                                                                                               /*  0 */ BLD_SAWMILL,
+                                                                                                               /*  1 */ BLD_SLAUGHTERHOUSE,
+                                                                                                               /*  2 */ BLD_MILL,
+                                                                                                               /*  3 */ BLD_BAKERY,
+                                                                                                               /*  4 */ BLD_IRONSMELTER,
+                                                                                                               /*  5 */ BLD_METALWORKS,
+                                                                                                               /*  6 */ BLD_ARMORY,
+                                                                                                               /*  7 */ BLD_MINT,
+                                                                                                               /*  8 */ BLD_SHIPYARD,
+                                                                                                               /*  9 */ BLD_BREWERY,
+                                                                                                               /* 10 */ BLD_STOREHOUSE,
+                                                                                                               /* 11 */ BLD_WATCHTOWER,
+                                                                                                               /* 12 */ BLD_CATAPULT},
+                                                                                                              {/* 2 */
+                                                                                                               /* 0 */ BLD_FARM,
+                                                                                                               /* 1 */ BLD_PIGFARM,
+                                                                                                               /* 2 */ BLD_DONKEYBREEDER,
+                                                                                                               /* 3 */ BLD_CHARBURNER,
+                                                                                                               /* 4 */ BLD_FORTRESS,
+                                                                                                               /* 5 */ BLD_HARBORBUILDING},
+                                                                                                              {/* 3 */
+                                                                                                               /* 0 */ BLD_GOLDMINE,
+                                                                                                               /* 1 */ BLD_IRONMINE,
+                                                                                                               /* 2 */ BLD_COALMINE,
+                                                                                                               /* 3 */ BLD_GRANITEMINE}}};
 
         /// Flexible what-buildings-are-available handling
-        helpers::SimpleMultiArray<bool, 4, building_count_max> building_available;
+        helpers::MultiArray<bool, 4, building_count_max> building_available;
 
         // First enable all buildings
         for(unsigned char i = 0; i < 4; ++i)

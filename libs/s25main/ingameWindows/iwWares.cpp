@@ -38,7 +38,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         font = SmallFont;
 
     // Zuordnungs-IDs
-    const helpers::SimpleMultiArray<unsigned short, 2, 31> INVENTORY_IDS = {{
+    const helpers::MultiArray<unsigned short, 2, 31> INVENTORY_IDS = {{
       {// Waren
        22, 23, 24, 33, 27, 18, 19, 32, 20, 11, 0, 31, 30, 29, 17, 28, 1, 3, 4, 5, 2, 6, 7, 8, 9, 12, 13, 14, 16, GD_SHIELDROMANS,
        15}, // GD_SHIELDROMANS = Völkerspezifisches Schild

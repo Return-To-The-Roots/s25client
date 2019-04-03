@@ -19,7 +19,7 @@
 #define JOB_CONSTS_H_
 
 #include "DrawPoint.h"
-#include "helpers/SimpleMultiArray.h"
+#include "helpers/MultiArray.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include <array>
@@ -79,7 +79,7 @@ const JobConst JOB_CONSTS[NUM_JOB_TYPES] = {
 const unsigned CATAPULT_WAIT1_LENGTH = 1300; // eigenlich 310 - aber hochgestellt wegen zu schneller Warenverteilung
 
 /// Position of the ware on a donkey per direction and animation step
-const helpers::SimpleMultiArray<DrawPoint, 6, 8> WARE_POS_DONKEY = {
+const helpers::MultiArray<DrawPoint, 6, 8> WARE_POS_DONKEY = {
   {{{0, -13}, {0, -12}, {0, -12}, {1, -13}, {2, -13}, {2, -12}, {2, -12}, {1, -13}},
    {{3, -12}, {3, -11}, {3, -11}, {3, -12}, {4, -12}, {5, -11}, {5, -11}, {5, -12}},
    {{2, -9}, {1, -8}, {0, -7}, {1, -8}, {2, -9}, {3, -8}, {4, -8}, {3, -9}},

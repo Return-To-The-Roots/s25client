@@ -167,11 +167,11 @@ void nobUsual::Draw(DrawPoint drawPt)
     {
         // Für alle Völker jeweils
         // X-Position der Esel
-        const helpers::SimpleMultiArray<DrawPoint, NUM_NATS, 3> DONKEY_OFFSETS = {{{{13, -9}, {26, -9}, {39, -9}},
-                                                                                   {{3, -17}, {16, -17}, {30, -17}},
-                                                                                   {{2, -21}, {15, -21}, {29, -21}},
-                                                                                   {{7, -17}, {18, -17}, {30, -17}},
-                                                                                   {{3, -22}, {16, -22}, {30, -22}}}};
+        const helpers::MultiArray<DrawPoint, NUM_NATS, 3> DONKEY_OFFSETS = {{{{13, -9}, {26, -9}, {39, -9}},
+                                                                             {{3, -17}, {16, -17}, {30, -17}},
+                                                                             {{2, -21}, {15, -21}, {29, -21}},
+                                                                             {{7, -17}, {18, -17}, {30, -17}},
+                                                                             {{3, -22}, {16, -22}, {30, -22}}}};
         // Animations-IDS des Esels
         const std::array<unsigned char, 25> DONKEY_ANIMATION = {
           {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0}};
@@ -205,7 +205,7 @@ void nobUsual::Draw(DrawPoint drawPt)
     else if(bldType_ == BLD_PIGFARM && this->HasWorker())
     {
         // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
-        const helpers::SimpleMultiArray<DrawPoint, NUM_NATS, 5> PIG_POSITIONS = {{
+        const helpers::MultiArray<DrawPoint, NUM_NATS, 5> PIG_POSITIONS = {{
           //  gr. S. 1.klS 2. klS usw
           {{3, -8}, {17, 3}, {-12, 4}, {-2, 10}, {-22, 11}},    // Afrikaner
           {{-16, 0}, {-37, 0}, {-32, 8}, {-16, 10}, {-22, 18}}, // Japaner
