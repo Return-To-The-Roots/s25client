@@ -33,7 +33,7 @@ nofCarpenter::nofCarpenter(SerializedGameData& sgd, const unsigned obj_id) : nof
 
 void nofCarpenter::DrawWorking(DrawPoint drawPt)
 {
-    static const std::array<DrawPointInit, NUM_NATS> offsets = {{{30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3}}};
+    static const std::array<DrawPoint, NUM_NATS> offsets = {{{30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3}}};
 
     unsigned now_id;
 

@@ -346,13 +346,13 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     if(SETTINGS.video.vbo)
     {
         // Create and fill the 3 VBOs for vertices, texCoords and colors
-        vbo_vertices.reset(ogl::Target::Array);
+        vbo_vertices = ogl::VBO<Triangle>(ogl::Target::Array);
         vbo_vertices.fill(gl_vertices, ogl::Usage::Static);
 
-        vbo_texcoords.reset(ogl::Target::Array);
+        vbo_texcoords = ogl::VBO<Triangle>(ogl::Target::Array);
         vbo_texcoords.fill(gl_texcoords, ogl::Usage::Static);
 
-        vbo_colors.reset(ogl::Target::Array);
+        vbo_colors = ogl::VBO<ColorTriangle>(ogl::Target::Array);
         vbo_colors.fill(gl_colors, ogl::Usage::Static);
 
         // Unbind VBO to not interfere with other program parts
@@ -862,28 +862,14 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 
 MapPoint TerrainRenderer::ConvertCoords(const Position pt, Position* offset) const
 {
-    if(offset)
-    {
-        // We need the screen offset by which we shifted the point
-        // this is the world size (in screen units) times the number we shifted the point
-        // This factor is floor(pos/size) which we do here in integer
-        // and avoid implementation defined (prior C++11) rounding for negative values by using the integer ceil on the inverse
-        if(pt.x >= 0)
-            offset->x = pt.x / size_.x;
-        else
-            offset->x = -((-pt.x + size_.x - 1) / size_.x);
-        if(pt.y >= 0)
-            offset->y = pt.y / size_.y;
-        else
-            offset->y = -((-pt.y + size_.y - 1) / size_.y);
-        offset->x *= (TR_W * size_.x);
-        offset->y *= (TR_H * size_.y);
-    }
     MapPoint ptOut = MakeMapPoint(pt, size_);
     RTTR_Assert(ptOut.x < size_.x);
     RTTR_Assert(ptOut.y < size_.y);
-    RTTR_Assert(!offset || pt.x - ptOut.x == offset->x / TR_W);
-    RTTR_Assert(!offset || pt.y - ptOut.y == offset->y / TR_H);
+    if(offset)
+    {
+        // We need the offset by which we shifted the point in screen units
+        *offset = (pt - ptOut) * Extent(TR_W, TR_H);
+    }
     return ptOut;
 }
 

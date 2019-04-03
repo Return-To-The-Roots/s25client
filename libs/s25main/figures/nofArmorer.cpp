@@ -46,7 +46,7 @@ nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 
 void nofArmorer::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPointInit, NUM_NATS> offsets = {{{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}}};
+    const std::array<DrawPoint, NUM_NATS> offsets = {{{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}}};
 
     unsigned max_id = 280;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);

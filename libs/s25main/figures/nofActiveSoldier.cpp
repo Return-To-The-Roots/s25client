@@ -484,25 +484,17 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
         return true;
     }
 
-    // TODO: Put the condition below into a functor and pass it as the condition to GetPointsInRadius with a limit of 1 (much easier in
-    // C++11)
-    std::vector<MapPoint> pts = gwg->GetPointsInRadius(middle, MEET_FOR_FIGHT_DISTANCE);
-    for(const auto& pt : pts)
-    {
-        // Did we find a good spot?
-        if(gwg->ValidPointForFighting(pt, true, nullptr)
-           && (pos == pt || gwg->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff)
-           && (other->GetPos() == pt || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff))
-
-        {
-            // Great, then let's take this one
-            *fight_spot = pt;
-            return true;
-        }
-    }
-
-    // No point found
-    return false;
+    std::vector<MapPoint> pts = gwg->GetPointsInRadius<1>(
+      middle, MEET_FOR_FIGHT_DISTANCE, Identity<MapPoint>(), [gwg = this->gwg, pos = this->pos, other](const auto& pt) {
+          // Did we find a good spot?
+          return gwg->ValidPointForFighting(pt, true, nullptr)
+                 && (pos == pt || gwg->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff)
+                 && (other->GetPos() == pt || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff);
+      });
+    if(pts.empty())
+        return false;
+    *fight_spot = pts.front();
+    return true;
 }
 
 /// Informs a waiting soldier about the start of a fight

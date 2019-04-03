@@ -314,7 +314,7 @@ void GameServer::Run()
             continue;
         player.sendMsgs(10);
     }
-    helpers::remove_if(networkPlayers, [](const auto& player) { return player.socket.isValid(); });
+    helpers::remove_if(networkPlayers, [](const auto& player) { return !player.socket.isValid(); });
 
     lanAnnouncer.Run();
 }

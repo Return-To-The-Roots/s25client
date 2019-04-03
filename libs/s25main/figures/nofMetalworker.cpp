@@ -71,7 +71,7 @@ void nofMetalworker::Serialize(SerializedGameData& sgd) const
 
 void nofMetalworker::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPointInit, NUM_NATS> offsets = {{{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}}};
+    const std::array<DrawPoint, NUM_NATS> offsets = {{{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}}};
 
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 

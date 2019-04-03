@@ -33,8 +33,8 @@ nofBaker::nofBaker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 
 void nofBaker::DrawWorking(DrawPoint drawPt)
 {
-    static const std::array<DrawPointInit, NUM_NATS> workOffset = {{{40, -4}, {-16, 8}, {-5, 9}, {-8, 7}, {-16, 8}}};
-    static const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, 8> walkOffsets = // nation, schrit, x-y
+    static const std::array<DrawPoint, NUM_NATS> workOffset = {{{40, -4}, {-16, 8}, {-5, 9}, {-8, 7}, {-16, 8}}};
+    static const helpers::SimpleMultiArray<DrawPoint, NUM_NATS, 8> walkOffsets = // nation, schrit, x-y
       {{{{10, 10}, {17, 12}, {24, 14}, {32, 14}, {34, 9}, {36, 4}, {38, -1}, {40, -4}},
         {{9, 11}, {11, 13}, {7, 17}, {3, 20}, {-1, 17}, {-5, 14}, {-9, 12}, {-13, 10}},
         {{9, 9}, {11, 11}, {9, 13}, {7, 15}, {4, 13}, {1, 11}, {-2, 9}, {-5, 9}},

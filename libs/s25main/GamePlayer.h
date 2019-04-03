@@ -93,8 +93,8 @@ public:
     // Deserialisieren
     void Deserialize(SerializedGameData& sgd);
 
-    GameWorldGame& GetGameWorld() { return *gwg; }
-    const GameWorldGame& GetGameWorld() const { return *gwg; }
+    GameWorldGame& GetGameWorld() { return gwg; }
+    const GameWorldGame& GetGameWorld() const { return gwg; }
 
     const MapPoint& GetHQPos() const { return hqPos; }
     void AddBuilding(noBuilding* bld, BuildingType bldType);
@@ -347,8 +347,8 @@ public:
     static BuildOrders GetStandardBuildOrder();
 
 private:
-    /// Access to the world. Pointer used only for vector-compatibility till C++11, always set, non-owning
-    GameWorldGame* gwg;
+    /// Access to the world
+    GameWorldGame& gwg;
     /// List of all buildings
     BuildingRegister buildings; //-V730_NOINIT
 

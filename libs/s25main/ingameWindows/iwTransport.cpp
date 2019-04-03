@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwTransport.h"
 
-#include "DrawPointInit.h"
+#include "DrawPoint.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -71,20 +71,20 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     TRANSPORT_SPRITES[13] = LOADER.GetMapTexN(2250 + GD_BOAT);
 
     // Positionen der einzelnen Buttons
-    const std::array<DrawPointInit, 14> BUTTON_POS = {{{20, 25},
-                                                       {52, 42},
-                                                       {84, 59},
-                                                       {116, 76},
-                                                       {84, 93},
-                                                       {52, 110},
-                                                       {20, 127},
-                                                       {52, 144},
-                                                       {84, 161},
-                                                       {116, 178},
-                                                       {84, 195},
-                                                       {52, 212},
-                                                       {20, 229},
-                                                       {52, 246}}};
+    const std::array<DrawPoint, 14> BUTTON_POS = {{{20, 25},
+                                                   {52, 42},
+                                                   {84, 59},
+                                                   {116, 76},
+                                                   {84, 93},
+                                                   {52, 110},
+                                                   {20, 127},
+                                                   {52, 144},
+                                                   {84, 161},
+                                                   {116, 178},
+                                                   {84, 195},
+                                                   {52, 212},
+                                                   {20, 229},
+                                                   {52, 246}}};
 
     // Einstellungen festlegen
     for(unsigned char i = 0; i < 14; ++i)

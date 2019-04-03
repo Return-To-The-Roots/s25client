@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwShip.h"
-#include "DrawPointInit.h"
+#include "DrawPoint.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -55,7 +55,7 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
     // Die Expeditionsweiterfahrbuttons
     AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))->SetVisible(false);
 
-    const std::array<DrawPointInit, 6> BUTTON_POS = {{{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}}};
+    const std::array<DrawPoint, 6> BUTTON_POS = {{{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}}};
 
     // Expedition abbrechen
     AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))->SetVisible(false);

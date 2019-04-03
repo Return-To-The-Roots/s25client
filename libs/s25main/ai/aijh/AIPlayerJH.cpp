@@ -132,7 +132,6 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
             break;
         default: throw std::invalid_argument("Invalid AI level!");
     }
-    // TODO: Use C++11 lambdas to simplify this
     // TODO: Maybe remove the AIEvents where possible and call the handler functions directly
     NotificationManager& notifications = gwb.GetNotifications();
     subBuilding = notifications.subscribe<BuildingNote>([this, playerId](const BuildingNote& note) {

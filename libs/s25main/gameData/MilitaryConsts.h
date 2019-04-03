@@ -18,7 +18,7 @@
 #ifndef MILITARY_CONSTS_H_
 #define MILITARY_CONSTS_H_
 
-#include "DrawPointInit.h"
+#include "DrawPoint.h"
 #include "helpers/SimpleMultiArray.h"
 #include "gameData/NationConsts.h"
 #include <array>
@@ -59,21 +59,21 @@ const unsigned HARBOR_RADIUS = 8;
 const unsigned HQ_RADIUS = 9;
 
 /// Offset of the troop flag per nation and type from the buildings origin
-const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, 4> TROOPS_FLAG_OFFSET = {{{{24, -41}, {19, -41}, {31, -88}, {35, -67}},
-                                                                                   {{-9, -49}, {14, -59}, {16, -63}, {0, -44}},
-                                                                                   {{-24, -36}, {9, -62}, {-2, -80}, {23, -75}},
-                                                                                   {{-5, -50}, {-5, -51}, {-9, -74}, {-12, -58}},
-                                                                                   {{-22, -37}, {-2, -51}, {20, -70}, {-46, -64}}}};
+const helpers::SimpleMultiArray<DrawPoint, NUM_NATS, 4> TROOPS_FLAG_OFFSET = {{{{24, -41}, {19, -41}, {31, -88}, {35, -67}},
+                                                                               {{-9, -49}, {14, -59}, {16, -63}, {0, -44}},
+                                                                               {{-24, -36}, {9, -62}, {-2, -80}, {23, -75}},
+                                                                               {{-5, -50}, {-5, -51}, {-9, -74}, {-12, -58}},
+                                                                               {{-22, -37}, {-2, -51}, {20, -70}, {-46, -64}}}};
 
 /// Offset of the troop flag per nation from the HQs origin
-const std::array<DrawPointInit, NUM_NATS> TROOPS_FLAG_HQ_OFFSET = {{{-12, -102}, {-19, -94}, {-18, -112}, {20, -54}, {-33, -81}}};
+const std::array<DrawPoint, NUM_NATS> TROOPS_FLAG_HQ_OFFSET = {{{-12, -102}, {-19, -94}, {-18, -112}, {20, -54}, {-33, -81}}};
 
 /// Offset of the border indicator flag per nation from the buildings origin
-const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, 4> BORDER_FLAG_OFFSET = {{{{-6, -36}, {7, -48}, {-18, -28}, {-47, -64}},
-                                                                                   {{17, -45}, {-3, -49}, {-30, -25}, {22, -53}},
-                                                                                   {{28, -19}, {29, -18}, {-27, -12}, {-49, -62}},
-                                                                                   {{24, -19}, {24, -19}, {17, -52}, {-37, -32}},
-                                                                                   {{8, -26}, {13, -36}, {-1, -59}, {-10, -61}}}};
+const helpers::SimpleMultiArray<DrawPoint, NUM_NATS, 4> BORDER_FLAG_OFFSET = {{{{-6, -36}, {7, -48}, {-18, -28}, {-47, -64}},
+                                                                               {{17, -45}, {-3, -49}, {-30, -25}, {22, -53}},
+                                                                               {{28, -19}, {29, -18}, {-27, -12}, {-49, -62}},
+                                                                               {{24, -19}, {24, -19}, {17, -52}, {-37, -32}},
+                                                                               {{8, -26}, {13, -36}, {-1, -59}, {-10, -61}}}};
 
 /// maximale Hitpoints der Soldaten von jedem Volk
 const helpers::SimpleMultiArray<unsigned char, NUM_NATS, 5> HITPOINTS = {

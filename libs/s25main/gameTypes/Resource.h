@@ -43,9 +43,7 @@ public:
 
     Resource(Type type, uint8_t amount);
     explicit Resource(uint8_t value = 0);
-    // C++11
-    // explicit operator uint8_t() const { return value; }
-    // explicit operator uint32_t() const { return value; }
+    explicit operator uint8_t() const { return value_; }
     uint8_t getValue() const { return value_; }
     Type getType() const { return Type(value_ >> 4); }
     uint8_t getAmount() const { return value_ & 0x0F; }

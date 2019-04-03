@@ -18,7 +18,7 @@
 #ifndef BUILD_COSTS_H_
 #define BUILD_COSTS_H_
 
-#include "DrawPointInit.h"
+#include "DrawPoint.h"
 #include "helpers/SimpleMultiArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/BuildingTypes.h"
@@ -318,7 +318,7 @@ const helpers::SimpleMultiArray<SmokeConst, NUM_NATS, NUM_BUILDING_TYPES> SUPPRE
    }}};
 
 /// Offset of the production-/gold- stop signs per building
-const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SIGN_CONSTS = {
+const helpers::SimpleMultiArray<DrawPoint, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SIGN_CONSTS = {
   {// Nubier
    {{0, 0},    {19, -4},  {19, -3},  {0, 0},    {23, -19}, {0, 0},    {0, 0},   {0, 0},     {0, 0},     {29, -23},
     {-2, -15}, {2, -13},  {-5, -16}, {-5, -15}, {0, 0},    {0, 0},    {0, 0},   {4, -16},   {9, -12},   {7, -10},
@@ -347,7 +347,7 @@ const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, NUM_BUILDING_TYPES> SUP
 
 /// Position der nubischen Feuer für alle 4 Bergwerke
 /// (Granit, Kohle, Eisen, Gold)
-const std::array<DrawPointInit, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
+const std::array<DrawPoint, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
   {31, -18},
   {34, -10},
   {30, -11},
