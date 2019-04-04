@@ -24,6 +24,7 @@ Checks: >-
   -readability-isolate-declaration,
   -readability-magic-numbers,
   -readability-named-parameter,
+  -readability-static-accessed-through-instance,
   -readability-uppercase-literal-suffix
 CheckOptions:
   - key: performance-for-range-copy.AllowedTypes
