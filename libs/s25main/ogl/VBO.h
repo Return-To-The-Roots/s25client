@@ -45,8 +45,8 @@ public:
         size_ = 0;
         handle_.create();
     }
-    VBO(VBO&&) = default;
-    VBO& operator=(VBO&&) = default;
+    VBO(VBO&&) noexcept = default;
+    VBO& operator=(VBO&&) noexcept = default;
     VBO(const VBO&) = delete;
     VBO& operator=(const VBO&) = delete;
 
