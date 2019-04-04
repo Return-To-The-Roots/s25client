@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwTrade.h"
-
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -27,6 +26,7 @@
 #include "controls/ctrlText.h"
 #include "factories/GameCommandFactory.h"
 #include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/JobConsts.h"
@@ -165,7 +165,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
                 number = GetPossibleTradeAmount(jobs[selection]);
             }
 
-            GetCtrl<ctrlText>(7)->SetText("/ " + std::to_string(number));
+            GetCtrl<ctrlText>(7)->SetText("/ " + helpers::toString(number));
         }
         break;
     }

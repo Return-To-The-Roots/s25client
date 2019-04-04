@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks ( helpers::toString(gameInfo.info.curNumPlayers)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,13 +17,13 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskLAN.h"
-#include "RTTR_Version.h"
-
 #include "Loader.h"
+#include "RTTR_Version.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlTable.h"
 #include "desktops/dskMultiPlayer.h"
+#include "helpers/toString.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMsgbox.h"
@@ -136,10 +136,9 @@ void dskLAN::UpdateServerList()
     unsigned curId = 0;
     for(const auto& gameInfo : openGames)
     {
-        std::string id = std::to_string(curId++);
+        std::string id = helpers::toString(curId++);
         std::string name = (gameInfo.info.hasPwd ? "(pwd) " : "") + gameInfo.info.name; //-V807
-        std::string player = std::to_string(static_cast<unsigned>(gameInfo.info.curNumPlayers)) + "/"
-                             + std::to_string(static_cast<unsigned>(gameInfo.info.maxNumPlayers));
+        std::string player = helpers::toString(gameInfo.info.curNumPlayers) + "/" + helpers::toString(gameInfo.info.maxNumPlayers);
         servertable->AddRow(0, id.c_str(), name.c_str(), gameInfo.info.map.c_str(), player.c_str(), gameInfo.info.version.c_str());
     }
 

@@ -19,7 +19,7 @@
 #include "iwLobbyServerInfo.h"
 #include "Loader.h"
 #include "controls/ctrlEdit.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/colors.h"
@@ -35,7 +35,7 @@ void iwLobbyServerInfo::UpdateServerInfo()
 
     GetCtrl<ctrlEdit>(1)->SetText(serverinfo.getMap());
     GetCtrl<ctrlEdit>(4)->SetText(serverinfo.getName());
-    GetCtrl<ctrlEdit>(6)->SetText(serverinfo.getHost() + ":" + std::to_string(serverinfo.getPort()));
+    GetCtrl<ctrlEdit>(6)->SetText(serverinfo.getHost() + ":" + helpers::toString(serverinfo.getPort()));
     GetCtrl<ctrlEdit>(8)->SetText(serverinfo.getVersion());
 }
 

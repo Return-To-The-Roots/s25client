@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameCommand.h"
 #include "GameCommands.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 
 #include <stdexcept>
 
@@ -64,7 +64,7 @@ GameCommandPtr GameCommand::Deserialize(Serializer& ser)
         case ORDER_NEW_SOLDIERS: gc = new OrderNewSoldiers(ser); break;
         case SEND_SOLDIERS_HOME: gc = new SendSoldiersHome(ser); break;
         case NOTIFY_ALLIES_OF_LOCATION: gc = new NotifyAlliesOfLocation(ser); break;
-        default: gc = nullptr; throw std::logic_error("Invalid GC Type: " + std::to_string(gcType));
+        default: gc = nullptr; throw std::logic_error("Invalid GC Type: " + helpers::toString(gcType));
     }
     RTTR_Assert(gc->gcType == gcType);
     return gc;

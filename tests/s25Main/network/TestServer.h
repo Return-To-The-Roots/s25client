@@ -35,7 +35,6 @@ class TestServer
 {
 public:
     virtual ~TestServer() = default;
-    ;
     bool listen(int16_t port);
     bool run();
     bool stop();

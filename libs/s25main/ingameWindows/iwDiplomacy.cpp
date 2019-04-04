@@ -26,7 +26,7 @@
 #include "controls/ctrlText.h"
 #include "controls/ctrlTextDeepening.h"
 #include "helpers/format.hpp"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
@@ -141,7 +141,7 @@ void iwDiplomacy::Msg_PaintBefore()
 
         // Ggf. Ping aktualisieren
         if(auto* pingfield = GetCtrl<ctrlTextDeepening>(200 + i))
-            pingfield->SetText(std::to_string(gwv.GetWorld().GetPlayer(i).ping));
+            pingfield->SetText(helpers::toString(gwv.GetWorld().GetPlayer(i).ping));
 
         // Verbleibende Zeit der Bündnisse in den Text-Ctrls anzeigen
         if(GetCtrl<ctrlText>(500 + i))

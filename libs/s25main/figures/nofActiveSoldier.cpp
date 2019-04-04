@@ -175,12 +175,6 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
     }
 }
 
-void nofActiveSoldier::HandleDerivedEvent(const unsigned /*id*/)
-{
-    // That's not supposed to happen!
-    RTTR_Assert(false);
-}
-
 /// Gets the visual range radius of this soldier
 unsigned nofActiveSoldier::GetVisualRange() const
 {

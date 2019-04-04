@@ -34,7 +34,7 @@
 #include "desktops/dskSinglePlayer.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
@@ -431,7 +431,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
 
         // Und Zeilen vorbereiten
         std::string players = (boost::format(_("%d Player")) % static_cast<unsigned>(header.getNumPlayers())).str();
-        std::string size = std::to_string(header.getWidth()) + "x" + std::to_string(header.getHeight());
+        std::string size = helpers::toString(header.getWidth()) + "x" + helpers::toString(header.getHeight());
 
         std::string name = cvStringToUTF8(header.getName());
         if(hasLua)

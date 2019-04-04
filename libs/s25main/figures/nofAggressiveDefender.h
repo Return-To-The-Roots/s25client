@@ -65,6 +65,7 @@ public:
     /// Serialisierungsfunktionen
 protected:
     void Serialize_nofAggressiveDefender(SerializedGameData& sgd) const;
+    [[noreturn]] void HandleDerivedEvent(unsigned) override { throw std::logic_error("No events expected"); }
 
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofAggressiveDefender(sgd); }

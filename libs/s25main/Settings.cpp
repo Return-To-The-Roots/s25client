@@ -23,6 +23,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "languages.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"

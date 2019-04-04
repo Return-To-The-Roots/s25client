@@ -70,7 +70,7 @@
 #include "figures/nofWellguy.h"
 #include "figures/nofWoodcutter.h"
 #include "helpers/containerUtils.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noCharburnerPile.h"
@@ -167,7 +167,7 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
         case GOT_NOTHING:
         case GOT_UNKNOWN: RTTR_Assert(false); break;
     }
-    throw Error("Invalid GameObjectType " + std::to_string(got) + " for objId=" + std::to_string(obj_id) + " found!");
+    throw Error("Invalid GameObjectType " + helpers::toString(got) + " for objId=" + helpers::toString(obj_id) + " found!");
 }
 
 FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)

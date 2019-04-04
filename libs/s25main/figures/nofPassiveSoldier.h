@@ -38,7 +38,7 @@ private:
     void GoalReached() override; // das Ziel erreicht wurde
 
     /// wenn man gelaufen ist
-    void Walked() override;
+    [[noreturn]] void Walked() override;
     /// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
     void Heal();
 

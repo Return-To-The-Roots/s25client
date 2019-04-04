@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaServerPlayer.h"
 #include "JoinPlayerInfo.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "lua/LuaHelpers.h"
 #include "network/GameMessages.h"
 #include "network/IGameLobbyController.h"

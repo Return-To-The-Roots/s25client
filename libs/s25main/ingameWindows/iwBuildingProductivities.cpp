@@ -58,7 +58,6 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
         {
             if(y * 2 + x >= bts.size()) //-V547
                 break;
-            ;
             unsigned imgId = (y * 2 + x) * 2;
             DrawPoint imgPos(x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y + percentSize.y / 2);
             imgPos = imgPos + bldProdContentOffset;

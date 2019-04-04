@@ -34,7 +34,7 @@ class nofDefender : public nofActiveSoldier
     void Walked() override;
 
     /// The derived classes regain control after a fight of nofActiveSoldier
-    void FreeFightEnded() override;
+    [[noreturn]] void FreeFightEnded() override;
 
 public:
     nofDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank, nofAttacker* attacker);
@@ -55,6 +55,7 @@ public:
     /// Serialisierungsfunktionen
 protected:
     void Serialize_nofDefender(SerializedGameData& sgd) const;
+    void HandleDerivedEvent[[noreturn]](unsigned) override { throw std::logic_error("No events expected"); }
 
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofDefender(sgd); }

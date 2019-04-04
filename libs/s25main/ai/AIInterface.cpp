@@ -144,7 +144,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
     {
         std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, RES_RADIUS[static_cast<unsigned>(res)]);
         return std::accumulate(pts.begin(), pts.end(), 0,
-                               [this, res](int lhs, const auto& curPt) { return lhs + GetResourceRating(curPt, res); });
+                               [this, res](int lhs, const auto& curPt) { return lhs + this->GetResourceRating(curPt, res); });
     } else // calculate different nodes only (4n+2 ?anyways much faster)
     {
         int returnVal = lastval;

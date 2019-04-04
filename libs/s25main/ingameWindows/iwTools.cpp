@@ -27,7 +27,7 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlProgress.h"
 #include "helpers/mathFuncs.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
 #include "notifications/NotificationManager.h"
@@ -143,7 +143,7 @@ void iwTools::UpdateTexts()
         {
             auto* field = GetCtrl<ctrlBaseText>(200 + i);
             int curOrders = isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i) + pendingOrderChanges[i];
-            field->SetText(std::to_string(curOrders));
+            field->SetText(helpers::toString(curOrders));
         }
     }
 }
@@ -183,7 +183,7 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
             ++curOrders;
         }
         ordersChanged = true;
-        GetCtrl<ctrlBaseText>(200 + tool)->SetText(std::to_string(curOrders));
+        GetCtrl<ctrlBaseText>(200 + tool)->SetText(helpers::toString(curOrders));
     } else
         switch(ctrl_id)
         {

@@ -222,7 +222,5 @@ void nofDefender::AttackerArrested()
 /// The derived classes regain control after a fight of nofActiveSoldier
 void nofDefender::FreeFightEnded()
 {
-    // This is not supposed to happen
-    RTTR_Assert(false);
-    nofActiveSoldier::FreeFightEnded();
+    throw std::logic_error("Should not participate inf ree fights");
 }

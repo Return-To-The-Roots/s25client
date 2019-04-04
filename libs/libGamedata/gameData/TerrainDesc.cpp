@@ -18,7 +18,7 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "TerrainDesc.h"
 #include "WorldDescription.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "lua/CheckedLuaTable.h"
 #include "lua/LuaHelpers.h"
 
@@ -61,7 +61,7 @@ ETerrain getDefaultFlags(TerrainKind kind)
         case TerrainKind::SNOW: return ETerrain::Unreachable;
         case TerrainKind::MOUNTAIN: return ETerrain::Mineable;
     }
-    throw GameDataError("Invalid terrain kind: " + std::to_string(static_cast<unsigned>(kind)));
+    throw GameDataError("Invalid terrain kind: " + helpers::toString(kind));
 }
 
 uint8_t getDefaultHumidity(TerrainKind kind)
@@ -74,7 +74,7 @@ uint8_t getDefaultHumidity(TerrainKind kind)
         case TerrainKind::SNOW:
         case TerrainKind::MOUNTAIN: return 0;
     }
-    throw GameDataError("Invalid terrain kind: " + std::to_string(static_cast<unsigned>(kind)));
+    throw GameDataError("Invalid terrain kind: " + helpers::toString(kind));
 }
 } // namespace
 

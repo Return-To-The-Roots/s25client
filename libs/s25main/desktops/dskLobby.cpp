@@ -25,6 +25,7 @@
 #include "controls/ctrlTable.h"
 #include "dskMultiPlayer.h"
 #include "helpers/containerUtils.h"
+#include "helpers/toString.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwLobbyRanking.h"
@@ -326,10 +327,10 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
             continue;
         }
         ids.insert(server.getId());
-        std::string id = std::to_string(server.getId());
+        std::string id = helpers::toString(server.getId());
         std::string name = (server.hasPassword() ? "(pwd) " : "") + server.getName();
-        std::string ping = std::to_string(server.getPing());
-        std::string player = std::to_string(server.getCurPlayers()) + "/" + std::to_string(server.getMaxPlayers());
+        std::string ping = helpers::toString(server.getPing());
+        std::string player = helpers::toString(server.getCurPlayers()) + "/" + helpers::toString(server.getMaxPlayers());
         servertable->AddRow(0, id.c_str(), name.c_str(), server.getMap().c_str(), player.c_str(), server.getVersion().c_str(),
                             ping.c_str());
     }
@@ -363,7 +364,7 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
     {
         if(player.getId() != 0xFFFFFFFF)
         {
-            std::string punkte = std::to_string(player.getPunkte());
+            std::string punkte = helpers::toString(player.getPunkte());
             std::string name = player.getName();
             if(player.isIngame)
                 name += _(" (playing)");

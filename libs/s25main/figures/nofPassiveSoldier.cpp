@@ -157,8 +157,7 @@ void nofPassiveSoldier::Upgrade()
 
 void nofPassiveSoldier::Walked()
 {
-    // Das dürfte nich passiern!
-    RTTR_Assert(false);
+    throw std::logic_error("Passive soldiers shall not walk");
 }
 
 void nofPassiveSoldier::NotNeeded()

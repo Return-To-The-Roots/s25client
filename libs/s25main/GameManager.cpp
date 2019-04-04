@@ -28,7 +28,7 @@
 #include "desktops/dskSplash.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "network/GameClient.h"
 #include "network/GameServer.h"
 #include "ogl/glArchivItem_Bitmap.h"

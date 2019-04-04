@@ -25,7 +25,7 @@
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskSelectMap.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "network/CreateServerInfo.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"

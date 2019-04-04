@@ -23,7 +23,7 @@
 #include "ai/AIPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "lua/LuaHelpers.h"
 #include "lua/LuaInterfaceBase.h"
 #include "notifications/BuildingNote.h"
@@ -130,7 +130,7 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
                 LOG.write("Duplicate nils found in SetRestrictedArea\n");
             else if(pts.size() < static_cast<unsigned>(curPolyStart) + 3)
                 throw LuaExecutionError(std::string("Invalid polygon (less than 3 points) found at index ")
-                                        + std::to_string(std::distance(inPoints.cbegin(), it)));
+                                        + helpers::toString(std::distance(inPoints.cbegin(), it)));
             else if(pts[curPolyStart] != pts.back()) // Close polygon if not already done
                 pts.push_back(pts[curPolyStart]);
             curPolyStart = -1;
@@ -207,7 +207,7 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
         if(unsigned(ware.first) < NUM_WARE_TYPES)
             goods.Add(ware.first, ware.second);
         else
-            throw LuaExecutionError(std::string("Invalid ware in AddWares: ") + std::to_string(ware.first));
+            throw LuaExecutionError(std::string("Invalid ware in AddWares: ") + helpers::toString(ware.first));
     }
 
     warehouse->AddGoods(goods, true);
@@ -228,7 +228,7 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
         if(unsigned(it.first) < NUM_JOB_TYPES)
             goods.Add(it.first, it.second);
         else
-            throw LuaExecutionError(std::string("Invalid job in AddPeople: ") + std::to_string(it.first));
+            throw LuaExecutionError(std::string("Invalid job in AddPeople: ") + helpers::toString(it.first));
     }
 
     warehouse->AddGoods(goods, true);

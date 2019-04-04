@@ -33,7 +33,7 @@
 #include "dskMainMenu.h"
 #include "helpers/containerUtils.h"
 #include "helpers/mathFuncs.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwMusicPlayer.h"
@@ -41,6 +41,7 @@
 #include "languages.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
+#include <sstream>
 
 /** @class dskOptions
  *
@@ -282,7 +283,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         if(framerate == -1)
             cbFrameRate->AddString(_("Disabled"));
         else
-            cbFrameRate->AddString(std::to_string(framerate) + " FPS");
+            cbFrameRate->AddString(helpers::toString(framerate) + " FPS");
         if(SETTINGS.video.vsync == framerate)
             cbFrameRate->SetSelection(cbFrameRate->GetNumItems() - 1);
     }

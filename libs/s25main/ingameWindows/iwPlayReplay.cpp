@@ -28,7 +28,7 @@
 #include "desktops/dskGameLoader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -123,7 +123,7 @@ void iwPlayReplay::PopulateTable()
         if(!path.has_filename())
             continue;
         std::string fileName = path.filename().string();
-        std::string lastGF = std::to_string(replay.GetLastGF());
+        std::string lastGF = helpers::toString(replay.GetLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
         table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), it.c_str());

@@ -22,7 +22,7 @@
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldBase.h"

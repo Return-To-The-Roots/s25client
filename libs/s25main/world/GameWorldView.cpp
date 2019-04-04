@@ -30,7 +30,7 @@
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -45,6 +45,7 @@
 #include "gameData/MapConsts.h"
 #include "libutil/warningSuppression.h"
 #include <boost/format.hpp>
+#include <cmath>
 #include <glad/glad.h>
 #include <stdexcept>
 
@@ -403,7 +404,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
                 return;
 
             unsigned short p = n.GetProductivity();
-            text = std::to_string(p) + " %";
+            text = helpers::toString(p) + " %";
             if(p >= 60)
                 color = COLOR_60_PERCENT;
             else if(p >= 30)

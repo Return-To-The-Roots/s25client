@@ -42,12 +42,12 @@ public:
     /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
     bool GetMouseStateR() const override;
 
-    VideoMode GetWindowSize() const final { return windowSize_; }
-    Extent GetRenderSize() const final { return renderSize_; }
-    bool IsFullscreen() const final { return isFullscreen_; }
+    VideoMode GetWindowSize() const override final { return windowSize_; }
+    Extent GetRenderSize() const override final { return renderSize_; }
+    bool IsFullscreen() const override final { return isFullscreen_; }
 
     /// prüft auf Initialisierung.
-    bool IsInitialized() const final { return initialized; }
+    bool IsInitialized() const override final { return initialized; }
     bool IsOpenGL() const override { return true; }
 
 protected:

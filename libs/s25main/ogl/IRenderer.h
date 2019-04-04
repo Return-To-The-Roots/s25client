@@ -29,7 +29,6 @@ class IRenderer
 {
 public:
     virtual ~IRenderer() = default;
-    ;
     /// Synchronize the rendering pipeline. Usually not required unless measuring something
     virtual void synchronize(){};
     /// Draw a border around rect with 3D effect

@@ -23,7 +23,7 @@
 #include "ai/aijh/Jobs.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
@@ -77,7 +77,7 @@ public:
         else if(overlay == 3)
             ticks[ai->GetAINode(pt).farmed]->DrawFull(curPos);
         else if(overlay < 13)
-            font.Draw(curPos, std::to_string(ai->GetResMapValue(pt, AIResource(overlay - 4))), FontStyle{}, 0xFFFFFF00);
+            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIResource(overlay - 4))), FontStyle{}, 0xFFFFFF00);
     }
 };
 

@@ -70,7 +70,7 @@ class World : public MapBase
     WorldDescription description_;
 
     std::unique_ptr<noBase> noNodeObj;
-    void Resize(const MapExtent& newSize) final;
+    void Resize(const MapExtent& newSize) override final;
 
 public:
     /// Currently flying catapult stones

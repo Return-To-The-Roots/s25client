@@ -29,6 +29,7 @@
 #include "controls/ctrlList.h"
 #include "controls/ctrlTextDeepening.h"
 #include "files.h"
+#include "helpers/toString.h"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/StringConversion.h"
@@ -367,7 +368,7 @@ void iwMusicPlayer::SetSegments(const std::vector<std::string>& segments)
 }
 void iwMusicPlayer::SetRepeats(unsigned repeats)
 {
-    GetCtrl<ctrlTextDeepening>(12)->SetText(std::to_string(repeats));
+    GetCtrl<ctrlTextDeepening>(12)->SetText(helpers::toString(repeats));
 }
 
 void iwMusicPlayer::SetRandomPlayback(const bool random_playback)

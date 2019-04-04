@@ -17,9 +17,30 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include <boost/test/unit_test.hpp>
 
+namespace {
+enum class IntEnum : int16_t
+{
+    MinusOne = -1,
+    Zero = 0,
+    PlusTwo = 2
+};
+}
+
 BOOST_AUTO_TEST_SUITE(Helpers)
+
+BOOST_AUTO_TEST_CASE(toString)
+{
+    BOOST_TEST(helpers::toString(uint16_t(1)) == "1");
+    BOOST_TEST(helpers::toString(uint32_t(65536)) == "65536");
+    BOOST_TEST(helpers::toString(int16_t(-1)) == "-1");
+    BOOST_TEST(helpers::toString(int32_t(-65536)) == "-65536");
+    BOOST_TEST(helpers::toString(IntEnum::MinusOne) == "-1");
+    BOOST_TEST(helpers::toString(IntEnum::Zero) == "0");
+    BOOST_TEST(helpers::toString(IntEnum::PlusTwo) == "2");
+}
 
 BOOST_AUTO_TEST_CASE(join)
 {

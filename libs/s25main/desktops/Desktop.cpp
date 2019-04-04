@@ -22,7 +22,7 @@
 #include "controls/ctrlText.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include <limits>
@@ -84,7 +84,7 @@ void Desktop::SetFpsDisplay(bool show)
         DeleteCtrl(fpsDisplayId);
     else if(!GetCtrl<ctrlText>(fpsDisplayId) && SmallFont)
     {
-        AddText(fpsDisplayId, DrawPoint(800, 0), std::to_string(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT, SmallFont);
+        AddText(fpsDisplayId, DrawPoint(800, 0), helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT, SmallFont);
     }
 }
 
@@ -92,6 +92,6 @@ void Desktop::UpdateFps(unsigned newFps)
 {
     auto* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
     if(fpsDisplay)
-        fpsDisplay->SetText(std::to_string(newFps) + " fps");
+        fpsDisplay->SetText(helpers::toString(newFps) + " fps");
     lastFPS_ = newFps;
 }
