@@ -35,7 +35,7 @@
 namespace {
 struct DeleterFreeLib
 {
-    using pointer = void*;
+    using pointer = HINSTANCE;
     void operator()(HINSTANCE dll) const { FreeLibrary(dll); }
 };
 } // namespace

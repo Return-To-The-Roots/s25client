@@ -29,7 +29,7 @@
 #include <windows.h>
 #else
 #ifndef HINSTANCE
-#define HINSTANCE void*
+using HINSTANCE = void*;
 #endif
 #endif
 
