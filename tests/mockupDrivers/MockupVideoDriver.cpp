@@ -55,7 +55,7 @@ void MockupVideoDriver::CleanUp()
     initialized = false;
 }
 
-bool MockupVideoDriver::CreateScreen(const std::string& /*title*/, const VideoMode& newSize, bool fullscreen)
+bool MockupVideoDriver::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
 {
     ResizeScreen(newSize, fullscreen);
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -64,9 +64,13 @@ bool MockupVideoDriver::CreateScreen(const std::string& /*title*/, const VideoMo
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 
-    SDL_Surface* screen;
-
-    if(!(screen = SDL_SetVideoMode(2, 2, 32, SDL_HWSURFACE | SDL_NOFRAME | SDL_OPENGL)))
+#if SDL_MAJOR_VERSION == 1
+    RTTR_UNUSED(title);
+    auto* window = SDL_SetVideoMode(2, 2, 32, SDL_HWSURFACE | SDL_NOFRAME | SDL_OPENGL);
+#else
+    auto* window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 2, 2, SDL_WINDOW_OPENGL);
+#endif
+    if(!window)
     {
         bnw::cerr << SDL_GetError() << std::endl;
         return false;
