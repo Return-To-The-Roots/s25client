@@ -126,22 +126,22 @@ struct MultiArray<T, T_n, T_ns...>
     static constexpr size_t size() { return shape()[0]; }
     static constexpr size_t numElements() { return detail::Product<T_n, T_ns...>::value; }
 
-    constexpr T* data() { return reinterpret_cast<T*>(elems); }
+    T* data() { return reinterpret_cast<T*>(elems); }
     constexpr const T* data() const { return reinterpret_cast<const T*>(elems); }
 
-    constexpr T* begin() { return data(); }
+    T* begin() { return data(); }
     constexpr const T* begin() const { return data(); }
-    constexpr T* end() { return data() + size(); }
+    T* end() { return data() + size(); }
     constexpr const T* end() const { return data() + size(); }
 
-    template<typename... I, std::enable_if_t<sizeof...(I) == numDims, int> = 0>
-    T& operator()(I... i)
+    template<typename... I>
+    std::enable_if_t<sizeof...(I) == numDims, T&> operator()(I... i)
     {
         return data()[detail::getFlatIndex(std::array<size_t, numDims>{size_t(i)...}, shape())];
     }
 
-    template<typename... I, std::enable_if_t<sizeof...(I) == numDims, int> = 0>
-    const T& operator()(I... i) const
+    template<typename... I>
+    std::enable_if_t<sizeof...(I) == numDims, const T&> operator()(I... i) const
     {
         return data()[detail::getFlatIndex(std::array<size_t, numDims>{size_t(i)...}, shape())];
     }

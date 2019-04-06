@@ -46,8 +46,8 @@ class ClientInterface
 public:
     virtual ~ClientInterface() = default;
 
-    virtual void CI_NextConnectState(const ConnectState) {}
-    virtual void CI_Error(const ClientError) {}
+    virtual void CI_NextConnectState(ConnectState) {}
+    virtual void CI_Error(ClientError) {}
 
     virtual void CI_NewPlayer(unsigned /*playerId*/) {}
     virtual void CI_PlayerLeft(unsigned /*playerId*/) {}
@@ -62,7 +62,7 @@ public:
     virtual void CI_PlayersSwapped(unsigned /*player1*/, unsigned /*player2*/) {}
     virtual void CI_GGSChanged(const GlobalGameSettings&) {}
 
-    virtual void CI_Chat(unsigned /*playerId*/, const ChatDestination /*cd*/, const std::string& /*msg*/) {}
+    virtual void CI_Chat(unsigned /*playerId*/, ChatDestination /*cd*/, const std::string& /*msg*/) {}
     virtual void CI_Countdown(unsigned /*remainingTimeInSec*/) {}
     virtual void CI_CancelCountdown(bool /*error*/) {}
 

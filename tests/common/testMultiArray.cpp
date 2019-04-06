@@ -72,8 +72,8 @@ BOOST_AUTO_TEST_CASE(Test2DArray)
     tmp[2][0] = 4;
     tmp[2][1] = 5;
     for(size_t i = 0; i < tmp.numElements(); ++i)
-        BOOST_TEST(tmp.data()[i] == i);
-    size_t i = 0;
+        BOOST_TEST(tmp.data()[i] == static_cast<int>(i));
+    int i = 0;
     for(int val : tmp)
     {
         BOOST_TEST(val == i);

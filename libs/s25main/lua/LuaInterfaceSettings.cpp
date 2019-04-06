@@ -57,7 +57,7 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
 
     state["AddonId"].setClass(kaguya::UserdataMetatable<AddonIdWrapper>());
 
-    for(auto id : rttrEnum::values<AddonId>)
+    for(AddonId id : rttrEnum::EnumData<AddonId>::values)
     {
         state[std::string("ADDON_") + rttrEnum::toString(id)] = AddonIdWrapper{id};
     }

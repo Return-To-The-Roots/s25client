@@ -72,7 +72,7 @@ namespace rttr { namespace test {
             if(boost::unit_test::framework::test_in_progress())
                 test_unit_start(boost::unit_test::framework::current_test_case());
         }
-        ~randomObserver() override { boost::unit_test::framework::deregister_observer(*this); }
+        ~randomObserver() { boost::unit_test::framework::deregister_observer(*this); }
         std::mt19937& getState() { return randState; }
     };
 

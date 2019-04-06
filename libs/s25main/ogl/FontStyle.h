@@ -29,7 +29,7 @@ class FontStyle
 {
 public:
     /// Horizontal align
-    enum AlignH
+    enum AlignH : unsigned
     {
         LEFT = 0,
         RIGHT = 1 << 0,
@@ -37,7 +37,7 @@ public:
     };
 
     /// Vertical align
-    enum AlignV
+    enum AlignV : unsigned
     {
         TOP = 0,
         BOTTOM = 1 << 2,
@@ -45,7 +45,7 @@ public:
     };
 
     /// Additional style
-    enum Additional
+    enum Additional : unsigned
     {
         OUTLINE = 0,
         NO_OUTLINE = 1 << 4
@@ -55,7 +55,7 @@ public:
     constexpr FontStyle(unsigned style) : value(style) {}
 
     template<class T_Enum>
-    constexpr FontStyle operator|(T_Enum style)
+    constexpr FontStyle operator|(T_Enum style) const
     {
         return (value & ~detail::GetFontStyleMask<T_Enum>::value) | style;
     }

@@ -60,7 +60,7 @@ std::string toString(T value)
 {
     for(size_t index = 0; index < size<T>; ++index)
     {
-        if(values<T>[index] == value)
+        if(EnumData<T>::values[index] == value)
         {
             const char* const rawName = EnumData<T>::rawNames[index];
             size_t length = std::strcspn(rawName, " =\t\n\r");
@@ -77,7 +77,7 @@ namespace detail {
         constexpr ignore_assign(T value) : value_(value) {}
         constexpr operator T() const { return value_; }
 
-        constexpr ignore_assign& operator=(int) { return *this; }
+        constexpr const ignore_assign& operator=(int) const { return *this; }
 
         T value_;
     };
