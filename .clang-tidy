@@ -10,6 +10,7 @@ Checks: >-
   readability-*,
   -bugprone-narrowing-conversions,
   -bugprone-too-small-loop-variable,
+  -clang-analyzer-osx.*,
   -misc-non-private-member-variables-in-classes,
   -misc-unused-parameters,
   -modernize-avoid-c-arrays,
