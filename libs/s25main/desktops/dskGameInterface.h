@@ -39,7 +39,6 @@ class iwRoadWindow;
 class glArchivItem_Bitmap;
 class GlobalGameSettings;
 class MouseCoords;
-class GameWorldBase;
 class PostBox;
 class PostMsg;
 struct BuildingNote;

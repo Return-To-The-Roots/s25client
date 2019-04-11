@@ -20,7 +20,6 @@
 #include "random/Random.h"
 #include "random/XorShift.h"
 #include "libutil/Serializer.h"
-#include <boost/assign/std/vector.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 #include <limits>

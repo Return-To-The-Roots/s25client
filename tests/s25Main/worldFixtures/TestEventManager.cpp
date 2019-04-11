@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TestEventManager.h"
 #include "GameEvent.h"
-#include <memory>
 
 unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
 {

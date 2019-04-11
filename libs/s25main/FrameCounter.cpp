@@ -20,7 +20,6 @@
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include <algorithm>
 #include <cmath>
-#include <cstdlib>
 
 //-V:clock::time_point:813
 

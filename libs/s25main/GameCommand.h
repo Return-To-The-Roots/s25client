@@ -23,7 +23,6 @@
 
 class Serializer;
 class GameWorldGame;
-class GamePlayer;
 class GameCommandFactory;
 
 namespace gc {

@@ -27,8 +27,6 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
-#include "gameTypes/BuildingCount.h"
-#include "gameData/BuildingProperties.h"
 #include "gameData/TerrainDesc.h"
 #include <limits>
 #include <numeric>

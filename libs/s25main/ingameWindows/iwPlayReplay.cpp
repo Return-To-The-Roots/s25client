@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwPlayReplay.h"
-#include "BasePlayerInfo.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "Replay.h"
@@ -35,7 +34,6 @@
 #include "gameData/const_gui_ids.h"
 #include "libutil/Log.h"
 #include <boost/filesystem.hpp>
-#include <boost/format.hpp>
 
 namespace {
 class SwitchOnStart : public ClientInterface

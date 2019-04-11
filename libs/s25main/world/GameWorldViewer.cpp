@@ -20,7 +20,6 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "buildings/nobMilitary.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "network/GameClient.h"
 #include "notifications/NodeNote.h"
 #include "notifications/PlayerNodeNote.h"

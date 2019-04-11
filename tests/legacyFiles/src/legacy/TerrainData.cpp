@@ -20,7 +20,6 @@
 #include "helpers/MultiArray.h"
 #include <array>
 #include <iostream>
-#include <list>
 
 unsigned char TerrainData::GetTextureIdentifier(TerrainType t)
 {

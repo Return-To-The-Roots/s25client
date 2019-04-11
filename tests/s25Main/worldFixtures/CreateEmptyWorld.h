@@ -20,10 +20,7 @@
 
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
-#include "gameTypes/MapTypes.h"
-#include "gameTypes/Nation.h"
 #include "gameData/DescIdx.h"
-#include <vector>
 
 class GameWorldGame;
 struct TerrainDesc;

@@ -19,9 +19,12 @@
 #define Map_h__
 
 #include "gameTypes/MapCoordinates.h"
-#include "libsiedler2/archives.h"
 #include <string>
 #include <vector>
+
+namespace libsiedler2 {
+class Archiv;
+}
 
 using VecUChar = std::vector<unsigned char>;
 
@@ -147,7 +150,7 @@ struct Map
      * Creates a new archiv for this map.
      * @return a new archiv containing the information of this map
      */
-    libsiedler2::Archiv* CreateArchiv();
+    libsiedler2::Archiv CreateArchiv();
 };
 
 #endif // Map_h__

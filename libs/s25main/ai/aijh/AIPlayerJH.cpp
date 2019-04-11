@@ -26,7 +26,6 @@
 #include "ai/AIEvents.h"
 #include "boost/filesystem/fstream.hpp"
 #include "buildings/noBuildingSite.h"
-#include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"

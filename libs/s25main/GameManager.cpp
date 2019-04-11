@@ -28,16 +28,12 @@
 #include "desktops/dskSplash.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/toString.h"
 #include "network/GameClient.h"
 #include "network/GameServer.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "gameData/GameConsts.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
-#include "libutil/colors.h"
 #include "libutil/error.h"
-#include <cstdio>
 
 GameManager::GameManager() : skipgf_last_time(0), skipgf_last_report_gf(0), cursor_(CURSOR_HAND)
 {

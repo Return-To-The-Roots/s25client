@@ -28,6 +28,7 @@
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/JobConsts.h"
+#include "gameData/NationConsts.h"
 #include "gameData/WorldDescription.h"
 #include <array>
 #include <cstdlib>

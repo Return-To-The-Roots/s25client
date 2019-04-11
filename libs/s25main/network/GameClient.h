@@ -25,12 +25,12 @@
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapInfo.h"
+#include "gameTypes/Nation.h"
 #include "gameTypes/ServerType.h"
 #include "gameTypes/TeamTypes.h"
 #include "gameTypes/VisualSettings.h"
 #include "libutil/Singleton.h"
 #include <memory>
-#include <queue>
 #include <vector>
 
 namespace AI {
@@ -46,7 +46,6 @@ class GameLobby;
 class GameWorldView;
 class Game;
 class Replay;
-class EventManager;
 struct PlayerGameCommands;
 class NWFInfo;
 struct CreateServerInfo;

@@ -20,7 +20,8 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "driver/VideoInterface.h"
+
+struct VideoMode;
 
 class iwSettings : public IngameWindow
 {

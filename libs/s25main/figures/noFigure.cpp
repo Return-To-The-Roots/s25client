@@ -40,8 +40,6 @@
 #include "nodeObjs/noSkeleton.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
-#include "gameData/MapConsts.h"
-#include "gameData/MilitaryConsts.h"
 #include "libutil/Log.h"
 #include "libutil/colors.h"
 

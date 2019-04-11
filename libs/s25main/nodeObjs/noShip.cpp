@@ -38,7 +38,6 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingConsts.h"
-#include "gameData/GameConsts.h"
 #include "gameData/ShipNames.h"
 #include "libutil/Log.h"
 

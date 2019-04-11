@@ -30,7 +30,6 @@
 #include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
 #include "gameData/MapConsts.h"
-#include "libutil/colors.h"
 
 const std::array<DrawPoint, 6> STONE_STARTS = {{{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}}};
 

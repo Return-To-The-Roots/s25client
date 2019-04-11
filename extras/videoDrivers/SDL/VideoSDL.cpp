@@ -21,14 +21,12 @@
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
-#include "makeException.h"
 #include <boost/nowide/iostream.hpp>
-#include <boost/system/windows_error.hpp>
 #include <SDL.h>
 #include <algorithm>
-#include <memory>
 
 #ifdef _WIN32
+#include "makeException.h"
 #include "s25clientResources.h"
 #include "libutil/ucString.h"
 #undef WIN32_LEAN_AND_MEAN
@@ -302,7 +300,7 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
         SendMessage(info.window, WM_SETICON, ICON_SMALL, icon);
     } catch(const std::runtime_error& e)
     {
-        PrintError(helpers::concat("Could not set icon: ", e.what()));
+        PrintError(std::string("Could not set icon: ") + e.what());
     }
 #endif // _WIN32
 

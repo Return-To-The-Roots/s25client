@@ -21,8 +21,6 @@
 #include "LandscapeType.h"
 #include "Rect.h"
 #include "TerrainType.h"
-#include "gameTypes/BuildingQuality.h"
-#include "gameTypes/MapTypes.h"
 #include "gameData/TerrainDesc.h"
 #include <array>
 

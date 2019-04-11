@@ -24,12 +24,11 @@
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 #include "gameData/TerrainDesc.h"
+#include <libsiedler2/enumTypes.h>
 #include <algorithm>
 #include <cmath>
-#include <cstdlib>
 #include <queue>
 #include <set>
-#include <stdexcept>
 #include <vector>
 
 void MapUtility::SetHill(Map& map, const Position& center, int z)

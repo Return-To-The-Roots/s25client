@@ -33,6 +33,7 @@
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VisualSettings.h"
+#include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
 #include <boost/test/unit_test.hpp>

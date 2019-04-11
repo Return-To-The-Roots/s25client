@@ -23,7 +23,6 @@
 #include "world/NodeMapBase.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/BuildingType.h"
-#include <vector>
 
 class AIInterface;
 namespace AIJH {

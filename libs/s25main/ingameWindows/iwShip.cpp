@@ -24,9 +24,9 @@
 #include "Ware.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
+#include "factories/GameCommandFactory.h"
 #include "figures/noFigure.h"
 #include "iwHelp.h"
-#include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
@@ -35,9 +35,9 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/JobConsts.h"
+#include "gameData/NationConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/const_gui_ids.h"
-#include <cstdio>
 
 iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship, const DrawPoint& pos)
     : IngameWindow(CGI_SHIP, pos, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)), gwv(gwv), gcFactory(gcFactory),

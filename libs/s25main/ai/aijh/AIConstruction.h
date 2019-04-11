@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "gameTypes/BuildingCount.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"

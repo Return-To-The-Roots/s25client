@@ -22,6 +22,7 @@
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
 #include "worldFixtures/WorldWithGCExecution.h"
+#include "gameData/ToolConsts.h"
 #include <boost/test/unit_test.hpp>
 #include <algorithm>
 #include <array>

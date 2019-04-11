@@ -28,7 +28,6 @@
 #include "world/TerritoryRegion.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/const_gui_ids.h"
-#include <boost/format.hpp>
 
 class iwMapDebug::DebugPrinter : public IDrawNodeCallback
 {

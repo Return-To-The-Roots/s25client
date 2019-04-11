@@ -19,7 +19,6 @@
 #include "FOWObjects.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/BuildingConsts.h"
 #include "libutil/colors.h"

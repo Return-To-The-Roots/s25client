@@ -20,7 +20,6 @@
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
-#include <cstdio>
 
 ctrlPercent::ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
                          glArchivItem_Font* font, const unsigned short* percentage)

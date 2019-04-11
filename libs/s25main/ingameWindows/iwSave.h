@@ -20,7 +20,6 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "iwDirectIPCreate.h"
 #include "network/CreateServerInfo.h"
 
 /// Fenster fürs Speichern UND(!) Laden von Spielständen

@@ -17,14 +17,14 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomMapGenerator.h"
+#include "mapGenerator/MapSettings.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/VertexUtility.h"
 #include "world/MapGeometry.h"
 #include "gameData/TerrainDesc.h"
+#include "libsiedler2/enumTypes.h"
 #include <algorithm>
-#include <cmath>
-#include <cstdlib>
 
 // harbor placement
 #define MIN_HARBOR_DISTANCE 35.0
@@ -276,22 +276,22 @@ void RandomMapGenerator::SetResources(const MapSettings& settings, Map& map)
     }
 }
 
-Map* RandomMapGenerator::Create(MapSettings settings)
+Map RandomMapGenerator::Create(MapSettings settings)
 {
     settings.Validate();
-    auto* map = new Map(settings.size, settings.name, settings.author);
+    Map map(settings.size, settings.name, settings.author);
 
     // configuration of the map settings
-    map->type = config.worldDesc.get(settings.type).s2Id;
-    map->numPlayers = settings.numPlayers;
+    map.type = config.worldDesc.get(settings.type).s2Id;
+    map.numPlayers = settings.numPlayers;
 
     // the actual map generation
-    PlacePlayers(settings, *map);
-    PlacePlayerResources(settings, *map);
-    CreateHills(settings, *map);
-    FillRemainingTerrain(settings, *map);
-    helper.Smooth(*map);
-    SetResources(settings, *map);
+    PlacePlayers(settings, map);
+    PlacePlayerResources(settings, map);
+    CreateHills(settings, map);
+    FillRemainingTerrain(settings, map);
+    helper.Smooth(map);
+    SetResources(settings, map);
 
     return map;
 }

@@ -17,6 +17,7 @@
 #ifndef CONTROLS_H_INCLUDED
 #define CONTROLS_H_INCLUDED
 
+// IWYU pragma: begin_exports
 #include "ctrlBuildingIcon.h"
 #include "ctrlChat.h"
 #include "ctrlCheck.h"
@@ -43,5 +44,6 @@
 #include "ctrlTimer.h"
 #include "ctrlVarDeepening.h"
 #include "ctrlVarText.h"
+// IWYU pragma: end_exports
 
 #endif // !CONTROLS_H_INCLUDED

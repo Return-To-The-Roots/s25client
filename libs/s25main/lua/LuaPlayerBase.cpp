@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaPlayerBase.h"
 #include "BasePlayerInfo.h"
-#include <stdexcept>
+#include <kaguya/kaguya.hpp>
 
 void LuaPlayerBase::Register(kaguya::State& state)
 {

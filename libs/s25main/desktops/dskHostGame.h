@@ -19,8 +19,6 @@
 #define WP_HOSTGAME_H_
 
 #include "Desktop.h"
-#include "GlobalGameSettings.h"
-#include "ILobbyClient.hpp"
 #include "network/ClientInterface.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
@@ -31,6 +29,7 @@ class GameLobby;
 class LobbyPlayerInfo;
 class LuaInterfaceSettings;
 struct GameLobbyController;
+class ILobbyClient;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
 class dskHostGame final : public Desktop, public ClientInterface, public LobbyInterface

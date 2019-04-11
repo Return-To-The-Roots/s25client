@@ -18,12 +18,14 @@
 #ifndef ILobbyClient_h__
 #define ILobbyClient_h__
 
-#include "liblobby/LobbyInterface.h"
 #include <string>
 
+class LobbyInterface;
+
 /// Interface for lobby clients
-struct ILobbyClient
+class ILobbyClient
 {
+public:
     virtual ~ILobbyClient() = default;
     virtual bool IsLoggedIn() const = 0;
     virtual void AddListener(LobbyInterface* listener) = 0;

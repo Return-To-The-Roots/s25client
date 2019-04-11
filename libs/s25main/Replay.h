@@ -20,11 +20,9 @@
 #pragma once
 
 #include "SavedFile.h"
-#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapType.h"
 #include "libutil/BinaryFile.h"
 #include <string>
-#include <vector>
 
 class MapInfo;
 struct PlayerGameCommands;

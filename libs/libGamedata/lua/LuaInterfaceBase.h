@@ -23,6 +23,10 @@
 #include <stdexcept>
 #include <string>
 
+namespace kaguya {
+class State;
+}
+
 class LuaExecutionError : public std::runtime_error
 {
 public:

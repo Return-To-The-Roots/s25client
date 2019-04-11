@@ -25,9 +25,8 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/Nation.h"
 #include "gameData/AnimalConsts.h"
-#include "gameData/NationConsts.h"
 #include "libsiedler2/Archiv.h"
 #include "libutil/Singleton.h"
 #include <array>
@@ -42,7 +41,6 @@ class ITexture;
 class glArchivItem_Bitmap;
 class glArchivItem_BitmapBase;
 class glArchivItem_Bitmap_Player;
-class glArchivItem_Bitmap_Raw;
 class glArchivItem_Bob;
 class glArchivItem_Font;
 class SoundEffectItem;
@@ -184,7 +182,7 @@ private:
     bool isWinterGFX_;
     std::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
     libsiedler2::Archiv* map_gfx;
-    glTexturePacker* stp;
+    std::unique_ptr<glTexturePacker> stp;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

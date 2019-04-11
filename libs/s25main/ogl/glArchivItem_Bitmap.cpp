@@ -21,7 +21,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include <glad/glad.h>
-#include <vector>
 
 glArchivItem_Bitmap::glArchivItem_Bitmap() = default;
 

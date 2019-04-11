@@ -22,7 +22,6 @@
 #include <vector>
 
 class glSmartBitmap;
-class glTexturePackerNode;
 namespace libsiedler2 {
 class PixelBufferARGB;
 } // namespace libsiedler2

@@ -19,15 +19,11 @@
 #include "GameClient.h"
 #include "CreateServerInfo.h"
 #include "EventManager.h"
-#include "FileChecksum.h"
 #include "Game.h"
 #include "GameEvent.h"
-#include "GameInterface.h"
 #include "GameLobby.h"
 #include "GameManager.h"
 #include "GameMessage_GameCommand.h"
-#include "GameObject.h"
-#include "GlobalVars.h"
 #include "JoinPlayerInfo.h"
 #include "Loader.h"
 #include "NWFInfo.h"
@@ -53,7 +49,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
-#include "postSystem/PostManager.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldView.h"
@@ -68,10 +63,7 @@
 #include "libutil/strFuncs.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
-#include <boost/format.hpp>
-#include <cerrno>
 #include <helpers/chronoIO.h>
-#include <iostream>
 #include <memory>
 
 void GameClient::ClientConfig::Clear()

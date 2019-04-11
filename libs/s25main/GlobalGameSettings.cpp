@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GlobalGameSettings.h"
 #include "Settings.h"
+#include "addons/Addon.h"
 #include "addons/Addons.h"
 #include "helpers/containerUtils.h"
 #include "gameData/MilitaryConsts.h"

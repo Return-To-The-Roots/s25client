@@ -20,7 +20,7 @@
 #pragma once
 
 #include "DrawPoint.h"
-#include "libsiedler2/ArchivItem_Bitmap.h"
+#include "libsiedler2/ArchivItem_BitmapBase.h"
 
 class glArchivItem_BitmapBase : public virtual libsiedler2::ArchivItem_BitmapBase //-V690
 {

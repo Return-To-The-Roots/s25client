@@ -86,8 +86,6 @@
 #include "gameData/TerrainDesc.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
-#include "libutil/Log.h"
-#include <boost/format.hpp>
 #include <algorithm>
 #include <cstdio>
 #include <sstream>
@@ -309,14 +307,13 @@ void dskGameInterface::Msg_PaintAfter()
     const GameWorldBase& world = worldViewer.GetWorld();
     if(GAMECLIENT.IsReplayModeOn())
     {
-        snprintf(nwf_string.data(), nwf_string.size() - 1,
+        snprintf(nwf_string.data(), nwf_string.size(),
                  _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
                  world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
                  GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
     } else
-        snprintf(nwf_string.data(), nwf_string.size() - 1,
-                 _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"), world.GetEvMgr().GetCurrentGF(),
-                 GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
+        snprintf(nwf_string.data(), nwf_string.size(), _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
+                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
                  GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), worldViewer.GetPlayer().ping);
 
     // tournament mode?

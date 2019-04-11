@@ -19,15 +19,13 @@
 #include "iwMapGenerator.h"
 #include "Loader.h"
 #include "controls/ctrlComboBox.h"
-#include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlProgress.h"
-#include "helpers/containerUtils.h"
 #include "lua/GameDataLoader.h"
+#include "mapGenerator/MapSettings.h"
 #include "gameData/MaxPlayers.h"
 #include "gameData/WorldDescription.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
-#include <boost/format.hpp>
 #include <string>
 
 enum

@@ -19,7 +19,6 @@
 #include "nofScout_LookoutTower.h"
 #include "EventManager.h"
 #include "buildings/nobUsual.h"
-#include "network/GameClient.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"

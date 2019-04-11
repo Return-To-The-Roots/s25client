@@ -30,6 +30,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include "libutil/colors.h"
 #include <stdexcept>
 

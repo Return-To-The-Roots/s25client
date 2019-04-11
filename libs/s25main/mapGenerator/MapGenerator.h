@@ -18,8 +18,9 @@
 #ifndef MapGenerator_h__
 #define MapGenerator_h__
 
-#include "mapGenerator/MapSettings.h"
 #include <string>
+
+struct MapSettings;
 
 /**
  * The MapGenerator is a utility to generate a large variety of different worlds.

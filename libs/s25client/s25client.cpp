@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Debug.h"
 #include "GameManager.h"
-#include "GlobalVars.h"
 #include "QuickStartGame.h"
 #include "RTTR_AssertError.h"
 #include "RTTR_Version.h"
@@ -34,42 +33,31 @@
 #include "libutil/StringConversion.h"
 #include "libutil/System.h"
 #include "libutil/error.h"
-
-#ifdef _WIN32
-#include "drivers/VideoDriverWrapper.h"
-#include "libutil/ucString.h"
-#include <s25clientResources.h>
-#endif
-
 #include <boost/filesystem.hpp>
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <boost/program_options.hpp>
 #include <array>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <limits>
+//#include <vld.h>
 
 #ifdef __APPLE__
 #include <SDL_main.h>
 #endif // __APPLE__
-
 #ifdef _WIN32
+#include "libutil/ucString.h"
 #include <windows.h>
+#include <s25clientResources.h>
 #if defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS
 #include <eh.h>
 #endif
 #endif
-
 #ifndef _MSC_VER
 #include <csignal>
 #endif
-
-//#include <vld.h>
-
-#include <cstdlib>
-#include <ctime>
-#include <iomanip>
-#include <iostream>
-#include <limits>
-#include <sstream>
 
 namespace po = boost::program_options;
 

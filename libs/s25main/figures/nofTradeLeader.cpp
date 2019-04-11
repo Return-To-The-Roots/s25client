@@ -29,6 +29,7 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
+#include "gameData/NationConsts.h"
 #include <boost/format.hpp>
 #include <utility>
 
@@ -71,7 +72,7 @@ void nofTradeLeader::GoalReached()
         GamePlayer& owner = gwg->GetPlayer(player);
         std::string waresName = _(goodType == GD_NOTHING ? JOB_NAMES[jobType] : WARE_NAMES[goodType]);
         std::string text =
-          boost::str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares % waresName % owner.name);
+          str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares % waresName % owner.name);
         SendPostMessage(targetWarehouse->GetPlayer(),
                         new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), text, PostCategory::Economy, *targetWarehouse));
         successor->AddNextDir(REACHED_GOAL);

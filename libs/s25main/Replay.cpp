@@ -17,13 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Replay.h"
-#include "BasePlayerInfo.h"
 #include "Savegame.h"
 #include "network/PlayerGameCommands.h"
 #include "gameTypes/MapInfo.h"
-#include "libendian/ConvertEndianess.h"
 #include <boost/filesystem.hpp>
 #include <memory>
+#include <mygettext/mygettext.h>
 
 std::string Replay::GetSignature() const
 {

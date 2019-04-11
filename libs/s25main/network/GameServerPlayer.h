@@ -19,14 +19,10 @@
 
 #pragma once
 
-#include "AsyncChecksum.h"
 #include "NetworkPlayer.h"
 #include "Timer.h"
 #include "helpers/SmoothedValue.hpp"
-#include <queue>
 #include <variant.h>
-
-class Serializer;
 
 /// Player connected to the server
 class GameServerPlayer : public NetworkPlayer

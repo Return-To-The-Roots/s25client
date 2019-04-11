@@ -18,13 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Game.h"
 #include "GameMessage_GameCommand.h"
-#include "GamePlayer.h"
 #include "NWFInfo.h"
 #include "ReplayInfo.h"
 #include "ai/AIPlayer.h"
 #include "network/GameClient.h"
-#include "random/Random.h"
-#include "libutil/Log.h"
 
 void GameClient::ExecuteNWF()
 {

@@ -37,14 +37,13 @@
 #include <valgrind/memcheck.h>
 #endif
 
-// WGL_EXT_swap_control
 #ifdef _WIN32
-typedef BOOL(APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
+using SwapIntervalExt_t = BOOL APIENTRY(int);
 #else
-using PFNWGLSWAPINTERVALFARPROC = int (*)(int);
+using SwapIntervalExt_t = int(int);
 #endif
 
-PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = nullptr;
+SwapIntervalExt_t* wglSwapIntervalEXT = nullptr;
 
 VideoDriverWrapper::VideoDriverWrapper()
     : videodriver(nullptr), renderer_(nullptr), loadedFromDll(false), isOglEnabled_(false), texture_current(0)
@@ -62,13 +61,13 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
     if(!existingDriver)
     {
         // DLL laden
-        if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
+        if(!driver_wrapper.Load(drivers::DriverType::Video, SETTINGS.driver.video))
             return false;
 
-        auto CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
+        auto createVideoInstance = driver_wrapper.GetFunction<decltype(CreateVideoInstance)>("CreateVideoInstance");
 
         // Instanz erzeugen
-        videodriver = CreateVideoInstance(&WINDOWMANAGER);
+        videodriver = createVideoInstance(&WINDOWMANAGER);
         if(!videodriver)
         {
             UnloadDriver();
@@ -100,9 +99,9 @@ void VideoDriverWrapper::UnloadDriver()
 {
     if(loadedFromDll)
     {
-        auto FreeVideoInstance = pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
-        if(FreeVideoInstance)
-            FreeVideoInstance(videodriver);
+        auto freeVideoInstance = driver_wrapper.GetFunction<decltype(FreeVideoInstance)>("FreeVideoInstance");
+        if(freeVideoInstance)
+            freeVideoInstance(videodriver);
         driver_wrapper.Unload();
     } else
         delete videodriver;
@@ -454,9 +453,9 @@ bool VideoDriverWrapper::LoadAllExtensions()
 // auf VSync-Extension testen
 #ifdef _WIN32
     if(hasExtension("WGL_EXT_swap_control"))
-        wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("wglSwapIntervalEXT"));
+        wglSwapIntervalEXT = drivers::FunctionPointerCast<SwapIntervalExt_t>(loadExtension("wglSwapIntervalEXT"));
 #else
-    wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"));
+    wglSwapIntervalEXT = drivers::FunctionPointerCast<SwapIntervalExt_t>(loadExtension("glXSwapIntervalSGI"));
 #endif
     GLOBALVARS.hasVSync = wglSwapIntervalEXT != nullptr;
 

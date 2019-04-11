@@ -17,9 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PostMsgWithBuilding.h"
-#include "Loader.h"
 #include "buildings/noBaseBuilding.h"
-#include <stdexcept>
 
 PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld,
                                          SoundEffect soundEffect)

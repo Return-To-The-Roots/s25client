@@ -20,7 +20,6 @@
 #pragma once
 
 #include "Desktop.h"
-#include "ingameWindows/iwDirectIPCreate.h"
 #include "mapGenerator/MapSettings.h"
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"

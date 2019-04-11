@@ -20,7 +20,6 @@
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
 #include "PointOutput.h"
-#include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/glArchivItem_Map.h"
@@ -42,7 +41,6 @@
 #include <queue>
 
 class noBase;
-class nobBaseWarehouse;
 
 MapLoader::MapLoader(World& world) : world_(world) {}
 

@@ -20,7 +20,6 @@
 
 #include "IngameWindow.h"
 
-class ctrlText;
 class GameWorldView;
 
 class iwMapDebug : public IngameWindow

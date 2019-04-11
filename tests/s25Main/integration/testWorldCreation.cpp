@@ -19,6 +19,7 @@
 #include "GamePlayer.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
+#include "gameData/MilitaryConsts.h"
 #include <boost/test/unit_test.hpp>
 
 /// HQ radius is 9 -> min size is 20

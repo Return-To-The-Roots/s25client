@@ -22,10 +22,10 @@
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
-#include "network/GameClient.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
+#include "gameData/MilitaryConsts.h"
 #include "libutil/Log.h"
 #include <stdexcept>
 

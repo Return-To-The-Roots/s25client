@@ -24,8 +24,6 @@
 #include "gameData/WorldDescription.h"
 #include <memory>
 
-class glArchivItem_Bitmap;
-
 class dskTextureTest : public dskMenuBase
 {
 public:

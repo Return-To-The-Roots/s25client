@@ -24,7 +24,6 @@
 #include "ogl/FontStyle.h"
 #include <cstdarg>
 #include <string>
-#include <vector>
 
 class glArchivItem_Font;
 

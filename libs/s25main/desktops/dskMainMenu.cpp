@@ -25,7 +25,6 @@
 #include "Settings.h"
 
 #include "CollisionDetection.h"
-#include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
 #include "desktops/dskCredits.h"
 #include "desktops/dskIntro.h"

@@ -27,7 +27,6 @@
 #include "network/GameClient.h"
 #include <boost/filesystem/path.hpp>
 #include <algorithm>
-#include <array>
 #include <iostream>
 
 class SwitchOnStart : public ClientInterface

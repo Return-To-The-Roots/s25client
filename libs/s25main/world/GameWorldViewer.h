@@ -29,10 +29,8 @@ class GamePlayer;
 class FOWObject;
 class GameWorldBase;
 struct MapNode;
-struct NodeNote;
 struct FoWNode;
 class noShip;
-class TerrainRenderer;
 struct RoadNote;
 
 /// This is a players View(er) on the GameWorld

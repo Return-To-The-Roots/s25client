@@ -31,13 +31,11 @@
 #include "worldFixtures/initGameRNG.hpp"
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
-#include "nodeObjs/noFlag.h"
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainDesc.h"
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 
 BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
 

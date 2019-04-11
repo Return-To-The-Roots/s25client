@@ -20,7 +20,7 @@
 
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/MapCoordinates.h"
-#include "gameData/NationConsts.h"
+#include "gameTypes/Nation.h"
 
 class noBuilding;
 class GameWorldBase;

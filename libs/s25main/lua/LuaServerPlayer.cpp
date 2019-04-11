@@ -18,13 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaServerPlayer.h"
 #include "JoinPlayerInfo.h"
-#include "helpers/toString.h"
 #include "lua/LuaHelpers.h"
-#include "network/GameMessages.h"
 #include "network/IGameLobbyController.h"
-#include "libutil/Log.h"
 #include "libutil/colors.h"
-#include <stdexcept>
+#include <kaguya/kaguya.hpp>
 
 const BasePlayerInfo& LuaServerPlayer::GetPlayer() const
 {

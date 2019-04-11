@@ -17,10 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/World.h"
-#include "world/MapGeometry.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noNothing.h"
-#include "nodeObjs/noTree.h"
 #if RTTR_ENABLE_ASSERTS
 #include "nodeObjs/noMovable.h"
 #endif

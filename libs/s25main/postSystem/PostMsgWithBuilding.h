@@ -20,7 +20,7 @@
 
 #include "postSystem/PostMsg.h"
 #include "gameTypes/BuildingType.h"
-#include "gameData/NationConsts.h"
+#include "gameTypes/Nation.h"
 
 class ITexture;
 class noBaseBuilding;

@@ -19,7 +19,6 @@
 #include "glArchivItem_Font.h"
 #include "FontStyle.h"
 #include "Loader.h"
-#include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
 #include "helpers/containerUtils.h"
@@ -551,8 +550,8 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
 void glArchivItem_Font::initFont()
 {
     ClearCharInfoMapping();
-    fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
-    fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
+    fontWithOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RLE);
+    fontNoOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RLE);
 
     // first, we have to find how much chars we really have
     unsigned numChars = 0;

@@ -36,17 +36,15 @@
 #include "ogl/glTexturePacker.h"
 #include "gameTypes/Direction.h"
 #include "gameData/JobConsts.h"
-#include "libsiedler2/ArchivItem_Ini.h"
+#include "gameData/NationConsts.h"
 #include "libsiedler2/ArchivItem_Palette.h"
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libsiedler2/ErrorCodes.h"
-#include "libsiedler2/IAllocator.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include "libsiedler2/PixelBufferPaletted.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
-#include "libutil/StringConversion.h"
 #include "libutil/System.h"
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/assign/std/vector.hpp>
@@ -64,10 +62,7 @@ Loader::Loader() : isWinterGFX_(false), map_gfx(nullptr), stp(nullptr)
     std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::Archiv*>(nullptr));
 }
 
-Loader::~Loader()
-{
-    delete stp;
-}
+Loader::~Loader() = default;
 
 glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned nr)
 {
@@ -300,53 +295,56 @@ bool Loader::LoadSounds()
 void Loader::LoadDummyGUIFiles()
 {
     // Palettes
-    auto* palette = new libsiedler2::ArchivItem_Palette;
-    files_["colors"].archiv.pushC(*palette);
-    files_["pal5"].archiv.push(palette);
+    {
+        auto palette = std::make_unique<libsiedler2::ArchivItem_Palette>();
+        files_["colors"].archiv.pushC(*palette);
+        files_["pal5"].archiv.push(std::move(palette));
+    }
     // GUI elements
     libsiedler2::Archiv& resource = files_["resource"].archiv;
     resource.alloc(57);
     for(unsigned id = 4; id < 36; id++)
     {
-        auto* bmp = new glArchivItem_Bitmap_RLE();
+        auto bmp = std::make_unique<glArchivItem_Bitmap_RLE>();
         libsiedler2::PixelBufferARGB buffer(1, 1);
         bmp->create(buffer);
-        resource.set(id, bmp);
+        resource.set(id, std::move(bmp));
     }
     for(unsigned id = 36; id < 57; id++)
     {
-        auto* bmp = new glArchivItem_Bitmap_Raw();
+        auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
         libsiedler2::PixelBufferARGB buffer(1, 1);
         bmp->create(buffer);
-        resource.set(id, bmp);
+        resource.set(id, std::move(bmp));
     }
     libsiedler2::Archiv& io = files_["io"].archiv;
     for(unsigned id = 0; id < 264; id++)
     {
-        auto* bmp = new glArchivItem_Bitmap_Raw();
+        auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
         libsiedler2::PixelBufferARGB buffer(1, 1);
         bmp->create(buffer);
-        io.push(bmp);
+        io.push(std::move(bmp));
     }
     // Fonts
     libsiedler2::Archiv& fonts = files_["outline_fonts"].archiv;
+    auto* palette = GetPaletteN("colors");
     fonts.alloc(3);
     libsiedler2::PixelBufferARGB buffer(15, 16);
     for(unsigned i = 0; i < 3; i++)
     {
-        auto* font = new glArchivItem_Font();
+        auto font = std::make_unique<glArchivItem_Font>();
         const unsigned dx = 9 + i * 3;
         const unsigned dy = 10 + i * 3;
         font->setDx(dx);
         font->setDy(dy);
         font->alloc(255);
-        for(unsigned id = 0x21; id < 255; id++)
+        for(unsigned id = 0x20; id < 255; id++)
         {
-            auto* bmp = new glArchivItem_Bitmap_Player();
+            auto bmp = std::make_unique<glArchivItem_Bitmap_Player>();
             bmp->create(dx, dy, buffer, palette, 0);
-            font->set(id, bmp);
+            font->set(id, std::move(bmp));
         }
-        fonts.set(i, font);
+        fonts.set(i, std::move(font));
     }
 }
 
@@ -425,8 +423,7 @@ bool Loader::LoadFiles(const std::vector<std::string>& files)
 
 void Loader::fillCaches()
 {
-    delete stp;
-    stp = new glTexturePacker();
+    stp = std::make_unique<glTexturePacker>();
 
     // Animals
     for(unsigned species = 0; species < NUM_SPECS; ++species)
@@ -569,7 +566,7 @@ void Loader::fillCaches()
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
                                 /* TODO: change this once we have own job pictures for babylonians
-                                                                //Offsets to new job imgs
+                                                                //Offsets to std::make_unique<job imgs>()
                                                                 overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
 
                                                                 //8 Frames * 6 Directions * 6 Types
@@ -780,12 +777,12 @@ void Loader::fillCaches()
                     }
                 }
 
-                auto* bitmap = new glArchivItem_Bitmap_Raw();
+                auto bitmap = std::make_unique<glArchivItem_Bitmap_Raw>();
                 bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
                 bitmap->setNx(image->getNx());
                 bitmap->setNy(image->getNy());
 
-                bmp.add(bitmap, true);
+                bmp.add(bitmap.release(), true);
                 bmp.addShadow(shadow);
 
                 stp->add(bmp);
@@ -806,7 +803,7 @@ void Loader::fillCaches()
         // generate mega texture
         stp->pack();
     } else
-        deletePtr(stp);
+        stp.reset();
 }
 
 /**
@@ -856,17 +853,15 @@ std::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArch
     libsiedler2::ArchivItem_Palette* curPal = nullptr;
     for(unsigned i = 0; i < color_count; ++i)
     {
-        if(i == 0)
-            curPal = srcImg.getPalette()->clone();
-        else
-            curPal = anim.apply(*curPal);
+        auto newPal = (i == 0) ? std::unique_ptr<libsiedler2::ArchivItem_Palette>(srcImg.getPalette()->clone()) : anim.apply(*curPal);
+        curPal = newPal.get();
         auto bitmap = std::make_unique<glArchivItem_Bitmap_Raw>();
 
-        bitmap->setPalette(curPal);
+        bitmap->setPalette(std::move(newPal));
 
         if(int ec = bitmap->create(buffer))
             throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
-        destination->push(bitmap.release());
+        destination->push(std::move(bitmap));
     }
     return destination;
 }
@@ -901,7 +896,7 @@ bool Loader::MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archi
         // Skip empty entries
         if(!otherArchiv[i])
             continue;
-        // If target entry is empty, just move the new one
+        // If target entry is empty, just move the std::make_unique<one>()
         if(!targetArchiv[i])
             targetArchiv.set(i, otherArchiv.release(i));
         else

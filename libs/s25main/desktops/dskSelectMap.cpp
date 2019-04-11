@@ -35,7 +35,6 @@
 #include "files.h"
 #include "helpers/containerUtils.h"
 #include "helpers/toString.h"
-#include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
@@ -51,7 +50,7 @@
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/ucString.h"
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <utility>
 //#include <boost/thread.hpp>
 

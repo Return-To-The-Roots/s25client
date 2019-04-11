@@ -24,6 +24,8 @@
 
 class MockupVideoDriver : public VideoDriver
 {
+    void* window = nullptr;
+
 public:
     MockupVideoDriver(VideoDriverLoaderInterface* CallBack);
     ~MockupVideoDriver() override;

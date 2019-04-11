@@ -34,7 +34,6 @@
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
-#include <boost/filesystem.hpp>
 #include <utility>
 
 const unsigned NUM_AUTO_SAVE_INTERVALS = 7;

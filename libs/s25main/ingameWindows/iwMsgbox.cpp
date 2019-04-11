@@ -25,7 +25,6 @@
 #include "helpers/MultiArray.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
-#include "libsiedler2/ArchivItem_BitmapBase.h"
 
 namespace {
 enum IDS

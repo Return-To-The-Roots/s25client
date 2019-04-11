@@ -17,13 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Jobs.h"
-#include "GlobalGameSettings.h"
-#include "addons/const_addons.h"
 #include "ai/AIEvents.h"
 #include "ai/AIInterface.h"
 #include "ai/aijh/AIConstruction.h"
 #include "ai/aijh/AIPlayerJH.h"
 #include "ai/aijh/BuildingPlanner.h"
+#include "ai/aijh/PositionSearch.h"
 #include "buildings/noBuildingSite.h"
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noFlag.h"

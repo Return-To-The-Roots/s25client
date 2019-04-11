@@ -26,17 +26,14 @@
 #include "GlobalGameSettings.h"
 #include "JoinPlayerInfo.h"
 #include "NWFInfo.h"
-#include "random/Random.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
 #include "libutil/LANDiscoveryService.h"
 #include "libutil/Singleton.h"
 #include <chrono>
-#include <memory>
 #include <vector>
 
-class AIPlayer;
 struct CreateServerInfo;
 class GameMessage;
 class GameMessageWithPlayer;

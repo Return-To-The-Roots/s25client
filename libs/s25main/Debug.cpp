@@ -26,11 +26,9 @@
 #include "libutil/Log.h"
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
-#include <boost/format.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <bzlib.h>
 #include <memory>
-#include <type_traits>
 #include <vector>
 
 #if defined(_WIN32) || defined(__CYGWIN__)

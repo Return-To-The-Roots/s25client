@@ -31,8 +31,6 @@ class FreePathFinder;
 class GamePlayer;
 class GameInterface;
 class GlobalGameSettings;
-class LuaInterfaceGame;
-class noBase;
 class noBuildingSite;
 class noFlag;
 class nobHarborBuilding;

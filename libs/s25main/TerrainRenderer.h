@@ -20,7 +20,6 @@
 #include "Point.h"
 #include "ogl/VBO.h"
 #include "gameTypes/MapCoordinates.h"
-#include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>

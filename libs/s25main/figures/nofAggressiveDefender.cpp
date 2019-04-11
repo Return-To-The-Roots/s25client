@@ -20,7 +20,6 @@
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
-#include "network/GameClient.h"
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
 #include "random/Random.h"

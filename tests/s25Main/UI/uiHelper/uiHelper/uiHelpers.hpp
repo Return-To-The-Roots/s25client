@@ -18,10 +18,7 @@
 #ifndef uiHelpers_h__
 #define uiHelpers_h__
 
-#include <memory>
-
 class MockupVideoDriver;
-class Desktop;
 
 namespace uiHelper {
 /// Initialize data required for GUI tests:

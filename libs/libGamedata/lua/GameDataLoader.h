@@ -20,6 +20,10 @@
 
 #include "LuaInterfaceBase.h"
 
+namespace kaguya {
+class State;
+class LuaTable;
+} // namespace kaguya
 struct WorldDescription;
 
 class GameDataLoader : public LuaInterfaceBase

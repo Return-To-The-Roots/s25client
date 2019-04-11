@@ -28,13 +28,9 @@
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/StatisticTypes.h"
 #include "gameData/MaxPlayers.h"
-#include "gameData/MilitaryConsts.h"
-#include "gameData/ToolConsts.h"
 #include <array>
 #include <list>
-#include <queue>
 
-struct BuildingCount;
 struct Direction;
 class GameWorldGame;
 class noBaseBuilding;
@@ -47,7 +43,6 @@ class nobBaseMilitary;
 class nobBaseWarehouse;
 class nobHarborBuilding;
 class nobMilitary;
-class nobUsual;
 class nofCarrier;
 class nofFlagWorker;
 class PostMsg;

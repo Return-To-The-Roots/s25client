@@ -103,25 +103,26 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
                     bmp->setSharedTexture(texture);
                 }
             }
-            /*
-            std::array<char, 100> tmp;
-            snprintf(tmp, sizeof(tmp), "%u-%ux%u.rgba", texture, curSize.x, curSize.y);
-
-            FILE *f = fopen(tmp, "w+");
-
-            for (int y = 0; y < curSize.y; ++y)
+            if((false))
             {
-            for (int x = 0; x < curSize.x; ++x)
-            {
-            fputc(buffer[((y * curSize.x + x) << 2) + 2], f);
-            fputc(buffer[((y * curSize.x + x) << 2) + 1], f);
-            fputc(buffer[((y * curSize.x + x) << 2) + 0], f);
-            fputc(buffer[((y * curSize.x + x) << 2) + 3], f);
-            }
-            }
+                std::array<char, 100> tmp;
+                snprintf(tmp.data(), tmp.size(), "%u-%ux%u.rgba", texture, curSize.x, curSize.y);
 
-            fclose(f);
-            */
+                FILE* f = fopen(tmp.data(), "w+");
+
+                for(unsigned y = 0; y < curSize.y; ++y)
+                {
+                    for(unsigned x = 0; x < curSize.x; ++x)
+                    {
+                        auto* curPixel = reinterpret_cast<const uint8_t*>(&buffer.getPixels()[buffer.calcIdx(x, y)]);
+                        fputc(curPixel[2], f);
+                        fputc(curPixel[1], f);
+                        fputc(curPixel[0], f);
+                        fputc(curPixel[3], f);
+                    }
+                }
+                fclose(f);
+            }
             // free texture packer, as it is not needed any more
             root->destroy(list.size());
             delete root;

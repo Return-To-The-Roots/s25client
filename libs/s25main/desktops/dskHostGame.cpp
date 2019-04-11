@@ -19,6 +19,7 @@
 #include "dskHostGame.h"
 #include "GameLobby.h"
 #include "GameLobbyController.h"
+#include "ILobbyClient.hpp"
 #include "JoinPlayerInfo.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -27,7 +28,6 @@
 #include "controls/ctrlChat.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
-#include "controls/ctrlDeepening.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlOptionGroup.h"
@@ -40,15 +40,14 @@
 #include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/LuaInterfaceSettings.h"
 #include "network/GameClient.h"
-#include "network/IGameLobbyController.h"
 #include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Map.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyPlayerInfo.h"
@@ -57,6 +56,7 @@
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
 #include <memory>
+#include <mygettext/mygettext.h>
 #include <set>
 #include <sstream>
 

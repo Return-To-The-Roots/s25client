@@ -41,7 +41,6 @@
 #include "nodeObjs/noFlag.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
-#include <boost/format.hpp>
 #include <sstream>
 
 // Tab - Flags

@@ -21,7 +21,6 @@
 #include "noBaseBuilding.h"
 class FOWObject;
 class SerializedGameData;
-class noFigure;
 
 class noBuilding : public noBaseBuilding
 {

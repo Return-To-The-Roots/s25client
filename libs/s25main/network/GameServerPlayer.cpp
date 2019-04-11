@@ -17,10 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameServerPlayer.h"
-#include "GameMessage_GameCommand.h"
 #include "GameMessages.h"
 #include "helpers/mathFuncs.h"
-#include "libutil/Log.h"
 #include <algorithm>
 #include <limits>
 

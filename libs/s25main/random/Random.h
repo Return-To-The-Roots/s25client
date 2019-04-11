@@ -24,6 +24,7 @@
 #include "random/XorShift.h"
 #include "libutil/Singleton.h"
 #include <array>
+#include <cstddef>
 #include <iosfwd>
 #include <limits>
 #include <string>

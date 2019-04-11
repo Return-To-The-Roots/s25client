@@ -29,7 +29,6 @@
 #include "worldFixtures/initGameRNG.hpp"
 #include "nodeObjs/noShip.h"
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 
 namespace {
 std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)

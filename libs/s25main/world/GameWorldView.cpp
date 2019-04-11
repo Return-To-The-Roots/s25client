@@ -23,7 +23,6 @@
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "MapGeometry.h"
-#include "SoundManager.h"
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
@@ -31,7 +30,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
 #include "helpers/toString.h"
-#include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
@@ -40,14 +38,12 @@
 #include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/BuildingConsts.h"
-#include "gameData/BuildingProperties.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
 #include "libutil/warningSuppression.h"
 #include <boost/format.hpp>
 #include <cmath>
 #include <glad/glad.h>
-#include <stdexcept>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
     : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),

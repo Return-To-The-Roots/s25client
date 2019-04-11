@@ -25,7 +25,6 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "helpers/containerUtils.h"
-#include "network/GameClient.h"
 #include "nofAggressiveDefender.h"
 #include "nofDefender.h"
 #include "nofPassiveSoldier.h"

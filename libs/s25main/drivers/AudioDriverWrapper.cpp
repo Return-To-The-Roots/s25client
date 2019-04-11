@@ -94,13 +94,13 @@ bool AudioDriverWrapper::LoadDriver(IAudioDriver* audioDriver)
     else
     {
         // DLL laden
-        if(!driver_wrapper.Load(DriverWrapper::DT_AUDIO, SETTINGS.driver.audio))
+        if(!driver_wrapper.Load(drivers::DriverType::Audio, SETTINGS.driver.audio))
             return false;
 
-        auto CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
+        auto createAudioInstance = driver_wrapper.GetFunction<decltype(CreateAudioInstance)>("CreateAudioInstance");
 
         // Instanz erzeugen
-        audiodriver_ = CreateAudioInstance(this, VIDEODRIVER.GetMapPointer());
+        audiodriver_ = createAudioInstance(this, VIDEODRIVER.GetMapPointer());
         if(!audiodriver_)
         {
             UnloadDriver();
@@ -123,9 +123,9 @@ void AudioDriverWrapper::UnloadDriver()
 {
     if(loadedFromDll)
     {
-        auto FreeAudioInstance = pto2ptf<PDRIVER_FREEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("FreeAudioInstance"));
-        if(FreeAudioInstance)
-            FreeAudioInstance(audiodriver_);
+        auto freeAudioInstance = driver_wrapper.GetFunction<decltype(FreeAudioInstance)>("FreeAudioInstance");
+        if(freeAudioInstance)
+            freeAudioInstance(audiodriver_);
         driver_wrapper.Unload();
     } else
         delete audiodriver_;

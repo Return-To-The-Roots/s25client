@@ -20,13 +20,13 @@
 #include "CheckedLuaTable.h"
 #include "RttrConfig.h"
 #include "files.h"
-#include "helpers/containerUtils.h"
 #include "gameData/EdgeDesc.h"
 #include "gameData/LandscapeDesc.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
 #include "libutil/Log.h"
 #include <boost/filesystem.hpp>
+#include <kaguya/kaguya.hpp>
 #include <stdexcept>
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)

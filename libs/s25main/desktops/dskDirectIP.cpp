@@ -24,7 +24,6 @@
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "libutil/colors.h"
 
 dskDirectIP::dskDirectIP()
 {

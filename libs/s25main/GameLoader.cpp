@@ -21,7 +21,6 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "addons/const_addons.h"
-#include "desktops/dskGameInterface.h"
 #include "helpers/containerUtils.h"
 #include <set>
 #include <utility>

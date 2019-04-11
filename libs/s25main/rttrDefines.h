@@ -26,24 +26,6 @@
 
 // IWYU pragma: end_exports
 
-/**
- *  konvertiert einen void*-Pointer zu einem function-Pointer mithilfe einer
- *  Union. GCC meckert da sonst wegen "type punned pointer" bzw
- *  "iso c++ forbids conversion".
- */
-template<typename F>
-inline F pto2ptf(void* o)
-{
-    union
-    {
-        F f;
-        void* o;
-    } U;
-    U.o = o;
-
-    return U.f;
-}
-
 template<typename T>
 inline T min(T a, T b)
 {

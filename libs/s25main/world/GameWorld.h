@@ -19,8 +19,6 @@
 #define GameWorld_h__
 
 #include "world/GameWorldGame.h"
-#include "world/GameWorldViewer.h"
-#include "gameTypes/MapCoordinates.h"
 #include <memory>
 #include <string>
 

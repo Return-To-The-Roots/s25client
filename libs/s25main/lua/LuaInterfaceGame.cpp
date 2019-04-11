@@ -19,7 +19,6 @@
 #include "LuaInterfaceGame.h"
 #include "EventManager.h"
 #include "Game.h"
-#include "GlobalVars.h"
 #include "WindowManager.h"
 #include "ai/AIInterface.h"
 #include "ai/AIPlayer.h"
@@ -30,9 +29,7 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
-#include "libutil/Log.h"
 #include "libutil/Serializer.h"
-#include <boost/nowide/fstream.hpp>
 
 LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance) : gw(gameInstance.lock()->world_), game(gameInstance)
 {

@@ -33,7 +33,7 @@
 #include "gameTypes/BuildingCount.h"
 #include "gameData/BuildingConsts.h"
 #include "libutil/Log.h"
-#include <stdexcept>
+#include <kaguya/kaguya.hpp>
 
 const BasePlayerInfo& LuaPlayer::GetPlayer() const
 {
@@ -119,7 +119,7 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
     int lastNullPt = -1;
     // Do we have multiple polygons?
     bool isMultiPoly = false;
-    for(auto it = inPoints.begin(); it != inPoints.end(); ++it)
+    for(auto it = inPoints.cbegin(); it != inPoints.cend(); ++it)
     {
         // Is this the separator between polygons?
         if(it->isNilref())

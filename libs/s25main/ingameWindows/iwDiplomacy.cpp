@@ -34,8 +34,6 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
-#include "libsiedler2/ArchivItem_BitmapBase.h"
-#include <cstdio>
 
 /// Position des Headers der Tabelle (Y)
 const unsigned short HEADER_Y = 30;

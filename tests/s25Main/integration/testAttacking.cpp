@@ -33,7 +33,6 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/Direction_Output.h"
-#include "gameData/GameConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include <boost/test/unit_test.hpp>
 #include <iostream>

@@ -33,7 +33,6 @@
 #include "ingameWindows/iwSave.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
-#include <boost/filesystem.hpp>
 
 static CreateServerInfo createLocalGameInfo(const std::string& name)
 {

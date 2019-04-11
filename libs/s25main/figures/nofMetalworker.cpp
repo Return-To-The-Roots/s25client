@@ -19,7 +19,6 @@
 #include "nofMetalworker.h"
 
 #include "EventManager.h"
-#include "GameEvent.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"

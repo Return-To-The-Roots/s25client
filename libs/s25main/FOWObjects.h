@@ -20,7 +20,7 @@
 #include "DrawPoint.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/MapTypes.h"
-#include "gameData/NationConsts.h"
+#include "gameTypes/Nation.h"
 
 class SerializedGameData;
 

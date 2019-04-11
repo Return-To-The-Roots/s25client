@@ -32,9 +32,7 @@
 #include <type_traits>
 
 class GameObject;
-class GameWorld;
 class EventManager;
-class BinaryFile;
 class GameEvent;
 class Game;
 

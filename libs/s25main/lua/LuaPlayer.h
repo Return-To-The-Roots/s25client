@@ -23,11 +23,14 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/PactTypes.h"
-#include <kaguya/kaguya.hpp>
 #include <map>
 #include <memory>
 #include <utility>
 
+namespace kaguya {
+class State;
+class VariadicArgType;
+} // namespace kaguya
 class GamePlayer;
 class Game;
 

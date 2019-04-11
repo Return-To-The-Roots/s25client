@@ -18,8 +18,6 @@
 #ifndef World_h__
 #define World_h__
 
-#include "Identity.h"
-#include "ReturnConst.h"
 #include "world/MapBase.h"
 #include "world/MilitarySquares.h"
 #include "gameTypes/Direction.h"
@@ -35,9 +33,7 @@
 #include <vector>
 
 struct LandscapeDesc;
-class noNothing;
 class CatapultStone;
-class FOWObject;
 class noBase;
 struct ShipDirection;
 /// Base class representing the world itself, no algorithms, handlers etc!

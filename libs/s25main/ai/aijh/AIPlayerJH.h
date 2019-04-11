@@ -19,21 +19,17 @@
 
 #pragma once
 
-#include "GamePlayer.h"
 #include "ai/AIEventManager.h"
 #include "ai/AIPlayer.h"
 #include "ai/aijh/AIMap.h"
 #include "ai/aijh/AIResourceMap.h"
-#include "ai/aijh/PositionSearch.h"
 #include "gameTypes/MapCoordinates.h"
 #include <boost/container/static_vector.hpp>
-#include <array>
 #include <list>
 #include <memory>
 #include <queue>
 
 class noFlag;
-class GlobalGameSettings;
 class noShip;
 class nobBaseWarehouse;
 namespace AIEvent {

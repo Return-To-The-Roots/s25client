@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 
-#include "addons/Addon.h"
 #include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
 #include "worldFixtures/WorldWithGCExecution.h"

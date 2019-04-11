@@ -15,8 +15,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/Map.h"
-
 #include "gameData/MaxPlayers.h"
+#include "libsiedler2/Archiv.h"
+#include "libsiedler2/ArchivItem_Map.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libsiedler2/ArchivItem_Raw.h"
 #include "libsiedler2/enumTypes.h"
 #include <utility>
 
@@ -43,11 +46,11 @@ Map::Map(const MapExtent& size, std::string name, std::string author)
     unknown5.resize(numNodes, 0x00);
 }
 
-libsiedler2::Archiv* Map::CreateArchiv()
+libsiedler2::Archiv Map::CreateArchiv()
 {
-    auto* info = new libsiedler2::Archiv();
-    auto* map = new libsiedler2::ArchivItem_Map();
-    auto* header = new libsiedler2::ArchivItem_Map_Header();
+    libsiedler2::Archiv info;
+    auto map = std::make_unique<libsiedler2::ArchivItem_Map>();
+    auto header = std::make_unique<libsiedler2::ArchivItem_Map_Header>();
 
     // create header information for the archiv
     header->setName(name);
@@ -63,23 +66,23 @@ libsiedler2::Archiv* Map::CreateArchiv()
         header->setPlayerHQ(i, hqPositions[i].x, hqPositions[i].y);
     }
 
-    map->push(header);
-    map->push(new libsiedler2::ArchivItem_Raw(z));
-    map->push(new libsiedler2::ArchivItem_Raw(textureRsu));
-    map->push(new libsiedler2::ArchivItem_Raw(textureLsd));
-    map->push(new libsiedler2::ArchivItem_Raw(road));
-    map->push(new libsiedler2::ArchivItem_Raw(objectType));
-    map->push(new libsiedler2::ArchivItem_Raw(objectInfo));
-    map->push(new libsiedler2::ArchivItem_Raw(animal));
-    map->push(new libsiedler2::ArchivItem_Raw(unknown1));
-    map->push(new libsiedler2::ArchivItem_Raw(build));
-    map->push(new libsiedler2::ArchivItem_Raw(unknown2));
-    map->push(new libsiedler2::ArchivItem_Raw(unknown3));
-    map->push(new libsiedler2::ArchivItem_Raw(resource));
+    map->push(std::move(header));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(z));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(textureRsu));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(textureLsd));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(road));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(objectType));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(objectInfo));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(animal));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(unknown1));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(build));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(unknown2));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(unknown3));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(resource));
     map->push(nullptr); // No shading
-    map->push(new libsiedler2::ArchivItem_Raw(unknown5));
+    map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(unknown5));
 
-    info->push(map);
+    info.push(std::move(map));
 
     return info;
 }

@@ -9,14 +9,11 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
-#include "gameData/MilitaryConsts.h"
-#include "gameData/ToolConsts.h"
 #include "libutil/Serializer.h"
 #include <utility>
 #include <vector>
 
 class GameWorldGame;
-class GamePlayer;
 
 namespace gc {
 

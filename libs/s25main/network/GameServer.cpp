@@ -45,6 +45,7 @@
 #include <cmath>
 #include <helpers/chronoIO.h>
 #include <iomanip>
+#include <mygettext/mygettext.h>
 
 inline std::ostream& operator<<(std::ostream& os, const AsyncChecksum& checksum)
 {

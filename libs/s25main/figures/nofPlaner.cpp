@@ -29,7 +29,6 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
-class RoadSegment;
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
     : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), pd(PD_NOTWORKING)

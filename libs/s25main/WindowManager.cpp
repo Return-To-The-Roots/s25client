@@ -806,12 +806,12 @@ void WindowManager::TakeScreenshot()
 {
     libsiedler2::PixelBufferARGB buffer(curRenderSize.x, curRenderSize.y);
     glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
-    auto* bmp = new libsiedler2::ArchivItem_Bitmap_Raw;
-    libsiedler2::Archiv archive;
-    archive.push(bmp);
+    auto bmp = std::make_unique<libsiedler2::ArchivItem_Bitmap_Raw>();
     bmp->create(buffer);
     bmp->flipVertical();
     bfs::path outFilepath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[100])) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
+    libsiedler2::Archiv archive;
+    archive.push(std::move(bmp));
     if(int ec = libsiedler2::Write(outFilepath.string(), archive))
         LOG.write(_("Error writing screenshot: %1%\n")) % libsiedler2::getErrorString(ec);
     else

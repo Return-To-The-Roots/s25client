@@ -20,8 +20,7 @@
 #include "PointOutput.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
-#include "helpers/containerUtils.h"
-#include "lua/LuaTraits.h"
+#include "lua/LuaTraits.h" // IWYU pragma: keep
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
@@ -36,7 +35,6 @@
 #include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>
-#include <boost/format.hpp>
 #include <boost/test/unit_test.hpp>
 #include <map>
 #include <memory>

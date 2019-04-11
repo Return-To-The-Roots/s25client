@@ -76,7 +76,7 @@ private:
     void Msg_MusicFinished() override;
 
 private:
-    DriverWrapper driver_wrapper;
+    drivers::DriverWrapper driver_wrapper;
     IAudioDriver* audiodriver_;
     bool loadedFromDll; /// If true then free must just dll free function else delete
 };

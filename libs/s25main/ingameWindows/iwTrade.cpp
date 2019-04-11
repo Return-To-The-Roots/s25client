@@ -31,8 +31,6 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
-#include <boost/format.hpp>
-#include <cstdio>
 
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"

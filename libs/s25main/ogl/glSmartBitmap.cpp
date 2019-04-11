@@ -24,7 +24,6 @@
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include "libutil/colors.h"
-#include <climits>
 #include <glad/glad.h>
 #include <limits>
 

@@ -19,8 +19,6 @@
 #define CreateSeaWorld_h__
 
 #include "gameTypes/MapCoordinates.h"
-#include "gameTypes/Nation.h"
-#include <vector>
 
 class GameWorldGame;
 

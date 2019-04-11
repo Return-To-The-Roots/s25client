@@ -28,9 +28,8 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
+#include "nodeObjs/noMovable.h"
 #include "gameTypes/RoadBuildState.h"
-#include "gameData/GuiConsts.h"
-#include "libutil/Log.h"
 #include <cmath>
 
 const Extent SmallWndSize(260, 190);

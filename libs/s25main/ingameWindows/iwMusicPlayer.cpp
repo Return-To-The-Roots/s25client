@@ -36,8 +36,6 @@
 #include "libutil/colors.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/nowide/cstdio.hpp>
-#include <cstdio>
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
     : IngameWindow(CGI_INPUTWINDOW, IngameWindow::posAtMouse, Extent(300, 100), title, LOADER.GetImageN("resource", 41), true),

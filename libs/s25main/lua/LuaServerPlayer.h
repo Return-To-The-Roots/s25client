@@ -19,7 +19,7 @@
 #define LuaServerPlayer_h__
 
 #include "LuaPlayerBase.h"
-#include <kaguya/kaguya.hpp>
+#include "gameTypes/Nation.h"
 
 struct JoinPlayerInfo;
 class IGameLobbyController;

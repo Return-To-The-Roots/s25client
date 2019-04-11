@@ -24,7 +24,6 @@
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "addons/const_addons.h"
-#include "network/GameClient.h"
 #include "nobBaseWarehouse.h"
 #include "notifications/BuildingNote.h"
 #include "world/GameWorldGame.h"

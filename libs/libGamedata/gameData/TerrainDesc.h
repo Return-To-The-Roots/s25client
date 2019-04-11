@@ -21,7 +21,6 @@
 #include "DescIdx.h"
 #include "Rect.h"
 #include <string>
-#include <vector>
 
 struct LandscapeDesc;
 struct EdgeDesc;

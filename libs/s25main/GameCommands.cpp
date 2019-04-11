@@ -25,7 +25,6 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
-#include <iostream>
 
 namespace gc {
 

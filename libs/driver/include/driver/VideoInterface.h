@@ -95,8 +95,4 @@ class VideoDriverLoaderInterface;
 RTTR_DECL IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack);
 RTTR_DECL void FreeVideoInstance(IVideoDriver* driver);
 
-///
-using PDRIVER_CREATEVIDEOINSTANCE = IVideoDriver* (*)(VideoDriverLoaderInterface*);
-using PDRIVER_FREEVIDEOINSTANCE = void (*)(IVideoDriver*);
-
 #endif // !VIDEOINTERFACE_H_INCLUDED

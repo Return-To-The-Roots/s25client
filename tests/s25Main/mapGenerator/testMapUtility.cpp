@@ -21,6 +21,7 @@
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "gameData/TerrainDesc.h"
+#include "libsiedler2/enumTypes.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 

@@ -24,6 +24,7 @@
 #include "libutil/Serializer.h"
 #include <boost/format.hpp>
 #include <algorithm>
+#include <mygettext/mygettext.h>
 #include <stdexcept>
 
 SavedFile::SavedFile() : saveTime_(0)

@@ -31,8 +31,6 @@
 #include <boost/test/unit_test.hpp>
 #include <array>
 #include <iostream>
-#include <rttr/test/testHelpers.hpp>
-#include <string>
 #include <vector>
 
 using namespace boost::assign;

@@ -25,7 +25,6 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
-class RoadSegment;
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier), healing_event(nullptr)
 {

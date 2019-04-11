@@ -17,10 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PointOutput.h"
+#include "mapGenerator/MapSettings.h"
 #include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 #include "gameData/MaxPlayers.h"
+#include "libsiedler2/enumTypes.h"
 #include <boost/test/unit_test.hpp>
 #include <memory>
 #include <vector>
@@ -42,9 +44,8 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
     settings.maxPlayerRadius = 0.3;
 
     RandomMapGenerator generator(config);
-    std::unique_ptr<Map> map(generator.Create(settings));
-
-    BOOST_REQUIRE_EQUAL(map->size, settings.size);
+    Map map(generator.Create(settings));
+    BOOST_REQUIRE_EQUAL(map.size, settings.size);
 }
 
 /**
@@ -63,26 +64,26 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
 
     RandomMapGenerator generator(config);
 
-    std::unique_ptr<Map> map(generator.Create(settings));
-    BOOST_REQUIRE_EQUAL(map->numPlayers, settings.numPlayers);
+    Map map(generator.Create(settings));
+    BOOST_REQUIRE_EQUAL(map.numPlayers, settings.numPlayers);
 
-    unsigned minSize = std::min(map->size.x, map->size.y) / 2; //-V807
+    unsigned minSize = std::min(map.size.x, map.size.y) / 2; //-V807
     for(unsigned i = 0; i < settings.numPlayers; i++)
     {
-        Point<uint16_t> p = map->hqPositions[i];
-        BOOST_REQUIRE_LT(p.x, map->size.x);
-        BOOST_REQUIRE_LT(p.y, map->size.y);
+        Point<uint16_t> p = map.hqPositions[i];
+        BOOST_REQUIRE_LT(p.x, map.size.x);
+        BOOST_REQUIRE_LT(p.y, map.size.y);
 
-        BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.size.x + p.x], i);
-        BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.size.x + p.x], libsiedler2::OI_HeadquarterMask);
+        BOOST_REQUIRE_EQUAL(map.objectType[p.y * settings.size.x + p.x], i);
+        BOOST_REQUIRE_EQUAL(map.objectInfo[p.y * settings.size.x + p.x], libsiedler2::OI_HeadquarterMask);
 
-        double distance = VertexUtility::Distance(Position(p), Position(settings.size / 2), map->size);
+        double distance = VertexUtility::Distance(Position(p), Position(settings.size / 2), map.size);
         BOOST_REQUIRE_GE(distance, settings.minPlayerRadius * minSize);
         BOOST_REQUIRE_LE(distance, settings.maxPlayerRadius * minSize);
     }
 
     for(unsigned i = settings.numPlayers; i < MAX_PLAYERS; i++)
-        BOOST_REQUIRE(!map->hqPositions[i].isValid());
+        BOOST_REQUIRE(!map.hqPositions[i].isValid());
 }
 
 BOOST_AUTO_TEST_CASE(InvalidConfig)
@@ -97,38 +98,38 @@ BOOST_AUTO_TEST_CASE(InvalidConfig)
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
-    std::unique_ptr<Map> map(generator.Create(settings));
-    BOOST_REQUIRE_GE(map->numPlayers, 1);
+    Map map(generator.Create(settings));
+    BOOST_REQUIRE_GE(map.numPlayers, 1);
 
     settings.numPlayers = 99;
-    map.reset(generator.Create(settings));
-    BOOST_REQUIRE_LT(map->numPlayers, 99);
+    map = generator.Create(settings);
+    BOOST_REQUIRE_LT(map.numPlayers, 99);
 
     settings.numPlayers = 2;
     settings.minPlayerRadius = -1;
     settings.maxPlayerRadius = 100;
-    map.reset(generator.Create(settings));
-    BOOST_REQUIRE(map->hqPositions[1].isValid());
+    map = generator.Create(settings);
+    BOOST_REQUIRE(map.hqPositions[1].isValid());
 
     settings.minPlayerRadius = 1;
     settings.maxPlayerRadius = 1;
-    map.reset(generator.Create(settings));
-    BOOST_REQUIRE(map->hqPositions[1].isValid());
+    map = generator.Create(settings);
+    BOOST_REQUIRE(map.hqPositions[1].isValid());
 
     settings.minPlayerRadius = 1;
     settings.maxPlayerRadius = 0.5;
-    map.reset(generator.Create(settings));
-    BOOST_REQUIRE(map->hqPositions[1].isValid());
+    map = generator.Create(settings);
+    BOOST_REQUIRE(map.hqPositions[1].isValid());
 
     settings.ratioCoal = 0;
     settings.ratioGold = 0;
     settings.ratioGranite = 0;
     settings.ratioIron = 0;
-    map.reset(generator.Create(settings));
+    map = generator.Create(settings);
 
     settings.size = MapExtent(33, 35);
-    map.reset(generator.Create(settings));
-    BOOST_REQUIRE_EQUAL(map->size, MapExtent(32, 34));
+    map = generator.Create(settings);
+    BOOST_REQUIRE_EQUAL(map.size, MapExtent(32, 34));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

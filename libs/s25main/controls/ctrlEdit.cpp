@@ -20,11 +20,9 @@
 #include "CollisionDetection.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/strUtils.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "libutil/StringConversion.h"
-#include <sstream>
 
 ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
                    unsigned short maxlength, bool password, bool disabled, bool notify)

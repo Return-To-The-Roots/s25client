@@ -29,7 +29,6 @@
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include <boost/test/unit_test.hpp>
-#include <utility>
 
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(GameInterfaceDesktop)

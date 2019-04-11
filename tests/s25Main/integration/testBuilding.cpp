@@ -18,12 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "BQOutput.h"
 #include "GamePlayer.h"
-#include "GlobalVars.h"
 #include "PointOutput.h"
 #include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
 #include "helpers/containerUtils.h"
-#include "network/GameClient.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"

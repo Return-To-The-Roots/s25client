@@ -17,14 +17,13 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofGeologist.h"
-
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
-#include "addons/Addon.h"
+#include "addons/const_addons.h"
 #include "lua/LuaInterfaceGame.h"
 #include "network/GameClient.h"
 #include "notifications/ResourceNote.h"

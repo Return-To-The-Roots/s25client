@@ -27,7 +27,6 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/ShipDirection.h"
-#include "gameData/MilitaryConsts.h"
 #include <vector>
 
 struct InventorySetting;

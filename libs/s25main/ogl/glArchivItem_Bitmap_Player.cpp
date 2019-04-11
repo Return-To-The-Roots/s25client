@@ -22,7 +22,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include <glad/glad.h>
-#include <vector>
 
 namespace {
 struct GL_RGBAColor

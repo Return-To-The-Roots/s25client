@@ -17,12 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "BQOutput.h"
-#include "EventManager.h"
 #include "FileChecksum.h"
-#include "GameObject.h"
 #include "GamePlayer.h"
-#include "GlobalGameSettings.h"
-#include "PlayerInfo.h"
 #include "PointOutput.h"
 #include "RttrConfig.h"
 #include "files.h"
@@ -30,10 +26,8 @@
 #include "ogl/glArchivItem_Map.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
-#include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noBase.h"
-#include "gameTypes/Nation.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/tmpFile.h"
 #include <boost/test/unit_test.hpp>

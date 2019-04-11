@@ -17,13 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameManager.h"
-#include "GlobalVars.h"
 #include "PlayerGameCommands.h"
 #include "ReplayInfo.h"
 #include "helpers/format.hpp"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
-#include "random/Random.h"
 #include "libutil/Log.h"
 
 void GameClient::ExecuteGameFrame_Replay()

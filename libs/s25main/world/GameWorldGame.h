@@ -22,7 +22,6 @@
 #include "gameTypes/MapCoordinates.h"
 #include <vector>
 
-class CatapultStone;
 class GameInterface;
 class MilitarySquares;
 class noBaseBuilding;

@@ -21,7 +21,6 @@
 #include "Window.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlText.h"
-#include "helpers/containerUtils.h"
 #include "libutil/colors.h"
 
 void Addon::hideGui(Window* window, unsigned id) const

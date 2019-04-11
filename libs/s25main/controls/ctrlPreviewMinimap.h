@@ -19,7 +19,6 @@
 
 #include "PreviewMinimap.h"
 #include "ctrlMinimap.h"
-#include "ogl/glArchivItem_Map.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameData/MaxPlayers.h"
 #include <array>

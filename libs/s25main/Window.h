@@ -26,8 +26,8 @@
 #include "animation/AnimationManager.h"
 #include "ogl/FontStyle.h"
 #include "gameTypes/BuildingType.h"
+#include "gameTypes/Nation.h"
 #include "gameTypes/TextureColor.h"
-#include "gameData/NationConsts.h"
 #include "libutil/colors.h"
 #include <boost/range/adaptor/map.hpp>
 #include <map>

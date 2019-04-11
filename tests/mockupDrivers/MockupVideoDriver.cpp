@@ -56,6 +56,9 @@ bool MockupVideoDriver::Initialize()
 bool MockupVideoDriver::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
 {
     ResizeScreen(newSize, fullscreen);
+    if(window)
+        return true;
+
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -64,9 +67,9 @@ bool MockupVideoDriver::CreateScreen(const std::string& title, const VideoMode& 
 
 #if SDL_MAJOR_VERSION == 1
     RTTR_UNUSED(title);
-    auto* window = SDL_SetVideoMode(2, 2, 32, SDL_HWSURFACE | SDL_NOFRAME | SDL_OPENGL);
+    window = SDL_SetVideoMode(2, 2, 32, SDL_ANYFORMAT | SDL_NOFRAME | SDL_OPENGL);
 #else
-    auto* window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 2, 2, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 2, 2, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
 #endif
     if(!window)
     {

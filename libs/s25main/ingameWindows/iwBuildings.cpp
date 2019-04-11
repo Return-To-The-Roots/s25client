@@ -23,7 +23,6 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
-#include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
 #include "files.h"
 #include "iwBaseWarehouse.h"
@@ -39,7 +38,6 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/const_gui_ids.h"
-#include <cstdio>
 
 /// Reihenfolge der Gebäude
 const std::array<BuildingType, 32> bts = {

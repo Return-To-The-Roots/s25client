@@ -22,7 +22,6 @@
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
 #include "buildings/nobMilitary.h"
-#include "network/GameClient.h"
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
 #include "random/Random.h"

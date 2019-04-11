@@ -18,7 +18,6 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "LuaHelpers.h"
 #include "LuaInterfaceBase.h"
-#include <boost/filesystem/operations.hpp>
 
 namespace lua {
 

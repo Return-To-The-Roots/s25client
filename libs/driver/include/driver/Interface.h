@@ -24,9 +24,4 @@
 RTTR_DECL unsigned GetDriverAPIVersion();
 RTTR_DECL const char* GetDriverName();
 
-/// Definition des GetDriverAPIVersion-Zeigers
-using PDRIVER_GETDRIVERAPIVERSION = unsigned int (*)();
-/// Definition des GetDriverName
-using PDRIVER_GETDRIVERNAME = const char* (*)();
-
 #endif // !INTERFACE_H_INCLUDED

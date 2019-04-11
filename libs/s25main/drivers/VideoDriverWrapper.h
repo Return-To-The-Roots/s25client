@@ -118,7 +118,7 @@ private:
     bool LoadAllExtensions();
 
 private:
-    DriverWrapper driver_wrapper;
+    drivers::DriverWrapper driver_wrapper;
     IVideoDriver* videodriver;
     std::unique_ptr<IRenderer> renderer_;
     std::unique_ptr<FrameCounter> frameCtr_;

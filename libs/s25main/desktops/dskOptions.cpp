@@ -41,6 +41,7 @@
 #include "languages.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
+#include <mygettext/mygettext.h>
 #include <sstream>
 
 /** @class dskOptions
@@ -192,7 +193,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupGrafik->AddText(58, DrawPoint(80, 275), _("Graphics Driver"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = groupGrafik->AddComboBox(59, DrawPoint(280, 275), Extent(390, 20), TC_GREY, NormalFont, 100);
 
-    std::vector<DriverWrapper::DriverItem> video_drivers = DriverWrapper::LoadDriverList(DriverWrapper::DT_VIDEO);
+    const auto video_drivers = drivers::DriverWrapper::LoadDriverList(drivers::DriverType::Video);
 
     for(const auto& video_driver : video_drivers)
     {
@@ -211,7 +212,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupSound->AddText(60, DrawPoint(80, 230), _("Sounddriver"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = groupSound->AddComboBox(61, DrawPoint(280, 225), Extent(390, 20), TC_GREY, NormalFont, 100);
 
-    std::vector<DriverWrapper::DriverItem> audio_drivers = DriverWrapper::LoadDriverList(DriverWrapper::DT_AUDIO);
+    const auto audio_drivers = drivers::DriverWrapper::LoadDriverList(drivers::DriverType::Audio);
 
     for(const auto& audio_driver : audio_drivers)
     {

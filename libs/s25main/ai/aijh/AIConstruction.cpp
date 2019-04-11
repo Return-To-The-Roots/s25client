@@ -39,11 +39,9 @@
 #include "gameTypes/JobTypes.h"
 #include "gameData/BuildingProperties.h"
 #include "libutil/warningSuppression.h"
-#include <boost/container/flat_set.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <algorithm>
 #include <array>
-#include <cmath>
 #include <cstdlib>
 #include <limits>
 #include <list>

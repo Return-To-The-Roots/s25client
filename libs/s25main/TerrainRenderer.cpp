@@ -17,12 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
-#include "GlobalVars.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
-#include "helpers/toString.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldBase.h"
@@ -32,6 +30,7 @@
 #include "gameData/TerrainDesc.h"
 #include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
+#include "libsiedler2/dynamicUniqueCast.h"
 #include "libutil/Log.h"
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/range/adaptor/indexed.hpp>
@@ -139,7 +138,8 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
                   LOADER.ExtractAnimatedTexture(*texBmp, cur.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
                 for(unsigned i = 0; i < textures->size(); i++)
                 {
-                    terrainTextures[curIdx.value].textures.push_back(dynamic_cast<glArchivItem_Bitmap*>(textures->release(i)));
+                    terrainTextures[curIdx.value].textures.push_back(
+                      libsiedler2::dynamicUniqueCast<glArchivItem_Bitmap>(textures->release(i)).release());
                 }
             }
         } else

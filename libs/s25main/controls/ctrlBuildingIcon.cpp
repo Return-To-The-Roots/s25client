@@ -21,7 +21,6 @@
 #include "files.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameTypes/BuildingType.h"
-#include "gameData/NationConsts.h"
 #include <string>
 
 ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, const DrawPoint& pos, const BuildingType type,

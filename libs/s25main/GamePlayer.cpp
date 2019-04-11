@@ -51,9 +51,9 @@
 #include "gameTypes/VisualSettings.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/ToolConsts.h"
 #include "libutil/Log.h"
 #include <limits>
 

@@ -22,7 +22,7 @@
 #include "helpers/MultiArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/BuildingTypes.h"
-#include "gameData/NationConsts.h"
+#include "gameTypes/Nation.h"
 
 extern const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_NAMES;
 
