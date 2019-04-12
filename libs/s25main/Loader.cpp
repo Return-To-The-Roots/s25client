@@ -850,17 +850,15 @@ std::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArch
     anim.moveUp = false;
     anim.firstClr = start_index;
     anim.lastClr = start_index + color_count - 1u;
-    libsiedler2::ArchivItem_Palette* curPal = nullptr;
+    const libsiedler2::ArchivItem_Palette* curPal = nullptr;
     for(unsigned i = 0; i < color_count; ++i)
     {
-        auto newPal = (i == 0) ? std::unique_ptr<libsiedler2::ArchivItem_Palette>(srcImg.getPalette()->clone()) : anim.apply(*curPal);
-        curPal = newPal.get();
+        auto newPal = (i == 0) ? clone(srcImg.getPalette()) : anim.apply(*curPal);
         auto bitmap = std::make_unique<glArchivItem_Bitmap_Raw>();
-
         bitmap->setPalette(std::move(newPal));
-
         if(int ec = bitmap->create(buffer))
             throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
+        curPal = bitmap->getPalette();
         destination->push(std::move(bitmap));
     }
     return destination;

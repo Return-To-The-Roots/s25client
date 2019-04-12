@@ -99,7 +99,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 
 void* DriverWrapper::GetDLLFunction(const std::string& name)
 {
-    return !dll ? nullptr : dll->get<void*>(name);
+    return !dll ? nullptr : &dll->get<void*>(name);
 }
 
 bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)

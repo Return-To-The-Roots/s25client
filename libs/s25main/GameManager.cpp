@@ -19,6 +19,7 @@
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "Loader.h"
+#include "RTTR_Assert.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "SoundManager.h"
@@ -32,6 +33,7 @@
 #include "network/GameServer.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "liblobby/LobbyClient.h"
+#include "libutil//dynamicUniqueCast.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
 
@@ -161,11 +163,10 @@ bool GameManager::ShowSplashscreen()
     libsiedler2::Archiv arSplash;
     if(!LOADER.LoadFile(arSplash, RTTRCONFIG.ExpandPath("<RTTR_RTTR>/splash.bmp")))
         return false;
-    auto* image = dynamic_cast<glArchivItem_Bitmap*>(arSplash[0]);
+    auto image = libutil::dynamicUniqueCast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)
         return false;
-    arSplash.release(0);
-    WINDOWMANAGER.Switch(new dskSplash(image));
+    WINDOWMANAGER.Switch(new dskSplash(std::move(image)));
     return true;
 }
 

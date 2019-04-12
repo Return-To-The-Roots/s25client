@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskSplash.h"
-
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "Loader.h"
@@ -30,7 +29,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libutil/error.h"
 
-dskSplash::dskSplash(glArchivItem_Bitmap* splashImg) : Desktop(splashImg), isLoading(false), isLoaded(false)
+dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg) : Desktop(splashImg.release()), isLoading(false), isLoaded(false)
 {
     background->setInterpolateTexture(false);
     GAMEMANAGER.SetCursor(CURSOR_NONE);

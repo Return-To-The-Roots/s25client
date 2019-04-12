@@ -90,7 +90,7 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
         if(i == 0)
         {
             if(!author.empty())
-                tmp.author = helpers::format(_("<%s> "));
+                tmp.author = helpers::format(_("<%s> "), author);
             tmp.cd = cd;
         } else
             tmp.cd = CD_SYSTEM;

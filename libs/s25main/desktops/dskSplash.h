@@ -20,13 +20,14 @@
 #pragma once
 
 #include "Desktop.h"
+#include <memory>
 class MouseCoords;
 
 /// Klasse des Splashscreen Desktops.
 class dskSplash : public Desktop
 {
 public:
-    dskSplash(glArchivItem_Bitmap* splashImg);
+    dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg);
     ~dskSplash() override;
 
     void SetActive(bool activate) override;

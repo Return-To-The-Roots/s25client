@@ -30,8 +30,8 @@
 #include "gameData/TerrainDesc.h"
 #include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
-#include "libsiedler2/dynamicUniqueCast.h"
 #include "libutil/Log.h"
+#include "libutil/dynamicUniqueCast.h"
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
@@ -139,7 +139,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
                 for(unsigned i = 0; i < textures->size(); i++)
                 {
                     terrainTextures[curIdx.value].textures.push_back(
-                      libsiedler2::dynamicUniqueCast<glArchivItem_Bitmap>(textures->release(i)).release());
+                      libutil::dynamicUniqueCast<glArchivItem_Bitmap>(textures->release(i)).release());
                 }
             }
         } else
