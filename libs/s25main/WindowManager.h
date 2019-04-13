@@ -57,15 +57,20 @@ public:
     void RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
 
     /// Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
-    void Show(IngameWindow* window, bool mouse = false);
+    IngameWindow* DoShow(std::unique_ptr<IngameWindow> window, bool mouse = false);
+    template<typename T>
+    T* Show(std::unique_ptr<T> window, bool mouse = false)
+    {
+        return static_cast<T*>(DoShow(std::move(window), mouse));
+    }
     /// Registers a window to be shown after a desktop switch
-    void ShowAfterSwitch(IngameWindow* window);
+    IngameWindow* ShowAfterSwitch(std::unique_ptr<IngameWindow> window);
     /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
     void Close(const IngameWindow* window);
     /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schließt es (falls es so eins gibt)
     void Close(unsigned id);
     /// merkt einen Desktop zum Wechsel vor.
-    void Switch(Desktop* desktop);
+    Desktop* Switch(std::unique_ptr<Desktop> desktop);
     /// Verarbeitung des Drückens der Linken Maustaste.
     void Msg_LeftDown(MouseCoords mc) override;
     /// Verarbeitung des Loslassens der Linken Maustaste.
@@ -97,12 +102,8 @@ public:
 
     Desktop* GetCurrentDesktop() { return curDesktop.get(); }
 
-protected:
-    void DrawToolTip();
-
 private:
-    using IgwList = std::list<IngameWindow*>;                   /// Fensterlistentyp
-    using IgwListIterator = std::list<IngameWindow*>::iterator; /// Fensterlistentypiterator
+    void DrawToolTip();
 
     void TakeScreenshot();
     /// wechselt einen Desktop
@@ -116,10 +117,10 @@ private:
     std::unique_ptr<Desktop> nextdesktop; /// der nächste Desktop
     bool disable_mouse;                   /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
 
-    IgwList windows; /// Fensterliste
+    std::list<std::unique_ptr<IngameWindow>> windows; /// Fensterliste
     /// Windows that will be shown after desktop switch
     /// Otherwise the window will not be shown, if it was added after a switch request
-    std::vector<IngameWindow*> nextWnds;
+    std::vector<std::unique_ptr<IngameWindow>> nextWnds;
     Position lastMousePos;
     std::string curTooltip;
     Extent curRenderSize; /// current render size

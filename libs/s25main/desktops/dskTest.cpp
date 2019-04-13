@@ -135,8 +135,8 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btTextureTest: WINDOWMANAGER.Switch(new dskTextureTest); break;
-        case ID_btShowBenchmark: WINDOWMANAGER.Switch(new dskBenchmark); break;
+        case ID_btTextureTest: WINDOWMANAGER.Switch(std::make_unique<dskTextureTest>()); break;
+        case ID_btShowBenchmark: WINDOWMANAGER.Switch(std::make_unique<dskBenchmark>()); break;
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {
@@ -211,7 +211,7 @@ bool dskTest::Msg_KeyDown(const KeyEvent& ke)
         curBGIdx = (curBGIdx < LOAD_SCREENS.size() - 1) ? curBGIdx + 1 : 0;
         background = LOADER.GetImageN(LOAD_SCREENS[curBGIdx], 0);
     } else if(ke.kt == KT_ESCAPE)
-        WINDOWMANAGER.Switch(new dskMainMenu);
+        WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
     else
         return false;
     return true;

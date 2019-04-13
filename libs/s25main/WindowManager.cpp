@@ -45,17 +45,11 @@ WindowManager::WindowManager()
     : disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
 {}
 
-WindowManager::~WindowManager()
-{
-    CleanUp();
-}
+WindowManager::~WindowManager() = default;
 
 void WindowManager::CleanUp()
 {
-    for(auto window : windows)
-        delete window;
     windows.clear();
-
     curDesktop.reset();
     nextdesktop.reset();
 }
@@ -79,7 +73,7 @@ void WindowManager::Draw()
 
     // First close all marked windows
     CloseMarkedIngameWnds();
-    for(IngameWindow* wnd : windows)
+    for(auto& wnd : windows)
     {
         // If the window is not minimized, call paintAfter
         if(!wnd->IsMinimized())
@@ -136,7 +130,7 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
     // Letztes Fenster schließen? (Escape oder Alt-W)
     if(ke.kt == KT_ESCAPE || (ke.c == 'w' && ke.alt))
     {
-        Close(windows.back());
+        Close(GetTopMostWindow());
         return;
     }
     // Nein, dann Nachricht an letztes Fenster weiterleiten
@@ -174,7 +168,7 @@ void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc
 /**
  *  Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
  */
-void WindowManager::Show(IngameWindow* window, bool mouse)
+IngameWindow* WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool mouse)
 {
     RTTR_Assert(window);
     RTTR_Assert(!helpers::contains(windows, window));
@@ -183,14 +177,14 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
 
     // No desktop -> Out
     if(!curDesktop)
-        return;
+        return nullptr;
 
     // Non-Modal windows can only be opened once
     if(!window->IsModal())
     {
         // Check for already open windows with same ID (ignoring to-be-closed windows)
-        auto itOther = helpers::findPred(windows, [window](const IngameWindow* curWnd) {
-            return !curWnd->ShouldBeClosed() && !curWnd->IsModal() && curWnd->GetID() == window->GetID();
+        auto itOther = helpers::findPred(windows, [wndId = window->GetID()](const auto& curWnd) {
+            return !curWnd->ShouldBeClosed() && !curWnd->IsModal() && curWnd->GetID() == wndId;
         });
         if(itOther != windows.end())
         {
@@ -202,28 +196,29 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
             {
                 // Same ID -> Close and don't open again
                 (*itOther)->Close();
-                delete window;
-                return;
+                return nullptr;
             }
         }
     }
 
     // All windows are inserted before the first modal window (shown behind)
-    auto itModal = helpers::findPred(windows, [](const IngameWindow* curWnd) { return curWnd->IsModal(); });
+    auto itModal = helpers::findPred(windows, [](const auto& curWnd) { return curWnd->IsModal(); });
     // Note that if there is no other modal window it will be put at the back which is what we want
-    windows.insert(itModal, window);
+    auto* result = windows.emplace(itModal, std::move(window))->get();
 
     // Make the new window active (special cases handled in the function)
-    SetActiveWindow(*window);
+    SetActiveWindow(*result);
 
     // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschließend-Drück-Bugs)
     disable_mouse = mouse;
+    return result;
 }
 
-void WindowManager::ShowAfterSwitch(IngameWindow* window)
+IngameWindow* WindowManager::ShowAfterSwitch(std::unique_ptr<IngameWindow> window)
 {
     RTTR_Assert(window);
-    nextWnds.push_back(window);
+    nextWnds.emplace_back(std::move(window));
+    return nextWnds.back().get();
 }
 
 /**
@@ -232,17 +227,18 @@ void WindowManager::ShowAfterSwitch(IngameWindow* window)
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
  *  @param[in] data          Daten für den neuen Desktop
  */
-void WindowManager::Switch(Desktop* desktop)
+Desktop* WindowManager::Switch(std::unique_ptr<Desktop> desktop)
 {
-    nextdesktop.reset(desktop);
+    nextdesktop = std::move(desktop);
     // Disable the mouse till the next desktop is shown to avoid e.g. double-switching
     disable_mouse = true;
+    return nextdesktop.get();
 }
 
 IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
 {
     // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprüft werden müssen !! )
-    for(auto* window : helpers::reverse(windows))
+    for(const auto& window : helpers::reverse(windows))
     {
         // FensterRect für Kollisionsabfrage
         Rect window_rect = window->GetDrawRect();
@@ -250,11 +246,11 @@ IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
         // trifft die Maus auf ein Fenster?
         if(IsPointInRect(pos, window_rect))
         {
-            return window;
+            return window.get();
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
         if(window->IsInLockedRegion(pos))
-            return window;
+            return window.get();
     }
     return nullptr;
 }
@@ -427,7 +423,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
             // We have a modal window -> Activate it
             SetActiveWindow(*windows.back());
             // Ignore actions in all other windows
-            if(foundWindow != windows.back())
+            if(foundWindow != GetTopMostWindow())
                 return;
         }
         if(foundWindow)
@@ -655,7 +651,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     curDesktop->Msg_ScreenResize(sr);
 
     // IngameWindow verschieben falls nötig, so dass sie komplett sichtbar sind
-    for(auto window : windows)
+    for(const auto& window : windows)
     {
         DrawPoint delta = window->GetPos() + DrawPoint(window->GetSize()) - DrawPoint(sr.newSize);
         if(delta.x > 0 || delta.y > 0)
@@ -668,16 +664,8 @@ const IngameWindow* WindowManager::GetTopMostWindow() const
     if(windows.empty())
         return nullptr;
     else
-        return windows.back();
+        return windows.back().get();
 }
-
-struct IsWindowId
-{
-    const unsigned id;
-    IsWindowId(const unsigned id) : id(id) {}
-
-    bool operator()(IngameWindow* wnd) { return wnd->GetID() == id; }
-};
 
 void WindowManager::Close(const IngameWindow* window)
 {
@@ -685,16 +673,17 @@ void WindowManager::Close(const IngameWindow* window)
     if(!window)
         return;
 
-    auto it = std::find(windows.begin(), windows.end(), window);
+    const auto it = std::find_if(windows.begin(), windows.end(), [window](const auto& it) { return it.get() == window; });
     if(it == windows.end())
         return; // Window already closed -> Out
 
     SetToolTip(nullptr, "");
 
     // War es an vorderster Stelle?
-    const bool isActiveWnd = window == windows.back();
+    const bool isActiveWnd = window == GetTopMostWindow();
 
-    // Remove from list and notify parent
+    // Remove from list and notify parent, hold onto it till parent is notified
+    const auto tmpHolder = std::move(*it);
     windows.erase(it);
     if(isActiveWnd)
     {
@@ -704,8 +693,6 @@ void WindowManager::Close(const IngameWindow* window)
             SetActiveWindow(*windows.back());
     }
     curDesktop->Msg_WindowClosed(const_cast<IngameWindow&>(*window));
-    // Then delete
-    delete window;
 }
 
 /**
@@ -715,11 +702,12 @@ void WindowManager::Close(const IngameWindow* window)
  */
 void WindowManager::Close(unsigned id)
 {
-    auto it = std::find_if(windows.begin(), windows.end(), IsWindowId(id));
+    auto isId = [id](const auto& curWnd) { return curWnd->GetID() == id; };
+    auto it = std::find_if(windows.begin(), windows.end(), isId);
     while(it != windows.end())
     {
-        Close(*it);
-        it = std::find_if(windows.begin(), windows.end(), IsWindowId(id));
+        Close(it->get());
+        it = std::find_if(windows.begin(), windows.end(), isId);
     }
 }
 
@@ -737,8 +725,6 @@ void WindowManager::DoDesktopSwitch()
     if(curDesktop)
     {
         // Alle (alten) Fenster zumachen
-        for(auto window : windows)
-            delete window;
         windows.clear();
     }
 
@@ -746,8 +732,8 @@ void WindowManager::DoDesktopSwitch()
     curDesktop = std::move(nextdesktop);
     curDesktop->SetActive(true);
 
-    for(auto nextWnd : nextWnds)
-        Show(nextWnd);
+    for(auto& nextWnd : nextWnds)
+        Show(std::move(nextWnd));
     nextWnds.clear();
 
     if(!VIDEODRIVER.IsLeftDown())
@@ -757,29 +743,25 @@ void WindowManager::DoDesktopSwitch()
     Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMousePos()));
 }
 
-struct IsWndMarkedForClose
-{
-    bool operator()(const IngameWindow* wnd) const { return wnd->ShouldBeClosed(); }
-};
-
 void WindowManager::CloseMarkedIngameWnds()
 {
-    auto it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
+    auto isWndMarkedForClose = [](const auto& wnd) { return wnd->ShouldBeClosed(); };
+    auto it = std::find_if(windows.begin(), windows.end(), isWndMarkedForClose);
     while(it != windows.end())
     {
-        Close(*it);
-        it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
+        Close(it->get());
+        it = std::find_if(windows.begin(), windows.end(), isWndMarkedForClose);
     }
 }
 
 template<class T_Windows>
-void SetActiveWindowImpl(Window& wnd, Desktop& desktop, T_Windows& windows)
+void SetActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows)
 {
-    auto itWnd = helpers::find(windows, &wnd);
+    auto itWnd = helpers::findPred(windows, [&wnd](const auto& it) { return it.get() == &wnd; });
     if(itWnd != windows.end())
     {
         // If we have a modal window, don't make this active unless it is the top most one
-        if(&wnd != windows.back() && helpers::containsPred(windows, [](const IngameWindow* wnd) { return wnd->IsModal(); }))
+        if(&wnd != windows.back().get() && helpers::containsPred(windows, [](const auto& it) { return it->IsModal(); }))
         {
             return;
         }
@@ -790,8 +772,8 @@ void SetActiveWindowImpl(Window& wnd, Desktop& desktop, T_Windows& windows)
         desktop.SetActive(true);
     else
         return;
-    for(auto curWnd : windows)
-        curWnd->SetActive(curWnd == &wnd);
+    for(const auto& curWnd : windows)
+        curWnd->SetActive(&wnd == curWnd.get());
 }
 
 void WindowManager::SetActiveWindow(Window& wnd)

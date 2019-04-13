@@ -640,8 +640,7 @@ BOOST_AUTO_TEST_CASE(MoveAni)
 BOOST_AUTO_TEST_CASE(MoveAniScale)
 {
     MockupVideoDriver* video = uiHelper::GetVideoDriver();
-    auto* dsk = new Desktop(nullptr);
-    WINDOWMANAGER.Switch(dsk);
+    auto* dsk = WINDOWMANAGER.Switch(std::make_unique<Desktop>(nullptr));
     WINDOWMANAGER.Draw();
     bt = dsk->AddTextButton(0, DrawPoint(10, 20), Extent(100, 150), TC_RED1, "", NormalFont);
     ctrlButton* btReference = dsk->AddTextButton(1, DrawPoint(130, bt->GetPos().y), bt->GetSize(), TC_RED1, "", NormalFont);

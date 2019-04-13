@@ -160,7 +160,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
                                  (SETTINGS.global.use_upnp == 1));
 
             // Map auswählen
-            WINDOWMANAGER.Switch(new dskSelectMap(csi));
+            WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
         }
         break;
         case 8: { Close();

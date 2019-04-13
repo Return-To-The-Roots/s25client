@@ -121,9 +121,9 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 0:
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("The transport priority of a type of merchandise can "
-                                                              "be determined here.The higher the priority of an item "
-                                                              "in the list, the quicker it is transported by helpers.")));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("The transport priority of a type of merchandise can "
+                                                                            "be determined here.The higher the priority of an item "
+                                                                            "in the list, the quicker it is transported by helpers.")));
         }
         break;
         case 1: // Standardbelegung

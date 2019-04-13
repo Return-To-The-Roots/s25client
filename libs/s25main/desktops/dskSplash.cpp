@@ -59,13 +59,13 @@ void dskSplash::Msg_Timer(const unsigned ctrl_id)
         isLoading = true;
         LoadFiles();
     } else if(isLoaded)
-        WINDOWMANAGER.Switch(new dskMainMenu);
+        WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
 }
 
 bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
 {
     if(isLoaded)
-        WINDOWMANAGER.Switch(new dskMainMenu);
+        WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
 
     return true;
 }

@@ -155,7 +155,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         }
         break;
         case 5: // Gebäude abbrennen
@@ -169,7 +169,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             {
                 // Abreißen?
                 Close();
-                WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building));
+                WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, building));
             }
         }
         break;
@@ -211,9 +211,9 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                 if(it == militaryBuildings.end()) // was last entry in list -> goto first
                     it = militaryBuildings.begin();
                 gwv.MoveToMapPt((*it)->GetPos());
-                auto* nextscrn = new iwMilitaryBuilding(gwv, gcFactory, *it);
+                auto nextscrn = std::make_unique<iwMilitaryBuilding>(gwv, gcFactory, *it);
                 nextscrn->SetPos(GetPos());
-                WINDOWMANAGER.Show(nextscrn);
+                WINDOWMANAGER.Show(std::move(nextscrn));
                 break;
             }
         }
@@ -237,5 +237,5 @@ void iwMilitaryBuilding::DemolitionNotAllowed(const GlobalGameSettings& ggs)
         case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
     }
 
-    WINDOWMANAGER.Show(new iwMsgbox(_("Demolition not possible"), msg, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Demolition not possible"), msg, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
 }

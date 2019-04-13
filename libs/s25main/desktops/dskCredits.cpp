@@ -310,7 +310,7 @@ void dskCredits::DrawBobs()
 
 bool dskCredits::Close()
 {
-    WINDOWMANAGER.Switch(new dskMainMenu());
+    WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
     return true;
 }
 

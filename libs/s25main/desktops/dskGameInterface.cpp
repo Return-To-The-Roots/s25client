@@ -254,14 +254,14 @@ void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btMap: WINDOWMANAGER.Show(new iwMinimap(minimap, gwv)); break;
-        case ID_btOptions: WINDOWMANAGER.Show(new iwMainMenu(gwv, GAMECLIENT)); break;
+        case ID_btMap: WINDOWMANAGER.Show(std::make_unique<iwMinimap>(minimap, gwv)); break;
+        case ID_btOptions: WINDOWMANAGER.Show(std::make_unique<iwMainMenu>(gwv, GAMECLIENT)); break;
         case ID_btConstructionAid:
             if(WINDOWMANAGER.IsDesktopActive())
                 gwv.ToggleShowBQ();
             break;
         case ID_btPost:
-            WINDOWMANAGER.Show(new iwPostWindow(gwv, GetPostBox()));
+            WINDOWMANAGER.Show(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             break;
     }
@@ -477,7 +477,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // Vielleicht steht hier auch ein Schiff?
         if(noShip* ship = worldViewer.GetShip(cSel))
         {
-            WINDOWMANAGER.Show(new iwShip(gwv, GAMECLIENT, ship));
+            WINDOWMANAGER.Show(std::make_unique<iwShip>(gwv, GAMECLIENT, ship));
             return true;
         }
 
@@ -488,26 +488,29 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
             // HQ
             if(bt == BLD_HEADQUARTERS)
-                // WINDOWMANAGER.Show(new iwTrade(gwv,this,gwb.GetSpecObj<nobHQ>(cselx,csely)));
-                WINDOWMANAGER.Show(new iwHQ(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
+                // WINDOWMANAGER.Show(std::make_unique<iwTrade>(gwv,this,gwb.GetSpecObj<nobHQ>(cselx,csely)));
+                WINDOWMANAGER.Show(std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WINDOWMANAGER.Show(new iwBaseWarehouse(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwBaseWarehouse>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
                 WINDOWMANAGER.Show(
-                  new iwHarborBuilding(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
+                  std::make_unique<iwHarborBuilding>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
             else if(BuildingProperties::IsMilitary(bt))
-                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwMilitaryBuilding>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
             else
-                WINDOWMANAGER.Show(new iwBuilding(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwBuilding>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
             return true;
         }
         // oder vielleicht eine Baustelle?
         else if(selObj.GetType() == NOP_BUILDINGSITE && worldViewer.IsOwner(cSel))
         {
-            WINDOWMANAGER.Show(new iwBuildingSite(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
+            WINDOWMANAGER.Show(std::make_unique<iwBuildingSite>(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
             return true;
         }
 
@@ -571,7 +574,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     // Allied warehouse? -> Show trade window
                     if(BuildingProperties::IsWareHouse(bt) && worldViewer.GetPlayer().IsAlly(building->GetPlayer()))
                     {
-                        WINDOWMANAGER.Show(new iwTrade(*static_cast<const nobBaseWarehouse*>(building), worldViewer, GAMECLIENT));
+                        WINDOWMANAGER.Show(
+                          std::make_unique<iwTrade>(*static_cast<const nobBaseWarehouse*>(building), worldViewer, GAMECLIENT));
                         return true;
                     }
                 }
@@ -651,7 +655,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     {
         default: break;
         case KT_RETURN: // Chatfenster öffnen
-            WINDOWMANAGER.Show(new iwChat(this));
+            WINDOWMANAGER.Show(std::make_unique<iwChat>(this));
             return true;
 
         case KT_SPACE: // Bauqualitäten anzeigen
@@ -672,16 +676,16 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
 
         case KT_F2: // Spiel speichern
-            WINDOWMANAGER.Show(new iwSave);
+            WINDOWMANAGER.Show(std::make_unique<iwSave>());
             return true;
         case KT_F3: // Map debug window/ Multiplayer coordinates
-            WINDOWMANAGER.Show(new iwMapDebug(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
+            WINDOWMANAGER.Show(std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
             return true;
         case KT_F8: // Tastaturbelegung
-            WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             return true;
         case KT_F9: // Readme
-            WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
+            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
         case KT_F10: {
 #ifdef NDEBUG
@@ -694,10 +698,10 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         }
         case KT_F11: // Music player (midi files)
-            WINDOWMANAGER.Show(new iwMusicPlayer);
+            WINDOWMANAGER.Show(std::make_unique<iwMusicPlayer>());
             return true;
         case KT_F12: // Optionsfenster
-            WINDOWMANAGER.Show(new iwOptionsWindow());
+            WINDOWMANAGER.Show(std::make_unique<iwOptionsWindow>());
             return true;
     }
 
@@ -784,20 +788,20 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         }
             return true;
         case 'i': // Show inventory
-            WINDOWMANAGER.Show(new iwInventory(worldViewer.GetPlayer()));
+            WINDOWMANAGER.Show(std::make_unique<iwInventory>(worldViewer.GetPlayer()));
             return true;
         case 'j': // GFs überspringen
             if(game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
-                WINDOWMANAGER.Show(new iwSkipGFs(gwv));
+                WINDOWMANAGER.Show(std::make_unique<iwSkipGFs>(gwv));
             return true;
         case 'l': // Minimap anzeigen
-            WINDOWMANAGER.Show(new iwMinimap(minimap, gwv));
+            WINDOWMANAGER.Show(std::make_unique<iwMinimap>(minimap, gwv));
             return true;
         case 'm': // Hauptauswahl
-            WINDOWMANAGER.Show(new iwMainMenu(gwv, GAMECLIENT));
+            WINDOWMANAGER.Show(std::make_unique<iwMainMenu>(gwv, GAMECLIENT));
             return true;
         case 'n': // Show Post window
-            WINDOWMANAGER.Show(new iwPostWindow(gwv, GetPostBox()));
+            WINDOWMANAGER.Show(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             return true;
         case 'p': // Pause
@@ -805,7 +809,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         case 'q': // Spiel verlassen
             if(ke.alt)
-                WINDOWMANAGER.Show(new iwEndgame);
+                WINDOWMANAGER.Show(std::make_unique<iwEndgame>());
             return true;
         case 's': // Produktivität anzeigen
             gwv.ToggleShowProductivity();
@@ -983,8 +987,7 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
 
 void dskGameInterface::ShowRoadWindow(const Position& mousePos)
 {
-    roadwindow = new iwRoadWindow(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos);
-    WINDOWMANAGER.Show(roadwindow, true);
+    roadwindow = WINDOWMANAGER.Show(std::make_unique<iwRoadWindow>(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos), true);
 }
 
 void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
@@ -1021,7 +1024,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     }
 
     actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings);
-    WINDOWMANAGER.Show(actionwindow, true);
+    WINDOWMANAGER.Show(std::unique_ptr<iwAction>(actionwindow), true);
 }
 
 void dskGameInterface::OnChatCommand(const std::string& cmd)
@@ -1288,7 +1291,7 @@ void dskGameInterface::GI_Winner(const unsigned playerId)
     const std::string name = worldViewer.GetWorld().GetPlayer(playerId).name;
     const std::string text = (boost::format(_("Player '%s' is the winner!")) % name).str();
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
-    WINDOWMANAGER.Show(new iwVictory(std::vector<std::string>(1, name)));
+    WINDOWMANAGER.Show(std::make_unique<iwVictory>(std::vector<std::string>(1, name)));
 }
 
 /**
@@ -1305,5 +1308,5 @@ void dskGameInterface::GI_TeamWinner(const unsigned playerMask)
     }
     const std::string text = (boost::format(_("%1% are the winners!")) % helpers::join(winners, ", ", _(" and "))).str();
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
-    WINDOWMANAGER.Show(new iwVictory(winners));
+    WINDOWMANAGER.Show(std::make_unique<iwVictory>(winners));
 }

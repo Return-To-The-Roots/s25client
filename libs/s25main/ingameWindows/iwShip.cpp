@@ -121,9 +121,10 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == 2) // Hilfe
     {
-        WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("The ship register contains all the ships in your fleet. Here you can monitor "
-                                                          "the loading and destinations of individual ships. Ships on an expedition are "
-                                                          "controlled from here as well.")));
+        WINDOWMANAGER.Show(
+          std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("The ship register contains all the ships in your fleet. Here you can monitor "
+                                                       "the loading and destinations of individual ships. Ships on an expedition are "
+                                                       "controlled from here as well.")));
         return;
     }
 

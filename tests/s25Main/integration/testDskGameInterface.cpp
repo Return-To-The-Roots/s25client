@@ -47,8 +47,7 @@ struct GameInterfaceFixture : uiHelper::Fixture
     const GameWorldView* view;
     GameInterfaceFixture()
     {
-        gameDesktop = new dskGameInterfaceMock(worldFixture.game);
-        WINDOWMANAGER.Switch(gameDesktop);
+        gameDesktop = static_cast<dskGameInterface*>(WINDOWMANAGER.Switch(std::make_unique<dskGameInterfaceMock>(worldFixture.game)));
         WINDOWMANAGER.Draw();
         view = &gameDesktop->GetView();
     }

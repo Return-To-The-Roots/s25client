@@ -102,30 +102,30 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 // Server info
                 CreateServerInfo csi = createLocalGameInfo(fileName.string());
 
-                WINDOWMANAGER.Switch(new dskSelectMap(csi));
+                WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
                 if(GAMECLIENT.HostGame(csi, path.string(), MAPTYPE_SAVEGAME))
-                    WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
+                    WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPleaseWait>());
                 else
                 {
-                    WINDOWMANAGER.Show(
-                      new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK,
+                                                                  MSB_EXCLAMATIONRED));
                 }
             } else
                 WINDOWMANAGER.Show(
-                  new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+                  std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         }
         break;
         case 4: // "Replay abspielen"
         {
-            WINDOWMANAGER.Show(new iwPlayReplay);
+            WINDOWMANAGER.Show(std::make_unique<iwPlayReplay>());
         }
         break;
         case 5: // "Kampagne"
         {
             /// @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
-            WINDOWMANAGER.Show(new iwMsgbox(_("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this,
-                                            MSB_OK, MSB_EXCLAMATIONGREEN));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+              _("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this, MSB_OK, MSB_EXCLAMATIONGREEN));
         }
         break;
         case 6: // "Freies Spiel"
@@ -140,7 +140,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 8: // "Zurück"
         {
-            WINDOWMANAGER.Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
         }
         break;
     }
@@ -148,13 +148,13 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
 
 void dskSinglePlayer::PrepareSinglePlayerServer()
 {
-    WINDOWMANAGER.Switch(new dskSelectMap(createLocalGameInfo(_("Unlimited Play"))));
+    WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(createLocalGameInfo(_("Unlimited Play"))));
 }
 
 void dskSinglePlayer::PrepareLoadGame()
 {
     CreateServerInfo csi = createLocalGameInfo(_("Unlimited Play"));
 
-    WINDOWMANAGER.Switch(new dskSelectMap(csi));
-    WINDOWMANAGER.ShowAfterSwitch(new iwLoad(csi));
+    WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
+    WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwLoad>(csi));
 }

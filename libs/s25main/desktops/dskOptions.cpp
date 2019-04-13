@@ -354,7 +354,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             std::string old_lang = SETTINGS.language.language; //-V807
             SETTINGS.language.language = LANGUAGES.setLanguage(selection);
             if(SETTINGS.language.language != old_lang)
-                WINDOWMANAGER.Switch(new dskOptions);
+                WINDOWMANAGER.Switch(std::make_unique<dskOptions>());
         }
         break;
         case 39: // Proxy
@@ -514,8 +514,8 @@ static bool validatePort(const std::string& sPort, uint16_t& outPort)
         outPort = *port;
     else
     {
-        WINDOWMANAGER.Show(
-          new iwMsgbox(_("Error"), _("Invalid port. The valid port-range is 1 to 65535!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Invalid port. The valid port-range is 1 to 65535!"), nullptr, MSB_OK,
+                                                      MSB_EXCLAMATIONRED, 1));
     }
     return static_cast<bool>(port);
 }
@@ -545,23 +545,25 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
                 const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
                 if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
                 {
-                    WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
-                                                    MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"),
+                                                                  _("You need to restart your game to change the screen resolution!"), this,
+                                                                  MSB_OK, MSB_EXCLAMATIONGREEN, 1));
                     return;
                 }
             }
             if(SETTINGS.driver.video != VIDEODRIVER.GetName() || SETTINGS.driver.audio != AUDIODRIVER.GetName())
             {
-                WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this,
-                                                MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"),
+                                                              _("You need to restart your game to change the video or audio driver!"), this,
+                                                              MSB_OK, MSB_EXCLAMATIONGREEN, 1));
                 return;
             }
 
-            WINDOWMANAGER.Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
         }
         break;
         case 14: // Addons
-            WINDOWMANAGER.Show(new iwAddons(ggs));
+            WINDOWMANAGER.Show(std::make_unique<iwAddons>(ggs));
             break;
     }
 }
@@ -573,12 +575,12 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsign
         default: break;
         case 71: // "Music player"
         {
-            WINDOWMANAGER.Show(new iwMusicPlayer);
+            WINDOWMANAGER.Show(std::make_unique<iwMusicPlayer>());
         }
         break;
         case 35: // "Keyboard Readme"
         {
-            WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
         }
         break;
     }
@@ -591,7 +593,7 @@ void dskOptions::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /
         default: break;
         case 1: // "You need to restart your game ..."
         {
-            WINDOWMANAGER.Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
         }
         break;
     }

@@ -81,7 +81,8 @@ iwSettings::~iwSettings()
             const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
             if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
             {
-                // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
+                // WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("You need to restart your game to change the screen
+                // resolution!"), this,
                 //     MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             }
         }

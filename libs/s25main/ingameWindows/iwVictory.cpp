@@ -62,7 +62,7 @@ void iwVictory::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case ID_CONTINUE: Close(); break;
         case ID_END_GAME:
-            WINDOWMANAGER.Show(new iwEndgame);
+            WINDOWMANAGER.Show(std::make_unique<iwEndgame>());
             Close();
             break;
     }

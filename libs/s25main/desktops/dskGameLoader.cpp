@@ -70,11 +70,11 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResul
         GAMECLIENT.Stop();
 
         if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
-            WINDOWMANAGER.Switch(new dskLobby);
+            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
         else if(loader_.getGame()->world_.IsSinglePlayer())
-            WINDOWMANAGER.Switch(new dskSinglePlayer);
+            WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
         else
-            WINDOWMANAGER.Switch(new dskDirectIP);
+            WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
     }
 }
 
@@ -143,18 +143,18 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
  */
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
     GetCtrl<ctrlTimer>(1)->Stop();
 }
 
 void dskGameLoader::CI_GameStarted(const std::shared_ptr<Game>&)
 {
     RTTR_Assert(gameInterface);
-    WINDOWMANAGER.Switch(gameInterface.release());
+    WINDOWMANAGER.Switch(std::move(gameInterface));
 }
 
 void dskGameLoader::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
     GetCtrl<ctrlTimer>(1)->Stop();
 }

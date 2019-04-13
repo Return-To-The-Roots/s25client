@@ -169,14 +169,14 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         }
         break;
         case 5: // Gebäude abbrennen
         {
             // Abreißen?
             Close();
-            WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building));
+            WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, building));
         }
         break;
         case 6:
@@ -234,9 +234,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                 if(it == buildings.end()) // was last entry in list -> goto first
                     it = buildings.begin();
                 gwv.MoveToMapPt((*it)->GetPos());
-                auto* nextscrn = new iwBuilding(gwv, gcFactory, *it);
-                nextscrn->SetPos(GetPos());
-                WINDOWMANAGER.Show(nextscrn);
+                WINDOWMANAGER.Show(std::make_unique<iwBuilding>(gwv, gcFactory, *it))->SetPos(GetPos());
                 break;
             }
         }

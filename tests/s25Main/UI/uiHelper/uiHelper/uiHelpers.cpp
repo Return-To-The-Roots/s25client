@@ -43,7 +43,7 @@ void initGUITests()
     BOOST_TEST_CHECKPOINT("Load dummy files");
     LOADER.LoadDummyGUIFiles();
     BOOST_TEST_CHECKPOINT("Switch to Desktop");
-    WINDOWMANAGER.Switch(new DummyDesktop);
+    WINDOWMANAGER.Switch(std::make_unique<DummyDesktop>());
     BOOST_TEST_CHECKPOINT("Dummy Draw");
     WINDOWMANAGER.Draw();
     BOOST_TEST_CHECKPOINT("GUI test initialized");

@@ -35,7 +35,7 @@
 #include "liblobby/LobbyInterface.h"
 #include <array>
 
-class iwRoadWindow;
+class IngameWindow;
 class glArchivItem_Bitmap;
 class GlobalGameSettings;
 class MouseCoords;
@@ -156,7 +156,7 @@ private:
     // Aktuell geöffnetes Aktionsfenster
     iwAction* actionwindow;
     // Aktuell geöffnetes Straßenbaufenster
-    iwRoadWindow* roadwindow;
+    IngameWindow* roadwindow;
     // Messenger für die Nachrichten
     Messenger messenger;
     /// Minimap-Instanz

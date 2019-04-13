@@ -167,9 +167,10 @@ void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
 
         case 2:
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("The priority of goods for the individual buildings can be set here. "
-                                                              "The higher the value, the quicker the required goods are delivered "
-                                                              "to the building concerned.")));
+            WINDOWMANAGER.Show(
+              std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("The priority of goods for the individual buildings can be set here. "
+                                                           "The higher the value, the quicker the required goods are delivered "
+                                                           "to the building concerned.")));
         }
         break;
         // Default button

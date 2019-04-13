@@ -52,16 +52,16 @@ void dskMultiPlayer::Msg_ButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case 3: // Lobby
-            WINDOWMANAGER.Show(new iwLobbyConnect, true);
+            WINDOWMANAGER.Show(std::make_unique<iwLobbyConnect>(), true);
             break;
         case 4: // Local Area Network
-            WINDOWMANAGER.Switch(new dskLAN);
+            WINDOWMANAGER.Switch(std::make_unique<dskLAN>());
             break;
         case 5: // Direct IP
-            WINDOWMANAGER.Switch(new dskDirectIP);
+            WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
             break;
         case 6: // Zurück
-            WINDOWMANAGER.Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
             break;
     }
 }

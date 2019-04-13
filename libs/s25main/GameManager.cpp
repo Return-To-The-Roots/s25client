@@ -166,7 +166,7 @@ bool GameManager::ShowSplashscreen()
     auto image = libutil::dynamicUniqueCast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)
         return false;
-    WINDOWMANAGER.Switch(new dskSplash(std::move(image)));
+    WINDOWMANAGER.Switch(std::make_unique<dskSplash>(std::move(image)));
     return true;
 }
 
@@ -181,10 +181,10 @@ bool GameManager::ShowMenu()
 
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
-        WINDOWMANAGER.Switch(new dskLobby);
+        WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
     else
         // Hauptmenü zeigen
-        WINDOWMANAGER.Switch(new dskMainMenu);
+        WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
 
     return true;
 }

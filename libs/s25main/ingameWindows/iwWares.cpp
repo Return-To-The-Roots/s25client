@@ -176,8 +176,8 @@ void iwWares::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 12: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("Here you will find a list of your entire stores of "
-                                                              "merchandise and all the inhabitants of your realm.")));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("Here you will find a list of your entire stores of "
+                                                                            "merchandise and all the inhabitants of your realm.")));
         }
         break;
     }

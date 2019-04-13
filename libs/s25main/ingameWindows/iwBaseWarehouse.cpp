@@ -143,7 +143,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
         {
             // Abreißen?
             Close();
-            WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, wh));
+            WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, wh));
         }
         break;
         case ID_SELECT_ALL: // "Alle auswählen"
@@ -204,7 +204,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case ID_HELP: // "Hilfe"
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
         }
         break;
         case ID_GOTO: // "Gehe Zu Ort"
@@ -229,19 +229,15 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                 gwv.MoveToMapPt((*it)->GetPos());
                 if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
                 {
-                    auto* nextscrn = new iwHQ(gwv, gcFactory, *it);
-                    nextscrn->SetPos(GetPos());
-                    WINDOWMANAGER.Show(nextscrn);
+                    WINDOWMANAGER.Show(std::make_unique<iwHQ>(gwv, gcFactory, *it))->SetPos(GetPos());
                 } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
                 {
-                    auto* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
-                    nextscrn->SetPos(GetPos());
-                    WINDOWMANAGER.Show(nextscrn);
+                    WINDOWMANAGER.Show(std::make_unique<iwHarborBuilding>(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it)))
+                      ->SetPos(GetPos());
                 } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
                 {
-                    auto* nextscrn = new iwBaseWarehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
-                    nextscrn->SetPos(GetPos());
-                    WINDOWMANAGER.Show(nextscrn);
+                    WINDOWMANAGER.Show(std::make_unique<iwBaseWarehouse>(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it)))
+                      ->SetPos(GetPos());
                 }
                 break;
             }

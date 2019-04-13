@@ -99,23 +99,23 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 0: // "Spiel beenden"
         {
-            WINDOWMANAGER.Show(new iwEndgame);
+            WINDOWMANAGER.Show(std::make_unique<iwEndgame>());
             Close();
         }
         break;
         case 4: // "Tastaturbelegung laden"
         {
-            WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
         }
         break;
         case 6: // "'Lies mich'-Datei laden"
         {
-            WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
+            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
         }
         break;
         case 10: // "Spiel speichern"
         {
-            WINDOWMANAGER.Show(new iwSave);
+            WINDOWMANAGER.Show(std::make_unique<iwSave>());
         }
         break;
 
@@ -141,18 +141,18 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 16: // Music player
         {
-            WINDOWMANAGER.Show(new iwMusicPlayer);
+            WINDOWMANAGER.Show(std::make_unique<iwMusicPlayer>());
         }
         break;
         case 17: // Aufgeben
         {
-            WINDOWMANAGER.Show(new iwSurrender);
+            WINDOWMANAGER.Show(std::make_unique<iwSurrender>());
             Close();
         }
         break;
         case 18: // Advanced
         {
-            WINDOWMANAGER.Show(new iwSettings());
+            WINDOWMANAGER.Show(std::make_unique<iwSettings>());
             Close();
         }
         break;

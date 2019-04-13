@@ -28,6 +28,7 @@ class dskTextureTest : public dskMenuBase
 {
 public:
     dskTextureTest();
+    ~dskTextureTest();
 
     void Load();
 

@@ -83,17 +83,16 @@ void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btBack: WINDOWMANAGER.Switch(new dskMultiPlayer); break;
+        case ID_btBack: WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>()); break;
         case ID_btConnect: ConnectToSelectedGame(); break;
         case ID_btAddServer:
             if(SETTINGS.proxy.type != PROXY_NONE)
-                WINDOWMANAGER.Show(new iwMsgbox(
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
-                auto* servercreate = new iwDirectIPCreate(ServerType::LAN);
-                WINDOWMANAGER.Show(servercreate, true);
+                WINDOWMANAGER.Show(std::make_unique<iwDirectIPCreate>(ServerType::LAN), true);
             }
     }
 }
@@ -159,14 +158,14 @@ bool dskLAN::ConnectToSelectedGame()
     const GameInfo& game = openGames[selection];
     if(game.info.revision == RTTR_Version::GetRevision())
     {
-        auto* connect = new iwDirectIPConnect(ServerType::LAN);
+        auto connect = std::make_unique<iwDirectIPConnect>(ServerType::LAN);
         connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);
-        WINDOWMANAGER.Show(connect);
+        WINDOWMANAGER.Show(std::move(connect));
         return true;
     } else
     {
         WINDOWMANAGER.Show(
-          new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+          std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
         return false;
     }
 }

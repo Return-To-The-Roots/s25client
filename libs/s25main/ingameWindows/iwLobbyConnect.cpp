@@ -190,7 +190,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case ID_btRegister: // Registrieren
         {
-            WINDOWMANAGER.Show(new iwMsgbox(
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
               _("Error"), _("To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"), this,
               MSB_OK, MSB_EXCLAMATIONRED, 0));
 
@@ -272,7 +272,7 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& email)
     if(btRegister)
         btRegister->SetEnabled(false);
 
-    WINDOWMANAGER.Switch(new dskLobby);
+    WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
 }
 
 /**

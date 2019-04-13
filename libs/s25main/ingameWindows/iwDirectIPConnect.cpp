@@ -225,7 +225,8 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
             std::unique_ptr<ILobbyClient> lobbyClient;
             if(server_type == ServerType::LOBBY)
                 lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-            WINDOWMANAGER.Switch(new dskHostGame(server_type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
+            WINDOWMANAGER.Switch(
+              std::make_unique<dskHostGame>(server_type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
         }
         break;
         default: break;

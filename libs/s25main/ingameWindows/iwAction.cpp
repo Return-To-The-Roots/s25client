@@ -640,7 +640,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
                     }
                 }
 
-                WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building, true));
+                WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, building, true));
             } else
             {
                 GAMECLIENT.DestroyFlag(selectedPt);
@@ -721,7 +721,7 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
     {
         case 1:
             // TODO: bestimen, was an der position selected ist
-            WINDOWMANAGER.Show(new iwObservate(gwv, selectedPt));
+            WINDOWMANAGER.Show(std::make_unique<iwObservate>(gwv, selectedPt));
             mousePosAtOpen_ = DrawPoint::Invalid();
             break;
         case 2: // Häusernamen/Prozent anmachen

@@ -52,14 +52,14 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 2: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()])));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()])));
         }
         break;
         case 3: // Gebäude abbrennen
         {
             // Abreißen?
             Close();
-            WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, buildingsite));
+            WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, buildingsite));
         }
         break;
         case 4: // "Gehe Zu Ort"

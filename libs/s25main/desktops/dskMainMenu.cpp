@@ -81,10 +81,10 @@ dskMainMenu::dskMainMenu()
 void dskMainMenu::Msg_Timer(const unsigned ctrl_id)
 {
     GetCtrl<ctrlTimer>(ctrl_id)->Stop();
-    WINDOWMANAGER.Show(
-      new iwMsgbox(_("Submit debug data?"),
-                   _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"), this,
-                   MSB_YESNO, MSB_QUESTIONRED, 100));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+      _("Submit debug data?"),
+      _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"), this, MSB_YESNO,
+      MSB_QUESTIONRED, 100));
 }
 
 void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
@@ -105,7 +105,7 @@ bool dskMainMenu::Msg_LeftUp(const MouseCoords& mc)
     auto* txtVersion = GetCtrl<Window>(dskMenuBase::ID_txtVersion);
     if(mc.dbl_click && IsPointInRect(mc.GetPos(), txtVersion->GetBoundaryRect()))
     {
-        WINDOWMANAGER.Switch(new dskTest);
+        WINDOWMANAGER.Switch(std::make_unique<dskTest>());
         return true;
     }
     return false;
@@ -116,25 +116,25 @@ void dskMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case ID_btSingleplayer: // "Single Player"
-            WINDOWMANAGER.Switch(new dskSinglePlayer);
+            WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
             break;
         case ID_btMultiplayer: // "Multiplayer"
-            WINDOWMANAGER.Switch(new dskMultiPlayer);
+            WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>());
             break;
         case ID_btOptions: // "Options"
-            WINDOWMANAGER.Switch(new dskOptions);
+            WINDOWMANAGER.Switch(std::make_unique<dskOptions>());
             break;
         case ID_btIntro: // "Intro"
-            WINDOWMANAGER.Switch(new dskIntro);
+            WINDOWMANAGER.Switch(std::make_unique<dskIntro>());
             break;
         case ID_btCredits: // "Credits"
-            WINDOWMANAGER.Switch(new dskCredits);
+            WINDOWMANAGER.Switch(std::make_unique<dskCredits>());
             break;
         case ID_btQuit: // "Quit"
             GLOBALVARS.notdone = false;
             break;
         case ID_btReadme: // "Readme"
-            WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
+            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             break;
     }
 }

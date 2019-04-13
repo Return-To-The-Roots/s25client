@@ -49,13 +49,16 @@ dskTextureTest::dskTextureTest()
     AddTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
 }
 
+dskTextureTest::~dskTextureTest() = default;
+
 void dskTextureTest::Load()
 {
     WorldDescription newDesc;
     GameDataLoader gdLoader(newDesc);
     if(!gdLoader.Load())
     {
-        WINDOWMANAGER.ShowAfterSwitch(new iwMsgbox(_("Error"), "Failed to load game data!", nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+        WINDOWMANAGER.ShowAfterSwitch(
+          std::make_unique<iwMsgbox>(_("Error"), "Failed to load game data!", nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         return;
     }
     desc = newDesc;
@@ -88,7 +91,7 @@ void dskTextureTest::Msg_ComboSelectItem(const unsigned ctrl_id, const int selec
 
 void dskTextureTest::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
-    WINDOWMANAGER.Switch(new dskMainMenu);
+    WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
 }
 
 using PointF = Point<GLfloat>;

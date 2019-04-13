@@ -197,14 +197,14 @@ void iwLoad::SaveLoad()
         // Server starten
         if(LOBBYCLIENT.IsLoggedIn())
             // Lobby zeigen, wenn wenn das nich ging und man im Lobby-Modus ist
-            WINDOWMANAGER.Switch(new dskLobby);
+            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
         else
             // Ansonsten schließen
             Close();
     } else
     {
         // Verbindungsfenster anzeigen
-        WINDOWMANAGER.Show(new iwPleaseWait);
+        WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
     }
 }
 

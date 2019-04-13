@@ -89,15 +89,15 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         lua = std::make_unique<LuaInterfaceSettings>(*lobbyHostController);
         if(!lua->LoadScript(GAMECLIENT.GetLuaFilePath()))
         {
-            WINDOWMANAGER.ShowAfterSwitch(new iwMsgbox(_("Error"),
-                                                       _("Lua script was found but failed to load. Map might not work as expected!"), this,
-                                                       MSB_OK, MSB_EXCLAMATIONRED, 1));
+            WINDOWMANAGER.ShowAfterSwitch(
+              std::make_unique<iwMsgbox>(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,
+                                         MSB_OK, MSB_EXCLAMATIONRED, 1));
             lua.reset();
         } else if(!lua->CheckScriptVersion())
         {
-            WINDOWMANAGER.ShowAfterSwitch(
-              new iwMsgbox(_("Error"), _("Lua script uses a different version and cannot be used. Map might not work as expected!"), this,
-                           MSB_OK, MSB_EXCLAMATIONRED, 1));
+            WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(
+              _("Error"), _("Lua script uses a different version and cannot be used. Map might not work as expected!"), this, MSB_OK,
+              MSB_EXCLAMATIONRED, 1));
             lua.reset();
         } else if(!lua->EventSettingsInit(serverType == ServerType::LOCAL, gameLobby->isSavegame()))
         {
@@ -232,8 +232,8 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         // Karteninformationen laden
         if(int ec = libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath(), mapArchiv))
         {
-            WINDOWMANAGER.ShowAfterSwitch(
-              new iwMsgbox(_("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+            WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(
+              _("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
         } else
         {
             auto* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
@@ -325,8 +325,9 @@ void dskHostGame::SetActive(bool activate /*= true*/)
             lua->EventSettingsReady();
         } catch(LuaExecutionError&)
         {
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,
-                                            MSB_OK, MSB_EXCLAMATIONRED, 1));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"),
+                                                          _("Lua script was found but failed to load. Map might not work as expected!"),
+                                                          this, MSB_OK, MSB_EXCLAMATIONRED, 1));
             lua.reset();
         }
     }
@@ -614,13 +615,13 @@ void dskHostGame::Msg_Group_ComboSelectItem(const unsigned group_id, const unsig
 void dskHostGame::GoBack()
 {
     if(IsSinglePlayer())
-        WINDOWMANAGER.Switch(new dskSinglePlayer);
+        WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
     else if(serverType == ServerType::LAN)
-        WINDOWMANAGER.Switch(new dskLAN);
+        WINDOWMANAGER.Switch(std::make_unique<dskLAN>());
     else if(serverType == ServerType::LOBBY && lobbyClient_ && lobbyClient_->IsLoggedIn())
-        WINDOWMANAGER.Switch(new dskLobby);
+        WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
     else
-        WINDOWMANAGER.Switch(new dskDirectIP);
+        WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
 }
 
 void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
@@ -662,14 +663,14 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 22: // Addons
         {
-            iwAddons* w;
+            std::unique_ptr<iwAddons> w;
             if(allowAddonChange && (!lua || lua->IsChangeAllowed("addonsAll")))
-                w = new iwAddons(gameLobby->getSettings(), this, iwAddons::HOSTGAME);
+                w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME);
             else if(allowAddonChange)
-                w = new iwAddons(gameLobby->getSettings(), this, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
+                w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
             else
-                w = new iwAddons(gameLobby->getSettings(), this, iwAddons::READONLY);
-            WINDOWMANAGER.Show(w);
+                w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::READONLY);
+            WINDOWMANAGER.Show(std::move(w));
         }
         break;
     }
@@ -724,10 +725,10 @@ void dskHostGame::CI_CancelCountdown(bool error)
     {
         if(error)
         {
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"),
-                                            _("Game can only be started as soon as everybody has a unique color,everyone is "
-                                              "ready and all free slots are closed."),
-                                            this, MSB_OK, MSB_EXCLAMATIONRED, 10));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"),
+                                                          _("Game can only be started as soon as everybody has a unique color,everyone is "
+                                                            "ready and all free slots are closed."),
+                                                          this, MSB_OK, MSB_EXCLAMATIONRED, 10));
         }
 
         ChangeReady(localPlayerId_, true);
@@ -935,7 +936,7 @@ void dskHostGame::CI_PlayerLeft(const unsigned playerId)
 void dskHostGame::CI_GameLoading(const std::shared_ptr<Game>& game)
 {
     // Desktop wechseln
-    WINDOWMANAGER.Switch(new dskGameLoader(game));
+    WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game));
 }
 
 void dskHostGame::CI_PlayerDataChanged(unsigned playerId)
@@ -1009,7 +1010,7 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
 
 void dskHostGame::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 /**
@@ -1029,7 +1030,7 @@ void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
  */
 void dskHostGame::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 void dskHostGame::LC_Chat(const std::string& player, const std::string& text)

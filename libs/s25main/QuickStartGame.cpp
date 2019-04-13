@@ -35,7 +35,7 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() override { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameLoading(const std::shared_ptr<Game>& game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
+    void CI_GameLoading(const std::shared_ptr<Game>& game) override { WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game)); }
 };
 
 bool QuickStartGame(const std::string& filePath, bool singlePlayer)
@@ -46,12 +46,12 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
     std::string extension = bfs::path(filePath).extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
-    WINDOWMANAGER.Switch(new dskSelectMap(csi));
+    WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
     if((extension == ".sav" && GAMECLIENT.HostGame(csi, filePath, MAPTYPE_SAVEGAME))
        || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, filePath, MAPTYPE_OLDMAP)))
     {
-        WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPleaseWait>());
         return true;
     } else
     {

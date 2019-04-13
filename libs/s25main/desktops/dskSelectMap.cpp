@@ -203,7 +203,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
             std::string errorTxt = _("Could not load map:\n");
             errorTxt += path + '\n';
             errorTxt += libsiedler2::getErrorString(ec);
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
             table.RemoveRow(selection);
         } else
         {
@@ -225,13 +225,13 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
 void dskSelectMap::GoBack()
 {
     if(csi.type == ServerType::LOCAL)
-        WINDOWMANAGER.Switch(new dskSinglePlayer);
+        WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
     else if(csi.type == ServerType::LAN)
-        WINDOWMANAGER.Switch(new dskLAN);
+        WINDOWMANAGER.Switch(std::make_unique<dskLAN>());
     else if(csi.type == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
-        WINDOWMANAGER.Switch(new dskLobby);
+        WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
     else
-        WINDOWMANAGER.Switch(new dskDirectIP);
+        WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
 }
 
 void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
@@ -246,7 +246,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
         case 4: // "Spiel laden..."
         {
             // Ladefenster aufrufen
-            WINDOWMANAGER.Show(new iwLoad(csi));
+            WINDOWMANAGER.Show(std::make_unique<iwLoad>(csi));
         }
         break;
         case 5: // "Weiter"
@@ -259,8 +259,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
             if(!mapGenThread)
             {
                 newRandMapPath.clear();
-                waitWnd = new iwPleaseWait;
-                WINDOWMANAGER.Show(waitWnd);
+                waitWnd = WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
                 // mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
                 CreateRandomMap();
             }
@@ -268,7 +267,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 7: // random map generator settings
         {
-            WINDOWMANAGER.Show(new iwMapGenerator(rndMapSettings));
+            WINDOWMANAGER.Show(std::make_unique<iwMapGenerator>(rndMapSettings));
         }
         break;
     }
@@ -339,7 +338,7 @@ void dskSelectMap::StartServer()
         else
         {
             // Verbindungsfenster anzeigen
-            WINDOWMANAGER.Show(new iwPleaseWait);
+            WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
         }
     }
 }
@@ -351,13 +350,13 @@ void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         GAMECLIENT.Stop();
 
         if(csi.type == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
-            WINDOWMANAGER.Switch(new dskLobby);
+            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
         else if(csi.type == ServerType::LOBBY)
-            WINDOWMANAGER.Switch(new dskDirectIP);
+            WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
         else if(csi.type == ServerType::LAN)
-            WINDOWMANAGER.Switch(new dskLAN);
+            WINDOWMANAGER.Switch(std::make_unique<dskLAN>());
         else
-            WINDOWMANAGER.Switch(new dskSinglePlayer);
+            WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
     }
 }
 
@@ -370,7 +369,8 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
             std::unique_ptr<ILobbyClient> lobbyClient;
             if(csi.type == ServerType::LOBBY)
                 lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-            WINDOWMANAGER.Switch(new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
+            WINDOWMANAGER.Switch(
+              std::make_unique<dskHostGame>(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
             break;
         }
         default: break;
@@ -379,7 +379,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 
 void dskSelectMap::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 /**
@@ -387,7 +387,7 @@ void dskSelectMap::CI_Error(const ClientError ce)
  */
 void dskSelectMap::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 void dskSelectMap::Draw_()
@@ -399,7 +399,8 @@ void dskSelectMap::Draw_()
         if(newRandMapPath[0] == '!')
         {
             std::string errorTxt = _("Failed to generate random map.\nReason: ");
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errorTxt + newRandMapPath.substr(1), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+            WINDOWMANAGER.Show(
+              std::make_unique<iwMsgbox>(_("Error"), errorTxt + newRandMapPath.substr(1), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         } else
             OnMapCreated(newRandMapPath);
         newRandMapPath.clear();
