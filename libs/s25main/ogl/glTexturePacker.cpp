@@ -20,9 +20,13 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePackerNode.h"
+#include "libsiedler2/Archiv.h"
+#include "libsiedler2/ArchivItem_Bitmap_Raw.h"
 #include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/libsiedler2.h"
 #include <algorithm>
 #include <glad/glad.h>
+#include <utility>
 
 static bool isSizeGreater(glSmartBitmap* a, glSmartBitmap* b)
 {
@@ -31,24 +35,12 @@ static bool isSizeGreater(glSmartBitmap* a, glSmartBitmap* b)
     return (sizeA.x * sizeA.y) > (sizeB.x * sizeB.y);
 }
 
-glTexturePacker::~glTexturePacker()
-{
-    for(unsigned texture : textures)
-        VIDEODRIVER.DeleteTexture(texture);
-}
-
 bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
 {
-    unsigned texture = VIDEODRIVER.GenerateTexture();
+    glTexture texture;
 
     if(!texture)
         return false;
-
-    textures.push_back(texture);
-
-    VIDEODRIVER.BindTexture(texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // find space needed in total and biggest texture to store (as a start)
     Extent maxBmpSize(0, 0);
@@ -64,11 +56,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
     // most cards work much better with texture sizes of powers of two.
     maxBmpSize = VIDEODRIVER.calcPreferredTextureSize(maxBmpSize);
 
-    int parTexWidth = 0;
-    glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, maxBmpSize.x, maxBmpSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
-    glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
-
-    if(parTexWidth == 0)
+    if(!texture.checkSize(maxBmpSize))
         return false;
 
     // maximum texture size reached?
@@ -100,48 +88,32 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
                 } else
                 {
                     // tell or glSmartBitmap, that it uses a shared texture (so it won't try to delete/free it)
-                    bmp->setSharedTexture(texture);
+                    bmp->setSharedTexture(texture.get());
                 }
             }
             if((false))
             {
-                std::array<char, 100> tmp;
-                snprintf(tmp.data(), tmp.size(), "%u-%ux%u.rgba", texture, curSize.x, curSize.y);
-
-                FILE* f = fopen(tmp.data(), "w+");
-
-                for(unsigned y = 0; y < curSize.y; ++y)
-                {
-                    for(unsigned x = 0; x < curSize.x; ++x)
-                    {
-                        auto* curPixel = reinterpret_cast<const uint8_t*>(&buffer.getPixels()[buffer.calcIdx(x, y)]);
-                        fputc(curPixel[2], f);
-                        fputc(curPixel[1], f);
-                        fputc(curPixel[0], f);
-                        fputc(curPixel[3], f);
-                    }
-                }
-                fclose(f);
+                auto bmp = std::make_unique<libsiedler2::ArchivItem_Bitmap_Raw>();
+                bmp->create(buffer);
+                bfs::path outFilepath =
+                  std::to_string(texture.get()) + "-" + std::to_string(curSize.x) + "x" + std::to_string(curSize.y) + ".bmp";
+                libsiedler2::Archiv archive;
+                archive.push(std::move(bmp));
+                libsiedler2::Write(outFilepath.string(), archive);
             }
             // free texture packer, as it is not needed any more
             root->destroy(list.size());
             delete root;
 
+            if(!texture.uploadData(buffer))
+                return false;
+
+            textures.emplace_back(std::move(texture));
+
             if(left.empty()) // nothing left, just generate texture and return success
+                return true;
+            else if(maxTex) // maximum texture size reached and something still left
             {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
-                glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
-
-                return parTexWidth != 0;
-            } else if(maxTex) // maximum texture size reached and something still left
-            {
-                // generate this texture and release the buffer
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
-                glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
-
-                if(parTexWidth == 0)
-                    return false;
-
                 // recursively generate textures for what is left
                 return packHelper(left);
             }
@@ -152,25 +124,11 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
         }
 
         // increase width or height, try whether opengl is able to handle textures that big
-        if(curSize.x <= curSize.y)
-        {
-            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, curSize.x * 2, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
-            glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
-
-            if(parTexWidth == 0)
-                maxTex = true;
-            else
-                curSize.x *= 2;
-        } else
-        {
-            glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y * 2, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
-            glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
-
-            if(parTexWidth == 0)
-                maxTex = true;
-            else
-                curSize.y *= 2;
-        }
+        const auto newSize = (curSize.x <= curSize.y) ? Extent(curSize.x * 2, curSize.y) : Extent(curSize.x, curSize.y * 2);
+        if(!texture.checkSize(newSize))
+            maxTex = true;
+        else
+            curSize = newSize;
     } while(true);
 }
 
@@ -181,13 +139,66 @@ bool glTexturePacker::pack()
     if(packHelper(items))
         return true;
 
-    // free all textures allocated by us
-    for(unsigned tex : textures)
-        VIDEODRIVER.DeleteTexture(tex);
-
     // reset glSmartBitmap textures
     for(glSmartBitmap* bmp : items)
         bmp->setSharedTexture(0);
 
+    textures.clear();
+
     return false;
+}
+
+glTexture::glTexture() : handle(VIDEODRIVER.GenerateTexture()), size(0, 0)
+{
+    if(!handle)
+        return;
+    bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+}
+
+glTexture::glTexture(glTexture&& rhs) : handle(rhs.handle), size(rhs.size)
+{
+    rhs.handle = 0;
+}
+glTexture& glTexture::operator=(glTexture&& rhs)
+{
+    std::swap(handle, rhs.handle);
+    std::swap(size, rhs.size);
+    return *this;
+}
+
+void glTexture::bind()
+{
+    VIDEODRIVER.BindTexture(handle);
+}
+
+glTexture::~glTexture()
+{
+    if(handle)
+        VIDEODRIVER.DeleteTexture(handle);
+}
+
+bool glTexture::checkSize(const Extent& size)
+{
+    if(!handle)
+        return false;
+    VIDEODRIVER.BindTexture(handle);
+    glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
+    int resultWidth;
+    glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &resultWidth);
+
+    return resultWidth > 0;
+}
+
+bool glTexture::uploadData(const libsiedler2::PixelBufferARGB& buffer)
+{
+    if(!handle)
+        return false;
+    VIDEODRIVER.BindTexture(handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, buffer.getWidth(), buffer.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
+    size = Extent(buffer.getWidth(), buffer.getHeight());
+    int resultWidth;
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &resultWidth);
+    return resultWidth > 0;
 }

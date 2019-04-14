@@ -18,24 +18,49 @@
 #ifndef glTexturePacker_h__
 #define glTexturePacker_h__
 
+#include "Point.h"
 #include <vector>
 
 class glSmartBitmap;
 
+namespace libsiedler2 {
+class PixelBufferARGB;
+}
+
+class glTexture
+{
+    unsigned handle;
+    Extent size;
+
+public:
+    glTexture();
+    ~glTexture();
+    glTexture(const glTexture&) = delete;
+    glTexture(glTexture&&);
+    glTexture& operator=(const glTexture&) = delete;
+    glTexture& operator=(glTexture&&);
+
+    explicit operator bool() const { return handle != 0; }
+    const Extent& getSize() const { return size; }
+    auto get() const { return handle; }
+
+    void bind();
+    bool checkSize(const Extent&);
+    bool uploadData(const libsiedler2::PixelBufferARGB&);
+};
+
 class glTexturePacker
 {
 private:
-    std::vector<unsigned> textures;
+    std::vector<glTexture> textures;
     std::vector<glSmartBitmap*> items;
 
     bool packHelper(std::vector<glSmartBitmap*>& list);
 
 public:
-    ~glTexturePacker();
-
     bool pack();
-
     void add(glSmartBitmap& bmp) { items.push_back(&bmp); }
+    const auto& getTextures() const { return textures; }
 };
 
 #endif // glTexturePacker_h__
