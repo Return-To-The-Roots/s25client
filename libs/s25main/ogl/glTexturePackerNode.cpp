@@ -50,23 +50,26 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, libsiedler2::PixelBufferARGB&
 
         if(texSize == current->size)
         {
+            b->drawTo(buffer, current->pos);
             current->bmp = b;
 
-            b->drawTo(buffer, current->pos);
+            const Point<float> bufferSize(buffer.getWidth(), buffer.getHeight());
+            Extent currentSize(current->size);
+            if(b->isPlayer())
+                currentSize.x /= 2;
 
-            auto const currentFullWidth = current->size.x;
-            auto const currentWidth = b->isPlayer() ? currentFullWidth / 2 : currentFullWidth;
+            b->texCoords[0] = current->pos / bufferSize;
+            b->texCoords[2] = (current->pos + currentSize) / bufferSize;
+            b->texCoords[1] = {b->texCoords[0].x, b->texCoords[2].y};
+            b->texCoords[3] = {b->texCoords[2].x, b->texCoords[0].y};
 
-            b->texCoords[0].x = b->texCoords[1].x = (float)current->pos.x / (float)buffer.getWidth();
-            b->texCoords[2].x = b->texCoords[3].x = (float)(currentWidth) / (float)buffer.getWidth();
-            b->texCoords[0].y = b->texCoords[3].y = b->texCoords[4].y = b->texCoords[7].y =
-              (float)current->pos.y / (float)buffer.getHeight();
-            b->texCoords[1].y = b->texCoords[2].y = b->texCoords[5].y = b->texCoords[6].y =
-              (float)(current->pos.y + current->size.y) / (float)buffer.getHeight();
-
-            b->texCoords[4].x = b->texCoords[5].x = (float)(currentWidth) / (float)buffer.getWidth();
-            b->texCoords[6].x = b->texCoords[7].x = (float)(currentFullWidth) / (float)buffer.getWidth();
-
+            if(b->isPlayer())
+            {
+                b->texCoords[4] = b->texCoords[3];
+                b->texCoords[6] = (current->pos + current->size) / bufferSize;
+                b->texCoords[5] = {b->texCoords[4].x, b->texCoords[6].y};
+                b->texCoords[7] = {b->texCoords[6].x, b->texCoords[4].y};
+            }
             return true;
         }
 

@@ -36,9 +36,9 @@ public:
     glTexture();
     ~glTexture();
     glTexture(const glTexture&) = delete;
-    glTexture(glTexture&&);
+    glTexture(glTexture&&) noexcept;
     glTexture& operator=(const glTexture&) = delete;
-    glTexture& operator=(glTexture&&);
+    glTexture& operator=(glTexture&&) noexcept;
 
     explicit operator bool() const { return handle != 0; }
     const Extent& getSize() const { return size; }

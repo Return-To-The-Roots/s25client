@@ -108,12 +108,13 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
             if(!texture.uploadData(buffer))
                 return false;
 
-            textures.emplace_back(std::move(texture));
-
             if(left.empty()) // nothing left, just generate texture and return success
-                return true;
-            else if(maxTex) // maximum texture size reached and something still left
             {
+                textures.emplace_back(std::move(texture));
+                return true;
+            } else if(maxTex) // maximum texture size reached and something still left
+            {
+                textures.emplace_back(std::move(texture));
                 // recursively generate textures for what is left
                 return packHelper(left);
             }
@@ -157,11 +158,11 @@ glTexture::glTexture() : handle(VIDEODRIVER.GenerateTexture()), size(0, 0)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
-glTexture::glTexture(glTexture&& rhs) : handle(rhs.handle), size(rhs.size)
+glTexture::glTexture(glTexture&& rhs) noexcept : handle(rhs.handle), size(rhs.size)
 {
     rhs.handle = 0;
 }
-glTexture& glTexture::operator=(glTexture&& rhs)
+glTexture& glTexture::operator=(glTexture&& rhs) noexcept
 {
     std::swap(handle, rhs.handle);
     std::swap(size, rhs.size);
