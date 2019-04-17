@@ -36,7 +36,7 @@ const unsigned Desktop::fpsDisplayId = std::numeric_limits<unsigned>::max();
  *  @param[in] background Hintergrund des Desktops
  */
 Desktop::Desktop(glArchivItem_Bitmap* background)
-    : Window(nullptr, 0, DrawPoint::all(0), VIDEODRIVER.GetRenderSize()), background(background)
+    : Window(nullptr, 0, DrawPoint::all(0), VIDEODRIVER.GetRenderSize()), background(background), lastFPS_(0)
 {
     SetScale(true);
     SetFpsDisplay(true);
