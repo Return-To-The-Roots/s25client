@@ -20,10 +20,8 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePackerNode.h"
-#include "libsiedler2/Archiv.h"
-#include "libsiedler2/ArchivItem_Bitmap_Raw.h"
+#include "ogl/saveBitmap.h"
 #include "libsiedler2/PixelBufferARGB.h"
-#include "libsiedler2/libsiedler2.h"
 #include <algorithm>
 #include <glad/glad.h>
 #include <utility>
@@ -93,13 +91,9 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
             }
             if((false))
             {
-                auto bmp = std::make_unique<libsiedler2::ArchivItem_Bitmap_Raw>();
-                bmp->create(buffer);
                 bfs::path outFilepath =
                   std::to_string(texture.get()) + "-" + std::to_string(curSize.x) + "x" + std::to_string(curSize.y) + ".bmp";
-                libsiedler2::Archiv archive;
-                archive.push(std::move(bmp));
-                libsiedler2::Write(outFilepath.string(), archive);
+                saveBitmap(buffer, outFilepath);
             }
             // free texture packer, as it is not needed any more
             root->destroy(list.size());

@@ -32,11 +32,9 @@
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Font.h"
+#include "ogl/saveBitmap.h"
 #include "gameData/const_gui_ids.h"
-#include "libsiedler2/ArchivItem_Bitmap_Raw.h"
-#include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/PixelBufferARGB.h"
-#include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
 #include <algorithm>
@@ -788,16 +786,15 @@ void WindowManager::TakeScreenshot()
 {
     libsiedler2::PixelBufferARGB buffer(curRenderSize.x, curRenderSize.y);
     glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
-    auto bmp = std::make_unique<libsiedler2::ArchivItem_Bitmap_Raw>();
-    bmp->create(buffer);
-    bmp->flipVertical();
     bfs::path outFilepath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[100])) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
-    libsiedler2::Archiv archive;
-    archive.push(std::move(bmp));
-    if(int ec = libsiedler2::Write(outFilepath.string(), archive))
-        LOG.write(_("Error writing screenshot: %1%\n")) % libsiedler2::getErrorString(ec);
-    else
+    try
+    {
+        saveBitmap(buffer, outFilepath);
         LOG.write(_("Screenshot saved to %1%\n")) % outFilepath;
+    } catch(const std::runtime_error& e)
+    {
+        LOG.write(_("Error writing screenshot: %1%\n")) % e.what();
+    }
 }
 
 void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip)
