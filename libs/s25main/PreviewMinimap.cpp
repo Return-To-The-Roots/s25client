@@ -89,11 +89,14 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 
         // Schattierung
         const int shading = shadows[GetMMIdx(pt)] - 0x40;
-        int r = helpers::clamp(GetRed(color) + shading, 0, 255);
-        int g = helpers::clamp(GetGreen(color) + shading, 0, 255);
-        int b = helpers::clamp(GetBlue(color) + shading, 0, 255);
-
-        color = MakeColor(0xFF, unsigned(r), unsigned(g), unsigned(b));
+        if(shading != 0)
+        {
+            const auto r = static_cast<int>(GetRed(color)) + shading;
+            const auto g = static_cast<int>(GetGreen(color)) + shading;
+            const auto b = static_cast<int>(GetBlue(color)) + shading;
+            using helpers::clamp;
+            color = MakeColor(0xFF, clamp(r, 0u, 255u), clamp(g, 0u, 255u), clamp(b, 0u, 255u));
+        }
     }
 
     return color;
