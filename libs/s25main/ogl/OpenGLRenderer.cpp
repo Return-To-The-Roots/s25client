@@ -19,6 +19,7 @@
 #include "OpenGLRenderer.h"
 #include "DrawPoint.h"
 #include "glArchivItem_Bitmap.h"
+#include "openglCfg.hpp"
 #include <glad/glad.h>
 
 void OpenGLRenderer::synchronize()
@@ -130,4 +131,13 @@ void OpenGLRenderer::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsi
     glEnd();
 
     glEnable(GL_TEXTURE_2D);
+}
+
+bool OpenGLRenderer::initOpenGL(OpenGL_Loader_Proc loader)
+{
+#if RTTR_OGL_ES
+    return gladLoadGLES2Loader(loader) != 0;
+#else
+    return gladLoadGLLoader(loader) != 0;
+#endif
 }

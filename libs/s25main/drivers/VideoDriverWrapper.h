@@ -108,9 +108,6 @@ private:
     bool Initialize();
     bool setHwVSync(bool enabled);
 
-    // prüft ob eine Extension verfügbar ist
-    bool hasExtension(const std::string& extension);
-
     // lädt eine Funktion aus den Extensions
     void* loadExtension(const std::string& extension);
 
@@ -124,8 +121,6 @@ private:
     std::unique_ptr<FrameCounter> frameCtr_;
     std::unique_ptr<FrameLimiter> frameLimiter_;
     bool loadedFromDll;
-    /// (Some) OpenGL can be disabled for testing
-    bool isOglEnabled_;
 
     std::vector<unsigned> texture_list;
     unsigned texture_current;

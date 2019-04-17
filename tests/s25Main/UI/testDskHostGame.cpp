@@ -45,10 +45,9 @@ MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
 };
 /* clang-format on */
 
-BOOST_AUTO_TEST_CASE(LobbyChat)
+BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
 {
     rttr::test::LogAccessor logAcc;
-    uiHelper::initGUITests();
 
     GameLobby gameLobby(false, true, 2);
     JoinPlayerInfo& player = gameLobby.getPlayer(0);

@@ -19,6 +19,7 @@
 #include "PointOutput.h"
 #include "controls/ctrlPreviewMinimap.h"
 #include "ogl/glArchivItem_Map.h"
+#include "uiHelper/uiHelpers.hpp"
 #include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
@@ -39,7 +40,7 @@ static void resizeMap(glArchivItem_Map& glMap, const Extent& size)
     glMap.load(map);
 }
 
-BOOST_AUTO_TEST_CASE(PreviewMinimap)
+BOOST_FIXTURE_TEST_CASE(PreviewMinimap, uiHelper::Fixture)
 {
     DrawPoint pos(5, 12);
     Extent size(20, 10);

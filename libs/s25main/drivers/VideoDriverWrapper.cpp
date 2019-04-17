@@ -45,9 +45,7 @@ using SwapIntervalExt_t = int(int);
 
 SwapIntervalExt_t* wglSwapIntervalEXT = nullptr;
 
-VideoDriverWrapper::VideoDriverWrapper()
-    : videodriver(nullptr), renderer_(nullptr), loadedFromDll(false), isOglEnabled_(false), texture_current(0)
-{}
+VideoDriverWrapper::VideoDriverWrapper() : videodriver(nullptr), renderer_(nullptr), loadedFromDll(false), texture_current(0) {}
 
 VideoDriverWrapper::~VideoDriverWrapper()
 {
@@ -84,8 +82,7 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
 
     LOG.write(_("Loaded video driver \"%1%\"\n")) % GetName();
 
-    isOglEnabled_ = videodriver->IsOpenGL();
-    if(isOglEnabled_)
+    if(videodriver->IsOpenGL())
         renderer_ = std::make_unique<OpenGLRenderer>();
     else
         renderer_ = std::make_unique<DummyRenderer>();
@@ -219,47 +216,11 @@ unsigned VideoDriverWrapper::GetFPS() const
 }
 
 /**
- *  prüft, ob eine bestimmte Extension existiert.
- *
- *  @param[in] extension Die zu suchende Extension
- *
- *  @return Bei Erfolg @p true ansonsten @p false
- */
-bool VideoDriverWrapper::hasExtension(const std::string& extension)
-{
-    // Extension mit Leerzeichen gibts nich
-    if(!isOglEnabled_ || extension.empty() || extension.find(' ') != std::string::npos)
-        return false;
-
-    // ermittle Extensions String
-    const std::string extensions = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-
-    // such nach einer exakten Kopie des Extensions Strings
-    size_t curOffset = 0;
-    do
-    {
-        size_t curPos = extensions.find(extension, curOffset);
-        if(curPos == std::string::npos)
-            break;
-
-        size_t endPos = curPos + extension.length();
-        if(curPos == 0 || extensions[curPos - 1] == ' ')
-        {
-            if(endPos == extensions.length() || extensions[endPos] == ' ')
-                return true;
-        }
-        curOffset = endPos;
-    } while(curOffset < extensions.length());
-
-    return false;
-}
-
-/**
  *  Löscht alle herausgegebenen Texturen aus dem Speicher.
  */
 void VideoDriverWrapper::CleanUp()
 {
-    if(isOglEnabled_ && !texture_list.empty())
+    if(!texture_list.empty())
         glDeleteTextures(texture_list.size(), (const GLuint*)&texture_list.front());
 
     texture_list.clear();
@@ -267,9 +228,6 @@ void VideoDriverWrapper::CleanUp()
 
 unsigned VideoDriverWrapper::GenerateTexture()
 {
-    if(!isOglEnabled_)
-        return 0;
-
     GLuint newTexture = 0;
     glGenTextures(1, &newTexture);
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
@@ -286,8 +244,7 @@ void VideoDriverWrapper::BindTexture(unsigned t)
     if(t != texture_current)
     {
         texture_current = t;
-        if(isOglEnabled_)
-            glBindTexture(GL_TEXTURE_2D, t);
+        glBindTexture(GL_TEXTURE_2D, t);
     }
 }
 
@@ -295,8 +252,7 @@ void VideoDriverWrapper::DeleteTexture(unsigned t)
 {
     if(t == texture_current)
         texture_current = 0;
-    if(isOglEnabled_)
-        glDeleteTextures(1, &t);
+    glDeleteTextures(1, &t);
 }
 
 KeyEvent VideoDriverWrapper::GetModKeyState() const
@@ -323,8 +279,7 @@ void VideoDriverWrapper::SwapBuffers()
 
 void VideoDriverWrapper::ClearScreen()
 {
-    if(isOglEnabled_)
-        glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 bool VideoDriverWrapper::Run()
@@ -345,9 +300,6 @@ Extent VideoDriverWrapper::calcPreferredTextureSize(const Extent& minSize) const
 
 bool VideoDriverWrapper::Initialize()
 {
-    if(!isOglEnabled_)
-        return true;
-
     // Extensions laden
     if(!LoadAllExtensions())
         return false;
@@ -431,29 +383,19 @@ void VideoDriverWrapper::RenewViewport()
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
-#if RTTR_OGL_ES
-    if(!gladLoadGLES2Loader(videodriver->GetLoaderFunction()))
-    {
+    if(!renderer_->initOpenGL(videodriver->GetLoaderFunction()))
         return false;
-    }
-#else
-    if(!gladLoadGLLoader(videodriver->GetLoaderFunction()))
-    {
-        return false;
-    }
-#endif
     LOG.write(_("OpenGL %1%.%2% supported\n")) % GLVersion.major % GLVersion.minor;
     if(GLVersion.major < RTTR_OGL_MAJOR || (GLVersion.major == RTTR_OGL_MAJOR && GLVersion.minor < RTTR_OGL_MINOR))
     {
-        boost::format errorMsg(_("OpenGL %1% %2%.%3% is not supported. Try updating your GPU drivers or hardware!"));
-        errorMsg % ((RTTR_OGL_ES) ? "ES" : "") % RTTR_OGL_MAJOR % RTTR_OGL_MINOR;
-        s25util::fatal_error(errorMsg.str());
+        LOG.write(_("OpenGL %1% %2%.%3% is not supported. Try updating your GPU drivers or hardware!")) % ((RTTR_OGL_ES) ? "ES" : "")
+          % RTTR_OGL_MAJOR % RTTR_OGL_MINOR;
         return false;
     }
+
 // auf VSync-Extension testen
 #ifdef _WIN32
-    if(hasExtension("WGL_EXT_swap_control"))
-        wglSwapIntervalEXT = drivers::FunctionPointerCast<SwapIntervalExt_t>(loadExtension("wglSwapIntervalEXT"));
+    wglSwapIntervalEXT = drivers::FunctionPointerCast<SwapIntervalExt_t>(loadExtension("wglSwapIntervalEXT"));
 #else
     wglSwapIntervalEXT = drivers::FunctionPointerCast<SwapIntervalExt_t>(loadExtension("glXSwapIntervalSGI"));
 #endif
