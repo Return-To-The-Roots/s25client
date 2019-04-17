@@ -55,6 +55,8 @@ VideoDriverWrapper::~VideoDriverWrapper()
 
 bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
 {
+    UnloadDriver();
+
     loadedFromDll = existingDriver == nullptr;
     if(!existingDriver)
     {
@@ -67,10 +69,7 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
         // Instanz erzeugen
         videodriver = createVideoInstance(&WINDOWMANAGER);
         if(!videodriver)
-        {
-            UnloadDriver();
             return false;
-        }
     } else
         videodriver = existingDriver;
 
