@@ -297,8 +297,13 @@ void Loader::LoadDummyGUIFiles()
     // Palettes
     {
         auto palette = std::make_unique<libsiedler2::ArchivItem_Palette>();
-        files_["colors"].archiv.pushC(*palette);
-        files_["pal5"].archiv.push(std::move(palette));
+        for(int i = 0; i < 256; i++)
+            palette->set(i, libsiedler2::ColorRGB(42, 137, i));
+        files_["pal5"].archiv.pushC(*palette);
+        // Player color palette
+        for(int i = 128; i < 128 + libsiedler2::ArchivItem_Bitmap_Player::numPlayerClrs; i++)
+            palette->set(i, libsiedler2::ColorRGB(i, i, i));
+        files_["colors"].archiv.push(std::move(palette));
     }
     // GUI elements
     libsiedler2::Archiv& resource = files_["resource"].archiv;
@@ -946,7 +951,8 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
 
     FileEntry& entry = files_[name];
     // Load if: 1. Not loaded
-    //          2. archive content changed BUT we are not loading an override file or the file wasn't loaded since the last override change
+    //          2. archive content changed BUT we are not loading an override file or the file wasn't loaded since the last override
+    //          change
     if(entry.archiv.empty() || (entry.filesUsed != GetFilesToLoad(pfad) && (!isFromOverrideDir || !entry.loadedAfterOverrideChange)))
     {
         if(!LoadFile(entry.archiv, pfad, palette))

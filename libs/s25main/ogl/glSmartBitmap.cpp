@@ -96,9 +96,8 @@ void glSmartBitmap::calcDimensions()
         return;
     }
 
-    Position maxPos(0, 0);
-
     origin_.x = origin_.y = std::numeric_limits<int>::min();
+    Position maxPos = origin_;
 
     hasPlayer = false;
 
