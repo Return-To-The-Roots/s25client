@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
     BOOST_REQUIRE_GE(worldDesc.terrain.size(), 3u * NUM_TTS);
     for(unsigned l = 0; l < NUM_LTS; l++)
     {
-        Landscape lt = Landscape(l);
+        auto lt = Landscape(l);
         // indexOf(name) in these arrays should be the original RTTR index as in TerrainData
         std::vector<std::string> tNames, eNames;
         for(DescIdx<TerrainDesc> i(0); i.value < worldDesc.terrain.size(); i.value++)
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
         }
         for(unsigned i = 0; i < NUM_TTS; i++)
         {
-            TerrainType t = TerrainType(i);
+            auto t = TerrainType(i);
             const TerrainDesc& desc = worldDesc.terrain.get(worldDesc.terrain.getIndex(tNames[i]));
             BOOST_REQUIRE_EQUAL(desc.s2Id, TerrainData::GetTextureIdentifier(t));
             EdgeType newEdge = !desc.edgeType ? ET_NONE : EdgeType((helpers::indexOf(eNames, worldDesc.get(desc.edgeType).name) + 1));
@@ -106,15 +106,15 @@ BOOST_AUTO_TEST_CASE(TextureCoords)
     WorldDescription desc;
     GameDataLoader loader(desc, basePath.string());
     BOOST_REQUIRE(loader.Load());
-    typedef TerrainDesc::PointF PointF;
+    using PointF = TerrainDesc::PointF;
     // Border points are inset by half a pixel for OpenGL (sample middle of pixel!)
     // Overlapped uses the full rectangle
     const TerrainDesc::Triangle rsuO = desc.terrain.tryGet("terrain1")->GetRSUTriangle();
-    BOOST_REQUIRE_EQUAL(rsuO.tip, PointF(10 + 32 / 2, 20 + 0.5f));
+    BOOST_REQUIRE_EQUAL(rsuO.tip, PointF(10 + 32 / 2.f, 20 + 0.5f));
     BOOST_REQUIRE_EQUAL(rsuO.left, PointF(10 + 0.5f, 20 + 31 - 0.5f));
     BOOST_REQUIRE_EQUAL(rsuO.right, PointF(10 + 32 - 0.5f, 20 + 31 - 0.5f));
     const TerrainDesc::Triangle usdO = desc.terrain.tryGet("terrain1")->GetUSDTriangle();
-    BOOST_REQUIRE_EQUAL(usdO.tip, PointF(10 + 32 / 2, 20 + 31 - 0.5f));
+    BOOST_REQUIRE_EQUAL(usdO.tip, PointF(10 + 32 / 2.f, 20 + 31 - 0.5f));
     BOOST_REQUIRE_EQUAL(usdO.left, PointF(10 + 0.5f, 20 + 0.5f));
     BOOST_REQUIRE_EQUAL(usdO.right, PointF(10 + 32 - 0.5f, 20 + 0.5f));
 

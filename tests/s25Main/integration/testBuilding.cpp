@@ -18,12 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "BQOutput.h"
 #include "GamePlayer.h"
-#include "GlobalVars.h"
 #include "PointOutput.h"
 #include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
 #include "helpers/containerUtils.h"
-#include "network/GameClient.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
@@ -49,11 +47,10 @@ struct MapPointLess
 };
 
 namespace {
-typedef WorldFixture<CreateEmptyWorld, 0> EmptyWorldFixture0P;
-typedef WorldFixture<CreateEmptyWorld, 1> EmptyWorldFixture1P;
-typedef WorldFixture<CreateEmptyWorld, 1, 18, 16> EmptyWorldFixture1PBigger;
-typedef std::map<MapPoint, BuildingQuality, MapPointLess> ReducedBQMap;
-} // namespace
+using EmptyWorldFixture0P = WorldFixture<CreateEmptyWorld, 0>;
+using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
+using EmptyWorldFixture1PBigger = WorldFixture<CreateEmptyWorld, 1, 18, 16>;
+using ReducedBQMap = std::map<MapPoint, BuildingQuality, MapPointLess>;
 
 /// Check that the BQ at all points is BQ_CASTLE except the points in the reducedBQs map which have given BQs
 boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const std::vector<MapPoint>& pts, const ReducedBQMap& reducedBQs)
@@ -75,6 +72,7 @@ boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const s
     return true;
 }
 
+} // namespace
 BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
 {
     const MapPoint flagPos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(5, 6));
@@ -199,8 +197,6 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
         BOOST_REQUIRE_EQUAL(world.GetNode(pt + MapPoint(1, 0)).bq, BQ_HOUSE);
     }
 }
-
-void deleteNoting(void*) {}
 
 BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
 {
@@ -371,7 +367,7 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1P)
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHWEST), 0), BQ_NOTHING);
 }
 
-void addStaticObj(GameWorldBase& world, const MapPoint& pos, unsigned size)
+static void addStaticObj(GameWorldBase& world, const MapPoint& pos, unsigned size)
 {
     world.DestroyNO(pos, false);
     world.SetNO(pos, new noStaticObject(pos, 0, 0, size));

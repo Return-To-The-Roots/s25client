@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_SUITE(GameInterfaceDesktop)
 namespace {
 struct dskGameInterfaceMock : public dskGameInterface
 {
-    dskGameInterfaceMock(std::shared_ptr<Game> game) : dskGameInterface(game, std::shared_ptr<NWFInfo>(), 0, false) {}
+    dskGameInterfaceMock(const std::shared_ptr<Game>& game) : dskGameInterface(game, std::shared_ptr<NWFInfo>(), 0, false) {}
     void Msg_PaintBefore() override {}
     void Msg_PaintAfter() override {}
 };
@@ -47,8 +47,7 @@ struct GameInterfaceFixture : uiHelper::Fixture
     const GameWorldView* view;
     GameInterfaceFixture()
     {
-        gameDesktop = new dskGameInterfaceMock(worldFixture.game);
-        WINDOWMANAGER.Switch(gameDesktop);
+        gameDesktop = static_cast<dskGameInterface*>(WINDOWMANAGER.Switch(std::make_unique<dskGameInterfaceMock>(worldFixture.game)));
         WINDOWMANAGER.Draw();
         view = &gameDesktop->GetView();
     }

@@ -23,6 +23,6 @@
 /// This defines a subscription to a notification.
 /// When there are no references left, the subscription is canceled
 /// Note: Treat this as a kind of opaque handle
-typedef std::shared_ptr<void> Subscribtion;
+using Subscribtion = std::shared_ptr<void>;
 
 #endif // Subscriber_h__

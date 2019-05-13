@@ -36,7 +36,7 @@
 unsigned short noTree::DRAW_COUNTER = 0;
 
 noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char size)
-    : noCoordBase(NOP_TREE, pos), type(type), size(size), event(0), produce_animal_event(0)
+    : noCoordBase(NOP_TREE, pos), type(type), size(size), event(nullptr), produce_animal_event(nullptr)
 {
     // Wenn der Baum klein ist, muss später mal wachsen
     if(!size)
@@ -47,7 +47,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
         state = STATE_NOTHING;
 
     // Every nth tree produces animals, but no palm and pineapple trees
-    const unsigned TREESPERANIMALSPAWN[] = {20, 13, 10, 6, 4, 2};
+    const std::array<unsigned, 6> TREESPERANIMALSPAWN = {20, 13, 10, 6, 4, 2};
     produce_animals =
       (type < 3 || type > 5) && (RANDOM_RAND(GetObjId(), TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)]) == 0);
 
@@ -56,7 +56,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
         produce_animal_event = GetEvMgr().AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
 }
 
-noTree::~noTree() {}
+noTree::~noTree() = default;
 
 void noTree::Destroy_noTree()
 {
@@ -173,7 +173,7 @@ void noTree::HandleEvent(const unsigned id)
             {
                 // bin nun ausgewachsen
                 state = STATE_NOTHING;
-                event = 0;
+                event = nullptr;
             }
         }
         break;
@@ -195,7 +195,7 @@ void noTree::HandleEvent(const unsigned id)
         case STATE_FALLING_FALLEN:
         {
             // Baum verschwindet nun und es bleibt ein Baumstumpf zurück
-            event = 0;
+            event = nullptr;
             GetEvMgr().AddToKillList(this);
             gwg->SetNO(pos, new noDisappearingMapEnvObject(pos, 531), true);
             gwg->RecalcBQAroundPoint(pos);
@@ -231,7 +231,7 @@ void noTree::ProduceAnimal()
 {
     // neues Tier erzeugen, zufälliger Typ
     static const std::array<Species, 6> possibleSpecies = {{SPEC_RABBITWHITE, SPEC_RABBITGREY, SPEC_FOX, SPEC_STAG, SPEC_DEER, SPEC_SHEEP}};
-    noAnimal* animal = new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
+    auto* animal = new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
     // In die Landschaft setzen
     gwg->AddFigure(pos, animal);
     // Und ihm die Pforten geben..

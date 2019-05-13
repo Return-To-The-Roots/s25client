@@ -26,10 +26,8 @@
 #include "driver/KeyEvent.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "iwHelp.h"
-#include "macros.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include "postSystem/DiplomacyPostQuestion.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
@@ -113,9 +111,9 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case ID_HELP:
             WINDOWMANAGER.Show(
-              new iwHelp(GUI_ID(CGI_HELP), _("All important messages are collected in this window and "
-                                             "sorted into groups. If this window is not open, the dove "
-                                             "symbol at the bottom of the screen indicates the arrival of a new message.")));
+              std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("All important messages are collected in this window and "
+                                                           "sorted into groups. If this window is not open, the dove "
+                                                           "symbol at the bottom of the screen indicates the arrival of a new message.")));
             break;
         case ID_SHOW_ALL:
             showAll = true;
@@ -126,7 +124,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_SHOW_GOAL:
             if(!postBox.GetCurrentMissionGoal().empty())
                 WINDOWMANAGER.Show(
-                  new iwMissionStatement(_("Diary"), postBox.GetCurrentMissionGoal(), false, iwMissionStatement::IM_AVATAR9));
+                  std::make_unique<iwMissionStatement>(_("Diary"), postBox.GetCurrentMissionGoal(), false, iwMissionStatement::IM_AVATAR9));
             break;
         case ID_SHOW_MIL: SwitchCategory(PostCategory::Military); break;
         case ID_SHOW_GEO: SwitchCategory(PostCategory::Geologist); break;
@@ -167,7 +165,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(!ValidateMessages() || !curMsg)
                 return;
-            const DiplomacyPostQuestion* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(curMsg);
+            const auto* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(curMsg);
             if(dcurMsg)
             {
                 // If it is a question about a new contract, tell the other player we denied it
@@ -183,7 +181,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(!ValidateMessages())
                 return;
-            const DiplomacyPostQuestion* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(GetMsg(curMsgId));
+            const auto* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(GetMsg(curMsgId));
             if(dcurMsg)
             {
                 // New contract?
@@ -309,7 +307,7 @@ void iwPostWindow::DisplayPostMessage()
 
 void iwPostWindow::SetMessageText(const std::string& message)
 {
-    ctrlMultiline* text = GetCtrl<ctrlMultiline>(ID_TEXT);
+    auto* text = GetCtrl<ctrlMultiline>(ID_TEXT);
     text->Clear();
     text->AddString(message, COLOR_WINDOWBROWN);
 }

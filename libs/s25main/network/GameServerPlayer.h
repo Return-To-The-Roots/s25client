@@ -19,14 +19,10 @@
 
 #pragma once
 
-#include "AsyncChecksum.h"
 #include "NetworkPlayer.h"
 #include "Timer.h"
 #include "helpers/SmoothedValue.hpp"
-#include <queue>
 #include <variant.h>
-
-class Serializer;
 
 /// Player connected to the server
 class GameServerPlayer : public NetworkPlayer
@@ -42,8 +38,6 @@ class GameServerPlayer : public NetworkPlayer
     };
     struct ActiveState
     {
-        /// Are we waiting for a ping reply
-        bool isPinging;
         /// Timer for the current sent ping command or the last received ping reply
         Timer pingTimer;
         /// Timer started when the player started lagging
@@ -51,7 +45,9 @@ class GameServerPlayer : public NetworkPlayer
         helpers::SmoothedValue<unsigned> ping;
         /// These swaps are yet to be confirmed by the client
         std::vector<std::pair<unsigned, unsigned>> pendingSwaps;
-        ActiveState(unsigned maxSmoothValues) : isPinging(false), ping(maxSmoothValues) {}
+        /// Are we waiting for a ping reply
+        bool isPinging;
+        ActiveState(unsigned maxSmoothValues) : ping(maxSmoothValues), isPinging(false) {}
     };
 
 public:

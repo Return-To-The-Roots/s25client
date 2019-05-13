@@ -38,7 +38,7 @@ noGrainfield::noGrainfield(const MapPoint pos)
     event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
 }
 
-noGrainfield::~noGrainfield() {}
+noGrainfield::~noGrainfield() = default;
 
 void noGrainfield::Destroy_noGrainfield()
 {
@@ -133,7 +133,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
         case STATE_WITHERING:
         {
             // Selbst zerstören
-            event = 0;
+            event = nullptr;
             gwg->SetNO(pos, nullptr);
             GetEvMgr().AddToKillList(this);
         }
@@ -145,7 +145,7 @@ void noGrainfield::BeginHarvesting()
 {
     // Event killen, damit wir nicht plötzlich verschwinden, wenn er uns aberntet
     GetEvMgr().RemoveEvent(event);
-    event = 0;
+    event = nullptr;
     state = STATE_NORMAL;
 }
 

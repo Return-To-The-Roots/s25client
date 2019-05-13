@@ -36,7 +36,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
         return false;
     }
 
-    auto uncompressedData = std::make_unique<char[]>(length);
+    auto uncompressedData = std::unique_ptr<char[]>(new char[length]);
 
     unsigned outLength = length;
 
@@ -72,7 +72,7 @@ bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* che
     data.resize(static_cast<int>(std::ceil(length * 1.1)) + 600); // Buffer should be at most 1% bigger + 600 Bytes according to docu
     file.seekg(0);
 
-    auto uncompressedData = std::make_unique<char[]>(length);
+    auto uncompressedData = std::unique_ptr<char[]>(new char[length]);
 
     if(!file.read(uncompressedData.get(), length))
     {

@@ -31,20 +31,18 @@
 #include "worldFixtures/initGameRNG.hpp"
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
-#include "nodeObjs/noFlag.h"
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainDesc.h"
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 
 BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
 
 // Size is chosen based on current maximum attacking distances!
 struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
 {
-    typedef SeaWorldWithGCExecution<3, 62, 64> Parent;
+    using Parent = SeaWorldWithGCExecution<3, 62, 64>;
     using Parent::curPlayer;
     using Parent::ggs;
     using Parent::world;
@@ -91,7 +89,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         {
             SetCurPlayer(i);
             hqPos[i] = world.GetPlayer(i).GetHQPos();
-            nobBaseWarehouse* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos[i]);
+            auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos[i]);
             Inventory goods;
             goods.Add(JOB_GENERAL, 3);
             hq->AddGoods(goods, true);
@@ -121,7 +119,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
             MapPoint shipPos = world.GetCoastalPoint(world.GetHarborPointID(harborPos[i]), 1);
             shipPos = world.MakeMapPoint(Position(shipPos) + (Position(shipPos) - Position(harborPos[i])) * 8);
             BOOST_REQUIRE(shipPos.isValid());
-            noShip* ship = new noShip(shipPos, i);
+            auto* ship = new noShip(shipPos, i);
             world.AddFigure(shipPos, ship);
             world.GetPlayer(i).RegisterShip(ship);
         }
@@ -194,12 +192,12 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
     void AddSoldiersWithRank(MapPoint bldPos, unsigned numSoldiers, unsigned rank)
     {
         BOOST_REQUIRE_LE(rank, world.GetGGS().GetMaxMilitaryRank());
-        nobMilitary* bld = world.GetSpecObj<nobMilitary>(bldPos);
+        auto* bld = world.GetSpecObj<nobMilitary>(bldPos);
         BOOST_REQUIRE(bld);
         const unsigned oldNumSoldiers = bld->GetNumTroops();
         for(unsigned i = 0; i < numSoldiers; i++)
         {
-            nofPassiveSoldier* soldier = new nofPassiveSoldier(bldPos, bld->GetPlayer(), bld, bld, rank);
+            auto* soldier = new nofPassiveSoldier(bldPos, bld->GetPlayer(), bld, bld, rank);
             world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier->GetJobType(), 1);
             world.AddFigure(bldPos, soldier);
             // Let him "walk" to goal -> Already reached -> Added
@@ -524,7 +522,7 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     {
         for(noBase* fig : world.GetFigures(pt))
         {
-            nofAttacker* attacker = dynamic_cast<nofAttacker*>(fig);
+            auto* attacker = dynamic_cast<nofAttacker*>(fig);
             if(attacker)
             {
                 BOOST_REQUIRE_EQUAL(attacker->GetPlayer(), 2u);

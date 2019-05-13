@@ -34,7 +34,7 @@ class nofMinter : public nofWorkman
     GoodType ProduceWare() override;
 
 public:
-    nofMinter(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofMinter(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMinter(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

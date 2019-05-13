@@ -21,14 +21,13 @@
 #include "Loader.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/TerritoryRegion.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/const_gui_ids.h"
-#include <boost/format.hpp>
 
 class iwMapDebug::DebugPrinter : public IDrawNodeCallback
 {
@@ -47,15 +46,15 @@ public:
                 if(node.reserved)
                     data = "R";
                 break;
-            case 2: data = helpers::toString(static_cast<unsigned>(node.altitude)); break;
-            case 3: data = helpers::toString(static_cast<unsigned>(node.resources.getValue())); break;
+            case 2: data = helpers::toString(node.altitude); break;
+            case 3: data = helpers::toString(node.resources.getValue()); break;
             case 4:
                 if(node.seaId)
                     data = helpers::toString(node.seaId);
                 else if(gw.GetSeaFromCoastalPoint(pt))
                     data = "C";
                 break;
-            case 5: data = helpers::toString(static_cast<unsigned>(node.owner)); break;
+            case 5: data = helpers::toString(node.owner); break;
             case 6:
             {
                 bool isAllowed = TerritoryRegion::IsPointValid(gw.GetSize(), gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
@@ -70,10 +69,10 @@ public:
         if(showCoords)
         {
             std::string coord = helpers::toString(pt.x) + ":" + helpers::toString(pt.y);
-            font->Draw(displayPt, coord, 0, coordsColor);
+            font->Draw(displayPt, coord, FontStyle{}, coordsColor);
         }
         if(!data.empty())
-            font->Draw(displayPt, data, 0, dataColor);
+            font->Draw(displayPt, data, FontStyle{}, dataColor);
     }
 
     bool showCoords;

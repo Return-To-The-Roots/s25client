@@ -26,7 +26,7 @@
 #include "pathfinding/PathfindingPoint.h"
 #include "world/GameWorldBase.h"
 
-typedef std::vector<FreePathNode> FreePathNodes;
+using FreePathNodes = std::vector<FreePathNode>;
 extern FreePathNodes fpNodes;
 
 struct NodePtrCmpGreater
@@ -48,8 +48,8 @@ struct GetEstimatedDistance
     unsigned operator()(const FreePathNode& lhs) const { return lhs.estimatedDistance; }
 };
 
-// typedef OpenListPrioQueue<NewNode2*, NodePtrCmpGreater> QueueImpl;
-typedef OpenListBinaryHeap<FreePathNode, GetEstimatedDistance> QueueImpl;
+// using QueueImpl = OpenListPrioQueue<NewNode2*, NodePtrCmpGreater>;
+using QueueImpl = OpenListBinaryHeap<FreePathNode, GetEstimatedDistance>;
 
 template<class TNodeChecker>
 bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool randomRoute, unsigned maxLength,

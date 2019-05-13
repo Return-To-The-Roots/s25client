@@ -44,14 +44,14 @@ struct InventorySetting
     InventorySetting(const EInventorySetting::Type setting) : state(MakeBitField(setting)) {}
     InventorySetting(const EInventorySetting setting) : state(MakeBitField(setting)) {}
     explicit InventorySetting(unsigned char state) : state(state) { MakeValid(); }
-    inline bool IsSet(const EInventorySetting setting) const;
-    inline InventorySetting Toggle(const EInventorySetting setting);
+    inline bool IsSet(EInventorySetting setting) const;
+    inline InventorySetting Toggle(EInventorySetting setting);
     inline void MakeValid();
     unsigned char ToUnsignedChar() const { return state; }
     friend bool operator==(const InventorySetting& lhs, const InventorySetting& rhs);
 
 private:
-    inline static unsigned char MakeBitField(const EInventorySetting setting);
+    inline static unsigned char MakeBitField(EInventorySetting setting);
     // Current state as a bitfield!
     unsigned char state;
 };
@@ -87,9 +87,9 @@ void InventorySetting::MakeValid()
     static const std::array<unsigned char, 4> validStates = {
       {MakeBitField(EInventorySetting::STOP), MakeBitField(EInventorySetting::SEND), MakeBitField(EInventorySetting::COLLECT),
        static_cast<unsigned char>(MakeBitField(EInventorySetting::STOP) | MakeBitField(EInventorySetting::SEND))}};
-    for(unsigned i = 0; i < validStates.size(); i++)
+    for(unsigned char validState : validStates)
     {
-        if(state == validStates[i])
+        if(state == validState)
             return;
     }
     state = 0;

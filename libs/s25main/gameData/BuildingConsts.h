@@ -18,16 +18,16 @@
 #ifndef BUILD_COSTS_H_
 #define BUILD_COSTS_H_
 
-#include "DrawPointInit.h"
-#include "helpers/SimpleMultiArray.h"
+#include "DrawPoint.h"
+#include "helpers/MultiArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/BuildingTypes.h"
-#include "gameData/NationConsts.h"
+#include "gameTypes/Nation.h"
 
 extern const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_NAMES;
 
 // Konstanten für die Baukosten der Gebäude von allen 4 Völkern
-const helpers::SimpleMultiArray<BuildingCost, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_COSTS = {
+const helpers::MultiArray<BuildingCost, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_COSTS = {
   {// Nubier
    {{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7}, {4, 0}, {4, 0}, {4, 0}, {4, 0},
     {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3},
@@ -56,7 +56,7 @@ const std::array<BuildingQuality, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_S
    BQ_HUT,     BQ_HOUSE, BQ_HUT,   BQ_HOUSE,   BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HOUSE,
    BQ_NOTHING, BQ_HOUSE, BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE, BQ_HUT,     BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HARBOR}};
 
-const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WORK_DESC = {{
+const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WORK_DESC = {
   BldWorkDescription(), // HQ
   BldWorkDescription(JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 1),
   BldWorkDescription(JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 2),
@@ -97,10 +97,10 @@ const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WOR
   BldWorkDescription(JOB_FARMER, GD_GRAIN),
   BldWorkDescription(JOB_DONKEYBREEDER, GD_INVALID, WaresNeeded(GD_GRAIN, GD_WATER)), // Produces a job. TODO: Better way
   BldWorkDescription(),                                                               // Harbour
-}};
+};
 
 /// Smoke consts for all buildings and nations
-const helpers::SimpleMultiArray<SmokeConst, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SMOKE_CONSTS = {
+const helpers::MultiArray<SmokeConst, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SMOKE_CONSTS = {
   {// Nubier
    {
      SmokeConst(),
@@ -318,7 +318,7 @@ const helpers::SimpleMultiArray<SmokeConst, NUM_NATS, NUM_BUILDING_TYPES> SUPPRE
    }}};
 
 /// Offset of the production-/gold- stop signs per building
-const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SIGN_CONSTS = {
+const helpers::MultiArray<DrawPoint, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SIGN_CONSTS = {
   {// Nubier
    {{0, 0},    {19, -4},  {19, -3},  {0, 0},    {23, -19}, {0, 0},    {0, 0},   {0, 0},     {0, 0},     {29, -23},
     {-2, -15}, {2, -13},  {-5, -16}, {-5, -15}, {0, 0},    {0, 0},    {0, 0},   {4, -16},   {9, -12},   {7, -10},
@@ -347,7 +347,7 @@ const helpers::SimpleMultiArray<DrawPointInit, NUM_NATS, NUM_BUILDING_TYPES> SUP
 
 /// Position der nubischen Feuer für alle 4 Bergwerke
 /// (Granit, Kohle, Eisen, Gold)
-const std::array<DrawPointInit, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
+const std::array<DrawPoint, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
   {31, -18},
   {34, -10},
   {30, -11},

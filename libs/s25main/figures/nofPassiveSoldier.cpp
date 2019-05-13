@@ -25,7 +25,6 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
-class RoadSegment;
 
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier), healing_event(nullptr)
 {
@@ -40,7 +39,7 @@ nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char pla
     : nofSoldier(pos, player, goal, home, rank), healing_event(nullptr)
 {}
 
-nofPassiveSoldier::~nofPassiveSoldier() {}
+nofPassiveSoldier::~nofPassiveSoldier() = default;
 
 void nofPassiveSoldier::Destroy_nofPassiveSoldier()
 {
@@ -72,7 +71,7 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
         // "Heilungs-Event"
         case 1:
         {
-            healing_event = 0;
+            healing_event = nullptr;
 
             // Sind wir noch im Haus?
             if(fs == FS_JOB)
@@ -157,8 +156,7 @@ void nofPassiveSoldier::Upgrade()
 
 void nofPassiveSoldier::Walked()
 {
-    // Das dürfte nich passiern!
-    RTTR_Assert(false);
+    throw std::logic_error("Passive soldiers shall not walk");
 }
 
 void nofPassiveSoldier::NotNeeded()

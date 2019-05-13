@@ -32,9 +32,7 @@
 #include <type_traits>
 
 class GameObject;
-class GameWorld;
 class EventManager;
-class BinaryFile;
 class GameEvent;
 class Game;
 
@@ -52,10 +50,10 @@ public:
     SerializedGameData();
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-    void MakeSnapshot(std::shared_ptr<Game> game);
+    void MakeSnapshot(const std::shared_ptr<Game>& game);
 
     /// Reads the snapshot from the internal buffer
-    void ReadSnapshot(std::shared_ptr<Game> game);
+    void ReadSnapshot(const std::shared_ptr<Game>& game);
 
     unsigned GetGameDataVersion() const { return gameDataVersion; }
 
@@ -69,7 +67,7 @@ public:
     {
         /* The assert below basically checks the virtual function table.
            If the dynamic_cast fails, we tried to push an object of another type or it was deleted */
-        const GameObject* goTmp = static_cast<const GameObject*>(go);
+        const auto* goTmp = static_cast<const GameObject*>(go);
         RTTR_Assert(dynamic_cast<const T*>(goTmp) == go); //-V547
         PushObject_(goTmp, known);
     }
@@ -158,9 +156,9 @@ private:
     /// Starts reading or writing according to the param
     void Prepare(bool reading);
     /// Erzeugt GameObject
-    GameObject* Create_GameObject(const GO_Type got, unsigned obj_id);
+    GameObject* Create_GameObject(GO_Type got, unsigned obj_id);
     /// Erzeugt FOWObject
-    FOWObject* Create_FOWObject(const FOW_Type fowtype);
+    FOWObject* Create_FOWObject(FOW_Type fowtype);
 
     void PushObject_(const GameObject* go, bool known);
     /// Objekt(referenzen) lesen
@@ -182,20 +180,20 @@ void SerializedGameData::PushObjectContainer(const T& gos, bool known)
     // Anzahl
     PushVarSize(gos.size());
     // einzelne Objekte
-    for(typename T::const_iterator it = gos.begin(); it != gos.end(); ++it)
-        PushObject(*it, known);
+    for(const auto* go : gos)
+        PushObject(go, known);
 }
 
 template<typename T>
 void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
 {
-    typedef typename T::value_type ObjectPtr;
-    typedef std::remove_pointer_t<ObjectPtr> Object;
+    using ObjectPtr = typename T::value_type;
+    using Object = std::remove_pointer_t<ObjectPtr>;
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     gos.clear();
     helpers::ReserveElements<T>::reserve(gos, size);
-    typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(gos);
+    auto it = helpers::GetInsertIterator<T>::get(gos);
     for(unsigned i = 0; i < size; ++i)
         *it = PopObject<Object>(got);
 }
@@ -203,26 +201,26 @@ void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
 template<typename T>
 void SerializedGameData::PushContainer(const T& container)
 {
-    typedef typename T::value_type Type;
+    using Type = typename T::value_type;
     static_assert(std::is_integral<Type>::value, "Only integral types are possible");
     PushVarSize(container.size());
-    for(typename T::const_iterator it = container.begin(); it != container.end(); ++it)
+    for(const auto el : container)
     {
         // Explicit template argument required for bool vector -.-
-        Push<Type>(*it);
+        Push<Type>(el);
     }
 }
 
 template<typename T>
 void SerializedGameData::PopContainer(T& result)
 {
-    typedef typename T::value_type Type;
+    using Type = typename T::value_type;
     static_assert(std::is_integral<Type>::value, "Only integral types are possible");
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     result.clear();
     helpers::ReserveElements<T>::reserve(result, size);
-    typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(result);
+    auto it = helpers::GetInsertIterator<T>::get(result);
     for(unsigned i = 0; i < size; ++i)
     {
         *it = Pop<Type>();

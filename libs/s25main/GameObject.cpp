@@ -19,9 +19,7 @@
 #include "GameObject.h"
 #include "EventManager.h"
 #include "SerializedGameData.h"
-#include "postSystem/PostBox.h"
 #include "world/GameWorldGame.h"
-
 #include <iostream>
 #include <sstream>
 

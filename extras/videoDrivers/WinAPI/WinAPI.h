@@ -28,8 +28,11 @@
 #include <utility>
 
 /// Klasse für den WinAPI Videotreiber.
-class VideoWinAPI : public VideoDriver
+class VideoWinAPI final : public VideoDriver
 {
+    /// Treiberaufräumfunktion.
+    void CleanUp();
+
 public:
     VideoWinAPI(VideoDriverLoaderInterface* CallBack);
 
@@ -40,9 +43,6 @@ public:
 
     /// Treiberinitialisierungsfunktion.
     bool Initialize() override;
-
-    /// Treiberaufräumfunktion.
-    void CleanUp() override;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
     bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) override;

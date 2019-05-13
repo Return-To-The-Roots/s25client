@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(ItemHandling)
     REQUIRE(cb->GetText(0) == "");
 }
 
-BOOST_AUTO_TEST_CASE(ControlWithScrollWheel, *boost::unit_test::label("seed=1547929045333605162"))
+BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
 {
     TestWindow wnd;
     auto cb = std::make_unique<ctrlComboBox>(&wnd, randomValue<unsigned>(), randomPoint<DrawPoint>(0, 100), randomPoint<Extent>(20, 200),
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel, *boost::unit_test::label("seed=1547
     REQUIRE(cb->GetSelection() == -1);
     mock::sequence s;
     // Scroll down 3 times (each selected)
-    MouseCoords mc{cb->GetPos() + Position(randomValue(0u, cb->GetSize().x), randomValue(0u, cb->GetSize().y))};
+    MouseCoords mc{cb->GetPos() + Position(randomValue(0u, cb->GetSize().x - 1u), randomValue(0u, cb->GetSize().y - 1u))};
     for(int i = 0; i < 3; i++)
     {
         MOCK_EXPECT(wnd.Msg_ComboSelectItem).once().with(cb->GetID(), i).in(s);

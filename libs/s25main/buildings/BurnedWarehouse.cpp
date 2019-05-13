@@ -22,7 +22,6 @@
 #include "GamePlayer.h"
 #include "SerializedGameData.h"
 #include "figures/nofPassiveWorker.h"
-#include "network/GameClient.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
@@ -42,11 +41,11 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
 {
-    for(PeopleArray::iterator it = people.begin(); it != people.end(); ++it)
-        *it = sgd.PopUnsignedInt();
+    for(unsigned int& it : people)
+        it = sgd.PopUnsignedInt();
 }
 
-BurnedWarehouse::~BurnedWarehouse() {}
+BurnedWarehouse::~BurnedWarehouse() = default;
 
 void BurnedWarehouse::Destroy()
 {
@@ -61,8 +60,8 @@ void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedInt(go_out_phase);
 
-    for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
-        sgd.PushUnsignedInt(*it);
+    for(unsigned int it : people)
+        sgd.PushUnsignedInt(it);
 }
 
 void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
@@ -123,7 +122,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             for(unsigned z = 0; z < numPeopleInDir; ++z)
             {
                 // Job erzeugen
-                nofPassiveWorker* figure = new nofPassiveWorker(Job(iJob), pos, player, nullptr);
+                auto* figure = new nofPassiveWorker(Job(iJob), pos, player, nullptr);
                 // Auf die Map setzen
                 gwg->AddFigure(pos, figure);
                 // Losrumirren in die jeweilige Richtung
@@ -142,8 +141,8 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         // fertig, sich selbst töten
         GetEvMgr().AddToKillList(this);
         // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
-        for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
-            RTTR_Assert(*it == 0);
+        for(unsigned int it : people)
+            RTTR_Assert(it == 0);
     } else
     {
         // Nächstes Event anmelden

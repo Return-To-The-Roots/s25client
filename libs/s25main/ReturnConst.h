@@ -22,7 +22,7 @@
 template<typename T_Type, T_Type T_value>
 struct ReturnConst
 {
-    typedef T_Type result_type;
+    using result_type = T_Type;
 
     template<typename T>
     result_type operator()(const T&) const

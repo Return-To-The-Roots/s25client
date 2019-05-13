@@ -26,6 +26,7 @@
 #include "buildings/nobMilitary.h"
 #include "controls/ctrlImageButton.h"
 #include "figures/nofPassiveSoldier.h"
+#include "helpers/containerUtils.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
 #include "iwMsgbox.h"
@@ -111,9 +112,9 @@ void iwMilitaryBuilding::Draw_()
 
     // Soldaten zeichnen
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
-    for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>>::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it)
+    for(auto soldier : soldiers)
     {
-        LOADER.GetMapImageN(2321 + (*it)->GetRank())->DrawFull(curTroopsPos);
+        LOADER.GetMapImageN(2321 + soldier->GetRank())->DrawFull(curTroopsPos);
         curTroopsPos.x += 22;
     }
 
@@ -126,11 +127,10 @@ void iwMilitaryBuilding::Draw_()
         DrawRectangle(Rect(healthPos, Extent(22 * maxSoldierCt, 14)), 0x96000000);
 
         healthPos += DrawPoint(12, 2);
-        for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>>::const_iterator it = soldiers.begin(); it != soldiers.end();
-            ++it)
+        for(auto soldier : soldiers)
         {
-            int hitpoints = static_cast<int>((*it)->GetHitpoints());
-            int maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][(*it)->GetRank()]);
+            auto hitpoints = static_cast<int>(soldier->GetHitpoints());
+            auto maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][soldier->GetRank()]);
             unsigned hitpointsColour;
             if(hitpoints <= maxHitpoints / 2)
                 hitpointsColour = COLOR_RED;
@@ -155,7 +155,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         }
         break;
         case 5: // Gebäude abbrennen
@@ -169,7 +169,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             {
                 // Abreißen?
                 Close();
-                WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building));
+                WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, building));
             }
         }
         break;
@@ -201,21 +201,20 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobMilitary*>& militaryBuildings =
               gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetMilitaryBuildings();
             // go through list once we get to current building -> open window for the next one and go to next location
-            for(std::list<nobMilitary*>::const_iterator it = militaryBuildings.begin(); it != militaryBuildings.end(); ++it)
+            auto it =
+              helpers::findPred(militaryBuildings, [bldPos = building->GetPos()](const auto* it) { return it->GetPos() == bldPos; });
+            if(it != militaryBuildings.end()) // got to current building in the list?
             {
-                if((*it)->GetPos() == building->GetPos()) // got to current building in the list?
-                {
-                    // close old window, open new window (todo: only open if it isnt already open), move to location of next building
-                    Close();
-                    ++it;
-                    if(it == militaryBuildings.end()) // was last entry in list -> goto first
-                        it = militaryBuildings.begin();
-                    gwv.MoveToMapPt((*it)->GetPos());
-                    iwMilitaryBuilding* nextscrn = new iwMilitaryBuilding(gwv, gcFactory, *it);
-                    nextscrn->SetPos(GetPos());
-                    WINDOWMANAGER.Show(nextscrn);
-                    break;
-                }
+                // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                Close();
+                ++it;
+                if(it == militaryBuildings.end()) // was last entry in list -> goto first
+                    it = militaryBuildings.begin();
+                gwv.MoveToMapPt((*it)->GetPos());
+                auto nextscrn = std::make_unique<iwMilitaryBuilding>(gwv, gcFactory, *it);
+                nextscrn->SetPos(GetPos());
+                WINDOWMANAGER.Show(std::move(nextscrn));
+                break;
             }
         }
         break;
@@ -238,5 +237,5 @@ void iwMilitaryBuilding::DemolitionNotAllowed(const GlobalGameSettings& ggs)
         case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
     }
 
-    WINDOWMANAGER.Show(new iwMsgbox(_("Demolition not possible"), msg, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Demolition not possible"), msg, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
 }

@@ -45,7 +45,7 @@ private:
     unsigned GetVisualRange() const override;
 
 public:
-    nofScout_Free(const MapPoint pt, unsigned char player, noRoadNode* goal);
+    nofScout_Free(MapPoint pos, unsigned char player, noRoadNode* goal);
     nofScout_Free(SerializedGameData& sgd, unsigned obj_id);
 
     /// Serialisierungsfunktionen

@@ -68,9 +68,9 @@ bfs::path RttrConfig::GetPrefixPath()
     {
         // Go up one level for each entry (folder) in rttrBinDir
         prefixPath = fullExeFilepath.parent_path();
-        for(bfs::path::const_iterator it = rttrBinDir.begin(); it != rttrBinDir.end(); ++it)
+        for(const auto& part : rttrBinDir)
         {
-            if(*it == ".")
+            if(part == ".")
                 continue;
             prefixPath = prefixPath.parent_path();
         }
@@ -108,7 +108,7 @@ std::string RttrConfig::ExpandPath(const std::string& path) const
         if(endPos == std::string::npos)
             throw std::runtime_error("Incomplete <RTTR_X> placeholder found!");
         std::string entry = path.substr(sizeof(rttrPathId) - 1, endPos - startPos - sizeof(rttrPathId) + 1);
-        std::map<std::string, std::string>::const_iterator it = pathMappings.find(entry);
+        auto it = pathMappings.find(entry);
         if(it == pathMappings.end())
             throw std::runtime_error("Invalid <RTTR_X> placeholder found!");
         outPath = bfs::path(it->second) / path.substr(endPos + 1);

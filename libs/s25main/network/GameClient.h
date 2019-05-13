@@ -25,12 +25,12 @@
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapInfo.h"
+#include "gameTypes/Nation.h"
 #include "gameTypes/ServerType.h"
 #include "gameTypes/TeamTypes.h"
 #include "gameTypes/VisualSettings.h"
 #include "libutil/Singleton.h"
 #include <memory>
-#include <queue>
 #include <vector>
 
 namespace AI {
@@ -46,7 +46,6 @@ class GameLobby;
 class GameWorldView;
 class Game;
 class Replay;
-class EventManager;
 struct PlayerGameCommands;
 class NWFInfo;
 struct CreateServerInfo;
@@ -117,12 +116,11 @@ public:
     FramesInfo::milliseconds32_t GetGFLength() const { return framesinfo.gf_length; }
     unsigned GetNWFLength() const { return framesinfo.nwf_length; }
     FramesInfo::milliseconds32_t GetFrameTime() const { return framesinfo.frameTime; }
-    unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
-                                const unsigned offset);
+    unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator, unsigned offset);
     unsigned Interpolate(unsigned max_val, const GameEvent* ev);
     int Interpolate(int x1, int x2, const GameEvent* ev);
 
-    void Command_Chat(const std::string& text, const ChatDestination cd);
+    void Command_Chat(const std::string& text, ChatDestination cd);
     void Command_SetNation(Nation newNation);
     void Command_SetTeam(Team newTeam);
     void Command_SetColor(unsigned newColor);
@@ -159,7 +157,7 @@ public:
     void SkipGF(unsigned gf, GameWorldView& gwv);
 
     /// Changes the player ingame (for replay or debugging)
-    void ChangePlayerIngame(unsigned char player1, unsigned char player2);
+    void ChangePlayerIngame(unsigned char playerId1, unsigned char playerId2);
     /// Sends a request to swap places with the requested player. Only for debugging!
     void RequestSwapToPlayer(unsigned char newId);
 
@@ -180,7 +178,7 @@ public:
 
 private:
     /// Create an AI player for the current world
-    AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
+    std::unique_ptr<AIPlayer> CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
 
     /// Add the gamecommand. Return true in success, false otherwise (paused, or defeated)
     bool AddGC(gc::GameCommandPtr gc) override;
@@ -205,6 +203,7 @@ private:
     void HandleAutosave();
 
     //  Netzwerknachrichten
+    RTTR_IGNORE_OVERLOADED_VIRTUAL
     bool OnGameMessage(const GameMessage_Ping& msg) override;
 
     bool OnGameMessage(const GameMessage_Server_TypeOK& msg) override;
@@ -242,6 +241,7 @@ private:
     bool OnGameMessage(const GameMessage_RemoveLua& msg) override;
 
     bool OnGameMessage(const GameMessage_GetAsyncLog& msg) override;
+    RTTR_POP_DIAGNOSTIC
 
     /// Report the error and stop
     void OnError(ClientError error);

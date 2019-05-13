@@ -27,7 +27,6 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/ShipDirection.h"
-#include "gameData/MilitaryConsts.h"
 #include <vector>
 
 struct InventorySetting;
@@ -37,47 +36,47 @@ class GameCommandFactory
 {
 public:
     /// Sets a flag on a spot
-    bool SetFlag(const MapPoint pt);
+    bool SetFlag(MapPoint pt);
     /// Destroys a flag on a spot
-    bool DestroyFlag(const MapPoint pt);
+    bool DestroyFlag(MapPoint pt);
     /// Builds a road from a starting point along a given route
-    bool BuildRoad(const MapPoint pt, bool boat_road, const std::vector<Direction>& route);
+    bool BuildRoad(MapPoint pt, bool boat_road, const std::vector<Direction>& route);
     /// Destroys a road on a spot
-    bool DestroyRoad(const MapPoint pt, Direction start_dir);
-    bool UpgradeRoad(const MapPoint pt, Direction start_dir);
+    bool DestroyRoad(MapPoint pt, Direction start_dir);
+    bool UpgradeRoad(MapPoint pt, Direction start_dir);
     /// Sets new distribution of goods
     bool ChangeDistribution(const Distributions& data);
     bool ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& data);
     /// Sets a building site (new building)
-    bool SetBuildingSite(const MapPoint pt, BuildingType bt);
+    bool SetBuildingSite(MapPoint pt, BuildingType bt);
     /// Destroys a building on a spot
-    bool DestroyBuilding(const MapPoint pt);
+    bool DestroyBuilding(MapPoint pt);
     /// send out soldiers
-    bool SendSoldiersHome(const MapPoint pt);
+    bool SendSoldiersHome(MapPoint pt);
     /// order new soldiers
-    bool OrderNewSoldiers(const MapPoint pt);
+    bool OrderNewSoldiers(MapPoint pt);
     bool ChangeTransport(const TransportOrders& data);
     /// Sets new military settings for the player (8 values)
     bool ChangeMilitary(const MilitarySettings& data);
     /// Sets new tool production settings
     bool ChangeTools(const ToolSettings& data, const int8_t* order_delta = nullptr);
     /// Calls a specialist to a flag
-    bool CallSpecialist(const MapPoint pt, Job job);
+    bool CallSpecialist(MapPoint pt, Job job);
     /// Attacks an enemy building
-    bool Attack(const MapPoint pt, unsigned soldiers_count, bool strong_soldiers);
+    bool Attack(MapPoint pt, unsigned soldiers_count, bool strong_soldiers);
     /// Sea-Attacks an enemy building
-    bool SeaAttack(const MapPoint pt, unsigned soldiers_count, bool strong_soldiers);
+    bool SeaAttack(MapPoint pt, unsigned soldiers_count, bool strong_soldiers);
     /// Toggles coin delivery on/off for a military building
-    bool SetCoinsAllowed(const MapPoint pt, bool enabled);
+    bool SetCoinsAllowed(MapPoint pt, bool enabled);
     /// Stops/starts production of a producer
-    bool SetProductionEnabled(const MapPoint pt, bool enabled);
-    bool NotifyAlliesOfLocation(const MapPoint pt);
+    bool SetProductionEnabled(MapPoint pt, bool enabled);
+    bool NotifyAlliesOfLocation(MapPoint pt);
     /// Sets inventory settings for a warehouse
-    bool SetInventorySetting(const MapPoint pt, bool isJob, unsigned char type, InventorySetting state);
-    bool SetInventorySetting(const MapPoint pt, Job job, InventorySetting state);
-    bool SetInventorySetting(const MapPoint pt, GoodType good, InventorySetting state);
-    bool SetAllInventorySettings(const MapPoint pt, bool isJob, const std::vector<InventorySetting>& states);
-    bool ChangeReserve(const MapPoint pt, unsigned char rank, unsigned count);
+    bool SetInventorySetting(MapPoint pt, bool isJob, unsigned char type, InventorySetting state);
+    bool SetInventorySetting(MapPoint pt, Job job, InventorySetting state);
+    bool SetInventorySetting(MapPoint pt, GoodType good, InventorySetting state);
+    bool SetAllInventorySettings(MapPoint pt, bool isJob, const std::vector<InventorySetting>& states);
+    bool ChangeReserve(MapPoint pt, unsigned char rank, unsigned count);
     bool CheatArmageddon();
     /// Simply surrenders...
     bool Surrender();
@@ -86,20 +85,20 @@ public:
     bool AcceptPact(unsigned id, PactType pt, unsigned char player);
     bool CancelPact(PactType pt, unsigned char player);
     /// Toggles the construction mode of the shipyard between boat and ship
-    bool SetShipYardMode(const MapPoint pt, bool buildShips);
+    bool SetShipYardMode(MapPoint pt, bool buildShips);
     /// Starts Preparation of an sea expedition in a habor
-    bool StartStopExpedition(const MapPoint pt, bool start);
+    bool StartStopExpedition(MapPoint pt, bool start);
     /// Lets a ship found a colony
     bool FoundColony(unsigned shipID);
     /// Lets a ship travel to a new harbor spot in a given direction
     bool TravelToNextSpot(ShipDirection direction, unsigned shipID);
     /// Cancels an expedition
     bool CancelExpedition(unsigned shipID);
-    bool StartStopExplorationExpedition(const MapPoint pt, bool start);
-    bool TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count);
+    bool StartStopExplorationExpedition(MapPoint pt, bool start);
+    bool TradeOverLand(MapPoint pt, GoodType gt, Job job, unsigned count);
 
 protected:
-    virtual ~GameCommandFactory() {}
+    virtual ~GameCommandFactory() = default;
     /// Called for each created GC. Return true iff this is going to be executed
     virtual bool AddGC(gc::GameCommandPtr gc) = 0;
 };

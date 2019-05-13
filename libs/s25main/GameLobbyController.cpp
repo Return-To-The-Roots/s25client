@@ -17,14 +17,16 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameLobbyController.h"
+
 #include "GameLobby.h"
 #include "JoinPlayerInfo.h"
 #include "network/GameClient.h"
 #include "network/GameMessages.h"
+#include <utility>
 
-GameLobbyController::GameLobbyController(std::shared_ptr<GameLobby> lobby) : lobby(lobby) {}
+GameLobbyController::GameLobbyController(std::shared_ptr<GameLobby> lobby) : lobby(std::move(lobby)) {}
 
-GameLobbyController::~GameLobbyController() {}
+GameLobbyController::~GameLobbyController() = default;
 
 unsigned GameLobbyController::GetMaxNumPlayers() const
 {

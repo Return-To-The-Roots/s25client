@@ -21,10 +21,11 @@
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "gameData/TerrainDesc.h"
+#include "libsiedler2/enumTypes.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-std::ostream& operator<<(std::ostream& os, const TerrainKind& t)
+static std::ostream& operator<<(std::ostream& os, const TerrainKind& t)
 {
     return os << unsigned(static_cast<uint8_t>(t));
 }

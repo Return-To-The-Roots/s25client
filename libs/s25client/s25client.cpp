@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Debug.h"
 #include "GameManager.h"
-#include "GlobalVars.h"
 #include "QuickStartGame.h"
 #include "RTTR_AssertError.h"
 #include "RTTR_Version.h"
@@ -34,42 +33,31 @@
 #include "libutil/StringConversion.h"
 #include "libutil/System.h"
 #include "libutil/error.h"
-
-#ifdef _WIN32
-#include "drivers/VideoDriverWrapper.h"
-#include "libutil/ucString.h"
-#include <s25clientResources.h>
-#endif
-
 #include <boost/filesystem.hpp>
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <boost/program_options.hpp>
 #include <array>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <limits>
+//#include <vld.h>
 
 #ifdef __APPLE__
 #include <SDL_main.h>
 #endif // __APPLE__
-
 #ifdef _WIN32
+#include "libutil/ucString.h"
 #include <windows.h>
+#include <s25clientResources.h>
 #if defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS
 #include <eh.h>
 #endif
 #endif
-
 #ifndef _MSC_VER
 #include <csignal>
 #endif
-
-//#include <vld.h>
-
-#include <cstdlib>
-#include <ctime>
-#include <iomanip>
-#include <iostream>
-#include <limits>
-#include <sstream>
 
 namespace po = boost::program_options;
 
@@ -80,6 +68,7 @@ struct RttrExitException : std::exception
     RttrExitException(int code) : code(code) {}
 };
 
+namespace {
 void WaitForEnter()
 {
     static bool waited = false;
@@ -116,18 +105,20 @@ void CExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_p
 }
 #endif // _WIN32 && _DEBUG && RTTR_HWETRANS
 
-bool shouldSendDebugData()
+bool askForDebugData()
 {
-    if(SETTINGS.global.submit_debug_data == 1)
-        return true;
 #ifdef _WIN32
     std::wstring title = cvUTF8ToWideString(_("Error"));
     std::wstring text = cvUTF8ToWideString(_(
       "RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"));
-    if(MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
-        return true;
-#endif
+    return (MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES);
+#else
     return false;
+#endif
+}
+bool shouldSendDebugData()
+{
+    return (SETTINGS.global.submit_debug_data == 1) || askForDebugData();
 }
 
 void showCrashMessage()
@@ -141,7 +132,7 @@ void showCrashMessage()
 #endif
 }
 
-void terminateProgramm()
+[[noreturn]] void terminateProgramm()
 {
 #ifdef _DEBUG
     abort();
@@ -150,7 +141,7 @@ void terminateProgramm()
 #endif
 }
 
-void handleException(void* pCtx = nullptr)
+[[noreturn]] void handleException(void* pCtx = nullptr)
 {
     std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
     try
@@ -187,7 +178,7 @@ LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
     return EXCEPTION_EXECUTE_HANDLER;
 }
 #else
-void ExceptionHandler(int /*sig*/)
+[[noreturn]] void ExceptionHandler(int /*sig*/)
 {
     handleException();
 }
@@ -411,6 +402,7 @@ int RunProgram(po::variables_map& options)
     }
     return 0;
 }
+} // namespace
 
 /**
  *  Hauptfunktion von Siedler II.5 Return to the Roots
@@ -420,9 +412,11 @@ int RunProgram(po::variables_map& options)
  *
  *  @return Exit Status, 0 bei Erfolg, > 0 bei Fehler
  */
+// Exceptions handled by registred global handlers
+// NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int argc, char** argv)
 {
-    bnw::args(argc, argv);
+    bnw::args _(argc, argv);
 
     po::options_description desc("Allowed options");
     desc.add_options()("help,h", "Show help")("map,m", po::value<std::string>(),

@@ -20,9 +20,9 @@
 #ifndef EffectPlayId_h__
 #define EffectPlayId_h__
 
-#include <stdint.h>
+#include <cstdint>
 
 /// Id of a played effect
-typedef int32_t EffectPlayId;
+using EffectPlayId = int32_t;
 
 #endif // EffectPlayId_h__

@@ -18,6 +18,7 @@
 #ifndef testHelpers_h__
 #define testHelpers_h__
 
+#include "libutil/warningSuppression.h"
 #include <boost/test/unit_test.hpp>
 #include <utility>
 
@@ -52,7 +53,9 @@ do                                                                           \
     {                                                                        \
         BOOST_TEST_PASSPOINT();                                              \
         S;                                                                   \
-        BOOST_TEST_ERROR("Exception " << #E << " expected but not thrown"); \
+        RTTR_IGNORE_UNREACHABLE_CODE                                         \
+        BOOST_TEST_ERROR("Exception " << #E << " expected but not thrown");  \
+        RTTR_POP_DIAGNOSTIC                                                  \
     } catch(const E& e)                                                      \
     {                                                                        \
         BOOST_TEST(e.what() == (MSG));                                       \
@@ -60,24 +63,7 @@ do                                                                           \
 } while(false)
     /* clang-format on */
 
-#define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) BOOST_REQUIRE_EQUAL_COLLECTIONS(Col1.begin(), Col1.end(), Col2.begin(), Col2.end())
-
-#define RTTR_REQUIRE_EQUAL_MSG(L, R, MSG)                                              \
-    do                                                                                 \
-    {                                                                                  \
-        boost::test_tools::predicate_result res = testCmp(#L "==" #R, (L), (R), true); \
-        if(!res)                                                                       \
-            res.message() << MSG;                                                      \
-        BOOST_REQUIRE(res);                                                            \
-    } while(false)
-
-#define RTTR_REQUIRE_NE_MSG(L, R, MSG)                                                  \
-    do                                                                                  \
-    {                                                                                   \
-        boost::test_tools::predicate_result res = testCmp(#L "!=" #R, (L), (R), false); \
-        if(!res)                                                                        \
-            res.message() << MSG;                                                       \
-        BOOST_REQUIRE(res);                                                             \
-    } while(false)
+#define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) \
+    BOOST_REQUIRE_EQUAL_COLLECTIONS((Col1).begin(), (Col1).end(), (Col2).begin(), (Col2).end())
 
 #endif // testHelpers_h__

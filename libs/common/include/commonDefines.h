@@ -21,64 +21,12 @@
 
 // IWYU pragma: begin_exports
 
-#ifndef _CRTDBG_MAP_ALLOC
-#define _CRTDBG_MAP_ALLOC
-#endif
-
-#ifdef _WIN32
-
-// Enable Memory Leak Detection
-//#define RTTR_CRTDBG
-
-// Enable catching of exceptions
-//#define RTTR_HWETRANS
-
-#ifdef _MSC_VER
-// Visual Studio
-#ifdef _DEBUG
-#include <crtdbg.h>
-#endif              // _DEBUG
-#include <stdlib.h> // Required for crtdbg.h
-#if !defined(snprintf) && _MSC_VER < 1900
-#define snprintf _snprintf
-#endif
-#endif
-
-typedef int socklen_t;
-#else
-// Non-Windows
-#define SOCKET int
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
-#define HINSTANCE void*
-
-#define closesocket close
-#define LoadLibrary(lib) dlopen(lib, RTLD_LAZY)
-#define LoadLibraryW LoadLibrary
-#define LoadLibraryA LoadLibrary
-#define GetProcAddress(lib, name) dlsym(lib, name)
-#define GetProcAddressW GetProcAddress
-#define GetProcAddressA GetProcAddress
-#define FreeLibrary(lib) dlclose(lib)
-#endif // !_WIN32
-
 #include "RTTR_Assert.h"
-
-// Include to use e.g. boost macros like constexpr
-#include <boost/config.hpp>
 // Fixed width types like uint32_t shall be treated like build-in types
-#include <stdint.h>
-
 #include <libutil/warningSuppression.h>
+#include <cstdint>
 
 // IWYU pragma: end_exports
-
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && defined RTTR_CRTDBG
-// Check for heap corruption
-#define CHECK_HEAP_CORRUPTION _ASSERTE(_CrtCheckMemory());
-#else
-#define CHECK_HEAP_CORRUPTION
-#endif // _WIN32 && _DEBUG && RTTR_CRTDBG
 
 /// Call a member function trough an object and a member function pointer
 #define CALL_MEMBER_FN(object, ptrToMember) ((object).*(ptrToMember))
@@ -88,7 +36,7 @@ template<typename T>
 inline void deletePtr(T*& ptr)
 {
     delete ptr;
-    ptr = 0;
+    ptr = nullptr;
 }
 
 /// Calculate |a-b| of 2 unsigned values

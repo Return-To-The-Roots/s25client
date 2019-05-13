@@ -49,9 +49,8 @@ class nofAggressiveDefender : public nofActiveSoldier
     void FreeFightEnded() override;
 
 public:
-    nofAggressiveDefender(const MapPoint pt, unsigned char player, nobBaseMilitary* const home, unsigned char rank,
-                          nofAttacker* const attacker);
-    nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
+    nofAggressiveDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank, nofAttacker* attacker);
+    nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* attacker);
     nofAggressiveDefender(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofAggressiveDefender() override;
@@ -66,6 +65,7 @@ public:
     /// Serialisierungsfunktionen
 protected:
     void Serialize_nofAggressiveDefender(SerializedGameData& sgd) const;
+    [[noreturn]] void HandleDerivedEvent(unsigned) override { throw std::logic_error("No events expected"); }
 
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofAggressiveDefender(sgd); }

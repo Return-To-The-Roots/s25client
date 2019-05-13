@@ -56,7 +56,7 @@ public:
     IngameMinimap(const GameWorldViewer& gwv);
 
     /// Merkt, vor dass ein bestimmter Punkt aktualisiert werden soll
-    void UpdateNode(const MapPoint pt);
+    void UpdateNode(MapPoint pt);
 
     /// Updatet die gesamte Minimap
     void UpdateAll();
@@ -68,18 +68,18 @@ public:
 
 protected:
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
-    unsigned CalcPixelColor(const MapPoint pt, unsigned t) override;
+    unsigned CalcPixelColor(MapPoint pt, unsigned t) override;
     /// Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
-    unsigned CalcTerrainColor(const MapPoint pt, unsigned t);
+    unsigned CalcTerrainColor(MapPoint pt, unsigned t);
     /// Prüft ob an einer Stelle eine Straße gezeichnet werden muss
-    bool IsRoad(const MapPoint pt, const Visibility visibility);
+    bool IsRoad(MapPoint pt, Visibility visibility);
     /// Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein (player muss mit +1 gegeben sein!)
     unsigned CombineWithPlayerColor(unsigned color, unsigned char player) const;
     /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
     /// in dem Falle: Karte aktualisieren
     void BeforeDrawing() override;
     /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem übergebenen drawn_object ist
-    void UpdateAll(const DrawnObject drawn_object);
+    void UpdateAll(DrawnObject drawn_object);
 };
 
 #endif // IngameMinimap_h__

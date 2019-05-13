@@ -27,7 +27,7 @@
 class FrameCounter
 {
 public:
-    typedef std::chrono::steady_clock clock;
+    using clock = std::chrono::steady_clock;
 
 private:
     clock::duration updateInverval_; /// How often the FPS are updated
@@ -55,9 +55,9 @@ class FrameTimer
 {
 public:
     /// Clock used. Same as FrameCounter
-    typedef FrameCounter::clock clock;
+    using clock = FrameCounter::clock;
     /// Resolution of the time between frames. Uses Clocks duration
-    typedef clock::duration duration_t;
+    using duration_t = clock::duration;
 
 private:
     /// How long a frame should be
@@ -81,7 +81,7 @@ class FrameLimiter
     FrameTimer frameTimer_;
 
 public:
-    typedef FrameTimer::clock clock;
+    using clock = FrameTimer::clock;
     FrameLimiter();
     explicit FrameLimiter(FrameTimer frameTimer);
     void setTargetFramerate(int targetFramerate);

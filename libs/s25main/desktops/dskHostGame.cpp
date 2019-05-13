@@ -19,6 +19,7 @@
 #include "dskHostGame.h"
 #include "GameLobby.h"
 #include "GameLobbyController.h"
+#include "ILobbyClient.hpp"
 #include "JoinPlayerInfo.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -27,7 +28,6 @@
 #include "controls/ctrlChat.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
-#include "controls/ctrlDeepening.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlOptionGroup.h"
@@ -40,14 +40,14 @@
 #include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/LuaInterfaceSettings.h"
 #include "network/GameClient.h"
-#include "network/IGameLobbyController.h"
 #include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Map.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyPlayerInfo.h"
@@ -55,6 +55,8 @@
 #include "libsiedler2/prototypen.h"
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
+#include <memory>
+#include <mygettext/mygettext.h>
 #include <set>
 #include <sstream>
 
@@ -73,29 +75,29 @@ enum CtrlIds
 };
 }
 
-dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId,
+dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>& gameLobby, unsigned playerId,
                          std::unique_ptr<ILobbyClient> lobbyClient)
     : Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(gameLobby), localPlayerId_(playerId),
       lobbyClient_(std::move(lobbyClient)), hasCountdown_(false), wasActivated(false), gameChat(nullptr), lobbyChat(nullptr),
       lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
     if(gameLobby->isHost())
-        lobbyHostController.reset(new GameLobbyController(gameLobby));
+        lobbyHostController = std::make_unique<GameLobbyController>(gameLobby);
 
     if(!GAMECLIENT.GetLuaFilePath().empty() && gameLobby->isHost())
     {
-        lua.reset(new LuaInterfaceSettings(*lobbyHostController));
+        lua = std::make_unique<LuaInterfaceSettings>(*lobbyHostController);
         if(!lua->LoadScript(GAMECLIENT.GetLuaFilePath()))
         {
-            WINDOWMANAGER.ShowAfterSwitch(new iwMsgbox(_("Error"),
-                                                       _("Lua script was found but failed to load. Map might not work as expected!"), this,
-                                                       MSB_OK, MSB_EXCLAMATIONRED, 1));
+            WINDOWMANAGER.ShowAfterSwitch(
+              std::make_unique<iwMsgbox>(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,
+                                         MSB_OK, MSB_EXCLAMATIONRED, 1));
             lua.reset();
         } else if(!lua->CheckScriptVersion())
         {
-            WINDOWMANAGER.ShowAfterSwitch(
-              new iwMsgbox(_("Error"), _("Lua script uses a different version and cannot be used. Map might not work as expected!"), this,
-                           MSB_OK, MSB_EXCLAMATIONRED, 1));
+            WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(
+              _("Error"), _("Lua script uses a different version and cannot be used. Map might not work as expected!"), this, MSB_OK,
+              MSB_EXCLAMATIONRED, 1));
             lua.reset();
         } else if(!lua->EventSettingsInit(serverType == ServerType::LOCAL, gameLobby->isSavegame()))
         {
@@ -173,7 +175,7 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
     AddCheckBox(23, DrawPoint(600, 430), Extent(180, 26), TC_GREY, _("Random start locations"), NormalFont, readonlySettings);
 
     // "Enhancements"
-    AddText(21, DrawPoint(400, 499), _("Addons:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(21, DrawPoint(400, 499), _("Addons:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddTextButton(22, DrawPoint(600, 495), Extent(180, 22), TC_GREEN2, allowAddonChange ? _("Change Settings...") : _("View Settings..."),
                   NormalFont);
 
@@ -182,7 +184,7 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
     // umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
 
     // "Aufklärung"
-    AddText(30, DrawPoint(400, 405), _("Exploration:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(30, DrawPoint(400, 405), _("Exploration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(40, DrawPoint(600, 400), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("Off (all visible)"));
     combo->AddString(_("Classic (Settlers 2)"));
@@ -190,7 +192,7 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
     combo->AddString(_("FoW - all explored"));
 
     // "Waren zu Beginn"
-    AddText(31, DrawPoint(400, 375), _("Goods at start:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(31, DrawPoint(400, 375), _("Goods at start:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(41, DrawPoint(600, 370), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("Very Low"));
     combo->AddString(_("Low"));
@@ -198,7 +200,7 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
     combo->AddString(_("A lot"));
 
     // "Spielziel"
-    AddText(32, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(32, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(42, DrawPoint(600, 340), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("None"));               // Kein Spielziel
     combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
@@ -209,14 +211,12 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
         // Then add tournament modes as possible "objectives"
         for(unsigned i = 0; i < NUM_TOURNAMENT_MODESS; ++i)
         {
-            char str[512];
-            sprintf(str, _("Tournament: %u minutes"), TOURNAMENT_MODES_DURATION[i]);
-            combo->AddString(str);
+            combo->AddString(helpers::format(_("Tournament: %u minutes"), TOURNAMENT_MODES_DURATION[i]));
         }
     }
 
     // "Geschwindigkeit"
-    AddText(33, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(33, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(43, DrawPoint(600, 310), Extent(180, 20), TC_GREY, NormalFont, 100, !gameLobby->isHost());
     combo->AddString(_("Very slow")); // Sehr Langsam
     combo->AddString(_("Slow"));      // Langsam
@@ -232,11 +232,11 @@ dskHostGame::dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameL
         // Karteninformationen laden
         if(int ec = libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath(), mapArchiv))
         {
-            WINDOWMANAGER.ShowAfterSwitch(
-              new iwMsgbox(_("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+            WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(
+              _("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
         } else
         {
-            glArchivItem_Map* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
+            auto* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
             ctrlPreviewMinimap* preview = AddPreviewMinimap(70, DrawPoint(560, 40), Extent(220, 220), map);
 
             // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
@@ -304,8 +304,8 @@ void dskHostGame::Resize(const Extent& newSize)
 
     // Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der
     // PreviewMinimap abhängt, welche sich gerade geändert hat.
-    ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(70);
-    ctrlText* text = GetCtrl<ctrlText>(71);
+    auto* preview = GetCtrl<ctrlPreviewMinimap>(70);
+    auto* text = GetCtrl<ctrlText>(71);
     if(preview && text)
     {
         DrawPoint txtPos = text->GetPos();
@@ -325,8 +325,9 @@ void dskHostGame::SetActive(bool activate /*= true*/)
             lua->EventSettingsReady();
         } catch(LuaExecutionError&)
         {
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,
-                                            MSB_OK, MSB_EXCLAMATIONRED, 1));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"),
+                                                          _("Lua script was found but failed to load. Map might not work as expected!"),
+                                                          this, MSB_OK, MSB_EXCLAMATIONRED, 1));
             lua.reset();
         }
     }
@@ -370,7 +371,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         group->AddTextButton(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont);
     else
         group->AddTextDeepening(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont, COLOR_YELLOW);
-    ctrlBaseText* text = group->GetCtrl<ctrlBaseText>(1);
+    auto* text = group->GetCtrl<ctrlBaseText>(1);
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)
@@ -523,7 +524,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
 
                 // Look for a unique color
                 JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-                int newColorIdx = player.GetColorIdx(player.color);
+                int newColorIdx = JoinPlayerInfo::GetColorIdx(player.color);
                 do
                 {
                     player.color = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
@@ -614,13 +615,13 @@ void dskHostGame::Msg_Group_ComboSelectItem(const unsigned group_id, const unsig
 void dskHostGame::GoBack()
 {
     if(IsSinglePlayer())
-        WINDOWMANAGER.Switch(new dskSinglePlayer);
+        WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
     else if(serverType == ServerType::LAN)
-        WINDOWMANAGER.Switch(new dskLAN);
+        WINDOWMANAGER.Switch(std::make_unique<dskLAN>());
     else if(serverType == ServerType::LOBBY && lobbyClient_ && lobbyClient_->IsLoggedIn())
-        WINDOWMANAGER.Switch(new dskLobby);
+        WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
     else
-        WINDOWMANAGER.Switch(new dskDirectIP);
+        WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
 }
 
 void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
@@ -641,7 +642,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
 
         case 2: // Starten
         {
-            ctrlTextButton* ready = GetCtrl<ctrlTextButton>(2);
+            auto* ready = GetCtrl<ctrlTextButton>(2);
             if(gameLobby->isHost())
             {
                 SetPlayerReady(localPlayerId_, true);
@@ -662,14 +663,14 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 22: // Addons
         {
-            iwAddons* w;
+            std::unique_ptr<iwAddons> w;
             if(allowAddonChange && (!lua || lua->IsChangeAllowed("addonsAll")))
-                w = new iwAddons(gameLobby->getSettings(), this, iwAddons::HOSTGAME);
+                w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME);
             else if(allowAddonChange)
-                w = new iwAddons(gameLobby->getSettings(), this, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
+                w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
             else
-                w = new iwAddons(gameLobby->getSettings(), this, iwAddons::READONLY);
-            WINDOWMANAGER.Show(w);
+                w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::READONLY);
+            WINDOWMANAGER.Show(std::move(w));
         }
         break;
     }
@@ -679,7 +680,7 @@ void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
 {
     if(ctrl_id != ID_CHAT_INPUT)
         return;
-    ctrlEdit* edit = GetCtrl<ctrlEdit>(ctrl_id);
+    auto* edit = GetCtrl<ctrlEdit>(ctrl_id);
     const std::string msg = edit->GetText();
     edit->SetText("");
     if(gameChat->IsVisible())
@@ -695,8 +696,7 @@ void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
 
     if(!hasCountdown_)
     {
-        char startMsg[100];
-        sprintf(startMsg, _("You have %u seconds until game starts"), remainingTimeInSec);
+        const std::string startMsg = helpers::format(_("You have %u seconds until game starts"), remainingTimeInSec);
         gameChat->AddMessage("", "", 0, startMsg, COLOR_RED);
         gameChat->AddMessage("", "", 0, _("Don't forget to check the addon configuration!"), 0xFFFFDD00);
         gameChat->AddMessage("", "", 0, "", 0xFFFFCC00);
@@ -725,10 +725,10 @@ void dskHostGame::CI_CancelCountdown(bool error)
     {
         if(error)
         {
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"),
-                                            _("Game can only be started as soon as everybody has a unique color,everyone is "
-                                              "ready and all free slots are closed."),
-                                            this, MSB_OK, MSB_EXCLAMATIONRED, 10));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"),
+                                                          _("Game can only be started as soon as everybody has a unique color,everyone is "
+                                                            "ready and all free slots are closed."),
+                                                          this, MSB_OK, MSB_EXCLAMATIONRED, 10));
         }
 
         ChangeReady(localPlayerId_, true);
@@ -739,8 +739,8 @@ void dskHostGame::FlashGameChat()
 {
     if(!gameChat->IsVisible())
     {
-        Window* tab = GetCtrl<Window>(ID_CHAT_TAB);
-        ctrlButton* bt = tab->GetCtrl<ctrlButton>(TAB_GAMECHAT);
+        auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
+        auto* bt = tab->GetCtrl<ctrlButton>(TAB_GAMECHAT);
         if(!localChatTabAnimId)
             localChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }
@@ -806,7 +806,7 @@ void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const int select
     {
         gameChat->SetVisible(selection == TAB_GAMECHAT);
         lobbyChat->SetVisible(selection == TAB_LOBBYCHAT);
-        Window* tab = GetCtrl<Window>(ID_CHAT_TAB);
+        auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
         tab->GetCtrl<ctrlButton>(selection)->SetTexture(TC_GREEN2);
         if(selection == TAB_GAMECHAT)
         {
@@ -847,20 +847,20 @@ void dskHostGame::UpdateGGS()
 
 void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
 {
-    const std::string teams[9] = {"-", "?", "1", "2", "3", "4", "?", "?", "?"};
+    const std::array<std::string, 9> teams = {"-", "?", "1", "2", "3", "4", "?", "?", "?"};
 
     GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + i)->GetCtrl<ctrlBaseText>(5)->SetText(teams[nr]);
 }
 
 void dskHostGame::ChangeReady(const unsigned player, const bool ready)
 {
-    ctrlCheck* check = GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlCheck>(6);
+    auto* check = GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + player)->GetCtrl<ctrlCheck>(6);
     if(check)
         check->SetCheck(ready);
 
     if(player == localPlayerId_)
     {
-        ctrlTextButton* start = GetCtrl<ctrlTextButton>(2);
+        auto* start = GetCtrl<ctrlTextButton>(2);
         if(gameLobby->isHost())
             start->SetText(hasCountdown_ ? _("Cancel start") : _("Start game"));
         else
@@ -933,10 +933,10 @@ void dskHostGame::CI_PlayerLeft(const unsigned playerId)
         lua->EventPlayerLeft(playerId);
 }
 
-void dskHostGame::CI_GameLoading(std::shared_ptr<Game> game)
+void dskHostGame::CI_GameLoading(const std::shared_ptr<Game>& game)
 {
     // Desktop wechseln
-    WINDOWMANAGER.Switch(new dskGameLoader(game));
+    WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game));
 }
 
 void dskHostGame::CI_PlayerDataChanged(unsigned playerId)
@@ -1010,7 +1010,7 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
 
 void dskHostGame::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 /**
@@ -1030,7 +1030,7 @@ void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
  */
 void dskHostGame::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
@@ -1040,8 +1040,8 @@ void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
     lobbyChat->AddMessage("", player, ctrlChat::CalcUniqueColor(player), text, COLOR_YELLOW);
     if(!lobbyChat->IsVisible())
     {
-        Window* tab = GetCtrl<Window>(ID_CHAT_TAB);
-        ctrlButton* bt = tab->GetCtrl<ctrlButton>(TAB_LOBBYCHAT);
+        auto* tab = GetCtrl<Window>(ID_CHAT_TAB);
+        auto* bt = tab->GetCtrl<ctrlButton>(TAB_LOBBYCHAT);
         if(!lobbyChatTabAnimId)
             lobbyChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }

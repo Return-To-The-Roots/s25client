@@ -17,14 +17,14 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomMapGenerator.h"
+#include "mapGenerator/MapSettings.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/VertexUtility.h"
 #include "world/MapGeometry.h"
 #include "gameData/TerrainDesc.h"
+#include "libsiedler2/enumTypes.h"
 #include <algorithm>
-#include <cmath>
-#include <cstdlib>
 
 // harbor placement
 #define MIN_HARBOR_DISTANCE 35.0
@@ -61,13 +61,13 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     for(unsigned i = 0; i < settings.numPlayers; i++)
     {
         // compute headquarter position
-        Position position = helper.ComputePointOnCircle(i, settings.numPlayers, center, rnd);
+        Position position = MapUtility::ComputePointOnCircle(i, settings.numPlayers, center, rnd);
 
         // store headquarter position
         map.hqPositions[i] = MapPoint(position);
 
         // create headquarter
-        helper.objGen.CreateHeadquarter(map, VertexUtility::GetIndexOf(position, map.size), i);
+        ObjectGenerator::CreateHeadquarter(map, VertexUtility::GetIndexOf(position, map.size), i);
     }
 }
 
@@ -79,8 +79,8 @@ void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map& 
         int offset2 = config.Rand(180, 360);
         const Position p(map.hqPositions[i]);
 
-        helper.SetStones(map, helper.ComputePointOnCircle(offset1, 360, p, 12), 2.0F);
-        helper.SetStones(map, helper.ComputePointOnCircle(offset2, 360, p, 12), 2.7F);
+        helper.SetStones(map, MapUtility::ComputePointOnCircle(offset1, 360, p, 12), 2.0F);
+        helper.SetStones(map, MapUtility::ComputePointOnCircle(offset2, 360, p, 12), 2.7F);
     }
 }
 
@@ -93,7 +93,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
     {
         for(int y = 0; y < map.size.y; y++)
         {
-            double distanceToPlayer = (double)(map.size.x + map.size.y);
+            auto distanceToPlayer = (double)(map.size.x + map.size.y);
             Position tile(x, y);
 
             for(int i = 0; i < players; i++)
@@ -101,17 +101,17 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
                 distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(tile, Position(map.hqPositions[i]), map.size));
             }
 
-            for(std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
+            for(auto& area : areas)
             {
-                if(it->IsInArea(tile, distanceToPlayer, map.size))
+                if(area.IsInArea(tile, distanceToPlayer, map.size))
                 {
-                    const int pr = (int)it->likelyhoodHill;
-                    const int maxZ = it->maxElevation;
+                    const auto pr = (int)area.likelyhoodHill;
+                    const int maxZ = area.maxElevation;
 
                     if(maxZ > 0 && config.Rand(101) <= pr)
                     {
-                        unsigned z = (unsigned)config.Rand(it->minElevation, maxZ + 1);
-                        helper.SetHill(map, tile, z);
+                        auto z = (unsigned)config.Rand(area.minElevation, maxZ + 1);
+                        MapUtility::SetHill(map, tile, z);
                     }
                 }
             }
@@ -133,18 +133,18 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
         // create texture for current height value
         helper.objGen.CreateTexture(map, index, textures[level]);
 
-        double distanceToPlayer = (double)(map.size.x + map.size.y);
+        auto distanceToPlayer = (double)(map.size.x + map.size.y);
 
         for(int i = 0; i < players; i++)
             distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(pt, Position(map.hqPositions[i]), map.size));
 
-        for(std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
+        for(auto& area : areas)
         {
-            if(it->IsInArea(pt, distanceToPlayer, map.size))
+            if(area.IsInArea(pt, distanceToPlayer, map.size))
             {
-                if(static_cast<unsigned>(config.Rand(0, 100)) < it->likelyhoodTree)
+                if(static_cast<unsigned>(config.Rand(0, 100)) < area.likelyhoodTree)
                     helper.SetTree(map, pt);
-                else if(static_cast<unsigned>(config.Rand(0, 100)) < it->likelyhoodStone)
+                else if(static_cast<unsigned>(config.Rand(0, 100)) < area.likelyhoodStone)
                     helper.SetStone(map, pt);
             }
         }
@@ -165,7 +165,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
             bool treeFound = false;
             for(int curIdx : positions)
             {
-                if(helper.objGen.IsTree(map, curIdx))
+                if(ObjectGenerator::IsTree(map, curIdx))
                 {
                     treeFound = true;
                     break;
@@ -201,12 +201,12 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
             // ensure there's water close to the coast texture
             bool waterNeighbor = false;
             std::vector<int> neighbors = VertexUtility::GetNeighbors(pt, map.size, 1);
-            for(std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
+            for(int& neighbor : neighbors)
             {
-                if(helper.objGen.IsTexture(map, *it, textures[maxWaterIndex]))
+                if(helper.objGen.IsTexture(map, neighbor, textures[maxWaterIndex]))
                 {
                     waterNeighbor = true;
-                    water = VertexUtility::GetPosition(*it, map.size);
+                    water = VertexUtility::GetPosition(neighbor, map.size);
                     break;
                 }
             }
@@ -215,16 +215,16 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
 
             // ensure there's no other harbor nearby
             double closestHarbor = MIN_HARBOR_DISTANCE + 1.0;
-            for(std::vector<Position>::iterator it = harbors.begin(); it != harbors.end(); ++it)
+            for(auto& harbor : harbors)
             {
-                closestHarbor = std::min(closestHarbor, VertexUtility::Distance(pt, *it, map.size));
+                closestHarbor = std::min(closestHarbor, VertexUtility::Distance(pt, harbor, map.size));
             }
 
             if(closestHarbor < MIN_HARBOR_DISTANCE)
                 continue;
 
             // setup harbor position
-            if(helper.GetBodySize(map, water, MIN_HARBOR_WATER) >= MIN_HARBOR_WATER)
+            if(MapUtility::GetBodySize(map, water, MIN_HARBOR_WATER) >= MIN_HARBOR_WATER)
             {
                 helper.SetHarbour(map, pt, maxWaterIndex);
                 harbors.push_back(pt);
@@ -276,22 +276,22 @@ void RandomMapGenerator::SetResources(const MapSettings& settings, Map& map)
     }
 }
 
-Map* RandomMapGenerator::Create(MapSettings settings)
+Map RandomMapGenerator::Create(MapSettings settings)
 {
     settings.Validate();
-    Map* map = new Map(settings.size, settings.name, settings.author);
+    Map map(settings.size, settings.name, settings.author);
 
     // configuration of the map settings
-    map->type = config.worldDesc.get(settings.type).s2Id;
-    map->numPlayers = settings.numPlayers;
+    map.type = config.worldDesc.get(settings.type).s2Id;
+    map.numPlayers = settings.numPlayers;
 
     // the actual map generation
-    PlacePlayers(settings, *map);
-    PlacePlayerResources(settings, *map);
-    CreateHills(settings, *map);
-    FillRemainingTerrain(settings, *map);
-    helper.Smooth(*map);
-    SetResources(settings, *map);
+    PlacePlayers(settings, map);
+    PlacePlayerResources(settings, map);
+    CreateHills(settings, map);
+    FillRemainingTerrain(settings, map);
+    helper.Smooth(map);
+    SetResources(settings, map);
 
     return map;
 }

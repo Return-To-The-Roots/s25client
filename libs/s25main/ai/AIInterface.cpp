@@ -23,18 +23,39 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
 #include "pathfinding/FreePathFinder.h"
+#include "pathfinding/PathConditionRoad.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
-#include "gameTypes/BuildingCount.h"
-#include "gameData/BuildingProperties.h"
 #include "gameData/TerrainDesc.h"
 #include <limits>
+#include <numeric>
+
 class noRoadNode;
 
-// from Pathfinding.cpp TODO: in nice
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
-bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
+namespace {
+/// Param for road-build pathfinding
+struct Param_RoadPath
+{
+    /// Boat or normal road
+    bool boat_road;
+};
+
+bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
+{
+    const auto* prp = static_cast<const Param_RoadPath*>(param);
+    return makePathConditionRoad(gwb, prp->boat_road).IsNodeOk(pt);
+}
+
+/// Condition for comfort road construction with a possible flag every 2 steps
+bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param)
+{
+    if(!IsPointOK_RoadPath(gwb, pt, dir, param))
+        return false;
+    const auto* prp = static_cast<const Param_RoadPath*>(param);
+    return prp->boat_road || gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) != BQ_NOTHING;
+}
+} // namespace
 
 AIResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 {
@@ -117,16 +138,14 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
 
 int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t direction, int lastval) const
 {
-    int returnVal;
     if(direction == -1) // calculate complete value from scratch (3n^2+3n+1)
     {
-        returnVal = 0;
         std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, RES_RADIUS[static_cast<unsigned>(res)]);
-        for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
-            returnVal += GetResourceRating(*it, res);
+        return std::accumulate(pts.begin(), pts.end(), 0,
+                               [this, res](int lhs, const auto& curPt) { return lhs + this->GetResourceRating(curPt, res); });
     } else // calculate different nodes only (4n+2 ?anyways much faster)
     {
-        returnVal = lastval;
+        int returnVal = lastval;
         // add new points
         // first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
@@ -164,10 +183,10 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
                 tmpPt = gwb.GetNeighbour(tmpPt, Direction(i));
             }
         }
+        return returnVal;
     }
     // if(returnval<0&&lastval>=0&&res==AIResource::BORDERLAND)
     // LOG.write(("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction, lastval);
-    return returnVal;
 }
 
 bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route /*= nullptr*/,

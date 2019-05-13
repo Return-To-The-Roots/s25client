@@ -17,10 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/World.h"
-#include "world/MapGeometry.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noNothing.h"
-#include "nodeObjs/noTree.h"
 #if RTTR_ENABLE_ASSERTS
 #include "nodeObjs/noMovable.h"
 #endif
@@ -29,6 +27,7 @@
 #include "helpers/containerUtils.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainDesc.h"
+#include <memory>
 #include <set>
 #include <stdexcept>
 
@@ -51,46 +50,46 @@ void World::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 
     // Dummy so that the harbor "0" might be used for ships with no particular destination
     harbor_pos.push_back(MapPoint::Invalid());
-    noNodeObj.reset(new noNothing);
+    noNodeObj = std::make_unique<noNothing>();
 }
 
 void World::Unload()
 {
     // Collect and destroy roads
     std::set<RoadSegment*> roadsegments;
-    for(std::vector<MapNode>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
+    for(const auto& node : nodes)
     {
-        if(!it->obj || it->obj->GetGOT() != GOT_FLAG)
+        if(!node.obj || node.obj->GetGOT() != GOT_FLAG)
             continue;
         for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            if(static_cast<noFlag*>(it->obj)->GetRoute(Direction::fromInt(dir)))
+            if(static_cast<noFlag*>(node.obj)->GetRoute(Direction::fromInt(dir)))
             {
-                roadsegments.insert(static_cast<noFlag*>(it->obj)->GetRoute(Direction::fromInt(dir)));
+                roadsegments.insert(static_cast<noFlag*>(node.obj)->GetRoute(Direction::fromInt(dir)));
             }
         }
     }
 
-    for(std::set<RoadSegment*>::iterator it = roadsegments.begin(); it != roadsegments.end(); ++it)
-        delete(*it);
+    for(auto roadsegment : roadsegments)
+        delete roadsegment;
 
     // Objekte vernichten
-    for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    for(auto& node : nodes)
     {
-        deletePtr(it->obj);
+        deletePtr(node.obj);
 
-        for(unsigned z = 0; z < it->fow.size(); ++z)
+        for(auto& z : node.fow)
         {
-            deletePtr(it->fow[z].object);
+            deletePtr(z.object);
         }
     }
 
     // Figuren vernichten
-    for(std::vector<MapNode>::iterator itNode = nodes.begin(); itNode != nodes.end(); ++itNode)
+    for(auto& node : nodes)
     {
-        std::list<noBase*>& nodeFigures = itNode->figures;
-        for(std::list<noBase*>::iterator it = nodeFigures.begin(); it != nodeFigures.end(); ++it)
-            delete(*it);
+        std::list<noBase*>& nodeFigures = node.figures;
+        for(auto& nodeFigure : nodeFigures)
+            delete nodeFigure;
 
         nodeFigures.clear();
     }

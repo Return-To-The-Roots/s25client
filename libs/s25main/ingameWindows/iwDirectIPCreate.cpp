@@ -25,7 +25,6 @@
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskSelectMap.h"
-#include "helpers/strUtils.h"
 #include "network/CreateServerInfo.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
@@ -38,19 +37,19 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
     ctrlEdit *name, *port;
 
     // "Name des Spiels"
-    AddText(0, DrawPoint(20, 30), _("Game's Name:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(0, DrawPoint(20, 30), _("Game's Name:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     name = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // "Server-Port"
-    AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // "Passwort"
-    AddText(4, DrawPoint(20, 130), _("Password:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(4, DrawPoint(20, 130), _("Password:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // ipv6 oder ipv4 benutzen
-    AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = AddOptionGroup(12, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TC_GREEN2, _("IPv4"), NormalFont);
@@ -85,9 +84,9 @@ void iwDirectIPCreate::Msg_EditChange(const unsigned /*ctrl_id*/)
  */
 void iwDirectIPCreate::Msg_EditEnter(const unsigned ctrl_id)
 {
-    ctrlEdit* name = GetCtrl<ctrlEdit>(1);
-    ctrlEdit* port = GetCtrl<ctrlEdit>(3);
-    ctrlEdit* pass = GetCtrl<ctrlEdit>(5);
+    auto* name = GetCtrl<ctrlEdit>(1);
+    auto* port = GetCtrl<ctrlEdit>(3);
+    auto* pass = GetCtrl<ctrlEdit>(5);
 
     switch(ctrl_id)
     {
@@ -135,9 +134,9 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 7: // "Starten"
         {
-            ctrlEdit* edtName = GetCtrl<ctrlEdit>(1);
-            ctrlEdit* edtPort = GetCtrl<ctrlEdit>(3);
-            ctrlEdit* edtPw = GetCtrl<ctrlEdit>(5);
+            auto* edtName = GetCtrl<ctrlEdit>(1);
+            auto* edtPort = GetCtrl<ctrlEdit>(3);
+            auto* edtPw = GetCtrl<ctrlEdit>(5);
 
             if(edtName->GetText().empty())
             {
@@ -161,7 +160,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
                                  (SETTINGS.global.use_upnp == 1));
 
             // Map auswählen
-            WINDOWMANAGER.Switch(new dskSelectMap(csi));
+            WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
         }
         break;
         case 8: { Close();
@@ -189,9 +188,9 @@ void iwDirectIPCreate::SetText(const std::string& text, unsigned color, bool but
  */
 void iwDirectIPCreate::LC_Status_Error(const std::string& error)
 {
-    ctrlEdit* name = GetCtrl<ctrlEdit>(1);
-    ctrlEdit* port = GetCtrl<ctrlEdit>(3);
-    ctrlEdit* pass = GetCtrl<ctrlEdit>(5);
+    auto* name = GetCtrl<ctrlEdit>(1);
+    auto* port = GetCtrl<ctrlEdit>(3);
+    auto* pass = GetCtrl<ctrlEdit>(5);
 
     name->SetFocus(true);
     port->SetFocus(false);

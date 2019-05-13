@@ -29,7 +29,7 @@ class NetworkPlayer
 {
 public:
     NetworkPlayer(unsigned playerId);
-    virtual ~NetworkPlayer() {}
+    virtual ~NetworkPlayer() = default;
     /// Close the socket and clear queues
     virtual void closeConnection();
     /// Receive all waiting messages from the socket. Return false on error

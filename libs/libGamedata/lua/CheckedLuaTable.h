@@ -33,11 +33,12 @@ class CheckedLuaTable
     bool checkEnabled; // When this is a movable only class this can be true on ctor
 
 public:
-    CheckedLuaTable(const kaguya::LuaTable& luaTable);
-    ~CheckedLuaTable();
+    CheckedLuaTable(kaguya::LuaTable luaTable);
+    // NOLINTNEXTLINE(bugprone-exception-escape)
+    ~CheckedLuaTable() noexcept(false);
 
     /// Check and report unused entries
-    bool checkUnused(bool throwError = true);
+    void checkUnused();
 
     /// Return the value from lua or throw an error
     template<typename T>
@@ -55,8 +56,8 @@ namespace kaguya {
 template<>
 struct lua_type_traits<CheckedLuaTable>
 {
-    typedef lua_type_traits<kaguya::LuaTable> Base;
-    typedef CheckedLuaTable get_type;
+    using Base = lua_type_traits<kaguya::LuaTable>;
+    using get_type = CheckedLuaTable;
 
     static bool strictCheckType(lua_State* l, int index) { return Base::strictCheckType(l, index); }
     static bool checkType(lua_State* l, int index) { return Base::checkType(l, index); }

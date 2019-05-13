@@ -20,7 +20,6 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "buildings/nobMilitary.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "network/GameClient.h"
 #include "notifications/NodeNote.h"
 #include "notifications/PlayerNodeNote.h"
@@ -81,7 +80,7 @@ unsigned GameWorldViewer::GetNumPlayers() const
 
 unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
 {
-    const nobBaseMilitary* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
+    const auto* attacked_building = GetWorld().GetSpecObj<nobBaseMilitary>(pt);
     // Can we actually attack this bld?
     if(!attacked_building || !attacked_building->IsAttackable(playerId_))
         return 0;
@@ -90,11 +89,11 @@ unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
     unsigned total_count = 0;
 
     sortedMilitaryBlds buildings = GetWorld().LookForMilitaryBuildings(pt, 3);
-    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(auto& building : buildings)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if((*it)->GetPlayer() == playerId_ && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
-            total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt);
+        if(building->GetPlayer() == playerId_ && BuildingProperties::IsMilitary(building->GetBuildingType()))
+            total_count += static_cast<nobMilitary*>(building)->GetNumSoldiersForAttack(pt);
     }
 
     return total_count;
@@ -209,11 +208,11 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
             curPt = GetWorld().GetNeighbour(pt, Direction::fromInt(i));
 
         const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
-        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+        for(auto figure : figures)
         {
-            if((*it)->GetGOT() != GOT_SHIP)
+            if(figure->GetGOT() != GOT_SHIP)
                 continue;
-            noShip* curShip = static_cast<noShip*>(*it);
+            auto* curShip = static_cast<noShip*>(figure);
 
             if(curShip->GetPlayerId() == playerId_ && (curShip->GetPos() == pt || curShip->GetDestinationForCurrentMove() == pt))
             {
@@ -277,11 +276,11 @@ void GameWorldViewer::RecalcBQForRoad(const MapPoint& pt)
 void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<Direction>& route)
 {
     MapPoint curPt = start;
-    for(unsigned i = 0; i < route.size(); ++i)
+    for(auto i : route)
     {
-        SetVisiblePointRoad(curPt, route[i], 0);
+        SetVisiblePointRoad(curPt, i, 0);
         RecalcBQForRoad(curPt);
-        curPt = GetWorld().GetNeighbour(curPt, route[i]);
+        curPt = GetWorld().GetNeighbour(curPt, i);
     }
     RecalcBQForRoad(curPt);
 }

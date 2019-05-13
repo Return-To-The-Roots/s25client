@@ -45,12 +45,9 @@ MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
 };
 /* clang-format on */
 
-void deleteNoting(void*) {}
-
-BOOST_AUTO_TEST_CASE(LobbyChat)
+BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
 {
     rttr::test::LogAccessor logAcc;
-    uiHelper::initGUITests();
 
     GameLobby gameLobby(false, true, 2);
     JoinPlayerInfo& player = gameLobby.getPlayer(0);
@@ -66,15 +63,16 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
     MOCK_EXPECT(client->SendServerJoinRequest).exactly(1).in(s2);
     MOCK_EXPECT(client->SendRankingInfoRequest).at_least(1);
 
-    dskHostGame* desktop = new dskHostGame(ServerType::LOBBY, std::shared_ptr<GameLobby>(&gameLobby, &deleteNoting), 0, std::move(client));
-    ClientInterface* ci = dynamic_cast<ClientInterface*>(desktop);
-    LobbyInterface* li = dynamic_cast<LobbyInterface*>(desktop);
+    auto* desktop = WINDOWMANAGER.Switch(
+      std::make_unique<dskHostGame>(ServerType::LOBBY, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client)));
+    auto* ci = dynamic_cast<ClientInterface*>(desktop);
+    auto* li = dynamic_cast<LobbyInterface*>(desktop);
     BOOST_REQUIRE(ci && li);
     std::vector<ctrlOptionGroup*> chatTab = desktop->GetCtrls<ctrlOptionGroup>();
     BOOST_REQUIRE_EQUAL(chatTab.size(), 1u);
     std::vector<ctrlButton*> chatBts = chatTab.front()->GetCtrls<ctrlButton>();
     BOOST_REQUIRE_EQUAL(chatBts.size(), 2u);
-    WINDOWMANAGER.Switch(desktop);
+
     WINDOWMANAGER.Draw();
 
     // Send a chat message via lobby chat and game chat with either visible
@@ -84,7 +82,7 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
         RTTR_REQUIRE_LOG_CONTAINS("<TestName>", false);
         li->LC_Chat("OtherPlayer", "Test");
         RTTR_REQUIRE_LOG_CONTAINS("<OtherPlayer>", false);
-        static_cast<Window*>(desktop)->Msg_OptionGroupChange(chatTab.front()->GetID(), chatBts[i % 2]->GetID());
+        desktop->Msg_OptionGroupChange(chatTab.front()->GetID(), chatBts[i % 2]->GetID());
     }
     // Free desktop etc to trigger mock verification
     WINDOWMANAGER.CleanUp();

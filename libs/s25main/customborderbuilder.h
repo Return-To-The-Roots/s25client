@@ -30,7 +30,7 @@ class Archiv;
 } // namespace libsiedler2
 
 /// Position in an image
-typedef Point<unsigned> ImgPos;
+using ImgPos = Point<unsigned>;
 
 class CustomBorderBuilder
 {
@@ -47,7 +47,7 @@ private:
     public:
         BdrBitmap() : size(0, 0) {}
         BdrBitmap(const Extent& size);
-        BdrBitmap get(const ImgPos& srcOffset, const Extent& size) const;
+        BdrBitmap get(const ImgPos& srcOffset, const Extent& targetSize) const;
         unsigned char get(const ImgPos& pos) const;
         void put(const ImgPos& dstOffset, const BdrBitmap& pic);
         void put(const ImgPos& pos, unsigned char c);
@@ -58,13 +58,13 @@ private:
         std::vector<unsigned char> values;
     };
 
-    void Bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmap, BdrBitmap& bdrBitmap);
-    void BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmap);
+    void Bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmapRLE, BdrBitmap& bdrBitmap);
+    void BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmapRLE);
 
-    void FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths, std::array<unsigned char, 3>& counts);
+    void FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths, std::array<unsigned char, 3>& shouldCounts);
     template<size_t T_numEdges, size_t T_numFillers>
     void WriteEdgeDistribution(const ImgPos& pos, unsigned toFill,
-                               const bool direction, // false = waagerecht, true = senkrecht
+                               bool direction, // false = waagerecht, true = senkrecht
                                const std::array<unsigned short, 3>& edgeLengths,
                                std::array<unsigned char, 3>& edgeCounts, // wird verändert, nicht weiterbenutzen
                                const std::array<BdrBitmap, T_numEdges>& edges, const std::array<BdrBitmap, T_numFillers>& fillers,

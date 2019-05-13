@@ -18,7 +18,6 @@
 #ifndef GameMessage_GameCommand_h__
 #define GameMessage_GameCommand_h__
 
-#include "AsyncChecksum.h"
 #include "GameCommand.h"
 #include "GameMessage.h"
 #include "PlayerGameCommands.h"

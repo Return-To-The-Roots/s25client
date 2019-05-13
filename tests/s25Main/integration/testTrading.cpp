@@ -78,7 +78,7 @@ struct TradeFixture : public WorldWithGCExecution3P
     void testAfterLeaving(unsigned numTradeItems)
     {
         // Run enough GFs so all trade caravans are out (~numTradeItems + 1 people need to leave taking 30GFs max each)
-        RTTR_EXEC_TILL(30 * (numTradeItems + 1), curWh->GetLeavingFigures().size() == 0u);
+        RTTR_EXEC_TILL(30 * (numTradeItems + 1), curWh->GetLeavingFigures().empty());
         // Real count should not be changed
         // But helpers can be produced in the meantime
         BOOST_REQUIRE_GE(curWh->GetNumRealFigures(JOB_HELPER), numHelpers);
@@ -289,7 +289,7 @@ BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
 
     const PostMsg* post = postbox->GetMsg(0);
     BOOST_REQUIRE(post);
-    const PostMsgWithBuilding* msg = dynamic_cast<const PostMsgWithBuilding*>(post);
+    const auto* msg = dynamic_cast<const PostMsgWithBuilding*>(post);
     BOOST_REQUIRE(msg->GetText().find('2') != std::string::npos);
     BOOST_REQUIRE(msg->GetText().find(_(JOB_NAMES[JOB_WOODCUTTER])) != std::string::npos);
     BOOST_REQUIRE(msg->GetText().find(players[1]->name) != std::string::npos);
@@ -305,7 +305,7 @@ BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
 
     const PostMsg* post2 = postbox->GetMsg(1);
     BOOST_REQUIRE(post2);
-    const PostMsgWithBuilding* msg2 = dynamic_cast<const PostMsgWithBuilding*>(post2);
+    const auto* msg2 = dynamic_cast<const PostMsgWithBuilding*>(post2);
     BOOST_REQUIRE(msg2->GetText().find('2') != std::string::npos);
     BOOST_REQUIRE(msg2->GetText().find(_(WARE_NAMES[GD_BOARDS])) != std::string::npos);
     BOOST_REQUIRE(msg2->GetText().find(players[1]->name) != std::string::npos);

@@ -17,8 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Savegame.h"
-#include "BasePlayerInfo.h"
-#include "libendian/ConvertEndianess.h"
 #include "libutil/BinaryFile.h"
 
 std::string Savegame::GetSignature() const
@@ -34,9 +32,9 @@ uint16_t Savegame::GetVersion() const
 
 //////////////////////////////////////////////////////////////////////////
 
-Savegame::Savegame() : SavedFile(), start_gf(0) {}
+Savegame::Savegame() : start_gf(0) {}
 
-Savegame::~Savegame() {}
+Savegame::~Savegame() = default;
 
 bool Savegame::Save(const std::string& filename, const std::string& mapName)
 {

@@ -21,6 +21,6 @@
 #include "gameTypes/MapCoordinates.h"
 
 class GameWorldBase;
-bool DoesReachablePathExist(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt, unsigned maxLen);
+bool DoesReachablePathExist(const GameWorldBase& world, MapPoint startPt, MapPoint endPt, unsigned maxLen);
 
 #endif // FindPathReachable_h__

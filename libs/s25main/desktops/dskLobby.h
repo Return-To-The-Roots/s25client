@@ -30,7 +30,7 @@ class iwDirectIPCreate;
 class LobbyServerList;
 class LobbyPlayerList;
 
-class dskLobby : public dskMenuBase, public ClientInterface, public LobbyInterface
+class dskLobby final : public dskMenuBase, public ClientInterface, public LobbyInterface
 {
 private:
     iwLobbyServerInfo* serverInfoWnd;

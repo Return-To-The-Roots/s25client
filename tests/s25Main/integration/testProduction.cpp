@@ -22,12 +22,13 @@
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
 #include "worldFixtures/WorldWithGCExecution.h"
+#include "gameData/ToolConsts.h"
 #include <boost/test/unit_test.hpp>
 #include <algorithm>
 #include <array>
 #include <rttr/test/LogAccessor.hpp>
 
-std::ostream& operator<<(std::ostream& os, const PostCategory& cat)
+static std::ostream& operator<<(std::ostream& os, const PostCategory& cat)
 {
     return os << static_cast<unsigned>(cat);
 }

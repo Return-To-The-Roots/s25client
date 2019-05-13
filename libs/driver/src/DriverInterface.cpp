@@ -15,21 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
+#define RTTR_DLLEXPORT
 #include "driver/DriverInterfaceVersion.h"
-
-#ifdef _WIN32
-#define DRIVERDLLAPI extern "C" __declspec(dllexport)
-#else
-#define DRIVERDLLAPI extern "C"
-#endif // !_WIN32
+#include "driver/Interface.h"
 
 /**
  *  API-Versions-Lieferfunktion
  *
  *  @return liefert die API-Version des Treibers
  */
-DRIVERDLLAPI unsigned GetDriverAPIVersion()
+unsigned GetDriverAPIVersion()
 {
     return DRIVERAPIVERSION;
 }

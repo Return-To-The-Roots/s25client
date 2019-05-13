@@ -19,7 +19,6 @@
 #include "glArchivItem_Font.h"
 #include "FontStyle.h"
 #include "Loader.h"
-#include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
 #include "helpers/containerUtils.h"
@@ -35,7 +34,7 @@
 
 //#define RTTR_PRINT_FONTS
 
-typedef utf8::iterator<std::string::const_iterator> utf8Iterator;
+using utf8Iterator = utf8::iterator<std::string::const_iterator>;
 
 template<typename T>
 struct GetNextCharAndIncIt;
@@ -98,7 +97,7 @@ T_Iterator nextIt(T_Iterator it)
 
 //////////////////////////////////////////////////////////////////////////
 
-glArchivItem_Font::glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(nullptr), fontWithOutline(nullptr)
+glArchivItem_Font::glArchivItem_Font() : fontNoOutline(nullptr), fontWithOutline(nullptr)
 {
     ClearCharInfoMapping();
 }
@@ -106,10 +105,8 @@ glArchivItem_Font::glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(nullpt
 glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj)
     : ArchivItem_Font(obj), asciiMapping(obj.asciiMapping), utf8_mapping(obj.utf8_mapping)
 {
-    if(obj.fontNoOutline)
-        fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(obj.fontNoOutline->clone()));
-    if(obj.fontWithOutline)
-        fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(obj.fontWithOutline->clone()));
+    fontNoOutline = libsiedler2::clone(obj.fontNoOutline);
+    fontWithOutline = libsiedler2::clone(obj.fontWithOutline);
 }
 
 bool glArchivItem_Font::CharExist(unsigned c) const
@@ -127,7 +124,7 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
             return asciiMapping[c].second;
     } else
     {
-        std::map<unsigned, CharInfo>::const_iterator it = utf8_mapping.find(c);
+        auto it = utf8_mapping.find(c);
         if(it != utf8_mapping.end())
             return it->second;
     }
@@ -136,7 +133,7 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
 
 void glArchivItem_Font::ClearCharInfoMapping()
 {
-    typedef std::pair<bool, CharInfo> CharPair;
+    using CharPair = std::pair<bool, CharInfo>;
     for(CharPair& entry : asciiMapping)
         entry.first = false;
     utf8_mapping.clear();
@@ -176,7 +173,7 @@ inline void glArchivItem_Font::DrawChar(unsigned curChar, VertexArrays& vertices
     curPos.x += ci.width;
 }
 
-void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, unsigned format, unsigned color, unsigned short length,
+void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, FontStyle format, unsigned color, unsigned short length,
                              unsigned short maxWidth, const ucString& end)
 {
     // etwas dämlich, aber einfach ;)
@@ -204,7 +201,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, unsigned form
  *  @param[in] max    maximale Länge
  *  @param     end    Suffix for displaying a truncation of the text (...)
  */
-void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned format, unsigned color, unsigned short length,
+void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short length,
                              unsigned short maxWidth, const std::string& end)
 {
     if(!fontNoOutline)
@@ -245,25 +242,25 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
 
     if(maxNumChars == 0)
         return;
-    std::string::const_iterator itEnd = text.begin();
+    auto itEnd = text.cbegin();
     std::advance(itEnd, maxNumChars);
 
     // Vertical alignment (assumes 1 line only!)
-    if(format & FontStyle::BOTTOM)
+    if(format.is(FontStyle::BOTTOM))
         pos.y -= dy;
-    else if(format & FontStyle::VCENTER)
+    else if(format.is(FontStyle::VCENTER))
         pos.y -= dy / 2;
     // Horizontal center must change current line only. Everything else changes the start point
     DrawPoint curPos(pos);
     // Horizontal alignment
-    if(format & FontStyle::RIGHT)
+    if(format.is(FontStyle::RIGHT))
         curPos.x = pos.x -= textWidth;
-    else if(format & FontStyle::CENTER)
+    else if(format.is(FontStyle::CENTER))
     {
         unsigned short line_width;
-        std::string::const_iterator itNl = std::find(text.begin(), itEnd, '\n');
+        const auto itNl = std::find(text.cbegin(), itEnd, '\n');
         if(itNl != itEnd)
-            line_width = getWidthInternal(text.begin(), itNl);
+            line_width = getWidthInternal(text.cbegin(), itNl);
         else
             line_width = textWidth;
         curPos.x = pos.x - line_width / 2;
@@ -272,15 +269,15 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
     texList.texCoords.clear();
     texList.vertices.clear();
 
-    for(std::string::const_iterator it = text.begin(); it != itEnd;)
+    for(auto it = text.begin(); it != itEnd;)
     {
         const uint32_t curChar = utf8::next(it, itEnd);
         if(curChar == '\n')
         {
-            if(format & FontStyle::CENTER)
+            if(format.is(FontStyle::CENTER))
             {
                 unsigned short line_width;
-                std::string::const_iterator itNl = std::find(it, itEnd, '\n');
+                const auto itNl = std::find(it, itEnd, '\n');
                 line_width = getWidthInternal(it, itNl);
                 curPos.x = pos.x - line_width / 2;
             } else
@@ -292,7 +289,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
 
     if(drawEnd)
     {
-        for(std::string::const_iterator it = end.begin(); it != end.end();)
+        for(auto it = end.begin(); it != end.end();)
         {
             const uint32_t curChar = utf8::next(it, end.end());
             if(curChar == '\n')
@@ -308,7 +305,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
         return;
 
     // Get texture first as it might need to be created
-    glArchivItem_Bitmap& usedFont = (format & FontStyle::NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
+    glArchivItem_Bitmap& usedFont = format.is(FontStyle::NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
     unsigned texture = usedFont.GetTexture();
     if(!texture)
         return;
@@ -395,7 +392,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
     return getWidthInternal(text.begin(), length ? text.begin() + length : text.end());
 }
 
-Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsigned format) const
+Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, FontStyle format) const
 {
     if(text.empty())
         return Rect(Position(pos), 0, 0);
@@ -403,13 +400,13 @@ Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsign
     unsigned numLines = static_cast<unsigned>(std::count(text.begin(), text.end(), '\n')) + 1;
     Rect result(Position(pos), width, numLines * getHeight());
     Position offset(0, 0);
-    if((format & 3) == FontStyle::RIGHT)
+    if(format.is(FontStyle::RIGHT))
         offset.x = width;
-    else if((format & 3) == FontStyle::CENTER)
+    else if(format.is(FontStyle::CENTER))
         offset.x = width / 2;
-    if((format & 12) == FontStyle::BOTTOM)
+    if(format.is(FontStyle::BOTTOM))
         offset.y = getHeight();
-    else if((format & 12) == FontStyle::VCENTER)
+    else if(format.is(FontStyle::VCENTER))
         offset.y = getHeight() / 2;
     result.move(-offset);
     return result;
@@ -428,7 +425,7 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
 
     destStrings.reserve(positions.size());
     unsigned curStart = positions.front();
-    for(std::vector<unsigned>::const_iterator it = positions.begin() + 1; it != positions.end(); ++it)
+    for(auto it = positions.begin() + 1; it != positions.end(); ++it)
     {
         RTTR_Assert(*it >= curStart);
         std::string curLine = text.substr(curStart, *it - curStart);
@@ -551,8 +548,8 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
 void glArchivItem_Font::initFont()
 {
     ClearCharInfoMapping();
-    fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
-    fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
+    fontWithOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RLE);
+    fontNoOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RLE);
 
     // first, we have to find how much chars we really have
     unsigned numChars = 0;
@@ -565,7 +562,7 @@ void glArchivItem_Font::initFont()
     if(numChars == 0)
         return;
 
-    const unsigned numCharsPerLine = static_cast<unsigned>(std::sqrt(static_cast<double>(numChars)));
+    const auto numCharsPerLine = static_cast<unsigned>(std::sqrt(static_cast<double>(numChars)));
     // Calc lines required (rounding up)
     const unsigned numLines = (numChars + numCharsPerLine - 1) / numCharsPerLine;
 
@@ -579,7 +576,7 @@ void glArchivItem_Font::initFont()
     numChars = 0;
     for(unsigned i = 0; i < size(); ++i)
     {
-        const libsiedler2::ArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
+        const auto* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
         if(!c)
             continue;
 

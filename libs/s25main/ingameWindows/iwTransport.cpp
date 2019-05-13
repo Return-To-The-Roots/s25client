@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwTransport.h"
 
-#include "DrawPointInit.h"
+#include "DrawPoint.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -29,10 +29,10 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
 
-const std::string TOOLTIPS[14] = {gettext_noop("Coins"),  gettext_noop("Weapons"),  gettext_noop("Beer"),  gettext_noop("Iron"),
-                                  gettext_noop("Gold"),   gettext_noop("Iron ore"), gettext_noop("Coal"),  gettext_noop("Boards"),
-                                  gettext_noop("Stones"), gettext_noop("Wood"),     gettext_noop("Water"), gettext_noop("Food"),
-                                  gettext_noop("Tools"),  gettext_noop("Boats")};
+const std::array<std::string, 14> TOOLTIPS = {
+  gettext_noop("Coins"),    gettext_noop("Weapons"), gettext_noop("Beer"),   gettext_noop("Iron"),   gettext_noop("Gold"),
+  gettext_noop("Iron ore"), gettext_noop("Coal"),    gettext_noop("Boards"), gettext_noop("Stones"), gettext_noop("Wood"),
+  gettext_noop("Water"),    gettext_noop("Food"),    gettext_noop("Tools"),  gettext_noop("Boats")};
 
 iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"), LOADER.GetImageN("io", 5)), gwv(gwv),
@@ -71,8 +71,20 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     TRANSPORT_SPRITES[13] = LOADER.GetMapTexN(2250 + GD_BOAT);
 
     // Positionen der einzelnen Buttons
-    const DrawPointInit BUTTON_POS[14] = {{20, 25},  {52, 42},  {84, 59},   {116, 76}, {84, 93},  {52, 110}, {20, 127},
-                                          {52, 144}, {84, 161}, {116, 178}, {84, 195}, {52, 212}, {20, 229}, {52, 246}};
+    const std::array<DrawPoint, 14> BUTTON_POS = {{{20, 25},
+                                                   {52, 42},
+                                                   {84, 59},
+                                                   {116, 76},
+                                                   {84, 93},
+                                                   {52, 110},
+                                                   {20, 127},
+                                                   {52, 144},
+                                                   {84, 161},
+                                                   {116, 178},
+                                                   {84, 195},
+                                                   {52, 212},
+                                                   {20, 229},
+                                                   {52, 246}}};
 
     // Einstellungen festlegen
     for(unsigned char i = 0; i < 14; ++i)
@@ -109,14 +121,14 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 0:
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("The transport priority of a type of merchandise can "
-                                                              "be determined here.The higher the priority of an item "
-                                                              "in the list, the quicker it is transported by helpers.")));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("The transport priority of a type of merchandise can "
+                                                                            "be determined here.The higher the priority of an item "
+                                                                            "in the list, the quicker it is transported by helpers.")));
         }
         break;
         case 1: // Standardbelegung
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             GAMECLIENT.visual_settings.transport_order = GAMECLIENT.default_settings.transport_order;
 
@@ -134,7 +146,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 2: // ganz hoch
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz oben sind, gehts nicht weiter höher
             while(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
@@ -153,7 +165,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 3: // hoch
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz oben sind, gehts nicht weiter höher
             if(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
@@ -172,7 +184,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 4: // runter
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz unten sind, gehts nicht weiter runter
             if(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
@@ -191,7 +203,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 5: // ganz runter
         {
-            ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+            auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz unten sind, gehts nicht weiter runter
             while(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
@@ -225,7 +237,7 @@ void iwTransport::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    ctrlOptionGroup* group = GetCtrl<ctrlOptionGroup>(6);
+    auto* group = GetCtrl<ctrlOptionGroup>(6);
 
     // Einstellungen festlegen
     for(unsigned char i = 0; i < 14; ++i)

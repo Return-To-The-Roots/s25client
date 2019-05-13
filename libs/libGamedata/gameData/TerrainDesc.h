@@ -21,7 +21,6 @@
 #include "DescIdx.h"
 #include "Rect.h"
 #include <string>
-#include <vector>
 
 struct LandscapeDesc;
 struct EdgeDesc;
@@ -69,7 +68,7 @@ enum class ETexType : uint8_t
 
 struct TerrainDesc
 {
-    typedef Point<float> PointF;
+    using PointF = Point<float>;
     struct Triangle
     {
         PointF tip, left, right;

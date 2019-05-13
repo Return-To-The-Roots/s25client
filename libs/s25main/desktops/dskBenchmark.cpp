@@ -30,7 +30,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofPassiveWorker.h"
 #include "helpers/mathFuncs.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
 #include "ogl/IRenderer.h"
@@ -43,6 +43,7 @@
 #include "libutil/Log.h"
 #include "libutil/strFuncs.h"
 #include <helpers/chronoIO.h>
+#include <memory>
 #include <random>
 
 namespace {
@@ -75,19 +76,24 @@ dskBenchmark::dskBenchmark() : curTest_(TEST_NONE), runAll_(false), numInstances
             FontStyle::LEFT, LargeFont);
     AddText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
     for(std::chrono::milliseconds& t : testDurations_)
-        t = t.zero();
+        t = std::chrono::milliseconds::zero();
 }
 
 dskBenchmark::~dskBenchmark()
 {
-    printTimes();
+    try
+    {
+        printTimes();
+    } catch(...)
+    {
+    }
 }
 
 bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
 {
     switch(ke.kt)
     {
-        case KT_ESCAPE: WINDOWMANAGER.Switch(new dskMainMenu); break;
+        case KT_ESCAPE: WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>()); break;
         case KT_F1: startTest(TEST_TEXT); break;
         case KT_F2: startTest(TEST_PRIMITIVES); break;
         case KT_F3: startTest(TEST_EMPTY_GAME); break;
@@ -216,9 +222,9 @@ void dskBenchmark::startTest(Test test)
             createGame();
             if(!game_)
                 return;
-            RTTR_FOREACH_PT(MapPoint, game_->world.GetSize())
+            RTTR_FOREACH_PT(MapPoint, game_->world_.GetSize())
             {
-                game_->world.SetVisibility(pt, 0, VIS_VISIBLE);
+                game_->world_.SetVisibility(pt, 0, VIS_VISIBLE);
             }
             break;
         case TEST_BASIC_GAME:
@@ -228,7 +234,7 @@ void dskBenchmark::startTest(Test test)
                 return;
             std::vector<MapPoint> hqs(2, MapPoint(0, 0));
             hqs[1].x += 30;
-            MapLoader::PlaceHQs(game_->world, hqs, false);
+            MapLoader::PlaceHQs(game_->world_, hqs, false);
             break;
         }
         case TEST_FULL_GAME:
@@ -238,10 +244,10 @@ void dskBenchmark::startTest(Test test)
                 return;
             std::vector<MapPoint> hqs(2, MapPoint(0, 0));
             hqs[1].x += 30;
-            MapLoader::PlaceHQs(game_->world, hqs, false);
+            MapLoader::PlaceHQs(game_->world_, hqs, false);
             for(unsigned i = 0; i < hqs.size(); i++)
             {
-                std::vector<MapPoint> pts = game_->world.GetPointsInRadius(hqs[i], 15);
+                std::vector<MapPoint> pts = game_->world_.GetPointsInRadius(hqs[i], 15);
                 std::bernoulli_distribution dist(numInstances_ / 1000.f);
                 std::bernoulli_distribution distEqual;
                 std::array<BuildingType, 5> blds = {{BLD_BARRACKS, BLD_MILL, BLD_IRONMINE, BLD_SLAUGHTERHOUSE, BLD_BAKERY}};
@@ -250,20 +256,20 @@ void dskBenchmark::startTest(Test test)
                 std::uniform_int_distribution<int> getDir(0, Direction::COUNT - 1);
                 for(MapPoint pt : pts)
                 {
-                    MapPoint flagPt = game_->world.GetNeighbour(pt, Direction::SOUTHEAST);
-                    if(game_->world.GetNode(pt).obj || game_->world.GetNode(flagPt).obj || !dist(rng))
+                    MapPoint flagPt = game_->world_.GetNeighbour(pt, Direction::SOUTHEAST);
+                    if(game_->world_.GetNode(pt).obj || game_->world_.GetNode(flagPt).obj || !dist(rng))
                         continue;
                     BuildingType bldType = blds[getBld(rng)];
                     noBuilding* bld =
-                      BuildingFactory::CreateBuilding(game_->world, bldType, pt, i, distEqual(rng) ? NAT_AFRICANS : NAT_JAPANESE);
+                      BuildingFactory::CreateBuilding(game_->world_, bldType, pt, i, distEqual(rng) ? NAT_AFRICANS : NAT_JAPANESE);
                     if(bldType == BLD_BARRACKS)
                     {
-                        nobMilitary* mil = static_cast<nobMilitary*>(bld);
-                        nofPassiveSoldier* sld = new nofPassiveSoldier(pt, i, mil, mil, 0);
+                        auto* mil = static_cast<nobMilitary*>(bld);
+                        auto* sld = new nofPassiveSoldier(pt, i, mil, mil, 0);
                         mil->AddPassiveSoldier(sld);
                     }
-                    nofPassiveWorker* figure = new nofPassiveWorker(Job(getJob(rng)), flagPt, i, nullptr);
-                    game_->world.AddFigure(flagPt, figure);
+                    auto* figure = new nofPassiveWorker(Job(getJob(rng)), flagPt, i, nullptr);
+                    game_->world_.AddFigure(flagPt, figure);
                     figure->StartWandering();
                     figure->StartWalking(Direction::fromInt(getDir(rng)));
                 }
@@ -272,7 +278,7 @@ void dskBenchmark::startTest(Test test)
         }
     }
     if(game_)
-        gameView_.reset(new GameView(game_->world, VIDEODRIVER.GetRenderSize()));
+        gameView_ = std::make_unique<GameView>(game_->world_, VIDEODRIVER.GetRenderSize());
     VIDEODRIVER.GetRenderer()->synchronize();
     VIDEODRIVER.setTargetFramerate(-1);
     curTest_ = test;
@@ -325,8 +331,8 @@ void dskBenchmark::createGame()
     p.nation = NAT_JAPANESE;
     p.color = PLAYER_COLORS[1];
     players.push_back(p);
-    game_.reset(new Game(GlobalGameSettings(), 0u, players));
-    GameWorld& world = game_->world;
+    game_ = std::make_shared<Game>(GlobalGameSettings(), 0u, players);
+    GameWorld& world = game_->world_;
     try
     {
         loadGameData(world.GetDescriptionWriteable());

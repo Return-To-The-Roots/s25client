@@ -26,7 +26,7 @@
 class glArchivItem_Bitmap_Shadow : public libsiedler2::baseArchivItem_Bitmap_Shadow, public glArchivItem_Bitmap
 {
 public:
-    glArchivItem_Bitmap_Shadow() {}
+    glArchivItem_Bitmap_Shadow() = default;
 
     glArchivItem_Bitmap_Shadow(const glArchivItem_Bitmap_Shadow& item)
         : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Shadow(item), glArchivItem_Bitmap(item)

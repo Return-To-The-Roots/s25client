@@ -22,11 +22,12 @@
 #include "KeyEvent.h"
 #include "Point.h"
 #include "VideoMode.h"
+#include "exportImport.h"
 #include <string>
 #include <vector>
 
 /// Function type for loading OpenGL methods
-typedef void* (*OpenGL_Loader_Proc)(const char* name);
+using OpenGL_Loader_Proc = void* (*)(const char*);
 
 class IVideoDriver
 {
@@ -37,8 +38,6 @@ public:
     virtual const char* GetName() const = 0;
 
     virtual bool Initialize() = 0;
-
-    virtual void CleanUp() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
     virtual bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) = 0;
@@ -92,25 +91,8 @@ public:
 
 class VideoDriverLoaderInterface;
 
-///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#undef DRIVERDLLAPI
-#ifdef _WIN32
-#ifdef BUILD_DLL
-#define DRIVERDLLAPI extern "C" __declspec(dllexport)
-#else
-#define DRIVERDLLAPI extern "C" __declspec(dllimport)
-#endif // !_USRDLL
-#else
-#define DRIVERDLLAPI extern "C"
-#endif // !_WIN32
-
 /// Instanzierungsfunktion der Treiber.
-DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack);
-DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver);
-
-///
-typedef IVideoDriver* (*PDRIVER_CREATEVIDEOINSTANCE)(VideoDriverLoaderInterface*);
-typedef void (*PDRIVER_FREEVIDEOINSTANCE)(IVideoDriver*);
+RTTR_DECL IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack);
+RTTR_DECL void FreeVideoInstance(IVideoDriver* driver);
 
 #endif // !VIDEOINTERFACE_H_INCLUDED

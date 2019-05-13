@@ -23,7 +23,7 @@
 #include <windows.h>
 #define RTTR_SET_LAST_ERROR(errNum) SetLastError(errNum)
 #elif defined(BOOST_POSIX_API)
-#include <errno.h>
+#include <cerrno>
 #define RTTR_SET_LAST_ERROR(errNum) errno = errNum
 #endif
 

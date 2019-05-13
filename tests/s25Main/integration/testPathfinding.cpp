@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "PointOutput.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "nodeObjs/noGranite.h"
@@ -37,8 +36,9 @@ using namespace boost::assign;
 // differently colored start/end points if multiple tests are performed on the same landscape
 BOOST_AUTO_TEST_SUITE(PathfindingSuite)
 
-typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
-typedef WorldFixture<CreateEmptyWorld, 1> WorldFixtureEmpty1P;
+namespace {
+using WorldFixtureEmpty0P = WorldFixture<CreateEmptyWorld, 0>;
+using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1>;
 
 /// Sets all terrain to the given terrain
 void clearWorld(GameWorldGame& world, DescIdx<TerrainDesc> terrain)
@@ -84,6 +84,7 @@ void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, DescIdx<Te
     if(bothTerrain)
         setRightTerrain(world, terrainPt, dir, tOther);
 }
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
 {

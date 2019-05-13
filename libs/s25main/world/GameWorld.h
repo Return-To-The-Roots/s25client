@@ -19,8 +19,6 @@
 #define GameWorld_h__
 
 #include "world/GameWorldGame.h"
-#include "world/GameWorldViewer.h"
-#include "gameTypes/MapCoordinates.h"
 #include <memory>
 #include <string>
 
@@ -33,11 +31,11 @@ public:
     GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
 
     /// Lädt eine Karte
-    bool LoadMap(std::shared_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath);
+    bool LoadMap(const std::shared_ptr<Game>& game, const std::string& mapFilePath, const std::string& luaFilePath);
 
     /// Serialisiert den gesamten GameWorld
     void Serialize(SerializedGameData& sgd) const;
-    void Deserialize(std::shared_ptr<Game> game, SerializedGameData& sgd);
+    void Deserialize(const std::shared_ptr<Game>& game, SerializedGameData& sgd);
 };
 
 #endif // GameWorld_h__

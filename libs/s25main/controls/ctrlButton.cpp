@@ -18,17 +18,15 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlButton.h"
 #include "CollisionDetection.h"
-#include "Loader.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ogl/glArchivItem_Bitmap.h"
 
 ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& tooltip)
     : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true), isChecked(false),
       isIlluminated(false), isEnabled(true)
 {}
 
-ctrlButton::~ctrlButton() {}
+ctrlButton::~ctrlButton() = default;
 
 void ctrlButton::SetEnabled(bool enable /*= true*/)
 {

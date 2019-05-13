@@ -26,14 +26,14 @@ class Window;
 class GameInterface
 {
 public:
-    virtual ~GameInterface() {}
+    virtual ~GameInterface() = default;
 
     /// Ein Spieler hat verloren
     virtual void GI_PlayerDefeated(unsigned playerId) = 0;
     /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
-    virtual void GI_UpdateMinimap(const MapPoint pt) = 0;
+    virtual void GI_UpdateMinimap(MapPoint pt) = 0;
     /// Flagge wurde zerstört
-    virtual void GI_FlagDestroyed(const MapPoint pt) = 0;
+    virtual void GI_FlagDestroyed(MapPoint pt) = 0;
     /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
     virtual void GI_TreatyOfAllianceChanged(unsigned playerId) = 0;
 
@@ -43,7 +43,7 @@ public:
     /// An important window was closed (currently iwAction, iwRoad)
     virtual void GI_WindowClosed(Window* wnd) = 0;
     /// Changes into road building mode
-    virtual void GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad) = 0;
+    virtual void GI_StartRoadBuilding(MapPoint startPt, bool waterRoad) = 0;
     /// Cancels the road building mode
     virtual void GI_CancelRoadBuilding() = 0;
     /// Executes the construction of a road

@@ -22,7 +22,7 @@
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
 #include "libutil/Log.h"
-#include <boost/format.hpp>
+#include <mygettext/mygettext.h>
 
 EventManager::EventManager(unsigned startGF) : numActiveEvents(0), eventInstanceCtr(1), currentGF(startGF), curActiveEvent(nullptr) {}
 
@@ -33,9 +33,9 @@ EventManager::~EventManager()
 
 void EventManager::Clear()
 {
-    for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
+    for(auto& event : events)
     {
-        for(const GameEvent* ev : it->second)
+        for(const GameEvent* ev : event.second)
         {
             delete ev;
             RTTR_Assert(numActiveEvents > 0u);
@@ -45,10 +45,10 @@ void EventManager::Clear()
     events.clear();
     RTTR_Assert(numActiveEvents == 0u);
 
-    for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
+    for(auto& it : killList)
     {
-        GameObject* obj = *it;
-        *it = nullptr;
+        GameObject* obj = it;
+        it = nullptr;
         delete obj;
     }
     killList.clear();
@@ -103,11 +103,11 @@ void EventManager::ExecuteNextGF()
 void EventManager::DestroyCurrentObjects()
 {
     // Remove all objects
-    for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
+    for(auto& it : killList)
     {
-        GameObject* obj = *it;
+        GameObject* obj = it;
         // Object is no longer in the kill list (some may check this upon destruction)
-        *it = nullptr;
+        it = nullptr;
         obj->Destroy();
         delete obj;
     }
@@ -118,8 +118,8 @@ void EventManager::DestroyCurrentObjects()
 std::vector<const GameEvent*> EventManager::GetEvents() const
 {
     std::vector<const GameEvent*> nextEv;
-    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
-        nextEv.insert(nextEv.end(), it->second.begin(), it->second.end());
+    for(const auto& event : events)
+        nextEv.insert(nextEv.end(), event.second.begin(), event.second.end());
     return nextEv;
 }
 
@@ -128,7 +128,7 @@ void EventManager::ExecuteCurrentEvents()
     if(events.empty())
         return;
     // Get list of events to be executed next
-    EventMap::iterator itCurEvents = events.begin();
+    auto itCurEvents = events.begin();
 
     RTTR_Assert(itCurEvents->first >= currentGF);
 
@@ -142,7 +142,7 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
     // We have to allow 2 cases:
     // 1) Adding of events to current GF -> std::list allows this without invalidating any iterators
     // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
-    for(EventList::iterator e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
+    for(auto e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
     {
         const GameEvent* ev = (*e_it);
         RTTR_Assert(ev->obj);
@@ -194,9 +194,9 @@ void EventManager::Deserialize(SerializedGameData& sgd)
         boost::format eventCtError(_("Event count mismatch. Read events: %1%. Expected: %2%.\n"));
         throw SerializedGameData::Error((eventCtError % numActiveEvents % numEvents).str());
     }
-    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
+    for(const auto& it : events)
     {
-        for(const GameEvent* ev : it->second)
+        for(const GameEvent* ev : it.second)
         {
             if(ev->GetInstanceId() >= eventInstanceCtr)
             {
@@ -209,9 +209,9 @@ void EventManager::Deserialize(SerializedGameData& sgd)
 
 bool EventManager::ObjectHasEvents(const GameObject& obj)
 {
-    for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
+    for(auto& event : events)
     {
-        for(const GameEvent* ev : it->second)
+        for(const GameEvent* ev : event.second)
         {
             if(ev->obj == &obj)
                 return true;
@@ -244,11 +244,11 @@ void EventManager::RemoveEvent(const GameEvent*& ep)
 void EventManager::RemoveEventFromQueue(const GameEvent& event)
 {
     RTTR_Assert(curActiveEvent != &event);
-    EventMap::iterator itEventsAtTime = events.find(event.GetTargetGF());
+    auto itEventsAtTime = events.find(event.GetTargetGF());
     if(itEventsAtTime != events.end())
     {
         EventList& eventsAtTime = itEventsAtTime->second;
-        EventList::iterator e_it = helpers::find(eventsAtTime, &event);
+        auto e_it = helpers::find(eventsAtTime, &event);
         if(e_it != eventsAtTime.end())
         {
             eventsAtTime.erase(e_it);

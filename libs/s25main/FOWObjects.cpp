@@ -19,7 +19,6 @@
 #include "FOWObjects.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/BuildingConsts.h"
 #include "libutil/colors.h"
@@ -39,7 +38,7 @@ unsigned CalcPlayerFOWDrawColor(const unsigned color)
     return MakeColor(0xFF, red, green, blue);
 }
 
-FOWObject::~FOWObject() {}
+FOWObject::~FOWObject() = default;
 
 ////////////////////////////////////////////////////////////////////////////////////
 // fowBuilding

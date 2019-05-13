@@ -27,14 +27,14 @@ GameMessage_Player_List::GameMessage_Player_List(const std::vector<JoinPlayerInf
     LOG.writeToFile(">>> NMS_PLAYER_LIST(%u)\n") % playerInfos.size();
 }
 
-GameMessage_Player_List::~GameMessage_Player_List() {}
+GameMessage_Player_List::~GameMessage_Player_List() = default;
 
 void GameMessage_Player_List::Serialize(Serializer& ser) const
 {
     GameMessage::Serialize(ser);
     ser.PushUnsignedInt(playerInfos.size());
-    for(std::vector<JoinPlayerInfo>::const_iterator it = playerInfos.begin(); it != playerInfos.end(); ++it)
-        it->Serialize(ser);
+    for(const auto& playerInfo : playerInfos)
+        playerInfo.Serialize(ser);
 }
 
 void GameMessage_Player_List::Deserialize(Serializer& ser)

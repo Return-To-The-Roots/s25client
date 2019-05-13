@@ -20,8 +20,10 @@
 #pragma once
 
 #include "libutil/MessageInterface.h"
+#include "libutil/warningSuppression.h"
 #include <boost/preprocessor.hpp>
 
+// NOLINTNEXTLINE(bugprone-macro-parentheses)
 #define __GENERATE_FWD_DECL_SINGLE(s, data, expression) class expression;
 #define __GENERATE_FWD_DECL(...) BOOST_PP_SEQ_FOR_EACH(__GENERATE_FWD_DECL_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
@@ -49,6 +51,7 @@
         __GENERATE_CALLBACKS(__VA_ARGS__)                \
     };
 
+RTTR_IGNORE_OVERLOADED_VIRTUAL
 GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
 
                                 GameMessage_Server_Type, GameMessage_Server_TypeOK, GameMessage_Server_Password, GameMessage_Server_Name,
@@ -65,5 +68,6 @@ GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
                                 GameMessage_SkipToGF, GameMessage_Server_NWFDone, GameMessage_GameCommand, GameMessage_Speed,
 
                                 GameMessage_GetAsyncLog, GameMessage_AsyncLog)
+RTTR_POP_DIAGNOSTIC
 
 #endif //! GAMEMESSAGEINTERFACE_H_INCLUDED

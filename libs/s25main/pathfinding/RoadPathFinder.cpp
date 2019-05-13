@@ -42,8 +42,8 @@ struct RoadNodeComperatorGreater
     }
 };
 
-typedef OpenListPrioQueue<const noRoadNode*, RoadNodeComperatorGreater> QueueImpl;
-typedef OpenListVector<const noRoadNode*> VecImpl;
+using QueueImpl = OpenListPrioQueue<const noRoadNode*, RoadNodeComperatorGreater>;
+using VecImpl = OpenListVector<const noRoadNode*>;
 VecImpl todo;
 
 // Namespace with all functors usable as additional cost functors
@@ -91,8 +91,8 @@ struct AvoidRoadType
 template<class T_Func1, class T_Func2>
 struct And : private T_Func1, private T_Func2
 {
-    typedef T_Func1 Func1;
-    typedef T_Func2 Func2;
+    using Func1 = T_Func1;
+    using Func2 = T_Func2;
 
     And() : Func1(), Func2() {}
 
@@ -140,7 +140,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     {
         RTTR_FOREACH_PT(MapPoint, gwb_.GetSize())
         {
-            noRoadNode* const node = gwb_.GetSpecObj<noRoadNode>(pt);
+            auto* const node = gwb_.GetSpecObj<noRoadNode>(pt);
             if(node)
                 node->last_visit = 0;
         }
@@ -256,15 +256,15 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         {
             std::vector<nobHarborBuilding::ShipConnection> scs = static_cast<const nobHarborBuilding&>(best).GetShipConnections();
 
-            for(unsigned i = 0; i < scs.size(); ++i)
+            for(auto& sc : scs)
             {
                 // Neuer Weg für diesen neuen Knoten berechnen
-                unsigned cost = best.cost + scs[i].way_costs;
+                unsigned cost = best.cost + sc.way_costs;
 
                 if(cost > max)
                     continue;
 
-                noRoadNode& dest = *scs[i].dest;
+                noRoadNode& dest = *sc.dest;
                 // Was node already visited?
                 if(dest.last_visit == currentVisit)
                 {

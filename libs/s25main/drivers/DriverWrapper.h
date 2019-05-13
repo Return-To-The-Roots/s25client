@@ -17,40 +17,40 @@
 #ifndef DRIVERWRAPPER_H_INCLUDED
 #define DRIVERWRAPPER_H_INCLUDED
 
-#ifdef DriverType
-#undef DriverType
-#endif
-
 #include <boost/filesystem/path.hpp>
-#ifdef _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#else
-#ifndef HINSTANCE
-#define HINSTANCE void*
-#endif
-#endif
-
 #include <string>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace bfs = boost::filesystem;
+namespace boost { namespace dll {
+    class shared_library;
+}} // namespace boost::dll
+
+namespace drivers {
+
+enum class DriverType
+{
+    Video,
+    Audio
+};
+
+template<typename T, typename From>
+constexpr T* FunctionPointerCast(From* from)
+{
+    static_assert(std::is_void<From>::value, "Function must be used only for casting from void pointers");
+    static_assert(sizeof(From*) == sizeof(T*), "Pointer sizes don't match");
+    return reinterpret_cast<T*>(from);
+}
 
 class DriverWrapper
 {
 public:
-    enum DriverType
-    {
-        DT_VIDEO = 0,
-        DT_AUDIO
-    };
-
     class DriverItem
     {
     public:
-        DriverItem(const bfs::path& file, const std::string& name) : file(file), name(name) {}
+        DriverItem(bfs::path file, std::string name) : file(std::move(file)), name(std::move(name)) {}
         const bfs::path& GetFile() const { return file; }
         const std::string& GetName() const { return name; }
 
@@ -62,22 +62,26 @@ public:
 public:
     DriverWrapper();
     ~DriverWrapper();
-
     /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
-    bool Load(const DriverType dt, std::string& preference);
+    bool Load(DriverType dt, std::string& preference);
     /// Gibt eine Treiber-Handle wieder frei
     void Unload();
     /// Gibt Adresse auf eine bestimmte Funktion zurück
     void* GetDLLFunction(const std::string& name);
+    template<typename T>
+    T* GetFunction(const std::string& name)
+    {
+        return FunctionPointerCast<T>(GetDLLFunction(name));
+    }
 
     /// Läd eine Liste von verfügbaren Treibern
-    static std::vector<DriverItem> LoadDriverList(const DriverType dt);
+    static std::vector<DriverItem> LoadDriverList(DriverType dt);
 
 private:
-    /// Handle auf die DLL
-    HINSTANCE dll;
+    std::unique_ptr<boost::dll::shared_library> dll;
     /// Checks if the library is valid. Puts either the name or the error message into nameOrError
     static bool CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError);
 };
+} // namespace drivers
 
 #endif // DRIVERWRAPPER_H_INCLUDED

@@ -20,8 +20,6 @@
 
 #include "RandomConfig.h"
 #include "mapGenerator/Map.h"
-#include "gameTypes/MapTypes.h"
-#include "gameData/DescIdx.h"
 
 struct TerrainDesc;
 

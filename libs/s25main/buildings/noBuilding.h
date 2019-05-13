@@ -21,7 +21,6 @@
 #include "noBaseBuilding.h"
 class FOWObject;
 class SerializedGameData;
-class noFigure;
 
 class noBuilding : public noBaseBuilding
 {
@@ -29,7 +28,7 @@ class noBuilding : public noBaseBuilding
     signed char opendoor;
 
 protected:
-    noBuilding(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    noBuilding(BuildingType type, MapPoint pos, unsigned char player, Nation nation);
     noBuilding(SerializedGameData& sgd, unsigned obj_id);
 
     /// Called to destroy derived classes after building was replaced by fire and removed from players inventory

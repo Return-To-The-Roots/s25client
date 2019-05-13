@@ -25,6 +25,7 @@
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
 #include "postSystem/PostBox.h"
+#include "rttr/test/random.hpp"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
 #include "nodeObjs/noBase.h"
@@ -32,12 +33,20 @@
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VisualSettings.h"
+#include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
-std::ostream& operator<<(std::ostream& out, const InventorySetting& setting)
+#if defined(PVS_STUDIO) || defined(__clang_analyzer__)
+#undef BOOST_REQUIRE
+#define BOOST_REQUIRE(expr) \
+    if(!(expr))             \
+    throw "Silence static analyzer"
+#endif
+
+static std::ostream& operator<<(std::ostream& out, const InventorySetting& setting)
 {
     return out << setting.ToUnsignedChar();
 }
@@ -56,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
     curPlayer = 0;
     this->SetFlag(flagPt);
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetType(), NOP_FLAG);
-    noRoadNode* flag = world.GetSpecObj<noRoadNode>(flagPt);
+    auto* flag = world.GetSpecObj<noRoadNode>(flagPt);
     BOOST_REQUIRE(flag);
     BOOST_REQUIRE_EQUAL(flag->GetPos(), flagPt);
     BOOST_REQUIRE_EQUAL(flag->GetPlayer(), 0);
@@ -299,19 +308,19 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
     for(; curPlayer < 2; curPlayer++)
     {
         Distributions inDist;
-        for(unsigned i = 0; i < inDist.size(); i++)
-            inDist[i] = rand();
+        for(unsigned char& i : inDist)
+            i = rand();
         this->ChangeDistribution(inDist);
 
         bool orderType = rand() % 2 == 0;
         BuildOrders inBuildOrder = GamePlayer::GetStandardBuildOrder();
-        std::random_shuffle(inBuildOrder.begin(), inBuildOrder.end());
+        std::shuffle(inBuildOrder.begin(), inBuildOrder.end(), rttr::test::getRandState());
         this->ChangeBuildOrder(orderType, inBuildOrder);
 
         TransportOrders inTransportOrder;
         for(unsigned i = 0; i < inTransportOrder.size(); i++)
             inTransportOrder[i] = i;
-        std::random_shuffle(inTransportOrder.begin(), inTransportOrder.end());
+        std::shuffle(inTransportOrder.begin(), inTransportOrder.end(), rttr::test::getRandState());
         this->ChangeTransport(inTransportOrder);
 
         MilitarySettings militarySettings;
@@ -320,8 +329,8 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
         this->ChangeMilitary(militarySettings);
 
         ToolSettings toolPrios;
-        for(unsigned i = 0; i < toolPrios.size(); ++i)
-            toolPrios[i] = rand() % 11;
+        for(unsigned char& toolPrio : toolPrios)
+            toolPrio = rand() % 11;
         this->ChangeTools(toolPrios);
 
         const GamePlayer& player = world.GetPlayer(curPlayer);
@@ -423,7 +432,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     // Set all military stuff to max
     this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
     // Build a watchtower and connect it
-    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
+    auto* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
     BOOST_REQUIRE(bld);
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
     // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked (distance + to and from flag),
@@ -431,8 +440,8 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x + 2) + 30;
     RTTR_SKIP_GFS(numGFtillAllArrive);
     // Now we should have 1 each of ranks 0-3 and 2 rank 4s
-    BOOST_REQUIRE_EQUAL(bld->GetNumTroops(), 6u);                     //-V522
-    SortedTroops::const_iterator itTroops = bld->GetTroops().begin(); //-V807
+    BOOST_REQUIRE_EQUAL(bld->GetNumTroops(), 6u); //-V522
+    auto itTroops = bld->GetTroops().cbegin();    //-V807
     for(unsigned i = 0; i < 4; i++, ++itTroops)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
     for(unsigned i = 0; i < 2; i++, ++itTroops)
@@ -506,12 +515,11 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
     ggs.setSelection(AddonId::MAX_RANK, MAX_MILITARY_RANK);
     // Build a watchtower and connect it
-    nobMilitary* bld = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
+    auto* bld = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
-    nobBaseWarehouse* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
-    const std::list<noFigure*>& leavings = hq->GetLeavingFigures();
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     nofPassiveSoldier* soldier = nullptr;
-    for(noFigure* fig : leavings)
+    for(noFigure* fig : hq->GetLeavingFigures())
     {
         soldier = dynamic_cast<nofPassiveSoldier*>(fig);
         if(soldier)
@@ -607,7 +615,7 @@ BOOST_FIXTURE_TEST_CASE(CallScout, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
-    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
+    auto* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsGoldDisabled()); //-V522
 
@@ -633,7 +641,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
-    nobUsual* bld = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
+    auto* bld = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsProductionDisabled()); //-V522
 
@@ -864,8 +872,8 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     Inventory goods;
 
     // Add enough soldiers per rank
-    for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
-        goods.Add(SOLDIER_JOBS[i], 50);
+    for(auto i : SOLDIER_JOBS)
+        goods.Add(i, 50);
     wh->AddGoods(goods, true); //-V522
 
     // Use more

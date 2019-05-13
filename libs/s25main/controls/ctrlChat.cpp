@@ -53,7 +53,7 @@ ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Exte
     bracket2_size = font->getWidth("> ");
 }
 
-ctrlChat::~ctrlChat() {}
+ctrlChat::~ctrlChat() = default;
 
 /**
  *  Größe ändern
@@ -63,7 +63,7 @@ void ctrlChat::Resize(const Extent& newSize)
     const bool x_changed = (GetSize().x != newSize.x && !chat_lines.empty());
     Window::Resize(newSize);
 
-    ctrlScrollBar* scroll = GetCtrl<ctrlScrollBar>(0);
+    auto* scroll = GetCtrl<ctrlScrollBar>(0);
     scroll->SetPos(DrawPoint(newSize.x - SCROLLBAR_WIDTH, 0));
     scroll->Resize(Extent(SCROLLBAR_WIDTH, newSize.y));
 
@@ -130,7 +130,7 @@ void ctrlChat::Draw_()
     {
         // eine zweite oder n-nte Zeile?
         if(chat_lines[i + pos].secondary)
-            font->Draw(textPos, chat_lines[i + pos].msg, 0, chat_lines[i + pos].msg_color);
+            font->Draw(textPos, chat_lines[i + pos].msg, FontStyle{}, chat_lines[i + pos].msg_color);
         else
         {
             DrawPoint curTextPos = textPos;
@@ -138,24 +138,24 @@ void ctrlChat::Draw_()
             // Zeit, Spieler und danach Textnachricht
             if(!chat_lines[i + pos].time_string.empty())
             {
-                font->Draw(curTextPos, chat_lines[i + pos].time_string, 0, time_color);
+                font->Draw(curTextPos, chat_lines[i + pos].time_string, FontStyle{}, time_color);
                 curTextPos.x += font->getWidth(chat_lines[i + pos].time_string);
             }
 
             if(!chat_lines[i + pos].player.empty())
             {
                 // Klammer 1 (<)
-                font->Draw(curTextPos, "<", 0, chat_lines[i + pos].player_color);
+                font->Draw(curTextPos, "<", FontStyle{}, chat_lines[i + pos].player_color);
                 curTextPos.x += bracket1_size;
                 // Spielername
-                font->Draw(curTextPos, chat_lines[i + pos].player, 0, chat_lines[i + pos].player_color);
+                font->Draw(curTextPos, chat_lines[i + pos].player, FontStyle{}, chat_lines[i + pos].player_color);
                 curTextPos.x += font->getWidth(chat_lines[i + pos].player);
                 // Klammer 2 (>)
-                font->Draw(curTextPos, "> ", 0, chat_lines[i + pos].player_color);
+                font->Draw(curTextPos, "> ", FontStyle{}, chat_lines[i + pos].player_color);
                 curTextPos.x += bracket2_size;
             }
 
-            font->Draw(curTextPos, chat_lines[i + pos].msg, 0, chat_lines[i + pos].msg_color);
+            font->Draw(curTextPos, chat_lines[i + pos].msg, FontStyle{}, chat_lines[i + pos].msg_color);
         }
         textPos.y += font->getHeight() + 2;
     }
@@ -228,7 +228,7 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
     WrapLine(raw_chat_lines.size() - 1);
 
     // Scrollbar Bescheid sagen
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
     scrollbar->SetRange(unsigned(chat_lines.size()));
 
     // Waren wir am Ende? Dann mit runterscrollen
@@ -255,7 +255,7 @@ bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-3);
         return true;
     } else
@@ -266,7 +266,7 @@ bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+3);
         return true;
     } else

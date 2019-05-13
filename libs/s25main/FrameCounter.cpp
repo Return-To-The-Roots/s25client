@@ -20,7 +20,6 @@
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include <algorithm>
 #include <cmath>
-#include <cstdlib>
 
 //-V:clock::time_point:813
 
@@ -48,7 +47,7 @@ unsigned FrameCounter::getCurFrameRate() const
     clock::duration timeDiff = lastUpdateTime_ - curStartTime_;
     if(timeDiff == clock::duration::zero())
         return 0;
-    typedef std::chrono::duration<double> dSeconds;
+    using dSeconds = std::chrono::duration<double>;
     return std::lround(curNumFrames_ / std::chrono::duration_cast<dSeconds>(timeDiff).count());
 }
 
@@ -97,7 +96,7 @@ void FrameTimer::update(clock::time_point curTime)
     }
 }
 
-FrameLimiter::FrameLimiter() {}
+FrameLimiter::FrameLimiter() = default;
 
 FrameLimiter::FrameLimiter(FrameTimer frameTimer) : frameTimer_(frameTimer) {}
 

@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwTrade.h"
-
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -27,12 +26,11 @@
 #include "controls/ctrlText.h"
 #include "factories/GameCommandFactory.h"
 #include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
-#include <boost/format.hpp>
-#include <cstdio>
 
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -93,7 +91,7 @@ void iwTrade::Msg_PaintBefore()
 
     if(bitmap)
     {
-        ctrlImage* img = GetCtrl<ctrlImage>(0);
+        auto* img = GetCtrl<ctrlImage>(0);
         bitmap->DrawFull(img->GetDrawPos(), COLOR_SHADOW);
     }
 }
@@ -123,19 +121,19 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
         // Change ware/figure mode
         case 2:
         {
-            ctrlComboBox* names = this->GetCtrl<ctrlComboBox>(4);
+            auto* names = this->GetCtrl<ctrlComboBox>(4);
             names->DeleteAllItems();
             if(selection == 0)
             {
                 // Add ware names
-                for(unsigned i = 0; i < wares.size(); ++i)
-                    names->AddString(_(WARE_NAMES[wares[i]]));
+                for(auto& ware : wares)
+                    names->AddString(_(WARE_NAMES[ware]));
 
             } else
             {
                 // Add job names
-                for(unsigned i = 0; i < jobs.size(); ++i)
-                    names->AddString(_(JOB_NAMES[jobs[i]]));
+                for(auto& job : jobs)
+                    names->AddString(_(JOB_NAMES[job]));
             }
             names->SetSelection(0);
             Msg_ComboSelectItem(4, 0);
@@ -165,9 +163,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
                 number = GetPossibleTradeAmount(jobs[selection]);
             }
 
-            char str[256];
-            sprintf(str, "/ %u", number);
-            GetCtrl<ctrlText>(7)->SetText(str);
+            GetCtrl<ctrlText>(7)->SetText("/ " + helpers::toString(number));
         }
         break;
     }
@@ -177,10 +173,10 @@ unsigned iwTrade::GetPossibleTradeAmount(const Job job) const
 {
     const GamePlayer& player = gwv.GetPlayer();
     unsigned amount = 0;
-    for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
+    for(auto possibleSrcWarehouse : possibleSrcWarehouses)
     {
-        if(player.IsWarehouseValid(*it))
-            amount += (*it)->GetAvailableFiguresForTrading(job);
+        if(player.IsWarehouseValid(possibleSrcWarehouse))
+            amount += possibleSrcWarehouse->GetAvailableFiguresForTrading(job);
     }
     return amount;
 }
@@ -189,10 +185,10 @@ unsigned iwTrade::GetPossibleTradeAmount(const GoodType good) const
 {
     const GamePlayer& player = gwv.GetPlayer();
     unsigned amount = 0;
-    for(std::vector<nobBaseWarehouse*>::const_iterator it = possibleSrcWarehouses.begin(); it != possibleSrcWarehouses.end(); ++it)
+    for(auto possibleSrcWarehouse : possibleSrcWarehouses)
     {
-        if(player.IsWarehouseValid(*it))
-            amount += (*it)->GetAvailableWaresForTrading(good);
+        if(player.IsWarehouseValid(possibleSrcWarehouse))
+            amount += possibleSrcWarehouse->GetAvailableWaresForTrading(good);
     }
     return amount;
 }

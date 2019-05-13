@@ -18,13 +18,12 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Map.h"
 
-#include "glAllocator.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 
-glArchivItem_Map::glArchivItem_Map() : ArchivItem_Map(), header(nullptr) {}
+glArchivItem_Map::glArchivItem_Map() : header(nullptr) {}
 
-glArchivItem_Map::~glArchivItem_Map() {}
+glArchivItem_Map::~glArchivItem_Map() = default;
 
 /**
  *  lädt die Mapdaten aus einer Datei.
@@ -61,7 +60,7 @@ void glArchivItem_Map::load(const libsiedler2::ArchivItem_Map& map)
 const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) const
 {
     RTTR_Assert(HasLayer(type));
-    const libsiedler2::ArchivItem_Raw* item = dynamic_cast<const libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
+    const auto* item = dynamic_cast<const libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
     RTTR_Assert(item);
     return item->getData(); //-V522
 }
@@ -74,7 +73,7 @@ const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) cons
 std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type)
 {
     RTTR_Assert(HasLayer(type));
-    libsiedler2::ArchivItem_Raw* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
+    auto* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
     RTTR_Assert(item);
     return item->getData(); //-V522
 }

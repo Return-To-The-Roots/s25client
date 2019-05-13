@@ -20,11 +20,9 @@
 #include "CollisionDetection.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/strUtils.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "libutil/StringConversion.h"
-#include <sstream>
 
 ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
                    unsigned short maxlength, bool password, bool disabled, bool notify)
@@ -47,8 +45,8 @@ void ctrlEdit::SetText(const std::string& text)
     text_.clear();
     ucString tmp = cvUTF8ToUnicode(text);
 
-    for(ucString::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
-        AddChar(*it);
+    for(const auto c : tmp)
+        AddChar(c);
 }
 
 void ctrlEdit::SetText(const unsigned text)

@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "CollisionDetection.h"
-#include "PointOutput.h"
 #include "Rect.h"
 #include <boost/test/unit_test.hpp>
 

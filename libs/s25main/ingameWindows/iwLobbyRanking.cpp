@@ -19,6 +19,7 @@
 #include "iwLobbyRanking.h"
 #include "Loader.h"
 #include "controls/ctrlTable.h"
+#include "helpers/toString.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 
@@ -27,19 +28,19 @@
  */
 void iwLobbyRanking::UpdateRankings(const LobbyPlayerList& rankinglist)
 {
-    ctrlTable* rankingtable = GetCtrl<ctrlTable>(0);
+    auto* rankingtable = GetCtrl<ctrlTable>(0);
     bool first = rankingtable->GetNumRows() == 0;
 
     rankingtable->DeleteAllItems();
 
-    if(rankinglist.size() > 0)
+    if(!rankinglist.empty())
     {
         for(unsigned i = 0; i < rankinglist.size() && i < 10; ++i)
         {
             const LobbyPlayerInfo& rankInfo = *rankinglist.getElement(i);
-            std::string points = std::to_string(rankInfo.getPunkte());
-            std::string numLost = std::to_string(rankInfo.getVerloren());
-            std::string numWon = std::to_string(rankInfo.getGewonnen());
+            std::string points = helpers::toString(rankInfo.getPunkte());
+            std::string numLost = helpers::toString(rankInfo.getVerloren());
+            std::string numWon = helpers::toString(rankInfo.getGewonnen());
             rankingtable->AddRow(0, rankInfo.getName().c_str(), points.c_str(), numLost.c_str(), numWon.c_str());
         }
         if(first)

@@ -21,7 +21,6 @@
 #define iwOBSERVATE_H_INCLUDED
 
 #include "IngameWindow.h"
-#include "nodeObjs/noMovable.h"
 #include "gameTypes/MapCoordinates.h"
 
 class GameWorldView;
@@ -48,7 +47,7 @@ class iwObservate : public IngameWindow
     unsigned followMovableId;
 
 public:
-    iwObservate(GameWorldView& gwv, const MapPoint selectedPt);
+    iwObservate(GameWorldView& gwv, MapPoint selectedPt);
 
 private:
     void Draw_() override;
@@ -58,7 +57,7 @@ private:
     bool Msg_RightUp(const MouseCoords& mc) override;
     /// Move view to the object we currently follow, return true if it can still be found
     bool MoveToFollowedObj();
-    inline bool MoveToFollowedObj(const MapPoint ptToCheck);
+    inline bool MoveToFollowedObj(MapPoint ptToCheck);
 };
 
 #endif // !iwOBSERVATE_H_INCLUDED

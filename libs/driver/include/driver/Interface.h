@@ -19,9 +19,9 @@
 
 #pragma once
 
-/// Definition des GetDriverAPIVersion-Zeigers
-typedef unsigned (*PDRIVER_GETDRIVERAPIVERSION)();
-/// Definition des GetDriverName
-typedef const char* (*PDRIVER_GETDRIVERNAME)();
+#include "exportImport.h"
+
+RTTR_DECL unsigned GetDriverAPIVersion();
+RTTR_DECL const char* GetDriverName();
 
 #endif // !INTERFACE_H_INCLUDED

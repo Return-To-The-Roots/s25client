@@ -18,17 +18,20 @@
 #ifndef LuaPlayerBase_h__
 #define LuaPlayerBase_h__
 
+#include "gameTypes/Nation.h"
 #include "gameTypes/TeamTypes.h"
-#include "gameData/NationConsts.h"
-#include <kaguya/kaguya.hpp>
+#include <string>
 
+namespace kaguya {
+class State;
+}
 struct BasePlayerInfo;
 
 class LuaPlayerBase
 {
 protected:
-    LuaPlayerBase() {}
-    virtual ~LuaPlayerBase() {}
+    LuaPlayerBase() = default;
+    virtual ~LuaPlayerBase() = default;
 
     virtual const BasePlayerInfo& GetPlayer() const = 0;
 

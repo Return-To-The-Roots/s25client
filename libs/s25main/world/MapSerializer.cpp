@@ -21,6 +21,7 @@
 #include "SerializedGameData.h"
 #include "lua/GameDataLoader.h"
 #include "world/World.h"
+#include <mygettext/mygettext.h>
 
 void MapSerializer::Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd)
 {
@@ -31,24 +32,23 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 
     // Alle Weltpunkte serialisieren
-    for(std::vector<MapNode>::const_iterator it = world.nodes.begin(); it != world.nodes.end(); ++it)
+    for(const auto& node : world.nodes)
     {
-        it->Serialize(sgd, numPlayers, world.GetDescription());
+        node.Serialize(sgd, numPlayers, world.GetDescription());
     }
 
     // Katapultsteine serialisieren
     sgd.PushObjectContainer(world.catapult_stones, true);
     // Meeresinformationen serialisieren
     sgd.PushUnsignedInt(world.seas.size());
-    for(unsigned i = 0; i < world.seas.size(); ++i)
+    for(auto sea : world.seas)
     {
-        sgd.PushUnsignedInt(world.seas[i].nodes_count);
+        sgd.PushUnsignedInt(sea.nodes_count);
     }
     // Hafenpositionen serialisieren
     sgd.PushUnsignedInt(world.harbor_pos.size());
-    for(unsigned i = 0; i < world.harbor_pos.size(); ++i)
+    for(const auto& curHarborPos : world.harbor_pos)
     {
-        const HarborPos& curHarborPos = world.harbor_pos[i];
         sgd.PushMapPoint(curHarborPos.pos);
         for(unsigned z = 0; z < 6; ++z)
             sgd.PushUnsignedShort(curHarborPos.cps[z].seaId);
@@ -56,10 +56,10 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
         {
             sgd.PushUnsignedInt(curHarborPos.neighbors[z].size());
 
-            for(unsigned c = 0; c < curHarborPos.neighbors[z].size(); ++c)
+            for(auto c : curHarborPos.neighbors[z])
             {
-                sgd.PushUnsignedInt(curHarborPos.neighbors[z][c].id);
-                sgd.PushUnsignedInt(curHarborPos.neighbors[z][c].distance);
+                sgd.PushUnsignedInt(c.id);
+                sgd.PushUnsignedInt(c.distance);
             }
         }
     }
@@ -108,10 +108,10 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
     }
     // Alle Weltpunkte
     MapPoint curPos(0, 0);
-    for(std::vector<MapNode>::iterator it = world.nodes.begin(); it != world.nodes.end(); ++it)
+    for(auto& node : world.nodes)
     {
-        it->Deserialize(sgd, numPlayers, world.GetDescription(), landscapeTerrains);
-        if(it->harborId)
+        node.Deserialize(sgd, numPlayers, world.GetDescription(), landscapeTerrains);
+        if(node.harborId)
         {
             HarborPos p(curPos);
             world.harbor_pos.push_back(p);
@@ -129,26 +129,25 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
 
     // Meeresinformationen deserialisieren
     world.seas.resize(sgd.PopUnsignedInt());
-    for(unsigned i = 0; i < world.seas.size(); ++i)
+    for(auto& sea : world.seas)
     {
-        world.seas[i].nodes_count = sgd.PopUnsignedInt();
+        sea.nodes_count = sgd.PopUnsignedInt();
     }
 
     // Hafenpositionen serialisieren
     world.harbor_pos.resize(sgd.PopUnsignedInt());
-    for(unsigned i = 0; i < world.harbor_pos.size(); ++i)
+    for(auto& curHarborPos : world.harbor_pos)
     {
-        HarborPos& curHarborPos = world.harbor_pos[i];
         curHarborPos.pos = sgd.PopMapPoint();
         for(unsigned z = 0; z < 6; ++z)
             curHarborPos.cps[z].seaId = sgd.PopUnsignedShort();
         for(unsigned z = 0; z < 6; ++z)
         {
             curHarborPos.neighbors[z].resize(sgd.PopUnsignedInt());
-            for(unsigned c = 0; c < curHarborPos.neighbors[z].size(); ++c)
+            for(auto& c : curHarborPos.neighbors[z])
             {
-                curHarborPos.neighbors[z][c].id = sgd.PopUnsignedInt();
-                curHarborPos.neighbors[z][c].distance = sgd.PopUnsignedInt();
+                c.id = sgd.PopUnsignedInt();
+                c.distance = sgd.PopUnsignedInt();
             }
         }
     }

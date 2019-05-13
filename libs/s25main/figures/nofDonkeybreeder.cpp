@@ -41,8 +41,8 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id) : n
 void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 {
     const Nation nation = workplace->GetNation();
-    const DrawPointInit walk_start[NUM_NATS] = {{2, 2}, {-6, -6}, {-7, -7}, {-7, -7}, {-6, -6}};
-    const signed char walk_length[NUM_NATS] = {22, 19, 19, 23, 19};
+    const std::array<DrawPoint, NUM_NATS> walk_start = {{{2, 2}, {-6, -6}, {-7, -7}, {-7, -7}, {-6, -6}}};
+    const std::array<int8_t, NUM_NATS> walk_length = {22, 19, 19, 23, 19};
     const unsigned color = gwg->GetPlayer(player).color;
 
     unsigned now_id = GAMECLIENT.Interpolate(9600, current_ev);
@@ -86,7 +86,7 @@ void nofDonkeybreeder::WorkFinished()
     RoadSegment* road = gwg->GetPlayer(player).FindRoadForDonkey(workplace, &flag_goal);
 
     // Esel erzeugen und zum Ziel beordern
-    nofCarrier* donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, flag_goal);
+    auto* donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, flag_goal);
     gwg->GetPlayer(player).IncreaseInventoryJob(JOB_PACKDONKEY, 1);
     donkey->InitializeRoadWalking(gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SOUTHEAST), 0, true);
 

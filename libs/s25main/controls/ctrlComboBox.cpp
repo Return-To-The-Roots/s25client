@@ -48,14 +48,14 @@ void ctrlComboBox::Resize(const Extent& newSize)
 {
     Window::Resize(newSize);
 
-    ctrlButton* button = GetCtrl<ctrlButton>(1);
+    auto* button = GetCtrl<ctrlButton>(1);
     if(button)
     {
         button->SetPos(DrawPoint(newSize.x - newSize.y, 0));
         button->Resize(Extent(newSize.y, newSize.y));
     }
 
-    ctrlList* list = GetCtrl<ctrlList>(0);
+    auto* list = GetCtrl<ctrlList>(0);
 
     Extent listSize(newSize.x, 4);
 
@@ -97,7 +97,7 @@ bool ctrlComboBox::Msg_MouseMove(const MouseCoords& mc)
 
 bool ctrlComboBox::Msg_LeftDown(const MouseCoords& mc)
 {
-    ctrlList* list = GetCtrl<ctrlList>(0);
+    auto* list = GetCtrl<ctrlList>(0);
 
     // Irgendwo anders hingeklickt --> Liste ausblenden
     if(!readonly && !IsPointInRect(mc.GetPos(), GetFullDrawRect(list)))
@@ -126,7 +126,7 @@ bool ctrlComboBox::Msg_LeftUp(const MouseCoords& mc)
 
 bool ctrlComboBox::Msg_RightDown(const MouseCoords& mc)
 {
-    ctrlList* list = GetCtrl<ctrlList>(0);
+    auto* list = GetCtrl<ctrlList>(0);
 
     // Für Button und Liste weiterleiten (und danach erst schließen)
     bool ret = RelayMouseMessage(&Window::Msg_RightDown, mc);
@@ -146,7 +146,7 @@ bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
     if(readonly)
         return false;
 
-    ctrlList* list = GetCtrl<ctrlList>(0);
+    auto* list = GetCtrl<ctrlList>(0);
     if(list->IsVisible() && IsPointInRect(mc.GetPos(), list->GetDrawRect()))
         return RelayMouseMessage(&Window::Msg_WheelUp, mc);
 
@@ -166,7 +166,7 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
     if(readonly)
         return false;
 
-    ctrlList* list = GetCtrl<ctrlList>(0);
+    auto* list = GetCtrl<ctrlList>(0);
 
     if(list->IsVisible() && IsPointInRect(mc.GetPos(), list->GetDrawRect()))
     {
@@ -238,7 +238,7 @@ void ctrlComboBox::SetSelection(unsigned short selection)
  */
 void ctrlComboBox::Draw_()
 {
-    ctrlList* liste = GetCtrl<ctrlList>(0);
+    auto* liste = GetCtrl<ctrlList>(0);
 
     // Box
     Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
@@ -250,7 +250,7 @@ void ctrlComboBox::Draw_()
 
     // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde
     // auch die Liste malen, die bei Msg_PaintAfter() sowieso gemalt wird.
-    ctrlButton* button = GetCtrl<ctrlButton>(1);
+    auto* button = GetCtrl<ctrlButton>(1);
     if(button)
         button->Draw();
 }
@@ -260,7 +260,7 @@ void ctrlComboBox::Draw_()
  */
 void ctrlComboBox::ShowList(bool show)
 {
-    ctrlList* liste = GetCtrl<ctrlList>(0);
+    auto* liste = GetCtrl<ctrlList>(0);
     if(liste->IsVisible() == show)
         return;
 

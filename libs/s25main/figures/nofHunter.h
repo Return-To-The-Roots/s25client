@@ -50,7 +50,7 @@ private:
     void WalkHome();
 
     /// Prüft, ob der Schießpunkt geeignet ist
-    bool IsShootingPointGood(const MapPoint pt);
+    bool IsShootingPointGood(MapPoint pt);
 
     /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
     void HandleStateChasing();
@@ -60,7 +60,7 @@ private:
     void HandleStateEviscerating();
 
 public:
-    nofHunter(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofHunter(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofHunter(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override

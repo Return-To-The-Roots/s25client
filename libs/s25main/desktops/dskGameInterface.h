@@ -35,11 +35,10 @@
 #include "liblobby/LobbyInterface.h"
 #include <array>
 
-class iwRoadWindow;
+class IngameWindow;
 class glArchivItem_Bitmap;
 class GlobalGameSettings;
 class MouseCoords;
-class GameWorldBase;
 class PostBox;
 class PostMsg;
 struct BuildingNote;
@@ -49,7 +48,7 @@ class NWFInfo;
 class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface, public IChatCmdListener
 {
 public:
-    dskGameInterface(std::shared_ptr<Game> game, const std::shared_ptr<const NWFInfo>& nwfInfo, unsigned playerIdx, bool initOGL = true);
+    dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx, bool initOGL = true);
     ~dskGameInterface() override;
 
     void Resize(const Extent& newSize) override;
@@ -64,29 +63,29 @@ public:
 
     void CI_PlayerLeft(unsigned playerId) override;
     void CI_GGSChanged(const GlobalGameSettings& ggs) override;
-    void CI_Chat(unsigned playerId, const ChatDestination cd, const std::string& msg) override;
+    void CI_Chat(unsigned playerId, ChatDestination cd, const std::string& msg) override;
     void CI_Async(const std::string& checksums_list) override;
     void CI_ReplayAsync(const std::string& msg) override;
     void CI_ReplayEndReached(const std::string& msg) override;
     void CI_GamePaused() override;
     void CI_GameResumed() override;
-    void CI_Error(const ClientError ce) override;
+    void CI_Error(ClientError ce) override;
     void CI_PlayersSwapped(unsigned player1, unsigned player2) override;
 
     void NewPostMessage(const PostMsg& msg, unsigned msgCt);
     void PostMessageDeleted(unsigned msgCt);
 
     /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
-    void GI_FlagDestroyed(const MapPoint pt) override;
+    void GI_FlagDestroyed(MapPoint pt) override;
     /// Wenn ein Spieler verloren hat
     void GI_PlayerDefeated(unsigned playerId) override;
     /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
-    void GI_UpdateMinimap(const MapPoint pt) override;
+    void GI_UpdateMinimap(MapPoint pt) override;
     /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
     void GI_TreatyOfAllianceChanged(unsigned playerId) override;
     void GI_Winner(unsigned playerId) override;
-    void GI_TeamWinner(unsigned playerId) override;
-    void GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad) override;
+    void GI_TeamWinner(unsigned playerMask) override;
+    void GI_StartRoadBuilding(MapPoint startPt, bool waterRoad) override;
     void GI_CancelRoadBuilding() override;
     /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
     void GI_BuildRoad() override;
@@ -99,15 +98,14 @@ public:
     bool BuildRoadPart(MapPoint& cSel);
     // Return the id (index + 1) of the point in the currently build road (1 = startPt)
     // If pt is not on the road, return 0
-    unsigned GetIdInCurBuildRoad(const MapPoint pt);
+    unsigned GetIdInCurBuildRoad(MapPoint pt);
     /// Baut Weg zurück von Ende bis zu start_id
     void DemolishRoad(unsigned start_id);
     // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
     // ansonsten gibt's nur nen Button zum Abbrechen
     void ShowRoadWindow(const Position& mousePos);
     /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
-    void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
-                          const bool enable_military_buildings);
+    void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos, bool enable_military_buildings);
 
     const GameWorldView& GetView() const { return gwv; }
 
@@ -158,7 +156,7 @@ private:
     // Aktuell geöffnetes Aktionsfenster
     iwAction* actionwindow;
     // Aktuell geöffnetes Straßenbaufenster
-    iwRoadWindow* roadwindow;
+    IngameWindow* roadwindow;
     // Messenger für die Nachrichten
     Messenger messenger;
     /// Minimap-Instanz

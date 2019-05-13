@@ -17,11 +17,9 @@
 #ifndef MINIMAP_H_
 #define MINIMAP_H_
 
-#include "DrawPoint.h"
 #include "Rect.h"
 #include "ogl/glArchivItem_Bitmap_Direct.h"
 #include "gameTypes/MapCoordinates.h"
-#include <vector>
 
 class Minimap
 {
@@ -35,7 +33,7 @@ protected:
 public:
     Minimap() : mapSize(0, 0) {}
     Minimap(const MapExtent& mapSize);
-    virtual ~Minimap() {}
+    virtual ~Minimap() = default;
 
     /// Draw the minimap in the given rectangle (stretching if required)
     void Draw(const Rect& rect);
@@ -49,7 +47,7 @@ protected:
     unsigned VaryBrightness(unsigned color, int range) const;
     /// Erstellt die Textur
     void CreateMapTexture();
-    virtual unsigned CalcPixelColor(const MapPoint pt, unsigned t) = 0;
+    virtual unsigned CalcPixelColor(MapPoint pt, unsigned t) = 0;
     /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
     virtual void BeforeDrawing();
 };

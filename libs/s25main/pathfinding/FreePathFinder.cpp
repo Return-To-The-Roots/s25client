@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "pathfinding/FreePathFinder.h"
 #include "EventManager.h"
+#include "helpers/containerUtils.h"
 #include "pathfinding/NewNode.h"
 #include "pathfinding/PathfindingPoint.h"
 #include "world/GameWorldBase.h"
@@ -28,8 +29,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 /// MapNodes
-typedef std::vector<NewNode> MapNodes;
-typedef std::vector<FreePathNode> FreePathNodes;
+using MapNodes = std::vector<NewNode>;
+using FreePathNodes = std::vector<FreePathNode>;
 MapNodes nodes;
 FreePathNodes fpNodes;
 
@@ -57,14 +58,14 @@ void FreePathFinder::IncreaseCurrentVisit()
     // if the counter reaches its maxium, tidy up
     if(currentVisit == std::numeric_limits<unsigned>::max())
     {
-        for(MapNodes::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        for(auto& node : nodes)
         {
-            it->lastVisited = 0;
-            it->lastVisitedEven = 0;
+            node.lastVisited = 0;
+            node.lastVisitedEven = 0;
         }
-        for(FreePathNodes::iterator it = fpNodes.begin(); it != fpNodes.end(); ++it)
+        for(auto& fpNode : fpNodes)
         {
-            it->lastVisited = 0;
+            fpNode.lastVisited = 0;
         }
         currentVisit = 1;
     } else
@@ -221,18 +222,8 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                         back_id = alternate ? nodes[back_id].prevEven : nodes[back_id].prev;
                         alternate = !alternate;
                     }
-                    bool tooClose = false;
-                    // LOG.write(("pf from %i, %i to %i, %i now %i, %i ", x_start, y_start, x_dest, y_dest, xa, ya);//\n
-                    for(std::vector<MapPoint>::const_iterator it = evenLocationsOnRoute.begin(); it != evenLocationsOnRoute.end(); ++it)
-                    {
-                        // LOG.write(("dist to %i, %i ", temp, *it);
-                        if(gwb_.CalcDistance(neighbourPos, (*it)) < 2)
-                        {
-                            tooClose = true;
-                            break;
-                        }
-                    }
-                    // LOG.write(("\n");
+                    bool tooClose = helpers::containsPred(
+                      evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) { return gwb_.CalcDistance(neighbourPos, it) < 2; });
                     if(tooClose)
                         continue;
                     if(gwb_.CalcDistance(neighbourPos, start) < 2)

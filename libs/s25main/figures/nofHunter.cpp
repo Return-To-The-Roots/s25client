@@ -171,19 +171,19 @@ void nofHunter::TryStartHunting()
             const std::list<noBase*>& figures = gwg->GetFigures(curMapPos);
 
             // nach Tieren suchen
-            for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+            for(auto figure : figures)
             {
-                if((*it)->GetType() != NOP_ANIMAL)
+                if(figure->GetType() != NOP_ANIMAL)
                     continue;
                 // Ist das Tier überhaupt zum Jagen geeignet?
-                if(!static_cast<noAnimal*>(*it)->CanHunted())
+                if(!static_cast<noAnimal*>(figure)->CanHunted())
                     continue;
 
                 // Und komme ich hin?
-                if(gwg->FindHumanPath(pos, static_cast<noAnimal*>(*it)->GetPos(), MAX_HUNTING_DISTANCE) != 0xFF)
+                if(gwg->FindHumanPath(pos, static_cast<noAnimal*>(figure)->GetPos(), MAX_HUNTING_DISTANCE) != 0xFF)
                 {
                     // Dann nehmen wir es
-                    available_animals.push_back(static_cast<noAnimal*>(*it));
+                    available_animals.push_back(static_cast<noAnimal*>(figure));
                 }
             }
         }

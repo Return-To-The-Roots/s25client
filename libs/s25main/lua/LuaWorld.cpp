@@ -23,6 +23,7 @@
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/MapCoordinates.h"
+#include <kaguya/kaguya.hpp>
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, AddEnvObject, 3, 4)
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddStaticObjectWrapper, LuaWorld, AddStaticObject, 3, 5)
@@ -89,7 +90,7 @@ void LuaWorld::AddAnimal(int x, int y, Species species)
 {
     lua::assertTrue(static_cast<unsigned>(species) < NUM_SPECS, "Invalid animal species");
     MapPoint pos = gw.MakeMapPoint(Position(x, y));
-    noAnimal* animal = new noAnimal(species, pos);
+    auto* animal = new noAnimal(species, pos);
     gw.AddFigure(pos, animal);
     animal->StartLiving();
 }

@@ -17,14 +17,13 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofGeologist.h"
-
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
-#include "addons/Addon.h"
+#include "addons/const_addons.h"
 #include "lua/LuaInterfaceGame.h"
 #include "network/GameClient.h"
 #include "notifications/ResourceNote.h"
@@ -50,9 +49,9 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData& sgd) const
     sgd.PushUnsignedShort(signs);
 
     sgd.PushUnsignedInt(available_nodes.size());
-    for(std::vector<MapPoint>::const_iterator it = available_nodes.begin(); it != available_nodes.end(); ++it)
+    for(const auto& available_node : available_nodes)
     {
-        sgd.PushMapPoint(*it);
+        sgd.PushMapPoint(available_node);
     }
 
     sgd.PushMapPoint(node_goal);
@@ -186,7 +185,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
                 LOADER.GetPlayerImage("rom_bobs", 357 + i)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
             } else
             {
-                unsigned char ids[9] = {1, 0, 1, 2, 1, 0, 1, 2, 1};
+                std::array<unsigned char, 9> ids = {1, 0, 1, 2, 1, 0, 1, 2, 1};
                 LOADER.GetPlayerImage("rom_bobs", 361 + ids[i - 7])->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
             }
 
@@ -196,7 +195,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
         break;
     }
 
-    /*char number[256];
+    /*std::array<char, 256> number;
     sprintf(number,"%u",obj_id);
     NormalFont->Draw(x,y,number,0,0xFFFF0000);*/
 }
@@ -309,7 +308,7 @@ bool nofGeologist::IsNodeGood(const MapPoint pt) const
 namespace {
 struct GetMapPointWithRadius
 {
-    typedef std::pair<MapPoint, unsigned> result_type;
+    using result_type = std::pair<MapPoint, unsigned>;
 
     result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
 };
@@ -320,18 +319,18 @@ void nofGeologist::LookForNewNodes()
     std::vector<GetMapPointWithRadius::result_type> pts = gwg->GetPointsInRadius(flag->GetPos(), 15, GetMapPointWithRadius());
     unsigned curMaxRadius = 15;
     bool found = false;
-    for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
+    for(const auto& it : pts)
     {
-        if(it->second > curMaxRadius)
+        if(it.second > curMaxRadius)
             break;
-        if(IsValidTargetNode(it->first))
+        if(IsValidTargetNode(it.first))
         {
-            available_nodes.push_back(it->first);
+            available_nodes.push_back(it.first);
             if(!found)
             {
                 found = true;
                 // if we found a valid node, look only in other nodes within 2 more "circles"
-                curMaxRadius = std::min(10u, it->second + 2);
+                curMaxRadius = std::min(10u, it.second + 2);
             }
         }
     }
@@ -494,7 +493,7 @@ struct IsSignOfType
 
     bool operator()(const MapPoint& pt, unsigned /*distance*/)
     {
-        const noSign* sign = gwb.GetSpecObj<noSign>(pt);
+        const auto* sign = gwb.GetSpecObj<noSign>(pt);
         return sign && sign->GetSignType() == type;
     }
 };

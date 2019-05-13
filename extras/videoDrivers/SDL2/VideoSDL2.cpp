@@ -17,6 +17,7 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "VideoSDL2.h"
+#include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
@@ -39,17 +40,17 @@
             PrintError(SDL_GetError()); \
     } while(false)
 
-DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
+IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
     return new VideoSDL2(CallBack);
 }
 
-DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
+void FreeVideoInstance(IVideoDriver* driver)
 {
     delete driver;
 }
 
-DRIVERDLLAPI const char* GetDriverName()
+const char* GetDriverName()
 {
     return "(SDL2) OpenGL via SDL2-Library";
 }
@@ -109,9 +110,9 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, RTTR_OGL_MAJOR));
     CHECK_SDL(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, RTTR_OGL_MINOR));
     SDL_GLprofile profile;
-    if(RTTR_OGL_ES)
+    if((RTTR_OGL_ES))
         profile = SDL_GL_CONTEXT_PROFILE_ES;
-    else if(RTTR_OGL_COMPAT)
+    else if((RTTR_OGL_COMPAT))
         profile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
     else
         profile = SDL_GL_CONTEXT_PROFILE_CORE;
@@ -145,7 +146,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
     UpdateCurrentSizes();
 
-    SDL_Surface* iconSurf = SDL_CreateRGBSurfaceFrom(image, 48, 48, 32, 48 * 4, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+    SDL_Surface* iconSurf = SDL_CreateRGBSurfaceFrom(image.data(), 48, 48, 32, 48 * 4, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
     if(iconSurf)
     {
         SDL_SetWindowIcon(window, iconSurf);
@@ -186,9 +187,9 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
             SDL_DisplayMode target, closest;
             target.w = targetMode.width;
             target.h = targetMode.height;
-            target.format = 0;       // don't care
-            target.refresh_rate = 0; // don't care
-            target.driverdata = 0;   // initialize to 0
+            target.format = 0;           // don't care
+            target.refresh_rate = 0;     // don't care
+            target.driverdata = nullptr; // initialize to 0
             if(!SDL_GetClosestDisplayMode(SDL_GetWindowDisplayIndex(window), &target, &closest))
             {
                 PrintError(SDL_GetError());
@@ -337,7 +338,7 @@ bool VideoSDL2::MessageLoop()
             break;
             case SDL_TEXTINPUT:
             {
-                typedef utf8::iterator<std::string::const_iterator> iterator;
+                using iterator = utf8::iterator<std::string::const_iterator>;
                 const std::string text = ev.text.text;
                 iterator end(text.end(), text.begin(), text.end());
                 SDL_Keymod mod = SDL_GetModState();

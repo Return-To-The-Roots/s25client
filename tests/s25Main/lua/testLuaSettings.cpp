@@ -17,17 +17,20 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GlobalGameSettings.h"
-#include "GlobalVars.h"
 #include "JoinPlayerInfo.h"
 #include "LuaBaseFixture.h"
 #include "addons/Addon.h"
 #include "lua/LuaInterfaceSettings.h"
 #include "network/IGameLobbyController.h"
 #include "libutil/colors.h"
-#include <boost/format.hpp>
 #include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
 #include <vector>
+
+static std::ostream& operator<<(std::ostream& os, AddonId id)
+{
+    return os << rttrEnum::toString(id);
+}
 
 namespace {
 

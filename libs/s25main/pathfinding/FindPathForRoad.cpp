@@ -20,7 +20,6 @@
 #include "FindPathForRoad.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditionRoad.h"
-#include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 
 namespace {

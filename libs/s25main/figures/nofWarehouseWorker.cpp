@@ -125,7 +125,7 @@ void nofWarehouseWorker::Walked()
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)
             if(gwg->GetNO(pos)->GetType() == NOP_BUILDING)
             {
-                nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
+                auto* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
                 if(carried_ware->GetGoal() == carried_ware->GetLocation() || carried_ware->GetGoal() == wh)
                     wh->AddWare(carried_ware);
                 else

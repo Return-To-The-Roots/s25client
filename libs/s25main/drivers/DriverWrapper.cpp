@@ -22,37 +22,40 @@
 #include "driver/DriverInterfaceVersion.h"
 #include "driver/Interface.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
 #include "mygettext/mygettext.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
+#include <boost/dll/shared_library.hpp>
 #include <memory>
 
-#ifndef _WIN32
-#include <dlfcn.h>
-#endif // _WIN32
-
 namespace {
-struct DeleterFreeLib
+/// Definition des GetDriverAPIVersion-Zeigers
+using GetDriverAPIVersion_t = decltype(GetDriverAPIVersion);
+/// Definition des GetDriverName
+using GetDriverName_t = decltype(GetDriverName);
+
+std::string getName(drivers::DriverType type)
 {
-    typedef HINSTANCE pointer;
-    void operator()(HINSTANCE dll) const { FreeLibrary(dll); }
-};
+    return (type == drivers::DriverType::Audio) ? "audio" : "video";
+}
+auto tryLoadLibrary(const bfs::path& filepath)
+{
+    boost::system::error_code ec;
+    auto result = std::make_unique<boost::dll::shared_library>(filepath, ec, boost::dll::load_mode::rtld_lazy);
+    if(ec)
+        result.reset();
+    return result;
+}
 } // namespace
 
-DriverWrapper::DriverWrapper() : dll(0) {}
-
-DriverWrapper::~DriverWrapper()
-{
-    Unload();
-}
+namespace drivers {
+DriverWrapper::DriverWrapper() = default;
+DriverWrapper::~DriverWrapper() = default;
 
 void DriverWrapper::Unload()
 {
-    if(dll)
-    {
-        FreeLibrary(dll);
-        dll = 0;
-    }
+    dll.reset();
 }
 
 bool DriverWrapper::Load(const DriverType dt, std::string& preference)
@@ -61,34 +64,28 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     Unload();
 
     /// Verfügbare Treiber auflisten
-    const std::string DIRECTORY[2] = {"video", "audio"};
-
     std::vector<DriverItem> drivers = LoadDriverList(dt);
 
-    LOG.write("%u %s drivers found!\n") % unsigned(drivers.size()) % DIRECTORY[dt];
+    LOG.write("%u %s drivers found!\n") % drivers.size() % getName(dt);
 
     // Welche gefunden?
     if(drivers.empty())
         return false;
 
     /// Suche, ob der Treiber dabei ist, den wir wünschen
-    for(std::vector<DriverItem>::iterator it = drivers.begin(); it != drivers.end(); ++it)
+    const auto it = helpers::findPred(drivers, [preference](const auto& it) { return it.GetName() == preference; });
+    if(it != drivers.end())
     {
-        if(it->GetName() == preference)
-        {
-            // Dann den gleich nehmen
-            dll = LoadLibraryW(it->GetFile().c_str());
-            break;
-        }
+        // Dann den gleich nehmen
+        dll = tryLoadLibrary(it->GetFile());
     }
 
     // ersten Treiber laden
     if(!dll)
     {
-        dll = LoadLibraryW(drivers.begin()->GetFile().c_str());
-
+        dll = tryLoadLibrary(drivers.front().GetFile());
         // Standardwert zuweisen
-        preference = drivers.begin()->GetName();
+        preference = drivers.front().GetName();
     }
 
     if(!dll)
@@ -100,31 +97,14 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     return true;
 }
 
-void* GetDLLFunction2(HINSTANCE dll, const std::string& name)
-{
-    if(!dll)
-        return nullptr;
-#ifdef _WIN32
-    union
-    {
-        FARPROC proc;
-        void* ptr;
-    };
-    proc = GetProcAddress(dll, name.c_str());
-    return ptr;
-#else
-    return GetProcAddress(dll, name.c_str());
-#endif // _WIN32
-}
-
 void* DriverWrapper::GetDLLFunction(const std::string& name)
 {
-    return GetDLLFunction2(dll, name);
+    return !dll ? nullptr : &dll->get<void*>(name);
 }
 
 bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)
 {
-    std::unique_ptr<HINSTANCE, DeleterFreeLib> dll(LoadLibraryW(path.c_str()));
+    auto dll = tryLoadLibrary(path);
 
     if(!dll)
     {
@@ -132,8 +112,7 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
         return false;
     }
 
-    PDRIVER_GETDRIVERAPIVERSION GetDriverAPIVersion =
-      pto2ptf<PDRIVER_GETDRIVERAPIVERSION>(GetDLLFunction2(dll.get(), "GetDriverAPIVersion"));
+    auto GetDriverAPIVersion = dll->get<GetDriverAPIVersion_t>("GetDriverAPIVersion");
     if(!GetDriverAPIVersion)
     {
         nameOrError = _("Not a RTTR driver library!");
@@ -145,9 +124,9 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
         return false;
     }
 
-    PDRIVER_GETDRIVERNAME GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>(GetDLLFunction2(dll.get(), "GetDriverName"));
+    auto GetDriverName = dll->get<GetDriverName_t>("GetDriverName");
     std::string createName, freeName;
-    if(dt == DT_VIDEO)
+    if(dt == DriverType::Video)
     {
         createName = "CreateVideoInstance";
         freeName = "FreeVideoInstance";
@@ -157,7 +136,7 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
         freeName = "FreeAudioInstance";
     }
 
-    if(!GetDriverName || !GetDLLFunction2(dll.get(), createName) || !GetDLLFunction2(dll.get(), freeName))
+    if(!GetDriverName || !dll->has(createName) || !dll->has(freeName))
     {
         nameOrError = _("Missing required API function");
         return false;
@@ -171,9 +150,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 {
     std::vector<DriverItem> driver_list;
 
-    const std::string DIRECTORY[2] = {"/video", "/audio"};
-
-    std::string path = RTTRCONFIG.ExpandPath(FILE_PATHS[46]) + DIRECTORY[dt];
+    std::string path = RTTRCONFIG.ExpandPath(FILE_PATHS[46]) + "/" + getName(dt);
     std::string extension =
 #ifdef _WIN32
       "dll";
@@ -188,10 +165,8 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
     LOG.write(_("Searching for drivers in %s\n")) % path;
     std::vector<std::string> driver_files = ListDir(path, extension, false);
 
-    for(std::vector<std::string>::iterator it = driver_files.begin(); it != driver_files.end(); ++it)
+    for(auto path : driver_files)
     {
-        std::string path(*it);
-
 #ifdef _WIN32
         // check filename to "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
         size_t filepos = path.find_last_of("/\\");
@@ -214,3 +189,4 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
     }
     return driver_list;
 }
+} // namespace drivers

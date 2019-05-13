@@ -1,9 +1,7 @@
-#define BOOST_FOREACH(var, col) for(var;;)
-#define BOOST_REVERSE_FOREACH(var, col) for(var;;)
 #define BOOST_AUTO_TEST_CASE(name) class name: public BOOST_AUTO_TEST_CASE_FIXTURE{ void testMethod(); }; void name::testMethod()
 #define BOOST_FIXTURE_TEST_CASE(name, fixture) class name: public fixture, public BOOST_AUTO_TEST_CASE_FIXTURE{ void testMethod(); }; void name::testMethod()
 #define BOOST_AUTO_TEST_SUITE(name) namespace name{
-#define BOOST_FIXTURE_TEST_SUITE(name, fixture) namespace name{ typedef F BOOST_AUTO_TEST_CASE_FIXTURE; 
+#define BOOST_FIXTURE_TEST_SUITE(name, fixture) namespace name{ typedef F BOOST_AUTO_TEST_CASE_FIXTURE;
 #define BOOST_AUTO_TEST_SUITE_END() }
 #define BOOST_REQUIRE(cond) if(!(cond)) assert(false)
 #define BOOST_REQUIRE_EQUAL(x,y) BOOST_REQUIRE((x) == (y))

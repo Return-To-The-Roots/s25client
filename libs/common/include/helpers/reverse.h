@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2019 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#ifndef Reverse_h__
+#define Reverse_h__
 
-#define DEFINE_AddonId
-#include "const_addons.h"
+namespace helpers {
+
+template<typename T>
+struct ReverseAdapter
+{
+    T& range;
+};
+
+template<typename T>
+constexpr auto begin(ReverseAdapter<T> w)
+{
+    return w.range.rbegin();
+}
+
+template<typename T>
+constexpr auto end(ReverseAdapter<T> w)
+{
+    return w.range.rend();
+}
+
+/// Reverse a range: for(auto i: reverse(container))
+template<typename T>
+constexpr ReverseAdapter<T> reverse(T&& range)
+{
+    return {range};
+}
+} // namespace helpers
+
+#endif

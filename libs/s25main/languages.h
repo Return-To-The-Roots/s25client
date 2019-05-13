@@ -21,11 +21,12 @@
 
 #include "libutil/Singleton.h"
 #include <string>
+#include <utility>
 #include <vector>
 
 struct Language
 {
-    Language(const std::string& name, const std::string& code) : name(name), code(code) {}
+    Language(std::string name, std::string code) : name(std::move(name)), code(std::move(code)) {}
 
     std::string name;
     std::string code; // "normaler" locale-code
@@ -37,7 +38,7 @@ public:
     Languages();
 
     void setLanguage(const std::string& lang_code);
-    const std::string setLanguage(unsigned i);
+    std::string setLanguage(unsigned i);
 
     unsigned size();
     const Language& getLanguage(unsigned i);

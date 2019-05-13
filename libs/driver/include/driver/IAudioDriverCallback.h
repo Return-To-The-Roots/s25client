@@ -20,8 +20,7 @@
 class IAudioDriverCallback
 {
 public:
-    virtual ~IAudioDriverCallback(){};
-
+    virtual ~IAudioDriverCallback() = default;
     virtual void Msg_MusicFinished() = 0;
 };
 

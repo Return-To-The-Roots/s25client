@@ -45,6 +45,7 @@
 #include <cmath>
 #include <helpers/chronoIO.h>
 #include <iomanip>
+#include <mygettext/mygettext.h>
 
 inline std::ostream& operator<<(std::ostream& os, const AsyncChecksum& checksum)
 {
@@ -314,14 +315,7 @@ void GameServer::Run()
             continue;
         player.sendMsgs(10);
     }
-
-    for(std::vector<GameServerPlayer>::iterator it = networkPlayers.begin(); it != networkPlayers.end();)
-    {
-        if(!it->socket.isValid())
-            it = networkPlayers.erase(it);
-        else
-            ++it;
-    }
+    helpers::remove_if(networkPlayers, [](const auto& player) { return !player.socket.isValid(); });
 
     lanAnnouncer.Run();
 }
@@ -663,7 +657,7 @@ void GameServer::ExecuteNWF()
     {
         // Speed will change, adjust nwf length so the time will stay constant
         using namespace std::chrono;
-        typedef duration<double, std::milli> MsDouble;
+        using MsDouble = duration<double, std::milli>;
         double newNWFLen = framesinfo.nwf_length * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
         newInfo.nextNWF = lastNWF + std::max(1l, std::lround(newNWFLen));
     }
@@ -1519,7 +1513,7 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
     }
 
     // Look for a unique color
-    int newColorIdx = player.GetColorIdx(newColor);
+    int newColorIdx = JoinPlayerInfo::GetColorIdx(newColor);
     while(helpers::contains(takenColors, newColor))
         newColor = PLAYER_COLORS[(++newColorIdx) % PLAYER_COLORS.size()];
 
@@ -1539,7 +1533,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
     int targetPlayer = GetTargetPlayer(msg);
     if(targetPlayer < 0)
         return true;
-    uint8_t player1 = static_cast<uint8_t>(targetPlayer);
+    auto player1 = static_cast<uint8_t>(targetPlayer);
     if(player1 == msg.player2 || msg.player2 >= playerInfos.size())
         return true;
 

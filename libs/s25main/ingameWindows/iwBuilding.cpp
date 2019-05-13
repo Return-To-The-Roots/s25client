@@ -24,9 +24,10 @@
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
+#include "factories/GameCommandFactory.h"
+#include "helpers/containerUtils.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
-#include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
@@ -168,14 +169,14 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         }
         break;
         case 5: // Gebäude abbrennen
         {
             // Abreißen?
             Close();
-            WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building));
+            WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, building));
         }
         break;
         case 6:
@@ -193,7 +194,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                 else
                     GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 196));
 
-                ctrlText* text = GetCtrl<ctrlText>(10);
+                auto* text = GetCtrl<ctrlText>(10);
                 if(building->IsProductionDisabledVirtual() && building->HasWorker())
                     text->SetText(_("(House unoccupied)"));
                 else if(building->HasWorker())
@@ -211,7 +212,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             if(gcFactory.SetShipYardMode(building->GetPos(), static_cast<const nobShipYard*>(building)->GetMode() == nobShipYard::BOATS))
             {
                 // Auch optisch den Button umstellen
-                ctrlImageButton* button = GetCtrl<ctrlImageButton>(11);
+                auto* button = GetCtrl<ctrlImageButton>(11);
                 if(button->GetImage() == LOADER.GetImageN("io", IODAT_BOAT_ID))
                     button->SetImage(LOADER.GetImageN("io", IODAT_SHIP_ID));
                 else
@@ -224,21 +225,17 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobUsual*>& buildings =
               gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetBuildings(building->GetBuildingType());
             // go through list once we get to current building -> open window for the next one and go to next location
-            for(std::list<nobUsual*>::const_iterator it = buildings.begin(); it != buildings.end(); ++it)
+            auto it = helpers::findPred(buildings, [bldPos = building->GetPos()](const auto* it) { return it->GetPos() == bldPos; });
+            if(it != buildings.end()) // got to current building in the list?
             {
-                if((*it)->GetPos() == building->GetPos()) // got to current building in the list?
-                {
-                    // close old window, open new window (todo: only open if it isnt already open), move to location of next building
-                    Close();
-                    ++it;
-                    if(it == buildings.end()) // was last entry in list -> goto first
-                        it = buildings.begin();
-                    gwv.MoveToMapPt((*it)->GetPos());
-                    iwBuilding* nextscrn = new iwBuilding(gwv, gcFactory, *it);
-                    nextscrn->SetPos(GetPos());
-                    WINDOWMANAGER.Show(nextscrn);
-                    break;
-                }
+                // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                Close();
+                ++it;
+                if(it == buildings.end()) // was last entry in list -> goto first
+                    it = buildings.begin();
+                gwv.MoveToMapPt((*it)->GetPos());
+                WINDOWMANAGER.Show(std::make_unique<iwBuilding>(gwv, gcFactory, *it))->SetPos(GetPos());
+                break;
             }
         }
         break;

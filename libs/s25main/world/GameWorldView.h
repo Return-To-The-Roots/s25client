@@ -32,7 +32,7 @@ class noBaseBuilding;
 class IDrawNodeCallback
 {
 public:
-    virtual ~IDrawNodeCallback() {}
+    virtual ~IDrawNodeCallback() = default;
     /// Called when a node is going to be drawn at displayPt
     /// Can e.g. print coordinates
     virtual void onDraw(const MapPoint& pt, const DrawPoint& displayPt) = 0;
@@ -102,13 +102,13 @@ public:
     /// Schaltet Produktivitäten/Namen komplett aus oder an
     void ToggleShowNamesAndProductivity();
 
-    void Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water = nullptr);
+    void Draw(const RoadBuildState& rb, MapPoint selected, bool drawMouse, unsigned* water = nullptr);
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
     void MoveTo(int x, int y, bool absolute = false);
     void MoveTo(const DrawPoint& newPos, bool absolute = false);
     /// Zentriert den Bildschirm auf ein bestimmtes Map-Object
-    void MoveToMapPt(const MapPoint pt);
+    void MoveToMapPt(MapPoint pt);
     /// Springt zur letzten Position, bevor man "weggesprungen" ist
     void MoveToLastPosition();
 
@@ -132,7 +132,7 @@ public:
 
 private:
     void CalcFxLx();
-    void DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis);
+    void DrawBoundaryStone(const MapPoint& pt, DrawPoint pos, Visibility vis);
     void DrawObject(const MapPoint& pt, const DrawPoint& curPos);
     void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
     void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines);

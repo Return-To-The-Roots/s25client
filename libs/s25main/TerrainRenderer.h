@@ -20,7 +20,6 @@
 #include "Point.h"
 #include "ogl/VBO.h"
 #include "gameTypes/MapCoordinates.h"
-#include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -40,7 +39,7 @@ glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp);
 class TerrainRenderer : private boost::noncopyable
 {
 public:
-    typedef Point<float> PointF;
+    using PointF = Point<float>;
 
     TerrainRenderer();
     ~TerrainRenderer();
@@ -55,16 +54,16 @@ public:
 
     /// Converts given point into a MapPoint (0 <= x < width and 0 <= y < height)
     /// Optionally returns offset of returned point to original point in pixels (for drawing)
-    MapPoint ConvertCoords(const Position pt, Position* offset = 0) const;
+    MapPoint ConvertCoords(Position pt, Position* offset = nullptr) const;
     /// Get position of node in pixels (VertexPos)
     PointF GetVertexPos(const MapPoint pt) const { return GetVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to GetNodePos(pt)
     PointF GetNeighbourVertexPos(MapPoint pt, unsigned dir) const;
 
     /// Callback function for altitude changes
-    void AltitudeChanged(const MapPoint pt, const GameWorldViewer& gwv);
+    void AltitudeChanged(MapPoint pt, const GameWorldViewer& gwv);
     /// Callback function for visibility changes
-    void VisibilityChanged(const MapPoint pt, const GameWorldViewer& gwv);
+    void VisibilityChanged(MapPoint pt, const GameWorldViewer& gwv);
 
     /// Recalculates all colors on the map
     void UpdateAllColors(const GameWorldViewer& gwv);
@@ -112,8 +111,8 @@ private:
         float b;
     };
 
-    typedef std::array<PointF, 3> Triangle;
-    typedef std::array<Color, 3> ColorTriangle;
+    using Triangle = std::array<PointF, 3>;
+    using ColorTriangle = std::array<Color, 3>;
 
     struct Borders
     {
@@ -131,7 +130,7 @@ private:
         Triangle usdCoords, rsuCoords;
     };
 
-    typedef std::vector<std::vector<PreparedRoad>> PreparedRoads;
+    using PreparedRoads = std::vector<std::vector<PreparedRoad>>;
 
     /// Size of the map
     MapExtent size_;
@@ -150,7 +149,7 @@ private:
 
     std::vector<Borders> borders;
 
-    typedef std::unique_ptr<glArchivItem_Bitmap> BmpPtr;
+    using BmpPtr = std::unique_ptr<glArchivItem_Bitmap>;
     std::vector<TerrainTexture> terrainTextures;
     std::vector<BmpPtr> edgeTextures;
     /// Flat 2D array: [Landscape][RoadType]
@@ -164,7 +163,7 @@ private:
     /// Returns the index of the first triangle (each point has 2). Used to access gl_* structs
     unsigned GetTriangleIdx(const MapPoint pt) const { return GetVertexIdx(pt) * 2; }
     /// Return the coordinates of the neighbour node
-    MapPoint GetNeighbour(const MapPoint& pt, const Direction dir) const;
+    MapPoint GetNeighbour(const MapPoint& pt, Direction dir) const;
 
     /// liefert den Vertex an der Stelle X, Y.
     Vertex& GetVertex(const MapPoint pt) { return vertices[GetVertexIdx(pt)]; }
@@ -175,27 +174,27 @@ private:
     /// Creates and initializes (map-)vertices for the viewer
     void GenerateVertices(const GameWorldViewer& gwv);
     /// Updates (map-)vertex attributes
-    void UpdateVertexPos(const MapPoint pt, const GameWorldViewer& gwv);
-    void UpdateVertexColor(const MapPoint pt, const GameWorldViewer& gwv);
-    void LoadVertexTerrain(const MapPoint pt, const GameWorldViewer& gwv);
+    void UpdateVertexPos(MapPoint pt, const GameWorldViewer& gwv);
+    void UpdateVertexColor(MapPoint pt, const GameWorldViewer& gwv);
+    void LoadVertexTerrain(MapPoint pt, const GameWorldViewer& gwv);
     /// Update (map-)border vertex attributes
-    void UpdateBorderVertex(const MapPoint pt);
+    void UpdateBorderVertex(MapPoint pt);
 
     /// Fills OGL vertex data from map vertex data (updateVBO = true updates also VBO if used)
-    void UpdateTrianglePos(const MapPoint pt, bool updateVBO);
-    void UpdateTriangleColor(const MapPoint pt, bool updateVBO);
-    void UpdateTriangleTerrain(const MapPoint pt, bool updateVBO);
+    void UpdateTrianglePos(MapPoint pt, bool updateVBO);
+    void UpdateTriangleColor(MapPoint pt, bool updateVBO);
+    void UpdateTriangleTerrain(MapPoint pt, bool updateVBO);
     /// Fills OGL border vertex data from map vertex data
-    void UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO);
-    void UpdateBorderTriangleColor(const MapPoint pt, bool updateVBO);
-    void UpdateBorderTriangleTerrain(const MapPoint pt, bool updateVBO);
+    void UpdateBorderTrianglePos(MapPoint pt, bool updateVBO);
+    void UpdateBorderTriangleColor(MapPoint pt, bool updateVBO);
+    void UpdateBorderTriangleTerrain(MapPoint pt, bool updateVBO);
 
     /// liefert den Vertex-Farbwert an der Stelle X,Y
     float GetColor(const MapPoint pt) const { return GetVertex(pt).color; }
     /// liefert den Rand-Vertex an der Stelle X,Y
     PointF GetBorderPos(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderPos[triangle]; }
     /// Get neighbour border position of a node (VertexPos) potentially shifted so that the returned value is next to GetBorderPos(pt)
-    PointF GetNeighbourBorderPos(const MapPoint pt, unsigned char triangle, unsigned char dir) const;
+    PointF GetNeighbourBorderPos(MapPoint pt, unsigned char triangle, unsigned char dir) const;
     /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
     float GetBorderColor(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderColor[triangle]; }
 

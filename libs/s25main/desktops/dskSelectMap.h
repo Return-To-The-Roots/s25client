@@ -20,7 +20,6 @@
 #pragma once
 
 #include "Desktop.h"
-#include "ingameWindows/iwDirectIPCreate.h"
 #include "mapGenerator/MapSettings.h"
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
@@ -32,10 +31,10 @@ namespace boost {
 class thread;
 }
 
-class dskSelectMap : public Desktop, public ClientInterface, public LobbyInterface
+class dskSelectMap final : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskSelectMap(const CreateServerInfo& csi);
+    dskSelectMap(CreateServerInfo csi);
     ~dskSelectMap() override;
 
 private:
@@ -49,8 +48,8 @@ private:
     void Msg_TableSelectItem(unsigned ctrl_id, int selection) override;
     void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
-    void CI_NextConnectState(const ConnectState cs) override;
-    void CI_Error(const ClientError ce) override;
+    void CI_NextConnectState(ConnectState cs) override;
+    void CI_Error(ClientError ce) override;
 
     void LC_Status_Error(const std::string& error) override;
 

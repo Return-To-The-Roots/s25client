@@ -19,7 +19,7 @@
 #include "iwLobbyServerInfo.h"
 #include "Loader.h"
 #include "controls/ctrlEdit.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/colors.h"
@@ -44,13 +44,13 @@ iwLobbyServerInfo::iwLobbyServerInfo(unsigned serverId)
                    LOADER.GetImageN("resource", 41)),
       serverId_(serverId)
 {
-    AddText(0, DrawPoint(30, 40), _("Map Name:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(0, DrawPoint(30, 40), _("Map Name:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddEdit(1, DrawPoint(30, 60), Extent(200, 22), TC_GREEN2, NormalFont, 0, false, true);
-    AddText(3, DrawPoint(30, 90), _("Server Name:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(3, DrawPoint(30, 90), _("Server Name:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddEdit(4, DrawPoint(30, 110), Extent(200, 22), TC_GREEN2, NormalFont, 0, false, true);
-    AddText(5, DrawPoint(30, 140), _("Host:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(5, DrawPoint(30, 140), _("Host:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddEdit(6, DrawPoint(30, 160), Extent(200, 22), TC_GREEN2, NormalFont, 0, false, true);
-    AddText(7, DrawPoint(30, 190), _("Version:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(7, DrawPoint(30, 190), _("Version:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddEdit(8, DrawPoint(30, 210), Extent(200, 22), TC_GREEN2, NormalFont, 0, false, true);
 
     LOBBYCLIENT.SendServerInfoRequest(serverId_);

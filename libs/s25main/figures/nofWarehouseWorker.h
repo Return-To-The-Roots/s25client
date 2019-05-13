@@ -56,7 +56,7 @@ private:
     void HandleDerivedEvent(unsigned id) override;
 
 public:
-    nofWarehouseWorker(const MapPoint pt, unsigned char player, Ware* ware, bool task);
+    nofWarehouseWorker(MapPoint pos, unsigned char player, Ware* ware, bool task);
     nofWarehouseWorker(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofWarehouseWorker() override;

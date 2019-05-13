@@ -57,7 +57,7 @@ private:
     MapPoint next_harbor;
 
 public:
-    Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location);
+    Ware(GoodType type, noBaseBuilding* goal, noRoadNode* location);
     Ware(SerializedGameData& sgd, unsigned obj_id);
 
     ~Ware() override;

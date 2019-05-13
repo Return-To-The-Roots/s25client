@@ -28,7 +28,7 @@ Animation::Animation(Window* element, unsigned numFrames, unsigned frameRate, Re
     RTTR_Assert(frameRate_ > 0);
 }
 
-Animation::~Animation() {}
+Animation::~Animation() = default;
 
 void Animation::setFrameRate(unsigned frameRate)
 {
@@ -72,7 +72,7 @@ void Animation::execFrame(Window* parent, unsigned remainingTime)
 {
     RTTR_Assert(curFrame_ < numFrames_);
     RTTR_Assert(remainingTime < frameRate_);
-    Window* element = parent->GetCtrl<Window>(elementId_);
+    auto* element = parent->GetCtrl<Window>(elementId_);
     // Element missing -> Done
     if(!element)
     {

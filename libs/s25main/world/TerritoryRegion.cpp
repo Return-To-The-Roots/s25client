@@ -33,7 +33,7 @@ TerritoryRegion::TerritoryRegion(const Position& startPt, const Extent& size, co
     nodes.resize(size.x * size.y);
 }
 
-TerritoryRegion::~TerritoryRegion() {}
+TerritoryRegion::~TerritoryRegion() = default;
 
 bool TerritoryRegion::IsPointInPolygon(const std::vector<Position>& polygon, const Position& pt)
 {
@@ -42,8 +42,8 @@ bool TerritoryRegion::IsPointInPolygon(const std::vector<Position>& polygon, con
 
     bool inside = false;
 
-    std::vector<Position>::const_iterator it = polygon.begin();
-    std::vector<Position>::const_iterator prev = polygon.end() - 1;
+    auto it = polygon.begin();
+    auto prev = polygon.end() - 1;
     // Check each edge if a ray from the point to the right crosses the edge
     for(; it != polygon.end(); prev = it, ++it)
     {
@@ -147,7 +147,7 @@ bool TerritoryRegion::AdjustCoords(Position& pt) const
 namespace {
 struct GetMapPointWithRadius
 {
-    typedef std::pair<MapPoint, unsigned> result_type;
+    using result_type = std::pair<MapPoint, unsigned>;
 
     result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
 };
@@ -172,8 +172,8 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
     AdjustNode(bldPos, building.GetPlayer(), 0, nullptr); // no need to check barriers here. this point is on our territory.
 
     std::vector<GetMapPointWithRadius::result_type> pts = world.GetPointsInRadius(bldPos, radius, GetMapPointWithRadius());
-    for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
-        AdjustNode(it->first, building.GetPlayer(), it->second, allowedArea);
+    for(const auto& ptWithRadius : pts)
+        AdjustNode(ptWithRadius.first, building.GetPlayer(), ptWithRadius.second, allowedArea);
 }
 
 uint8_t TerritoryRegion::SafeGetOwner(const Position& pt) const

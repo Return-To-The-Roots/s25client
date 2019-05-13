@@ -17,16 +17,18 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlCheck.h"
+
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "driver/MouseCoords.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
+#include <utility>
 
-ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
+ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, std::string text,
                      glArchivItem_Font* font, bool readonly)
-    : Window(parent, id, pos, size), tc(tc), text(text), font(font), check(false), readonly(readonly)
+    : Window(parent, id, pos, size), tc(tc), text(std::move(text)), font(font), check(false), readonly(readonly)
 {}
 
 /**

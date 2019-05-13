@@ -57,7 +57,7 @@ class Job
 {
 public:
     Job(AIPlayerJH& aijh);
-    virtual ~Job() {}
+    virtual ~Job() = default;
     virtual void ExecuteJob() = 0;
     JobState GetState() const { return state; }
     void SetState(JobState s) { state = s; }
@@ -87,7 +87,7 @@ public:
         RTTR_Assert(type != BLD_NOTHING);
     }
 
-    ~BuildJob() override {}
+    ~BuildJob() override = default;
     void ExecuteJob() override;
     inline BuildingType GetType() const { return type; }
     inline MapPoint GetAround() const { return around; }
@@ -107,7 +107,7 @@ class ConnectJob : public Job, public JobWithTarget
 {
 public:
     ConnectJob(AIPlayerJH& aijh, MapPoint flagPos) : Job(aijh), flagPos(flagPos) {}
-    ~ConnectJob() override {}
+    ~ConnectJob() override = default;
     void ExecuteJob() override;
     MapPoint getFlag() const { return flagPos; }
 

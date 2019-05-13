@@ -135,12 +135,12 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btTextureTest: WINDOWMANAGER.Switch(new dskTextureTest); break;
-        case ID_btShowBenchmark: WINDOWMANAGER.Switch(new dskBenchmark); break;
+        case ID_btTextureTest: WINDOWMANAGER.Switch(std::make_unique<dskTextureTest>()); break;
+        case ID_btShowBenchmark: WINDOWMANAGER.Switch(std::make_unique<dskBenchmark>()); break;
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {
-                ctrlButton* bt = GetCtrl<ctrlButton>(i);
+                auto* bt = GetCtrl<ctrlButton>(i);
                 if(bt)
                     bt->SetEnabled(!bt->GetEnabled());
             }
@@ -149,8 +149,8 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btAnimateOscillate:
         case ID_btAnimateRepeat:
         {
-            ctrlButton* btAniBg = GetCtrl<ctrlButton>(ID_btAniBg);
-            ctrlButton* btAni = GetCtrl<ctrlButton>(ID_btAni);
+            auto* btAniBg = GetCtrl<ctrlButton>(ID_btAniBg);
+            auto* btAni = GetCtrl<ctrlButton>(ID_btAni);
             // Stop all
             GetAnimationManager().removeElementAnimations(btAni->GetID());
             GetAnimationManager().finishElementAnimations(ID_btAnimate, false);
@@ -192,7 +192,7 @@ void dskTest::ToggleCtrlVisibility()
 {
     for(int i = ID_txtTitle; i <= ID_btHideCtrls; i++)
     {
-        Window* ctrl = GetCtrl<Window>(i);
+        auto* ctrl = GetCtrl<Window>(i);
         if(ctrl)
             ctrl->SetVisible(!ctrl->IsVisible());
     }
@@ -211,7 +211,7 @@ bool dskTest::Msg_KeyDown(const KeyEvent& ke)
         curBGIdx = (curBGIdx < LOAD_SCREENS.size() - 1) ? curBGIdx + 1 : 0;
         background = LOADER.GetImageN(LOAD_SCREENS[curBGIdx], 0);
     } else if(ke.kt == KT_ESCAPE)
-        WINDOWMANAGER.Switch(new dskMainMenu);
+        WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
     else
         return false;
     return true;

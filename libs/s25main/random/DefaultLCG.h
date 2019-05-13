@@ -18,6 +18,7 @@
 #ifndef DefaultLCG_h__
 #define DefaultLCG_h__
 
+#include <cstdint>
 #include <iosfwd>
 #include <type_traits>
 
@@ -27,7 +28,7 @@ class Serializer;
 class DefaultLCG
 {
 public:
-    typedef uint32_t result_type;
+    using result_type = uint32_t;
 
     static constexpr result_type min() { return 0; }
     static constexpr result_type max() { return 0xFFFF; }
@@ -36,7 +37,7 @@ public:
     DefaultLCG() { seed(); }
     explicit DefaultLCG(result_type initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit DefaultLCG(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = 0)
+    explicit DefaultLCG(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr)
     {
         seed(seedSeq);
     }
@@ -44,7 +45,7 @@ public:
     void seed() { seed(0x1337); }
     void seed(unsigned newSeed) { state_ = newSeed; }
     template<class T_SeedSeq>
-    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = 0);
+    void seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>* = nullptr);
 
     /// Return random value in [min, max]
     result_type operator()();
@@ -67,7 +68,7 @@ template<class T_SeedSeq>
 inline void DefaultLCG::seed(T_SeedSeq& seedSeq, std::enable_if_t<!std::is_integral<T_SeedSeq>::value>*)
 {
     unsigned seedVal;
-    seedSeq.generate(&seedVal, &seedVal + 1);
+    seedSeq.generate(&seedVal, (&seedVal) + 1);
     seed(seedVal);
 }
 

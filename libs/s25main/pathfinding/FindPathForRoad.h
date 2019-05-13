@@ -27,8 +27,7 @@ class GameWorldViewer;
 
 namespace detail {
 template<class T_WorldOrViewer>
-std::vector<Direction> FindPathForRoad(const T_WorldOrViewer& world, const MapPoint startPt, const MapPoint endPt, bool isBoatRoad,
-                                       unsigned maxLen);
+std::vector<Direction> FindPathForRoad(const T_WorldOrViewer& world, MapPoint startPt, MapPoint endPt, bool isBoatRoad, unsigned maxLen);
 }
 
 /// Wrapper for finding a path for a road

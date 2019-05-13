@@ -89,9 +89,9 @@ public:
     void RemoveFromAttackedGoal();
 
     /// Normaler Konstruktor für Angreifer
-    nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal);
+    nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* attacked_goal);
     /// Konstruktor für Schiffs-Angreifer, die zuerst einmal zu einem Hafen laufen müssen
-    nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor);
+    nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* attacked_goal, const nobHarborBuilding* harbor);
     nofAttacker(SerializedGameData& sgd, unsigned obj_id);
     ~nofAttacker() override;
 
@@ -145,7 +145,7 @@ public:
     unsigned GetRadius() const { return radius; }
     /// Ein um-die-Flagge-wartender Angreifer soll auf einen frei gewordenen Platz nachrücken, damit keine
     /// Lücken entstehen
-    void StartSucceeding(const MapPoint pt, unsigned short new_radius);
+    void StartSucceeding(MapPoint pt, unsigned short new_radius);
     /// Try to start capturing although he is still far away from the destination
     /// Returns true if successful
     bool TryToStartFarAwayCapturing(nobMilitary* dest);
@@ -160,7 +160,7 @@ public:
     nobBaseMilitary* GetAttackedGoal() const { return attacked_goal; }
 
     /// Startet den Angriff am Landungspunkt vom Schiff
-    void StartAttackOnOtherIsland(const MapPoint shipPos, unsigned ship_id);
+    void StartAttackOnOtherIsland(MapPoint shipPos, unsigned ship_id);
     /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
     void StartReturnViaShip(noShip& ship);
     /// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: return home soon on a road

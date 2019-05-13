@@ -19,7 +19,10 @@
 #define LuaWorld_h__
 
 #include "gameTypes/AnimalTypes.h"
-#include <kaguya/kaguya.hpp>
+
+namespace kaguya {
+class State;
+}
 
 class GameWorldGame;
 

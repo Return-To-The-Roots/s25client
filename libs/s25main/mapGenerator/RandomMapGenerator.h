@@ -18,15 +18,12 @@
 #ifndef RandomMapGenerator_h__
 #define RandomMapGenerator_h__
 
-#include "mapGenerator/Map.h"
-#include "mapGenerator/MapSettings.h"
 #include "mapGenerator/MapUtility.h"
-#include "gameTypes/MapTypes.h"
-#include "gameData/DescIdx.h"
-#include <vector>
 
 class RandomConfig;
 struct TerrainDesc;
+struct MapSettings;
+struct Map;
 
 /**
  * Random map generator.
@@ -46,7 +43,7 @@ public:
      * @param settings settings used for the map generation
      * @param config configuration for the random map generator
      */
-    Map* Create(MapSettings settings);
+    Map Create(MapSettings settings);
 
 private:
     /**
@@ -60,7 +57,7 @@ private:
      * @param textures set of textures used for different height values
      * @return the maximum height value for the terrain
      */
-    unsigned GetMaxTerrainHeight(const DescIdx<TerrainDesc> terrain);
+    unsigned GetMaxTerrainHeight(DescIdx<TerrainDesc> terrain);
 
     /**
      * Gets the minimum height to be considered as specified terrain.
@@ -68,7 +65,7 @@ private:
      * @param textures set of textures used for different height values
      * @return the minimum height value for the terrain
      */
-    unsigned GetMinTerrainHeight(const DescIdx<TerrainDesc> terrain);
+    unsigned GetMinTerrainHeight(DescIdx<TerrainDesc> terrain);
 
     /**
      * Create player positions (headquarters) for the specified map.

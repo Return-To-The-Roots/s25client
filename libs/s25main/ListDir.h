@@ -28,6 +28,6 @@
 /// @includeDirectories tells whether directories should be added too
 /// @appendTo Appends to given vector (if specified)
 std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories = false,
-                                 const std::vector<std::string>* const appendTo = nullptr);
+                                 const std::vector<std::string>* appendTo = nullptr);
 
 #endif // LISTDIR_H_INCLUDED

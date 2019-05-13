@@ -18,32 +18,18 @@
 #ifndef GameCommand_h__
 #define GameCommand_h__
 
+#include <boost/smart_ptr/intrusive_ptr.hpp>
+#include <RTTR_Assert.h>
+
 class Serializer;
 class GameWorldGame;
-class GamePlayer;
 class GameCommandFactory;
-
-// fwd decl
-namespace gc {
-class GameCommand;
-}
-
-void intrusive_ptr_add_ref(gc::GameCommand* x);
-void intrusive_ptr_release(gc::GameCommand* x);
-
-#include <boost/smart_ptr/intrusive_ptr.hpp>
-
-// Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. constructor)
-// Only factory classes should be in here
-#define GC_FRIEND_DECL        \
-    friend class GameCommand; \
-    friend class ::GameCommandFactory
 
 namespace gc {
 
 class GameCommand;
 // Use this for safely using Pointers to GameCommands
-typedef boost::intrusive_ptr<GameCommand> GameCommandPtr;
+using GameCommandPtr = boost::intrusive_ptr<GameCommand>;
 
 class GameCommand
 {
@@ -91,18 +77,16 @@ private:
     /// Type of this command
     Type gcType;
     unsigned refCounter_;
-    friend void ::intrusive_ptr_add_ref(GameCommand* x);
-    friend void ::intrusive_ptr_release(GameCommand* x);
+    friend void intrusive_ptr_add_ref(GameCommand* x);
+    friend void intrusive_ptr_release(GameCommand* x);
 
 public:
     GameCommand(const GameCommand& obj) : gcType(obj.gcType), refCounter_(0) // Do not copy refCounter!
     {}
-    virtual ~GameCommand() {}
+    virtual ~GameCommand() = default;
 
     GameCommand& operator=(const GameCommand& obj)
     {
-        if(this == &obj)
-            return *this;
         gcType = obj.gcType;
         // Do not copy or reset refCounter!
         return *this;
@@ -121,18 +105,24 @@ protected:
     GameCommand(const Type gcType) : gcType(gcType), refCounter_(0) {}
 };
 
-} // namespace gc
-
-inline void intrusive_ptr_add_ref(gc::GameCommand* x)
+inline void intrusive_ptr_add_ref(GameCommand* x)
 {
     ++x->refCounter_;
 }
 
-inline void intrusive_ptr_release(gc::GameCommand* x)
+inline void intrusive_ptr_release(GameCommand* x)
 {
     RTTR_Assert(x->refCounter_);
     if(--x->refCounter_ == 0)
         delete x;
 }
+
+} // namespace gc
+
+// Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. constructor)
+// Only factory classes should be in here
+#define GC_FRIEND_DECL        \
+    friend class GameCommand; \
+    friend class ::GameCommandFactory
 
 #endif // GameCommand_h__

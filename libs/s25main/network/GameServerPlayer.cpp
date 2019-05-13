@@ -17,10 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameServerPlayer.h"
-#include "GameMessage_GameCommand.h"
 #include "GameMessages.h"
 #include "helpers/mathFuncs.h"
-#include "libutil/Log.h"
 #include <algorithm>
 #include <limits>
 
@@ -41,14 +39,14 @@ GameServerPlayer::GameServerPlayer(unsigned id, const Socket& socket) //-V818
     this->socket = socket;
 }
 
-GameServerPlayer::~GameServerPlayer() {}
+GameServerPlayer::~GameServerPlayer() = default;
 
 void GameServerPlayer::setMapSending(std::chrono::seconds estimatedSendTime)
 {
     MapSendingState state;
     state.timer.start();
     state.estimatedSendTime = estimatedSendTime;
-    state_ = state;
+    state_ = std::move(state);
 }
 
 void GameServerPlayer::setActive()
@@ -69,7 +67,7 @@ void GameServerPlayer::doPing()
 
 unsigned GameServerPlayer::calcPingTime()
 {
-    ActiveState& state = boost::get<ActiveState>(state_);
+    auto& state = boost::get<ActiveState>(state_);
     if(!state.isPinging)
         return 0u;
     int result = durationToInt(std::chrono::duration_cast<std::chrono::milliseconds>(state.pingTimer.getElapsed()));

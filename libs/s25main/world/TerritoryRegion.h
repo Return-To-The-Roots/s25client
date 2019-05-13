@@ -35,7 +35,7 @@ public:
     TerritoryRegion(const Position& startPt, const Extent& size, const GameWorldBase& gwb);
     ~TerritoryRegion();
 
-    static bool IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt);
+    static bool IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, MapPoint pt);
 
     /// Adds the territory of the building
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);
@@ -76,8 +76,8 @@ private:
     const TRNode& GetNode(const Position& pt) const { return nodes[GetIdx(pt)]; }
     /// Return a pointer to the node, if it is inside this region
     TRNode* TryGetNode(const MapPoint& pt);
-    TRNode* TryGetNode(Position pt);
-    const TRNode* TryGetNode(Position pt) const;
+    TRNode* TryGetNode(Position realPt);
+    const TRNode* TryGetNode(Position realPt) const;
     bool AdjustCoords(Position& pt) const;
 
     const GameWorldBase& world;

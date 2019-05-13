@@ -19,8 +19,6 @@
 #define WP_HOSTGAME_H_
 
 #include "Desktop.h"
-#include "GlobalGameSettings.h"
-#include "ILobbyClient.hpp"
 #include "network/ClientInterface.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
@@ -31,12 +29,14 @@ class GameLobby;
 class LobbyPlayerInfo;
 class LuaInterfaceSettings;
 struct GameLobbyController;
+class ILobbyClient;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
-class dskHostGame : public Desktop, public ClientInterface, public LobbyInterface
+class dskHostGame final : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskHostGame(ServerType serverType, std::shared_ptr<GameLobby> gameLobby, unsigned playerId, std::unique_ptr<ILobbyClient> lobbyClient);
+    dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>& gameLobby, unsigned playerId,
+                std::unique_ptr<ILobbyClient> lobbyClient);
     ~dskHostGame();
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
@@ -52,8 +52,8 @@ private:
 
     /// Füllt die Felder einer Reihe aus
     void ChangeTeam(unsigned i, unsigned char nr);
-    void ChangeReady(unsigned i, bool ready);
-    void ChangeNation(unsigned i, const Nation nation);
+    void ChangeReady(unsigned player, bool ready);
+    void ChangeNation(unsigned i, Nation nation);
     void ChangePing(unsigned playerId);
     void ChangeColor(unsigned i, unsigned color);
 
@@ -70,12 +70,12 @@ private:
 
     void LC_RankingInfo(const LobbyPlayerInfo& player) override;
 
-    void CI_Error(const ClientError ce) override;
+    void CI_Error(ClientError ce) override;
 
     void CI_NewPlayer(unsigned playerId) override;
     void CI_PlayerLeft(unsigned playerId) override;
 
-    void CI_GameLoading(std::shared_ptr<Game> game) override;
+    void CI_GameLoading(const std::shared_ptr<Game>& game) override;
 
     void CI_PlayerDataChanged(unsigned playerId) override;
     void CI_PingChanged(unsigned playerId, unsigned short ping) override;
@@ -83,7 +83,7 @@ private:
     void CI_PlayersSwapped(unsigned player1, unsigned player2) override;
     void CI_GGSChanged(const GlobalGameSettings& ggs) override;
 
-    void CI_Chat(unsigned playerId, const ChatDestination cd, const std::string& msg) override;
+    void CI_Chat(unsigned playerId, ChatDestination cd, const std::string& msg) override;
     void CI_Countdown(unsigned remainingTimeInSec) override;
     void CI_CancelCountdown(bool error) override;
 

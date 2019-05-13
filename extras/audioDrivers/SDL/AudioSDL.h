@@ -22,7 +22,7 @@ class IAudioDriverCallback;
 class SoundHandle;
 
 /// Klasse für den SDL Audiotreiber.
-class AudioSDL : public AudioDriver
+class AudioSDL final : public AudioDriver
 {
 private:
     /// Lautstärke der Effekte.
@@ -31,7 +31,7 @@ private:
     uint8_t master_music_volume;
 
 public:
-    AudioSDL(IAudioDriverCallback* driverCallback);
+    AudioSDL(IAudioDriverCallback* adli);
     ~AudioSDL() override;
 
     /// Return the name of the driver

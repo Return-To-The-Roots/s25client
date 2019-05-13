@@ -24,10 +24,6 @@
 #include "TerrainDesc.h"
 #include <stdexcept>
 
-struct LandscapeDesc;
-struct EdgeDesc;
-struct TerrainDesc;
-
 struct GameDataError : public std::runtime_error
 {
     GameDataError(const std::string& desc) : std::runtime_error("Invalid game data: " + desc) {}

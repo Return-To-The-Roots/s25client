@@ -24,7 +24,7 @@
 #include <algorithm>
 
 ctrlMultiline::ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                             glArchivItem_Font* font, unsigned format)
+                             glArchivItem_Font* font, FontStyle format)
     : Window(parent, id, pos, size), tc_(tc), font(font), format_(format), showBackground_(true), scrollbarAllowed_(true),
       cachedContentWidth(0)
 {
@@ -40,7 +40,7 @@ void ctrlMultiline::AddString(const std::string& str, unsigned color, bool scrol
     lines.push_back(Line(str, color));
     RecalcWrappedLines();
 
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
     if(scroll && scrollbar->GetScrollPos() + 1 + maxNumVisibleLines == lines.size())
         scrollbar->SetScrollPos(scrollbar->GetScrollPos() + 1);
 }
@@ -153,7 +153,7 @@ bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
     const Extent padding(PADDING, PADDING);
     if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(padding), GetSize() - padding * 2u)))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-3);
         return true;
     } else
@@ -165,7 +165,7 @@ bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
     const Extent padding(PADDING, PADDING);
     if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(padding), GetSize() - padding * 2u)))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+3);
         return true;
     } else
@@ -184,7 +184,7 @@ void ctrlMultiline::Resize(const Extent& newSize)
     Window::Resize(newSize);
 
     RecalcVisibleLines();
-    ctrlScrollBar* scrollBar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollBar = GetCtrl<ctrlScrollBar>(0);
     scrollBar->SetPageSize(maxNumVisibleLines);
     scrollBar->SetHeight(GetSize().y);
     scrollBar->SetPos(DrawPoint(GetSize().x - SCROLLBAR_WIDTH, 0));

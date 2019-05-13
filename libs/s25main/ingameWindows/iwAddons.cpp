@@ -18,6 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwAddons.h"
 
+#include <utility>
+
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "addons/Addon.h"
@@ -27,12 +29,12 @@
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
 
-iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy, const std::vector<AddonId>& addonIds)
+iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy, std::vector<AddonId> addonIds)
     : IngameWindow(CGI_ADDONS, IngameWindow::posLastOrCenter, Extent(700, 500), _("Addon Settings"), LOADER.GetImageN("resource", 41), true,
                    false, parent),
-      ggs(ggs), policy(policy), addonIds(addonIds)
+      ggs(ggs), policy(policy), addonIds(std::move(addonIds))
 {
-    AddText(0, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(0, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     Extent btSize(200, 22);
     if(policy != READONLY)
@@ -65,7 +67,7 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy,
     optiongroup->SetSelection(ADDONGROUP_ALL, true);
 }
 
-iwAddons::~iwAddons() {}
+iwAddons::~iwAddons() = default;
 
 void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 {
@@ -140,7 +142,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 /// Aktualisiert die Addons, die angezeigt werden sollen
 void iwAddons::UpdateView(const unsigned short selection)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
     unsigned short y = 90;
     unsigned short numAddonsInCurCategory = 0;
     for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
@@ -179,7 +181,7 @@ void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection
     {
         case 5: // richtige Kategorie anzeigen
         {
-            ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
+            auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
             scrollbar->SetScrollPos(0);
             UpdateView(selection);
         }
@@ -192,20 +194,20 @@ void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection
  */
 void iwAddons::Msg_ScrollChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
-    ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(5);
+    auto* optiongroup = GetCtrl<ctrlOptionGroup>(5);
     UpdateView(optiongroup->GetSelection());
 }
 
 bool iwAddons::Msg_WheelUp(const MouseCoords& /*mc*/)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
     scrollbar->Scroll(-2);
     return true;
 }
 
 bool iwAddons::Msg_WheelDown(const MouseCoords& /*mc*/)
 {
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
     scrollbar->Scroll(+2);
     return true;
 }

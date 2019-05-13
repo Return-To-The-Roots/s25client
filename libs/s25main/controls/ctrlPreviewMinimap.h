@@ -19,7 +19,6 @@
 
 #include "PreviewMinimap.h"
 #include "ctrlMinimap.h"
-#include "ogl/glArchivItem_Map.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameData/MaxPlayers.h"
 #include <array>
@@ -51,7 +50,7 @@ public:
     /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
     void SetPlayerColor(unsigned id, unsigned color) { players[id].color = color; }
 
-    void SetMap(const glArchivItem_Map* const s2map);
+    void SetMap(const glArchivItem_Map* s2map);
 };
 
 #endif // !MapPreview_H_

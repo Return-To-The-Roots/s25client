@@ -22,9 +22,9 @@
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/MultiArray.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
-#include "libsiedler2/ArchivItem_BitmapBase.h"
 
 namespace {
 enum IDS
@@ -106,11 +106,11 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
     GAMEMANAGER.SetCursor();
 }
 
-iwMsgbox::~iwMsgbox() {}
+iwMsgbox::~iwMsgbox() = default;
 
 void iwMsgbox::MoveIcon(const DrawPoint& pos)
 {
-    ctrlImage* icon = GetCtrl<ctrlImage>(ID_ICON);
+    auto* icon = GetCtrl<ctrlImage>(ID_ICON);
     if(icon)
     {
         icon->SetPos(elMax(pos, DrawPoint(0, 0)));
@@ -146,7 +146,7 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
         }
-        ctrlMultiline* multiline = GetCtrl<ctrlMultiline>(ID_TEXT);
+        auto* multiline = GetCtrl<ctrlMultiline>(ID_TEXT);
         multiline->SetPos(textPos);
         multiline->Resize(textMaxSize);
         multiline->Resize(multiline->GetContentSize());
@@ -158,7 +158,7 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
         btMoveDelta.x /= 2;
         for(unsigned i = 0; i < 3; i++)
         {
-            Window* bt = GetCtrl<Window>(i + ID_BT_0);
+            auto* bt = GetCtrl<Window>(i + ID_BT_0);
             if(bt)
                 bt->SetPos(bt->GetPos() + btMoveDelta);
         }
@@ -166,8 +166,8 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
     }
 }
 
-const MsgboxResult RET_IDS[MSB_YESNOCANCEL + 1][3] = {
-  {MSR_OK, MSR_NOTHING, MSR_NOTHING}, {MSR_OK, MSR_CANCEL, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_CANCEL}};
+const helpers::MultiArray<MsgboxResult, MSB_YESNOCANCEL + 1, 3> RET_IDS = {
+  {{MSR_OK, MSR_NOTHING, MSR_NOTHING}, {MSR_OK, MSR_CANCEL, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_CANCEL}}};
 
 void iwMsgbox::Msg_ButtonClick(const unsigned ctrl_id)
 {

@@ -60,9 +60,9 @@ public:
     unsigned char getBoards() const { return boards; }
     unsigned char getStones() const { return stones; }
 
-    noBuildingSite(const BuildingType type, const MapPoint pt, unsigned char player);
+    noBuildingSite(BuildingType type, MapPoint pos, unsigned char player);
     /// Konstruktor für Hafenbaustellen vom Schiff aus
-    noBuildingSite(const MapPoint pt, unsigned char player);
+    noBuildingSite(MapPoint pos, unsigned char player);
     noBuildingSite(SerializedGameData& sgd, unsigned obj_id);
 
     ~noBuildingSite() override;
@@ -101,7 +101,7 @@ public:
     /// Gibt den Bau-Fortschritt zurück
     unsigned char GetBuildProgress(bool percent = true) const;
 
-    unsigned CalcDistributionPoints(noRoadNode* start, const GoodType type);
+    unsigned CalcDistributionPoints(noRoadNode* start, GoodType goodtype);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
     void TakeWare(Ware* ware) override;

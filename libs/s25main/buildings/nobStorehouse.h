@@ -25,7 +25,7 @@ class nobStorehouse : public nobBaseWarehouse
 {
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobStorehouse(const MapPoint pt, unsigned char player, const Nation nation);
+    nobStorehouse(MapPoint pos, unsigned char player, Nation nation);
     nobStorehouse(SerializedGameData& sgd, unsigned obj_id);
 
 protected:

@@ -25,7 +25,6 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "helpers/containerUtils.h"
-#include "network/GameClient.h"
 #include "nofAggressiveDefender.h"
 #include "nofDefender.h"
 #include "nofPassiveSoldier.h"
@@ -64,11 +63,7 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
     attacked_goal->LinkAggressor(this);
 }
 
-nofAttacker::~nofAttacker()
-{
-    // unsigned char oplayer = (player == 0) ? 1 : 0;
-    // RTTR_Assert(!gwg->GetPlayer(oplayer).GetFirstWH()->Test(this));
-}
+nofAttacker::~nofAttacker() = default;
 
 void nofAttacker::Destroy_nofAttacker()
 {
@@ -169,15 +164,15 @@ void nofAttacker::Walked()
             nofDefender* defender = nullptr;
             // Look for defenders at this position
             const std::list<noBase*>& figures = gwg->GetFigures(goalFlagPos);
-            for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+            for(auto figure : figures)
             {
-                if((*it)->GetGOT() == GOT_NOF_DEFENDER)
+                if(figure->GetGOT() == GOT_NOF_DEFENDER)
                 {
                     // Is the defender waiting at the flag?
                     // (could be wandering around or something)
-                    if(static_cast<nofDefender*>(*it)->IsWaitingAtFlag())
+                    if(static_cast<nofDefender*>(figure)->IsWaitingAtFlag())
                     {
-                        defender = static_cast<nofDefender*>(*it);
+                        defender = static_cast<nofDefender*>(figure);
                     }
                 }
             }
@@ -249,7 +244,7 @@ void nofAttacker::Walked()
                     if(ship_obj_id)
                         CancelAtShip();
                     // Gebäude einnehmen
-                    nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+                    auto* goal = static_cast<nobMilitary*>(attacked_goal);
                     goal->Capture(player);
                     // This is the new home
                     building = attacked_goal;
@@ -590,7 +585,7 @@ void nofAttacker::ReachedDestination()
         {
             state = STATE_ATTACKING_CAPTURINGNEXT;
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
-            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            auto* goal = static_cast<nobMilitary*>(attacked_goal);
             RTTR_Assert(goal->IsFarAwayCapturer(this));
             // Start walking first so the flag is free
             StartWalking(Direction::NORTHWEST);
@@ -663,7 +658,7 @@ void nofAttacker::ReachedDestination()
             // Building already captured? -> Then we might be a far-away-capturer
             // -> Tell the building, that we are here
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
-            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            auto* goal = static_cast<nobMilitary*>(attacked_goal);
             if(goal->IsFarAwayCapturer(this))
                 goal->FarAwayCapturerReachedGoal(this);
         }
@@ -742,7 +737,7 @@ void nofAttacker::AttackedGoalDestroyed()
     else if(state == STATE_SEAATTACKING_WAITINHARBOR)
     {
         // We don't need to wait anymore, target was destroyed
-        nobHarborBuilding* harbor = gwg->GetSpecObj<nobHarborBuilding>(harborPos);
+        auto* harbor = gwg->GetSpecObj<nobHarborBuilding>(harborPos);
         RTTR_Assert(harbor);
         // go home
         goal_ = building;
@@ -837,7 +832,7 @@ void nofAttacker::CapturingWalking()
         if(BuildingProperties::IsMilitary(attacked_goal->GetBuildingType()))
         {
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
-            nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
+            auto* goal = static_cast<nobMilitary*>(attacked_goal);
             // If we are still a far-away-capturer at this point, then the building belongs to us and capturing was already finished
             if(!goal->IsFarAwayCapturer(this))
             {
@@ -867,7 +862,7 @@ void nofAttacker::CapturingWalking()
             // Wenn noch das Ziel existiert (könnte ja zeitgleich abgebrannt worden sein)
             if(attacked_goal)
             {
-                nobMilitary* attackedBld = static_cast<nobMilitary*>(attacked_goal);
+                auto* attackedBld = static_cast<nobMilitary*>(attacked_goal);
                 RemoveFromAttackedGoal();
                 // Evtl. neue Besatzer rufen
                 RTTR_Assert(attackedBld->GetPlayer() == player);
@@ -1010,9 +1005,8 @@ void nofAttacker::RemoveFromAttackedGoal()
     RTTR_Assert(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || !attacked_goal->GetDefender()
                 || (attacked_goal->GetDefender()->GetAttacker() != this && attacked_goal->GetDefender()->GetEnemy() != this));
     // No defender should be chasing us at this point
-    for(std::list<nofAggressiveDefender*>::const_iterator it = attacked_goal->GetAggresiveDefenders().begin();
-        it != attacked_goal->GetAggresiveDefenders().end(); ++it)
-        RTTR_Assert((*it)->GetAttacker() != this);
+    for(auto it : attacked_goal->GetAggresiveDefenders())
+        RTTR_Assert(it->GetAttacker() != this);
     attacked_goal->UnlinkAggressor(this);
     attacked_goal = nullptr;
 }
@@ -1080,7 +1074,7 @@ void nofAttacker::CancelAtShip()
     {
         if(figure->GetObjId() == ship_obj_id)
         {
-            noShip* ship = static_cast<noShip*>(figure);
+            auto* ship = static_cast<noShip*>(figure);
             ship->SeaAttackerWishesNoReturn();
             break;
         }

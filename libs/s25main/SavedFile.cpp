@@ -24,6 +24,7 @@
 #include "libutil/Serializer.h"
 #include <boost/format.hpp>
 #include <algorithm>
+#include <mygettext/mygettext.h>
 #include <stdexcept>
 
 SavedFile::SavedFile() : saveTime_(0)
@@ -32,7 +33,7 @@ SavedFile::SavedFile() : saveTime_(0)
     std::copy(rev.begin(), rev.begin() + revision.size(), revision.begin());
 }
 
-SavedFile::~SavedFile() {}
+SavedFile::~SavedFile() = default;
 
 void SavedFile::WriteFileHeader(BinaryFile& file)
 {
@@ -130,8 +131,8 @@ void SavedFile::WritePlayerData(BinaryFile& file)
 {
     Serializer ser;
     ser.PushUnsignedChar(players.size());
-    for(std::vector<BasePlayerInfo>::const_iterator it = players.begin(); it != players.end(); ++it)
-        it->Serialize(ser, true);
+    for(const auto& player : players)
+        player.Serialize(ser, true);
 
     ser.WriteToFile(file);
 }

@@ -35,8 +35,8 @@ void XorShift::deserialize(Serializer& ser)
 
 void XorShift::serialize(Serializer& ser) const
 {
-    unsigned high = static_cast<unsigned>(state_ >> 32);
-    unsigned low = static_cast<unsigned>(state_);
+    auto high = static_cast<unsigned>(state_ >> 32);
+    auto low = static_cast<unsigned>(state_);
     ser.PushUnsignedInt(high);
     ser.PushUnsignedInt(low);
 }

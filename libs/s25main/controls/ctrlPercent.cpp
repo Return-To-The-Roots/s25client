@@ -17,9 +17,9 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlPercent.h"
+#include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
-#include <cstdio>
 
 ctrlPercent::ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
                          glArchivItem_Font* font, const unsigned short* percentage)
@@ -59,7 +59,6 @@ void ctrlPercent::Draw_()
     DrawRectangle(Rect(GetDrawPos() + DrawPoint(4, 4), progSize), color);
 
     // Text zeichnen
-    char caption[256];
-    sprintf(caption, "%u%%", percentage);
+    std::string caption = helpers::toString(percentage) + "%";
     font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, caption, FontStyle::CENTER | FontStyle::VCENTER, text_color);
 }

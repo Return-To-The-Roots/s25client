@@ -31,4 +31,4 @@ rttr::test::Fixture::Fixture()
         throw std::runtime_error(RTTRCONFIG.ExpandPath("<RTTR_RTTR>") + " not found. Binary misplaced or RTTR folder not copied?");
 }
 
-rttr::test::Fixture::~Fixture() {}
+rttr::test::Fixture::~Fixture() = default;

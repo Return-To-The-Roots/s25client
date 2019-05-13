@@ -21,9 +21,7 @@
 #include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/MapStyle.h"
 #include "random/XorShift.h"
-#include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
-#include "gameData/DescriptionContainer.h"
 #include "gameData/WorldDescription.h"
 #include <vector>
 
@@ -75,7 +73,7 @@ public:
      * @param max maximum value
      * @return a new random number
      */
-    double DRand(const double min, const double max);
+    double DRand(double min, double max);
 
     const TerrainDesc& GetTerrainByS2Id(uint8_t s2Id) const;
 
@@ -98,7 +96,7 @@ private:
     void CreateContinent();
     void CreateRandom();
 
-    typedef XorShift UsedRNG;
+    using UsedRNG = XorShift;
     UsedRNG rng_;
 };
 

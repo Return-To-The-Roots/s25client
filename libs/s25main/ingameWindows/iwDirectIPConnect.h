@@ -30,7 +30,7 @@ private:
 
 public:
     iwDirectIPConnect(ServerType server_type);
-    void SetHost(const std::string& host);
+    void SetHost(const std::string& hostIp);
     void SetPort(unsigned short port);
     /// Connects to the given server or fills in the info if it has a password
     void Connect(const std::string& hostOrIp, unsigned short port, bool isIPv6, bool hasPwd);
@@ -43,8 +43,8 @@ private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
 
-    void CI_Error(const ClientError ce) override;
-    void CI_NextConnectState(const ConnectState cs) override;
+    void CI_Error(ClientError ce) override;
+    void CI_NextConnectState(ConnectState cs) override;
 };
 
 #endif // !iwDIRECTIPCONNECT_H_INCLUDED

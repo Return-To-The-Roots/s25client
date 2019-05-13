@@ -99,7 +99,7 @@ private:
     // void WanderToFlagFailedTrade();
 
     /// Sichtbarkeiten berechnen für Figuren mit Sichtradius (Soldaten, Erkunder) vor dem Laufen
-    void CalcVisibilities(const MapPoint pt);
+    void CalcVisibilities(MapPoint pt);
 
 protected:
     /// In aktueller Richtung ein Stück zurcklegen
@@ -117,9 +117,9 @@ protected:
 
 public:
     /// Konstruktor für Figuren, die auf dem Wegenetz starten
-    noFigure(const Job job, const MapPoint pt, unsigned char player, noRoadNode* const goal);
+    noFigure(Job job, MapPoint pos, unsigned char player, noRoadNode* goal);
     /// Konstruktor für Figuren, die im Job-Modus starten
-    noFigure(const Job job, const MapPoint pt, unsigned char player);
+    noFigure(Job job, MapPoint pos, unsigned char player);
 
     noFigure(SerializedGameData& sgd, unsigned obj_id);
 
@@ -151,7 +151,7 @@ public:
     /// Tut was, nachdem er rausgehen soll
     void ActAtFirst();
     /// Legt die Anfangsdaten für das Laufen auf Wegen fest
-    void InitializeRoadWalking(const RoadSegment* const road, unsigned short rs_pos, bool rs_dir);
+    void InitializeRoadWalking(const RoadSegment* road, unsigned short rs_pos, bool rs_dir);
     /// Gibt Job-Typ zurück
     Job GetJobType() const { return job_; }
     /// Returns true if this is a soldier (they get some special handling at some points)
@@ -159,17 +159,17 @@ public:
     /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
     void DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat);
     /// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
-    void DrawWalkingBobJobs(DrawPoint drawPt, unsigned id);
+    void DrawWalkingBobJobs(DrawPoint drawPt, unsigned job);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft
-    void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned item, bool fat, bool waitingsoldier = false);
+    void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat, bool waitingsoldier = false);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
-    void DrawWalking(DrawPoint drawPt, const char* const file, unsigned id);
+    void DrawWalking(DrawPoint drawPt, const char* file, unsigned id);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft, nimmt automatisch richtige Job-ID/Datei
     void DrawWalking(DrawPoint drawPt);
     /// Interpoliert die Positon zwischen zwei Knotenpunkten
     DrawPoint CalcFigurRelative() const;
     /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)
-    void StartWalking(const Direction dir);
+    void StartWalking(Direction dir);
     /// Starts walking in a random dir and returns whether this was possible
     bool WalkInRandomDir();
     /// Umherirren starten (frei rumlaufen)
@@ -183,7 +183,7 @@ public:
     /// Gibt die Straße zurück, auf der man gerade läuft
     const RoadSegment* GetCurrentRoad() { return cur_rs; }
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde, setzt vorraus, dass die Figur auf der geteilten Straße läuft!
-    void CorrectSplitData(const RoadSegment* const rs2);
+    void CorrectSplitData(const RoadSegment* rs2);
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
     virtual void CorrectSplitData_Derived();
     /// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche)
@@ -199,12 +199,12 @@ public:
     virtual bool MemberOfWarehouse() const { return false; }
 
     /// Ein Punkt neben der Figur wurde freigegeben --> wenn sie deswegen angehalten ist, kann sie weiterlaufen
-    void NodeFreed(const MapPoint pt);
+    void NodeFreed(MapPoint pt);
 
     /// Wartet sie auf einen freien Platz?
     bool IsWaitingForFreeNode() const { return waiting_for_free_node; }
     /// Stoppt, wenn er auf diesen Punkt zuläuft
-    void StopIfNecessary(const MapPoint pt);
+    void StopIfNecessary(MapPoint pt);
 
     unsigned char GetPlayer() const { return player; }
 
@@ -216,7 +216,7 @@ public:
     /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
     void StartShipJourney();
     /// Tells the figure it arrived at a harbor at the given position
-    void ArrivedByShip(const MapPoint harborPos);
+    void ArrivedByShip(MapPoint harborPos);
     /// Gibt zurück, ob die Figur kein Ziel mehr hat und damit nach einer Schifffahrt im
     /// Lagerhaus interniert werden muss
     bool HasNoGoal() const { return (goal_ == nullptr); }

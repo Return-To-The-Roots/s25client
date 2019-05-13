@@ -19,9 +19,7 @@
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "files.h"
-#include "helpers/containerUtils.h"
 #include "languages.h"
-#include "mygettext/mygettext.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libutil/StringConversion.h"
 #include <boost/assign/std/vector.hpp>

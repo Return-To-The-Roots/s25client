@@ -29,7 +29,7 @@ class noGranite : public noBase
     unsigned char state; // Status, 0 - 5, von sehr wenig bis sehr viel
 
 public:
-    noGranite(const GraniteType type, unsigned char state);
+    noGranite(GraniteType type, unsigned char state);
     noGranite(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden

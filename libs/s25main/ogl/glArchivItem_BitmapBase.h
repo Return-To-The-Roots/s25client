@@ -20,20 +20,20 @@
 #pragma once
 
 #include "DrawPoint.h"
-#include "libsiedler2/ArchivItem_Bitmap.h"
+#include "libsiedler2/ArchivItem_BitmapBase.h"
 
 class glArchivItem_BitmapBase : public virtual libsiedler2::ArchivItem_BitmapBase //-V690
 {
 public:
     glArchivItem_BitmapBase();
-    glArchivItem_BitmapBase(const glArchivItem_BitmapBase& other);
+    glArchivItem_BitmapBase(const glArchivItem_BitmapBase& item);
     ~glArchivItem_BitmapBase() override;
 
     /// liefert das GL-Textur-Handle.
     unsigned GetTexture();
     unsigned GetTextureNoCreate() const { return texture; }
     /// Löscht die GL-Textur (z.B fürs Neuerstellen)
-    virtual void DeleteTexture();
+    void DeleteTexture();
     /// Setzt den Texturfilter auf einen bestimmten Wert.
     virtual void setInterpolateTexture(bool interpolate);
 

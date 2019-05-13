@@ -23,15 +23,13 @@
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "MapGeometry.h"
-#include "SoundManager.h"
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
-#include "helpers/strUtils.h"
-#include "network/GameClient.h"
+#include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
@@ -40,12 +38,12 @@
 #include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/BuildingConsts.h"
-#include "gameData/BuildingProperties.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
+#include "libutil/warningSuppression.h"
 #include <boost/format.hpp>
+#include <cmath>
 #include <glad/glad.h>
-#include <stdexcept>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
     : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
@@ -54,7 +52,7 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, co
     MoveTo(0, 0);
 }
 
-GameWorldView::~GameWorldView() {}
+GameWorldView::~GameWorldView() = default;
 
 const GameWorldBase& GameWorldView::GetWorld() const
 {
@@ -196,8 +194,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         }
 
         // Figuren zwischen den Zeilen zeichnen
-        for(unsigned i = 0; i < between_lines.size(); ++i)
-            between_lines[i].obj->Draw(between_lines[i].pos);
+        for(auto& between_line : between_lines)
+            between_line.obj->Draw(between_line.pos);
     }
 
     if(show_names || show_productivity)
@@ -206,10 +204,10 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
     // Umherfliegende Katapultsteine zeichnen
-    for(std::list<CatapultStone*>::const_iterator it = GetWorld().catapult_stones.begin(); it != GetWorld().catapult_stones.end(); ++it)
+    for(auto catapult_stone : GetWorld().catapult_stones)
     {
-        if(gwv.GetVisibility((*it)->dest_building) == VIS_VISIBLE || gwv.GetVisibility((*it)->dest_map) == VIS_VISIBLE)
-            (*it)->Draw(offset);
+        if(gwv.GetVisibility(catapult_stone->dest_building) == VIS_VISIBLE || gwv.GetVisibility(catapult_stone->dest_map) == VIS_VISIBLE)
+            catapult_stone->Draw(offset);
     }
 
     if(zoomFactor_ != 1.f) //-V550
@@ -350,7 +348,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             Position curOffset;
             MapPoint pt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
 
-            const noBaseBuilding* no = GetWorld().GetSpecObj<noBaseBuilding>(pt);
+            const auto* no = GetWorld().GetSpecObj<noBaseBuilding>(pt);
             if(!no)
                 continue;
 
@@ -387,7 +385,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         SmallFont->Draw(curPos, (boost::format("(%1% %%)") % p).str(), FontStyle::CENTER | FontStyle::VCENTER, color);
     } else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
     {
-        const nobUsual& n = static_cast<const nobUsual&>(no);
+        const auto& n = static_cast<const nobUsual&>(no);
         std::string text;
         unsigned color = COLOR_0_PERCENT;
 
@@ -496,9 +494,10 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
 
     return;
     // TODO: military aid - display icon overlay of attack possibility
-
+    RTTR_IGNORE_UNREACHABLE_CODE
     if(gwv.GetNumSoldiersForAttack(pt) > 0) // soldiers available for attack?
         LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
+    RTTR_POP_DIAGNOSTIC
 }
 
 void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis)
@@ -602,7 +601,7 @@ void GameWorldView::AddDrawNodeCallback(IDrawNodeCallback* newCallback)
 
 void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
 {
-    std::vector<IDrawNodeCallback*>::iterator itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
+    auto itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
     RTTR_Assert(itPos != drawNodeCallbacks.end());
     drawNodeCallbacks.erase(itPos);
 }

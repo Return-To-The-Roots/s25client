@@ -22,6 +22,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <memory>
+#include <utility>
 
 enum SoundType
 {
@@ -34,7 +35,7 @@ enum SoundType
 struct SoundDesc : boost::noncopyable
 {
     SoundDesc() : type_(SD_UNKNOWN), isValid_(false) {}
-    virtual ~SoundDesc() {}
+    virtual ~SoundDesc() = default;
     const SoundType type_;
     bool isValid() const { return isValid_; }
 
@@ -47,9 +48,9 @@ protected:
 class SoundHandle
 {
 public:
-    typedef std::shared_ptr<SoundDesc> Descriptor;
+    using Descriptor = std::shared_ptr<SoundDesc>;
 
-    explicit SoundHandle(Descriptor descriptor = Descriptor()) : descriptor_(descriptor) {}
+    explicit SoundHandle(Descriptor descriptor = Descriptor()) : descriptor_(std::move(descriptor)) {}
     SoundType getType() const { return isValid() ? descriptor_->type_ : SD_UNKNOWN; }
     bool isMusic() const { return getType() == SD_MUSIC; }
     bool isEffect() const { return getType() == SD_EFFECT; }

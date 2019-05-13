@@ -22,7 +22,6 @@
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
 #include "buildings/nobMilitary.h"
-#include "network/GameClient.h"
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
 #include "random/Random.h"
@@ -52,7 +51,7 @@ nofDefender::nofDefender(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     if(state != STATE_FIGUREWORK)
         attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
     else
-        attacker = 0;
+        attacker = nullptr;
 }
 
 /// wenn man gelaufen ist
@@ -75,7 +74,7 @@ void nofDefender::Walked()
             if(!building)
             {
                 // Rumirren
-                attacker = 0;
+                attacker = nullptr;
                 state = STATE_FIGUREWORK;
                 StartWandering();
                 Wander();
@@ -108,7 +107,7 @@ void nofDefender::Walked()
 /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
 void nofDefender::HomeDestroyed()
 {
-    building = 0;
+    building = nullptr;
 
     switch(state)
     {
@@ -222,7 +221,5 @@ void nofDefender::AttackerArrested()
 /// The derived classes regain control after a fight of nofActiveSoldier
 void nofDefender::FreeFightEnded()
 {
-    // This is not supposed to happen
-    RTTR_Assert(false);
-    nofActiveSoldier::FreeFightEnded();
+    throw std::logic_error("Should not participate inf ree fights");
 }

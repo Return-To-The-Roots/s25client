@@ -17,12 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Replay.h"
-#include "BasePlayerInfo.h"
 #include "Savegame.h"
 #include "network/PlayerGameCommands.h"
 #include "gameTypes/MapInfo.h"
-#include "libendian/ConvertEndianess.h"
 #include <boost/filesystem.hpp>
+#include <memory>
+#include <mygettext/mygettext.h>
 
 std::string Replay::GetSignature() const
 {
@@ -180,7 +180,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
                 break;
             case MAPTYPE_SAVEGAME:
                 // Load savegame
-                mapInfo.savegame.reset(new Savegame);
+                mapInfo.savegame = std::make_unique<Savegame>();
                 if(!mapInfo.savegame->Load(file, true, true))
                 {
                     lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo.savegame->GetLastErrorMsg();

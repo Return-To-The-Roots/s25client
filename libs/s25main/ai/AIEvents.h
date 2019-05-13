@@ -48,7 +48,7 @@ class Base
 {
 public:
     Base(EventType type) : type(type) {}
-    virtual ~Base() {}
+    virtual ~Base() = default;
     EventType GetType() const { return type; }
 
 protected:
@@ -59,7 +59,7 @@ class Location : public Base
 {
 public:
     Location(EventType type, const MapPoint pt) : Base(type), pos(pt) {}
-    ~Location() override {}
+    ~Location() override = default;
     MapCoord GetX() const { return pos.x; }
     MapCoord GetY() const { return pos.y; }
     MapPoint GetPos() const { return pos; }
@@ -72,7 +72,7 @@ class Direction : public Location
 {
 public:
     Direction(EventType type, const MapPoint pt, ::Direction direction) : Location(type, pt), direction(direction) {}
-    ~Direction() override {}
+    ~Direction() override = default;
     ::Direction GetDirection() const { return direction; }
 
 protected:
@@ -83,7 +83,7 @@ class Building : public Location
 {
 public:
     Building(EventType type, const MapPoint pt, BuildingType building) : Location(type, pt), building(building) {}
-    ~Building() override {}
+    ~Building() override = default;
     BuildingType GetBuildingType() const { return building; }
 
 protected:

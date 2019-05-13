@@ -33,27 +33,27 @@ class Game;
 class LuaInterfaceGame : public LuaInterfaceGameBase
 {
 public:
-    LuaInterfaceGame(std::weak_ptr<Game> game);
+    LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance);
     virtual ~LuaInterfaceGame();
 
     static void Register(kaguya::State& state);
 
     bool Serialize(Serializer& luaSaveState);
-    bool Deserialize(Serializer& luaState);
+    bool Deserialize(Serializer& luaSaveState);
 
-    void EventExplored(unsigned player, const MapPoint pt, unsigned char owner);
-    void EventOccupied(unsigned player, const MapPoint pt);
+    void EventExplored(unsigned player, MapPoint pt, unsigned char owner);
+    void EventOccupied(unsigned player, MapPoint pt);
     void EventStart(bool isFirstStart);
-    void EventGameFrame(unsigned number);
-    void EventResourceFound(unsigned char player, const MapPoint pt, unsigned char type, unsigned char quantity);
+    void EventGameFrame(unsigned nr);
+    void EventResourceFound(unsigned char player, MapPoint pt, unsigned char type, unsigned char quantity);
     // Called if player wants to cancel a pact
     bool EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
     // Called if player suggests a pact
-    void EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, unsigned duration);
+    void EventSuggestPact(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, unsigned duration);
     // called if pact was canceled
-    void EventPactCanceled(const PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
+    void EventPactCanceled(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
     // called if pact was created
-    void EventPactCreated(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, unsigned duration);
+    void EventPactCreated(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, unsigned duration);
     // Callable from Lua
     void ClearResources();
     unsigned GetGF() const;

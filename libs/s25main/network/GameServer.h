@@ -26,17 +26,14 @@
 #include "GlobalGameSettings.h"
 #include "JoinPlayerInfo.h"
 #include "NWFInfo.h"
-#include "random/Random.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
 #include "libutil/LANDiscoveryService.h"
 #include "libutil/Singleton.h"
 #include <chrono>
-#include <memory>
 #include <vector>
 
-class AIPlayer;
 struct CreateServerInfo;
 class GameMessage;
 class GameMessageWithPlayer;
@@ -48,7 +45,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 {
 public:
     static constexpr unsigned Longevity = 6;
-    typedef std::chrono::steady_clock SteadyClock;
+    using SteadyClock = std::chrono::steady_clock;
 
     GameServer();
     ~GameServer() override;
@@ -71,7 +68,7 @@ private:
 
     GameServerPlayer* GetNetworkPlayer(unsigned playerId);
     /// Swap players ingame or during config
-    void SwapPlayer(const uint8_t player1, const uint8_t player2);
+    void SwapPlayer(uint8_t player1, uint8_t player2);
 
     void SendToAll(const GameMessage& msg);
     void SendNWFDone(const NWFServerInfo& info);
@@ -92,6 +89,7 @@ private:
     void LC_Status_Error(const std::string& error) override;
     void LC_Created() override;
 
+    RTTR_IGNORE_OVERLOADED_VIRTUAL
     bool OnGameMessage(const GameMessage_Pong& msg) override;
     bool OnGameMessage(const GameMessage_Server_Type& msg) override;
     bool OnGameMessage(const GameMessage_Server_Password& msg) override;
@@ -115,6 +113,8 @@ private:
     bool OnGameMessage(const GameMessage_CancelCountdown& msg) override;
     bool OnGameMessage(const GameMessage_Pause& msg) override;
     bool OnGameMessage(const GameMessage_SkipToGF& msg) override;
+    RTTR_POP_DIAGNOSTIC
+
     void CancelCountdown();
     bool ArePlayersReady() const;
     /// Some player data has changed. Set non-ready and cancel countdown

@@ -26,8 +26,8 @@ namespace kaguya {
 template<typename T1, typename T2>
 struct lua_type_traits<std::pair<T1, T2>>
 {
-    typedef std::pair<T1, T2> get_type;
-    typedef const std::pair<T1, T2>& push_type;
+    using get_type = std::pair<T1, T2>;
+    using push_type = const std::pair<T1, T2>&;
 
     struct checkTypeForEach
     {

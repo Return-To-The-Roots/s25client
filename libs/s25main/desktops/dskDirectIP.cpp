@@ -17,16 +17,13 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskDirectIP.h"
-
 #include "Loader.h"
 #include "Settings.h"
 #include "WindowManager.h"
-
 #include "dskMultiPlayer.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "libutil/colors.h"
 
 dskDirectIP::dskDirectIP()
 {
@@ -49,21 +46,21 @@ void dskDirectIP::Msg_ButtonClick(const unsigned ctrl_id)
         {
             // Hosten geht nur ohne aktiven Proxy
             if(SETTINGS.proxy.type != PROXY_NONE)
-                WINDOWMANAGER.Show(new iwMsgbox(
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
-                WINDOWMANAGER.Show(new iwDirectIPCreate(ServerType::DIRECT));
+                WINDOWMANAGER.Show(std::make_unique<iwDirectIPCreate>(ServerType::DIRECT));
         }
         break;
         case 4: // "Verbinden"
         {
-            WINDOWMANAGER.Show(new iwDirectIPConnect(ServerType::DIRECT));
+            WINDOWMANAGER.Show(std::make_unique<iwDirectIPConnect>(ServerType::DIRECT));
         }
         break;
         case 5: // "Zurück"
         {
-            WINDOWMANAGER.Switch(new dskMultiPlayer);
+            WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>());
         }
         break;
     }

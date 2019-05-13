@@ -20,13 +20,12 @@
 #include "test/testConfig.h"
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libutil/Tokenizer.h"
-#include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
 
 BOOST_AUTO_TEST_SUITE(LoaderTests)
 
-boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv& archive, const std::string& expectedContents)
+static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv& archive, const std::string& expectedContents)
 {
     std::vector<std::string> txts = Tokenizer(expectedContents, "|").explode();
     if(txts.size() != archive.size())
@@ -52,7 +51,7 @@ boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv& archi
             return res;
         } else
         {
-            const libsiedler2::ArchivItem_Text* arTxt = static_cast<const libsiedler2::ArchivItem_Text*>(archive[i]);
+            const auto* arTxt = static_cast<const libsiedler2::ArchivItem_Text*>(archive[i]);
             if(arTxt->getText() != txts[i])
             {
                 boost::test_tools::predicate_result res(false);

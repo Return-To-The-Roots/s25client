@@ -20,6 +20,7 @@
 #include "notifications/notifications.h"
 #include <boost/test/unit_test.hpp>
 #include <string>
+#include <utility>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(NotificationsTestSuite)
@@ -28,7 +29,7 @@ struct TestNote
 {
     ENABLE_NOTIFICATION(TestNote)
 
-    TestNote(const std::string& text) : text(text) {}
+    TestNote(std::string text) : text(std::move(text)) {}
     std::string text;
 };
 

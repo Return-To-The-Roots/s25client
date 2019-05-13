@@ -29,10 +29,8 @@ class GamePlayer;
 class FOWObject;
 class GameWorldBase;
 struct MapNode;
-struct NodeNote;
 struct FoWNode;
 class noShip;
-class TerrainRenderer;
 struct RoadNote;
 
 /// This is a players View(er) on the GameWorld
@@ -56,28 +54,28 @@ public:
     unsigned GetNumPlayers() const;
 
     /// Get number of soldiers that can attack bld at that point
-    unsigned GetNumSoldiersForAttack(const MapPoint pt) const;
+    unsigned GetNumSoldiersForAttack(MapPoint pt) const;
     /// Get number of soldiers for attacking a point via sea
-    unsigned GetNumSoldiersForSeaAttack(const MapPoint pt) const;
+    unsigned GetNumSoldiersForSeaAttack(MapPoint pt) const;
 
     /// Get BQ for this player
     BuildingQuality GetBQ(const MapPoint& pt) const;
     /// Recalculates the visual BQ when a road part is build at that point
     void RecalcBQForRoad(const MapPoint& pt);
     /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
-    Visibility GetVisibility(const MapPoint pt) const;
+    Visibility GetVisibility(MapPoint pt) const;
     /// Returns true, if we own this point (but may not be our territory if this is a border point)
     bool IsOwner(const MapPoint& pt) const;
     /// Return true if the point belongs to any player
     bool IsPlayerTerritory(const MapPoint& pt) const;
     const MapNode& GetNode(const MapPoint& pt) const;
-    MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
+    MapPoint GetNeighbour(MapPoint pt, Direction dir) const;
 
     /// liefert sichtbare Strasse, im Nebel entsprechend die FoW-Strasse
-    unsigned char GetVisibleRoad(const MapPoint pt, unsigned char roadDir, const Visibility visibility) const;
-    unsigned char GetVisibleRoad(const MapPoint pt, unsigned char roadDir) const;
+    unsigned char GetVisibleRoad(MapPoint pt, unsigned char roadDir, Visibility visibility) const;
+    unsigned char GetVisibleRoad(MapPoint pt, unsigned char roadDir) const;
     /// Get road, including virtual ones
-    unsigned char GetVisiblePointRoad(const MapPoint pt, Direction dir) const;
+    unsigned char GetVisiblePointRoad(MapPoint pt, Direction dir) const;
     void SetVisiblePointRoad(const MapPoint& pt, Direction dir, unsigned char type);
     bool IsOnRoad(const MapPoint& pt) const;
     /// Remove a visual (not yet built) road
@@ -86,14 +84,14 @@ public:
     bool IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) const;
 
     /// Get the "youngest" FOWObject of all players who share the view with the local player
-    const FOWObject* GetYoungestFOWObject(const MapPoint pos) const;
+    const FOWObject* GetYoungestFOWObject(MapPoint pos) const;
 
     /// Gets the youngest fow node of all visible objects of all players who are connected
     /// with the local player via team view
-    const FoWNode& GetYoungestFOWNode(const MapPoint pos) const;
+    const FoWNode& GetYoungestFOWNode(MapPoint pos) const;
 
     /// Get first found ship of this player at that point or nullptr of none
-    noShip* GetShip(const MapPoint pt) const;
+    noShip* GetShip(MapPoint pt) const;
 
     /// Schattierungen (vor allem FoW) neu berechnen
     void RecalcAllColors();

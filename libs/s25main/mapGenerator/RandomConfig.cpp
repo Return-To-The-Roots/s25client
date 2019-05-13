@@ -27,7 +27,7 @@
 
 bool RandomConfig::Init(MapStyle mapStyle, DescIdx<LandscapeDesc> landscape)
 {
-    uint64_t seed = static_cast<uint64_t>(time(nullptr));
+    auto seed = static_cast<uint64_t>(time(nullptr));
     return Init(mapStyle, landscape, seed);
 }
 

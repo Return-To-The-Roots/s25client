@@ -28,10 +28,10 @@
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/BuildingProperties.h"
 #include "libutil/Log.h"
-#include <stdexcept>
+#include <utility>
 
-RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<Direction>& route)
-    : rt(rt), f1(f1), f2(f2), route(route)
+RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, std::vector<Direction> route)
+    : rt(rt), f1(f1), f2(f2), route(std::move(route))
 {
     carriers_[0] = carriers_[1] = nullptr;
 }
@@ -43,8 +43,8 @@ RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
     carriers_[0] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
     carriers_[1] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
 
-    for(unsigned short i = 0; i < route.size(); ++i)
-        route[i] = Direction(sgd.PopUnsignedChar());
+    for(auto& i : route)
+        i = Direction(sgd.PopUnsignedChar());
 
     // tell the noRoadNodes about our existance
     f1->SetRoute(route.front(), this);
@@ -114,8 +114,8 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
     sgd.PushObject(carriers_[0], true);
     sgd.PushObject(carriers_[1], true);
 
-    for(unsigned short i = 0; i < route.size(); ++i)
-        sgd.PushUnsignedChar(route[i].toUInt());
+    for(auto i : route)
+        sgd.PushUnsignedChar(i.toUInt());
 }
 
 /**
@@ -146,7 +146,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     for(unsigned i = 0; i < length2; ++i)
         second_route[i] = this->route[length1 + i];
 
-    RoadSegment* second = new RoadSegment(rt, splitflag, f2, second_route);
+    auto* second = new RoadSegment(rt, splitflag, f2, second_route);
 
     // Eselstraße? Dann prächtige Flagge, da sie ja wieder zwischen Eselstraßen ist
     if(rt == RT_DONKEY)
@@ -172,12 +172,12 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
     {
         const std::list<noBase*>& figures = gwg->GetFigures(t);
-        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+        for(auto figure : figures)
         {
-            if((*it)->GetType() == NOP_FIGURE)
+            if(figure->GetType() == NOP_FIGURE)
             {
-                if(static_cast<noFigure*>(*it)->GetCurrentRoad() == this)
-                    static_cast<noFigure*>(*it)->CorrectSplitData(second);
+                if(static_cast<noFigure*>(figure)->GetCurrentRoad() == this)
+                    static_cast<noFigure*>(figure)->CorrectSplitData(second);
             }
         }
 
@@ -309,10 +309,10 @@ void RoadSegment::UpgradeDonkeyRoad()
 
     // Eselstraßen setzen
     MapPoint pt = f1->GetPos();
-    for(unsigned short i = 0; i < route.size(); ++i)
+    for(auto i : route)
     {
-        gwg->SetPointRoad(pt, route[i], RT_DONKEY + 1);
-        pt = gwg->GetNeighbour(pt, route[i]);
+        gwg->SetPointRoad(pt, i, RT_DONKEY + 1);
+        pt = gwg->GetNeighbour(pt, i);
     }
 
     // Flaggen auf beiden Seiten upgraden

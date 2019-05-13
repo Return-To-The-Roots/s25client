@@ -21,7 +21,6 @@
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
-#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
@@ -75,17 +74,17 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
         {
             // Fertig mit warten --> anfangen zu arbeiten
             // Die Arbeitsradien der Berufe wie in JobConst.h (ab JOB_WOODCUTTER!)
-            const unsigned char RADIUS[7] = {6, 7, 6, 0, 8, 2, 2};
+            const std::array<unsigned char, 7> RADIUS = {6, 7, 6, 0, 8, 2, 2};
 
             // Additional radius delta r which is used when a point in radius r was found
             // I.e. looks till radius r + delta r
-            const unsigned ADD_RADIUS_WHEN_FOUND[7] = {1, 1, 1, 1, 0, 1, 1};
+            const std::array<unsigned, 7> ADD_RADIUS_WHEN_FOUND = {1, 1, 1, 1, 0, 1, 1};
 
             // Anzahl der Radien, wo wir gültige Punkte gefunden haben
             unsigned radius_count = 0;
 
             // Available points: 1st class and 2st class
-            std::vector<MapPoint> available_points[3];
+            std::array<std::vector<MapPoint>, 3> available_points;
 
             unsigned max_radius = (job_ == JOB_CHARBURNER) ? 3 : RADIUS[job_ - JOB_WOODCUTTER];
             unsigned add_radius_when_found = (job_ == JOB_CHARBURNER) ? 1 : ADD_RADIUS_WHEN_FOUND[job_ - JOB_WOODCUTTER];
@@ -132,11 +131,11 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             if(points_found)
             {
                 // Prefer 1st class objects and use only 2nd class objects if there are no more other objects anymore
-                for(unsigned i = 0; i < 3; ++i)
+                for(auto& available_point : available_points)
                 {
-                    if(!available_points[i].empty())
+                    if(!available_point.empty())
                     {
-                        dest = available_points[i][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_points[i].size())];
+                        dest = available_point[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_point.size())];
                         break;
                     }
                 }

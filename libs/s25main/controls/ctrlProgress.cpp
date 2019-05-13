@@ -105,15 +105,15 @@ void ctrlProgress::Draw_()
     // Prozentzahlen zeichnen
     std::stringstream percent;
     percent << percentage << "%";
-    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, percent.str(), FontStyle::VCENTER | FontStyle::CENTER, COLOR_YELLOW);
+    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, percent.str(), FontStyle::CENTER | FontStyle::VCENTER, COLOR_YELLOW);
 }
 
 void ctrlProgress::Resize(const Extent& newSize)
 {
     Window::Resize(newSize);
 
-    Window* lessBt = GetCtrl<Window>(0);
-    Window* moreBt = GetCtrl<Window>(1);
+    auto* lessBt = GetCtrl<Window>(0);
+    auto* moreBt = GetCtrl<Window>(1);
     Extent btSize(newSize.y, newSize.y);
     lessBt->Resize(btSize);
     moreBt->Resize(btSize);

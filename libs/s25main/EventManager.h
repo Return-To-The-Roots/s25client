@@ -44,10 +44,10 @@ public:
     /// Add an event for the given object
     /// @param length Number of GFs after which it is executed (>0)
     /// @param id     ID of the event (passed to OnEvent)
-    const GameEvent* AddEvent(GameObject* obj, unsigned length, unsigned id = 0);
+    const GameEvent* AddEvent(GameObject* obj, unsigned gf_length, unsigned id = 0);
     /// Add an event that was started before, but paused (e.g. removed as someone stopped walking due to an obstacle)
     /// @param elapsed Number of GFs that have already elapsed of the length. Passing 0 is equal to adding a regular event
-    const GameEvent* AddEvent(GameObject* obj, unsigned length, unsigned id, unsigned elapsed);
+    const GameEvent* AddEvent(GameObject* obj, unsigned gf_length, unsigned id, unsigned gf_elapsed);
     /// Remove an event and sets the pointer to nullptr
     void RemoveEvent(const GameEvent*& ep);
     /// Add an object to be destroyed after current GF
@@ -67,10 +67,10 @@ public:
 
 protected:
     // Use list to allow removing of events while iterating (Event A can cause Event B in the same GF to be removed)
-    typedef std::list<const GameEvent*> EventList;
-    typedef std::map<unsigned, EventList> EventMap;
+    using EventList = std::list<const GameEvent*>;
+    using EventMap = std::map<unsigned, EventList>;
     // Use list to allow adding events while iterating (Destroying 1 object may lead to destruction of another)
-    typedef std::list<GameObject*> GameObjList;
+    using GameObjList = std::list<GameObject*>;
     unsigned numActiveEvents;
     /// Instances created. Must be != 0
     unsigned eventInstanceCtr;

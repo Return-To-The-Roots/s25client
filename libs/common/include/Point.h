@@ -19,8 +19,8 @@
 #define Point_h__
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
-#include <stdint.h>
 #include <type_traits>
 
 /// Type for describing a 2D value (position, size, offset...)
@@ -28,36 +28,40 @@
 template<typename T>
 struct Point //-V690
 {
-    typedef T ElementType;
+    using ElementType = T;
 
     T x, y;
+    constexpr Point() : x(getInvalidValue()), y(getInvalidValue()) {}
     constexpr Point(const T x, const T y) : x(x), y(y) {}
-    constexpr Point(const Point& other = Invalid()) : x(other.x), y(other.y) {}
+    constexpr Point(const Point&) = default;
     template<typename U>
     constexpr explicit Point(const Point<U>& pt) : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
     {}
 
-    static constexpr Point Invalid();
+    static constexpr Point Invalid() { return Point(); }
     /// Create a new point with all coordinates set to value
     static constexpr Point all(const T& value);
     constexpr bool isValid() const;
 
     constexpr bool operator==(const Point& second) const;
     constexpr bool operator!=(const Point& second) const;
+
+private:
+    static constexpr T getInvalidValue();
 };
 
 /// Type for describing a position/offset etc. (signed type)
-typedef Point<int> Position;
+using Position = Point<int>;
 /// Type for describing an extent/size etc. (unsigned type)
-typedef Point<unsigned> Extent;
+using Extent = Point<unsigned>;
 //-V:all:810
 
 //////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-constexpr Point<T> Point<T>::Invalid()
+constexpr T Point<T>::getInvalidValue()
 {
-    return Point::all(std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max());
+    return std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max();
 }
 
 template<typename T>
@@ -107,7 +111,7 @@ constexpr Point<T> elMax(const Point<T>& lhs, const Point<T>& rhs)
 template<typename T, bool T_isFloat = std::is_floating_point<T>::value>
 struct PointProductType
 {
-    typedef T type;
+    using type = T;
 };
 
 template<typename T>
@@ -115,7 +119,7 @@ struct PointProductType<T, false>
 {
     static constexpr bool is64Bit = sizeof(T) > 4u;
     using type32Bit = std::conditional_t<std::is_signed<T>::value, int32_t, uint32_t>;
-    typedef std::conditional_t<is64Bit, T, type32Bit> type;
+    using type = std::conditional_t<is64Bit, T, type32Bit>;
 };
 
 /// Compute pt.x * pt.y
@@ -152,7 +156,7 @@ struct MixedType<T, U, true>
                                       std::conditional_t<std::is_floating_point<T>::value, T, U> // Take the floating point type
                                       >;
     // Convert to signed iff at least one value is signed
-    typedef std::conditional_t<std::is_signed<T>::value || std::is_signed<U>::value, TryMakeSigned_t<Common>, Common> type;
+    using type = std::conditional_t<std::is_signed<T>::value || std::is_signed<U>::value, TryMakeSigned_t<Common>, Common>;
 };
 template<typename T, typename U>
 using MixedType_t = typename MixedType<T, U>::type;
@@ -219,7 +223,7 @@ constexpr Point<T>& operator*=(Point<T>& lhs, const Point<T>& rhs)
 }
 
 template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
-constexpr Point<T>& operator*=(Point<T>& lhs, const U factor)
+constexpr Point<T>& operator*=(Point<T>& lhs, U factor)
 {
     return lhs *= Point<T>::all(factor);
 }
@@ -253,7 +257,7 @@ constexpr Point<T>& operator/=(Point<T>& lhs, const Point<T>& rhs)
 }
 
 template<typename T, typename U, class = detail::require_nonLossyOp<T, U>>
-constexpr Point<T>& operator/=(Point<T>& lhs, const U div)
+constexpr Point<T>& operator/=(Point<T>& lhs, U div)
 {
     return lhs /= Point<T>::all(div);
 }

@@ -38,7 +38,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         font = SmallFont;
 
     // Zuordnungs-IDs
-    const unsigned short INVENTORY_IDS[2][31] = {
+    const helpers::MultiArray<unsigned short, 2, 31> INVENTORY_IDS = {{
       {// Waren
        22, 23, 24, 33, 27, 18, 19, 32, 20, 11, 0, 31, 30, 29, 17, 28, 1, 3, 4, 5, 2, 6, 7, 8, 9, 12, 13, 14, 16, GD_SHIELDROMANS,
        15}, // GD_SHIELDROMANS = Völkerspezifisches Schild
@@ -46,7 +46,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
       {// Figuren
        0,  19, 20, 1,  3, 5, 2, 6, 4, 7, 13, 14, 8, 9, 10, 12, 11, 15, 18, 16, 17, 27, 26, 28, 29, JOB_CHARBURNER,
        21, 22, 23, 24, 25}, // 0xFFFF = unused
-    };
+    }};
 
     // Warenseite hinzufügen
     ctrlGroup& wares = AddPage();
@@ -150,10 +150,10 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
 
         // die jeweilige Anzahl (Texte)
         DrawPoint txtPos = btPos + DrawPoint(btSize.x, 40);
-        wares.AddVarText(600 + INVENTORY_IDS[0][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font, 1,
+        wares.AddVarText(600 + INVENTORY_IDS[0][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font, 1,
                          &inventory.goods[INVENTORY_IDS[0][ware_idx]]);
         if(INVENTORY_IDS[1][ware_idx] != 0xFFFF)
-            figures.AddVarText(600 + INVENTORY_IDS[1][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font,
+            figures.AddVarText(600 + INVENTORY_IDS[1][ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font,
                                1, &inventory.people[INVENTORY_IDS[1][ware_idx]]);
     }
 
@@ -176,8 +176,8 @@ void iwWares::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 12: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("Here you will find a list of your entire stores of "
-                                                              "merchandise and all the inhabitants of your realm.")));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("Here you will find a list of your entire stores of "
+                                                                            "merchandise and all the inhabitants of your realm.")));
         }
         break;
     }
@@ -192,14 +192,14 @@ void iwWares::Msg_PaintBefore()
     if(curPage_ != pagePeople && curPage_ != pageWares)
         return;
 
-    ctrlGroup* group = GetCtrl<ctrlGroup>(100 + curPage_);
+    auto* group = GetCtrl<ctrlGroup>(100 + curPage_);
     if(group)
     {
         unsigned count = (curPage_ == pageWares) ? 36 : 32;
 
         for(unsigned i = 0; i < count; ++i)
         {
-            ctrlVarText* text = group->GetCtrl<ctrlVarText>(600 + i);
+            auto* text = group->GetCtrl<ctrlVarText>(600 + i);
             if(text)
                 text->SetTextColor((((curPage_ == pageWares) ? inventory.goods[i] : inventory.people[i]) == 0) ? COLOR_RED : COLOR_YELLOW);
         }
@@ -214,7 +214,7 @@ void iwWares::Msg_PaintBefore()
 void iwWares::SetPage(unsigned page)
 {
     // alte Page verstecken
-    ctrlGroup* group = GetCtrl<ctrlGroup>(100 + curPage_);
+    auto* group = GetCtrl<ctrlGroup>(100 + curPage_);
     if(group)
         group->SetVisible(false);
 

@@ -19,6 +19,7 @@
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "Loader.h"
+#include "RTTR_Assert.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "SoundManager.h"
@@ -28,16 +29,13 @@
 #include "desktops/dskSplash.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/strUtils.h"
 #include "network/GameClient.h"
 #include "network/GameServer.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "gameData/GameConsts.h"
 #include "liblobby/LobbyClient.h"
+#include "libutil//dynamicUniqueCast.h"
 #include "libutil/Log.h"
-#include "libutil/colors.h"
 #include "libutil/error.h"
-#include <cstdio>
 
 GameManager::GameManager() : skipgf_last_time(0), skipgf_last_report_gf(0), cursor_(CURSOR_HAND)
 {
@@ -79,10 +77,7 @@ bool GameManager::Start()
     SETTINGS.Save();
 
     LOG.write(_("\nStarting the game\n"));
-    if(!ShowSplashscreen())
-        return false;
-
-    return true;
+    return ShowSplashscreen();
 }
 
 /**
@@ -128,7 +123,7 @@ bool GameManager::Run()
                 if(curGF > skipgf_last_report_gf)
                 {
                     // Elapsed time in ms
-                    double timeDiff = static_cast<double>(current_time - skipgf_last_time);
+                    auto timeDiff = static_cast<double>(current_time - skipgf_last_time);
                     LOG.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF
                       % curGF % (timeDiff / 1000) % (timeDiff / (curGF - skipgf_last_time));
                 } else
@@ -140,7 +135,7 @@ bool GameManager::Run()
         {
             // Jump just completed
             RTTR_Assert(!GAMECLIENT.skiptogf);
-            double timeDiff = static_cast<double>(current_time - skipgf_last_time);
+            auto timeDiff = static_cast<double>(current_time - skipgf_last_time);
             unsigned numGFPassed = curGF - skipgf_last_report_gf;
             LOG.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % numGFPassed
               % (timeDiff / 1000) % (timeDiff / numGFPassed);
@@ -168,11 +163,10 @@ bool GameManager::ShowSplashscreen()
     libsiedler2::Archiv arSplash;
     if(!LOADER.LoadFile(arSplash, RTTRCONFIG.ExpandPath("<RTTR_RTTR>/splash.bmp")))
         return false;
-    glArchivItem_Bitmap* image = dynamic_cast<glArchivItem_Bitmap*>(arSplash[0]);
+    auto image = libutil::dynamicUniqueCast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)
         return false;
-    arSplash.release(0);
-    WINDOWMANAGER.Switch(new dskSplash(image));
+    WINDOWMANAGER.Switch(std::make_unique<dskSplash>(std::move(image)));
     return true;
 }
 
@@ -187,10 +181,10 @@ bool GameManager::ShowMenu()
 
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
-        WINDOWMANAGER.Switch(new dskLobby);
+        WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
     else
         // Hauptmenü zeigen
-        WINDOWMANAGER.Switch(new dskMainMenu);
+        WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
 
     return true;
 }

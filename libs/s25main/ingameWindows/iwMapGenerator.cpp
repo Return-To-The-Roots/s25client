@@ -19,15 +19,13 @@
 #include "iwMapGenerator.h"
 #include "Loader.h"
 #include "controls/ctrlComboBox.h"
-#include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlProgress.h"
-#include "helpers/containerUtils.h"
 #include "lua/GameDataLoader.h"
+#include "mapGenerator/MapSettings.h"
 #include "gameData/MaxPlayers.h"
 #include "gameData/WorldDescription.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
-#include <boost/format.hpp>
 #include <string>
 
 enum
@@ -80,7 +78,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     combo->AddString("512 x 512");
     combo->AddString("1024 x 1024");
 
-    AddText(2, DrawPoint(20, 120), _("Player Distribution"), COLOR_YELLOW, 0, NormalFont);
+    AddText(2, DrawPoint(20, 120), _("Player Distribution"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(CTRL_PLAYER_RADIUS, DrawPoint(20, 140), Extent(210, 20), TC_GREY, NormalFont, 100);
     combo->AddString(_("Very Close"));
     combo->AddString(_("Close"));
@@ -89,24 +87,24 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     combo->AddString(_("Very Far"));
     combo->AddString(_("Furthest apart"));
 
-    AddText(3, DrawPoint(20, 170), _("Landscape"), COLOR_YELLOW, 0, NormalFont);
+    AddText(3, DrawPoint(20, 170), _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(CTRL_MAP_TYPE, DrawPoint(20, 190), Extent(210, 20), TC_GREY, NormalFont, 100);
     for(unsigned i = 0; i < desc.landscapes.size(); i++)
         combo->AddString(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
 
-    AddText(4, DrawPoint(20, 225), _("Gold:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(4, DrawPoint(20, 225), _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RATIO_GOLD, DrawPoint(100, 220), Extent(130, 20), TC_GREY, 139, 138, 100);
-    AddText(5, DrawPoint(20, 255), _("Iron:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(5, DrawPoint(20, 255), _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RATIO_IRON, DrawPoint(100, 250), Extent(130, 20), TC_GREY, 139, 138, 100);
-    AddText(6, DrawPoint(20, 285), _("Coal:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(6, DrawPoint(20, 285), _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RATIO_COAL, DrawPoint(100, 280), Extent(130, 20), TC_GREY, 139, 138, 100);
-    AddText(7, DrawPoint(20, 315), _("Granite:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(7, DrawPoint(20, 315), _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(CTRL_RATIO_GRANITE, DrawPoint(100, 310), Extent(130, 20), TC_GREY, 139, 138, 100);
 
     Reset();
 }
 
-iwMapGenerator::~iwMapGenerator() {}
+iwMapGenerator::~iwMapGenerator() = default;
 
 void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 {
@@ -188,7 +186,7 @@ void iwMapGenerator::Apply()
 
 void iwMapGenerator::Reset()
 {
-    ctrlComboBox* combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER);
+    auto* combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER);
     const uint16_t playersSelection = mapSettings.numPlayers - 2;
     if(playersSelection < MAX_PLAYERS - 2)
     {

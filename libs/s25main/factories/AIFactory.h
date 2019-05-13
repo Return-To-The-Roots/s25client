@@ -20,6 +20,8 @@
 #ifndef AIFactory_h__
 #define AIFactory_h__
 
+#include <memory>
+
 class GameWorldBase;
 class AIPlayer;
 namespace AI {
@@ -28,10 +30,10 @@ struct Info;
 
 class AIFactory
 {
-    AIFactory();
-
 public:
-    static AIPlayer* Create(const AI::Info& info, unsigned playerId, const GameWorldBase& world);
+    AIFactory() = delete;
+
+    static std::unique_ptr<AIPlayer> Create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world);
 };
 
 #endif // AIFactory_h__

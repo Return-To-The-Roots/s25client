@@ -27,7 +27,7 @@ class GameWorldView;
 class iwBuildingSite : public IngameWindow
 {
 public:
-    iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite);
+    iwBuildingSite(GameWorldView& gwv, const noBuildingSite* buildingsite);
 
 protected:
     void Msg_ButtonClick(unsigned ctrl_id) override;

@@ -25,7 +25,6 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
-#include <iostream>
 
 namespace gc {
 
@@ -46,14 +45,14 @@ void BuildRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
 
 void DestroyRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    noFlag* flag = gwg.GetSpecObj<noFlag>(pt_);
+    auto* flag = gwg.GetSpecObj<noFlag>(pt_);
     if(flag && flag->GetPlayer() == playerId)
         flag->DestroyRoad(start_dir);
 }
 
 void UpgradeRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    noFlag* flag = gwg.GetSpecObj<noFlag>(pt_);
+    auto* flag = gwg.GetSpecObj<noFlag>(pt_);
     if(flag && flag->GetPlayer() == playerId)
         flag->UpgradeRoad(start_dir);
 }
@@ -110,49 +109,49 @@ void SeaAttack::Execute(GameWorldGame& gwg, uint8_t playerId)
 
 void SetCoinsAllowed::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobMilitary* const bld = gwg.GetSpecObj<nobMilitary>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobMilitary>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetCoinsAllowed(enabled);
 }
 
 void SendSoldiersHome::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobMilitary* const bld = gwg.GetSpecObj<nobMilitary>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobMilitary>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SendSoldiersHome();
 }
 
 void OrderNewSoldiers::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobMilitary* const bld = gwg.GetSpecObj<nobMilitary>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobMilitary>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->OrderNewSoldiers();
 }
 
 void SetProductionEnabled::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobUsual* const bld = gwg.GetSpecObj<nobUsual>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobUsual>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetProductionEnabled(enabled);
 }
 
 void SetInventorySetting::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobBaseWarehouse* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetInventorySetting(isJob, type, state);
 }
 
 void SetAllInventorySettings::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobBaseWarehouse* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetAllInventorySettings(isJob, states);
 }
 
 void ChangeReserve::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobBaseWarehouse* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetRealReserve(rank, count);
 }
@@ -194,14 +193,14 @@ void NotifyAlliesOfLocation::Execute(GameWorldGame& gwg, uint8_t playerId)
 
 void SetShipYardMode::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobShipYard* const bld = gwg.GetSpecObj<nobShipYard>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobShipYard>(pt_);
     if(bld && bld->GetPlayer() == playerId)
         bld->SetMode(buildShips ? nobShipYard::SHIPS : nobShipYard::BOATS);
 }
 
 void StartStopExpedition::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobHarborBuilding* const bld = gwg.GetSpecObj<nobHarborBuilding>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobHarborBuilding>(pt_);
     if(bld && bld->GetPlayer() == playerId)
     {
         if(start)
@@ -213,7 +212,7 @@ void StartStopExpedition::Execute(GameWorldGame& gwg, uint8_t playerId)
 
 void StartStopExplorationExpedition::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobHarborBuilding* const bld = gwg.GetSpecObj<nobHarborBuilding>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobHarborBuilding>(pt_);
     if(bld && bld->GetPlayer() == playerId)
     {
         if(start)
@@ -240,7 +239,7 @@ void ExpeditionCommand::Execute(GameWorldGame& gwg, uint8_t playerId)
 /// Fuehrt das GameCommand aus
 void TradeOverLand::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
-    nobBaseWarehouse* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
+    auto* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
     if(bld)
         gwg.GetPlayer(playerId).Trade(bld, gt, job, count);
 }

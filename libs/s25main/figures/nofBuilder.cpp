@@ -167,7 +167,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 // Special handling for warehouses
                 if(BuildingProperties::IsWareHouse(building_type))
                 {
-                    nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
+                    auto* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
                     wh->AddFigure(this);
                     gwg->RemoveFigure(pos, this);
@@ -219,8 +219,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
 }
 
 // Länge, die der Bauarbeiter in einem Free-Walk zurücklegt (in Pixeln)
-const short FREEWALK_LENGTH[2] = {22, 11};          // waagerecht
-const short FREEWALK_LENGTH_SLANTWISE[2] = {14, 7}; // schräg
+const std::array<short, 2> FREEWALK_LENGTH = {22, 11};          // waagerecht
+const std::array<short, 2> FREEWALK_LENGTH_SLANTWISE = {14, 7}; // schräg
 
 void nofBuilder::StartFreewalk()
 {
@@ -344,7 +344,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
         break;
     }
 
-    // char number[256];
+    // std::array<char, 256> number;
     // sprintf(number,"%u",obj_id);
     // NormalFont->Draw(x,y,number,0,0xFFFF0000);
 }

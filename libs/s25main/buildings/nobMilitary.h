@@ -83,7 +83,7 @@ private:
     /// Wählt je nach Militäreinstellungen (Verteidigerstärke) einen passenden Soldaten aus
     nofPassiveSoldier* ChooseSoldier();
     /// Stellt Verteidiger zur Verfügung
-    nofDefender* ProvideDefender(nofAttacker* const attacker) override;
+    nofDefender* ProvideDefender(nofAttacker* attacker) override;
     /// Will/kann das Gebäude noch Münzen bekommen?
     bool WantCoins() const;
     /// Prüft, ob Goldmünzen und Soldaten, die befördert werden können, vorhanden sind und meldet ggf. ein
@@ -96,7 +96,7 @@ private:
 
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobMilitary(const BuildingType type, const MapPoint pt, unsigned char player, const Nation nation);
+    nobMilitary(BuildingType type, MapPoint pos, unsigned char player, Nation nation);
     nobMilitary(SerializedGameData& sgd, unsigned obj_id);
 
 public:
@@ -124,7 +124,7 @@ public:
 
     /// Sucht feindliche Miitärgebäude im Umkreis und setzt die frontier_distance entsprechend (sowohl selber als
     /// auch von den feindlichen Gebäuden) und bestellt somit ggf. neue Soldaten, exception wird nicht mit einbezogen
-    void LookForEnemyBuildings(const nobBaseMilitary* const exception = nullptr);
+    void LookForEnemyBuildings(const nobBaseMilitary* exception = nullptr);
 
     /// Wird von gegnerischem Gebäude aufgerufen, wenn sie neu gebaut worden sind und es so ein neues Gebäude im Umkreis gibt
     /// setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung
@@ -171,11 +171,11 @@ public:
     nofAggressiveDefender* SendAggressiveDefender(nofAttacker* attacker) override;
 
     /// Gibt die Anzahl der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-    unsigned GetNumSoldiersForAttack(const MapPoint dest) const;
+    unsigned GetNumSoldiersForAttack(MapPoint dest) const;
     /// Gibt die Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-    std::vector<nofPassiveSoldier*> GetSoldiersForAttack(const MapPoint dest) const;
+    std::vector<nofPassiveSoldier*> GetSoldiersForAttack(MapPoint dest) const;
     /// Gibt die Stärke der Soldaten zurück, die für einen Angriff auf ein bestimmtes Ziel zur Verfügung stehen
-    unsigned GetSoldiersStrengthForAttack(const MapPoint dest, unsigned& soldiers_count) const;
+    unsigned GetSoldiersStrengthForAttack(MapPoint dest, unsigned& soldiers_count) const;
     /// Gibt die Stärke eines Militärgebäudes zurück
     unsigned GetSoldiersStrength() const;
 
@@ -211,7 +211,7 @@ public:
     /// Stoppt/Erlaubt Goldzufuhr (visuell)
     void ToggleCoinsVirtual() { coinsDisabledVirtual = !coinsDisabledVirtual; }
     /// Stoppt/Erlaubt Goldzufuhr (real)
-    void SetCoinsAllowed(const bool enabled);
+    void SetCoinsAllowed(bool enabled);
     /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (visuell)
     bool IsGoldDisabledVirtual() const { return coinsDisabledVirtual; }
     /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (real)

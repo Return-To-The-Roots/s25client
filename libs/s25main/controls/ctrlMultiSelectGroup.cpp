@@ -29,7 +29,7 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int sele
 void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 {
     // Neuen Button auswählen
-    ctrlButton* button = GetCtrl<ctrlButton>(selection);
+    auto* button = GetCtrl<ctrlButton>(selection);
     RTTR_Assert(button);
     switch(select_type)
     {
@@ -50,7 +50,7 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify)
 {
     // Neuen Button auswählen
-    ctrlButton* button = GetCtrl<ctrlButton>(selection);
+    auto* button = GetCtrl<ctrlButton>(selection);
     RTTR_Assert(button);
     switch(select_type)
     {

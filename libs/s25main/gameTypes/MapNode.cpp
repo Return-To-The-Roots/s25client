@@ -32,8 +32,8 @@ MapNode::MapNode()
 
 void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const
 {
-    for(unsigned z = 0; z < roads.size(); ++z)
-        sgd.PushUnsignedChar(roads[z]);
+    for(unsigned char road : roads)
+        sgd.PushUnsignedChar(road);
 
     sgd.PushUnsignedChar(altitude);
     sgd.PushUnsignedChar(shadow);
@@ -42,8 +42,8 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
     sgd.PushUnsignedChar(static_cast<uint8_t>(resources.getValue()));
     sgd.PushBool(reserved);
     sgd.PushUnsignedChar(owner);
-    for(unsigned b = 0; b < boundary_stones.size(); ++b)
-        sgd.PushUnsignedChar(boundary_stones[b]);
+    for(unsigned char boundary_stone : boundary_stones)
+        sgd.PushUnsignedChar(boundary_stone);
     sgd.PushUnsignedChar(static_cast<unsigned char>(bq));
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
@@ -57,10 +57,10 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
 void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
                           const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains)
 {
-    for(unsigned z = 0; z < roads.size(); ++z)
+    for(unsigned char& road : roads)
     {
-        roads[z] = sgd.PopUnsignedChar();
-        RTTR_Assert(roads[z] < 4);
+        road = sgd.PopUnsignedChar();
+        RTTR_Assert(road < 4);
     }
 
     altitude = sgd.PopUnsignedChar();
@@ -85,8 +85,8 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
     resources = Resource(sgd.PopUnsignedChar());
     reserved = sgd.PopBool();
     owner = sgd.PopUnsignedChar();
-    for(unsigned b = 0; b < boundary_stones.size(); ++b)
-        boundary_stones[b] = sgd.PopUnsignedChar();
+    for(unsigned char& boundary_stone : boundary_stones)
+        boundary_stone = sgd.PopUnsignedChar();
     bq = BuildingQuality(sgd.PopUnsignedChar());
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)

@@ -41,7 +41,7 @@ namespace detail {
     template<class T, class U, typename = void>
     struct FindImpl
     {
-        static auto find(T& container, const U& value) { return std::find(container.begin(), container.end(), value); }
+        static auto find(T& container, const U& value) { return std::find(std::begin(container), std::end(container), value); }
     };
 
     template<class T, class U>
@@ -61,10 +61,15 @@ inline typename T::iterator erase(T& container, typename T::iterator it)
 }
 
 template<typename T>
-inline typename T::reverse_iterator erase(T& container, typename T::reverse_iterator it)
+inline auto erase(T& container, typename T::reverse_iterator it)
 {
-    typename T::reverse_iterator tmp = it;
-    return typename T::reverse_iterator(erase(container, (++tmp).base()));
+    return typename T::reverse_iterator(erase(container, (++it).base()));
+}
+
+template<typename T, typename T_Predicate>
+void remove_if(T& container, T_Predicate&& predicate)
+{
+    container.erase(std::remove_if(container.begin(), container.end(), std::forward<T_Predicate>(predicate)), container.end());
 }
 
 /// Removes the first element in a container
@@ -85,7 +90,7 @@ inline auto find(T& container, const U& value)
 template<typename T, class T_Predicate>
 inline auto findPred(T& container, T_Predicate&& predicate)
 {
-    return std::find_if(container.begin(), container.end(), std::forward<T_Predicate>(predicate));
+    return std::find_if(begin(container), end(container), std::forward<T_Predicate>(predicate));
 }
 
 /// Returns true if the container contains the given value
@@ -100,7 +105,7 @@ inline bool contains(const T& container, const U& value)
 template<typename T, class T_Predicate>
 inline bool containsPred(const T& container, T_Predicate&& predicate)
 {
-    return findPred(container, std::forward<T_Predicate>(predicate)) != container.end();
+    return findPred(container, std::forward<T_Predicate>(predicate)) != end(container);
 }
 
 /// Remove duplicate values from the given container without changing the order
@@ -110,11 +115,11 @@ inline void makeUnique(T& container)
     // Containers with less than 2 elements are always unique
     if(container.size() < 2u)
         return;
-    typename T::iterator itInsert = container.begin();
+    auto itInsert = container.begin();
     // We always begin inserting at 2nd pos so skip first
     ++itInsert;
     // And now start inserting all values starting from the 2nd
-    for(typename T::iterator it = itInsert; it != container.end(); ++it)
+    for(auto it = itInsert; it != container.end(); ++it)
     {
         // If current element is not found in [begin, insertPos) then add it at insertPos and inc insertPos
         if(std::find(container.begin(), itInsert, *it) == itInsert)

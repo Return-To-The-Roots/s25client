@@ -27,7 +27,7 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlProgress.h"
 #include "helpers/mathFuncs.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
 #include "notifications/NotificationManager.h"
@@ -113,7 +113,7 @@ void iwTools::TransmitSettings()
             const GamePlayer& localPlayer = gwv.GetPlayer();
             for(unsigned i = 0; i < NUM_TOOLS; ++i)
             {
-                int curOrder = static_cast<int>(localPlayer.GetToolsOrderedVisual(i));
+                auto curOrder = static_cast<int>(localPlayer.GetToolsOrderedVisual(i));
                 pendingOrderChanges[i] = helpers::clamp<int>(pendingOrderChanges[i], -curOrder, 100 - curOrder);
             }
         }
@@ -141,7 +141,7 @@ void iwTools::UpdateTexts()
         const GamePlayer& localPlayer = gwv.GetPlayer();
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
         {
-            ctrlBaseText* field = GetCtrl<ctrlBaseText>(200 + i);
+            auto* field = GetCtrl<ctrlBaseText>(200 + i);
             int curOrders = isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i) + pendingOrderChanges[i];
             field->SetText(helpers::toString(curOrders));
         }
@@ -189,8 +189,9 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
         {
             default: return;
             case 12:
-                WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("These settings control the tool production of your metalworks. "
-                                                                  "The higher the value, the more likely this tool is to be produced.")));
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("These settings control the tool production of your metalworks. "
+                                                               "The higher the value, the more likely this tool is to be produced.")));
                 break;
             case 13: // Standard
                 GAMECLIENT.visual_settings.tools_settings = GAMECLIENT.default_settings.tools_settings;

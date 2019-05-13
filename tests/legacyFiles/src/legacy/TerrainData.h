@@ -21,18 +21,16 @@
 #include "LandscapeType.h"
 #include "Rect.h"
 #include "TerrainType.h"
-#include "gameTypes/BuildingQuality.h"
-#include "gameTypes/MapTypes.h"
 #include "gameData/TerrainDesc.h"
 #include <array>
 
 /// Static class returning properties of terrain types
 class TerrainData
 {
-    // Disallow construction, only static methods
-    TerrainData();
-
 public:
+    // Disallow construction, only static methods
+    TerrainData() = delete;
+
     /// Returns the terrain type for a given map terrain index
     static TerrainType MapIdx2Terrain(unsigned char mapIdx);
     /// Returns the position in the texture image
@@ -69,7 +67,7 @@ public:
     /// Returns whether the given terrain is any kind of lava
     static bool IsLava(TerrainType t);
     /// Returns whether the given terrain is any kind of snow
-    static bool IsSnow(Landscape landsCape, TerrainType t);
+    static bool IsSnow(Landscape lt, TerrainType t);
     /// Returns whether the given terrain is a mountain
     static bool IsMountain(TerrainType t);
     /// Returns whether the given terrain is a mineable mountain

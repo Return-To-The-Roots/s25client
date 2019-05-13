@@ -30,6 +30,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
+#include <random>
 #include <sstream>
 
 Playlist::Playlist() : current(-1), repeats(1), random(false) {}
@@ -47,10 +48,10 @@ void Playlist::Prepare()
 
     // Shuffle if requested
     if(random)
-        std::random_shuffle(order.begin(), order.end());
+        std::shuffle(order.begin(), order.end(), std::mt19937(std::random_device()()));
 }
 
-const std::string Playlist::getCurrentSong() const
+std::string Playlist::getCurrentSong() const
 {
     if(order.empty() || order.front() >= songs.size())
         return "";
@@ -81,15 +82,15 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
     out << (random ? "random" : "ordered") << std::endl;
 
     // songs reinschreiben
-    for(unsigned i = 0; i < songs.size(); ++i)
-        out << songs[i] << "\n";
+    for(const auto& song : songs)
+        out << song << "\n";
 
     out.close();
 
     return true;
 }
 
-bool isNewline(char c)
+static constexpr bool isNewline(char c)
 {
     return c == '\r' || c == '\n';
 }
@@ -170,18 +171,18 @@ void Playlist::ReadMusicPlayer(const iwMusicPlayer* const window)
 // Wählt den Start-Song aus
 void Playlist::SetStartSong(const unsigned id)
 {
-    for(unsigned i = 0; i < order.size(); ++i)
+    for(unsigned int& i : order)
     {
-        if(order[i] == id)
+        if(i == id)
         {
-            std::swap(order[0], order[i]);
+            std::swap(order[0], i);
             return;
         }
     }
 }
 
 /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-const std::string Playlist::getNextSong()
+std::string Playlist::getNextSong()
 {
     const std::string tmp = getCurrentSong();
     current = tmp.empty() ? -1 : static_cast<int>(order.front());
@@ -231,7 +232,7 @@ void MusicPlayer::PlayNext()
         if(nr <= 14)
         {
             // Siedlerstück abspielen (falls es geladen wurde)
-            MusicItem* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[nr - 1]);
+            auto* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[nr - 1]);
             if(curSong)
                 curSong->Play(1);
         }
@@ -254,7 +255,7 @@ void MusicPlayer::PlayNext()
     LOG.write(_("OK\n"));
 
     // Und abspielen
-    MusicItem* curSong = dynamic_cast<MusicItem*>(sng[0]);
+    auto* curSong = dynamic_cast<MusicItem*>(sng[0]);
     if(curSong)
         curSong->Play(1);
 }

@@ -23,8 +23,8 @@
 /// Struct that stores information about the frames, like GF status...
 struct FramesInfo
 {
-    typedef std::chrono::duration<uint32_t, std::milli> milliseconds32_t; //-V:milliseconds32_t:813
-    typedef std::chrono::steady_clock UsedClock;
+    using milliseconds32_t = std::chrono::duration<uint32_t, std::milli>; //-V:milliseconds32_t:813
+    using UsedClock = std::chrono::steady_clock;
 
     FramesInfo();
     void Clear();

@@ -25,8 +25,10 @@
 class VideoDriverLoaderInterface;
 struct VideoMode;
 
-class VideoSDL2 : public VideoDriver
+class VideoSDL2 final : public VideoDriver
 {
+    void CleanUp();
+
 public:
     VideoSDL2(VideoDriverLoaderInterface* CallBack);
 
@@ -36,9 +38,8 @@ public:
     const char* GetName() const override;
 
     bool Initialize() override;
-    void CleanUp() override;
 
-    bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) override;
+    bool CreateScreen(const std::string& title, const VideoMode& size, bool fullscreen) override;
     bool ResizeScreen(const VideoMode& newSize, bool fullscreen) override;
 
     void DestroyScreen() override;

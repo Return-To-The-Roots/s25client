@@ -15,9 +15,9 @@ void copyDirectory(const bfs::path& sourceDir, const bfs::path& destinationDir)
         throw std::runtime_error("Directory " + sourceDir.string() + " does not exist");
     bfs::create_directories(destinationDir);
 
-    for(bfs::recursive_directory_iterator it(sourceDir); it != bfs::recursive_directory_iterator(); ++it)
+    for(const auto& it : bfs::recursive_directory_iterator(sourceDir))
     {
-        const bfs::path& curPath = it->path();
+        const bfs::path& curPath = it.path();
         std::string relativePathStr = curPath.string();
         boost::replace_first(relativePathStr, sourceDir.string(), "");
         bfs::copy(curPath, destinationDir / relativePathStr);

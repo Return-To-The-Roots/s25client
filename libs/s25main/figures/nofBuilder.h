@@ -24,7 +24,7 @@ class noBuildingSite;
 class SerializedGameData;
 class noRoadNode;
 
-class nofBuilder : public noFigure
+class nofBuilder final : public noFigure
 {
 private:
     // Wie weit der Bauarbeiter maximal in alle vier richtungen laufen darf (in Pixeln, rel..)
@@ -66,7 +66,7 @@ private:
     bool ChooseWare();
 
 public:
-    nofBuilder(const MapPoint pt, unsigned char player, noRoadNode* building_site);
+    nofBuilder(MapPoint pos, unsigned char player, noRoadNode* building_site);
     nofBuilder(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override

@@ -25,7 +25,7 @@ void BuildingProperties::Init()
     militaryBldTypes.clear();
     for(unsigned i = 0; i < NUM_BUILDING_TYPES; i++)
     {
-        BuildingType bld = BuildingType(i);
+        auto bld = BuildingType(i);
         if(IsMilitary(bld))
             militaryBldTypes.push_back(bld);
     }

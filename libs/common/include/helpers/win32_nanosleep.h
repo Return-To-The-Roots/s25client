@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <ctime>
+#include <ctime> // IWYU pragma: exports
 #ifdef _WIN32
 
 #ifndef HAVE_STRUCT_TIMESPEC

@@ -29,7 +29,6 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
-class RoadSegment;
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
     : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), pd(PD_NOTWORKING)
@@ -74,7 +73,7 @@ void nofPlaner::Walked()
         rs_pos = 0;
         rs_dir = true;
         cur_rs = gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SOUTHEAST);
-        building_site = 0;
+        building_site = nullptr;
 
         GoHome();
         StartWalking(Direction::SOUTHEAST);
@@ -98,7 +97,7 @@ void nofPlaner::AbrogateWorkplace()
 
 void nofPlaner::LostWork()
 {
-    building_site = 0;
+    building_site = nullptr;
 
     if(state == STATE_FIGUREWORK)
         GoHome();
@@ -140,8 +139,8 @@ void nofPlaner::Draw(DrawPoint drawPt)
             unsigned now_id = GAMECLIENT.Interpolate(69, current_ev);
 
             // spezielle Animation am Ende
-            const unsigned ANIMATION[21] = {273, 273, 273, 273, 273, 274, 274, 275, 276, 276, 276,
-                                            276, 276, 276, 276, 276, 276, 276, 277, 277, 278};
+            const std::array<unsigned, 21> ANIMATION = {273, 273, 273, 273, 273, 274, 274, 275, 276, 276, 276,
+                                                        276, 276, 276, 276, 276, 276, 276, 277, 277, 278};
 
             unsigned bobId;
             if(now_id < 20)

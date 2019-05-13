@@ -30,7 +30,7 @@ class Game;
 
 class dskBenchmark : public dskMenuBase
 {
-    typedef std::chrono::steady_clock clock;
+    using clock = std::chrono::steady_clock;
     enum Test
     {
         TEST_NONE,

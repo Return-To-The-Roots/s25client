@@ -17,34 +17,41 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Game.h"
+#include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
 
 Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
-    : ggs(settings), em(new EventManager(startGF)), world(players, ggs, *em), started(false), finished(false)
+    : Game(settings, std::make_unique<EventManager>(startGF), players)
 {}
 
-Game::Game(const GlobalGameSettings& settings, EventManager* em, const std::vector<PlayerInfo>& players)
-    : ggs(settings), em(em), world(players, ggs, *em), started(false), finished(false)
+Game::Game(const GlobalGameSettings& settings, std::unique_ptr<EventManager> em, const std::vector<PlayerInfo>& players)
+    : ggs_(settings), em_(std::move(em)), world_(players, ggs_, *em_), started_(false), finished_(false)
 {}
 
-Game::~Game() {}
+Game::~Game() = default;
 
 void Game::Start(bool startFromSave)
 {
-    if(started)
+    if(started_)
         return;
-    started = true;
+    started_ = true;
     if(startFromSave)
         CheckObjective();
     else
         StatisticStep();
-    if(world.HasLua())
-        world.GetLua().EventStart(!startFromSave);
+    if(world_.HasLua())
+        world_.GetLua().EventStart(!startFromSave);
 }
 
+void Game::AddAIPlayer(std::unique_ptr<AIPlayer> newAI)
+{
+    aiPlayers_.push_back(newAI.release());
+}
+
+namespace {
 unsigned getNumAlivePlayers(const GameWorldBase& world)
 {
     unsigned numPlayersAlive = 0;
@@ -55,16 +62,17 @@ unsigned getNumAlivePlayers(const GameWorldBase& world)
     }
     return numPlayersAlive;
 }
+} // namespace
 
 void Game::RunGF()
 {
-    unsigned numPlayersAlive = getNumAlivePlayers(world);
+    unsigned numPlayersAlive = getNumAlivePlayers(world_);
     //  EventManager Bescheid sagen
-    em->ExecuteNextGF();
+    em_->ExecuteNextGF();
     // Notfallprogramm durchlaufen lassen
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
     {
-        GamePlayer& player = world.GetPlayer(i);
+        GamePlayer& player = world_.GetPlayer(i);
         if(player.isUsed())
         {
             // Auf Notfall testen (Wenige Bretter/Steine und keine Holzindustrie)
@@ -73,20 +81,20 @@ void Game::RunGF()
         }
     }
 
-    if(world.HasLua())
-        world.GetLua().EventGameFrame(em->GetCurrentGF());
+    if(world_.HasLua())
+        world_.GetLua().EventGameFrame(em_->GetCurrentGF());
     // Update statistic every 750 GFs (30 seconds on 'fast')
-    if(em->GetCurrentGF() % 750 == 0)
+    if(em_->GetCurrentGF() % 750 == 0)
         StatisticStep();
     // If some players got defeated check objective
-    if(getNumAlivePlayers(world) < numPlayersAlive)
+    if(getNumAlivePlayers(world_) < numPlayersAlive)
         CheckObjective();
 }
 
 void Game::StatisticStep()
 {
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
-        world.GetPlayer(i).StatisticStep();
+    for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
+        world_.GetPlayer(i).StatisticStep();
 
     CheckObjective();
 }
@@ -94,28 +102,28 @@ void Game::StatisticStep()
 void Game::CheckObjective()
 {
     // Check objective if there is one
-    if(finished || (ggs.objective != GO_CONQUER3_4 && ggs.objective != GO_TOTALDOMINATION))
+    if(finished_ || (ggs_.objective != GO_CONQUER3_4 && ggs_.objective != GO_TOTALDOMINATION))
         return;
 
     // check winning condition
     unsigned maxPoints = 0, totalPoints = 0, bestPlayer = 0xFFFF, maxTeamPoints = 0, bestTeam = 0xFFFF;
 
     // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
     {
-        GamePlayer& player = world.GetPlayer(i);
+        GamePlayer& player = world_.GetPlayer(i);
         if(player.IsDefeated())
             continue;
-        if(ggs.lockedTeams) // in games with locked team settings check for team victory
+        if(ggs_.lockedTeams) // in games with locked team settings check for team victory
         {
             unsigned curTeam = 0;
             unsigned teamPoints = 0;
             // Add points of all players in this players team (including himself)
-            for(unsigned j = 0; j < world.GetNumPlayers(); ++j)
+            for(unsigned j = 0; j < world_.GetNumPlayers(); ++j)
             {
                 if(!player.IsAlly(j))
                     continue;
-                GamePlayer& teamPlayer = world.GetPlayer(j);
+                GamePlayer& teamPlayer = world_.GetPlayer(j);
                 if(!teamPlayer.IsDefeated())
                 {
                     curTeam = curTeam | (1 << j);
@@ -141,37 +149,37 @@ void Game::CheckObjective()
     if(totalPoints == 0u)
         return;
 
-    switch(ggs.objective)
+    switch(ggs_.objective)
     {
         case GO_CONQUER3_4: // at least 3/4 of the land
             if(maxTeamPoints * 4 >= totalPoints * 3)
-                finished = true;
+                finished_ = true;
             else if(maxPoints * 4 >= totalPoints * 3)
-                finished = true;
+                finished_ = true;
             break;
 
         case GO_TOTALDOMINATION: // whole populated land
             if(maxTeamPoints == totalPoints)
-                finished = true;
+                finished_ = true;
             else if(maxPoints == totalPoints)
-                finished = true;
+                finished_ = true;
             break;
         default: break;
     }
 
     // We have a winner!
-    if(finished)
+    if(finished_)
     {
         if(maxPoints >= maxTeamPoints)
-            world.GetGameInterface()->GI_Winner(bestPlayer);
+            world_.GetGameInterface()->GI_Winner(bestPlayer);
         else
-            world.GetGameInterface()->GI_TeamWinner(bestTeam);
+            world_.GetGameInterface()->GI_TeamWinner(bestTeam);
     }
 }
 
 AIPlayer* Game::GetAIPlayer(unsigned id)
 {
-    for(AIPlayer& ai : aiPlayers)
+    for(AIPlayer& ai : aiPlayers_)
     {
         if(ai.GetPlayerId() == id)
             return &ai;

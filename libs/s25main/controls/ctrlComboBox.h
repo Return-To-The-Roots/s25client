@@ -24,7 +24,7 @@
 class MouseCoords;
 class glArchivItem_Font;
 
-class ctrlComboBox : public Window
+class ctrlComboBox final : public Window
 {
 public:
     ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,

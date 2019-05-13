@@ -44,17 +44,17 @@ enum ConnectState
 class ClientInterface
 {
 public:
-    virtual ~ClientInterface() {}
+    virtual ~ClientInterface() = default;
 
-    virtual void CI_NextConnectState(const ConnectState) {}
-    virtual void CI_Error(const ClientError) {}
+    virtual void CI_NextConnectState(ConnectState) {}
+    virtual void CI_Error(ClientError) {}
 
     virtual void CI_NewPlayer(unsigned /*playerId*/) {}
     virtual void CI_PlayerLeft(unsigned /*playerId*/) {}
     /// Game entered loading state
-    virtual void CI_GameLoading(std::shared_ptr<Game>) {}
+    virtual void CI_GameLoading(const std::shared_ptr<Game>&) {}
     /// Game is started and running
-    virtual void CI_GameStarted(std::shared_ptr<Game>) {}
+    virtual void CI_GameStarted(const std::shared_ptr<Game>&) {}
 
     virtual void CI_PlayerDataChanged(unsigned /*playerId*/) {}
     virtual void CI_PingChanged(unsigned /*playerId*/, unsigned short /*ping*/) {}
@@ -62,7 +62,7 @@ public:
     virtual void CI_PlayersSwapped(unsigned /*player1*/, unsigned /*player2*/) {}
     virtual void CI_GGSChanged(const GlobalGameSettings&) {}
 
-    virtual void CI_Chat(unsigned /*playerId*/, const ChatDestination /*cd*/, const std::string& /*msg*/) {}
+    virtual void CI_Chat(unsigned /*playerId*/, ChatDestination /*cd*/, const std::string& /*msg*/) {}
     virtual void CI_Countdown(unsigned /*remainingTimeInSec*/) {}
     virtual void CI_CancelCountdown(bool /*error*/) {}
 

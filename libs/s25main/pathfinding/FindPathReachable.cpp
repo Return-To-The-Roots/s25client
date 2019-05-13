@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-
+#include "FindPathReachable.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditionReachable.h"
 #include "world/GameWorldBase.h"

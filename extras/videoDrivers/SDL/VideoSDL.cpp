@@ -17,17 +17,16 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "VideoSDL.h"
+#include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
-#include "makeException.h"
 #include <boost/nowide/iostream.hpp>
-#include <boost/system/windows_error.hpp>
 #include <SDL.h>
 #include <algorithm>
-#include <memory>
 
 #ifdef _WIN32
+#include "makeException.h"
 #include "s25clientResources.h"
 #include "libutil/ucString.h"
 #undef WIN32_LEAN_AND_MEAN
@@ -36,14 +35,14 @@
 namespace {
 struct DeleterReleaseDC
 {
-    typedef HDC pointer;
+    using pointer = HDC;
     HWND wnd;
     DeleterReleaseDC(HWND wnd) : wnd(wnd) {}
     void operator()(HDC dc) const { ReleaseDC(wnd, dc); }
 };
 struct DeleterDeleteRC
 {
-    typedef HGLRC pointer;
+    using pointer = HGLRC;
     void operator()(HGLRC rc) const { wglDeleteContext(rc); }
 };
 
@@ -79,12 +78,12 @@ void ShareOGLResources(HGLRC srcContext, HGLRC dstContext)
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  */
-DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
+IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
     return new VideoSDL(CallBack);
 }
 
-DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
+void FreeVideoInstance(IVideoDriver* driver)
 {
     delete driver;
 }
@@ -94,7 +93,7 @@ DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
  *
  *  @return liefert den Namen des Treibers.
  */
-DRIVERDLLAPI const char* GetDriverName()
+const char* GetDriverName()
 {
     return "(SDL) OpenGL via SDL-Library";
 }
@@ -118,7 +117,8 @@ VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack)
 
 VideoSDL::~VideoSDL()
 {
-    CleanUp();
+    if(initialized)
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 /**
@@ -157,21 +157,6 @@ bool VideoSDL::Initialize()
 }
 
 /**
- *  Treiberaufräumfunktion.
- */
-void VideoSDL::CleanUp()
-{
-    if(!initialized)
-        return;
-
-    // Fenster vernichten
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-
-    // nun sind wir nicht mehr initalisiert
-    initialized = false;
-}
-
-/**
  *  Erstellt das Fenster mit entsprechenden Werten.
  *
  *  @param[in] width      Breite des Fensters
@@ -196,7 +181,7 @@ bool VideoSDL::CreateScreen(const std::string& title, const VideoMode& newSize, 
     if(!SetVideoMode(newSize, fullscreen))
         return false;
 
-    SDL_WM_SetCaption(title.c_str(), 0);
+    SDL_WM_SetCaption(title.c_str(), nullptr);
 
 #ifdef _WIN32
     SetWindowTextW(GetConsoleWindow(), cvUTF8ToWideString(title).c_str());
@@ -315,7 +300,7 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
         SendMessage(info.window, WM_SETICON, ICON_SMALL, icon);
     } catch(const std::runtime_error& e)
     {
-        PrintError(helpers::concat("Could not set icon: ", e.what()));
+        PrintError(std::string("Could not set icon: ") + e.what());
     }
 #endif // _WIN32
 
@@ -360,7 +345,11 @@ void VideoSDL::HandlePaste()
 void VideoSDL::DestroyScreen()
 {
     // Fenster schliessen
-    CleanUp();
+    if(initialized)
+    {
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
+        initialized = false;
+    }
     Initialize();
 }
 

@@ -70,7 +70,7 @@
 #include "figures/nofWellguy.h"
 #include "figures/nofWoodcutter.h"
 #include "helpers/containerUtils.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noCharburnerPile.h"
@@ -210,11 +210,11 @@ void SerializedGameData::Prepare(bool reading)
     isReading = reading;
 }
 
-void SerializedGameData::MakeSnapshot(std::shared_ptr<Game> game)
+void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
 {
     Prepare(false);
 
-    GameWorld& gw = game->world;
+    GameWorld& gw = game->world_;
     writeEm = &gw.GetEvMgr();
 
     // Anzahl Objekte reinschreiben (used for safety checks only)
@@ -249,11 +249,11 @@ void SerializedGameData::MakeSnapshot(std::shared_ptr<Game> game)
     writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(std::shared_ptr<Game> game)
+void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game)
 {
     Prepare(true);
 
-    GameWorld& gw = game->world;
+    GameWorld& gw = game->world_;
     em = &gw.GetEvMgr();
 
     expectedNumObjects = PopUnsignedInt();
@@ -363,7 +363,7 @@ const GameEvent* SerializedGameData::PopEvent()
         return nullptr;
 
     // Note: em->GetEventInstanceCtr() might not be set yet
-    std::map<unsigned, GameEvent*>::const_iterator foundObj = readEvents.find(instanceId);
+    const auto foundObj = readEvents.find(instanceId);
     if(foundObj != readEvents.end())
         return foundObj->second;
     std::unique_ptr<GameEvent> ev = std::make_unique<GameEvent>(*this, instanceId);
@@ -399,7 +399,7 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
 FOWObject* SerializedGameData::PopFOWObject()
 {
     // Typ auslesen
-    FOW_Type type = FOW_Type(PopUnsignedChar());
+    auto type = FOW_Type(PopUnsignedChar());
 
     // Kein Objekt?
     if(type == FOW_NOTHING)
@@ -490,7 +490,7 @@ GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
 {
     RTTR_Assert(isReading);
     RTTR_Assert(obj_id <= GameObject::GetObjIDCounter());
-    std::map<unsigned, GameObject*>::const_iterator foundObj = readObjects.find(obj_id);
+    auto foundObj = readObjects.find(obj_id);
     if(foundObj == readObjects.end())
         return nullptr;
     else

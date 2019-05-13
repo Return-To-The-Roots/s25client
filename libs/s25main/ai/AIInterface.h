@@ -52,14 +52,14 @@ public:
 
     bool IsDefeated() const { return player_.IsDefeated(); }
     /// Return the resource buried on a given spot (gold, coal, ironore, granite (sub), fish, nothing)
-    AIResource GetSubsurfaceResource(const MapPoint pt) const;
+    AIResource GetSubsurfaceResource(MapPoint pt) const;
     /// Return the resource on top on a given spot (wood, stones, nothing)
-    AIResource GetSurfaceResource(const MapPoint pt) const;
+    AIResource GetSurfaceResource(MapPoint pt) const;
     /// Calculate the surface resource value on a given spot (wood/ stones/ farmland)
     /// when given a direction and lastvalue the calculation will be much faster O(n) vs O(n^2)
-    int CalcResourceValue(const MapPoint pt, AIResource res, int8_t direction = -1, int lastval = 0xffff) const;
+    int CalcResourceValue(MapPoint pt, AIResource res, int8_t direction = -1, int lastval = 0xffff) const;
     /// Calculate the resource value for a given point
-    int GetResourceRating(const MapPoint pt, AIResource res) const;
+    int GetResourceRating(MapPoint pt, AIResource res) const;
     /// Test whether a given point is part of the border or not
     bool IsBorder(const MapPoint pt) const { return gwb.GetNode(pt).boundary_stones[0] == (playerID_ + 1); }
     /// Test whether a given point is part of own territory
@@ -78,10 +78,10 @@ public:
     /// Test whether the ai player can see a point
     bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == VIS_VISIBLE; }
     /// Return true when the building quality at the 2nd point is lower than the bq on the first point
-    bool CalcBQSumDifference(const MapPoint pt, const MapPoint t);
+    bool CalcBQSumDifference(MapPoint pt1, MapPoint pt2);
     /// Return building quality on a given spot
-    BuildingQuality GetBuildingQuality(const MapPoint pt) const;
-    BuildingQuality GetBuildingQualityAnyOwner(const MapPoint pt) const;
+    BuildingQuality GetBuildingQuality(MapPoint pt) const;
+    BuildingQuality GetBuildingQualityAnyOwner(MapPoint pt) const;
     /// Tries to find a free path for a road and return length and the route
     bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route = nullptr, unsigned* length = nullptr) const;
     /// Tries to find a route from start to target, returning length of that route if it exists
@@ -129,16 +129,16 @@ public:
     unsigned GetShipID(const noShip* ship) const { return player_.GetShipID(ship); }
     /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a given starting
     /// harbor
-    bool IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const;
+    bool IsExplorationDirectionPossible(MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const;
     /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a given starting
     /// harbor
-    bool IsExplorationDirectionPossible(const MapPoint pt, unsigned originHarborID, ShipDirection direction) const;
+    bool IsExplorationDirectionPossible(MapPoint pt, unsigned originHarborID, ShipDirection direction) const;
     unsigned GetNation() { return player_.nation; }
 
     bool SetCoinsAllowed(const nobMilitary* building, bool enabled);
     using GameCommandFactory::SetCoinsAllowed;
 
-    bool StartStopExpedition(const nobHarborBuilding* harbor, bool start);
+    bool StartStopExpedition(const nobHarborBuilding* hb, bool start);
     using GameCommandFactory::StartStopExpedition;
 
     bool FoundColony(const noShip* ship) { return FoundColony(GetShipID(ship)); }
@@ -150,7 +150,7 @@ public:
     bool CancelExpedition(const noShip* ship) { return CancelExpedition(GetShipID(ship)); }
     using GameCommandFactory::CancelExpedition;
 
-    bool SetShipYardMode(const nobShipYard* yard, bool buildShips);
+    bool SetShipYardMode(const nobShipYard* shipyard, bool buildShips);
     using GameCommandFactory::SetShipYardMode;
 
     bool DestroyBuilding(const noBuilding* building);

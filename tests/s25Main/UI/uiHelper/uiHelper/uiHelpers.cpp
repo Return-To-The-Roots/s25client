@@ -36,22 +36,26 @@ void initGUITests()
 {
     libsiedler2::setAllocator(new GlAllocator);
     BOOST_TEST_CHECKPOINT("Load video driver");
-    rttr::test::LogAccessor logAcc;
-    VIDEODRIVER.LoadDriver(new MockupVideoDriver(&WINDOWMANAGER));
-    RTTR_REQUIRE_LOG_CONTAINS("Loaded", false);
-    VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
-    BOOST_TEST_CHECKPOINT("Load dummy files");
-    LOADER.LoadDummyGUIFiles();
-    BOOST_TEST_CHECKPOINT("Switch to Desktop");
-    WINDOWMANAGER.Switch(new DummyDesktop);
-    BOOST_TEST_CHECKPOINT("Dummy Draw");
-    WINDOWMANAGER.Draw();
+    if(!dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver()))
+    {
+        rttr::test::LogAccessor logAcc;
+        VIDEODRIVER.LoadDriver(new MockupVideoDriver(&WINDOWMANAGER));
+        RTTR_REQUIRE_LOG_CONTAINS("Loaded", false);
+        VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+        BOOST_TEST_CHECKPOINT("Load dummy files");
+        LOADER.LoadDummyGUIFiles();
+        BOOST_TEST_CHECKPOINT("Switch to Desktop");
+        WINDOWMANAGER.Switch(std::make_unique<DummyDesktop>());
+        BOOST_TEST_CHECKPOINT("Dummy Draw");
+        WINDOWMANAGER.Draw();
+        logAcc.clearLog();
+    }
     BOOST_TEST_CHECKPOINT("GUI test initialized");
 }
 
 MockupVideoDriver* GetVideoDriver()
 {
-    MockupVideoDriver* video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
+    auto* video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
     if(!video)
     {
         initGUITests();

@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameCommand.h"
 #include "GameCommands.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 
 #include <stdexcept>
 
@@ -26,7 +26,7 @@ namespace gc {
 
 GameCommandPtr GameCommand::Deserialize(Serializer& ser)
 {
-    Type gcType = static_cast<Type>(ser.PopUnsignedChar());
+    auto gcType = static_cast<Type>(ser.PopUnsignedChar());
     GameCommand* gc;
     switch(gcType)
     {

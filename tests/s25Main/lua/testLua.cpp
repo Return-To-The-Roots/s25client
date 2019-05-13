@@ -20,8 +20,7 @@
 #include "PointOutput.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
-#include "helpers/containerUtils.h"
-#include "lua/LuaTraits.h"
+#include "lua/LuaTraits.h" // IWYU pragma: keep
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
@@ -36,7 +35,6 @@
 #include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>
-#include <boost/format.hpp>
 #include <boost/test/unit_test.hpp>
 #include <map>
 #include <memory>
@@ -101,11 +99,11 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     executeLua("function getRequiredLuaVersion()\n return 0\n end");
     BOOST_REQUIRE(!lua.CheckScriptVersion());
     BOOST_REQUIRE_NE(getLog(), "");
-    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % (lua.GetVersion() + 1));
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % (LuaInterfaceGameBase::GetVersion() + 1));
     BOOST_REQUIRE(!lua.CheckScriptVersion());
     BOOST_REQUIRE_NE(getLog(), "");
     // Correct version
-    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % lua.GetVersion());
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % LuaInterfaceGameBase::GetVersion());
     BOOST_REQUIRE(lua.CheckScriptVersion());
 
     BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));
@@ -172,7 +170,7 @@ struct StoreChat : public ClientInterface
         GAMECLIENT.SetInterface(this);
     }
 
-    ~StoreChat() { GAMECLIENT.RemoveInterface(this); }
+    ~StoreChat() override { GAMECLIENT.RemoveInterface(this); }
 
     void Clear()
     {
@@ -200,17 +198,17 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     BOOST_REQUIRE_GT(hqs[0]->GetNumRealWares(GD_BOARDS), 0u);
 
     executeLua("rttr:ClearResources()");
-    for(unsigned i = 0; i < hqs.size(); i++)
+    for(auto& hq : hqs)
     {
         for(unsigned gd = 0; gd < NUM_WARE_TYPES; gd++)
         {
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumRealWares(GoodType(gd)), 0u);
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumVisualWares(GoodType(gd)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumRealWares(GoodType(gd)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumVisualWares(GoodType(gd)), 0u);
         }
         for(unsigned job = 0; job < NUM_JOB_TYPES; job++)
         {
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumRealFigures(Job(job)), 0u);
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumVisualFigures(Job(job)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumRealFigures(Job(job)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumVisualFigures(Job(job)), 0u);
         }
     }
 
@@ -748,7 +746,7 @@ BOOST_AUTO_TEST_CASE(onOccupied)
         occupied[player_id] = points\n\
     end");
     initWorld();
-    typedef std::vector<std::pair<int, int>> Points;
+    using Points = std::vector<std::pair<int, int>>;
     std::map<int, Points> gamePtsPerPlayer;
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
@@ -777,7 +775,7 @@ BOOST_AUTO_TEST_CASE(onExplored)
         explored[player_id] = points\n\
     end");
     initWorld();
-    typedef std::vector<std::pair<int, int>> Points;
+    using Points = std::vector<std::pair<int, int>>;
     std::map<int, Points> gamePtsPerPlayer;
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
@@ -853,7 +851,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     // Suggest Pact from Lua
     executeLua("player:SuggestPact(0, TREATY_OF_ALLIANCE, DURATION_INFINITE)");
     game->executeAICommands();
-    const DiplomacyPostQuestion* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox->GetMsg(0));
+    const auto* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox->GetMsg(0));
     this->AcceptPact(msg->GetPactId(), TREATY_OF_ALLIANCE, 1);
     BOOST_REQUIRE(!player.IsAttackable(1));
     executeLua("assert(not player:IsAttackable(0))");

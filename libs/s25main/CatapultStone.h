@@ -44,8 +44,7 @@ private:
     const GameEvent* event;
 
 public:
-    CatapultStone(const MapPoint dest_building, const MapPoint dest_map, const DrawPoint start, const DrawPoint dest,
-                  const unsigned fly_duration);
+    CatapultStone(MapPoint dest_building, MapPoint dest_map, DrawPoint start, DrawPoint dest, unsigned fly_duration);
 
     CatapultStone(SerializedGameData& sgd, unsigned obj_id);
 

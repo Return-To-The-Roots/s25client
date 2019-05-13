@@ -17,7 +17,7 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "WinAPI.h"
-
+#include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
@@ -41,17 +41,17 @@ static VideoWinAPI* pVideoWinAPI = nullptr;
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  */
-DRIVERDLLAPI IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
+IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack)
 {
     return new VideoWinAPI(CallBack);
 }
 
-DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
+void FreeVideoInstance(IVideoDriver* driver)
 {
     delete driver;
 }
 
-DRIVERDLLAPI const char* GetDriverName()
+const char* GetDriverName()
 {
     return "(WinAPI) OpenGL via the glorious WinAPI";
 }
@@ -463,7 +463,7 @@ unsigned long VideoWinAPI::GetTickCount() const
     return ::GetTickCount();
 }
 
-void* wglGetProcAddress_Wrapper(const char* name)
+static void* wglGetProcAddress_Wrapper(const char* name)
 {
     union
     {

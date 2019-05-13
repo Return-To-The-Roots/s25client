@@ -29,7 +29,6 @@
 #include "worldFixtures/initGameRNG.hpp"
 #include "nodeObjs/noShip.h"
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 
 namespace {
 std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
@@ -50,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     const MapPoint hbPos = world.GetHarborPoint(hbId);
     BOOST_REQUIRE_LT(world.CalcDistance(hqPos, hbPos), HQ_RADIUS);
 
-    nobHarborBuilding* harbor =
+    auto* harbor =
       dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(harbor);
     BOOST_REQUIRE_EQUAL(buildings.GetHarbors().size(), 1u); //-V807
@@ -81,21 +80,20 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     const MapPoint hbPos = world.GetHarborPoint(hbId);
     const MapPoint shipyardPos(hqPos.x + 3, hqPos.y - 5);
 
-    nobHarborBuilding* harbor =
+    auto* harbor =
       dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(harbor);
     std::vector<Direction> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
     MapPoint curPt = hqFlagPos;
-    for(unsigned i = 0; i < road.size(); i++)
+    for(auto i : road)
     {
-        curPt = world.GetNeighbour(curPt, road[i]);
+        curPt = world.GetNeighbour(curPt, i);
         this->SetFlag(curPt);
     }
     BOOST_REQUIRE_EQUAL(world.GetBQ(shipyardPos, curPlayer), BQ_CASTLE);
-    nobShipYard* shipYard =
-      dynamic_cast<nobShipYard*>(BuildingFactory::CreateBuilding(world, BLD_SHIPYARD, shipyardPos, curPlayer, NAT_ROMANS));
+    auto* shipYard = dynamic_cast<nobShipYard*>(BuildingFactory::CreateBuilding(world, BLD_SHIPYARD, shipyardPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(shipYard);
     road = FindRoadPath(hqFlagPos, world.GetNeighbour(shipyardPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
@@ -119,7 +117,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     RTTR_EXEC_TILL(5600, postBox.GetNumMsgs() > 0);
     // There should be a msg telling the player about the new ship
     BOOST_REQUIRE_EQUAL(postBox.GetNumMsgs(), 1u);
-    const ShipPostMsg* msg = dynamic_cast<const ShipPostMsg*>(postBox.GetMsg(0));
+    const auto* msg = dynamic_cast<const ShipPostMsg*>(postBox.GetMsg(0));
     BOOST_REQUIRE(msg);
     BOOST_REQUIRE_EQUAL(player.GetNumShips(), 1u);
     BOOST_REQUIRE_EQUAL(player.GetShips().size(), 1u);
@@ -132,7 +130,7 @@ template<unsigned T_numPlayers = 3, unsigned T_hbId = 1, unsigned T_width = SeaW
          unsigned T_height = SeaWorldDefault::height>
 struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, T_height>
 {
-    typedef SeaWorldWithGCExecution<T_numPlayers, T_width, T_height> Parent;
+    using Parent = SeaWorldWithGCExecution<T_numPlayers, T_width, T_height>;
     using Parent::curPlayer;
     using Parent::world;
 
@@ -146,7 +144,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         world.GetPostMgr().AddPostBox(curPlayer);
         postBox = world.GetPostMgr().GetPostBox(curPlayer);
 
-        nobHarborBuilding* harbor =
+        auto* harbor =
           dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
         BOOST_REQUIRE(harbor);
         world.RecalcBQAroundPointBig(hbPos);
@@ -154,9 +152,9 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(hqFlagPos, false, road);
         MapPoint curPt = hqFlagPos;
-        for(unsigned i = 0; i < road.size(); i++)
+        for(auto& i : road)
         {
-            curPt = world.GetNeighbour(curPt, road[i]);
+            curPt = world.GetNeighbour(curPt, i);
             this->SetFlag(curPt);
         }
 
@@ -164,7 +162,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         if(!world.IsSeaPoint(shipPos))
             shipPos.y += 6;
         BOOST_REQUIRE(world.IsSeaPoint(shipPos));
-        noShip* ship = new noShip(shipPos, curPlayer);
+        auto* ship = new noShip(shipPos, curPlayer);
         world.AddFigure(ship->GetPos(), ship);
         player.RegisterShip(ship);
 
@@ -316,7 +314,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     BOOST_REQUIRE(!ship->IsMoving());
 
     MapPoint newHbPos = world.GetHarborPoint(6);
-    nobHarborBuilding* newHarbor =
+    auto* newHarbor =
       dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, newHbPos, curPlayer, NAT_ROMANS));
 
     BOOST_REQUIRE(!ship->IsLost());
@@ -378,7 +376,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     // Ship should be waiting for expedition instructions (where to go) and player should have received a message
     BOOST_REQUIRE_EQUAL(ship->GetCurrentHarbor(), harbor.GetHarborPosID());
     BOOST_REQUIRE_EQUAL(postBox->GetNumMsgs(), 1u);
-    const ShipPostMsg* msg = dynamic_cast<const ShipPostMsg*>(postBox->GetMsg(0));
+    const auto* msg = dynamic_cast<const ShipPostMsg*>(postBox->GetMsg(0));
     BOOST_REQUIRE(msg);
     BOOST_REQUIRE_EQUAL(msg->GetPos(), ship->GetPos()); //-V522
 
@@ -446,7 +444,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(player.GetBuildingRegister().GetHarbors().size(), 2u);
 }
 
-typedef ShipReadyFixture<1, 2, 64, 800> ShipReadyFixtureBig;
+using ShipReadyFixtureBig = ShipReadyFixture<1, 2, 64, 800>;
 
 BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
 {
@@ -478,20 +476,21 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), targetHbId);
 }
 
+namespace {
 template<unsigned T_numPlayers = 2, unsigned T_width = SmallSeaWorldDefault<T_numPlayers>::width,
          unsigned T_height = SmallSeaWorldDefault<T_numPlayers>::height>
 struct ShipAndHarborsReadyFixture : public WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height>, public GCExecutor
 {
 public:
-    typedef WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height> Parent;
+    using Parent = WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height>;
     using Parent::world;
 
-    virtual GameWorldGame& GetWorld() override { return world; }
+    GameWorldGame& GetWorld() override { return world; }
 
     nobHarborBuilding& createHarbor(unsigned hbPosId)
     {
         MapPoint hbPos = world.GetHarborPoint(hbPosId);
-        nobHarborBuilding* harbor =
+        auto* harbor =
           static_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
         BOOST_REQUIRE(harbor);
         Inventory inv;
@@ -510,7 +509,7 @@ public:
         MapPoint hbPos = world.GetHarborPoint(1);
         MapPoint shipPos = world.MakeMapPoint(hbPos - Position(2, 0));
         BOOST_REQUIRE(world.IsSeaPoint(shipPos));
-        noShip* ship = new noShip(shipPos, curPlayer);
+        auto* ship = new noShip(shipPos, curPlayer);
         world.AddFigure(ship->GetPos(), ship);
         player.RegisterShip(ship);
 
@@ -536,6 +535,7 @@ void destroyBldAndFire(GameWorldBase& world, const MapPoint& pos)
         }
     }
 }
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
 {

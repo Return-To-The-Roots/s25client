@@ -21,7 +21,6 @@
 #include "buildings/noBaseBuilding.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"

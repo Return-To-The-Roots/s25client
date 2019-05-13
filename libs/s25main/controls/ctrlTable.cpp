@@ -74,7 +74,7 @@ void ctrlTable::Resize(const Extent& newSize)
     const bool heightIncreased = newSize.y > GetSize().y;
     Window::Resize(newSize);
 
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // changed height
 
@@ -126,7 +126,7 @@ void ctrlTable::SetSelection(int selection)
     {
         selection_ = selection;
         // Scroll into view
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         if(selection_ < scrollbar->GetScrollPos())
             scrollbar->SetScrollPos(selection_);
         else if(selection_ >= scrollbar->GetScrollPos() + scrollbar->GetPageSize())
@@ -201,7 +201,7 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  *                         @p true  - A-Z,
  *                         @p false - Z-A
  */
-void ctrlTable::SortRows(int column, bool* direction)
+void ctrlTable::SortRows(int column, const bool* direction)
 {
     if(columns.empty())
         return;
@@ -256,8 +256,8 @@ void ctrlTable::Draw_()
 
     Window::Draw_();
 
-    int lines = static_cast<int>(line_count > rows.size() ? rows.size() : line_count);
-    ctrlScrollBar* scroll = GetCtrl<ctrlScrollBar>(0);
+    auto lines = static_cast<int>(line_count > rows.size() ? rows.size() : line_count);
+    auto* scroll = GetCtrl<ctrlScrollBar>(0);
     DrawPoint curPos = GetDrawPos() + DrawPoint(2, 2 + header_height);
     for(int i = 0; i < lines; ++i)
     {
@@ -276,8 +276,8 @@ void ctrlTable::Draw_()
             if(columns[c].width == 0)
                 continue;
 
-            ctrlButton* bt = GetCtrl<ctrlButton>(c + 1);
-            font->Draw(colPos, rows[curRow].columns[c], 0, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetSize().x, "");
+            auto* bt = GetCtrl<ctrlButton>(c + 1);
+            font->Draw(colPos, rows[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetSize().x, "");
             colPos.x += bt->GetSize().x;
         }
         curPos.y += font->getHeight();
@@ -341,7 +341,7 @@ bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
     // If mouse in list or scrollbar
     if(IsPointInRect(mc.GetPos(), GetFullDrawArea()))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-1);
         return true;
     } else
@@ -352,7 +352,7 @@ bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.GetPos(), GetFullDrawArea()))
     {
-        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+1);
         return true;
     } else
@@ -390,13 +390,13 @@ void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool visible)
         /// Scrollbar wird angezeigt
         // Breite der letzten Spalte entsprechend anpassen, wenn plötzlich ne Scrolleiste sich hier noch reindrängelt
         // Aufteilen dieser Breite auf die einzelnen Spalten
-        unsigned x_col_minus = unsigned(20 / columns.size());
+        auto x_col_minus = unsigned(20 / columns.size());
         // Rest, der nicht aufgeteilt wurde
-        unsigned rest = unsigned(20 % columns.size());
+        auto rest = unsigned(20 % columns.size());
 
         for(unsigned i = 0; i < columns.size(); ++i)
         {
-            ctrlButton* bt = GetCtrl<ctrlButton>(i + 1);
+            auto* bt = GetCtrl<ctrlButton>(i + 1);
             if(bt->GetSize().x > x_col_minus) //-V807
 
                 bt->SetWidth(bt->GetSize().x - x_col_minus);
@@ -407,7 +407,7 @@ void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool visible)
         // Rest einfach von letzter passender Spalte abziehen
         for(unsigned i = 0; i < columns.size(); ++i)
         {
-            ctrlButton* bt = GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1);
+            auto* bt = GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1);
             if(bt->GetSize().x > rest)
             {
                 bt->SetWidth(bt->GetSize().x - rest);
@@ -446,7 +446,7 @@ void ctrlTable::ResetButtonWidths()
     {
         if(columns.at(columns.size() - i - 1).width)
         {
-            ctrlButton* bt = GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1);
+            auto* bt = GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1);
             bt->SetWidth(bt->GetSize().x + (GetSize().x - btPos.x));
             break;
         }

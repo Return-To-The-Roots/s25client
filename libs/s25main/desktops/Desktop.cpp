@@ -22,7 +22,7 @@
 #include "controls/ctrlText.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include <limits>
@@ -36,7 +36,7 @@ const unsigned Desktop::fpsDisplayId = std::numeric_limits<unsigned>::max();
  *  @param[in] background Hintergrund des Desktops
  */
 Desktop::Desktop(glArchivItem_Bitmap* background)
-    : Window(nullptr, 0, DrawPoint::all(0), VIDEODRIVER.GetRenderSize()), background(background)
+    : Window(nullptr, 0, DrawPoint::all(0), VIDEODRIVER.GetRenderSize()), background(background), lastFPS_(0)
 {
     SetScale(true);
     SetFpsDisplay(true);
@@ -48,7 +48,7 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
     UpdateFps(VIDEODRIVER.GetFPS());
 }
 
-Desktop::~Desktop() {}
+Desktop::~Desktop() = default;
 
 /**
  *  Zeichenmethode zum Zeichnen des Desktops
@@ -90,7 +90,7 @@ void Desktop::SetFpsDisplay(bool show)
 
 void Desktop::UpdateFps(unsigned newFps)
 {
-    ctrlText* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
+    auto* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
     if(fpsDisplay)
         fpsDisplay->SetText(helpers::toString(newFps) + " fps");
     lastFPS_ = newFps;

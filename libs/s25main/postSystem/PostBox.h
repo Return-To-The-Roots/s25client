@@ -27,8 +27,8 @@ class PostMsg;
 class PostBox
 {
 public:
-    typedef std::function<void(const PostMsg&, unsigned)> NewMsgCallback;
-    typedef std::function<void(unsigned)> MsgDeletedCallback;
+    using NewMsgCallback = std::function<void(const PostMsg&, unsigned)>;
+    using MsgDeletedCallback = std::function<void(unsigned)>;
 
     PostBox();
     ~PostBox();

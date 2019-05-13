@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks ( helpers::toString(gameInfo.info.curNumPlayers)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,13 +17,13 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskLAN.h"
-#include "RTTR_Version.h"
-
 #include "Loader.h"
+#include "RTTR_Version.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlTable.h"
 #include "desktops/dskMultiPlayer.h"
+#include "helpers/toString.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMsgbox.h"
@@ -83,17 +83,16 @@ void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btBack: WINDOWMANAGER.Switch(new dskMultiPlayer); break;
+        case ID_btBack: WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>()); break;
         case ID_btConnect: ConnectToSelectedGame(); break;
         case ID_btAddServer:
             if(SETTINGS.proxy.type != PROXY_NONE)
-                WINDOWMANAGER.Show(new iwMsgbox(
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
-                iwDirectIPCreate* servercreate = new iwDirectIPCreate(ServerType::LAN);
-                WINDOWMANAGER.Show(servercreate, true);
+                WINDOWMANAGER.Show(std::make_unique<iwDirectIPCreate>(ServerType::LAN), true);
             }
     }
 }
@@ -108,11 +107,11 @@ void dskLAN::ReadOpenGames()
 {
     openGames.clear();
     const LANDiscoveryClient::ServiceMap& services = discovery.GetServices();
-    for(LANDiscoveryClient::ServiceMap::const_iterator it = services.begin(); it != services.end(); ++it)
+    for(const auto& service : services)
     {
-        Serializer ser(&it->second.info.GetPayload().front(), it->second.info.GetPayload().size()); //-V807
+        Serializer ser(&service.second.info.GetPayload().front(), service.second.info.GetPayload().size()); //-V807
         GameInfo info;
-        info.ip = it->second.ip;
+        info.ip = service.second.ip;
         info.info.Deserialize(ser);
         openGames.push_back(info);
     }
@@ -122,7 +121,7 @@ void dskLAN::UpdateServerList()
 {
     ReadOpenGames();
 
-    ctrlTable* servertable = GetCtrl<ctrlTable>(ID_tblServer);
+    auto* servertable = GetCtrl<ctrlTable>(ID_tblServer);
 
     unsigned selection = servertable->GetSelection();
     if(selection == 0xFFFF)
@@ -134,13 +133,12 @@ void dskLAN::UpdateServerList()
     servertable->DeleteAllItems();
 
     unsigned curId = 0;
-    for(std::vector<GameInfo>::const_iterator it = openGames.begin(); it != openGames.end(); ++it)
+    for(const auto& gameInfo : openGames)
     {
-        std::string id = std::to_string(curId++);
-        std::string name = (it->info.hasPwd ? "(pwd) " : "") + it->info.name; //-V807
-        std::string player = std::to_string(static_cast<unsigned>(it->info.curNumPlayers)) + "/"
-                             + std::to_string(static_cast<unsigned>(it->info.maxNumPlayers));
-        servertable->AddRow(0, id.c_str(), name.c_str(), it->info.map.c_str(), player.c_str(), it->info.version.c_str());
+        std::string id = helpers::toString(curId++);
+        std::string name = (gameInfo.info.hasPwd ? "(pwd) " : "") + gameInfo.info.name; //-V807
+        std::string player = helpers::toString(gameInfo.info.curNumPlayers) + "/" + helpers::toString(gameInfo.info.maxNumPlayers);
+        servertable->AddRow(0, id.c_str(), name.c_str(), gameInfo.info.map.c_str(), player.c_str(), gameInfo.info.version.c_str());
     }
 
     servertable->SortRows(column, &direction);
@@ -152,22 +150,22 @@ bool dskLAN::ConnectToSelectedGame()
     if(openGames.empty())
         return false;
 
-    ctrlTable* table = GetCtrl<ctrlTable>(ID_tblServer);
-    unsigned selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
+    auto* table = GetCtrl<ctrlTable>(ID_tblServer);
+    auto selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
     if(selection >= openGames.size())
         return false;
 
-    GameInfo game = openGames[selection];
+    const GameInfo& game = openGames[selection];
     if(game.info.revision == RTTR_Version::GetRevision())
     {
-        iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LAN);
+        auto connect = std::make_unique<iwDirectIPConnect>(ServerType::LAN);
         connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);
-        WINDOWMANAGER.Show(connect);
+        WINDOWMANAGER.Show(std::move(connect));
         return true;
     } else
     {
         WINDOWMANAGER.Show(
-          new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+          std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
         return false;
     }
 }

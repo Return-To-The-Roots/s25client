@@ -64,7 +64,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     /// Bestell-Ware-Event
     const GameEvent* orderware_ev;
     /// Die Meeres-IDs aller angrenzenden Meere (jeweils für die 6 drumherumliegenden Küstenpunkte)
-    unsigned short seaIds[6];
+    std::array<unsigned short, 6> seaIds;
     /// Liste von Waren, die weggeschifft werden sollen
     std::list<Ware*> wares_for_ships;
     /// Liste von Menschen, die weggeschifft werden sollen
@@ -105,11 +105,11 @@ private:
     void OrderShip();
 
     /// Stellt Verteidiger zur Verfügung
-    nofDefender* ProvideDefender(nofAttacker* const attacker) override;
+    nofDefender* ProvideDefender(nofAttacker* attacker) override;
 
     friend class SerializedGameData;
     friend class BuildingFactory;
-    nobHarborBuilding(const MapPoint pt, unsigned char player, const Nation nation);
+    nobHarborBuilding(MapPoint pos, unsigned char player, Nation nation);
     nobHarborBuilding(SerializedGameData& sgd, unsigned obj_id);
 
 protected:
@@ -132,7 +132,7 @@ public:
     void AddFigure(noFigure* figure, bool increase_visual_counts) override;
     /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
     /// benötigt!)
-    unsigned CalcDistributionPoints(const GoodType type) const;
+    unsigned CalcDistributionPoints(GoodType type) const;
 
     /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
     void CancelWareForShip(Ware* ware);

@@ -21,7 +21,6 @@
 #include "Resource.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/FoWNode.h"
-#include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
 #include "gameData/MaxPlayers.h"
 #include <array>

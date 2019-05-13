@@ -73,8 +73,8 @@ void noFighting::Serialize_noFighting(SerializedGameData& sgd) const
     sgd.PushEvent(current_ev);
     sgd.PushUnsignedChar(player_won);
 
-    for(unsigned i = 0; i < 2; ++i)
-        sgd.PushObject(soldiers[i], false);
+    for(auto soldier : soldiers)
+        sgd.PushObject(soldier, false);
 }
 
 noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
@@ -82,8 +82,8 @@ noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
       player_won(sgd.PopUnsignedChar())
 
 {
-    for(unsigned i = 0; i < 2; ++i)
-        soldiers[i] = sgd.PopObject<nofActiveSoldier>(GOT_UNKNOWN);
+    for(auto& soldier : soldiers)
+        soldier = sgd.PopObject<nofActiveSoldier>(GOT_UNKNOWN);
 }
 
 void noFighting::Destroy_noFighting()
@@ -131,7 +131,7 @@ void noFighting::Draw(DrawPoint drawPt)
         case 2:
         {
             // Erste Phase des Kampfes, die Soldaten gehen jeweils nach links bzw. rechts
-            int x_diff = int(GAMECLIENT.Interpolate(12, current_ev));
+            auto x_diff = int(GAMECLIENT.Interpolate(12, current_ev));
             drawPt.x -= x_diff;
             for(unsigned i = 0; i < 2; ++i)
             {
@@ -307,7 +307,7 @@ void noFighting::StartAttack()
     // "Auswürfeln", ob der Angreifer (also der, der gerade den Angriff vollzieht) trifft oder ob sich der andere
     // erfolgreich verteidigt
 
-    unsigned char results[2];
+    std::array<unsigned char, 2> results;
     for(unsigned i = 0; i < 2; ++i)
     {
         switch(gwg->GetGGS().getSelection(AddonId::ADJUST_MILITARY_STRENGTH))

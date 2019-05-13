@@ -34,16 +34,23 @@
 // Macros for executing GFs in tests effectively by skipping GFs without any events
 
 /// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
-/// Return the number of GFs executed in gfReturnVar
-#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                                          \
-    gfReturnVar = 0;                                                                             \
-    for(unsigned endGf = this->em.GetCurrentGF() + (maxGFs); !(cond) && gfReturnVar < (maxGFs);) \
-    {                                                                                            \
-        unsigned numGF = this->em.ExecuteNextEvent(endGf);                                       \
-        if(numGF == 0)                                                                           \
-            break;                                                                               \
-        gfReturnVar += numGF;                                                                    \
-    }                                                                                            \
+/// Return the number of GFs executed
+template<class T>
+unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond, unsigned& gfsExecuted)
+{
+    gfsExecuted = 0;
+    for(unsigned endGf = em.GetCurrentGF() + maxGFs; !cond() && gfsExecuted < maxGFs;)
+    {
+        unsigned numGF = em.ExecuteNextEvent(endGf);
+        if(numGF == 0)
+            break;
+        gfsExecuted += numGF;
+    }
+    return gfsExecuted;
+}
+
+#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                          \
+    rttr_exec_till_ct_gf(this->em, maxGFs, [&] { return (cond); }, gfReturnVar); \
     BOOST_REQUIRE((cond))
 
 /// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
@@ -54,15 +61,18 @@
         (void)dummyReturnGF;                               \
     }
 
-/// Skip up to numGFs GFs or until no event left
-#define RTTR_SKIP_GFS(numGFs)                                                      \
-    for(unsigned gf = 0, endGf = this->em.GetCurrentGF() + (numGFs); gf < numGFs;) \
-    {                                                                              \
-        unsigned numGFsExecuted = this->em.ExecuteNextEvent(endGf);                \
-        if(numGFsExecuted == 0)                                                    \
-            break;                                                                 \
-        gf += numGFsExecuted;                                                      \
+inline void rttr_skip_gfs(TestEventManager& em, unsigned numGFs)
+{
+    for(unsigned gf = 0, endGf = em.GetCurrentGF() + numGFs; gf < numGFs;)
+    {
+        unsigned numGFsExecuted = em.ExecuteNextEvent(endGf);
+        if(numGFsExecuted == 0)
+            break;
+        gf += numGFsExecuted;
     }
+}
+/// Skip up to numGFs GFs or until no event left
+#define RTTR_SKIP_GFS(numGFs) rttr_skip_gfs(this->em, numGFs)
 //////////////////////////////////////////////////////////////////////////
 
 template<unsigned T_numPlayers>
@@ -105,8 +115,9 @@ struct WorldFixture
     GameWorld& world;
     T_WorldCreator worldCreator;
     WorldFixture()
-        : game(new Game(GlobalGameSettings(), new TestEventManager, std::vector<PlayerInfo>(T_numPlayers, GetPlayer()))),
-          em(static_cast<TestEventManager&>(*game->em)), ggs(const_cast<GlobalGameSettings&>(game->ggs)), world(game->world),
+        : game(std::make_shared<Game>(GlobalGameSettings(), std::make_unique<TestEventManager>(),
+                                      std::vector<PlayerInfo>(T_numPlayers, GetPlayer()))),
+          em(static_cast<TestEventManager&>(*game->em_)), ggs(const_cast<GlobalGameSettings&>(game->ggs_)), world(game->world_),
           worldCreator(MapExtent(T_width, T_height))
     {
         // Fast moving ships

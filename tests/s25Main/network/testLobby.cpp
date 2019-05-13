@@ -43,11 +43,9 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
                 std::unique_ptr<Message> msg(con.recvQueue.popFront());
                 if(!msg->run(this, id))
                 {
-                    LobbyMessage* lobbyMsg = dynamic_cast<LobbyMessage*>(msg.get());
-                    if(lobbyMsg)
+                    if(dynamic_cast<LobbyMessage*>(msg.get()))
                     {
-                        messages.push_back(lobbyMsg);
-                        msg.release();
+                        messages.push_back(static_cast<LobbyMessage*>(msg.release()));
                     }
                 }
             }
@@ -93,7 +91,7 @@ namespace {
         {
             LOBBYCLIENT.AddListener(this);
         }
-        ~MockLobbyInterface()
+        ~MockLobbyInterface() override
         {
             LOBBYCLIENT.RemoveListener(this);
         }

@@ -29,7 +29,7 @@ iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
       gwv(gwv)
 {
     // Text vor Editfeld
-    AddText(0, DrawPoint(50, 36), _("to GameFrame:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(0, DrawPoint(50, 36), _("to GameFrame:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     // Editfeld zum Eingeben des Ziel-GF
     ctrlEdit* edit = AddEdit(1, DrawPoint(126, 32), Extent(120, 20), TC_GREY, NormalFont);
@@ -41,7 +41,7 @@ iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
 
 void iwSkipGFs::SkipGFs()
 {
-    int gf = s25util::fromStringClassicDef(GetCtrl<ctrlEdit>(1)->GetText().c_str(), 0);
+    int gf = s25util::fromStringClassicDef(GetCtrl<ctrlEdit>(1)->GetText(), 0);
     GAMECLIENT.SkipGF(gf, gwv);
 }
 

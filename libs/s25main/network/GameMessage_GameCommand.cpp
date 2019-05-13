@@ -18,9 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameMessage_GameCommand.h"
 #include "GameMessageInterface.h"
-#include "GameObject.h"
 #include "GameProtocol.h"
-#include "libutil/Serializer.h"
 
 //////////////////////////////////////////////////////////////////////////
 

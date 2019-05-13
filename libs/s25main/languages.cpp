@@ -25,7 +25,7 @@
 #include "libsiedler2/ArchivItem_Text.h"
 #include <algorithm>
 
-bool operator<(const Language& o1, const Language& o2)
+static bool operator<(const Language& o1, const Language& o2)
 {
     if(o1.name < o2.name)
         return true;
@@ -50,7 +50,7 @@ void Languages::loadLanguages()
 
     for(unsigned i = 0; i < count; i++)
     {
-        const libsiedler2::ArchivItem_Text& langEntry = dynamic_cast<const libsiedler2::ArchivItem_Text&>(*langInfo[i]);
+        const auto& langEntry = dynamic_cast<const libsiedler2::ArchivItem_Text&>(*langInfo[i]);
         Language lang(langEntry.getName(), langEntry.getText());
         RTTR_Assert(!lang.name.empty());
         languages.push_back(lang);
@@ -90,7 +90,7 @@ void Languages::setLanguage(const std::string& lang_code)
     mysetlocale(LC_ALL, lang_code.c_str());
 }
 
-const std::string Languages::setLanguage(unsigned i)
+std::string Languages::setLanguage(unsigned i)
 {
     const Language& l = getLanguage(i);
     setLanguage(l.code);

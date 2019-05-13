@@ -23,6 +23,10 @@
 #include <stdexcept>
 #include <string>
 
+namespace kaguya {
+class State;
+}
+
 class LuaExecutionError : public std::runtime_error
 {
 public:
@@ -62,7 +66,7 @@ protected:
     std::string Translate(const std::string& key);
 
     void ErrorHandlerNoThrow(int status, const char* message);
-    void ErrorHandler(int status, const char* message);
+    [[noreturn]] void ErrorHandler(int status, const char* message);
 
 private:
     /// Sticky flag to signal an occurred error during execution of lua code

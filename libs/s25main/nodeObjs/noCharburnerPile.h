@@ -49,7 +49,7 @@ private:
     const GameEvent* event;
 
 public:
-    noCharburnerPile(const MapPoint pt);
+    noCharburnerPile(MapPoint pos);
     noCharburnerPile(SerializedGameData& sgd, unsigned obj_id);
 
     ~noCharburnerPile() override;

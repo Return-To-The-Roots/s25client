@@ -33,10 +33,10 @@ noFire::noFire(const MapPoint pos, bool isBig)
     : noCoordBase(NOP_FIRE, pos), isBig(isBig), was_sounding(false), last_sound(0), next_interval(0)
 {
     // Bestimmte Zeit lang brennen
-    const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370, 5550, 7400};
+    const std::array<unsigned, 7> FIREDURATION = {3700, 2775, 1850, 925, 370, 5550, 7400};
     dead_event = GetEvMgr().AddEvent(this, FIREDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)]);
 }
-noFire::~noFire() {}
+noFire::~noFire() = default;
 
 void noFire::Destroy_noFire()
 {
@@ -69,7 +69,7 @@ noFire::noFire(SerializedGameData& sgd, const unsigned obj_id)
 void noFire::Draw(DrawPoint drawPt)
 {
     //// Die ersten 2 Drittel (zeitlich) brennen, das 3. Drittel Schutt daliegen lassen
-    const unsigned FIREANIMATIONDURATION[] = {1000, 750, 500, 250, 100, 1500, 2000};
+    const std::array<unsigned, 7> FIREANIMATIONDURATION = {1000, 750, 500, 250, 100, 1500, 2000};
     unsigned id = GAMECLIENT.Interpolate(FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
 
     if(id < FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)] * 2 / 3)

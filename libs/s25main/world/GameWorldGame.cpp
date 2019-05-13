@@ -31,7 +31,6 @@
 #include "figures/nofScout_Free.h"
 #include "helpers/containerUtils.h"
 #include "lua/LuaInterfaceGame.h"
-#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/RoadNote.h"
@@ -40,15 +39,13 @@
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/MapGeometry.h"
 #include "world/TerritoryRegion.h"
-#include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include "nodeObjs/noStaticObject.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
-#include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainDesc.h"
 #include <algorithm>
 #include <cmath>
@@ -105,7 +102,7 @@ void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
     // Let's see if there is a flag
     if(GetNO(pt)->GetType() == NOP_FLAG)
     {
-        noFlag* flag = GetSpecObj<noFlag>(pt);
+        auto* flag = GetSpecObj<noFlag>(pt);
         if(flag->GetPlayer() != playerId)
             return;
 
@@ -180,7 +177,7 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
     // Steht da auch ein Gebäude oder eine Baustelle, nicht dass wir aus Verzögerung Feuer abreißen wollen, das geht schief
     if(GetNO(pt)->GetType() == NOP_BUILDING || GetNO(pt)->GetType() == NOP_BUILDINGSITE)
     {
-        noBaseBuilding* nbb = GetSpecObj<noBaseBuilding>(pt);
+        auto* nbb = GetSpecObj<noBaseBuilding>(pt);
 
         // Ist das Gebäude auch von dem Spieler, der es abreißen will?
         if(nbb->GetPlayer() != player)
@@ -260,18 +257,18 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
         DestroyNO(start);
 
     MapPoint end(start);
-    for(unsigned i = 0; i < route.size(); ++i)
+    for(auto i : route)
     {
-        SetPointRoad(end, route[i], boat_road ? (RoadSegment::RT_BOAT + 1) : (RoadSegment::RT_NORMAL + 1));
+        SetPointRoad(end, i, boat_road ? (RoadSegment::RT_BOAT + 1) : (RoadSegment::RT_NORMAL + 1));
         RecalcBQForRoad(end);
-        end = GetNeighbour(end, route[i]);
+        end = GetNeighbour(end, i);
 
         // Evtl Zierobjekte abreißen
         if(HasRemovableObjForRoad(end))
             DestroyNO(end);
     }
 
-    RoadSegment* rs =
+    auto* rs =
       new RoadSegment(boat_road ? RoadSegment::RT_BOAT : RoadSegment::RT_NORMAL, GetSpecObj<noFlag>(start), GetSpecObj<noFlag>(end), route);
 
     GetSpecObj<noFlag>(start)->SetRoute(route.front(), rs);
@@ -284,48 +281,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
 
 bool GameWorldGame::HasRemovableObjForRoad(const MapPoint pt) const
 {
-    const noStaticObject* obj = GetSpecObj<noStaticObject>(pt);
-    if(obj && obj->GetSize() == 0)
-        return true;
-    return false;
-    /*if(GetNO(pt)->GetGOT() == GOT_ENVOBJECT)
-    {
-        const noEnvObject* no = GetSpecObj<noEnvObject>(pt);
-        unsigned short type = no->GetItemID();
-        switch(no->GetItemFile())
-        {
-            case 0xFFFF: // map_?_z.lst
-                if(type == 505 || type == 506 || type == 507 || type == 508 || type == 510 || (type >= 542 && type <= 546) || type == 512
-                   || type == 513 ||           // Kakteen
-                   type == 536 || type == 541) // abgeerntete Getreidefelder
-                    return true;
-                break;
-            case 0:
-                // todo:
-                break;
-            case 1:
-                if(type <= 12)
-                    return true;
-                // todo:
-                break;
-            case 2:
-                // todo:
-                break;
-            case 3:
-                // todo:
-                break;
-            case 4:
-                // todo:
-                break;
-            case 5:
-                // todo:
-                break;
-            // Charburner rests
-            case 6: return true; break;
-        }
-    }
-
-    return false;*/
+    const auto* obj = GetSpecObj<noStaticObject>(pt);
+    return obj && obj->GetSize() == 0;
 }
 
 // When defined the game tries to remove "blocks" of border stones that look ugly (TODO: Example?)
@@ -764,7 +721,7 @@ struct PotentialAttacker
 void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count,
                            const bool strong_soldiers)
 {
-    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
+    auto* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     if(!attacked_building || !attacked_building->IsAttackable(player_attacker))
         return;
 
@@ -774,27 +731,27 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
     // Liste von verfügbaren Soldaten, geordnet einfügen, damit man dann starke oder schwache Soldaten nehmen kann
     std::list<PotentialAttacker> soldiers;
 
-    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    for(auto& building : buildings)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if((*it)->GetPlayer() != player_attacker || !BuildingProperties::IsMilitary((*it)->GetBuildingType()))
+        if(building->GetPlayer() != player_attacker || !BuildingProperties::IsMilitary(building->GetBuildingType()))
             continue;
 
-        unsigned soldiers_count = static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt);
+        unsigned soldiers_count = static_cast<nobMilitary*>(building)->GetNumSoldiersForAttack(pt);
         if(!soldiers_count)
             continue;
 
         // Take soldier(s)
         unsigned i = 0;
-        const SortedTroops& troops = static_cast<nobMilitary*>(*it)->GetTroops();
-        const unsigned distance = CalcDistance((*it)->GetPos(), pt);
+        const SortedTroops& troops = static_cast<nobMilitary*>(building)->GetTroops();
+        const unsigned distance = CalcDistance(building->GetPos(), pt);
         if(strong_soldiers)
         {
             // Strong soldiers first
-            for(SortedTroops::const_reverse_iterator it2 = troops.rbegin(); it2 != troops.rend() && i < soldiers_count; ++it2, ++i) //-V127
+            for(auto it2 = troops.crbegin(); it2 != troops.crend() && i < soldiers_count; ++it2, ++i) //-V127
             {
                 bool inserted = false;
-                for(std::list<PotentialAttacker>::iterator it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
+                for(auto it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
                 {
                     /* Insert new soldier before current one if:
                             new soldiers rank is greater
@@ -817,10 +774,10 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         } else
         {
             // Weak soldiers first
-            for(SortedTroops::const_iterator it2 = troops.begin(); it2 != troops.end() && i < soldiers_count; ++it2, ++i) //-V127
+            for(auto it2 = troops.cbegin(); it2 != troops.cend() && i < soldiers_count; ++it2, ++i) //-V127
             {
                 bool inserted = false;
-                for(std::list<PotentialAttacker>::iterator it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
+                for(auto it3 = soldiers.begin(); it3 != soldiers.end(); ++it3)
                 {
                     /* Insert new soldier before current one if:
                             new soldiers rank is less
@@ -886,11 +843,11 @@ void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapP
 
     // Sort them
     if(strong_soldiers)
-        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::greater<unsigned>>());
+        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::greater<>>());
     else
-        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::less<unsigned>>());
+        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::less<>>());
 
-    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
+    auto* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
     unsigned counter = 0;
     for(GameWorldBase::PotentialSeaAttacker& pa : attackers)
     {
@@ -949,32 +906,32 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
 
     // Auch vom Ausgangspunkt aus, da sie im GameWorldGame wegem Zeichnen auch hier hängen können!
     const std::list<noBase*>& fieldFigures = GetFigures(pt);
-    for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
-        if((*it)->GetType() == NOP_FIGURE)
-            figures.push_back(*it);
+    for(auto fieldFigure : fieldFigures)
+        if(fieldFigure->GetType() == NOP_FIGURE)
+            figures.push_back(fieldFigure);
 
     // Und natürlich in unmittelbarer Umgebung suchen
     for(unsigned d = 0; d < Direction::COUNT; ++d)
     {
         const std::list<noBase*>& fieldFigures = GetFigures(GetNeighbour(pt, Direction::fromInt(d)));
-        for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
-            if((*it)->GetType() == NOP_FIGURE)
-                figures.push_back(*it);
+        for(auto fieldFigure : fieldFigures)
+            if(fieldFigure->GetType() == NOP_FIGURE)
+                figures.push_back(fieldFigure);
     }
 
-    for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
+    for(auto& figure : figures)
     {
         if(dir < Direction::COUNT)
         {
-            if(Direction(dir + 3) == static_cast<noFigure*>(*it)->GetCurMoveDir())
+            if(Direction(dir + 3) == static_cast<noFigure*>(figure)->GetCurMoveDir())
             {
-                if(GetNeighbour(pt, Direction::fromInt(dir)) == static_cast<noFigure*>(*it)->GetPos())
+                if(GetNeighbour(pt, Direction::fromInt(dir)) == static_cast<noFigure*>(figure)->GetPos())
                     continue;
             }
         }
 
         // Derjenige muss ggf. stoppen, wenn alles auf ihn zutrifft
-        static_cast<noFigure*>(*it)->StopIfNecessary(pt);
+        static_cast<noFigure*>(figure)->StopIfNecessary(pt);
     }
 }
 
@@ -982,7 +939,7 @@ void GameWorldGame::Armageddon()
 {
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
-        noFlag* flag = GetSpecObj<noFlag>(pt);
+        auto* flag = GetSpecObj<noFlag>(pt);
         if(flag)
         {
             flag->DestroyAttachedBuilding();
@@ -995,7 +952,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
 {
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
-        noFlag* flag = GetSpecObj<noFlag>(pt);
+        auto* flag = GetSpecObj<noFlag>(pt);
         if(flag && flag->GetPlayer() == player)
         {
             flag->DestroyAttachedBuilding();
@@ -1012,18 +969,18 @@ bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttack
 
     // Objekte, die sich hier befinden durchgehen
     const std::list<noBase*>& figures = GetFigures(pt);
-    for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+    for(auto figure : figures)
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
-        if((*it)->GetGOT() == GOT_NOF_ATTACKER || (*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER || (*it)->GetGOT() == GOT_NOF_DEFENDER)
+        if(figure->GetGOT() == GOT_NOF_ATTACKER || figure->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER || figure->GetGOT() == GOT_NOF_DEFENDER)
         {
-            if(static_cast<nofActiveSoldier*>(*it)->GetState() == nofActiveSoldier::STATE_WAITINGFORFIGHT
-               || static_cast<nofActiveSoldier*>(*it)->GetState() == nofActiveSoldier::STATE_ATTACKING_WAITINGAROUNDBUILDING)
+            if(static_cast<nofActiveSoldier*>(figure)->GetState() == nofActiveSoldier::STATE_WAITINGFORFIGHT
+               || static_cast<nofActiveSoldier*>(figure)->GetState() == nofActiveSoldier::STATE_ATTACKING_WAITINGAROUNDBUILDING)
                 return false;
         }
 
         // Oder ein Kampf, der hier tobt?
-        if((*it)->GetGOT() == GOT_FIGHTING)
+        if(figure->GetGOT() == GOT_FIGHTING)
             return false;
     }
     // object wall or impassable terrain increasing my path to target length to a higher value than the direct distance?
@@ -1042,14 +999,14 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
 
     // Objekte, die sich hier befinden durchgehen
     const std::list<noBase*>& figures = GetFigures(pt);
-    for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+    for(auto figure : figures)
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
-        if((*it)->GetGOT() == GOT_NOF_ATTACKER || (*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER || (*it)->GetGOT() == GOT_NOF_DEFENDER)
+        if(figure->GetGOT() == GOT_NOF_ATTACKER || figure->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER || figure->GetGOT() == GOT_NOF_DEFENDER)
         {
-            if(static_cast<nofActiveSoldier*>(*it) == exception)
+            if(static_cast<nofActiveSoldier*>(figure) == exception)
                 continue;
-            switch(static_cast<nofActiveSoldier*>(*it)->GetState())
+            switch(static_cast<nofActiveSoldier*>(figure)->GetState())
             {
                 default: break;
                 case nofActiveSoldier::STATE_WAITINGFORFIGHT:
@@ -1060,9 +1017,9 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
         }
 
         // Oder ein Kampf, der hier tobt?
-        if((*it)->GetGOT() == GOT_FIGHTING)
+        if(figure->GetGOT() == GOT_FIGHTING)
         {
-            if(static_cast<noFighting*>(*it)->IsActive() && !static_cast<noFighting*>(*it)->IsFighter(exception))
+            if(static_cast<noFighting*>(figure)->IsActive() && !static_cast<noFighting*>(figure)->IsFighter(exception))
                 return false;
         }
     }
@@ -1398,7 +1355,7 @@ bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char
     DestroyNO(pos, false);
 
     // Hafenbaustelle errichten
-    noBuildingSite* bs = new noBuildingSite(pos, player);
+    auto* bs = new noBuildingSite(pos, player);
     SetNO(pos, bs);
     AddHarborBuildingSiteFromSea(bs);
 

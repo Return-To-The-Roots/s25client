@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "Point.h"
 #include "driver/VideoMode.h"
 #include "libutil/ProxySettings.h"
 #include "libutil/Singleton.h"

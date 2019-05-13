@@ -21,13 +21,14 @@
 #include "noCoordBase.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
-#include <stdint.h>
+#include <array>
+#include <cstdint>
 
 class SerializedGameData;
 class GameEvent;
 
 /// Anzahl Animationsschritte bei dem jeweiligen Anstieg
-const unsigned short ASCENT_ANIMATION_STEPS[7] = {16, 16, 16, 16, 24, 32, 48};
+const std::array<unsigned short, 7> ASCENT_ANIMATION_STEPS = {16, 16, 16, 16, 24, 32, 48};
 
 struct EventState
 {
@@ -52,7 +53,7 @@ protected:
     void PauseWalking();
 
 public:
-    noMovable(const NodalObjectType nop, const MapPoint pt);
+    noMovable(NodalObjectType nop, MapPoint pos);
     noMovable(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override { noCoordBase::Destroy(); }
@@ -70,7 +71,7 @@ public:
     /// In aktueller Richtung ein Stück zurücklegen
     void Walk();
     // Starten zu Laufen, Event anmelden
-    void StartMoving(const Direction dir, unsigned gf_length);
+    void StartMoving(Direction dir, unsigned gf_length);
     // Interpoliert die Position zwischen zwei Knoten punkten
     DrawPoint CalcRelative(DrawPoint curPt, DrawPoint nextPt) const;
     /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten

@@ -151,9 +151,7 @@ void nofScout_Free::GoToNewNode()
 {
     std::vector<MapPoint> available_points =
       gwg->GetPointsInRadius<-1>(flag->GetPos(), SCOUT_RANGE, Identity<MapPoint>(), IsScoutable(player, *gwg));
-    // Shuffle the points
-    RANDOM_FUNCTOR(randFunc);
-    std::random_shuffle(available_points.begin(), available_points.end(), randFunc);
+    RANDOM_SHUFFLE(available_points);
     for(MapPoint pt : available_points)
     {
         // Is there a path to this point and is the point also not to far away from the flag?

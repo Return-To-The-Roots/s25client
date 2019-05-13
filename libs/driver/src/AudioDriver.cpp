@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "driver/AudioDriver.h"
+#include "RTTR_Assert.h"
 #include "driver/SoundHandle.h"
 #include <algorithm>
 #include <limits>
@@ -26,7 +26,7 @@ class IAudioDriverCallback;
 
 // Do not inline! That would break DLL compatibility:
 // http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
-IAudioDriver::~IAudioDriver() {}
+IAudioDriver::~IAudioDriver() = default;
 
 AudioDriver::AudioDriver(IAudioDriverCallback* driverCallback)
     : driverCallback(driverCallback), initialized(false), nextPlayID_(0), numChannels_(0)
@@ -55,7 +55,7 @@ void AudioDriver::UnloadSound(AudioDriver& driver, SoundDesc* sound)
 {
     if(sound->isValid())
     {
-        std::vector<SoundDesc*>::iterator it = std::find(driver.sounds_.begin(), driver.sounds_.end(), sound);
+        auto it = std::find(driver.sounds_.begin(), driver.sounds_.end(), sound);
         RTTR_Assert(it != driver.sounds_.end());
         driver.DoUnloadSound(*sound);
         RTTR_Assert(!sound->isValid());

@@ -21,12 +21,12 @@
 #include "ai/aijh/AIPlayerJH.h"
 #include "gameTypes/AIInfo.h"
 
-AIPlayer* AIFactory::Create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world)
+std::unique_ptr<AIPlayer> AIFactory::Create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world)
 {
     switch(aiInfo.type)
     {
-        case AI::DUMMY: return new DummyAI(playerId, world, aiInfo.level); break;
+        case AI::DUMMY: return std::make_unique<DummyAI>(playerId, world, aiInfo.level); break;
         case AI::DEFAULT:
-        default: return new AIJH::AIPlayerJH(playerId, world, aiInfo.level); break;
+        default: return std::make_unique<AIJH::AIPlayerJH>(playerId, world, aiInfo.level); break;
     }
 }

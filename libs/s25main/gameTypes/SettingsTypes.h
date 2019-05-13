@@ -26,27 +26,27 @@
 // TODO: Make this structs so meanings are obvious
 
 /// 1 mapping of a required good to its building and default setting
-typedef std::tuple<GoodType, BuildingType, uint8_t> DistributionMapping;
+using DistributionMapping = std::tuple<GoodType, BuildingType, uint8_t>;
 /// List of all possible distribution mappings ordered by GoodType
-typedef std::array<DistributionMapping, 23> DistributionMap;
+using DistributionMap = std::array<DistributionMapping, 23>;
 extern const DistributionMap SUPPRESS_UNUSED distributionMap;
 /// List of the percentage a building should get from a specific ware
-typedef std::array<uint8_t, std::tuple_size<DistributionMap>::value> Distributions;
+using Distributions = std::array<uint8_t, std::tuple_size<DistributionMap>::value>;
 /// Ordering of building types by priority. All buildings in here except unused and HQ
-typedef std::array<BuildingType, NUM_BUILDING_TYPES - NUM_UNUSED_BLD_TYPES - 1> BuildOrders;
+using BuildOrders = std::array<BuildingType, NUM_BUILDING_TYPES - NUM_UNUSED_BLD_TYPES - 1>;
 /// Mapping transport priority -> standard transport priority of ware(group):
 /// E.g. std prio of coins = 0 -> TransportOrders[0] = stdPrio[COINS] = 0
 /// New prio of coins = 1 -> TransportOrders[1] = stdPrio[COINS] = 0
-typedef std::array<uint8_t, 14> TransportOrders;
-typedef std::array<uint8_t, NUM_WARE_TYPES> TransportPriorities;
+using TransportOrders = std::array<uint8_t, 14>;
+using TransportPriorities = std::array<uint8_t, NUM_WARE_TYPES>;
 /// Priority of each tool
-typedef std::array<uint8_t, NUM_TOOLS> ToolSettings;
+using ToolSettings = std::array<uint8_t, NUM_TOOLS>;
 /// Value of each military slider
 /// 0: Recruiting ratio (to max possible recruits)
 /// 1: Defender strength (ratio to max available rank)
 /// 2: Active defenders (engaging attackers by leaving building): Chance that one is sent
 /// 3: Ratio of used attackers to available attackers
 /// 4-7: Ratio of soldiers in buildings to full occupation for inland, middle region, harbor spots, border regions
-typedef std::array<uint8_t, 8> MilitarySettings;
+using MilitarySettings = std::array<uint8_t, 8>;
 
 #endif // SettingsTypes_h__

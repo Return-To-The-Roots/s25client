@@ -37,7 +37,7 @@ public:
     bool Save(BinaryFile& file, const std::string& mapName);
 
     /// Lädt Savegame oder Teile davon
-    bool Load(const std::string& filename, bool loadSettings, bool loadGameData);
+    bool Load(const std::string& filePath, bool loadSettings, bool loadGameData);
     bool Load(BinaryFile& file, bool loadSettings, bool loadGameData);
 
     void WriteExtHeader(BinaryFile& file, const std::string& mapName) override;

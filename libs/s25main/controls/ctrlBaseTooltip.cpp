@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlBaseTooltip.h"
 #include "WindowManager.h"
-#include <algorithm>
 
 ctrlBaseTooltip::~ctrlBaseTooltip()
 {

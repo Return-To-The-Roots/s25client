@@ -31,8 +31,8 @@ void BuildingRegister::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushObjectContainer(warehouses, false);
     sgd.PushObjectContainer(harbors, true);
-    for(unsigned i = 0; i < buildings.size(); ++i)
-        sgd.PushObjectContainer(buildings[i], true);
+    for(const auto& building : buildings)
+        sgd.PushObjectContainer(building, true);
     sgd.PushObjectContainer(building_sites, true);
     sgd.PushObjectContainer(military_buildings, true);
 }
@@ -43,8 +43,8 @@ void BuildingRegister::Deserialize(SerializedGameData& sgd)
     sgd.PopObjectContainer(harbors, GOT_NOB_HARBORBUILDING);
     if(sgd.GetGameDataVersion() >= 2)
     {
-        for(unsigned i = 0; i < buildings.size(); ++i)
-            sgd.PopObjectContainer(buildings[i], GOT_NOB_USUAL);
+        for(auto& building : buildings)
+            sgd.PopObjectContainer(building, GOT_NOB_USUAL);
         sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
         sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
     }
@@ -176,7 +176,7 @@ unsigned short BuildingRegister::CalcAverageProductivity() const
     unsigned numBlds = 0;
     for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
     {
-        BuildingType bldType = BuildingType(i);
+        auto bldType = BuildingType(i);
         if(BLD_WORK_DESC[bldType].producedWare == GD_NOTHING)
             continue;
 

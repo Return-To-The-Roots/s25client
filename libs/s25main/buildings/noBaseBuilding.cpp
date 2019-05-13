@@ -24,7 +24,6 @@
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "addons/const_addons.h"
-#include "network/GameClient.h"
 #include "nobBaseWarehouse.h"
 #include "notifications/BuildingNote.h"
 #include "world/GameWorldGame.h"
@@ -56,13 +55,13 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         // immer von Flagge ZU Gebäude (!)
         std::vector<Direction> route(1, Direction::NORTHWEST);
         // Straße zuweisen
-        RoadSegment* rs = new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
+        auto* rs = new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
         gwg->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NORTHWEST, rs); // der Flagge
         SetRoute(Direction::SOUTHEAST, rs);                                      // dem Gebäude
     } else
     {
         // vorhandene Straße der Flagge nutzen
-        noFlag* flag = gwg->GetSpecObj<noFlag>(flagPt);
+        auto* flag = gwg->GetSpecObj<noFlag>(flagPt);
 
         RTTR_Assert(flag->GetRoute(Direction::NORTHWEST));
         SetRoute(Direction::SOUTHEAST, flag->GetRoute(Direction::NORTHWEST));
@@ -81,7 +80,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 }
 
-noBaseBuilding::~noBaseBuilding() {}
+noBaseBuilding::~noBaseBuilding() = default;
 
 void noBaseBuilding::Destroy_noBaseBuilding()
 {
@@ -113,21 +112,21 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                 percent_index = 2;
 
             // wieviel kriegt man von jeder Ware wieder?
-            const unsigned percents[5] = {0, 25, 50, 75, 100};
+            const std::array<unsigned, 5> percents = {0, 25, 50, 75, 100};
             const unsigned percent = 10 * percents[percent_index];
 
             // zurückgaben berechnen (abgerundet)
             unsigned boards = (percent * BUILDING_COSTS[nation][bldType_].boards) / 1000;
             unsigned stones = (percent * BUILDING_COSTS[nation][bldType_].stones) / 1000;
 
-            GoodType goods[2] = {GD_BOARDS, GD_STONES};
-            bool which = 0;
+            std::array<GoodType, 2> goods = {GD_BOARDS, GD_STONES};
+            bool which = false;
             while(flag->IsSpaceForWare() && (boards > 0 || stones > 0))
             {
                 if((!which && boards > 0) || (which && stones > 0))
                 {
                     // Ware erzeugen
-                    Ware* ware = new Ware(goods[which], nullptr, flag);
+                    auto* ware = new Ware(goods[which], nullptr, flag);
                     // Inventur anpassen
                     gwg->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden

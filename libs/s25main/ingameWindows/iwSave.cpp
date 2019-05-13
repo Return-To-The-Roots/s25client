@@ -28,17 +28,17 @@
 #include "controls/ctrlTable.h"
 #include "desktops/dskLobby.h"
 #include "files.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "iwPleaseWait.h"
 #include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
-#include <boost/filesystem.hpp>
+#include <utility>
 
-const unsigned NUM_AUTO_SAVE_INTERVALSS = 7;
+const unsigned NUM_AUTO_SAVE_INTERVALS = 7;
 
-const unsigned AUTO_SAVE_INTERVALS[NUM_AUTO_SAVE_INTERVALSS] = {500, 1000, 5000, 10000, 50000, 100000, 1};
+const std::array<unsigned, NUM_AUTO_SAVE_INTERVALS> AUTO_SAVE_INTERVALS = {500, 1000, 5000, 10000, 50000, 100000, 1 /*  */};
 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
     : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title, LOADER.GetImageN("resource", 41))
@@ -71,17 +71,17 @@ void iwSaveLoad::RefreshTable()
     GetCtrl<ctrlTable>(0)->DeleteAllItems();
 
     std::vector<std::string> saveFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
-    for(std::vector<std::string>::iterator it = saveFiles.begin(); it != saveFiles.end(); ++it)
+    for(auto& saveFile : saveFiles)
     {
         Savegame save;
 
         // Datei öffnen
-        if(!save.Load(*it, false, false))
+        if(!save.Load(saveFile, false, false))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
             {
-                LOG.write(_("Invalid Savegame %1%! Reason: %2%\n")) % *it
+                LOG.write(_("Invalid Savegame %1%! Reason: %2%\n")) % saveFile
                   % (save.GetLastErrorMsg().empty() ? _("Unknown") : save.GetLastErrorMsg());
             }
             continue;
@@ -91,7 +91,7 @@ void iwSaveLoad::RefreshTable()
         std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
 
         // Dateiname noch rausextrahieren aus dem Pfad
-        bfs::path path = *it;
+        bfs::path path = saveFile;
         if(!path.has_filename())
             continue;
         // Just filename w/o extension
@@ -101,7 +101,7 @@ void iwSaveLoad::RefreshTable()
 
         // Und das Zeug zur Tabelle hinzufügen
         GetCtrl<ctrlTable>(0)->AddRow(0, fileName.string().c_str(), save.GetMapName().c_str(), dateStr.c_str(), startGF.c_str(),
-                                      it->c_str());
+                                      saveFile.c_str());
     }
 
     // Nach Zeit Sortieren
@@ -133,14 +133,14 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     AddImageButton(2, DrawPoint(540, 386), Extent(40, 40), TC_GREEN2, LOADER.GetImageN("io", 47));
 
     // Autospeicherzeug
-    AddText(3, DrawPoint(20, 350), _("Auto-Save every:"), 0xFFFFFF00, 0, NormalFont);
+    AddText(3, DrawPoint(20, 350), _("Auto-Save every:"), 0xFFFFFF00, FontStyle{}, NormalFont);
     ctrlComboBox* combo = AddComboBox(4, DrawPoint(270, 345), Extent(130, 22), TC_GREEN2, NormalFont, 100);
 
     /// Combobox füllen
     combo->AddString(_("Disabled")); // deaktiviert
 
     // Last entry is only for debugging
-    const unsigned numIntervalls = SETTINGS.global.debugMode ? NUM_AUTO_SAVE_INTERVALSS : NUM_AUTO_SAVE_INTERVALSS - 1;
+    const unsigned numIntervalls = SETTINGS.global.debugMode ? NUM_AUTO_SAVE_INTERVALS : NUM_AUTO_SAVE_INTERVALS - 1;
 
     // Die Intervalle
     for(unsigned i = 0; i < numIntervalls; ++i)
@@ -176,7 +176,7 @@ void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const int selection
         SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1];
 }
 
-iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")), csi(csi)
+iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(0, _("Load game!")), csi(std::move(csi))
 {
     AddEdit(1, DrawPoint(20, 350), Extent(510, 22), TC_GREEN2, NormalFont);
     AddImageButton(2, DrawPoint(540, 346), Extent(40, 40), TC_GREEN2, LOADER.GetImageN("io", 48));
@@ -190,21 +190,21 @@ iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")), cs
 void iwLoad::SaveLoad()
 {
     // Server starten
-    ctrlTable* table = GetCtrl<ctrlTable>(0);
+    auto* table = GetCtrl<ctrlTable>(0);
 
     if(!GAMECLIENT.HostGame(csi, table->GetItemText(table->GetSelection(), 4), MAPTYPE_SAVEGAME))
     {
         // Server starten
         if(LOBBYCLIENT.IsLoggedIn())
             // Lobby zeigen, wenn wenn das nich ging und man im Lobby-Modus ist
-            WINDOWMANAGER.Switch(new dskLobby);
+            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
         else
             // Ansonsten schließen
             Close();
     } else
     {
         // Verbindungsfenster anzeigen
-        WINDOWMANAGER.Show(new iwPleaseWait);
+        WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
     }
 }
 

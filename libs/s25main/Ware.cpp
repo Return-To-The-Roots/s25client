@@ -25,11 +25,9 @@
 #include "buildings/noBuilding.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
-#include "network/GameClient.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
-#include "gameTypes/BuildingType.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
@@ -49,7 +47,7 @@ Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
         goal->TakeWare(this);
 }
 
-Ware::~Ware() {}
+Ware::~Ware() = default;
 
 void Ware::Destroy()
 {

@@ -55,7 +55,7 @@ CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette& 
     std::fill(fillersLeft.begin(), fillersLeft.end(), BdrBitmap());
     std::fill(fillersRight.begin(), fillersRight.end(), BdrBitmap());
 }
-CustomBorderBuilder::~CustomBorderBuilder() {}
+CustomBorderBuilder::~CustomBorderBuilder() = default;
 
 int CustomBorderBuilder::loadEdges(const libsiedler2::Archiv& archiveInfo)
 {
@@ -244,8 +244,8 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, std::array<unsig
     shouldCounts[0] = 0;
     shouldCounts[1] = 0;
     shouldCounts[2] = 0;
-    unsigned char wouldCounts[3];
-    unsigned char maxCounts[3]; // wieviel mal passt jedes Teil maximal in die Freifläche?
+    std::array<unsigned char, 3> wouldCounts;
+    std::array<unsigned char, 3> maxCounts; // wieviel mal passt jedes Teil maximal in die Freifläche?
     for(unsigned char i = 0; i < 3; i++)
         maxCounts[i] = toFill / lengths[i];
     unsigned shouldBeFilled = 0;
@@ -265,8 +265,8 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, std::array<unsig
                     {
                         // Finde, ob mehr verschiedene Stücken benutzt würden als bisher
                         unsigned char wouldNumDifferentTiles = 3;
-                        for(unsigned char i = 0; i < 3; i++)
-                            if(wouldCounts[i] == 0)
+                        for(unsigned char wouldCount : wouldCounts)
+                            if(wouldCount == 0)
                                 wouldNumDifferentTiles--;
                         // wenn mehr Stücke benutzt würden oder weniger Freifläche bleibt
                         if((wouldNumDifferentTiles > shouldNumDifferentTiles) || (wouldBeFilled > shouldBeFilled))

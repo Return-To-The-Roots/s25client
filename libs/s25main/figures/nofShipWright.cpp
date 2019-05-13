@@ -81,9 +81,9 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                 std::vector<ShipPoint> available_points;
 
                 // Besitze ich noch ein Schiff, was gebaut werden muss?
-                for(std::vector<MapPoint>::const_iterator it = possiblePts.begin(); it != possiblePts.end(); ++it)
+                for(const auto& it : possiblePts)
                 {
-                    noBase* obj = gwg->GetNode(*it).obj;
+                    noBase* obj = gwg->GetNode(it).obj;
 
                     if(!obj)
                         continue;
@@ -94,9 +94,9 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                         // Platz noch nicht reserviert und gehört das Schiff auch mir?
                         unsigned char first_dir = INVALID_DIR;
                         if(!gwg->GetNode(pos).reserved && static_cast<noShipBuildingSite*>(obj)->GetPlayer() == player
-                           && (first_dir = gwg->FindHumanPath(flagPos, *it, SHIPWRIGHT_WALKING_DISTANCE)) != INVALID_DIR)
+                           && (first_dir = gwg->FindHumanPath(flagPos, it, SHIPWRIGHT_WALKING_DISTANCE)) != INVALID_DIR)
                         {
-                            available_points.push_back(ShipPoint(*it, first_dir));
+                            available_points.push_back(ShipPoint(it, first_dir));
                         }
                     }
                 }
@@ -104,16 +104,16 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                 // Kein Schiff im Bau gefunden? Dann Plätzchen für ein neues Schiff suchen
                 if(available_points.empty())
                 {
-                    for(std::vector<MapPoint>::const_iterator it = possiblePts.begin(); it != possiblePts.end(); ++it)
+                    for(const auto& it : possiblePts)
                     {
                         // Dieser Punkt geeignet?
-                        if(IsPointGood(*it))
+                        if(IsPointGood(it))
                         {
                             // Weg dorthin finden
-                            unsigned char first_dir = gwg->FindHumanPath(flagPos, *it, SHIPWRIGHT_WALKING_DISTANCE);
+                            unsigned char first_dir = gwg->FindHumanPath(flagPos, it, SHIPWRIGHT_WALKING_DISTANCE);
                             if(first_dir != 0xFF)
                             {
-                                available_points.push_back(ShipPoint(*it, first_dir));
+                                available_points.push_back(ShipPoint(it, first_dir));
                             }
                         }
                     }
@@ -286,7 +286,7 @@ void nofShipWright::WorkFinished()
     if(gwg->GetGOT(pos) != GOT_SHIPBUILDINGSITE)
     {
         // Ggf Zierobjekte löschen
-        noBase* obj = gwg->GetSpecObj<noBase>(pos);
+        auto* obj = gwg->GetSpecObj<noBase>(pos);
         if(obj)
         {
             if(obj->GetType() != NOP_ENVIRONMENT)
@@ -316,8 +316,9 @@ void nofShipWright::WalkedDerived()
     }
 }
 
-const unsigned ANIMATION[42] = {299, 300, 301, 302, 299, 300, 301, 302, 299, 300, 301, 302, 303, 303, 304, 304, 305, 305, 306, 306, 307,
-                                307, 299, 300, 301, 302, 299, 300, 301, 302, 308, 309, 310, 311, 312, 313, 308, 309, 310, 311, 312, 313};
+const std::array<unsigned, 42> ANIMATION = {299, 300, 301, 302, 299, 300, 301, 302, 299, 300, 301, 302, 303, 303,
+                                            304, 304, 305, 305, 306, 306, 307, 307, 299, 300, 301, 302, 299, 300,
+                                            301, 302, 308, 309, 310, 311, 312, 313, 308, 309, 310, 311, 312, 313};
 
 void nofShipWright::DrawWorking(DrawPoint drawPt)
 {

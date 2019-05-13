@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwPlayReplay.h"
-#include "BasePlayerInfo.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "Replay.h"
@@ -28,28 +27,29 @@
 #include "desktops/dskGameLoader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/Log.h"
 #include <boost/filesystem.hpp>
-#include <boost/format.hpp>
 
+namespace {
 class SwitchOnStart : public ClientInterface
 {
 public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
-    ~SwitchOnStart() { GAMECLIENT.RemoveInterface(this); }
+    ~SwitchOnStart() override { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameLoading(std::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
+    void CI_GameLoading(const std::shared_ptr<Game>& game) override { WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game)); }
 };
 
 std::vector<std::string> GetReplays()
 {
     return ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[51]), "rpl");
 }
+} // namespace
 
 iwPlayReplay::iwPlayReplay()
     : IngameWindow(CGI_PLAYREPLAY, IngameWindow::posLastOrCenter, Extent(600, 330), _("Play Replay"), LOADER.GetImageN("resource", 41))
@@ -76,7 +76,7 @@ void iwPlayReplay::PopulateTable()
 {
     static bool loadedOnce = false;
 
-    ctrlTable* table = GetCtrl<ctrlTable>(0);
+    auto* table = GetCtrl<ctrlTable>(0);
     unsigned short sortCol = table->GetSortColumn();
     if(sortCol == 0xFFFF)
         sortCol = 0;
@@ -86,17 +86,17 @@ void iwPlayReplay::PopulateTable()
     unsigned numInvalid = 0;
 
     std::vector<std::string> replays = GetReplays();
-    for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
+    for(auto& it : replays)
     {
         Replay replay;
 
         // Datei laden
-        if(!replay.LoadHeader(*it, false))
+        if(!replay.LoadHeader(it, false))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
             {
-                LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % *it
+                LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % it
                   % (replay.GetLastErrorMsg().empty() ? _("Unknown") : replay.GetLastErrorMsg());
             }
             numInvalid++;
@@ -117,20 +117,20 @@ void iwPlayReplay::PopulateTable()
         }
 
         // Dateiname noch rausextrahieren aus dem Pfad
-        bfs::path path = *it;
+        bfs::path path = it;
         if(!path.has_filename())
             continue;
         std::string fileName = path.filename().string();
         std::string lastGF = helpers::toString(replay.GetLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
-        table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), it->c_str());
+        table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), it.c_str());
     }
 
     // Erst einmal nach Dateiname sortieren
     table->SortRows(sortCol, &sortDir);
 
-    ctrlTextButton* btDelInvalid = GetCtrl<ctrlTextButton>(5);
+    auto* btDelInvalid = GetCtrl<ctrlTextButton>(5);
     if(numInvalid == 0)
         btDelInvalid->SetVisible(false);
     else
@@ -148,20 +148,21 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
         default: break;
         case 1: StartReplay(); break;
         case 2:
-            WINDOWMANAGER.Show(new iwMsgbox(_("Clear"), _("Are you sure to remove all replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 1));
+            WINDOWMANAGER.Show(
+              std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 1));
             break;
         case 3:
         {
-            ctrlTable* table = GetCtrl<ctrlTable>(0);
+            auto* table = GetCtrl<ctrlTable>(0);
             if(table->GetSelection() < table->GetNumRows())
-                WINDOWMANAGER.Show(new iwMsgbox(_("Delete selected"), _("Are you sure you want to remove the selected replay?"), this,
-                                                MSB_YESNO, MSB_QUESTIONRED, 2));
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                  _("Delete selected"), _("Are you sure you want to remove the selected replay?"), this, MSB_YESNO, MSB_QUESTIONRED, 2));
             break;
         }
         case 4: Close(); break;
         case 5:
-            WINDOWMANAGER.Show(
-              new iwMsgbox(_("Clear"), _("Are you sure to remove all invalid replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 3));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all invalid replays?"), this, MSB_YESNO,
+                                                          MSB_QUESTIONRED, 3));
             break;
     }
 }
@@ -178,12 +179,13 @@ void iwPlayReplay::StartReplay()
     LOADER.GetImageN("resource", 33)->DrawFull(VIDEODRIVER.GetMousePos() - DrawPoint(0, 40));
     VIDEODRIVER.SwapBuffers();
 
-    ctrlTable* table = GetCtrl<ctrlTable>(0);
+    auto* table = GetCtrl<ctrlTable>(0);
     if(table->GetSelection() < table->GetNumRows())
     {
         SwitchOnStart switchOnStart;
         if(!GAMECLIENT.StartReplay(table->GetItemText(table->GetSelection(), 4)))
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error while playing replay!"), _("Invalid Replay!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+            WINDOWMANAGER.Show(
+              std::make_unique<iwMsgbox>(_("Error while playing replay!"), _("Invalid Replay!"), this, MSB_OK, MSB_EXCLAMATIONRED));
     }
 }
 
@@ -193,10 +195,10 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     if(msgbox_id == 1 && mbr == MSR_YES)
     {
         std::vector<std::string> replays = GetReplays();
-        for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
+        for(auto& replay : replays)
         {
             boost::system::error_code ec;
-            bfs::remove(*it, ec);
+            bfs::remove(replay, ec);
         }
 
         // Tabelle leeren
@@ -204,21 +206,21 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     } else if(msgbox_id == 3 && mbr == MSR_YES)
     {
         std::vector<std::string> replays = GetReplays();
-        for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
+        for(auto& it : replays)
         {
             Replay replay;
-            if(!replay.LoadHeader(*it, false))
+            if(!replay.LoadHeader(it, false))
             {
                 replay.Close();
                 boost::system::error_code ec;
-                bfs::remove(*it, ec);
+                bfs::remove(it, ec);
             }
         }
 
         PopulateTable();
     } else if(msgbox_id == 2 && mbr == MSR_YES)
     {
-        ctrlTable* table = GetCtrl<ctrlTable>(0);
+        auto* table = GetCtrl<ctrlTable>(0);
         if(table->GetSelection() < table->GetNumRows())
         {
             boost::system::error_code ec;

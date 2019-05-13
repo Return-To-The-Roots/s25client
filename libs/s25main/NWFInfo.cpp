@@ -19,7 +19,6 @@
 #include "NWFInfo.h"
 #include "FramesInfo.h"
 #include "helpers/containerUtils.h"
-#include <boost/bind.hpp>
 #include <algorithm>
 #include <stdexcept>
 

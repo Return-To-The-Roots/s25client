@@ -34,7 +34,7 @@ class nofPigbreeder : public nofWorkman
     GoodType ProduceWare() override;
 
 public:
-    nofPigbreeder(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofPigbreeder(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofPigbreeder(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_PIGBREEDER; }

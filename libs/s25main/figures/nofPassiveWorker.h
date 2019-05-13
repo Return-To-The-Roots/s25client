@@ -35,7 +35,7 @@ private:
     void HandleDerivedEvent(unsigned id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 
 public:
-    nofPassiveWorker(const Job job, const MapPoint pt, unsigned char player, noRoadNode* goal);
+    nofPassiveWorker(Job job, MapPoint pos, unsigned char player, noRoadNode* goal);
     nofPassiveWorker(SerializedGameData& sgd, unsigned obj_id);
 
     /// Zeichnen

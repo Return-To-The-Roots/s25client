@@ -26,7 +26,6 @@
 #include <string>
 
 class MouseCoords;
-class glArchivItem_Font;
 
 /// Buttonklasse
 class ctrlButton : public Window, public ctrlBaseTooltip

@@ -29,7 +29,7 @@
 #include <sstream>
 
 // Farben für die einzelnen Balken
-const unsigned iwMerchandiseStatistics::BarColors[14] = {
+const std::array<unsigned, 14> iwMerchandiseStatistics::BarColors = {
   0xFF00D3F7, // türkis
   0xFFFB9E49, // gelb
   0xFFDF6161, // orange
@@ -101,7 +101,7 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
                        LOADER.GetFontN("resource", 0));
 }
 
-iwMerchandiseStatistics::~iwMerchandiseStatistics() {}
+iwMerchandiseStatistics::~iwMerchandiseStatistics() = default;
 
 void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {
@@ -109,19 +109,19 @@ void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 16: // Hilfe
         {
-            WINDOWMANAGER.Show(
-              new iwHelp(GUI_ID(CGI_HELP), _("The merchandise statistics window allows you to check the quantities "
-                                             "of your merchandise. By clicking the left mouse button you can switch "
-                                             "the display of individual goods on and off. These can displayed over "
-                                             "four different time periods. To delete all displays, click on the wastebasket button.")));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(
+              GUI_ID(CGI_HELP), _("The merchandise statistics window allows you to check the quantities "
+                                  "of your merchandise. By clicking the left mouse button you can switch "
+                                  "the display of individual goods on and off. These can displayed over "
+                                  "four different time periods. To delete all displays, click on the wastebasket button.")));
         }
         break;
         case 17: // Alle abwählen
         {
             const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
-            for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end();)
+            for(auto it = active.begin(); it != active.end();)
             {
-                std::set<unsigned short>::const_iterator curIt = it++;
+                auto curIt = it++;
                 GetCtrl<ctrlMultiSelectGroup>(22)->RemoveSelection(*curIt);
             }
         }
@@ -170,13 +170,13 @@ void iwMerchandiseStatistics::DrawStatistic()
 
     // Maximalwert suchen
     unsigned short max = 1;
-    for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); ++it)
+    for(unsigned short it : active)
     {
         for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
         {
-            if(max < stat.merchandiseData[(*it) - 1][i])
+            if(max < stat.merchandiseData[it - 1][i])
             {
-                max = stat.merchandiseData[(*it) - 1][i];
+                max = stat.merchandiseData[it - 1][i];
             }
         }
     }
@@ -189,7 +189,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     DrawPoint previous(0, 0);
     unsigned short currentIndex = stat.currentIndex;
 
-    for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); ++it)
+    for(unsigned short it : active)
     {
         // Testing only:
         // DrawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft + DrawPoint(sizeX, 3 * (*it)), 2, BarColors[(*it) - 1]);
@@ -200,11 +200,11 @@ void iwMerchandiseStatistics::DrawStatistic()
             drawPos.x += (NUM_STAT_STEPS - i) * stepX;
             drawPos.y +=
               sizeY
-              - ((stat.merchandiseData[(*it) - 1][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)]) * sizeY)
+              - ((stat.merchandiseData[it - 1][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)]) * sizeY)
                   / max;
             if(i != 0)
             {
-                DrawLine(drawPos, previous, 2, BarColors[(*it) - 1]);
+                DrawLine(drawPos, previous, 2, BarColors[it - 1]);
             }
             previous = drawPos;
         }

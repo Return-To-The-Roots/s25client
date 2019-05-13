@@ -22,7 +22,7 @@
 template<typename T>
 struct Identity
 {
-    typedef T result_type;
+    using result_type = T;
 
     result_type operator()(const result_type& arg) { return arg; }
 

@@ -25,7 +25,6 @@
 #include "helpers/containerUtils.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/filesystem/operations.hpp>
-#include <boost/format.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <mygettext/mygettext.h>
 #include <mygettext/utils.h>

@@ -17,3 +17,5 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "MockupAudioDriver.h"
+
+int MockupSoundDesc::numAlive = 0;

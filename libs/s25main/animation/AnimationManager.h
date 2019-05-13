@@ -63,7 +63,7 @@ public:
     void onRescale(const ScreenResizeEvent& rs);
 
 private:
-    typedef std::map<unsigned, Animation*> AnimationMap;
+    using AnimationMap = std::map<unsigned, Animation*>;
     Window* parent_;
     unsigned nextId_;
     AnimationMap animations_;

@@ -17,8 +17,8 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "helpers/mathFuncs.h"
-#include <algorithm>
 #include <cstdlib>
+#include <utility>
 
 namespace helpers {
 int gcd(int a, int b)

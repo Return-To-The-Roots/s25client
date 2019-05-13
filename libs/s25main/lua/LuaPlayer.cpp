@@ -23,7 +23,7 @@
 #include "ai/AIPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "lua/LuaHelpers.h"
 #include "lua/LuaInterfaceBase.h"
 #include "notifications/BuildingNote.h"
@@ -33,7 +33,7 @@
 #include "gameTypes/BuildingCount.h"
 #include "gameData/BuildingConsts.h"
 #include "libutil/Log.h"
-#include <stdexcept>
+#include <kaguya/kaguya.hpp>
 
 const BasePlayerInfo& LuaPlayer::GetPlayer() const
 {
@@ -119,7 +119,7 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
     int lastNullPt = -1;
     // Do we have multiple polygons?
     bool isMultiPoly = false;
-    for(kaguya::VariadicArgType::const_iterator it = inPoints.begin(); it != inPoints.end(); ++it)
+    for(auto it = inPoints.cbegin(); it != inPoints.cend(); ++it)
     {
         // Is this the separator between polygons?
         if(it->isNilref())
@@ -189,8 +189,8 @@ bool LuaPlayer::IsInRestrictedArea(unsigned x, unsigned y) const
 void LuaPlayer::ClearResources()
 {
     const std::list<nobBaseWarehouse*> warehouses = player.GetBuildingRegister().GetStorehouses();
-    for(std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
-        (*wh)->Clear();
+    for(auto warehouse : warehouses)
+        warehouse->Clear();
 }
 
 bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
@@ -202,12 +202,12 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
 
     Inventory goods;
 
-    for(std::map<GoodType, unsigned>::const_iterator it = wares.begin(); it != wares.end(); ++it)
+    for(auto ware : wares)
     {
-        if(unsigned(it->first) < NUM_WARE_TYPES)
-            goods.Add(it->first, it->second);
+        if(unsigned(ware.first) < NUM_WARE_TYPES)
+            goods.Add(ware.first, ware.second);
         else
-            throw LuaExecutionError((std::string("Invalid ware in AddWares: ") + helpers::toString(it->first)).c_str());
+            throw LuaExecutionError(std::string("Invalid ware in AddWares: ") + helpers::toString(ware.first));
     }
 
     warehouse->AddGoods(goods, true);
@@ -223,12 +223,12 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
 
     Inventory goods;
 
-    for(std::map<Job, unsigned>::const_iterator it = people.begin(); it != people.end(); ++it)
+    for(auto it : people)
     {
-        if(unsigned(it->first) < NUM_JOB_TYPES)
-            goods.Add(it->first, it->second);
+        if(unsigned(it.first) < NUM_JOB_TYPES)
+            goods.Add(it.first, it.second);
         else
-            throw LuaExecutionError((std::string("Invalid job in AddPeople: ") + helpers::toString(it->first)).c_str());
+            throw LuaExecutionError(std::string("Invalid job in AddPeople: ") + helpers::toString(it.first));
     }
 
     warehouse->AddGoods(goods, true);
@@ -279,7 +279,7 @@ void LuaPlayer::ModifyHQ(bool isTent)
     const MapPoint hqPos = player.GetHQPos();
     if(hqPos.isValid())
     {
-        nobHQ* hq = player.GetGameWorld().GetSpecObj<nobHQ>(hqPos);
+        auto* hq = player.GetGameWorld().GetSpecObj<nobHQ>(hqPos);
         if(hq)
             hq->SetIsTent(isTent);
     }

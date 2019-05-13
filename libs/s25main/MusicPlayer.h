@@ -36,10 +36,10 @@ public:
     void Prepare();
 
     /// liefert den Dateinamen des aktuellen Songs
-    const std::string getCurrentSong() const;
+    std::string getCurrentSong() const;
 
     /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-    const std::string getNextSong();
+    std::string getNextSong();
 
     /// Playlist in Datei speichern
     bool SaveAs(const std::string& filename, bool overwrite);
@@ -49,7 +49,7 @@ public:
     /// Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
     void FillMusicPlayer(iwMusicPlayer* window) const;
     /// Liest die Werte aus dem iwMusicPlayer-Fenster
-    void ReadMusicPlayer(const iwMusicPlayer* const window);
+    void ReadMusicPlayer(const iwMusicPlayer* window);
 
     /// Wählt den Start-Song aus
     void SetStartSong(unsigned id);

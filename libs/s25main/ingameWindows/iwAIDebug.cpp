@@ -23,7 +23,7 @@
 #include "ai/aijh/Jobs.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
@@ -77,7 +77,7 @@ public:
         else if(overlay == 3)
             ticks[ai->GetAINode(pt).farmed]->DrawFull(curPos);
         else if(overlay < 13)
-            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIResource(overlay - 4))), 0, 0xFFFFFF00);
+            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIResource(overlay - 4))), FontStyle{}, 0xFFFFFF00);
     }
 };
 
@@ -87,7 +87,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
 {
     for(const AIPlayer* ai : ais)
     {
-        const AIJH::AIPlayerJH* aijh = dynamic_cast<const AIJH::AIPlayerJH*>(ai);
+        const auto* aijh = dynamic_cast<const AIJH::AIPlayerJH*>(ai);
         if(aijh)
             ais_.push_back(aijh);
     }
@@ -162,8 +162,8 @@ void iwAIDebug::Msg_PaintBefore()
 
     ss << "Jobs to do: " << printer->ai->GetNumJobs() << std::endl << std::endl;
 
-    const AIJH::BuildJob* bj = dynamic_cast<const AIJH::BuildJob*>(currentJob);
-    const AIJH::EventJob* ej = dynamic_cast<const AIJH::EventJob*>(currentJob);
+    const auto* bj = dynamic_cast<const AIJH::BuildJob*>(currentJob);
+    const auto* ej = dynamic_cast<const AIJH::EventJob*>(currentJob);
 
     if(bj)
     {
@@ -196,7 +196,7 @@ void iwAIDebug::Msg_PaintBefore()
         }
 #undef RTTR_PRINT_EV
 
-        AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ej->GetEvent());
+        auto* evb = dynamic_cast<AIEvent::Building*>(ej->GetEvent());
         if(evb)
         {
             ss << evb->GetX() << " / " << evb->GetY() << std::endl;

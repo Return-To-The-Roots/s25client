@@ -19,7 +19,7 @@
 #include "BuildingConsts.h"
 #include "mygettext/mygettext.h"
 
-const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_NAMES = {{
+const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_NAMES = {
   gettext_noop("Headquarters"),
   gettext_noop("Barracks"),
   gettext_noop("Guardhouse"),
@@ -60,9 +60,9 @@ const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_NAMES = {{
   gettext_noop("Farm"),
   gettext_noop("Donkey breeding"),
   gettext_noop("Harbor building"),
-}};
+};
 
-const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_HELP_STRINGS = {{
+const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_HELP_STRINGS = {
   // Headquarters
   gettext_noop("The headquarters represents the "
                "center of your realm. The large "
@@ -303,4 +303,4 @@ const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_HELP_STRINGS = {{
                "this, first choose the relevant "
                "icon followed by the desired "
                "merchandise or job symbol."),
-}};
+};

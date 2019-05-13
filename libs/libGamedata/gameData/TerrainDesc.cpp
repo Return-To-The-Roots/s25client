@@ -18,10 +18,11 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "TerrainDesc.h"
 #include "WorldDescription.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "lua/CheckedLuaTable.h"
 #include "lua/LuaHelpers.h"
 
+namespace {
 TerrainKind strToTerrainKind(const std::string& name)
 {
     if(name == "land")
@@ -50,19 +51,6 @@ ETexType strToTexType(const std::string& name)
         throw GameDataError("Invalid texture type: " + name);
 }
 
-TerrainBQ getDefaultBQ(TerrainKind kind)
-{
-    switch(kind)
-    {
-        case TerrainKind::LAND: return TerrainBQ::CASTLE;
-        case TerrainKind::WATER: return TerrainBQ::NOTHING;
-        case TerrainKind::LAVA:
-        case TerrainKind::SNOW: return TerrainBQ::DANGER;
-        case TerrainKind::MOUNTAIN: return TerrainBQ::MINE;
-    }
-    throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
-}
-
 ETerrain getDefaultFlags(TerrainKind kind)
 {
     switch(kind)
@@ -73,7 +61,7 @@ ETerrain getDefaultFlags(TerrainKind kind)
         case TerrainKind::SNOW: return ETerrain::Unreachable;
         case TerrainKind::MOUNTAIN: return ETerrain::Mineable;
     }
-    throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
+    throw GameDataError("Invalid terrain kind: " + helpers::toString(kind));
 }
 
 uint8_t getDefaultHumidity(TerrainKind kind)
@@ -86,8 +74,9 @@ uint8_t getDefaultHumidity(TerrainKind kind)
         case TerrainKind::SNOW:
         case TerrainKind::MOUNTAIN: return 0;
     }
-    throw GameDataError("Invalid terrain kind: " + helpers::toString(static_cast<unsigned>(kind)));
+    throw GameDataError("Invalid terrain kind: " + helpers::toString(kind));
 }
+} // namespace
 
 TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
 {
@@ -131,7 +120,7 @@ TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldD
     luaData.checkUnused();
 }
 
-TerrainDesc::~TerrainDesc() {}
+TerrainDesc::~TerrainDesc() = default;
 
 TerrainBQ TerrainDesc::GetBQ() const
 {

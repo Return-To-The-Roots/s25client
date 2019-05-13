@@ -30,9 +30,8 @@
 #include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
 #include "gameData/MapConsts.h"
-#include "libutil/colors.h"
 
-const DrawPointInit STONE_STARTS[6] = {{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}};
+const std::array<DrawPoint, 6> STONE_STARTS = {{{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}}};
 
 nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt()) {}
 
@@ -119,23 +118,23 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             std::vector<PossibleTarget> possibleTargets;
 
             sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
-            for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
+            for(auto& building : buildings)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
-                if((*it)->GetGOT() == GOT_NOB_MILITARY && gwg->GetPlayer(player).IsAttackable((*it)->GetPlayer()))
+                if(building->GetGOT() == GOT_NOB_MILITARY && gwg->GetPlayer(player).IsAttackable(building->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
-                    if(gwg->GetNode((*it)->GetPos()).fow[player].visibility == VIS_VISIBLE
-                       && !static_cast<nobMilitary*>((*it))->IsNewBuilt())
+                    if(gwg->GetNode(building->GetPos()).fow[player].visibility == VIS_VISIBLE
+                       && !static_cast<nobMilitary*>(building)->IsNewBuilt())
                     {
                         // Entfernung ausrechnen
-                        unsigned distance = gwg->CalcDistance(pos, (*it)->GetPos());
+                        unsigned distance = gwg->CalcDistance(pos, building->GetPos());
 
                         // Entfernung nicht zu hoch?
                         if(distance < 14)
                         {
                             // Mit in die Liste aufnehmen
-                            possibleTargets.push_back(PossibleTarget((*it)->GetPos(), distance));
+                            possibleTargets.push_back(PossibleTarget(building->GetPos(), distance));
                         }
                     }
                 }
@@ -289,7 +288,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
         break;
         case STATE_CATAPULT_BACKOFF:
         {
-            current_ev = 0;
+            current_ev = nullptr;
             // wir arbeiten nicht mehr
             workplace->is_working = false;
             // Wieder versuchen, zu arbeiten

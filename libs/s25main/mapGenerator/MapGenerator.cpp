@@ -17,8 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/MapGenerator.h"
+#include "mapGenerator/MapSettings.h"
 #include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/RandomMapGenerator.h"
+#include "libsiedler2/Archiv.h"
 #include "libsiedler2/libsiedler2.h"
 #include <stdexcept>
 
@@ -29,13 +31,9 @@ void MapGenerator::Create(const std::string& filePath, const MapSettings& settin
     if(!config.Init(settings.style, settings.type))
         throw std::runtime_error("Error initializing random map config");
     RandomMapGenerator generator(config);
-    Map* randomMap = generator.Create(settings);
+    Map randomMap = generator.Create(settings);
 
     // generate the random map
-    libsiedler2::Archiv* archiv = randomMap->CreateArchiv();
-    libsiedler2::Write(filePath, *archiv);
-
-    // cleanup map and archiv
-    delete randomMap;
-    delete archiv;
+    libsiedler2::Archiv archiv = randomMap.CreateArchiv();
+    libsiedler2::Write(filePath, archiv);
 }

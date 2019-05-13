@@ -29,14 +29,13 @@
 #include "controls/ctrlList.h"
 #include "controls/ctrlTextDeepening.h"
 #include "files.h"
+#include "helpers/toString.h"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/StringConversion.h"
 #include "libutil/colors.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/nowide/cstdio.hpp>
-#include <cstdio>
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
     : IngameWindow(CGI_INPUTWINDOW, IngameWindow::posAtMouse, Extent(300, 100), title, LOADER.GetImageN("resource", 41), true),
@@ -65,7 +64,7 @@ iwMusicPlayer::iwMusicPlayer()
       changed(false)
 {
     AddList(0, DrawPoint(20, 30), Extent(330, 200), TC_GREEN1, NormalFont);
-    AddText(1, DrawPoint(20, 240), _("Playlist:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(1, DrawPoint(20, 240), _("Playlist:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddComboBox(2, DrawPoint(20, 260), Extent(330, 22), TC_GREEN1, NormalFont, 200);
 
     // Playlistbuttons
@@ -114,7 +113,7 @@ iwMusicPlayer::~iwMusicPlayer()
             if(!pl.SaveAs(GetFullPlaylistPath(str), true))
                 // Fehler, konnte nicht gespeichert werden
                 WINDOWMANAGER.Show(
-                  new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+                  std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be saved!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         } catch(std::exception&)
         {
         }
@@ -144,7 +143,8 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const int se
             changed = true;
         } else
             // Fehler, konnte nicht geladen werden
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+            WINDOWMANAGER.Show(
+              std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
     }
 }
 
@@ -169,7 +169,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         // Add Playlist
-        case 3: { WINDOWMANAGER.Show(new InputWindow(*this, 1, _("Specify the playlist name")));
+        case 3: { WINDOWMANAGER.Show(std::make_unique<InputWindow>(*this, 1, _("Specify the playlist name")));
         }
         break;
         // Remove Playlist
@@ -185,8 +185,8 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 // RTTR-Playlisten dürfen nicht gelöscht werden
                 if(str == "S2_Standard")
                 {
-                    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("You are not allowed to delete the standard playlist!"), this, MSB_OK,
-                                                    MSB_EXCLAMATIONRED));
+                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("You are not allowed to delete the standard playlist!"),
+                                                                  this, MSB_OK, MSB_EXCLAMATIONRED));
                     return;
                 }
 
@@ -207,14 +207,14 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         // Add Track
         case 7:
         {
-            WINDOWMANAGER.Show(new InputWindow(*this, 0, _("Add track")));
+            WINDOWMANAGER.Show(std::make_unique<InputWindow>(*this, 0, _("Add track")));
             changed = true;
         }
         break;
         // Add Directory of tracks
         case 8:
         {
-            WINDOWMANAGER.Show(new InputWindow(*this, 2, _("Add directory of tracks")));
+            WINDOWMANAGER.Show(std::make_unique<InputWindow>(*this, 2, _("Add directory of tracks")));
             changed = true;
         }
         break;
@@ -285,18 +285,6 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-bool ValidateFile(const std::string& filename)
-{
-    FILE* file = bnw::fopen(filename.c_str(), "r");
-    if(!file)
-        return false;
-    else
-    {
-        fclose(file);
-        return true;
-    }
-}
-
 void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
 {
     switch(win_id)
@@ -307,7 +295,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
             bool valid = false;
 
             // Existiert diese Datei nicht?
-            if(ValidateFile(msg))
+            if(bfs::exists(msg))
                 valid = true;
             else
             {
@@ -326,7 +314,8 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
                 GetCtrl<ctrlList>(0)->AddString(msg);
                 changed = true;
             } else
-                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be opened!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be opened!"), this, MSB_OK, MSB_EXCLAMATIONRED));
         }
         break;
         // Add Playlist
@@ -352,7 +341,8 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
             } else
             {
                 // Fehler, konnte nicht gespeichert werden
-                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be saved!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be saved!"), this, MSB_OK, MSB_EXCLAMATIONRED));
             }
         }
         break;
@@ -361,8 +351,8 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
         {
             std::vector<std::string> oggFiles = ListDir(msg, "ogg");
 
-            for(std::vector<std::string>::iterator it = oggFiles.begin(); it != oggFiles.end(); ++it)
-                GetCtrl<ctrlList>(0)->AddString(*it);
+            for(auto& oggFile : oggFiles)
+                GetCtrl<ctrlList>(0)->AddString(oggFile);
 
             changed = true;
         }
@@ -374,12 +364,12 @@ void iwMusicPlayer::SetSegments(const std::vector<std::string>& segments)
 {
     GetCtrl<ctrlList>(0)->DeleteAllItems();
 
-    for(unsigned i = 0; i < segments.size(); ++i)
-        GetCtrl<ctrlList>(0)->AddString(segments[i]);
+    for(const auto& segment : segments)
+        GetCtrl<ctrlList>(0)->AddString(segment);
 }
 void iwMusicPlayer::SetRepeats(unsigned repeats)
 {
-    GetCtrl<ctrlTextDeepening>(12)->SetText(std::to_string(repeats));
+    GetCtrl<ctrlTextDeepening>(12)->SetText(helpers::toString(repeats));
 }
 
 void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
@@ -418,13 +408,13 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
     std::vector<std::string> playlists = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[90]), "pll");
 
     unsigned i = 0;
-    for(std::vector<std::string>::iterator it = playlists.begin(); it != playlists.end(); ++it, ++i)
+    for(bfs::path playlistPath : playlists)
     {
-        bfs::path playlistPath(*it);
         // Reduce to pure filename
         playlistPath = playlistPath.stem();
         GetCtrl<ctrlComboBox>(2)->AddString(playlistPath.string());
         if(playlistPath == highlight_entry)
             GetCtrl<ctrlComboBox>(2)->SetSelection(i);
+        ++i;
     }
 }

@@ -17,12 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
-#include "GlobalVars.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
-#include "helpers/strUtils.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldBase.h"
@@ -33,7 +31,9 @@
 #include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "libutil/Log.h"
+#include "libutil/dynamicUniqueCast.h"
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
 #include <glad/glad.h>
 #include <set>
@@ -62,7 +62,7 @@ glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp)
 }
 
 TerrainRenderer::TerrainRenderer() : size_(0, 0) {}
-TerrainRenderer::~TerrainRenderer() {}
+TerrainRenderer::~TerrainRenderer() = default;
 
 TerrainRenderer::PointF TerrainRenderer::GetNeighbourVertexPos(MapPoint pt, const unsigned dir) const
 {
@@ -96,7 +96,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     std::set<DescIdx<LandscapeDesc>> usedLandscapes;
     std::set<DescIdx<TerrainDesc>> usedTerrains;
     std::set<DescIdx<EdgeDesc>> usedEdges;
-    typedef std::array<DescIdx<TerrainDesc>, 2> TerrainPair;
+    using TerrainPair = std::array<DescIdx<TerrainDesc>, 2>;
     for(const TerrainPair& ts : terrain)
     {
         for(const DescIdx<TerrainDesc>& tIdx : ts)
@@ -133,12 +133,13 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
                 terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
             } else
             {
-                libsiedler2::ArchivItem_PaletteAnimation& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
+                auto& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
                 std::unique_ptr<libsiedler2::Archiv> textures =
                   LOADER.ExtractAnimatedTexture(*texBmp, cur.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
                 for(unsigned i = 0; i < textures->size(); i++)
                 {
-                    terrainTextures[curIdx.value].textures.push_back(dynamic_cast<glArchivItem_Bitmap*>(textures->release(i)));
+                    terrainTextures[curIdx.value].textures.push_back(
+                      libutil::dynamicUniqueCast<glArchivItem_Bitmap>(textures->release(i)).release());
                 }
             }
         } else
@@ -176,7 +177,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
         glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
         if(!texBmp)
             throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for edge '" + cur.name + "'");
-        edgeTextures[curIdx.value].reset(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());
+        edgeTextures[curIdx.value] = LOADER.ExtractTexture(*texBmp, cur.posInTexture);
         edgeTextures[curIdx.value]->GetTexture(); // Init texture
     }
     for(DescIdx<LandscapeDesc> curIdx : usedLandscapes)
@@ -189,9 +190,8 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
             if(!texBmp)
                 throw std::runtime_error("Invalid texture '" + cur.roadTexDesc[i].texturePath + "' for road in landscape '" + cur.name
                                          + "'");
-            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i].reset(
-              LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture).release());
-            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i]->GetTexture(); // Init texture
+            roadTextures[curIdx.value * LandscapeDesc::NUM_ROADTYPES + i] = LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture);
+            roadTextures[curIdx.value * LandscapeDesc::NUM_ROADTYPES + i]->GetTexture(); // Init texture
         }
     }
 }
@@ -218,7 +218,7 @@ void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& 
 
 void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer& gwv)
 {
-    float shadow = static_cast<float>(gwv.GetNode(pt).shadow);
+    auto shadow = static_cast<float>(gwv.GetNode(pt).shadow);
     float clr = -1.f / (256.f * 256.f) * shadow * shadow + 1.f / 90.f * shadow + 0.38f;
     switch(gwv.GetVisibility(pt))
     {
@@ -346,13 +346,13 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     if(SETTINGS.video.vbo)
     {
         // Create and fill the 3 VBOs for vertices, texCoords and colors
-        vbo_vertices.reset(ogl::Target::Array);
+        vbo_vertices = ogl::VBO<Triangle>(ogl::Target::Array);
         vbo_vertices.fill(gl_vertices, ogl::Usage::Static);
 
-        vbo_texcoords.reset(ogl::Target::Array);
+        vbo_texcoords = ogl::VBO<Triangle>(ogl::Target::Array);
         vbo_texcoords.fill(gl_texcoords, ogl::Usage::Static);
 
-        vbo_colors.reset(ogl::Target::Array);
+        vbo_colors = ogl::VBO<ColorTriangle>(ogl::Target::Array);
         vbo_colors.fill(gl_colors, ogl::Usage::Static);
 
         // Unbind VBO to not interfere with other program parts
@@ -775,13 +775,13 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     if(vbo_vertices.isValid())
     {
         vbo_vertices.bind();
-        glVertexPointer(2, GL_FLOAT, 0, 0);
+        glVertexPointer(2, GL_FLOAT, 0, nullptr);
 
         vbo_texcoords.bind();
-        glTexCoordPointer(2, GL_FLOAT, 0, 0);
+        glTexCoordPointer(2, GL_FLOAT, 0, nullptr);
 
         vbo_colors.bind();
-        glColorPointer(3, GL_FLOAT, 0, 0);
+        glColorPointer(3, GL_FLOAT, 0, nullptr);
     } else
     {
         glVertexPointer(2, GL_FLOAT, 0, &gl_vertices.front());
@@ -810,17 +810,17 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 
         VIDEODRIVER.BindTexture(terrainTextures[t].textures[animationFrame].GetTextureNoCreate());
 
-        for(std::vector<MapTile>::iterator it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
+        for(const auto& texture : sorted_textures[t])
         {
-            if(it->posOffset != lastOffset)
+            if(texture.posOffset != lastOffset)
             {
-                Position trans = it->posOffset - lastOffset;
+                Position trans = texture.posOffset - lastOffset;
                 glTranslatef(float(trans.x), float(trans.y), 0.0f);
-                lastOffset = it->posOffset;
+                lastOffset = texture.posOffset;
             }
 
-            RTTR_Assert(it->tileOffset + it->count <= size_.x * size_.y * 2u);
-            glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
+            RTTR_Assert(texture.tileOffset + texture.count <= size_.x * size_.y * 2u);
+            glDrawArrays(GL_TRIANGLES, texture.tileOffset * 3, texture.count * 3); // Arguments are in Elements. 1 triangle has 3 values
         }
     }
     glPopMatrix();
@@ -835,16 +835,16 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
             continue;
         VIDEODRIVER.BindTexture(edgeTextures[i]->GetTextureNoCreate());
 
-        for(std::vector<BorderTile>::iterator it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
+        for(const auto& texture : sorted_borders[i])
         {
-            if(it->posOffset != lastOffset)
+            if(texture.posOffset != lastOffset)
             {
-                Position trans = it->posOffset - lastOffset;
+                Position trans = texture.posOffset - lastOffset;
                 glTranslatef(float(trans.x), float(trans.y), 0.0f);
-                lastOffset = it->posOffset;
+                lastOffset = texture.posOffset;
             }
-            RTTR_Assert(it->tileOffset + it->count <= gl_vertices.size());
-            glDrawArrays(GL_TRIANGLES, it->tileOffset * 3, it->count * 3); // Arguments are in Elements. 1 triangle has 3 values
+            RTTR_Assert(texture.tileOffset + texture.count <= gl_vertices.size());
+            glDrawArrays(GL_TRIANGLES, texture.tileOffset * 3, texture.count * 3); // Arguments are in Elements. 1 triangle has 3 values
         }
     }
     glPopMatrix();
@@ -862,28 +862,14 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 
 MapPoint TerrainRenderer::ConvertCoords(const Position pt, Position* offset) const
 {
-    if(offset)
-    {
-        // We need the screen offset by which we shifted the point
-        // this is the world size (in screen units) times the number we shifted the point
-        // This factor is floor(pos/size) which we do here in integer
-        // and avoid implementation defined (prior C++11) rounding for negative values by using the integer ceil on the inverse
-        if(pt.x >= 0)
-            offset->x = pt.x / size_.x;
-        else
-            offset->x = -((-pt.x + size_.x - 1) / size_.x);
-        if(pt.y >= 0)
-            offset->y = pt.y / size_.y;
-        else
-            offset->y = -((-pt.y + size_.y - 1) / size_.y);
-        offset->x *= (TR_W * size_.x);
-        offset->y *= (TR_H * size_.y);
-    }
     MapPoint ptOut = MakeMapPoint(pt, size_);
     RTTR_Assert(ptOut.x < size_.x);
     RTTR_Assert(ptOut.y < size_.y);
-    RTTR_Assert(!offset || pt.x - ptOut.x == offset->x / TR_W);
-    RTTR_Assert(!offset || pt.y - ptOut.y == offset->y / TR_H);
+    if(offset)
+    {
+        // We need the offset by which we shifted the point in screen units
+        *offset = (pt - ptOut) * Extent(TR_W, TR_H);
+    }
     return ptOut;
 }
 
@@ -927,7 +913,7 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
                 endPos.y += totalHeight;
         }
 
-        RoadSegment::RoadType rt = RoadSegment::RoadType(type - 1);
+        auto rt = RoadSegment::RoadType(type - 1);
         // The gfx road type is:
         // Boat for boat roads
         // else Mountain left or right is a mountain terrain
@@ -978,7 +964,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     if(maxSize == 0)
         return;
 
-    auto vertexData = std::make_unique<Tex2C3Ver2[]>(maxSize * 4);
+    auto vertexData = std::unique_ptr<Tex2C3Ver2[]>(new Tex2C3Ver2[maxSize * 4]);
     // These should still be enabled
     RTTR_Assert(glIsEnabled(GL_VERTEX_ARRAY));
     RTTR_Assert(glIsEnabled(GL_TEXTURE_COORD_ARRAY));
@@ -987,22 +973,21 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     glTexCoordPointer(2, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].tx);
     glColorPointer(3, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].r);
 
-    size_t type = 0;
-    for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
+    for(const auto& itRoad : sorted_roads | boost::adaptors::indexed())
     {
-        if(itRoad->empty())
+        if(itRoad.value().empty())
             continue;
         Tex2C3Ver2* curVertexData = vertexData.get();
-        const glArchivItem_Bitmap& texture = *roadTextures[type];
+        const glArchivItem_Bitmap& texture = *roadTextures[itRoad.index()];
         PointF scaledTexSize = texture.GetSize() / PointF(texture.GetTexSize());
 
-        for(PreparedRoads::value_type::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
+        for(const auto& it : itRoad.value())
         {
-            RTTR_Assert(it->dir < 3); // begin_end_coords has 3 dir entries
+            RTTR_Assert(it.dir < 3); // begin_end_coords has 3 dir entries
             curVertexData->tx = 0.0f;
             curVertexData->ty = 0.0f;
-            curVertexData->r = curVertexData->g = curVertexData->b = it->color1;
-            Position tmpP = it->pos + begin_end_coords[it->dir * 4];
+            curVertexData->r = curVertexData->g = curVertexData->b = it.color1;
+            Position tmpP = it.pos + begin_end_coords[it.dir * 4];
             curVertexData->x = GLfloat(tmpP.x);
             curVertexData->y = GLfloat(tmpP.y);
 
@@ -1010,8 +995,8 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 
             curVertexData->tx = 0.0f;
             curVertexData->ty = scaledTexSize.y;
-            curVertexData->r = curVertexData->g = curVertexData->b = it->color1;
-            tmpP = it->pos + begin_end_coords[it->dir * 4 + 1];
+            curVertexData->r = curVertexData->g = curVertexData->b = it.color1;
+            tmpP = it.pos + begin_end_coords[it.dir * 4 + 1];
             curVertexData->x = GLfloat(tmpP.x);
             curVertexData->y = GLfloat(tmpP.y);
 
@@ -1019,25 +1004,24 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 
             curVertexData->tx = scaledTexSize.x;
             curVertexData->ty = scaledTexSize.y;
-            curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
-            tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 2];
+            curVertexData->r = curVertexData->g = curVertexData->b = it.color2;
+            tmpP = it.pos2 + begin_end_coords[it.dir * 4 + 2];
             curVertexData->x = GLfloat(tmpP.x);
             curVertexData->y = GLfloat(tmpP.y);
 
             curVertexData++;
-
             curVertexData->tx = scaledTexSize.x;
             curVertexData->ty = 0.0f;
-            curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
-            tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 3];
+            curVertexData->r = curVertexData->g = curVertexData->b = it.color2;
+            tmpP = it.pos2 + begin_end_coords[it.dir * 4 + 3];
             curVertexData->x = GLfloat(tmpP.x);
             curVertexData->y = GLfloat(tmpP.y);
 
             curVertexData++;
         }
 
-        VIDEODRIVER.BindTexture(roadTextures[type]->GetTextureNoCreate());
-        glDrawArrays(GL_QUADS, 0, itRoad->size() * 4);
+        VIDEODRIVER.BindTexture(texture.GetTextureNoCreate());
+        glDrawArrays(GL_QUADS, 0, itRoad.value().size() * 4);
     }
     // Note: No glDisableClientState as we did not enable it
 }

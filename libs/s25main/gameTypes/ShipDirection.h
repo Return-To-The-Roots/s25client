@@ -18,6 +18,8 @@
 #ifndef ShipDirection_h__
 #define ShipDirection_h__
 
+#include "RTTR_Assert.h"
+
 /// "Enum" to represent one of the 6 directions a ship can go
 struct ShipDirection
 {
@@ -38,6 +40,7 @@ struct ShipDirection
     explicit ShipDirection(unsigned t) : t_(Type(t % COUNT)) { RTTR_Assert(t_ >= NORTH && t_ < COUNT); }
     /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static ShipDirection fromInt(unsigned t) { return Type(t); }
+    static ShipDirection fromInt(unsigned char t) { return Type(t); }
     static ShipDirection fromInt(int t) { return Type(t); }
     operator Type() const { return t_; }
     /// Returns the Direction as an UInt (for legacy code)

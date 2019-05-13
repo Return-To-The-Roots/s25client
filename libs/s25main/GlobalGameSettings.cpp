@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GlobalGameSettings.h"
 #include "Settings.h"
+#include "addons/Addon.h"
 #include "addons/Addons.h"
 #include "helpers/containerUtils.h"
 #include "gameData/MilitaryConsts.h"
@@ -71,8 +72,8 @@ GlobalGameSettings::~GlobalGameSettings()
  */
 void GlobalGameSettings::clearAddons()
 {
-    for(AddonContainer::iterator it = addons.begin(); it != addons.end(); ++it)
-        delete it->addon;
+    for(auto& addon : addons)
+        delete addon.addon;
 
     addons.clear();
 }
@@ -155,13 +156,13 @@ const Addon* GlobalGameSettings::getAddon(unsigned nr) const
 
 bool GlobalGameSettings::isEnabled(AddonId id) const
 {
-    AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
+    auto it = std::find(addons.begin(), addons.end(), id);
     return it != addons.end() && it->status != it->addon->getDefaultStatus();
 }
 
 unsigned GlobalGameSettings::getSelection(AddonId id) const
 {
-    AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
+    auto it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
         return 0;
     return it->status;
@@ -187,8 +188,8 @@ void GlobalGameSettings::LoadSettings()
 {
     resetAddons();
 
-    for(std::map<unsigned, unsigned>::iterator it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
-        setSelection((AddonId::type_)it->first, it->second);
+    for(const auto& it : SETTINGS.addons.configuration)
+        setSelection(static_cast<AddonId>(it.first), it.second);
 }
 
 /**
@@ -198,7 +199,7 @@ void GlobalGameSettings::SaveSettings() const
 {
     SETTINGS.addons.configuration.clear();
     for(const AddonWithState& addon : addons)
-        SETTINGS.addons.configuration.insert(std::make_pair(addon.addon->getId(), addon.status));
+        SETTINGS.addons.configuration.insert(std::make_pair(static_cast<unsigned>(addon.addon->getId()), addon.status));
 }
 
 /**
@@ -219,7 +220,7 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
     ser.PushUnsignedInt(addons.size());
     for(const AddonWithState& addon : addons)
     {
-        ser.PushUnsignedInt(addon.addon->getId());
+        ser.PushUnsignedInt(static_cast<unsigned>(addon.addon->getId()));
         ser.PushUnsignedInt(addon.status);
 
         // LOG.writeToFile("\t0x%08X=%d\n") % AddonId::type_(it->addon->getId()) % it->status;
@@ -247,7 +248,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     for(unsigned i = 0; i < count; ++i)
     {
-        AddonId addon = AddonId::type_(ser.PopUnsignedInt());
+        auto addon = static_cast<AddonId>(ser.PopUnsignedInt());
         unsigned status = ser.PopUnsignedInt();
         setSelection(addon, status);
 
@@ -257,9 +258,9 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
 void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
 {
-    AddonContainer::iterator it = std::find(addons.begin(), addons.end(), id);
+    auto it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
-        LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % id;
+        LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % static_cast<unsigned>(id);
     else
         it->status = selection;
 }

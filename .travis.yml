@@ -51,18 +51,36 @@ before_script: source external/libutil/tools/ci/setupXServer.sh
 script: tools/ci/travisBuild.sh
 
 jobs:
+  fast_finish: true
   include:
+    # Clang-Tidy main
+    - &clang-tidy
+      os: linux
+      addons:
+        apt:
+          sources: [*defSrcs, llvm-toolchain-trusty-8]
+          packages: [*defPackages, g++-7, clang-8, clang-tidy-8]
+      env:
+        - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
+      script: tools/ci/runClangTidy.sh main
+    - <<: *clang-tidy
+      script: tools/ci/runClangTidy.sh external
     - &linux-gcc6
       os: linux
       compiler: gcc
-      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" BUILD_TYPE=Release
+      env:
+        - MATRIX_EVAL="CXX=g++-6 && CC=gcc-6"
+        - BUILD_TYPE=Release
       addons:
         apt:
           <<: *defApt
           packages: [*defPackages, g++-6]
     # With coverage and external tests
     - <<: *linux-gcc6
-      env: MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6 BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON"
+      env:
+        - MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6
+        - BUILD_TYPE=Debug
+        - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON"
       after_success: tools/ci/uploadCoverageData.sh
     - &linux-clang
       # GCC6 headers required
@@ -90,6 +108,9 @@ jobs:
       compiler: clang
       addons:
         apt:
-          sources: [*defSrcs, llvm-toolchain-trusty-7]
-          packages: [*defPackages, g++-7, clang-7]
-      env: MATRIX_EVAL="CXX=clang++-7 && CC=clang-7" BUILD_TYPE=Debug ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON"
+          sources: [*defSrcs, llvm-toolchain-trusty-8]
+          packages: [*defPackages, g++-7, clang-8]
+      env:
+        - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
+        - BUILD_TYPE=Debug
+        - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON"

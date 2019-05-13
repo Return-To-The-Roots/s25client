@@ -22,10 +22,10 @@
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
-#include "network/GameClient.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
+#include "gameData/MilitaryConsts.h"
 #include "libutil/Log.h"
 #include <stdexcept>
 
@@ -175,12 +175,6 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
     }
 }
 
-void nofActiveSoldier::HandleDerivedEvent(const unsigned /*id*/)
-{
-    // That's not supposed to happen!
-    RTTR_Assert(false);
-}
-
 /// Gets the visual range radius of this soldier
 unsigned nofActiveSoldier::GetVisualRange() const
 {
@@ -195,23 +189,23 @@ void nofActiveSoldier::ExpelEnemies()
 
     // At the position of the soldier
     const std::list<noBase*>& fieldFigures = gwg->GetFigures(pos);
-    for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
+    for(auto fieldFigure : fieldFigures)
     {
-        if((*it)->GetType() == NOP_FIGURE)
-            figures.push_back(static_cast<noFigure*>(*it));
+        if(fieldFigure->GetType() == NOP_FIGURE)
+            figures.push_back(static_cast<noFigure*>(fieldFigure));
     }
 
     // And around this point
     for(unsigned i = 0; i < 6; ++i)
     {
         const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetNeighbour(pos, Direction::fromInt(i)));
-        for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
+        for(auto fieldFigure : fieldFigures)
         {
             // Normal settler?
             // Don't disturb hedgehogs and rabbits!
-            if((*it)->GetType() == NOP_FIGURE)
+            if(fieldFigure->GetType() == NOP_FIGURE)
             {
-                noFigure* fig = static_cast<noFigure*>(*it);
+                auto* fig = static_cast<noFigure*>(fieldFigure);
                 // The people have to be either on the point itself or they have to walk there
                 if(fig->GetPos() == pos)
                     figures.push_back(fig);
@@ -223,9 +217,8 @@ void nofActiveSoldier::ExpelEnemies()
 
     // Let's see which things are netted and sort the wrong things out
     // ( Don't annoy Erika Steinbach! )
-    for(std::vector<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
+    for(auto fig : figures)
     {
-        noFigure* fig = *it;
         // Enemy of us and no soldier?
         // And he has to walking on the road (don't disturb free workers like woodcutters etc.)
         if(!gwg->GetPlayer(player).IsAlly(fig->GetPlayer()) && !fig->IsSoldier() && fig->IsWalkingOnRoad())
@@ -267,11 +260,11 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     // Get all points in a radius of 2
     std::vector<MapPoint> pts = gwg->GetPointsInRadiusWithCenter(pos, 2);
 
-    for(std::vector<MapPoint>::const_iterator itPos = pts.begin(); itPos != pts.end(); ++itPos)
+    for(const auto& curPos : pts)
     {
-        for(noBase* object : gwg->GetFigures(*itPos))
+        for(noBase* object : gwg->GetFigures(curPos))
         {
-            nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(object);
+            auto* soldier = dynamic_cast<nofActiveSoldier*>(object);
             if(!soldier || soldier->GetPlayer() == excludedOwner)
                 continue;
             if(soldier->IsReadyForFight() && !gwg->GetPlayer(soldier->GetPlayer()).IsAlly(player))
@@ -485,25 +478,17 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
         return true;
     }
 
-    // TODO: Put the condition below into a functor and pass it as the condition to GetPointsInRadius with a limit of 1 (much easier in
-    // C++11)
-    std::vector<MapPoint> pts = gwg->GetPointsInRadius(middle, MEET_FOR_FIGHT_DISTANCE);
-    for(std::vector<MapPoint>::const_iterator pt = pts.begin(); pt != pts.end(); ++pt)
-    {
-        // Did we find a good spot?
-        if(gwg->ValidPointForFighting(*pt, true, nullptr)
-           && (pos == *pt || gwg->FindHumanPath(pos, *pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff)
-           && (other->GetPos() == *pt || gwg->FindHumanPath(other->GetPos(), *pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff))
-
-        {
-            // Great, then let's take this one
-            *fight_spot = *pt;
-            return true;
-        }
-    }
-
-    // No point found
-    return false;
+    std::vector<MapPoint> pts = gwg->GetPointsInRadius<1>(
+      middle, MEET_FOR_FIGHT_DISTANCE, Identity<MapPoint>(), [gwg = this->gwg, pos = this->pos, other](const auto& pt) {
+          // Did we find a good spot?
+          return gwg->ValidPointForFighting(pt, true, nullptr)
+                 && (pos == pt || gwg->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff)
+                 && (other->GetPos() == pt || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff);
+      });
+    if(pts.empty())
+        return false;
+    *fight_spot = pts.front();
+    return true;
 }
 
 /// Informs a waiting soldier about the start of a fight

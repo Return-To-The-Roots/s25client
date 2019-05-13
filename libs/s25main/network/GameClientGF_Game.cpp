@@ -18,13 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Game.h"
 #include "GameMessage_GameCommand.h"
-#include "GamePlayer.h"
 #include "NWFInfo.h"
 #include "ReplayInfo.h"
 #include "ai/AIPlayer.h"
 #include "network/GameClient.h"
-#include "random/Random.h"
-#include "libutil/Log.h"
 
 void GameClient::ExecuteNWF()
 {
@@ -52,7 +49,7 @@ void GameClient::ExecuteNWF()
 
     // Send GC message for this NWF
     // First for all potential AIs as we need to combine the AI cmds of the local player with our own ones
-    for(AIPlayer& ai : game->aiPlayers)
+    for(AIPlayer& ai : game->aiPlayers_)
     {
         const std::vector<gc::GameCommandPtr> aiGCs = ai.FetchGameCommands();
         /// Cmds from own AI get added to our gcs

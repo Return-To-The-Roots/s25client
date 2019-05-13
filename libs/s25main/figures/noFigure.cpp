@@ -40,12 +40,10 @@
 #include "nodeObjs/noSkeleton.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
-#include "gameData/MapConsts.h"
-#include "gameData/MilitaryConsts.h"
 #include "libutil/Log.h"
 #include "libutil/colors.h"
 
-const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, 0, 0, std::vector<Direction>(0, Direction::EAST));
+const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, nullptr, nullptr, std::vector<Direction>(0, Direction::EAST));
 /// Welche Strecke soll minimal und maximal zurückgelegt werden beim Rumirren, bevor eine Flagge gesucht wird
 const unsigned short WANDER_WAY_MIN = 20;
 const unsigned short WANDER_WAY_MAX = 40;
@@ -58,7 +56,7 @@ const unsigned short WANDER_TRYINGS_SOLDIERS = 6;
 const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
-    : noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(0), on_ship(false),
+    : noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false), on_ship(false),
       goal_(goal), waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
       burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {
@@ -70,7 +68,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 }
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
-    : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(0), on_ship(false),
+    : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false), on_ship(false),
       goal_(nullptr), waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
       burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {}
@@ -165,7 +163,7 @@ void noFigure::ActAtFirst()
                 gwg->RemoveFigure(pos, this);
                 RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
                 // Reset goal before re-adding to wh
-                nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(goal_);
+                auto* wh = static_cast<nobBaseWarehouse*>(goal_);
                 goal_ = nullptr;
                 cur_rs = nullptr;
                 wh->AddFigure(this);
@@ -205,12 +203,12 @@ DrawPoint noFigure::CalcFigurRelative() const
     if(GetCurMoveDir() == Direction::NORTHWEST
        && (gwg->GetNO(targetPt)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(targetPt)->GetType() == NOP_BUILDING))
     {
-        noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(targetPt);
+        auto* const bld = gwg->GetSpecObj<noBaseBuilding>(targetPt);
         nextPt += bld->GetDoorPoint();
     } else if(GetCurMoveDir() == Direction::SOUTHEAST
               && (gwg->GetNO(pos)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(pos)->GetType() == NOP_BUILDING))
     {
-        noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(pos);
+        auto* const bld = gwg->GetSpecObj<noBaseBuilding>(pos);
         curPt += bld->GetDoorPoint();
         offset = bld->GetDoorPoint();
     }
@@ -286,7 +284,7 @@ void noFigure::WalkToGoal()
         if(GetGOT() == GOT_NOF_CARRIER && fs == FS_GOTOGOAL)
         {
             RTTR_Assert(dynamic_cast<nofCarrier*>(this));
-            nofCarrier* carrier = static_cast<nofCarrier*>(this);
+            auto* carrier = static_cast<nofCarrier*>(this);
             noRoadNode* flag = carrier->GetFirstFlag();
             if(flag && flag->GetPos() == pos)
                 reachedGoal = true;
@@ -306,7 +304,7 @@ void noFigure::WalkToGoal()
             // Zeug nullen
             cur_rs = nullptr;
             goal_ = nullptr;
-            rs_dir = 0;
+            rs_dir = false;
             rs_pos = 0;
             if(fs == FS_GOHOME)
             {
@@ -324,7 +322,7 @@ void noFigure::WalkToGoal()
         {
             MapPoint next_harbor;
             // Neuen Weg berechnen
-            noRoadNode* const curRoadNode = gwg->GetSpecObj<noRoadNode>(pos);
+            auto* const curRoadNode = gwg->GetSpecObj<noRoadNode>(pos);
             unsigned char route = curRoadNode ? gwg->FindHumanPathOnRoads(*curRoadNode, *goal_, nullptr, &next_harbor) : 0xFF;
             // Kein Weg zum Ziel... nächstes Lagerhaus suchen
             if(route == 0xFF)
@@ -507,7 +505,7 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
 namespace {
 struct Point2Flag
 {
-    typedef noFlag* result_type;
+    using result_type = noFlag*;
     World& gwb;
 
     Point2Flag(World& gwb) : gwb(gwb) {}
@@ -547,13 +545,13 @@ void noFigure::Wander()
         unsigned best_way = 0xFFFFFFFF;
         noFlag const* best_flag = nullptr;
 
-        for(std::vector<noFlag*>::const_iterator it = flags.begin(); it != flags.end(); ++it)
+        for(auto flag : flags)
         {
             // Ist das ein Flüchtling aus einem abgebrannten Lagerhaus?
             if(burned_wh_id != 0xFFFFFFFF)
             {
                 // Dann evtl gucken, ob anderen Mitglieder schon gesagt haben, dass die Flagge nicht zugänglich ist
-                if((*it)->IsImpossibleForBWU(burned_wh_id))
+                if(flag->IsImpossibleForBWU(burned_wh_id))
                 {
                     // Dann können wir die Flagge überspringen
                     continue;
@@ -561,18 +559,18 @@ void noFigure::Wander()
             }
 
             // würde die die bisher beste an Weg unterbieten?
-            unsigned way = gwg->CalcDistance(pos, (*it)->GetPos());
+            unsigned way = gwg->CalcDistance(pos, flag->GetPos());
             if(way < best_way)
             {
                 // Are we at that flag or is there a path to it?
-                if(way == 0 || gwg->FindHumanPath(pos, (*it)->GetPos(), wander_radius, false, &way) != 0xFF)
+                if(way == 0 || gwg->FindHumanPath(pos, flag->GetPos(), wander_radius, false, &way) != 0xFF)
                 {
                     // gucken, ob ein Weg zu einem Warenhaus führt
-                    if(gwg->GetPlayer(player).FindWarehouse(**it, FW::AcceptsFigure(job_), true, false))
+                    if(gwg->GetPlayer(player).FindWarehouse(*flag, FW::AcceptsFigure(job_), true, false))
                     {
                         // dann nehmen wir die doch glatt
                         best_way = way;
-                        best_flag = *it;
+                        best_flag = flag;
                         if(way == 0)
                             break; // Can't get better
                     }
@@ -584,7 +582,7 @@ void noFigure::Wander()
 
                     // TODO: Actually it is possible! E.g. between us and the flag is a river, so we won't find a path within the radius
                     // but others (on the other side) could --> Remove ImpossibleForBWU?
-                    (*it)->ImpossibleForBWU(burned_wh_id);
+                    flag->ImpossibleForBWU(burned_wh_id);
                 }
             }
         }
@@ -647,7 +645,6 @@ bool noFigure::WalkInRandomDir()
 void noFigure::WanderFailedTrade()
 {
     DieFailedTrade();
-    return;
 }
 
 void noFigure::WanderToFlag()
@@ -745,7 +742,7 @@ void noFigure::CorrectSplitData(const RoadSegment* const rs2)
             // dann einfach auf das 2. gehen
             cur_rs = rs2;
             rs_pos = 0;
-            rs_dir = 0;
+            rs_dir = false;
         }
     }
 

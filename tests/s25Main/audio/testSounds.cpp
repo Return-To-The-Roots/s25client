@@ -67,8 +67,9 @@ BOOST_FIXTURE_TEST_CASE(SoundHandles, LoadMockupAudio)
     BOOST_REQUIRE_EQUAL(handle.getType(), SD_EFFECT);
     {
         // Copy handle
-        SoundHandle localHandle = handle;
+        const SoundHandle localHandle = handle;
         BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
+        RTTR_UNUSED(localHandle);
         // Copy goes out of scope
     }
     BOOST_REQUIRE(handle.isValid());
@@ -86,7 +87,7 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
     libsiedler2::Archiv snd;
     std::array<std::string, 3> musicFiles = {{"/test.ogg", "/testMidi.mid", "/testXMidi.xmi"}};
     BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR "/testMono.wav", snd), 0);
-    SoundEffectItem* effect = dynamic_cast<SoundEffectItem*>(snd[0]);
+    auto* effect = dynamic_cast<SoundEffectItem*>(snd[0]);
     BOOST_REQUIRE(effect);
     EffectPlayId id = effect->Play(50, false); //-V522
     BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
@@ -95,11 +96,11 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
     BOOST_REQUIRE(AUDIODRIVER.IsEffectPlaying(id));
     AUDIODRIVER.StopEffect(id);
     BOOST_REQUIRE(!AUDIODRIVER.IsEffectPlaying(id));
-    for(unsigned i = 0; i < musicFiles.size(); i++)
+    for(const auto& musicFile : musicFiles)
     {
         libsiedler2::Archiv musicArchiv;
-        BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR + musicFiles[i], musicArchiv), 0);
-        MusicItem* music = dynamic_cast<MusicItem*>(musicArchiv[0]);
+        BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR + musicFile, musicArchiv), 0);
+        auto* music = dynamic_cast<MusicItem*>(musicArchiv[0]);
         BOOST_REQUIRE(music);
         BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
         music->Play(0); //-V522

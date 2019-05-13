@@ -61,7 +61,7 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
 void iwMinimap::Resize(const Extent& newSize)
 {
     IngameWindow::Resize(newSize);
-    ctrlIngameMinimap* im = GetCtrl<ctrlIngameMinimap>(0);
+    auto* im = GetCtrl<ctrlIngameMinimap>(0);
 
     im->Resize(newSize - contentOffset - contentOffsetEnd);
 
@@ -74,7 +74,7 @@ void iwMinimap::Resize(const Extent& newSize)
     // Buttonpositionen anpassen, nach unten verschieben
     for(unsigned i = 1; i < 4; ++i)
     {
-        Window* ctrl = GetCtrl<Window>(i);
+        auto* ctrl = GetCtrl<Window>(i);
         DrawPoint ctrlPos = ctrl->GetPos();
         ctrlPos.y = GetRightBottomBoundary().y - BUTTON_SIZE.y - BUTTON_WINDOW_SPACE;
         ctrl->SetPos(ctrlPos);

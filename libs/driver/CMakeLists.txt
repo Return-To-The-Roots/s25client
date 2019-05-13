@@ -3,7 +3,7 @@ find_package(Boost 1.64.0 REQUIRED)
 # Library interface to be consumed by users
 add_library(driver INTERFACE)
 target_include_directories(driver INTERFACE include)
-target_include_directories(driver SYSTEM INTERFACE Boost::boost)
+target_link_libraries(driver INTERFACE Boost::boost)
 
 include(EnableWarnings)
 enable_warnings(driver)

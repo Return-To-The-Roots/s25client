@@ -20,38 +20,12 @@
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditionHuman.h"
-#include "pathfinding/PathConditionRoad.h"
 #include "pathfinding/PathConditionShip.h"
 #include "pathfinding/PathConditionTrade.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/GameConsts.h"
-
-/// Param for road-build pathfinding
-struct Param_RoadPath
-{
-    /// Boat or normal road
-    bool boat_road;
-};
-
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
-{
-    const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
-    return makePathConditionRoad(gwb, prp->boat_road).IsNodeOk(pt);
-}
-
-/// Condition for comfort road construction with a possible flag every 2 steps
-bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param)
-{
-    if(!IsPointOK_RoadPath(gwb, pt, dir, param))
-        return false;
-    const Param_RoadPath* prp = static_cast<const Param_RoadPath*>(param);
-    if(!prp->boat_road && gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) == BQ_NOTHING)
-        return false;
-
-    return true;
-}
 
 /// Findet einen Weg für Figuren
 unsigned char GameWorldBase::FindHumanPath(const MapPoint start, const MapPoint dest, const unsigned max_route, const bool random_route,

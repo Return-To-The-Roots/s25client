@@ -22,7 +22,13 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include <glad/glad.h>
-#include <vector>
+
+namespace {
+struct GL_RGBAColor
+{
+    GLbyte r, g, b, a;
+};
+} // namespace
 
 Extent glArchivItem_Bitmap_Player::CalcTextureSize() const
 {
@@ -61,7 +67,7 @@ void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color
         dstSize.y = srcSize.y;
     dstArea.setSize(dstSize);
 
-    Point<GLfloat> texCoords[8], vertices[8];
+    std::array<Point<GLfloat>, 8> texCoords, vertices;
 
     dstArea.move(-GetOrigin());
 
@@ -77,18 +83,15 @@ void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color
     texCoords[0].y = texCoords[3].y = srcOrig.y;
     texCoords[1].y = texCoords[2].y = srcEndPt.y;
 
-    std::copy(vertices, vertices + 4, vertices + 4);
-    std::copy(texCoords, texCoords + 4, texCoords + 4);
+    std::copy(vertices.begin(), vertices.begin() + 4, vertices.begin() + 4);
+    std::copy(texCoords.begin(), texCoords.begin() + 4, texCoords.begin() + 4);
 
     texCoords[4].x += 0.5f;
     texCoords[5].x += 0.5f;
     texCoords[6].x += 0.5f;
     texCoords[7].x += 0.5f;
 
-    struct
-    {
-        GLbyte r, g, b, a;
-    } colors[8];
+    std::array<GL_RGBAColor, 8> colors;
     colors[0].r = GetRed(color);
     colors[0].g = GetGreen(color);
     colors[0].b = GetBlue(color);
@@ -102,9 +105,9 @@ void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color
     colors[7] = colors[6] = colors[5] = colors[4];
 
     glEnableClientState(GL_COLOR_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
-    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+    glVertexPointer(2, GL_FLOAT, 0, vertices.data());
+    glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
+    glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
     VIDEODRIVER.BindTexture(GetTexture());
     glDrawArrays(GL_QUADS, 0, 8);
     glDisableClientState(GL_COLOR_ARRAY);

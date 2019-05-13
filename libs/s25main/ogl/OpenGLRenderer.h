@@ -25,6 +25,7 @@ class glArchivItem_Bitmap;
 class OpenGLRenderer : public IRenderer
 {
 public:
+    bool initOpenGL(OpenGL_Loader_Proc) override;
     void synchronize() override;
     void Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture) override;
     void Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated, unsigned color) override;

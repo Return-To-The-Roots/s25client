@@ -24,11 +24,11 @@
 class BaseClock
 {
 public:
-    typedef std::chrono::nanoseconds duration;
-    typedef duration::rep rep;
-    typedef duration::period period;
+    using duration = std::chrono::nanoseconds;
+    using rep = duration::rep;
+    using period = duration::period;
 
-    virtual ~BaseClock() {}
+    virtual ~BaseClock() = default;
     virtual duration time_since_epoch()
     {
         return std::chrono::duration_cast<duration>(std::chrono::steady_clock::now().time_since_epoch());
@@ -46,9 +46,9 @@ class Clock
     }
 
 public:
-    typedef BaseClock::rep rep;
-    typedef BaseClock::duration duration;
-    typedef std::chrono::time_point<Clock> time_point;
+    using rep = BaseClock::rep;
+    using duration = BaseClock::duration;
+    using time_point = std::chrono::time_point<Clock>;
     static time_point now() { return time_point(instance()->time_since_epoch()); }
     // Set to a different clock
     static void setClock(std::unique_ptr<BaseClock> newClock) { instance() = std::move(newClock); }

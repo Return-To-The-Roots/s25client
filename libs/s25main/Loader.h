@@ -20,29 +20,27 @@
 #pragma once
 
 #include "Rect.h"
-#include "helpers/multiArray.h"
+#include "helpers/MultiArray.h"
 #include "ogl/glSmartBitmap.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/Nation.h"
 #include "gameData/AnimalConsts.h"
-#include "gameData/NationConsts.h"
 #include "libsiedler2/Archiv.h"
 #include "libutil/Singleton.h"
 #include <array>
+#include <cstdint>
 #include <map>
 #include <memory>
-#include <stdint.h>
 #include <string>
 #include <vector>
 
-struct AddonId;
+enum class AddonId;
 class ITexture;
 class glArchivItem_Bitmap;
 class glArchivItem_BitmapBase;
 class glArchivItem_Bitmap_Player;
-class glArchivItem_Bitmap_Raw;
 class glArchivItem_Bob;
 class glArchivItem_Font;
 class SoundEffectItem;
@@ -149,13 +147,13 @@ public:
     /// Carrier w/ ware: Ware, Direction, Animation, NormalOrFat
     helpers::MultiArray<glSmartBitmap, NUM_WARE_TYPES, 6, 8, 2> carrier_cache;
     /// Boundary stones: Nation
-    helpers::MultiArray<glSmartBitmap, NUM_NATS> boundary_stone_cache;
+    std::array<glSmartBitmap, NUM_NATS> boundary_stone_cache;
     /// BoatCarrier: Direction, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 6, 8> boat_cache;
     /// Donkey: Direction, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 6, 8> donkey_cache;
     /// Gateway: AnimationFrame
-    helpers::MultiArray<glSmartBitmap, 5> gateway_cache;
+    std::array<glSmartBitmap, 5> gateway_cache;
 
 private:
     /// Get all files to load for a request of loading filepath
@@ -166,7 +164,7 @@ private:
     bool LoadSounds();
 
     /// Load a file into the archiv
-    bool LoadSingleFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool LoadSingleFile(libsiedler2::Archiv& to, const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadArchiv(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadOverrideDirectory(const std::string& path);
     bool LoadFilesFromArray(const std::vector<unsigned>& files);
@@ -184,7 +182,7 @@ private:
     bool isWinterGFX_;
     std::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
     libsiedler2::Archiv* map_gfx;
-    glTexturePacker* stp;
+    std::unique_ptr<glTexturePacker> stp;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

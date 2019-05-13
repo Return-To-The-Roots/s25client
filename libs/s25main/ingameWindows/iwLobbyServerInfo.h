@@ -21,8 +21,6 @@
 
 #include "IngameWindow.h"
 
-class LobbyServerInfo;
-
 class iwLobbyServerInfo : public IngameWindow
 {
 private:

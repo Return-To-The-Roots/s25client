@@ -38,7 +38,7 @@ class OpenListVector
     std::vector<T> elements;
 
 public:
-    typedef typename std::vector<T>::iterator iterator;
+    using iterator = typename std::vector<T>::iterator;
 
     OpenListVector() { elements.reserve(255); }
 

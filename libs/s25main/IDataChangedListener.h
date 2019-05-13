@@ -22,7 +22,7 @@
 class IDataChangedListener
 {
 protected:
-    ~IDataChangedListener() {}
+    ~IDataChangedListener() = default;
 
 public:
     /// Handles a change, changeId is the type of the change (object dependent)

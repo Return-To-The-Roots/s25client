@@ -25,7 +25,8 @@
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTextDeepening.h"
-#include "helpers/strUtils.h"
+#include "helpers/format.hpp"
+#include "helpers/toString.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
@@ -33,8 +34,6 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
-#include "libsiedler2/ArchivItem_BitmapBase.h"
-#include <cstdio>
 
 /// Position des Headers der Tabelle (Y)
 const unsigned short HEADER_Y = 30;
@@ -112,7 +111,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
 void iwDiplomacy::Msg_PaintBefore()
 {
     // Farben, die zu den 3 Bündnisstates gesetzt werden (0-kein Bündnis, 1-in Arbeit, 2-Bündnis abgeschlossen)
-    const unsigned PACT_COLORS[3] = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
+    const std::array<unsigned, 3> PACT_COLORS = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
 
     IngameWindow::Msg_PaintBefore();
     // Die farbigen Zeilen malen
@@ -127,7 +126,7 @@ void iwDiplomacy::Msg_PaintBefore()
         // Farben der Bündnis-Buttons setzen, je nachdem wie der Status ist
 
         // Existiert der Button auch?
-        ctrlImageButton* button = GetCtrl<ctrlImageButton>(300 + i);
+        auto* button = GetCtrl<ctrlImageButton>(300 + i);
         // Bündnisvertrag
         if(button)
             // Farbe je nach Bündnisstatus setzen
@@ -139,7 +138,7 @@ void iwDiplomacy::Msg_PaintBefore()
             button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(NON_AGGRESSION_PACT, i)]);
 
         // Ggf. Ping aktualisieren
-        if(ctrlTextDeepening* pingfield = GetCtrl<ctrlTextDeepening>(200 + i))
+        if(auto* pingfield = GetCtrl<ctrlTextDeepening>(200 + i))
             pingfield->SetText(helpers::toString(gwv.GetWorld().GetPlayer(i).ping));
 
         // Verbleibende Zeit der Bündnisse in den Text-Ctrls anzeigen
@@ -164,19 +163,20 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(gwv.GetWorld().GetGGS().lockedTeams)
     {
-        WINDOWMANAGER.Show(new iwMsgbox(_("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), nullptr,
-                                        MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Teams locked"),
+                                                      _("As the teams are locked, you cannot make treaties of any kind."), nullptr, MSB_OK,
+                                                      MSB_EXCLAMATIONGREEN, 1));
         return;
     }
 
     // Bündnisverträge
     if(ctrl_id >= 300 && ctrl_id < 400)
     {
-        unsigned char playerId = static_cast<unsigned char>(ctrl_id - 300);
+        auto playerId = static_cast<unsigned char>(ctrl_id - 300);
         // Noch kein Bündnis abgeschlossen?
         if(gwv.GetPlayer().GetPactState(TREATY_OF_ALLIANCE, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
-            WINDOWMANAGER.Show(new iwSuggestPact(TREATY_OF_ALLIANCE, gwv.GetWorld().GetPlayer(playerId), gcFactory));
+            WINDOWMANAGER.Show(std::make_unique<iwSuggestPact>(TREATY_OF_ALLIANCE, gwv.GetWorld().GetPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
             gcFactory.CancelPact(TREATY_OF_ALLIANCE, playerId);
@@ -184,11 +184,11 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
     // Nichtangriffspakte
     if(ctrl_id >= 400 && ctrl_id < 500)
     {
-        unsigned char playerId = static_cast<unsigned char>(ctrl_id - 400);
+        auto playerId = static_cast<unsigned char>(ctrl_id - 400);
         // Noch kein Bündnis abgeschlossen?
         if(gwv.GetPlayer().GetPactState(NON_AGGRESSION_PACT, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
-            WINDOWMANAGER.Show(new iwSuggestPact(NON_AGGRESSION_PACT, gwv.GetWorld().GetPlayer(playerId), gcFactory));
+            WINDOWMANAGER.Show(std::make_unique<iwSuggestPact>(NON_AGGRESSION_PACT, gwv.GetWorld().GetPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
             gcFactory.CancelPact(NON_AGGRESSION_PACT, playerId);
@@ -199,16 +199,18 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
 /////////////////////////////
 
 /// Titel für die Fenster für unterschiedliche Bündnistypen
-const char* const PACT_TITLES[NUM_PACTS] = {gettext_noop("Suggest treaty of alliance"), gettext_noop("Suggest non-aggression pact")};
+const std::array<const char*, NUM_PACTS> PACT_TITLES = {gettext_noop("Suggest treaty of alliance"),
+                                                        gettext_noop("Suggest non-aggression pact")};
 
 /// Anzahl der unterschiedlich möglichen Längen ("für immer" nicht mit eingerechnet!)
 const unsigned NUM_DURATIONS = 3;
 
 /// Längen für die Dauer des Vertrages (kurz-, mittel- und langfristig)
-const unsigned DURATIONS[NUM_DURATIONS] = {5000, 30000, 100000};
+const std::array<unsigned, NUM_DURATIONS> DURATIONS = {5000, 30000, 100000};
 
 /// Namen für diese Vertragsdauern
-const char* const DURATION_NAMES[NUM_DURATIONS] = {gettext_noop("Short-run"), gettext_noop("Medium-term"), gettext_noop("Long-run")};
+const std::array<const char*, NUM_DURATIONS> DURATION_NAMES = {gettext_noop("Short-run"), gettext_noop("Medium-term"),
+                                                               gettext_noop("Long-run")};
 
 iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter, Extent(320, 215), _(PACT_TITLES[pt]), LOADER.GetImageN("resource", 41)),
@@ -227,19 +229,17 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
     if(image)
         this->AddImage(0, DrawPoint(55, 100), image);
 
-    AddText(1, DrawPoint(100, 30), _("Contract type:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(2, DrawPoint(100, 45), _(PACT_NAMES[pt]), COLOR_GREEN, 0, NormalFont);
-    AddText(3, DrawPoint(100, 70), _("To player:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(4, DrawPoint(100, 85), player.name, player.color, 0, NormalFont);
-    AddText(5, DrawPoint(100, 110), _("Duration:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(1, DrawPoint(100, 30), _("Contract type:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(2, DrawPoint(100, 45), _(PACT_NAMES[pt]), COLOR_GREEN, FontStyle{}, NormalFont);
+    AddText(3, DrawPoint(100, 70), _("To player:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddText(4, DrawPoint(100, 85), player.name, player.color, FontStyle{}, NormalFont);
+    AddText(5, DrawPoint(100, 110), _("Duration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(100, 125), Extent(190, 22), TC_GREEN2, NormalFont, 100);
 
     // Zeiten zur Combobox hinzufügen
     for(unsigned i = 0; i < NUM_DURATIONS; ++i)
     {
-        char str[256];
-        sprintf(str, "%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i]).c_str());
-        combo->AddString(str);
+        combo->AddString(helpers::format("%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i])));
     }
     // Erstes Item in der Combobox vorerst auswählen
     combo->SetSelection(0);

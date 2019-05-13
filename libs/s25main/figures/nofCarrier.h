@@ -90,7 +90,7 @@ private:
     void LookForWares();
     /// Nimmt eine Ware auf an der aktuellen Flagge und dreht sich um, um sie zu tragen (fetch_dir ist die Richtung der Waren, die der
     /// Träger aufnehmen will)
-    void FetchWare(const bool swap_wares);
+    void FetchWare(bool swap_wares);
 
     /// Prüft, ob die getragene Ware dann von dem Weg zum Gebäude will
     bool WantInBuilding(bool* calculated);
@@ -107,7 +107,7 @@ private:
     void WanderOnWater();
 
 public:
-    nofCarrier(const CarrierType ct, const MapPoint pt, unsigned char player, RoadSegment* workplace, noRoadNode* const goal);
+    nofCarrier(CarrierType ct, MapPoint pos, unsigned char player, RoadSegment* workplace, noRoadNode* goal);
     nofCarrier(SerializedGameData& sgd, unsigned obj_id);
 
     ~nofCarrier() override;
@@ -153,7 +153,7 @@ public:
 
     /// Benachrichtigt den Träger, wenn an einer auf seinem Weg an einer Flagge wieder ein freier Platz ist
     /// gibt zurück, ob der Träger diesen freien Platz auch nutzen wird
-    bool SpaceAtFlag(const bool flag);
+    bool SpaceAtFlag(bool flag);
 
     /// Gibt erste Flagge des Arbeitsweges zurück, falls solch einer existiert
     noRoadNode* GetFirstFlag() const;

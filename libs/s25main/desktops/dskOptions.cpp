@@ -31,8 +31,9 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
+#include "helpers/containerUtils.h"
 #include "helpers/mathFuncs.h"
-#include "helpers/strUtils.h"
+#include "helpers/toString.h"
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwMusicPlayer.h"
@@ -40,6 +41,8 @@
 #include "languages.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
+#include <mygettext/mygettext.h>
+#include <sstream>
 
 /** @class dskOptions
  *
@@ -74,12 +77,12 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // {
 
     // "Name"
-    groupAllgemein->AddText(30, DrawPoint(80, 80), _("Name in Game:"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(30, DrawPoint(80, 80), _("Name in Game:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* name = groupAllgemein->AddEdit(31, DrawPoint(280, 75), Extent(190, 22), TC_GREY, NormalFont, 15);
     name->SetText(SETTINGS.lobby.name);
 
     // "Sprache"
-    groupAllgemein->AddText(32, DrawPoint(80, 110), _("Language:"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(32, DrawPoint(80, 110), _("Language:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = groupAllgemein->AddComboBox(33, DrawPoint(280, 105), Extent(190, 20), TC_GREY, NormalFont, 100);
 
     bool selected = false;
@@ -98,16 +101,16 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         combo->SetSelection(0);
 
     // Tastaturlayout
-    groupAllgemein->AddText(34, DrawPoint(80, 150), _("Keyboard layout:"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(34, DrawPoint(80, 150), _("Keyboard layout:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     groupAllgemein->AddTextButton(35, DrawPoint(280, 145), Extent(120, 22), TC_GREY, _("Readme"), NormalFont);
 
-    groupAllgemein->AddText(40, DrawPoint(80, 190), _("Local Port:"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(40, DrawPoint(80, 190), _("Local Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* edtPort = groupAllgemein->AddEdit(41, DrawPoint(280, 185), Extent(190, 22), TC_GREY, NormalFont, 15);
     edtPort->SetNumberOnly(true);
     edtPort->SetText(SETTINGS.server.localPort);
 
     // IPv4/6
-    groupAllgemein->AddText(300, DrawPoint(80, 230), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(300, DrawPoint(80, 230), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     ctrlOptionGroup* ipv6 = groupAllgemein->AddOptionGroup(301, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(302, DrawPoint(480, 225), Extent(190, 22), TC_GREY, _("IPv6"), NormalFont);
@@ -118,7 +121,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->GetCtrl<ctrlButton>(302)->SetEnabled(SETTINGS.proxy.type != PROXY_SOCKS5); //-V807
 
     // Proxyserver
-    groupAllgemein->AddText(36, DrawPoint(80, 280), _("Proxyserver:"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(36, DrawPoint(80, 280), _("Proxyserver:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* proxy = groupAllgemein->AddEdit(37, DrawPoint(280, 275), Extent(190, 22), TC_GREY, NormalFont);
     proxy->SetText(SETTINGS.proxy.hostname);
     proxy = groupAllgemein->AddEdit(371, DrawPoint(480, 275), Extent(50, 22), TC_GREY, NormalFont, 5);
@@ -126,7 +129,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     proxy->SetText(SETTINGS.proxy.port);
 
     // Proxytyp
-    groupAllgemein->AddText(38, DrawPoint(80, 310), _("Proxytyp:"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(38, DrawPoint(80, 310), _("Proxytyp:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = groupAllgemein->AddComboBox(39, DrawPoint(280, 305), Extent(390, 20), TC_GREY, NormalFont, 100);
     combo->AddString(_("No Proxy"));
     combo->AddString(_("Socks v4"));
@@ -143,7 +146,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // }
 
-    groupAllgemein->AddText(70, DrawPoint(80, 360), _("Submit debug data:"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(70, DrawPoint(80, 360), _("Submit debug data:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupAllgemein->AddOptionGroup(71, ctrlOptionGroup::CHECK);
     optiongroup->AddTextButton(72, DrawPoint(480, 355), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(73, DrawPoint(280, 355), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
@@ -151,13 +154,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->SetSelection(((SETTINGS.global.submit_debug_data == 1) ? 72 : 73)); //-V807
 
     // qx:upnp switch
-    groupAllgemein->AddText(9999, DrawPoint(80, 390), _("Use UPnP"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(9999, DrawPoint(80, 390), _("Use UPnP"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(9998, ctrlOptionGroup::CHECK);
     upnp->AddTextButton(10002, DrawPoint(280, 385), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
     upnp->AddTextButton(10001, DrawPoint(480, 385), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     upnp->SetSelection((SETTINGS.global.use_upnp == 1) ? 10001 : 10002);
 
-    groupAllgemein->AddText(10100, DrawPoint(80, 420), _("Smart Cursor"), COLOR_YELLOW, 0, NormalFont);
+    groupAllgemein->AddText(10100, DrawPoint(80, 420), _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK);
     smartCursor->AddTextButton(10103, DrawPoint(280, 415), Extent(190, 22), TC_GREY, _("Off"), NormalFont,
                                _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
@@ -166,31 +169,31 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     smartCursor->SetSelection(SETTINGS.global.smartCursor ? 10102 : 10103);
 
     // "Auflösung"
-    groupGrafik->AddText(40, DrawPoint(80, 80), _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
+    groupGrafik->AddText(40, DrawPoint(80, 80), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     groupGrafik->AddComboBox(41, DrawPoint(280, 75), Extent(190, 22), TC_GREY, NormalFont, 150);
 
     // "Vollbild"
-    groupGrafik->AddText(46, DrawPoint(80, 130), _("Mode:"), COLOR_YELLOW, 0, NormalFont);
+    groupGrafik->AddText(46, DrawPoint(80, 130), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(47, ctrlOptionGroup::CHECK);
     optiongroup->AddTextButton(48, DrawPoint(480, 125), Extent(190, 22), TC_GREY, _("Fullscreen"), NormalFont);
     optiongroup->AddTextButton(49, DrawPoint(280, 125), Extent(190, 22), TC_GREY, _("Windowed"), NormalFont);
 
     // "VSync"
-    groupGrafik->AddText(50, DrawPoint(80, 180), _("Limit Framerate:"), COLOR_YELLOW, 0, NormalFont);
+    groupGrafik->AddText(50, DrawPoint(80, 180), _("Limit Framerate:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     groupGrafik->AddComboBox(51, DrawPoint(280, 175), Extent(390, 22), TC_GREY, NormalFont, 150);
 
     // "VBO"
-    groupGrafik->AddText(54, DrawPoint(80, 230), _("Vertex Buffer Objects:"), COLOR_YELLOW, 0, NormalFont);
+    groupGrafik->AddText(54, DrawPoint(80, 230), _("Vertex Buffer Objects:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(55, ctrlOptionGroup::CHECK);
 
     optiongroup->AddTextButton(56, DrawPoint(280, 225), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(57, DrawPoint(480, 225), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
 
     // "Grafiktreiber"
-    groupGrafik->AddText(58, DrawPoint(80, 275), _("Graphics Driver"), COLOR_YELLOW, 0, NormalFont);
+    groupGrafik->AddText(58, DrawPoint(80, 275), _("Graphics Driver"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = groupGrafik->AddComboBox(59, DrawPoint(280, 275), Extent(390, 20), TC_GREY, NormalFont, 100);
 
-    std::vector<DriverWrapper::DriverItem> video_drivers = DriverWrapper::LoadDriverList(DriverWrapper::DT_VIDEO);
+    const auto video_drivers = drivers::DriverWrapper::LoadDriverList(drivers::DriverType::Video);
 
     for(const auto& video_driver : video_drivers)
     {
@@ -199,17 +202,17 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
             combo->SetSelection(combo->GetNumItems() - 1);
     }
 
-    groupGrafik->AddText(74, DrawPoint(80, 320), _("Optimized Textures:"), COLOR_YELLOW, 0, NormalFont);
+    groupGrafik->AddText(74, DrawPoint(80, 320), _("Optimized Textures:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(75, ctrlOptionGroup::CHECK);
 
     optiongroup->AddTextButton(76, DrawPoint(280, 315), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(77, DrawPoint(480, 315), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
 
     // "Audiotreiber"
-    groupSound->AddText(60, DrawPoint(80, 230), _("Sounddriver"), COLOR_YELLOW, 0, NormalFont);
+    groupSound->AddText(60, DrawPoint(80, 230), _("Sounddriver"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = groupSound->AddComboBox(61, DrawPoint(280, 225), Extent(390, 20), TC_GREY, NormalFont, 100);
 
-    std::vector<DriverWrapper::DriverItem> audio_drivers = DriverWrapper::LoadDriverList(DriverWrapper::DT_AUDIO);
+    const auto audio_drivers = drivers::DriverWrapper::LoadDriverList(drivers::DriverType::Audio);
 
     for(const auto& audio_driver : audio_drivers)
     {
@@ -219,7 +222,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     }
 
     // Musik
-    groupSound->AddText(62, DrawPoint(80, 80), _("Music"), COLOR_YELLOW, 0, NormalFont);
+    groupSound->AddText(62, DrawPoint(80, 80), _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupSound->AddOptionGroup(63, ctrlOptionGroup::CHECK);
     optiongroup->AddTextButton(64, DrawPoint(280, 75), Extent(90, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(65, DrawPoint(380, 75), Extent(90, 22), TC_GREY, _("Off"), NormalFont);
@@ -228,7 +231,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     Mvolume->SetPosition(SETTINGS.sound.musik_volume * 10 / 255); //-V807
 
     // Effekte
-    groupSound->AddText(66, DrawPoint(80, 130), _("Effects"), COLOR_YELLOW, 0, NormalFont);
+    groupSound->AddText(66, DrawPoint(80, 130), _("Effects"), COLOR_YELLOW, FontStyle{}, NormalFont);
     optiongroup = groupSound->AddOptionGroup(67, ctrlOptionGroup::CHECK);
     optiongroup->AddTextButton(68, DrawPoint(280, 125), Extent(90, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(69, DrawPoint(380, 125), Extent(90, 22), TC_GREY, _("Off"), NormalFont);
@@ -273,7 +276,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->SetSelection((SETTINGS.video.fullscreen ? 48 : 49)); //-V807
 
     // "Limit Framerate" füllen
-    ctrlComboBox* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
+    auto* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
     if(GLOBALVARS.hasVSync)
         cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
     for(int framerate : Settings::SCREEN_REFRESH_RATES)
@@ -340,8 +343,8 @@ void dskOptions::Msg_Group_ProgressChange(const unsigned /*group_id*/, const uns
 
 void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection)
 {
-    ctrlGroup* group = GetCtrl<ctrlGroup>(group_id);
-    ctrlComboBox* combo = group->GetCtrl<ctrlComboBox>(ctrl_id);
+    auto* group = GetCtrl<ctrlGroup>(group_id);
+    auto* combo = group->GetCtrl<ctrlComboBox>(ctrl_id);
 
     switch(ctrl_id)
     {
@@ -351,7 +354,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             std::string old_lang = SETTINGS.language.language; //-V807
             SETTINGS.language.language = LANGUAGES.setLanguage(selection);
             if(SETTINGS.language.language != old_lang)
-                WINDOWMANAGER.Switch(new dskOptions);
+                WINDOWMANAGER.Switch(std::make_unique<dskOptions>());
         }
         break;
         case 39: // Proxy
@@ -504,15 +507,15 @@ void dskOptions::Msg_OptionGroupChange(const unsigned ctrl_id, const int selecti
 }
 
 /// Check that the port is valid and sets outPort to it. Shows an error otherwise
-bool validatePort(const std::string& sPort, uint16_t& outPort)
+static bool validatePort(const std::string& sPort, uint16_t& outPort)
 {
     boost::optional<uint16_t> port = validate::checkPort(sPort);
     if(port)
         outPort = *port;
     else
     {
-        WINDOWMANAGER.Show(
-          new iwMsgbox(_("Error"), _("Invalid port. The valid port-range is 1 to 65535!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Invalid port. The valid port-range is 1 to 65535!"), nullptr, MSB_OK,
+                                                      MSB_EXCLAMATIONRED, 1));
     }
     return static_cast<bool>(port);
 }
@@ -523,7 +526,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 0: // "Zurück"
         {
-            ctrlGroup* groupAllgemein = GetCtrl<ctrlGroup>(21);
+            auto* groupAllgemein = GetCtrl<ctrlGroup>(21);
 
             // Name abspeichern
             SETTINGS.lobby.name = groupAllgemein->GetCtrl<ctrlEdit>(31)->GetText();
@@ -542,23 +545,25 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
                 const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
                 if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
                 {
-                    WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
-                                                    MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"),
+                                                                  _("You need to restart your game to change the screen resolution!"), this,
+                                                                  MSB_OK, MSB_EXCLAMATIONGREEN, 1));
                     return;
                 }
             }
             if(SETTINGS.driver.video != VIDEODRIVER.GetName() || SETTINGS.driver.audio != AUDIODRIVER.GetName())
             {
-                WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this,
-                                                MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"),
+                                                              _("You need to restart your game to change the video or audio driver!"), this,
+                                                              MSB_OK, MSB_EXCLAMATIONGREEN, 1));
                 return;
             }
 
-            WINDOWMANAGER.Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
         }
         break;
         case 14: // Addons
-            WINDOWMANAGER.Show(new iwAddons(ggs));
+            WINDOWMANAGER.Show(std::make_unique<iwAddons>(ggs));
             break;
     }
 }
@@ -570,12 +575,12 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsign
         default: break;
         case 71: // "Music player"
         {
-            WINDOWMANAGER.Show(new iwMusicPlayer);
+            WINDOWMANAGER.Show(std::make_unique<iwMusicPlayer>());
         }
         break;
         case 35: // "Keyboard Readme"
         {
-            WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
         }
         break;
     }
@@ -588,7 +593,7 @@ void dskOptions::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /
         default: break;
         case 1: // "You need to restart your game ..."
         {
-            WINDOWMANAGER.Switch(new dskMainMenu);
+            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
         }
         break;
     }
@@ -623,13 +628,7 @@ void dskOptions::loadVideoModes()
     // Get available modes
     VIDEODRIVER.ListVideoModes(video_modes);
     // Remove everything below 800x600
-    for(std::vector<VideoMode>::iterator it = video_modes.begin(); it != video_modes.end();)
-    {
-        if(it->width < 800 && it->height < 600)
-            it = video_modes.erase(it);
-        else
-            ++it;
-    }
+    helpers::remove_if(video_modes, [](const auto& it) { return it.width < 800 && it.height < 600; });
     // Sort by aspect ratio
     std::sort(video_modes.begin(), video_modes.end(), cmpVideoModes);
 }

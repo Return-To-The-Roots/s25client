@@ -284,7 +284,7 @@ void Settings::Load()
         // {
         for(unsigned addon = 0; addon < iniAddons->size(); ++addon)
         {
-            const libsiedler2::ArchivItem_Text* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
+            const auto* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
 
             if(item)
                 addons.configuration.insert(std::make_pair(s25util::fromStringClassic<unsigned>(item->getName()),
@@ -307,7 +307,7 @@ void Settings::Save()
     libsiedler2::Archiv settings;
     settings.alloc(SECTION_NAMES.size());
     for(unsigned i = 0; i < SECTION_NAMES.size(); ++i)
-        settings.set(i, new libsiedler2::ArchivItem_Ini(SECTION_NAMES[i]));
+        settings.set(i, std::make_unique<libsiedler2::ArchivItem_Ini>(SECTION_NAMES[i]));
 
     libsiedler2::ArchivItem_Ini* iniGlobal = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("global"));
     libsiedler2::ArchivItem_Ini* iniVideo = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("video"));
@@ -403,8 +403,8 @@ void Settings::Save()
     // addons
     // {
     iniAddons->clear();
-    for(std::map<unsigned, unsigned>::const_iterator it = addons.configuration.begin(); it != addons.configuration.end(); ++it)
-        iniAddons->addValue(s25util::toStringClassic(it->first), s25util::toStringClassic(it->second));
+    for(const auto& it : addons.configuration)
+        iniAddons->addValue(s25util::toStringClassic(it.first), s25util::toStringClassic(it.second));
     // }
 
     bfs::path settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);

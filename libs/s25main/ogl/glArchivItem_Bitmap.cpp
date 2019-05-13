@@ -21,9 +21,8 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include <glad/glad.h>
-#include <vector>
 
-glArchivItem_Bitmap::glArchivItem_Bitmap() {}
+glArchivItem_Bitmap::glArchivItem_Bitmap() = default;
 
 glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
     : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_BitmapBase(item)
@@ -55,7 +54,7 @@ void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= CO
 
     RTTR_Assert(getBobType() != libsiedler2::BOBTYPE_BITMAP_PLAYER);
 
-    Point<GLfloat> texCoords[4], vertices[4];
+    std::array<Point<GLfloat>, 4> texCoords, vertices;
 
     dstArea.move(-GetOrigin());
 
@@ -71,8 +70,8 @@ void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= CO
     texCoords[0].y = texCoords[3].y = srcOrig.y;
     texCoords[1].y = texCoords[2].y = srcEndPt.y;
 
-    glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+    glVertexPointer(2, GL_FLOAT, 0, vertices.data());
+    glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
     VIDEODRIVER.BindTexture(GetTexture());
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, 4);

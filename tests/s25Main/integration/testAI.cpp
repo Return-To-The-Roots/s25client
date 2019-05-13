@@ -30,9 +30,8 @@
 #include <boost/test/unit_test.hpp>
 #include <memory>
 
-typedef std::unique_ptr<AIPlayer> AIPointer;
 // We need border land
-typedef WorldWithGCExecution<1, 24, 22> BiggerWorldWithGCExecution;
+using BiggerWorldWithGCExecution = WorldWithGCExecution<1, 24, 22>;
 
 struct IsBldType
 {
@@ -66,7 +65,7 @@ BOOST_AUTO_TEST_SUITE(AI)
 
 BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 {
-    AIPointer ai(AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world));
+    auto ai = AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world);
     const AIJH::AIPlayerJH& aijh = static_cast<AIJH::AIPlayerJH&>(*ai);
     RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
     {
@@ -148,7 +147,7 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
             world.SetNO(pt, new noTree(pt, 0, 3));
     }
     const GamePlayer& player = world.GetPlayer(curPlayer);
-    AIPointer ai(AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world));
+    auto ai = AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world);
     // Build a woodcutter, sawmill and forester at some point
     for(unsigned gf = 0; gf < 2000;)
     {
@@ -183,7 +182,7 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
     {
         BOOST_REQUIRE_LE(world.GetBQ(pt, curPlayer), BQ_HUT);
     }
-    AIPointer ai(AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world));
+    auto ai = AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world);
     const std::list<noBuildingSite*>& bldSites = player.GetBuildingRegister().GetBuildingSites();
     // Can't build sawmill -> Expand anyway
     for(unsigned gf = 0; gf < 2000;)

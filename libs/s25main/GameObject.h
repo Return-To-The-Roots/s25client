@@ -36,6 +36,7 @@ public:
     GameObject(SerializedGameData& sgd, unsigned obj_id);
     GameObject(const GameObject& go);
     virtual ~GameObject();
+    GameObject& operator=(const GameObject&) = delete;
 
     /// zerstört das Objekt.
     virtual void Destroy() = 0;
@@ -63,8 +64,6 @@ protected:
 
 private:
     unsigned objId; /// unique ID
-
-    BOOST_DELETED_FUNCTION(GameObject& operator=(const GameObject&))
 
     // Static members
 public:

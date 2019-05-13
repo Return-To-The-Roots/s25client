@@ -38,7 +38,7 @@ struct HarborPos
         unsigned id;
         unsigned distance;
 
-        Neighbor() {} //-V730
+        Neighbor() = default; //-V730
         Neighbor(unsigned id, unsigned distance) : id(id), distance(distance) {}
 
         bool operator<(const Neighbor& two) const { return (distance < two.distance) || (distance == two.distance && id < two.id); }
@@ -46,7 +46,7 @@ struct HarborPos
 
     std::array<std::vector<Neighbor>, 6> neighbors;
 
-    HarborPos() {} //-V730
+    HarborPos() = default; //-V730
     HarborPos(const MapPoint pt) : pos(pt) {}
 };
 

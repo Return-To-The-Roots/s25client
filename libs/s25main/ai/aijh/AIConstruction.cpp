@@ -38,11 +38,10 @@
 #include "gameTypes/Inventory.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/BuildingProperties.h"
-#include <boost/container/flat_set.hpp>
+#include "libutil/warningSuppression.h"
 #include <boost/range/adaptor/reversed.hpp>
 #include <algorithm>
 #include <array>
-#include <cmath>
 #include <cstdlib>
 #include <limits>
 #include <list>
@@ -78,9 +77,9 @@ void AIConstruction::AddBuildJob(BuildJob* job, bool front)
     } else // check if the buildjob is already in list and if so dont add it again
     {
         bool alreadyinlist = false;
-        for(unsigned i = 0; i < buildJobs.size(); i++)
+        for(auto& buildJob : buildJobs)
         {
-            if(buildJobs[i]->GetType() == job->GetType() && buildJobs[i]->GetAround() == job->GetAround())
+            if(buildJob->GetType() == job->GetType() && buildJob->GetAround() == job->GetAround())
             {
                 alreadyinlist = true;
                 break;
@@ -172,9 +171,9 @@ BuildJob* AIConstruction::GetBuildJob()
 void AIConstruction::AddConnectFlagJob(const noFlag* flag)
 {
     // already in list?
-    for(unsigned i = 0; i < connectJobs.size(); i++)
+    for(auto& connectJob : connectJobs)
     {
-        if(connectJobs[i]->getFlag() == flag->GetPos())
+        if(connectJob->getFlag() == flag->GetPos())
             return;
     }
     // add to list
@@ -183,9 +182,9 @@ void AIConstruction::AddConnectFlagJob(const noFlag* flag)
 
 bool AIConstruction::CanStillConstructHere(const MapPoint pt) const
 {
-    for(unsigned i = 0; i < constructionlocations.size(); i++)
+    for(const auto& constructionlocation : constructionlocations)
     {
-        if(aii.gwb.CalcDistance(pt, constructionlocations[i]) < 12)
+        if(aii.gwb.CalcDistance(pt, constructionlocation) < 12)
             return false;
     }
     return true;
@@ -208,7 +207,7 @@ void AIConstruction::ConstructionsExecuted()
 namespace {
     struct Point2FlagAI
     {
-        typedef const noFlag* result_type;
+        using result_type = const noFlag*;
         const GameWorldBase& world_;
 
         Point2FlagAI(const GameWorldBase& world) : world_(world) {}
@@ -235,10 +234,10 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
         helpers::makeUnique(flags);
         // If at this pos is a flag, then it might be included due to wrapping.
         // This is wrong and needs to be removed
-        const noFlag* flag = aii.gwb.GetSpecObj<noFlag>(pt);
+        const auto* flag = aii.gwb.GetSpecObj<noFlag>(pt);
         if(flag)
         {
-            std::vector<const noFlag*>::iterator it = std::find(flags.begin(), flags.end(), flag);
+            auto it = std::find(flags.begin(), flags.end(), flag);
             if(it != flags.end())
                 flags.erase(it);
         }
@@ -273,9 +272,7 @@ bool AIConstruction::MilitaryBuildingWantsRoad(const nobMilitary& milbld)
         return true;
     // TODO: This probably does not do what is wanted...
     int bldIdx = helpers::indexOf(aii.GetMilitaryBuildings(), &milbld);
-    if(bldIdx > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds()))
-        return true;
-    return false;
+    return bldIdx > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds());
 }
 
 bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned maxSearchRadius /*= 14*/)
@@ -287,7 +284,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 
     // flag of a military building? -> check if we really want to connect this right now
     const MapPoint bldPos = aii.gwb.GetNeighbour(flag->GetPos(), Direction::NORTHWEST);
-    if(const nobMilitary* milBld = aii.gwb.GetSpecObj<const nobMilitary>(bldPos))
+    if(const auto* milBld = aii.gwb.GetSpecObj<const nobMilitary>(bldPos))
     {
         if(!MilitaryBuildingWantsRoad(*milBld))
             return false;
@@ -328,9 +325,9 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         // check for non-flag points on planned route: more than 2 nonflaggable spaces on the route -> not really valid path
         unsigned curNonFlagPts = 0;
         MapPoint tmpPos = flag->GetPos();
-        for(unsigned j = 0; j < tmpRoute.size(); ++j)
+        for(auto j : tmpRoute)
         {
-            tmpPos = aii.gwb.GetNeighbour(tmpPos, tmpRoute[j]);
+            tmpPos = aii.gwb.GetNeighbour(tmpPos, j);
             RTTR_Assert(aii.GetBuildingQuality(tmpPos) == aijh.GetAINode(tmpPos).bq);
             if(aii.GetBuildingQuality(tmpPos) == BQ_NOTHING)
                 curNonFlagPts++;
@@ -383,39 +380,34 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route)
 {
     return BuildRoad(start, target, route);
+    // TODO: Enable later after checking for performance and correctness
+    RTTR_IGNORE_UNREACHABLE_CODE
     MapPoint pStart = start->GetPos(); //-V779
     for(unsigned i = 0; i + 1 < route.size(); i++)
     {
-        if((route[i] + 1u == route[i + 1])
-           || (route[i] - 1u
-               == route[i + 1])) // switching current and next route element will result in the same position after building both
+        // switching current and next route element will result in the same position after building both
+        if((route[i] + 1u == route[i + 1]) || (route[i] - 1u == route[i + 1]))
         {
             MapPoint t(pStart);
             t = aii.gwb.GetNeighbour(t, route[i + 1]);
             pStart = aii.gwb.GetNeighbour(pStart, route[i]);
-            if(aii.gwb.IsRoadAvailable(false, t) && aii.IsOwnTerritory(t)) // can the alternative road be build?
+            // can the alternative road be build?
+            if(aii.gwb.IsRoadAvailable(false, t) && aii.IsOwnTerritory(t))
             {
-                if(aii.CalcBQSumDifference(
-                     pStart, t)) // does the alternative road block a lower buildingquality point than the normal planned route?
+                // does the alternative road block a lower buildingquality point than the normal planned route?
+                if(aii.CalcBQSumDifference(pStart, t))
                 {
                     // LOG.write(("AIConstruction::road improvements p%i from %i,%i moved node %i,%i to %i,%i i:%i, i+1:%i\n",playerID,
                     // start->GetX(), start->GetY(), ptx, pt.y, t.x, t.y,route[i],route[i+1]);
                     pStart = t; // we move the alternative path so move x&y and switch the route entries
-                    if(route[i] + 1u == route[i + 1])
-                    {
-                        ++route[i];
-                        --route[i + 1];
-                    } else
-                    {
-                        --route[i];
-                        ++route[i + 1];
-                    }
+                    std::swap(route[i], route[i + 1]);
                 }
             }
         } else
             pStart = aii.gwb.GetNeighbour(pStart, route[i]);
     }
     return BuildRoad(start, target, route);
+    RTTR_POP_DIAGNOSTIC
 }
 
 bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route)
@@ -610,16 +602,16 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
     std::vector<Direction> mainroad = route;
     // targetflag for mainroad
     MapPoint t = flag->GetPos();
-    for(unsigned i = 0; i < mainroad.size(); i++)
+    for(auto i : mainroad)
     {
-        t = aii.gwb.GetNeighbour(t, mainroad[i]);
+        t = aii.gwb.GetNeighbour(t, i);
     }
-    const noFlag* mainflag = aii.gwb.GetSpecObj<noFlag>(t);
+    const auto* mainflag = aii.gwb.GetSpecObj<noFlag>(t);
 
     // Jede Flagge testen...
-    for(unsigned i = 0; i < flags.size(); ++i)
+    for(auto& i : flags)
     {
-        const noFlag& curFlag = *flags[i];
+        const noFlag& curFlag = *i;
         // When the current flag is the end of the main route, we skip it as crossing the main route is dissallowed by crossmainpath check a
         // bit below
         if(mainflag && &curFlag == mainflag)
@@ -654,14 +646,14 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
         // more than 5 nonflaggable spaces on the route -> not really valid path
         unsigned temp = 0;
         t = flag->GetPos();
-        for(unsigned j = 0; j < route.size(); ++j)
+        for(auto j : route)
         {
-            t = aii.gwb.GetNeighbour(t, route[j]);
+            t = aii.gwb.GetNeighbour(t, j);
             MapPoint t2 = flag->GetPos();
             // check if we cross the planned main road
-            for(unsigned k = 0; k < mainroad.size(); ++k)
+            for(auto k : mainroad)
             {
-                t2 = aii.gwb.GetNeighbour(t2, mainroad[k]);
+                t2 = aii.gwb.GetNeighbour(t2, k);
                 if(t2 == t)
                 {
                     crossmainpath = true;

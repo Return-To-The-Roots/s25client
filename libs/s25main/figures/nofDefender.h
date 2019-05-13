@@ -34,11 +34,11 @@ class nofDefender : public nofActiveSoldier
     void Walked() override;
 
     /// The derived classes regain control after a fight of nofActiveSoldier
-    void FreeFightEnded() override;
+    [[noreturn]] void FreeFightEnded() override;
 
 public:
-    nofDefender(const MapPoint pt, unsigned char player, nobBaseMilitary* const building, unsigned char rank, nofAttacker* const attacker);
-    nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
+    nofDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank, nofAttacker* attacker);
+    nofDefender(nofPassiveSoldier* other, nofAttacker* attacker);
     nofDefender(SerializedGameData& sgd, unsigned obj_id);
 
     /// Aufräummethoden
@@ -55,6 +55,7 @@ public:
     /// Serialisierungsfunktionen
 protected:
     void Serialize_nofDefender(SerializedGameData& sgd) const;
+    void HandleDerivedEvent[[noreturn]](unsigned) override { throw std::logic_error("No events expected"); }
 
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nofDefender(sgd); }

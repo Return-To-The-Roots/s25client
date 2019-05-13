@@ -24,7 +24,8 @@
 
 class LuaServerPlayer;
 class IGameLobbyController;
-struct AddonId;
+enum class AddonId;
+struct AddonIdWrapper;
 
 class LuaInterfaceSettings : public LuaInterfaceGameBase
 {
@@ -55,8 +56,8 @@ private:
     // Callable from Lua
     unsigned GetNumPlayers() const;
     LuaServerPlayer GetPlayer(unsigned idx);
-    void SetAddon(AddonId id, unsigned value);
-    void SetBoolAddon(AddonId id, bool enabled); // Alias
+    void SetAddon(AddonIdWrapper id, unsigned value);
+    void SetBoolAddon(AddonIdWrapper id, bool value); // Alias
     void ResetAddons();
     void ResetGameSettings();
     void SetGameSettings(const kaguya::LuaTable& settings);

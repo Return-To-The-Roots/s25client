@@ -17,26 +17,23 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameWorld.h"
-#include "GamePlayer.h"
 #include "GlobalGameSettings.h"
-#include "Loader.h"
 #include "SerializedGameData.h"
 #include "buildings/noBuildingSite.h"
 #include "lua/LuaInterfaceGame.h"
-#include "luaIncludes.h"
-#include "network/GameClient.h"
 #include "ogl/glArchivItem_Map.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
 #include "libsiedler2/prototypen.h"
 #include <boost/filesystem.hpp>
+#include <mygettext/mygettext.h>
 
 GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em)
     : GameWorldGame(playerInfos, gameSettings, em)
 {}
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(std::shared_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath)
+bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, const std::string& mapFilePath, const std::string& luaFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;
@@ -49,7 +46,7 @@ bool GameWorld::LoadMap(std::shared_ptr<Game> game, const std::string& mapFilePa
 
     if(bfs::exists(luaFilePath))
     {
-        SetLua(new LuaInterfaceGame(game));
+        SetLua(std::make_unique<LuaInterfaceGame>(game));
         if(!GetLua().LoadScript(luaFilePath) || !GetLua().CheckScriptVersion())
         {
             SetLua(nullptr);
@@ -94,7 +91,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     }
 }
 
-void GameWorld::Deserialize(std::shared_ptr<Game> game, SerializedGameData& sgd)
+void GameWorld::Deserialize(const std::shared_ptr<Game>& game, SerializedGameData& sgd)
 {
     MapSerializer::Deserialize(*this, GetNumPlayers(), sgd);
 
@@ -114,7 +111,7 @@ void GameWorld::Deserialize(std::shared_ptr<Game> game, SerializedGameData& sgd)
             throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 
         // Now init and load lua
-        SetLua(new LuaInterfaceGame(game));
+        SetLua(std::make_unique<LuaInterfaceGame>(game));
         if(!GetLua().LoadScriptString(luaScript))
         {
             SetLua(nullptr);

@@ -31,7 +31,7 @@ class NodeMapBase : public MapBase
     std::vector<T_Node> nodes;
 
 public:
-    typedef T_Node Node;
+    using Node = T_Node;
 
     void Resize(const MapExtent& newSize) override;
     /// Access given node

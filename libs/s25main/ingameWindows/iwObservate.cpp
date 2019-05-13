@@ -28,9 +28,8 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
+#include "nodeObjs/noMovable.h"
 #include "gameTypes/RoadBuildState.h"
-#include "gameData/GuiConsts.h"
-#include "libutil/Log.h"
 #include <cmath>
 
 const Extent SmallWndSize(260, 190);
@@ -105,7 +104,7 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
 
                         for(const noBase* obj : figures)
                         {
-                            const noMovable* movable = dynamic_cast<const noMovable*>(obj);
+                            const auto* movable = dynamic_cast<const noMovable*>(obj);
                             if(!movable)
                                 continue;
 
@@ -223,7 +222,7 @@ bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
     {
         if(obj->GetObjId() == followMovableId)
         {
-            const noMovable* followMovable = static_cast<const noMovable*>(obj);
+            const auto* followMovable = static_cast<const noMovable*>(obj);
             DrawPoint drawPt = view->GetWorld().GetNodePos(ptToCheck);
 
             if(followMovable->IsMoving())

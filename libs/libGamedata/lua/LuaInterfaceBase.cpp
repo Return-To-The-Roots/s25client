@@ -40,7 +40,7 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), errorOccured_(f
     lua["__"] = gettext_noop;
 }
 
-LuaInterfaceBase::~LuaInterfaceBase() {}
+LuaInterfaceBase::~LuaInterfaceBase() = default;
 
 void LuaInterfaceBase::Register(kaguya::State& state)
 {
@@ -134,22 +134,22 @@ void LuaInterfaceBase::RegisterTranslations(const kaguya::LuaRef& luaTranslation
     // Replace with entries of current locale
     std::string locale = mysetlocale(LC_ALL, nullptr);
     std::map<std::string, std::string> translated = GetTranslation(luaTranslations, locale);
-    for(std::map<std::string, std::string>::const_iterator it = translated.begin(); it != translated.end(); ++it)
-        translations_[it->first] = it->second;
+    for(const auto& it : translated)
+        translations_[it.first] = it.second;
 }
 
 std::string LuaInterfaceBase::Translate(const std::string& key)
 {
-    std::map<std::string, std::string>::const_iterator entry = translations_.find(key);
+    const auto entry = translations_.find(key);
     if(entry == translations_.end())
         return key;
     else
-        return entry->second.c_str();
+        return entry->second;
 }
 
 bool LuaInterfaceBase::ValidateUTF8(const std::string& scriptTxt)
 {
-    std::string::const_iterator it = utf8::find_invalid(scriptTxt.begin(), scriptTxt.end());
+    const auto it = utf8::find_invalid(scriptTxt.begin(), scriptTxt.end());
     if(it == scriptTxt.end())
         return true;
     size_t invPos = std::distance(scriptTxt.begin(), it);

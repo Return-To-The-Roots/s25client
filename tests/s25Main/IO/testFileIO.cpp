@@ -105,7 +105,7 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
             {
                 BOOST_FAIL(e.what());
             }
-            typedef boost::iostreams::stream<boost::iostreams::mapped_file_source> MMStream;
+            using MMStream = boost::iostreams::stream<boost::iostreams::mapped_file_source>;
             MMStream map(mmapFile);
         }
     }

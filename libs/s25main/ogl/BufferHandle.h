@@ -19,6 +19,7 @@
 #define BufferHandle_h__
 
 #include <glad/glad.h>
+#include <utility>
 
 namespace ogl {
 /// RAII Handle of an OpenGL buffer
@@ -28,9 +29,11 @@ class BufferHandle
 
 public:
     explicit BufferHandle(GLuint handle = 0u) : handle_(handle) {}
-    BufferHandle(BufferHandle&& other) : handle_(other.handle_) { other.handle_ = 0u; }
+    BufferHandle(BufferHandle&& other) noexcept : handle_(other.handle_) { other.handle_ = 0u; }
+    BufferHandle(const BufferHandle&) = delete;
+    BufferHandle& operator=(const BufferHandle& other) = delete;
     ~BufferHandle() { reset(); }
-    BufferHandle& operator=(BufferHandle other)
+    BufferHandle& operator=(BufferHandle&& other) noexcept
     {
         std::swap(handle_, other.handle_);
         return *this;

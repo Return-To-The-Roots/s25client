@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 
-#include "addons/Addon.h"
 #include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
 #include "worldFixtures/WorldWithGCExecution.h"
@@ -26,6 +25,7 @@
 
 BOOST_AUTO_TEST_SUITE(FrontierDistance)
 
+namespace {
 template<unsigned T_width, unsigned T_height>
 struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
 {
@@ -49,9 +49,9 @@ struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
         milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
     }
 };
-typedef FrontierWorld<34u, 20u> FrontierWorldSmall;
-typedef FrontierWorld<38u, 20u> FrontierWorldMiddle;
-typedef FrontierWorld<60u, 20u> FrontierWorldBig;
+using FrontierWorldSmall = FrontierWorld<34u, 20u>;
+using FrontierWorldMiddle = FrontierWorld<38u, 20u>;
+using FrontierWorldBig = FrontierWorld<60u, 20u>;
 
 DescIdx<TerrainDesc> GetWaterTerrain(const GameWorld& world)
 {
@@ -64,6 +64,7 @@ DescIdx<TerrainDesc> GetWaterTerrain(const GameWorld& world)
     }
     throw std::logic_error("No water");
 }
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
 {
@@ -275,7 +276,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
 //  |                   ||                      |
 //  ---------------------------------------------
 //
-typedef WorldWithGCExecution<2u, 60u, 60u> WorldBig;
+using WorldBig = WorldWithGCExecution<2u, 60u, 60u>;
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 {
     this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, 1);
@@ -328,13 +329,13 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 
     // p1 s building, which should cause a frontier distance "near"
     MapPoint p1Near(middle + 5, 15);
-    nobMilitary* milBld1 =
+    auto* milBld1 =
       dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Near, p1.GetPlayerId(), NAT_ROMANS));
 
     // p0 s building, should be near, like p1 s but, will be far cause p1Far cant be reached (patch is longer then 40 units).
     // It will override the NEAR-Distance from P1Near, when evaluating P1Far
     MapPoint p0Near(middle - 5, 15);
-    nobMilitary* milBld0 =
+    auto* milBld0 =
       dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p0Near, p0.GetPlayerId(), NAT_ROMANS));
 
     nobMilitary::FrontierDistance distance0 = milBld0->GetFrontierDistance();

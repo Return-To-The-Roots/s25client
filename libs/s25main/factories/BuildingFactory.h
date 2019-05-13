@@ -20,7 +20,7 @@
 
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/MapCoordinates.h"
-#include "gameData/NationConsts.h"
+#include "gameTypes/Nation.h"
 
 class noBuilding;
 class GameWorldBase;
@@ -30,11 +30,10 @@ class GameWorldBase;
 /// Only exception is during deserialization (switch on GOT instead of building type), this case is handled in SerializedGameData
 class BuildingFactory
 {
-    BuildingFactory();
-
 public:
-    static noBuilding* CreateBuilding(GameWorldBase& gwg, const BuildingType type, const MapPoint pt, unsigned char player,
-                                      const Nation nation);
+    BuildingFactory() = delete;
+
+    static noBuilding* CreateBuilding(GameWorldBase& gwg, BuildingType type, MapPoint pt, unsigned char player, Nation nation);
 };
 
 #endif // BuildingFactory_h__

@@ -25,7 +25,7 @@
 #include "worldFixtures/WorldFixture.h"
 #include <boost/test/unit_test.hpp>
 
-typedef WorldFixture<CreateEmptyWorld, 2> WorldFixtureEmpty2P;
+using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2>;
 
 BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
 {
@@ -37,8 +37,8 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     BOOST_REQUIRE(world.GetPlayer(1).IsDefeated());
     // Destroy HQ but leave a military bld
     MapPoint milBldPos = world.MakeMapPoint(world.GetPlayer(0).GetFirstWH()->GetPos() + Position(4, 0)); //-V522
-    nobMilitary* milBld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBldPos, 0, NAT_BABYLONIANS));
-    nofPassiveSoldier* sld = new nofPassiveSoldier(milBldPos, 0, milBld, milBld, 0);
+    auto* milBld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBldPos, 0, NAT_BABYLONIANS));
+    auto* sld = new nofPassiveSoldier(milBldPos, 0, milBld, milBld, 0);
     world.AddFigure(milBldPos, sld);
     milBld->GotWorker(JOB_PRIVATE, sld);
     sld->WalkToGoal();

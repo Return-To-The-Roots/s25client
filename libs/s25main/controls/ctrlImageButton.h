@@ -23,13 +23,11 @@
 #include "controls/ctrlButton.h"
 #include "ctrlBaseImage.h"
 
-class glArchivItem_Bitmap;
-
 /// Button mit einem Bild
 class ctrlImageButton : public ctrlButton, public ctrlBaseImage
 {
 public:
-    ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* const image,
+    ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
                     const std::string& tooltip);
 
 protected:

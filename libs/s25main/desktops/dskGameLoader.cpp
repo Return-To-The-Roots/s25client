@@ -20,6 +20,7 @@
 #include "Game.h"
 #include "GameManager.h"
 #include "Loader.h"
+
 #include "WindowManager.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
@@ -32,13 +33,15 @@
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "liblobby/LobbyClient.h"
+#include <memory>
+#include <utility>
 
 /**
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
  */
 dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
-    : Desktop(LOADER.GetImageN(LOAD_SCREENS[rand() % LOAD_SCREENS.size()], 0)), position(0), loader_(game)
+    : Desktop(LOADER.GetImageN(LOAD_SCREENS[rand() % LOAD_SCREENS.size()], 0)), position(0), loader_(std::move(game))
 {
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 
@@ -47,7 +50,7 @@ dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
     AddText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     for(unsigned i = 0; i < 8; ++i)
-        AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, 0, LargeFont);
+        AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, FontStyle{}, LargeFont);
 
     LOBBYCLIENT.AddListener(this);
     GAMECLIENT.SetInterface(this);
@@ -67,18 +70,18 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResul
         GAMECLIENT.Stop();
 
         if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
-            WINDOWMANAGER.Switch(new dskLobby);
-        else if(loader_.getGame()->world.IsSinglePlayer())
-            WINDOWMANAGER.Switch(new dskSinglePlayer);
+            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
+        else if(loader_.getGame()->world_.IsSinglePlayer())
+            WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
         else
-            WINDOWMANAGER.Switch(new dskDirectIP);
+            WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
     }
 }
 
 void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 {
-    ctrlTimer* timer = GetCtrl<ctrlTimer>(1);
-    ctrlText* text = GetCtrl<ctrlText>(10 + position);
+    auto* timer = GetCtrl<ctrlTimer>(1);
+    auto* text = GetCtrl<ctrlText>(10 + position);
     int interval = 50;
 
     timer->Stop();
@@ -111,7 +114,7 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             try
             {
                 // Do this here as it will init OGL
-                gameInterface.reset(new dskGameInterface(loader_.getGame(), GAMECLIENT.GetNWFInfo(), GAMECLIENT.GetPlayerId()));
+                gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.GetNWFInfo(), GAMECLIENT.GetPlayerId());
             } catch(std::runtime_error& e)
             {
                 LC_Status_Error(std::string(_("Failed to init GUI: ")) + e.what());
@@ -140,18 +143,18 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
  */
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
     GetCtrl<ctrlTimer>(1)->Stop();
 }
 
-void dskGameLoader::CI_GameStarted(std::shared_ptr<Game>)
+void dskGameLoader::CI_GameStarted(const std::shared_ptr<Game>&)
 {
     RTTR_Assert(gameInterface);
-    WINDOWMANAGER.Switch(gameInterface.release());
+    WINDOWMANAGER.Switch(std::move(gameInterface));
 }
 
 void dskGameLoader::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
     GetCtrl<ctrlTimer>(1)->Stop();
 }

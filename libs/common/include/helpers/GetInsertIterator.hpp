@@ -22,19 +22,17 @@
 
 namespace helpers {
 
-/// Returns the most efficient insert operator defining its type as "iterator"
+/// Returns the most efficient insert operator
 template<class T, typename = void>
 struct GetInsertIterator
 {
-    typedef std::insert_iterator<T> iterator;
-    static iterator get(T& collection) { return iterator(collection, collection.end()); }
+    static auto get(T& collection) { return std::insert_iterator<T>(collection, collection.end()); }
 };
 
 template<class T>
 struct GetInsertIterator<T, boost::void_t<decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))>>
 {
-    typedef std::back_insert_iterator<T> iterator;
-    static iterator get(T& collection) { return iterator(collection); }
+    static auto get(T& collection) { return std::back_insert_iterator<T>(collection); }
 };
 
 } // namespace helpers

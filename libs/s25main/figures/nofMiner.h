@@ -39,7 +39,7 @@ protected:
     Resource::Type GetRequiredResType() const;
 
 public:
-    nofMiner(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofMiner(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMiner(SerializedGameData& sgd, unsigned obj_id);
 
     GO_Type GetGOT() const override { return GOT_NOF_MINER; }

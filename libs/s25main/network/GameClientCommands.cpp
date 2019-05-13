@@ -104,8 +104,8 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
         if(IsHost())
         {
             // Switch AIs
-            game->aiPlayers.erase_if([playerId2](const auto& player) { return player.GetPlayerId() == playerId2; });
-            game->aiPlayers.push_back(CreateAIPlayer(playerId1, AI::Info(AI::DUMMY)));
+            game->aiPlayers_.erase_if([playerId2](const auto& player) { return player.GetPlayerId() == playerId2; });
+            game->AddAIPlayer(CreateAIPlayer(playerId1, AI::Info(AI::DUMMY)));
         }
         GetPlayer(playerId1).ps = PS_AI;
         GetPlayer(playerId2).ps = PS_OCCUPIED;

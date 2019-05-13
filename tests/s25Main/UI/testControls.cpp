@@ -18,26 +18,29 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PointOutput.h"
 #include "controls/ctrlPreviewMinimap.h"
+#include "ogl/glArchivItem_Map.h"
+#include "uiHelper/uiHelpers.hpp"
+#include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(Controls)
 
-void resizeMap(glArchivItem_Map& glMap, const Extent& size)
+static void resizeMap(glArchivItem_Map& glMap, const Extent& size)
 {
     libsiedler2::ArchivItem_Map map;
-    libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header;
+    auto header = std::make_unique<libsiedler2::ArchivItem_Map_Header>();
     header->setWidth(size.x);
     header->setHeight(size.y);
     header->setNumPlayers(2);
-    map.push(header);
+    map.push(std::move(header));
     for(int i = 0; i <= MAP_TYPE; i++)
-        map.push(new libsiedler2::ArchivItem_Raw(std::vector<uint8_t>(prodOfComponents(size))));
+        map.push(std::make_unique<libsiedler2::ArchivItem_Raw>(std::vector<uint8_t>(prodOfComponents(size))));
     glMap.load(map);
 }
 
-BOOST_AUTO_TEST_CASE(PreviewMinimap)
+BOOST_FIXTURE_TEST_CASE(PreviewMinimap, uiHelper::Fixture)
 {
     DrawPoint pos(5, 12);
     Extent size(20, 10);

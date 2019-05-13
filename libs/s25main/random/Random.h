@@ -24,9 +24,11 @@
 #include "random/XorShift.h"
 #include "libutil/Singleton.h"
 #include <array>
+#include <cstddef>
 #include <iosfwd>
 #include <limits>
 #include <string>
+#include <utility>
 #include <vector>
 
 class Serializer;
@@ -42,7 +44,7 @@ class Random : public Singleton<Random<T_PRNG>>
 {
 public:
     /// The used random number generator type
-    typedef T_PRNG PRNG;
+    using PRNG = T_PRNG;
 
     /// Class for storing the invocation of the rng
     struct RandomEntry
@@ -55,8 +57,8 @@ public:
         unsigned obj_id;
 
         RandomEntry() : counter(0), max(0), src_line(0), obj_id(0){};
-        RandomEntry(unsigned counter, int max, const PRNG& rngState, const std::string& src_name, unsigned src_line, unsigned obj_id)
-            : counter(counter), max(max), rngState(rngState), src_name(src_name), src_line(src_line), obj_id(obj_id){};
+        RandomEntry(unsigned counter, int max, const PRNG& rngState, std::string src_name, unsigned src_line, unsigned obj_id)
+            : counter(counter), max(max), rngState(rngState), src_name(std::move(src_name)), src_line(src_line), obj_id(obj_id){};
 
         friend std::ostream& operator<<(std::ostream& os, const RandomEntry& entry) { return entry.print(os); }
         std::ostream& print(std::ostream& os) const;
@@ -73,7 +75,7 @@ public:
     /// Reset the Random class to start from a given state
     void ResetState(const PRNG& newState);
     /// Return a random number in the range [0, max)
-    int Rand(const char* const src_name, unsigned src_line, unsigned obj_id, int max);
+    int Rand(const char* src_name, unsigned src_line, unsigned obj_id, int max);
 
     /// Get a checksum of the RNG
     unsigned GetChecksum() const;
@@ -96,9 +98,9 @@ private:
 };
 
 /// The actual PRNG used for the ingame RNG
-typedef XorShift UsedPRNG;
-typedef Random<UsedPRNG> UsedRandom;
-typedef UsedRandom::RandomEntry RandomEntry;
+using UsedPRNG = XorShift;
+using UsedRandom = Random<UsedPRNG>;
+using RandomEntry = UsedRandom::RandomEntry;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Macros / Defines
@@ -107,21 +109,35 @@ typedef UsedRandom::RandomEntry RandomEntry;
 /// Note: maxVal has to be small (at least <= 32768)
 #define RANDOM_RAND(objId, maxVal) RANDOM.Rand(__FILE__, __LINE__, objId, maxVal)
 
-/// functor using RANDOM.Rand(...) e.g. for std::random_shuffle
-struct RandomFunctor
+/// functor using RANDOM.Rand(...) e.g. for std::shuffle
+class RandomFunctor
 {
     const char* file_;
     unsigned line_;
-    RandomFunctor(const char* file, unsigned line) : file_(file), line_(line) {}
+
+public:
+    constexpr RandomFunctor(const char* file, unsigned line) : file_(file), line_(line) {}
 
     ptrdiff_t operator()(ptrdiff_t max) const
     {
         RTTR_Assert(max < std::numeric_limits<int>::max());
         return RANDOM.Rand(file_, line_, 0, static_cast<int>(max));
     }
+    template<class T>
+    static void shuffleContainer(T& container, const char* file, unsigned line)
+    {
+        if(container.empty())
+            return;
+        const RandomFunctor getIdx(file, line);
+        for(auto i = container.size() - 1; i > 0; --i)
+        {
+            using std::swap;
+            swap(container[i], container[getIdx(i + 1)]);
+        }
+    }
 };
 
 /// Shortcut for creating an instance of RandomFunctor
-#define RANDOM_FUNCTOR(varName) RandomFunctor varName(__FILE__, __LINE__)
+#define RANDOM_SHUFFLE(container) RandomFunctor::shuffleContainer(container, __FILE__, __LINE__)
 
 #endif // !RANDOM_H_INCLUDED

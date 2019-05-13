@@ -24,9 +24,10 @@
 #include "Rect.h"
 #include "TextFormatSetter.h"
 #include "animation/AnimationManager.h"
+#include "ogl/FontStyle.h"
 #include "gameTypes/BuildingType.h"
+#include "gameTypes/Nation.h"
 #include "gameTypes/TextureColor.h"
-#include "gameData/NationConsts.h"
 #include "libutil/colors.h"
 #include <boost/range/adaptor/map.hpp>
 #include <map>
@@ -69,10 +70,10 @@ struct ScreenResizeEvent;
 class Window
 {
 public:
-    typedef bool (Window::*KeyboardMsgHandler)(const KeyEvent&);
-    typedef bool (Window::*MouseMsgHandler)(const MouseCoords&);
+    using KeyboardMsgHandler = bool (Window::*)(const KeyEvent&);
+    using MouseMsgHandler = bool (Window::*)(const MouseCoords&);
 
-    Window(Window* parent, unsigned id, const DrawPoint& position, const Extent& size = Extent(0, 0));
+    Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0));
     virtual ~Window();
     /// zeichnet das Fenster.
     void Draw();
@@ -141,14 +142,14 @@ public:
     T* AddCtrl(T* ctrl);
 
     ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation, unsigned short size = 36,
-                                      const std::string& tooltip_ = "");
+                                      const std::string& tooltip = "");
     ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
                               glArchivItem_Font* font, const std::string& tooltip = "");
     ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor,
                                const std::string& tooltip = "");
-    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* const image,
+    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
                                const std::string& tooltip = "");
-    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Bitmap* const image,
+    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Bitmap* image,
                                const std::string& tooltip = "");
     ctrlChat* AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
     ctrlCheck* AddCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
@@ -165,7 +166,7 @@ public:
     ctrlImage* AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip = "");
     ctrlList* AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
     ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
-                                unsigned format = 0);
+                                FontStyle format = {});
     ctrlOptionGroup* AddOptionGroup(unsigned id, int select_type);
     ctrlMultiSelectGroup* AddMultiSelectGroup(unsigned id, int select_type);
     ctrlPercent* AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
@@ -179,8 +180,9 @@ public:
     ctrlTab* AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
     ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned columns,
                         ...);
-    ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format, glArchivItem_Font* font);
-    TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+    ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
+                      glArchivItem_Font* font);
+    TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                                       glArchivItem_Font* font);
     ctrlTimer* AddTimer(unsigned id, unsigned timeout);
     /// fügt ein vertieftes variables TextCtrl hinzu.
@@ -189,7 +191,7 @@ public:
                                       glArchivItem_Font* font, unsigned color, unsigned parameters, ...);
     /// fügt ein variables TextCtrl hinzu.
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-    ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format,
+    ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, FontStyle format,
                             glArchivItem_Font* font, unsigned parameters, ...);
     ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* map);
 
@@ -264,7 +266,7 @@ protected:
         BUTTON_HOVER,
         BUTTON_PRESSED
     };
-    typedef std::map<unsigned, Window*> ControlMap;
+    using ControlMap = std::map<unsigned, Window*>;
 
     /// scales X- und Y values to fit the screen
     template<class T_Pt>
@@ -310,7 +312,7 @@ inline T* Window::AddCtrl(T* ctrl)
 template<typename T>
 inline T* Window::GetCtrl(unsigned id)
 {
-    ControlMap::iterator it = childIdToWnd_.find(id);
+    auto it = childIdToWnd_.find(id);
     if(it == childIdToWnd_.end())
         return nullptr;
 
@@ -320,7 +322,7 @@ inline T* Window::GetCtrl(unsigned id)
 template<typename T>
 inline const T* Window::GetCtrl(unsigned id) const
 {
-    ControlMap::const_iterator it = childIdToWnd_.find(id);
+    auto it = childIdToWnd_.find(id);
     if(it == childIdToWnd_.end())
         return nullptr;
 

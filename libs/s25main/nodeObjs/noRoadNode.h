@@ -46,7 +46,7 @@ public:
     /// Direction to previous node, includes SHIP_DIR
     mutable unsigned dir_; //-V730_NOINIT
 public:
-    noRoadNode(const NodalObjectType nop, const MapPoint pt, unsigned char player);
+    noRoadNode(NodalObjectType nop, MapPoint pos, unsigned char player);
     noRoadNode(SerializedGameData& sgd, unsigned obj_id);
 
     ~noRoadNode() override;
@@ -66,10 +66,10 @@ public:
 
     RoadSegment* GetRoute(const Direction dir) const { return routes[dir.toUInt()]; }
     void SetRoute(const Direction dir, RoadSegment* route) { routes[dir.toUInt()] = route; }
-    noRoadNode* GetNeighbour(const Direction dir) const;
+    noRoadNode* GetNeighbour(Direction dir) const;
 
-    void DestroyRoad(const Direction dir);
-    void UpgradeRoad(const Direction dir);
+    void DestroyRoad(Direction dir);
+    void UpgradeRoad(Direction dir);
     /// Vernichtet Alle Straße um diesen Knoten
     void DestroyAllRoads();
 
@@ -80,7 +80,7 @@ public:
 
     /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch
     /// transportiert werden müssen
-    virtual unsigned GetPunishmentPoints(const Direction) const { return 0; }
+    virtual unsigned GetPunishmentPoints(Direction) const { return 0; }
 };
 
 inline noRoadNode* noRoadNode::GetNeighbour(const Direction dir) const

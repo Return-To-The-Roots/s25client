@@ -22,13 +22,11 @@
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
-#include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrainfield.h"
-#include "gameData/TerrainDesc.h"
 
 nofFarmer::nofFarmer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FARMER, pos, player, workplace), harvest(false)

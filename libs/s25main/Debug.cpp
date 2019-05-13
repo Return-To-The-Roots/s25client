@@ -26,11 +26,9 @@
 #include "libutil/Log.h"
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
-#include <boost/format.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <bzlib.h>
 #include <memory>
-#include <type_traits>
 #include <vector>
 
 #if defined(_WIN32) || defined(__CYGWIN__)
@@ -63,6 +61,7 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 #include <execinfo.h>
 #endif
 
+namespace {
 #ifdef RTTR_USE_WIN_API
 #ifdef HAVE_DBGHELP_H
 bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr)
@@ -152,6 +151,7 @@ void captureBacktrace(std::vector<void*>& stacktrace)
     stacktrace.resize(num_frames);
 }
 #endif
+} // namespace
 
 DebugInfo::DebugInfo()
 {
@@ -204,7 +204,7 @@ std::vector<void*> DebugInfo::GetStackTrace(void* ctx)
 
 bool DebugInfo::Send(const void* buffer, size_t length)
 {
-    char* ptr = (char*)buffer;
+    auto* ptr = (const char*)buffer;
 
     while(length > 0)
     {
@@ -267,7 +267,7 @@ bool DebugInfo::SendStackTrace(const std::vector<void*>& stacktrace)
     if(!SendString("StackTrace"))
         return false;
 
-    typedef std::conditional_t<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t> littleVoid_t;
+    using littleVoid_t = std::conditional_t<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>;
     static_assert(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
     std::vector<littleVoid_t> endStacktrace;
     endStacktrace.reserve(stacktrace.size());
@@ -332,9 +332,9 @@ bool DebugInfo::SendFile(BinaryFile& file)
 
     LOG.write("- File size: %u\n") % fileSize;
 
-    auto fileData = std::make_unique<char[]>(fileSize);
+    auto fileData = std::unique_ptr<char[]>(new char[fileSize]);
     unsigned compressed_len = fileSize * 2 + 600;
-    auto compressed = std::make_unique<char[]>(compressed_len);
+    auto compressed = std::unique_ptr<char[]>(new char[compressed_len]);
 
     file.Seek(0, SEEK_SET);
     file.ReadRawData(fileData.get(), fileSize);

@@ -19,7 +19,6 @@
 #include "LuaInterfaceGame.h"
 #include "EventManager.h"
 #include "Game.h"
-#include "GlobalVars.h"
 #include "WindowManager.h"
 #include "ai/AIInterface.h"
 #include "ai/AIPlayer.h"
@@ -30,11 +29,9 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
-#include "libutil/Log.h"
 #include "libutil/Serializer.h"
-#include <boost/nowide/fstream.hpp>
 
-LuaInterfaceGame::LuaInterfaceGame(std::weak_ptr<Game> gameInstance) : gw(gameInstance.lock()->world), game(gameInstance)
+LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance) : gw(gameInstance.lock()->world_), game(gameInstance)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name
@@ -177,7 +174,7 @@ LuaInterfaceGame::LuaInterfaceGame(std::weak_ptr<Game> gameInstance) : gw(gameIn
     lua["rttr"] = this;
 }
 
-LuaInterfaceGame::~LuaInterfaceGame() {}
+LuaInterfaceGame::~LuaInterfaceGame() = default;
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMissionGoal, 1, 2)
 
@@ -274,7 +271,8 @@ void LuaInterfaceGame::MissionStatement3(int playerIdx, const std::string& title
     if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
         return;
 
-    WINDOWMANAGER.Show(new iwMissionStatement(_(title), msg, gw.IsSinglePlayer() && pause, iwMissionStatement::HelpImage(imgIdx)));
+    WINDOWMANAGER.Show(
+      std::make_unique<iwMissionStatement>(_(title), msg, gw.IsSinglePlayer() && pause, iwMissionStatement::HelpImage(imgIdx)));
 }
 
 void LuaInterfaceGame::SetMissionGoal(int playerIdx, const std::string& newGoal)
@@ -372,7 +370,7 @@ void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggest
         if(onPactCancel.type() == LUA_TFUNCTION)
         {
             AIInterface& aii = ai->getAIInterface();
-            bool luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
+            auto luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
             if(luaResult)
                 aii.AcceptPact(gw.GetEvMgr().GetCurrentGF(), pt, suggestedByPlayerId);
             else

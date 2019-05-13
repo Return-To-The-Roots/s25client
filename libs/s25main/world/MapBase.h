@@ -44,31 +44,22 @@ public:
     /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
     MapPoint MakeMapPoint(Position pt) const;
     /// Returns the linear index for a map point
-    unsigned GetIdx(const MapPoint pt) const;
+    unsigned GetIdx(MapPoint pt) const;
 
     /// Get coordinates of neighbor in the given direction
-    MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
+    MapPoint GetNeighbour(MapPoint pt, Direction dir) const;
     /// Return neighboring point (2nd layer: dir 0-11)
-    MapPoint GetNeighbour2(const MapPoint, unsigned dir) const;
+    MapPoint GetNeighbour2(MapPoint, unsigned dir) const;
     // Convenience functions for the above function
-    MapCoord GetXA(const MapPoint pt, Direction dir) const;
+    MapCoord GetXA(MapPoint pt, Direction dir) const;
 
     /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
     /// Number of results is constrained to maxResults (if > 0)
-    /// Overloads are used due to missing template default args until C++11
-    template<int T_maxResults, class T_TransformPt, class T_IsValidPt>
-    std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, unsigned radius, T_TransformPt transformPt,
-                                                                       T_IsValidPt isValid, bool includePt = false) const;
-    template<class T_TransformPt>
-    std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, unsigned radius, T_TransformPt transformPt) const
-    {
-        return GetPointsInRadius<-1>(pt, radius, transformPt, ReturnConst<bool, true>());
-    }
-    std::vector<MapPoint> GetPointsInRadius(const MapPoint pt, unsigned radius) const
-    {
-        return GetPointsInRadius<-1>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
-    }
+    template<int T_maxResults = -1, class T_TransformPt = Identity<MapPoint>, class T_IsValidPt = ReturnConst<bool, true>>
+    std::vector<typename T_TransformPt::result_type> GetPointsInRadius(MapPoint pt, unsigned radius,
+                                                                       T_TransformPt&& transformPt = T_TransformPt(),
+                                                                       T_IsValidPt&& isValid = T_IsValidPt(), bool includePt = false) const;
     std::vector<MapPoint> GetPointsInRadiusWithCenter(const MapPoint pt, unsigned radius) const
     {
         return GetPointsInRadius<-1>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>(), true);
@@ -76,7 +67,7 @@ public:
     /// Returns true, if the IsValid functor returns true for any point in the given radius
     /// If includePt is true, then the point itself is also checked
     template<class T_IsValidPt>
-    bool CheckPointsInRadius(const MapPoint pt, unsigned radius, T_IsValidPt isValid, bool includePt) const;
+    bool CheckPointsInRadius(MapPoint pt, unsigned radius, T_IsValidPt&& isValid, bool includePt) const;
 
     /// Return the distance between 2 points on the map (includes wrapping around map borders)
     unsigned CalcDistance(const Position& p1, const Position& p2) const;
@@ -103,9 +94,9 @@ inline unsigned MapBase::GetIdx(const MapPoint pt) const
 
 template<int T_maxResults, class T_TransformPt, class T_IsValidPt>
 inline std::vector<typename T_TransformPt::result_type>
-MapBase::GetPointsInRadius(const MapPoint pt, unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid, bool includePt) const
+MapBase::GetPointsInRadius(const MapPoint pt, unsigned radius, T_TransformPt&& transformPt, T_IsValidPt&& isValid, bool includePt) const
 {
-    typedef typename T_TransformPt::result_type Element;
+    using Element = typename T_TransformPt::result_type;
     std::vector<Element> result;
     if(includePt)
     {
@@ -143,7 +134,7 @@ MapBase::GetPointsInRadius(const MapPoint pt, unsigned radius, T_TransformPt tra
 }
 
 template<class T_IsValidPt>
-inline bool MapBase::CheckPointsInRadius(const MapPoint pt, unsigned radius, T_IsValidPt isValid, bool includePt) const
+inline bool MapBase::CheckPointsInRadius(const MapPoint pt, unsigned radius, T_IsValidPt&& isValid, bool includePt) const
 {
     if(includePt && isValid(pt, 0))
         return true;

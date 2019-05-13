@@ -27,7 +27,6 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noTree.h"
-#include "gameData/TerrainDesc.h"
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FORESTER, pos, player, workplace)
@@ -82,9 +81,9 @@ void nofForester::WorkFinished()
         gwg->DestroyNO(pos, false);
 
         // Je nach Landschaft andere Bäume pflanzbar!
-        const unsigned char NUM_AVAILABLE_TREES[3] = {6, 3, 4};
-        const unsigned char AVAILABLE_TREES[3][8] = {
-          {0, 1, 2, 6, 7, 8, 0xFF, 0xFF}, {0, 1, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, {0, 1, 6, 8, 0xFF, 0xFF, 0xFF, 0xFF}};
+        const std::array<unsigned char, 3> NUM_AVAILABLE_TREES = {6, 3, 4};
+        const helpers::MultiArray<unsigned char, 3, 6> AVAILABLE_TREES = {
+          {{0, 1, 2, 6, 7, 8}, {0, 1, 7, 0xFF, 0xFF, 0xFF}, {0, 1, 6, 8, 0xFF, 0xFF}}};
         uint8_t landscapeType = std::min<uint8_t>(gwg->GetLandscapeType().value, 2);
 
         // jungen Baum einsetzen

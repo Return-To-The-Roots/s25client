@@ -31,8 +31,6 @@
 #include <boost/test/unit_test.hpp>
 #include <array>
 #include <iostream>
-#include <rttr/test/testHelpers.hpp>
-#include <string>
 #include <vector>
 
 using namespace boost::assign;
@@ -91,7 +89,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     results += MapPoint(19, 19);
 
     // check the whole area
-    std::vector<MapPoint> polygon[8];
+    std::array<std::vector<MapPoint>, 8> polygon;
 
     // Generate polygons for all eight cases of ordering
     for(int i = 0; i < 8; ++i)
@@ -109,14 +107,14 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         polygon[i] += MapPoint(0, 0);
     }
 
-    for(int i = 0; i < 8; ++i)
+    for(const auto& i : polygon)
     {
         // check the whole area
         RTTR_FOREACH_PT(MapPoint, worldSize)
         {
             // Result for this particular point
             bool result = helpers::contains(results, pt);
-            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(worldSize, polygon[i], pt), result);
+            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(worldSize, i, pt), result);
         }
     }
 
@@ -176,12 +174,12 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         for(int x = 0; x <= 3; x++)
             borderPts += MapPoint(x + 11, y), MapPoint(x + 16, y);
     }
-    for(unsigned i = 0; i < rectAreas.size(); i++)
+    for(const auto& rectArea : rectAreas)
     {
         // Those must be outside
         for(MapPoint pt : outsidePts)
         {
-            BOOST_REQUIRE(!TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt));
+            BOOST_REQUIRE(!TerritoryRegion::IsPointValid(worldSize, rectArea, pt));
         }
     }
     // Border points are unspecified, but must be consistently either inside or outside
@@ -227,7 +225,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
 }
 
 // HQ radius = 9, HQs 2 + 5 + 6 = 13 fields apart
-typedef WorldFixture<CreateEmptyWorld, 2, 26, 10> WorldFixtureEmpty2P;
+using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2, 26, 10>;
 
 BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
 {
@@ -269,8 +267,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
         {
             milBlds[j] = world.GetSpecObj<nobBaseMilitary>(milBldPos[j]);
             MapPoint flagPt = milBlds[j]->GetFlagPos();
-            nofPassiveSoldier* sld = new nofPassiveSoldier(flagPt, milBlds[j]->GetPlayer(), static_cast<nobBaseMilitary*>(milBlds[j]),
-                                                           static_cast<nobBaseMilitary*>(milBlds[j]), 0);
+            auto* sld = new nofPassiveSoldier(flagPt, milBlds[j]->GetPlayer(), static_cast<nobBaseMilitary*>(milBlds[j]),
+                                              static_cast<nobBaseMilitary*>(milBlds[j]), 0);
             world.AddFigure(flagPt, sld);
             sld->ActAtFirst();
         }
@@ -302,16 +300,18 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
                     bestID = bld->GetObjId();
                 }
             }
-            RTTR_REQUIRE_EQUAL_MSG(region.GetOwner(Position(pt)), owner, " on " << pt << " iteration " << i);
+            BOOST_TEST_CHECKPOINT(" on " << pt << " iteration " << i);
+            BOOST_TEST_REQUIRE(region.GetOwner(Position(pt)) == owner);
         }
         // Check that all world points that should have an owner do have one
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             uint8_t owner = region.GetOwner(Position(pt));
+            BOOST_TEST_CHECKPOINT(" on " << pt << " iteration " << i);
             if(!owner)
-                RTTR_REQUIRE_EQUAL_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
+                BOOST_TEST_REQUIRE(world.GetNode(pt).owner == 0u);
             else
-                RTTR_REQUIRE_NE_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
+                BOOST_TEST_REQUIRE(world.GetNode(pt).owner != 0u);
         }
         for(const MapPoint pt : milBldPos)
         {

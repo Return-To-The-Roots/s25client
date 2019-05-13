@@ -34,7 +34,7 @@ public:
         : playerId(playerId), player(gwb.GetPlayer(playerId)), gwb(gwb), ggs(gwb.GetGGS()), level(level), aii(gwb, gcs, playerId)
     {}
 
-    virtual ~AIPlayer() {}
+    virtual ~AIPlayer() = default;
 
     /// Called for every GF
     virtual void RunGF(unsigned gf, bool gfisnwf) = 0;

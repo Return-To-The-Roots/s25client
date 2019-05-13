@@ -19,7 +19,7 @@
 #include "JoinPlayerInfo.h"
 #include "mygettext/mygettext.h"
 #include "libutil/Serializer.h"
-#include <cstdio>
+#include <boost/format.hpp>
 
 JoinPlayerInfo::JoinPlayerInfo() : rating(0), isReady(false) {}
 
@@ -75,13 +75,7 @@ void JoinPlayerInfo::InitRating()
 void JoinPlayerInfo::SetAIName(unsigned playerId)
 {
     RTTR_Assert(ps == PS_AI);
-    char str[128];
-    if(aiInfo.type == AI::DUMMY)
-        sprintf(str, _("Dummy %u"), playerId);
-    else
-        sprintf(str, _("Computer %u"), playerId);
-
-    name = str;
+    name = (boost::format((aiInfo.type == AI::DUMMY) ? _("Dummy %u") : _("Computer %u")) % playerId).str();
     name += _(" (AI)");
 
     if(aiInfo.type == AI::DEFAULT)

@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Minimap.h"
-#include "Loader.h"
 #include "libsiedler2/PixelBufferARGB.h"
 
 Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize) {}

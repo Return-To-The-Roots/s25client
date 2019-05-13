@@ -20,7 +20,6 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "iwDirectIPCreate.h"
 #include "network/CreateServerInfo.h"
 
 /// Fenster fürs Speichern UND(!) Laden von Spielständen
@@ -63,7 +62,7 @@ class iwLoad : public iwSaveLoad
     const CreateServerInfo csi;
 
 public:
-    iwLoad(const CreateServerInfo& csi);
+    iwLoad(CreateServerInfo csi);
 
 private:
     /// Handle double click on the table

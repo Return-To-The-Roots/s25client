@@ -22,7 +22,7 @@
 #include <array>
 
 /// List of all tools (correspond to buttons at IO:140-163)
-const std::array<GoodType, NUM_TOOLS> SUPPRESS_UNUSED TOOLS = {{
+const std::array<GoodType, NUM_TOOLS> SUPPRESS_UNUSED TOOLS = {
   GD_TONGS,      // Zange
   GD_HAMMER,     // Hammer
   GD_AXE,        // Axt,
@@ -35,6 +35,6 @@ const std::array<GoodType, NUM_TOOLS> SUPPRESS_UNUSED TOOLS = {{
   GD_CLEAVER,    // Beil
   GD_ROLLINGPIN, // Nudelholz
   GD_BOW         // Bogen
-}};
+};
 
 #endif // ToolConsts_h__

@@ -188,7 +188,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 {
     MapPoint hqPos = world.GetPlayer(0).GetHQPos();
     MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
-    nobUsual* usualBld = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, usualBldPos, 0, NAT_VIKINGS));
+    auto* usualBld = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, usualBldPos, 0, NAT_VIKINGS));
     world.BuildRoad(0, false, world.GetNeighbour(hqPos, Direction::SOUTHEAST), std::vector<Direction>(3, Direction::EAST));
     usualBld->is_working = true;
 
@@ -267,9 +267,9 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             for(unsigned j = 0; j < 4; j++)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
             std::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
-            GameWorld& newWorld = sharedGame->world;
+            GameWorld& newWorld = sharedGame->world_;
             save.sgd.ReadSnapshot(sharedGame);
-            TestEventManager& newEm = static_cast<TestEventManager&>(sharedGame->world.GetEvMgr());
+            auto& newEm = static_cast<TestEventManager&>(sharedGame->world_.GetEvMgr());
 
             BOOST_REQUIRE_EQUAL(newWorld.GetSize(), world.GetSize());
             BOOST_REQUIRE_EQUAL(newEm.GetCurrentGF(), em.GetCurrentGF());
@@ -426,7 +426,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     map.title = "MapTitle";
     map.filepath = "Map.swd";
     map.luaFilepath = "Map.lua";
-    map.savegame.reset(new Savegame);
+    map.savegame = std::make_unique<Savegame>();
     for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         map.savegame->AddPlayer(world.GetPlayer(i));
     // We can change players

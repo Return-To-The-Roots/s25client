@@ -77,7 +77,7 @@ private:
     void ProduceAnimal();
 
 public:
-    noTree(const MapPoint pt, unsigned char type, unsigned char size);
+    noTree(MapPoint pos, unsigned char type, unsigned char size);
     noTree(SerializedGameData& sgd, unsigned obj_id);
 
     ~noTree() override;

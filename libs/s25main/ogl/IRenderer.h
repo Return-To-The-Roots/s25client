@@ -28,7 +28,11 @@ class glArchivItem_Bitmap;
 class IRenderer
 {
 public:
-    virtual ~IRenderer(){};
+    /// Function type for loading OpenGL methods
+    using OpenGL_Loader_Proc = void* (*)(const char*);
+
+    virtual ~IRenderer() = default;
+    virtual bool initOpenGL(OpenGL_Loader_Proc) = 0;
     /// Synchronize the rendering pipeline. Usually not required unless measuring something
     virtual void synchronize(){};
     /// Draw a border around rect with 3D effect

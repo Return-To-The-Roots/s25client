@@ -57,9 +57,9 @@ const unsigned NEXT_ANIMATION_RANDOM = 200; // was noch dazu zufälliges addiert
 const unsigned FRAME_GF = 3;
 
 /// Animation indices, 1st Dim: small or big, 2nd Dim: Animation, 3rd Dim: Index in map.lst of the frame
-typedef std::array<std::vector<std::vector<unsigned short>>, 2> AnimationsType;
+using AnimationsType = std::array<std::vector<std::vector<unsigned short>>, 2>;
 
-AnimationsType fillAnimations()
+static AnimationsType fillAnimations()
 {
     AnimationsType animations;
     using namespace boost::assign; // Adds the vector += operator
@@ -112,7 +112,7 @@ const std::array<Job, 3> JOB_TYPES = {{JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRI
 
 nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char player, RoadSegment* workplace, noRoadNode* const goal)
     : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct), state(CARRS_FIGUREWORK),
-      fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0)), workplace(workplace), carried_ware(nullptr), productivity_ev(0),
+      fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0)), workplace(workplace), carried_ware(nullptr), productivity_ev(nullptr),
       productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0)
 {}
 
@@ -124,8 +124,8 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
         shore_path.resize(sgd.PopUnsignedInt());
-        for(std::vector<Direction>::iterator it = shore_path.begin(); it != shore_path.end(); ++it)
-            *it = Direction::fromInt(sgd.PopUnsignedChar());
+        for(auto& it : shore_path)
+            it = Direction::fromInt(sgd.PopUnsignedChar());
     }
 }
 
@@ -146,8 +146,8 @@ void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
     if(state == CARRS_BOATCARRIER_WANDERONWATER)
     {
         sgd.PushUnsignedInt(shore_path.size());
-        for(std::vector<Direction>::const_iterator it = shore_path.begin(); it != shore_path.end(); ++it)
-            sgd.PushUnsignedChar(it->toUInt());
+        for(auto it : shore_path)
+            sgd.PushUnsignedChar(it.toUInt());
     }
 }
 
@@ -369,7 +369,7 @@ void nofCarrier::Walked()
                 else
                     FaceDir(Direction::SOUTHEAST);
 
-                current_ev = 0;
+                current_ev = nullptr;
 
                 // Jetzt wird wieder nur rumgegammelt, dann kriegen wir aber evtl keinen schönen IH-AH!
                 StopWorking();
@@ -407,7 +407,7 @@ void nofCarrier::Walked()
             if(rs_pos == cur_rs->GetLength())
             {
                 // Flagge, an der wir gerade stehen
-                noFlag* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
+                auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
                 bool calculated = false;
 
@@ -436,7 +436,7 @@ void nofCarrier::Walked()
                         // Ware ablegen
                         this_flag->AddWare(carried_ware);
                         // Wir tragen erstmal keine Ware mehr
-                        carried_ware = 0;
+                        carried_ware = nullptr;
                         // Gibts an den Flaggen etwas, was ich tragen muss, ansonsten wieder in die Mitte gehen und warten
                         LookForWares();
                     } else if(workplace->AreWareJobs(!rs_dir, ct, true))
@@ -468,7 +468,7 @@ void nofCarrier::Walked()
             } else if(rs_pos == cur_rs->GetLength() - 1)
             {
                 // Wenn wir fast da sind, gucken, ob an der Flagge noch ein freier Platz ist
-                noFlag* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
+                auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
                 if(this_flag->IsSpaceForWare() || WantInBuilding(nullptr) || cur_rs->AreWareJobs(!rs_dir, ct, true))
                 {
@@ -491,7 +491,7 @@ void nofCarrier::Walked()
             // Ware ablegen
             gwg->GetSpecObj<noRoadNode>(pos)->AddWare(carried_ware);
             // Ich trag' keine Ware mehr
-            carried_ware = 0;
+            carried_ware = nullptr;
             // Wieder zurück zu meinem Weg laufen
             state = CARRS_LEAVEBUILDING;
             StartWalking(Direction::SOUTHEAST);
@@ -551,7 +551,7 @@ void nofCarrier::GoalReached()
     // Wir arbeiten schonmal
     StartWorking();
 
-    noRoadNode* rn = gwg->GetSpecObj<noRoadNode>(pos);
+    auto* rn = gwg->GetSpecObj<noRoadNode>(pos);
     for(unsigned char i = 0; i < 6; ++i)
     {
         // noRoadNode * rn = gwg->GetSpecObj<noRoadNode>(x,y);
@@ -661,11 +661,11 @@ void nofCarrier::LostWork()
             const unsigned maxNodeDistance = 5;
             std::vector<MapPoint> coastPoints =
               gwg->GetPointsInRadius<-1>(tmpPos, maxNodeDistance, Identity<MapPoint>(), IsCoastalAndForFigs(*gwg));
-            for(std::vector<MapPoint>::const_iterator it = coastPoints.begin(); it != coastPoints.end(); ++it)
+            for(const auto& it : coastPoints)
             {
                 // 10x the node distance should be enough, otherwise it would be to far to paddle
                 const unsigned maxDistance = maxNodeDistance * 10;
-                if(gwg->FindShipPath(tmpPos, *it, maxDistance, &shore_path, nullptr))
+                if(gwg->FindShipPath(tmpPos, it, maxDistance, &shore_path, nullptr))
                 {
                     // Ok let's paddle to the coast
                     rs_pos = 0;
@@ -755,7 +755,7 @@ void nofCarrier::HandleDerivedEvent(const unsigned id)
         // Produktivitätsevent
         case 1:
         {
-            productivity_ev = 0;
+            productivity_ev = nullptr;
 
             // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzählen
             if(since_working_gf != 0xFFFFFFFF)

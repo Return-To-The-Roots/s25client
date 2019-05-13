@@ -57,6 +57,6 @@ unsigned AsyncChecksum::getHash() const
 
 AsyncChecksum AsyncChecksum::create(const Game& game)
 {
-    return AsyncChecksum(RANDOM.GetChecksum(), GameObject::GetNumObjs(), GameObject::GetObjIDCounter(), game.em->GetNumActiveEvents(),
-                         game.em->GetEventInstanceCtr());
+    return AsyncChecksum(RANDOM.GetChecksum(), GameObject::GetNumObjs(), GameObject::GetObjIDCounter(), game.em_->GetNumActiveEvents(),
+                         game.em_->GetEventInstanceCtr());
 }

@@ -21,29 +21,29 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "addons/const_addons.h"
-#include "desktops/dskGameInterface.h"
 #include "helpers/containerUtils.h"
 #include <set>
+#include <utility>
 
-GameLoader::GameLoader(std::shared_ptr<Game> game) : game(game) {}
+GameLoader::GameLoader(std::shared_ptr<Game> game) : game(std::move(game)) {}
 
-GameLoader::~GameLoader() {}
+GameLoader::~GameLoader() = default;
 
 void GameLoader::initNations()
 {
     load_nations.clear();
     load_nations.resize(NUM_NATS, false);
-    for(unsigned i = 0; i < game->world.GetNumPlayers(); ++i)
-        load_nations[game->world.GetPlayer(i).nation] = true;
+    for(unsigned i = 0; i < game->world_.GetNumPlayers(); ++i)
+        load_nations[game->world_.GetPlayer(i).nation] = true;
 }
 
 void GameLoader::initTextures()
 {
     textures.clear();
     std::set<DescIdx<TerrainDesc>> usedTerrains;
-    RTTR_FOREACH_PT(MapPoint, game->world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, game->world_.GetSize())
     {
-        const MapNode& node = game->world.GetNode(pt);
+        const MapNode& node = game->world_.GetNode(pt);
         usedTerrains.insert(node.t1);
         usedTerrains.insert(node.t2);
     }
@@ -52,7 +52,7 @@ void GameLoader::initTextures()
 
     for(DescIdx<TerrainDesc> tIdx : usedTerrains)
     {
-        const TerrainDesc& t = game->world.GetDescription().get(tIdx);
+        const TerrainDesc& t = game->world_.GetDescription().get(tIdx);
         if(!helpers::contains(textures, t.texturePath))
             textures.push_back(t.texturePath);
         usedEdges.insert(t.edgeType);
@@ -62,13 +62,13 @@ void GameLoader::initTextures()
     {
         if(!eIdx)
             continue;
-        const EdgeDesc& e = game->world.GetDescription().get(eIdx);
+        const EdgeDesc& e = game->world_.GetDescription().get(eIdx);
         if(!helpers::contains(textures, e.texturePath))
             textures.push_back(e.texturePath);
     }
     for(DescIdx<LandscapeDesc> lIdx : usedLandscapes)
     {
-        const LandscapeDesc& e = game->world.GetDescription().get(lIdx);
+        const LandscapeDesc& e = game->world_.GetDescription().get(lIdx);
         for(const RoadTextureDesc& r : e.roadTexDesc)
         {
             if(!helpers::contains(textures, r.texturePath))
@@ -82,10 +82,10 @@ bool GameLoader::loadTextures()
     LOADER.ClearOverrideFolders();
     LOADER.AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME");
     LOADER.AddOverrideFolder("<RTTR_USERDATA>/LSTS/GAME");
-    if(game->world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
+    if(game->ggs_.isEnabled(AddonId::CATAPULT_GRAPHICS))
         LOADER.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
 
-    const LandscapeDesc& lt = game->world.GetDescription().get(game->world.GetLandscapeType());
+    const LandscapeDesc& lt = game->world_.GetDescription().get(game->world_.GetLandscapeType());
     if(!LOADER.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, load_nations) || !LOADER.LoadFiles(textures) || !LOADER.LoadOverrideFiles())
     {
         return false;
@@ -99,7 +99,5 @@ bool GameLoader::load()
 {
     initNations();
     initTextures();
-    if(!loadTextures())
-        return false;
-    return true;
+    return loadTextures();
 }

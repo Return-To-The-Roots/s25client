@@ -59,10 +59,10 @@ public:
     ~SoundManager() override;
 
     /// Versucht ggf. Objekt-Sound abzuspielen
-    void PlayNOSound(unsigned sound_lst_id, noBase* const obj, unsigned id, unsigned char volume = 255);
+    void PlayNOSound(unsigned sound_lst_id, noBase* obj, unsigned id, unsigned char volume = 255);
     /// Wenn die Arbeit (wo er Sounds von sich gegeben hat) von einem Objekt fertig ist bzw. abgebrochen wurde,
     /// wird diese Funktion aufgerufen, die alle Sounds von diesem Objekt entfernt
-    void WorkingFinished(noBase* const obj);
+    void WorkingFinished(noBase* obj);
 
     /////////////////////////////////
 

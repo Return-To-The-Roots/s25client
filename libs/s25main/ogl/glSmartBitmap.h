@@ -22,6 +22,7 @@
 
 #include "DrawPoint.h"
 #include "ITexture.h"
+#include <array>
 #include <vector>
 
 namespace libsiedler2 {
@@ -49,7 +50,7 @@ private:
     void calcDimensions();
 
 public:
-    Point<float> texCoords[8];
+    std::array<Point<float>, 8> texCoords;
 
     glSmartBitmap();
     ~glSmartBitmap();

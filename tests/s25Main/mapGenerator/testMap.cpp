@@ -91,20 +91,4 @@ BOOST_AUTO_TEST_CASE(Constructor_CorrectAuthor)
     BOOST_REQUIRE_EQUAL(mapB.author, author2);
 }
 
-/**
- * Tests the Map::CreateArchiv method. Ensure that the generated archiv for a map is
- * not null.
- */
-BOOST_AUTO_TEST_CASE(CreateArchiv_NotNull)
-{
-    std::string author("author");
-    Map map(MapExtent(64, 32), "name", author);
-
-    libsiedler2::Archiv* archiv = map.CreateArchiv();
-
-    BOOST_REQUIRE(archiv != nullptr);
-
-    delete archiv;
-}
-
 BOOST_AUTO_TEST_SUITE_END()

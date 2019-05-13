@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlTextButton.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 
 ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,

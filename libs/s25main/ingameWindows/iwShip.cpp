@@ -17,16 +17,16 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwShip.h"
-#include "DrawPointInit.h"
+#include "DrawPoint.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "Ware.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
+#include "factories/GameCommandFactory.h"
 #include "figures/noFigure.h"
 #include "iwHelp.h"
-#include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
@@ -35,9 +35,9 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/JobConsts.h"
+#include "gameData/NationConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/const_gui_ids.h"
-#include <cstdio>
 
 iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship, const DrawPoint& pos)
     : IngameWindow(CGI_SHIP, pos, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)), gwv(gwv), gcFactory(gcFactory),
@@ -55,7 +55,7 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
     // Die Expeditionsweiterfahrbuttons
     AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))->SetVisible(false);
 
-    const DrawPointInit BUTTON_POS[6] = {{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}};
+    const std::array<DrawPoint, 6> BUTTON_POS = {{{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}}};
 
     // Expedition abbrechen
     AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))->SetVisible(false);
@@ -67,6 +67,7 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
 
 void iwShip::Draw_()
 {
+    static boost::format valByValFmt{"%1%/%2%"};
     IngameWindow::Draw_();
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     // Schiff holen
@@ -91,9 +92,8 @@ void iwShip::Draw_()
     // Schiffsname
     NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
-    char str[32];
-    sprintf(str, "%u/%u", ship_id + 1, owner.GetNumShips());
-    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, FontStyle::RIGHT | FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
+    valByValFmt % (ship_id + 1) % owner.GetNumShips();
+    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), valByValFmt.str(), FontStyle::RIGHT | FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
     LOADER.GetImageN("boot_z", 12)->DrawFull(GetDrawPos() + DrawPoint(138, 117));
 
@@ -121,9 +121,10 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == 2) // Hilfe
     {
-        WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("The ship register contains all the ships in your fleet. Here you can monitor "
-                                                          "the loading and destinations of individual ships. Ships on an expedition are "
-                                                          "controlled from here as well.")));
+        WINDOWMANAGER.Show(
+          std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("The ship register contains all the ships in your fleet. Here you can monitor "
+                                                       "the loading and destinations of individual ships. Ships on an expedition are "
+                                                       "controlled from here as well.")));
         return;
     }
 
@@ -190,17 +191,17 @@ void iwShip::DrawCargo()
     std::vector<unsigned short> orderedFigures = std::vector<unsigned short>(NUM_JOB_TYPES);
 
     // Alle Figuren in Gruppen zählen
-    const std::list<noFigure*> figures = ship->GetFigures();
-    for(std::list<noFigure*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+    const std::list<noFigure*>& figures = ship->GetFigures();
+    for(auto figure : figures)
     {
-        orderedFigures[(*it)->GetJobType()]++;
+        orderedFigures[figure->GetJobType()]++;
     }
 
     // Alle Waren in Gruppen zählen
-    const std::list<Ware*> wares = ship->GetWares();
-    for(std::list<Ware*>::const_iterator it = wares.begin(); it != wares.end(); ++it)
+    const std::list<Ware*>& wares = ship->GetWares();
+    for(auto ware : wares)
     {
-        orderedWares[(*it)->type]++;
+        orderedWares[ware->type]++;
     }
 
     // Spezialfall Expedition:

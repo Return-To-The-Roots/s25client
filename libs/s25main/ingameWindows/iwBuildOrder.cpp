@@ -35,8 +35,8 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 
     // Liste füllen
     BuildOrders buildOrders = GAMECLIENT.visual_settings.build_order;
-    for(unsigned char i = 0; i < buildOrders.size(); ++i)
-        list->AddString(_(BUILDING_NAMES[buildOrders[i]])); //-V807
+    for(auto& buildOrder : buildOrders)
+        list->AddString(_(BUILDING_NAMES[buildOrder])); //-V807
 
     // Nach ganz oben
     AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 215), _("Top"));
@@ -68,9 +68,15 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 
 iwBuildOrder::~iwBuildOrder()
 {
-    GAMECLIENT.visual_settings.useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() == 1;
+    try
+    {
+        GAMECLIENT.visual_settings.useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() == 1;
 
-    TransmitSettings();
+        TransmitSettings();
+    } catch(...)
+    {
+        // Ignored
+    }
 }
 
 void iwBuildOrder::TransmitSettings()
@@ -117,7 +123,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(GAMECLIENT.IsReplayModeOn())
         return;
-    ctrlList* list = GetCtrl<ctrlList>(0);
+    auto* list = GetCtrl<ctrlList>(0);
     unsigned short auswahl = list->GetSelection();
     unsigned short anzahl = list->GetNumLines();
 
@@ -176,7 +182,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
             // Baureihenfolge vom Spieler kopieren
             GAMECLIENT.visual_settings.build_order = GAMECLIENT.default_settings.build_order;
 
-            ctrlList* list = GetCtrl<ctrlList>(0);
+            auto* list = GetCtrl<ctrlList>(0);
             list->DeleteAllItems();
 
             // Liste füllen

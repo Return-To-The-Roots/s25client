@@ -17,9 +17,9 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainData.h"
+#include "helpers/MultiArray.h"
 #include <array>
 #include <iostream>
-#include <list>
 
 unsigned char TerrainData::GetTextureIdentifier(TerrainType t)
 {
@@ -332,76 +332,76 @@ EdgeType TerrainData::GetEdgeType(Landscape landsCape, TerrainType t)
 /// 0: Nothing is drawn above each other (hard edge)
 /// 1: T1 draws over T2 (If T1 is inside T2 then you'd get a "circle")
 /// -1: T2 draws over T1 (If T1 is inside T2 then you'd get a dented shape)
-const signed char TERRAIN_DRAW_PRIORITY[NUM_LTS][NUM_TTS][NUM_TTS] = {
-  // Greenland
-  {/*00 TT_SNOW*/ {},
-   /*01 TT_DESERT*/ {-1},
-   /*02 TT_SWAMPLAND*/ {-1, -1},
-   /*03 TT_MEADOW_FLOWERS*/ {-1, -1, 1},
-   /*04 TT_MOUNTAIN1*/ {-1, -1, 1, 1},
-   /*05 TT_MOUNTAIN2*/ {-1, -1, 1, 1, -1},
-   /*06 TT_MOUNTAIN3*/ {-1, -1, 1, 1, -1, -1},
-   /*07 TT_MOUNTAIN4*/ {-1, -1, 1, 1, -1, -1, -1},
-   /*08 TT_SAVANNAH*/ {-1, -1, 1, -1, -1, -1, -1, -1},
-   /*09 TT_MEADOW1*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1},
-   /*10 TT_MEADOW2*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1, -1},
-   /*11 TT_MEADOW3*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1, -1, -1},
-   /*12 TT_STEPPE*/ {-1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-   /*13 TT_MOUNTAINMEADOW*/ {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-   /*14 TT_WATER*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-   /*15 TT_LAVA*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-   /*16 TT_WATER_NOSHIP*/ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-   /*17 TT_BUILDABLE_WATER*/ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
-   /*18 TT_BUILDABLE_MOUNTAIN*/ {-1, -1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, -1, 0, 1, 1, -1, -1},
-   /*19 TT_LAVA2*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1},
-   /*20 TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
-   /*21 TT_LAVA4*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}},
-  // Wasteland
-  {/*TT_SNOW*/ {},
-   /*TT_DESERT*/ {1},
-   /*TT_SWAMPLAND*/ {1, 1},
-   /*TT_MEADOW_FLOWERS*/ {1, -1, -1},
-   /*TT_MOUNTAIN1*/ {1, 1, -1, -1},
-   /*TT_MOUNTAIN2*/ {1, 1, -1, -1, -1},
-   /*TT_MOUNTAIN3*/ {1, 1, -1, -1, -1, 0},
-   /*TT_MOUNTAIN4*/ {1, 1, -1, -1, -1, -1, 0},
-   /*TT_SAVANNAH*/ {1, -1, -1, -1, 1, 1, 1, 1},
-   /*TT_MEADOW1*/ {1, -1, -1, -1, 1, 1, 1, 1, -1},
-   /*TT_MEADOW2*/ {1, -1, -1, -1, 1, 1, 1, 1, -1, -1},
-   /*TT_MEADOW3*/ {1, -1, -1, -1, 1, 1, 1, 1, -1, -1, -1},
-   /*TT_STEPPE*/ {1, -1, -1, 1, -1, -1, -1, -1, 1, 1, 1, 1},
-   /*TT_MOUNTAINMEADOW*/ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-   /*TT_WATER*/ {1, 1, -1, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, -1},
-   /*TT_LAVA*/ {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-   /*TT_WATER_NOSHIP*/ {1, 1, -1, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, -1, -1, 1},
-   /*TT_BUILDABLE_WATER*/ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 1},
-   /*TT_BUILDABLE_MOUNTAIN*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, 1, -1, -1},
-   /*TT_LAVA2*/ {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1},
-   /*TT_LAVA3*/ {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
-   /*TT_LAVA4*/ {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}},
-  // Winterworld
-  {/*TT_SNOW*/ {},
-   /*TT_DESERT*/ {-1},
-   /*TT_SWAMPLAND*/ {0, 1},
-   /*TT_MEADOW_FLOWERS*/ {-1, -1, -1},
-   /*TT_MOUNTAIN1*/ {1, 1, 1, 1},
-   /*TT_MOUNTAIN2*/ {1, 1, 1, 1, -1},
-   /*TT_MOUNTAIN3*/ {1, 1, 1, 1, -1, -1},
-   /*TT_MOUNTAIN4*/ {1, 1, 1, 1, -1, -1, -1},
-   /*TT_SAVANNAH*/ {-1, -1, -1, -1, -1, -1, -1, -1},
-   /*TT_MEADOW1*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1},
-   /*TT_MEADOW2*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-   /*TT_MEADOW3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-   /*TT_STEPPE*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-   /*TT_MOUNTAINMEADOW*/ {-1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-   /*TT_WATER*/ {0, 1, 0, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1},
-   /*TT_LAVA*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0},
-   /*TT_WATER_NOSHIP*/ {0, 1, 0, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, -1, 0},
-   /*TT_BUILDABLE_WATER*/ {0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1},
-   /*TT_BUILDABLE_MOUNTAIN*/ {-1, -1, -1, -1, -1, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1},
-   /*TT_LAVA2*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1},
-   /*TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
-   /*TT_LAVA4*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}}};
+const helpers::MultiArray<int8_t, NUM_LTS, NUM_TTS, NUM_TTS> TERRAIN_DRAW_PRIORITY{
+  {// Greenland
+   {/*00 TT_SNOW*/ {},
+    /*01 TT_DESERT*/ {-1},
+    /*02 TT_SWAMPLAND*/ {-1, -1},
+    /*03 TT_MEADOW_FLOWERS*/ {-1, -1, 1},
+    /*04 TT_MOUNTAIN1*/ {-1, -1, 1, 1},
+    /*05 TT_MOUNTAIN2*/ {-1, -1, 1, 1, -1},
+    /*06 TT_MOUNTAIN3*/ {-1, -1, 1, 1, -1, -1},
+    /*07 TT_MOUNTAIN4*/ {-1, -1, 1, 1, -1, -1, -1},
+    /*08 TT_SAVANNAH*/ {-1, -1, 1, -1, -1, -1, -1, -1},
+    /*09 TT_MEADOW1*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1},
+    /*10 TT_MEADOW2*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1, -1},
+    /*11 TT_MEADOW3*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1, -1, -1},
+    /*12 TT_STEPPE*/ {-1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    /*13 TT_MOUNTAINMEADOW*/ {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    /*14 TT_WATER*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    /*15 TT_LAVA*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    /*16 TT_WATER_NOSHIP*/ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    /*17 TT_BUILDABLE_WATER*/ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
+    /*18 TT_BUILDABLE_MOUNTAIN*/ {-1, -1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, -1, 0, 1, 1, -1, -1},
+    /*19 TT_LAVA2*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1},
+    /*20 TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
+    /*21 TT_LAVA4*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}},
+   // Wasteland
+   {/*TT_SNOW*/ {},
+    /*TT_DESERT*/ {1},
+    /*TT_SWAMPLAND*/ {1, 1},
+    /*TT_MEADOW_FLOWERS*/ {1, -1, -1},
+    /*TT_MOUNTAIN1*/ {1, 1, -1, -1},
+    /*TT_MOUNTAIN2*/ {1, 1, -1, -1, -1},
+    /*TT_MOUNTAIN3*/ {1, 1, -1, -1, -1, 0},
+    /*TT_MOUNTAIN4*/ {1, 1, -1, -1, -1, -1, 0},
+    /*TT_SAVANNAH*/ {1, -1, -1, -1, 1, 1, 1, 1},
+    /*TT_MEADOW1*/ {1, -1, -1, -1, 1, 1, 1, 1, -1},
+    /*TT_MEADOW2*/ {1, -1, -1, -1, 1, 1, 1, 1, -1, -1},
+    /*TT_MEADOW3*/ {1, -1, -1, -1, 1, 1, 1, 1, -1, -1, -1},
+    /*TT_STEPPE*/ {1, -1, -1, 1, -1, -1, -1, -1, 1, 1, 1, 1},
+    /*TT_MOUNTAINMEADOW*/ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    /*TT_WATER*/ {1, 1, -1, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, -1},
+    /*TT_LAVA*/ {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    /*TT_WATER_NOSHIP*/ {1, 1, -1, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, -1, -1, 1},
+    /*TT_BUILDABLE_WATER*/ {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 1},
+    /*TT_BUILDABLE_MOUNTAIN*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, 1, -1, -1},
+    /*TT_LAVA2*/ {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1},
+    /*TT_LAVA3*/ {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
+    /*TT_LAVA4*/ {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}},
+   // Winterworld
+   {/*TT_SNOW*/ {},
+    /*TT_DESERT*/ {-1},
+    /*TT_SWAMPLAND*/ {0, 1},
+    /*TT_MEADOW_FLOWERS*/ {-1, -1, -1},
+    /*TT_MOUNTAIN1*/ {1, 1, 1, 1},
+    /*TT_MOUNTAIN2*/ {1, 1, 1, 1, -1},
+    /*TT_MOUNTAIN3*/ {1, 1, 1, 1, -1, -1},
+    /*TT_MOUNTAIN4*/ {1, 1, 1, 1, -1, -1, -1},
+    /*TT_SAVANNAH*/ {-1, -1, -1, -1, -1, -1, -1, -1},
+    /*TT_MEADOW1*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1},
+    /*TT_MEADOW2*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    /*TT_MEADOW3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    /*TT_STEPPE*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+    /*TT_MOUNTAINMEADOW*/ {-1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    /*TT_WATER*/ {0, 1, 0, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1},
+    /*TT_LAVA*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0},
+    /*TT_WATER_NOSHIP*/ {0, 1, 0, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, -1, 0},
+    /*TT_BUILDABLE_WATER*/ {0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1},
+    /*TT_BUILDABLE_MOUNTAIN*/ {-1, -1, -1, -1, -1, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1},
+    /*TT_LAVA2*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1},
+    /*TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
+    /*TT_LAVA4*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}}}};
 
 unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, TerrainType t2)
 {
@@ -439,7 +439,7 @@ unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, Terr
     return EDGE_TABLE[static_cast<uint8_t>(landsCape)][t1][t2];
 }
 
-void CheckPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrainPrios)
+static void CheckPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrainPrios)
 {
     for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
         std::cout << iT1 << ": " << terrainPrios[iT1] << std::endl;
@@ -466,9 +466,9 @@ void CheckPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrainPrios)
 
 const std::array<int, NUM_TTS>& TerrainData::GetEdgePrios(Landscape landsCape)
 {
-    static const std::array<int, NUM_TTS> prioGL = {{}};
-    static const std::array<int, NUM_TTS> prioWL = {{}};
-    static const std::array<int, NUM_TTS> prioWW = {{}};
+    static const std::array<int, NUM_TTS> prioGL{};
+    static const std::array<int, NUM_TTS> prioWL{};
+    static const std::array<int, NUM_TTS> prioWW{};
     switch(landsCape)
     {
         default:

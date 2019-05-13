@@ -148,7 +148,7 @@ public:
     TestLogKill(EventManager& em) : em(em) {}
 
     static unsigned killNum, destroyNum;
-    ~TestLogKill() { killNum++; }
+    ~TestLogKill() override { killNum++; }
     void HandleEvent(unsigned /*evId*/) override
     {
         BOOST_REQUIRE(!em.IsObjectInKillList(*this));
@@ -167,7 +167,7 @@ unsigned TestLogKill::destroyNum = 0;
 BOOST_AUTO_TEST_CASE(KillList)
 {
     EventManager evMgr(0);
-    TestLogKill* obj = new TestLogKill(evMgr);
+    auto* obj = new TestLogKill(evMgr);
     evMgr.AddEvent(obj, 2);
     // Nothing should happened yet
     evMgr.ExecuteNextGF();

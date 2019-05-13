@@ -22,7 +22,6 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "network/GameClient.h"
 #include "noShip.h"
 #include "notifications/ShipNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -33,7 +32,7 @@ noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char p
     : noCoordBase(NOP_ENVIRONMENT, pos), player(player), progress(0)
 {}
 
-noShipBuildingSite::~noShipBuildingSite() {}
+noShipBuildingSite::~noShipBuildingSite() = default;
 
 void noShipBuildingSite::Destroy()
 {
@@ -55,7 +54,7 @@ noShipBuildingSite::noShipBuildingSite(SerializedGameData& sgd, const unsigned o
 {}
 
 /// Progress-Anteile für die 3 Baustufen
-const unsigned PROGRESS_PARTS[3] = {4, 2, 3};
+const std::array<unsigned, 3> PROGRESS_PARTS = {4, 2, 3};
 
 // const unsigned TOTAL_PROGRESS = PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2];
 
@@ -99,7 +98,7 @@ void noShipBuildingSite::MakeBuildStep()
         // Replace me by ship
         GetEvMgr().AddToKillList(this);
         gwg->SetNO(pos, nullptr);
-        noShip* ship = new noShip(pos, player);
+        auto* ship = new noShip(pos, player);
         gwg->AddFigure(pos, ship);
 
         // Schiff registrieren lassen

@@ -23,10 +23,14 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/PactTypes.h"
-#include <kaguya/kaguya.hpp>
 #include <map>
 #include <memory>
+#include <utility>
 
+namespace kaguya {
+class State;
+class VariadicArgType;
+} // namespace kaguya
 class GamePlayer;
 class Game;
 
@@ -39,14 +43,14 @@ protected:
     const BasePlayerInfo& GetPlayer() const override;
 
 public:
-    LuaPlayer(std::weak_ptr<Game> game, GamePlayer& player) : game(game), player(player) {}
+    LuaPlayer(std::weak_ptr<Game> game, GamePlayer& player) : game(std::move(game)), player(player) {}
     static void Register(kaguya::State& state);
 
     void EnableBuilding(BuildingType bld, bool notify);
     void DisableBuilding(BuildingType bld);
     void EnableAllBuildings();
     void DisableAllBuildings();
-    void SetRestrictedArea(kaguya::VariadicArgType points);
+    void SetRestrictedArea(kaguya::VariadicArgType inPoints);
     bool IsInRestrictedArea(unsigned x, unsigned y) const;
     void ClearResources();
     bool AddWares(const std::map<GoodType, unsigned>& wares);
@@ -63,7 +67,7 @@ public:
     bool IsAlly(unsigned char otherPlayerId);
     bool IsAttackable(unsigned char otherPlayerId);
     void SuggestPact(unsigned char otherPlayerId, PactType pt, unsigned duration);
-    void CancelPact(const PactType pt, unsigned char otherPlayerId);
+    void CancelPact(PactType pt, unsigned char otherPlayerId);
 };
 
 #endif // LuaPlayer_h__

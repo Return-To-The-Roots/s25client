@@ -60,13 +60,13 @@ void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
 {
     Close();
 
-    ctrlEdit* edit = GetCtrl<ctrlEdit>(0);
+    auto* edit = GetCtrl<ctrlEdit>(0);
     std::string text = edit->GetText();
     edit->SetText("");
 
     if(text.size() > 3u && text[0] == '!')
     {
-        IChatCmdListener* listener = dynamic_cast<IChatCmdListener*>(GetParent());
+        auto* listener = dynamic_cast<IChatCmdListener*>(GetParent());
         if(listener)
             listener->OnChatCommand(text.substr(1));
     } else

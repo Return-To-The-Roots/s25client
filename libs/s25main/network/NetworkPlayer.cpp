@@ -48,7 +48,7 @@ void NetworkPlayer::sendMsgAsync(Message* msg)
 
 void NetworkPlayer::sendMsg(const Message& msg)
 {
-    sendQueue.sendMessage(socket, msg);
+    MessageQueue::sendMessage(socket, msg);
 }
 
 void NetworkPlayer::executeMsgs(MessageInterface& msgHandler)

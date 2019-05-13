@@ -20,7 +20,6 @@
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
 #include "PointOutput.h"
-#include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/glArchivItem_Map.h"
@@ -42,7 +41,6 @@
 #include <queue>
 
 class noBase;
-class nobBaseWarehouse;
 
 MapLoader::MapLoader(World& world) : world_(world) {}
 
@@ -175,9 +173,8 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         }
 
         // FOW-Zeug initialisieren
-        for(unsigned i = 0; i < node.fow.size(); ++i)
+        for(auto& fow : node.fow)
         {
-            FoWNode& fow = node.fow[i];
             fow.last_update_time = 0;
             fow.visibility = fowVisibility;
             fow.object = nullptr;
@@ -394,7 +391,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
 
         if(species != SPEC_NOTHING)
         {
-            noAnimal* animal = new noAnimal(species, pt);
+            auto* animal = new noAnimal(species, pt);
             world_.AddFigure(pt, animal);
             // Loslaufen
             animal->StartLiving();
@@ -407,8 +404,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
     // random locations? -> randomize them :)
     if(randomStartPos)
     {
-        RANDOM_FUNCTOR(random);
-        std::random_shuffle(hqPositions.begin(), hqPositions.end(), random);
+        RANDOM_SHUFFLE(hqPositions);
     }
 
     for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
@@ -454,7 +450,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 
     /// Die Meere herausfinden, an die die Hafenpunkte grenzen
     unsigned curHarborId = 1;
-    for(std::vector<HarborPos>::iterator it = world.harbor_pos.begin() + 1; it != world.harbor_pos.end();)
+    for(auto it = world.harbor_pos.begin() + 1; it != world.harbor_pos.end();)
     {
         std::vector<bool> hasCoastAtSea(world.seas.size() + 1, false);
         bool foundCoast = false;
@@ -510,7 +506,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 // class for finding harbor neighbors
 struct CalcHarborPosNeighborsNode
 {
-    CalcHarborPosNeighborsNode() {} //-V730
+    CalcHarborPosNeighborsNode() = default; //-V730
     CalcHarborPosNeighborsNode(const MapPoint pt, unsigned distance) : pos(pt), distance(distance) {}
 
     MapPoint pos;

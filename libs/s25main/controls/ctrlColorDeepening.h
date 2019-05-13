@@ -27,7 +27,7 @@
 class ctrlColorDeepening : public ctrlDeepening, public ctrlBaseColor
 {
 public:
-    ctrlColorDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size, TextureColor tc, unsigned fillColor);
+    ctrlColorDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc, unsigned fillColor);
 
 protected:
     void DrawContent() const override;

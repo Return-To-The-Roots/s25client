@@ -28,7 +28,7 @@ class nobHQ : public nobBaseWarehouse
     bool isTent_;
 
 public:
-    nobHQ(const MapPoint pt, unsigned char player, const Nation nation, bool isTent = false);
+    nobHQ(MapPoint pos, unsigned char player, Nation nation, bool isTent = false);
     nobHQ(SerializedGameData& sgd, unsigned obj_id);
 
 protected:

@@ -41,7 +41,7 @@ public:
     };
 
 public:
-    RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<Direction>& route);
+    RoadSegment(RoadType rt, noRoadNode* f1, noRoadNode* f2, std::vector<Direction> route);
     RoadSegment(SerializedGameData& sgd, unsigned obj_id);
 
     /// zerstört das Objekt.
@@ -101,11 +101,11 @@ public:
     /// zerteilt die Straße in 2 Teile.
     void SplitRoad(noFlag* splitflag);
     /// Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
-    bool AreWareJobs(const bool flag, unsigned carrier_type, bool take_ware_immediately) const;
+    bool AreWareJobs(bool flag, unsigned ct, bool take_ware_immediately) const;
     /// Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
     void AddWareJob(const noRoadNode* rn);
     /// Eine Ware will nicht mehr befördert werden.
-    void WareJobRemoved(const noFigure* const exception);
+    void WareJobRemoved(const noFigure* exception);
     /// Baut die Straße zu einer Eselstraße aus.
     void UpgradeDonkeyRoad();
     /// Soll versuchen einen Esel zu bekommen.

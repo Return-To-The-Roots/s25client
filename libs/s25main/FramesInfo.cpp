@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "FramesInfo.h"
-#include "helpers/mathFuncs.h"
 
 FramesInfo::FramesInfo()
 {

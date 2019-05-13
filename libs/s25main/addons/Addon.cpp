@@ -21,16 +21,15 @@
 #include "Window.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlText.h"
-#include "helpers/containerUtils.h"
 #include "libutil/colors.h"
 
 void Addon::hideGui(Window* window, unsigned id) const
 {
-    ctrlText* text = window->GetCtrl<ctrlText>(id);
+    auto* text = window->GetCtrl<ctrlText>(id);
     if(text)
         text->SetVisible(false);
 
-    ctrlButton* button = window->GetCtrl<ctrlButton>(id + 1);
+    auto* button = window->GetCtrl<ctrlButton>(id + 1);
     if(button)
         button->SetVisible(false);
 }
@@ -38,16 +37,16 @@ void Addon::hideGui(Window* window, unsigned id) const
 void Addon::createGui(Window* window, unsigned id, unsigned short& y, bool /*readonly*/, unsigned /*status*/) const //-V669
 {
     DrawPoint btPos(20, y), txtPos(52, y + 4);
-    ctrlButton* button = window->GetCtrl<ctrlButton>(id + 1);
+    auto* button = window->GetCtrl<ctrlButton>(id + 1);
     if(!button)
         button = window->AddImageButton(id + 1, btPos, Extent(22, 22), TC_GREY, LOADER.GetImageN("io", 21), description_);
 
     button->SetVisible(true);
     button->SetPos(btPos);
 
-    ctrlText* text = window->GetCtrl<ctrlText>(id);
+    auto* text = window->GetCtrl<ctrlText>(id);
     if(!text)
-        text = window->AddText(id, txtPos, name_, COLOR_YELLOW, 0, NormalFont);
+        text = window->AddText(id, txtPos, name_, COLOR_YELLOW, FontStyle{}, NormalFont);
 
     text->SetVisible(true);
     text->SetPos(txtPos);

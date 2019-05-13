@@ -18,6 +18,8 @@
 #ifndef RTTRAssert_h__
 #define RTTRAssert_h__
 
+#include <libutil/warningSuppression.h>
+
 /// Define this to 1 if you want assertions enabled
 #ifndef RTTR_ENABLE_ASSERTS
 #ifdef NDEBUG
@@ -39,7 +41,7 @@ extern void __cdecl __debugbreak();
 #define RTTR_BREAKPOINT
 #endif
 
-void RTTR_AssertFailure(const char* condition, const char* file, int line, const char* function, bool throwException = true);
+[[noreturn]] void RTTR_AssertFailure(const char* condition, const char* file, int line, const char* function);
 bool RTTR_IsBreakOnAssertFailureEnabled();
 /// If true(default), a breakpoint is triggered on assert (if available)
 /// Note: This breakpoint can be globally disabled by setting the environment variable
@@ -56,6 +58,7 @@ extern bool RTTR_AssertEnableBreak;
 #define RTTR_Assert(cond)                                            \
     do                                                               \
     {                                                                \
+        RTTR_IGNORE_UNREACHABLE_CODE                                 \
         if(!(cond))                                                  \
         {                                                            \
             if(RTTR_IsBreakOnAssertFailureEnabled())                 \
@@ -64,18 +67,7 @@ extern bool RTTR_AssertEnableBreak;
             }                                                        \
             RTTR_AssertFailure(#cond, __FILE__, __LINE__, __func__); \
         }                                                            \
-    } while(false)
-#define RTTR_AssertNoThrow(cond)                                            \
-    do                                                                      \
-    {                                                                       \
-        if(!(cond))                                                         \
-        {                                                                   \
-            if(RTTR_IsBreakOnAssertFailureEnabled())                        \
-            {                                                               \
-                RTTR_BREAKPOINT;                                            \
-            }                                                               \
-            RTTR_AssertFailure(#cond, __FILE__, __LINE__, __func__, false); \
-        }                                                                   \
+        RTTR_POP_DIAGNOSTIC                                          \
     } while(false)
 #else
 #define RTTR_Assert(cond)   \
@@ -83,7 +75,6 @@ extern bool RTTR_AssertEnableBreak;
     {                       \
         (void)sizeof(cond); \
     } while(false)
-#define RTTR_AssertNoThrow RTTR_Assert
 #endif
 
 #endif // RTTRAssert_h__

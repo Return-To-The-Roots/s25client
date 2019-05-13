@@ -49,7 +49,7 @@ protected:
     void CheckForOrders();
 
 public:
-    nofMetalworker(const MapPoint pt, unsigned char player, nobUsual* workplace);
+    nofMetalworker(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMetalworker(SerializedGameData& sgd, unsigned obj_id);
     void Serialize(SerializedGameData& sgd) const override;
 

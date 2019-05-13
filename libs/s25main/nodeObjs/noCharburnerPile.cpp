@@ -36,7 +36,7 @@ const unsigned SMOLDERING_LENGTH = 3000;
 const unsigned SELFDESTRUCT_DELAY = 12000;
 
 /// Work steps for the construction of the wood pile and the cover
-const unsigned short CONSTRUCTION_WORKING_STEPS[2] = {6, 6};
+const std::array<unsigned short, 2> CONSTRUCTION_WORKING_STEPS = {6, 6};
 /// Work steps for one graphical step during the remove of the cover
 const unsigned short REMOVECOVER_WORK_STEPS = 1;
 /// Work steps for one graphical step during the "harvest"
@@ -46,7 +46,7 @@ noCharburnerPile::noCharburnerPile(const MapPoint pos)
     : noCoordBase(NOP_CHARBURNERPILE, pos), state(STATE_WOOD), step(0), sub_step(1), event(nullptr)
 {}
 
-noCharburnerPile::~noCharburnerPile() {}
+noCharburnerPile::~noCharburnerPile() = default;
 
 void noCharburnerPile::Destroy_noCharburnerPile()
 {

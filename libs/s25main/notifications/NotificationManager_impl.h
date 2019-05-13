@@ -19,8 +19,10 @@
 #ifdef __INTELLISENSE__
 #include "notifications/NotificationManager.h"
 #endif
+#include "RTTR_Assert.h"
 #include <algorithm>
 #include <stdexcept>
+#include <utility>
 
 template<class T_Note>
 class NotificationManager::CallbackUnregistrar
@@ -33,7 +35,7 @@ public:
     {
         if(!subscribtion)
             return; // Nothing to do
-        NoteCallback<T_Note>* callback = static_cast<NoteCallback<T_Note>*>(subscribtion);
+        auto* callback = static_cast<NoteCallback<T_Note>*>(subscribtion);
         // Check if we are still subscribed
         if(callback->IsSubscribed())
             noteMgr.unsubscribe<T_Note>(callback);
@@ -56,8 +58,8 @@ private:
 template<class T_Note>
 struct NotificationManager::NoteCallback : NoteCallbackBase
 {
-    typedef std::function<void(const T_Note&)> Callback;
-    explicit NoteCallback(Callback callback) : execute(callback) {}
+    using Callback = std::function<void(const T_Note&)>;
+    explicit NoteCallback(Callback callback) : execute(std::move(callback)) {}
     const Callback execute;
 };
 
@@ -67,9 +69,9 @@ NotificationManager::~NotificationManager()
 {
     RTTR_Assert(!isPublishing);
     // Unsubscribe all callbacks so we don't get accesses to this class after destruction
-    for(SubscriberMap::iterator itSubscribers = noteId2Subscriber.begin(); itSubscribers != noteId2Subscriber.end(); ++itSubscribers)
-        for(CallbackList::iterator itCallback = itSubscribers->second.begin(); itCallback != itSubscribers->second.end(); ++itCallback)
-            static_cast<NoteCallbackBase*>(*itCallback)->SetUnsubscribed();
+    for(auto& itSubscribers : noteId2Subscriber)
+        for(auto& itCallback : itSubscribers.second)
+            static_cast<NoteCallbackBase*>(itCallback)->SetUnsubscribed();
 }
 
 inline void NotificationManager::unsubscribe(Subscribtion& subscription)
@@ -83,7 +85,7 @@ Subscribtion NotificationManager::subscribe(std::function<void(T_Note)> callback
 {
     if(isPublishing)
         throw std::runtime_error("Cannot subscribe during publishing of messages");
-    NoteCallback<T_Note>* subscriber = new NoteCallback<T_Note>(callback);
+    auto* subscriber = new NoteCallback<T_Note>(callback);
     noteId2Subscriber[T_Note::getNoteId()].push_back(subscriber);
     return Subscribtion(subscriber, CallbackUnregistrar<T_Note>(*this));
 }
@@ -96,7 +98,7 @@ void NotificationManager::unsubscribe(NoteCallback<T_Note>* callback)
     if(isPublishing)
         throw std::runtime_error("Cannot unsubscribe during publishing of messages");
     CallbackList& callbacks = noteId2Subscriber[T_Note::getNoteId()];
-    CallbackList::iterator itEl = std::find(callbacks.begin(), callbacks.end(), callback);
+    auto itEl = std::find(callbacks.begin(), callbacks.end(), callback);
     if(itEl != callbacks.end())
         callbacks.erase(itEl);
     else
@@ -109,8 +111,7 @@ template<class T_Note>
 void NotificationManager::publish(const T_Note& notification)
 {
     isPublishing = true;
-    CallbackList& callbacks = noteId2Subscriber[T_Note::getNoteId()];
-    for(CallbackList::const_iterator it = callbacks.begin(); it != callbacks.end(); ++it)
-        static_cast<NoteCallback<T_Note>*>(*it)->execute(notification);
+    for(auto* it : noteId2Subscriber[T_Note::getNoteId()])
+        static_cast<NoteCallback<T_Note>*>(it)->execute(notification);
     isPublishing = false;
 }

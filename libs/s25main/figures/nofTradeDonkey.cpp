@@ -28,7 +28,6 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
-#include "libutil/colors.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
     : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(nullptr), gt(gt)
@@ -53,7 +52,7 @@ void nofTradeDonkey::GoalReached()
 {
     RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(gwg->GetNO(pos)));
     successor = nullptr;
-    nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
+    auto* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
     GamePlayer& whOwner = gwg->GetPlayer(wh->GetPlayer());
 
     if(gt != GD_NOTHING)

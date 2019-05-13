@@ -17,10 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBaseWarehouse.h"
-
-#include "Loader.h"
-
 #include "GamePlayer.h"
+#include "Loader.h"
 #include "WindowManager.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
@@ -29,6 +27,7 @@
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlOptionGroup.h"
+#include "helpers/containerUtils.h"
 #include "iwDemolishBuilding.h"
 #include "iwHQ.h"
 #include "iwHarborBuilding.h"
@@ -114,7 +113,7 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsig
         if(GAMECLIENT.IsReplayModeOn())
             return;
         RTTR_Assert(GetCurPage() == pagePeople || GetCurPage() == pageWares);
-        ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP);
+        auto* optiongroup = GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP);
 
         EInventorySetting setting;
         switch(optiongroup->GetSelection())
@@ -144,7 +143,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
         {
             // Abreißen?
             Close();
-            WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, wh));
+            WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, wh));
         }
         break;
         case ID_SELECT_ALL: // "Alle auswählen"
@@ -153,7 +152,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                 return;
             if(GetCurPage() != pageWares && GetCurPage() != pagePeople)
                 return;
-            ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP);
+            auto* optiongroup = GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP);
             EInventorySetting data;
             switch(optiongroup->GetSelection())
             {
@@ -205,7 +204,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case ID_HELP: // "Hilfe"
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
+            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
         }
         break;
         case ID_GOTO: // "Gehe Zu Ort"
@@ -219,34 +218,28 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobBaseWarehouse*>& storehouses =
               gwv.GetWorld().GetPlayer(wh->GetPlayer()).GetBuildingRegister().GetStorehouses();
             // go through list once we get to current building -> open window for the next one and go to next location
-            for(std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin(); it != storehouses.end(); ++it)
+            auto it = helpers::findPred(storehouses, [whPos = wh->GetPos()](const auto* it) { return it->GetPos() == whPos; });
+            if(it != storehouses.end()) // got to current building in the list?
             {
-                if((*it)->GetPos() == wh->GetPos()) // got to current building in the list?
+                // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                Close();
+                ++it;
+                if(it == storehouses.end()) // was last entry in list -> goto first
+                    it = storehouses.begin();
+                gwv.MoveToMapPt((*it)->GetPos());
+                if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
                 {
-                    // close old window, open new window (todo: only open if it isnt already open), move to location of next building
-                    Close();
-                    ++it;
-                    if(it == storehouses.end()) // was last entry in list -> goto first
-                        it = storehouses.begin();
-                    gwv.MoveToMapPt((*it)->GetPos());
-                    if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
-                    {
-                        iwHQ* nextscrn = new iwHQ(gwv, gcFactory, *it);
-                        nextscrn->SetPos(GetPos());
-                        WINDOWMANAGER.Show(nextscrn);
-                    } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
-                    {
-                        iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
-                        nextscrn->SetPos(GetPos());
-                        WINDOWMANAGER.Show(nextscrn);
-                    } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
-                    {
-                        iwBaseWarehouse* nextscrn = new iwBaseWarehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
-                        nextscrn->SetPos(GetPos());
-                        WINDOWMANAGER.Show(nextscrn);
-                    }
-                    break;
+                    WINDOWMANAGER.Show(std::make_unique<iwHQ>(gwv, gcFactory, *it))->SetPos(GetPos());
+                } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
+                {
+                    WINDOWMANAGER.Show(std::make_unique<iwHarborBuilding>(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it)))
+                      ->SetPos(GetPos());
+                } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
+                {
+                    WINDOWMANAGER.Show(std::make_unique<iwBaseWarehouse>(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it)))
+                      ->SetPos(GetPos());
                 }
+                break;
             }
         }
         break;
@@ -275,9 +268,9 @@ void iwBaseWarehouse::UpdateOverlay(unsigned i)
 
 void iwBaseWarehouse::UpdateOverlay(unsigned i, bool isWare)
 {
-    ctrlGroup* group = GetCtrl<ctrlGroup>(100 + (isWare ? pageWares : pagePeople));
+    auto* group = GetCtrl<ctrlGroup>(100 + (isWare ? pageWares : pagePeople));
     // Einlagern verbieten-Bild (de)aktivieren
-    ctrlImage* image = group->GetCtrl<ctrlImage>(400 + i);
+    auto* image = group->GetCtrl<ctrlImage>(400 + i);
     if(image)
         image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::STOP) :
                                    wh->IsInventorySettingVisual(Job(i), EInventorySetting::STOP));

@@ -20,8 +20,8 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "mapGenerator/MapSettings.h"
-#include "mapGenerator/MapStyle.h"
+
+struct MapSettings;
 
 /**
  * The iwMapGenerator is an ingame window for the user to configure parameters used
