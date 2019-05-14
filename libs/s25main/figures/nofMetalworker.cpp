@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMetalworker.h"
-
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -26,6 +25,7 @@
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
+#include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "notifications/NotificationManager.h"
 #include "notifications/ToolNote.h"
@@ -98,14 +98,12 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
 }
 
 // Zuordnungnen Richtige IDs - Trage-IDs in der JOBS.BOB
-const std::array<uint8_t, NUM_TOOLS> CARRYTOOLS_IDS = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 90};
+const std::array<uint8_t, NUM_TOOLS> CARRYTOOLS_IDS = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 86};
 
 unsigned short nofMetalworker::GetCarryID() const
 {
-    for(unsigned i = 0; i < NUM_TOOLS; i++)
-        if(TOOLS[i] == ware)
-            return CARRYTOOLS_IDS[i];
-    return 0;
+    const int toolIdx = helpers::indexOf(TOOLS, ware);
+    return (toolIdx >= 0) ? CARRYTOOLS_IDS[toolIdx] : 0;
 }
 
 bool nofMetalworker::HasToolOrder() const
