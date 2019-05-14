@@ -21,6 +21,7 @@
 
 #include "FrameCounter.h"
 #include "libutil/Singleton.h"
+#include <boost/optional.hpp>
 
 // Die verschiedenen Cursor mit ihren Indizes in resource.idx
 enum CursorType
@@ -61,8 +62,11 @@ private:
 
     FrameCounter gfCounter_;
 
-    unsigned skipgf_last_time;
-    unsigned skipgf_last_report_gf;
+    struct SkipReport
+    {
+        unsigned time, gf;
+    };
+    boost::optional<SkipReport> lastSkipReport;
     CursorType cursor_;
 };
 
