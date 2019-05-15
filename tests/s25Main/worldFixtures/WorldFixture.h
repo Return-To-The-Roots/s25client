@@ -36,12 +36,13 @@
 /// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
 /// Return the number of GFs executed
 template<class T>
-unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond, unsigned& gfsExecuted)
+unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
 {
-    gfsExecuted = 0;
-    for(unsigned endGf = em.GetCurrentGF() + maxGFs; !cond() && gfsExecuted < maxGFs;)
+    const unsigned endGf = em.GetCurrentGF() + maxGFs;
+    unsigned gfsExecuted = 0;
+    while(!cond())
     {
-        unsigned numGF = em.ExecuteNextEvent(endGf);
+        const unsigned numGF = em.ExecuteNextEvent(endGf);
         if(numGF == 0)
             break;
         gfsExecuted += numGF;
@@ -49,8 +50,8 @@ unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond, u
     return gfsExecuted;
 }
 
-#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                          \
-    rttr_exec_till_ct_gf(this->em, maxGFs, [&] { return (cond); }, gfReturnVar); \
+#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                           \
+    gfReturnVar = rttr_exec_till_ct_gf(this->em, maxGFs, [&] { return (cond); }); \
     BOOST_REQUIRE((cond))
 
 /// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
@@ -63,13 +64,7 @@ unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond, u
 
 inline void rttr_skip_gfs(TestEventManager& em, unsigned numGFs)
 {
-    for(unsigned gf = 0, endGf = em.GetCurrentGF() + numGFs; gf < numGFs;)
-    {
-        unsigned numGFsExecuted = em.ExecuteNextEvent(endGf);
-        if(numGFsExecuted == 0)
-            break;
-        gf += numGFsExecuted;
-    }
+    rttr_exec_till_ct_gf(em, numGFs, [] { return false; });
 }
 /// Skip up to numGFs GFs or until no event left
 #define RTTR_SKIP_GFS(numGFs) rttr_skip_gfs(this->em, numGFs)

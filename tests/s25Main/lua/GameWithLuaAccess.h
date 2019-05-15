@@ -107,7 +107,7 @@ public:
     void initWorld()
     {
         // For consistent results
-        doInitGameRNG(0);
+        initGameRNG(0);
 
         loadGameData(world.GetDescriptionWriteable());
         world.Init(MapExtent(24, 32));

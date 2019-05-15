@@ -62,6 +62,10 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
     MOCK_EXPECT(client->RemoveListener).exactly(1).in(s);
     MOCK_EXPECT(client->SendServerJoinRequest).exactly(1).in(s2);
     MOCK_EXPECT(client->SendRankingInfoRequest).at_least(1);
+    MOCK_EXPECT(client->SendChat).exactly(1);
+
+    // TODO: How to trigger through dskHostGame?
+    client->SendChat("");
 
     auto* desktop = WINDOWMANAGER.Switch(
       std::make_unique<dskHostGame>(ServerType::LOBBY, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client)));

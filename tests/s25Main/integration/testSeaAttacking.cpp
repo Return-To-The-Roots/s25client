@@ -167,9 +167,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
     MapPoint FindBldPos(const MapPoint& preferedPos, BuildingQuality reqBQ, unsigned player)
     {
         std::vector<MapPoint> pts = world.GetPointsInRadius<1>(preferedPos, 2, Identity<MapPoint>(), HasBQ(world, player, reqBQ), true);
-        if(!pts.empty())
-            return pts[0];
-        return MapPoint::Invalid();
+        return pts.at(0);
     }
 
     /// Constructs a road connecting 2 buildings and checks for success
@@ -449,8 +447,7 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     {
         numSoldiersForAttack = hbSrc.GetNumVisualFigures(JOB_PRIVATE) + hbSrc.GetNumVisualFigures(JOB_GENERAL);
         unsigned numGfs = em.ExecuteNextEvent();
-        if(numGfs == 0)
-            break;
+        RTTR_Assert(numGfs > 0u);
         gf += numGfs;
         if(ship.IsOnAttackMission())
             break;
@@ -648,18 +645,8 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     // And ship go to harbor (+200 GFs for loading)
     const noShip& ship = *world.GetPlayer(2).GetShipByID(0);
     distance = world.CalcDistance(ship.GetPos(), harborPos[1]);
-    for(unsigned gf = 0; gf < distance * 2 * 20 + 200;)
-    {
-        unsigned numGFs = em.ExecuteNextEvent();
-        if(numGFs == 0)
-            break;
-        gf += numGFs;
-        if(!ship.IsMoving() && world.CalcDistance(ship.GetPos(), harborPos[1]) <= 2)
-            break;
-    }
+    RTTR_EXEC_TILL(distance * 2 * 20 + 200, (!ship.IsMoving() && world.CalcDistance(ship.GetPos(), harborPos[1]) <= 2));
     BOOST_REQUIRE(ship.IsOnAttackMission());
-    BOOST_REQUIRE(!ship.IsMoving());
-    BOOST_REQUIRE_LE(world.CalcDistance(ship.GetPos(), harborPos[1]), 2u);
     // Harbor should be destroyed and the ship go back
     RTTR_EXEC_TILL(500, ship.IsMoving());
     BOOST_REQUIRE_EQUAL(world.GetNO(harborPos[1])->GetGOT(), GOT_FIRE);

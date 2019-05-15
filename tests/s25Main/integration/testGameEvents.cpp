@@ -42,10 +42,11 @@ public:
     std::vector<unsigned> handledEventIds;
 
     void HandleEvent(unsigned evId) override { handledEventIds.push_back(evId); }
-
+    // LCOV_EXCL_START
     void Destroy() override {}
     void Serialize(SerializedGameData&) const override {}
     GO_Type GetGOT() const override { return GOT_UNKNOWN; }
+    // LCOV_EXCL_STOP
 };
 
 BOOST_AUTO_TEST_CASE(AddAndExecuteEvent)
@@ -156,9 +157,11 @@ public:
         em.AddToKillList(this);
         BOOST_REQUIRE(em.IsObjectInKillList(*this));
     }
+    // LCOV_EXCL_START
     void Destroy() override { destroyNum++; }
     void Serialize(SerializedGameData&) const override {}
     GO_Type GetGOT() const override { return GOT_UNKNOWN; }
+    // LCOV_EXCL_STOP
 };
 
 unsigned TestLogKill::killNum = 0;

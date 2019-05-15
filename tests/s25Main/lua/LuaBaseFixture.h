@@ -48,11 +48,16 @@ public:
         {
             boost::test_tools::predicate_result result(false);
             std::string msg = e.what();
-            size_t xPos = msg.rfind("xxx=");
+            // Extract start of actual message to filter out the code that failed
+            const auto msgPos = msg.rfind("\"]:1: ");
+            if(msgPos != std::string::npos)
+                msg = msg.substr(msgPos + 6);
+
+            const auto xPos = msg.rfind("xxx=");
             if(xPos != std::string::npos)
                 result.message() << "Value = " << msg.substr(xPos + 4);
             else
-                result.message() << e.what();
+                result.message() << msg;
             return result;
         }
         return true;

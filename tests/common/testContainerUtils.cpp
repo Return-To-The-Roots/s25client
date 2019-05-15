@@ -20,6 +20,7 @@
 #include "helpers/reverse.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/test/unit_test.hpp>
+#include <rttr/test/random.hpp>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(ContainerUtils)
@@ -85,11 +86,15 @@ BOOST_AUTO_TEST_CASE(Reverse)
 {
     std::vector<int> vecIn, vecOut;
     for(int i : helpers::reverse(vecIn))
-        vecOut.push_back(i);
-    std::reverse(vecIn.begin(), vecIn.end());
-    BOOST_TEST(vecIn == vecOut, boost::test_tools::per_element());
+    {
+        RTTR_UNUSED(i);                                             // LCOV_EXCL_LINE
+        BOOST_TEST_FAIL("Reverse of empty vector should be empty"); // LCOV_EXCL_LINE
+    }
 
-    vecIn = {1, 2, 3, 4, 5};
+    vecIn.resize(rttr::test::randomValue(1, 100));
+    for(int& i : vecIn)
+        i = rttr::test::randomValue<int>();
+
     for(int i : helpers::reverse(vecIn))
         vecOut.push_back(i);
     std::reverse(vecIn.begin(), vecIn.end());

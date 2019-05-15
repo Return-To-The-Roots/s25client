@@ -26,23 +26,6 @@ bool TestServer::run()
         return false;
 
     SocketSet set;
-
-    for(Connection& con : connections)
-        set.Add(con.so);
-
-    // Check for errors
-    if(set.Select(0, 2) > 0)
-    {
-        for(unsigned id = 0; id < connections.size();)
-        {
-            if(set.InSet(connections[id].so))
-                connections.erase(connections.begin() + id);
-            else
-                ++id;
-        }
-    }
-
-    set.Clear();
     set.Add(socket);
     if(set.Select(0, 0) > 0)
     {

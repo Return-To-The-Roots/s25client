@@ -27,8 +27,19 @@
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
+#include <sstream>
 
 BOOST_AUTO_TEST_SUITE(GameData)
+
+BOOST_AUTO_TEST_CASE(BQ_Output)
+{
+    std::stringstream s;
+    s << TerrainBQ::NOTHING;
+    BOOST_TEST(s.str() == "Nothing");
+    s.str("");
+    s << TerrainBQ::MINE;
+    BOOST_TEST(s.str() == "Mine");
+}
 
 BOOST_AUTO_TEST_CASE(LoadGameData)
 {

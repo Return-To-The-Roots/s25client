@@ -43,7 +43,7 @@ bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbo
             MapPoint posCoastPt = world.GetNeighbour(curPt, Direction::fromInt(i));
             // Coast must not be water
             if(world.IsWaterPoint(posCoastPt))
-                continue;
+                continue; // LCOV_EXCL_LINE
             // But somewhere around must be a sea
             for(unsigned j = 0; j < 6; j++)
             {
@@ -63,7 +63,7 @@ bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbo
 bool CreateSeaWorld::operator()(GameWorldGame& world) const
 {
     // For consistent results
-    doInitGameRNG(0);
+    initGameRNG(0);
 
     loadGameData(world.GetDescriptionWriteable());
     world.Init(size_);
@@ -103,7 +103,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     // and at least the same amount of water between the land
     const MapCoord minSize = landSize * 3 + offset * 2;
     if(size_.x < minSize || size_.y < minSize)
-        throw std::runtime_error("World to small");
+        throw std::runtime_error("World to small"); // LCOV_EXCL_LINE
     t = DescIdx<TerrainDesc>(0);
     for(; t.value < desc.terrain.size(); t.value++)
     {
@@ -166,7 +166,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
 
     if(!MapLoader::PlaceHQs(world, hqPositions, false))
-        return false;
+        return false; // LCOV_EXCL_LINE
     world.InitAfterLoad();
 
     /* The HQs and harbor(ids) are here: (H=HQ, 1-8=harbor)
@@ -212,7 +212,7 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
     std::vector<MapPoint> hqPositions;
     hqPositions.push_back(MapPoint(10, 10));
     if(world.GetNumPlayers() > 1)
-        hqPositions.push_back(world.MakeMapPoint(hqPositions.front() + size_ / 2));
+        hqPositions.push_back(world.MakeMapPoint(hqPositions.front() + size_ / 2)); // LCOV_EXCL_LINE
     t = DescIdx<TerrainDesc>(0);
     for(; t.value < desc.terrain.size(); t.value++)
     {

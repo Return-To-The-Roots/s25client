@@ -26,6 +26,7 @@
 #include <iomanip>
 #include <locale>
 #include <rttr/test/random.hpp>
+#include <sstream>
 
 using namespace libsiedler2;
 
@@ -45,7 +46,7 @@ std::unique_ptr<ArchivItem_Bitmap_Raw> createRandBmp(unsigned percentTransparent
     auto bmp = std::make_unique<ArchivItem_Bitmap_Raw>();
     const Extent size = rttr::test::randomPoint<Extent>(10, 50);
     bmp->init(size.x, size.y, TextureFormat::FORMAT_BGRA);
-    const auto offset = rttr::test::randomPoint<Extent>(0, 100);
+    const auto offset = rttr::test::randomPoint<Position>(-100, 100);
     bmp->setNx(offset.x);
     bmp->setNy(offset.y);
     using rttr::test::randomValue;
@@ -60,8 +61,8 @@ std::unique_ptr<ArchivItem_Bitmap_Player> createRandPlayerBmp(unsigned percentTr
 {
     const auto* pal = LOADER.GetPaletteN("colors");
     auto bmp = std::make_unique<ArchivItem_Bitmap_Player>();
-    const Extent size = rttr::test::randomPoint<Extent>(10, 50);
-    const auto offset = rttr::test::randomPoint<Extent>(0, 100);
+    const auto size = rttr::test::randomPoint<Extent>(10, 50);
+    const auto offset = rttr::test::randomPoint<Position>(-100, 100);
     bmp->setNx(offset.x);
     bmp->setNy(offset.y);
     using rttr::test::randomValue;
@@ -75,9 +76,27 @@ std::unique_ptr<ArchivItem_Bitmap_Player> createRandPlayerBmp(unsigned percentTr
             buffer.set(pt.x, pt.y, pal->get(idx));
         }
     }
+    bmp->create(buffer, pal);
     return bmp;
 }
 } // namespace
+
+BOOST_AUTO_TEST_CASE(CreateRandBmp_Works)
+{
+    const auto bmp = createRandBmp(50);
+    BOOST_TEST(bmp->getWidth() > 0);
+    BOOST_TEST(bmp->getHeight() > 0);
+    const auto bmpPl = createRandPlayerBmp(50);
+    BOOST_TEST(bmpPl->getWidth() > 0);
+    BOOST_TEST(bmpPl->getHeight() > 0);
+}
+
+BOOST_AUTO_TEST_CASE(PrintColor)
+{
+    std::stringstream s;
+    boost_test_print_type(s, ColorARGB(0x42, 0x13, 0x37, 0x99));
+    BOOST_TEST(s.str() == "42133799");
+}
 
 BOOST_AUTO_TEST_CASE(RegularBitmap)
 {
@@ -173,17 +192,20 @@ BOOST_AUTO_TEST_CASE(PlayerBitmap)
     {
         const Position bmpPos = pt - offset;
         ColorARGB expectedColor;
-        if(bmpPos.x >= static_cast<int>(smartBmp.GetSize().x))
+        if(bmpPos.x >= 0 && bmpPos.y >= 0 && bmpPos.y < bmp->getHeight())
         {
-            // Player color
-            const Position plClrPos = bmpPos - smartBmp.GetSize();
-            if(plClrPos.x >= 0 && plClrPos.y >= 0 && plClrPos.x < bmp->getWidth() && plClrPos.y < bmp->getHeight()
-               && bmp->isPlayerColor(plClrPos.x, plClrPos.y))
+            if(bmpPos.x >= static_cast<int>(smartBmp.GetSize().x))
             {
-                expectedColor = pal->get(bmp->getPlayerColorIdx(plClrPos.x, plClrPos.y) + 128);
-            }
-        } else if(bmpPos.x >= 0 && bmpPos.y >= 0 && bmpPos.x < bmp->getWidth() && bmpPos.y < bmp->getHeight())
-            expectedColor = bmp->getPixel(bmpPos.x, bmpPos.y);
+                // Player color
+                const int plClrPos = bmpPos.x - smartBmp.GetSize().x;
+                if(plClrPos < bmp->getWidth() && bmp->isPlayerColor(plClrPos, bmpPos.y))
+                {
+                    expectedColor = pal->get(bmp->getPlayerColorIdx(plClrPos, bmpPos.y) + 128);
+                }
+            } else if(bmpPos.x < bmp->getWidth())
+                expectedColor = bmp->getPixel(bmpPos.x, bmpPos.y);
+        }
+        BOOST_TEST_INFO("Position" << pt);
         BOOST_TEST(buffer.get(pt.x, pt.y) == expectedColor);
     }
 }
@@ -230,7 +252,7 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
         {
             // Drawing buffer at `pos` - commonOrigin should be equal to drawing bmp at `pos` - origin
             const Position curOriginOffset = Position(bmp->getNx(), bmp->getNy()) - commonOrigin;
-            const Position bmpPos = curPos + curOriginOffset - (isPlayerClrRegion ? smartBmp.GetSize() : Extent(0, 0));
+            const Position bmpPos = curPos + curOriginOffset - Extent(isPlayerClrRegion ? smartBmp.GetSize().x : 0, 0);
             if(bmpPos.x >= 0 && bmpPos.y >= 0 && bmpPos.x < bmp->getWidth() && bmpPos.y < bmp->getHeight())
             {
                 const ColorARGB color = bmp->getPixel(bmpPos.x, bmpPos.y);

@@ -72,12 +72,12 @@ struct LoadWorldFromFileCreator : MapTestFixture
     {
         bnw::ifstream mapFile(testMapPath, std::ios::binary);
         if(map.load(mapFile, false) != 0)
-            throw std::runtime_error("Could not load file " + testMapPath);
+            throw std::runtime_error("Could not load file " + testMapPath); // LCOV_EXCL_LINE
         MapLoader loader(world);
         if(!loader.Load(map, EXP_FOGOFWAR))
-            throw std::runtime_error("Could not load map");
+            throw std::runtime_error("Could not load map"); // LCOV_EXCL_LINE
         if(!loader.PlaceHQs(world, false))
-            throw std::runtime_error("Could not place HQs");
+            throw std::runtime_error("Could not place HQs"); // LCOV_EXCL_LINE
         for(unsigned i = 0; i < world.GetNumPlayers(); i++)
             hqs.push_back(loader.GetHQPos(i));
         return true;
@@ -222,8 +222,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
             for(unsigned targetHb = 1; targetHb < world.GetNumHarborPoints(); targetHb++)
             {
                 MapPoint destPt = world.GetCoastalPoint(targetHb, seaId);
-                if(!destPt.isValid())
-                    continue;
+                BOOST_REQUIRE(destPt.isValid());
                 std::vector<Direction> route;
                 BOOST_REQUIRE(startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, nullptr));
                 BOOST_REQUIRE_EQUAL(route.size(), world.CalcHarborDistance(startHb, targetHb));

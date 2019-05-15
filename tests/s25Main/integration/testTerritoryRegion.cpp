@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
 }
 
 // HQ radius = 9, HQs 2 + 5 + 6 = 13 fields apart
-using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2, 26, 10>;
+using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2, 30, 10>;
 
 BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
 {
@@ -300,14 +300,14 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
                     bestID = bld->GetObjId();
                 }
             }
-            BOOST_TEST_CHECKPOINT(" on " << pt << " iteration " << i);
+            BOOST_TEST_INFO(pt << " iteration " << i);
             BOOST_TEST_REQUIRE(region.GetOwner(Position(pt)) == owner);
         }
         // Check that all world points that should have an owner do have one
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             uint8_t owner = region.GetOwner(Position(pt));
-            BOOST_TEST_CHECKPOINT(" on " << pt << " iteration " << i);
+            BOOST_TEST_INFO(pt << " iteration " << i);
             if(!owner)
                 BOOST_TEST_REQUIRE(world.GetNode(pt).owner == 0u);
             else

@@ -28,10 +28,12 @@
 #include <array>
 #include <rttr/test/LogAccessor.hpp>
 
+// LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& os, const PostCategory& cat)
 {
     return os << static_cast<unsigned>(cat);
 }
+// LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_SUITE(Production)
 

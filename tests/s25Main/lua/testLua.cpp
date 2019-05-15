@@ -47,6 +47,15 @@ using namespace boost::assign;
 
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
 
+BOOST_AUTO_TEST_CASE(LuaEqual_IsCorrect)
+{
+    executeLua("foo=42");
+    BOOST_TEST(isLuaEqual("foo", "42"));
+    BOOST_TEST(isLuaEqual("foo", "1337").message().str() == "Value = 42");
+    BOOST_TEST(isLuaEqual("nonexisting.method()", "1337").message().str().find("nonexisting") != std::string::npos);
+    clearLog();
+}
+
 BOOST_AUTO_TEST_CASE(AssertionThrows)
 {
     BOOST_REQUIRE_THROW(executeLua("assert(false)"), LuaExecutionError);

@@ -96,6 +96,13 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
 
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuiteSettings, LuaSettingsTestsFixture)
 
+BOOST_AUTO_TEST_CASE(AddonId_ToString)
+{
+    std::stringstream s;
+    s << AddonId::CHARBURNER;
+    BOOST_TEST(s.str() == "CHARBURNER");
+}
+
 BOOST_AUTO_TEST_CASE(AssertionThrows)
 {
     BOOST_REQUIRE_THROW(executeLua("assert(false)"), LuaExecutionError);

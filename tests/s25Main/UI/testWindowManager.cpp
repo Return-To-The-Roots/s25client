@@ -25,6 +25,7 @@
 #include "uiHelper/uiHelpers.hpp"
 #include "gameData/const_gui_ids.h"
 #include <boost/test/unit_test.hpp>
+#include <sstream>
 #include <turtle/mock.hpp>
 
 //-V:MOCK_METHOD:813
@@ -46,13 +47,8 @@ MOCK_BASE_CLASS(TestDesktop, Desktop)
 {
     TestDesktop(): Desktop(nullptr){}
     MOCK_METHOD(Msg_LeftDown, 1)
-    MOCK_METHOD(Msg_RightDown, 1)
     MOCK_METHOD(Msg_LeftUp, 1)
-    MOCK_METHOD(Msg_RightUp, 1)
-    MOCK_METHOD(Msg_WheelUp, 1)
-    MOCK_METHOD(Msg_WheelDown, 1)
     MOCK_METHOD(Msg_MouseMove, 1)
-    MOCK_METHOD(Msg_KeyDown, 1)
 };
 /* clang-format on */
 
@@ -72,6 +68,13 @@ struct WMFixture
 } // namespace
 
 BOOST_AUTO_TEST_SUITE(WindowManagerSuite)
+
+BOOST_AUTO_TEST_CASE(MouseCoordsOutput)
+{
+    std::stringstream s;
+    s << MouseCoords(Position(2, 3), true, false, true);
+    BOOST_TEST(s.str() == "<(2, 3),1,0,1>");
+}
 
 BOOST_FIXTURE_TEST_CASE(LeftClick, WMFixture)
 {

@@ -20,9 +20,6 @@
 
 /// Initialize the ingame-Random Number Generator with the given value
 /// unless RTTR_RAND_TEST is defined in which case a random value is used
-void doInitGameRNG(unsigned defaultValue = 1337, const char* fileName = "", unsigned line = 0);
-
-/// Macro to automatically add file and line info. takes a defaultValue
-#define initGameRNG(...) doInitGameRNG((__VA_ARGS__ + 0) ? (__VA_ARGS__ + 0) : 1337, __FILE__, __LINE__);
+void initGameRNG(unsigned defaultValue = 1337);
 
 #endif // initGameRNG_h__

@@ -25,10 +25,12 @@
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
+// LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& os, const TerrainKind& t)
 {
     return os << unsigned(static_cast<uint8_t>(t));
 }
+// LCOV_EXCL_STOP
 
 namespace {
 class ObjGenFixture

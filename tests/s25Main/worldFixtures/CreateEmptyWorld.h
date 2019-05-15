@@ -35,16 +35,6 @@ private:
     MapExtent size_;
 };
 
-/// Create an uninitalized world (terrain, BQ etc not set. only nodes and size)
-struct CreateUninitWorld
-{
-    explicit CreateUninitWorld(const MapExtent& size);
-    bool operator()(GameWorldGame& world) const;
-
-private:
-    MapExtent size_;
-};
-
 void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
 void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
 
