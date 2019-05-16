@@ -18,6 +18,7 @@
 #define BOOST_TEST_MODULE RTTR_Network
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "TestServer.h"
 #include <libutil/Socket.h>
 #include <boost/test/unit_test.hpp>
 #include <rttr/test/Fixture.hpp>
@@ -31,3 +32,30 @@ struct NetworkFixture : rttr::test::Fixture
 };
 
 BOOST_GLOBAL_FIXTURE(NetworkFixture);
+
+BOOST_AUTO_TEST_CASE(TestServer_Works)
+{
+    TestServer server;
+    BOOST_TEST(!server.run());
+    BOOST_TEST(server.listen(1337));
+    BOOST_TEST(server.run());
+
+    Socket sock;
+    BOOST_TEST(sock.Connect("localhost", 1337, false));
+    BOOST_TEST(server.run());
+    BOOST_TEST(server.connections.size() == 1u);
+    BOOST_TEST(server.stop());
+    BOOST_TEST(server.connections.empty());
+
+    BOOST_TEST(server.listen(1337));
+    Socket sock2;
+    BOOST_TEST(sock.Connect("localhost", 1337, false));
+    BOOST_TEST(server.run());
+    BOOST_TEST(sock2.Connect("localhost", 1337, false));
+    BOOST_TEST(server.run());
+    BOOST_TEST_REQUIRE(server.connections.size() == 2u);
+    BOOST_TEST(server.run());
+    sock.Close();
+    BOOST_TEST(server.run());
+    BOOST_TEST_REQUIRE(server.connections.size() == 1u);
+}

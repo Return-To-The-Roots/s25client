@@ -18,20 +18,13 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "initGameRNG.hpp"
 #include "random/Random.h"
+#include "rttr/test/random.hpp"
 #include <iostream>
 
-void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""*/, unsigned line /*= 0*/)
+void initGameRNG(unsigned defaultValue /*= 1337*/)
 {
 #ifdef RTTR_RAND_TEST
-    defaultValue += rand();
+    defaultValue += rttr::test::randomValue<unsigned>();
 #endif
     RANDOM.Init(defaultValue);
-    // Reduce log clutter
-    bool print = defaultValue != 1337;
-#ifdef RTTR_RAND_TEST
-    print = true;
-#endif
-    if(print && fileName && fileName[0])
-        std::cout << "Ingame RNG (" << fileName << "#" << line << ")= " << RANDOM.GetCurrentState() << "(" << defaultValue << ")"
-                  << std::endl;
 }

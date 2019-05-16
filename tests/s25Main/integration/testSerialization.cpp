@@ -37,11 +37,13 @@
 #include <memory>
 #include <rttr/test/testHelpers.hpp>
 
+// LCOV_EXCL_START
 template<class T>
 std::ostream& operator<<(std::ostream& os, const DescIdx<T>& d)
 {
     return os << d.value;
 }
+// LCOV_EXCL_STOP
 
 namespace {
 struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>

@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
 {
     std::string parentPath = tmpPath.string();
     std::vector<std::string> files = ListDir(parentPath, "txt");
-    BOOST_REQUIRE_EQUAL(files.size(), 3u);
+    BOOST_TEST_REQUIRE(files.size() == 3u);
     for(const std::string& file : files)
     {
         BOOST_REQUIRE(bfs::exists(file));
@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
             BOOST_REQUIRE(sFile);
             std::string content;
             BOOST_REQUIRE(sFile >> content);
-            BOOST_REQUIRE_EQUAL(content, "OK");
+            BOOST_TEST_REQUIRE(content == "OK");
         }
 
         {
@@ -92,21 +92,19 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
             BOOST_REQUIRE(sFile);
             std::string content;
             BOOST_REQUIRE(sFile >> content);
-            BOOST_REQUIRE_EQUAL(content, "OK");
+            BOOST_TEST_REQUIRE(content == "OK");
         }
 
         {
             // Memory mapped file
             boost::iostreams::mapped_file_source mmapFile;
-            try
-            {
-                mmapFile.open(bfs::path(file));
-            } catch(std::exception& e)
-            {
-                BOOST_FAIL(e.what());
-            }
+            mmapFile.open(bfs::path(file));
+            BOOST_TEST_REQUIRE(mmapFile.is_open());
             using MMStream = boost::iostreams::stream<boost::iostreams::mapped_file_source>;
             MMStream map(mmapFile);
+            std::string content;
+            BOOST_REQUIRE(map >> content);
+            BOOST_TEST_REQUIRE(content == "OK");
         }
     }
 }

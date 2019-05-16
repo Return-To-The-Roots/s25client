@@ -37,7 +37,7 @@
 #include "libutil/Log.h"
 #include "libutil/error.h"
 
-GameManager::GameManager() : skipgf_last_time(0), skipgf_last_report_gf(0), cursor_(CURSOR_HAND)
+GameManager::GameManager() : cursor_(CURSOR_HAND)
 {
     ResetAverageGFPS();
 }
@@ -120,27 +120,33 @@ bool GameManager::Run()
         {
             if(curGF % 5000 == 0)
             {
-                if(curGF > skipgf_last_report_gf)
+                if(lastSkipReport)
                 {
                     // Elapsed time in ms
-                    auto timeDiff = static_cast<double>(current_time - skipgf_last_time);
+                    const auto timeDiff = static_cast<double>(current_time - lastSkipReport->time);
+                    const unsigned numGFPassed = curGF - lastSkipReport->gf;
                     LOG.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF
-                      % curGF % (timeDiff / 1000) % (timeDiff / (curGF - skipgf_last_time));
+                      % curGF % (timeDiff / 1000) % (timeDiff / numGFPassed);
                 } else
                     LOG.write(_("jumping to gf %i, now at gf %i \n")) % targetSkipGF % curGF;
-                skipgf_last_time = current_time;
-                skipgf_last_report_gf = curGF;
-            }
+                lastSkipReport = SkipReport{current_time, curGF};
+            } else if(!lastSkipReport)
+                lastSkipReport = SkipReport{current_time, curGF};
         } else
         {
             // Jump just completed
             RTTR_Assert(!GAMECLIENT.skiptogf);
-            auto timeDiff = static_cast<double>(current_time - skipgf_last_time);
-            unsigned numGFPassed = curGF - skipgf_last_report_gf;
-            LOG.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % numGFPassed
-              % (timeDiff / 1000) % (timeDiff / numGFPassed);
-            skipgf_last_time = 0;
-            skipgf_last_report_gf = 0;
+            if(lastSkipReport)
+            {
+                const auto timeDiff = static_cast<double>(current_time - lastSkipReport->time);
+                const unsigned numGFPassed = curGF - lastSkipReport->gf;
+                LOG.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % numGFPassed
+                  % (timeDiff / 1000) % (timeDiff / numGFPassed);
+                lastSkipReport.reset();
+            } else
+            {
+                LOG.write(_("jump to gf %1% complete\n")) % targetSkipGF;
+            }
         }
     } else
     {

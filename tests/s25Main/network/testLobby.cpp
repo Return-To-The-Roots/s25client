@@ -41,13 +41,7 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
             while(!con.recvQueue.empty())
             {
                 std::unique_ptr<Message> msg(con.recvQueue.popFront());
-                if(!msg->run(this, id))
-                {
-                    if(dynamic_cast<LobbyMessage*>(msg.get()))
-                    {
-                        messages.push_back(static_cast<LobbyMessage*>(msg.release()));
-                    }
-                }
+                BOOST_TEST(msg->run(this, id));
             }
         }
     }
@@ -87,14 +81,8 @@ namespace {
     MOCK_BASE_CLASS(MockLobbyInterface, LobbyInterface)
     {
     public:
-        MockLobbyInterface()
-        {
-            LOBBYCLIENT.AddListener(this);
-        }
-        ~MockLobbyInterface() override
-        {
-            LOBBYCLIENT.RemoveListener(this);
-        }
+        MockLobbyInterface() { LOBBYCLIENT.AddListener(this); }
+        ~MockLobbyInterface() override { LOBBYCLIENT.RemoveListener(this); }
         MOCK_METHOD(LC_Chat, 2)
         MOCK_METHOD(LC_LoggedIn, 1)
         MOCK_METHOD(LC_Connected, 0)

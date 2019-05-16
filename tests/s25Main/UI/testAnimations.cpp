@@ -56,6 +56,7 @@ struct WindowFixture
     {
         bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TC_RED1, "Test", NormalFont);
         bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TC_RED1, "Test", NormalFont);
+        wnd.Draw();
     }
 
     PredRes testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame, double reqFramepartTime);
@@ -88,7 +89,9 @@ PredRes WindowFixture::testAdvanceTime(TestAnimation* anim, unsigned time, bool 
     unsigned animId = animMgr.getAnimationId(anim);
     animMgr.update(time);
     BOOST_REQUIRE(animMgr.isAnimationActive(animId));
-    if(anim->updateCalled != reqUpdate)
+    const bool updateCalled = anim->updateCalled;
+    anim->updateCalled = false;
+    if(updateCalled != reqUpdate)
     {
         PredRes result(false);
         result.message() << "Update: " << anim->updateCalled << " != " << reqUpdate;
@@ -106,12 +109,22 @@ PredRes WindowFixture::testAdvanceTime(TestAnimation* anim, unsigned time, bool 
         result.message() << "lastNextFramepartTime: " << anim->lastNextFramepartTime << " != " << reqFramepartTime;
         return result;
     }
-    anim->updateCalled = false;
     return true;
 }
 } // namespace
 
 BOOST_FIXTURE_TEST_SUITE(Animations, WindowFixture)
+
+BOOST_AUTO_TEST_CASE(TestPred)
+{
+    auto anim = new TestAnimation(*this, bt, 10u, 2u, Animation::RPT_None);
+    animMgr.addAnimation(anim);
+    unsigned time = 0;
+    BOOST_TEST(testAdvanceTime(anim, time, true, 0, 0.));
+    BOOST_TEST(testAdvanceTime(anim, time += 2, false, 1, 0.).message().str().find("Update: ") != std::string::npos);
+    BOOST_TEST(testAdvanceTime(anim, time, false, 0, 0.).message().str() == "CurFrame: 1 != 0");
+    BOOST_TEST(testAdvanceTime(anim, time += 3, true, 2, 0.).message().str().find("lastNextFramepartTime: ") != std::string::npos);
+}
 
 BOOST_AUTO_TEST_CASE(AddRemoveAnimations)
 {

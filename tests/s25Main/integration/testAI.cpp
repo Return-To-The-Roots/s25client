@@ -23,6 +23,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "factories/AIFactory.h"
+#include "factories/BuildingFactory.h"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
@@ -33,17 +34,11 @@
 // We need border land
 using BiggerWorldWithGCExecution = WorldWithGCExecution<1, 24, 22>;
 
-struct IsBldType
-{
-    BuildingType type;
-    IsBldType(BuildingType type) : type(type) {}
-    bool operator()(const noBaseBuilding* bld) { return bld->GetBuildingType() == type; }
-};
-
 template<class T_Col>
 inline bool containsBldType(const T_Col& collection, BuildingType type)
 {
-    return std::find_if(collection.begin(), collection.end(), IsBldType(type)) != collection.end();
+    return std::find_if(collection.begin(), collection.end(), [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; })
+           != collection.end();
 }
 
 inline bool playerHasBld(const GamePlayer& player, BuildingType type)
@@ -62,6 +57,22 @@ inline bool playerHasBld(const GamePlayer& player, BuildingType type)
 // Run "Network Frame" then execute GCs from last NWF
 // Also use "HARD" AI for faster execution
 BOOST_AUTO_TEST_SUITE(AI)
+
+BOOST_FIXTURE_TEST_CASE(PlayerHasBld_IsCorrect, WorldWithGCExecution<1>)
+{
+    const GamePlayer& player = world.GetPlayer(curPlayer);
+    BOOST_TEST(playerHasBld(player, BLD_HEADQUARTERS));
+    MapPoint pos = hqPos;
+    for(const auto bld : {BLD_WOODCUTTER, BLD_BARRACKS, BLD_STOREHOUSE})
+    {
+        pos = world.MakeMapPoint(pos + Position(2, 0));
+        BOOST_TEST_INFO(bld);
+        BOOST_TEST(!playerHasBld(player, bld));
+        BuildingFactory::CreateBuilding(world, bld, pos, player.GetPlayerId(), NAT_ROMANS);
+        BOOST_TEST_INFO(bld);
+        BOOST_TEST(playerHasBld(player, bld));
+    }
+}
 
 BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 {

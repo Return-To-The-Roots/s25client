@@ -23,7 +23,9 @@
 #include <string>
 
 namespace rttr { namespace test {
+    /// Decorate a test with , *boost::unit_test::label("seed=42") to enforce a seed
     std::mt19937& getRandState();
+
     template<typename T>
     T randomValue(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max())
     {

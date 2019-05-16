@@ -22,10 +22,12 @@
 #include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
 
+// LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
 {
     return out << dir.toUInt();
 }
+// LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_SUITE(SeaWorldCreationSuite)
 
@@ -117,13 +119,11 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
         // Reverse mapping must match
         BOOST_REQUIRE_EQUAL(world.GetHarborPointID(curHarborPt), curHarborId);
         // We must be at one of the 2 seas
-        unsigned seaId = 0;
+        unsigned seaId = 2;
         if(world.IsHarborAtSea(curHarborId, 1))
             seaId = 1;
-        else if(world.IsHarborAtSea(curHarborId, 2))
-            seaId = 2;
         else
-            BOOST_FAIL("Harbor is at no sea");
+            BOOST_REQUIRE(world.IsHarborAtSea(curHarborId, 2));
         // We must have a coast point at that sea
         const MapPoint coastPt = world.GetCoastalPoint(curHarborId, seaId);
         BOOST_REQUIRE(coastPt.isValid());

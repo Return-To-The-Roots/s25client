@@ -49,7 +49,7 @@ void nofMiner::DrawWorking(DrawPoint drawPt)
     else
         texture = 1799 + now_id % 4;
     LOADER.GetPlayerImage("rom_bobs", texture)
-      ->DrawFull(drawPt + offsets[workplace->GetNation()][(workplace->GetBuildingType() - BLD_GRANITEMINE) * 2]);
+      ->DrawFull(drawPt + offsets[workplace->GetNation()][workplace->GetBuildingType() - BLD_GRANITEMINE]);
 
     if(now_id % 8 == 3)
     {

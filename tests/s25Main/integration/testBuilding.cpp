@@ -50,6 +50,7 @@ namespace {
 using EmptyWorldFixture0P = WorldFixture<CreateEmptyWorld, 0>;
 using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
 using EmptyWorldFixture1PBigger = WorldFixture<CreateEmptyWorld, 1, 18, 16>;
+using EmptyWorldFixture1PBiggest = WorldFixture<CreateEmptyWorld, 1, 22, 20>;
 using ReducedBQMap = std::map<MapPoint, BuildingQuality, MapPointLess>;
 
 /// Check that the BQ at all points is BQ_CASTLE except the points in the reducedBQs map which have given BQs
@@ -71,8 +72,26 @@ boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const s
     }
     return true;
 }
-
 } // namespace
+
+BOOST_FIXTURE_TEST_CASE(checkBQs_Correct, EmptyWorldFixture1P)
+{
+    const MapPoint flagPos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(5, 6));
+    const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(flagPos, 4);
+    std::stringstream s;
+    s << flagPos;
+
+    ReducedBQMap reducedBQs;
+    BOOST_TEST(checkBQs(world, pts, reducedBQs));
+
+    world.GetNodeWriteable(flagPos).bq = BQ_FLAG;
+    BOOST_TEST(checkBQs(world, pts, reducedBQs).message().str() == "Flag!=Castle at " + s.str());
+    reducedBQs[flagPos] = BQ_FLAG;
+    BOOST_TEST(checkBQs(world, pts, reducedBQs));
+    world.GetNodeWriteable(flagPos).bq = BQ_CASTLE;
+    BOOST_TEST(checkBQs(world, pts, reducedBQs).message().str() == "Castle!=Flag at " + s.str());
+}
+
 BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
 {
     const MapPoint flagPos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(5, 6));
@@ -306,7 +325,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1P)
+BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1PBiggest)
 {
     GamePlayer& player = world.GetPlayer(0);
     const MapPoint hqPos = player.GetHQPos();
@@ -314,7 +333,9 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1P)
     BOOST_REQUIRE(hq);
     const unsigned hqRadius = hq->GetMilitaryRadius();
     BOOST_REQUIRE_GT(hqRadius, 4u);
-    std::vector<MapPoint> pts = world.GetPointsInRadius(hqPos, hq->GetMilitaryRadius() + 1);
+    BOOST_TEST_REQUIRE(hqRadius * 2u < world.GetWidth());
+    BOOST_TEST_REQUIRE(hqRadius * 2u < world.GetHeight());
+    std::vector<MapPoint> pts = world.GetPointsInRadius(hqPos, hqRadius + 1);
     for(const MapPoint pt : pts)
     {
         const unsigned distance = world.CalcDistance(pt, hqPos);

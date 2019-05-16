@@ -62,7 +62,7 @@ DescIdx<TerrainDesc> GetWaterTerrain(const GameWorld& world)
         if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
             return tWater;
     }
-    throw std::logic_error("No water");
+    throw std::logic_error("No water"); // LCOV_EXCL_LINE
 }
 } // namespace
 

@@ -21,8 +21,14 @@
 
 unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
 {
-    if(events.empty() || GetCurrentGF() >= maxGF)
+    if(GetCurrentGF() >= maxGF)
         return 0;
+    if(events.empty())
+    {
+        unsigned numGFs = maxGF - GetCurrentGF();
+        currentGF = maxGF;
+        return numGFs;
+    }
     auto itEvents = events.begin();
     if(itEvents->first > maxGF)
     {

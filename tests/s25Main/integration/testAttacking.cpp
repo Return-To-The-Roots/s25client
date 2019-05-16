@@ -62,6 +62,7 @@ void rescheduleWalkEvent(TestEventManager& em, noMovable& obj, unsigned numGFs)
 }
 
 /// Move the object next to the given point. The next walk event will make it reach that point
+// LCOV_EXCL_START
 void moveObjTo(GameWorldBase& world, noFigure& obj, const MapPoint& pos)
 {
     if(helpers::contains(world.GetFigures(obj.GetPos()), &obj))
@@ -75,6 +76,7 @@ void moveObjTo(GameWorldBase& world, noFigure& obj, const MapPoint& pos)
     else
         obj.StartWalking(Direction::EAST);
 }
+// LCOV_EXCL_STOP
 
 template<unsigned T_numPlayers, unsigned T_width, unsigned T_height>
 struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_height>

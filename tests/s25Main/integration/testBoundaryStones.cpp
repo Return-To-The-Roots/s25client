@@ -36,7 +36,7 @@ boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, co
             if(isValue[i] != expectedValue[i])
             {
                 boost::test_tools::predicate_result result(false);
-                result.message() << isValue[i] << "!=" << expectedValue[i] << " at " << pt << "[" << i << "]";
+                result.message() << unsigned(isValue[i]) << "!=" << unsigned(expectedValue[i]) << " at " << pt << "[" << i << "]";
                 return result;
             }
         }
@@ -47,13 +47,15 @@ boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, co
 
 BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
 {
-    std::vector<MapPoint> ptsToTest;
+    std::vector<BoundaryStones> expectedBoundaryStones(world.GetWidth() * world.GetHeight());
+    // Sanity check
+    BOOST_TEST(boundaryStonesMatch(world, expectedBoundaryStones));
+    expectedBoundaryStones[world.GetIdx(MapPoint(7, 5))][2] = 1u;
+    BOOST_TEST(boundaryStonesMatch(world, expectedBoundaryStones).message().str() == "0!=1 at (7, 5)[2]");
+
     // Check some point in the middle and at 0,0 which causes wrapping
-    ptsToTest.push_back(MapPoint(5, 5));
-    ptsToTest.push_back(MapPoint(0, 0));
-    for(MapPoint middlePt : ptsToTest)
+    for(const auto middlePt : {MapPoint(5, 5), MapPoint(0, 0)})
     {
-        std::vector<BoundaryStones> expectedBoundaryStones(world.GetWidth() * world.GetHeight());
         // Reset owner to 0 (None) and boundary stones to nothing
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {

@@ -30,7 +30,7 @@ CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size) : size_(size) {}
 bool CreateEmptyWorld::operator()(GameWorldGame& world) const
 {
     // For consistent results
-    doInitGameRNG(0);
+    initGameRNG(0);
 
     loadGameData(world.GetDescriptionWriteable());
     world.Init(size_);
@@ -75,20 +75,6 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
             return false;
     }
     world.InitAfterLoad();
-    return true;
-}
-
-CreateUninitWorld::CreateUninitWorld(const MapExtent& size) : size_(size) {}
-
-bool CreateUninitWorld::operator()(GameWorldGame& world) const
-{
-    if(world.GetNumPlayers() > 0)
-        throw std::logic_error("Cannot have players for uninitialized world");
-    // For consistent results
-    doInitGameRNG(0);
-
-    loadGameData(world.GetDescriptionWriteable());
-    world.Init(size_);
     return true;
 }
 
