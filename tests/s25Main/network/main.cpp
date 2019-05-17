@@ -56,6 +56,6 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
     BOOST_TEST_REQUIRE(server.connections.size() == 2u);
     BOOST_TEST(server.run());
     sock.Close();
-    BOOST_TEST(server.run());
+    BOOST_TEST((server.run() && server.run()));
     BOOST_TEST_REQUIRE(server.connections.size() == 1u);
 }
