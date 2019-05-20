@@ -216,22 +216,24 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
     glSmartBitmap smartBmp;
     for(int i = 0; i < 3; i++)
     {
-        bmps.emplace_back(createRandPlayerBmp(70));
+        bmps.emplace_back(createRandPlayerBmp(50));
         smartBmp.add(bmps.back().get());
     }
+
+    Extent size = smartBmp.GetSize();
+    BOOST_TEST(smartBmp.getRequiredTexSize() == Extent(size.x * 2, size.y));
+
     Position commonOrigin(bmps[0]->getNx(), bmps[0]->getNy());
     for(const auto& bmp : bmps)
     {
         commonOrigin.x = std::max<int>(commonOrigin.x, bmp->getNx());
         commonOrigin.y = std::max<int>(commonOrigin.y, bmp->getNy());
     }
-    Extent size = smartBmp.GetSize();
     for(const auto& bmp : bmps)
     {
         size.x = std::max<unsigned>(size.x, bmp->getWidth() + commonOrigin.x - bmp->getNx());
         size.y = std::max<unsigned>(size.y, bmp->getHeight() + commonOrigin.y - bmp->getNy());
     }
-    BOOST_TEST(smartBmp.getRequiredTexSize() == Extent(size.x * 2, size.y));
     // Note: We don't test size and origin as they may be adjusted for optimization purposes
     // which is considered an internal detail
     commonOrigin = smartBmp.GetOrigin();
