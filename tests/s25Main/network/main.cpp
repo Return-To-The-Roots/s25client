@@ -36,13 +36,22 @@ BOOST_GLOBAL_FIXTURE(NetworkFixture);
 BOOST_AUTO_TEST_CASE(TestServer_Works)
 {
     TestServer server;
-    BOOST_TEST(!server.run());
+    // Run might need to be called multiple times as connection and drop might not be immediate
+    auto runServer = [&server]() {
+        const auto result = server.run();
+        for(int i = 0; i < 5; i++)
+        {
+            BOOST_TEST(server.run() == result);
+        }
+        return result;
+    };
+    BOOST_TEST(!runServer());
     BOOST_TEST(server.listen(1337));
-    BOOST_TEST(server.run());
+    BOOST_TEST(runServer());
 
     Socket sock;
     BOOST_TEST(sock.Connect("localhost", 1337, false));
-    BOOST_TEST(server.run());
+    BOOST_TEST(runServer());
     BOOST_TEST(server.connections.size() == 1u);
     BOOST_TEST(server.stop());
     BOOST_TEST(server.connections.empty());
@@ -50,12 +59,12 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
     BOOST_TEST(server.listen(1337));
     Socket sock2;
     BOOST_TEST(sock.Connect("localhost", 1337, false));
-    BOOST_TEST(server.run());
+    BOOST_TEST(runServer());
     BOOST_TEST(sock2.Connect("localhost", 1337, false));
-    BOOST_TEST(server.run());
+    BOOST_TEST(runServer());
     BOOST_TEST_REQUIRE(server.connections.size() == 2u);
-    BOOST_TEST(server.run());
+    BOOST_TEST(runServer());
     sock.Close();
-    BOOST_TEST((server.run() && server.run()));
+    BOOST_TEST(runServer());
     BOOST_TEST_REQUIRE(server.connections.size() == 1u);
 }
