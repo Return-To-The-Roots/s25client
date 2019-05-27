@@ -73,9 +73,9 @@ BOOST_AUTO_TEST_CASE(TestPredicate)
     BOOST_REQUIRE(LOADER.LoadFile(overrideFolder1 + "/test.GER"));
     const auto& txt = LOADER.GetInfoN("test");
     BOOST_REQUIRE(compareTxts(txt, "1||20"));
-    BOOST_TEST(compareTxts(txt, "1||").message().str() == "Item count mismatch [3 != 2]");
+    BOOST_TEST(compareTxts(txt, "1|").message().str() == "Item count mismatch [3 != 2]");
     BOOST_TEST(compareTxts(txt, "1||20|2").message().str() == "Item count mismatch [3 != 4]");
-    BOOST_TEST(compareTxts(txt, "1|||").message().str() == "Unexpected item at 2");
+    BOOST_TEST(compareTxts(txt, "1||").message().str() == "Unexpected item at 2");
     BOOST_TEST(compareTxts(txt, "1|2|20").message().str() == "Item 1 not found");
     BOOST_TEST(compareTxts(txt, "4||20").message().str() == "Mismatch at 0 [1 != 4]");
 }
