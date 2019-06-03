@@ -42,9 +42,9 @@ install:
     export PATH="${CMAKE_DIR}/bin:${PATH}"
   - |
     BOOST_VERSION=${BOOST_VERSION:-1.64.0}
-    BOOST_DIR="${DEPS_DIR}/boost${BOOST_VERSION}"
-    export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBOOST_ROOT=${BOOST_DIR} -DBoost_NO_SYSTEM_PATHS=ON"
-    external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_DIR}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
+    export BOOST_ROOT="${DEPS_DIR}/boost${BOOST_VERSION}"
+    export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBoost_NO_SYSTEM_PATHS=ON"
+    external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_ROOT}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
 
 before_script: source external/libutil/tools/ci/setupXServer.sh
 
