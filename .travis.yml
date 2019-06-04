@@ -41,10 +41,10 @@ install:
     external/libutil/tools/ci/installCMake.sh "3.8.2" "${CMAKE_DIR}"
     export PATH="${CMAKE_DIR}/bin:${PATH}"
   - |
-    BOOST_VERSION=1.64.0
-    BOOST_DIR="${DEPS_DIR}/boost${BOOST_VERSION}"
-    export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBOOST_ROOT=${BOOST_DIR} -DBoost_NO_SYSTEM_PATHS=ON"
-    external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_DIR}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
+    BOOST_VERSION=${BOOST_VERSION:-1.64.0}
+    export BOOST_ROOT="${DEPS_DIR}/boost${BOOST_VERSION}"
+    export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBoost_NO_SYSTEM_PATHS=ON"
+    external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_ROOT}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
 
 before_script: source external/libutil/tools/ci/setupXServer.sh
 
@@ -104,7 +104,8 @@ jobs:
         - tools/ci/staticValidation.sh "$(pwd)"
         - tools/ci/travisBuild.sh
     # Latest Clang with externals
-    - os: linux
+    - &latest-clang-externals
+      os: linux
       compiler: clang
       addons:
         apt:
@@ -114,3 +115,9 @@ jobs:
         - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
         - BUILD_TYPE=Debug
         - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON"
+    - <<: *latest-clang-externals
+      env:
+        - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
+        - BUILD_TYPE=Debug
+        - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON"
+        - BOOST_VERSION=1.70.0

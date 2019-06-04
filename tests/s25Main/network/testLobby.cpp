@@ -102,6 +102,7 @@ BOOST_AUTO_TEST_CASE(LobbyConnectAndChat)
 
     BOOST_REQUIRE(LOBBYCLIENT.Login("localhost", lobbyPort, lobbyServer.testUser, lobbyServer.testPw, false));
     RTTR_REQUIRE_LOG_CONTAINS("Connect", true);
+    lobbyServer.run(true);
     for(unsigned i = 0; i < 50; i++)
     {
         run();

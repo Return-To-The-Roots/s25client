@@ -20,14 +20,14 @@
 #include "libutil/Message.h"
 #include "libutil/SocketSet.h"
 
-bool TestServer::run()
+bool TestServer::run(bool waitForConnection)
 {
     if(!socket.isValid())
         return false;
 
     SocketSet set;
     set.Add(socket);
-    if(set.Select(0, 0) > 0)
+    if(set.Select(waitForConnection ? 2 * 60 * 1000 : 0, 0) > 0)
     {
         RTTR_Assert(set.InSet(socket));
         Socket newSocket = socket.Accept();

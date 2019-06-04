@@ -28,7 +28,13 @@ cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
 make -j2 ${MAKE_TARGET}
 
 # Set runtime path for boost libraries
-boostLibDir=`cmake -LA -N . | grep Boost_LIBRARY_DIR_DEBUG | cut -d "=" -f2`
+CMAKE_VARS="$(cmake -LA -N .)"
+if echo "${CMAKE_VARS}" | grep -q Boost_LIBRARY_DIR_DEBUG; then
+    boostLibDir="$(echo "${CMAKE_VARS}" | grep Boost_LIBRARY_DIR_DEBUG | cut -d "=" -f2)"
+else
+    boostLibDir="$(echo "${CMAKE_VARS}" | grep Boost_DIR | cut -d "=" -f2)"
+    boostLibDir="${boostLibDir%/lib/*}/lib"
+fi
 export DYLD_LIBRARY_PATH="${boostLibDir}:${DYLD_LIBRARY_PATH:-}"
 export LD_LIBRARY_PATH="${boostLibDir}:${LD_LIBRARY_PATH:-}"
 
