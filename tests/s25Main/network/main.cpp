@@ -46,22 +46,22 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
         return result;
     };
     BOOST_TEST(!runServer());
-    BOOST_TEST(server.listen(1337));
+    BOOST_TEST_REQUIRE(server.listen(1337));
     BOOST_TEST(runServer());
 
     Socket sock;
-    BOOST_TEST(sock.Connect("localhost", 1337, false));
-    BOOST_TEST(runServer());
-    BOOST_TEST(server.connections.size() == 1u);
+    BOOST_TEST_REQUIRE(sock.Connect("localhost", 1337, false));
+    BOOST_TEST(server.run(true));
+    BOOST_TEST_REQUIRE(server.connections.size() == 1u);
     BOOST_TEST(server.stop());
-    BOOST_TEST(server.connections.empty());
+    BOOST_TEST_REQUIRE(server.connections.empty());
 
-    BOOST_TEST(server.listen(1337));
+    BOOST_TEST_REQUIRE(server.listen(1337));
     Socket sock2;
-    BOOST_TEST(sock.Connect("localhost", 1337, false));
-    BOOST_TEST(runServer());
-    BOOST_TEST(sock2.Connect("localhost", 1337, false));
-    BOOST_TEST(runServer());
+    BOOST_TEST_REQUIRE(sock.Connect("localhost", 1337, false));
+    BOOST_TEST(server.run(true));
+    BOOST_TEST_REQUIRE(sock2.Connect("localhost", 1337, false));
+    BOOST_TEST(server.run(true));
     BOOST_TEST_REQUIRE(server.connections.size() == 2u);
     BOOST_TEST(runServer());
     sock.Close();

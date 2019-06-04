@@ -36,7 +36,7 @@ class TestServer
 public:
     virtual ~TestServer() = default;
     bool listen(int16_t port);
-    bool run();
+    bool run(bool waitForConnection = false);
     bool stop();
     virtual void handleMessages() {}
     virtual Connection acceptConnection(unsigned id, const Socket& so);
