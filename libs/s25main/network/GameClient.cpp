@@ -809,7 +809,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
         return true;
 
     // Liste mit Namen und Checksummen erzeugen
-    std::stringstream checksum_list;
+    s25util::ClassicImbuedStream<std::stringstream> checksum_list;
     for(unsigned i = 0; i < msg.checksums.size(); ++i)
     {
         checksum_list << GetPlayer(i).name << ": " << msg.checksums[i];

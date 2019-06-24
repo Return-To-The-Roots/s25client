@@ -19,9 +19,9 @@
 #include "RTTR_Assert.h"
 #include "RTTR_AssertError.h"
 #include "libutil/Log.h"
+#include "libutil/StringConversion.h"
 #include "libutil/System.h"
 #include <iostream>
-#include <sstream>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -57,7 +57,7 @@ void RTTR_AssertFailure(const char* condition, const char* file, const int line,
         if(pos != std::string::npos && filePath.size() > pos && filePath.substr(0, pos) == thisFilePath.substr(0, pos))
             filePath = filePath.substr(pos + 1);
 
-        std::stringstream sMsg;
+        s25util::ClassicImbuedStream<std::stringstream> sMsg;
         sMsg << "Assertion failure";
         if(function)
             sMsg << " in \"" << function << "\"";

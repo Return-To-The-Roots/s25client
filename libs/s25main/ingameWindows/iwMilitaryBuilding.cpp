@@ -39,7 +39,6 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include <set>
-#include <sstream>
 
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]),
@@ -141,9 +140,7 @@ void iwMilitaryBuilding::Draw_()
                 else
                     hitpointsColour = COLOR_ORANGE;
             }
-            std::stringstream hitpointsText;
-            hitpointsText << hitpoints;
-            NormalFont->Draw(healthPos, hitpointsText.str(), FontStyle::CENTER, hitpointsColour);
+            NormalFont->Draw(healthPos, std::to_string(hitpoints), FontStyle::CENTER, hitpointsColour);
             healthPos.x += 22;
         }
     }
