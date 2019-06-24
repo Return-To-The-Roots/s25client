@@ -22,7 +22,6 @@ addons:
       - sdl_mixer
       - gettext
       - miniupnpc
-    update: true
 
 cache:
   - ccache
