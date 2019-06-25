@@ -23,6 +23,7 @@
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "libutil/StringConversion.h"
+#include <utf8.h>
 
 ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
                    unsigned short maxlength, bool password, bool disabled, bool notify)
@@ -43,7 +44,7 @@ void ctrlEdit::SetText(const std::string& text)
     viewStart_ = 0;
 
     text_.clear();
-    ucString tmp = cvUTF8ToUnicode(text);
+    std::u32string tmp = utf8::utf8to32(text);
 
     for(const auto c : tmp)
         AddChar(c);
@@ -56,7 +57,7 @@ void ctrlEdit::SetText(const unsigned text)
 
 std::string ctrlEdit::GetText() const
 {
-    return cvUnicodeToUTF8(text_);
+    return utf8::utf32to8(text_);
 }
 
 /**
@@ -69,11 +70,11 @@ void ctrlEdit::Draw_()
     // Box malen
     Draw3D(Rect(GetDrawPos(), GetSize()), texColor_, false);
 
-    ucString dtext;
+    std::u32string dtext;
 
     // Text zeichnen
     if(isPassword_)
-        dtext = ucString(text_.length(), '*');
+        dtext = std::u32string(text_.length(), '*');
     else
         dtext = text_;
 
@@ -188,6 +189,8 @@ bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
  */
 bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 {
+    static const std::u32string delimiters = U" \t\n-+=";
+
     // hat das Steuerelement den Fokus?
     if(!focus_)
         return false;
@@ -209,25 +212,18 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             if(ke.ctrl)
             {
                 // Erst über alle Trennzeichen hinweg
-                while(cursorPos_ > 0 && std::wstring(L" \t\n-+=").find(text_[cursorPos_ - 1]) != std::wstring::npos)
+                while(cursorPos_ > 0 && delimiters.find(text_[cursorPos_ - 1]) != std::u32string::npos)
                 {
                     CursorLeft();
-                    if(cursorPos_ == 0)
-                        break;
                 }
 
                 // Und dann über alles, was kein Trenner ist
-                while(cursorPos_ > 0 && std::wstring(L" \t\n-+=").find(text_[cursorPos_ - 1]) == std::wstring::npos)
+                while(cursorPos_ > 0 && delimiters.find(text_[cursorPos_ - 1]) == std::u32string::npos)
                 {
                     CursorLeft();
-                    if(cursorPos_ == 0)
-                        break;
                 }
-            }
-
-            // Sonst nur einen Schritt
-            if(cursorPos_ > 0)
-                CursorLeft();
+            } else
+                CursorLeft(); // just one step
         }
         break;
 
@@ -237,24 +233,17 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             if(ke.ctrl)
             {
                 // Erst über alle Trennzeichen hinweg
-                while(cursorPos_ + 1 < text_.length() && std::wstring(L" \t\n-+=").find(text_[cursorPos_ + 1]) != std::wstring::npos)
+                while(cursorPos_ + 1 < text_.length() && delimiters.find(text_[cursorPos_ + 1]) != std::u32string::npos)
                 {
                     CursorRight();
-                    if(cursorPos_ == text_.length())
-                        break;
                 }
                 // Und dann über alles, was kein Trenner ist
-                while(cursorPos_ + 1 < text_.length() && std::wstring(L" \t\n-+=").find(text_[cursorPos_ + 1]) == std::wstring::npos)
+                while(cursorPos_ + 1 < text_.length() && delimiters.find(text_[cursorPos_ + 1]) == std::u32string::npos)
                 {
                     CursorRight();
-                    if(cursorPos_ == text_.length())
-                        break;
                 }
-            }
-
-            // Sonst nur einen Schritt
-            if(cursorPos_ < text_.length())
-                CursorRight();
+            } else
+                CursorRight(); // just one step
         }
         break;
 

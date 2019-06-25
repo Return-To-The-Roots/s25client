@@ -25,7 +25,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libsiedler2/ArchivItem_Font.h"
 #include "libutil/colors.h"
-#include "libutil/ucString.h"
 #include <array>
 #include <glad/glad.h>
 #include <map>
@@ -45,16 +44,16 @@ public:
     /// If length is given, only that many chars (not glyphs!) will be used
     /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is appended (included in
     /// maxWidth)
-    void Draw(DrawPoint pos, const ucString& wtext, FontStyle format, unsigned color = COLOR_WHITE, unsigned short length = 0,
-              unsigned short maxWidth = 0xFFFF, const ucString& end = cvWideStringToUnicode(L"..."));
+    void Draw(DrawPoint pos, const std::u32string& wtext, FontStyle format, unsigned color = COLOR_WHITE, unsigned short length = 0,
+              unsigned short maxWidth = 0xFFFF, const std::u32string& end = U"...");
     void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE, unsigned short length = 0,
               unsigned short maxWidth = 0xFFFF, const std::string& end = "...");
 
     /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will be set to the
     /// maximum number of chars (not glyphs!) that fit into the width
-    unsigned short getWidth(const ucString& text, unsigned length = 0) const;
+    unsigned short getWidth(const std::u32string& text, unsigned length = 0) const;
     unsigned short getWidth(const std::string& text, unsigned length = 0) const;
-    unsigned short getWidth(const ucString& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const;
+    unsigned short getWidth(const std::u32string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const;
     unsigned short getWidth(const std::string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const;
     /// liefert die Höhe des Textes ( entspricht @p getDy() )
     unsigned short getHeight() const { return dy + 1; }

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Window.h"
-#include "libutil/ucString.h"
+
 class MouseCoords;
 class glArchivItem_Font;
 struct KeyEvent;
@@ -78,7 +78,7 @@ private:
     bool newFocus_;
     bool notify_;
 
-    ucString text_;
+    std::u32string text_;
     unsigned cursorPos_;
     unsigned viewStart_;
 

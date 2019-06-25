@@ -17,12 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ListDir.h"
-#include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
+#include <utf8.h>
 
 BOOST_AUTO_TEST_SUITE(FileIOSuite)
 
@@ -70,11 +70,11 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
         BOOST_REQUIRE(bfs::exists(file));
         BOOST_REQUIRE(bfs::path(file).is_absolute());
         // Filepath must be utf8 encoded
-        BOOST_REQUIRE(isValidUTF8(file));
+        BOOST_REQUIRE(utf8::is_valid(file));
 
         bfs::path filePath(file);
         // String result must still be utf8
-        BOOST_REQUIRE(isValidUTF8(filePath.string()));
+        BOOST_REQUIRE(utf8::is_valid(filePath.string()));
 
         // Scopes for auto-close
         {

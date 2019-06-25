@@ -19,7 +19,7 @@
 #include "LuaInterfaceBase.h"
 #include "mygettext/mygettext.h"
 #include "mygettext/utils.h"
-#include "libutf8/utf8.h"
+#include "utf8.h"
 #include "libutil/Log.h"
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
