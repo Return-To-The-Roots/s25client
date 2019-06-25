@@ -35,7 +35,7 @@
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
-#include "libutil/StringConversion.h"
+#include <sstream>
 
 /// IDs in der IO_DAT von Boot und Schiffs-Bild für den Umschaltebutton beim Schiffsbauer
 const unsigned IODAT_BOAT_ID = 219;
@@ -155,7 +155,7 @@ void iwBuilding::Msg_PaintAfter()
                 waresPos.x += 24;
             }
 
-            s25util::ClassicImbuedStream<std::stringstream> text;
+            std::stringstream text;
             text << (unsigned)building->GetNumWares(i) << "/" << wares_count;
             NormalFont->Draw(curPos + DrawPoint(0, 12), text.str(), FontStyle::CENTER | FontStyle::VCENTER);
             curPos.y += 29;

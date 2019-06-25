@@ -88,6 +88,7 @@
 #include "liblobby/LobbyClient.h"
 #include <algorithm>
 #include <cstdio>
+#include <sstream>
 #include <utility>
 
 namespace {
@@ -1253,7 +1254,9 @@ void dskGameInterface::UpdatePostIcon(const unsigned postmessages_count, bool sh
     // und Anzahl der Postnachrichten aktualisieren
     if(postmessages_count > 0)
     {
-        GetCtrl<ctrlText>(ID_txtNumMsg)->SetText(std::to_string(postmessages_count));
+        std::stringstream ss;
+        ss << postmessages_count;
+        GetCtrl<ctrlText>(ID_txtNumMsg)->SetText(ss.str());
     } else
         GetCtrl<ctrlText>(ID_txtNumMsg)->SetText("");
 }

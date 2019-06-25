@@ -55,10 +55,10 @@
 #include "libsiedler2/prototypen.h"
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
-#include "libutil/StringConversion.h"
 #include <memory>
 #include <mygettext/mygettext.h>
 #include <set>
+#include <sstream>
 
 namespace {
 enum CtrlIds
@@ -703,7 +703,7 @@ void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
         hasCountdown_ = true;
     }
 
-    s25util::ClassicImbuedStream<std::stringstream> message;
+    std::stringstream message;
     if(remainingTimeInSec > 0)
         message << " " << remainingTimeInSec;
     else

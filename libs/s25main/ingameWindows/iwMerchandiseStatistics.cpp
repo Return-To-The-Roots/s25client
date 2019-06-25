@@ -26,6 +26,7 @@
 #include "iwHelp.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
+#include <sstream>
 
 // Farben für die einzelnen Balken
 const std::array<unsigned, 14> iwMerchandiseStatistics::BarColors = {
@@ -181,7 +182,9 @@ void iwMerchandiseStatistics::DrawStatistic()
     }
 
     // Maximalen Wert an die Achse schreiben
-    maxValue->SetText(std::to_string(max));
+    std::stringstream ss;
+    ss << max;
+    maxValue->SetText(ss.str());
 
     DrawPoint previous(0, 0);
     unsigned short currentIndex = stat.currentIndex;

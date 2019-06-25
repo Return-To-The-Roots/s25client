@@ -29,9 +29,9 @@
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/StringConversion.h"
 #include "libutil/colors.h"
 #include <array>
+#include <sstream>
 
 namespace {
 enum
@@ -151,7 +151,7 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 void iwAIDebug::Msg_PaintBefore()
 {
     IngameWindow::Msg_PaintBefore();
-    s25util::ClassicImbuedStream<std::stringstream> ss;
+    std::stringstream ss;
 
     const AIJH::Job* currentJob = printer->ai->GetCurrentJob();
     if(!currentJob)

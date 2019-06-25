@@ -42,11 +42,11 @@ std::string ctrlBaseVarText::GetFormatedText() const
             switch(it)
             {
                 case 'd':
-                    str << std::to_string(*reinterpret_cast<int*>(vars[curVar])); //-V206
+                    str << *reinterpret_cast<int*>(vars[curVar]); //-V206
                     curVar++;
                     break;
                 case 'u':
-                    str << std::to_string(*reinterpret_cast<unsigned*>(vars[curVar])); //-V206
+                    str << *reinterpret_cast<unsigned*>(vars[curVar]); //-V206
                     curVar++;
                     break;
                 case 's':

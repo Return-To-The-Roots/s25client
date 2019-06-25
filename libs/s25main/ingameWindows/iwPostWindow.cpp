@@ -33,8 +33,8 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldView.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/StringConversion.h"
 #include <iostream>
+#include <sstream>
 
 // Only internally visible
 namespace {
@@ -273,7 +273,7 @@ void iwPostWindow::DisplayPostMessage()
     curMsg = GetMsg(curMsgId);
 
     // We have a message, display its status...
-    s25util::ClassicImbuedStream<std::stringstream> ss;
+    std::stringstream ss;
     ss << _("Message") << " " << curMsgId + 1 << " " << _("of") << " " << size << " - GF: " << curMsg->GetSendFrame();
     GetCtrl<ctrlText>(ID_INFO)->SetText(ss.str());
     GetCtrl<ctrlText>(ID_INFO)->SetVisible(true);

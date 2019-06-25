@@ -32,6 +32,7 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
+#include <sstream>
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     : IngameWindow(CGI_STATISTICS, IngameWindow::posLastOrCenter, Extent(252, 336), _("Statistics"), LOADER.GetImageN("resource", 41)),
@@ -315,10 +316,14 @@ void iwStatistics::DrawStatistic(StatisticType type)
         ++max;
     }
     // Maximalen/Minimalen Wert an die Achse schreiben
-    maxValue->SetText(std::to_string(max));
+    std::stringstream ss;
+    ss << max;
+    maxValue->SetText(ss.str());
     if(SETTINGS.ingame.scale_statistics)
     {
-        minValue->SetText(std::to_string(min));
+        ss.str("");
+        ss << min;
+        minValue->SetText(ss.str());
     }
 
     // Statistiklinien zeichnen

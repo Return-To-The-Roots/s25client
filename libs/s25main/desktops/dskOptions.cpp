@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -40,9 +40,9 @@
 #include "ingameWindows/iwTextfile.h"
 #include "languages.h"
 #include "ogl/FontStyle.h"
-#include "libutil/StringConversion.h"
 #include "libutil/colors.h"
 #include <mygettext/mygettext.h>
+#include <sstream>
 
 /** @class dskOptions
  *
@@ -256,11 +256,11 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     for(const auto& videoMode : video_modes)
     {
         VideoMode ratio = getAspectRatio(videoMode);
-        s25util::ClassicImbuedStream<std::stringstream> str;
+        std::stringstream str;
         str << videoMode.width << "x" << videoMode.height;
         // Make the length always the same as 'iiiixiiii' to align the ratio
-        auto len = str.str().length();
-        for(auto i = len; i < 4 + 1 + 4; i++)
+        int len = str.str().length();
+        for(int i = len; i < 4 + 1 + 4; i++)
             str << " ";
         str << " (" << ratio.width << ":" << ratio.height << ")";
 

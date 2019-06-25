@@ -32,7 +32,7 @@
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "libutil/Log.h"
-#include "libutil/StringConversion.h"
+#include <sstream>
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
     : next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),
@@ -415,7 +415,7 @@ void Ware::WaitForShip(nobHarborBuilding* hb)
 
 std::string Ware::ToString() const
 {
-    s25util::ClassicImbuedStream<std::stringstream> s;
+    std::stringstream s;
     s << "Ware(" << GetObjId() << "): type=" << GoodType2String(type) << ", location=" << location->GetX() << "," << location->GetY();
     return s.str();
 }

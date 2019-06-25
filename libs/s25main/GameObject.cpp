@@ -20,8 +20,8 @@
 #include "EventManager.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
-#include "libutil/StringConversion.h"
 #include <iostream>
+#include <sstream>
 
 /**
  *  Objekt-ID-Counter.
@@ -88,7 +88,7 @@ void GameObject::AttachWorld(GameWorldGame* gameWorld)
 
 std::string GameObject::ToString() const
 {
-    s25util::ClassicImbuedStream<std::stringstream> s;
+    std::stringstream s;
     s << "GameObject(" << objId << ")";
     return s.str();
 }
