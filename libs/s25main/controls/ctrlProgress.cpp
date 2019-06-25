@@ -23,7 +23,6 @@
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include <cmath>
-#include <sstream>
 
 ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                            unsigned short button_minus, unsigned short button_plus, const unsigned short maximum, const Extent& padding,
@@ -103,9 +102,8 @@ void ctrlProgress::Draw_()
     DrawRectangle(Rect(barPos + innerPadding, progress, GetSize().y - 2 * (innerPadding.y + padding_.y)), color);
 
     // Prozentzahlen zeichnen
-    std::stringstream percent;
-    percent << percentage << "%";
-    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, percent.str(), FontStyle::CENTER | FontStyle::VCENTER, COLOR_YELLOW);
+    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, std::to_string(percentage) + "%", FontStyle::CENTER | FontStyle::VCENTER,
+                    COLOR_YELLOW);
 }
 
 void ctrlProgress::Resize(const Extent& newSize)

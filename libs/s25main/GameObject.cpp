@@ -21,7 +21,6 @@
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include <iostream>
-#include <sstream>
 
 /**
  *  Objekt-ID-Counter.
@@ -88,7 +87,5 @@ void GameObject::AttachWorld(GameWorldGame* gameWorld)
 
 std::string GameObject::ToString() const
 {
-    std::stringstream s;
-    s << "GameObject(" << objId << ")";
-    return s.str();
+    return "GameObject(" + std::to_string(objId) + ")";
 }

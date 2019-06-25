@@ -32,7 +32,6 @@
 #include "libutil/error.h"
 #include <ctime>
 #include <glad/glad.h>
-#include <sstream>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
 #include <valgrind/memcheck.h>
 #endif
@@ -120,11 +119,10 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
         return false;
     }
 
-    std::stringstream title;
-    title << RTTR_Version::GetTitle() << " - " << RTTR_Version::GetReadableVersion();
+    const std::string title = RTTR_Version::GetTitle() + " - " + RTTR_Version::GetReadableVersion();
 
     // Fenster erstellen
-    if(!videodriver->CreateScreen(title.str(), size, fullscreen))
+    if(!videodriver->CreateScreen(title, size, fullscreen))
     {
         s25util::fatal_error("Could not create window!\n");
         return false;

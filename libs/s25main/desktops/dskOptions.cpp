@@ -40,6 +40,7 @@
 #include "ingameWindows/iwTextfile.h"
 #include "languages.h"
 #include "ogl/FontStyle.h"
+#include "libutil/StringConversion.h"
 #include "libutil/colors.h"
 #include <mygettext/mygettext.h>
 #include <sstream>
@@ -256,7 +257,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     for(const auto& videoMode : video_modes)
     {
         VideoMode ratio = getAspectRatio(videoMode);
-        std::stringstream str;
+        s25util::ClassicImbuedStream<std::ostringstream> str;
         str << videoMode.width << "x" << videoMode.height;
         // Make the length always the same as 'iiiixiiii' to align the ratio
         int len = str.str().length();
