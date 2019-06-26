@@ -19,8 +19,8 @@
 #include "network/GameProtocol.h"
 #include "network/GameServerPlayer.h"
 #include "libutil/Socket.h"
-#include <boost/test/unit_test.hpp>
 #include <rttr/test/MockClock.hpp>
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameServerPlayerSuite)
 

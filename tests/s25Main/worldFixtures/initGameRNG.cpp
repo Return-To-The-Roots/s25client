@@ -18,7 +18,7 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "initGameRNG.hpp"
 #include "random/Random.h"
-#include "rttr/test/random.hpp"
+#include <rttr/test/random.hpp>
 #include <iostream>
 
 void initGameRNG(unsigned defaultValue /*= 1337*/)

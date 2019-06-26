@@ -23,8 +23,8 @@
 #include "lua/LuaInterfaceSettings.h"
 #include "network/IGameLobbyController.h"
 #include "libutil/colors.h"
-#include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
+#include <boost/test/unit_test.hpp>
 #include <vector>
 
 static std::ostream& operator<<(std::ostream& os, AddonId id)

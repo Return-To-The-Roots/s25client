@@ -18,9 +18,9 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "helpers/containerUtils.h"
 #include "helpers/reverse.h"
+#include <rttr/test/random.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/test/unit_test.hpp>
-#include <rttr/test/random.hpp>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(ContainerUtils)

@@ -22,8 +22,8 @@
 #include "ogl/glTexturePackerNode.h"
 #include "ogl/saveBitmap.h"
 #include "libsiedler2/PixelBufferARGB.h"
-#include <algorithm>
 #include <glad/glad.h>
+#include <algorithm>
 #include <utility>
 
 static bool isSizeGreater(glSmartBitmap* a, glSmartBitmap* b)

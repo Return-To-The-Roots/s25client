@@ -27,10 +27,10 @@
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include <glad/glad.h>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/path.hpp>
 #include <array>
-#include <glad/glad.h>
 
 namespace {
 enum

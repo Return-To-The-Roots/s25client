@@ -18,9 +18,9 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "FrameCounter.h"
 #include "Timer.h"
+#include <rttr/test/MockClock.hpp>
 #include <boost/test/unit_test.hpp>
 #include <helpers/chronoIO.h>
-#include <rttr/test/MockClock.hpp>
 
 BOOST_AUTO_TEST_SUITE(Timers)
 

@@ -18,8 +18,8 @@
 #define BOOST_TEST_MODULE RTTR_UI
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include <boost/test/unit_test.hpp>
 #include <rttr/test/Fixture.hpp>
+#include <boost/test/unit_test.hpp>
 
 //#include <vld.h>
 

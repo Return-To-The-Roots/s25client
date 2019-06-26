@@ -19,8 +19,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "BQOutput.h"
-#include <boost/test/unit_test.hpp>
 #include <rttr/test/Fixture.hpp>
+#include <boost/test/unit_test.hpp>
 #include <sstream>
 
 //#include <vld.h>

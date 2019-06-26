@@ -26,8 +26,8 @@
 #include "libsiedler2/IAllocator.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include "libsiedler2/libsiedler2.h"
-#include "libutf8/utf8.h"
 #include "libutil/Log.h"
+#include <utf8.h>
 #include <boost/algorithm/string.hpp>
 #include <cmath>
 #include <vector>
@@ -40,10 +40,10 @@ template<typename T>
 struct GetNextCharAndIncIt;
 
 template<>
-struct GetNextCharAndIncIt<uint32_t>
+struct GetNextCharAndIncIt<char32_t>
 {
     template<class T_Iterator>
-    uint32_t operator()(T_Iterator& it, const T_Iterator& /*itEnd*/) const
+    char32_t operator()(T_Iterator& it, const T_Iterator& /*itEnd*/) const
     {
         return *it++;
     }
@@ -63,7 +63,7 @@ template<typename T_Iterator, typename T_Value = typename std::iterator_traits<T
 struct MakePrevIt;
 
 template<typename T_Iterator>
-struct MakePrevIt<T_Iterator, uint32_t>
+struct MakePrevIt<T_Iterator, char32_t>
 {
     void operator()(T_Iterator& it, const T_Iterator& /*itStart*/) const { --it; }
 };
@@ -173,13 +173,13 @@ inline void glArchivItem_Font::DrawChar(unsigned curChar, VertexArrays& vertices
     curPos.x += ci.width;
 }
 
-void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, FontStyle format, unsigned color, unsigned short length,
-                             unsigned short maxWidth, const ucString& end)
+void glArchivItem_Font::Draw(DrawPoint pos, const std::u32string& wtext, FontStyle format, unsigned color, unsigned short length,
+                             unsigned short maxWidth, const std::u32string& end)
 {
     // etwas dämlich, aber einfach ;)
     // da wir hier erstmal in utf8 konvertieren, und dann im anderen Draw wieder zurück ...
-    std::string text = cvUnicodeToUTF8(wtext);
-    std::string utf8End = cvUnicodeToUTF8(end);
+    std::string text = utf8::utf32to8(wtext);
+    std::string utf8End = utf8::utf32to8(end);
     Draw(pos, text, format, color, length, maxWidth, utf8End);
 }
 
@@ -207,7 +207,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
     if(!fontNoOutline)
         initFont();
 
-    RTTR_Assert(isValidUTF8(text));
+    RTTR_Assert(utf8::is_valid(text));
 
     // Breite bestimmen
     if(length == 0)
@@ -223,7 +223,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
         drawEnd = false;
     } else
     {
-        RTTR_Assert(isValidUTF8(end));
+        RTTR_Assert(utf8::is_valid(end));
         textWidth = getWidth(text, length, maxWidth, &maxNumChars);
         if(!end.empty() && maxNumChars < length)
         {
@@ -372,7 +372,7 @@ unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_It
     return getWidthInternal<false>(begin, end, 0, nullptr);
 }
 
-unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const
+unsigned short glArchivItem_Font::getWidth(const std::u32string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const
 {
     return getWidthInternal(text.begin(), length ? text.begin() + length : text.end(), maxWidth, maxNumChars);
 }
@@ -382,7 +382,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
     return getWidthInternal(text.begin(), length ? text.begin() + length : text.end(), maxWidth, maxNumChars);
 }
 
-unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length) const
+unsigned short glArchivItem_Font::getWidth(const std::u32string& text, unsigned length) const
 {
     return getWidthInternal(text.begin(), length ? text.begin() + length : text.end());
 }
@@ -417,7 +417,7 @@ Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, FontSt
  */
 std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& text)
 {
-    RTTR_Assert(isValidUTF8(text)); // Can only handle UTF-8 strings!
+    RTTR_Assert(utf8::is_valid(text)); // Can only handle UTF-8 strings!
 
     std::vector<std::string> destStrings;
     if(positions.empty())
@@ -451,7 +451,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
     if(!fontNoOutline)
         initFont();
 
-    RTTR_Assert(isValidUTF8(text)); // Can only handle UTF-8 strings!
+    RTTR_Assert(utf8::is_valid(text)); // Can only handle UTF-8 strings!
 
     // Current line width
     unsigned line_width = 0;

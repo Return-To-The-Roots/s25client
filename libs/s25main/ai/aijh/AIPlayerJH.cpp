@@ -51,7 +51,6 @@
 #include <array>
 #include <memory>
 #include <random>
-#include <sstream>
 #include <stdexcept>
 
 namespace {
@@ -1887,9 +1886,7 @@ void AIPlayerJH::SaveResourceMapsToFile()
 {
     for(unsigned res = 0; res < NUM_AIRESOURCES; ++res)
     {
-        std::stringstream ss;
-        ss << "resmap-" << res << ".log";
-        bfs::ofstream file(ss.str());
+        bfs::ofstream file("resmap-" + std::to_string(res) + ".log");
         for(unsigned y = 0; y < aiMap.GetHeight(); ++y)
         {
             if(y % 2 == 1)

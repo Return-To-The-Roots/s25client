@@ -465,8 +465,8 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
         // Nach Mapgrößen-String sortieren: ZahlxZahl
         case SRT_MAPSIZE:
         {
-            std::stringstream ss_a(a);
-            std::stringstream ss_b(b);
+            std::istringstream ss_a(a);
+            std::istringstream ss_b(b);
             char x;
             int x_a, y_a, x_b, y_b;
             ss_a >> x_a >> x >> y_a;
@@ -482,8 +482,8 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
         // Nach Zahl sortieren
         case SRT_NUMBER:
         {
-            std::stringstream ss_a(a);
-            std::stringstream ss_b(b);
+            std::istringstream ss_a(a);
+            std::istringstream ss_b(b);
             int num_a, num_b;
             ss_a >> num_a;
             ss_b >> num_b;
@@ -498,8 +498,8 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
         // Nach Datum im Format dd.mm.yyyy - hh:mm sortieren
         case SRT_DATE:
         {
-            s25util::ClassicImbuedStream<std::stringstream> ss_a(a);
-            s25util::ClassicImbuedStream<std::stringstream> ss_b(b);
+            s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
+            s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
             int d_a, d_b, m_a, m_b, y_a, y_b;
             char c;
 

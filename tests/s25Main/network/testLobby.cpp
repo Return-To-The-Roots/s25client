@@ -21,11 +21,11 @@
 #include "liblobby/LobbyInterface.h"
 #include "liblobby/LobbyMessages.h"
 #include "libutil/md5.hpp"
+#include <rttr/test/LogAccessor.hpp>
+#include <turtle/mock.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/test/unit_test.hpp>
 #include <memory>
-#include <rttr/test/LogAccessor.hpp>
-#include <turtle/mock.hpp>
 
 struct TestLobbySever : public TestServer, public LobbyMessageInterface
 {

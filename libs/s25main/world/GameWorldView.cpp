@@ -41,9 +41,9 @@
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
 #include "libutil/warningSuppression.h"
+#include <glad/glad.h>
 #include <boost/format.hpp>
 #include <cmath>
-#include <glad/glad.h>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
     : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),

@@ -58,7 +58,6 @@
 #include <memory>
 #include <mygettext/mygettext.h>
 #include <set>
-#include <sstream>
 
 namespace {
 enum CtrlIds
@@ -703,13 +702,9 @@ void dskHostGame::CI_Countdown(unsigned remainingTimeInSec)
         hasCountdown_ = true;
     }
 
-    std::stringstream message;
-    if(remainingTimeInSec > 0)
-        message << " " << remainingTimeInSec;
-    else
-        message << _("Starting game, please wait");
+    const std::string message = (remainingTimeInSec > 0) ? " " + std::to_string(remainingTimeInSec) : _("Starting game, please wait");
 
-    gameChat->AddMessage("", "", 0, message.str(), 0xFFFFBB00);
+    gameChat->AddMessage("", "", 0, message, 0xFFFFBB00);
 }
 
 void dskHostGame::CI_CancelCountdown(bool error)

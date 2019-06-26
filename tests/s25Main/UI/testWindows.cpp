@@ -23,8 +23,8 @@
 #include "desktops/Desktop.h"
 #include "ingameWindows/iwVictory.h"
 #include "uiHelper/uiHelpers.hpp"
-#include <boost/test/unit_test.hpp>
 #include <turtle/mock.hpp>
+#include <boost/test/unit_test.hpp>
 
 //-V:MOCK_METHOD:813
 //-V:MOCK_EXPECT:807
