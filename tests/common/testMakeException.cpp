@@ -16,9 +16,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "makeException.h"
+#include <rttr/test/testHelpers.hpp>
 #include <boost/system/config.hpp>
 #include <boost/test/unit_test.hpp>
-#include <rttr/test/testHelpers.hpp>
 #ifdef BOOST_WINDOWS_API
 #include <windows.h>
 #define RTTR_SET_LAST_ERROR(errNum) SetLastError(errNum)

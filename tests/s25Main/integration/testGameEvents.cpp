@@ -20,8 +20,8 @@
 #include "GameObject.h"
 #include "RTTR_AssertError.h"
 #include "worldFixtures/TestEventManager.h"
-#include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameEventsTestSuite)
 

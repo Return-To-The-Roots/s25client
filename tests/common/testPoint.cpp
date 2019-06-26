@@ -17,9 +17,9 @@
 
 #include "Point.h"
 #include "PointOutput.h"
+#include <rttr/test/random.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
-#include <rttr/test/random.hpp>
 #include <type_traits>
 
 using rttr::test::randomPoint;

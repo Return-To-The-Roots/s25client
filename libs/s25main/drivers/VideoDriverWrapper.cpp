@@ -30,8 +30,8 @@
 #include "openglCfg.hpp"
 #include "libutil/Log.h"
 #include "libutil/error.h"
-#include <ctime>
 #include <glad/glad.h>
+#include <ctime>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
 #include <valgrind/memcheck.h>
 #endif

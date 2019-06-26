@@ -21,8 +21,8 @@
 #include "enum_cast.hpp"
 #include "ogl/BufferHandle.h"
 #include "ogl/constants.h"
-#include <boost/type_traits/make_void.hpp>
 #include <glad/glad.h>
+#include <boost/type_traits/make_void.hpp>
 #include <stdexcept>
 
 namespace ogl {

@@ -34,12 +34,12 @@
 #include "libutil/Serializer.h"
 #include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
+#include <rttr/test/LocaleResetter.hpp>
+#include <rttr/test/testHelpers.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/test/unit_test.hpp>
 #include <map>
 #include <memory>
-#include <rttr/test/LocaleResetter.hpp>
-#include <rttr/test/testHelpers.hpp>
 #include <utility>
 #include <vector>
 

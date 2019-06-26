@@ -32,10 +32,10 @@
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "libutil/Log.h"
 #include "libutil/dynamicUniqueCast.h"
+#include <glad/glad.h>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
-#include <glad/glad.h>
 #include <set>
 
 /* Terrain rendering works like that:

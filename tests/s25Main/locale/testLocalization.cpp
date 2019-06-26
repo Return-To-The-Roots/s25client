@@ -22,10 +22,10 @@
 #include "languages.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libutil/StringConversion.h"
-#include <boost/assign/std/vector.hpp>
-#include <boost/test/unit_test.hpp>
 #include <rttr/test/LocaleResetter.hpp>
 #include <rttr/test/LogAccessor.hpp>
+#include <boost/assign/std/vector.hpp>
+#include <boost/test/unit_test.hpp>
 #include <string>
 
 struct LocaleFixture

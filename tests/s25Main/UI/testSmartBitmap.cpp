@@ -22,10 +22,10 @@
 #include <libsiedler2/ArchivItem_Bitmap_Raw.h>
 #include <libsiedler2/ArchivItem_Palette.h>
 #include <libsiedler2/PixelBufferARGB.h>
+#include <rttr/test/random.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iomanip>
 #include <locale>
-#include <rttr/test/random.hpp>
 #include <sstream>
 
 using namespace libsiedler2;

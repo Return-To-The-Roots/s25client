@@ -18,10 +18,10 @@
 #include "Loader.h"
 #include "driver/MouseCoords.h"
 #include "uiHelper/uiHelpers.hpp"
-#include <boost/test/unit_test.hpp>
-#include <controls/ctrlComboBox.h>
 #include <rttr/test/random.hpp>
 #include <turtle/mock.hpp>
+#include <boost/test/unit_test.hpp>
+#include <controls/ctrlComboBox.h>
 
 //-V:MOCK_METHOD:813
 //-V:MOCK_EXPECT:807

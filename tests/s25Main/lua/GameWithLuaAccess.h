@@ -36,9 +36,9 @@
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
+#include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 #include <memory>
-#include <rttr/test/LogAccessor.hpp>
 #include <vector>
 
 class GameWithLuaAccess : public Game

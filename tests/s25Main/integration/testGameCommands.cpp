@@ -25,7 +25,6 @@
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
 #include "postSystem/PostBox.h"
-#include "rttr/test/random.hpp"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
 #include "nodeObjs/noBase.h"
@@ -36,6 +35,7 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
+#include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 

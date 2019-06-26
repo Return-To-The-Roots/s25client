@@ -32,10 +32,10 @@
 #include "nodeObjs/noFire.h"
 #include "gameTypes/MapInfo.h"
 #include "libutil/tmpFile.h"
+#include <rttr/test/testHelpers.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/test/unit_test.hpp>
 #include <memory>
-#include <rttr/test/testHelpers.hpp>
 
 // LCOV_EXCL_START
 template<class T>

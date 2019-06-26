@@ -22,9 +22,9 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glAllocator.h"
 #include <libsiedler2/libsiedler2.h>
+#include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test_log.hpp>
 #include <mockupDrivers/MockupVideoDriver.h>
-#include <rttr/test/LogAccessor.hpp>
 
 namespace uiHelper {
 class DummyDesktop : public Desktop

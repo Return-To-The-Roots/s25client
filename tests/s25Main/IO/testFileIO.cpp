@@ -17,12 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ListDir.h"
+#include <utf8.h>
 #include <boost/filesystem.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
-#include <utf8.h>
 
 BOOST_AUTO_TEST_SUITE(FileIOSuite)
 

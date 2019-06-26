@@ -24,9 +24,9 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/ShieldConsts.h"
+#include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 #include <array>
-#include <rttr/test/LogAccessor.hpp>
 
 struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::test::LogAccessor
 {

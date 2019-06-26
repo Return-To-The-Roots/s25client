@@ -24,9 +24,9 @@
 #include "controls/ctrlOptionGroup.h"
 #include "desktops/dskHostGame.h"
 #include "uiHelper/uiHelpers.hpp"
-#include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
 #include <turtle/mock.hpp>
+#include <boost/test/unit_test.hpp>
 
 //-V:MOCK_METHOD:813
 //-V:MOCK_EXPECT:807

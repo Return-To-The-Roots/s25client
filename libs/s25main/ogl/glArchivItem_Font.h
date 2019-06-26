@@ -25,8 +25,8 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libsiedler2/ArchivItem_Font.h"
 #include "libutil/colors.h"
-#include <array>
 #include <glad/glad.h>
+#include <array>
 #include <map>
 #include <memory>
 #include <string>

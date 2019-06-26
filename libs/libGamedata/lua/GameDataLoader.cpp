@@ -25,8 +25,8 @@
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
 #include "libutil/Log.h"
-#include <boost/filesystem.hpp>
 #include <kaguya/kaguya.hpp>
+#include <boost/filesystem.hpp>
 #include <stdexcept>
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)

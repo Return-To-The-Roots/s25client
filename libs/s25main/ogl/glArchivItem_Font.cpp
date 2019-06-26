@@ -22,12 +22,12 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
 #include "helpers/containerUtils.h"
-#include "utf8.h"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/IAllocator.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
+#include <utf8.h>
 #include <boost/algorithm/string.hpp>
 #include <cmath>
 #include <vector>

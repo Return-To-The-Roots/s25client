@@ -19,8 +19,8 @@
 #include "RTTR_AssertError.h"
 #include "worldFixtures/SeaWorldWithGCExecution.h"
 #include "gameTypes/ShipDirection.h"
-#include <boost/test/unit_test.hpp>
 #include <rttr/test/LogAccessor.hpp>
+#include <boost/test/unit_test.hpp>
 
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)

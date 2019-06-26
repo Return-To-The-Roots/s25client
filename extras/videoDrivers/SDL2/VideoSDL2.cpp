@@ -23,7 +23,7 @@
 #include "helpers/containerUtils.h"
 #include "icon.h"
 #include "openglCfg.hpp"
-#include "utf8.h"
+#include <utf8.h>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>

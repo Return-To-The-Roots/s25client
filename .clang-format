@@ -70,7 +70,11 @@ IncludeCategories:
     Priority: 50
   - Regex:    '^(<|")lib.*/'
     Priority: 90
-  - Regex:    '^<boost/'
+  - Regex:    '(<|")rttr/'
+    Priority: 90
+  - Regex:    '<(utf8.h|kaguya|turtle|glad|KHR)'
+    Priority: 95
+  - Regex:    '<boost/'
     Priority: 99
   - Regex:    '^<windows'
     Priority: 100

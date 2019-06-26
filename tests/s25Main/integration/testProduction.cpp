@@ -23,10 +23,10 @@
 #include "postSystem/PostMsg.h"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "gameData/ToolConsts.h"
+#include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 #include <algorithm>
 #include <array>
-#include <rttr/test/LogAccessor.hpp>
 
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& os, const PostCategory& cat)

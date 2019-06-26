@@ -22,10 +22,10 @@
 #include "gameTypes/Direction_Output.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
+#include <rttr/test/testHelpers.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/test/unit_test.hpp>
-#include <rttr/test/testHelpers.hpp>
 #include <vector>
 
 using namespace boost::assign;

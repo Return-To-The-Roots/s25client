@@ -24,9 +24,9 @@
 #include "mockupDrivers/MockupVideoDriver.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "gameData/const_gui_ids.h"
+#include <turtle/mock.hpp>
 #include <boost/test/unit_test.hpp>
 #include <sstream>
-#include <turtle/mock.hpp>
 
 //-V:MOCK_METHOD:813
 //-V:MOCK_EXPECT:807
