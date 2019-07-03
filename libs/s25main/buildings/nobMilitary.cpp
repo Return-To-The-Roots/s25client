@@ -332,7 +332,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             unsigned distance = gwg->CalcDistance(pos, building->GetPos());
             FrontierDistance newFrontierDistance = DIST_FAR;
 
-            if(distance <= MILITARY_RADIUS[size] + building->GetMilitaryRadius())
+            if(distance <= GetMilitaryRadius() + building->GetMilitaryRadius())
             {
                 newFrontierDistance = DIST_NEAR;
             }
