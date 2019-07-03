@@ -34,7 +34,8 @@ public:
         : SoundDesc(SD_EFFECT), sound(sound)
     {}
 
-    Mix_Chunk* const sound; ///< Handle to the sound. Managed and freed by the driver
+    /// Handle to the sound. Managed and freed by the driver
+    Mix_Chunk* const sound;
 };
 
 #endif // !extras_audioDrivers_SDL_SoundSDL_Effect_h

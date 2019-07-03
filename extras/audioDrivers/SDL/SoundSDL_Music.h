@@ -44,7 +44,9 @@ public:
         , data(std::move(data))
     {}
 
-    Mix_Music* music; ///< Handle to the sound. Managed and freed by the driver
+    /// Handle to the sound. Managed and freed by the driver
+    Mix_Music* music; 
+    /// Music data memory
     const std::vector<char> data;
 };
 
