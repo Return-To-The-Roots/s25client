@@ -756,7 +756,8 @@ void GamePlayer::JobNotWanted(noRoadNode* workplace, bool all)
 void GamePlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 {
     const auto it = helpers::findPred(jobs_wanted, [workplace, job](const auto& it) { return it.workplace == workplace && it.job == job; });
-    jobs_wanted.erase(it);
+    if(it != jobs_wanted.end())
+        jobs_wanted.erase(it);
 }
 
 void GamePlayer::SendPostMessage(PostMsg* msg)

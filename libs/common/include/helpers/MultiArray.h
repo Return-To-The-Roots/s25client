@@ -18,6 +18,7 @@
 #ifndef SimpleMultiArray_h__
 #define SimpleMultiArray_h__
 
+#include "RTTR_Assert.h"
 #include <boost/config.hpp>
 #include <array>
 #include <cstddef>
