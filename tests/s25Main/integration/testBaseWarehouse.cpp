@@ -19,6 +19,7 @@
 #include "GamePlayer.h"
 #include "RTTR_AssertError.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "factories/BuildingFactory.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "gameTypes/GoodTypes.h"
@@ -28,6 +29,7 @@
 #include <boost/test/unit_test.hpp>
 #include <array>
 
+namespace {
 struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::test::LogAccessor
 {
     std::array<unsigned, NUM_JOB_TYPES> numPeople, numPeoplePlayer;
@@ -67,6 +69,10 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
             BOOST_REQUIRE_EQUAL(player.GetInventory().goods[i], numGoodsPlayer[i]);
     }
 };
+
+using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
+
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
 {
@@ -134,4 +140,36 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     RTTR_REQUIRE_ASSERT(hq.AddGoods(newGoods, false));
     RTTR_AssertEnableBreak = true;
 #endif
+}
+
+BOOST_FIXTURE_TEST_CASE(OrderJob, EmptyWorldFixture1P)
+{
+    GamePlayer& player = world.GetPlayer(0);
+    auto* hq = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
+    auto* wh = static_cast<nobBaseWarehouse*>(
+      BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, player.GetHQPos() + MapPoint(4, 0), 0, NAT_ROMANS));
+    world.BuildRoad(0, false, hq->GetFlagPos(), {4, Direction::EAST});
+
+    // Order all existing builders
+    while(hq->GetNumRealFigures(JOB_BUILDER) > 0u)
+    {
+        const auto numBuilders = hq->GetNumRealFigures(JOB_BUILDER);
+        BOOST_TEST(hq->OrderJob(JOB_BUILDER, wh, false));
+        BOOST_TEST_REQUIRE(hq->GetNumRealFigures(JOB_BUILDER) == numBuilders - 1u);
+    }
+    // Ordering another one fails
+    BOOST_TEST_REQUIRE(!hq->OrderJob(JOB_BUILDER, wh, false));
+    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(JOB_BUILDER) == 0u);
+    // Recruit all possible builders
+    while(hq->GetNumRealWares(GD_HAMMER) > 0u)
+    {
+        const auto numHammers = hq->GetNumRealWares(GD_HAMMER);
+        BOOST_TEST(hq->OrderJob(JOB_BUILDER, wh, true));
+        BOOST_TEST_REQUIRE(hq->GetNumRealWares(GD_HAMMER) == numHammers - 1u);
+        BOOST_TEST_REQUIRE(hq->GetNumRealFigures(JOB_BUILDER) == 0u);
+    }
+    // Ordering another one fails
+    BOOST_TEST_REQUIRE(!hq->OrderJob(JOB_BUILDER, wh, true));
+    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(JOB_BUILDER) == 0u);
+    BOOST_TEST_REQUIRE(hq->GetNumRealWares(GD_HAMMER) == 0u);
 }
