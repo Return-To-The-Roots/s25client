@@ -1,4 +1,4 @@
-// Copyright (c) 2018 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,23 +14,34 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef SmoothedValue_h__
-#define SmoothedValue_h__
+#pragma once
+#ifndef libs_common_include_helpers_SmoothedValue_hpp
+#define libs_common_include_helpers_SmoothedValue_hpp
 
 #include <boost/circular_buffer.hpp>
+
 #include <numeric>
 
 namespace helpers {
+
 /// A value that is smoothed over the past N values added
 template<typename T>
 class SmoothedValue
 {
-    boost::circular_buffer<T> pastValues_;
-
 public:
-    explicit SmoothedValue(size_t maxValues) : pastValues_(maxValues) {}
-    void add(const T& value) { pastValues_.push_back(value); }
+    explicit
+    SmoothedValue(size_t maxValues)
+        : pastValues_(maxValues)
+    {}
+
+    void add(const T& value)
+    {
+        pastValues_.push_back(value);
+    }
+
     T get() const
     {
         if(pastValues_.empty())
@@ -38,8 +49,16 @@ public:
         else
             return std::accumulate(pastValues_.begin(), pastValues_.end(), T(0)) / static_cast<T>(size());
     }
-    size_t size() const { return pastValues_.size(); }
+
+    size_t size() const
+    {
+        return pastValues_.size();
+    }
+
+private:
+    boost::circular_buffer<T> pastValues_;
 };
+
 } // namespace helpers
 
-#endif // SmoothedValue_h__
+#endif // !libs_common_include_helpers_SmoothedValue_hpp

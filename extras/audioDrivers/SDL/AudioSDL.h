@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,23 +14,23 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef SDL_H_INCLUDED
-#define SDL_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#pragma once
+#ifndef extras_audioDrivers_SDL_AudioSDL_h
+#define extras_audioDrivers_SDL_AudioSDL_h
 
 #include <driver/AudioDriver.h>
+
 class IAudioDriverCallback;
 class SoundHandle;
 
 /// Klasse für den SDL Audiotreiber.
 class AudioSDL final : public AudioDriver
 {
-private:
-    /// Lautstärke der Effekte.
-    uint8_t master_effects_volume;
-    /// Lautstärke der Musik.
-    uint8_t master_music_volume;
-
 public:
+    explicit
     AudioSDL(IAudioDriverCallback* adli);
     ~AudioSDL() override;
 
@@ -71,6 +71,12 @@ private:
     uint8_t CalcEffectVolume(uint8_t volume) const;
     /// Callback für Audiotreiber
     static void MusicFinished();
+
+private:
+    /// Lautstärke der Effekte.
+    uint8_t master_effects_volume;
+    /// Lautstärke der Musik.
+    uint8_t master_music_volume;
 };
 
-#endif // !SDL_H_INCLUDED
+#endif // !extras_audioDrivers_SDL_AudioSDL_h

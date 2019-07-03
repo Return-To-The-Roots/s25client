@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,24 +14,40 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef SOUNDSDL_MUSIC_H_INCLUDED
-#define SOUNDSDL_MUSIC_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "driver/SoundHandle.h"
+#pragma once
+#ifndef extras_audioDrivers_SDL_SoundSDL_Music_h
+#define extras_audioDrivers_SDL_SoundSDL_Music_h
+
+#include <driver/SoundHandle.h>
+
 #include <SDL_mixer.h>
+
 #include <utility>
 #include <vector>
 
 class SoundSDL_Music : public SoundDesc
 {
 public:
-    explicit SoundSDL_Music(Mix_Music* music) : SoundDesc(SD_MUSIC), music(music) {}
-    explicit SoundSDL_Music(std::vector<char> data) : SoundDesc(SD_MUSIC), music(nullptr), data(std::move(data)) {}
+    explicit
+    SoundSDL_Music(Mix_Music* music)
+        : SoundDesc(SD_MUSIC)
+        , music(music)
+    {}
+    
+    explicit 
+    SoundSDL_Music(std::vector<char> data)
+        : SoundDesc(SD_MUSIC)
+        , music(nullptr)
+        , data(std::move(data))
+    {}
 
     void setInvalid() { isValid_ = false; }
-    /// Handle to the sound. Managed and freed by the driver
-    Mix_Music* music; /// Das Music-Handle.
+
+    Mix_Music* music; ///< Handle to the sound. Managed and freed by the driver
     const std::vector<char> data;
 };
 
-#endif // !SOUNDSDL_MUSIC_H_INCLUDED
+#endif // !extras_audioDrivers_SDL_SoundSDL_Music_h

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,23 +14,30 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "VideoSDL2.h"
-#include "driver/Interface.h"
-#include "driver/VideoDriverLoaderInterface.h"
-#include "driver/VideoInterface.h"
-#include "helpers/containerUtils.h"
 #include "icon.h"
-#include "openglCfg.hpp"
+
+#include <commonDefines.h> // IWYU pragma: keep
+#include <openglCfg.hpp>
+
+#include <driver/Interface.h>
+#include <driver/VideoDriverLoaderInterface.h>
+#include <driver/VideoInterface.h>
+#include <helpers/containerUtils.h>
+
 #include <utf8.h>
-#include <boost/nowide/iostream.hpp>
 #include <SDL.h>
+
+#include <boost/nowide/iostream.hpp>
+
 #include <algorithm>
 
 #ifdef _WIN32
-#include "libutil/ucString.h"
-#include <SDL_syswm.h>
+#   include <libutil/ucString.h>
+#   include <SDL_syswm.h>
 #endif // _WIN32
 
 #define CHECK_SDL(call)                 \
@@ -55,7 +62,9 @@ const char* GetDriverName()
     return "(SDL2) OpenGL via SDL2-Library";
 }
 
-VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), window(nullptr), context(nullptr) {}
+VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack)
+    : VideoDriver(CallBack), window(nullptr), context(nullptr)
+{}
 
 VideoSDL2::~VideoSDL2()
 {

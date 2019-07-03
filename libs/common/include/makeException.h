@@ -1,4 +1,4 @@
-// Copyright (c) 2019 - 2019 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,13 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#pragma once
+#ifndef libs_common_include_makeException_h
+#define libs_common_include_makeException_h
 
 #include "helpers/strUtils.h"
+
 #include <stdexcept>
 #include <system_error>
-
-#ifndef makeException_h__
-#define makeException_h__
 
 /// Create an exception by concatenating the passed args
 template<typename T_Exception = std::runtime_error, typename... Args>
@@ -38,4 +42,4 @@ std::system_error makeLastSystemError(Args&&... args)
     return {GetLastErrorCode(), helpers::concat(std::forward<Args>(args)...)};
 }
 
-#endif // makeException_h__
+#endif // !libs_common_include_makeException_h

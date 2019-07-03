@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,17 +14,23 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef EnumWithString_h__
-#define EnumWithString_h__
+#pragma once
+#ifndef libs_common_include_helpers_EnumWithString_h
+#define libs_common_include_helpers_EnumWithString_h
 
 #include <boost/preprocessor.hpp>
+
 #include <array>
 #include <cstring>
 #include <string>
 
 namespace rttrEnum {
-namespace detail {
+
+namespace detail 
+{
     template<class T_Enum>
     struct Tag
     {
@@ -70,7 +76,8 @@ std::string toString(T value)
     return {};
 }
 
-namespace detail {
+namespace detail 
+{
     template<class T>
     struct ignore_assign
     {
@@ -82,6 +89,7 @@ namespace detail {
         T value_;
     };
 } // namespace detail
+
 } // namespace rttrEnum
 
 // NOLINTNEXTLINE(bugprone-macro-parentheses)
@@ -112,4 +120,4 @@ namespace detail {
         }                                                                                                                      \
     }
 
-#endif // EnumWithString_h__
+#endif // !libs_common_include_helpers_EnumWithString_h

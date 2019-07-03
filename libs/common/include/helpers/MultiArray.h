@@ -1,4 +1,4 @@
-// Copyright (c) 2015 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,11 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef SimpleMultiArray_h__
-#define SimpleMultiArray_h__
+#pragma once
+#ifndef libs_common_include_helpers_MultiArray_h
+#define libs_common_include_helpers_MultiArray_h
 
 #include <boost/config.hpp>
+
 #include <array>
 #include <cstddef>
 #include <type_traits>
@@ -36,7 +40,8 @@ namespace helpers {
 template<typename T, size_t... T_n>
 struct MultiArray;
 
-namespace detail {
+namespace detail
+{
     // TODO: Use C++14 constexpr function when dropping MSVC2015
     template<size_t... sizes>
     struct Product;
@@ -161,4 +166,4 @@ struct MultiArray<T, T_n, T_ns...>
 
 } // namespace helpers
 
-#endif // SimpleMultiArray_h__
+#endif // !libs_common_include_helpers_MultiArray_h

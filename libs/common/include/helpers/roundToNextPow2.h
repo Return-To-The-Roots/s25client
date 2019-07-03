@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,16 +14,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef roundToNextPow2_h__
-#define roundToNextPow2_h__
+#pragma once
+#ifndef libs_common_include_helpers_roundToNextPow2_h
+#define libs_common_include_helpers_roundToNextPow2_h
 
 #include <cstdint>
 
 namespace helpers {
+
 /// compute the next highest power of 2 of 32-bit v
 /// Note: 0 will be rounded to 1 and maximum accepted value is 2^31 as maximum uint32_t value is 2^32-1
-inline uint32_t roundToNextPowerOfTwo(uint32_t v)
+inline
+uint32_t roundToNextPowerOfTwo(uint32_t v)
 {
     if(!v)
         return 1;
@@ -36,6 +41,7 @@ inline uint32_t roundToNextPowerOfTwo(uint32_t v)
     v++;
     return v;
 }
+
 } // namespace helpers
 
-#endif // roundToNextPow2_h__
+#endif // libs_common_include_helpers_roundToNextPow2_h

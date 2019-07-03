@@ -1,4 +1,4 @@
-// Copyright (c) 2019 - 2019 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,9 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef toString_h__
-#define toString_h__
+#pragma once
+#ifndef libs_common_include_helpers_toString_h
+#define libs_common_include_helpers_toString_h
 
 #include <string>
 #include <type_traits>
@@ -46,4 +49,4 @@ std::string toString(T value)
 
 } // namespace helpers
 
-#endif
+#endif // !libs_common_include_helpers_toString_h

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,12 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef WIN32_NANOSLEEP_H_INCLUDED
-#define WIN32_NANOSLEEP_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#ifndef libs_common_include_helpers_win32_nanosleep_h
+#define libs_common_include_helpers_win32_nanosleep_h
 
 #include <ctime> // IWYU pragma: exports
+
 #ifdef _WIN32
 
 #ifndef HAVE_STRUCT_TIMESPEC
@@ -28,11 +31,11 @@ struct timespec
     time_t tv_sec; // Seconds.
     long tv_nsec;  // Nanoseconds.
 };
-#endif
+#endif // !HAVE_STRUCT_TIMESPEC
 
 /// nanosleep replacement for windows.
 int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay);
 
 #endif // _WIN32
 
-#endif // !WIN32_NANOSLEEP_H_INCLUDED
+#endif // !libs_common_include_helpers_win32_nanosleep_h

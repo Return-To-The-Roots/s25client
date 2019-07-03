@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,13 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "helpers/mathFuncs.h"
+
 #include <cstdlib>
 #include <utility>
 
 namespace helpers {
+
 int gcd(int a, int b)
 {
     a = std::abs(a);
@@ -46,4 +50,5 @@ unsigned roundedDiv(unsigned dividend, unsigned divisor)
     // Which is the same as: floor((divident + 0.5 * divisor) / divisor) == floor((divident + divisor / 2) / divisor)
     return (dividend + (divisor / 2)) / divisor;
 }
+
 } // namespace helpers

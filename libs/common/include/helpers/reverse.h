@@ -1,4 +1,4 @@
-// Copyright (c) 2019 - 2019 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,9 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef Reverse_h__
-#define Reverse_h__
+#pragma once
+#ifndef libs_common_include_helpers_reverse_h
+#define libs_common_include_helpers_reverse_h
 
 namespace helpers {
 
@@ -44,6 +47,7 @@ constexpr ReverseAdapter<T> reverse(T&& range)
 {
     return {range};
 }
+
 } // namespace helpers
 
-#endif
+#endif // !libs_common_include_helpers_reverse_h

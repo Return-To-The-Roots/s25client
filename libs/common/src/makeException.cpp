@@ -1,4 +1,4 @@
-// Copyright (c) 2019 - 2019 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,15 +14,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "makeException.h"
+
 #include <boost/system/config.hpp>
+
 #ifdef BOOST_WINDOWS_API
-#include <windows.h>
+#   include <windows.h>
 #elif defined(BOOST_POSIX_API)
-#include <cerrno>
+#   include <cerrno>
 #else
-#error "Must define windows or posix API"
+#   error "Must define windows or posix API"
 #endif
 
 std::error_code GetLastErrorCode()

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,20 +14,25 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "WinAPI.h"
-#include "driver/Interface.h"
-#include "driver/VideoDriverLoaderInterface.h"
-#include "driver/VideoInterface.h"
-#include "helpers/containerUtils.h"
-#include "s25clientResources.h"
-#include "libutil/ucString.h"
+
+#include <commonDefines.h> // IWYU pragma: keep
+#include <s25clientResources.h>
+#include <driver/Interface.h>
+#include <driver/VideoDriverLoaderInterface.h>
+#include <driver/VideoInterface.h>
+#include <helpers/containerUtils.h>
+#include <libutil/ucString.h>
+
 #include <GL/gl.h>
-#include <cstdlib>
-#include <cstring>
+
 #include <iostream>
 #include <limits>
+#include <cstdlib>
+#include <cstring>
 
 /**
  *  Zeiger auf die aktuelle Instanz.
@@ -87,8 +92,15 @@ const char* GetDriverName()
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack)
-    : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), screen(nullptr), screen_dc(nullptr), screen_rc(nullptr),
-      isWindowResizable(false), isMinimized(true)
+    : VideoDriver(CallBack)
+    , mouse_l(false)
+    , mouse_r(false)
+    , mouse_z(0)
+    , screen(nullptr)
+    , screen_dc(nullptr)
+    , screen_rc(nullptr)
+    , isWindowResizable(false)
+    , isMinimized(true)
 {
     pVideoWinAPI = this;
 }

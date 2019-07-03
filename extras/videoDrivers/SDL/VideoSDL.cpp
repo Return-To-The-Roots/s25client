@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,21 +14,30 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#include "VideoSDL.h"
 
 #include "commonDefines.h" // IWYU pragma: keep
-#include "VideoSDL.h"
-#include "driver/Interface.h"
-#include "driver/VideoDriverLoaderInterface.h"
-#include "driver/VideoInterface.h"
-#include "helpers/containerUtils.h"
+
+#include <driver/Interface.h>
+#include <driver/VideoDriverLoaderInterface.h>
+#include <driver/VideoInterface.h>
+#include <helpers/containerUtils.h>
+
 #include <boost/nowide/iostream.hpp>
+
 #include <SDL.h>
+
 #include <algorithm>
 
 #ifdef _WIN32
-#include "makeException.h"
-#include "s25clientResources.h"
-#include "libutil/ucString.h"
+#include <makeException.h>
+#include <s25clientResources.h>
+
+#include <libutil/ucString.h>
+
 #undef WIN32_LEAN_AND_MEAN
 #include <SDL_syswm.h>
 
@@ -113,7 +122,9 @@ const char* GetDriverName()
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
-VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(nullptr) {}
+VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack)
+    : VideoDriver(CallBack), screen(nullptr)
+{}
 
 VideoSDL::~VideoSDL()
 {

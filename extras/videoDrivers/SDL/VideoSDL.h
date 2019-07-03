@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,12 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef SDL_H_INCLUDED
-#define SDL_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#ifndef extras_videoDrivers_SDL_VideoSDL_h
+#define extras_videoDrivers_SDL_VideoSDL_h
 
 #include "driver/VideoDriver.h"
+
 class VideoDriverLoaderInterface;
 struct VideoMode;
 struct SDL_Surface;
@@ -29,7 +32,6 @@ class VideoSDL final : public VideoDriver
 {
 public:
     VideoSDL(VideoDriverLoaderInterface* CallBack);
-
     ~VideoSDL() override;
 
     /// Funktion zum Auslesen des Treibernamens.
@@ -76,7 +78,8 @@ private:
     void PrintError(const std::string& msg);
     void HandlePaste();
 
+private:
     SDL_Surface* screen; /// Das Fenster-SDL-Surface.
 };
 
-#endif // !SDL_H_INCLUDED
+#endif // !extras_videoDrivers_SDL_VideoSDL_h

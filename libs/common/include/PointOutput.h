@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,11 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef PointOutput_h__
-#define PointOutput_h__
+#pragma once
+#ifndef libs_common_include_PointOutput_h
+#define libs_common_include_PointOutput_h
 
 #include "Point.h"
+
 #include <iostream>
 
 template<typename T>
@@ -27,4 +31,4 @@ std::ostream& operator<<(std::ostream& out, const Point<T>& point)
     return out << "(" << point.x * 1 << ", " << point.y * 1 << ")"; // *1 to convert chars to int
 }
 
-#endif // PointOutput_h__
+#endif // !libs_common_include_PointOutput_h

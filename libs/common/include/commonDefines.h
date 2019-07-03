@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,16 +14,20 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
-#ifndef commonDefines_h__
-#define commonDefines_h__
+#ifndef libs_common_include_commonDefines_h
+#define libs_common_include_commonDefines_h
 
 // IWYU pragma: begin_exports
 
 #include "RTTR_Assert.h"
+
 // Fixed width types like uint32_t shall be treated like build-in types
 #include <libutil/warningSuppression.h>
+
 #include <cstdint>
 
 // IWYU pragma: end_exports
@@ -56,10 +60,13 @@ inline T checkedCast(T_Src src)
 
 // Fwd decl
 namespace boost {
+
 namespace filesystem {
-}
+} // namespace filesystem
+
 namespace nowide {
-}
+} // namespace nowide
+
 } // namespace boost
 
 /// Shortcut for boost::filesystem
@@ -67,4 +74,4 @@ namespace bfs = boost::filesystem;
 /// Shortcut for boost::nowide
 namespace bnw = boost::nowide;
 
-#endif // commonDefines_h__
+#endif // !libs_common_include_commonDefines_h

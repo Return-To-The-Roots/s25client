@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,9 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef POINT_DISTANCE_H_
-#define POINT_DISTANCE_H_
+#pragma once
+#ifndef libs_common_include_helpers_PointDistance_h
+#define libs_common_include_helpers_PointDistance_h
 
 #include <cmath>
 
@@ -26,4 +29,4 @@ int PointDistance(int x1, int y1, int x2, int y2)
     return std::abs(x1 - x2) + std::abs(y1 - y2);
 }
 
-#endif
+#endif // !libs_common_include_helpers_PointDistance_h

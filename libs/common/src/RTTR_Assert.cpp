@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,16 +14,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "RTTR_Assert.h"
 #include "RTTR_AssertError.h"
-#include "libutil/Log.h"
-#include "libutil/System.h"
+#include "commonDefines.h" // IWYU pragma: keep
+
+#include <libutil/Log.h>
+#include <libutil/System.h>
+
 #include <iostream>
 #include <sstream>
+
 #ifdef _WIN32
-#include <windows.h>
+#   include <windows.h>
 #endif
 
 bool RTTR_AssertEnableBreak = true;

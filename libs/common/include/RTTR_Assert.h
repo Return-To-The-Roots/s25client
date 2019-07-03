@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,35 +14,41 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef RTTRAssert_h__
-#define RTTRAssert_h__
+#pragma once
+#ifndef libs_common_include_RTTR_Assert_h
+#define libs_common_include_RTTR_Assert_h
 
 #include <libutil/warningSuppression.h>
 
 /// Define this to 1 if you want assertions enabled
 #ifndef RTTR_ENABLE_ASSERTS
-#ifdef NDEBUG
-#define RTTR_ENABLE_ASSERTS 0
-#else
-#define RTTR_ENABLE_ASSERTS 1
-#endif
+#   ifdef NDEBUG
+#       define RTTR_ENABLE_ASSERTS 0
+#   else
+#       define RTTR_ENABLE_ASSERTS 1
+#   endif // !NDEBUG
 #endif // !RTTR_ENABLE_ASSERTS
 
 #ifdef _MSC_VER
-extern void __cdecl __debugbreak();
-#define RTTR_BREAKPOINT __debugbreak()
+    extern void __cdecl __debugbreak();
+#   define RTTR_BREAKPOINT __debugbreak()
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
-#define RTTR_BREAKPOINT __asm__ __volatile__("int $3\n\t")
+#   define RTTR_BREAKPOINT __asm__ __volatile__("int $3\n\t")
 #elif !defined(WIN32)
-#include <csignal>
-#define RTTR_BREAKPOINT raise(SIGTRAP)
+#   include <csignal>
+#   define RTTR_BREAKPOINT raise(SIGTRAP)
 #else
-#define RTTR_BREAKPOINT
+#   define RTTR_BREAKPOINT
 #endif
 
-[[noreturn]] void RTTR_AssertFailure(const char* condition, const char* file, int line, const char* function);
+[[noreturn]] 
+void RTTR_AssertFailure(const char* condition, const char* file, int line, const char* function);
+
 bool RTTR_IsBreakOnAssertFailureEnabled();
+
 /// If true(default), a breakpoint is triggered on assert (if available)
 /// Note: This breakpoint can be globally disabled by setting the environment variable
 ///       RTTR_DISABLE_ASSERT_BREAKPOINT to "1" or "yes" which overrides this setting
@@ -50,7 +56,7 @@ extern bool RTTR_AssertEnableBreak;
 
 /* Some aspects about RTTR_Assert:
     - do-while(false) so it can be used in conditions: if(foo) RTTR_Assert(bar);
-    - Don't forget parantheses around cond for cases like: RTTR_Assert(true||false);
+    - Don't forget parentheses around cond for cases like: RTTR_Assert(true||false);
     - Use sizeof for disabled assert to avoid unused value warnings and actual code generation
     - RTTR_AssertNoThrow which does just logging and triggers a breakpoint but does not throw (e.g. for dtors)
  */
@@ -77,4 +83,4 @@ extern bool RTTR_AssertEnableBreak;
     } while(false)
 #endif
 
-#endif // RTTRAssert_h__
+#endif // !libs_common_include_RTTR_Assert_h

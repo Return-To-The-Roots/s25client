@@ -1,4 +1,4 @@
-// Copyright (c) 2018 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,9 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef Clock_h__
-#define Clock_h__
+#pragma once
+#ifndef libs_common_include_Clock_h
+#define libs_common_include_Clock_h
 
 #include <chrono>
 #include <memory>
@@ -29,6 +32,7 @@ public:
     using period = duration::period;
 
     virtual ~BaseClock() = default;
+
     virtual duration time_since_epoch()
     {
         return std::chrono::duration_cast<duration>(std::chrono::steady_clock::now().time_since_epoch());
@@ -49,9 +53,11 @@ public:
     using rep = BaseClock::rep;
     using duration = BaseClock::duration;
     using time_point = std::chrono::time_point<Clock>;
+
     static time_point now() { return time_point(instance()->time_since_epoch()); }
+
     // Set to a different clock
     static void setClock(std::unique_ptr<BaseClock> newClock) { instance() = std::move(newClock); }
 };
 
-#endif // Clock_h__
+#endif // !libs_common_include_Clock_h

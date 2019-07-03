@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,29 +14,29 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef WINAPI_H_INCLUDED
-#define WINAPI_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#ifndef extras_videoDrivers_WinAPI_WinAPI_h
+#define extras_videoDrivers_WinAPI_WinAPI_h
 
-#include "driver/VideoDriver.h"
+#include <driver/VideoDriver.h>
+
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+
 #include <string>
 #include <utility>
 
 /// Klasse für den WinAPI Videotreiber.
 class VideoWinAPI final : public VideoDriver
 {
-    /// Treiberaufräumfunktion.
-    void CleanUp();
-
 public:
     VideoWinAPI(VideoDriverLoaderInterface* CallBack);
-
-    ~VideoWinAPI();
+    ~VideoWinAPI() override;
 
     /// Funktion zum Auslesen des Treibernamens.
     const char* GetName() const override;
@@ -79,8 +79,10 @@ public:
 
 private:
     std::pair<DWORD, DWORD> GetStyleFlags(bool fullscreen) const;
+
     /// Calculate the rect for the window and adjusts the (usable) size if required
     RECT CalculateWindowRect(bool fullscreen, VideoMode& size) const;
+
     bool RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, bool fullscreen);
     bool InitOGL();
     static bool MakeFullscreen(const VideoMode& resolution);
@@ -95,6 +97,9 @@ private:
     /// Callbackfunktion der WinAPI.
     static LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 
+    /// Treiberaufräumfunktion.
+    void CleanUp();
+
 private:
     bool mouse_l;    /// Status der Linken Maustaste.
     bool mouse_r;    /// Status der Rechten Maustaste.
@@ -102,8 +107,9 @@ private:
     HWND screen;     /// Fensterhandle.
     HDC screen_dc;   /// Zeichenkontext des Fensters.
     HGLRC screen_rc; /// OpenGL-Kontext des Fensters.
-    bool isWindowResizable, isMinimized;
+    bool isWindowResizable;
+    bool isMinimized;
     std::wstring windowClassName;
 };
 
-#endif // !WINAPI_H_INCLUDED
+#endif // !extras_videoDrivers_WinAPI_WinAPI_h

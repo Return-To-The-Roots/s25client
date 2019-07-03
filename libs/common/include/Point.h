@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,9 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef Point_h__
-#define Point_h__
+#pragma once
+#ifndef libs_common_include_Point_h
+#define libs_common_include_Point_h
 
 #include <algorithm>
 #include <cstdint>
@@ -133,44 +136,45 @@ constexpr typename PointProductType<T>::type prodOfComponents(const Point<T>& pt
 //////////////////////////////////////////////////////////////////////////
 // Math ops: add/subtract/negate of Point(s). multiply/divide of points and or scalars
 
-namespace detail {
-template<typename T>
-using TryMakeSigned = std::conditional_t<std::is_integral<T>::value, std::make_signed<T>, std::common_type<T>>;
-template<typename T>
-using TryMakeSigned_t = typename TryMakeSigned<T>::type;
-
-/// Creates a mixed type out of types T and U which is
-/// the larger type of T & U AND signed iff either is signed
-/// Will be a floating point type if either T or U is floating point
-/// fails for non-numeric types with SFINAE
-template<typename T, typename U, bool T_areNumeric = std::is_arithmetic<T>::value&& std::is_arithmetic<U>::value>
-struct MixedType;
-
-template<typename T, typename U>
-struct MixedType<T, U, true>
+namespace detail 
 {
-    static constexpr bool isTBigger = sizeof(T) > sizeof(U);
-    // If both are floating point or both are not
-    using Common = std::conditional_t<std::is_floating_point<T>::value == std::is_floating_point<U>::value,
-                                      std::conditional_t<isTBigger, T, U>,                       // Take the larger type
-                                      std::conditional_t<std::is_floating_point<T>::value, T, U> // Take the floating point type
-                                      >;
-    // Convert to signed iff at least one value is signed
-    using type = std::conditional_t<std::is_signed<T>::value || std::is_signed<U>::value, TryMakeSigned_t<Common>, Common>;
-};
-template<typename T, typename U>
-using MixedType_t = typename MixedType<T, U>::type;
+    template<typename T>
+    using TryMakeSigned = std::conditional_t<std::is_integral<T>::value, std::make_signed<T>, std::common_type<T>>;
+    template<typename T>
+    using TryMakeSigned_t = typename TryMakeSigned<T>::type;
 
-template<typename T, typename U>
-struct IsNonLossyOp
-{
-    // We can do T <op> U (except overflow) if:
-    static constexpr bool value = std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value;
-};
-template<typename T, typename U>
-using require_nonLossyOp = std::enable_if_t<IsNonLossyOp<T, U>::value>;
-template<typename T>
-using require_arithmetic = std::enable_if_t<std::is_arithmetic<T>::value>;
+    /// Creates a mixed type out of types T and U which is
+    /// the larger type of T & U AND signed iff either is signed
+    /// Will be a floating point type if either T or U is floating point
+    /// fails for non-numeric types with SFINAE
+    template<typename T, typename U, bool T_areNumeric = std::is_arithmetic<T>::value&& std::is_arithmetic<U>::value>
+    struct MixedType;
+
+    template<typename T, typename U>
+    struct MixedType<T, U, true>
+    {
+        static constexpr bool isTBigger = sizeof(T) > sizeof(U);
+        // If both are floating point or both are not
+        using Common = std::conditional_t<std::is_floating_point<T>::value == std::is_floating_point<U>::value,
+                                          std::conditional_t<isTBigger, T, U>,                       // Take the larger type
+                                          std::conditional_t<std::is_floating_point<T>::value, T, U> // Take the floating point type
+                                          >;
+        // Convert to signed iff at least one value is signed
+        using type = std::conditional_t<std::is_signed<T>::value || std::is_signed<U>::value, TryMakeSigned_t<Common>, Common>;
+    };
+    template<typename T, typename U>
+    using MixedType_t = typename MixedType<T, U>::type;
+
+    template<typename T, typename U>
+    struct IsNonLossyOp
+    {
+        // We can do T <op> U (except overflow) if:
+        static constexpr bool value = std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value;
+    };
+    template<typename T, typename U>
+    using require_nonLossyOp = std::enable_if_t<IsNonLossyOp<T, U>::value>;
+    template<typename T>
+    using require_arithmetic = std::enable_if_t<std::is_arithmetic<T>::value>;
 } // namespace detail
 
 /// Unary negate
@@ -274,4 +278,4 @@ constexpr auto operator/(const U rhs, const Point<T>& div)
     return Point<U>::all(rhs) / div;
 }
 
-#endif // Point_h__
+#endif // !libs_common_include_Point_h

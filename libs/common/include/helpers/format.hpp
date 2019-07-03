@@ -1,4 +1,4 @@
-// Copyright (c) 2019 - 2019 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,13 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef format_h__
-#define format_h__
+#pragma once
+#ifndef libs_common_include_helpers_format_hpp
+#define libs_common_include_helpers_format_hpp
 
 #include <boost/format.hpp>
 
 namespace helpers {
+
 template<typename... T>
 // NOLINTNEXTLINE(performance-unnecessary-value-param)
 std::string format(boost::format fmt, T&&... args)
@@ -30,16 +34,19 @@ std::string format(boost::format fmt, T&&... args)
     (void)expander{0, (fmt % std::forward<T>(args), 0)...};
     return std::move(fmt).str();
 }
+
 template<typename... T>
 std::string format(const char* fmtString, T&&... args)
 {
     return format(boost::format(fmtString), std::forward<T>(args)...);
 }
+
 template<typename... T>
 std::string format(const std::string& fmtString, T&&... args)
 {
     return format(boost::format(fmtString), std::forward<T>(args)...);
 }
+
 } // namespace helpers
 
-#endif
+#endif // !libs_common_include_helpers_format_hpp
