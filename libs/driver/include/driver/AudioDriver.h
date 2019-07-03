@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,18 +14,25 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AUDIODRIVER_H_INCLUDED
-#define AUDIODRIVER_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#pragma once
+#ifndef libs_driver_include_driver_AudioDriver_h
+#define libs_driver_include_driver_AudioDriver_h
 
 #include "AudioInterface.h"
+
 #include <array>
 #include <vector>
+
 class IAudioDriverCallback;
 
 /// Base class for audio drivers
 class AudioDriver : public IAudioDriver
 {
 public:
+    explicit
     AudioDriver(IAudioDriverCallback* driverCallback);
     ~AudioDriver() override;
 
@@ -66,4 +73,4 @@ private:
     std::array<EffectPlayId, MAX_NUM_CHANNELS> channels_; //-V730_NOINIT
 };
 
-#endif // !AUDIODRIVER_H_INCLUDED
+#endif // !libs_driver_include_driver_AudioDriver_h

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,10 +14,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "driver/AudioDriver.h"
-#include "RTTR_Assert.h"
 #include "driver/SoundHandle.h"
+
+#include <RTTR_Assert.h>
+
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
@@ -29,7 +33,10 @@ class IAudioDriverCallback;
 IAudioDriver::~IAudioDriver() = default;
 
 AudioDriver::AudioDriver(IAudioDriverCallback* driverCallback)
-    : driverCallback(driverCallback), initialized(false), nextPlayID_(0), numChannels_(0)
+    : driverCallback(driverCallback)
+    , initialized(false)
+    , nextPlayID_(0)
+    , numChannels_(0)
 {}
 
 AudioDriver::~AudioDriver()

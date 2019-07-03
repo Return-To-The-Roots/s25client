@@ -1,21 +1,25 @@
-// Copyright (c) 2005-2009 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
-// This file is part of Siedler II.5 RTTR.
+// This file is part of Return To The Roots.
 //
-// Siedler II.5 RTTR is free software: you can redistribute it and/or modify
+// Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Siedler II.5 RTTR is distributed in the hope that it will be useful,
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AUDIODRIVERLOADERINTERFACE_H_INCLUDED
-#define AUDIODRIVERLOADERINTERFACE_H_INCLUDED
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#pragma once
+#ifndef libs_driver_include_driver_IAudioDriverCallback_h
+#define libs_driver_include_driver_IAudioDriverCallback_h
 
 class IAudioDriverCallback
 {
@@ -24,4 +28,4 @@ public:
     virtual void Msg_MusicFinished() = 0;
 };
 
-#endif // !DRIVERLOADERINTERFACE_H_INCLUDED
+#endif // !libs_driver_include_driver_IAudioDriverCallback_h

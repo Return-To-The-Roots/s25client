@@ -14,15 +14,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef EXPORT_IMPORT_H_INCLUDED
-#define EXPORT_IMPORT_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#pragma once
+#ifndef libs_driver_include_driver_exportImport_h
+#define libs_driver_include_driver_exportImport_h
 
 #include <boost/config.hpp>
 
 #ifdef BUILD_DLL
-#define RTTR_DECL extern "C" BOOST_SYMBOL_EXPORT
+#   define RTTR_DECL extern "C" BOOST_SYMBOL_EXPORT
 #else
-#define RTTR_DECL extern "C" BOOST_SYMBOL_IMPORT
+#   define RTTR_DECL extern "C" BOOST_SYMBOL_IMPORT
 #endif
 
-#endif
+#endif // !libs_driver_include_driver_exportImport_h

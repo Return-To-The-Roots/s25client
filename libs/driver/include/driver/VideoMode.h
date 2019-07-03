@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,10 +14,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
-#ifndef VideoMode_h__
-#define VideoMode_h__
+#ifndef libs_driver_include_driver_VideoInterface_h
+#define libs_driver_include_driver_VideoInterface_h
 
 /// Window size or resolution
 struct VideoMode
@@ -25,10 +27,23 @@ struct VideoMode
     unsigned short width;
     unsigned short height;
 
-    VideoMode() : width(0), height(0) {}
-    VideoMode(unsigned short width, unsigned short height) : width(width), height(height) {}
-    bool operator==(const VideoMode& o) const { return (width == o.width && height == o.height); }
-    bool operator!=(const VideoMode& o) const { return !(*this == o); }
+    VideoMode()
+        : width(0), height(0)
+    {}
+
+    VideoMode(unsigned short width, unsigned short height)
+        : width(width), height(height)
+    {}
+
+    bool operator==(const VideoMode& o) const
+    {
+        return (width == o.width && height == o.height);
+    }
+
+    bool operator!=(const VideoMode& o) const
+    {
+        return !(*this == o);
+    }
 };
 
-#endif // VideoMode_h__
+#endif // libs_driver_include_driver_VideoInterface_h

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,15 +14,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
-
-#ifndef EffectPlayId_h__
-#define EffectPlayId_h__
+#ifndef libs_driver_include_driver_EffectPlayId_h
+#define libs_driver_include_driver_EffectPlayId_h
 
 #include <cstdint>
 
 /// Id of a played effect
 using EffectPlayId = int32_t;
 
-#endif // EffectPlayId_h__
+#endif // !libs_driver_include_driver_EffectPlayId_h

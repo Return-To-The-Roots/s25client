@@ -34,8 +34,6 @@ public:
         : SoundDesc(SD_EFFECT), sound(sound)
     {}
 
-    void setInvalid() { isValid_ = false; }
-    
     Mix_Chunk* const sound; ///< Handle to the sound. Managed and freed by the driver
 };
 

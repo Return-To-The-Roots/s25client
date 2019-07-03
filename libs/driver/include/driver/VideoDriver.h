@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,13 +14,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef VIDEODRIVER_H_INCLUDED
-#define VIDEODRIVER_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#ifndef libs_driver_include_driver_VideoDriver_h
+#define libs_driver_include_driver_VideoDriver_h
 
 #include "MouseCoords.h"
 #include "VideoInterface.h"
+
 #include <array>
 
 class VideoDriverLoaderInterface;
@@ -29,8 +32,8 @@ class VideoDriverLoaderInterface;
 class VideoDriver : public IVideoDriver
 {
 public:
+    explicit
     VideoDriver(VideoDriverLoaderInterface* CallBack);
-
     ~VideoDriver() override = default;
 
     /// Funktion zum Auslesen der Mauskoordinaten.
@@ -59,9 +62,10 @@ protected:
     MouseCoords mouse_xy;                 /// Status der Maus.
     std::array<bool, 512> keyboard;       /// Status der Tastatur;
     bool isFullscreen_;                   /// Vollbild an/aus?
+
 private:
     // cached as possibly used often
     VideoMode windowSize_;
     Extent renderSize_;
 };
-#endif // !VIDEODRIVER_H_INCLUDED
+#endif // !libs_driver_include_driver_VideoDriver_h

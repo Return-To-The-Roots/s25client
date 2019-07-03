@@ -15,8 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "driver/VideoDriver.h"
+
+#include <commonDefines.h> // IWYU pragma: keep
+
 #include <algorithm>
 #include <stdexcept>
 
@@ -30,7 +32,10 @@ IVideoDriver::~IVideoDriver() = default;
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
-    : CallBack(CallBack), initialized(false), isFullscreen_(false), renderSize_(0, 0)
+    : CallBack(CallBack)
+    , initialized(false)
+    , isFullscreen_(false)
+    , renderSize_(0, 0)
 {
     std::fill(keyboard.begin(), keyboard.end(), false);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,15 +14,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef VIDEOINTERFACE_H_INCLUDED
-#define VIDEOINTERFACE_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#ifndef libs_driver_include_driver_VideoInterface_h
+#define libs_driver_include_driver_VideoInterface_h
 
-#include "KeyEvent.h"
-#include "Point.h"
-#include "VideoMode.h"
 #include "exportImport.h"
+#include "KeyEvent.h"
+#include "VideoMode.h"
+
+#include <Point.h>
+
 #include <string>
 #include <vector>
 
@@ -95,4 +99,4 @@ class VideoDriverLoaderInterface;
 RTTR_DECL IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack);
 RTTR_DECL void FreeVideoInstance(IVideoDriver* driver);
 
-#endif // !VIDEOINTERFACE_H_INCLUDED
+#endif // !libs_driver_include_driver_VideoInterface_h

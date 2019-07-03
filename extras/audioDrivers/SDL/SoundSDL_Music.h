@@ -44,8 +44,6 @@ public:
         , data(std::move(data))
     {}
 
-    void setInvalid() { isValid_ = false; }
-
     Mix_Music* music; ///< Handle to the sound. Managed and freed by the driver
     const std::vector<char> data;
 };
