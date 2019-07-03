@@ -25,9 +25,9 @@
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
 
+#include <cstdio>
 #include <iostream>
 #include <stdexcept>
-#include <cstdio>
 
 namespace bfs = boost::filesystem;
 
