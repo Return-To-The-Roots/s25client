@@ -190,20 +190,16 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     {
         if(isFullscreen_)
         {
-            // Use our algorithm to determine a size, then SDLs to fill in remaining data
             auto const targetMode = FindClosestVideoMode(newSize);
-            SDL_DisplayMode target, closest;
+            SDL_DisplayMode target;
             target.w = targetMode.width;
             target.h = targetMode.height;
             target.format = 0;           // don't care
             target.refresh_rate = 0;     // don't care
             target.driverdata = nullptr; // initialize to 0
-            if(!SDL_GetClosestDisplayMode(SDL_GetWindowDisplayIndex(window), &target, &closest))
-            {
-                PrintError(SDL_GetError());
-                return false;
-            }
-            if(SDL_SetWindowDisplayMode(window, &closest) < 0)
+            // Explicitly change the window size to avoid a bug with SDL reporting the wrong size until alt+tab
+            SDL_SetWindowSize(window, target.w, target.h);
+            if(SDL_SetWindowDisplayMode(window, &target) < 0)
             {
                 PrintError(SDL_GetError());
                 return false;
