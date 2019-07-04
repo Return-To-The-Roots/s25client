@@ -15,9 +15,9 @@ IF (MSVC)
 	ENDIF()
 	MESSAGE(STATUS "Building for MSVC: ${CMAKE_LIBRARY_ARCHITECTURE}")
 
-	SET(msvcContribDir ${CMAKE_CURRENT_SOURCE_DIR}/full-contrib-msvc)
+	SET(msvcContribDir ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/full-contrib-msvc)
 	IF(NOT EXISTS ${msvcContribDir} OR NOT IS_DIRECTORY ${msvcContribDir})
-		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${msvcContribDir} first!")
+		MESSAGE(FATAL_ERROR "You have to extract external/3rdparty/full-contrib-msvc.rar to ${msvcContribDir} first!")
 	ENDIF()
 	SET(_dllDir "${msvcContribDir}/bin/${CMAKE_LIBRARY_ARCHITECTURE}")
     # Add dlls to the gathered ones
@@ -39,8 +39,8 @@ ENDIF()
 ################################################################################
 
 if(WIN32)
-	set(bzip2ContribDir ${CMAKE_CURRENT_LIST_DIR}/bzip2-1.0.6)
-	IF(IS_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${bzip2ContribDir})
+	set(bzip2ContribDir ${CMAKE_CURRENT_LIST_DIR}/3rdparty/bzip2-1.0.6)
+	IF(EXISTS ${bzip2ContribDir} AND IS_DIRECTORY ${bzip2ContribDir})
 		SET(SOURCES_BZIP
 			${bzip2ContribDir}/blocksort.c
 			${bzip2ContribDir}/bzlib.c
@@ -67,20 +67,26 @@ foreach(curDirVar BINDIR DATADIR LIBDIR DOCDIR DRIVERDIR)
 endforeach()
 option(RTTR_BUILD_UPDATER "Build auto-updater. Not advised when changing the default paths as the updater is configured specifically for the official builds." ${RTTR_BUILD_UPDATER_DEF})
 
-add_subdirectory(glad)
+add_subdirectory(3rdparty/glad)
+
 add_library(kaguya INTERFACE)
-target_include_directories(kaguya SYSTEM INTERFACE kaguya/include)
+target_include_directories(kaguya SYSTEM INTERFACE 3rdparty/kaguya/include)
+
 add_subdirectory(libendian)
+
 set(RTTR_BUILD_LOBBY_CLIENT ON)
 add_subdirectory(liblobby)
+
 add_subdirectory(libsiedler2)
 add_subdirectory(libutil)
 add_subdirectory(mygettext)
 add_subdirectory(s-c)
 add_subdirectory(s25edit)
+
 if(RTTR_BUILD_UPDATER)
     add_subdirectory(s25update)
 endif()
+
 add_library(turtle INTERFACE)
-target_include_directories(turtle SYSTEM INTERFACE turtle/include)
+target_include_directories(turtle SYSTEM INTERFACE 3rdparty/turtle/include)
 target_compile_definitions(turtle INTERFACE MOCK_NO_AUTO_PTR)

@@ -20,7 +20,7 @@ SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 # As this will be appended to CMAKE_PREFIX_PATH one can use other version by setting
 # that appropriately
 
-set(_contrib_lua_path ${CMAKE_SOURCE_DIR}/external/lua)
+set(_contrib_lua_path ${CMAKE_SOURCE_DIR}/external/3rdparty/lua)
 
 if(MSVC)
 	# Library is in contrib archive which is in prefix path.

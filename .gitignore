@@ -10,6 +10,6 @@
 .vscode
 /S2
 /build
-/external/boost*
-/external/full-contrib-msvc
-/win32/*.aps
+/external/3rdparty/boost*
+/external/3rdparty/full-contrib-msvc
+/data/win32/*.aps
