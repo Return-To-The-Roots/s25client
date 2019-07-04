@@ -80,10 +80,6 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
 
     LOG.write(_("Loaded video driver \"%1%\"\n")) % GetName();
 
-    if(videodriver->IsOpenGL())
-        renderer_ = std::make_unique<OpenGLRenderer>();
-    else
-        renderer_ = std::make_unique<DummyRenderer>();
     frameCtr_ = std::make_unique<FrameCounter>();
     frameLimiter_ = std::make_unique<FrameLimiter>();
 
@@ -101,6 +97,7 @@ void VideoDriverWrapper::UnloadDriver()
     } else
         delete videodriver;
     videodriver = nullptr;
+    renderer_.reset();
 }
 
 /**
@@ -321,7 +318,7 @@ bool VideoDriverWrapper::setHwVSync(bool enabled)
  */
 void VideoDriverWrapper::RenewViewport()
 {
-    if(!videodriver->IsOpenGL())
+    if(!videodriver->IsOpenGL() || !renderer_)
         return;
 
     const Extent renderSize = videodriver->GetRenderSize();
@@ -380,6 +377,10 @@ void VideoDriverWrapper::RenewViewport()
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
+    if(videodriver->IsOpenGL())
+        renderer_ = std::make_unique<OpenGLRenderer>();
+    else
+        renderer_ = std::make_unique<DummyRenderer>();
     if(!renderer_->initOpenGL(videodriver->GetLoaderFunction()))
         return false;
     LOG.write(_("OpenGL %1%.%2% supported\n")) % GLVersion.major % GLVersion.minor;
