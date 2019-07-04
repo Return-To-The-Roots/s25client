@@ -465,12 +465,12 @@ unsigned long VideoWinAPI::GetTickCount() const
 
 static void* wglGetProcAddress_Wrapper(const char* name)
 {
-    union
+    auto* func = reinterpret_cast<void*>(wglGetProcAddress(name));
+    if(!func)
     {
-        PROC procAddress;
-        void* func;
-    }; // Avoid warning about pointer conversion
-    procAddress = wglGetProcAddress(name);
+        const auto opengl32DLL = LoadLibrary(L"opengl32.dll");
+        func = reinterpret_cast<void*>(GetProcAddress(opengl32DLL, name));
+    }
     return func;
 }
 
