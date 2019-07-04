@@ -23,11 +23,11 @@
 	url = https://github.com/Return-To-The-Roots/languages.git
 	path = external/languages
 [submodule "contrib/kaguya"]
-	path = external/kaguya
+	path = external/3rdparty/kaguya
 	url = https://github.com/satoren/kaguya.git
 [submodule "s25edit"]
 	path = external/s25edit
 	url = https://github.com/Return-To-The-Roots/s25edit.git
 [submodule "contrib/turtle"]
-	path = external/turtle
+	path = external/3rdparty/turtle
 	url = https://github.com/mat007/turtle.git
