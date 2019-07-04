@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,12 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef EdgeDesc_h__
-#define EdgeDesc_h__
+#pragma once
+#ifndef libs_libGamedata_gameData_EdgeDesc_h
+#define libs_libGamedata_gameData_EdgeDesc_h
 
 #include "DescIdx.h"
-#include "Rect.h"
+
+#include <Rect.h>
+
 #include <string>
 
 struct WorldDescription;
@@ -36,4 +41,4 @@ struct EdgeDesc
     EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
 };
 
-#endif // EdgeDesc_h__
+#endif // !libs_libGamedata_gameData_EdgeDesc_h

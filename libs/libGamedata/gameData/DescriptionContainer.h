@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,11 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef DescriptionContainer_h__
-#define DescriptionContainer_h__
+#pragma once
+#ifndef libs_libGamedata_gameData_DescriptionContainer_h
+#define libs_libGamedata_gameData_DescriptionContainer_h
 
 #include "DescIdx.h"
+
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -98,4 +102,4 @@ inline T& DescriptionContainer<T>::getMutable(const DescIdx<T> idx)
     return items[idx.value];
 }
 
-#endif // DescriptionContainer_h__
+#endif // !libs_libGamedata_gameData_DescriptionContainer_h

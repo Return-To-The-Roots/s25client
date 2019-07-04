@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,13 +14,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef CheckedLuaTable_h__
-#define CheckedLuaTable_h__
+#pragma once
+#ifndef libs_libGamedata_lua_CheckedLuaTable_h
+#define libs_libGamedata_lua_CheckedLuaTable_h
 
 #include "Rect.h"
+
 #include "gameData/WorldDescription.h"
+
 #include <kaguya/kaguya.hpp>
+
 #include <set>
 #include <string>
 #include <vector>
@@ -53,6 +59,7 @@ public:
 };
 
 namespace kaguya {
+
 template<>
 struct lua_type_traits<CheckedLuaTable>
 {
@@ -63,6 +70,7 @@ struct lua_type_traits<CheckedLuaTable>
     static bool checkType(lua_State* l, int index) { return Base::checkType(l, index); }
     static get_type get(lua_State* l, int index) { return CheckedLuaTable(Base::get(l, index)); }
 };
+
 } // namespace kaguya
 
 //////////////////////////////////////////////////////////////////////////
@@ -113,4 +121,4 @@ inline Rect CheckedLuaTable::getRectOrDefault(const std::string& fieldName, cons
         return defaultValue;
 }
 
-#endif // CheckedLuaTable_h__
+#endif // !libs_libGamedata_lua_CheckedLuaTable_h

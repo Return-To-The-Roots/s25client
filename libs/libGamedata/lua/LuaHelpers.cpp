@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,8 +14,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "LuaHelpers.h"
 #include "LuaInterfaceBase.h"
 
@@ -24,14 +25,16 @@ namespace lua {
 void assertTrue(bool testValue, const std::string& error)
 {
     if(!testValue)
+    {
         throw LuaExecutionError(error);
+    }
 }
 
 void validatePath(const std::string& path)
 {
-    std::string errorStart = std::string("Invalid path '") + path + "': ";
-    assertTrue(path.find("<RTTR_") == 0, errorStart + "Must start with <RTTR_");
-    assertTrue(path.find("..") == std::string::npos, errorStart + "Must not contain '..'");
+    const std::string errorPrefix( "Invalid path '" + path + "': " );
+    assertTrue(path.find("<RTTR_") == 0, errorPrefix + "Must start with <RTTR_");
+    assertTrue(path.find("..") == std::string::npos, errorPrefix + "Must not contain '..'");
 }
 
 } // namespace lua

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,23 +14,35 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
-
-#ifndef RTTR_Version_h__
-#define RTTR_Version_h__
+#ifndef libs_rttrConfig_src_RTTR_Version_h
+#define libs_rttrConfig_src_RTTR_Version_h
 
 #include <string>
 
 class RTTR_Version
 {
 public:
-    static std::string GetTitle();
-    static std::string GetVersionDate();
-    static std::string GetRevision();
-    static std::string GetShortRevision();
-    static std::string GetYear();
-    static std::string GetReadableVersion();
+    static
+    std::string GetTitle();
+
+    static
+    std::string GetVersionDate();
+
+    static
+    std::string GetRevision();
+
+    static
+    std::string GetShortRevision();
+
+    static
+    std::string GetYear();
+
+    static
+    std::string GetReadableVersion();
 };
 
-#endif // RTTR_Version_h__
+#endif // !libs_rttrConfig_src_RTTR_Version_h

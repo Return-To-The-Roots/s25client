@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,13 +14,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef FILES_H_INCLUDED
-#define FILES_H_INCLUDED
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#ifndef libs_rttrConfig_src_files_h
+#define libs_rttrConfig_src_files_h
 
-#include "helpers/MultiArray.h"
-#include "libutil/warningSuppression.h"
+#include <helpers/MultiArray.h>
+#include <libutil/warningSuppression.h>
+
 #include <array>
 #include <string>
 
@@ -135,21 +138,29 @@ const std::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
 
 constexpr unsigned FILE_SPLASH_ID = 104;
 
-const std::array<const std::string, 21> SUPPRESS_UNUSED LOAD_SCREENS = {
-  {"setup666", "setup667", "setup801", "setup802", "setup803", "setup804", "setup805", "setup806", "setup810", "setup811", "setup895",
-   "setup896", "africa",   "austra",   "europe",   "green",    "japan",    "namerica", "nasia",    "samerica", "sasia"}};
+const std::array<const std::string, 21> SUPPRESS_UNUSED LOAD_SCREENS = {{
+      "setup666", "setup667", "setup801", "setup802", "setup803", "setup804", "setup805", "setup806", "setup810", "setup811", "setup895", "setup896"
+    , "africa",   "austra",   "europe",   "green",    "japan",    "namerica", "nasia",    "samerica", "sasia"
+}};
 
 constexpr unsigned NUM_GFXSETS = 3;
 constexpr unsigned NUM_NATIONS = 5;
 
-const std::array<const std::string, NUM_NATIONS> SUPPRESS_UNUSED NATION_ICON_IDS = {
-  {"afr_icon", "jap_icon", "rom_icon", "vik_icon", "bab_icon"}};
+const std::array<const std::string, NUM_NATIONS> SUPPRESS_UNUSED NATION_ICON_IDS = {{
+    "afr_icon", "jap_icon", "rom_icon", "vik_icon", "bab_icon"
+}};
 
-const helpers::MultiArray<const std::string, 2, NUM_NATIONS> SUPPRESS_UNUSED NATION_GFXSET_Z = {
-  {{"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"}, {"wafr_z", "wjap_z", "wrom_z", "wvik_z", "wbab_z"}}};
+const helpers::MultiArray<const std::string, 2, NUM_NATIONS> SUPPRESS_UNUSED NATION_GFXSET_Z = {{
+      {"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"}
+    , {"wafr_z", "wjap_z", "wrom_z", "wvik_z", "wbab_z"}
+}};
 
-const std::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED MAP_GFXSET_Z = {{"MAP_0_Z", "MAP_1_Z", "MAP_2_Z"}};
+const std::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED MAP_GFXSET_Z = {{
+    "MAP_0_Z", "MAP_1_Z", "MAP_2_Z"
+}};
 
-const std::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED TEX_GFXSET = {{"TEX5", "TEX6", "TEX7"}};
+const std::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED TEX_GFXSET = {{
+    "TEX5", "TEX6", "TEX7"
+}};
 
-#endif // FILES_H_INCLUDED
+#endif // !libs_rttrConfig_src_files_h

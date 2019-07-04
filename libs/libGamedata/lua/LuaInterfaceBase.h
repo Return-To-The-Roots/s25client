@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,23 +14,29 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef LuaInterfaceBase_h__
-#define LuaInterfaceBase_h__
+#pragma once
+#ifndef libs_libGamedata_lua_LuaInterfaceBase_h
+#define libs_libGamedata_lua_LuaInterfaceBase_h
 
 #include <kaguya/kaguya.hpp>
+
 #include <map>
 #include <stdexcept>
 #include <string>
 
 namespace kaguya {
 class State;
-}
+} // namespace kaguya
 
 class LuaExecutionError : public std::runtime_error
 {
 public:
-    LuaExecutionError(const std::string& msg) : std::runtime_error(msg) {}
+    LuaExecutionError(const std::string& msg)
+        : std::runtime_error(msg) 
+    {}
 };
 
 /// Base class for all lua script handlers
@@ -48,14 +54,11 @@ public:
     bool HasErrorOccurred() const { return errorOccured_; }
     void ClearErrorOccured() { errorOccured_ = false; }
 
-    kaguya::State& GetState() { return lua; }
+    kaguya::State& GetState() { return lua_; }
 
 protected:
     LuaInterfaceBase();
     virtual ~LuaInterfaceBase();
-
-    kaguya::State lua;
-    std::string script_;
 
     bool ValidateUTF8(const std::string& scriptTxt);
 
@@ -66,14 +69,22 @@ protected:
     std::string Translate(const std::string& key);
 
     void ErrorHandlerNoThrow(int status, const char* message);
-    [[noreturn]] void ErrorHandler(int status, const char* message);
+
+    [[noreturn]]
+    void ErrorHandler(int status, const char* message);
+
+private:
+    static
+    std::map<std::string, std::string> GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code);
+
+protected:
+    kaguya::State lua_;
+    std::string script_;
 
 private:
     /// Sticky flag to signal an occurred error during execution of lua code
     bool errorOccured_;
     std::map<std::string, std::string> translations_;
-
-    static std::map<std::string, std::string> GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code);
 };
 
-#endif // LuaInterfaceBase_h__
+#endif // !libs_libGamedata_lua_LuaInterfaceBase_h

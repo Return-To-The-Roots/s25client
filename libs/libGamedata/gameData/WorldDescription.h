@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,59 +14,73 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef WorldDescription_h__
-#define WorldDescription_h__
+#pragma once
+#ifndef libs_libGamedata_gameData_WorldDesc_h
+#define libs_libGamedata_gameData_WorldDesc_h
 
 #include "DescriptionContainer.h"
 #include "EdgeDesc.h"
 #include "LandscapeDesc.h"
 #include "TerrainDesc.h"
+
 #include <stdexcept>
 
 struct GameDataError : public std::runtime_error
 {
-    GameDataError(const std::string& desc) : std::runtime_error("Invalid game data: " + desc) {}
+    GameDataError(const std::string& desc)
+        : std::runtime_error("Invalid game data: " + desc)
+    {}
 };
 
 struct GameDataLoadError : public std::runtime_error
 {
-    GameDataLoadError(const std::string& desc) : std::runtime_error("Failed to load game data: " + desc) {}
+    GameDataLoadError(const std::string& desc)
+        : std::runtime_error("Failed to load game data: " + desc)
+    {}
 };
 
 struct WorldDescription
 {
-    WorldDescription();
-    ~WorldDescription();
     DescriptionContainer<LandscapeDesc> landscapes;
     DescriptionContainer<EdgeDesc> edges;
     DescriptionContainer<TerrainDesc> terrain;
+
+    WorldDescription();
+    ~WorldDescription();
+
     // Convenience accessors
     template<class T>
     const T& get(DescIdx<T> idx) const
     {
         return getContainer<T>().get(idx);
     }
+
     template<class T>
     const DescriptionContainer<T>& getContainer() const;
 };
 
 template<>
-inline const DescriptionContainer<LandscapeDesc>& WorldDescription::getContainer() const
+inline
+const DescriptionContainer<LandscapeDesc>& WorldDescription::getContainer() const
 {
     return landscapes;
 }
 
 template<>
-inline const DescriptionContainer<EdgeDesc>& WorldDescription::getContainer() const
+inline
+const DescriptionContainer<EdgeDesc>& WorldDescription::getContainer() const
 {
     return edges;
 }
 
 template<>
-inline const DescriptionContainer<TerrainDesc>& WorldDescription::getContainer() const
+inline
+const DescriptionContainer<TerrainDesc>& WorldDescription::getContainer() const
 {
     return terrain;
 }
 
-#endif // WorldDescription_h__
+#endif // !libs_libGamedata_gameData_WorldDesc_h

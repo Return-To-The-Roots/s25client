@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,11 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef LandscapeDesc_h__
-#define LandscapeDesc_h__
+#pragma once
+#ifndef libs_libGamedata_gameData_LandscapeDesc_h
+#define libs_libGamedata_gameData_LandscapeDesc_h
 
 #include "Rect.h"
+
 #include <array>
 #include <string>
 
@@ -50,4 +54,4 @@ struct LandscapeDesc
     LandscapeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
 };
 
-#endif // LandscapeDesc_h__
+#endif // !libs_libGamedata_gameData_LandscapeDesc_h

@@ -26,35 +26,68 @@
 struct MockupSoundDesc : public SoundDesc
 {
     static int numAlive;
-    MockupSoundDesc(SoundType type) : SoundDesc(type) { numAlive++; }
-    ~MockupSoundDesc() override { numAlive--; }
-    void setInvalid() { isValid_ = false; }
+
+    MockupSoundDesc(SoundType type)
+        : SoundDesc(type)
+    {
+        numAlive++; 
+    }
+    
+    ~MockupSoundDesc() override
+    {
+        numAlive--; 
+    }
 };
 
 struct MockupAudioDriver final : public AudioDriver, IAudioDriverCallback
 {
 protected:
-    void DoUnloadSound(SoundDesc& sound) override { static_cast<MockupSoundDesc&>(sound).setInvalid(); }
+    void DoUnloadSound(SoundDesc& sound) override
+    { 
+        static_cast<MockupSoundDesc&>(sound).setInvalid();
+    }
 
 public:
-    MockupAudioDriver() : AudioDriver(this) {}
-    ~MockupAudioDriver() override { CleanUp(); }
-    const char* GetName() const override { return "MockupAudio"; }
+    MockupAudioDriver()
+        : AudioDriver(this) 
+    {}
+    
+    ~MockupAudioDriver() override
+    {
+        CleanUp(); 
+    }
+    
+    const char* GetName() const override
+    {
+        return "MockupAudio"; 
+    }
+    
     bool Initialize() override
     {
         SetNumChannels(MAX_NUM_CHANNELS);
         return initialized = true;
     }
-    SoundHandle LoadEffect(const std::string&) override { return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT)); }
+
+    SoundHandle LoadEffect(const std::string&) override
+    { 
+        return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT)); 
+    }
+
     SoundHandle LoadEffect(const std::vector<char>&, const std::string&) override
     {
         return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT));
     }
-    SoundHandle LoadMusic(const std::string&) override { return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC)); }
+
+    SoundHandle LoadMusic(const std::string&) override
+    {
+        return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC)); 
+    }
+
     SoundHandle LoadMusic(const std::vector<char>&, const std::string&) override
     {
         return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC));
     }
+
     EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t /*volume*/, bool /*loop*/) override
     {
         if(!sound.isValid())
@@ -64,6 +97,7 @@ public:
             channel = 0;
         return AddPlayedEffect(channel);
     }
+
     void PlayMusic(const SoundHandle&, unsigned /*repeats*/) override {}
     void StopMusic() override {}
     void StopEffect(EffectPlayId play_id) override { RemoveEffect(play_id); }

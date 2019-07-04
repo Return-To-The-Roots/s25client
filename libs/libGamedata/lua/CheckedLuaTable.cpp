@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,15 +14,23 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "CheckedLuaTable.h"
-#include "libutil/Log.h"
+
+#include <RTTR_Assert.h>
+#include <libutil/Log.h>
+
 #include <boost/algorithm/string/join.hpp>
+
 #include <algorithm>
 #include <utility>
 
-CheckedLuaTable::CheckedLuaTable(kaguya::LuaTable luaTable) : table(std::move(luaTable)), checkEnabled(false) {}
+CheckedLuaTable::CheckedLuaTable(kaguya::LuaTable luaTable)
+    : table(std::move(luaTable))
+    , checkEnabled(false)
+{}
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
 CheckedLuaTable::~CheckedLuaTable() noexcept(false)
@@ -39,9 +47,16 @@ void CheckedLuaTable::checkUnused()
     std::sort(tableKeys.begin(), tableKeys.end());
     std::vector<std::string> unusedKeys;
     std::set_difference(tableKeys.begin(), tableKeys.end(), accessedKeys_.begin(), accessedKeys_.end(), std::back_inserter(unusedKeys));
+
     for(const std::string& unusedKey : unusedKeys)
+    {
         LOG.write("\nERROR: Did not use key '%1%' in a lua table. This is most likely a bug!\n") % unusedKey;
+    }
+    
     RTTR_Assert(unusedKeys.empty());
+    
     if(!unusedKeys.empty())
+    {
         throw std::runtime_error("Did not use keys " + boost::algorithm::join(unusedKeys, ", ") + " in lua table!");
+    }
 }

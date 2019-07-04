@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,12 +14,16 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "EdgeDesc.h"
 #include "WorldDescription.h"
-#include "lua/CheckedLuaTable.h"
-#include "lua/LuaHelpers.h"
+
+#include <commonDefines.h> // IWYU pragma: keep
+
+#include <lua/CheckedLuaTable.h>
+#include <lua/LuaHelpers.h>
 
 EdgeDesc::EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
 {

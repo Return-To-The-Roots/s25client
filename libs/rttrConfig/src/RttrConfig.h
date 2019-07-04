@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,22 +14,22 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
+#ifndef libs_rttrConfig_src_RttrConfig_h
+#define libs_rttrConfig_src_RttrConfig_h
 
-#ifndef RttrConfig_h__
-#define RttrConfig_h__
+#include <libutil/Singleton.h>
 
-#include "libutil/Singleton.h"
 #include <boost/filesystem/path.hpp>
+
 #include <map>
 #include <string>
 
 class RttrConfig : public Singleton<RttrConfig>
 {
-    boost::filesystem::path prefixPath_, homePath;
-    std::map<std::string, std::string> pathMappings;
-
 public:
     bool Init();
     /// Return the prefix path for the installation
@@ -38,8 +38,13 @@ public:
     static boost::filesystem::path GetSourceDir();
     /// Expand the given path to a valid, absolute path replacing placeholders like <RTTR_BINDIR>/foo.bar
     std::string ExpandPath(const std::string& path) const;
+
+private:
+    boost::filesystem::path prefixPath_;
+    boost::filesystem::path homePath_;
+    std::map<std::string, std::string> pathMappings_;
 };
 
 #define RTTRCONFIG RttrConfig::inst()
 
-#endif // RttrConfig_h__
+#endif // !libs_rttrConfig_src_RttrConfig_h

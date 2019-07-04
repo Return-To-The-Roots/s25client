@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,9 +14,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef DescIdx_h__
-#define DescIdx_h__
+#pragma once
+#ifndef libs_libGamedata_gameData_DescIdx_h
+#define libs_libGamedata_gameData_DescIdx_h
+
+#include <cstdint>
 
 /// Type safe index for a description
 //-V:DescIdx:801
@@ -25,8 +30,13 @@ struct DescIdx
 {
     /// Invalid index
     static constexpr uint8_t INVALID = 0xFF;
+
     uint8_t value;
-    explicit DescIdx(uint8_t value = INVALID) : value(value) {}
+
+    explicit
+    DescIdx(uint8_t value = INVALID) : value(value)
+    {}
+    
     bool operator!() const { return value == INVALID; }
     bool operator==(DescIdx rhs) const { return value == rhs.value; }
     bool operator!=(DescIdx rhs) const { return value != rhs.value; }
@@ -36,4 +46,4 @@ struct DescIdx
     bool operator>=(DescIdx rhs) const { return value >= rhs.value; }
 };
 
-#endif // DescIdx_h__
+#endif // !libs_libGamedata_gameData_DescIdx_h

@@ -18,21 +18,23 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
-#ifndef libs_driver_include_driver_VideoInterface_h
-#define libs_driver_include_driver_VideoInterface_h
+#ifndef libs_driver_include_driver_VideoMode_h
+#define libs_driver_include_driver_VideoMode_h
+
+#include <cstdint>
 
 /// Window size or resolution
 struct VideoMode
 {
-    unsigned short width;
-    unsigned short height;
+    uint16_t width;
+    uint16_t height;
 
-    VideoMode()
-        : width(0), height(0)
+    VideoMode(uint16_t w, uint16_t h)
+        : width(w), height(h)
     {}
 
-    VideoMode(unsigned short width, unsigned short height)
-        : width(width), height(height)
+    VideoMode()
+        : VideoMode(0, 0)
     {}
 
     bool operator==(const VideoMode& o) const
@@ -46,4 +48,4 @@ struct VideoMode
     }
 };
 
-#endif // libs_driver_include_driver_VideoInterface_h
+#endif // libs_driver_include_driver_VideoMode_h

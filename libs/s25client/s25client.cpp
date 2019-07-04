@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,49 +14,54 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "rttrDefines.h" // IWYU pragma: keep
-#include "Debug.h"
-#include "GameManager.h"
-#include "QuickStartGame.h"
-#include "RTTR_AssertError.h"
-#include "RTTR_Version.h"
-#include "RttrConfig.h"
-#include "Settings.h"
-#include "SignalHandler.h"
-#include "files.h"
-#include "mygettext/mygettext.h"
-#include "ogl/glAllocator.h"
-#include "libsiedler2/libsiedler2.h"
-#include "libutil/LocaleHelper.h"
-#include "libutil/Log.h"
-#include "libutil/StringConversion.h"
-#include "libutil/System.h"
-#include "libutil/error.h"
+#include <rttrDefines.h> // IWYU pragma: keep
+#include <Debug.h>
+#include <GameManager.h>
+#include <QuickStartGame.h>
+#include <RTTR_AssertError.h>
+#include <RTTR_Version.h>
+#include <RttrConfig.h>
+#include <Settings.h>
+#include <SignalHandler.h>
+#include <files.h>
+#include <mygettext/mygettext.h>
+#include <ogl/glAllocator.h>
+#include <libsiedler2/libsiedler2.h>
+#include <libutil/LocaleHelper.h>
+#include <libutil/Log.h>
+#include <libutil/StringConversion.h>
+#include <libutil/System.h>
+#include <libutil/error.h>
+
 #include <boost/filesystem.hpp>
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <boost/program_options.hpp>
+
 #include <array>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <limits>
-//#include <vld.h>
 
 #ifdef __APPLE__
-#include <SDL_main.h>
+#   include <SDL_main.h>
 #endif // __APPLE__
+
 #ifdef _WIN32
-#include "libutil/ucString.h"
-#include <windows.h>
-#include <s25clientResources.h>
-#if defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS
-#include <eh.h>
-#endif
-#endif
+#   include <libutil/ucString.h>
+#   include <windows.h>
+#   include <s25clientResources.h>
+#   if defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS
+#       include <eh.h>
+#   endif
+#endif // _WIN32
+
 #ifndef _MSC_VER
-#include <csignal>
+#   include <csignal>
 #endif
 
 namespace po = boost::program_options;
@@ -65,7 +70,11 @@ namespace po = boost::program_options;
 struct RttrExitException : std::exception
 {
     int code;
-    RttrExitException(int code) : code(code) {}
+    
+    explicit
+    RttrExitException(int code)
+        : code(code) 
+    {}
 };
 
 namespace {
@@ -141,7 +150,8 @@ void showCrashMessage()
 #endif
 }
 
-[[noreturn]] void handleException(void* pCtx = nullptr)
+[[noreturn]]
+void handleException(void* pCtx = nullptr)
 {
     std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
     try
@@ -178,7 +188,8 @@ LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
     return EXCEPTION_EXECUTE_HANDLER;
 }
 #else
-[[noreturn]] void ExceptionHandler(int /*sig*/)
+[[noreturn]]
+void ExceptionHandler(int /*sig*/)
 {
     handleException();
 }
@@ -309,10 +320,12 @@ bool InitDirectories()
             {
                 s25util::error(std::string("Directory ") + dir + " could not be created.");
                 s25util::error("Failed to start the game");
-            } catch(const std::runtime_error& error)
+            }
+            catch(const std::runtime_error& error)
             {
                 LOG.write("Additional error: %1%\n", LogTarget::Stderr) % error.what();
             }
+            
             return false;
         }
     }
@@ -323,7 +336,8 @@ bool InitDirectories()
         LOG.open();
         LOG.write("%1%\n\n", LogTarget::File) % GetProgramDescription();
         LOG.write("Starting in %s\n", LogTarget::File) % curPath;
-    } catch(const std::exception& e)
+    }
+    catch(const std::exception& e)
     {
         LOG.write("Error initializing log: %1%\nSystem reports: %2%\n", LogTarget::Stderr) % e.what() % LOG.getLastError();
         return false;
@@ -349,22 +363,33 @@ bool InitGame()
         s25util::error("Failed to start the game");
         return false;
     }
+    
     return true;
 }
 
 int RunProgram(po::variables_map& options)
 {
     LOG.write("%1%\n\n", LogTarget::Stdout) % GetProgramDescription();
+
     if(!LocaleHelper::init())
+    {
         return 1;
+    }
     if(!RTTRCONFIG.Init())
+    {
         return 1;
+    }
+
     SetAppSymbol();
     InstallSignalHandlers();
+
     // Exit-Handler initialisieren
     atexit(&ExitHandler);
+
     if(!InitDirectories())
+    {
         return 1;
+    }
 
     // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere (spielentscheidende) wird unser
     // Generator verwendet)
@@ -373,10 +398,14 @@ int RunProgram(po::variables_map& options)
     try
     {
         if(!InitGame())
+        {
             return 2;
+        }
 
         if(options.count("map"))
+        {
             QuickStartGame(options["map"].as<std::string>());
+        }
 
         // Hauptschleife
         while(GAMEMANAGER.Run())
@@ -389,13 +418,15 @@ int RunProgram(po::variables_map& options)
         // Spiel beenden
         GAMEMANAGER.Stop();
         libsiedler2::setAllocator(nullptr);
-    } catch(RTTR_AssertError& error)
+    }
+    catch(const RTTR_AssertError& error)
     {
         // Write to log file, but don't throw any errors if this fails too
         try
         {
             LOG.writeToFile(error.what());
-        } catch(...)
+        } 
+        catch(...)
         { //-V565
         }
         return 42;
@@ -419,8 +450,12 @@ int main(int argc, char** argv)
     bnw::args _(argc, argv);
 
     po::options_description desc("Allowed options");
-    desc.add_options()("help,h", "Show help")("map,m", po::value<std::string>(),
-                                              "Map to load")("test", "Run in test mode (shows errors during run)");
+    desc.add_options()
+        ("help,h", "Show help")
+        ("map,m", po::value<std::string>(), "Map to load")
+        ("test", "Run in test mode (shows errors during run)")
+        ;
+
     po::positional_options_description positionalOptions;
     positionalOptions.add("map", 1);
 
@@ -438,12 +473,16 @@ int main(int argc, char** argv)
     try
     {
         result = RunProgram(options);
-    } catch(RttrExitException& e)
+    } 
+    catch(const RttrExitException& e)
     {
         result = e.code;
     }
+
     if(result)
+    {
         WaitForEnter();
+    }
 
     return result;
 }

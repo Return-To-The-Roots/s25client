@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,12 +14,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#ifndef TerrainDesc_h__
-#define TerrainDesc_h__
+#pragma once
+#ifndef libs_libGamedata_gameData_TerrainDesc_h
+#define libs_libGamedata_gameData_TerrainDesc_h
 
 #include "DescIdx.h"
-#include "Rect.h"
+
+#include <Rect.h>
+
 #include <string>
 
 struct LandscapeDesc;
@@ -35,6 +40,7 @@ enum class TerrainBQ : uint8_t
     CASTLE,
     MINE
 };
+
 enum class TerrainKind : uint8_t
 {
     LAND,
@@ -43,6 +49,7 @@ enum class TerrainKind : uint8_t
     SNOW,
     MOUNTAIN
 };
+
 /// Bitset of what can be done on that terrain
 enum class ETerrain : uint8_t
 { /// Can do nothing, but also not dangerous. Don't use in code! Use !Is(Walkable) etc. instead!
@@ -105,9 +112,10 @@ struct TerrainDesc
     Triangle GetRSUTriangle() const;
 };
 
-inline bool TerrainDesc::Is(ETerrain what) const
+inline
+bool TerrainDesc::Is(ETerrain what) const
 {
     return (static_cast<uint8_t>(flags) & static_cast<uint8_t>(what)) == static_cast<uint8_t>(what);
 }
 
-#endif // TerrainDesc_h__
+#endif // !libs_libGamedata_gameData_TerrainDesc_h

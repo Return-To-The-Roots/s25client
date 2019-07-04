@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,32 +14,42 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "GameDataLoader.h"
 #include "CheckedLuaTable.h"
-#include "RttrConfig.h"
-#include "files.h"
+
 #include "gameData/EdgeDesc.h"
 #include "gameData/LandscapeDesc.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
-#include "libutil/Log.h"
+
+#include <commonDefines.h> // IWYU pragma: keep
+#include <RttrConfig.h>
+#include <files.h>
+#include <libutil/Log.h>
+
 #include <kaguya/kaguya.hpp>
 #include <boost/filesystem.hpp>
+
 #include <stdexcept>
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)
-    : worldDesc_(worldDesc), basePath_(bfs::path(basePath).lexically_normal().make_preferred().string()), curIncludeDepth_(0),
-      errorInIncludeFile_(false)
+    : worldDesc_(worldDesc)
+    , basePath_(bfs::path(basePath).lexically_normal().make_preferred().string())
+    , curIncludeDepth_(0)
+    , errorInIncludeFile_(false)
 {
-    Register(lua);
+    Register(lua_);
 
-    lua["rttr"] = this;
-    lua["include"] = kaguya::function([this](const std::string& file) { Include(file); });
+    lua_["rttr"] = this;
+    lua_["include"] = kaguya::function([this](const std::string& file) { Include(file); });
 }
 
-GameDataLoader::GameDataLoader(WorldDescription& worldDesc) : GameDataLoader(worldDesc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world") {}
+GameDataLoader::GameDataLoader(WorldDescription& worldDesc)
+    : GameDataLoader(worldDesc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world")
+{}
 
 GameDataLoader::~GameDataLoader() = default;
 
@@ -105,9 +115,11 @@ void GameDataLoader::AddTerrain(const kaguya::LuaTable& data)
 }
 
 void loadGameData(WorldDescription& worldDesc)
-
 {
     GameDataLoader gdLoader(worldDesc);
     if(!gdLoader.Load())
+    {
+        // TODO: why not use GameDataLoadError ?
         throw std::runtime_error("Failed to load game data");
+    }
 }
