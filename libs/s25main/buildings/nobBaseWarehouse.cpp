@@ -241,9 +241,8 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
     // Maybe we have to recruit one
     if(!inventory[job])
     {
-        if(!allow_recruiting)
+        if(!allow_recruiting || !TryRecruitJob(job))
             return false;
-        TryRecruitJob(job);
     }
 
     noFigure* fig = JobFactory::CreateJob(job, pos, player, goal);
