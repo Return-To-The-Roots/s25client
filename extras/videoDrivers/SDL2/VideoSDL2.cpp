@@ -146,6 +146,9 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
     UpdateCurrentSizes();
 
+    if(!isFullscreen_)
+        MoveWindowToCenter();
+
     SDL_Surface* iconSurf = SDL_CreateRGBSurfaceFrom(image.data(), 48, 48, 32, 48 * 4, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
     if(iconSurf)
     {
@@ -176,26 +179,27 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     {
         SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
         isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
+        if(!isFullscreen_)
+        {
+            SDL_SetWindowResizable(window, SDL_TRUE);
+            MoveWindowToCenter();
+        }
     }
 
     if(newSize != GetWindowSize())
     {
         if(isFullscreen_)
         {
-            // Use our algorithm to determine a size, then SDLs to fill in remaining data
             auto const targetMode = FindClosestVideoMode(newSize);
-            SDL_DisplayMode target, closest;
+            SDL_DisplayMode target;
             target.w = targetMode.width;
             target.h = targetMode.height;
             target.format = 0;           // don't care
             target.refresh_rate = 0;     // don't care
             target.driverdata = nullptr; // initialize to 0
-            if(!SDL_GetClosestDisplayMode(SDL_GetWindowDisplayIndex(window), &target, &closest))
-            {
-                PrintError(SDL_GetError());
-                return false;
-            }
-            if(SDL_SetWindowDisplayMode(window, &closest) < 0)
+            // Explicitly change the window size to avoid a bug with SDL reporting the wrong size until alt+tab
+            SDL_SetWindowSize(window, target.w, target.h);
+            if(SDL_SetWindowDisplayMode(window, &target) < 0)
             {
                 PrintError(SDL_GetError());
                 return false;
@@ -270,10 +274,11 @@ bool VideoSDL2::MessageLoop()
                 {
                     case SDL_WINDOWEVENT_RESIZED:
                     {
+                        isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
                         VideoMode newSize(ev.window.data1, ev.window.data2);
                         if(newSize != GetWindowSize())
                         {
-                            ResizeScreen(newSize, isFullscreen_);
+                            UpdateCurrentSizes();
                             CallBack->WindowResized();
                         }
                     }
@@ -459,4 +464,20 @@ void* VideoSDL2::GetMapPointer() const
 #else
     return nullptr;
 #endif
+}
+
+void VideoSDL2::MoveWindowToCenter()
+{
+    SDL_Rect usableBounds;
+    CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
+    int top, left, bottom, right;
+    CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right));
+    usableBounds.w -= left + right;
+    usableBounds.h -= top + bottom;
+    if(usableBounds.w < GetWindowSize().width || usableBounds.h < GetWindowSize().height)
+    {
+        SDL_SetWindowSize(window, usableBounds.w, usableBounds.h);
+        UpdateCurrentSizes();
+    }
+    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }

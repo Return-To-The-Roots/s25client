@@ -70,6 +70,7 @@ private:
     void PrintError(const std::string& msg) const;
     void HandlePaste();
     void UpdateCurrentSizes();
+    void MoveWindowToCenter();
 
     SDL_Window* window;
     SDL_GLContext context;

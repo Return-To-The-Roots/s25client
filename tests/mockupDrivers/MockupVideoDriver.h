@@ -41,9 +41,11 @@ public:
     KeyEvent GetModKeyState() const override;
     void* GetMapPointer() const override;
     bool IsOpenGL() const override { return false; }
+    using VideoDriver::FindClosestVideoMode;
 
     KeyEvent modKeyState_;
     unsigned long tickCount_;
+    std::vector<VideoMode> video_modes_;
 };
 
 #endif // MockupVideoDriver_h__
