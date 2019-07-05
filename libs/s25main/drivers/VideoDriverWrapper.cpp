@@ -23,6 +23,7 @@
 #include "Settings.h"
 #include "WindowManager.h"
 #include "driver/VideoInterface.h"
+#include "helpers/containerUtils.h"
 #include "helpers/roundToNextPow2.h"
 #include "mygettext/mygettext.h"
 #include "ogl/DummyRenderer.h"
@@ -185,11 +186,10 @@ bool VideoDriverWrapper::DestroyScreen()
         return false;
     }
 
-    // Texturen aufräumen
-    LOG.write("Saeubere Texturespeicher: ");
+    LOG.write("Clearing textures: ");
     unsigned ladezeit = GetTickCount();
     CleanUp();
-    LOG.write("fertig (nach %dms)\n") % (GetTickCount() - ladezeit);
+    LOG.write("Finished in %dms\n") % (GetTickCount() - ladezeit);
 
     // Videotreiber zurücksetzen
     videodriver->DestroyScreen();
@@ -215,9 +215,10 @@ unsigned VideoDriverWrapper::GetFPS() const
 void VideoDriverWrapper::CleanUp()
 {
     if(!texture_list.empty())
-        glDeleteTextures(texture_list.size(), (const GLuint*)&texture_list.front());
-
-    texture_list.clear();
+    {
+        glDeleteTextures(texture_list.size(), static_cast<const GLuint*>(texture_list.data()));
+        texture_list.clear();
+    }
 }
 
 unsigned VideoDriverWrapper::GenerateTexture()
@@ -229,8 +230,9 @@ unsigned VideoDriverWrapper::GenerateTexture()
 #endif
 
     static_assert(sizeof(newTexture) == sizeof(texture_list[0]), "Unexpected texture size");
-    texture_list.push_back(newTexture);
-    return texture_list.back();
+    if(newTexture)
+        texture_list.push_back(newTexture);
+    return newTexture;
 }
 
 void VideoDriverWrapper::BindTexture(unsigned t)
@@ -244,9 +246,16 @@ void VideoDriverWrapper::BindTexture(unsigned t)
 
 void VideoDriverWrapper::DeleteTexture(unsigned t)
 {
+    if(!t)
+        return;
     if(t == texture_current)
         texture_current = 0;
-    glDeleteTextures(1, &t);
+    auto it = helpers::find(texture_list, t);
+    if(it != texture_list.end())
+    {
+        glDeleteTextures(1, &t);
+        texture_list.erase(it);
+    }
 }
 
 KeyEvent VideoDriverWrapper::GetModKeyState() const

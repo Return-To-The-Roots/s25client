@@ -66,6 +66,12 @@ inline auto erase(T& container, typename T::reverse_iterator it)
     return typename T::reverse_iterator(erase(container, (++it).base()));
 }
 
+template<typename T, typename T_Element>
+void remove(T& container, T_Element&& element)
+{
+    container.erase(std::remove(container.begin(), container.end(), std::forward<T_Element>(element)), container.end());
+}
+
 template<typename T, typename T_Predicate>
 void remove_if(T& container, T_Predicate&& predicate)
 {
