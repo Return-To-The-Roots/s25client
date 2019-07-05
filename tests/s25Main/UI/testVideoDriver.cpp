@@ -15,8 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
 #include "mockupDrivers/MockupVideoDriver.h"
 #include "uiHelper/uiHelpers.hpp"
+#include <libutil/warningSuppression.h>
+#include <glad/glad.h>
 #include <boost/test/unit_test.hpp>
 
 // LCOV_EXCL_START
@@ -38,4 +42,59 @@ BOOST_AUTO_TEST_CASE(FindClosestVideoMode)
     BOOST_TEST(driver->FindClosestVideoMode(VideoMode(950, 570)) == VideoMode(1000, 600));
     BOOST_TEST(driver->FindClosestVideoMode(VideoMode(2000, 622)) == VideoMode(1500, 800));
     BOOST_TEST(driver->FindClosestVideoMode(VideoMode(1200, 900)) == VideoMode(1500, 800));
+}
+
+namespace rttrOglMock2 {
+RTTR_IGNORE_DIAGNOSTIC("-Wmissing-declarations")
+
+std::vector<GLuint> activeTextures;
+
+void APIENTRY glGenTextures(GLsizei n, GLuint* textures)
+{
+    static GLuint cur = 0;
+    for(; n > 0; --n)
+    {
+        *(textures++) = ++cur;
+        activeTextures.push_back(cur);
+    }
+}
+void APIENTRY glDeleteTextures(GLsizei n, const GLuint* textures)
+{
+    for(; n > 0; --n)
+    {
+        BOOST_TEST(*textures != 0u);
+        BOOST_TEST(helpers::contains(activeTextures, *textures));
+        helpers::remove(activeTextures, *(textures++));
+    }
+}
+
+RTTR_POP_DIAGNOSTIC
+} // namespace rttrOglMock2
+
+BOOST_AUTO_TEST_CASE(CreateAndDestroyTextures)
+{
+    // Fresh start
+    VIDEODRIVER.DestroyScreen();
+    VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+
+    glGenTextures = rttrOglMock2::glGenTextures;
+    glDeleteTextures = rttrOglMock2::glDeleteTextures;
+    for(unsigned i = 1u; i <= 5u; ++i)
+        BOOST_TEST(VIDEODRIVER.GenerateTexture() == i);
+    BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.size() == 5u);
+    VIDEODRIVER.DestroyScreen();
+    BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.empty());
+    // Next cleanup call is a no-op (validated inside glDeleteTextures)
+    VIDEODRIVER.CleanUp();
+
+    VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);
+    glGenTextures = rttrOglMock2::glGenTextures;
+    glDeleteTextures = rttrOglMock2::glDeleteTextures;
+    for(unsigned i = 1u; i <= 5u; ++i)
+        VIDEODRIVER.GenerateTexture();
+    BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.size() == 5u);
+    VIDEODRIVER.CleanUp();
+    BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.empty());
+    // Next cleanup call is a no-op (validated inside glDeleteTextures)
+    VIDEODRIVER.CleanUp();
 }
