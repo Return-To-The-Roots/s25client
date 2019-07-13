@@ -1,0 +1,74 @@
+name: s25rttr
+base: core18
+version: git
+summary: Return To The Roots
+description: |
+  Return to the Roots is an inofficial addon for "The Settlers II"® by BlueByte Software GmbH.	
+grade: stable
+confinement: strict
+
+parts:
+  s25client:
+    plugin: cmake
+    source: https://github.com/Return-To-The-Roots/s25client.git
+    configflags:
+      - -DCMAKE_INSTALL_PREFIX=/
+    build-packages:
+      - clang-format
+      - g++
+      - gettext
+      - libboost-dev
+      - libboost-filesystem-dev
+      - libboost-iostreams-dev
+      - libboost-locale-dev
+      - libboost-program-options-dev
+      - libboost-system-dev
+      - libboost-test-dev
+      - libbz2-dev
+      - libcurl-dev
+      - libminiupnpc-dev
+      - libsdl2-dev
+      - libsdl-dev
+      - libsdl-mixer1.2-dev
+    override-prime: |
+      snapcraftctl prime
+      echo Removing usr/share/s25rttr/S2 and creating symlink...
+      rm -rvf usr/share/s25rttr/S2
+      ln -svf /var/snap/s25rttr/current/S2 usr/share/s25rttr/S2
+  # shouldn't be needed, but snapcraft fails to resolve dynamic library
+  # dependencies
+  runtime-deps:
+    plugin: nil
+    stage-packages:
+      - libboost-filesystem1.65.1
+      - libboost-system1.65.1
+      - libboost-iostreams1.65.1
+      - libboost-program-options1.65.1
+      - libminiupnpc10
+      - libsdl1.2debian
+      - libsdl-mixer1.2
+      - libsdl2-2.0-0
+      - libpulse0
+      - libslang2
+      - libgl1
+      - libgl1-mesa-dri
+    # ugly
+    #override-prime: |
+    #  snapcraftctl prime
+    #  cp usr/lib/*/pulseaudio/libpulsecommon*.so usr/lib || true
+    #  mkdir -p usr/lib/dri
+    #  cp usr/lib/*/dri/*.so usr/lib/dri || true
+    # ugly hardcoding
+    #organize:
+    #  usr/lib/*/pulseaudio/libpulsecommon-11.1.so: usr/lib/libpulsecommon-11.1.so
+  utils:
+    plugin: dump
+    source: snap-utils/
+apps:
+  s25rttr:
+    command: snap-launcher $SNAP/usr/bin/s25client
+    plugs: [desktop, desktop-legacy, network-bind, opengl, pulseaudio, x11]
+  s25edit:
+    command: snap-launcher $SNAP/usr/bin/s25edit
+    plugs: [desktop, desktop-legacy, network-bind, opengl, pulseaudio, x11]
+

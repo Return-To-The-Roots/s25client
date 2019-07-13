@@ -1,0 +1,16 @@
+#!/bin/sh
+
+pulse=`realpath $SNAP/usr/lib/*/pulseaudio`
+dri=`realpath $SNAP/usr/lib/*/dri`
+
+LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$dri:$pulse"
+export LD_LIBRARY_PATH
+LIBGL_DRIVERS_PATH="$LIBGL_DRIVERS_PATH:$dri"
+export LIBGL_DRIVERS_PATH
+
+if ! [ -e $SNAP_DATA/S2 ]; then
+   echo "Settlers II installation not found; copy a S2 directory to this snap's system data directory with: sudo cp -r S2 /var/snap/s25rttr/current/"
+   exit 1
+fi
+
+exec "$@"
