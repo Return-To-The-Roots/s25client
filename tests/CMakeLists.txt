@@ -1,6 +1,7 @@
 add_subdirectory(common)
 add_subdirectory(legacyFiles)
 add_subdirectory(libGameData)
+add_subdirectory(libsamplerate_cpp)
 add_subdirectory(mockupDrivers)
 add_subdirectory(s25Main)
 add_subdirectory(testHelpers)
