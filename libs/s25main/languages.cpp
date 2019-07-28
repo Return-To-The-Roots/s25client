@@ -45,7 +45,8 @@ Languages::Languages() : loaded(false)
 
 void Languages::loadLanguages()
 {
-    const libsiedler2::Archiv& langInfo = dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages").find("Languages"));
+    const libsiedler2::Archiv& langInfo =
+      dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetArchive("languages").find("Languages"));
     unsigned count = langInfo.size();
 
     for(unsigned i = 0; i < count; i++)

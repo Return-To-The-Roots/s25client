@@ -112,7 +112,7 @@ public:
     libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned nr = 0);
     SoundEffectItem* GetSoundN(const std::string& file, unsigned nr);
     std::string GetTextN(const std::string& file, unsigned nr);
-    libsiedler2::Archiv& GetInfoN(const std::string& file);
+    libsiedler2::Archiv& GetArchive(const std::string& file);
     glArchivItem_Bob* GetBobN(const std::string& file);
     glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
     glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
