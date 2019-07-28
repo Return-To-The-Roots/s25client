@@ -232,14 +232,13 @@ bool Loader::LoadSounds()
     if(!LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[49])))
         return false;
     auto const convertStartTime = VIDEODRIVER.GetTickCount();
-    LOG.write(_("Starting sound conversion...")); 
+    LOG.write(_("Starting sound conversion..."));
     if(!convertSounds(GetArchive("sound"), RTTRCONFIG.ExpandPath(FILE_PATHS[56])))
     {
         LOG.write(_("failed\n"));
         return false;
     }
     LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - convertStartTime);
-    libsiedler2::Write(soundLSTPath, GetArchive("sound"));
 
     const std::string oggPath = RTTRCONFIG.ExpandPath(FILE_PATHS[50]);
     std::vector<std::string> oggFiles = ListDir(oggPath, "ogg");

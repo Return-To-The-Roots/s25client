@@ -18,6 +18,7 @@
 #include <libsiedler2/Archiv.h>
 #include <libsiedler2/ArchivItem_Sound_Wave.h>
 #include <boost/nowide/fstream.hpp>
+#include <cmath>
 #include <samplerate.hpp>
 #include <sstream>
 #include <stdexcept>

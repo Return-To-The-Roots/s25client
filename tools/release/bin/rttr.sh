@@ -2,7 +2,7 @@
 
 DIR=$(cd ${0%/*} && pwd -P)
 
-chmod 0755 $DIR/../bin/rttr.sh $DIR/../libexec/s25rttr/s25update $DIR/../bin/s25client $DIR/../bin/s25edit $DIR/../libexec/s25rttr/sound-convert >/dev/null 2>/dev/null
+chmod 0755 $DIR/../bin/rttr.sh $DIR/../libexec/s25rttr/s25update $DIR/../bin/s25client $DIR/../bin/s25edit >/dev/null 2>/dev/null
 
 if [ "$LD_LIBRARY_PATH" = "" ] ; then
 	export LD_LIBRARY_PATH="$DIR/../lib"
