@@ -50,13 +50,26 @@ namespace detail {
             throw std::runtime_error(src_strerror(errorCode));
     }
 
+    template<class... Ts>
+    using void_t = void;
+
+    template<class T, class = void>
+    struct has_src_clone : std::false_type
+    {};
+
+    template<class T>
+    struct has_src_clone<T, void_t<decltype(src_clone(std::declval<T>(), nullptr))>> : std::true_type
+    {};
+
+    template<typename T, bool = has_src_clone<T*>::value>
     class State
     {
-        SRC_STATE* state_;
+        T* state_;
 
     public:
         explicit State(SRC_STATE* state) : state_(state) {}
         ~State() { src_delete(state_); }
+        State(State&& other) noexcept : state_(other.state_) { other.state_ = nullptr; }
         State(const State& other) : state_(nullptr)
         {
             if(other.state_)
@@ -67,7 +80,6 @@ namespace detail {
                     throwOnError(error);
             }
         }
-        State(State&& other) noexcept : state_(other.state_) { other.state_ = nullptr; }
         State& operator=(State other) noexcept
         {
             std::swap(state_, other.state_);
@@ -76,10 +88,28 @@ namespace detail {
         operator SRC_STATE*() { return state_; }
     };
 
+    template<typename T>
+    class State<T, false>
+    {
+        T* state_;
+
+    public:
+        explicit State(SRC_STATE* state) : state_(state) {}
+        ~State() { src_delete(state_); }
+        State(State&& other) noexcept : state_(other.state_) { other.state_ = nullptr; }
+        State& operator=(State&& other) noexcept
+        {
+            state_ = other.state_;
+            other.state_ = nullptr;
+            return *this;
+        }
+        operator SRC_STATE*() { return state_; }
+    };
+
     class StateBase
     {
     protected:
-        State state_;
+        State<SRC_STATE> state_;
         explicit StateBase(SRC_STATE* state) : state_(state) {}
 
     public:

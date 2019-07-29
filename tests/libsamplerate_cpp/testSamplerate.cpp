@@ -49,16 +49,26 @@ BOOST_AUTO_TEST_CASE(CtorAndBaseFuncsWork)
     s1.setRatio(44100. / 22050.); // No exceptions thrown
 }
 
-BOOST_AUTO_TEST_CASE(CopyClones)
+template<typename T, typename std::enable_if<std::is_copy_constructible<T>::value>::type* = nullptr>
+void cloneTests(T& s1)
 {
-    samplerate::State s1(samplerate::Converter::Linear, 1);
-    BOOST_TEST(s1.getState());
     samplerate::State s2 = s1;
     BOOST_TEST(s2.getState());
     BOOST_TEST(s1.getState() != s2.getState());
     samplerate::State s3{s1};
     BOOST_TEST(s3.getState());
     BOOST_TEST(s1.getState() != s3.getState());
+}
+
+template<typename T, typename std::enable_if<!std::is_copy_constructible<T>::value>::type* = nullptr>
+void cloneTests(const T&)
+{}
+
+BOOST_AUTO_TEST_CASE(CopyClones)
+{
+    samplerate::State s1(samplerate::Converter::Linear, 1);
+    BOOST_TEST(s1.getState());
+    cloneTests(s1);
 }
 
 BOOST_AUTO_TEST_CASE(MoveDoesNotCopy)
