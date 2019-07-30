@@ -282,6 +282,14 @@ if(NOT Boost_FOUND)
     "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}') "
     "since cmake was unable to find boost!")
 endif()
+if(Boost_VERSION VERSION_EQUAL 1.70)
+    # Bug in Boost 1.70: https://github.com/boostorg/boost_install/issues/5
+    if(Boost_USE_STATIC_LIBS)
+        set(BUILD_SHARED_LIBS OFF)
+    else()
+        set(BUILD_SHARED_LIBS ON)
+    endif()
+endif()
 
 add_subdirectory(external)
 add_subdirectory(libs)
