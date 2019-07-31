@@ -48,7 +48,7 @@ public:
     using SteadyClock = std::chrono::steady_clock;
 
     GameServer();
-    ~GameServer() override;
+    ~GameServer();
 
     /// Starts the server
     bool Start(const CreateServerInfo& csi, const std::string& map_path, MapType map_type, const std::string& hostPw);

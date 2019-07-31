@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2018 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,32 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PactTypes_h__
-#define PactTypes_h__
+#ifndef LSAN_Utils_h__
+#define LSAN_Utils_h__
 
-#include "helpers/MaxEnumValue.h"
-#include <array>
+#ifdef __has_feature
+#define RTTR_HAS_ASAN __has_feature(address_sanitizer)
+#elif defined(__SANITIZE_ADDRESS__)
+#define RTTR_HAS_ASAN __SANITIZE_ADDRESS__
+#else
+#define RTTR_HAS_ASAN 0
+#endif
 
-/// Types of pacts
-enum PactType
+#if RTTR_HAS_ASAN
+#include <sanitizer/lsan_interface.h>
+namespace rttr {
+/// Record all leaks in the current context as expected
+using ScopedLeakDisabler = __lsan::ScopedDisabler;
+} // namespace rttr
+#else
+namespace rttr {
+struct ScopedLeakDisabler
 {
-    TREATY_OF_ALLIANCE = 0,
-    NON_AGGRESSION_PACT
+    ScopedLeakDisabler(){
+      // Pretent to be a RAII class to avoid unused variable warnings
+    };
 };
+} // namespace rttr
+#endif
 
-/// Number of the various pacts
-const unsigned NUM_PACTS = 2;
-DEFINE_MAX_ENUM_VALUE(PactType, NUM_PACTS)
-
-/// Names of the possible pacts
-extern const std::array<const char*, NUM_PACTS> PACT_NAMES;
-
-#endif // PactTypes_h__
+#endif // LSAN_Utils_h__

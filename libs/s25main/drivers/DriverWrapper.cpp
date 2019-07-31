@@ -22,18 +22,16 @@
 #include "driver/DriverInterfaceVersion.h"
 #include "driver/Interface.h"
 #include "files.h"
+#include "helpers/LSANUtils.h"
 #include "helpers/containerUtils.h"
 #include "mygettext/mygettext.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
-#include <boost/dll/shared_library.hpp>
-#include <memory>
+#include "libutil/warningSuppression.h"
+
+namespace dll = boost::dll;
 
 namespace {
-/// Definition des GetDriverAPIVersion-Zeigers
-using GetDriverAPIVersion_t = decltype(GetDriverAPIVersion);
-/// Definition des GetDriverName
-using GetDriverName_t = decltype(GetDriverName);
 
 std::string getName(drivers::DriverType type)
 {
@@ -42,10 +40,8 @@ std::string getName(drivers::DriverType type)
 auto tryLoadLibrary(const bfs::path& filepath)
 {
     boost::system::error_code ec;
-    auto result = std::make_unique<boost::dll::shared_library>(filepath, ec, boost::dll::load_mode::rtld_lazy);
-    if(ec)
-        result.reset();
-    return result;
+    rttr::ScopedLeakDisabler _;
+    return dll::shared_library(filepath, ec, dll::load_mode::rtld_lazy);
 }
 } // namespace
 
@@ -55,7 +51,7 @@ DriverWrapper::~DriverWrapper() = default;
 
 void DriverWrapper::Unload()
 {
-    dll.reset();
+    dll.unload();
 }
 
 bool DriverWrapper::Load(const DriverType dt, std::string& preference)
@@ -97,9 +93,9 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     return true;
 }
 
-void* DriverWrapper::GetDLLFunction(const std::string& name)
+bool DriverWrapper::IsLoaded() const
 {
-    return !dll ? nullptr : &dll->get<void*>(name);
+    return dll.is_loaded();
 }
 
 bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)
@@ -112,7 +108,7 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
         return false;
     }
 
-    auto GetDriverAPIVersion = dll->get<GetDriverAPIVersion_t>("GetDriverAPIVersion");
+    auto GetDriverAPIVersion = dll.get<GetDriverAPIVersion_t>("GetDriverAPIVersion");
     if(!GetDriverAPIVersion)
     {
         nameOrError = _("Not a RTTR driver library!");
@@ -124,7 +120,7 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
         return false;
     }
 
-    auto GetDriverName = dll->get<GetDriverName_t>("GetDriverName");
+    auto GetDriverName = dll.get<GetDriverName_t>("GetDriverName");
     std::string createName, freeName;
     if(dt == DriverType::Video)
     {
@@ -136,7 +132,7 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
         freeName = "FreeAudioInstance";
     }
 
-    if(!GetDriverName || !dll->has(createName) || !dll->has(freeName))
+    if(!GetDriverName || !dll.has(createName) || !dll.has(freeName))
     {
         nameOrError = _("Missing required API function");
         return false;

@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "VideoSDL.h"
 #include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
@@ -24,6 +23,7 @@
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
+#include <helpers/LSANUtils.h>
 
 #ifdef _WIN32
 #include "makeException.h"
@@ -138,6 +138,7 @@ const char* VideoSDL::GetName() const
  */
 bool VideoSDL::Initialize()
 {
+    rttr::ScopedLeakDisabler _;
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
     {
         fprintf(stderr, "%s\n", SDL_GetError());
@@ -152,7 +153,6 @@ bool VideoSDL::Initialize()
 
     // Key-Repeat einschalten
     SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-
     return initialized;
 }
 
@@ -309,7 +309,7 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
 
 void VideoSDL::PrintError(const std::string& msg)
 {
-    bnw::cerr << msg << std::endl;
+    boost::nowide::cerr << msg << std::endl;
 }
 
 void VideoSDL::HandlePaste()

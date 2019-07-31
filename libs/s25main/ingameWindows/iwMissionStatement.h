@@ -25,7 +25,8 @@ class iwMissionStatement : public IngameWindow
 {
 public:
     /// Image shown in bottom right corner
-    enum HelpImage
+    using HelpImage = int;
+    enum HelpImageConsts // enum used
     {
         /// No image
         IM_NONE,

@@ -131,14 +131,12 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     testNumGoodsPlayer();
 
 #if RTTR_ENABLE_ASSERTS
-    RTTR_AssertEnableBreak = false;
     newGoods.clear();
     newGoods.Add(JOB_BOATCARRIER);
     RTTR_REQUIRE_ASSERT(hq.AddGoods(newGoods, false));
     newGoods.clear();
     newGoods.Add(GD_SHIELDAFRICANS);
     RTTR_REQUIRE_ASSERT(hq.AddGoods(newGoods, false));
-    RTTR_AssertEnableBreak = true;
 #endif
 }
 

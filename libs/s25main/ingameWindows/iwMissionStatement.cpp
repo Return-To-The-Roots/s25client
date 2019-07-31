@@ -46,6 +46,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
 
     // set window width to our determined max width
     Extent newIwSize = text->GetSize() + Extent::all(textSpace) + Extent(imgSize.x + imgSpace, buttonSize.y + 2);
+    newIwSize = elMax(newIwSize, buttonSize);
     newIwSize.y = std::max(newIwSize.y, imgSize.y + minImgSpaceTop) + buttonSpace;
     SetIwSize(newIwSize);
 

@@ -27,6 +27,7 @@ target_include_directories(testWorldFixtures PUBLIC .)
 include(AddMacros)
 
 add_subdirectory(audio)
+add_subdirectory(drivers)
 add_subdirectory(integration)
 add_subdirectory(IO)
 add_subdirectory(locale)

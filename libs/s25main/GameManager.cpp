@@ -51,7 +51,7 @@ bool GameManager::Start()
     SETTINGS.Load();
 
     /// Videotreiber laden
-    if(!VIDEODRIVER.LoadDriver())
+    if(!VIDEODRIVER.LoadDriver(SETTINGS.driver.video))
     {
         s25util::error(_("Video driver couldn't be loaded!\n"));
         return false;
@@ -61,9 +61,11 @@ bool GameManager::Start()
     const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
     if(!VIDEODRIVER.CreateScreen(screenSize, SETTINGS.video.fullscreen))
         return false;
+    VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync);
+    VIDEODRIVER.SetMouseWarping(SETTINGS.global.smartCursor);
 
     /// Audiodriver laden
-    if(!AUDIODRIVER.LoadDriver())
+    if(!AUDIODRIVER.LoadDriver(SETTINGS.driver.audio))
     {
         s25util::warning(_("Audio driver couldn't be loaded!\n"));
         // return false;
@@ -197,7 +199,7 @@ bool GameManager::ShowMenu()
 
 void GameManager::ResetAverageGFPS()
 {
-    gfCounter_ = FrameCounter(std::chrono::hours::max()); // Never update
+    gfCounter_ = FrameCounter(FrameCounter::clock::duration::max()); // Never update
 }
 
 /**

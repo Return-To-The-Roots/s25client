@@ -15,13 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "AudioSDL.h"
+#include "RTTR_Assert.h"
 #include "SoundSDL_Effect.h"
 #include "SoundSDL_Music.h"
 #include "driver/AudioInterface.h"
 #include "driver/IAudioDriverCallback.h"
 #include "driver/Interface.h"
+#include "helpers/LSANUtils.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <iostream>
@@ -85,15 +86,17 @@ bool AudioSDL::Initialize()
         return false;
     }
 
-    // open 44.1KHz, signed 16bit, system byte order,
-    // stereo audio, using 1024 byte chunks
-    if(Mix_OpenAudio(44100, AUDIO_S16LSB, 2, 4096) < 0)
     {
-        std::cerr << Mix_GetError() << std::endl;
-        initialized = false;
-        return false;
+        rttr::ScopedLeakDisabler _; // SDL_thread leaks a mutex
+        // open 44.1KHz, signed 16bit, system byte order,
+        // stereo audio, using 1024 byte chunks
+        if(Mix_OpenAudio(44100, AUDIO_S16LSB, 2, 4096) < 0)
+        {
+            std::cerr << Mix_GetError() << std::endl;
+            initialized = false;
+            return false;
+        }
     }
-
     SetNumChannels(Mix_AllocateChannels(MAX_NUM_CHANNELS));
     Mix_SetMusicCMD(nullptr);
     Mix_HookMusicFinished(AudioSDL::MusicFinished);
@@ -113,6 +116,7 @@ void AudioSDL::CleanUp()
 
     Mix_CloseAudio();
     Mix_HookMusicFinished(nullptr);
+    Mix_Quit();
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 

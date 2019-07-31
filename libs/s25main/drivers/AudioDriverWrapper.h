@@ -21,6 +21,7 @@
 #include "driver/EffectPlayId.h"
 #include "driver/IAudioDriverCallback.h"
 #include "libutil/Singleton.h"
+#include <memory>
 
 class IAudioDriver;
 class SoundHandle;
@@ -37,10 +38,11 @@ public:
     static constexpr unsigned Longevity = 30;
 
     AudioDriverWrapper();
-    ~AudioDriverWrapper() override;
+    ~AudioDriverWrapper();
 
-    /// Loads the driver. If audioDriver is nullptr then the dll directory is checked
-    bool LoadDriver(IAudioDriver* audioDriver = nullptr);
+    /// Loads the driver
+    bool LoadDriver(IAudioDriver* audioDriver);
+    bool LoadDriver(std::string& preference);
     /// Unloads the driver resetting all open handles
     void UnloadDriver();
 
@@ -73,12 +75,12 @@ public:
     std::string GetName() const;
 
 private:
+    using Handle = std::unique_ptr<IAudioDriver, void (*)(IAudioDriver*)>;
+    bool Init();
     void Msg_MusicFinished() override;
 
-private:
     drivers::DriverWrapper driver_wrapper;
-    IAudioDriver* audiodriver_;
-    bool loadedFromDll; /// If true then free must just dll free function else delete
+    Handle audiodriver_;
 };
 
 #define AUDIODRIVER AudioDriverWrapper::inst()

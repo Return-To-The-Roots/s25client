@@ -14,4 +14,5 @@ if(SDL2_FOUND)
     RUNTIME DESTINATION ${RTTR_DRIVERDIR}/video
     LIBRARY DESTINATION ${RTTR_DRIVERDIR}/video
   )
+  add_dependencies(drivers videoSDL2)
 endif()

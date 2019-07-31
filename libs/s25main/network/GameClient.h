@@ -67,7 +67,7 @@ public:
     };
 
     GameClient();
-    ~GameClient() override;
+    ~GameClient();
 
     void SetInterface(ClientInterface* ci) { this->ci = ci; }
     /// Removes the given interface (if it is not yet overwritten by another one)

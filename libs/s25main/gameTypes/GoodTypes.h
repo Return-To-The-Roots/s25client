@@ -18,6 +18,7 @@
 #ifndef GoodTypes_h__
 #define GoodTypes_h__
 
+#include "helpers/MaxEnumValue.h"
 #include "mygettext/mygettext.h"
 
 // Warentypen
@@ -63,6 +64,7 @@ enum GoodType
 };
 // Anzahl an unterschiedlichen Warentypen
 const unsigned NUM_WARE_TYPES = GD_NOTHING;
+DEFINE_MAX_ENUM_VALUE(GoodType, NUM_WARE_TYPES - 1)
 // Number of tools
 const unsigned NUM_TOOLS = 12;
 

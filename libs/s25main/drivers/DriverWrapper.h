@@ -17,6 +17,7 @@
 #ifndef DRIVERWRAPPER_H_INCLUDED
 #define DRIVERWRAPPER_H_INCLUDED
 
+#include <boost/dll/shared_library.hpp>
 #include <boost/filesystem/path.hpp>
 #include <string>
 #include <type_traits>
@@ -24,9 +25,6 @@
 #include <vector>
 
 namespace bfs = boost::filesystem;
-namespace boost { namespace dll {
-    class shared_library;
-}} // namespace boost::dll
 
 namespace drivers {
 
@@ -35,14 +33,6 @@ enum class DriverType
     Video,
     Audio
 };
-
-template<typename T, typename From>
-constexpr T* FunctionPointerCast(From* from)
-{
-    static_assert(std::is_void<From>::value, "Function must be used only for casting from void pointers");
-    static_assert(sizeof(From*) == sizeof(T*), "Pointer sizes don't match");
-    return reinterpret_cast<T*>(from);
-}
 
 class DriverWrapper
 {
@@ -66,19 +56,18 @@ public:
     bool Load(DriverType dt, std::string& preference);
     /// Gibt eine Treiber-Handle wieder frei
     void Unload();
-    /// Gibt Adresse auf eine bestimmte Funktion zurück
-    void* GetDLLFunction(const std::string& name);
+    bool IsLoaded() const;
     template<typename T>
     T* GetFunction(const std::string& name)
     {
-        return FunctionPointerCast<T>(GetDLLFunction(name));
+        return dll.get<T>(name);
     }
 
     /// Läd eine Liste von verfügbaren Treibern
     static std::vector<DriverItem> LoadDriverList(DriverType dt);
 
 private:
-    std::unique_ptr<boost::dll::shared_library> dll;
+    boost::dll::shared_library dll;
     /// Checks if the library is valid. Puts either the name or the error message into nameOrError
     static bool CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError);
 };

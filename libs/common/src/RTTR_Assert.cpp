@@ -26,11 +26,18 @@
 #include <windows.h>
 #endif
 
-bool RTTR_AssertEnableBreak = true;
+static bool breakOnAssertFailureEnabled = true;
+
+bool RTTR_SetBreakOnAssertFailure(bool enabled)
+{
+    const bool old = breakOnAssertFailureEnabled;
+    breakOnAssertFailureEnabled = enabled;
+    return old;
+}
 
 bool RTTR_IsBreakOnAssertFailureEnabled()
 {
-    if(!RTTR_AssertEnableBreak)
+    if(!breakOnAssertFailureEnabled)
         return false;
     try
     {

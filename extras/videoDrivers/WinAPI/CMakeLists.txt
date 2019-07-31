@@ -7,4 +7,5 @@ IF (WIN32)
     target_include_directories(videoWinAPI SYSTEM PRIVATE ${OPENGL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/data/win32)
 
 	INSTALL(TARGETS videoWinAPI RUNTIME DESTINATION ${RTTR_DRIVERDIR}/video)
+	add_dependencies(drivers videoWinAPI)
 ENDIF ()

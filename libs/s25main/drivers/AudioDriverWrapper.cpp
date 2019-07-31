@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "AudioDriverWrapper.h"
 #include "MusicPlayer.h"
-#include "Settings.h"
 #include "VideoDriverWrapper.h"
 #include "driver/AudioInterface.h"
 #include "mygettext/mygettext.h"
@@ -30,7 +29,7 @@
 
 using ovectorstream = boost::interprocess::basic_ovectorstream<std::vector<char>>;
 
-AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(nullptr), loadedFromDll(false) {}
+AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(nullptr, nullptr) {}
 
 AudioDriverWrapper::~AudioDriverWrapper()
 {
@@ -85,51 +84,45 @@ std::string AudioDriverWrapper::GetName() const
     return (name) ? name : "";
 }
 
-/// Lädt den Treiber
-bool AudioDriverWrapper::LoadDriver(IAudioDriver* audioDriver)
+bool AudioDriverWrapper::Init()
 {
-    loadedFromDll = audioDriver == nullptr;
-    if(audioDriver)
-        audiodriver_ = audioDriver;
-    else
-    {
-        // DLL laden
-        if(!driver_wrapper.Load(drivers::DriverType::Audio, SETTINGS.driver.audio))
-            return false;
-
-        auto createAudioInstance = driver_wrapper.GetFunction<decltype(CreateAudioInstance)>("CreateAudioInstance");
-
-        // Instanz erzeugen
-        audiodriver_ = createAudioInstance(this, VIDEODRIVER.GetMapPointer());
-        if(!audiodriver_)
-        {
-            UnloadDriver();
-            return false;
-        }
-    }
-
-    if(!audiodriver_->Initialize())
+    if(!audiodriver_ || !audiodriver_->Initialize())
     {
         UnloadDriver();
         return false;
     }
 
     LOG.write(_("Loaded audio driver \"%1%\"\n")) % GetName();
-
     return true;
+}
+
+/// Lädt den Treiber
+bool AudioDriverWrapper::LoadDriver(IAudioDriver* audioDriver)
+{
+    audiodriver_ = Handle(audioDriver, [](auto* p) { delete p; });
+    return Init();
+}
+
+bool AudioDriverWrapper::LoadDriver(std::string& preference)
+{
+    RTTR_Assert(!audiodriver_);
+    // DLL laden
+    if(!driver_wrapper.Load(drivers::DriverType::Audio, preference))
+        return false;
+
+    auto createAudioInstance = driver_wrapper.GetFunction<decltype(CreateAudioInstance)>("CreateAudioInstance");
+    auto freeAudioInstance = driver_wrapper.GetFunction<decltype(FreeAudioInstance)>("FreeAudioInstance");
+    RTTR_Assert(createAudioInstance && freeAudioInstance);
+
+    // Instanz erzeugen
+    audiodriver_ = Handle(createAudioInstance(this, VIDEODRIVER.GetMapPointer()), freeAudioInstance);
+    return Init();
 }
 
 void AudioDriverWrapper::UnloadDriver()
 {
-    if(loadedFromDll)
-    {
-        auto freeAudioInstance = driver_wrapper.GetFunction<decltype(FreeAudioInstance)>("FreeAudioInstance");
-        if(freeAudioInstance)
-            freeAudioInstance(audiodriver_);
-        driver_wrapper.Unload();
-    } else
-        delete audiodriver_;
-    audiodriver_ = nullptr;
+    audiodriver_.reset();
+    driver_wrapper.Unload();
 }
 
 /**

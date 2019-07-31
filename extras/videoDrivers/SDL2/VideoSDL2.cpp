@@ -20,6 +20,7 @@
 #include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
+#include "helpers/LSANUtils.h"
 #include "helpers/containerUtils.h"
 #include "icon.h"
 #include "openglCfg.hpp"
@@ -70,6 +71,7 @@ const char* VideoSDL2::GetName() const
 bool VideoSDL2::Initialize()
 {
     initialized = false;
+    rttr::ScopedLeakDisabler _;
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
     {
         PrintError(SDL_GetError());
@@ -90,6 +92,7 @@ void VideoSDL2::CleanUp()
     if(window)
         SDL_DestroyWindow(window);
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    SDL_Quit();
     initialized = false;
 }
 

@@ -63,13 +63,13 @@ public:
     void MissionStatement2(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
     void MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx, bool pause);
     void SetMissionGoal(int playerIdx, const std::string& newGoal = "");
-    void PostMessageLua(unsigned playerIdx, const std::string& msg);
-    void PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y);
+    void PostMessageLua(int playerIdx, const std::string& msg);
+    void PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y);
 
 private:
     GameWorldGame& gw;
     std::weak_ptr<Game> game;
-    LuaPlayer GetPlayer(unsigned playerIdx);
+    LuaPlayer GetPlayer(int playerIdx);
     LuaWorld GetWorld();
 };
 

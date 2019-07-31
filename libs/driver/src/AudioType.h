@@ -18,6 +18,8 @@
 #ifndef AudioType_h__
 #define AudioType_h__
 
+#include <cassert>
+
 struct AudioType
 {
     enum Type

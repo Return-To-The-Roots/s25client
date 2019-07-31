@@ -247,7 +247,8 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     const PostBox& postBox = *world.GetPostMgr().GetPostBox(1);
     // Send to other player or invalid
     executeLua("rttr:PostMessage(0, 'Hello World')");
-    executeLua("rttr:PostMessage(-1, 'Hello World')");
+    BOOST_REQUIRE_THROW(executeLua("rttr:PostMessage(-1, 'Hello World')"), LuaExecutionError);
+    BOOST_REQUIRE_NE(getLog(), "");
     BOOST_REQUIRE_EQUAL(postBox.GetNumMsgs(), 0u);
     // Send to this player
     executeLua("rttr:PostMessage(1, 'Hello World')");

@@ -32,7 +32,7 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
     BOOST_REQUIRE(!world.GetPlayer(1).IsDefeated());
     // Destroy HQ -> defeated
-    world.GetPlayer(1).GetFirstWH()->Destroy(); //-V522
+    world.DestroyNO(world.GetPlayer(1).GetHQPos()); //-V522
     BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
     BOOST_REQUIRE(world.GetPlayer(1).IsDefeated());
     // Destroy HQ but leave a military bld
@@ -42,9 +42,9 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     world.AddFigure(milBldPos, sld);
     milBld->GotWorker(JOB_PRIVATE, sld);
     sld->WalkToGoal();
-    world.GetPlayer(0).GetFirstWH()->Destroy();
+    world.DestroyNO(world.GetPlayer(0).GetHQPos());
     BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());
     // Destroy this -> defeated
-    milBld->Destroy();
+    world.DestroyNO(milBldPos);
     BOOST_REQUIRE(world.GetPlayer(0).IsDefeated());
 }

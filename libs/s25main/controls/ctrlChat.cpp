@@ -22,6 +22,7 @@
 #include "ctrlScrollBar.h"
 #include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
+#include "variant.h"
 #include "libutil/Log.h"
 
 /// Breite der Scrollbar
@@ -72,7 +73,7 @@ void ctrlChat::Resize(const Extent& newSize)
     unsigned short position = 0;
     // Remember the entry on top
     for(unsigned short i = 1; i <= scroll->GetScrollPos(); ++i)
-        if(!chat_lines[i].secondary)
+        if(holds_alternative<PrimaryChatLine>(chat_lines[i]))
             ++position;
 
     // Rewrap
@@ -96,7 +97,7 @@ void ctrlChat::Resize(const Extent& newSize)
     {
         unsigned short i;
         for(i = 0; position > 0; ++i)
-            if(!chat_lines[i].secondary)
+            if(holds_alternative<PrimaryChatLine>(chat_lines[i]))
                 --position;
         scroll->SetScrollPos(i);
     }
@@ -128,42 +129,41 @@ void ctrlChat::Draw_()
     unsigned pos = GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
     for(unsigned i = 0; i < show_lines; ++i)
     {
-        // eine zweite oder n-nte Zeile?
-        if(chat_lines[i + pos].secondary)
-            font->Draw(textPos, chat_lines[i + pos].msg, FontStyle{}, chat_lines[i + pos].msg_color);
-        else
+        DrawPoint curTextPos = textPos;
+        if(PrimaryChatLine* line = boost::get<PrimaryChatLine>(&chat_lines[i + pos]))
         {
-            DrawPoint curTextPos = textPos;
-
             // Zeit, Spieler und danach Textnachricht
-            if(!chat_lines[i + pos].time_string.empty())
+            if(!line->time_string.empty())
             {
-                font->Draw(curTextPos, chat_lines[i + pos].time_string, FontStyle{}, time_color);
-                curTextPos.x += font->getWidth(chat_lines[i + pos].time_string);
+                font->Draw(curTextPos, line->time_string, FontStyle{}, time_color);
+                curTextPos.x += font->getWidth(line->time_string);
             }
 
-            if(!chat_lines[i + pos].player.empty())
+            if(!line->player.empty())
             {
                 // Klammer 1 (<)
-                font->Draw(curTextPos, "<", FontStyle{}, chat_lines[i + pos].player_color);
+                font->Draw(curTextPos, "<", FontStyle{}, line->player_color);
                 curTextPos.x += bracket1_size;
                 // Spielername
-                font->Draw(curTextPos, chat_lines[i + pos].player, FontStyle{}, chat_lines[i + pos].player_color);
-                curTextPos.x += font->getWidth(chat_lines[i + pos].player);
+                font->Draw(curTextPos, line->player, FontStyle{}, line->player_color);
+                curTextPos.x += font->getWidth(line->player);
                 // Klammer 2 (>)
-                font->Draw(curTextPos, "> ", FontStyle{}, chat_lines[i + pos].player_color);
+                font->Draw(curTextPos, "> ", FontStyle{}, line->player_color);
                 curTextPos.x += bracket2_size;
             }
-
-            font->Draw(curTextPos, chat_lines[i + pos].msg, FontStyle{}, chat_lines[i + pos].msg_color);
         }
+        boost::apply_visitor(
+          [this, curTextPos](const auto& line) { // Draw msg
+              this->font->Draw(curTextPos, line.msg, FontStyle{}, line.msg_color);
+          },
+          chat_lines[i + pos]);
         textPos.y += font->getHeight() + 2;
     }
 }
 
 void ctrlChat::WrapLine(unsigned short i)
 {
-    ChatLine line = raw_chat_lines[i];
+    const RawChatLine& line = raw_chat_lines[i];
 
     // Breite von Zeitstring und Spielername berechnen (falls vorhanden)
     unsigned short prefix_width = (line.time_string.length() ? font->getWidth(line.time_string) : 0)
@@ -186,34 +186,28 @@ void ctrlChat::WrapLine(unsigned short i)
     // Zeilen hinzufügen
     for(unsigned i = 0; i < strings.size(); ++i)
     {
-        ChatLine wrap_line;
-        // Nur bei den ersten Zeilen müssen ja Zeit und Spielername mit angegeben werden
-        wrap_line.secondary = i != 0;
-        if(!wrap_line.secondary)
+        if(i == 0)
         {
-            wrap_line.time_string = line.time_string;
-            wrap_line.player = line.player;
-            wrap_line.player_color = line.player_color;
+            PrimaryChatLine wrap_line = line;
+            wrap_line.msg = strings[i];
+            chat_lines.emplace_back(std::move(wrap_line));
+        } else
+        {
+            chat_lines.emplace_back(SecondaryChatLine{strings[i], line.msg_color});
         }
-
-        wrap_line.msg = strings[i];
-        wrap_line.msg_color = line.msg_color;
-
-        chat_lines.push_back(wrap_line);
     }
 }
 
 void ctrlChat::AddMessage(const std::string& time_string, const std::string& player, const unsigned player_color, const std::string& msg,
                           const unsigned msg_color)
 {
-    ChatLine line;
-
+    RawChatLine line;
     line.time_string = time_string;
     line.player = player;
     line.player_color = player_color;
     line.msg = msg;
     line.msg_color = msg_color;
-    raw_chat_lines.push_back(line);
+    raw_chat_lines.emplace_back(std::move(line));
 
     const size_t oldlength = chat_lines.size();
 

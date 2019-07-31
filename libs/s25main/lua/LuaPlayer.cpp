@@ -73,7 +73,7 @@ void LuaPlayer::Register(kaguya::State& state)
                                .addFunction("GetPeopleCount", &LuaPlayer::GetNumPeople));
 }
 
-void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
+void LuaPlayer::EnableBuilding(lua::SafeEnum<BuildingType> bld, bool notify)
 {
     lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     player.EnableBuilding(bld);
@@ -85,7 +85,7 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
     }
 }
 
-void LuaPlayer::DisableBuilding(BuildingType bld)
+void LuaPlayer::DisableBuilding(lua::SafeEnum<BuildingType> bld)
 {
     lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     player.DisableBuilding(bld);
@@ -193,7 +193,7 @@ void LuaPlayer::ClearResources()
         warehouse->Clear();
 }
 
-bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
+bool LuaPlayer::AddWares(const std::map<lua::SafeEnum<GoodType, NUM_WARE_TYPES - 1>, unsigned>& wares)
 {
     nobBaseWarehouse* warehouse = player.GetFirstWH();
 
@@ -214,7 +214,7 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
     return true;
 }
 
-bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
+bool LuaPlayer::AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
 {
     nobBaseWarehouse* warehouse = player.GetFirstWH();
 
@@ -235,33 +235,33 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
     return true;
 }
 
-unsigned LuaPlayer::GetNumBuildings(BuildingType bld) const
+unsigned LuaPlayer::GetNumBuildings(lua::SafeEnum<BuildingType> bld) const
 {
     lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
 
     return player.GetBuildingRegister().GetBuildingNums().buildings[bld];
 }
 
-unsigned LuaPlayer::GetNumBuildingSites(BuildingType bld) const
+unsigned LuaPlayer::GetNumBuildingSites(lua::SafeEnum<BuildingType> bld) const
 {
     lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
 
     return player.GetBuildingRegister().GetBuildingNums().buildingSites[bld];
 }
 
-unsigned LuaPlayer::GetNumWares(GoodType ware) const
+unsigned LuaPlayer::GetNumWares(lua::SafeEnum<GoodType> ware) const
 {
     lua::assertTrue(unsigned(ware) < NUM_WARE_TYPES, "Invalid ware");
     return player.GetInventory().goods[ware];
 }
 
-unsigned LuaPlayer::GetNumPeople(Job job) const
+unsigned LuaPlayer::GetNumPeople(lua::SafeEnum<Job> job) const
 {
     lua::assertTrue(unsigned(job) < NUM_JOB_TYPES, "Invalid ware");
     return player.GetInventory().people[job];
 }
 
-bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
+bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld)
 {
     // Only for actual AIs
     if(!player.isUsed() || player.isHuman())
@@ -312,7 +312,7 @@ bool LuaPlayer::IsAttackable(unsigned char otherPlayerId)
     return player.IsAttackable(otherPlayerId);
 }
 
-void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, const unsigned duration)
+void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const lua::SafeEnum<PactType> pt, const unsigned duration)
 {
     auto gameInst = game.lock();
     if(!gameInst)
@@ -325,7 +325,7 @@ void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, cons
     }
 }
 
-void LuaPlayer::CancelPact(const PactType pt, unsigned char otherPlayerId)
+void LuaPlayer::CancelPact(const lua::SafeEnum<PactType> pt, unsigned char otherPlayerId)
 {
     auto gameInst = game.lock();
     if(!gameInst)

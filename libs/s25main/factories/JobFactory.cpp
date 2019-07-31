@@ -67,11 +67,11 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
     {
         case JOB_BUILDER:
             if(!goal)
-                return new nofBuilder(pt, player, goal);
-            else if(goal->GetGOT() == GOT_NOB_HARBORBUILDING)
+                return new nofBuilder(pt, player, nullptr);
+            else if(goal->GetGOT() != GOT_BUILDINGSITE)
                 return new nofPassiveWorker(JOB_BUILDER, pt, player, goal);
             else
-                return new nofBuilder(pt, player, goal);
+                return new nofBuilder(pt, player, static_cast<noBuildingSite*>(goal));
         case JOB_PLANER:
             RTTR_Assert(dynamic_cast<noBuildingSite*>(goal));
             return new nofPlaner(pt, player, static_cast<noBuildingSite*>(goal));

@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Window.h"
+#include <boost/variant.hpp>
 #include <vector>
 class MouseCoords;
 class glArchivItem_Font;
@@ -56,15 +57,13 @@ protected:
 
 private:
     // Struktur für eine Chatzeile.
-    struct ChatLine
+    struct RawChatLine
     {
-        /// Handelt es sich bei dieser Zeile um eine sekundäre (also den >1-Teil einer umbrochenen Zeile)
-        bool secondary;
-        /// Zeitangabe (optional, 0 wenn nicht benutzt)
+        /// Zeitangabe (optional)
         std::string time_string;
-        /// Spielername
+        /// Spielername (optional)
         std::string player;
-        /// Farbe des Spieler(namens) (optional, 0 wenn nicht benutzt)
+        /// Farbe des Spieler(namens) (optional)
         unsigned player_color;
         /// Chatnachricht
         std::string msg;
@@ -72,12 +71,21 @@ private:
         unsigned msg_color;
     };
 
+    using PrimaryChatLine = RawChatLine;
+    struct SecondaryChatLine
+    {
+        std::string msg;
+        /// Farbe der Chatnachricht
+        unsigned msg_color;
+    };
+    using ChatLine = boost::variant<PrimaryChatLine, SecondaryChatLine>;
+
 private:
     TextureColor tc;         /// Hintergrundtextur.
     glArchivItem_Font* font; /// Schriftart.
 
-    std::vector<ChatLine> raw_chat_lines; /// Chatzeilen, noch nicht umgebrochen
-    std::vector<ChatLine> chat_lines;     /// Chatzeilen
+    std::vector<RawChatLine> raw_chat_lines; /// Chatzeilen, noch nicht umgebrochen
+    std::vector<ChatLine> chat_lines;        /// Chatzeilen
 
     unsigned page_size;  /// Chatzeilen pro Seite
     unsigned time_color; /// Farbe der Zeitangaben

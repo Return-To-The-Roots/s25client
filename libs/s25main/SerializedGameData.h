@@ -25,6 +25,7 @@
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
 #include "libutil/Serializer.h"
+#include "libutil/warningSuppression.h"
 #include <map>
 #include <memory>
 #include <set>
@@ -95,8 +96,12 @@ public:
     // Read methods
     //////////////////////////////////////////////////////////////////////////
 
+    /* FIXME: This function may be used to pop and cast incomplete objects due to a dependency cycle.
+     Example: Builder->Building->Builder
+     In this case Builder cannot be complete when it is stored into Building */
     /// Read a GameObject
     template<typename T>
+    RTTR_ATTRIBUTE_NO_UBSAN(vptr)
     T* PopObject(GO_Type got)
     {
         return static_cast<T*>(PopObject_(got));

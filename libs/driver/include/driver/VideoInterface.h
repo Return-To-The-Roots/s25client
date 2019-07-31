@@ -29,7 +29,7 @@
 /// Function type for loading OpenGL methods
 using OpenGL_Loader_Proc = void* (*)(const char*);
 
-class IVideoDriver
+class BOOST_SYMBOL_VISIBLE IVideoDriver
 {
 public:
     virtual ~IVideoDriver() = 0;
@@ -94,5 +94,8 @@ class VideoDriverLoaderInterface;
 /// Instanzierungsfunktion der Treiber.
 RTTR_DECL IVideoDriver* CreateVideoInstance(VideoDriverLoaderInterface* CallBack);
 RTTR_DECL void FreeVideoInstance(IVideoDriver* driver);
+
+using CreateVideoInstance_t = decltype(CreateVideoInstance);
+using FreeVideoInstance_t = decltype(FreeVideoInstance);
 
 #endif // !VIDEOINTERFACE_H_INCLUDED

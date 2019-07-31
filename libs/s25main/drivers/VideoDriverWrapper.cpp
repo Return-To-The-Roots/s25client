@@ -18,9 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "VideoDriverWrapper.h"
 #include "FrameCounter.h"
-#include "GlobalVars.h"
 #include "RTTR_Version.h"
-#include "Settings.h"
 #include "WindowManager.h"
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
@@ -45,7 +43,8 @@ using SwapIntervalExt_t = int(int);
 
 SwapIntervalExt_t* wglSwapIntervalEXT = nullptr;
 
-VideoDriverWrapper::VideoDriverWrapper() : videodriver(nullptr), renderer_(nullptr), loadedFromDll(false), texture_current(0) {}
+VideoDriverWrapper::VideoDriverWrapper() : videodriver(nullptr, nullptr), renderer_(nullptr), enableMouseWarping(true), texture_current(0)
+{}
 
 VideoDriverWrapper::~VideoDriverWrapper()
 {
@@ -53,27 +52,9 @@ VideoDriverWrapper::~VideoDriverWrapper()
     UnloadDriver();
 }
 
-bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
+bool VideoDriverWrapper::Initialize()
 {
-    UnloadDriver();
-
-    loadedFromDll = existingDriver == nullptr;
-    if(!existingDriver)
-    {
-        // DLL laden
-        if(!driver_wrapper.Load(drivers::DriverType::Video, SETTINGS.driver.video))
-            return false;
-
-        auto createVideoInstance = driver_wrapper.GetFunction<decltype(CreateVideoInstance)>("CreateVideoInstance");
-
-        // Instanz erzeugen
-        videodriver = createVideoInstance(&WINDOWMANAGER);
-        if(!videodriver)
-            return false;
-    } else
-        videodriver = existingDriver;
-
-    if(!videodriver->Initialize())
+    if(!videodriver || !videodriver->Initialize())
     {
         UnloadDriver();
         return false;
@@ -87,17 +68,32 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= nullptr*/)
     return true;
 }
 
+bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver)
+{
+    UnloadDriver();
+    videodriver = Handle(existingDriver, [](auto* p) { delete p; });
+    return Initialize();
+}
+
+bool VideoDriverWrapper::LoadDriver(std::string& preference)
+{
+    UnloadDriver();
+    // DLL laden
+    if(!driver_wrapper.Load(drivers::DriverType::Video, preference))
+        return false;
+
+    auto createVideoInstance = driver_wrapper.GetFunction<CreateVideoInstance_t>("CreateVideoInstance");
+    auto freeVideoInstance = driver_wrapper.GetFunction<FreeVideoInstance_t>("FreeVideoInstance");
+    RTTR_Assert(createVideoInstance && freeVideoInstance);
+
+    videodriver = Handle(createVideoInstance(&WINDOWMANAGER), freeVideoInstance);
+    return Initialize();
+}
+
 void VideoDriverWrapper::UnloadDriver()
 {
-    if(loadedFromDll)
-    {
-        auto freeVideoInstance = driver_wrapper.GetFunction<decltype(FreeVideoInstance)>("FreeVideoInstance");
-        if(freeVideoInstance)
-            freeVideoInstance(videodriver);
-        driver_wrapper.Unload();
-    } else
-        delete videodriver;
-    videodriver = nullptr;
+    videodriver.reset();
+    driver_wrapper.Unload();
     renderer_.reset();
 }
 
@@ -127,17 +123,20 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const bool fullscree
     }
 
     // DriverWrapper Initialisieren
-    if(!Initialize())
+    // Extensions laden
+    if(!LoadAllExtensions())
     {
         s25util::fatal_error("Failed to initialize the OpenGL context!\n");
         return false;
     }
 
+    RenewViewport();
+
+    // Buffer swappen um den leeren Buffer darzustellen
+    SwapBuffers();
+
     // WindowManager informieren
     WINDOWMANAGER.Msg_ScreenResize(GetRenderSize());
-
-    // VSYNC ggf abschalten/einschalten
-    setHwVSync(SETTINGS.video.vsync == 0);
 
     return true;
 }
@@ -301,20 +300,6 @@ Extent VideoDriverWrapper::calcPreferredTextureSize(const Extent& minSize) const
     return Extent(helpers::roundToNextPowerOfTwo(minSize.x), helpers::roundToNextPowerOfTwo(minSize.y));
 }
 
-bool VideoDriverWrapper::Initialize()
-{
-    // Extensions laden
-    if(!LoadAllExtensions())
-        return false;
-
-    RenewViewport();
-
-    // Buffer swappen um den leeren Buffer darzustellen
-    SwapBuffers();
-
-    return true;
-}
-
 bool VideoDriverWrapper::setHwVSync(bool enabled)
 {
     if(!wglSwapIntervalEXT)
@@ -402,11 +387,10 @@ bool VideoDriverWrapper::LoadAllExtensions()
 
 // auf VSync-Extension testen
 #ifdef _WIN32
-    wglSwapIntervalEXT = drivers::FunctionPointerCast<SwapIntervalExt_t>(loadExtension("wglSwapIntervalEXT"));
+    wglSwapIntervalEXT = reinterpret_cast<SwapIntervalExt_t*>(loadExtension("wglSwapIntervalEXT"));
 #else
-    wglSwapIntervalEXT = drivers::FunctionPointerCast<SwapIntervalExt_t>(loadExtension("glXSwapIntervalSGI"));
+    wglSwapIntervalEXT = reinterpret_cast<SwapIntervalExt_t*>(loadExtension("glXSwapIntervalSGI"));
 #endif
-    GLOBALVARS.hasVSync = wglSwapIntervalEXT != nullptr;
 
     return true;
 }
@@ -468,7 +452,7 @@ bool VideoDriverWrapper::IsRightDown()
 
 void VideoDriverWrapper::SetMousePos(const Position& newPos)
 {
-    if(!videodriver || !SETTINGS.global.smartCursor)
+    if(!videodriver || !enableMouseWarping)
         return;
 
     videodriver->SetMousePos(newPos);
@@ -483,6 +467,11 @@ void VideoDriverWrapper::ListVideoModes(std::vector<VideoMode>& video_modes) con
         return;
 
     videodriver->ListVideoModes(video_modes);
+}
+
+bool VideoDriverWrapper::HasVSync() const
+{
+    return wglSwapIntervalEXT != nullptr;
 }
 
 /**

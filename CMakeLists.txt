@@ -215,6 +215,7 @@ endif()
 
 # Code coverage
 include(RttrCoverageCfg)
+include(EnableSanitizers)
 
 ################################################################################
 # Configure files

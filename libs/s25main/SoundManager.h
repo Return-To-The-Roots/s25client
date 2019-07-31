@@ -56,7 +56,7 @@ public:
     static constexpr unsigned Longevity = 29;
 
     SoundManager();
-    ~SoundManager() override;
+    ~SoundManager();
 
     /// Versucht ggf. Objekt-Sound abzuspielen
     void PlayNOSound(unsigned sound_lst_id, noBase* obj, unsigned id, unsigned char volume = 255);

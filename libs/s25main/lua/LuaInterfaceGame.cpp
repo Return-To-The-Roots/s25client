@@ -23,6 +23,7 @@
 #include "ai/AIInterface.h"
 #include "ai/AIPlayer.h"
 #include "ingameWindows/iwMissionStatement.h"
+#include "lua/LuaHelpers.h"
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
 #include "network/GameClient.h"
@@ -281,22 +282,23 @@ void LuaInterfaceGame::SetMissionGoal(int playerIdx, const std::string& newGoal)
 }
 
 // Must not be PostMessage as this is a windows define :(
-void LuaInterfaceGame::PostMessageLua(unsigned playerIdx, const std::string& msg)
+void LuaInterfaceGame::PostMessageLua(int playerIdx, const std::string& msg)
 {
-    gw.GetPostMgr().SendMsg(playerIdx, new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General));
+    lua::assertTrue(playerIdx >= 0, "Invalid player idx");
+    gw.GetPostMgr().SendMsg(static_cast<unsigned>(playerIdx), new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General));
 }
 
-void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y)
+void LuaInterfaceGame::PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y)
 {
-    gw.GetPostMgr().SendMsg(playerIdx,
+    lua::assertTrue(playerIdx >= 0, "Invalid player idx");
+    gw.GetPostMgr().SendMsg(static_cast<unsigned>(playerIdx),
                             new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General, gw.MakeMapPoint(Position(x, y))));
 }
 
-LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)
+LuaPlayer LuaInterfaceGame::GetPlayer(int playerIdx)
 {
-    if(playerIdx >= gw.GetNumPlayers())
-        throw LuaExecutionError("Invalid player idx");
-    return LuaPlayer(game, gw.GetPlayer(playerIdx));
+    lua::assertTrue(playerIdx >= 0 && static_cast<unsigned>(playerIdx) < gw.GetNumPlayers(), "Invalid player idx");
+    return LuaPlayer(game, gw.GetPlayer(static_cast<unsigned>(playerIdx)));
 }
 
 LuaWorld LuaInterfaceGame::GetWorld()
