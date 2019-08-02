@@ -29,6 +29,9 @@ if(DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
+if(CMAKE_VERSION VERSION_LESS 3.11)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/cmake_3.11.0")
+endif()
 
 include(CheckGitSubmodules)
 check_git_submodules()
