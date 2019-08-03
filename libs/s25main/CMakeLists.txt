@@ -59,7 +59,7 @@ target_link_libraries(s25Main PUBLIC
     driver
 	${BZIP2_LIBRARIES}
 	Boost::filesystem Boost::disable_autolinking
-	PRIVATE utf8::cpp Boost::iostreams Boost::locale nowide::static
+	PRIVATE utf8::cpp Boost::iostreams Boost::locale nowide::static samplerate_cpp
 )
 
 if(WIN32)

@@ -23,6 +23,7 @@
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "addons/const_addons.h"
+#include "convertSounds.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
@@ -105,7 +106,7 @@ std::string Loader::GetTextN(const std::string& file, unsigned nr)
     return archiv ? archiv->getText() : "text missing";
 }
 
-libsiedler2::Archiv& Loader::GetInfoN(const std::string& file)
+libsiedler2::Archiv& Loader::GetArchive(const std::string& file)
 {
     return files_[file].archiv;
 }
@@ -218,33 +219,6 @@ bool Loader::LoadFilesAtStart()
     return LoadOverrideFiles();
 }
 
-namespace {
-bool ConvertSounds(const std::string& outputFilepath)
-{
-    bfs::path soundConverterPath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[57])) / "sound-convert";
-#ifdef _WIN32
-    soundConverterPath.replace_extension(".exe");
-#endif
-    std::stringstream sArguments;
-    sArguments << "-s \"";
-    sArguments << RTTRCONFIG.ExpandPath(FILE_PATHS[56]); // script
-    sArguments << "\" -f \"";
-    sArguments << RTTRCONFIG.ExpandPath(FILE_PATHS[49]); // quelle
-    sArguments << "\" -t \"";
-    sArguments << outputFilepath; // ziel
-    sArguments << "\"";
-
-    const std::string arguments = sArguments.str();
-
-    LOG.write(_("Starting Sound-Converter...\n"));
-    LOG.writeToFile("Executing %1% %2%\n") % soundConverterPath % arguments;
-    if(!System::execute(soundConverterPath, arguments))
-        return false;
-
-    return bfs::exists(outputFilepath);
-}
-} // namespace
-
 /**
  *  Lädt alle Sounds.
  *
@@ -254,19 +228,17 @@ bool Loader::LoadSounds()
 {
     std::string soundLSTPath = RTTRCONFIG.ExpandPath(FILE_PATHS[55]);
     if(bfs::exists(soundLSTPath))
+        bfs::remove(soundLSTPath);
+    if(!LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[49])))
+        return false;
+    auto const convertStartTime = VIDEODRIVER.GetTickCount();
+    LOG.write(_("Starting sound conversion..."));
+    if(!convertSounds(GetArchive("sound"), RTTRCONFIG.ExpandPath(FILE_PATHS[56])))
     {
-        // Archive might be faulty: Remove if it is and recreate
-        if(!LoadFile(soundLSTPath))
-            bfs::remove(soundLSTPath);
+        LOG.write(_("failed\n"));
+        return false;
     }
-    // ist die konvertierte sound.lst vorhanden?
-    if(!bfs::exists(soundLSTPath))
-    {
-        // nein, dann konvertieren
-        if(!ConvertSounds(soundLSTPath))
-            return false;
-        // die konvertierte muss nicht extra geladen werden, da sie im override-ordner landet
-    }
+    LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - convertStartTime);
 
     const std::string oggPath = RTTRCONFIG.ExpandPath(FILE_PATHS[50]);
     std::vector<std::string> oggFiles = ListDir(oggPath, "ogg");
@@ -389,12 +361,12 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     std::string mapGFXFile = RTTRCONFIG.ExpandPath(mapGfxPath);
     if(!LoadFile(mapGFXFile, pal5))
         return false;
-    map_gfx = &GetInfoN(boost::algorithm::to_lower_copy(bfs::path(mapGFXFile).stem().string()));
+    map_gfx = &GetArchive(boost::algorithm::to_lower_copy(bfs::path(mapGFXFile).stem().string()));
 
     isWinterGFX_ = isWinterGFX;
 
     for(unsigned nation = 0; nation < NUM_NATS; ++nation)
-        nation_gfx[nation] = &GetInfoN(NATION_GFXSET_Z[isWinterGFX ? 1 : 0][nation]);
+        nation_gfx[nation] = &GetArchive(NATION_GFXSET_Z[isWinterGFX ? 1 : 0][nation]);
 
     return true;
 }
@@ -880,7 +852,10 @@ std::vector<std::string> Loader::GetFilesToLoad(const std::string& filepath)
         {
             if(overrideFile == filename)
             {
-                const std::string overideFilepath = (bfs::path(overrideFolder.path) / overrideFile).string();
+                const auto fullFilePath = bfs::path(overrideFolder.path) / overrideFile;
+                if(!bfs::exists(fullFilePath))
+                    continue;
+                const std::string overideFilepath = fullFilePath.string(); // NOLINT
                 if(!helpers::contains(result, overideFilepath))
                     result.push_back(overideFilepath);
                 break;

@@ -71,7 +71,7 @@ const std::string overrideFolder2 = RTTR_BASE_DIR "/tests/testData/override2";
 BOOST_AUTO_TEST_CASE(TestPredicate)
 {
     BOOST_REQUIRE(LOADER.LoadFile(overrideFolder1 + "/test.GER"));
-    const auto& txt = LOADER.GetInfoN("test");
+    const auto& txt = LOADER.GetArchive("test");
     BOOST_REQUIRE(compareTxts(txt, "1||20"));
     BOOST_TEST(compareTxts(txt, "1|").message().str() == "Item count mismatch [3 != 2]");
     BOOST_TEST(compareTxts(txt, "1||20|2").message().str() == "Item count mismatch [3 != 4]");
@@ -86,19 +86,19 @@ BOOST_AUTO_TEST_CASE(Overrides)
     // No override folders
     LOADER.ClearOverrideFolders();
     BOOST_REQUIRE(LOADER.LoadFile(mainFile));
-    BOOST_REQUIRE(compareTxts(LOADER.GetInfoN("test"), "0|10"));
+    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "0|10"));
 
     // 1 override folder
     LOADER.AddOverrideFolder(overrideFolder1);
     // LoadOverrideFiles loads simply the override file itself
     BOOST_REQUIRE(LOADER.LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(LOADER.GetInfoN("test"), "1||20"));
+    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "1||20"));
     // Explicitly loading a file overwrites this and override file is used
     BOOST_REQUIRE(LOADER.LoadFile(mainFile));
-    BOOST_REQUIRE(compareTxts(LOADER.GetInfoN("test"), "1|10|20"));
+    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "1|10|20"));
     // LoadOverrideFiles has no effect (already loaded)
     BOOST_REQUIRE(LOADER.LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(LOADER.GetInfoN("test"), "1|10|20"));
+    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "1|10|20"));
 
     // 2 override folders
     LOADER.ClearOverrideFolders();
@@ -106,13 +106,13 @@ BOOST_AUTO_TEST_CASE(Overrides)
     LOADER.AddOverrideFolder(overrideFolder2);
     // LoadOverrideFiles loads override file from1 with override from 2
     BOOST_REQUIRE(LOADER.LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(LOADER.GetInfoN("test"), "2||20|30"));
+    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "2||20|30"));
     // Explicitly loading a file overwrites this and override file is used
     BOOST_REQUIRE(LOADER.LoadFile(mainFile));
-    BOOST_REQUIRE(compareTxts(LOADER.GetInfoN("test"), "2|10|20|30"));
+    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "2|10|20|30"));
     // LoadOverrideFiles has no effect (already loaded)
     BOOST_REQUIRE(LOADER.LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(LOADER.GetInfoN("test"), "2|10|20|30"));
+    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "2|10|20|30"));
     // Avoid log cluttering
     logAcc.clearLog();
 }

@@ -126,7 +126,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
             throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for terrain '" + cur.name + "'");
         if(cur.palAnimIdx >= 0)
         {
-            libsiedler2::ArchivItem* animItem = LOADER.GetInfoN(textureName)[cur.palAnimIdx];
+            libsiedler2::ArchivItem* animItem = LOADER.GetArchive(textureName)[cur.palAnimIdx];
             if(!texBmp->getPalette() || !animItem || animItem->getBobType() != libsiedler2::BOBTYPE_PALETTE_ANIM)
             {
                 LOG.write("Invalid palette animation '%1%' for '%2%'") % unsigned(cur.palAnimIdx) % cur.name;

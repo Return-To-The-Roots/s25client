@@ -132,7 +132,7 @@ dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::share
     game->world_.SetGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(nullptr));
-    cbb.loadEdges(LOADER.GetInfoN("resource"));
+    cbb.loadEdges(LOADER.GetArchive("resource"));
     cbb.buildBorder(VIDEODRIVER.GetRenderSize(), borders);
 
     InitPlayer();
