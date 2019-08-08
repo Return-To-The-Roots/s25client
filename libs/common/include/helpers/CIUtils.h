@@ -15,34 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LSAN_Utils_h__
-#define LSAN_Utils_h__
+#ifndef CI_Utils_h__
+#define CI_Utils_h__
 
-#ifdef __has_feature
-#define RTTR_HAS_ASAN __has_feature(address_sanitizer)
-#elif defined(__SANITIZE_ADDRESS__)
-#define RTTR_HAS_ASAN __SANITIZE_ADDRESS__
-#else
-#define RTTR_HAS_ASAN 0
-#endif
+#include <cstdlib>
+#include <string>
 
-#if RTTR_HAS_ASAN
-#include <sanitizer/lsan_interface.h>
 namespace rttr {
-/// Record all leaks in the current context as expected
-using ScopedLeakDisabler = __lsan::ScopedDisabler;
-} // namespace rttr
-#else
-namespace rttr {
-struct ScopedLeakDisabler
+inline bool isRunningOnCI()
 {
-    static void suppressDefaultCtorWarning() {}
-    ScopedLeakDisabler()
-    { // Pretent to be a RAII class to avoid unused variable warnings
-        suppressDefaultCtorWarning();
-    };
-};
+    const auto* ciPtr = std::getenv("CI");
+    if(!ciPtr)
+        return false;
+    const std::string ci = ciPtr;
+    return ci == "true" || ci == "True";
+}
 } // namespace rttr
-#endif
 
-#endif // LSAN_Utils_h__
+#endif // CI_Utils_h__
