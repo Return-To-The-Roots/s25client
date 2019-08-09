@@ -95,6 +95,7 @@ jobs:
       env: BUILD_TYPE=Debug
     # Latest version GCC with static analysis
     - os: linux
+      dist: bionic # GCC on <18 is broken with -fsanitize: https://stackoverflow.com/q/50024731/1930508
       compiler: gcc
       env:
         - MATRIX_EVAL="CXX=g++-8 && CC=gcc-8"
