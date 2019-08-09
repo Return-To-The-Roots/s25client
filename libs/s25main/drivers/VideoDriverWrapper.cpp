@@ -71,7 +71,7 @@ bool VideoDriverWrapper::Initialize()
 bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver)
 {
     UnloadDriver();
-    videodriver = Handle(existingDriver, [](auto* p) { delete p; });
+    videodriver = Handle(existingDriver, [](IVideoDriver* p) { delete p; });
     return Initialize();
 }
 

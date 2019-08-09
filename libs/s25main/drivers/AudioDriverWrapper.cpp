@@ -99,7 +99,7 @@ bool AudioDriverWrapper::Init()
 /// Lädt den Treiber
 bool AudioDriverWrapper::LoadDriver(IAudioDriver* audioDriver)
 {
-    audiodriver_ = Handle(audioDriver, [](auto* p) { delete p; });
+    audiodriver_ = Handle(audioDriver, [](IAudioDriver* p) { delete p; });
     return Init();
 }
 
