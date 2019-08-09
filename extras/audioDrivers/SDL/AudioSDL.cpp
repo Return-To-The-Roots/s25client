@@ -81,26 +81,25 @@ const char* AudioSDL::GetName() const
 bool AudioSDL::Initialize()
 {
     initialized = false;
+    // SDL_thread leaks a mutex on regular runs and SDL_mixer a lot on initialization error
+    rttr::ScopedLeakDisabler _;
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
     {
         std::cerr << SDL_GetError() << std::endl;
         return false;
     }
 
+    // open 44.1KHz, signed 16bit, system byte order,
+    // stereo audio, using 1024 byte chunks
+    if(Mix_OpenAudio(44100, AUDIO_S16LSB, 2, 4096) < 0)
     {
-        rttr::ScopedLeakDisabler _; // SDL_thread leaks a mutex
-        // open 44.1KHz, signed 16bit, system byte order,
-        // stereo audio, using 1024 byte chunks
-        if(Mix_OpenAudio(44100, AUDIO_S16LSB, 2, 4096) < 0)
+        if(rttr::isRunningOnCI())
         {
-            if(rttr::isRunningOnCI())
-            {
-                initialized = true;
-                return true;
-            }
-            std::cerr << Mix_GetError() << std::endl;
-            return false;
+            initialized = true;
+            return true;
         }
+        std::cerr << Mix_GetError() << std::endl;
+        return false;
     }
     SetNumChannels(Mix_AllocateChannels(MAX_NUM_CHANNELS));
     Mix_SetMusicCMD(nullptr);
