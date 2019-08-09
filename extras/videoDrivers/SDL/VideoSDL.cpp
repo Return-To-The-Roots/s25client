@@ -118,7 +118,10 @@ VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack)
 VideoSDL::~VideoSDL()
 {
     if(initialized)
+    {
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
+        SDL_Quit();
+    }
 }
 
 /**
