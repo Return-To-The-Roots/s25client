@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Direct.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 #include <glad/glad.h>
 #include <stdexcept>
 
@@ -45,7 +45,7 @@ void glArchivItem_Bitmap_Direct::endUpdate()
     if(prodOfComponents(areaToUpdate_.getSize()) == 0 || !GetTexNoCreate())
         return;
 
-    libsiedler2::PixelBufferARGB buffer(areaToUpdate_.getSize().x, areaToUpdate_.getSize().y);
+    libsiedler2::PixelBufferBGRA buffer(areaToUpdate_.getSize().x, areaToUpdate_.getSize().y);
     Position origin = areaToUpdate_.getOrigin();
     int ec = print(buffer, nullptr, 0, 0, origin.x, origin.y);
     RTTR_Assert(ec == 0);
@@ -54,7 +54,7 @@ void glArchivItem_Bitmap_Direct::endUpdate()
                     buffer.getPixelPtr());
 }
 
-void glArchivItem_Bitmap_Direct::updatePixel(const DrawPoint& pos, const libsiedler2::ColorARGB& clr)
+void glArchivItem_Bitmap_Direct::updatePixel(const DrawPoint& pos, const libsiedler2::ColorBGRA& clr)
 {
     RTTR_Assert(isUpdating_);
     RTTR_Assert(pos.x >= 0 && pos.y >= 0);

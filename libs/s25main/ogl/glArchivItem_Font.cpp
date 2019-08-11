@@ -24,7 +24,7 @@
 #include "helpers/containerUtils.h"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/IAllocator.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
 #include <utf8.h>
@@ -568,8 +568,8 @@ void glArchivItem_Font::initFont()
 
     constexpr Extent spacing(1, 1);
     Extent texSize = (Extent(dx, dy) + spacing * 2u) * Extent(numCharsPerLine, numLines) + spacing * 2u;
-    libsiedler2::PixelBufferARGB bufferWithOutline(texSize.x, texSize.y);
-    libsiedler2::PixelBufferARGB bufferNoOutline(texSize.x, texSize.y);
+    libsiedler2::PixelBufferBGRA bufferWithOutline(texSize.x, texSize.y);
+    libsiedler2::PixelBufferBGRA bufferNoOutline(texSize.x, texSize.y);
 
     const libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
     Position curPos(spacing);

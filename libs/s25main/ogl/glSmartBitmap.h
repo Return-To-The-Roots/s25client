@@ -28,7 +28,7 @@
 namespace libsiedler2 {
 class baseArchivItem_Bitmap;
 class ArchivItem_Bitmap_Player;
-class PixelBufferARGB;
+class PixelBufferBGRA;
 } // namespace libsiedler2
 
 class glBitmapItem;
@@ -77,7 +77,7 @@ public:
     void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
     void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
     /// Draw the bitmap(s) to the specified buffer at the position starting at bufOffset (must be positive)
-    void drawTo(libsiedler2::PixelBufferARGB& buffer, const Extent& bufOffset = Extent(0, 0)) const;
+    void drawTo(libsiedler2::PixelBufferBGRA& buffer, const Extent& bufOffset = Extent(0, 0)) const;
 
     void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
     void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false);

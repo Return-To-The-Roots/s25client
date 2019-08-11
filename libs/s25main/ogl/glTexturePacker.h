@@ -24,7 +24,7 @@
 class glSmartBitmap;
 
 namespace libsiedler2 {
-class PixelBufferARGB;
+class PixelBufferBGRA;
 }
 
 class glTexture
@@ -46,7 +46,7 @@ public:
 
     void bind();
     bool checkSize(const Extent&);
-    bool uploadData(const libsiedler2::PixelBufferARGB&);
+    bool uploadData(const libsiedler2::PixelBufferBGRA&);
 };
 
 class glTexturePacker

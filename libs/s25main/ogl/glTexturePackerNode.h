@@ -23,7 +23,7 @@
 
 class glSmartBitmap;
 namespace libsiedler2 {
-class PixelBufferARGB;
+class PixelBufferBGRA;
 } // namespace libsiedler2
 
 class glTexturePackerNode
@@ -41,7 +41,7 @@ public:
     glTexturePackerNode(const Extent& size) : pos(0, 0), size(size), bmp(nullptr) { child[0] = child[1] = nullptr; }
     /// Find a position in the buffer to draw the bitmap starting at this node
     /// todo list is cleared and used to avoid frequent allocations
-    bool insert(glSmartBitmap* b, libsiedler2::PixelBufferARGB& buffer, std::vector<glTexturePackerNode*>& todo);
+    bool insert(glSmartBitmap* b, libsiedler2::PixelBufferBGRA& buffer, std::vector<glTexturePackerNode*>& todo);
     void destroy(unsigned reserve = 0);
 };
 

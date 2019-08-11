@@ -21,7 +21,7 @@
 #include <libsiedler2/ArchivItem_Bitmap_Player.h>
 #include <libsiedler2/ArchivItem_Bitmap_Raw.h>
 #include <libsiedler2/ArchivItem_Palette.h>
-#include <libsiedler2/PixelBufferARGB.h>
+#include <libsiedler2/PixelBufferBGRA.h>
 #include <rttr/test/random.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iomanip>
@@ -31,10 +31,10 @@
 using namespace libsiedler2;
 
 namespace libsiedler2 {
-static std::ostream& boost_test_print_type(std::ostream& os, const ColorARGB color)
+static std::ostream& boost_test_print_type(std::ostream& os, const ColorBGRA color)
 {
     os.imbue(std::locale::classic());
-    return os << std::hex << std::setw(8) << color.clrValue;
+    return os << std::hex << std::setw(8) << color.asValue();
 }
 } // namespace libsiedler2
 
@@ -66,7 +66,7 @@ std::unique_ptr<ArchivItem_Bitmap_Player> createRandPlayerBmp(unsigned percentTr
     bmp->setNx(offset.x);
     bmp->setNy(offset.y);
     using rttr::test::randomValue;
-    PixelBufferARGB buffer(size.x, size.y);
+    PixelBufferBGRA buffer(size.x, size.y);
     RTTR_FOREACH_PT(Position, size)
     {
         if(randomValue(1u, 100u) > percentTransparent)
@@ -94,8 +94,8 @@ BOOST_AUTO_TEST_CASE(CreateRandBmp_Works)
 BOOST_AUTO_TEST_CASE(PrintColor)
 {
     std::stringstream s;
-    boost_test_print_type(s, ColorARGB(0x42, 0x13, 0x37, 0x99));
-    BOOST_TEST(s.str() == "42133799");
+    boost_test_print_type(s, ColorBGRA(0x42, 0x13, 0x37, 0x99));
+    BOOST_TEST(s.str() == "99371342");
 }
 
 BOOST_AUTO_TEST_CASE(RegularBitmap)
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(RegularBitmap)
     auto bmpSrc = createRandBmp(0);
     const Extent size(bmpSrc->getWidth(), bmpSrc->getHeight());
     const auto offset = rttr::test::randomPoint<Extent>(0, 100);
-    PixelBufferARGB buffer(size.x * 2 + offset.x, size.y * 2 + offset.y);
+    PixelBufferBGRA buffer(size.x * 2 + offset.x, size.y * 2 + offset.y);
     glSmartBitmap smartBmp;
     smartBmp.add(bmpSrc.get());
     BOOST_TEST(smartBmp.GetSize() == size);
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(RegularBitmap)
     {
         const Position bmpPos = pt - offset;
         if(bmpPos.x < 0 || bmpPos.y < 0 || bmpPos.x >= iSize.x || bmpPos.y >= iSize.y)
-            BOOST_TEST(buffer.get(pt.x, pt.y) == ColorARGB());
+            BOOST_TEST(buffer.get(pt.x, pt.y) == ColorBGRA());
         else
             BOOST_TEST(buffer.get(pt.x, pt.y) == bmpSrc->getPixel(bmpPos.x, bmpPos.y));
     }
@@ -150,13 +150,13 @@ BOOST_AUTO_TEST_CASE(MultiRegularBitmap)
 
     const auto offset = rttr::test::randomPoint<Extent>(0, 100);
     // Draw to a large buffer (detect pixels at wrong positions)
-    PixelBufferARGB buffer(size.x * 2 + offset.x, size.y * 2 + offset.y);
+    PixelBufferBGRA buffer(size.x * 2 + offset.x, size.y * 2 + offset.y);
     smartBmp.drawTo(buffer, offset);
     RTTR_FOREACH_PT(Position, Extent(buffer.getWidth(), buffer.getHeight()))
     {
         const Position curPos = pt - offset;
         // Bitmaps are drawn in order added, so final pixel value is determined by all bitmaps at that position
-        ColorARGB expectedColor;
+        ColorBGRA expectedColor;
         for(const auto& bmp : bmps)
         {
             // Drawing buffer at `pos` - commonOrigin should be equal to drawing bmp at `pos` - origin
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(MultiRegularBitmap)
             const Position bmpPos = curPos + curOriginOffset;
             if(bmpPos.x >= 0 && bmpPos.y >= 0 && bmpPos.x < bmp->getWidth() && bmpPos.y < bmp->getHeight())
             {
-                const ColorARGB color = bmp->getPixel(bmpPos.x, bmpPos.y);
+                const ColorBGRA color = bmp->getPixel(bmpPos.x, bmpPos.y);
                 if(color.getAlpha() != 0)
                     expectedColor = color;
             }
@@ -186,12 +186,12 @@ BOOST_AUTO_TEST_CASE(PlayerBitmap)
     BOOST_TEST(smartBmp.GetSize() == size);
     BOOST_TEST(smartBmp.getRequiredTexSize() == Extent(size.x * 2, size.y));
     BOOST_TEST(smartBmp.GetOrigin() == Position(bmp->getNx(), bmp->getNy()));
-    PixelBufferARGB buffer(size.x * 4 + offset.x, size.y * 4 + offset.y);
+    PixelBufferBGRA buffer(size.x * 4 + offset.x, size.y * 4 + offset.y);
     smartBmp.drawTo(buffer, offset);
     RTTR_FOREACH_PT(Position, Extent(buffer.getWidth(), buffer.getHeight()))
     {
         const Position bmpPos = pt - offset;
-        ColorARGB expectedColor;
+        ColorBGRA expectedColor;
         if(bmpPos.x >= 0 && bmpPos.y >= 0 && bmpPos.y < bmp->getHeight())
         {
             if(bmpPos.x >= static_cast<int>(smartBmp.GetSize().x))
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
 
     const auto offset = rttr::test::randomPoint<Extent>(0, 100);
     // Draw to a large buffer (detect pixels at wrong positions)
-    PixelBufferARGB buffer(size.x * 4 + offset.x, size.y * 4 + offset.y);
+    PixelBufferBGRA buffer(size.x * 4 + offset.x, size.y * 4 + offset.y);
     smartBmp.drawTo(buffer, offset);
     const auto* pal = LOADER.GetPaletteN("colors");
     RTTR_FOREACH_PT(Position, Extent(buffer.getWidth(), buffer.getHeight()))
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
         const bool isPlayerClrRegion =
           (curPos.x >= static_cast<int>(smartBmp.GetSize().x) && curPos.x < static_cast<int>(smartBmp.GetSize().x) * 2);
         // Bitmaps are drawn in order added, so final pixel value is determined by all bitmaps at that position
-        ColorARGB expectedColor;
+        ColorBGRA expectedColor;
         for(const auto& bmp : bmps)
         {
             // Drawing buffer at `pos` - commonOrigin should be equal to drawing bmp at `pos` - origin
@@ -257,11 +257,11 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
             const Position bmpPos = curPos + curOriginOffset - Extent(isPlayerClrRegion ? smartBmp.GetSize().x : 0, 0);
             if(bmpPos.x >= 0 && bmpPos.y >= 0 && bmpPos.x < bmp->getWidth() && bmpPos.y < bmp->getHeight())
             {
-                const ColorARGB color = bmp->getPixel(bmpPos.x, bmpPos.y);
+                const ColorBGRA color = bmp->getPixel(bmpPos.x, bmpPos.y);
                 if(color.getAlpha() != 0)
                 {
                     // Color overwrite (make transparent) player clr
-                    expectedColor = isPlayerClrRegion ? ColorARGB() : color;
+                    expectedColor = isPlayerClrRegion ? ColorBGRA() : color;
                 }
                 if(bmp->isPlayerColor(bmpPos.x, bmpPos.y))
                     expectedColor = pal->get(bmp->getPlayerColorIdx(bmpPos.x, bmpPos.y) + 128);

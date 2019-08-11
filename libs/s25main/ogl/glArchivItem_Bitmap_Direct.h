@@ -23,7 +23,7 @@
 #include "glArchivItem_Bitmap.h"
 
 namespace libsiedler2 {
-struct ColorARGB;
+struct ColorBGRA;
 }
 
 /// Klasse für GL-Direct-Bitmaps.
@@ -39,7 +39,7 @@ public:
     /// Call after updating texture
     void endUpdate();
     /// Updates a pixels color
-    void updatePixel(const DrawPoint& pos, const libsiedler2::ColorARGB& clr);
+    void updatePixel(const DrawPoint& pos, const libsiedler2::ColorBGRA& clr);
 
     /// lädt die Bilddaten aus einer Datei.
     int load(std::istream& /*file*/, const libsiedler2::ArchivItem_Palette* /*palette*/) override { return 254; }

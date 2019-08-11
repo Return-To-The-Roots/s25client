@@ -20,7 +20,7 @@
 #include "Loader.h"
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 #include <glad/glad.h>
 
 namespace {
@@ -122,7 +122,7 @@ void glArchivItem_Bitmap_Player::FillTexture()
     int iformat = GetInternalFormat(), dformat = GL_BGRA; // GL_BGRA_EXT;
 
     Extent texSize = GetTexSize();
-    libsiedler2::PixelBufferARGB buffer(texSize.x, texSize.y);
+    libsiedler2::PixelBufferBGRA buffer(texSize.x, texSize.y);
 
     print(buffer, palette, 128, 0, 0, 0, 0, 0, 0, false);
     print(buffer, palette, 128, texSize.x / 2u, 0, 0, 0, 0, 0, true);

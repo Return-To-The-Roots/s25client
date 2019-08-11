@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Minimap.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 
 Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize) {}
 
@@ -26,14 +26,14 @@ void Minimap::CreateMapTexture()
     map.DeleteTexture();
 
     /// Buffer für die Daten erzeugen
-    libsiedler2::PixelBufferARGB buffer(mapSize.x * 2, mapSize.y);
+    libsiedler2::PixelBufferBGRA buffer(mapSize.x * 2, mapSize.y);
 
     RTTR_FOREACH_PT(MapPoint, mapSize)
     {
         // Die 2. Terraindreiecke durchgehen
         for(unsigned t = 0; t < 2; ++t)
         {
-            libsiedler2::ColorARGB color(CalcPixelColor(pt, t));
+            libsiedler2::ColorBGRA color(CalcPixelColor(pt, t));
             unsigned xCoord = (pt.x * 2 + t + (pt.y & 1)) % buffer.getWidth();
             buffer.set(xCoord, pt.y, color);
         }
