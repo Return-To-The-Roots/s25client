@@ -99,7 +99,6 @@ jobs:
       env:
         - MATRIX_EVAL="CXX=g++-8 && CC=gcc-8"
         - BUILD_TYPE=Debug
-        - BOOST_VERSION=1.67.0
       addons:
         apt:
           <<: *defApt
@@ -119,7 +118,6 @@ jobs:
         - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
         - BUILD_TYPE=Debug
         - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"
-        - BOOST_VERSION=1.67.0
     - <<: *latest-clang-externals
       env:
         - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
