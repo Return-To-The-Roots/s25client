@@ -19,17 +19,24 @@
 
 #include <boost/test/unit_test.hpp>
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <samplerate.hpp>
 #include <vector>
 
-static int test_data = 42;
+namespace {
+int test_data = 42;
+int callback_pos = 0;
+std::array<float, 512> callback_data{};
+} // namespace
 
 long callback(void* cb_data, float** data)
 {
     BOOST_TEST(cb_data == &test_data);
-    *data = nullptr;
-    return test_data;
+    *data = callback_data.data() + callback_pos;
+    const auto size = std::min<long>(callback_data.size() - callback_pos, 128);
+    callback_pos += size;
+    return size;
 }
 
 BOOST_AUTO_TEST_CASE(InvalidCtorParamsThrow)
@@ -87,10 +94,11 @@ BOOST_AUTO_TEST_CASE(MoveDoesNotCopy)
 BOOST_AUTO_TEST_CASE(SimpleCallback)
 {
     samplerate::StateCallback state(samplerate::Converter::Linear, 1, callback, &test_data);
-    test_data = 0;
-    std::vector<float> out(10);
-    const auto written = state.read(2, out.size(), out.data());
-    BOOST_TEST(written == 0);
+    auto const ratio = 2;
+    std::vector<float> out(callback_data.size() * ratio);
+    callback_pos = 0;
+    const auto written = state.read(ratio, out.size(), out.data());
+    BOOST_TEST(written == out.size());
 }
 
 BOOST_AUTO_TEST_CASE(ConversionWorks)
