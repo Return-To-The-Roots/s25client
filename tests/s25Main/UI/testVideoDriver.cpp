@@ -71,7 +71,7 @@ void APIENTRY glDeleteTextures(GLsizei n, const GLuint* textures)
 RTTR_POP_DIAGNOSTIC
 } // namespace rttrOglMock2
 
-BOOST_AUTO_TEST_CASE(CreateAndDestroyTextures)
+BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
 {
     // Fresh start
     VIDEODRIVER.DestroyScreen();

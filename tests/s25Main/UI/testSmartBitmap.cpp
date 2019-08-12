@@ -18,6 +18,7 @@
 #include "Loader.h"
 #include "PointOutput.h"
 #include "macros.h"
+#include "uiHelper/uiHelpers.hpp"
 #include <libsiedler2/ArchivItem_Bitmap_Player.h>
 #include <libsiedler2/ArchivItem_Bitmap_Raw.h>
 #include <libsiedler2/ArchivItem_Palette.h>
@@ -80,6 +81,8 @@ std::unique_ptr<ArchivItem_Bitmap_Player> createRandPlayerBmp(unsigned percentTr
     return bmp;
 }
 } // namespace
+
+BOOST_FIXTURE_TEST_SUITE(SmartBmpSuite, uiHelper::Fixture)
 
 BOOST_AUTO_TEST_CASE(CreateRandBmp_Works)
 {
@@ -271,3 +274,5 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
         BOOST_TEST(buffer.get(pt.x, pt.y) == expectedColor);
     }
 }
+
+BOOST_AUTO_TEST_SUITE_END()
