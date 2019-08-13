@@ -10,5 +10,8 @@ if(SDL2_FOUND)
     gather_dll_by_name(SDL2 SDL2.dll)
   endif()
 
-  install(TARGETS videoSDL2 DESTINATION ${RTTR_DRIVERDIR}/video)
+  install(TARGETS videoSDL2
+    RUNTIME DESTINATION ${RTTR_DRIVERDIR}/video
+    LIBRARY DESTINATION ${RTTR_DRIVERDIR}/video
+  )
 endif()
