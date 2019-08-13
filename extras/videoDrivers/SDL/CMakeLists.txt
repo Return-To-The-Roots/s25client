@@ -18,7 +18,10 @@ IF (SDL_FOUND)
         gather_dll_by_name(SDL SDL.dll)
 	ENDIF()
 
-	INSTALL(TARGETS videoSDL DESTINATION ${RTTR_DRIVERDIR}/video)
+	INSTALL(TARGETS videoSDL
+		RUNTIME DESTINATION ${RTTR_DRIVERDIR}/video
+		LIBRARY DESTINATION ${RTTR_DRIVERDIR}/video
+	)
 ELSE ()
 	MESSAGE(WARNING ": SDL library not found: Not building SDL videodriver")
 ENDIF ()
