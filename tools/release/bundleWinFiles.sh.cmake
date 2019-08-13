@@ -66,6 +66,8 @@ echo "## Using Library Dir \"${RTTR_LIBDIR}\""
 
 ###############################################################################
 
+DESTDIR="${DESTDIR:-}"
+
 # strip ending slash from $DESTDIR
 DESTDIR=${DESTDIR%/}
 [ -n "$CMAKE_INSTALL_PREFIX" ] && CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX%/}
@@ -133,7 +135,7 @@ case "$SYSTEM_NAME" in
 esac
 
 binaries+=( "${RTTR_BINDIR}/"{s25client,s25edit}${exe_suffix} )
-binaries+=( "${RTTR_EXTRA_BINDIR}/"{s25update}${exe_suffix} )
+binaries+=( "${RTTR_EXTRA_BINDIR}/"s25update${exe_suffix} )
 binaries+=( "${RTTR_DRIVERDIR}/"{video/libvideoSDL,video/libvideoSDL2,audio/libaudioSDL}${lib_suffix} )
 
 # strip out debug symbols into external file
