@@ -7,7 +7,10 @@ if(WIN32)
 
         install(CODE "
             set(ENV{CMAKE_INSTALL_PREFIX} \${CMAKE_INSTALL_PREFIX})
-            execute_process(COMMAND ${CMAKE_CURRENT_BINARY_DIR}/prepareRelease.sh)
+            execute_process(COMMAND ${CMAKE_CURRENT_BINARY_DIR}/prepareRelease.sh RESULT_VARIABLE result)
+            if(NOT result EQUAL \"0\")
+              message(FATAL_ERROR \"Failed preparing the release\")
+            endif()
         ")
     endif()
 elseif(APPLE)
