@@ -21,6 +21,12 @@ mecho()
 	$CMAKE_COMMAND -E cmake_echo_color --bold $COLOR "$*"
 }
 
+error_and_exit()
+{
+	mecho --red "$*" >&2
+	exit 1
+}
+
 ###############################################################################
 
 SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
@@ -40,8 +46,7 @@ RTTR_DRIVERDIR=@RTTR_DRIVERDIR@
 RTTR_SRCDIR=@RTTR_SRCDIR@
 
 if [ -z "${RTTR_SRCDIR}" ] ; then
-	echo "RTTR_SRCDIR was not set" >&2
-	exit 1
+	error_and_exit "RTTR_SRCDIR was not set"
 fi
 
 if [ "$SYSTEM_NAME" != "Darwin" ] && [ -z "$(type -p $OBJCOPY)" ] ; then
@@ -50,13 +55,7 @@ if [ "$SYSTEM_NAME" != "Darwin" ] && [ -z "$(type -p $OBJCOPY)" ] ; then
 fi
 
 if [ "$SYSTEM_NAME" == "Windows" ] && [ -z "$(type -p $OBJDUMP)" ] ; then
-	echo "You have to install objdump" >&2
-	exit 1
-fi
-
-if [ -z "$(type -p $STRIP)" ] ; then
-	echo "You have to install strip" >&2
-	exit 1
+	error_and_exit "You have to install objdump"
 fi
 
 echo "## Installing for \"${SYSTEM_NAME}\""
@@ -75,12 +74,12 @@ DESTDIR=${DESTDIR%/}
 # adding the slash again if DESTDIR is not empty
 if [ -n "$DESTDIR" ] ; then
 	DESTDIR=${DESTDIR}/
-	mecho --red "## Using Destination Dir \"${DESTDIR}\""
+	mecho --green "## Using Destination Dir \"${DESTDIR}\""
 fi
 
 if [ -n "$CMAKE_INSTALL_PREFIX" ] ; then
 	DESTDIR=${DESTDIR}${CMAKE_INSTALL_PREFIX}/
-	mecho --red "## Updating Destination Dir with CMake-Install-Prefix \"${DESTDIR}\""
+	mecho --green "## Updating Destination Dir with CMake-Install-Prefix \"${DESTDIR}\""
 fi
 
 ###############################################################################
@@ -129,8 +128,7 @@ case "$SYSTEM_NAME" in
 		binaries+=( "${RTTR_DRIVERDIR}/video/libvideoWinAPI.dll" )
 	;;
 	*)
-		echo "$SYSTEM_NAME not supported" >&2
-		exit 1
+		error_and_exit "$SYSTEM_NAME not supported"
 	;;
 esac
 
@@ -195,8 +193,7 @@ case "$SYSTEM_NAME" in
 						done
 					done
 					if [ $FOUND -eq 0 ] ; then
-						echo "Unable to find $dep_dll for $dll" >&2
-						return 1
+						error_and_exit "Unable to find $dep_dll for $dll"
 					fi
 				done
 			done
@@ -209,7 +206,7 @@ case "$SYSTEM_NAME" in
 				to=$RTTR_BINDIR
 			fi
 			echo "Copying dependency dlls of $binary to ${DESTDIR}$to"
-			copy_dlls $to $binary || exit 1
+			copy_dlls $to $binary
 			echo ""
 		done
 
@@ -239,8 +236,8 @@ case "$SYSTEM_NAME" in
 		esac
 
 		if [ -f $miniupnpc ] ; then
-			mkdir -p ${DESTDIR}/lib/ || exit 1
-			cp -rv $miniupnpc* ${DESTDIR}/lib/ || exit 1
+			mkdir -p ${DESTDIR}/lib/
+			cp -rv $miniupnpc* ${DESTDIR}/lib/
 		else
 			echo "libminiupnpc.so not found at $miniupnpc" >&2
 			echo "will not bundle it in your installation" >&2
@@ -250,8 +247,8 @@ case "$SYSTEM_NAME" in
 	FreeBSD)
 		miniupnpc=/usr/local/lib/libminiupnpc.so
 		if [ -f $miniupnpc ] ; then
-			mkdir -p ${DESTDIR}/lib/ || exit 1
-			cp -rv ${miniupnpc}* ${DESTDIR}/lib/ || exit 1
+			mkdir -p ${DESTDIR}/lib/
+			cp -rv ${miniupnpc}* ${DESTDIR}/lib/
 		else
 			echo "libminiupnpc.so not found at $miniupnpc" >&2
 			echo "will not bundle it in your installation" >&2
@@ -259,8 +256,7 @@ case "$SYSTEM_NAME" in
 		fi
 	;;
 	*)
-		echo "$SYSTEM_NAME not supported" >&2
-		exit 1
+		error_and_exit "$SYSTEM_NAME not supported"
 	;;
 esac
 
