@@ -17,7 +17,9 @@
 #ifndef AUDIODRIVERLOADERINTERFACE_H_INCLUDED
 #define AUDIODRIVERLOADERINTERFACE_H_INCLUDED
 
-class IAudioDriverCallback
+#include <boost/config.hpp>
+
+class BOOST_SYMBOL_VISIBLE IAudioDriverCallback
 {
 public:
     virtual ~IAudioDriverCallback() = default;
