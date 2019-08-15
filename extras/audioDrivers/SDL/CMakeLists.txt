@@ -1,23 +1,23 @@
 set(SDL_BUILDING_LIBRARY ON)
-FIND_PACKAGE(SDL_mixer)
+find_package(SDL_mixer)
 
-IF(NOT SDL_MIXER_FOUND)
-	MESSAGE(WARNING ": SDL_mixer library not found: Not building SDL audiodriver")
-ELSE()
-	IF (WIN32)
-        include(GatherDll)
-        gather_dll(SDL_MIXER)
-        gather_dll_by_name(VORBIS libvorbis-0.dll)
-        gather_dll_by_name(VORBISFILE libvorbisfile-3.dll)
-        gather_dll_by_name(OGG libogg-0.dll)
-	ENDIF ()
+if(NOT SDL_MIXER_FOUND)
+  message(WARNING "SDL_mixer library not found: Not building SDL audiodriver")
+else()
+  if(WIN32)
+    include(GatherDll)
+    gather_dll(SDL_MIXER)
+    gather_dll_by_name(VORBIS libvorbis-0.dll)
+    gather_dll_by_name(VORBISFILE libvorbisfile-3.dll)
+    gather_dll_by_name(OGG libogg-0.dll)
+  endif()
 
-	ADD_LIBRARY(audioSDL SHARED ${RTTR_DRIVER_INTERFACE} AudioSDL.cpp AudioSDL.h SoundSDL_Effect.h SoundSDL_Music.h)
-	TARGET_LINK_LIBRARIES(audioSDL PRIVATE audiodrv SDL_mixer::SDL_mixer)
+  add_library(audioSDL SHARED ${RTTR_DRIVER_INTERFACE} AudioSDL.cpp AudioSDL.h SoundSDL_Effect.h SoundSDL_Music.h)
+  target_link_libraries(audioSDL PRIVATE audiodrv SDL_mixer::SDL_mixer)
 
-	INSTALL(TARGETS audioSDL
-		RUNTIME DESTINATION ${RTTR_DRIVERDIR}/audio
-		LIBRARY DESTINATION ${RTTR_DRIVERDIR}/audio
-	)
-	add_dependencies(drivers audioSDL)
-ENDIF ()
+  install(TARGETS audioSDL
+    RUNTIME DESTINATION ${RTTR_DRIVERDIR}/audio
+    LIBRARY DESTINATION ${RTTR_DRIVERDIR}/audio
+  )
+  add_dependencies(drivers audioSDL)
+endif()
