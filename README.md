@@ -45,7 +45,9 @@ Coverage:
 - libsdl2-mixer-dev (optional)
 - licurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
-- libminiupnpc-dev (linux)
+- lua5.2-dev
+- gettext
+- libminiupnpc-dev
 
 All of them can be installed with the package manager.
 
