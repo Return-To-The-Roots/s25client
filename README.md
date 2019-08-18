@@ -42,11 +42,12 @@ Coverage:
 - libsdl1.2-dev
 - libsdl-mixer1.2-dev
 - libsdl2-dev (optional)
-- libsdl-mixer2-dev (optional)
+- libsdl2-mixer-dev (optional)
 - licurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
 - libminiupnpc-dev (linux)
-Most of them can be installed with the package manager.
+
+All of them can be installed with the package manager.
 
 ### Prerequisite MacOSX:
 - cmake
@@ -56,6 +57,7 @@ Most of them can be installed with the package manager.
 - sdl_mixer
 - gettext (make sure it is in your path with e.g. `brew link --force gettext`)
 - miniupnpc
+
 All of them can be installed via homebrew
 
 ### Prerequesites with Nix
