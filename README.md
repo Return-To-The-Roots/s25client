@@ -38,15 +38,19 @@ Coverage:
 - C++14 compatible compiler (e.g. GCC-6)
 - cmake
 - git
-- boost / libboost1.64-dev (i.e http://www.boost.org/)
+- libboost-dev (at least v1.64.0, i.e http://www.boost.org/)
+- libboost-locale-dev, libboost-iostreams-dev, libboost-filesystem-dev, libbost-program-options-dev (at least v1.64.0)
 - libsdl1.2-dev
 - libsdl-mixer1.2-dev
 - libsdl2-dev (optional)
-- libsdl-mixer2-dev (optional)
+- libsdl2-mixer-dev (optional)
 - licurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
-- libminiupnpc-dev (linux)
-Most of them can be installed with the package manager.
+- lua5.2-dev
+- gettext
+- libminiupnpc-dev
+
+All of them can be installed with the package manager.
 
 ### Prerequisite MacOSX:
 - cmake
@@ -56,6 +60,7 @@ Most of them can be installed with the package manager.
 - sdl_mixer
 - gettext (make sure it is in your path with e.g. `brew link --force gettext`)
 - miniupnpc
+
 All of them can be installed via homebrew
 
 ### Prerequesites with Nix
