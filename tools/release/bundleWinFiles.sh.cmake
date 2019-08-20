@@ -2,16 +2,13 @@
 
 set -euo pipefail
 
-CMAKE_COMMAND=@CMAKE_COMMAND@
-SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
-SYSTEM_ARCH=@PLATFORM_ARCH@
-SYSROOT=@CMAKE_FIND_ROOT_PATH@
-CXX=@CMAKE_CXX_COMPILER@
-OBJDUMP=@CMAKE_OBJDUMP@
-RTTR_BINDIR=@RTTR_BINDIR@
-RTTR_EXTRA_BINDIR=@RTTR_EXTRA_BINDIR@
-RTTR_DRIVERDIR=@RTTR_DRIVERDIR@
-RTTR_SRCDIR=@RTTR_SRCDIR@
+CMAKE_COMMAND="@CMAKE_COMMAND@"
+SYSTEM_NAME="@CMAKE_SYSTEM_NAME@"
+SYSROOT="@CMAKE_FIND_ROOT_PATH@"
+CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES="@CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES@"
+CXX="@CMAKE_CXX_COMPILER@"
+OBJDUMP="@CMAKE_OBJDUMP@"
+RTTR_BINDIR="@RTTR_BINDIR@"
 
 ###############################################################################
 
@@ -28,23 +25,15 @@ error_and_exit()
   exit 1
 }
 
-CXX_SYSROOT=$(dirname $($CXX -v 2>&1 | grep COLLECT_LTO_WRAPPER | cut -d '=' -f 2))
-
-if [ -z "${RTTR_SRCDIR}" ] ; then
-  error_and_exit "RTTR_SRCDIR was not set"
-fi
-
 if [ "$SYSTEM_NAME" != "Windows" ]; then
   error_and_exit "Only for Windows"
 fi
 
-if [ -z "$(type -p $OBJDUMP)" ] ; then
+if [ ! -f "$OBJDUMP" ] ; then
   error_and_exit "You have to install objdump"
 fi
 
-echo "## Installing for \"${SYSTEM_NAME}\""
-echo "## Using Binary Dir \"${RTTR_BINDIR}\", \"${RTTR_EXTRA_BINDIR}\""
-echo "## Using Driver Dir \"${RTTR_DRIVERDIR}\""
+echo "## Using Binary Dir \"${RTTR_BINDIR}\""
 
 ###############################################################################
 
@@ -69,14 +58,7 @@ fi
 
 mecho --blue "## Copying dependencies"
 
-case "$SYSTEM_ARCH" in
-  i686|*86)
-    arch_dir=win32
-  ;;
-  x86_64|*64)
-    arch_dir=win64
-  ;;
-esac
+SEARCH_DIRS=(${SYSROOT//;/ } ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES//;/ })
 
 # exclude system dlls
 DLL_BLACKLIST=(
@@ -97,6 +79,21 @@ is_blacklisted_dll()
   return 1
 }
 
+resolve_dll()
+{
+  local dll="$1"
+  for DIR in "${SEARCH_DIRS[@]}" ; do
+    for SUFFIX in "" lib bin ; do
+      local candidate="$DIR/$SUFFIX/$dll"
+      if [ -f "${candidate}" ] ; then
+        echo "$candidate"
+        return 0
+      fi
+    done
+  done
+  return 1
+}
+
 copy_dependend_dlls()
 {
   local to="$1"
@@ -108,38 +105,36 @@ copy_dependend_dlls()
     if is_blacklisted_dll "$dep_dll"; then
       continue
     fi
-    FOUND=0
-    for P in "$SYSROOT" "$CXX_SYSROOT" "${RTTR_SRCDIR}/external/lua/${arch_dir}" ; do
-      for SUFFIX in "" lib/ bin/ ; do
-        local candidate="$P/$SUFFIX$dep_dll"
-        if [ -f "${candidate}" ] ; then
-          echo "Found $(basename $candidate)"
-          cp "${candidate}" "$to"
-          copy_dependend_dlls "$to" "${candidate}"
-          FOUND=1
-          break
-        fi
-      done
-      if [ $FOUND -eq 1 ] ; then
-        break
-      fi
-    done
-    if [ $FOUND -eq 0 ] ; then
+    if [ -f "$to/$dep_dll" ]; then
+      continue
+    fi
+    local resolved_dll=$(resolve_dll "$dep_dll" || true)
+    if [ -n "$resolved_dll" ] ; then
+      echo "Found $(basename $resolved_dll)"
+      cp "${resolved_dll}" "$to"
+      copy_dependend_dlls "$to" "${resolved_dll}"
+    else
       error_and_exit "Unable to find $dep_dll for $binary"
     fi
   done
 }
 
-binaries=()
-binaries+=( "${RTTR_BINDIR}/"{s25client,s25edit}.exe )
-binaries+=( "${RTTR_EXTRA_BINDIR}/"s25update.exe )
-binaries+=( "${RTTR_DRIVERDIR}/"{video/libvideoWinAPI,video/libvideoSDL,video/libvideoSDL2,audio/libaudioSDL}.dll )
+binaries=( $(find "${DESTDIR}" -name '*.exe') )
+plugins=( $(find "${DESTDIR}" -name '*.dll') libvorbisfile-3.dll )
 
 for binary in "${binaries[@]}" ; do
-  to=$(dirname $binary)
-  if [[ "$to" = "${RTTR_DRIVERDIR}"/* ]] ; then
-    to="$RTTR_BINDIR"
+  to=$(dirname "$binary")
+  copy_dependend_dlls "$to" "$binary"
+  echo ""
+done
+
+MAIN_FOLDER="${DESTDIR}$RTTR_BINDIR"
+
+for plugin in "${plugins[@]}" ; do
+  if [[ ! "$plugin" =~ ^/ ]] ; then
+    plugin=$(resolve_dll "$plugin")
+    cp "$plugin" "$MAIN_FOLDER"
   fi
-  copy_dependend_dlls "${DESTDIR}$to" "$binary"
+  copy_dependend_dlls "$MAIN_FOLDER" "$plugin"
   echo ""
 done
