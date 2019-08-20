@@ -17,7 +17,7 @@ IF (MSVC)
 
 	SET(msvcContribDir ${CMAKE_CURRENT_SOURCE_DIR}/full-contrib-msvc)
 	IF(NOT EXISTS ${msvcContribDir} OR NOT IS_DIRECTORY ${msvcContribDir})
-		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${msvcContribDir} first!")
+		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.7z to ${msvcContribDir} first!")
 	ENDIF()
 	SET(_dllDir "${msvcContribDir}/bin/${CMAKE_LIBRARY_ARCHITECTURE}")
     # Add dlls to the gathered ones
