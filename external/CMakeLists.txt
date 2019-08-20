@@ -35,29 +35,6 @@ IF (MSVC)
 ENDIF()
 
 ################################################################################
-# Bzip2 sources
-################################################################################
-
-if(WIN32)
-	set(bzip2ContribDir ${CMAKE_CURRENT_LIST_DIR}/bzip2-1.0.6)
-	IF(IS_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${bzip2ContribDir})
-		SET(SOURCES_BZIP
-			${bzip2ContribDir}/blocksort.c
-			${bzip2ContribDir}/bzlib.c
-			${bzip2ContribDir}/compress.c
-			${bzip2ContribDir}/crctable.c
-			${bzip2ContribDir}/decompress.c
-			${bzip2ContribDir}/huffman.c
-			${bzip2ContribDir}/randtable.c
-		)
-		add_library(bzip2 STATIC ${SOURCES_BZIP})
-		set(BZIP2_FOUND TRUE)
-		set(BZIP2_LIBRARIES bzip2)
-		set(BZIP2_INCLUDE_DIR ${bzip2ContribDir})
-	ENDIF()
-ENDIF()
-
-################################################################################
 # LUA
 ################################################################################
 
