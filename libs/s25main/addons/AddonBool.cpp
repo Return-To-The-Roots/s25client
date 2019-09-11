@@ -44,8 +44,6 @@ void AddonBool::createGui(Window* window, unsigned id, unsigned short& y, bool r
 
     check->SetVisible(true);
     check->SetPos(cbPos);
-
-    y += 30;
 }
 
 void AddonBool::setGuiStatus(Window* window, unsigned id, unsigned status) const

@@ -155,18 +155,22 @@ void iwAddons::UpdateView(const unsigned short selection)
             continue;
         unsigned groups = addon->getGroups();
 
+        bool isReadOnly = policy == READONLY || (policy == HOSTGAME_WHITELIST && !helpers::contains(addonIds, addon->getId()));
+        addon->createGui(this, id, y, isReadOnly, status);
+
         if((groups & selection) == selection)
             ++numAddonsInCurCategory;
+
         // hide addon's gui if addon is beyond selected group or is beyond current page scope
         if(((groups & selection) != selection) || numAddonsInCurCategory < scrollbar->GetScrollPos() + 1
            || numAddonsInCurCategory > (unsigned)(scrollbar->GetScrollPos() + scrollbar->GetPageSize()) + 1)
         {
             addon->hideGui(this, id);
-            continue;
+        } else
+        {
+            // if current button is displayed make sure next one will be below
+            y += 30;
         }
-
-        bool isReadOnly = policy == READONLY || (policy == HOSTGAME_WHITELIST && !helpers::contains(addonIds, addon->getId()));
-        addon->createGui(this, id, y, isReadOnly, status);
     }
     if(numAddonsInCurCategory_ != numAddonsInCurCategory)
     {

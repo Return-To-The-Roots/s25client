@@ -48,8 +48,6 @@ void AddonList::createGui(Window* window, unsigned id, unsigned short& y, bool r
 
     combo->SetVisible(true);
     combo->SetPos(cbPos);
-
-    y += 30;
 }
 
 void AddonList::setGuiStatus(Window* window, unsigned id, unsigned status) const
