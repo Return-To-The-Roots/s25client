@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PactTypes_h__
-#define PactTypes_h__
+#define BOOST_TEST_MODULE RTTR_Simple
 
-#include "helpers/MaxEnumValue.h"
-#include <array>
+#include <rttr/test/Fixture.hpp>
+#include <boost/test/unit_test.hpp>
 
-/// Types of pacts
-enum PactType
-{
-    TREATY_OF_ALLIANCE = 0,
-    NON_AGGRESSION_PACT
-};
+//#include <vld.h>
 
-/// Number of the various pacts
-const unsigned NUM_PACTS = 2;
-DEFINE_MAX_ENUM_VALUE(PactType, NUM_PACTS)
+using Fixture = rttr::test::Fixture;
 
-/// Names of the possible pacts
-extern const std::array<const char*, NUM_PACTS> PACT_NAMES;
-
-#endif // PactTypes_h__
+BOOST_GLOBAL_FIXTURE(Fixture);

@@ -25,7 +25,7 @@
 #include <vector>
 
 /// Interface for audio drivers (required for use across DLL boundaries)
-class IAudioDriver
+class BOOST_SYMBOL_VISIBLE IAudioDriver
 {
 public:
     virtual ~IAudioDriver() = 0;

@@ -97,11 +97,9 @@ struct TradeFixture : public WorldWithGCExecution3P
 BOOST_FIXTURE_TEST_CASE(TradeBothOrNone, TradeFixture)
 {
     rttr::test::LogAccessor logAcc;
-    RTTR_AssertEnableBreak = false;
     // It has to be either-or
     RTTR_REQUIRE_ASSERT(this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_WOODCUTTER, 2));
     RTTR_REQUIRE_ASSERT(this->TradeOverLand(players[0]->GetHQPos(), GD_NOTHING, JOB_NOTHING, 2));
-    RTTR_AssertEnableBreak = true;
 }
 #endif
 

@@ -105,9 +105,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_EQUAL(world.GetNumSeas(), 2u);
 // Harbor ID 0 is means invalid harbor
 #if RTTR_ENABLE_ASSERTS
-    RTTR_AssertEnableBreak = false;
     RTTR_REQUIRE_ASSERT(world.GetHarborPoint(0));
-    RTTR_AssertEnableBreak = true;
 #else
     BOOST_REQUIRE(!world.GetHarborPoint(0).isValid());
 #endif

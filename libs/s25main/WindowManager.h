@@ -42,7 +42,7 @@ public:
     using MouseMsgHandler = bool (Window::*)(const MouseCoords&);
 
     WindowManager();
-    ~WindowManager() override;
+    ~WindowManager();
     void CleanUp();
 
     /// Zeichnet Desktop und alle Fenster.

@@ -18,9 +18,9 @@
 #ifndef SAVE_BITMAP_H__
 #define SAVE_BITMAP_H__
 
-#include <libsiedler2/PixelBufferARGB.h>
+#include <libsiedler2/PixelBufferBGRA.h>
 #include <boost/filesystem/path.hpp>
 
-void saveBitmap(const libsiedler2::PixelBufferARGB&, const boost::filesystem::path&);
+void saveBitmap(const libsiedler2::PixelBufferBGRA&, const boost::filesystem::path&);
 
 #endif

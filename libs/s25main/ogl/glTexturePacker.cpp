@@ -21,7 +21,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePackerNode.h"
 #include "ogl/saveBitmap.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 #include <glad/glad.h>
 #include <algorithm>
 #include <utility>
@@ -74,7 +74,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
             // list to store bitmaps we could not fit in our current texture
             std::vector<glSmartBitmap*> left;
 
-            libsiedler2::PixelBufferARGB buffer(curSize.x, curSize.y);
+            libsiedler2::PixelBufferBGRA buffer(curSize.x, curSize.y);
 
             // try storing bitmaps in the big texture
             for(glSmartBitmap* bmp : list)
@@ -186,7 +186,7 @@ bool glTexture::checkSize(const Extent& size)
     return resultWidth > 0;
 }
 
-bool glTexture::uploadData(const libsiedler2::PixelBufferARGB& buffer)
+bool glTexture::uploadData(const libsiedler2::PixelBufferBGRA& buffer)
 {
     if(!handle)
         return false;

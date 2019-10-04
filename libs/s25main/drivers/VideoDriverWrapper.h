@@ -38,13 +38,14 @@ public:
     static constexpr unsigned Longevity = 30;
 
     VideoDriverWrapper();
-    ~VideoDriverWrapper() override;
+    ~VideoDriverWrapper();
 
-    /// Loads a new driver. Takes the existing one, if given
+    /// Loads a new driver.
     /// Do not use this class unless this returned true!
-    bool LoadDriver(IVideoDriver* existingDriver = nullptr);
+    bool LoadDriver(IVideoDriver* existingDriver);
+    bool LoadDriver(std::string& preference);
     void UnloadDriver();
-    IVideoDriver* GetDriver() const { return videodriver; }
+    IVideoDriver* GetDriver() const { return videodriver.get(); }
 
     /// Erstellt das Fenster.
     bool CreateScreen(VideoMode size, bool fullscreen);
@@ -72,6 +73,7 @@ public:
 
     /// Listet verfügbare Videomodi auf
     void ListVideoModes(std::vector<VideoMode>& video_modes) const;
+    bool HasVSync() const;
 
     /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
     void* GetMapPointer() const;
@@ -85,6 +87,7 @@ public:
     bool IsRightDown();
     // setzt den Mausstatus
     void SetMousePos(const Position& newPos);
+    void SetMouseWarping(bool enabled) { enableMouseWarping = enabled; }
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const;
 
@@ -104,7 +107,6 @@ public:
     Extent calcPreferredTextureSize(const Extent& minSize) const;
 
 private:
-    // Viewpoint und Co initialisieren
     bool Initialize();
     bool setHwVSync(bool enabled);
 
@@ -115,12 +117,14 @@ private:
     bool LoadAllExtensions();
 
 private:
+    using Handle = std::unique_ptr<IVideoDriver, void (*)(IVideoDriver*)>;
+
     drivers::DriverWrapper driver_wrapper;
-    IVideoDriver* videodriver;
+    Handle videodriver;
     std::unique_ptr<IRenderer> renderer_;
     std::unique_ptr<FrameCounter> frameCtr_;
     std::unique_ptr<FrameLimiter> frameLimiter_;
-    bool loadedFromDll;
+    bool enableMouseWarping;
 
     std::vector<unsigned> texture_list;
     unsigned texture_current;

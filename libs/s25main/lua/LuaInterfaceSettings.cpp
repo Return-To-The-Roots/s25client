@@ -93,10 +93,10 @@ unsigned LuaInterfaceSettings::GetNumPlayers() const
     return lobbyServerController_.GetMaxNumPlayers();
 }
 
-LuaServerPlayer LuaInterfaceSettings::GetPlayer(unsigned idx)
+LuaServerPlayer LuaInterfaceSettings::GetPlayer(int idx)
 {
-    lua::assertTrue(idx < GetNumPlayers(), "Invalid player idx");
-    return LuaServerPlayer(lobbyServerController_, idx);
+    lua::assertTrue(idx >= 0 && static_cast<unsigned>(idx) < GetNumPlayers(), "Invalid player idx");
+    return LuaServerPlayer(lobbyServerController_, static_cast<unsigned>(idx));
 }
 
 void LuaInterfaceSettings::SetAddon(AddonIdWrapper id, unsigned value)

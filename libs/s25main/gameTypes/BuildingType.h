@@ -20,6 +20,8 @@
 #ifndef BuildingType_h__
 #define BuildingType_h__
 
+#include "helpers/MaxEnumValue.h"
+
 enum BuildingType
 {
     BLD_HEADQUARTERS = 0,    // ----
@@ -67,6 +69,8 @@ enum BuildingType
 
 /// Number of building types
 const unsigned NUM_BUILDING_TYPES = BLD_NOTHING;
+DEFINE_MAX_ENUM_VALUE(BuildingType, NUM_BUILDING_TYPES - 1)
+
 /// Number of NOTHING entries (currently unused buildings)
 const unsigned NUM_UNUSED_BLD_TYPES = 7;
 /// First usual building (building that produces something)

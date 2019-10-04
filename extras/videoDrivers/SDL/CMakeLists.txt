@@ -7,7 +7,7 @@ IF (SDL_FOUND)
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
 	ADD_LIBRARY(videoSDL SHARED ${RTTR_DRIVER_INTERFACE} VideoSDL.cpp VideoSDL.h)
-	target_link_libraries(videoSDL PRIVATE videodrv s25util ${SDL_LIBRARY} Boost::boost nowide::static)
+	target_link_libraries(videoSDL PRIVATE videodrv ${SDL_LIBRARY} nowide::static)
 	target_include_directories(videoSDL PRIVATE ${SDL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/data/win32)
 
 	IF (WIN32)
@@ -22,6 +22,7 @@ IF (SDL_FOUND)
 		RUNTIME DESTINATION ${RTTR_DRIVERDIR}/video
 		LIBRARY DESTINATION ${RTTR_DRIVERDIR}/video
 	)
+	add_dependencies(drivers videoSDL)
 ELSE ()
 	MESSAGE(WARNING ": SDL library not found: Not building SDL videodriver")
 ENDIF ()

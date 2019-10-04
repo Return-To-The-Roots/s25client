@@ -18,6 +18,7 @@
 #ifndef JobTypes_h__
 #define JobTypes_h__
 
+#include "helpers/MaxEnumValue.h"
 #include <libutil/warningSuppression.h>
 #include <array>
 
@@ -60,6 +61,8 @@ enum Job
 
 // Anzahl an unterschiedlichen Berufstypen
 const unsigned NUM_JOB_TYPES = JOB_NOTHING;
+DEFINE_MAX_ENUM_VALUE(Job, NUM_JOB_TYPES - 1)
+
 /// Job types of soldiers, weak ones first
 static const std::array<Job, 5> SUPPRESS_UNUSED SOLDIER_JOBS = {
   {JOB_PRIVATE, JOB_PRIVATEFIRSTCLASS, JOB_SERGEANT, JOB_OFFICER, JOB_GENERAL}};

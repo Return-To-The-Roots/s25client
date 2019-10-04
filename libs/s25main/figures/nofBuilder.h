@@ -22,7 +22,6 @@
 
 class noBuildingSite;
 class SerializedGameData;
-class noRoadNode;
 
 class nofBuilder final : public noFigure
 {
@@ -66,7 +65,7 @@ private:
     bool ChooseWare();
 
 public:
-    nofBuilder(MapPoint pos, unsigned char player, noRoadNode* building_site);
+    nofBuilder(MapPoint pos, unsigned char player, noBuildingSite* building_site);
     nofBuilder(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override

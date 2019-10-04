@@ -73,7 +73,7 @@ public:
     static constexpr unsigned Longevity = 19;
 
     Loader();
-    ~Loader() override;
+    ~Loader();
 
     /// Add a folder to the list of folders containing overrides. Files in folders added last will override prior ones
     /// Paths with macros will be resolved

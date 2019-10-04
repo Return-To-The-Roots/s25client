@@ -55,7 +55,7 @@ private:
 
     // Callable from Lua
     unsigned GetNumPlayers() const;
-    LuaServerPlayer GetPlayer(unsigned idx);
+    LuaServerPlayer GetPlayer(int idx);
     void SetAddon(AddonIdWrapper id, unsigned value);
     void SetBoolAddon(AddonIdWrapper id, bool value); // Alias
     void ResetAddons();

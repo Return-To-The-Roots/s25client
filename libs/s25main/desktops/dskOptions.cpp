@@ -28,6 +28,7 @@
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlProgress.h"
+#include "driver/VideoDriver.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
@@ -278,7 +279,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Limit Framerate" füllen
     auto* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
-    if(GLOBALVARS.hasVSync)
+    if(VIDEODRIVER.HasVSync())
         cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
     for(int framerate : Settings::SCREEN_REFRESH_RATES)
     {
@@ -381,7 +382,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
             SETTINGS.video.fullscreenSize = video_modes[selection];
             break;
         case 51: // Limit Framerate
-            if(GLOBALVARS.hasVSync)
+            if(VIDEODRIVER.HasVSync())
             {
                 if(selection == 0)
                     SETTINGS.video.vsync = 0;
@@ -489,6 +490,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
                 case 10102: SETTINGS.global.smartCursor = true; break;
                 case 10103: SETTINGS.global.smartCursor = false; break;
             }
+            VIDEODRIVER.SetMouseWarping(SETTINGS.global.smartCursor);
         }
         break;
     }

@@ -24,4 +24,7 @@
 RTTR_DECL unsigned GetDriverAPIVersion();
 RTTR_DECL const char* GetDriverName();
 
+using GetDriverAPIVersion_t = decltype(GetDriverAPIVersion);
+using GetDriverName_t = decltype(GetDriverName);
+
 #endif // !INTERFACE_H_INCLUDED

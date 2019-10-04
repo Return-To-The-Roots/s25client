@@ -34,7 +34,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/saveBitmap.h"
 #include "gameData/const_gui_ids.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
 #include <algorithm>
@@ -784,7 +784,7 @@ void WindowManager::SetActiveWindow(Window& wnd)
 
 void WindowManager::TakeScreenshot()
 {
-    libsiedler2::PixelBufferARGB buffer(curRenderSize.x, curRenderSize.y);
+    libsiedler2::PixelBufferBGRA buffer(curRenderSize.x, curRenderSize.y);
     glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     bfs::path outFilepath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[100])) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
     try

@@ -18,9 +18,9 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "glTexturePackerNode.h"
 #include "ogl/glSmartBitmap.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 
-bool glTexturePackerNode::insert(glSmartBitmap* b, libsiedler2::PixelBufferARGB& buffer, std::vector<glTexturePackerNode*>& todo)
+bool glTexturePackerNode::insert(glSmartBitmap* b, libsiedler2::PixelBufferBGRA& buffer, std::vector<glTexturePackerNode*>& todo)
 {
     todo.clear();
 

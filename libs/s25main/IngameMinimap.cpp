@@ -23,7 +23,7 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainDesc.h"
-#include "libsiedler2/ColorARGB.h"
+#include "libsiedler2/ColorBGRA.h"
 
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv)
     : Minimap(gwv.GetWorld().GetSize()), gwv(gwv), nodes_updated(GetMapSize().x * GetMapSize().y, false),
@@ -230,7 +230,7 @@ void IngameMinimap::BeforeDrawing()
                 {
                     unsigned color = CalcPixelColor(it, t);
                     DrawPoint texPos((it.x * 2 + t + (it.y & 1)) % (GetMapSize().x * 2), it.y);
-                    map.updatePixel(texPos, libsiedler2::ColorARGB(color));
+                    map.updatePixel(texPos, libsiedler2::ColorBGRA(color));
                 }
                 nodes_updated[GetMMIdx(it)] = false;
             }
@@ -268,7 +268,7 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
             {
                 unsigned color = CalcPixelColor(pt, t);
                 DrawPoint texPos((pt.x * 2 + t + (pt.y & 1)) % (GetMapSize().x * 2), pt.y);
-                map.updatePixel(texPos, libsiedler2::ColorARGB(color));
+                map.updatePixel(texPos, libsiedler2::ColorBGRA(color));
             }
         }
     }

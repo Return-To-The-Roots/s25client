@@ -19,4 +19,5 @@ ELSE()
 		RUNTIME DESTINATION ${RTTR_DRIVERDIR}/audio
 		LIBRARY DESTINATION ${RTTR_DRIVERDIR}/audio
 	)
+	add_dependencies(drivers audioSDL)
 ENDIF ()

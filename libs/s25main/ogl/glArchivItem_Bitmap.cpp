@@ -19,7 +19,7 @@
 #include "glArchivItem_Bitmap.h"
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 #include <glad/glad.h>
 
 glArchivItem_Bitmap::glArchivItem_Bitmap() = default;
@@ -112,7 +112,7 @@ void glArchivItem_Bitmap::FillTexture()
     int iformat = GetInternalFormat(), dformat = GL_BGRA;
 
     const Extent texSize = GetTexSize();
-    libsiedler2::PixelBufferARGB buffer(texSize.x, texSize.y);
+    libsiedler2::PixelBufferBGRA buffer(texSize.x, texSize.y);
     print(buffer);
     glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 }

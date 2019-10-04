@@ -18,6 +18,7 @@ find_package(Boost REQUIRED program_options)
 
 add_executable(s25client s25client.cpp ${s25client_RC})
 target_link_libraries(s25client PRIVATE s25Main Boost::program_options nowide::static)
+add_dependencies(s25client drivers)
 
 if(APPLE)
     set(SDL_BUILDING_LIBRARY OFF)

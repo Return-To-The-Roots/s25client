@@ -22,7 +22,7 @@
 #include "libsiedler2/libsiedler2.h"
 #include <stdexcept>
 
-void saveBitmap(const libsiedler2::PixelBufferARGB& buffer, const boost::filesystem::path& path)
+void saveBitmap(const libsiedler2::PixelBufferBGRA& buffer, const boost::filesystem::path& path)
 {
     auto bmp = std::make_unique<libsiedler2::ArchivItem_Bitmap_Raw>();
     bmp->create(buffer);

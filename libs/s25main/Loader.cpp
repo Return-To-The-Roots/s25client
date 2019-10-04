@@ -42,7 +42,7 @@
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libsiedler2/ErrorCodes.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 #include "libsiedler2/PixelBufferPaletted.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
@@ -283,14 +283,14 @@ void Loader::LoadDummyGUIFiles()
     for(unsigned id = 4; id < 36; id++)
     {
         auto bmp = std::make_unique<glArchivItem_Bitmap_RLE>();
-        libsiedler2::PixelBufferARGB buffer(1, 1);
+        libsiedler2::PixelBufferBGRA buffer(1, 1);
         bmp->create(buffer);
         resource.set(id, std::move(bmp));
     }
     for(unsigned id = 36; id < 57; id++)
     {
         auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
-        libsiedler2::PixelBufferARGB buffer(1, 1);
+        libsiedler2::PixelBufferBGRA buffer(1, 1);
         bmp->create(buffer);
         resource.set(id, std::move(bmp));
     }
@@ -298,7 +298,7 @@ void Loader::LoadDummyGUIFiles()
     for(unsigned id = 0; id < 264; id++)
     {
         auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
-        libsiedler2::PixelBufferARGB buffer(1, 1);
+        libsiedler2::PixelBufferBGRA buffer(1, 1);
         bmp->create(buffer);
         io.push(std::move(bmp));
     }
@@ -306,7 +306,7 @@ void Loader::LoadDummyGUIFiles()
     libsiedler2::Archiv& fonts = files_["outline_fonts"].archiv;
     auto* palette = GetPaletteN("colors");
     fonts.alloc(3);
-    libsiedler2::PixelBufferARGB buffer(15, 16);
+    libsiedler2::PixelBufferBGRA buffer(15, 16);
     for(unsigned i = 0; i < 3; i++)
     {
         auto font = std::make_unique<glArchivItem_Font>();

@@ -96,7 +96,9 @@ jobs:
     # Latest version GCC with static analysis
     - os: linux
       compiler: gcc
-      env: MATRIX_EVAL="CXX=g++-8 && CC=gcc-8" BUILD_TYPE=Debug
+      env:
+        - MATRIX_EVAL="CXX=g++-8 && CC=gcc-8"
+        - BUILD_TYPE=Debug
       addons:
         apt:
           <<: *defApt
@@ -115,10 +117,10 @@ jobs:
       env:
         - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
         - BUILD_TYPE=Debug
-        - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON"
+        - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"
     - <<: *latest-clang-externals
       env:
         - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
         - BUILD_TYPE=Debug
-        - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON"
+        - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"
         - BOOST_VERSION=1.70.0

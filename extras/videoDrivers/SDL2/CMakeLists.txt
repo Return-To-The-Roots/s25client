@@ -1,5 +1,5 @@
 set(SDL2_BUILDING_LIBRARY ON)
-find_package(SDL2 2.0.4)
+find_package(SDL2 2.0.2)
 
 if(SDL2_FOUND)
   add_library(videoSDL2 SHARED ${RTTR_DRIVER_INTERFACE} VideoSDL2.cpp VideoSDL2.h icon.h icon.cpp)
@@ -14,4 +14,5 @@ if(SDL2_FOUND)
     RUNTIME DESTINATION ${RTTR_DRIVERDIR}/video
     LIBRARY DESTINATION ${RTTR_DRIVERDIR}/video
   )
+  add_dependencies(drivers videoSDL2)
 endif()

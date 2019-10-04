@@ -42,11 +42,11 @@ extern void __cdecl __debugbreak();
 #endif
 
 [[noreturn]] void RTTR_AssertFailure(const char* condition, const char* file, int line, const char* function);
-bool RTTR_IsBreakOnAssertFailureEnabled();
 /// If true(default), a breakpoint is triggered on assert (if available)
 /// Note: This breakpoint can be globally disabled by setting the environment variable
 ///       RTTR_DISABLE_ASSERT_BREAKPOINT to "1" or "yes" which overrides this setting
-extern bool RTTR_AssertEnableBreak;
+bool RTTR_IsBreakOnAssertFailureEnabled();
+bool RTTR_SetBreakOnAssertFailure(bool enabled);
 
 /* Some aspects about RTTR_Assert:
     - do-while(false) so it can be used in conditions: if(foo) RTTR_Assert(bar);

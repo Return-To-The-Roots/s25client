@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2018 - 2019 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PactTypes_h__
-#define PactTypes_h__
+#ifndef CI_Utils_h__
+#define CI_Utils_h__
 
-#include "helpers/MaxEnumValue.h"
-#include <array>
+#include <cstdlib>
+#include <string>
 
-/// Types of pacts
-enum PactType
+namespace rttr {
+inline bool isRunningOnCI()
 {
-    TREATY_OF_ALLIANCE = 0,
-    NON_AGGRESSION_PACT
-};
+    const auto* ciPtr = std::getenv("CI");
+    if(!ciPtr)
+        return false;
+    const std::string ci = ciPtr;
+    return ci == "true" || ci == "True";
+}
+} // namespace rttr
 
-/// Number of the various pacts
-const unsigned NUM_PACTS = 2;
-DEFINE_MAX_ENUM_VALUE(PactType, NUM_PACTS)
-
-/// Names of the possible pacts
-extern const std::array<const char*, NUM_PACTS> PACT_NAMES;
-
-#endif // PactTypes_h__
+#endif // CI_Utils_h__

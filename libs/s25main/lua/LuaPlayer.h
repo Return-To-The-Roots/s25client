@@ -19,6 +19,7 @@
 #define LuaPlayer_h__
 
 #include "LuaPlayerBase.h"
+#include "lua/SafeEnum.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
@@ -46,28 +47,28 @@ public:
     LuaPlayer(std::weak_ptr<Game> game, GamePlayer& player) : game(std::move(game)), player(player) {}
     static void Register(kaguya::State& state);
 
-    void EnableBuilding(BuildingType bld, bool notify);
-    void DisableBuilding(BuildingType bld);
+    void EnableBuilding(lua::SafeEnum<BuildingType> bld, bool notify);
+    void DisableBuilding(lua::SafeEnum<BuildingType> bld);
     void EnableAllBuildings();
     void DisableAllBuildings();
     void SetRestrictedArea(kaguya::VariadicArgType inPoints);
     bool IsInRestrictedArea(unsigned x, unsigned y) const;
     void ClearResources();
-    bool AddWares(const std::map<GoodType, unsigned>& wares);
-    bool AddPeople(const std::map<Job, unsigned>& people);
-    unsigned GetNumBuildings(BuildingType bld) const;
-    unsigned GetNumBuildingSites(BuildingType bld) const;
-    unsigned GetNumWares(GoodType ware) const;
-    unsigned GetNumPeople(Job job) const;
-    bool AIConstructionOrder(unsigned x, unsigned y, BuildingType bld);
+    bool AddWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& wares);
+    bool AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people);
+    unsigned GetNumBuildings(lua::SafeEnum<BuildingType> bld) const;
+    unsigned GetNumBuildingSites(lua::SafeEnum<BuildingType> bld) const;
+    unsigned GetNumWares(lua::SafeEnum<GoodType> ware) const;
+    unsigned GetNumPeople(lua::SafeEnum<Job> job) const;
+    bool AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld);
     void ModifyHQ(bool isTent);
     bool IsDefeated() const;
     void Surrender(bool destroyBlds);
     std::tuple<unsigned, unsigned> GetHQPos() const;
     bool IsAlly(unsigned char otherPlayerId);
     bool IsAttackable(unsigned char otherPlayerId);
-    void SuggestPact(unsigned char otherPlayerId, PactType pt, unsigned duration);
-    void CancelPact(PactType pt, unsigned char otherPlayerId);
+    void SuggestPact(unsigned char otherPlayerId, lua::SafeEnum<PactType> pt, unsigned duration);
+    void CancelPact(lua::SafeEnum<PactType> pt, unsigned char otherPlayerId);
 };
 
 #endif // LuaPlayer_h__

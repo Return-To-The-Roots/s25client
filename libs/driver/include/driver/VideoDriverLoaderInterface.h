@@ -21,8 +21,9 @@
 
 #include "KeyEvent.h"
 #include "MouseCoords.h"
+#include <boost/config.hpp>
 
-class VideoDriverLoaderInterface
+class BOOST_SYMBOL_VISIBLE VideoDriverLoaderInterface
 {
 public:
     virtual ~VideoDriverLoaderInterface() = default;

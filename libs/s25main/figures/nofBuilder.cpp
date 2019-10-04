@@ -35,9 +35,8 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 
-nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNode* building_site)
-    : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK),
-      building_site(static_cast<noBuildingSite*>(building_site)), building_steps_available(0)
+nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
+    : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), building_steps_available(0)
 {
     // Sind wir schon an unsere Baustelle gleich hingesetzt worden (bei Häfen)?
     if(building_site)

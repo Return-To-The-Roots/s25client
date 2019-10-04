@@ -75,7 +75,9 @@ namespace rttr { namespace test {
 #define RTTR_REQUIRE_ASSERT(stmt)                              \
     do                                                         \
     {                                                          \
+        const bool old = RTTR_SetBreakOnAssertFailure(false);  \
         BOOST_CHECK_THROW(stmt, RTTR_AssertError);             \
+        RTTR_SetBreakOnAssertFailure(old);                     \
         RTTR_REQUIRE_LOG_CONTAINS("Assertion failure", false); \
     } while(false)
 

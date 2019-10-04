@@ -29,6 +29,9 @@ if(DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/external/libutil/cmake")
+if(CMAKE_VERSION VERSION_LESS 3.11)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/cmake_3.11.0")
+endif()
 
 include(CheckGitSubmodules)
 check_git_submodules()
@@ -210,16 +213,9 @@ if(HAVE_MEMCHECK_H)
     add_definitions(-DHAVE_MEMCHECK_H)
 endif()
 
-# Clang bug workaround
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
-    if(NOT ${CHECK_CLANG_INLINE})
-        add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
-    endif()
-endif()
-
 # Code coverage
 include(RttrCoverageCfg)
+include(EnableSanitizers)
 
 ################################################################################
 # Configure files

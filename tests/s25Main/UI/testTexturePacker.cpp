@@ -20,7 +20,7 @@
 #include "ogl/glTexturePacker.h"
 #include "uiHelper/uiHelpers.hpp"
 #include "libsiedler2/ArchivItem_Bitmap_Raw.h"
-#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferBGRA.h"
 #include <boost/test/unit_test.hpp>
 #include <Rect.h>
 #include <array>
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(SizeAndPosCorrect)
     glTexturePacker packer;
     for(unsigned i = 0; i < bmps.size(); ++i)
     {
-        libsiedler2::PixelBufferARGB buffer(5 + i, 11 + i * 3, libsiedler2::ColorARGB(0xFFFFFFFF));
+        libsiedler2::PixelBufferBGRA buffer(5 + i, 11 + i * 3, libsiedler2::ColorBGRA(0xFFFFFFFF));
         bmps[i].create(buffer);
         smartBmps[i].add(&bmps[i]);
         packer.add(smartBmps[i]);

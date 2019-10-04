@@ -89,6 +89,14 @@ See the description in CMake-GUI/ccmake for details.
 Note that due to the use of submodules you always need to `git pull && git submodule update --init --recursive` to get the latest version.
 (The `--init` and `--recursive` arguments are only required should we add *new* submodules to the existing set.)
 
+### Tests
+Especially for developing you should build in Debug mode (`-DCMAKE_BUILD_TYPE=Debug`) and run the tests after executing `make` via `make test` or `ctest --output-on-failure`.
+There is also an option to enable checks for undefined behavior (UBSAN) and memory errors (ASAN) like use-after-free or leaks.
+Just pass `-DRTTR_ENABLE_SANITIZERS=ON` to CMake and use a recent GCC or Clang compiler to build.
+Then just run (tests or application) as usual.
+
+**Note**: Boost.Endian < 1.67 is known to have UB so use at least 1.67 when running the sanitizers.
+
 ## On Windows
 
 ### Prerequisites:

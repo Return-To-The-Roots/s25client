@@ -17,12 +17,16 @@ fi
 INSTALL_DIR="${TRAVIS_BUILD_DIR}/installed"
 rm -rf "${INSTALL_DIR}"
 mkdir -p build && cd build
-cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
-    -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-    -DRTTR_ENABLE_WERROR=ON \
-    -DRTTR_EDITOR_ADMINMODE=ON \
-    -DRTTR_BUNDLE="${RTTR_BUNDLE}" \
-    -G "Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
+if ! cmake .. -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+        -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+        -DRTTR_ENABLE_WERROR=ON \
+        -DRTTR_EDITOR_ADMINMODE=ON \
+        -DRTTR_BUNDLE="${RTTR_BUNDLE}" \
+        -G "Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}; then
+    cat CMakeFiles/CMakeOutput.log
+    cat CMakeFiles/CMakeError.log
+    exit 1
+fi
 
 # Travis uses 2 cores
 make -j2 ${MAKE_TARGET}
@@ -40,6 +44,7 @@ export LD_LIBRARY_PATH="${boostLibDir}:${LD_LIBRARY_PATH:-}"
 
 # Execute tests
 export RTTR_DISABLE_ASSERT_BREAKPOINT=1
+export UBSAN_OPTIONS=print_stacktrace=1
 if ! ctest --output-on-failure -j2; then
     cat CMakeCache.txt
     echo "LD:${LD_LIBRARY_PATH:-}"

@@ -20,6 +20,7 @@
 #include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
 #include "driver/VideoInterface.h"
+#include "helpers/LSANUtils.h"
 #include "helpers/containerUtils.h"
 #include "icon.h"
 #include "openglCfg.hpp"
@@ -70,6 +71,7 @@ const char* VideoSDL2::GetName() const
 bool VideoSDL2::Initialize()
 {
     initialized = false;
+    rttr::ScopedLeakDisabler _;
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
     {
         PrintError(SDL_GetError());
@@ -90,6 +92,7 @@ void VideoSDL2::CleanUp()
     if(window)
         SDL_DestroyWindow(window);
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    SDL_Quit();
     initialized = false;
 }
 
@@ -181,7 +184,9 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
         isFullscreen_ = (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN) != 0;
         if(!isFullscreen_)
         {
+#if SDL_VERSION_ATLEAST(2, 0, 5)
             SDL_SetWindowResizable(window, SDL_TRUE);
+#endif
             MoveWindowToCenter();
         }
     }
@@ -383,11 +388,11 @@ bool VideoSDL2::MessageLoop()
                     CallBack->Msg_RightUp(mouse_xy);
                 }
                 break;
-            case SDL_MOUSEWHEEL:
-            {
-                int y = ev.wheel.y;
+            case SDL_MOUSEWHEEL: { int y = ev.wheel.y;
+#if SDL_VERSION_ATLEAST(2, 0, 4)
                 if(ev.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
                     y = -y;
+#endif
                 if(y > 0)
                     CallBack->Msg_WheelUp(mouse_xy);
                 else if(y < 0)
@@ -469,11 +474,18 @@ void* VideoSDL2::GetMapPointer() const
 void VideoSDL2::MoveWindowToCenter()
 {
     SDL_Rect usableBounds;
+#if SDL_VERSION_ATLEAST(2, 0, 5)
     CHECK_SDL(SDL_GetDisplayUsableBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
     int top, left, bottom, right;
     CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right));
     usableBounds.w -= left + right;
     usableBounds.h -= top + bottom;
+#else
+    CHECK_SDL(SDL_GetDisplayBounds(SDL_GetWindowDisplayIndex(window), &usableBounds));
+    // rough estimates
+    usableBounds.w -= 10;
+    usableBounds.h -= 30;
+#endif
     if(usableBounds.w < GetWindowSize().width || usableBounds.h < GetWindowSize().height)
     {
         SDL_SetWindowSize(window, usableBounds.w, usableBounds.h);
