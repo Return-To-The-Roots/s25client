@@ -44,10 +44,9 @@ else()
     if(NOT (APPLE AND CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8))
         CheckAndAddFlags(-ffast-math)
     endif()
-    CheckAndAddFlags(-fomit-frame-pointer -mtune=generic)
+    CheckAndAddFlags(-fomit-frame-pointer)
 
     if(RTTR_OPTIMIZATION_TUNE)
-        # Adding multiple mtune flags just uses the last one, so adding mtune=generic above is ok
         CheckAndAddFlags(-mtune=${RTTR_OPTIMIZATION_TUNE})
     endif()
 
