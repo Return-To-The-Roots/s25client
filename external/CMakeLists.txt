@@ -17,7 +17,7 @@ IF (MSVC)
 
 	SET(msvcContribDir ${CMAKE_CURRENT_SOURCE_DIR}/full-contrib-msvc)
 	IF(NOT EXISTS ${msvcContribDir} OR NOT IS_DIRECTORY ${msvcContribDir})
-		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${msvcContribDir} first!")
+		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.7z to ${msvcContribDir} first!")
 	ENDIF()
 	SET(_dllDir "${msvcContribDir}/bin/${CMAKE_LIBRARY_ARCHITECTURE}")
     # Add dlls to the gathered ones
@@ -35,27 +35,51 @@ IF (MSVC)
 ENDIF()
 
 ################################################################################
-# Bzip2 sources
+# LUA
 ################################################################################
 
-if(WIN32)
-	set(bzip2ContribDir ${CMAKE_CURRENT_LIST_DIR}/bzip2-1.0.6)
-	IF(IS_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${bzip2ContribDir})
-		SET(SOURCES_BZIP
-			${bzip2ContribDir}/blocksort.c
-			${bzip2ContribDir}/bzlib.c
-			${bzip2ContribDir}/compress.c
-			${bzip2ContribDir}/crctable.c
-			${bzip2ContribDir}/decompress.c
-			${bzip2ContribDir}/huffman.c
-			${bzip2ContribDir}/randtable.c
-		)
-		add_library(bzip2 STATIC ${SOURCES_BZIP})
-		set(BZIP2_FOUND TRUE)
-		set(BZIP2_LIBRARIES bzip2)
-		set(BZIP2_INCLUDE_DIR ${bzip2ContribDir})
-	ENDIF()
-ENDIF()
+# Here we set hints to lua libraries used for official builds Normally those should be
+# on the build server but we make them available here for convenience.
+# As this will be appended to CMAKE_PREFIX_PATH one can use other version by setting
+# that appropriately
+
+set(_contrib_lua_path ${CMAKE_CURRENT_LIST_DIR}/lua)
+
+if(MSVC)
+	# Library is in contrib archive which is in prefix path.
+	# We just need the includes (which we did not duplicate in the msvc-contrib)
+	list(APPEND CMAKE_PREFIX_PATH ${_contrib_lua_path})
+	set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+elseif(WIN32 OR CYGWIN)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+		set(_contrib_lua_libpath ${_contrib_lua_path}/win64)
+	elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+		set(_contrib_lua_libpath ${_contrib_lua_path}/win32)
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
+		set(_contrib_lua_libpath ${_contrib_lua_path}/lin32)
+	elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
+		set(_contrib_lua_libpath ${_contrib_lua_path}/lin64)
+	endif()
+elseif(APPLE)
+	set(_contrib_lua_libpath ${_contrib_lua_path}/mac)
+endif()
+
+# Set only if we have a library for this arch
+if(_contrib_lua_libpath)
+	if(NOT EXISTS ${_contrib_lua_path}/include/lua.h)
+		message(WARNING "Could not find lua.h in contrib")
+	endif()
+	# For cross compilation we must set CMAKE_FIND_ROOT_PATH instead
+	if(CMAKE_CROSSCOMPILING)
+		list(APPEND CMAKE_FIND_ROOT_PATH ${_contrib_lua_path} ${_contrib_lua_libpath})
+		set(CMAKE_FIND_ROOT_PATH ${CMAKE_FIND_ROOT_PATH} PARENT_SCOPE)
+	else()
+		list(APPEND CMAKE_PREFIX_PATH ${_contrib_lua_path} ${_contrib_lua_libpath})
+		set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+	endif()
+endif()
 
 # Building the updater when using non-default paths (especially absolute paths)
 # is not recommended as it most likely won't work
