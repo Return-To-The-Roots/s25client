@@ -1,4 +1,4 @@
-FIND_PACKAGE(BZip2 REQUIRED)
+FIND_PACKAGE(BZip2 1.0.6 REQUIRED)
 gather_dll(BZIP2)
 FIND_PACKAGE(Boost 1.64.0 REQUIRED COMPONENTS filesystem iostreams locale)
 
@@ -43,7 +43,6 @@ SET(s25Main_SRCS
 
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(s25Main SYSTEM PRIVATE ${BZIP2_INCLUDE_DIR})
 set_target_properties(s25Main PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(s25Main PUBLIC cxx_std_14)
 
@@ -57,9 +56,8 @@ target_link_libraries(s25Main PUBLIC
 	gamedata
     glad
     driver
-	${BZIP2_LIBRARIES}
 	Boost::filesystem Boost::disable_autolinking
-	PRIVATE utf8::cpp Boost::iostreams Boost::locale nowide::static samplerate_cpp
+	PRIVATE BZip2::BZip2 utf8::cpp Boost::iostreams Boost::locale nowide::static samplerate_cpp
 )
 
 if(WIN32)
