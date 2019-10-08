@@ -30,7 +30,7 @@ struct Point;
 
 class IngameWindow : public Window
 {
-    /// For each id we save the last posistion of the window
+    /// For each id we save the last position of the window
     static std::vector<DrawPoint> last_pos;
 
 public:

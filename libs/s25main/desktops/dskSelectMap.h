@@ -69,6 +69,7 @@ private:
     void CreateRandomMap();
 
     void OnMapCreated(const std::string& mapPath);
+    void MarkMapAsBroken(int tableIdx, const std::string& reason);
 
     CreateServerInfo csi;
     MapSettings rndMapSettings;

@@ -30,6 +30,7 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noMovable.h"
 #include "gameTypes/RoadBuildState.h"
+#include "gameData/const_gui_ids.h"
 #include <cmath>
 
 const Extent SmallWndSize(260, 190);
@@ -37,8 +38,7 @@ const Extent MediumWndSize(300, 250);
 const Extent BigWndSize(340, 310);
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
-    : IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), nullptr, false,
-                   false),
+    : IngameWindow(CGI_OBSERVATION, IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), nullptr, false, false),
       parentView(gwv), view(new GameWorldView(gwv.GetViewer(), Position(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
       selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0), followMovableId(0)
 {

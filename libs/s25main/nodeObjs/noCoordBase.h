@@ -51,9 +51,6 @@ public:
     /// Returns position
     MapPoint GetPos() const { return pos; }
 
-    /// Liefert GUI-ID zurück für die Fenster
-    unsigned CreateGUIID() const;
-
 protected:
     MapPoint pos;
 };

@@ -118,7 +118,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 4: // "Replay abspielen"
         {
-            WINDOWMANAGER.Show(std::make_unique<iwPlayReplay>());
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwPlayReplay>());
         }
         break;
         case 5: // "Kampagne"

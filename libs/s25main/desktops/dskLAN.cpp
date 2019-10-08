@@ -92,7 +92,7 @@ void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
-                WINDOWMANAGER.Show(std::make_unique<iwDirectIPCreate>(ServerType::LAN), true);
+                WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::LAN));
             }
     }
 }
@@ -160,7 +160,7 @@ bool dskLAN::ConnectToSelectedGame()
     {
         auto connect = std::make_unique<iwDirectIPConnect>(ServerType::LAN);
         connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);
-        WINDOWMANAGER.Show(std::move(connect));
+        WINDOWMANAGER.ReplaceWindow(std::move(connect));
         return true;
     } else
     {

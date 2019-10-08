@@ -35,6 +35,7 @@
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
+#include "gameData/const_gui_ids.h"
 #include <sstream>
 
 /// IDs in der IO_DAT von Boot und Schiffs-Bild für den Umschaltebutton beim Schiffsbauer
@@ -42,8 +43,8 @@ const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
 iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]),
-                   LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->GetPos()), IngameWindow::posAtMouse, Extent(226, 194),
+                   _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Arbeitersymbol
@@ -169,7 +170,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         }
         break;
         case 5: // Gebäude abbrennen
@@ -234,7 +235,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                 if(it == buildings.end()) // was last entry in list -> goto first
                     it = buildings.begin();
                 gwv.MoveToMapPt((*it)->GetPos());
-                WINDOWMANAGER.Show(std::make_unique<iwBuilding>(gwv, gcFactory, *it))->SetPos(GetPos());
+                WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBuilding>(gwv, gcFactory, *it))->SetPos(GetPos());
                 break;
             }
         }

@@ -662,14 +662,19 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 22: // Addons
         {
-            std::unique_ptr<iwAddons> w;
-            if(allowAddonChange && (!lua || lua->IsChangeAllowed("addonsAll")))
-                w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME);
-            else if(allowAddonChange)
-                w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
+            if(auto* wnd = WINDOWMANAGER.FindNonModalWindow(CGI_ADDONS))
+                wnd->Close();
             else
-                w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::READONLY);
-            WINDOWMANAGER.Show(std::move(w));
+            {
+                std::unique_ptr<iwAddons> w;
+                if(allowAddonChange && (!lua || lua->IsChangeAllowed("addonsAll")))
+                    w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME);
+                else if(allowAddonChange)
+                    w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
+                else
+                    w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::READONLY);
+                WINDOWMANAGER.Show(std::move(w));
+            }
         }
         break;
     }

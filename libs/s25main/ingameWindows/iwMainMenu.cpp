@@ -97,68 +97,70 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 0: // Verteilung
         {
-            WINDOWMANAGER.Show(std::make_unique<iwDistribution>(gwv.GetViewer(), gcFactory));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwDistribution>(gwv.GetViewer(), gcFactory));
         }
         break;
         case 1: // Transport
         {
-            WINDOWMANAGER.Show(std::make_unique<iwTransport>(gwv.GetViewer(), gcFactory));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTransport>(gwv.GetViewer(), gcFactory));
         }
         break;
         case 2: // Werkzeugproduktion
         {
-            WINDOWMANAGER.Show(std::make_unique<iwTools>(gwv.GetViewer(), gcFactory));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTools>(gwv.GetViewer(), gcFactory));
         }
         break;
         case 3: // Statistik
         {
-            WINDOWMANAGER.Show(std::make_unique<iwStatistics>(gwv.GetViewer()));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwStatistics>(gwv.GetViewer()));
         }
         break;
         case 4: // Warenstatistik
         {
-            WINDOWMANAGER.Show(std::make_unique<iwMerchandiseStatistics>(gwv.GetViewer().GetPlayer()));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMerchandiseStatistics>(gwv.GetViewer().GetPlayer()));
         }
         break;
         case 5: // Gebäudestatistik
         {
-            WINDOWMANAGER.Show(std::make_unique<iwBuildings>(gwv, gcFactory));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwBuildings>(gwv, gcFactory));
         }
         break;
         case 6: // Inventur
         {
-            WINDOWMANAGER.Show(std::make_unique<iwInventory>(gwv.GetViewer().GetPlayer()));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwInventory>(gwv.GetViewer().GetPlayer()));
         }
         break;
         case 7: // Produktivitäten
         {
-            WINDOWMANAGER.Show(std::make_unique<iwBuildingProductivities>(gwv.GetViewer().GetPlayer()));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwBuildingProductivities>(gwv.GetViewer().GetPlayer()));
         }
         break;
         case 8: // Militär
         {
-            WINDOWMANAGER.Show(std::make_unique<iwMilitary>(gwv.GetViewer(), gcFactory));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMilitary>(gwv.GetViewer(), gcFactory));
         }
         break;
         case 9: // Schiffe
         {
-            WINDOWMANAGER.Show(
+            WINDOWMANAGER.ToggleWindow(
               std::make_unique<iwShip>(gwv, gcFactory, gwv.GetViewer().GetPlayer().GetShipByID(0), IngameWindow::posCenter));
         }
         break;
         case 10: // Baureihenfolge
         {
-            WINDOWMANAGER.Show(std::make_unique<iwBuildOrder>(gwv.GetViewer()));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwBuildOrder>(gwv.GetViewer()));
         }
         break;
         case 11: // Diplomatie
         {
-            WINDOWMANAGER.Show(std::make_unique<iwDiplomacy>(gwv.GetViewer(), gcFactory));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwDiplomacy>(gwv.GetViewer(), gcFactory));
         }
         break;
         case 13: // AI Debug
         {
-            if(gwv.GetViewer().GetPlayer().isHost)
+            if(auto* wnd = WINDOWMANAGER.FindNonModalWindow(CGI_AI_DEBUG))
+                wnd->Close();
+            else if(gwv.GetViewer().GetPlayer().isHost)
             {
                 std::vector<const AIPlayer*> ais;
                 for(unsigned i = 0; i < gwv.GetViewer().GetNumPlayers(); ++i)
@@ -173,7 +175,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 30: // Optionen
         {
-            WINDOWMANAGER.Show(std::make_unique<iwOptionsWindow>());
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>());
         }
         break;
     }

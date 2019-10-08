@@ -25,10 +25,12 @@
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldView.h"
+#include "world/MapBase.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/const_gui_ids.h"
 
 iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite)
-    : IngameWindow(buildingsite->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194),
+    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(buildingsite->GetPos()), IngameWindow::posAtMouse, Extent(226, 194),
                    _(BUILDING_NAMES[buildingsite->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), buildingsite(buildingsite)
 {
@@ -52,7 +54,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 2: // Hilfe
         {
-            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()])));
+            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()])));
         }
         break;
         case 3: // Gebäude abbrennen

@@ -190,10 +190,10 @@ void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
             break;
         case 25: // Hilfe
         {
-            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("This window allows a direct comparison with the enemies. "
-                                                                            "Factors such as the wealth, territorial area, inhabitants, "
-                                                                            "etc. of all parties can be compared. This data can be shown "
-                                                                            "over four different time periods.")));
+            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_("This window allows a direct comparison with the enemies. "
+                                                                   "Factors such as the wealth, territorial area, inhabitants, "
+                                                                   "etc. of all parties can be compared. This data can be shown "
+                                                                   "over four different time periods.")));
         }
         break;
     }

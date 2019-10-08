@@ -553,9 +553,7 @@ void iwAction::Msg_ButtonClick_TabAttack(const unsigned ctrl_id)
         case 4: // Angriff!
         {
             auto* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_ATTACK)->GetCtrl<ctrlOptionGroup>(3);
-
             GAMECLIENT.Attack(selectedPt, selected_soldiers_count, (ogroup->GetSelection() == 1));
-
             Close();
         }
         break;
@@ -592,9 +590,7 @@ void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id)
         case 4: // Angriff!
         {
             auto* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_SEAATTACK)->GetCtrl<ctrlOptionGroup>(3);
-
             GAMECLIENT.SeaAttack(selectedPt, selected_soldiers_count_sea, (ogroup->GetSelection() == 1));
-
             Close();
         }
         break;
@@ -625,7 +621,6 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
             if(nop == NOP_BUILDING || nop == NOP_BUILDINGSITE)
             {
                 // Abreißen?
-                Close();
                 const auto* building = world.GetSpecObj<noBaseBuilding>(world.GetNeighbour(selectedPt, Direction::NORTHWEST));
 
                 // Militärgebäude?
@@ -641,6 +636,8 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
                 }
 
                 WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, building, true));
+                DisableMousePosResetOnClose();
+                Close();
             } else
             {
                 GAMECLIENT.DestroyFlag(selectedPt);
@@ -679,15 +676,11 @@ void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case 1: // Flagge setzen
-        {
             GAMECLIENT.SetFlag(selectedPt);
-        }
-        break;
+            break;
         case 2: // Weg aufwerten
-        {
             DoUpgradeRoad();
-        }
-        break;
+            break;
     }
 
     Close();
@@ -706,10 +699,8 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id)
         }
         break;
         case 2: // Straße aufwerten
-        {
             DoUpgradeRoad();
-        }
-        break;
+            break;
     }
 
     Close();
@@ -722,17 +713,22 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
         case 1:
             // TODO: bestimen, was an der position selected ist
             WINDOWMANAGER.Show(std::make_unique<iwObservate>(gwv, selectedPt));
-            mousePosAtOpen_ = DrawPoint::Invalid();
+            DisableMousePosResetOnClose();
             break;
         case 2: // Häusernamen/Prozent anmachen
             gwv.ToggleShowNamesAndProductivity();
             break;
         case 3: // zum HQ
             gwv.MoveToMapPt(gwv.GetViewer().GetPlayer().GetHQPos());
-            mousePosAtOpen_ = DrawPoint::Invalid();
+            DisableMousePosResetOnClose();
             break;
         case 4: GAMECLIENT.NotifyAlliesOfLocation(selectedPt); break;
     }
 
     Close();
+}
+
+void iwAction::DisableMousePosResetOnClose()
+{
+    mousePosAtOpen_ = DrawPoint::Invalid();
 }

@@ -38,10 +38,12 @@
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/MilitaryConsts.h"
+#include "gameData/const_gui_ids.h"
 #include <set>
+
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]),
-                   LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->GetPos()), IngameWindow::posAtMouse, Extent(226, 194),
+                   _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Schwert
@@ -151,7 +153,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         }
         break;
         case 5: // Gebäude abbrennen
@@ -206,9 +208,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                 if(it == militaryBuildings.end()) // was last entry in list -> goto first
                     it = militaryBuildings.begin();
                 gwv.MoveToMapPt((*it)->GetPos());
-                auto nextscrn = std::make_unique<iwMilitaryBuilding>(gwv, gcFactory, *it);
-                nextscrn->SetPos(GetPos());
-                WINDOWMANAGER.Show(std::move(nextscrn));
+                WINDOWMANAGER.ReplaceWindow(std::make_unique<iwMilitaryBuilding>(gwv, gcFactory, *it))->SetPos(GetPos());
                 break;
             }
         }

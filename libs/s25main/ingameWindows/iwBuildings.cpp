@@ -114,11 +114,11 @@ void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == 32) // Help button
     {
-        WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("The building statistics window gives you an insight into "
-                                                                        "the number of buildings you have, by type. The number on "
-                                                                        "the left is the total number of this type of building "
-                                                                        "completed, the number on the right shows how many are "
-                                                                        "currently under construction.")));
+        WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_("The building statistics window gives you an insight into "
+                                                               "the number of buildings you have, by type. The number on "
+                                                               "the left is the total number of this type of building "
+                                                               "completed, the number on the right shows how many are "
+                                                               "currently under construction.")));
         return;
     }
 
@@ -147,7 +147,7 @@ void iwBuildings::GoToFirstMatching(BuildingType bldType, const std::list<T_Buil
             gwv.MoveToMapPt(bld->GetPos());
             auto nextscrn = std::make_unique<T_Window>(gwv, gcFactory, static_cast<T_Building*>(bld));
             nextscrn->SetPos(GetPos());
-            WINDOWMANAGER.Show(std::move(nextscrn));
+            WINDOWMANAGER.ReplaceWindow(std::move(nextscrn));
             return;
         }
     }
