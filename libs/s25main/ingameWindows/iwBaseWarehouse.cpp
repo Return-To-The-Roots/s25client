@@ -36,6 +36,7 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/const_gui_ids.h"
 #include <stdexcept>
 
 namespace {
@@ -57,8 +58,8 @@ enum
 }
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
-    : iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, Extent(167, 416), _(BUILDING_NAMES[wh->GetBuildingType()]), true, NormalFont,
-              wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
+    : iwWares(CGI_BUILDING + MapBase::CreateGUIID(wh->GetPos()), IngameWindow::posAtMouse, Extent(167, 416),
+              _(BUILDING_NAMES[wh->GetBuildingType()]), true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
       gwv(gwv), gcFactory(gcFactory), wh(wh)
 {
     wh->AddListener(this);
@@ -204,7 +205,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case ID_HELP: // "Hilfe"
         {
-            WINDOWMANAGER.Show(std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
+            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
         }
         break;
         case ID_GOTO: // "Gehe Zu Ort"
@@ -229,14 +230,14 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                 gwv.MoveToMapPt((*it)->GetPos());
                 if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
                 {
-                    WINDOWMANAGER.Show(std::make_unique<iwHQ>(gwv, gcFactory, *it))->SetPos(GetPos());
+                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHQ>(gwv, gcFactory, *it))->SetPos(GetPos());
                 } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
                 {
-                    WINDOWMANAGER.Show(std::make_unique<iwHarborBuilding>(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it)))
+                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHarborBuilding>(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it)))
                       ->SetPos(GetPos());
                 } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
                 {
-                    WINDOWMANAGER.Show(std::make_unique<iwBaseWarehouse>(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it)))
+                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBaseWarehouse>(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it)))
                       ->SetPos(GetPos());
                 }
                 break;

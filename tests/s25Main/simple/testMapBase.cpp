@@ -19,6 +19,7 @@
 #include "PointOutput.h"
 #include "world/MapBase.h"
 #include "world/MapGeometry.h"
+#include "gameData/MapConsts.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -117,14 +118,13 @@ BOOST_AUTO_TEST_CASE(GetIdx)
     BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 1)), 100u);
     BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(1, 1)), 101u);
     BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(99, 49)), 50u * 100u - 1u);
-    // Big world. Index will exceed uint16_t
-    world.Resize(MapExtent(0xFF00, 0xEEEE));
+    // Big world.
+    world.Resize(MapExtent(MAX_MAP_SIZE, MAX_MAP_SIZE - 2));
     BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 0)), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0xFF00u - 1, 0)), 0xFF00u - 1);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 1)), 0xFF00u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(1, 1)), 0xFF01u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0x100, 1)), 0x10000u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0xFF00 - 1, 0xEEEE - 1)), 0xFF00u * 0xEEEEu - 1u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(MAX_MAP_SIZE - 1, 0)), MAX_MAP_SIZE - 1);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 1)), MAX_MAP_SIZE);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(1, 1)), MAX_MAP_SIZE + 1u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(MAX_MAP_SIZE - 1, MAX_MAP_SIZE - 3)), MAX_MAP_SIZE * (MAX_MAP_SIZE - 2u) - 1u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

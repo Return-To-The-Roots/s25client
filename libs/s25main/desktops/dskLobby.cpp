@@ -126,7 +126,7 @@ void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
         case 5: // Ranking - Button
         {
             LOBBYCLIENT.SendRankingListRequest();
-            lobbyRankingWnd = WINDOWMANAGER.Show(std::make_unique<iwLobbyRanking>(), true);
+            lobbyRankingWnd = WINDOWMANAGER.ReplaceWindow(std::make_unique<iwLobbyRanking>());
         }
         break;
         case 6: // GameServer hinzufügen
@@ -137,7 +137,7 @@ void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
-                createServerWnd = WINDOWMANAGER.Show(std::make_unique<iwDirectIPCreate>(ServerType::LOBBY), true);
+                createServerWnd = WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::LOBBY));
             }
         }
         break;
@@ -177,7 +177,8 @@ void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const int selection)
                     WINDOWMANAGER.Close(serverInfoWnd);
                 }
 
-                serverInfoWnd = WINDOWMANAGER.Show(std::make_unique<iwLobbyServerInfo>(boost::lexical_cast<unsigned>(item.c_str())), true);
+                serverInfoWnd =
+                  WINDOWMANAGER.ReplaceWindow(std::make_unique<iwLobbyServerInfo>(boost::lexical_cast<unsigned>(item.c_str())));
                 serverInfoWnd->SetTitle(table->GetItemText(selection, 1));
             }
         }
@@ -231,7 +232,7 @@ bool dskLobby::ConnectToSelectedGame()
         {
             auto connect = std::make_unique<iwDirectIPConnect>(ServerType::LOBBY);
             connect->Connect(server.getHost(), server.getPort(), false, server.hasPassword());
-            WINDOWMANAGER.Show(std::move(connect));
+            WINDOWMANAGER.ReplaceWindow(std::move(connect));
             return true;
         } else
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK,

@@ -23,10 +23,13 @@
 #include "ogl/FontStyle.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
+#include "world/MapBase.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/const_gui_ids.h"
 
 iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(200, 200), _("Demolish?"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->GetPos()), IngameWindow::posAtMouse, Extent(200, 200), _("Demolish?"),
+                   LOADER.GetImageN("resource", 41)),
       gwv(gwv), building(building), flag(flag)
 {
     // Ja

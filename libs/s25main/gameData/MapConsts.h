@@ -26,4 +26,7 @@ constexpr int TR_H = 28;
 /// Number of pixels the node is adjusted in y per altitude step
 constexpr int HEIGHT_FACTOR = 5;
 
+/// Maximum supported width or height of the map
+constexpr unsigned MAX_MAP_SIZE = 2048;
+
 #endif // !MAPCONSTS_H_INCLUDED

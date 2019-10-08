@@ -27,16 +27,18 @@
 #include "factories/GameCommandFactory.h"
 #include "helpers/strUtils.h"
 #include "helpers/toString.h"
+#include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/const_gui_ids.h"
 
-#include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Bitmap.h"
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(wh.CreateGUIID(), IngameWindow::posAtMouse, Extent(400, 194), _("Trade"), LOADER.GetImageN("resource", 41)), wh(wh),
-      gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.GetPlayer().GetWarehousesForTrading(wh))
+    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(wh.GetPos()), IngameWindow::posAtMouse, Extent(400, 194), _("Trade"),
+                   LOADER.GetImageN("resource", 41)),
+      wh(wh), gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.GetPlayer().GetWarehousesForTrading(wh))
 {
     // Get title of the player
     SetTitle((boost::format(_("Trade with %s")) % gwv.GetWorld().GetPlayer(wh.GetPlayer()).name).str());

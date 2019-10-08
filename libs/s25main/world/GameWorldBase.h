@@ -103,9 +103,6 @@ public:
     noFlag* GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir = 255);
     const noFlag* GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir = 255) const;
 
-    /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
-    unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }
-
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
     Position GetNodePos(MapPoint pt) const;
 

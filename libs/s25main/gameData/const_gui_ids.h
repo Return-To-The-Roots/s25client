@@ -19,6 +19,10 @@
 
 #pragma once
 
+#include "MapConsts.h"
+
+constexpr unsigned MAX_OBSERVATION_WINDOWS = 50;
+
 enum GUI_ID
 {
     CGI_ACTION = 0,
@@ -34,7 +38,6 @@ enum GUI_ID
     CGI_OPTIONSWINDOW,
     CGI_POSTOFFICE,
     CGI_ROADWINDOW,
-    CGI_VIEWER,
     CGI_LOBBYSERVERINFO,
     CGI_README,
     CGI_DISTRIBUTION,
@@ -65,7 +68,9 @@ enum GUI_ID
     CGI_AI_DEBUG,
     CGI_MAP_GENERATOR,
     CGI_VICTORY,
-    CGI_NEXT = CGI_MAP_GENERATOR + 40
+    CGI_OBSERVATION,
+    CGI_BUILDING, /// Building windows use this as the base ID and add a unique number for each building
+    CGI_NEXT = CGI_BUILDING + MAX_MAP_SIZE * MAX_MAP_SIZE
 };
 
 #endif // !CONST_GUI_IDS_H_INCLUDED

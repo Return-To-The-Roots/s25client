@@ -82,7 +82,14 @@ std::unique_ptr<ArchivItem_Bitmap_Player> createRandPlayerBmp(unsigned percentTr
 }
 } // namespace
 
-BOOST_FIXTURE_TEST_SUITE(SmartBmpSuite, uiHelper::Fixture)
+BOOST_AUTO_TEST_CASE(PrintColor)
+{
+    std::stringstream s;
+    boost_test_print_type(s, ColorBGRA(0x42, 0x13, 0x37, 0x99));
+    BOOST_TEST(s.str() == "99371342");
+}
+
+BOOST_FIXTURE_TEST_SUITE(SmartBitmapTestSuite, uiHelper::Fixture)
 
 BOOST_AUTO_TEST_CASE(CreateRandBmp_Works)
 {
@@ -92,13 +99,6 @@ BOOST_AUTO_TEST_CASE(CreateRandBmp_Works)
     const auto bmpPl = createRandPlayerBmp(50);
     BOOST_TEST(bmpPl->getWidth() > 0);
     BOOST_TEST(bmpPl->getHeight() > 0);
-}
-
-BOOST_AUTO_TEST_CASE(PrintColor)
-{
-    std::stringstream s;
-    boost_test_print_type(s, ColorBGRA(0x42, 0x13, 0x37, 0x99));
-    BOOST_TEST(s.str() == "99371342");
 }
 
 BOOST_AUTO_TEST_CASE(RegularBitmap)

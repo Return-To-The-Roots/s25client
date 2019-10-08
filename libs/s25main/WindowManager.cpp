@@ -177,28 +177,6 @@ IngameWindow* WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool m
     if(!curDesktop)
         return nullptr;
 
-    // Non-Modal windows can only be opened once
-    if(!window->IsModal())
-    {
-        // Check for already open windows with same ID (ignoring to-be-closed windows)
-        auto itOther = helpers::find_if(windows, [wndId = window->GetID()](const auto& curWnd) {
-            return !curWnd->ShouldBeClosed() && !curWnd->IsModal() && curWnd->GetID() == wndId;
-        });
-        if(itOther != windows.end())
-        {
-            // Special case:
-            // Help windows simply replace other help windows
-            if(window->GetID() == CGI_HELP)
-                (*itOther)->Close();
-            else
-            {
-                // Same ID -> Close and don't open again
-                (*itOther)->Close();
-                return nullptr;
-            }
-        }
-    }
-
     // All windows are inserted before the first modal window (shown behind)
     auto itModal = helpers::find_if(windows, [](const auto& curWnd) { return curWnd->IsModal(); });
     // Note that if there is no other modal window it will be put at the back which is what we want
@@ -251,6 +229,13 @@ IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
             return window.get();
     }
     return nullptr;
+}
+
+IngameWindow* WindowManager::FindNonModalWindow(unsigned id) const
+{
+    auto itWnd =
+      helpers::find_if(windows, [id](const auto& wnd) { return !wnd->ShouldBeClosed() && !wnd->IsModal() && wnd->GetID() == id; });
+    return itWnd == windows.end() ? nullptr : itWnd->get();
 }
 
 /**

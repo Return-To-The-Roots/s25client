@@ -15,10 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h"
 #include "world/MapBase.h"
 #include "world/MapGeometry.h"
+#include "gameData/MapConsts.h"
 #include <stdexcept>
+#include <string>
+
+unsigned MapBase::CreateGUIID(MapPoint pt)
+{
+    return pt.y * MAX_MAP_SIZE + pt.x;
+}
 
 MapBase::MapBase() : size_(MapExtent::all(0)) {}
 
@@ -30,6 +37,8 @@ void MapBase::Resize(const MapExtent& newSize)
     // For width it is technically possible to have odd sizes so we don't check this
     if(newSize.y & 1)
         throw std::invalid_argument("The map height must be even!");
+    if(newSize.x > MAX_MAP_SIZE || newSize.y > MAX_MAP_SIZE)
+        throw std::invalid_argument("Can't load a map bigger than " + std::to_string(MAX_MAP_SIZE) + " nodes per direction");
     size_ = newSize;
 }
 
