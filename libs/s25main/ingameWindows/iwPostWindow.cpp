@@ -110,10 +110,10 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case ID_HELP:
-            WINDOWMANAGER.Show(
-              std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("All important messages are collected in this window and "
-                                                           "sorted into groups. If this window is not open, the dove "
-                                                           "symbol at the bottom of the screen indicates the arrival of a new message.")));
+            WINDOWMANAGER.ReplaceWindow(
+              std::make_unique<iwHelp>(_("All important messages are collected in this window and "
+                                         "sorted into groups. If this window is not open, the dove "
+                                         "symbol at the bottom of the screen indicates the arrival of a new message.")));
             break;
         case ID_SHOW_ALL:
             showAll = true;

@@ -99,6 +99,8 @@ private:
     inline void Msg_ButtonClick_TabSetFlag(unsigned ctrl_id);
     inline void Msg_ButtonClick_TabWatch(unsigned ctrl_id);
 
+    void DisableMousePosResetOnClose();
+
     /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
     void AddAttackControls(ctrlGroup* group, unsigned attackers_count);
     void AddUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);

@@ -176,7 +176,7 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
         // Noch kein Bündnis abgeschlossen?
         if(gwv.GetPlayer().GetPactState(TREATY_OF_ALLIANCE, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
-            WINDOWMANAGER.Show(std::make_unique<iwSuggestPact>(TREATY_OF_ALLIANCE, gwv.GetWorld().GetPlayer(playerId), gcFactory));
+            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSuggestPact>(TREATY_OF_ALLIANCE, gwv.GetWorld().GetPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
             gcFactory.CancelPact(TREATY_OF_ALLIANCE, playerId);
@@ -188,7 +188,8 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
         // Noch kein Bündnis abgeschlossen?
         if(gwv.GetPlayer().GetPactState(NON_AGGRESSION_PACT, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
-            WINDOWMANAGER.Show(std::make_unique<iwSuggestPact>(NON_AGGRESSION_PACT, gwv.GetWorld().GetPlayer(playerId), gcFactory));
+            WINDOWMANAGER.ReplaceWindow(
+              std::make_unique<iwSuggestPact>(NON_AGGRESSION_PACT, gwv.GetWorld().GetPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
             gcFactory.CancelPact(NON_AGGRESSION_PACT, playerId);

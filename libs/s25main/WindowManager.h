@@ -63,6 +63,25 @@ public:
     {
         return static_cast<T*>(DoShow(std::move(window), mouse));
     }
+    template<typename T>
+    T* ReplaceWindow(std::unique_ptr<T> window)
+    {
+        auto* oldWnd = FindNonModalWindow(window->GetID());
+        if(oldWnd)
+            oldWnd->Close();
+        return Show(std::move(window));
+    }
+    template<typename T>
+    T* ToggleWindow(std::unique_ptr<T> window)
+    {
+        auto* oldWnd = FindNonModalWindow(window->GetID());
+        if(oldWnd)
+        {
+            oldWnd->Close();
+            return nullptr;
+        } else
+            return Show(std::move(window));
+    }
     /// Registers a window to be shown after a desktop switch
     IngameWindow* ShowAfterSwitch(std::unique_ptr<IngameWindow> window);
     /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
@@ -99,6 +118,7 @@ public:
     /// Return the window currently on the top (probably active)
     const IngameWindow* GetTopMostWindow() const;
     IngameWindow* FindWindowAtPos(const Position& pos) const;
+    IngameWindow* FindNonModalWindow(unsigned id) const;
 
     Desktop* GetCurrentDesktop() { return curDesktop.get(); }
 

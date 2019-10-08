@@ -253,14 +253,14 @@ void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btMap: WINDOWMANAGER.Show(std::make_unique<iwMinimap>(minimap, gwv)); break;
-        case ID_btOptions: WINDOWMANAGER.Show(std::make_unique<iwMainMenu>(gwv, GAMECLIENT)); break;
+        case ID_btMap: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMinimap>(minimap, gwv)); break;
+        case ID_btOptions: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT)); break;
         case ID_btConstructionAid:
             if(WINDOWMANAGER.IsDesktopActive())
                 gwv.ToggleShowBQ();
             break;
         case ID_btPost:
-            WINDOWMANAGER.Show(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             break;
     }
@@ -484,11 +484,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         const noBase& selObj = *worldViewer.GetWorld().GetNO(cSel);
         if(selObj.GetType() == NOP_BUILDING && worldViewer.IsOwner(cSel))
         {
+            if(WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
+                return true;
             BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
             // HQ
             if(bt == BLD_HEADQUARTERS)
-                // WINDOWMANAGER.Show(std::make_unique<iwTrade>(gwv,this,gwb.GetSpecObj<nobHQ>(cselx,csely)));
-                WINDOWMANAGER.Show(std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
+                WINDOWMANAGER.ReplaceWindow(
+                  std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
                 WINDOWMANAGER.Show(
@@ -509,7 +511,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // oder vielleicht eine Baustelle?
         else if(selObj.GetType() == NOP_BUILDINGSITE && worldViewer.IsOwner(cSel))
         {
-            WINDOWMANAGER.Show(std::make_unique<iwBuildingSite>(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
+            if(!WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
+                WINDOWMANAGER.Show(std::make_unique<iwBuildingSite>(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
             return true;
         }
 
@@ -675,16 +678,16 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
 
         case KT_F2: // Spiel speichern
-            WINDOWMANAGER.Show(std::make_unique<iwSave>());
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
             return true;
         case KT_F3: // Map debug window/ Multiplayer coordinates
-            WINDOWMANAGER.Show(std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
             return true;
         case KT_F8: // Tastaturbelegung
-            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             return true;
         case KT_F9: // Readme
-            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
         case KT_F10: {
 #ifdef NDEBUG
@@ -697,10 +700,10 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         }
         case KT_F11: // Music player (midi files)
-            WINDOWMANAGER.Show(std::make_unique<iwMusicPlayer>());
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
             return true;
         case KT_F12: // Optionsfenster
-            WINDOWMANAGER.Show(std::make_unique<iwOptionsWindow>());
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>());
             return true;
     }
 
@@ -787,20 +790,20 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         }
             return true;
         case 'i': // Show inventory
-            WINDOWMANAGER.Show(std::make_unique<iwInventory>(worldViewer.GetPlayer()));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwInventory>(worldViewer.GetPlayer()));
             return true;
         case 'j': // GFs überspringen
             if(game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
-                WINDOWMANAGER.Show(std::make_unique<iwSkipGFs>(gwv));
+                WINDOWMANAGER.ToggleWindow(std::make_unique<iwSkipGFs>(gwv));
             return true;
         case 'l': // Minimap anzeigen
-            WINDOWMANAGER.Show(std::make_unique<iwMinimap>(minimap, gwv));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMinimap>(minimap, gwv));
             return true;
         case 'm': // Hauptauswahl
-            WINDOWMANAGER.Show(std::make_unique<iwMainMenu>(gwv, GAMECLIENT));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT));
             return true;
         case 'n': // Show Post window
-            WINDOWMANAGER.Show(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             return true;
         case 'p': // Pause
@@ -808,7 +811,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
         case 'q': // Spiel verlassen
             if(ke.alt)
-                WINDOWMANAGER.Show(std::make_unique<iwEndgame>());
+                WINDOWMANAGER.ToggleWindow(std::make_unique<iwEndgame>());
             return true;
         case 's': // Produktivität anzeigen
             gwv.ToggleShowProductivity();
@@ -875,7 +878,7 @@ void dskGameInterface::OnBuildingNote(const BuildingNote& note)
         case BuildingNote::Lost:
             // Close the related window as the building does not exist anymore
             // In "Constructed" this means the buildingsite
-            WINDOWMANAGER.Close(worldViewer.GetWorld().CreateGUIID(note.pos));
+            WINDOWMANAGER.Close(CGI_BUILDING + MapBase::CreateGUIID(note.pos));
             break;
         default: break;
     }
@@ -1022,8 +1025,8 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
         params = worldViewer.GetNumSoldiersForAttack(cSel);
     }
 
-    actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings);
-    WINDOWMANAGER.Show(std::unique_ptr<iwAction>(actionwindow), true);
+    actionwindow =
+      WINDOWMANAGER.Show(std::make_unique<iwAction>(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings), true);
 }
 
 void dskGameInterface::OnChatCommand(const std::string& cmd)

@@ -134,7 +134,7 @@ void dskMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
             GLOBALVARS.notdone = false;
             break;
         case ID_btReadme: // "Readme"
-            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             break;
     }
 }

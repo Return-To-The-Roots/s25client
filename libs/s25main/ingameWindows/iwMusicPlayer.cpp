@@ -207,14 +207,14 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         // Add Track
         case 7:
         {
-            WINDOWMANAGER.Show(std::make_unique<InputWindow>(*this, 0, _("Add track")));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<InputWindow>(*this, 0, _("Add track")));
             changed = true;
         }
         break;
         // Add Directory of tracks
         case 8:
         {
-            WINDOWMANAGER.Show(std::make_unique<InputWindow>(*this, 2, _("Add directory of tracks")));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<InputWindow>(*this, 2, _("Add directory of tracks")));
             changed = true;
         }
         break;

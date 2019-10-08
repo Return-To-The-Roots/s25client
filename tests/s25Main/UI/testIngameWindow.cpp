@@ -24,7 +24,7 @@
 BOOST_AUTO_TEST_CASE(IngameWnd)
 {
     uiHelper::initGUITests();
-    iwHelp wnd(CGI_HELP, "Foo barFoo barFoo barFoo bar\n\n\n\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\n");
+    iwHelp wnd("Foo barFoo barFoo barFoo bar\n\n\n\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\n");
     const Extent oldSize = wnd.GetSize();
     BOOST_REQUIRE_GT(oldSize.x, 50u);
     BOOST_REQUIRE_GT(oldSize.y, 50u);

@@ -50,7 +50,7 @@ void iwEndgame::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 2: // OK + Speichern
         {
-            WINDOWMANAGER.Show(std::make_unique<iwSave>());
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
         }
         break;
     }

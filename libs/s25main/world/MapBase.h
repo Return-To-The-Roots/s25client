@@ -32,6 +32,8 @@ class MapBase
     MapExtent size_;
 
 public:
+    static unsigned CreateGUIID(MapPoint pt);
+
     MapBase();
     ~MapBase();
 

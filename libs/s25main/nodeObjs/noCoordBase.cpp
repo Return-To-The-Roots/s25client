@@ -19,6 +19,7 @@
 #include "noCoordBase.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "gameData/MapConsts.h"
 
 void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
 {
@@ -28,8 +29,3 @@ void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
 }
 
 noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id), pos(sgd.PopMapPoint()) {}
-
-unsigned noCoordBase::CreateGUIID() const
-{
-    return gwg->CreateGUIID(pos);
-}

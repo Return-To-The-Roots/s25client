@@ -189,9 +189,9 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
         {
             default: return;
             case 12:
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwHelp>(GUI_ID(CGI_HELP), _("These settings control the tool production of your metalworks. "
-                                                               "The higher the value, the more likely this tool is to be produced.")));
+                WINDOWMANAGER.ReplaceWindow(
+                  std::make_unique<iwHelp>(_("These settings control the tool production of your metalworks. "
+                                             "The higher the value, the more likely this tool is to be produced.")));
                 break;
             case 13: // Standard
                 GAMECLIENT.visual_settings.tools_settings = GAMECLIENT.default_settings.tools_settings;

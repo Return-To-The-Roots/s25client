@@ -50,12 +50,12 @@ void dskDirectIP::Msg_ButtonClick(const unsigned ctrl_id)
                   _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
-                WINDOWMANAGER.Show(std::make_unique<iwDirectIPCreate>(ServerType::DIRECT));
+                WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::DIRECT));
         }
         break;
         case 4: // "Verbinden"
         {
-            WINDOWMANAGER.Show(std::make_unique<iwDirectIPConnect>(ServerType::DIRECT));
+            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPConnect>(ServerType::DIRECT));
         }
         break;
         case 5: // "Zurück"

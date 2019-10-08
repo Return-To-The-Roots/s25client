@@ -566,7 +566,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
         }
         break;
         case 14: // Addons
-            WINDOWMANAGER.Show(std::make_unique<iwAddons>(ggs));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwAddons>(ggs));
             break;
     }
 }
@@ -578,12 +578,12 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsign
         default: break;
         case 71: // "Music player"
         {
-            WINDOWMANAGER.Show(std::make_unique<iwMusicPlayer>());
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
         }
         break;
         case 35: // "Keyboard Readme"
         {
-            WINDOWMANAGER.Show(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
         }
         break;
     }

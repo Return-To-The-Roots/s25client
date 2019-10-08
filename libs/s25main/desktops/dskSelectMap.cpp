@@ -44,6 +44,7 @@
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Map.h"
+#include "gameData/MapConsts.h"
 #include "gameData/WorldDescription.h"
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
@@ -198,20 +199,19 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
         // load map data
         int ec = libsiedler2::loader::LoadMAP(path, ai);
         if(ec || !dynamic_cast<glArchivItem_Map*>(ai[0]))
-        {
-            brokenMapPaths.push_back(path);
-            std::string errorTxt = _("Could not load map:\n");
-            errorTxt += path + '\n';
-            errorTxt += libsiedler2::getErrorString(ec);
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
-            table.RemoveRow(selection);
-        } else
+            MarkMapAsBroken(selection, libsiedler2::getErrorString(ec));
+        else
         {
             const glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai[0]);
-            preview.SetMap(map);
-            txtMapName.SetText(cvStringToUTF8(map->getHeader().getName()));
-            txtMapPath.SetText(path);
-            btContinue.SetEnabled(true);
+            if(map->getHeader().getWidth() > MAX_MAP_SIZE || map->getHeader().getHeight() > MAX_MAP_SIZE)
+                MarkMapAsBroken(selection, "Map is bigger than allowed size of " + std::to_string(MAX_MAP_SIZE) + " nodes");
+            else
+            {
+                preview.SetMap(map);
+                txtMapName.SetText(cvStringToUTF8(map->getHeader().getName()));
+                txtMapPath.SetText(path);
+                btContinue.SetEnabled(true);
+            }
         }
     }
     DrawPoint txtPos = txtMapName.GetPos();
@@ -246,7 +246,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
         case 4: // "Spiel laden..."
         {
             // Ladefenster aufrufen
-            WINDOWMANAGER.Show(std::make_unique<iwLoad>(csi));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwLoad>(csi));
         }
         break;
         case 5: // "Weiter"
@@ -267,7 +267,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 7: // random map generator settings
         {
-            WINDOWMANAGER.Show(std::make_unique<iwMapGenerator>(rndMapSettings));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapGenerator>(rndMapSettings));
         }
         break;
     }
@@ -441,4 +441,14 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         table->AddRow(0, name.c_str(), author.c_str(), players.c_str(), landscapeNames[header.getGfxSet()].c_str(), size.c_str(),
                       filePath.c_str());
     }
+}
+
+void dskSelectMap::MarkMapAsBroken(const int tableIdx, const std::string& reason)
+{
+    ctrlTable& table = *GetCtrl<ctrlTable>(1);
+    const std::string path = table.GetItemText(tableIdx, 5);
+    brokenMapPaths.emplace_back(std::move(path));
+    std::string errorTxt = _("Could not load map:\n") + path + '\n' + reason;
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+    table.RemoveRow(tableIdx);
 }

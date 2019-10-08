@@ -73,6 +73,7 @@ RTTR_POP_DIAGNOSTIC
 
 BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
 {
+    uiHelper::initGUITests();
     // Fresh start
     VIDEODRIVER.DestroyScreen();
     VIDEODRIVER.CreateScreen(VideoMode(800, 600), false);

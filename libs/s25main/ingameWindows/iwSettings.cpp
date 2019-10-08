@@ -17,14 +17,15 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwSettings.h"
-
 #include "Loader.h"
 #include "Settings.h"
+#include "WindowManager.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlOptionGroup.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/format.hpp"
+#include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
 
@@ -81,9 +82,8 @@ iwSettings::~iwSettings()
             const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
             if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
             {
-                // WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("You need to restart your game to change the screen
-                // resolution!"), this,
-                //     MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                  _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             }
         }
     } catch(...)
