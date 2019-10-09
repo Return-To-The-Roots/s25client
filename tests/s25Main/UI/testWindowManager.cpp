@@ -175,7 +175,7 @@ std::vector<TestIngameWnd*> TestIngameWnd::closed;
 
 BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
 {
-    auto* wnd = WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+    auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     BOOST_TEST_REQUIRE(wnd);
     MOCK_EXPECT(wnd->Draw_).once();
     WINDOWMANAGER.Draw();
@@ -189,8 +189,8 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     BOOST_TEST(WINDOWMANAGER.GetCurrentDesktop()->IsActive());
 
     // Opening a window with the same ID works. The last gets the focus
-    wnd = WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
-    auto* wnd2 = WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+    wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+    auto* wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     BOOST_TEST_REQUIRE((wnd && wnd2));
     MOCK_EXPECT(wnd->Draw_).once();
     MOCK_EXPECT(wnd2->Draw_).once();
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     // Closing a window and immediately reopening works
     wnd->Close();
     wnd2->Close();
-    wnd2 = WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(wnd->GetID()));
+    wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(wnd->GetID()));
     BOOST_TEST_REQUIRE(wnd2);
     MOCK_EXPECT(wnd2->Draw_).once();
     WINDOWMANAGER.Draw();
@@ -240,7 +240,7 @@ BOOST_FIXTURE_TEST_CASE(ToggleIngameWnd, uiHelper::Fixture)
     // Opening a window with the same ID closes and frees both
     wnd = wnd2;
     wnd2 = new TestIngameWnd(wnd->GetID());
-    BOOST_TEST(WINDOWMANAGER.ToggleWindow(std::unique_ptr<TestIngameWnd>(wnd2)) == nullptr);
+    BOOST_TEST((WINDOWMANAGER.ToggleWindow(std::unique_ptr<TestIngameWnd>(wnd2)) == nullptr));
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd);
     REQUIRE_WINDOW_DESTROYED(wnd2);
@@ -263,7 +263,7 @@ BOOST_FIXTURE_TEST_CASE(ToggleIngameWnd, uiHelper::Fixture)
 BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
 {
     // When no window with the ID is open, then this is just Show
-    auto* wnd = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP));
+    auto* wnd = &WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP));
     MOCK_EXPECT(wnd->Draw_).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
@@ -271,7 +271,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
 
     // When window is about to be closed we can open a new one
     wnd->Close();
-    auto* wnd2 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP));
+    auto* wnd2 = &WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP));
     BOOST_TEST_REQUIRE(wnd2);
     MOCK_EXPECT(wnd2->Draw_).once();
     WINDOWMANAGER.Draw();
@@ -281,7 +281,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
 
     // Opening a window with the same ID closes and frees the first
     wnd = wnd2;
-    wnd2 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP));
+    wnd2 = &WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP));
     BOOST_TEST_REQUIRE(wnd2);
     MOCK_EXPECT(wnd2->Draw_).once();
     WINDOWMANAGER.Draw();
@@ -291,7 +291,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
 
     // Windows with different IDs are fine
     wnd = wnd2;
-    wnd2 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS));
+    wnd2 = &WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS));
     BOOST_TEST_REQUIRE(wnd2);
     MOCK_EXPECT(wnd->Draw_).once();
     MOCK_EXPECT(wnd2->Draw_).once();
@@ -302,8 +302,8 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
     wnd2->Close();
 
     // Modal windows are not replaced but placed behind existing ones
-    wnd = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS, true));
-    wnd2 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS, true));
+    wnd = &WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS, true));
+    wnd2 = &WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS, true));
     BOOST_TEST_REQUIRE((wnd && wnd2));
     MOCK_EXPECT(wnd->Draw_).once();
     MOCK_EXPECT(wnd2->Draw_).once();
@@ -317,53 +317,47 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
 BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
 {
     // new modal windows get placed before older ones
-    auto* wnd = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX, true));
-    BOOST_TEST_REQUIRE(wnd);
-    MOCK_EXPECT(wnd->Draw_).once();
+    auto& wnd = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX, true));
+    MOCK_EXPECT(wnd.Draw_).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(wnd);
-    auto* wnd2 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX, true));
-    BOOST_TEST_REQUIRE(wnd2);
-    MOCK_EXPECT(wnd->Draw_).once();
-    MOCK_EXPECT(wnd2->Draw_).once();
+    REQUIRE_WINDOW_ACTIVE(&wnd);
+    auto& wnd2 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX, true));
+    MOCK_EXPECT(wnd.Draw_).once();
+    MOCK_EXPECT(wnd2.Draw_).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(wnd);
-    auto* wnd3 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MISSION_STATEMENT, true));
-    BOOST_TEST_REQUIRE(wnd3);
-    MOCK_EXPECT(wnd->Draw_).once();
-    MOCK_EXPECT(wnd2->Draw_).once();
-    MOCK_EXPECT(wnd3->Draw_).once();
+    REQUIRE_WINDOW_ACTIVE(&wnd);
+    auto& wnd3 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MISSION_STATEMENT, true));
+    MOCK_EXPECT(wnd.Draw_).once();
+    MOCK_EXPECT(wnd2.Draw_).once();
+    MOCK_EXPECT(wnd3.Draw_).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(wnd);
-    auto* wnd4 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX));
-    BOOST_TEST_REQUIRE(wnd4);
-    MOCK_EXPECT(wnd->Draw_).once();
-    MOCK_EXPECT(wnd2->Draw_).once();
-    MOCK_EXPECT(wnd3->Draw_).once();
-    MOCK_EXPECT(wnd4->Draw_).once();
+    REQUIRE_WINDOW_ACTIVE(&wnd);
+    auto& wnd4 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX));
+    MOCK_EXPECT(wnd.Draw_).once();
+    MOCK_EXPECT(wnd2.Draw_).once();
+    MOCK_EXPECT(wnd3.Draw_).once();
+    MOCK_EXPECT(wnd4.Draw_).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(wnd);
-    auto* wnd5 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP, true));
-    BOOST_TEST_REQUIRE(wnd5);
-    MOCK_EXPECT(wnd->Draw_).once();
-    MOCK_EXPECT(wnd2->Draw_).once();
-    MOCK_EXPECT(wnd3->Draw_).once();
-    MOCK_EXPECT(wnd4->Draw_).once();
-    MOCK_EXPECT(wnd5->Draw_).once();
+    REQUIRE_WINDOW_ACTIVE(&wnd);
+    auto& wnd5 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP, true));
+    MOCK_EXPECT(wnd.Draw_).once();
+    MOCK_EXPECT(wnd2.Draw_).once();
+    MOCK_EXPECT(wnd3.Draw_).once();
+    MOCK_EXPECT(wnd4.Draw_).once();
+    MOCK_EXPECT(wnd5.Draw_).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(wnd);
-    auto* wnd6 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS));
-    BOOST_TEST_REQUIRE(wnd6);
-    MOCK_EXPECT(wnd->Draw_).once();
-    MOCK_EXPECT(wnd2->Draw_).once();
-    MOCK_EXPECT(wnd3->Draw_).once();
-    MOCK_EXPECT(wnd4->Draw_).once();
-    MOCK_EXPECT(wnd5->Draw_).once();
-    MOCK_EXPECT(wnd6->Draw_).once();
+    REQUIRE_WINDOW_ACTIVE(&wnd);
+    auto& wnd6 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS));
+    MOCK_EXPECT(wnd.Draw_).once();
+    MOCK_EXPECT(wnd2.Draw_).once();
+    MOCK_EXPECT(wnd3.Draw_).once();
+    MOCK_EXPECT(wnd4.Draw_).once();
+    MOCK_EXPECT(wnd5.Draw_).once();
+    MOCK_EXPECT(wnd6.Draw_).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(wnd);
+    REQUIRE_WINDOW_ACTIVE(&wnd);
     // Now we have the following order
-    std::vector<TestIngameWnd*> expectedOrder = {wnd, wnd2, wnd3, wnd5, wnd6, wnd4};
+    std::vector<TestIngameWnd*> expectedOrder = {&wnd, &wnd2, &wnd3, &wnd5, &wnd6, &wnd4};
     // Only way to check the order is to simulate a key event, expect the top most one to handle it and close it, then proceed
     mock::sequence s;
     for(TestIngameWnd* curWnd : expectedOrder)

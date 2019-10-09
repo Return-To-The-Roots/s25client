@@ -235,7 +235,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
                 if(it == buildings.end()) // was last entry in list -> goto first
                     it = buildings.begin();
                 gwv.MoveToMapPt((*it)->GetPos());
-                WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBuilding>(gwv, gcFactory, *it))->SetPos(GetPos());
+                WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBuilding>(gwv, gcFactory, *it)).SetPos(GetPos());
                 break;
             }
         }
