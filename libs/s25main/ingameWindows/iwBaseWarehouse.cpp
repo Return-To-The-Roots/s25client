@@ -230,15 +230,15 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                 gwv.MoveToMapPt((*it)->GetPos());
                 if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
                 {
-                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHQ>(gwv, gcFactory, *it))->SetPos(GetPos());
+                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHQ>(gwv, gcFactory, *it)).SetPos(GetPos());
                 } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
                 {
                     WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHarborBuilding>(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it)))
-                      ->SetPos(GetPos());
+                      .SetPos(GetPos());
                 } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
                 {
                     WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBaseWarehouse>(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it)))
-                      ->SetPos(GetPos());
+                      .SetPos(GetPos());
                 }
                 break;
             }

@@ -259,7 +259,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
             if(!mapGenThread)
             {
                 newRandMapPath.clear();
-                waitWnd = WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
+                waitWnd = &WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
                 // mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
                 CreateRandomMap();
             }
