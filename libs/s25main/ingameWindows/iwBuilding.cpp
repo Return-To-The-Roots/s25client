@@ -225,7 +225,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobUsual*>& buildings =
               gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetBuildings(building->GetBuildingType());
             // go through list once we get to current building -> open window for the next one and go to next location
-            auto it = helpers::findPred(buildings, [bldPos = building->GetPos()](const auto* it) { return it->GetPos() == bldPos; });
+            auto it = helpers::find_if(buildings, [bldPos = building->GetPos()](const auto* it) { return it->GetPos() == bldPos; });
             if(it != buildings.end()) // got to current building in the list?
             {
                 // close old window, open new window (todo: only open if it isnt already open), move to location of next building

@@ -24,12 +24,12 @@ namespace helpers {
 
 /// Returns the greatest common divisor of a and b
 /// That is the greatest number x with a % x == b % x == 0
-int gcd(int a, int b);
+int gcd(int a, int b) noexcept;
 /// Returns the result of "dividend / divisor" rounded to the nearest integer value
-unsigned roundedDiv(unsigned dividend, unsigned divisor);
+unsigned roundedDiv(unsigned dividend, unsigned divisor) noexcept;
 /// Clamp the value into [min, max]
 template<typename T>
-T clamp(T val, T min, T max)
+constexpr T clamp(T val, T min, T max) noexcept
 {
     if(val <= min)
         return min;
@@ -39,7 +39,7 @@ T clamp(T val, T min, T max)
         return val;
 }
 template<typename T, typename U>
-U clamp(T val, U min, U max)
+constexpr U clamp(T val, U min, U max) noexcept
 {
     using Common = std::common_type_t<T, U>;
     if(std::is_signed<T>::value && !std::is_signed<U>::value)

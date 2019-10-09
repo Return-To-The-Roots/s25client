@@ -181,7 +181,7 @@ IngameWindow* WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool m
     if(!window->IsModal())
     {
         // Check for already open windows with same ID (ignoring to-be-closed windows)
-        auto itOther = helpers::findPred(windows, [wndId = window->GetID()](const auto& curWnd) {
+        auto itOther = helpers::find_if(windows, [wndId = window->GetID()](const auto& curWnd) {
             return !curWnd->ShouldBeClosed() && !curWnd->IsModal() && curWnd->GetID() == wndId;
         });
         if(itOther != windows.end())
@@ -200,7 +200,7 @@ IngameWindow* WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool m
     }
 
     // All windows are inserted before the first modal window (shown behind)
-    auto itModal = helpers::findPred(windows, [](const auto& curWnd) { return curWnd->IsModal(); });
+    auto itModal = helpers::find_if(windows, [](const auto& curWnd) { return curWnd->IsModal(); });
     // Note that if there is no other modal window it will be put at the back which is what we want
     auto* result = windows.emplace(itModal, std::move(window))->get();
 
@@ -755,11 +755,11 @@ void WindowManager::CloseMarkedIngameWnds()
 template<class T_Windows>
 void SetActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows)
 {
-    auto itWnd = helpers::findPred(windows, [&wnd](const auto& it) { return it.get() == &wnd; });
+    auto itWnd = helpers::find_if(windows, [&wnd](const auto& it) { return it.get() == &wnd; });
     if(itWnd != windows.end())
     {
         // If we have a modal window, don't make this active unless it is the top most one
-        if(&wnd != windows.back().get() && helpers::containsPred(windows, [](const auto& it) { return it->IsModal(); }))
+        if(&wnd != windows.back().get() && helpers::contains_if(windows, [](const auto& it) { return it->IsModal(); }))
         {
             return;
         }

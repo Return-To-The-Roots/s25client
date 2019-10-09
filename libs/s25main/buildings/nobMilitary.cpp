@@ -866,7 +866,7 @@ unsigned nobMilitary::GetSoldiersStrength() const
 bool nobMilitary::HasMaxRankSoldier() const
 {
     const unsigned maxRank = gwg->GetGGS().GetMaxMilitaryRank();
-    return helpers::containsPred(helpers::reverse(troops), [maxRank](const auto* it) { return it->GetRank() >= maxRank; });
+    return helpers::contains_if(helpers::reverse(troops), [maxRank](const auto* it) { return it->GetRank() >= maxRank; });
 }
 
 nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)

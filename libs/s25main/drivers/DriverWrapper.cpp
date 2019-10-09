@@ -69,7 +69,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
         return false;
 
     /// Suche, ob der Treiber dabei ist, den wir wünschen
-    const auto it = helpers::findPred(drivers, [preference](const auto& it) { return it.GetName() == preference; });
+    const auto it = helpers::find_if(drivers, [preference](const auto& it) { return it.GetName() == preference; });
     if(it != drivers.end())
     {
         // Dann den gleich nehmen

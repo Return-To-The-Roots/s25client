@@ -19,6 +19,7 @@
 #define GetInsertIterator_h__
 
 #include <boost/type_traits/make_void.hpp>
+#include <utility>
 
 namespace helpers {
 
