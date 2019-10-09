@@ -29,7 +29,7 @@ int gcd(int a, int b) noexcept;
 unsigned roundedDiv(unsigned dividend, unsigned divisor) noexcept;
 /// Clamp the value into [min, max]
 template<typename T>
-constexpr T clamp(T val, T min, T max) noexcept
+T clamp(T val, T min, T max) noexcept
 {
     if(val <= min)
         return min;
@@ -39,7 +39,7 @@ constexpr T clamp(T val, T min, T max) noexcept
         return val;
 }
 template<typename T, typename U>
-constexpr U clamp(T val, U min, U max) noexcept
+U clamp(T val, U min, U max) noexcept
 {
     using Common = std::common_type_t<T, U>;
     if(std::is_signed<T>::value && !std::is_signed<U>::value)
