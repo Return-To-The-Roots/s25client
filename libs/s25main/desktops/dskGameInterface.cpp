@@ -989,7 +989,7 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
 
 void dskGameInterface::ShowRoadWindow(const Position& mousePos)
 {
-    roadwindow = WINDOWMANAGER.Show(std::make_unique<iwRoadWindow>(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos), true);
+    roadwindow = &WINDOWMANAGER.Show(std::make_unique<iwRoadWindow>(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos), true);
 }
 
 void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
@@ -1026,7 +1026,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     }
 
     actionwindow =
-      WINDOWMANAGER.Show(std::make_unique<iwAction>(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings), true);
+      &WINDOWMANAGER.Show(std::make_unique<iwAction>(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings), true);
 }
 
 void dskGameInterface::OnChatCommand(const std::string& cmd)

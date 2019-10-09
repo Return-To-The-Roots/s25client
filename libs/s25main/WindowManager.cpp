@@ -166,24 +166,23 @@ void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc
 /**
  *  Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
  */
-IngameWindow* WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool mouse)
+IngameWindow& WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool mouse)
 {
     RTTR_Assert(window);
     RTTR_Assert(!helpers::contains(windows, window));
-
-    SetToolTip(nullptr, "");
-
     // No desktop -> Out
     if(!curDesktop)
-        return nullptr;
+        throw std::runtime_error("No desktop active for window to be shown on");
+
+    SetToolTip(nullptr, "");
 
     // All windows are inserted before the first modal window (shown behind)
     auto itModal = helpers::find_if(windows, [](const auto& curWnd) { return curWnd->IsModal(); });
     // Note that if there is no other modal window it will be put at the back which is what we want
-    auto* result = windows.emplace(itModal, std::move(window))->get();
+    auto& result = *windows.emplace(itModal, std::move(window))->get();
 
     // Make the new window active (special cases handled in the function)
-    SetActiveWindow(*result);
+    SetActiveWindow(result);
 
     // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschließend-Drück-Bugs)
     disable_mouse = mouse;

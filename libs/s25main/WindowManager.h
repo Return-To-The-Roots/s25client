@@ -57,14 +57,14 @@ public:
     void RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
 
     /// Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
-    IngameWindow* DoShow(std::unique_ptr<IngameWindow> window, bool mouse = false);
+    IngameWindow& DoShow(std::unique_ptr<IngameWindow> window, bool mouse = false);
     template<typename T>
-    T* Show(std::unique_ptr<T> window, bool mouse = false)
+    T& Show(std::unique_ptr<T> window, bool mouse = false)
     {
-        return static_cast<T*>(DoShow(std::move(window), mouse));
+        return static_cast<T&>(DoShow(std::move(window), mouse));
     }
     template<typename T>
-    T* ReplaceWindow(std::unique_ptr<T> window)
+    T& ReplaceWindow(std::unique_ptr<T> window)
     {
         auto* oldWnd = FindNonModalWindow(window->GetID());
         if(oldWnd)
@@ -80,7 +80,7 @@ public:
             oldWnd->Close();
             return nullptr;
         } else
-            return Show(std::move(window));
+            return &Show(std::move(window));
     }
     /// Registers a window to be shown after a desktop switch
     IngameWindow* ShowAfterSwitch(std::unique_ptr<IngameWindow> window);
