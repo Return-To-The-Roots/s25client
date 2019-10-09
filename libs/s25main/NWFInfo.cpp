@@ -40,7 +40,7 @@ void NWFInfo::init(unsigned nextNWF, unsigned cmdDelay)
 
 void NWFInfo::addPlayer(unsigned playerId)
 {
-    if(!helpers::containsPred(playerInfos_, [playerId](const auto& info) { return info.id == playerId; }))
+    if(!helpers::contains_if(playerInfos_, [playerId](const auto& info) { return info.id == playerId; }))
         playerInfos_.push_back(NWFPlayerInfo(playerId));
 }
 

@@ -1749,7 +1749,7 @@ unsigned GameClient::GetTournamentModeDuration() const
 void GameClient::ToggleHumanAIPlayer()
 {
     RTTR_Assert(!IsReplayModeOn());
-    auto it = helpers::findPred(game->aiPlayers_, [id = this->GetPlayerId()](const auto& player) { return player.GetPlayerId() == id; });
+    auto it = helpers::find_if(game->aiPlayers_, [id = this->GetPlayerId()](const auto& player) { return player.GetPlayerId() == id; });
     if(it != game->aiPlayers_.end())
         game->aiPlayers_.erase(it);
     else
