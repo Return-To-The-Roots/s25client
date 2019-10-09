@@ -22,6 +22,7 @@
 
 #include <boost/type_traits/make_void.hpp>
 #include <algorithm>
+#include <iterator>
 
 namespace helpers {
 
@@ -41,7 +42,12 @@ namespace detail {
     template<class T, class U, typename = void>
     struct FindImpl
     {
-        static auto find(T& container, const U& value) { return std::find(std::begin(container), std::end(container), value); }
+        static auto find(T& container, const U& value)
+        {
+            using std::begin;
+            using std::end;
+            return std::find(begin(container), end(container), value);
+        }
     };
 
     template<class T, class U>
@@ -55,13 +61,13 @@ namespace detail {
 /// Works only for list and set as they don't invalidate other iterators, so erase is save to call inside a loop
 /// Works also for reverse iterators
 template<typename T>
-inline typename T::iterator erase(T& container, typename T::iterator it)
+typename T::iterator erase(T& container, typename T::iterator it)
 {
     return container.erase(it);
 }
 
 template<typename T>
-inline auto erase(T& container, typename T::reverse_iterator it)
+auto erase(T& container, typename T::reverse_iterator it)
 {
     return typename T::reverse_iterator(erase(container, (++it).base()));
 }
@@ -69,18 +75,22 @@ inline auto erase(T& container, typename T::reverse_iterator it)
 template<typename T, typename T_Element>
 void remove(T& container, T_Element&& element)
 {
-    container.erase(std::remove(container.begin(), container.end(), std::forward<T_Element>(element)), container.end());
+    using std::begin;
+    using std::end;
+    container.erase(std::remove(begin(container), end(container), std::forward<T_Element>(element)), end(container));
 }
 
 template<typename T, typename T_Predicate>
 void remove_if(T& container, T_Predicate&& predicate)
 {
-    container.erase(std::remove_if(container.begin(), container.end(), std::forward<T_Predicate>(predicate)), container.end());
+    using std::begin;
+    using std::end;
+    container.erase(std::remove_if(begin(container), end(container), std::forward<T_Predicate>(predicate)), end(container));
 }
 
 /// Removes the first element in a container
 template<typename T>
-inline void pop_front(T& container)
+void pop_front(T& container)
 {
     RTTR_Assert(!container.empty());
     detail::PopFrontImpl<T>::pop(container);
@@ -88,56 +98,60 @@ inline void pop_front(T& container)
 
 /// Effective implementation of find. Uses the containers find function if available
 template<typename T, typename U>
-inline auto find(T& container, const U& value)
+auto find(T& container, const U& value)
 {
     return detail::FindImpl<T, U>::find(container, value);
 }
 
 template<typename T, class T_Predicate>
-inline auto findPred(T& container, T_Predicate&& predicate)
+auto find_if(T& container, T_Predicate&& predicate)
 {
+    using std::begin;
+    using std::end;
     return std::find_if(begin(container), end(container), std::forward<T_Predicate>(predicate));
 }
 
 /// Returns true if the container contains the given value
 /// Uses the find member function if applicable otherwise uses the std::find method
 template<typename T, typename U>
-inline bool contains(const T& container, const U& value)
+bool contains(const T& container, const U& value)
 {
-    return find(container, value) != container.end();
+    using std::end;
+    return find(container, value) != end(container);
 }
 
 /// Returns true if the container contains a value matching the predicate
 template<typename T, class T_Predicate>
-inline bool containsPred(const T& container, T_Predicate&& predicate)
+bool contains_if(const T& container, T_Predicate&& predicate)
 {
-    return findPred(container, std::forward<T_Predicate>(predicate)) != end(container);
+    using std::end;
+    return find_if(container, std::forward<T_Predicate>(predicate)) != end(container);
 }
 
 /// Remove duplicate values from the given container without changing the order
 template<class T>
-inline void makeUnique(T& container)
+void makeUnique(T& container)
 {
     // Containers with less than 2 elements are always unique
     if(container.size() < 2u)
         return;
-    auto itInsert = container.begin();
+    auto itInsert = begin(container);
     // We always begin inserting at 2nd pos so skip first
     ++itInsert;
     // And now start inserting all values starting from the 2nd
     for(auto it = itInsert; it != container.end(); ++it)
     {
         // If current element is not found in [begin, insertPos) then add it at insertPos and inc insertPos
-        if(std::find(container.begin(), itInsert, *it) == itInsert)
-            *(itInsert++) = *it;
+        if(std::find(begin(container), itInsert, *it) == itInsert)
+            *(itInsert++) = std::move(*it);
     }
-    container.erase(itInsert, container.end());
+    container.erase(itInsert, end(container));
 }
 
 /// Returns the index of the given element in the container or -1 when not found
 /// Note: Only works for containers with less than 2^31 - 1 elements.
 template<class T_Container, class T_Element>
-inline int indexOf(const T_Container& container, const T_Element element)
+int indexOf(const T_Container& container, const T_Element& element)
 {
     int index = 0;
     for(const auto& curEl : container)

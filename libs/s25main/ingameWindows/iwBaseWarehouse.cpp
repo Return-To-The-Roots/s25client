@@ -218,7 +218,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobBaseWarehouse*>& storehouses =
               gwv.GetWorld().GetPlayer(wh->GetPlayer()).GetBuildingRegister().GetStorehouses();
             // go through list once we get to current building -> open window for the next one and go to next location
-            auto it = helpers::findPred(storehouses, [whPos = wh->GetPos()](const auto* it) { return it->GetPos() == whPos; });
+            auto it = helpers::find_if(storehouses, [whPos = wh->GetPos()](const auto* it) { return it->GetPos() == whPos; });
             if(it != storehouses.end()) // got to current building in the list?
             {
                 // close old window, open new window (todo: only open if it isnt already open), move to location of next building

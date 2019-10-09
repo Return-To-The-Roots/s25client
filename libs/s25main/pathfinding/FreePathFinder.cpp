@@ -222,7 +222,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                         back_id = alternate ? nodes[back_id].prevEven : nodes[back_id].prev;
                         alternate = !alternate;
                     }
-                    bool tooClose = helpers::containsPred(
+                    bool tooClose = helpers::contains_if(
                       evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) { return gwb_.CalcDistance(neighbourPos, it) < 2; });
                     if(tooClose)
                         continue;

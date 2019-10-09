@@ -49,7 +49,7 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
         paths.push_back(basePath / folderName / filename);
     paths.push_back(basePath / filename);
 
-    const auto existingFilePath = helpers::findPred(paths, [](const auto& path) { return bfs::exists(path); });
+    const auto existingFilePath = helpers::find_if(paths, [](const auto& path) { return bfs::exists(path); });
     bnw::ifstream file;
     if(existingFilePath != paths.end())
         file.open(*existingFilePath);

@@ -27,7 +27,7 @@ namespace helpers {
 
 /// Convert to number and return true on success
 template<typename T>
-inline bool tryFromString(const std::string& value, T& outValue)
+bool tryFromString(const std::string& value, T& outValue)
 {
     try
     {
@@ -41,7 +41,7 @@ inline bool tryFromString(const std::string& value, T& outValue)
 
 /// Convert to number or return defaultValue
 template<typename T>
-inline T fromString(const std::string& value, T defaultValue)
+T fromString(const std::string& value, T defaultValue)
 {
     T result;
     if(!tryFromString(value, result))

@@ -21,7 +21,7 @@
 #include <utility>
 
 namespace helpers {
-int gcd(int a, int b)
+int gcd(int a, int b) noexcept
 {
     a = std::abs(a);
     b = std::abs(b);
@@ -38,7 +38,7 @@ int gcd(int a, int b)
     return a;
 }
 
-unsigned roundedDiv(unsigned dividend, unsigned divisor)
+unsigned roundedDiv(unsigned dividend, unsigned divisor) noexcept
 {
     RTTR_Assert(divisor > 0);
     RTTR_Assert(dividend + (divisor / 2) >= dividend); // Overflow check
