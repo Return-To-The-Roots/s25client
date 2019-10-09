@@ -1,28 +1,28 @@
 set(SDL_BUILDING_LIBRARY ON)
-FIND_PACKAGE(SDL)
+find_package(SDL)
 
-IF (SDL_FOUND)
-	FIND_PACKAGE(Boost 1.64.0 REQUIRED)
-	include(CorrectLib)	
-	CORRECT_LIB(SDL_LIBRARY SDL)
+if(SDL_FOUND)
+  find_package(Boost 1.64.0 REQUIRED)
+  include(CorrectLib)
+  correct_lib(SDL_LIBRARY SDL)
 
-	ADD_LIBRARY(videoSDL SHARED ${RTTR_DRIVER_INTERFACE} VideoSDL.cpp VideoSDL.h)
-	target_link_libraries(videoSDL PRIVATE videodrv ${SDL_LIBRARY} nowide::static)
-	target_include_directories(videoSDL PRIVATE ${SDL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/data/win32)
+  add_library(videoSDL SHARED ${RTTR_DRIVER_INTERFACE} VideoSDL.cpp VideoSDL.h)
+  target_link_libraries(videoSDL PRIVATE videodrv s25util ${SDL_LIBRARY} Boost::boost nowide::static)
+  target_include_directories(videoSDL PRIVATE ${SDL_INCLUDE_DIR})
 
-	IF (WIN32)
-        find_package(OpenGL REQUIRED)
-        target_link_libraries(videoSDL PRIVATE ${OPENGL_gl_LIBRARY}) 
-        target_include_directories(videoSDL PRIVATE ${OPENGL_INCLUDE_DIR})
-        include(GatherDll)
-        gather_dll_by_name(SDL SDL.dll)
-	ENDIF()
+  if(WIN32)
+    find_package(OpenGL REQUIRED)
+    target_link_libraries(videoSDL PRIVATE ${OPENGL_gl_LIBRARY})
+    target_include_directories(videoSDL PRIVATE ${OPENGL_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/data/win32)
+    include(GatherDll)
+    gather_dll_by_name(SDL SDL.dll)
+  endif()
 
-	INSTALL(TARGETS videoSDL
-		RUNTIME DESTINATION ${RTTR_DRIVERDIR}/video
-		LIBRARY DESTINATION ${RTTR_DRIVERDIR}/video
-	)
-	add_dependencies(drivers videoSDL)
-ELSE ()
-	MESSAGE(WARNING ": SDL library not found: Not building SDL videodriver")
-ENDIF ()
+  install(TARGETS videoSDL
+    RUNTIME DESTINATION ${RTTR_DRIVERDIR}/video
+    LIBRARY DESTINATION ${RTTR_DRIVERDIR}/video
+  )
+  add_dependencies(drivers videoSDL)
+else()
+  message(WARNING "SDL library not found: Not building SDL videodriver")
+endif()
