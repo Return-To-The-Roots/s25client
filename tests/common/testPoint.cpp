@@ -22,6 +22,7 @@
 #include <boost/test/unit_test.hpp>
 #include <type_traits>
 
+using boost::test_tools::tolerance;
 using rttr::test::randomPoint;
 using rttr::test::randomValue;
 
@@ -229,20 +230,22 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(unscale_point, T, SignedTypes)
     SignedPoint pt(x, y);
     const auto scale = randomValue<U>(1, 100);
 
+    constexpr auto epsilon = std::conditional_t<std::is_same<T, float>::value, float, double>(0.001);
+
     const auto result = pt / scale;
     static_assert(std::is_same<decltype(result.x), T>::value, "Result must be signed");
-    BOOST_TEST(result == pt / SignedPoint::all(scale));
+    BOOST_TEST(result == pt / SignedPoint::all(scale), epsilon % tolerance());
 
     const auto resultSigned = pt / T(scale);
     static_assert(std::is_same<decltype(resultSigned.x), T>::value, "Result must be signed");
-    BOOST_TEST(resultSigned == result);
+    BOOST_TEST(resultSigned == result, epsilon % tolerance());
 
     x = abs(x);
     y = abs(y);
     UnsignedPoint pt2(x, y);
     const auto resultUnsigned = pt2 / scale;
     static_assert(std::is_same<decltype(resultUnsigned.x), U>::value, "Result must be unsigned");
-    BOOST_TEST(resultUnsigned == pt2 / UnsignedPoint::all(scale));
+    BOOST_TEST(resultUnsigned == pt2 / UnsignedPoint::all(scale), epsilon % tolerance());
 
     pt /= scale;
     BOOST_TEST(pt == result);
@@ -256,7 +259,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(unscale_point, T, SignedTypes)
     pt = SignedPoint(x, y);
     const auto resultPt = scale2 / pt;
     static_assert(std::is_same<decltype(resultPt.x), T>::value, "Result must be signed");
-    BOOST_TEST(resultPt == SignedPoint::all(scale2) / pt);
+    BOOST_TEST(resultPt == SignedPoint::all(scale2) / pt, epsilon % tolerance());
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(symetric_operators, T, SignedTypes)
