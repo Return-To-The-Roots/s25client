@@ -179,7 +179,7 @@ IngameWindow& WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool m
     // All windows are inserted before the first modal window (shown behind)
     auto itModal = helpers::find_if(windows, [](const auto& curWnd) { return curWnd->IsModal(); });
     // Note that if there is no other modal window it will be put at the back which is what we want
-    auto& result = *windows.emplace(itModal, std::move(window))->get();
+    auto& result = **windows.emplace(itModal, std::move(window));
 
     // Make the new window active (special cases handled in the function)
     SetActiveWindow(result);
