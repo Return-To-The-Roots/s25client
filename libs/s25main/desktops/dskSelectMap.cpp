@@ -181,7 +181,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
     if(ctrl_id != 1)
         return;
     ctrlTable& table = *GetCtrl<ctrlTable>(1);
-    const std::string path = table.GetItemText(selection, 5);
+    const std::string& path = table.GetItemText(selection, 5);
 
     ctrlPreviewMinimap& preview = *GetCtrl<ctrlPreviewMinimap>(11);
     ctrlText& txtMapName = *GetCtrl<ctrlText>(12);
@@ -446,8 +446,8 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
 void dskSelectMap::MarkMapAsBroken(const int tableIdx, const std::string& reason)
 {
     ctrlTable& table = *GetCtrl<ctrlTable>(1);
-    const std::string path = table.GetItemText(tableIdx, 5);
-    brokenMapPaths.emplace_back(std::move(path));
+    const std::string& path = table.GetItemText(tableIdx, 5);
+    brokenMapPaths.emplace_back(path);
     std::string errorTxt = _("Could not load map:\n") + path + '\n' + reason;
     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
     table.RemoveRow(tableIdx);
