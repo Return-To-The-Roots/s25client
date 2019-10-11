@@ -40,6 +40,7 @@ BOOST_AUTO_TEST_CASE(AllAudioDriversAreLoadable)
     for(const auto& driver : drivers)
     {
         std::string preference = driver.GetName();
+        BOOST_TEST_CHECKPOINT("Loading " << preference);
         BOOST_TEST_REQUIRE(AUDIODRIVER.LoadDriver(preference));
         BOOST_TEST(preference == driver.GetName());
         BOOST_TEST(AUDIODRIVER.GetName() == driver.GetName());
@@ -53,6 +54,7 @@ BOOST_AUTO_TEST_CASE(AllVideoDriversAreLoadable)
     for(const auto& driver : drivers)
     {
         std::string preference = driver.GetName();
+        BOOST_TEST_CHECKPOINT("Loading " << preference);
         BOOST_TEST_REQUIRE(VIDEODRIVER.LoadDriver(preference));
         BOOST_TEST(preference == driver.GetName());
         BOOST_TEST(VIDEODRIVER.GetName() == driver.GetName());
