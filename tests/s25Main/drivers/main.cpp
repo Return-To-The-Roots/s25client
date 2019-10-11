@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#define BOOST_TEST_MODULE RTTR_Simple
+#define BOOST_TEST_MODULE RTTR_Drivers
 
 #include <rttr/test/Fixture.hpp>
 #include <boost/test/unit_test.hpp>
