@@ -46,6 +46,7 @@ export LD_LIBRARY_PATH="${boostLibDir}:${LD_LIBRARY_PATH:-}"
 export RTTR_DISABLE_ASSERT_BREAKPOINT=1
 export UBSAN_OPTIONS=print_stacktrace=1
 export AUDIODEV=null # Avoid errors like: ALSA lib confmisc.c:768:(parse_card) cannot find card '0'
+export SDL_VIDEODRIVER=dummy # Avoid crash on travis
 if ! ctest --output-on-failure -j2; then
     cat CMakeCache.txt
     echo "LD:${LD_LIBRARY_PATH:-}"
