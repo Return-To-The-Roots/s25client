@@ -248,10 +248,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(unscale_point, T, SignedTypes)
     BOOST_TEST(resultUnsigned == pt2 / UnsignedPoint::all(scale), epsilon % tolerance());
 
     pt /= scale;
-    BOOST_TEST(pt == result);
+    BOOST_TEST(pt == result, epsilon % tolerance());
 
     pt2 /= scale;
-    BOOST_TEST(pt2 == resultUnsigned);
+    BOOST_TEST(pt2 == resultUnsigned, epsilon % tolerance());
 
     x = randomValue<T>(1, 100);
     y = randomValue<T>(1, 100);
