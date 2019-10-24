@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 
 /// Klasse für alle "globalen" Variablen/Objekte
 class GlobalVars : public Singleton<GlobalVars>

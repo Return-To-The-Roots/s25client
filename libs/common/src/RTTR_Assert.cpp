@@ -18,8 +18,8 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "RTTR_Assert.h"
 #include "RTTR_AssertError.h"
-#include "libutil/Log.h"
-#include "libutil/System.h"
+#include "s25util/Log.h"
+#include "s25util/System.h"
 #include <iostream>
 #include <sstream>
 #ifdef _WIN32

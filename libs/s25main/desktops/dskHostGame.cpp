@@ -53,8 +53,8 @@
 #include "liblobby/LobbyPlayerInfo.h"
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
-#include "libutil/Log.h"
-#include "libutil/MyTime.h"
+#include "s25util/Log.h"
+#include "s25util/MyTime.h"
 #include <memory>
 #include <mygettext/mygettext.h>
 #include <set>

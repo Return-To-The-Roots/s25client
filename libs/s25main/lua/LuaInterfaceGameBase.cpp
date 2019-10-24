@@ -21,7 +21,7 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "mygettext/mygettext.h"
 #include "network/GameClient.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 unsigned LuaInterfaceGameBase::GetVersion()
 {

@@ -45,8 +45,8 @@
 #include "libsiedler2/PixelBufferBGRA.h"
 #include "libsiedler2/PixelBufferPaletted.h"
 #include "libsiedler2/libsiedler2.h"
-#include "libutil/Log.h"
-#include "libutil/System.h"
+#include "s25util/Log.h"
+#include "s25util/System.h"
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>

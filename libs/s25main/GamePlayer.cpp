@@ -54,7 +54,7 @@
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/ToolConsts.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <limits>
 
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg)

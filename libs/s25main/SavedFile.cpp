@@ -20,8 +20,8 @@
 #include "BasePlayerInfo.h"
 #include "RTTR_Version.h"
 #include "libendian/ConvertEndianess.h"
-#include "libutil/BinaryFile.h"
-#include "libutil/Serializer.h"
+#include "s25util/BinaryFile.h"
+#include "s25util/Serializer.h"
 #include <boost/format.hpp>
 #include <algorithm>
 #include <mygettext/mygettext.h>

@@ -21,7 +21,7 @@
 #include "Point.h"
 #include "driver/KeyEvent.h"
 #include "driver/VideoMode.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <memory>
 #include <string>
 

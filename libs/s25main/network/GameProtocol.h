@@ -18,7 +18,7 @@
 #ifndef GAMEPROTOCOL_H_INCLUDED
 #define GAMEPROTOCOL_H_INCLUDED
 
-#include "libutil/Protocol.h"
+#include "s25util/Protocol.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Netzwerk Messages                       // client> | <server

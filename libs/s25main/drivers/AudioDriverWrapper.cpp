@@ -22,7 +22,7 @@
 #include "driver/AudioInterface.h"
 #include "mygettext/mygettext.h"
 #include "libsiedler2/ArchivItem_Sound.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <boost/interprocess/streams/vectorstream.hpp>
 #include <ostream>
 #include <vector>

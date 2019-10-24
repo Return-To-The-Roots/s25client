@@ -31,9 +31,9 @@
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
-#include "libutil/Serializer.h"
-#include "libutil/StringConversion.h"
-#include "libutil/tmpFile.h"
+#include "s25util/Serializer.h"
+#include "s25util/StringConversion.h"
+#include "s25util/tmpFile.h"
 #include <rttr/test/LocaleResetter.hpp>
 #include <rttr/test/testHelpers.hpp>
 #include <boost/assign/std/vector.hpp>

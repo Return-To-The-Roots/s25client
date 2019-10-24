@@ -22,7 +22,7 @@
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
 #include "s25clientResources.h"
-#include "libutil/ucString.h"
+#include "s25util/ucString.h"
 #include <GL/gl.h>
 #include <cstdlib>
 #include <cstring>

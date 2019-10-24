@@ -50,7 +50,7 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
-#include "libutil/ucString.h"
+#include "s25util/ucString.h"
 #include <boost/filesystem/operations.hpp>
 #include <utility>
 //#include <boost/thread.hpp>

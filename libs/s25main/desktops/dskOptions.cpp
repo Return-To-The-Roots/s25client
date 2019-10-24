@@ -41,8 +41,8 @@
 #include "ingameWindows/iwTextfile.h"
 #include "languages.h"
 #include "ogl/FontStyle.h"
-#include "libutil/StringConversion.h"
-#include "libutil/colors.h"
+#include "s25util/StringConversion.h"
+#include "s25util/colors.h"
 #include <mygettext/mygettext.h>
 #include <sstream>
 
@@ -120,7 +120,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 302 : 303));
 
     // ipv6-feld ggf (de-)aktivieren
-    ipv6->GetCtrl<ctrlButton>(302)->SetEnabled(SETTINGS.proxy.type != PROXY_SOCKS5); //-V807
+    ipv6->GetCtrl<ctrlButton>(302)->SetEnabled(SETTINGS.proxy.type != ProxyType::Socks5); //-V807
 
     // Proxyserver
     groupAllgemein->AddText(36, DrawPoint(80, 280), _("Proxyserver:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -142,8 +142,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     switch(SETTINGS.proxy.type)
     {
         default: combo->SetSelection(0); break;
-        case PROXY_SOCKS4: combo->SetSelection(1); break;
-        case PROXY_SOCKS5: combo->SetSelection(2); break;
+        case ProxyType::Socks4: combo->SetSelection(1); break;
+        case ProxyType::Socks5: combo->SetSelection(2); break;
     }
 
     // }
@@ -362,20 +362,20 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
         case 39: // Proxy
             switch(selection)
             {
-                case 0: SETTINGS.proxy.type = PROXY_NONE; break;
-                case 1: SETTINGS.proxy.type = PROXY_SOCKS4; break;
-                case 2: SETTINGS.proxy.type = PROXY_SOCKS5; break;
+                case 0: SETTINGS.proxy.type = ProxyType::None; break;
+                case 1: SETTINGS.proxy.type = ProxyType::Socks4; break;
+                case 2: SETTINGS.proxy.type = ProxyType::Socks5; break;
             }
 
             // ipv6 gleich sichtbar deaktivieren
-            if(SETTINGS.proxy.type == PROXY_SOCKS4 && SETTINGS.server.ipv6)
+            if(SETTINGS.proxy.type == ProxyType::Socks4 && SETTINGS.server.ipv6)
             {
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->SetSelection(303);
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlButton>(302)->SetEnabled(false);
                 SETTINGS.server.ipv6 = false;
             }
 
-            if(SETTINGS.proxy.type != PROXY_SOCKS4)
+            if(SETTINGS.proxy.type != ProxyType::Socks4)
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlButton>(302)->SetEnabled(true);
             break;
         case 41: // Auflösung

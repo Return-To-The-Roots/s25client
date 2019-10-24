@@ -28,7 +28,7 @@
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "gameData/LanDiscoveryCfg.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 #include <boost/lexical_cast.hpp>
 
 namespace {
@@ -86,7 +86,7 @@ void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btBack: WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>()); break;
         case ID_btConnect: ConnectToSelectedGame(); break;
         case ID_btAddServer:
-            if(SETTINGS.proxy.type != PROXY_NONE)
+            if(SETTINGS.proxy.type != ProxyType::None)
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));

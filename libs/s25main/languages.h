@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <string>
 #include <utility>
 #include <vector>

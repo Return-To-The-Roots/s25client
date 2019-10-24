@@ -27,7 +27,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/BuildingProperties.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <utility>
 
 RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, std::vector<Direction> route)

@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PlayerGameCommands.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 
 void PlayerGameCommands::Serialize(Serializer& ser) const
 {

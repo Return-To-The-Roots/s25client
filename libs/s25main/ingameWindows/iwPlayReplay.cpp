@@ -32,7 +32,7 @@
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <boost/filesystem.hpp>
 
 namespace {

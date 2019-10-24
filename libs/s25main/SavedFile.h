@@ -20,7 +20,7 @@
 #pragma once
 
 #include "GlobalGameSettings.h"
-#include "libutil/MyTime.h"
+#include "s25util/MyTime.h"
 #include <array>
 #include <string>
 #include <vector>

@@ -29,7 +29,7 @@
 #include "gameTypes/ServerType.h"
 #include "gameTypes/TeamTypes.h"
 #include "gameTypes/VisualSettings.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <memory>
 #include <vector>
 

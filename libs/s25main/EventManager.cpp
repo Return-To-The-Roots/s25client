@@ -21,7 +21,7 @@
 #include "GameObject.h"
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <mygettext/mygettext.h>
 
 EventManager::EventManager(unsigned startGF) : numActiveEvents(0), eventInstanceCtr(1), currentGF(startGF), curActiveEvent(nullptr) {}

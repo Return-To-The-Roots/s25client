@@ -27,7 +27,7 @@
 #include "dskMainMenu.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "libutil/error.h"
+#include "s25util/error.h"
 
 dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg) : Desktop(splashImg.release()), isLoading(false), isLoaded(false)
 {

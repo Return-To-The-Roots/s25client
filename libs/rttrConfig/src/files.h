@@ -20,7 +20,7 @@
 #pragma once
 
 #include "helpers/MultiArray.h"
-#include "libutil/warningSuppression.h"
+#include "s25util/warningSuppression.h"
 #include <array>
 #include <string>
 

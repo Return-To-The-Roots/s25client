@@ -35,9 +35,9 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/JobConsts.h"
-#include "libutil/Log.h"
-#include "libutil/MyTime.h"
-#include "libutil/colors.h"
+#include "s25util/Log.h"
+#include "s25util/MyTime.h"
+#include "s25util/colors.h"
 #include <boost/assign/std/vector.hpp>
 #include <array>
 

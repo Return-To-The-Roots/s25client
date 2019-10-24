@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "CompressedData.h"
 #include "FileChecksum.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <boost/nowide/fstream.hpp>
 #include <bzlib.h>
 #include <cerrno>

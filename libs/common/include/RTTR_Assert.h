@@ -18,7 +18,7 @@
 #ifndef RTTRAssert_h__
 #define RTTRAssert_h__
 
-#include <libutil/warningSuppression.h>
+#include <s25util/warningSuppression.h>
 
 /// Define this to 1 if you want assertions enabled
 #ifndef RTTR_ENABLE_ASSERTS

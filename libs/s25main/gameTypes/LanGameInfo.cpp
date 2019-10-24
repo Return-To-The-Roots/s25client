@@ -16,7 +16,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LanGameInfo.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 
 bool LanGameInfo::Serialize(Serializer& serializer)
 {

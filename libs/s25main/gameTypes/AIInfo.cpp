@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "AIInfo.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 
 namespace AI {
 Info::Info(Serializer& ser) : type(static_cast<Type>(ser.PopUnsignedChar())), level(static_cast<Level>(ser.PopUnsignedChar())) {}

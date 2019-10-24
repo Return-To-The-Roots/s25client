@@ -17,8 +17,8 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "RttrConfig.h"
-#include "libutil/Log.h"
-#include "libutil/System.h"
+#include "s25util/Log.h"
+#include "s25util/System.h"
 #include <boost/filesystem.hpp>
 #include <build_paths.h>
 #include <stdexcept>

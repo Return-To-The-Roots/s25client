@@ -10,7 +10,7 @@ set(ALL_SOURCES
 add_library(rttrConfig STATIC ${ALL_SOURCES})
 target_include_directories(rttrConfig INTERFACE src)
 target_link_libraries(rttrConfig
-	PUBLIC s25util Boost::filesystem
+	PUBLIC s25util::common Boost::filesystem
 	PRIVATE s25Common
 )
 SET_PROPERTY(TARGET rttrConfig PROPERTY POSITION_INDEPENDENT_CODE ON)

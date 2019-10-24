@@ -25,8 +25,8 @@
 #include "libsiedler2/ArchivItem.h"
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
-#include "libutil/Log.h"
-#include "libutil/StringConversion.h"
+#include "s25util/Log.h"
+#include "s25util/StringConversion.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>

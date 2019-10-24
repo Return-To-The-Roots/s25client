@@ -36,7 +36,7 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/ToolConsts.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 
 iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_TOOLS, IngameWindow::posLastOrCenter,

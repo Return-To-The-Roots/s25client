@@ -37,9 +37,9 @@
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
-#include "libutil/SocketSet.h"
-#include "libutil/colors.h"
-#include "libutil/ucString.h"
+#include "s25util/SocketSet.h"
+#include "s25util/colors.h"
+#include "s25util/ucString.h"
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <cmath>

@@ -24,7 +24,7 @@
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libsiedler2/ArchivItem_Font.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 #include <glad/glad.h>
 #include <array>
 #include <map>

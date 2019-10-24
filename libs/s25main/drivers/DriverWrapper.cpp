@@ -25,9 +25,9 @@
 #include "helpers/LSANUtils.h"
 #include "helpers/containerUtils.h"
 #include "mygettext/mygettext.h"
-#include "libutil/Log.h"
-#include "libutil/error.h"
-#include "libutil/warningSuppression.h"
+#include "s25util/Log.h"
+#include "s25util/error.h"
+#include "s25util/warningSuppression.h"
 
 namespace dll = boost::dll;
 

@@ -31,7 +31,7 @@
 #include "worldFixtures/WorldFixture.h"
 #include "nodeObjs/noFire.h"
 #include "gameTypes/MapInfo.h"
-#include "libutil/tmpFile.h"
+#include "s25util/tmpFile.h"
 #include <rttr/test/testHelpers.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/test/unit_test.hpp>

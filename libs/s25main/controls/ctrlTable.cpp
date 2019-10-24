@@ -23,7 +23,7 @@
 #include "driver/KeyEvent.h"
 #include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
-#include "libutil/StringConversion.h"
+#include "s25util/StringConversion.h"
 #include <cstdarg>
 #include <sstream>
 

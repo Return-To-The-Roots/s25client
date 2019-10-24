@@ -20,8 +20,8 @@
 #pragma once
 
 #include "driver/VideoMode.h"
-#include "libutil/ProxySettings.h"
-#include "libutil/Singleton.h"
+#include "s25util/ProxySettings.h"
+#include "s25util/Singleton.h"
 #include <boost/optional.hpp>
 #include <array>
 #include <map>

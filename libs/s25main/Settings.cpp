@@ -27,9 +27,9 @@
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libsiedler2/libsiedler2.h"
-#include "libutil/StringConversion.h"
-#include "libutil/System.h"
-#include "libutil/error.h"
+#include "s25util/StringConversion.h"
+#include "s25util/System.h"
+#include "s25util/error.h"
 #include <boost/filesystem/operations.hpp>
 
 const int Settings::VERSION = 13;
@@ -260,13 +260,13 @@ void Settings::Load()
 
         // leere proxyadresse deaktiviert proxy komplett
         // deaktivierter proxy entfernt proxyadresse
-        if(proxy.hostname.empty() || (proxy.type != PROXY_SOCKS4 && proxy.type != PROXY_SOCKS5))
+        if(proxy.hostname.empty() || (proxy.type != ProxyType::Socks4 && proxy.type != ProxyType::Socks5))
         {
-            proxy.type = PROXY_NONE;
+            proxy.type = ProxyType::None;
             proxy.hostname.clear();
         }
         // aktivierter Socks v4 deaktiviert ipv6
-        else if(proxy.type == PROXY_SOCKS4 && server.ipv6)
+        else if(proxy.type == ProxyType::Socks4 && server.ipv6)
             server.ipv6 = false;
 
         // interface
@@ -386,7 +386,7 @@ void Settings::Save()
     // {
     iniProxy->setValue("proxy", proxy.hostname);
     iniProxy->setValue("port", proxy.port);
-    iniProxy->setValue("typ", proxy.type);
+    iniProxy->setValue("typ", static_cast<int>(proxy.type));
     // }
 
     // interface

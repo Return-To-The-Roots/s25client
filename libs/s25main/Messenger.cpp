@@ -23,7 +23,7 @@
 #include "mygettext/mygettext.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <array>
 
 /// Chat-Destination-String, der entsprechend angezeigt wird

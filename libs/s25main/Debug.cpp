@@ -23,7 +23,7 @@
 #include "Replay.h"
 #include "Settings.h"
 #include "network/GameClient.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
 #include <boost/nowide/iostream.hpp>

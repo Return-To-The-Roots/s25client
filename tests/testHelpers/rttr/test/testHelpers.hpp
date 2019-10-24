@@ -18,7 +18,7 @@
 #ifndef testHelpers_h__
 #define testHelpers_h__
 
-#include "libutil/warningSuppression.h"
+#include "s25util/warningSuppression.h"
 #include <boost/test/unit_test.hpp>
 #include <utility>
 
