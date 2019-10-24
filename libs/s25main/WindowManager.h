@@ -121,6 +121,8 @@ public:
     IngameWindow* FindNonModalWindow(unsigned id) const;
 
     Desktop* GetCurrentDesktop() { return curDesktop.get(); }
+    /// Makes the given window (desktop or ingame window) active and all others inactive
+    void SetActiveWindow(Window&);
 
 private:
     void DrawToolTip();
@@ -130,8 +132,6 @@ private:
     void DoDesktopSwitch();
     /// Actually close all ingame windows marked for closing
     void CloseMarkedIngameWnds();
-    /// Makes the given window (desktop or ingame window) active and all others inactive
-    void SetActiveWindow(Window&);
 
     std::unique_ptr<Desktop> curDesktop;  /// aktueller Desktop
     std::unique_ptr<Desktop> nextdesktop; /// der nächste Desktop
