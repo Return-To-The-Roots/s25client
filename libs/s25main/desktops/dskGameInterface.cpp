@@ -484,13 +484,15 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         const noBase& selObj = *worldViewer.GetWorld().GetNO(cSel);
         if(selObj.GetType() == NOP_BUILDING && worldViewer.IsOwner(cSel))
         {
-            if(WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
+            if(auto* wnd = WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
+            {
+                WINDOWMANAGER.SetActiveWindow(*wnd);
                 return true;
+            }
             BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
             // HQ
             if(bt == BLD_HEADQUARTERS)
-                WINDOWMANAGER.ReplaceWindow(
-                  std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
+                WINDOWMANAGER.Show(std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
                 WINDOWMANAGER.Show(
