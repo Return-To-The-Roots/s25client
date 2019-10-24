@@ -27,7 +27,7 @@
 #include "helpers/format.hpp"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 
 iwSettings::iwSettings()
     : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"), LOADER.GetImageN("resource", 41))

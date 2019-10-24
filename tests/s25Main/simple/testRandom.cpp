@@ -19,7 +19,7 @@
 #include "random/DefaultLCG.h"
 #include "random/Random.h"
 #include "random/XorShift.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 #include <limits>

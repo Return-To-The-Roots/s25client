@@ -31,7 +31,7 @@
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/MilitaryConsts.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 #include <stdexcept>
 
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)

@@ -23,7 +23,7 @@
 #include "lua/LuaHelpers.h"
 #include "network/IGameLobbyController.h"
 #include "gameTypes/GameSettingTypes.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 /// Wrapper used to make sure LUA can only return on of the predefined values
 struct AddonIdWrapper

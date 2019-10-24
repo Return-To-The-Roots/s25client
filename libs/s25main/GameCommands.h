@@ -9,7 +9,7 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 #include <utility>
 #include <vector>
 

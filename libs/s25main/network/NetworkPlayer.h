@@ -18,8 +18,8 @@
 #ifndef NetworkPlayer_h__
 #define NetworkPlayer_h__
 
-#include "libutil/MessageQueue.h"
-#include "libutil/Socket.h"
+#include "s25util/MessageQueue.h"
+#include "s25util/Socket.h"
 
 class Message;
 class MessageInterface;

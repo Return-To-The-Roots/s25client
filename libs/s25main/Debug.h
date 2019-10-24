@@ -17,7 +17,7 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
-#include "libutil/Socket.h"
+#include "s25util/Socket.h"
 #include <vector>
 
 class BinaryFile;

@@ -34,7 +34,7 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/ToolConsts.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)

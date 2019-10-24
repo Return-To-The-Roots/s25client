@@ -33,7 +33,7 @@
 #include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <utility>
 
 const unsigned NUM_AUTO_SAVE_INTERVALS = 7;

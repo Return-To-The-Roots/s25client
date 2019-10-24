@@ -23,7 +23,7 @@
 
 #include "RTTR_Assert.h"
 // Fixed width types like uint32_t shall be treated like build-in types
-#include <libutil/warningSuppression.h>
+#include <s25util/warningSuppression.h>
 #include <cstdint>
 
 // IWYU pragma: end_exports

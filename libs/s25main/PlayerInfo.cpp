@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PlayerInfo.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 
 PlayerInfo::PlayerInfo() : isHost(false), ping(0) {}
 

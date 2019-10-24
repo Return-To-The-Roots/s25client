@@ -20,8 +20,8 @@
 #ifndef TestServer_h__
 #define TestServer_h__
 
-#include "libutil/MessageQueue.h"
-#include "libutil/Socket.h"
+#include "s25util/MessageQueue.h"
+#include "s25util/Socket.h"
 #include <vector>
 
 struct Connection

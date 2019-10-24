@@ -21,7 +21,7 @@
 #include "files.h"
 #include "languages.h"
 #include "libsiedler2/ArchivItem_Ini.h"
-#include "libutil/StringConversion.h"
+#include "s25util/StringConversion.h"
 #include <rttr/test/LocaleResetter.hpp>
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/assign/std/vector.hpp>

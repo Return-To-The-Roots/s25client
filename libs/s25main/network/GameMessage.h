@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "libutil/Message.h"
+#include "s25util/Message.h"
 
 class GameMessageInterface;
 class MessageInterface;

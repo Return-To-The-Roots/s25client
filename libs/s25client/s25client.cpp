@@ -28,11 +28,11 @@
 #include "mygettext/mygettext.h"
 #include "ogl/glAllocator.h"
 #include "libsiedler2/libsiedler2.h"
-#include "libutil/LocaleHelper.h"
-#include "libutil/Log.h"
-#include "libutil/StringConversion.h"
-#include "libutil/System.h"
-#include "libutil/error.h"
+#include "s25util/LocaleHelper.h"
+#include "s25util/Log.h"
+#include "s25util/StringConversion.h"
+#include "s25util/System.h"
+#include "s25util/error.h"
 #include <boost/filesystem.hpp>
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/iostream.hpp>
@@ -48,7 +48,7 @@
 #include <SDL_main.h>
 #endif // __APPLE__
 #ifdef _WIN32
-#include "libutil/ucString.h"
+#include "s25util/ucString.h"
 #include <windows.h>
 #include <s25clientResources.h>
 #if defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS

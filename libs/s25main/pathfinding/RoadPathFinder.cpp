@@ -24,7 +24,7 @@
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/GameConsts.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 /// Comparison operator for road nodes that returns true if lhs > rhs (descending order)
 struct RoadNodeComperatorGreater

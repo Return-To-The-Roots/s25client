@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "network/GameProtocol.h"
 #include "network/GameServerPlayer.h"
-#include "libutil/Socket.h"
+#include "s25util/Socket.h"
 #include <rttr/test/MockClock.hpp>
 #include <boost/test/unit_test.hpp>
 

@@ -24,8 +24,8 @@
 #include "helpers/ReserveElements.hpp"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
-#include "libutil/Serializer.h"
-#include "libutil/warningSuppression.h"
+#include "s25util/Serializer.h"
+#include "s25util/warningSuppression.h"
 #include <map>
 #include <memory>
 #include <set>

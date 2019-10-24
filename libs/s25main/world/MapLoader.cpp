@@ -35,7 +35,7 @@
 #include "gameData/MaxPlayers.h"
 #include "gameData/TerrainDesc.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <algorithm>
 #include <map>
 #include <queue>

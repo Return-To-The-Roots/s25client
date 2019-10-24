@@ -32,8 +32,8 @@
 #include "helpers/toString.h"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/StringConversion.h"
-#include "libutil/colors.h"
+#include "s25util/StringConversion.h"
+#include "s25util/colors.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 

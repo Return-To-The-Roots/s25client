@@ -40,7 +40,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
-#include "libutil/warningSuppression.h"
+#include "s25util/warningSuppression.h"
 #include <glad/glad.h>
 #include <boost/format.hpp>
 #include <cmath>

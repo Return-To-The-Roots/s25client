@@ -23,7 +23,7 @@
 #include "network/GameClient.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 
 /**
  *  Konstruktor von @p noBase.

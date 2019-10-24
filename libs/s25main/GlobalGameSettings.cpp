@@ -22,8 +22,8 @@
 #include "addons/Addons.h"
 #include "helpers/containerUtils.h"
 #include "gameData/MilitaryConsts.h"
-#include "libutil/Log.h"
-#include "libutil/Serializer.h"
+#include "s25util/Log.h"
+#include "s25util/Serializer.h"
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>

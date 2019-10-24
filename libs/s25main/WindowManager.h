@@ -21,7 +21,7 @@
 
 #include "Point.h"
 #include "driver/VideoDriverLoaderInterface.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <list>
 #include <memory>
 #include <string>

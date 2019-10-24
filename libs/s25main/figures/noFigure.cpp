@@ -40,8 +40,8 @@
 #include "nodeObjs/noSkeleton.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
-#include "libutil/Log.h"
-#include "libutil/colors.h"
+#include "s25util/Log.h"
+#include "s25util/colors.h"
 
 const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, nullptr, nullptr, std::vector<Direction>(0, Direction::EAST));
 /// Welche Strecke soll minimal und maximal zurückgelegt werden beim Rumirren, bevor eine Flagge gesucht wird

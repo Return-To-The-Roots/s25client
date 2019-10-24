@@ -21,7 +21,7 @@ ADD_LIBRARY(gamedata STATIC ${SOURCES_OTHER} ${SOURCES_SUBDIRS})
 target_include_directories(gamedata PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(gamedata SYSTEM PUBLIC ${LUA_INCLUDE_DIR})
 TARGET_LINK_LIBRARIES(gamedata PUBLIC
-	s25util
+	s25util::common
 	mygettext
 	s25Common
 	kaguya

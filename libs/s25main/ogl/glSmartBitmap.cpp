@@ -23,7 +23,7 @@
 #include "libsiedler2/ArchivItem_Bitmap.h"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/PixelBufferBGRA.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 #include <glad/glad.h>
 #include <limits>
 

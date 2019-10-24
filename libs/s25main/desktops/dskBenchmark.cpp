@@ -40,8 +40,8 @@
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
 #include "gameTypes/RoadBuildState.h"
-#include "libutil/Log.h"
-#include "libutil/strFuncs.h"
+#include "s25util/Log.h"
+#include "s25util/strFuncs.h"
 #include <helpers/chronoIO.h>
 #include <memory>
 #include <random>

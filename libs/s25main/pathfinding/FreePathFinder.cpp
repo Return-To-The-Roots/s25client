@@ -22,7 +22,7 @@
 #include "pathfinding/NewNode.h"
 #include "pathfinding/PathfindingPoint.h"
 #include "world/GameWorldBase.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 //////////////////////////////////////////////////////////////////////////
 /// FreePathFinder implementation

@@ -22,7 +22,7 @@
 #include "Game.h"
 #include "GameObject.h"
 #include "random/Random.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 
 AsyncChecksum::AsyncChecksum() : randChecksum(0), objCt(0), objIdCt(0), eventCt(0), evInstanceCt(0) {}
 

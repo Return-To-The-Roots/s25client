@@ -20,7 +20,7 @@
 #pragma once
 
 #include "gameTypes/ChatDestination.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 #include <list>
 #include <string>
 

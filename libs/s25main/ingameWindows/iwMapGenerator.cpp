@@ -25,7 +25,7 @@
 #include "gameData/MaxPlayers.h"
 #include "gameData/WorldDescription.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 #include <string>
 
 enum

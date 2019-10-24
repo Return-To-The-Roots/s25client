@@ -28,7 +28,7 @@
 #include "gameTypes/Nation.h"
 #include "gameData/AnimalConsts.h"
 #include "libsiedler2/Archiv.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <array>
 #include <cstdint>
 #include <map>
