@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlBaseImage.h"
 #include "ogl/ITexture.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 
 ctrlBaseImage::ctrlBaseImage(ITexture* img /*= nullptr*/) : img_(img), modulationColor_(COLOR_WHITE) {}
 

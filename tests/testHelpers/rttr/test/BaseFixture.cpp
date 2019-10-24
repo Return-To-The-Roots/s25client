@@ -18,11 +18,11 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "BaseFixture.hpp"
 #include "BufferedWriter.hpp"
-#include "libutil/AvoidDuplicatesWriter.h"
-#include "libutil/LocaleHelper.h"
-#include "libutil/Log.h"
-#include "libutil/NullWriter.h"
-#include "libutil/StdStreamWriter.h"
+#include "s25util/AvoidDuplicatesWriter.h"
+#include "s25util/LocaleHelper.h"
+#include "s25util/Log.h"
+#include "s25util/NullWriter.h"
+#include "s25util/StdStreamWriter.h"
 #include <cstdlib>
 #include <ctime>
 

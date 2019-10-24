@@ -18,7 +18,7 @@
 #ifndef BufferedWriter_h__
 #define BufferedWriter_h__
 
-#include <libutil/TextWriterInterface.h>
+#include <s25util/TextWriterInterface.h>
 #include <memory>
 #include <string>
 #include <utility>

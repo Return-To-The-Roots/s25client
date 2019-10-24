@@ -23,7 +23,7 @@
 #include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
 #include "variant.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 /// Breite der Scrollbar
 static const unsigned short SCROLLBAR_WIDTH = 20;

@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Savegame.h"
-#include "libutil/BinaryFile.h"
+#include "s25util/BinaryFile.h"
 
 std::string Savegame::GetSignature() const
 {

@@ -29,7 +29,7 @@
 #include "world/MapLoader.h"
 #include "nodeObjs/noBase.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
-#include "libutil/tmpFile.h"
+#include "s25util/tmpFile.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 

@@ -31,7 +31,7 @@
 #include "dskBenchmark.h"
 #include "files.h"
 #include "ogl/FontStyle.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 
 namespace {
 enum

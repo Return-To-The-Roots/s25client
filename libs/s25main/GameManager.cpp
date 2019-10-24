@@ -33,9 +33,9 @@
 #include "network/GameServer.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "liblobby/LobbyClient.h"
-#include "libutil//dynamicUniqueCast.h"
-#include "libutil/Log.h"
-#include "libutil/error.h"
+#include "s25util//dynamicUniqueCast.h"
+#include "s25util/Log.h"
+#include "s25util/error.h"
 
 GameManager::GameManager() : cursor_(CURSOR_HAND)
 {

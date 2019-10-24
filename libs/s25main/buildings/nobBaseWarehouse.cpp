@@ -42,7 +42,7 @@
 #include "gameData/JobConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <algorithm>
 
 /// Intervall für Ausleerung (in gf)

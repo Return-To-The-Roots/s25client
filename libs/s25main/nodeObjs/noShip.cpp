@@ -39,7 +39,7 @@
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/ShipNames.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 /// Zeit zum Beladen des Schiffes
 const unsigned LOADING_TIME = 200;

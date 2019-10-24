@@ -24,7 +24,7 @@
 #include "network/GameClient.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MapConsts.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 EventState::EventState(SerializedGameData& sgd) : elapsed(sgd.PopUnsignedInt()), length(sgd.PopUnsignedInt()) {}
 

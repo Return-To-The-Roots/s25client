@@ -30,8 +30,8 @@
 #include "gameData/TerrainDesc.h"
 #include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
-#include "libutil/Log.h"
-#include "libutil/dynamicUniqueCast.h"
+#include "s25util/Log.h"
+#include "s25util/dynamicUniqueCast.h"
 #include <glad/glad.h>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/range/adaptor/indexed.hpp>

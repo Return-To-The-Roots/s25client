@@ -21,7 +21,7 @@
 
 #include "desktops/dskMenuBase.h"
 #include "gameTypes/LanGameInfo.h"
-#include "libutil/LANDiscoveryClient.h"
+#include "s25util/LANDiscoveryClient.h"
 #include <vector>
 
 class dskLAN : public dskMenuBase

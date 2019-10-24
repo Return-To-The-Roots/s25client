@@ -28,7 +28,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Nation.h"
 #include "gameTypes/TextureColor.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 #include <boost/range/adaptor/map.hpp>
 #include <map>
 #include <vector>

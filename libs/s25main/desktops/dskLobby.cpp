@@ -34,9 +34,9 @@
 #include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
 #include "liblobby/LobbyClient.h"
-#include "libutil/Log.h"
-#include "libutil/MyTime.h"
-#include "libutil/colors.h"
+#include "s25util/Log.h"
+#include "s25util/MyTime.h"
+#include "s25util/colors.h"
 #include <boost/lexical_cast.hpp>
 #include <set>
 
@@ -131,7 +131,7 @@ void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 6: // GameServer hinzufügen
         {
-            if(SETTINGS.proxy.type != PROXY_NONE)
+            if(SETTINGS.proxy.type != ProxyType::None)
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));

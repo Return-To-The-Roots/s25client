@@ -4,9 +4,9 @@ FIND_PACKAGE(Boost 1.64.0 REQUIRED COMPONENTS filesystem iostreams locale)
 
 SET(SOURCES_SUBDIRS )
 MACRO(AddDirectory dir)
-	FILE(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h ${dir}/*.hpp ${dir}/*.tpp)
-	SET(SOURCES_SUBDIRS ${SOURCES_SUBDIRS} ${SUB_FILES})
-	SOURCE_GROUP(${dir} FILES ${SUB_FILES})
+    FILE(GLOB SUB_FILES ${dir}/*.cpp ${dir}/*.h ${dir}/*.hpp ${dir}/*.tpp)
+    SET(SOURCES_SUBDIRS ${SOURCES_SUBDIRS} ${SUB_FILES})
+    SOURCE_GROUP(${dir} FILES ${SUB_FILES})
 ENDMACRO()
 
 AddDirectory(addons)
@@ -37,8 +37,8 @@ FILE(GLOB SOURCES_OTHER *.cpp *.h)
 SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 
 SET(s25Main_SRCS
-	${SOURCES_OTHER}
-	${SOURCES_SUBDIRS}
+    ${SOURCES_OTHER}
+    ${SOURCES_SUBDIRS}
 )
 
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
@@ -47,17 +47,18 @@ set_target_properties(s25Main PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(s25Main PUBLIC cxx_std_14)
 
 target_link_libraries(s25Main PUBLIC
-	siedler2
-	lobby_c
-	s25util
-	mygettext
-	s25Common
-	rttrConfig
-	gamedata
+    siedler2
+    lobby_c
+    s25util::common
+    s25util::network
+    mygettext
+    s25Common
+    rttrConfig
+    gamedata
     glad
     driver
-	Boost::filesystem Boost::disable_autolinking
-	PRIVATE BZip2::BZip2 utf8::cpp Boost::iostreams Boost::locale nowide::static samplerate_cpp
+    Boost::filesystem Boost::disable_autolinking
+    PRIVATE BZip2::BZip2 utf8::cpp Boost::iostreams Boost::locale nowide::static samplerate_cpp
 )
 
 if(WIN32)
@@ -75,7 +76,7 @@ if(LIBRT)
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	target_link_libraries(s25Main PUBLIC ${CMAKE_DL_LIBS}) # For dynamic driver loading (DriverWrapper)
+    target_link_libraries(s25Main PUBLIC ${CMAKE_DL_LIBS}) # For dynamic driver loading (DriverWrapper)
 endif()
 
 include(EnableWarnings)

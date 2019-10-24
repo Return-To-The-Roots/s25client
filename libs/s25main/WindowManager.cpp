@@ -35,8 +35,8 @@
 #include "ogl/saveBitmap.h"
 #include "gameData/const_gui_ids.h"
 #include "libsiedler2/PixelBufferBGRA.h"
-#include "libutil/Log.h"
-#include "libutil/MyTime.h"
+#include "s25util/Log.h"
+#include "s25util/MyTime.h"
 #include <algorithm>
 
 WindowManager::WindowManager()

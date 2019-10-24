@@ -17,7 +17,7 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "CheckedLuaTable.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <boost/algorithm/string/join.hpp>
 #include <algorithm>
 #include <utility>

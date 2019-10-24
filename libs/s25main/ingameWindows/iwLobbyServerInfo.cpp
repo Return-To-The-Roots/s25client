@@ -22,7 +22,7 @@
 #include "helpers/toString.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 
 /**
  *  aktualisiert das Serverinfo.

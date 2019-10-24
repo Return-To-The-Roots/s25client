@@ -20,7 +20,7 @@
 #include "Loader.h"
 #include "RTTR_Version.h"
 #include "ogl/FontStyle.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 
 dskMenuBase::dskMenuBase() : Desktop(LOADER.GetImageN("menu", 0))
 {

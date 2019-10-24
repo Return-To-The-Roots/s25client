@@ -22,7 +22,7 @@
 #include "addons/Addon.h"
 #include "lua/LuaInterfaceSettings.h"
 #include "network/IGameLobbyController.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>

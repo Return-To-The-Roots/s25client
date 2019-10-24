@@ -38,7 +38,7 @@
 #include "gameTypes/Inventory.h"
 #include "gameTypes/JobTypes.h"
 #include "gameData/BuildingProperties.h"
-#include "libutil/warningSuppression.h"
+#include "s25util/warningSuppression.h"
 #include <boost/range/adaptor/reversed.hpp>
 #include <algorithm>
 #include <array>

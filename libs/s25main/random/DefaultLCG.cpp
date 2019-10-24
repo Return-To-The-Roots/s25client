@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "DefaultLCG.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 #include <iostream>
 
 void DefaultLCG::discard(uint64_t j)

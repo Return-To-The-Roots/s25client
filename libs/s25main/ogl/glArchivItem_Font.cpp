@@ -26,7 +26,7 @@
 #include "libsiedler2/IAllocator.h"
 #include "libsiedler2/PixelBufferBGRA.h"
 #include "libsiedler2/libsiedler2.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <utf8.h>
 #include <boost/algorithm/string.hpp>
 #include <cmath>

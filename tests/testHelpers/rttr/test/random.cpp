@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "random.hpp"
-#include "libutil/warningSuppression.h"
+#include "s25util/warningSuppression.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/test/framework.hpp>
 #include <boost/test/tree/observer.hpp>

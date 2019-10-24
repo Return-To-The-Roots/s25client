@@ -19,7 +19,7 @@
 #include "Loader.h"
 #include "test/testConfig.h"
 #include "libsiedler2/ArchivItem_Text.h"
-#include "libutil/Tokenizer.h"
+#include "s25util/Tokenizer.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 

@@ -21,7 +21,7 @@
 
 #include "SavedFile.h"
 #include "gameTypes/MapType.h"
-#include "libutil/BinaryFile.h"
+#include "s25util/BinaryFile.h"
 #include <string>
 
 class MapInfo;

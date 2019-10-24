@@ -22,7 +22,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
-#include "libutil/StringConversion.h"
+#include "s25util/StringConversion.h"
 #include <utf8.h>
 
 ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,

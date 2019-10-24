@@ -32,7 +32,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/DoorConsts.h"
 #include "gameData/MapConsts.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
     : noRoadNode(nop, pos, player), bldType_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000),

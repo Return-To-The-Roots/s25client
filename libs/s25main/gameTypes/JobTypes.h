@@ -19,7 +19,7 @@
 #define JobTypes_h__
 
 #include "helpers/MaxEnumValue.h"
-#include <libutil/warningSuppression.h>
+#include <s25util/warningSuppression.h>
 #include <array>
 
 enum Job

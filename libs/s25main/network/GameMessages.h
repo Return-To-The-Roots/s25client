@@ -31,8 +31,8 @@
 #include "gameTypes/PlayerState.h"
 #include "gameTypes/ServerType.h"
 #include "gameTypes/TeamTypes.h"
-#include "libutil/Log.h"
-#include "libutil/Serializer.h"
+#include "s25util/Log.h"
+#include "s25util/Serializer.h"
 
 struct JoinPlayerInfo;
 class MessageInterface;

@@ -19,8 +19,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TestServer.h"
-#include <libutil/Socket.h>
 #include <rttr/test/Fixture.hpp>
+#include <s25util/Socket.h>
 #include <boost/test/unit_test.hpp>
 
 //#include <vld.h>

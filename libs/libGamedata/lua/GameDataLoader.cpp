@@ -24,7 +24,7 @@
 #include "gameData/LandscapeDesc.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <kaguya/kaguya.hpp>
 #include <boost/filesystem.hpp>
 #include <stdexcept>

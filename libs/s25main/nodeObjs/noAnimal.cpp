@@ -30,7 +30,7 @@
 #include "gameData/TerrainDesc.h"
 
 #include "ogl/glSmartBitmap.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 
 noAnimal::noAnimal(const Species species, const MapPoint pos)
     : noMovable(NOP_ANIMAL, pos), species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)),

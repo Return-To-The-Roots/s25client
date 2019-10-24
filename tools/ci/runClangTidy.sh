@@ -13,7 +13,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 SRC_DIR="$(cd .. && pwd)"
 MAIN_FILTER="extras|libs|tests"
 EXTERNAL_FILTER="external/(libendian|liblobby|libsiedler2|mygettext|s25edit|s25update)|\
-external/libutil/(include|src|tests)"
+external/libutil/(tests|lib)"
 HEADER_FILTER="${MAIN_FILTER}|${EXTERNAL_FILTER}"
 
 if [[ "${WHAT}" == "main" ]]; then

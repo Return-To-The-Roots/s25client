@@ -27,8 +27,8 @@
 #include "ogl/DummyRenderer.h"
 #include "ogl/OpenGLRenderer.h"
 #include "openglCfg.hpp"
-#include "libutil/Log.h"
-#include "libutil/error.h"
+#include "s25util/Log.h"
+#include "s25util/error.h"
 #include <glad/glad.h>
 #include <ctime>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)

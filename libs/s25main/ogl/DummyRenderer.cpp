@@ -17,7 +17,7 @@
 
 #include "DummyRenderer.h"
 #include "openglCfg.hpp"
-#include <libutil/warningSuppression.h>
+#include <s25util/warningSuppression.h>
 #include <glad/glad.h>
 
 namespace rttrOglMock {

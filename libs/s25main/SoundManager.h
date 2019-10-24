@@ -19,7 +19,7 @@
 #define SOUNDMANAGER_H_
 
 #include "driver/EffectPlayId.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <list>
 
 class noBase;

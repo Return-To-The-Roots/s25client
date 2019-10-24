@@ -31,7 +31,7 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <sstream>
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)

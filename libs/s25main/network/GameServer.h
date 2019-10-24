@@ -29,8 +29,8 @@
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
-#include "libutil/LANDiscoveryService.h"
-#include "libutil/Singleton.h"
+#include "s25util/LANDiscoveryService.h"
+#include "s25util/Singleton.h"
 #include <chrono>
 #include <vector>
 
