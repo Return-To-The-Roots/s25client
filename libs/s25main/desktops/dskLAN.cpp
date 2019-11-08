@@ -53,9 +53,13 @@ dskLAN::dskLAN() : dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_D
     AddTextButton(ID_btBack, DrawPoint(530, 530), Extent(250, 22), TC_RED1, _("Back"), NormalFont);
 
     // Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version"
-    AddTable(ID_tblServer, DrawPoint(20, 20), Extent(500, 530), TC_GREY, NormalFont, 5, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300,
-             ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_STRING, _("Version"), 100,
-             ctrlTable::SRT_STRING);
+    using SRT = ctrlTable::SortType;
+    AddTable(ID_tblServer, DrawPoint(20, 20), Extent(500, 530), TC_GREY, NormalFont,
+             ctrlTable::Columns{{_("ID"), 0, SRT::Number},
+                                {_("Server"), 300, SRT::String},
+                                {_("Map"), 300, SRT::String},
+                                {_("Player"), 200, SRT::String},
+                                {_("Version"), 100, SRT::String}});
 
     discovery.Start();
 
@@ -138,7 +142,7 @@ void dskLAN::UpdateServerList()
         std::string id = helpers::toString(curId++);
         std::string name = (gameInfo.info.hasPwd ? "(pwd) " : "") + gameInfo.info.name; //-V807
         std::string player = helpers::toString(gameInfo.info.curNumPlayers) + "/" + helpers::toString(gameInfo.info.maxNumPlayers);
-        servertable->AddRow(0, id.c_str(), name.c_str(), gameInfo.info.map.c_str(), player.c_str(), gameInfo.info.version.c_str());
+        servertable->AddRow({id, name, gameInfo.info.map, player, gameInfo.info.version});
     }
 
     servertable->SortRows(column, &direction);

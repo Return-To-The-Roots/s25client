@@ -24,12 +24,99 @@
 #include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
 #include "s25util/StringConversion.h"
-#include <cstdarg>
+#include <numeric>
 #include <sstream>
 
+static int Compare(const std::string& a, const std::string& b, ctrlTable::SortType sortType)
+{
+    using SRT = ctrlTable::SortType;
+    switch(sortType)
+    {
+        case SRT::Default:
+        case SRT::String: return a.compare(b); break;
+        case SRT::MapSize:
+        {
+            // Nach Mapgrößen-String sortieren: ZahlxZahl
+            std::istringstream ss_a(a);
+            std::istringstream ss_b(b);
+            char x;
+            int x_a, y_a, x_b, y_b;
+            ss_a >> x_a >> x >> y_a;
+            ss_b >> x_b >> x >> y_b;
+            RTTR_Assert(ss_a);
+            RTTR_Assert(ss_b);
+            if(x_a * y_a == x_b * y_b)
+                return 0;
+            else
+                return (x_a * y_a < x_b * y_b) ? -1 : 1;
+        }
+        break;
+        case SRT::Number:
+        {
+            std::istringstream ss_a(a);
+            std::istringstream ss_b(b);
+            int num_a, num_b;
+            ss_a >> num_a;
+            ss_b >> num_b;
+            RTTR_Assert(ss_a);
+            RTTR_Assert(ss_b);
+            if(num_a == num_b)
+                return 0;
+            else
+                return (num_a < num_b) ? -1 : 1;
+        }
+        break;
+        case SRT::Date:
+        {
+            // Nach Datum im Format dd.mm.yyyy - hh:mm sortieren
+            s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
+            s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
+            int d_a, d_b, m_a, m_b, y_a, y_b;
+            char c;
+
+            // "dd.mm.yyyy"
+            ss_a >> d_a >> c >> m_a >> c >> y_a;
+            ss_b >> d_b >> c >> m_b >> c >> y_b;
+
+            RTTR_Assert(ss_a);
+            RTTR_Assert(ss_b);
+            if(y_a != y_b)
+                return (y_a < y_b) ? -1 : 1;
+
+            if(m_a != m_b)
+                return (m_a < m_b) ? -1 : 1;
+
+            if(d_a != d_b)
+                return (d_a < d_b) ? -1 : 1;
+
+            // " - "
+            ss_a >> c;
+            ss_b >> c;
+
+            int h_a, h_b, min_a, min_b;
+
+            // "hh:mm"
+            ss_a >> h_a >> c >> min_a;
+            ss_b >> h_b >> c >> min_b;
+
+            RTTR_Assert(ss_a);
+            RTTR_Assert(ss_b);
+            if(h_a != h_b)
+                return (h_a < h_b) ? -1 : 1;
+            if(min_a != min_b)
+                return (min_a < min_b) ? -1 : 1;
+
+            return 0;
+        }
+        break;
+    }
+    return 0;
+}
+
 ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
-                     unsigned short column_count, va_list liste)
-    : Window(parent, id, pos, elMax(size, Extent(20, 30))), tc(tc), font(font), selection_(-1), sort_column(-1), sort_direction(true)
+                     std::vector<Column> columns)
+    : Window(parent, id, pos, elMax(size, Extent(20, 30))), tc(tc), font(font), columns_(std::move(columns)), selection_(-1),
+      sort_column(-1), sort_direction(true)
 {
     header_height = font->getHeight() + 10;
     line_count = (GetSize().y - header_height - 2) / font->getHeight();
@@ -37,33 +124,12 @@ ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Ex
     // Scrollbar hinzufügen
     AddScrollBar(0, DrawPoint(GetSize().x - 20, 0), Extent(20, GetSize().y), 20, tc, line_count);
 
-    if(column_count > 0)
+    for(unsigned short i = 0; i < columns_.size(); ++i)
     {
-        for(unsigned short i = 0; i < column_count; ++i)
-        {
-            COLUMN c;
-
-            const char* title = va_arg(liste, const char*);
-            if(title)
-                c.title = title;
-
-            c.width = (unsigned short)va_arg(liste, int);
-            c.sortType = (SortType)va_arg(liste, int);
-
-            // Button für die Spalte hinzufügen
-            AddTextButton(i + 1, DrawPoint(0, 0), Extent(0, header_height), tc, c.title, font);
-
-            columns.push_back(c);
-        }
-
-        ResetButtonWidths();
+        AddTextButton(i + 1, DrawPoint(0, 0), Extent(0, header_height), tc, columns_[i].title, font);
     }
-}
 
-ctrlTable::~ctrlTable()
-{
-    DeleteAllItems();
-    columns.clear();
+    ResetButtonWidths();
 }
 
 /**
@@ -87,7 +153,7 @@ void ctrlTable::Resize(const Extent& newSize)
     // If the size was enlarged we have to check that we don't try to
     // display more lines than present
     if(heightIncreased)
-        while(rows.size() - scrollbar->GetScrollPos() < line_count && scrollbar->GetScrollPos() > 0)
+        while(rows_.size() - scrollbar->GetScrollPos() < line_count && scrollbar->GetScrollPos() > 0)
             scrollbar->SetScrollPos(scrollbar->GetScrollPos() - 1);
 
     // changed width
@@ -102,7 +168,7 @@ void ctrlTable::Resize(const Extent& newSize)
  */
 void ctrlTable::DeleteAllItems()
 {
-    rows.clear();
+    rows_.clear();
 
     GetCtrl<ctrlScrollBar>(0)->SetRange(0);
 
@@ -120,7 +186,7 @@ void ctrlTable::SetSelection(int selection)
 {
     if(selection < 0)
         selection_ = -1;
-    else if(static_cast<unsigned>(selection) >= rows.size())
+    else if(static_cast<unsigned>(selection) >= rows_.size())
         return;
     else
     {
@@ -137,41 +203,27 @@ void ctrlTable::SetSelection(int selection)
         GetParent()->Msg_TableSelectItem(GetID(), selection_);
 }
 
-/**
- *  fügt eine Zeile hinzu.
- *
- *  @param[in] alwaysnull Immer 0, wird nur für Liste gebraucht
- *  @param[in] ...        Die Werte für die Spalten.
- */
-void ctrlTable::AddRow(unsigned alwaysnull, ...)
+void ctrlTable::AddRow(std::vector<std::string> row)
 {
-    va_list liste;
-    va_start(liste, alwaysnull);
-
-    ROW r;
-    for(unsigned short i = 0; i < columns.size(); ++i)
+    if(row.size() > GetNumColumns())
+        throw std::logic_error("Invalid number of columns for added row");
+    for(unsigned i = row.size(); i < GetNumColumns(); ++i)
     {
-        const char* text = va_arg(liste, const char*);
-
-        if(text)
-            r.columns.push_back(text);
-        else
-            r.columns.push_back("");
+        row.push_back("");
     }
-    va_end(liste);
 
-    rows.push_back(r);
-    GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows.size()));
+    rows_.emplace_back(Row{std::move(row)});
+    GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows_.size()));
 }
 
 void ctrlTable::RemoveRow(unsigned rowIdx)
 {
-    if(rowIdx >= rows.size())
+    if(rowIdx >= rows_.size())
         return;
-    rows.erase(rows.begin() + rowIdx);
-    GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows.size()));
-    if(selection_ >= 0 && static_cast<unsigned>(selection_) >= rows.size())
-        selection_ = static_cast<int>(rows.size()) - 1;
+    rows_.erase(rows_.begin() + rowIdx);
+    GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows_.size()));
+    if(selection_ >= 0 && static_cast<unsigned>(selection_) >= rows_.size())
+        selection_ = static_cast<int>(rows_.size()) - 1;
     SetSelection(selection_);
 }
 
@@ -186,10 +238,10 @@ void ctrlTable::RemoveRow(unsigned rowIdx)
 const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short column) const
 {
     static std::string empty;
-    if(row >= rows.size() || column >= columns.size())
+    if(row >= rows_.size() || column >= columns_.size())
         return empty;
 
-    return rows.at(row).columns.at(column);
+    return rows_.at(row).columns.at(column);
 }
 
 /**
@@ -203,11 +255,11 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  */
 void ctrlTable::SortRows(int column, const bool* direction)
 {
-    if(columns.empty())
+    if(columns_.empty())
         return;
-    if(rows.empty())
+    if(rows_.empty())
         return;
-    if(column >= static_cast<int>(columns.size()))
+    if(column >= static_cast<int>(columns_.size()))
         column = 0;
 
     if(direction)
@@ -221,24 +273,25 @@ void ctrlTable::SortRows(int column, const bool* direction)
     if(sort_column < 0 || sort_column >= GetNumColumns())
         return;
 
+    // On which value of compare (-1,0,1) to swap
+    int sortCompareValue = sort_direction ? 1 : -1;
     bool done;
     do
     {
         done = true;
-        for(unsigned r = 0; r < rows.size() - 1; ++r)
+        for(unsigned r = 0; r < rows_.size() - 1; ++r)
         {
-            std::string a = rows[r].columns[sort_column];
-            std::string b = rows[r + 1].columns[sort_column];
+            std::string a = rows_[r].columns[sort_column];
+            std::string b = rows_[r + 1].columns[sort_column];
 
             // in kleinbuchstaben vergleichen
             std::transform(a.begin(), a.end(), a.begin(), tolower);
             std::transform(b.begin(), b.end(), b.begin(), tolower);
 
-            if((sort_direction && Compare(a, b, columns[column].sortType) > 0)
-               || (!sort_direction && Compare(a, b, columns[column].sortType) < 0))
+            if(Compare(a, b, columns_[column].sortType) == sortCompareValue)
             {
                 using std::swap;
-                swap(rows[r], rows[r + 1]);
+                swap(rows_[r], rows_[r + 1]);
                 done = false;
             }
         }
@@ -256,7 +309,7 @@ void ctrlTable::Draw_()
 
     Window::Draw_();
 
-    auto lines = static_cast<int>(line_count > rows.size() ? rows.size() : line_count);
+    auto lines = static_cast<int>(line_count > rows_.size() ? rows_.size() : line_count);
     auto* scroll = GetCtrl<ctrlScrollBar>(0);
     DrawPoint curPos = GetDrawPos() + DrawPoint(2, 2 + header_height);
     for(int i = 0; i < lines; ++i)
@@ -271,13 +324,13 @@ void ctrlTable::Draw_()
         }
 
         DrawPoint colPos = curPos;
-        for(unsigned short c = 0; c < columns.size(); ++c)
+        for(unsigned short c = 0; c < columns_.size(); ++c)
         {
-            if(columns[c].width == 0)
+            if(columns_[c].width == 0)
                 continue;
 
             auto* bt = GetCtrl<ctrlButton>(c + 1);
-            font->Draw(colPos, rows[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetSize().x, "");
+            font->Draw(colPos, rows_[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetSize().x, "");
             colPos.x += bt->GetSize().x;
         }
         curPos.y += font->getHeight();
@@ -390,11 +443,11 @@ void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool visible)
         /// Scrollbar wird angezeigt
         // Breite der letzten Spalte entsprechend anpassen, wenn plötzlich ne Scrolleiste sich hier noch reindrängelt
         // Aufteilen dieser Breite auf die einzelnen Spalten
-        auto x_col_minus = unsigned(20 / columns.size());
+        auto x_col_minus = unsigned(20 / columns_.size());
         // Rest, der nicht aufgeteilt wurde
-        auto rest = unsigned(20 % columns.size());
+        auto rest = unsigned(20 % columns_.size());
 
-        for(unsigned i = 0; i < columns.size(); ++i)
+        for(unsigned i = 0; i < columns_.size(); ++i)
         {
             auto* bt = GetCtrl<ctrlButton>(i + 1);
             if(bt->GetSize().x > x_col_minus) //-V807
@@ -405,9 +458,9 @@ void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool visible)
         }
 
         // Rest einfach von letzter passender Spalte abziehen
-        for(unsigned i = 0; i < columns.size(); ++i)
+        for(unsigned i = 0; i < columns_.size(); ++i)
         {
-            auto* bt = GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1);
+            auto* bt = GetCtrl<ctrlButton>(unsigned(columns_.size()) - i - 1 + 1);
             if(bt->GetSize().x > rest)
             {
                 bt->SetWidth(bt->GetSize().x - rest);
@@ -417,7 +470,7 @@ void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool visible)
 
         // X-Position der Buttons neu berechnen
         DrawPoint btPos(0, 0);
-        for(unsigned i = 0; i < columns.size(); ++i)
+        for(unsigned i = 0; i < columns_.size(); ++i)
         {
             GetCtrl<ctrlButton>(i + 1)->SetPos(btPos);
             btPos.x += GetCtrl<ctrlButton>(i + 1)->GetSize().x;
@@ -432,114 +485,26 @@ void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool visible)
 /// Setzt die Breite und Position der Buttons ohne Scrolleiste
 void ctrlTable::ResetButtonWidths()
 {
-    // Scrollbar wird nicht mehr angezeigt --> Breite und Position wieder zurücksetzen
+    unsigned sumWidth = std::accumulate(columns_.begin(), columns_.end(), 0u, [](unsigned cur, const Column& c) { return cur + c.width; });
     DrawPoint btPos(0, 0);
-    for(unsigned i = 0; i < columns.size(); ++i)
+    for(unsigned i = 0; i < columns_.size(); ++i)
     {
-        GetCtrl<ctrlButton>(i + 1)->SetWidth(columns[i].width * GetSize().x / 1000);
-        GetCtrl<ctrlButton>(i + 1)->SetPos(btPos);
-        btPos.x += GetCtrl<ctrlButton>(i + 1)->GetSize().x;
+        ctrlButton* button = GetCtrl<ctrlButton>(i + 1);
+        button->SetWidth(columns_[i].width * GetSize().x / sumWidth);
+        button->SetPos(btPos);
+        btPos.x += button->GetSize().x;
     }
 
     // Rest auf dem letzten aufschlagen
-    for(unsigned i = 0; i < columns.size(); ++i)
+    for(unsigned i = columns_.size(); i > 0; --i)
     {
-        if(columns.at(columns.size() - i - 1).width)
+        if(columns_[i - 1].width)
         {
-            auto* bt = GetCtrl<ctrlButton>(unsigned(columns.size()) - i - 1 + 1);
+            auto* bt = GetCtrl<ctrlButton>(i - 1);
             bt->SetWidth(bt->GetSize().x + (GetSize().x - btPos.x));
             break;
         }
     }
-}
-
-/// Verschiedene Sortiermöglichkeiten
-int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sortType)
-{
-    switch(sortType)
-    {
-        case SRT_DEFAULT:
-        case SRT_STRING:
-            return a.compare(b);
-            break;
-        // Nach Mapgrößen-String sortieren: ZahlxZahl
-        case SRT_MAPSIZE:
-        {
-            std::istringstream ss_a(a);
-            std::istringstream ss_b(b);
-            char x;
-            int x_a, y_a, x_b, y_b;
-            ss_a >> x_a >> x >> y_a;
-            ss_b >> x_b >> x >> y_b;
-            RTTR_Assert(ss_a);
-            RTTR_Assert(ss_b);
-            if(x_a * y_a == x_b * y_b)
-                return 0;
-            else
-                return (x_a * y_a < x_b * y_b) ? -1 : 1;
-        }
-        break;
-        // Nach Zahl sortieren
-        case SRT_NUMBER:
-        {
-            std::istringstream ss_a(a);
-            std::istringstream ss_b(b);
-            int num_a, num_b;
-            ss_a >> num_a;
-            ss_b >> num_b;
-            RTTR_Assert(ss_a);
-            RTTR_Assert(ss_b);
-            if(num_a == num_b)
-                return 0;
-            else
-                return (num_a < num_b) ? -1 : 1;
-        }
-        break;
-        // Nach Datum im Format dd.mm.yyyy - hh:mm sortieren
-        case SRT_DATE:
-        {
-            s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
-            s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
-            int d_a, d_b, m_a, m_b, y_a, y_b;
-            char c;
-
-            // "dd.mm.yyyy"
-            ss_a >> d_a >> c >> m_a >> c >> y_a;
-            ss_b >> d_b >> c >> m_b >> c >> y_b;
-
-            RTTR_Assert(ss_a);
-            RTTR_Assert(ss_b);
-            if(y_a != y_b)
-                return (y_a < y_b) ? -1 : 1;
-
-            if(m_a != m_b)
-                return (m_a < m_b) ? -1 : 1;
-
-            if(d_a != d_b)
-                return (d_a < d_b) ? -1 : 1;
-
-            // " - "
-            ss_a >> c;
-            ss_b >> c;
-
-            int h_a, h_b, min_a, min_b;
-
-            // "hh:mm"
-            ss_a >> h_a >> c >> min_a;
-            ss_b >> h_b >> c >> min_b;
-
-            RTTR_Assert(ss_a);
-            RTTR_Assert(ss_b);
-            if(h_a != h_b)
-                return (h_a < h_b) ? -1 : 1;
-            if(min_a != min_b)
-                return (min_a < min_b) ? -1 : 1;
-
-            return 0;
-        }
-        break;
-    }
-    return 0;
 }
 
 bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)

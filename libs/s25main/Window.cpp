@@ -363,17 +363,9 @@ ctrlTab* Window::AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short wi
  *  ... sollte eine Menge von const char*, int und SortType sein
  */
 ctrlTable* Window::AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
-                            unsigned columns, ...)
+                            std::vector<TableColumn> columns)
 {
-    ctrlTable* ctrl;
-    va_list liste;
-    va_start(liste, columns);
-
-    ctrl = new ctrlTable(this, id, ScaleIf(pos), ScaleIf(size), tc, font, columns, liste);
-
-    va_end(liste);
-
-    return AddCtrl(ctrl);
+    return AddCtrl(new ctrlTable(this, id, ScaleIf(pos), ScaleIf(size), tc, font, std::move(columns)));
 }
 
 ctrlTimer* Window::AddTimer(unsigned id, unsigned timeout)
@@ -534,7 +526,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
 }
 
 template<class T_Pt>
-T_Pt Window::Scale(const T_Pt& pt) const
+T_Pt Window::Scale(const T_Pt& pt)
 {
     return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetRenderSize());
 }
