@@ -56,6 +56,7 @@ class ctrlTimer;
 class ctrlVarDeepening;
 class ctrlVarText;
 class ctrlMultiSelectGroup;
+struct TableColumn;
 
 class glArchivItem_Bitmap;
 class glArchivItem_Map;
@@ -178,8 +179,8 @@ public:
     ctrlScrollBar* AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height, TextureColor tc,
                                 unsigned short page_size);
     ctrlTab* AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
-    ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned columns,
-                        ...);
+    ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                        std::vector<TableColumn> columns);
     ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                       glArchivItem_Font* font);
     TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
@@ -270,7 +271,7 @@ protected:
 
     /// scales X- und Y values to fit the screen
     template<class T_Pt>
-    T_Pt Scale(const T_Pt& pt) const;
+    static T_Pt Scale(const T_Pt& pt);
     /// Scales the value when scale_ is true, else returns the value
     template<class T_Pt>
     T_Pt ScaleIf(const T_Pt& pt) const;
