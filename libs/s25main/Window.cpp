@@ -263,9 +263,9 @@ ctrlComboBox* Window::AddComboBox(unsigned id, const DrawPoint& pos, const Exten
 }
 
 ctrlDeepening* Window::AddTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
-                                        glArchivItem_Font* font, unsigned color)
+                                        glArchivItem_Font* font, unsigned color, FontStyle style)
 {
-    return AddCtrl(new ctrlTextDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, text, font, color));
+    return AddCtrl(new ctrlTextDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, text, font, color, style));
 }
 
 ctrlDeepening* Window::AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor)

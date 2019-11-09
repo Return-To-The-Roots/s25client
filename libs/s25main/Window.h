@@ -158,7 +158,7 @@ public:
     ctrlComboBox* AddComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
                               unsigned short max_list_height, bool readonly = false);
     ctrlDeepening* AddTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
-                                    glArchivItem_Font* font, unsigned color);
+                                    glArchivItem_Font* font, unsigned color, FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
     ctrlDeepening* AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor);
     ctrlEdit* AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
                       unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
