@@ -173,16 +173,6 @@ inline void glArchivItem_Font::DrawChar(unsigned curChar, VertexArrays& vertices
     curPos.x += ci.width;
 }
 
-void glArchivItem_Font::Draw(DrawPoint pos, const std::u32string& wtext, FontStyle format, unsigned color, unsigned short length,
-                             unsigned short maxWidth, const std::u32string& end)
-{
-    // etwas dämlich, aber einfach ;)
-    // da wir hier erstmal in utf8 konvertieren, und dann im anderen Draw wieder zurück ...
-    std::string text = utf8::utf32to8(wtext);
-    std::string utf8End = utf8::utf32to8(end);
-    Draw(pos, text, format, color, length, maxWidth, utf8End);
-}
-
 /**
  *  Zeichnet einen Text.
  *
@@ -372,19 +362,9 @@ unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_It
     return getWidthInternal<false>(begin, end, 0, nullptr);
 }
 
-unsigned short glArchivItem_Font::getWidth(const std::u32string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const
-{
-    return getWidthInternal(text.begin(), length ? text.begin() + length : text.end(), maxWidth, maxNumChars);
-}
-
 unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const
 {
     return getWidthInternal(text.begin(), length ? text.begin() + length : text.end(), maxWidth, maxNumChars);
-}
-
-unsigned short glArchivItem_Font::getWidth(const std::u32string& text, unsigned length) const
-{
-    return getWidthInternal(text.begin(), length ? text.begin() + length : text.end());
 }
 
 unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length) const

@@ -23,6 +23,7 @@
 
 class MouseCoords;
 class glArchivItem_Font;
+class ctrlTextDeepening;
 struct KeyEvent;
 
 class ctrlEdit : public Window
@@ -38,8 +39,9 @@ public:
     void SetFocus(bool focus = true) { newFocus_ = focus; }
     void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
     void SetNotify(bool notify = true) { this->notify_ = notify; }
-    void SetMaxLength(unsigned short maxlength = 0) { this->maxLength_ = maxlength; }
     void SetNumberOnly(const bool activated) { this->numberOnly_ = activated; }
+
+    void Resize(const Extent& newSize) override;
 
     void Msg_PaintAfter() override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -49,29 +51,17 @@ protected:
     void Draw_() override;
 
 private:
-    void AddChar(unsigned c);
+    void AddChar(char32_t c);
     void RemoveChar();
     void Notify();
+    void UpdateInternalText();
 
-    void CursorLeft()
-    {
-        if(cursorPos_ == 0)
-            return;
-        --cursorPos_;
-        Notify();
-    };
-    void CursorRight()
-    {
-        if(cursorPos_ == text_.length())
-            return;
-        ++cursorPos_;
-        Notify();
-    };
+    void CursorLeft();
+    void CursorRight();
 
 private:
     unsigned short maxLength_;
-    TextureColor texColor_;
-    glArchivItem_Font* font_;
+    ctrlTextDeepening* txtCtrl;
     bool isPassword_;
     bool isDisabled_;
     bool focus_;
@@ -79,7 +69,10 @@ private:
     bool notify_;
 
     std::u32string text_;
+    /// Position of cursor in text (in UTF32 chars)
     unsigned cursorPos_;
+    /// Offset of the cursor from the start of the text start position
+    unsigned cursorOffsetX_ = 0;
     unsigned viewStart_;
 
     bool numberOnly_;
