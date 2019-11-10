@@ -41,12 +41,12 @@ void ctrlTextButton::DrawContent() const
     if(GetTooltip().empty() && state == BUTTON_HOVER)
     {
         unsigned maxNumChars;
-        font->getWidth(text, 0, maxTextWidth, &maxNumChars);
+        font->getWidth(text, maxTextWidth, &maxNumChars);
         if(maxNumChars < text.length())
             ShowTooltip(text);
     }
 
     const unsigned short offset = isPressed ? 2 : 0;
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER, color, 0,
+    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER, color,
                maxTextWidth);
 }

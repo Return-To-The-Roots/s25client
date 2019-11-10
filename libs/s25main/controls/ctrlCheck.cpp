@@ -79,7 +79,7 @@ void ctrlCheck::Draw_()
         int availableWidth = boxStartOffsetX - 4;
         if(availableWidth < 0)
             availableWidth = 0;
-        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, FontStyle::VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB), 0,
+        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, FontStyle::VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB),
                    availableWidth);
     }
 

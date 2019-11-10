@@ -245,7 +245,7 @@ void ctrlComboBox::Draw_()
 
     // Namen des selektierten Strings in der Box anzeigen
     if(liste->GetNumLines() > 0)
-        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), FontStyle::VCENTER, COLOR_YELLOW, 0,
+        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), FontStyle::VCENTER, COLOR_YELLOW,
                    GetSize().x - 2 - GetSize().y, "");
 
     // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde

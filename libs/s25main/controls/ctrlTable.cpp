@@ -330,7 +330,7 @@ void ctrlTable::Draw_()
                 continue;
 
             auto* bt = GetCtrl<ctrlButton>(c + 1);
-            font->Draw(colPos, rows_[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), 0, bt->GetSize().x, "");
+            font->Draw(colPos, rows_[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), bt->GetSize().x, "");
             colPos.x += bt->GetSize().x;
         }
         curPos.y += font->getHeight();
