@@ -26,68 +26,14 @@
 #include "libsiedler2/IAllocator.h"
 #include "libsiedler2/PixelBufferBGRA.h"
 #include "libsiedler2/libsiedler2.h"
-#include "s25util/Log.h"
 #include <utf8.h>
 #include <boost/algorithm/string.hpp>
 #include <cmath>
 #include <vector>
 
-//#define RTTR_PRINT_FONTS
+constexpr bool RTTR_PRINT_FONTS = false;
 
 using utf8Iterator = utf8::iterator<std::string::const_iterator>;
-
-template<typename T>
-struct GetNextCharAndIncIt;
-
-template<>
-struct GetNextCharAndIncIt<char32_t>
-{
-    template<class T_Iterator>
-    char32_t operator()(T_Iterator& it, const T_Iterator& /*itEnd*/) const
-    {
-        return *it++;
-    }
-};
-
-template<>
-struct GetNextCharAndIncIt<char>
-{
-    template<class T_Iterator>
-    uint32_t operator()(T_Iterator& it, const T_Iterator& itEnd) const
-    {
-        return utf8::next(it, itEnd);
-    }
-};
-
-template<typename T_Iterator, typename T_Value = typename std::iterator_traits<T_Iterator>::value_type>
-struct MakePrevIt;
-
-template<typename T_Iterator>
-struct MakePrevIt<T_Iterator, char32_t>
-{
-    void operator()(T_Iterator& it, const T_Iterator& /*itStart*/) const { --it; }
-};
-
-template<typename T_Iterator>
-struct MakePrevIt<T_Iterator, char>
-{
-    void operator()(T_Iterator& it, const T_Iterator& itStart) const { utf8::prior(it, itStart); }
-};
-
-template<class T_Iterator>
-struct Distance
-{
-    size_t operator()(const T_Iterator& first, const T_Iterator& last) const { return std::distance(first, last); }
-};
-
-template<class T_Iterator>
-struct Distance<utf8::iterator<T_Iterator>>
-{
-    size_t operator()(const utf8::iterator<T_Iterator>& first, const utf8::iterator<T_Iterator>& last) const
-    {
-        return std::distance(first.base(), last.base());
-    }
-};
 
 template<class T_Iterator>
 T_Iterator nextIt(T_Iterator it)
@@ -109,14 +55,14 @@ glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj)
     fontWithOutline = libsiedler2::clone(obj.fontWithOutline);
 }
 
-bool glArchivItem_Font::CharExist(unsigned c) const
+bool glArchivItem_Font::CharExist(char32_t c) const
 {
     if(c < asciiMapping.size())
         return asciiMapping[c].first;
     return helpers::contains(utf8_mapping, c);
 }
 
-inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigned c) const
+inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(char32_t c) const
 {
     if(c < asciiMapping.size())
     {
@@ -139,7 +85,7 @@ void glArchivItem_Font::ClearCharInfoMapping()
     utf8_mapping.clear();
 }
 
-void glArchivItem_Font::AddCharInfo(unsigned c, const CharInfo& info)
+void glArchivItem_Font::AddCharInfo(char32_t c, const CharInfo& info)
 {
     if(c < asciiMapping.size())
         asciiMapping[c] = std::make_pair(true, info);
@@ -150,7 +96,7 @@ void glArchivItem_Font::AddCharInfo(unsigned c, const CharInfo& info)
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
  */
-inline void glArchivItem_Font::DrawChar(unsigned curChar, VertexArrays& vertices, DrawPoint& curPos) const
+inline void glArchivItem_Font::DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const
 {
     CharInfo ci = GetCharInfo(curChar);
 
@@ -191,31 +137,27 @@ inline void glArchivItem_Font::DrawChar(unsigned curChar, VertexArrays& vertices
  *  @param[in] max    maximale Länge
  *  @param     end    Suffix for displaying a truncation of the text (...)
  */
-void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short length,
-                             unsigned short maxWidth, const std::string& end)
+void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short maxWidth,
+                             const std::string& end)
 {
     if(!fontNoOutline)
         initFont();
 
     RTTR_Assert(utf8::is_valid(text));
 
-    // Breite bestimmen
-    if(length == 0)
-        length = (unsigned short)text.length();
-
     unsigned maxNumChars;
     unsigned short textWidth;
     bool drawEnd;
     if(maxWidth == 0xFFFF)
     {
-        maxNumChars = length;
-        textWidth = getWidth(text, length);
+        maxNumChars = text.size();
+        textWidth = getWidth(text);
         drawEnd = false;
     } else
     {
         RTTR_Assert(utf8::is_valid(end));
-        textWidth = getWidth(text, length, maxWidth, &maxNumChars);
-        if(!end.empty() && maxNumChars < length)
+        textWidth = getWidth(text, maxWidth, &maxNumChars);
+        if(!end.empty() && maxNumChars < text.size())
         {
             unsigned short endWidth = getWidth(end);
 
@@ -224,7 +166,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
                 return;
 
             // Wieviele Buchstaben gehen in den "Rest" (ohne "end")
-            textWidth = getWidth(text, length, textWidth - endWidth, &maxNumChars) + endWidth;
+            textWidth = getWidth(text, textWidth - endWidth, &maxNumChars) + endWidth;
             drawEnd = true;
         } else
             drawEnd = false;
@@ -232,29 +174,18 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
 
     if(maxNumChars == 0)
         return;
-    auto itEnd = text.cbegin();
-    std::advance(itEnd, maxNumChars);
+    const auto itEnd = text.cbegin() + maxNumChars;
 
     // Vertical alignment (assumes 1 line only!)
     if(format.is(FontStyle::BOTTOM))
         pos.y -= dy;
     else if(format.is(FontStyle::VCENTER))
         pos.y -= dy / 2;
-    // Horizontal center must change current line only. Everything else changes the start point
-    DrawPoint curPos(pos);
     // Horizontal alignment
     if(format.is(FontStyle::RIGHT))
-        curPos.x = pos.x -= textWidth;
+        pos.x -= textWidth;
     else if(format.is(FontStyle::CENTER))
-    {
-        unsigned short line_width;
-        const auto itNl = std::find(text.cbegin(), itEnd, '\n');
-        if(itNl != itEnd)
-            line_width = getWidthInternal(text.cbegin(), itNl);
-        else
-            line_width = textWidth;
-        curPos.x = pos.x - line_width / 2;
-    }
+        pos.x -= textWidth / 2;
 
     texList.texCoords.clear();
     texList.vertices.clear();
@@ -262,19 +193,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
     for(auto it = text.begin(); it != itEnd;)
     {
         const uint32_t curChar = utf8::next(it, itEnd);
-        if(curChar == '\n')
-        {
-            if(format.is(FontStyle::CENTER))
-            {
-                unsigned short line_width;
-                const auto itNl = std::find(it, itEnd, '\n');
-                line_width = getWidthInternal(it, itNl);
-                curPos.x = pos.x - line_width / 2;
-            } else
-                curPos.x = pos.x;
-            curPos.y += dy;
-        } else
-            DrawChar(curChar, texList, curPos);
+        DrawChar(curChar, texList, pos);
     }
 
     if(drawEnd)
@@ -282,12 +201,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
         for(auto it = end.begin(); it != end.end();)
         {
             const uint32_t curChar = utf8::next(it, end.end());
-            if(curChar == '\n')
-            {
-                curPos.x = pos.x;
-                curPos.y += dy;
-            } else
-                DrawChar(curChar, texList, curPos);
+            DrawChar(curChar, texList, pos);
         }
     }
 
@@ -302,12 +216,8 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
     const GlPoint texSize(usedFont.GetTexSize());
     RTTR_Assert(texList.texCoords.size() == texList.vertices.size());
     RTTR_Assert(texList.texCoords.size() % 4u == 0);
-    // Vectorizable loop
-    for(unsigned i = 0; i < texList.texCoords.size(); i += 4)
-    {
-        for(int j = 0; j < 4; j++)
-            texList.texCoords[i + j] /= texSize;
-    }
+    for(GlPoint& pt : texList.texCoords)
+        pt /= texSize;
 
     glVertexPointer(2, GL_FLOAT, 0, &texList.vertices[0]);
     glTexCoordPointer(2, GL_FLOAT, 0, &texList.texCoords[0]);
@@ -316,60 +226,39 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
     glDrawArrays(GL_QUADS, 0, texList.vertices.size());
 }
 
-template<bool T_limitWidth, class T_Iterator>
-unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const
+template<bool T_limitWidth>
+unsigned glArchivItem_Font::getWidthInternal(const std::string::const_iterator& begin, const std::string::const_iterator& end,
+                                             unsigned maxWidth, unsigned* maxNumChars) const
 {
-    unsigned curLineLen = 0, maxLineLen = 0;
-    for(T_Iterator it = begin; it != end;)
+    unsigned curLen = 0;
+    for(auto it = begin; it != end;)
     {
-        const uint32_t curChar = GetNextCharAndIncIt<typename std::iterator_traits<T_Iterator>::value_type>()(it, end);
-        if(curChar == '\n')
+        const uint32_t curChar = utf8::next(it, end);
+        const unsigned cw = CharWidth(curChar);
+        // If we limit the width and the text will be longer, stop before it
+        // Do not stop if this is the first char
+        if(T_limitWidth && curLen != 0 && curLen + cw > maxWidth)
         {
-            if(curLineLen > maxLineLen)
-                maxLineLen = curLineLen;
-            curLineLen = 0;
-        } else
-        {
-            const unsigned cw = CharWidth(curChar);
-            // If we limit the width and the current line will be longer, stop before it
-            // Do not stop if this is the first char in this line
-            if(T_limitWidth && curLineLen != 0 && curLineLen + cw > maxWidth)
-            {
-                MakePrevIt<T_Iterator>()(it, begin);
-                *maxNumChars = static_cast<unsigned>(std::distance(begin, it));
-                return curLineLen;
-            }
-            curLineLen += cw;
+            utf8::prior(it, begin);
+            *maxNumChars = static_cast<unsigned>(std::distance(begin, it));
+            return curLen;
         }
+        curLen += cw;
     }
 
     if(T_limitWidth)
         *maxNumChars = static_cast<unsigned>(std::distance(begin, end));
-
-    // Last line can be longest
-    return std::max(curLineLen, maxLineLen);
+    return curLen;
 }
 
-template<class T_Iterator>
-unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const
+unsigned glArchivItem_Font::getWidth(const std::string& text) const
 {
-    return getWidthInternal<true>(begin, end, maxWidth, maxNumChars);
+    return getWidthInternal<false>(text.begin(), text.end(), 0, nullptr);
 }
 
-template<class T_Iterator>
-unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_Iterator& end) const
+unsigned glArchivItem_Font::getWidth(const std::string& text, unsigned maxWidth, unsigned* maxNumChars) const
 {
-    return getWidthInternal<false>(begin, end, 0, nullptr);
-}
-
-unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const
-{
-    return getWidthInternal(text.begin(), length ? text.begin() + length : text.end(), maxWidth, maxNumChars);
-}
-
-unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length) const
-{
-    return getWidthInternal(text.begin(), length ? text.begin() + length : text.end());
+    return getWidthInternal<true>(text.begin(), text.end(), maxWidth, maxNumChars);
 }
 
 Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, FontStyle format) const
@@ -581,20 +470,19 @@ void glArchivItem_Font::initFont()
     fontWithOutline->create(bufferWithOutline);
 
     // Set the placeholder for non-existant glyphs. Use '?' (should always be possible)
-    if(CharExist('?'))
+    if(CharExist(0xFFFD))
+        placeHolder = GetCharInfo(0xFFFD);
+    else if(CharExist('?'))
         placeHolder = GetCharInfo('?');
     else
-    {
-        // Fall back to first glyph in map (kinda random, but should not happen anyway)
-        LOG.writeToFile("Cannot find '?' glyph in font!");
         throw std::runtime_error("Cannot find '?' glyph in font. What shall I use as fallback?");
-    }
 
-#ifdef RTTR_PRINT_FONTS
-    Archiv items;
-    items.pushC(*fontNoOutline);
-    libsiedler2::Write("font" + getName() + "_noOutline.bmp", items);
-    items.setC(0, *fontWithOutline);
-    libsiedler2::Write("font" + getName() + "_Outline.bmp", items);
-#endif
+    if(RTTR_PRINT_FONTS)
+    {
+        Archiv items;
+        items.pushC(*fontNoOutline);
+        libsiedler2::Write("font" + getName() + "_noOutline.bmp", items);
+        items.setC(0, *fontWithOutline);
+        libsiedler2::Write("font" + getName() + "_Outline.bmp", items);
+    }
 }

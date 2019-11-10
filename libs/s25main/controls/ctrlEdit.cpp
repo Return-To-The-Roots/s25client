@@ -77,20 +77,20 @@ void ctrlEdit::UpdateInternalText()
     const unsigned max_width = GetSize().x - 8 - font->getDx();
     unsigned max;
     std::string curText = utf8::utf32to8(dtext.substr(viewStart_));
-    font->getWidth(curText, 0, max_width, &max);
+    font->getWidth(curText, max_width, &max);
     // Increase viewStart until string can be fully shown (removing chars from the front)
     while(max > 0 && curText.length() > max)
     {
         ++viewStart_;
         removeFirstCharFromString(curText);
-        font->getWidth(curText, 0, max_width, &max);
+        font->getWidth(curText, max_width, &max);
     }
     // Decrease viewStart as long as full text is shown (adding chars at the front)
     while(viewStart_ > 0 && curText.length() <= max)
     {
         --viewStart_;
         curText = utf8::utf32to8(dtext.substr(viewStart_));
-        font->getWidth(curText, 0, max_width, &max);
+        font->getWidth(curText, max_width, &max);
     }
 
     // Show (up to) 5 chars before the cursor

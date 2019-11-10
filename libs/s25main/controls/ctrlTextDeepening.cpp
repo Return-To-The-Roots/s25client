@@ -57,5 +57,5 @@ DrawPoint ctrlTextDeepening::CalcTextPos() const
 
 void ctrlTextDeepening::DrawContent() const
 {
-    font->Draw(CalcTextPos(), text, style_, color_, 0, GetSize().x - 2 * ctrlTextDeepening::borderSize.x);
+    font->Draw(CalcTextPos(), text, style_, color_, GetSize().x - 2 * ctrlTextDeepening::borderSize.x);
 }
