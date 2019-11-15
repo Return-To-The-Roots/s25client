@@ -29,7 +29,7 @@ class ctrlText : public Window, public ctrlBaseText
 {
 public:
     ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
-             glArchivItem_Font* font);
+             const glArchivItem_Font* font);
 
     Rect GetBoundaryRect() const override;
 

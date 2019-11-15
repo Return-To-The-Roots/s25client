@@ -29,7 +29,7 @@ class glArchivItem_Font;
 class ctrlChat : public Window
 {
 public:
-    ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
+    ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font);
     ~ctrlChat() override;
 
     /// Größe ändern
@@ -81,8 +81,8 @@ private:
     using ChatLine = boost::variant<PrimaryChatLine, SecondaryChatLine>;
 
 private:
-    TextureColor tc;         /// Hintergrundtextur.
-    glArchivItem_Font* font; /// Schriftart.
+    TextureColor tc;               /// Hintergrundtextur.
+    const glArchivItem_Font* font; /// Schriftart.
 
     std::vector<RawChatLine> raw_chat_lines; /// Chatzeilen, noch nicht umgebrochen
     std::vector<ChatLine> chat_lines;        /// Chatzeilen

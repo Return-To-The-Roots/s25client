@@ -28,19 +28,19 @@ class glArchivItem_Font;
 class ctrlBaseText
 {
 public:
-    ctrlBaseText(std::string text, unsigned color, glArchivItem_Font* font);
+    ctrlBaseText(std::string text, unsigned color, const glArchivItem_Font* font);
 
     void SetText(const std::string& text);
     const std::string& GetText() const { return text; }
     void SetFont(glArchivItem_Font* font);
-    glArchivItem_Font* GetFont() const { return font; }
+    const glArchivItem_Font* GetFont() const { return font; }
     void SetTextColor(unsigned color) { color_ = color; }
     unsigned GetTextColor() const { return color_; }
 
 protected:
     std::string text;
     unsigned color_;
-    glArchivItem_Font* font;
+    const glArchivItem_Font* font;
 };
 
 #endif // ctrlBaseText_h__

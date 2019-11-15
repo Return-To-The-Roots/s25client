@@ -52,7 +52,7 @@ public:
     using SortType = TableSortType;
     using Columns = std::vector<Column>;
 
-    ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+    ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
               std::vector<Column> columns);
 
     void Resize(const Extent& newSize) override;
@@ -95,7 +95,7 @@ protected:
 
 private:
     TextureColor tc;
-    glArchivItem_Font* font;
+    const glArchivItem_Font* font;
 
     unsigned short header_height;
     unsigned short line_count;

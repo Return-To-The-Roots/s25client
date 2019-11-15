@@ -29,7 +29,7 @@ class glArchivItem_Font;
 class ctrlList : public Window
 {
 public:
-    ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
+    ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font);
     ~ctrlList() override;
 
     /// Größe verändern
@@ -71,7 +71,7 @@ private:
     Rect GetListDrawArea() const;
 
     TextureColor tc;
-    glArchivItem_Font* font;
+    const glArchivItem_Font* font;
     ctrlBaseTooltip tooltip_;
 
     std::vector<std::string> lines;

@@ -113,7 +113,7 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
     return 0;
 }
 
-ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
                      std::vector<Column> columns)
     : Window(parent, id, pos, elMax(size, Extent(20, 30))), tc(tc), font(font), columns_(std::move(columns)), selection_(-1),
       sort_column(-1), sort_direction(true)

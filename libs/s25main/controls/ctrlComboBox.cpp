@@ -26,8 +26,8 @@
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Font.h"
 
-ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
-                           unsigned short max_list_height, bool readonly)
+ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                           const glArchivItem_Font* font, unsigned short max_list_height, bool readonly)
     : Window(parent, id, pos, size), tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), suppressSelectEvent(false)
 {
     ctrlList* liste = AddList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font);

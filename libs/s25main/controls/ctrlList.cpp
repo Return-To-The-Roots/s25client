@@ -22,7 +22,7 @@
 #include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
 
-ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
+ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font)
     : Window(parent, id, pos, elMax(size, Extent(22, 4))), tc(tc), font(font), selection_(-1), mouseover(-1)
 {
     pagesize = (GetSize().y - 4) / font->getHeight();

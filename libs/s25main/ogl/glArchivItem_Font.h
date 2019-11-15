@@ -45,7 +45,7 @@ public:
     /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is appended (included in
     /// maxWidth)
     void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE, unsigned short maxWidth = 0xFFFF,
-              const std::string& end = "...");
+              const std::string& end = "...") const;
 
     /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will be set to the
     /// maximum number of chars (not glyphs!) that fit into the width
@@ -70,7 +70,7 @@ public:
 
     /// Gibt Infos, über die Unterbrechungspunkte in einem Text, versucht Wörter nicht zu trennen, tut dies aber, falls
     /// es unumgänglich ist (Wort länger als die Zeile)
-    WrapInfo GetWrapInfo(const std::string& text, unsigned short primary_width, unsigned short secondary_width);
+    WrapInfo GetWrapInfo(const std::string& text, unsigned short primary_width, unsigned short secondary_width) const;
 
     /// prüft ob ein Buchstabe existiert.
     bool CharExist(char32_t c) const;
@@ -105,8 +105,8 @@ private:
     /// Holds ascii chars only. As most chars are ascii this is faster then accessing the map
     std::array<std::pair<bool, CharInfo>, 256> asciiMapping;
     std::map<char32_t, CharInfo> utf8_mapping;
-    CharInfo placeHolder; /// Placeholder if glyph is missing
-    VertexArrays texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
+    CharInfo placeHolder;         /// Placeholder if glyph is missing
+    mutable VertexArrays texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
 
     /// Get width of the sequence defined by the begin/end pair of iterators
     template<bool T_unlimitedWidth>

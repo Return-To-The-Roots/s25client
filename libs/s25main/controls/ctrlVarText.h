@@ -32,7 +32,7 @@ class ctrlVarText : public Window, public ctrlBaseVarText
 public:
     /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
     ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, FontStyle format,
-                glArchivItem_Font* font, unsigned count, va_list fmtArgs);
+                const glArchivItem_Font* font, unsigned count, va_list fmtArgs);
     ~ctrlVarText() override;
 
     Rect GetBoundaryRect() const override;
