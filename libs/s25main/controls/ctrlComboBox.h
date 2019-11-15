@@ -27,7 +27,7 @@ class glArchivItem_Font;
 class ctrlComboBox final : public Window
 {
 public:
-    ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+    ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
                  unsigned short max_list_height, bool readonly);
 
     void Resize(const Extent& newSize) override;
@@ -57,7 +57,7 @@ protected:
 
 private:
     TextureColor tc;
-    glArchivItem_Font* font;
+    const glArchivItem_Font* font;
     unsigned short max_list_height;
     bool readonly;
     bool suppressSelectEvent;

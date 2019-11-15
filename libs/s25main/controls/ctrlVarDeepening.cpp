@@ -21,7 +21,8 @@
 #include "ogl/glArchivItem_Font.h"
 
 ctrlVarDeepening::ctrlVarDeepening(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                                   const std::string& fmtString, glArchivItem_Font* font, unsigned color, unsigned count, va_list fmtArgs)
+                                   const std::string& fmtString, const glArchivItem_Font* font, unsigned color, unsigned count,
+                                   va_list fmtArgs)
     : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseVarText(fmtString, color, font, count, fmtArgs)
 {}
 

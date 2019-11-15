@@ -26,7 +26,7 @@ class ctrlPercent : public Window
 {
 public:
     ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
-                glArchivItem_Font* font, const unsigned short* percentage);
+                const glArchivItem_Font* font, const unsigned short* percentage);
 
     void SetPercentage(const unsigned short* percentage) { this->percentage_ = percentage; }
 
@@ -37,7 +37,7 @@ protected:
 private:
     TextureColor tc;
     unsigned text_color;
-    glArchivItem_Font* font;
+    const glArchivItem_Font* font;
     const unsigned short* percentage_;
 };
 

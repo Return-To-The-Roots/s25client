@@ -27,7 +27,7 @@
 #include <utility>
 
 ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, std::string text,
-                     glArchivItem_Font* font, bool readonly)
+                     const glArchivItem_Font* font, bool readonly)
     : Window(parent, id, pos, size), tc(tc), text(std::move(text)), font(font), check(false), readonly(readonly)
 {}
 

@@ -26,7 +26,7 @@
 #include "s25util/StringConversion.h"
 #include <utf8.h>
 
-ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
                    unsigned short maxlength, bool password, bool disabled, bool notify)
     : Window(parent, id, pos, size), maxLength_(maxlength), isPassword_(password), isDisabled_(disabled), focus_(false), newFocus_(false),
       notify_(notify), numberOnly_(false)

@@ -165,7 +165,7 @@ void dskBenchmark::startTest(Test test)
             std::uniform_int_distribution<unsigned> distr2(0, 100000);
             std::uniform_int_distribution<unsigned> distrMove(10, 25);
             DrawPoint pt(0, 0);
-            glArchivItem_Font* fnt = NormalFont;
+            const glArchivItem_Font* fnt = NormalFont;
             for(int i = 0; i < numInstances_; i++)
             {
                 std::string txt = createRandString(distr(rng), charset, seed);

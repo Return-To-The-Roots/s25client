@@ -40,7 +40,7 @@ static const unsigned short SCROLLBAR_WIDTH = 20;
  *  @param[in] tc     Hintergrundtextur
  *  @param[in] font   Schriftart
  */
-ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
+ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font)
     : Window(parent, id, pos, size), tc(tc), font(font), time_color(0xFFFFFFFF)
 {
     // Zeilen pro Seite festlegen errechnen

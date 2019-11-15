@@ -33,8 +33,8 @@ protected:
     unsigned pageWares, pagePeople;
 
 public:
-    iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing, glArchivItem_Font* font,
-            const Inventory& inventory, const GamePlayer& player);
+    iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing,
+            const glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player);
 
 protected:
     /// bestimmte Inventurseite zeigen.

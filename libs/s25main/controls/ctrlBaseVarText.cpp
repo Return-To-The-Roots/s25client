@@ -19,7 +19,7 @@
 #include "ctrlBaseVarText.h"
 #include <sstream>
 
-ctrlBaseVarText::ctrlBaseVarText(const std::string& fmtString, const unsigned color, glArchivItem_Font* font, unsigned count,
+ctrlBaseVarText::ctrlBaseVarText(const std::string& fmtString, const unsigned color, const glArchivItem_Font* font, unsigned count,
                                  va_list fmtArgs)
     : ctrlBaseText(fmtString, color, font)
 {

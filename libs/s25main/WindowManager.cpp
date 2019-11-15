@@ -786,7 +786,7 @@ class WindowManager::Tooltip
 {
     static constexpr unsigned BORDER_SIZE = 2;
     const ctrlBaseTooltip* showingCtrl;
-    glArchivItem_Font* font;
+    const glArchivItem_Font* font;
     std::vector<std::string> lines;
     unsigned width = 0, height = 0;
 

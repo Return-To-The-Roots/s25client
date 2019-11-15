@@ -32,7 +32,7 @@ class ctrlBaseVarText : public ctrlBaseText
 {
 public:
     /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-    ctrlBaseVarText(const std::string& fmtString, unsigned color, glArchivItem_Font* font, unsigned count, va_list fmtArgs);
+    ctrlBaseVarText(const std::string& fmtString, unsigned color, const glArchivItem_Font* font, unsigned count, va_list fmtArgs);
 
 protected:
     /// Returns the text with placeholders replaced by the actual vars

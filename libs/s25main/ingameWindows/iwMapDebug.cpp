@@ -79,7 +79,7 @@ public:
     unsigned showDataIdx;
     unsigned playerIdx;
     const GameWorldBase& gw;
-    glArchivItem_Font* font;
+    const glArchivItem_Font* font;
 };
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)

@@ -45,7 +45,7 @@ T_Iterator nextIt(T_Iterator it)
 
 glArchivItem_Font::glArchivItem_Font() : fontNoOutline(nullptr), fontWithOutline(nullptr)
 {
-    ClearCharInfoMapping();
+    initFont();
 }
 
 glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj)
@@ -138,11 +138,8 @@ inline void glArchivItem_Font::DrawChar(char32_t curChar, VertexArrays& vertices
  *  @param     end    Suffix for displaying a truncation of the text (...)
  */
 void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short maxWidth,
-                             const std::string& end)
+                             const std::string& end) const
 {
-    if(!fontNoOutline)
-        initFont();
-
     RTTR_Assert(utf8::is_valid(text));
 
     unsigned maxNumChars;
@@ -315,11 +312,8 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
  *  @param[in]     secondary_width Maximale Breite der weiteren Zeilen
  */
 glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text, const unsigned short primary_width,
-                                                           const unsigned short secondary_width)
+                                                           const unsigned short secondary_width) const
 {
-    if(!fontNoOutline)
-        initFont();
-
     RTTR_Assert(utf8::is_valid(text)); // Can only handle UTF-8 strings!
 
     // Current line width

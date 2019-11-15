@@ -145,33 +145,34 @@ public:
     ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation, unsigned short size = 36,
                                       const std::string& tooltip = "");
     ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
-                              glArchivItem_Font* font, const std::string& tooltip = "");
+                              const glArchivItem_Font* font, const std::string& tooltip = "");
     ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor,
                                const std::string& tooltip = "");
     ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
                                const std::string& tooltip = "");
     ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Bitmap* image,
                                const std::string& tooltip = "");
-    ctrlChat* AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
+    ctrlChat* AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font);
     ctrlCheck* AddCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
-                           glArchivItem_Font* font, bool readonly = false);
-    ctrlComboBox* AddComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                           const glArchivItem_Font* font, bool readonly = false);
+    ctrlComboBox* AddComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
                               unsigned short max_list_height, bool readonly = false);
     ctrlDeepening* AddTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
-                                    glArchivItem_Font* font, unsigned color, FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
+                                    const glArchivItem_Font* font, unsigned color,
+                                    FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
     ctrlDeepening* AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor);
-    ctrlEdit* AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+    ctrlEdit* AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
                       unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
     ctrlGroup* AddGroup(unsigned id);
     ctrlImage* AddImage(unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip = "");
     ctrlImage* AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip = "");
-    ctrlList* AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
-    ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+    ctrlList* AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font);
+    ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
                                 FontStyle format = {});
     ctrlOptionGroup* AddOptionGroup(unsigned id, int select_type);
     ctrlMultiSelectGroup* AddMultiSelectGroup(unsigned id, int select_type);
     ctrlPercent* AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
-                            glArchivItem_Font* font, const unsigned short* percentage);
+                            const glArchivItem_Font* font, const unsigned short* percentage);
     ctrlProgress* AddProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned short button_minus,
                               unsigned short button_plus, unsigned short maximum, const std::string& tooltip = "",
                               const Extent& padding = Extent(0, 0), unsigned force_color = 0, const std::string& button_minus_tooltip = "",
@@ -179,21 +180,21 @@ public:
     ctrlScrollBar* AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height, TextureColor tc,
                                 unsigned short page_size);
     ctrlTab* AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
-    ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+    ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
                         std::vector<TableColumn> columns);
     ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
-                      glArchivItem_Font* font);
+                      const glArchivItem_Font* font);
     TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
-                                      glArchivItem_Font* font);
+                                      const glArchivItem_Font* font);
     ctrlTimer* AddTimer(unsigned id, unsigned timeout);
     /// fügt ein vertieftes variables TextCtrl hinzu.
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
     ctrlVarDeepening* AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& formatstr,
-                                      glArchivItem_Font* font, unsigned color, unsigned parameters, ...);
+                                      const glArchivItem_Font* font, unsigned color, unsigned parameters, ...);
     /// fügt ein variables TextCtrl hinzu.
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
     ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, FontStyle format,
-                            glArchivItem_Font* font, unsigned parameters, ...);
+                            const glArchivItem_Font* font, unsigned parameters, ...);
     ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* map);
 
     /// Draw a 3D rectangle (e.g. button)
