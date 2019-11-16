@@ -23,7 +23,6 @@
 #include "Rect.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "libsiedler2/ArchivItem_Font.h"
 #include "s25util/colors.h"
 #include <glad/glad.h>
 #include <array>
@@ -32,13 +31,14 @@
 #include <string>
 #include <vector>
 
-/// Klasse für GL-Fontfiles.
-class glArchivItem_Font : public libsiedler2::ArchivItem_Font //-V690
+namespace libsiedler2 {
+class ArchivItem_Font;
+}
+
+class glFont
 {
 public:
-    glArchivItem_Font();
-    glArchivItem_Font(const glArchivItem_Font& obj);
-    RTTR_CLONEABLE(glArchivItem_Font)
+    glFont(const libsiedler2::ArchivItem_Font&);
 
     /// Draw the the text at the given position with format (alignment) and color.
     /// If length is given, only that many chars (not glyphs!) will be used
@@ -51,8 +51,9 @@ public:
     /// maximum number of chars (not glyphs!) that fit into the width
     unsigned getWidth(const std::string& text) const;
     unsigned getWidth(const std::string& text, unsigned maxWidth, unsigned* maxNumChars) const;
-    /// liefert die Höhe des Textes ( entspricht @p getDy() )
-    unsigned short getHeight() const { return dy + 1; }
+    /// Return height of each line of text
+    unsigned short getHeight() const { return maxCharSize.y + 1; }
+    unsigned getDx() const { return maxCharSize.x; }
 
     /// Return the bounds of the text when draw at the specified position with the specified format
     Rect getBounds(DrawPoint pos, const std::string& text, FontStyle format) const;
@@ -92,13 +93,12 @@ private:
         std::vector<GlPoint> vertices;
     };
 
-    void initFont();
-    void ClearCharInfoMapping();
     void AddCharInfo(char32_t c, const CharInfo& info);
     /// liefert das Char-Info eines Zeichens
     const CharInfo& GetCharInfo(char32_t c) const;
     void DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const;
 
+    Extent maxCharSize; // How big each char is at most (aka dx,dy)
     std::unique_ptr<glArchivItem_Bitmap> fontNoOutline;
     std::unique_ptr<glArchivItem_Bitmap> fontWithOutline;
 

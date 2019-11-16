@@ -18,10 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlTextDeepening.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 
 ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc,
-                                     const std::string& text, const glArchivItem_Font* font, unsigned color, FontStyle style)
+                                     const std::string& text, const glFont* font, unsigned color, FontStyle style)
     : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseText(text, color, font), style_(style)
 {}
 

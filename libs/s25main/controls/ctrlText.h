@@ -23,13 +23,13 @@
 #include "ctrlBaseText.h"
 #include "ogl/FontStyle.h"
 
-class glArchivItem_Font;
+class glFont;
 
 class ctrlText : public Window, public ctrlBaseText
 {
 public:
     ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
-             const glArchivItem_Font* font);
+             const glFont* font);
 
     Rect GetBoundaryRect() const override;
 

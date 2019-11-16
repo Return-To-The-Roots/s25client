@@ -71,7 +71,7 @@
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"

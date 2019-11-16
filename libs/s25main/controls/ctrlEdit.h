@@ -22,14 +22,14 @@
 #include "Window.h"
 
 class MouseCoords;
-class glArchivItem_Font;
+class glFont;
 class ctrlTextDeepening;
 struct KeyEvent;
 
 class ctrlEdit : public Window
 {
 public:
-    ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
+    ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
              unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
     /// setzt den Text.
     void SetText(const std::string& text);

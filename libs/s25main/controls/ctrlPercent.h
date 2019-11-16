@@ -20,13 +20,13 @@
 #pragma once
 
 #include "Window.h"
-class glArchivItem_Font;
+class glFont;
 
 class ctrlPercent : public Window
 {
 public:
     ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
-                const glArchivItem_Font* font, const unsigned short* percentage);
+                const glFont* font, const unsigned short* percentage);
 
     void SetPercentage(const unsigned short* percentage) { this->percentage_ = percentage; }
 
@@ -37,7 +37,7 @@ protected:
 private:
     TextureColor tc;
     unsigned text_color;
-    const glArchivItem_Font* font;
+    const glFont* font;
     const unsigned short* percentage_;
 };
 

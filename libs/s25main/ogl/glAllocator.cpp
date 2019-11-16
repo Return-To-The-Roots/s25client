@@ -22,7 +22,6 @@
 #include "glArchivItem_Bitmap_Raw.h"
 #include "glArchivItem_Bitmap_Shadow.h"
 #include "glArchivItem_Bob.h"
-#include "glArchivItem_Font.h"
 #include "glArchivItem_Map.h"
 #include "glArchivItem_Sound_Midi.h"
 #include "glArchivItem_Sound_Other.h"
@@ -57,8 +56,6 @@ std::unique_ptr<libsiedler2::ArchivItem> GlAllocator::create(libsiedler2::BobTyp
             return std::make_unique<glArchivItem_Bob>();
         case libsiedler2::BOBTYPE_BITMAP_RLE: // RLE komprimiertes Bitmap
             return std::make_unique<glArchivItem_Bitmap_RLE>();
-        case libsiedler2::BOBTYPE_FONT: // Font
-            return std::make_unique<glArchivItem_Font>();
         case libsiedler2::BOBTYPE_BITMAP_PLAYER: // Bitmap mit spezifischer Spielerfarbe
             return std::make_unique<glArchivItem_Bitmap_Player>();
         case libsiedler2::BOBTYPE_BITMAP_SHADOW: // Schatten

@@ -24,12 +24,12 @@
 #include <string>
 #include <vector>
 class MouseCoords;
-class glArchivItem_Font;
+class glFont;
 
 class ctrlList : public Window
 {
 public:
-    ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font);
+    ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
     ~ctrlList() override;
 
     /// Größe verändern
@@ -71,7 +71,7 @@ private:
     Rect GetListDrawArea() const;
 
     TextureColor tc;
-    const glArchivItem_Font* font;
+    const glFont* font;
     ctrlBaseTooltip tooltip_;
 
     std::vector<std::string> lines;

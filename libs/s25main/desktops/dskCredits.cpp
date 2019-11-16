@@ -26,7 +26,7 @@
 #include "ogl/FontStyle.h"
 #include "ogl/MusicItem.h"
 #include "ogl/glArchivItem_Bob.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "gameData/JobConsts.h"
 #include "gameData/NationConsts.h"
 #include "gameData/WorldDescription.h"
