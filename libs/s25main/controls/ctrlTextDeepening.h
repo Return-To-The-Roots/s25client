@@ -23,14 +23,14 @@
 #include "controls/ctrlBaseText.h"
 #include "controls/ctrlDeepening.h"
 
-class glArchivItem_Font;
+class glFont;
 
 /// Deepening with text
 class ctrlTextDeepening : public ctrlDeepening, public ctrlBaseText
 {
 public:
     ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc, const std::string& text,
-                      const glArchivItem_Font* font, unsigned color, FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
+                      const glFont* font, unsigned color, FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
 
     Rect GetBoundaryRect() const override;
 

@@ -32,12 +32,13 @@
 #include "ogl/glArchivItem_Bitmap_RLE.h"
 #include "ogl/glArchivItem_Bitmap_Raw.h"
 #include "ogl/glArchivItem_Bob.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePacker.h"
 #include "gameTypes/Direction.h"
 #include "gameData/JobConsts.h"
 #include "gameData/NationConsts.h"
+#include "libsiedler2/ArchivItem_Font.h"
 #include "libsiedler2/ArchivItem_Palette.h"
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "libsiedler2/ArchivItem_Text.h"
@@ -85,9 +86,9 @@ glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsi
     return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv[nr]);
 }
 
-glArchivItem_Font* Loader::GetFontN(const std::string& file, unsigned nr)
+glFont* Loader::GetFont(unsigned nr)
 {
-    return dynamic_cast<glArchivItem_Font*>(files_[file].archiv[nr]);
+    return nr < fonts.size() ? &fonts[nr] : nullptr;
 }
 
 libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, unsigned nr)
@@ -108,6 +109,7 @@ std::string Loader::GetTextN(const std::string& file, unsigned nr)
 
 libsiedler2::Archiv& Loader::GetArchive(const std::string& file)
 {
+    RTTR_Assert(helpers::contains(files_, file));
     return files_[file].archiv;
 }
 
@@ -205,6 +207,9 @@ bool Loader::LoadFilesAtStart()
     if(!LoadFilesFromArray(files))
         return false;
 
+    if(!LoadFonts())
+        return false;
+
     files.clear();
     files += 11, 12,                                                                      // Menüdateien:  resource.dat, io.dat
       102, 103,                                                                           // Hintergründe: setup013.lbm, setup015.lbm
@@ -264,6 +269,25 @@ bool Loader::LoadSounds()
     return true;
 }
 
+bool Loader::LoadFonts()
+{
+    if(!LoadFile(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/OUTLINE_FONTS.LST"), GetPaletteN("pal5")))
+        return false;
+    fonts.clear();
+    const auto& loadedFonts = GetArchive("outline_fonts");
+    for(int i = 0; i < 3; i++)
+    {
+        const auto* curFont = dynamic_cast<const libsiedler2::ArchivItem_Font*>(loadedFonts[i]);
+        if(!curFont)
+        {
+            LOG.write(_("Unable to load font at index %1%\n")) % i;
+            return false;
+        }
+        fonts.emplace_back(*curFont);
+    }
+    return true;
+}
+
 void Loader::LoadDummyGUIFiles()
 {
     // Palettes
@@ -303,13 +327,11 @@ void Loader::LoadDummyGUIFiles()
         io.push(std::move(bmp));
     }
     // Fonts
-    libsiedler2::Archiv& fonts = files_["outline_fonts"].archiv;
     auto* palette = GetPaletteN("colors");
-    fonts.alloc(3);
     libsiedler2::PixelBufferBGRA buffer(15, 16);
     for(unsigned i = 0; i < 3; i++)
     {
-        auto font = std::make_unique<glArchivItem_Font>();
+        auto font = std::make_unique<libsiedler2::ArchivItem_Font>();
         const unsigned dx = 9 + i * 3;
         const unsigned dy = 10 + i * 3;
         font->setDx(dx);
@@ -321,7 +343,7 @@ void Loader::LoadDummyGUIFiles()
             bmp->create(dx, dy, buffer, palette, 0);
             font->set(id, std::move(bmp));
         }
-        fonts.set(i, std::move(font));
+        fonts.emplace_back(*font);
     }
 }
 

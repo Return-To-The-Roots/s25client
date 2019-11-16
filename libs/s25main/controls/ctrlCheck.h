@@ -21,13 +21,13 @@
 
 #include "Window.h"
 class MouseCoords;
-class glArchivItem_Font;
+class glFont;
 
 class ctrlCheck : public Window
 {
 public:
-    ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, std::string text,
-              const glArchivItem_Font* font, bool readonly);
+    ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, std::string text, const glFont* font,
+              bool readonly);
 
     void SetCheck(bool check) { this->check = check; }
     bool GetCheck() const { return check; }
@@ -42,7 +42,7 @@ protected:
 private:
     TextureColor tc;
     std::string text;
-    const glArchivItem_Font* font;
+    const glFont* font;
     bool check;
     bool readonly;
 };

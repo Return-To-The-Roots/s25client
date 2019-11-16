@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
-#include "glArchivItem_Font.h"
+#include "glFont.h"
 #include "FontStyle.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
 #include "helpers/containerUtils.h"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
+#include "libsiedler2/ArchivItem_Font.h"
 #include "libsiedler2/IAllocator.h"
 #include "libsiedler2/PixelBufferBGRA.h"
 #include "libsiedler2/libsiedler2.h"
@@ -43,26 +43,86 @@ T_Iterator nextIt(T_Iterator it)
 
 //////////////////////////////////////////////////////////////////////////
 
-glArchivItem_Font::glArchivItem_Font() : fontNoOutline(nullptr), fontWithOutline(nullptr)
+glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getDx(), font.getDy()), asciiMapping{}
 {
-    initFont();
+    fontWithOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RAW);
+    fontNoOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RAW);
+
+    // first, we have to find how much chars we really have
+    unsigned numChars = 0;
+    for(unsigned i = 0; i < font.size(); ++i)
+    {
+        if(font[i])
+            ++numChars;
+    }
+
+    if(numChars == 0)
+        return;
+
+    const auto numCharsPerLine = static_cast<unsigned>(std::sqrt(static_cast<double>(numChars)));
+    // Calc lines required (rounding up)
+    const unsigned numLines = (numChars + numCharsPerLine - 1) / numCharsPerLine;
+
+    constexpr Extent spacing(1, 1);
+    Extent texSize = (maxCharSize + spacing * 2u) * Extent(numCharsPerLine, numLines) + spacing * 2u;
+    libsiedler2::PixelBufferBGRA bufferWithOutline(texSize.x, texSize.y);
+    libsiedler2::PixelBufferBGRA bufferNoOutline(texSize.x, texSize.y);
+
+    const libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
+    Position curPos(spacing);
+    numChars = 0;
+    for(unsigned i = 0; i < font.size(); ++i)
+    {
+        const auto* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(font[i]);
+        if(!c)
+            continue;
+
+        if((numChars % numCharsPerLine) == 0 && numChars > 0)
+        {
+            curPos.y += maxCharSize.y + spacing.y * 2;
+            curPos.x = spacing.x;
+        }
+
+        // Spezialpalette (blaue Spielerfarben sind Grau) verwenden, damit man per OpenGL einfärben kann!
+        c->print(bufferNoOutline, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0, true);
+        c->print(bufferWithOutline, palette, 128, curPos.x, curPos.y);
+
+        CharInfo ci(curPos, std::min<unsigned short>(maxCharSize.x + 2, c->getWidth()));
+
+        AddCharInfo(i, ci);
+        curPos.x += maxCharSize.x + spacing.x * 2;
+        ++numChars;
+    }
+
+    fontNoOutline->create(bufferNoOutline);
+    fontWithOutline->create(bufferWithOutline);
+
+    // Set the placeholder for non-existant glyphs. Use '?' (should always be possible)
+    if(CharExist(0xFFFD))
+        placeHolder = GetCharInfo(0xFFFD);
+    else if(CharExist('?'))
+        placeHolder = GetCharInfo('?');
+    else
+        throw std::runtime_error("Cannot find '?' glyph in font. What shall I use as fallback?");
+
+    if(RTTR_PRINT_FONTS)
+    {
+        libsiedler2::Archiv items;
+        items.pushC(*fontNoOutline);
+        libsiedler2::Write("font" + font.getName() + "_noOutline.bmp", items);
+        items.setC(0, *fontWithOutline);
+        libsiedler2::Write("font" + font.getName() + "_Outline.bmp", items);
+    }
 }
 
-glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj)
-    : ArchivItem_Font(obj), asciiMapping(obj.asciiMapping), utf8_mapping(obj.utf8_mapping)
-{
-    fontNoOutline = libsiedler2::clone(obj.fontNoOutline);
-    fontWithOutline = libsiedler2::clone(obj.fontWithOutline);
-}
-
-bool glArchivItem_Font::CharExist(char32_t c) const
+bool glFont::CharExist(char32_t c) const
 {
     if(c < asciiMapping.size())
         return asciiMapping[c].first;
     return helpers::contains(utf8_mapping, c);
 }
 
-inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(char32_t c) const
+inline const glFont::CharInfo& glFont::GetCharInfo(char32_t c) const
 {
     if(c < asciiMapping.size())
     {
@@ -77,15 +137,7 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(char32_
     return placeHolder;
 }
 
-void glArchivItem_Font::ClearCharInfoMapping()
-{
-    using CharPair = std::pair<bool, CharInfo>;
-    for(CharPair& entry : asciiMapping)
-        entry.first = false;
-    utf8_mapping.clear();
-}
-
-void glArchivItem_Font::AddCharInfo(char32_t c, const CharInfo& info)
+void glFont::AddCharInfo(char32_t c, const CharInfo& info)
 {
     if(c < asciiMapping.size())
         asciiMapping[c] = std::make_pair(true, info);
@@ -96,12 +148,12 @@ void glArchivItem_Font::AddCharInfo(char32_t c, const CharInfo& info)
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
  */
-inline void glArchivItem_Font::DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const
+inline void glFont::DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const
 {
     CharInfo ci = GetCharInfo(curChar);
 
     GlPoint texCoord1(ci.pos);
-    GlPoint texCoord2(ci.pos + DrawPoint(ci.width, dy));
+    GlPoint texCoord2(ci.pos + DrawPoint(ci.width, maxCharSize.y));
 
     vertices.texCoords.push_back(texCoord1);
     vertices.texCoords.push_back(GlPoint(texCoord1.x, texCoord2.y));
@@ -109,7 +161,7 @@ inline void glArchivItem_Font::DrawChar(char32_t curChar, VertexArrays& vertices
     vertices.texCoords.push_back(GlPoint(texCoord2.x, texCoord1.y));
 
     GlPoint curPos1(curPos);
-    GlPoint curPos2(curPos + DrawPoint(ci.width, dy));
+    GlPoint curPos2(curPos + DrawPoint(ci.width, maxCharSize.y));
 
     vertices.vertices.push_back(curPos1);
     vertices.vertices.push_back(GlPoint(curPos1.x, curPos2.y));
@@ -137,8 +189,8 @@ inline void glArchivItem_Font::DrawChar(char32_t curChar, VertexArrays& vertices
  *  @param[in] max    maximale Länge
  *  @param     end    Suffix for displaying a truncation of the text (...)
  */
-void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short maxWidth,
-                             const std::string& end) const
+void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short maxWidth,
+                  const std::string& end) const
 {
     RTTR_Assert(utf8::is_valid(text));
 
@@ -175,9 +227,9 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
 
     // Vertical alignment (assumes 1 line only!)
     if(format.is(FontStyle::BOTTOM))
-        pos.y -= dy;
+        pos.y -= maxCharSize.y;
     else if(format.is(FontStyle::VCENTER))
-        pos.y -= dy / 2;
+        pos.y -= maxCharSize.y / 2;
     // Horizontal alignment
     if(format.is(FontStyle::RIGHT))
         pos.x -= textWidth;
@@ -224,8 +276,8 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, FontStyle f
 }
 
 template<bool T_limitWidth>
-unsigned glArchivItem_Font::getWidthInternal(const std::string::const_iterator& begin, const std::string::const_iterator& end,
-                                             unsigned maxWidth, unsigned* maxNumChars) const
+unsigned glFont::getWidthInternal(const std::string::const_iterator& begin, const std::string::const_iterator& end, unsigned maxWidth,
+                                  unsigned* maxNumChars) const
 {
     unsigned curLen = 0;
     for(auto it = begin; it != end;)
@@ -248,17 +300,17 @@ unsigned glArchivItem_Font::getWidthInternal(const std::string::const_iterator& 
     return curLen;
 }
 
-unsigned glArchivItem_Font::getWidth(const std::string& text) const
+unsigned glFont::getWidth(const std::string& text) const
 {
     return getWidthInternal<false>(text.begin(), text.end(), 0, nullptr);
 }
 
-unsigned glArchivItem_Font::getWidth(const std::string& text, unsigned maxWidth, unsigned* maxNumChars) const
+unsigned glFont::getWidth(const std::string& text, unsigned maxWidth, unsigned* maxNumChars) const
 {
     return getWidthInternal<true>(text.begin(), text.end(), maxWidth, maxNumChars);
 }
 
-Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, FontStyle format) const
+Rect glFont::getBounds(DrawPoint pos, const std::string& text, FontStyle format) const
 {
     if(text.empty())
         return Rect(Position(pos), 0, 0);
@@ -281,7 +333,7 @@ Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, FontSt
 /**
  *  @brief
  */
-std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& text)
+std::vector<std::string> glFont::WrapInfo::CreateSingleStrings(const std::string& text)
 {
     RTTR_Assert(utf8::is_valid(text)); // Can only handle UTF-8 strings!
 
@@ -311,8 +363,8 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
  *  @param[in]     primary_width   Maximale Breite der ersten Zeile
  *  @param[in]     secondary_width Maximale Breite der weiteren Zeilen
  */
-glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text, const unsigned short primary_width,
-                                                           const unsigned short secondary_width) const
+glFont::WrapInfo glFont::GetWrapInfo(const std::string& text, const unsigned short primary_width,
+                                     const unsigned short secondary_width) const
 {
     RTTR_Assert(utf8::is_valid(text)); // Can only handle UTF-8 strings!
 
@@ -403,80 +455,4 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
     if(wi.positions.back() + 1 >= text.length() && wi.positions.size() > 1)
         wi.positions.pop_back();
     return wi;
-}
-
-/**
- *  @brief
- */
-void glArchivItem_Font::initFont()
-{
-    ClearCharInfoMapping();
-    fontWithOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RLE);
-    fontNoOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RLE);
-
-    // first, we have to find how much chars we really have
-    unsigned numChars = 0;
-    for(unsigned i = 0; i < size(); ++i)
-    {
-        if(get(i))
-            ++numChars;
-    }
-
-    if(numChars == 0)
-        return;
-
-    const auto numCharsPerLine = static_cast<unsigned>(std::sqrt(static_cast<double>(numChars)));
-    // Calc lines required (rounding up)
-    const unsigned numLines = (numChars + numCharsPerLine - 1) / numCharsPerLine;
-
-    constexpr Extent spacing(1, 1);
-    Extent texSize = (Extent(dx, dy) + spacing * 2u) * Extent(numCharsPerLine, numLines) + spacing * 2u;
-    libsiedler2::PixelBufferBGRA bufferWithOutline(texSize.x, texSize.y);
-    libsiedler2::PixelBufferBGRA bufferNoOutline(texSize.x, texSize.y);
-
-    const libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
-    Position curPos(spacing);
-    numChars = 0;
-    for(unsigned i = 0; i < size(); ++i)
-    {
-        const auto* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
-        if(!c)
-            continue;
-
-        if((numChars % numCharsPerLine) == 0 && numChars > 0)
-        {
-            curPos.y += dy + spacing.y * 2;
-            curPos.x = spacing.x;
-        }
-
-        // Spezialpalette (blaue Spielerfarben sind Grau) verwenden, damit man per OpenGL einfärben kann!
-        c->print(bufferNoOutline, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0, true);
-        c->print(bufferWithOutline, palette, 128, curPos.x, curPos.y);
-
-        CharInfo ci(curPos, std::min<unsigned short>(dx + 2, c->getWidth()));
-
-        AddCharInfo(i, ci);
-        curPos.x += dx + spacing.x * 2;
-        ++numChars;
-    }
-
-    fontNoOutline->create(bufferNoOutline);
-    fontWithOutline->create(bufferWithOutline);
-
-    // Set the placeholder for non-existant glyphs. Use '?' (should always be possible)
-    if(CharExist(0xFFFD))
-        placeHolder = GetCharInfo(0xFFFD);
-    else if(CharExist('?'))
-        placeHolder = GetCharInfo('?');
-    else
-        throw std::runtime_error("Cannot find '?' glyph in font. What shall I use as fallback?");
-
-    if(RTTR_PRINT_FONTS)
-    {
-        Archiv items;
-        items.pushC(*fontNoOutline);
-        libsiedler2::Write("font" + getName() + "_noOutline.bmp", items);
-        items.setC(0, *fontWithOutline);
-        libsiedler2::Write("font" + getName() + "_Outline.bmp", items);
-    }
 }

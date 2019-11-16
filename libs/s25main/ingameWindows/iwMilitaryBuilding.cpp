@@ -33,7 +33,7 @@
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"

@@ -17,7 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlVarText.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 
 /**
  *  Konstruktor des Textcontrols, welches variablen Inhalt haben kann.
@@ -34,7 +34,7 @@
  *  @param[in] liste     Pointerliste der variablen Inhalte
  */
 ctrlVarText::ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, FontStyle format,
-                         const glArchivItem_Font* font, unsigned count, va_list fmtArgs)
+                         const glFont* font, unsigned count, va_list fmtArgs)
     : Window(parent, id, pos), ctrlBaseVarText(formatstr, color, font, count, fmtArgs), format_(format)
 {}
 

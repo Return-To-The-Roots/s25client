@@ -26,7 +26,7 @@
 #include "ingameWindows/iwMissionStatement.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "network/GameClient.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "uiHelper/uiHelpers.hpp"
 #include <boost/assign/std/vector.hpp>
 

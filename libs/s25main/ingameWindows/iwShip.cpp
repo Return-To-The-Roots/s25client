@@ -29,7 +29,7 @@
 #include "iwHelp.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bob.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"

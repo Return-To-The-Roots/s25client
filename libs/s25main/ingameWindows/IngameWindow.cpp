@@ -25,7 +25,7 @@
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "gameData/const_gui_ids.h"
 #include <algorithm>
 #include <utility>

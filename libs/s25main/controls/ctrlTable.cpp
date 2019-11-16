@@ -22,7 +22,7 @@
 #include "ctrlScrollBar.h"
 #include "driver/KeyEvent.h"
 #include "driver/MouseCoords.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
 #include <numeric>
 #include <sstream>
@@ -113,7 +113,7 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
     return 0;
 }
 
-ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
+ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                      std::vector<Column> columns)
     : Window(parent, id, pos, elMax(size, Extent(20, 30))), tc(tc), font(font), columns_(std::move(columns)), selection_(-1),
       sort_column(-1), sort_direction(true)

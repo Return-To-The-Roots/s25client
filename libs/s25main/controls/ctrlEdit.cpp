@@ -22,11 +22,11 @@
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
 #include <utf8.h>
 
-ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glArchivItem_Font* font,
+ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                    unsigned short maxlength, bool password, bool disabled, bool notify)
     : Window(parent, id, pos, size), maxLength_(maxlength), isPassword_(password), isDisabled_(disabled), focus_(false), newFocus_(false),
       notify_(notify), numberOnly_(false)
@@ -74,7 +74,7 @@ void ctrlEdit::UpdateInternalText()
 {
     std::u32string dtext = (isPassword_) ? std::u32string(text_.size(), '*') : text_;
     const auto* font = txtCtrl->GetFont();
-    const unsigned max_width = GetSize().x - 8 - font->getDx();
+    const unsigned max_width = GetSize().x - ctrlTextDeepening::borderSize.x * 2 - font->getDx();
     unsigned max;
     std::string curText = utf8::utf32to8(dtext.substr(viewStart_));
     font->getWidth(curText, max_width, &max);

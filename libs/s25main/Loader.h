@@ -42,7 +42,7 @@ class glArchivItem_Bitmap;
 class glArchivItem_BitmapBase;
 class glArchivItem_Bitmap_Player;
 class glArchivItem_Bob;
-class glArchivItem_Font;
+class glFont;
 class SoundEffectItem;
 class glTexturePacker;
 namespace libsiedler2 {
@@ -84,6 +84,7 @@ public:
 
     /// Lädt alle allgemeinen Dateien.
     bool LoadFilesAtStart();
+    bool LoadFonts();
     /// Lädt die Spieldateien.
     bool LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<bool>& nations);
     /// Load all files from the override folders that have not been use yet
@@ -108,7 +109,7 @@ public:
     ITexture* GetTextureN(const std::string& file, unsigned nr);
     glArchivItem_Bitmap* GetImage(const std::string& file, const std::string& name);
     glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned nr);
-    glArchivItem_Font* GetFontN(const std::string& file, unsigned nr);
+    glFont* GetFont(unsigned nr);
     libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned nr = 0);
     SoundEffectItem* GetSoundN(const std::string& file, unsigned nr);
     std::string GetTextN(const std::string& file, unsigned nr);
@@ -178,6 +179,7 @@ private:
     }
     std::vector<OverrideFolder> overrideFolders_;
     std::map<std::string, FileEntry> files_;
+    std::vector<glFont> fonts;
 
     bool isWinterGFX_;
     std::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
@@ -189,8 +191,8 @@ private:
 #define LOADER Loader::inst()
 
 // Helper macros for easy access to fonts
-#define SmallFont (LOADER.GetFontN("outline_fonts", 0))
-#define NormalFont (LOADER.GetFontN("outline_fonts", 1))
-#define LargeFont (LOADER.GetFontN("outline_fonts", 2))
+#define SmallFont (LOADER.GetFont(0))
+#define NormalFont (LOADER.GetFont(1))
+#define LargeFont (LOADER.GetFont(2))
 
 #endif // LOADER_H_INCLUDED

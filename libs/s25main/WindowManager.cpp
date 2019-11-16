@@ -31,7 +31,7 @@
 #include "ingameWindows/IngameWindow.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "ogl/saveBitmap.h"
 #include "gameData/const_gui_ids.h"
 #include "libsiedler2/PixelBufferBGRA.h"
@@ -786,7 +786,7 @@ class WindowManager::Tooltip
 {
     static constexpr unsigned BORDER_SIZE = 2;
     const ctrlBaseTooltip* showingCtrl;
-    const glArchivItem_Font* font;
+    const glFont* font;
     std::vector<std::string> lines;
     unsigned width = 0, height = 0;
 

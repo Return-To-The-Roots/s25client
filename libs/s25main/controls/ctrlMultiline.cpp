@@ -20,11 +20,11 @@
 #include "CollisionDetection.h"
 #include "ctrlScrollBar.h"
 #include "driver/MouseCoords.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include <algorithm>
 
-ctrlMultiline::ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                             const glArchivItem_Font* font, FontStyle format)
+ctrlMultiline::ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
+                             FontStyle format)
     : Window(parent, id, pos, size), tc_(tc), font(font), format_(format), showBackground_(true), scrollbarAllowed_(true),
       cachedContentWidth(0)
 {
@@ -91,7 +91,7 @@ void ctrlMultiline::RecalcWrappedLines()
         return;
     }
     // Calculate the wrap info for each real line (2nd pass if we need a scrollbar after breaking into lines)
-    std::vector<glArchivItem_Font::WrapInfo> wrapInfos;
+    std::vector<glFont::WrapInfo> wrapInfos;
     wrapInfos.reserve(lines.size());
     bool needScrollBar = lines.size() > maxNumVisibleLines && scrollbarAllowed_;
     do
