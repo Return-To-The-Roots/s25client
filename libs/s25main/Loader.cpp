@@ -271,10 +271,10 @@ bool Loader::LoadSounds()
 
 bool Loader::LoadFonts()
 {
-    if(!LoadFile(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/OUTLINE_FONTS.LST"), GetPaletteN("pal5")))
+    if(!LoadFile(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/fonts.LST"), GetPaletteN("pal5")))
         return false;
     fonts.clear();
-    const auto& loadedFonts = GetArchive("outline_fonts");
+    const auto& loadedFonts = GetArchive("fonts");
     for(int i = 0; i < 3; i++)
     {
         const auto* curFont = dynamic_cast<const libsiedler2::ArchivItem_Font*>(loadedFonts[i]);
