@@ -25,6 +25,7 @@
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
 #include <utf8.h>
+#include <numeric>
 
 ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                    unsigned short maxlength, bool password, bool disabled, bool notify)
@@ -72,38 +73,47 @@ static void removeFirstCharFromString(std::string& str)
 
 void ctrlEdit::UpdateInternalText()
 {
-    std::u32string dtext = (isPassword_) ? std::u32string(text_.size(), '*') : text_;
-    const auto* font = txtCtrl->GetFont();
-    const unsigned max_width = GetSize().x - ctrlTextDeepening::borderSize.x * 2 - font->getDx();
-    unsigned max;
-    std::string curText = utf8::utf32to8(dtext.substr(viewStart_));
-    font->getWidth(curText, max_width, &max);
-    // Increase viewStart until string can be fully shown (removing chars from the front)
-    while(max > 0 && curText.length() > max)
+    if(text_.empty())
     {
-        ++viewStart_;
-        removeFirstCharFromString(curText);
-        font->getWidth(curText, max_width, &max);
-    }
-    // Decrease viewStart as long as full text is shown (adding chars at the front)
-    while(viewStart_ > 0 && curText.length() <= max)
+        viewStart_ = 0;
+        cursorPos_ = 0;
+        txtCtrl->SetText("");
+    } else
     {
-        --viewStart_;
-        curText = utf8::utf32to8(dtext.substr(viewStart_));
+        std::u32string dtext = (isPassword_) ? std::u32string(text_.size(), '*') : text_;
+        viewStart_ = std::min<unsigned>(viewStart_, dtext.length() - 1);
+        const auto* font = txtCtrl->GetFont();
+        const unsigned max_width = GetSize().x - ctrlTextDeepening::borderSize.x * 2;
+        unsigned max;
+        std::string curText = utf8::utf32to8(dtext.substr(viewStart_));
         font->getWidth(curText, max_width, &max);
-    }
+        // Add chars at front as long as full text is shown
+        while(viewStart_ > 0 && curText.length() <= max)
+        {
+            --viewStart_;
+            curText = utf8::utf32to8(dtext.substr(viewStart_));
+            font->getWidth(curText, max_width, &max);
+        }
+        // Remove chars from front until remaining string can be fully shown
+        while(curText.length() > max)
+        {
+            ++viewStart_;
+            removeFirstCharFromString(curText);
+            font->getWidth(curText, max_width, &max);
+        }
 
-    // Show (up to) 5 chars before the cursor
-    if(viewStart_ + 5 > cursorPos_)
-    {
-        viewStart_ = std::max(0, static_cast<int>(cursorPos_) - 5);
-        curText = utf8::utf32to8(dtext.substr(viewStart_));
+        // Show (up to) 5 chars before the cursor
+        if(viewStart_ + 5 > cursorPos_)
+        {
+            viewStart_ = std::max(0, static_cast<int>(cursorPos_) - 5);
+            curText = utf8::utf32to8(dtext.substr(viewStart_));
+        }
+        if(cursorPos_ > viewStart_)
+            cursorOffsetX_ = font->getWidth(utf8::utf32to8(dtext.substr(viewStart_, cursorPos_ - viewStart_)));
+        else
+            cursorOffsetX_ = 0;
+        txtCtrl->SetText(curText);
     }
-    if(cursorPos_ > viewStart_)
-        cursorOffsetX_ = font->getWidth(utf8::utf32to8(dtext.substr(viewStart_, cursorPos_ - viewStart_)));
-    else
-        cursorOffsetX_ = 0;
-    txtCtrl->SetText(curText);
 }
 
 inline void ctrlEdit::CursorLeft()
