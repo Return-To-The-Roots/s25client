@@ -18,6 +18,8 @@
 #ifndef MaxEnumValue_h__
 #define MaxEnumValue_h__
 
+#include <type_traits>
+
 namespace helpers {
 /// Trait to specify the maximum enum value
 template<class T_Enum>
@@ -25,16 +27,29 @@ struct MaxEnumValue;
 
 template<class T_Enum>
 constexpr unsigned MaxEnumValue_v = MaxEnumValue<T_Enum>::value;
+
+namespace detail {
+    template<class T>
+    constexpr std::enable_if_t<std::is_enum<T>::value, unsigned> castPotentialEnumToValue(T value)
+    {
+        return static_cast<unsigned>(value);
+    }
+    template<class T>
+    constexpr std::enable_if_t<std::is_same<T, unsigned>::value, unsigned> castPotentialEnumToValue(T value)
+    {
+        return value;
+    }
+} // namespace detail
 } // namespace helpers
 
 // Helper macro to specialize the trait
-#define DEFINE_MAX_ENUM_VALUE(enum, maxValue)             \
-    namespace helpers {                                   \
-        template<>                                        \
-        struct MaxEnumValue<enum>                         \
-        {                                                 \
-            static constexpr unsigned value = (maxValue); \
-        };                                                \
+#define DEFINE_MAX_ENUM_VALUE(enum, maxValue)                                             \
+    namespace helpers {                                                                   \
+        template<>                                                                        \
+        struct MaxEnumValue<enum>                                                         \
+        {                                                                                 \
+            static constexpr unsigned value = detail::castPotentialEnumToValue(maxValue); \
+        };                                                                                \
     } // namespace helpers
 
 #endif // MaxEnumValue_h__
