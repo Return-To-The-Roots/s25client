@@ -84,7 +84,7 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
                                 {_("Player"), 170, SRT::Number},
                                 {_("Type"), 180, SRT::String},
                                 {_("Size"), 134, SRT::MapSize},
-                                {"", 0}});
+                                {"", 0, SRT::Default}});
 
     // "Karten Auswahl"
     AddText(2, DrawPoint(400, 5), _("Selection of maps"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
