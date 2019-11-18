@@ -55,12 +55,17 @@ dskLobby::dskLobby()
     AddTextButton(6, DrawPoint(530, 440), Extent(250, 22), TC_GREEN2, _("Add Server"), NormalFont);
 
     // Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
-    AddTable(10, DrawPoint(20, 20), Extent(500, 262), TC_GREY, NormalFont, 6, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300,
-             ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_STRING, _("Version"), 100,
-             ctrlTable::SRT_STRING, _("Ping"), 100, ctrlTable::SRT_NUMBER);
+    using SRT = ctrlTable::SortType;
+    AddTable(10, DrawPoint(20, 20), Extent(500, 262), TC_GREY, NormalFont,
+             ctrlTable::Columns{{_("ID"), 0, SRT::Number},
+                                {_("Server"), 300, SRT::String},
+                                {_("Map"), 300, SRT::String},
+                                {_("Player"), 200, SRT::String},
+                                {_("Version"), 100, SRT::String},
+                                {_("Ping"), 100, SRT::Number}});
     // Spieler-Tabelle - "Name", "Punkte", "Version"
-    AddTable(11, DrawPoint(530, 20), Extent(250, 410), TC_GREY, NormalFont, 3, _("Name"), 500, ctrlTable::SRT_STRING, _("Points"), 250,
-             ctrlTable::SRT_STRING, _("Version"), 250, ctrlTable::SRT_STRING);
+    AddTable(11, DrawPoint(530, 20), Extent(250, 410), TC_GREY, NormalFont,
+             ctrlTable::Columns{{_("Name"), 500, SRT::String}, {_("Points"), 250, SRT::String}, {_("Version"), 250, SRT::String}});
 
     // Chatfenster
     AddChatCtrl(20, DrawPoint(20, 290), Extent(500, 238), TC_GREY, NormalFont);
@@ -331,8 +336,7 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
         std::string name = (server.hasPassword() ? "(pwd) " : "") + server.getName();
         std::string ping = helpers::toString(server.getPing());
         std::string player = helpers::toString(server.getCurPlayers()) + "/" + helpers::toString(server.getMaxPlayers());
-        servertable->AddRow(0, id.c_str(), name.c_str(), server.getMap().c_str(), player.c_str(), server.getVersion().c_str(),
-                            ping.c_str());
+        servertable->AddRow({id, name, server.getMap(), player, server.getVersion(), ping});
     }
     if(first)
         servertable->SortRows(0);
@@ -368,7 +372,7 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
             std::string name = player.getName();
             if(player.isIngame)
                 name += _(" (playing)");
-            playertable->AddRow(0, name.c_str(), punkte.c_str(), player.getVersion().c_str());
+            playertable->AddRow({name, punkte, player.getVersion()});
         }
     }
     if(first)

@@ -77,9 +77,14 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
         landscapeNames[desc.get(i).s2Id] = _(desc.get(i).name);
 
     // Die Tabelle für die Maps
-    AddTable(1, DrawPoint(110, 35), Extent(680, 400), TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216,
-             ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134,
-             ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);
+    using SRT = ctrlTable::SortType;
+    AddTable(1, DrawPoint(110, 35), Extent(680, 400), TC_GREY, NormalFont,
+             ctrlTable::Columns{{_("Name"), 250, SRT::String},
+                                {_("Author"), 216, SRT::String},
+                                {_("Player"), 170, SRT::Number},
+                                {_("Type"), 180, SRT::String},
+                                {_("Size"), 134, SRT::MapSize},
+                                {"", 0, SRT::Default}});
 
     // "Karten Auswahl"
     AddText(2, DrawPoint(400, 5), _("Selection of maps"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
@@ -438,8 +443,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
             name += " (*)";
         std::string author = cvStringToUTF8(header.getAuthor());
 
-        table->AddRow(0, name.c_str(), author.c_str(), players.c_str(), landscapeNames[header.getGfxSet()].c_str(), size.c_str(),
-                      filePath.c_str());
+        table->AddRow({name, author, players, landscapeNames[header.getGfxSet()], size, filePath});
     }
 }
 

@@ -25,7 +25,7 @@
 #include "controls/ctrlText.h"
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
@@ -46,7 +46,7 @@ class iwAIDebug::DebugPrinter : public IDrawNodeCallback
 {
     std::array<glArchivItem_Bitmap*, 7> bqImgs;
     std::array<glArchivItem_Bitmap*, 2> ticks;
-    glArchivItem_Font& font;
+    glFont& font;
 
 public:
     DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : font(*NormalFont), ai(ai), overlay(overlay)
@@ -77,7 +77,7 @@ public:
         else if(overlay == 3)
             ticks[ai->GetAINode(pt).farmed]->DrawFull(curPos);
         else if(overlay < 13)
-            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIResource(overlay - 4))), FontStyle{}, 0xFFFFFF00);
+            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIResource(overlay - 4))), FontStyle{}, COLOR_YELLOW);
     }
 };
 
@@ -119,7 +119,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
     overlays->AddString("Borderland");
     overlays->AddString("Fish");
 
-    text = AddText(ID_Text, DrawPoint(15, 120), "", COLOR_YELLOW, FontStyle::LEFT | FontStyle::TOP, LOADER.GetFontN("resource", 0));
+    text = AddText(ID_Text, DrawPoint(15, 120), "", COLOR_YELLOW, FontStyle::LEFT | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
 
     // Show 7 lines of text and 1 empty line
     SetIwSize(Extent(GetIwSize().x, text->GetPos().y + 8 * text->GetFont()->getHeight()));

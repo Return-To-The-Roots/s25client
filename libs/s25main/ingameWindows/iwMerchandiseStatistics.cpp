@@ -92,12 +92,12 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
     for(unsigned i = 0; i < 7; ++i)
     {
         timeAnnotations[i] = AddText(32 + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
-                                     FontStyle::CENTER | FontStyle::TOP, LOADER.GetFontN("resource", 0));
+                                     FontStyle::CENTER | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
     }
 
     // Aktueller Maximalwert an der y-Achse
-    maxValue = AddText(31, DrawPoint(211, 55), "1", MakeColor(255, 136, 96, 52), FontStyle::RIGHT | FontStyle::VCENTER,
-                       LOADER.GetFontN("resource", 0));
+    maxValue = AddText(31, DrawPoint(211, 55), "1", MakeColor(255, 136, 96, 52),
+                       FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 }
 
 iwMerchandiseStatistics::~iwMerchandiseStatistics() = default;

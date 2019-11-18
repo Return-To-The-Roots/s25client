@@ -26,6 +26,8 @@
 class ctrlDeepening : public Window
 {
 public:
+    static constexpr DrawPoint borderSize{4, 4};
+
     ctrlDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc);
 
 protected:

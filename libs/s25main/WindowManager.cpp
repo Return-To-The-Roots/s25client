@@ -31,7 +31,7 @@
 #include "ingameWindows/IngameWindow.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "ogl/saveBitmap.h"
 #include "gameData/const_gui_ids.h"
 #include "libsiedler2/PixelBufferBGRA.h"
@@ -782,55 +782,70 @@ void WindowManager::TakeScreenshot()
     }
 }
 
+class WindowManager::Tooltip
+{
+    static constexpr unsigned BORDER_SIZE = 2;
+    const ctrlBaseTooltip* showingCtrl;
+    const glFont* font;
+    std::vector<std::string> lines;
+    unsigned width = 0, height = 0;
+
+public:
+    Tooltip(const ctrlBaseTooltip* showingCtrl, const std::string& text, unsigned short maxWidth)
+        : showingCtrl(showingCtrl), font(NormalFont), lines(font->GetWrapInfo(text, maxWidth, maxWidth).CreateSingleStrings(text))
+    {
+        if(lines.empty())
+            return;
+        width = std::numeric_limits<unsigned>::max();
+        for(const auto& line : lines)
+            width = std::min(width, font->getWidth(line));
+        width += BORDER_SIZE * 2;
+        height = lines.size() * font->getHeight() + BORDER_SIZE * 2;
+    }
+
+    auto getShowingCtrl() const { return showingCtrl; }
+    auto getWidth() const { return width; }
+
+    void draw(DrawPoint pos) const
+    {
+        Window::DrawRectangle(Rect(pos, width, height), 0x9F000000);
+        pos += DrawPoint::all(BORDER_SIZE);
+        const auto fontHeight = font->getHeight();
+        for(const auto& line : lines)
+        {
+            font->Draw(pos, line, FontStyle::TOP, COLOR_YELLOW);
+            pos.y += fontHeight;
+        }
+    }
+};
+
 void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip)
 {
     // Max width of tooltip
-    const unsigned short MAX_TOOLTIP_WIDTH = 260;
-    static const ctrlBaseTooltip* lttw = nullptr;
+    constexpr unsigned short MAX_TOOLTIP_WIDTH = 260;
 
-    if(tooltip.empty() && (!ttw || lttw == ttw))
-        this->curTooltip.clear();
-    else if(!tooltip.empty())
+    if(tooltip.empty())
     {
-        glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(tooltip, MAX_TOOLTIP_WIDTH, MAX_TOOLTIP_WIDTH);
-        std::vector<std::string> lines = wi.CreateSingleStrings(tooltip);
-        curTooltip.clear();
-        for(const auto& line : lines)
-        {
-            if(!curTooltip.empty())
-                curTooltip += "\n";
-            curTooltip += line;
-        }
-        lttw = ttw;
-    }
+        if(curTooltip && (!ttw || curTooltip->getShowingCtrl() == ttw))
+            curTooltip.reset();
+    } else
+        curTooltip = std::make_unique<Tooltip>(ttw, tooltip, MAX_TOOLTIP_WIDTH);
 }
 
 void WindowManager::DrawToolTip()
 {
     // Tooltip zeichnen
-    if(curTooltip.length() && lastMousePos.isValid())
+    if(curTooltip && lastMousePos.isValid())
     {
         // Horizontal pace between mouse position and tooltip border
-        const unsigned rightSpacing = 30;
-        const unsigned leftSpacing = 10;
-        unsigned text_width = NormalFont->getWidth(curTooltip);
+        constexpr unsigned rightSpacing = 25;
+        constexpr unsigned leftSpacing = 10;
         DrawPoint ttPos = DrawPoint(lastMousePos.x + rightSpacing, lastMousePos.y);
-        unsigned right_edge = ttPos.x + text_width + 2;
+        unsigned right_edge = ttPos.x + curTooltip->getWidth();
 
         // links neben der Maus, wenn es über den Rand gehen würde
         if(right_edge > curRenderSize.x)
-            ttPos.x = lastMousePos.x - leftSpacing - text_width;
-
-        unsigned numLines = 1;
-        size_t pos = curTooltip.find('\n');
-        while(pos != std::string::npos)
-        {
-            numLines++; //-V127
-            pos = curTooltip.find('\n', pos + 1);
-        }
-
-        Rect bgRect(ttPos - DrawPoint(2, 2), text_width + 4, 4 + numLines * NormalFont->getDy());
-        Window::DrawRectangle(bgRect, 0x9F000000);
-        NormalFont->Draw(ttPos, curTooltip, FontStyle::TOP, COLOR_YELLOW);
+            ttPos.x = lastMousePos.x - leftSpacing - curTooltip->getWidth();
+        curTooltip->draw(ttPos);
     }
 }
