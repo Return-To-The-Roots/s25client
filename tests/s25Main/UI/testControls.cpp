@@ -131,12 +131,12 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     {
         int moveOffset = rttr::test::randomValue<int>(-curCursorPos - 1, curChars.size() - curCursorPos + 1); //+-1 to check for "overrun"
         for(; moveOffset < 0; ++moveOffset, --curCursorPos)
-            edt.Msg_KeyDown(KeyEvent{KT_LEFT});
+            edt.Msg_KeyDown(KeyEvent{KT_LEFT, 0, false, false, false});
         for(; moveOffset > 0; --moveOffset, ++curCursorPos)
-            edt.Msg_KeyDown(KeyEvent{KT_RIGHT});
+            edt.Msg_KeyDown(KeyEvent{KT_RIGHT, 0, false, false, false});
         curCursorPos = helpers::clamp(curCursorPos, 0, static_cast<int>(curChars.size()));
         // Erase one char (currently only good way to check where the cursor is
-        edt.Msg_KeyDown(KeyEvent{KT_BACKSPACE});
+        edt.Msg_KeyDown(KeyEvent{KT_BACKSPACE, 0, false, false, false});
         if(curCursorPos > 0)
         {
             curChars.erase(curChars.begin() + --curCursorPos);
@@ -162,18 +162,18 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     do
     {
         BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
-        edt.Msg_KeyDown(KeyEvent{KT_LEFT});
+        edt.Msg_KeyDown(KeyEvent{KT_LEFT, 0, false, false, false});
         --curCursorPos;
     } while(curCursorPos > 5);
     while(curCursorPos-- >= 0)
     {
         BOOST_TEST_REQUIRE(txt->GetText() == curText); // Trailing chars are removed by font rendering
-        edt.Msg_KeyDown(KeyEvent{KT_LEFT});
+        edt.Msg_KeyDown(KeyEvent{KT_LEFT, 0, false, false, false});
     }
     // Moving fully right shows txt again
     curCursorPos = 0;
-    while(curCursorPos++ < curChars.size())
-        edt.Msg_KeyDown(KeyEvent{KT_RIGHT});
+    while(static_cast<unsigned>(curCursorPos++) < curChars.size())
+        edt.Msg_KeyDown(KeyEvent{KT_RIGHT, 0, false, false, false});
     BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
 }
 
