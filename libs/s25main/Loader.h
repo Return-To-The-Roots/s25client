@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Rect.h"
+#include "helpers/MaxEnumValue.h"
 #include "helpers/MultiArray.h"
 #include "ogl/glSmartBitmap.h"
 #include "gameTypes/BuildingType.h"
@@ -49,6 +50,15 @@ namespace libsiedler2 {
 class ArchivItem_Ini;
 class ArchivItem_Palette;
 } // namespace libsiedler2
+
+/// Fontsizes for which we have glyph sets
+enum class FontSize
+{
+    Small,
+    Normal,
+    Large
+};
+DEFINE_MAX_ENUM_VALUE(FontSize, FontSize::Large)
 
 /// Loader Klasse.
 class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
@@ -109,7 +119,7 @@ public:
     ITexture* GetTextureN(const std::string& file, unsigned nr);
     glArchivItem_Bitmap* GetImage(const std::string& file, const std::string& name);
     glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned nr);
-    glFont* GetFont(unsigned nr);
+    glFont* GetFont(FontSize);
     libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned nr = 0);
     SoundEffectItem* GetSoundN(const std::string& file, unsigned nr);
     std::string GetTextN(const std::string& file, unsigned nr);
@@ -191,8 +201,8 @@ private:
 #define LOADER Loader::inst()
 
 // Helper macros for easy access to fonts
-#define SmallFont (LOADER.GetFont(0))
-#define NormalFont (LOADER.GetFont(1))
-#define LargeFont (LOADER.GetFont(2))
+#define SmallFont (LOADER.GetFont(FontSize::Small))
+#define NormalFont (LOADER.GetFont(FontSize::Normal))
+#define LargeFont (LOADER.GetFont(FontSize::Large))
 
 #endif // LOADER_H_INCLUDED

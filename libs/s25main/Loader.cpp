@@ -86,9 +86,9 @@ glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsi
     return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv[nr]);
 }
 
-glFont* Loader::GetFont(unsigned nr)
+glFont* Loader::GetFont(FontSize size)
 {
-    return nr < fonts.size() ? &fonts[nr] : nullptr;
+    return fonts.empty() ? nullptr : &fonts[static_cast<unsigned>(size)];
 }
 
 libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, unsigned nr)
@@ -275,7 +275,7 @@ bool Loader::LoadFonts()
         return false;
     fonts.clear();
     const auto& loadedFonts = GetArchive("fonts");
-    for(int i = 0; i < 3; i++)
+    for(unsigned i = 0; i <= helpers::MaxEnumValue_v<FontSize>; i++)
     {
         const auto* curFont = dynamic_cast<const libsiedler2::ArchivItem_Font*>(loadedFonts[i]);
         if(!curFont)
@@ -329,11 +329,11 @@ void Loader::LoadDummyGUIFiles()
     // Fonts
     auto* palette = GetPaletteN("colors");
     libsiedler2::PixelBufferBGRA buffer(15, 16);
-    for(unsigned i = 0; i < 3; i++)
+    for(unsigned i = 0; i <= helpers::MaxEnumValue_v<FontSize>; i++)
     {
         auto font = std::make_unique<libsiedler2::ArchivItem_Font>();
-        const unsigned dx = 9 + i * 3;
-        const unsigned dy = 10 + i * 3;
+        const unsigned dx = 9 + i * (helpers::MaxEnumValue_v<FontSize> + 1);
+        const unsigned dy = 10 + i * (helpers::MaxEnumValue_v<FontSize> + 1);
         font->setDx(dx);
         font->setDy(dy);
         font->alloc(255);
