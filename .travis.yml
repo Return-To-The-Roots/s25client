@@ -59,7 +59,7 @@ jobs:
       os: linux
       addons:
         apt:
-          sources: [*defSrcs, llvm-toolchain-trusty-8]
+          sources: [*defSrcs, llvm-toolchain-xenial-8]
           packages: [*defPackages, g++-7, clang-8, clang-tidy-8]
       env:
         - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
@@ -97,12 +97,12 @@ jobs:
     - os: linux
       compiler: gcc
       env:
-        - MATRIX_EVAL="CXX=g++-8 && CC=gcc-8"
+        - MATRIX_EVAL="CXX=g++-9 && CC=gcc-9"
         - BUILD_TYPE=Debug
       addons:
         apt:
           <<: *defApt
-          packages: [*defPackages, g++-8]
+          packages: [*defPackages, g++-9]
       script:
         - tools/ci/staticValidation.sh "$(pwd)"
         - tools/ci/travisBuild.sh
@@ -112,7 +112,7 @@ jobs:
       compiler: clang
       addons:
         apt:
-          sources: [*defSrcs, llvm-toolchain-trusty-8]
+          sources: [*defSrcs, llvm-toolchain-xenial-8]
           packages: [*defPackages, g++-7, clang-8]
       env:
         - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
