@@ -21,7 +21,7 @@
 
 #include "IngameWindow.h"
 
-class glArchivItem_Font;
+class glFont;
 struct Inventory;
 class GamePlayer;
 
@@ -33,7 +33,7 @@ protected:
     unsigned pageWares, pagePeople;
 
 public:
-    iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing, glArchivItem_Font* font,
+    iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing, const glFont* font,
             const Inventory& inventory, const GamePlayer& player);
 
 protected:

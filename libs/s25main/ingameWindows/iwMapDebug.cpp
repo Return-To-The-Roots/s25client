@@ -22,7 +22,7 @@
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
 #include "helpers/toString.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/TerritoryRegion.h"
@@ -79,7 +79,7 @@ public:
     unsigned showDataIdx;
     unsigned playerIdx;
     const GameWorldBase& gw;
-    glArchivItem_Font* font;
+    const glFont* font;
 };
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)

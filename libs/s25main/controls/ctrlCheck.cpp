@@ -23,11 +23,11 @@
 #include "driver/MouseCoords.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include <utility>
 
 ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, std::string text,
-                     glArchivItem_Font* font, bool readonly)
+                     const glFont* font, bool readonly)
     : Window(parent, id, pos, size), tc(tc), text(std::move(text)), font(font), check(false), readonly(readonly)
 {}
 
@@ -79,7 +79,7 @@ void ctrlCheck::Draw_()
         int availableWidth = boxStartOffsetX - 4;
         if(availableWidth < 0)
             availableWidth = 0;
-        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, FontStyle::VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB), 0,
+        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, FontStyle::VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB),
                    availableWidth);
     }
 

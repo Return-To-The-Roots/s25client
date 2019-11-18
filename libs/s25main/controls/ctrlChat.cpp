@@ -21,7 +21,7 @@
 #include "FileChecksum.h"
 #include "ctrlScrollBar.h"
 #include "driver/MouseCoords.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "variant.h"
 #include "s25util/Log.h"
 
@@ -40,7 +40,7 @@ static const unsigned short SCROLLBAR_WIDTH = 20;
  *  @param[in] tc     Hintergrundtextur
  *  @param[in] font   Schriftart
  */
-ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
+ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font)
     : Window(parent, id, pos, size), tc(tc), font(font), time_color(0xFFFFFFFF)
 {
     // Zeilen pro Seite festlegen errechnen
@@ -177,8 +177,7 @@ void ctrlChat::WrapLine(unsigned short i)
     }
 
     // Zeilen ggf. wrappen, falls der Platz nich reicht und die Zeilenanfanänge in wi speichern
-    glArchivItem_Font::WrapInfo wi =
-      font->GetWrapInfo(line.msg, GetSize().x - prefix_width - 2 - SCROLLBAR_WIDTH, GetSize().x - 2 - SCROLLBAR_WIDTH);
+    glFont::WrapInfo wi = font->GetWrapInfo(line.msg, GetSize().x - prefix_width - 2 - SCROLLBAR_WIDTH, GetSize().x - 2 - SCROLLBAR_WIDTH);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(line.msg);

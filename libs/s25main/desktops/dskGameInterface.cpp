@@ -71,7 +71,7 @@
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
@@ -328,11 +328,11 @@ void dskGameInterface::Msg_PaintAfter()
             tournamentNotice = helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tmd - curGF));
     }
 
-    NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, 0xFFFFFF00);
+    NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFileName(), FontStyle::BOTTOM, 0xFFFFFF00);
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFileName(), FontStyle::BOTTOM, COLOR_YELLOW);
     else
     {
         // Laggende Spieler anzeigen in Form von Schnecken

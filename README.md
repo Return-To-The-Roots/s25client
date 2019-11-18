@@ -37,7 +37,7 @@ Coverage:
 ### Prerequisite Linux:
 - C++14 compatible compiler (e.g. GCC-6)
 - cmake
-- git
+- git + git-lfs
 - libboost-dev (at least v1.64.0, i.e http://www.boost.org/)
 - libboost-locale-dev, libboost-iostreams-dev, libboost-filesystem-dev, libbost-program-options-dev (at least v1.64.0)
 - libsdl1.2-dev

@@ -24,9 +24,9 @@
 #include "driver/MouseCoords.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 
-ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                            unsigned short max_list_height, bool readonly)
     : Window(parent, id, pos, size), tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), suppressSelectEvent(false)
 {
@@ -245,7 +245,7 @@ void ctrlComboBox::Draw_()
 
     // Namen des selektierten Strings in der Box anzeigen
     if(liste->GetNumLines() > 0)
-        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), FontStyle::VCENTER, COLOR_YELLOW, 0,
+        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), FontStyle::VCENTER, COLOR_YELLOW,
                    GetSize().x - 2 - GetSize().y, "");
 
     // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde

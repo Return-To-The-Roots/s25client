@@ -148,19 +148,19 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
                        NormalFont); // qx: fix for bug #1106952
 
     // Aktueller Maximalwert an der y-Achse
-    maxValue = AddText(31, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52), FontStyle::RIGHT | FontStyle::VCENTER,
-                       LOADER.GetFontN("resource", 0));
+    maxValue = AddText(31, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52),
+                       FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
     // Aktueller Minimalwert an der y-Achse
-    minValue = AddText(40, DrawPoint(211, 200), "0", MakeColor(255, 136, 96, 52), FontStyle::RIGHT | FontStyle::VCENTER,
-                       LOADER.GetFontN("resource", 0));
+    minValue = AddText(40, DrawPoint(211, 200), "0", MakeColor(255, 136, 96, 52),
+                       FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
     // Zeit-Werte an der x-Achse
     timeAnnotations = std::vector<ctrlText*>(7); // TODO nach oben
     for(unsigned i = 0; i < 7; ++i)
     {
         timeAnnotations[i] = AddText(32 + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
-                                     FontStyle::CENTER | FontStyle::TOP, LOADER.GetFontN("resource", 0));
+                                     FontStyle::CENTER | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
     }
 
     // Standardansicht: 15min / Landesgröße

@@ -22,12 +22,12 @@
 #include "Window.h"
 #include "ctrlList.h"
 class MouseCoords;
-class glArchivItem_Font;
+class glFont;
 
 class ctrlComboBox final : public Window
 {
 public:
-    ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+    ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                  unsigned short max_list_height, bool readonly);
 
     void Resize(const Extent& newSize) override;
@@ -57,7 +57,7 @@ protected:
 
 private:
     TextureColor tc;
-    glArchivItem_Font* font;
+    const glFont* font;
     unsigned short max_list_height;
     bool readonly;
     bool suppressSelectEvent;

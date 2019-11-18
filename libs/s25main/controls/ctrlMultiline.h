@@ -23,7 +23,7 @@
 #include <vector>
 
 class MouseCoords;
-class glArchivItem_Font;
+class glFont;
 
 class ctrlMultiline : public Window
 {
@@ -34,7 +34,7 @@ public:
 
     /// Creates a multiline control with automatic/transparent wrapping of long lines and automatic scrollbar
     /// Note: Using non-default font-formats may cause issues when the scrollbar is shown
-    ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+    ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                   FontStyle format);
 
     void Resize(const Extent& newSize) override;
@@ -77,7 +77,7 @@ private:
     unsigned GetContentWidth() const;
 
     TextureColor tc_;
-    glArchivItem_Font* font;
+    const glFont* font;
     FontStyle format_;
     bool showBackground_;
     bool scrollbarAllowed_;

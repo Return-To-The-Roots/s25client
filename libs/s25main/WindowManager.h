@@ -125,6 +125,8 @@ public:
     void SetActiveWindow(Window&);
 
 private:
+    class Tooltip;
+
     void DrawToolTip();
 
     void TakeScreenshot();
@@ -142,7 +144,7 @@ private:
     /// Otherwise the window will not be shown, if it was added after a switch request
     std::vector<std::unique_ptr<IngameWindow>> nextWnds;
     Position lastMousePos;
-    std::string curTooltip;
+    std::unique_ptr<Tooltip> curTooltip;
     Extent curRenderSize; /// current render size
 
     // Für Doppelklick merken:

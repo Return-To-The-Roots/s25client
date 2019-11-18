@@ -20,9 +20,9 @@
 #include "CollisionDetection.h"
 #include "ctrlScrollBar.h"
 #include "driver/MouseCoords.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 
-ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
+ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font)
     : Window(parent, id, pos, elMax(size, Extent(22, 4))), tc(tc), font(font), selection_(-1), mouseover(-1)
 {
     pagesize = (GetSize().y - 4) / font->getHeight();
@@ -171,7 +171,7 @@ void ctrlList::Draw_()
             DrawRectangle(Rect(curPos, Extent(GetSize().x - 22, font->getHeight())), 0x80000000);
 
         // Text an sich
-        font->Draw(curPos, lines[i + scrollbarPos], FontStyle{}, (selection_ == i + scrollbarPos ? 0xFFFFAA00 : COLOR_YELLOW), 0,
+        font->Draw(curPos, lines[i + scrollbarPos], FontStyle{}, (selection_ == i + scrollbarPos ? 0xFFFFAA00 : COLOR_YELLOW),
                    GetSize().x - 22);
         curPos.y += font->getHeight();
     }

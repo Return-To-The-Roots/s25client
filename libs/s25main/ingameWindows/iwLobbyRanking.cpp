@@ -41,7 +41,7 @@ void iwLobbyRanking::UpdateRankings(const LobbyPlayerList& rankinglist)
             std::string points = helpers::toString(rankInfo.getPunkte());
             std::string numLost = helpers::toString(rankInfo.getVerloren());
             std::string numWon = helpers::toString(rankInfo.getGewonnen());
-            rankingtable->AddRow(0, rankInfo.getName().c_str(), points.c_str(), numLost.c_str(), numWon.c_str());
+            rankingtable->AddRow({rankInfo.getName(), points, numLost, numWon});
         }
         if(first)
             rankingtable->SetSelection(0);
@@ -52,8 +52,11 @@ iwLobbyRanking::iwLobbyRanking()
     : IngameWindow(CGI_LOBBYRANKING, IngameWindow::posLastOrCenter, Extent(440, 410), _("Internet Ranking"),
                    LOADER.GetImageN("resource", 41), true)
 {
-    AddTable(0, DrawPoint(20, 25), Extent(400, 340), TC_GREY, NormalFont, 4, _("Name"), 360, ctrlTable::SRT_STRING, _("Points"), 185,
-             ctrlTable::SRT_NUMBER, _("Lost"), 215, ctrlTable::SRT_NUMBER, _("Won"), 240, ctrlTable::SRT_NUMBER);
+    using SRT = ctrlTable::SortType;
+    AddTable(
+      0, DrawPoint(20, 25), Extent(400, 340), TC_GREY, NormalFont,
+      ctrlTable::Columns{
+        {_("Name"), 360, SRT::String}, {_("Points"), 185, SRT::Number}, {_("Lost"), 215, SRT::Number}, {_("Won"), 240, SRT::Number}});
     AddTimer(1, 60000);
 
     // "Zurück"
