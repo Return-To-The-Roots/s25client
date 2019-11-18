@@ -24,6 +24,7 @@
 #include "driver/MouseCoords.h"
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
+#include <cmath>
 #include <numeric>
 #include <sstream>
 
@@ -124,7 +125,7 @@ ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Ex
     // Scrollbar hinzufügen
     AddScrollBar(0, DrawPoint(GetSize().x - 20, 0), Extent(20, GetSize().y), 20, tc, line_count);
 
-    for(unsigned short i = 0; i < columns_.size(); ++i)
+    for(unsigned i = 0; i < columns_.size(); ++i)
     {
         AddTextButton(i + 1, DrawPoint(0, 0), Extent(0, header_height), tc, columns_[i].title, font);
     }
@@ -144,8 +145,8 @@ void ctrlTable::Resize(const Extent& newSize)
 
     // changed height
 
-    scrollbar->SetPos(DrawPoint(newSize.x - 20, 0));
     scrollbar->Resize(Extent(20, newSize.y));
+    scrollbar->SetPos(DrawPoint(newSize.x - scrollbar->GetSize().x, 0));
 
     line_count = (newSize.y - header_height - 2) / font->getHeight();
     scrollbar->SetPageSize(line_count);
@@ -309,14 +310,14 @@ void ctrlTable::Draw_()
 
     Window::Draw_();
 
-    auto lines = static_cast<int>(line_count > rows_.size() ? rows_.size() : line_count);
-    auto* scroll = GetCtrl<ctrlScrollBar>(0);
+    const auto lines = static_cast<int>(line_count > rows_.size() ? rows_.size() : line_count);
+    const auto* scroll = GetCtrl<ctrlScrollBar>(0);
     DrawPoint curPos = GetDrawPos() + DrawPoint(2, 2 + header_height);
     for(int i = 0; i < lines; ++i)
     {
         const int curRow = i + scroll->GetScrollPos();
         RTTR_Assert(curRow >= 0 && curRow < GetNumRows());
-        bool isSelected = selection_ == curRow;
+        const bool isSelected = selection_ == curRow;
         if(isSelected)
         {
             // durchsichtig schwarze Markierung malen
@@ -324,12 +325,12 @@ void ctrlTable::Draw_()
         }
 
         DrawPoint colPos = curPos;
-        for(unsigned short c = 0; c < columns_.size(); ++c)
+        for(unsigned c = 0; c < columns_.size(); ++c)
         {
             if(columns_[c].width == 0)
                 continue;
 
-            auto* bt = GetCtrl<ctrlButton>(c + 1);
+            const auto* bt = GetCtrl<ctrlButton>(c + 1);
             font->Draw(colPos, rows_[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), bt->GetSize().x, "");
             colPos.x += bt->GetSize().x;
         }
@@ -436,72 +437,34 @@ bool ctrlTable::Msg_MouseMove(const MouseCoords& mc)
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool visible)
+void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool /*visible*/)
 {
-    if(visible)
-    {
-        /// Scrollbar wird angezeigt
-        // Breite der letzten Spalte entsprechend anpassen, wenn plötzlich ne Scrolleiste sich hier noch reindrängelt
-        // Aufteilen dieser Breite auf die einzelnen Spalten
-        auto x_col_minus = unsigned(20 / columns_.size());
-        // Rest, der nicht aufgeteilt wurde
-        auto rest = unsigned(20 % columns_.size());
-
-        for(unsigned i = 0; i < columns_.size(); ++i)
-        {
-            auto* bt = GetCtrl<ctrlButton>(i + 1);
-            if(bt->GetSize().x > x_col_minus) //-V807
-
-                bt->SetWidth(bt->GetSize().x - x_col_minus);
-            else
-                rest += x_col_minus;
-        }
-
-        // Rest einfach von letzter passender Spalte abziehen
-        for(unsigned i = 0; i < columns_.size(); ++i)
-        {
-            auto* bt = GetCtrl<ctrlButton>(unsigned(columns_.size()) - i - 1 + 1);
-            if(bt->GetSize().x > rest)
-            {
-                bt->SetWidth(bt->GetSize().x - rest);
-                break;
-            }
-        }
-
-        // X-Position der Buttons neu berechnen
-        DrawPoint btPos(0, 0);
-        for(unsigned i = 0; i < columns_.size(); ++i)
-        {
-            GetCtrl<ctrlButton>(i + 1)->SetPos(btPos);
-            btPos.x += GetCtrl<ctrlButton>(i + 1)->GetSize().x;
-        }
-    } else
-    {
-        // Scrollbar wird nicht mehr angezeigt --> Breite und Position wieder zurücksetzen
-        ResetButtonWidths();
-    }
+    ResetButtonWidths();
 }
 
-/// Setzt die Breite und Position der Buttons ohne Scrolleiste
 void ctrlTable::ResetButtonWidths()
 {
-    unsigned sumWidth = std::accumulate(columns_.begin(), columns_.end(), 0u, [](unsigned cur, const Column& c) { return cur + c.width; });
+    auto addColumnWidth = [](unsigned cur, const Column& c) { return cur + c.width; };
+    const unsigned sumWidth = std::max(1u, std::accumulate(columns_.begin(), columns_.end(), 0u, addColumnWidth));
+    const auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
+    const unsigned availableSize = std::max<int>(0, GetSize().x - (scrollbar->IsVisible() ? scrollbar->GetSize().x : 0));
+    const double sizeFactor = static_cast<double>(availableSize) / static_cast<double>(sumWidth);
     DrawPoint btPos(0, 0);
     for(unsigned i = 0; i < columns_.size(); ++i)
     {
-        ctrlButton* button = GetCtrl<ctrlButton>(i + 1);
-        button->SetWidth(columns_[i].width * GetSize().x / sumWidth);
+        auto* button = GetCtrl<ctrlButton>(i + 1);
+        button->SetWidth(std::lround(columns_[i].width * sizeFactor));
         button->SetPos(btPos);
         btPos.x += button->GetSize().x;
     }
 
-    // Rest auf dem letzten aufschlagen
+    // Adjust last column size to cater for rounding error
     for(unsigned i = columns_.size(); i > 0; --i)
     {
         if(columns_[i - 1].width)
         {
-            auto* bt = GetCtrl<ctrlButton>(i - 1);
-            bt->SetWidth(bt->GetSize().x + (GetSize().x - btPos.x));
+            auto* bt = GetCtrl<ctrlButton>(i);
+            bt->SetWidth(std::max(0, static_cast<int>(availableSize) - bt->GetPos().x));
             break;
         }
     }
