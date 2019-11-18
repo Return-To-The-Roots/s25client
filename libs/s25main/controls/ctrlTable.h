@@ -43,7 +43,7 @@ struct TableColumn
     std::string title;
     /// Column width in relation to other cells
     unsigned short width;
-    TableSortType sortType = TableSortType::Default;
+    TableSortType sortType;
 };
 class ctrlTable : public Window
 {
