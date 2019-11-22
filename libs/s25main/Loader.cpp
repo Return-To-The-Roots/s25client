@@ -387,8 +387,9 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     isWinterGFX_ = isWinterGFX;
 
+    // TODO: Only put actually required archives here
     for(unsigned nation = 0; nation < NUM_NATS; ++nation)
-        nation_gfx[nation] = &GetArchive(NATION_GFXSET_Z[isWinterGFX ? 1 : 0][nation]);
+        nation_gfx[nation] = &files_[NATION_GFXSET_Z[isWinterGFX ? 1 : 0][nation]].archiv;
 
     return true;
 }
