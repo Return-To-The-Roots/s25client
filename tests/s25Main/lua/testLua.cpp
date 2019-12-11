@@ -122,11 +122,8 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     GAMECLIENT.SetIsHost(false);
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "false"));
     BOOST_CHECK(isLuaEqual("rttr:GetNumPlayers()", "3"));
-    std::string oldLog = getLog();
     // Set Player ID
     GAMECLIENT.SetTestPlayerId(1);
-    clearLog();
-    LOG.write(oldLog, LogTarget::Stdout);
     BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
 }
 

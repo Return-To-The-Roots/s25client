@@ -70,8 +70,8 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 {
     if(!author.empty())
         LOG.writeColored("%1% ", color_author) % author;
-    LOG.writeColored(CD_STRINGS[cd], CD_COLORS[cd]);
-    LOG.write(msg + "\n");
+    LOG.writeColored("%1%", CD_COLORS[cd]) % CD_STRINGS[cd];
+    LOG.write("%1%\n") % msg;
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
     glFont::WrapInfo wi = LargeFont->GetWrapInfo(msg,
