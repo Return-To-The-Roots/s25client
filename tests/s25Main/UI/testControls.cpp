@@ -30,6 +30,7 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 #include "rttr/test/random.hpp"
+#include <boost/locale/utf.hpp>
 #include <boost/test/unit_test.hpp>
 #include <Loader.h>
 #include <array>
@@ -101,8 +102,11 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     LOADER.LoadFonts();
     const auto* font = NormalFont;
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(90, 15), TC_GREEN1, font);
+    ctrlEdit edt2(nullptr, 0, DrawPoint(0, 0), Extent(90, 15), TC_GREEN1, font);
     const ctrlBaseText* txt = edt.GetCtrl<ctrlBaseText>(0);
+    const ctrlBaseText* txt2 = edt2.GetCtrl<ctrlBaseText>(0);
     BOOST_TEST_REQUIRE(txt);
+    BOOST_TEST_REQUIRE(txt2);
     BOOST_TEST_REQUIRE(txt->GetText() == "");
     // Use a 1 Byte and a 2 Byte UTF8 "char"
     const std::array<std::string, 6> chars = {u8"a", u8"b", u8"c", u8"\u0424", u8"\u041A", u8"\u043b"};
@@ -113,8 +117,14 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     for(int i = 0; i < 30; i++)
     {
         curChars.push_back(chars[rttr::test::randomValue<size_t>(0u, chars.size() - 1)]);
+        auto it = curChars.back().begin();
+        const char32_t c = boost::locale::utf::utf_traits<char>::decode_valid(it);
         std::string curText = std::accumulate(curChars.begin(), curChars.end(), std::string{});
         edt.SetText(curText);
+        // Activate
+        edt2.Msg_LeftDown(MouseCoords(edt2.GetPos(), true));
+        edt2.Msg_PaintAfter();
+        edt2.Msg_KeyDown(KeyEvent{KT_CHAR, c, false, false, false});
         // Remove chars from front until in size
         auto itFirst = curChars.begin();
         while(font->getWidth(curText) > allowedWidth)
@@ -122,6 +132,7 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
             curText = std::accumulate(++itFirst, curChars.end(), std::string{});
         }
         BOOST_TEST_REQUIRE(txt->GetText() == curText);
+        BOOST_TEST_REQUIRE(txt2->GetText() == curText);
     }
     // Check navigating of cursor
     edt.Msg_LeftDown(MouseCoords(edt.GetPos(), true)); // Activate

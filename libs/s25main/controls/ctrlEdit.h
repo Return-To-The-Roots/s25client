@@ -64,18 +64,18 @@ private:
     ctrlTextDeepening* txtCtrl;
     bool isPassword_;
     bool isDisabled_;
-    bool focus_;
-    bool newFocus_;
+    bool focus_ = false;
+    bool newFocus_ = false;
     bool notify_;
 
     std::u32string text_;
     /// Position of cursor in text (in UTF32 chars)
-    unsigned cursorPos_;
+    unsigned cursorPos_ = 0;
     /// Offset of the cursor from the start of the text start position
     unsigned cursorOffsetX_ = 0;
-    unsigned viewStart_;
+    unsigned viewStart_ = 0;
 
-    bool numberOnly_;
+    bool numberOnly_ = false;
 };
 
 #endif // !CTRLEDIT_H_INCLUDED

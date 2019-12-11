@@ -21,6 +21,7 @@
 #include "ctrlTextDeepening.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
@@ -29,12 +30,11 @@
 
 ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                    unsigned short maxlength, bool password, bool disabled, bool notify)
-    : Window(parent, id, pos, size), maxLength_(maxlength), isPassword_(password), isDisabled_(disabled), focus_(false), newFocus_(false),
-      notify_(notify), numberOnly_(false)
+    : Window(parent, id, pos, size), maxLength_(maxlength), isPassword_(password), isDisabled_(disabled), notify_(notify)
 {
     txtCtrl = static_cast<ctrlTextDeepening*>(
       AddTextDeepening(0, DrawPoint(0, 0), size, tc, "", font, COLOR_YELLOW, FontStyle::LEFT | FontStyle::VCENTER));
-    SetText("");
+    UpdateInternalText();
 }
 
 /**
@@ -44,14 +44,16 @@ ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Exte
  */
 void ctrlEdit::SetText(const std::string& text)
 {
-    cursorPos_ = 0;
+    text_ = utf8::utf8to32(text);
+    if(numberOnly_)
+        helpers::remove_if(text_, [](char32_t c) { return !(c >= '0' && c <= '9'); });
+    if(maxLength_ > 0 && text_.size() > maxLength_)
+        text_.resize(maxLength_);
+
     viewStart_ = 0;
-
-    text_.clear();
-    std::u32string tmp = utf8::utf8to32(text);
-
-    for(const auto c : tmp)
-        AddChar(c);
+    cursorPos_ = text_.length();
+    UpdateInternalText();
+    Notify();
 }
 
 void ctrlEdit::SetText(const unsigned text)
@@ -77,6 +79,7 @@ void ctrlEdit::UpdateInternalText()
     {
         viewStart_ = 0;
         cursorPos_ = 0;
+        cursorOffsetX_ = 0;
         txtCtrl->SetText("");
     } else
     {
