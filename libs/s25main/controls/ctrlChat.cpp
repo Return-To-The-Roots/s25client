@@ -212,9 +212,9 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
 
     // Loggen
     LOG.write("%s <") % time_string;
-    LOG.writeColored(player, player_color);
+    LOG.writeColored("%1%", player_color) % player;
     LOG.write(">: ");
-    LOG.writeColored(msg, msg_color);
+    LOG.writeColored("%1%", msg_color) % msg;
     LOG.write("\n");
 
     // Umbrechen

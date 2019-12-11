@@ -152,7 +152,7 @@ void showCrashMessage()
         s25util::ClassicImbuedStream<std::stringstream> ss;
         for(void* p : stacktrace)
             ss << p << "\n";
-        LOG.write(ss.str(), target);
+        LOG.write("%1%", target) % ss.str();
     } catch(...)
     { //-V565
       // Could not write stacktrace. Ignore errors

@@ -72,7 +72,7 @@ void RTTR_AssertFailure(const char* condition, const char* file, const int line,
         std::string msg = sMsg.str();
         try
         {
-            LOG.write(msg + "\n", LogTarget::Stderr);
+            LOG.write("%1%\n", LogTarget::Stderr) % msg;
         } catch(...)
         {
             std::cerr << msg << std::endl;
