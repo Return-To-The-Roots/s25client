@@ -39,7 +39,7 @@ Coverage:
 - cmake
 - git
 - libboost-dev (at least v1.64.0, i.e http://www.boost.org/)
-- libboost-locale-dev, libboost-iostreams-dev, libboost-filesystem-dev, libbost-program-options-dev (at least v1.64.0)
+- libboost-locale-dev, libboost-iostreams-dev, libboost-filesystem-dev, libboost-program-options-dev (at least v1.64.0)
 - libsdl1.2-dev
 - libsdl-mixer1.2-dev
 - libsdl2-dev (optional)
