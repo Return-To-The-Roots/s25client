@@ -31,8 +31,8 @@
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
-#include "libutil/StringConversion.h"
-#include "libutil/colors.h"
+#include "s25util/StringConversion.h"
+#include "s25util/colors.h"
 
 iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, Extent(300, 285), _("Join Game"), LOADER.GetImageN("resource", 41),

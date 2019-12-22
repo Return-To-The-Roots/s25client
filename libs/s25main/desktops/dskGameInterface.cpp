@@ -71,7 +71,7 @@
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
@@ -328,11 +328,11 @@ void dskGameInterface::Msg_PaintAfter()
             tournamentNotice = helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tmd - curGF));
     }
 
-    NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, 0xFFFFFF00);
+    NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFileName(), FontStyle::BOTTOM, 0xFFFFFF00);
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFileName(), FontStyle::BOTTOM, COLOR_YELLOW);
     else
     {
         // Laggende Spieler anzeigen in Form von Schnecken
@@ -484,13 +484,15 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         const noBase& selObj = *worldViewer.GetWorld().GetNO(cSel);
         if(selObj.GetType() == NOP_BUILDING && worldViewer.IsOwner(cSel))
         {
-            if(WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
+            if(auto* wnd = WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
+            {
+                WINDOWMANAGER.SetActiveWindow(*wnd);
                 return true;
+            }
             BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
             // HQ
             if(bt == BLD_HEADQUARTERS)
-                WINDOWMANAGER.ReplaceWindow(
-                  std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
+                WINDOWMANAGER.Show(std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
                 WINDOWMANAGER.Show(

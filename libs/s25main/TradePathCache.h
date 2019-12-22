@@ -19,7 +19,7 @@
 #define TradePathCache_h__
 
 #include "world/TradePath.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <array>
 
 class GameWorldGame;

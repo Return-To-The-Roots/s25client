@@ -19,8 +19,8 @@
 #define helperFuncs_h__
 
 #include "BufferedWriter.hpp"
-#include "libutil/AvoidDuplicatesWriter.h"
-#include "libutil/Log.h"
+#include "s25util/AvoidDuplicatesWriter.h"
+#include "s25util/Log.h"
 #include <boost/test/unit_test.hpp>
 
 namespace rttr { namespace test {

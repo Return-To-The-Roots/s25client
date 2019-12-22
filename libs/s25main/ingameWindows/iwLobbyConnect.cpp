@@ -30,7 +30,7 @@
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
-#include "libutil/StringConversion.h"
+#include "s25util/StringConversion.h"
 
 namespace {
 enum

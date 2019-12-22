@@ -32,10 +32,10 @@
 #include "worldFixtures/initGameRNG.hpp"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "libutil/AvoidDuplicatesWriter.h"
-#include "libutil/Log.h"
-#include "libutil/StringStreamWriter.h"
-#include "libutil/colors.h"
+#include "s25util/AvoidDuplicatesWriter.h"
+#include "s25util/Log.h"
+#include "s25util/StringStreamWriter.h"
+#include "s25util/colors.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 #include <memory>

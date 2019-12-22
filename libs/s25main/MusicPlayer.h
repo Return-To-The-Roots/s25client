@@ -18,7 +18,7 @@
 #define MUSICPLAYER_H_INCLUDED
 
 #include "libsiedler2/Archiv.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <string>
 #include <vector>
 

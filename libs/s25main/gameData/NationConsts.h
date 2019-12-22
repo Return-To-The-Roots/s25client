@@ -22,7 +22,7 @@
 
 #include "mygettext/mygettext.h"
 #include "gameTypes/Nation.h"
-#include <libutil/warningSuppression.h>
+#include <s25util/warningSuppression.h>
 #include <array>
 
 const std::array<const char*, NUM_NATS> SUPPRESS_UNUSED NationNames = {

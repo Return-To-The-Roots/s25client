@@ -30,7 +30,7 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 
 LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance) : gw(gameInstance.lock()->world_), game(gameInstance)
 {

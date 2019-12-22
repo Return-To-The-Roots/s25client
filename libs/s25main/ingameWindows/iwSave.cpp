@@ -33,7 +33,7 @@
 #include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <utility>
 
 const unsigned NUM_AUTO_SAVE_INTERVALS = 7;
@@ -43,9 +43,13 @@ const std::array<unsigned, NUM_AUTO_SAVE_INTERVALS> AUTO_SAVE_INTERVALS = {500, 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
     : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title, LOADER.GetImageN("resource", 41))
 {
-    AddTable(0, DrawPoint(20, 30), Extent(560, 300), TC_GREEN2, NormalFont, 5, _("Filename"), 270, ctrlTable::SRT_STRING, _("Map"), 250,
-             ctrlTable::SRT_STRING, _("Time"), 250, ctrlTable::SRT_DATE, _("Start GF"), 320, ctrlTable::SRT_NUMBER, "", 0,
-             ctrlTable::SRT_STRING);
+    using SRT = ctrlTable::SortType;
+    AddTable(0, DrawPoint(20, 30), Extent(560, 300), TC_GREEN2, NormalFont,
+             ctrlTable::Columns{{_("Filename"), 270, SRT::String},
+                                {_("Map"), 250, SRT::String},
+                                {_("Time"), 250, SRT::Date},
+                                {_("Start GF"), 320, SRT::Number},
+                                {}});
 }
 
 void iwSaveLoad::Msg_EditEnter(const unsigned /*ctrl_id*/)
@@ -100,8 +104,7 @@ void iwSaveLoad::RefreshTable()
         std::string startGF = helpers::toString(save.start_gf);
 
         // Und das Zeug zur Tabelle hinzufügen
-        GetCtrl<ctrlTable>(0)->AddRow(0, fileName.string().c_str(), save.GetMapName().c_str(), dateStr.c_str(), startGF.c_str(),
-                                      saveFile.c_str());
+        GetCtrl<ctrlTable>(0)->AddRow({fileName.string(), save.GetMapName(), dateStr, startGF, saveFile});
     }
 
     // Nach Zeit Sortieren

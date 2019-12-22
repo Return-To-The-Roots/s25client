@@ -19,7 +19,7 @@
 #include "helpers/containerUtils.h"
 #include "mockupDrivers/MockupVideoDriver.h"
 #include "uiHelper/uiHelpers.hpp"
-#include <libutil/warningSuppression.h>
+#include <s25util/warningSuppression.h>
 #include <glad/glad.h>
 #include <boost/test/unit_test.hpp>
 

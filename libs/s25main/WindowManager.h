@@ -21,7 +21,7 @@
 
 #include "Point.h"
 #include "driver/VideoDriverLoaderInterface.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <list>
 #include <memory>
 #include <string>
@@ -121,8 +121,12 @@ public:
     IngameWindow* FindNonModalWindow(unsigned id) const;
 
     Desktop* GetCurrentDesktop() { return curDesktop.get(); }
+    /// Makes the given window (desktop or ingame window) active and all others inactive
+    void SetActiveWindow(Window&);
 
 private:
+    class Tooltip;
+
     void DrawToolTip();
 
     void TakeScreenshot();
@@ -130,8 +134,6 @@ private:
     void DoDesktopSwitch();
     /// Actually close all ingame windows marked for closing
     void CloseMarkedIngameWnds();
-    /// Makes the given window (desktop or ingame window) active and all others inactive
-    void SetActiveWindow(Window&);
 
     std::unique_ptr<Desktop> curDesktop;  /// aktueller Desktop
     std::unique_ptr<Desktop> nextdesktop; /// der nächste Desktop
@@ -142,7 +144,7 @@ private:
     /// Otherwise the window will not be shown, if it was added after a switch request
     std::vector<std::unique_ptr<IngameWindow>> nextWnds;
     Position lastMousePos;
-    std::string curTooltip;
+    std::unique_ptr<Tooltip> curTooltip;
     Extent curRenderSize; /// current render size
 
     // Für Doppelklick merken:

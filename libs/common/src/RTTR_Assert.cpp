@@ -18,8 +18,8 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "RTTR_Assert.h"
 #include "RTTR_AssertError.h"
-#include "libutil/Log.h"
-#include "libutil/System.h"
+#include "s25util/Log.h"
+#include "s25util/System.h"
 #include <iostream>
 #include <sstream>
 #ifdef _WIN32
@@ -72,7 +72,7 @@ void RTTR_AssertFailure(const char* condition, const char* file, const int line,
         std::string msg = sMsg.str();
         try
         {
-            LOG.write(msg + "\n", LogTarget::Stderr);
+            LOG.write("%1%\n", LogTarget::Stderr) % msg;
         } catch(...)
         {
             std::cerr << msg << std::endl;

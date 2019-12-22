@@ -37,6 +37,17 @@ constexpr T abs(T val)
     return val < 0 ? -val : val;
 }
 
+// Compare 2 points to be close according to some tolerance
+// (for floating point types, integers are compared for equality)
+#define TEST_POINTS_CLOSE(lhs, rhs, epsilon)                       \
+    do                                                             \
+    {                                                              \
+        const auto lhsTmp = lhs;                                   \
+        const auto rhsTmp = rhs;                                   \
+        BOOST_TEST(lhsTmp.x == rhsTmp.x, (epsilon) % tolerance()); \
+        BOOST_TEST(lhsTmp.y == rhsTmp.y, (epsilon) % tolerance()); \
+    } while(false)
+
 BOOST_AUTO_TEST_CASE_TEMPLATE(negate_point, T, SignedTypes)
 {
     using U = make_unsigned_t<T>;
@@ -230,28 +241,28 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(unscale_point, T, SignedTypes)
     SignedPoint pt(x, y);
     const auto scale = randomValue<U>(1, 100);
 
-    constexpr auto epsilon = std::conditional_t<std::is_same<T, float>::value, float, double>(0.001);
+    constexpr auto epsilon = std::conditional_t<std::is_same<T, float>::value, float, double>(0.00001);
 
     const auto result = pt / scale;
     static_assert(std::is_same<decltype(result.x), T>::value, "Result must be signed");
-    BOOST_TEST(result == pt / SignedPoint::all(scale), epsilon % tolerance());
+    TEST_POINTS_CLOSE(result, pt / SignedPoint::all(scale), epsilon);
 
     const auto resultSigned = pt / T(scale);
     static_assert(std::is_same<decltype(resultSigned.x), T>::value, "Result must be signed");
-    BOOST_TEST(resultSigned == result, epsilon % tolerance());
+    TEST_POINTS_CLOSE(resultSigned, result, epsilon);
 
     x = abs(x);
     y = abs(y);
     UnsignedPoint pt2(x, y);
     const auto resultUnsigned = pt2 / scale;
     static_assert(std::is_same<decltype(resultUnsigned.x), U>::value, "Result must be unsigned");
-    BOOST_TEST(resultUnsigned == pt2 / UnsignedPoint::all(scale), epsilon % tolerance());
+    TEST_POINTS_CLOSE(resultUnsigned, pt2 / UnsignedPoint::all(scale), epsilon);
 
     pt /= scale;
-    BOOST_TEST(pt == result);
+    TEST_POINTS_CLOSE(pt, result, epsilon);
 
     pt2 /= scale;
-    BOOST_TEST(pt2 == resultUnsigned);
+    TEST_POINTS_CLOSE(pt2, resultUnsigned, epsilon);
 
     x = randomValue<T>(1, 100);
     y = randomValue<T>(1, 100);
@@ -259,7 +270,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(unscale_point, T, SignedTypes)
     pt = SignedPoint(x, y);
     const auto resultPt = scale2 / pt;
     static_assert(std::is_same<decltype(resultPt.x), T>::value, "Result must be signed");
-    BOOST_TEST(resultPt == SignedPoint::all(scale2) / pt, epsilon % tolerance());
+    TEST_POINTS_CLOSE(resultPt, SignedPoint::all(scale2) / pt, epsilon);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(symetric_operators, T, SignedTypes)

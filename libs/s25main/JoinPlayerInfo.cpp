@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "JoinPlayerInfo.h"
 #include "mygettext/mygettext.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 #include <boost/format.hpp>
 
 JoinPlayerInfo::JoinPlayerInfo() : rating(0), isReady(false) {}

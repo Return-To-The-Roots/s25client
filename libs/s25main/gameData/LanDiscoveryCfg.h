@@ -18,7 +18,7 @@
 #ifndef LAN_DISCOVERY_CFG_H_INCLUDED
 #define LAN_DISCOVERY_CFG_H_INCLUDED
 
-#include "libutil/LANDiscovery.h"
+#include "s25util/LANDiscovery.h"
 
 extern const LANDiscoveryBase::Config LAN_DISCOVERY_CFG;
 

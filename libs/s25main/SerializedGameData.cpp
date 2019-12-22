@@ -88,7 +88,7 @@
 #include "nodeObjs/noSkeleton.h"
 #include "nodeObjs/noStaticObject.h"
 #include "nodeObjs/noTree.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 /// Version of the current game data
 /// Usage: Always save for the most current version but include loading code that can cope with file format changes

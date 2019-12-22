@@ -7,7 +7,7 @@ if(SDL_FOUND)
   correct_lib(SDL_LIBRARY SDL)
 
   add_library(videoSDL SHARED ${RTTR_DRIVER_INTERFACE} VideoSDL.cpp VideoSDL.h)
-  target_link_libraries(videoSDL PRIVATE videodrv s25util ${SDL_LIBRARY} Boost::boost nowide::static)
+  target_link_libraries(videoSDL PRIVATE videodrv s25util::common ${SDL_LIBRARY} Boost::boost nowide::static)
   target_include_directories(videoSDL PRIVATE ${SDL_INCLUDE_DIR})
 
   if(WIN32)

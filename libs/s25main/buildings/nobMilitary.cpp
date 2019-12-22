@@ -47,7 +47,7 @@
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <limits>
 #include <stdexcept>
 

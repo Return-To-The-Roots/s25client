@@ -18,7 +18,7 @@
 #ifndef BufferedWriter_h__
 #define BufferedWriter_h__
 
-#include <libutil/TextWriterInterface.h>
+#include <s25util/TextWriterInterface.h>
 #include <memory>
 #include <string>
 #include <utility>
@@ -28,7 +28,7 @@ namespace rttr { namespace test {
     class BufferedWriter : public TextWriterInterface
     {
     public:
-        BufferedWriter(std::shared_ptr<TextWriterInterface> writer) : origWriter(std::move(std::move(writer))) {}
+        explicit BufferedWriter(std::shared_ptr<TextWriterInterface> writer) noexcept : origWriter(std::move(writer)) {}
         ~BufferedWriter() override { flush(); }
         void writeText(const std::string& txt, unsigned color) override;
         void flush();

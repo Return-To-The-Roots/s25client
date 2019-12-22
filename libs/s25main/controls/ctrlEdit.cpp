@@ -18,19 +18,23 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlEdit.h"
 #include "CollisionDetection.h"
+#include "ctrlTextDeepening.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Font.h"
-#include "libutil/StringConversion.h"
+#include "ogl/glFont.h"
+#include "s25util/StringConversion.h"
 #include <utf8.h>
+#include <numeric>
 
-ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                    unsigned short maxlength, bool password, bool disabled, bool notify)
-    : Window(parent, id, pos, size), maxLength_(maxlength), texColor_(tc), font_(font), isPassword_(password), isDisabled_(disabled),
-      focus_(false), newFocus_(false), notify_(notify), numberOnly_(false)
+    : Window(parent, id, pos, size), maxLength_(maxlength), isPassword_(password), isDisabled_(disabled), notify_(notify)
 {
-    SetText("");
+    txtCtrl = static_cast<ctrlTextDeepening*>(
+      AddTextDeepening(0, DrawPoint(0, 0), size, tc, "", font, COLOR_YELLOW, FontStyle::LEFT | FontStyle::VCENTER));
+    UpdateInternalText();
 }
 
 /**
@@ -40,14 +44,16 @@ ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Exte
  */
 void ctrlEdit::SetText(const std::string& text)
 {
-    cursorPos_ = 0;
+    text_ = utf8::utf8to32(text);
+    if(numberOnly_)
+        helpers::remove_if(text_, [](char32_t c) { return !(c >= '0' && c <= '9'); });
+    if(maxLength_ > 0 && text_.size() > maxLength_)
+        text_.resize(maxLength_);
+
     viewStart_ = 0;
-
-    text_.clear();
-    std::u32string tmp = utf8::utf8to32(text);
-
-    for(const auto c : tmp)
-        AddChar(c);
+    cursorPos_ = text_.length();
+    UpdateInternalText();
+    Notify();
 }
 
 void ctrlEdit::SetText(const unsigned text)
@@ -60,6 +66,75 @@ std::string ctrlEdit::GetText() const
     return utf8::utf32to8(text_);
 }
 
+static void removeFirstCharFromString(std::string& str)
+{
+    auto it = str.begin();
+    utf8::unchecked::next(it);
+    str.erase(str.begin(), it);
+}
+
+void ctrlEdit::UpdateInternalText()
+{
+    if(text_.empty())
+    {
+        viewStart_ = 0;
+        cursorPos_ = 0;
+        cursorOffsetX_ = 0;
+        txtCtrl->SetText("");
+    } else
+    {
+        std::u32string dtext = (isPassword_) ? std::u32string(text_.size(), '*') : text_;
+        viewStart_ = std::min<unsigned>(viewStart_, dtext.length() - 1);
+        const auto* font = txtCtrl->GetFont();
+        const unsigned max_width = GetSize().x - ctrlTextDeepening::borderSize.x * 2;
+        unsigned max;
+        std::string curText = utf8::utf32to8(dtext.substr(viewStart_));
+        font->getWidth(curText, max_width, &max);
+        // Add chars at front as long as full text is shown
+        while(viewStart_ > 0 && curText.length() <= max)
+        {
+            --viewStart_;
+            curText = utf8::utf32to8(dtext.substr(viewStart_));
+            font->getWidth(curText, max_width, &max);
+        }
+        // Remove chars from front until remaining string can be fully shown
+        while(curText.length() > max)
+        {
+            ++viewStart_;
+            removeFirstCharFromString(curText);
+            font->getWidth(curText, max_width, &max);
+        }
+
+        // Show (up to) 5 chars before the cursor
+        if(viewStart_ + 5 > cursorPos_)
+        {
+            viewStart_ = std::max(0, static_cast<int>(cursorPos_) - 5);
+            curText = utf8::utf32to8(dtext.substr(viewStart_));
+        }
+        if(cursorPos_ > viewStart_)
+            cursorOffsetX_ = font->getWidth(utf8::utf32to8(dtext.substr(viewStart_, cursorPos_ - viewStart_)));
+        else
+            cursorOffsetX_ = 0;
+        txtCtrl->SetText(curText);
+    }
+}
+
+inline void ctrlEdit::CursorLeft()
+{
+    if(cursorPos_ == 0)
+        return;
+    --cursorPos_;
+    UpdateInternalText();
+}
+
+inline void ctrlEdit::CursorRight()
+{
+    if(cursorPos_ == text_.length())
+        return;
+    ++cursorPos_;
+    UpdateInternalText();
+}
+
 /**
  *  zeichnet das Fenster.
  *
@@ -67,57 +142,16 @@ std::string ctrlEdit::GetText() const
  */
 void ctrlEdit::Draw_()
 {
-    // Box malen
-    Draw3D(Rect(GetDrawPos(), GetSize()), texColor_, false);
-
-    std::u32string dtext;
-
-    // Text zeichnen
-    if(isPassword_)
-        dtext = std::u32string(text_.length(), '*');
-    else
-        dtext = text_;
-
-    const unsigned max_width = GetSize().x - 8 - font_->getDx();
-    unsigned max;
-    font_->getWidth(dtext.substr(viewStart_), unsigned(text_.length()) - viewStart_, max_width, &max);
-    while(max > 0 && text_.length() - viewStart_ > max)
-    {
-        ++viewStart_;
-        font_->getWidth(&dtext[viewStart_], unsigned(text_.length()) - viewStart_, max_width, &max);
-    }
-
-    if(viewStart_ > 0)
-    {
-        font_->getWidth(dtext, unsigned(text_.length()), max_width, &max);
-        while(viewStart_ > 0 && unsigned(text_.length()) - viewStart_ <= max)
-        {
-            --viewStart_;
-
-            if(max > 0)
-                font_->getWidth(&dtext[viewStart_], unsigned(text_.length()) - viewStart_, max_width, &max);
-        }
-    }
-
-    unsigned short start = viewStart_;
-    if(cursorPos_ > 5 && cursorPos_ - 5 < viewStart_)
-        start = cursorPos_ - 5;
-    if(cursorPos_ <= 5)
-        start = 0;
-    font_->Draw(GetDrawPos() + DrawPoint(4, GetSize().y / 2), dtext.substr(start), FontStyle::VCENTER, (focus_ ? 0xFFFFA000 : COLOR_YELLOW),
-                0, GetSize().x - 8);
-
+    Window::Draw_();
     // Alle 500ms Cursor für 500ms anzeigen
     if(focus_ && !isDisabled_ && VIDEODRIVER.GetTickCount() % 1000 < 500)
     {
+        const auto fontHeight = txtCtrl->GetFont()->getHeight();
         DrawPoint cursorDrawPos = GetDrawPos();
-        if(cursorPos_ > start)
-            cursorDrawPos.x += font_->getWidth(&dtext[start], cursorPos_ - start) + 4;
-        else
-            cursorDrawPos.x += 5;
-        cursorDrawPos.y += (GetSize().y - (font_->getHeight() + 2)) / 2;
+        cursorDrawPos.x += cursorOffsetX_ + ctrlTextDeepening::borderSize.x;
+        cursorDrawPos.y += (GetSize().y - (fontHeight + 2)) / 2;
 
-        DrawRectangle(Rect(cursorDrawPos, Extent(1, font_->getHeight() + 2)), 0xFFFFA000);
+        DrawRectangle(Rect(cursorDrawPos, Extent(1, fontHeight + 2)), 0xFFFFA000);
     }
 }
 
@@ -126,7 +160,7 @@ void ctrlEdit::Draw_()
  *
  *  @param[in] text Das Zeichen
  */
-void ctrlEdit::AddChar(unsigned c)
+void ctrlEdit::AddChar(char32_t c)
 {
     // Number-only text fields accept numbers only ;)
     if(numberOnly_ && !(c >= '0' && c <= '9'))
@@ -137,6 +171,7 @@ void ctrlEdit::AddChar(unsigned c)
 
     text_.insert(cursorPos_, 1, c);
     CursorRight();
+    Notify();
 }
 
 /**
@@ -153,6 +188,7 @@ void ctrlEdit::RemoveChar()
             --viewStart_;
 
         CursorLeft();
+        Notify();
     }
 }
 
@@ -167,9 +203,19 @@ void ctrlEdit::Notify()
     GetParent()->Msg_EditChange(GetID());
 }
 
+void ctrlEdit::Resize(const Extent& newSize)
+{
+    Window::Resize(newSize);
+    UpdateInternalText();
+}
+
 void ctrlEdit::Msg_PaintAfter()
 {
-    focus_ = newFocus_;
+    if(focus_ != newFocus_)
+    {
+        focus_ = newFocus_;
+        txtCtrl->SetTextColor(focus_ ? 0xFFFFA000 : COLOR_YELLOW);
+    }
     Window::Msg_PaintAfter();
 }
 
@@ -189,7 +235,14 @@ bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
  */
 bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 {
-    static const std::u32string delimiters = U" \t\n-+=";
+    auto isDelimiter = [](char32_t c) {
+        for(const auto cur : U" \t\n-+=")
+        {
+            if(cur == c)
+                return true;
+        }
+        return false;
+    };
 
     // hat das Steuerelement den Fokus?
     if(!focus_)
@@ -201,96 +254,86 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             return false;
         // Wird bereits über Char geliefert !!
         case KT_SPACE: // Leertaste
-        {
             AddChar(0x20);
-        }
-        break;
+            break;
 
         case KT_LEFT: // Cursor nach Links
-        {
             // Blockweise nach links, falls Strg gedrückt
             if(ke.ctrl)
             {
                 // Erst über alle Trennzeichen hinweg
-                while(cursorPos_ > 0 && delimiters.find(text_[cursorPos_ - 1]) != std::u32string::npos)
+                while(cursorPos_ > 0 && isDelimiter(text_[cursorPos_ - 1]))
                 {
-                    CursorLeft();
+                    --cursorPos_;
                 }
 
                 // Und dann über alles, was kein Trenner ist
-                while(cursorPos_ > 0 && delimiters.find(text_[cursorPos_ - 1]) == std::u32string::npos)
+                while(cursorPos_ > 0 && !isDelimiter(text_[cursorPos_ - 1]))
                 {
-                    CursorLeft();
+                    --cursorPos_;
                 }
+                UpdateInternalText();
             } else
                 CursorLeft(); // just one step
-        }
-        break;
+            break;
 
         case KT_RIGHT: // Cursor nach Rechts
-        {
             // Blockweise nach rechts, falls Strg gedrückt
             if(ke.ctrl)
             {
                 // Erst über alle Trennzeichen hinweg
-                while(cursorPos_ + 1 < text_.length() && delimiters.find(text_[cursorPos_ + 1]) != std::u32string::npos)
+                while(cursorPos_ + 1 < text_.length() && isDelimiter(text_[cursorPos_ + 1]))
                 {
-                    CursorRight();
+                    ++cursorPos_;
                 }
                 // Und dann über alles, was kein Trenner ist
-                while(cursorPos_ + 1 < text_.length() && delimiters.find(text_[cursorPos_ + 1]) == std::u32string::npos)
+                while(cursorPos_ + 1 < text_.length() && !isDelimiter(text_[cursorPos_ + 1]))
                 {
-                    CursorRight();
+                    ++cursorPos_;
                 }
+                UpdateInternalText();
             } else
                 CursorRight(); // just one step
-        }
-        break;
+            break;
 
         case KT_CHAR: // Zeichen eingegeben
-        {
-            if(!isDisabled_ && font_->CharExist(ke.c))
+            if(!isDisabled_ && txtCtrl->GetFont()->CharExist(ke.c))
                 AddChar(ke.c);
-        }
-        break;
+            break;
 
         case KT_BACKSPACE: // Backspace gedrückt
-        {
             if(!isDisabled_)
                 RemoveChar();
-        }
-        break;
+            break;
 
         case KT_DELETE: // Entfernen gedrückt
-        {
             if(!isDisabled_ && cursorPos_ < text_.length())
             {
                 CursorRight();
                 RemoveChar();
             }
-        }
-        break;
+            break;
 
         case KT_RETURN: // Enter gedrückt
-        {
             if(!isDisabled_ && GetParent())
                 GetParent()->Msg_EditEnter(GetID());
-        }
-        break;
+            break;
 
         case KT_HOME: // Pos1 gedrückt
-        {
-            while(cursorPos_ > 0)
-                CursorLeft();
-        }
-        break;
+            if(cursorPos_ > 0)
+            {
+                cursorPos_ = 0;
+                UpdateInternalText();
+            }
+            break;
 
         case KT_END: // Ende gedrückt
-        {
-            while(cursorPos_ < text_.length())
-                CursorRight();
-        }
-        break;
+            if(cursorPos_ < text_.length())
+            {
+                cursorPos_ = text_.length();
+                UpdateInternalText();
+            }
+            break;
     }
 
     return true;

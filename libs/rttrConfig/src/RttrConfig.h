@@ -20,7 +20,7 @@
 #ifndef RttrConfig_h__
 #define RttrConfig_h__
 
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <boost/filesystem/path.hpp>
 #include <map>
 #include <string>

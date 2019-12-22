@@ -18,8 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "RttrConfig.h"
 #include "helperFuncs.h"
-#include "libutil/System.h"
-#include "libutil/ucString.h"
+#include "s25util/System.h"
+#include "s25util/ucString.h"
 #include <boost/filesystem/operations.hpp>
 #include <boost/nowide/args.hpp>
 #include <boost/test/unit_test.hpp>

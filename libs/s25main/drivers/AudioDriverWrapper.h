@@ -20,7 +20,7 @@
 #include "DriverWrapper.h"
 #include "driver/EffectPlayId.h"
 #include "driver/IAudioDriverCallback.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <memory>
 
 class IAudioDriver;

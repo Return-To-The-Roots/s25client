@@ -22,7 +22,7 @@
 
 #include "RTTR_Assert.h"
 #include "random/XorShift.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <array>
 #include <cstddef>
 #include <iosfwd>

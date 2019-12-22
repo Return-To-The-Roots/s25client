@@ -47,8 +47,8 @@
 #include "network/GameServer.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
+#include "ogl/glFont.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldView.h"
@@ -56,12 +56,12 @@
 #include "gameData/GameConsts.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
-#include "libutil/SocketSet.h"
-#include "libutil/StringConversion.h"
-#include "libutil/System.h"
-#include "libutil/fileFuncs.h"
-#include "libutil/strFuncs.h"
-#include "libutil/ucString.h"
+#include "s25util/SocketSet.h"
+#include "s25util/StringConversion.h"
+#include "s25util/System.h"
+#include "s25util/fileFuncs.h"
+#include "s25util/strFuncs.h"
+#include "s25util/ucString.h"
 #include <boost/filesystem.hpp>
 #include <helpers/chronoIO.h>
 #include <memory>
@@ -1565,7 +1565,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             // text oben noch hinschreiben
             boost::format nwfString(_("current GF: %u - still fast forwarding: %d GFs left (%d %%)"));
             nwfString % GetGFNumber() % (gf - i) % (i * 100 / gf);
-            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize() / 2u), nwfString.str(), FontStyle::CENTER, 0xFFFFFF00);
+            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize() / 2u), nwfString.str(), FontStyle::CENTER, COLOR_YELLOW);
 
             VIDEODRIVER.SwapBuffers();
         }

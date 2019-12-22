@@ -18,10 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlTextButton.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 
 ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
-                               const std::string& text, glArchivItem_Font* font, const std::string& tooltip)
+                               const std::string& text, const glFont* font, const std::string& tooltip)
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
 {}
 
@@ -41,12 +41,12 @@ void ctrlTextButton::DrawContent() const
     if(GetTooltip().empty() && state == BUTTON_HOVER)
     {
         unsigned maxNumChars;
-        font->getWidth(text, 0, maxTextWidth, &maxNumChars);
+        font->getWidth(text, maxTextWidth, &maxNumChars);
         if(maxNumChars < text.length())
             ShowTooltip(text);
     }
 
     const unsigned short offset = isPressed ? 2 : 0;
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER, color, 0,
+    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER, color,
                maxTextWidth);
 }

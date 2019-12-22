@@ -3,7 +3,7 @@ if(NOT RTTR_BUNDLE OR NOT RTTR_MACOS_DIR)
 endif()
 
 add_executable(starter starter.cpp)
-target_link_libraries(starter PRIVATE s25util rttrConfig nowide::static)
+target_link_libraries(starter PRIVATE s25util::common rttrConfig nowide::static)
 set(MACOSX_BUNDLE_EXECUTABLE_NAME "starter${CMAKE_EXECUTABLE_SUFFIX}")
 set(MACOSX_BUNDLE_BUNDLE_VERSION "${RTTR_VERSION}")
 set(MACOSX_BUNDLE_COPYRIGHT "(C) 2005-2018 Settlers Freaks")

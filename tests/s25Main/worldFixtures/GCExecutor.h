@@ -20,7 +20,7 @@
 
 #include "GameCommand.h"
 #include "factories/GameCommandFactory.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 #include <boost/test/unit_test.hpp>
 
 class GCExecutor : public GameCommandFactory

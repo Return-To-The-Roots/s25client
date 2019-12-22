@@ -21,8 +21,8 @@
 #include "controls/ctrlEdit.h"
 #include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/StringConversion.h"
-#include "libutil/colors.h"
+#include "s25util/StringConversion.h"
+#include "s25util/colors.h"
 
 iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
     : IngameWindow(CGI_SKIPGFS, IngameWindow::posLastOrCenter, Extent(300, 110), _("Skip GameFrames"), LOADER.GetImageN("resource", 41)),

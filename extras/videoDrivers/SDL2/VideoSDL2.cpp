@@ -30,7 +30,7 @@
 #include <algorithm>
 
 #ifdef _WIN32
-#include "libutil/ucString.h"
+#include "s25util/ucString.h"
 #include <SDL_syswm.h>
 #endif // _WIN32
 

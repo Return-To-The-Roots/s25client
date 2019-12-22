@@ -23,8 +23,7 @@
 #include "Rect.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "libsiedler2/ArchivItem_Font.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 #include <glad/glad.h>
 #include <array>
 #include <map>
@@ -32,31 +31,29 @@
 #include <string>
 #include <vector>
 
-/// Klasse für GL-Fontfiles.
-class glArchivItem_Font : public libsiedler2::ArchivItem_Font //-V690
+namespace libsiedler2 {
+class ArchivItem_Font;
+}
+
+class glFont
 {
 public:
-    glArchivItem_Font();
-    glArchivItem_Font(const glArchivItem_Font& obj);
-    RTTR_CLONEABLE(glArchivItem_Font)
+    glFont(const libsiedler2::ArchivItem_Font&);
 
     /// Draw the the text at the given position with format (alignment) and color.
     /// If length is given, only that many chars (not glyphs!) will be used
     /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is appended (included in
     /// maxWidth)
-    void Draw(DrawPoint pos, const std::u32string& wtext, FontStyle format, unsigned color = COLOR_WHITE, unsigned short length = 0,
-              unsigned short maxWidth = 0xFFFF, const std::u32string& end = U"...");
-    void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE, unsigned short length = 0,
-              unsigned short maxWidth = 0xFFFF, const std::string& end = "...");
+    void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE, unsigned short maxWidth = 0xFFFF,
+              const std::string& end = "...") const;
 
     /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will be set to the
     /// maximum number of chars (not glyphs!) that fit into the width
-    unsigned short getWidth(const std::u32string& text, unsigned length = 0) const;
-    unsigned short getWidth(const std::string& text, unsigned length = 0) const;
-    unsigned short getWidth(const std::u32string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const;
-    unsigned short getWidth(const std::string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const;
-    /// liefert die Höhe des Textes ( entspricht @p getDy() )
-    unsigned short getHeight() const { return dy + 1; }
+    unsigned getWidth(const std::string& text) const;
+    unsigned getWidth(const std::string& text, unsigned maxWidth, unsigned* maxNumChars) const;
+    /// Return height of each line of text
+    unsigned short getHeight() const { return maxCharSize.y + 1; }
+    unsigned getDx() const { return maxCharSize.x; }
 
     /// Return the bounds of the text when draw at the specified position with the specified format
     Rect getBounds(DrawPoint pos, const std::string& text, FontStyle format) const;
@@ -74,8 +71,14 @@ public:
 
     /// Gibt Infos, über die Unterbrechungspunkte in einem Text, versucht Wörter nicht zu trennen, tut dies aber, falls
     /// es unumgänglich ist (Wort länger als die Zeile)
-    WrapInfo GetWrapInfo(const std::string& text, unsigned short primary_width, unsigned short secondary_width);
+    WrapInfo GetWrapInfo(const std::string& text, unsigned short primary_width, unsigned short secondary_width) const;
 
+    /// prüft ob ein Buchstabe existiert.
+    bool CharExist(char32_t c) const;
+    /// liefert die Breite eines Zeichens
+    unsigned CharWidth(char32_t c) const { return GetCharInfo(c).width; }
+
+private:
     struct CharInfo
     {
         CharInfo() : pos(0, 0), width(0) {}
@@ -83,13 +86,6 @@ public:
         Position pos;
         unsigned width;
     };
-
-    /// prüft ob ein Buchstabe existiert.
-    bool CharExist(unsigned c) const;
-    /// liefert die Breite eines Zeichens
-    unsigned CharWidth(unsigned c) const { return GetCharInfo(c).width; }
-
-private:
     using GlPoint = Point<GLfloat>;
     struct VertexArrays
     {
@@ -97,30 +93,25 @@ private:
         std::vector<GlPoint> vertices;
     };
 
-    void initFont();
-    void ClearCharInfoMapping();
-    void AddCharInfo(unsigned c, const CharInfo& info);
+    void AddCharInfo(char32_t c, const CharInfo& info);
     /// liefert das Char-Info eines Zeichens
-    const CharInfo& GetCharInfo(unsigned c) const;
-    void DrawChar(unsigned curChar, VertexArrays& vertices, DrawPoint& curPos) const;
+    const CharInfo& GetCharInfo(char32_t c) const;
+    void DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const;
 
+    Extent maxCharSize; // How big each char is at most (aka dx,dy)
     std::unique_ptr<glArchivItem_Bitmap> fontNoOutline;
     std::unique_ptr<glArchivItem_Bitmap> fontWithOutline;
 
     /// Holds ascii chars only. As most chars are ascii this is faster then accessing the map
     std::array<std::pair<bool, CharInfo>, 256> asciiMapping;
-    std::map<unsigned, CharInfo> utf8_mapping;
-    CharInfo placeHolder; /// Placeholder if glyph is missing
-    VertexArrays texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
+    std::map<char32_t, CharInfo> utf8_mapping;
+    CharInfo placeHolder;         /// Placeholder if glyph is missing
+    mutable VertexArrays texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
 
     /// Get width of the sequence defined by the begin/end pair of iterators
-    template<class T_Iterator>
-    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end) const;
-    /// Same as above but the width will be at most maxWidth. The number of chars (or the iterator distance) is returned in maxNumChars
-    template<class T_Iterator>
-    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const;
-    template<bool T_unlimitedWidth, class T_Iterator>
-    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const;
+    template<bool T_unlimitedWidth>
+    unsigned getWidthInternal(const std::string::const_iterator& begin, const std::string::const_iterator& end, unsigned maxWidth,
+                              unsigned* maxNumChars) const;
 };
 
 #endif // !GLARCHIVITEM_FONT_H_INCLUDED

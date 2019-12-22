@@ -40,8 +40,8 @@
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
 #include "gameTypes/RoadBuildState.h"
-#include "libutil/Log.h"
-#include "libutil/strFuncs.h"
+#include "s25util/Log.h"
+#include "s25util/strFuncs.h"
 #include <helpers/chronoIO.h>
 #include <memory>
 #include <random>
@@ -165,7 +165,7 @@ void dskBenchmark::startTest(Test test)
             std::uniform_int_distribution<unsigned> distr2(0, 100000);
             std::uniform_int_distribution<unsigned> distrMove(10, 25);
             DrawPoint pt(0, 0);
-            glArchivItem_Font* fnt = NormalFont;
+            const glFont* fnt = NormalFont;
             for(int i = 0; i < numInstances_; i++)
             {
                 std::string txt = createRandString(distr(rng), charset, seed);

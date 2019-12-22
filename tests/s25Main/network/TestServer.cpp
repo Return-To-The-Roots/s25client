@@ -17,8 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TestServer.h"
-#include "libutil/Message.h"
-#include "libutil/SocketSet.h"
+#include "s25util/Message.h"
+#include "s25util/SocketSet.h"
 
 bool TestServer::run(bool waitForConnection)
 {

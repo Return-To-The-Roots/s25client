@@ -26,21 +26,40 @@
 #include <vector>
 
 class MouseCoords;
-class glArchivItem_Font;
+class glFont;
 struct KeyEvent;
 
+enum class TableSortType
+{
+    String,
+    MapSize,
+    Number,
+    Date,
+    Default
+};
+
+struct TableColumn
+{
+    std::string title;
+    /// Column width in relation to other cells
+    unsigned short width;
+    TableSortType sortType;
+};
 class ctrlTable : public Window
 {
 public:
-    ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
-              unsigned short column_count, va_list liste);
-    ~ctrlTable() override;
+    using Column = TableColumn;
+    using SortType = TableSortType;
+    using Columns = std::vector<Column>;
+
+    ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
+              std::vector<Column> columns);
 
     void Resize(const Extent& newSize) override;
     /// löscht alle Items.
     void DeleteAllItems();
     /// fügt eine Zeile hinzu.
-    void AddRow(unsigned alwaysnull, ...);
+    void AddRow(std::vector<std::string> row);
     void RemoveRow(unsigned rowIdx);
     /// liefert den Wert eines Feldes.
     const std::string& GetItemText(unsigned short row, unsigned short column) const;
@@ -48,8 +67,8 @@ public:
     void SortRows(int column, const bool* direction = nullptr);
     int GetSortColumn() const { return sort_column; }
     bool GetSortDirection() const { return sort_direction; }
-    unsigned short GetNumRows() const { return static_cast<unsigned short>(rows.size()); }
-    unsigned short GetNumColumns() const { return static_cast<unsigned short>(columns.size()); }
+    unsigned short GetNumRows() const { return static_cast<unsigned short>(rows_.size()); }
+    unsigned short GetNumColumns() const { return static_cast<unsigned short>(columns_.size()); }
     int GetSelection() const { return selection_; }
     void SetSelection(int selection);
 
@@ -62,15 +81,6 @@ public:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_ScrollShow(unsigned ctrl_id, bool visible) override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
-
-    enum SortType
-    {
-        SRT_STRING,
-        SRT_MAPSIZE,
-        SRT_NUMBER,
-        SRT_DATE,
-        SRT_DEFAULT
-    };
 
 protected:
     void Draw_() override;
@@ -85,19 +95,11 @@ protected:
 
 private:
     TextureColor tc;
-    glArchivItem_Font* font;
+    const glFont* font;
 
     unsigned short header_height;
     unsigned short line_count;
-
-    struct COLUMN
-    {
-        /// Breite der Spalten in Promille von der Tabellenlänge
-        unsigned short width;
-        std::string title;
-        SortType sortType;
-    };
-    std::vector<COLUMN> columns;
+    Columns columns_;
 
     /// Selected row. -1 for none
     int selection_;
@@ -105,13 +107,11 @@ private:
     int sort_column;
     bool sort_direction;
 
-    struct ROW
+    struct Row
     {
         std::vector<std::string> columns;
     };
-    std::vector<ROW> rows;
-
-    int Compare(const std::string& a, const std::string& b, SortType sortType);
+    std::vector<Row> rows_;
 };
 
 #endif // !CTRLTABLE_H_INCLUDED

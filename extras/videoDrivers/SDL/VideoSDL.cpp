@@ -28,7 +28,7 @@
 #ifdef _WIN32
 #include "makeException.h"
 #include "s25clientResources.h"
-#include "libutil/ucString.h"
+#include "s25util/ucString.h"
 #undef WIN32_LEAN_AND_MEAN
 #include <SDL_syswm.h>
 

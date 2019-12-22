@@ -32,7 +32,7 @@
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <boost/filesystem.hpp>
 
 namespace {
@@ -54,9 +54,13 @@ std::vector<std::string> GetReplays()
 iwPlayReplay::iwPlayReplay()
     : IngameWindow(CGI_PLAYREPLAY, IngameWindow::posLastOrCenter, Extent(600, 330), _("Play Replay"), LOADER.GetImageN("resource", 41))
 {
-    AddTable(0, DrawPoint(20, 30), Extent(560, 220), TC_GREEN2, NormalFont, 5, _("Filename"), 300, ctrlTable::SRT_STRING,
-             _("Stocktaking date"), 220, ctrlTable::SRT_DATE, _("Player"), 360, ctrlTable::SRT_STRING, _("Length"), 120,
-             ctrlTable::SRT_NUMBER, "", 0, ctrlTable::SRT_DEFAULT);
+    using SRT = ctrlTable::SortType;
+    AddTable(0, DrawPoint(20, 30), Extent(560, 220), TC_GREEN2, NormalFont,
+             ctrlTable::Columns{{("Filename"), 300, SRT::String},
+                                {_("Stocktaking date"), 220, SRT::Date},
+                                {_("Player"), 360, SRT::String},
+                                {_("Length"), 120, SRT::Number},
+                                {}});
 
     AddTextButton(2, DrawPoint(20, 260), Extent(100, 22), TC_RED1, _("Clear"), NormalFont);
     AddTextButton(5, DrawPoint(130, 260), Extent(160, 22), TC_RED1, "Delete Invalid", NormalFont,
@@ -124,7 +128,7 @@ void iwPlayReplay::PopulateTable()
         std::string lastGF = helpers::toString(replay.GetLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
-        table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), it.c_str());
+        table->AddRow({fileName, dateStr, tmp_players, lastGF, it});
     }
 
     // Erst einmal nach Dateiname sortieren

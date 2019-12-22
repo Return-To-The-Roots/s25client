@@ -32,7 +32,7 @@
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
@@ -40,7 +40,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
-#include "libutil/warningSuppression.h"
+#include "s25util/warningSuppression.h"
 #include <glad/glad.h>
 #include <boost/format.hpp>
 #include <cmath>

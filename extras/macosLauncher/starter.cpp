@@ -1,5 +1,5 @@
 #include "RttrConfig.h"
-#include <libutil/System.h>
+#include <s25util/System.h>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>

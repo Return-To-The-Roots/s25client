@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "random/Random.h"
 #include "RttrConfig.h"
-#include "libutil/Serializer.h"
+#include "s25util/Serializer.h"
 #include <boost/nowide/fstream.hpp>
 #include <iomanip>
 #include <stdexcept>

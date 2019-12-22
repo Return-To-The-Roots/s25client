@@ -31,9 +31,9 @@
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
-#include "libutil/Serializer.h"
-#include "libutil/StringConversion.h"
-#include "libutil/tmpFile.h"
+#include "s25util/Serializer.h"
+#include "s25util/StringConversion.h"
+#include "s25util/tmpFile.h"
 #include <rttr/test/LocaleResetter.hpp>
 #include <rttr/test/testHelpers.hpp>
 #include <boost/assign/std/vector.hpp>
@@ -122,11 +122,8 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     GAMECLIENT.SetIsHost(false);
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "false"));
     BOOST_CHECK(isLuaEqual("rttr:GetNumPlayers()", "3"));
-    std::string oldLog = getLog();
     // Set Player ID
     GAMECLIENT.SetTestPlayerId(1);
-    clearLog();
-    LOG.write(oldLog, LogTarget::Stdout);
     BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
 }
 

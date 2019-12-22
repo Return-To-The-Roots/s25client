@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "libutil/MessageInterface.h"
-#include "libutil/warningSuppression.h"
+#include "s25util/MessageInterface.h"
+#include "s25util/warningSuppression.h"
 #include <boost/preprocessor.hpp>
 
 // NOLINTNEXTLINE(bugprone-macro-parentheses)

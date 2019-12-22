@@ -22,7 +22,7 @@
 #include "helpers/format.hpp"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 
 void GameClient::ExecuteGameFrame_Replay()
 {

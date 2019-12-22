@@ -20,7 +20,7 @@
 #pragma once
 
 #include "FrameCounter.h"
-#include "libutil/Singleton.h"
+#include "s25util/Singleton.h"
 #include <boost/optional.hpp>
 
 // Die verschiedenen Cursor mit ihren Indizes in resource.idx

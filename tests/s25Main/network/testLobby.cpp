@@ -20,7 +20,7 @@
 #include "liblobby/LobbyClient.h"
 #include "liblobby/LobbyInterface.h"
 #include "liblobby/LobbyMessages.h"
-#include "libutil/md5.hpp"
+#include "s25util/md5.hpp"
 #include <rttr/test/LogAccessor.hpp>
 #include <turtle/mock.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>

@@ -31,7 +31,7 @@
 #include "iwHelp.h"
 #include "iwMilitaryBuilding.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glFont.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/BuildingCount.h"

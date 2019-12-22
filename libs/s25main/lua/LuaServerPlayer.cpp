@@ -20,7 +20,7 @@
 #include "JoinPlayerInfo.h"
 #include "lua/LuaHelpers.h"
 #include "network/IGameLobbyController.h"
-#include "libutil/colors.h"
+#include "s25util/colors.h"
 #include <kaguya/kaguya.hpp>
 
 const BasePlayerInfo& LuaServerPlayer::GetPlayer() const

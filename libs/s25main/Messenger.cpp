@@ -22,8 +22,8 @@
 #include "helpers/format.hpp"
 #include "mygettext/mygettext.h"
 #include "ogl/FontStyle.h"
-#include "ogl/glArchivItem_Font.h"
-#include "libutil/Log.h"
+#include "ogl/glFont.h"
+#include "s25util/Log.h"
 #include <array>
 
 /// Chat-Destination-String, der entsprechend angezeigt wird
@@ -70,14 +70,14 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 {
     if(!author.empty())
         LOG.writeColored("%1% ", color_author) % author;
-    LOG.writeColored(CD_STRINGS[cd], CD_COLORS[cd]);
-    LOG.write(msg + "\n");
+    LOG.writeColored("%1%", CD_COLORS[cd]) % CD_STRINGS[cd];
+    LOG.write("%1%\n") % msg;
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
-    glArchivItem_Font::WrapInfo wi = LargeFont->GetWrapInfo(msg,
-                                                            VIDEODRIVER.GetRenderSize().x - 60 - LargeFont->getWidth(author)
-                                                              - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
-                                                            VIDEODRIVER.GetRenderSize().x - 60);
+    glFont::WrapInfo wi = LargeFont->GetWrapInfo(msg,
+                                                 VIDEODRIVER.GetRenderSize().x - 60 - LargeFont->getWidth(author)
+                                                   - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
+                                                 VIDEODRIVER.GetRenderSize().x - 60);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(msg);

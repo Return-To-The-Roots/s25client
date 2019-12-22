@@ -22,25 +22,25 @@
 
 #include <string>
 
-class glArchivItem_Font;
+class glFont;
 
 /// Base class for controls containing a text
 class ctrlBaseText
 {
 public:
-    ctrlBaseText(std::string text, unsigned color, glArchivItem_Font* font);
+    ctrlBaseText(std::string text, unsigned color, const glFont* font);
 
     void SetText(const std::string& text);
     const std::string& GetText() const { return text; }
-    void SetFont(glArchivItem_Font* font);
-    glArchivItem_Font* GetFont() const { return font; }
+    void SetFont(glFont* font);
+    const glFont* GetFont() const { return font; }
     void SetTextColor(unsigned color) { color_ = color; }
     unsigned GetTextColor() const { return color_; }
 
 protected:
     std::string text;
     unsigned color_;
-    glArchivItem_Font* font;
+    const glFont* font;
 };
 
 #endif // ctrlBaseText_h__

@@ -32,7 +32,7 @@
 #include "world/TerritoryRegion.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameData/BuildingConsts.h"
-#include "libutil/Log.h"
+#include "s25util/Log.h"
 #include <kaguya/kaguya.hpp>
 
 const BasePlayerInfo& LuaPlayer::GetPlayer() const
