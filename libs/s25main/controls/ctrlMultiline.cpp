@@ -106,7 +106,7 @@ void ctrlMultiline::RecalcWrappedLines()
             wrapInfos.push_back(font->GetWrapInfo(lines[i].str, maxTextWidth, maxTextWidth));
             if(!needScrollBar)
             {
-                curNumLines += wrapInfos[i].positions.size();
+                curNumLines += wrapInfos[i].lines.size();
                 if(curNumLines > maxNumVisibleLines)
                     break;
             }
@@ -123,7 +123,7 @@ void ctrlMultiline::RecalcWrappedLines()
     for(unsigned i = 0; i < wrapInfos.size(); i++)
     {
         // Special case: No break, just push the line as-is
-        if(wrapInfos[i].positions.size() == 1u)
+        if(wrapInfos[i].lines.size() == 1u)
             drawLines.push_back(lines[i]);
         else
         {

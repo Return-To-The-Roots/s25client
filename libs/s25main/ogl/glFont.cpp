@@ -330,29 +330,12 @@ Rect glFont::getBounds(DrawPoint pos, const std::string& text, FontStyle format)
     return result;
 }
 
-/**
- *  @brief
- */
-std::vector<std::string> glFont::WrapInfo::CreateSingleStrings(const std::string& text)
+std::vector<std::string> glFont::WrapInfo::CreateSingleStrings(const std::string& text) const
 {
-    RTTR_Assert(utf8::is_valid(text)); // Can only handle UTF-8 strings!
-
     std::vector<std::string> destStrings;
-    if(positions.empty())
-        return destStrings;
-
-    destStrings.reserve(positions.size());
-    unsigned curStart = positions.front();
-    for(auto it = positions.begin() + 1; it != positions.end(); ++it)
-    {
-        RTTR_Assert(*it >= curStart);
-        std::string curLine = text.substr(curStart, *it - curStart);
-        boost::algorithm::trim_right(curLine);
-        destStrings.push_back(curLine);
-        curStart = *it;
-    }
-    /* Push last part */
-    destStrings.push_back(text.substr(curStart));
+    destStrings.reserve(lines.size());
+    for(const auto& line : lines)
+        destStrings.emplace_back(text.substr(line.start, line.len));
     return destStrings;
 }
 
@@ -375,14 +358,18 @@ glFont::WrapInfo glFont::GetWrapInfo(const std::string& text, const unsigned sho
     unsigned curMaxLineWidth = primary_width;
 
     WrapInfo wi;
-    // We start the first line at the first char (so wi.positions.size() == numLines)
-    wi.positions.push_back(0);
 
     utf8Iterator it(text.begin(), text.begin(), text.end());
     utf8Iterator itEnd(text.end(), text.begin(), text.end());
     utf8Iterator itWordStart = it;
+    auto itLineStart = text.begin();
 
     const unsigned spaceWidth = CharWidth(' ');
+
+    const auto makeLineRange = [&text, &itLineStart](const utf8Iterator& itLineEnd) {
+        return WrapInfo::LineRange{static_cast<unsigned>(itLineStart - text.begin()),
+                                   static_cast<unsigned>(itLineEnd.base() - itLineStart)};
+    };
 
     for(;; ++it)
     {
@@ -398,15 +385,17 @@ glFont::WrapInfo glFont::GetWrapInfo(const std::string& text, const unsigned sho
                 // Can we fit the word in one line?
                 if(word_width <= secondary_width)
                 {
+                    // Break before word
+                    wi.lines.emplace_back(makeLineRange(itWordStart));
                     // New line starts at index of word start
-                    wi.positions.push_back(static_cast<unsigned>(itWordStart.base() - text.begin()));
+                    itLineStart = itWordStart.base();
                     line_width = 0;
                 } else
                 {
                     // Word does not even fit on one line -> Put as many letters in one line as possible
                     for(utf8Iterator itWord = itWordStart; itWord != it; ++itWord)
                     {
-                        unsigned letter_width = CharWidth(*itWord);
+                        const unsigned letter_width = CharWidth(*itWord);
 
                         // Can we fit the letter onto current line?
                         if(line_width + letter_width <= curMaxLineWidth)
@@ -414,9 +403,10 @@ glFont::WrapInfo glFont::GetWrapInfo(const std::string& text, const unsigned sho
                         else
                         {
                             // Create new line at this letter
-                            wi.positions.push_back(static_cast<unsigned>(itWord.base() - text.begin()));
+                            wi.lines.emplace_back(makeLineRange(itWord));
+                            // New line starts at index of word start
+                            itLineStart = itWord.base();
                             line_width = letter_width;
-                            itWordStart = nextIt(itWord);
                         }
                     }
 
@@ -426,8 +416,10 @@ glFont::WrapInfo glFont::GetWrapInfo(const std::string& text, const unsigned sho
                 curMaxLineWidth = secondary_width;
             }
             if(curChar == 0)
+            {
+                wi.lines.emplace_back(makeLineRange(it));
                 break;
-            else if(curChar == ' ')
+            } else if(curChar == ' ')
             {
                 // Set up this line if we are going to continue it (not at line break or text end)
                 // Line contains word and whitespace
@@ -437,12 +429,11 @@ glFont::WrapInfo glFont::GetWrapInfo(const std::string& text, const unsigned sho
             } else
             {
                 // If line break add new line (after all the word-breaking above)
+                wi.lines.emplace_back(makeLineRange(it));
                 itWordStart = nextIt(it);
-                if(itWordStart == itEnd)
-                    break; // Reached end
+                itLineStart = itWordStart.base();
                 word_width = 0;
                 line_width = 0;
-                wi.positions.push_back(static_cast<unsigned>(itWordStart.base() - text.begin()));
             }
         } else
         {
@@ -450,9 +441,10 @@ glFont::WrapInfo glFont::GetWrapInfo(const std::string& text, const unsigned sho
             word_width += CharWidth(curChar);
         }
     }
-
-    // Ignore trailing newline
-    if(wi.positions.back() + 1 >= text.length() && wi.positions.size() > 1)
-        wi.positions.pop_back();
+    for(auto& line : wi.lines)
+    {
+        while(line.len > 0 && text[line.start + line.len - 1] == ' ')
+            --line.len;
+    }
     return wi;
 }

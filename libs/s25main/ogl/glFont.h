@@ -62,11 +62,16 @@ public:
     class WrapInfo
     {
     public:
-        /// Erzeugt ein Arrays aus eigenständigen Strings aus den Unterbrechungsinfos.
-        std::vector<std::string> CreateSingleStrings(const std::string& text);
+        struct LineRange
+        {
+            unsigned start, len;
+        };
 
-        /// Array von Positionen, wo der Text umbrochen werden soll (jeweils der Anfang vom String)
-        std::vector<unsigned> positions;
+        /// Create an array of strings by breaking the given string at the contained line range information
+        std::vector<std::string> CreateSingleStrings(const std::string& text) const;
+
+        /// Information on each line detected
+        std::vector<LineRange> lines;
     };
 
     /// Gibt Infos, über die Unterbrechungspunkte in einem Text, versucht Wörter nicht zu trennen, tut dies aber, falls
