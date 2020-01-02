@@ -158,6 +158,12 @@ BOOST_AUTO_TEST_CASE(Translations)
     {
         rttr::test::LocaleResetter loc("de");
         executeLua(localSetting);
+        const auto logStr = getLog();
+        BOOST_TEST(logStr.find("Did not found translation for language 'de' in LUA file. Available translations:") != std::string::npos);
+        // All 3 mentioned
+        BOOST_TEST(logStr.find("pt") != std::string::npos);
+        BOOST_TEST(logStr.find("en_GB") != std::string::npos);
+        BOOST_TEST(logStr.find("pt_BR") != std::string::npos);
         executeLua("rttr:Log(_('Foo'))");
         BOOST_REQUIRE_EQUAL(getLog(), "Eng\n");
     }
