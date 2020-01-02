@@ -796,9 +796,9 @@ public:
     {
         if(lines.empty())
             return;
-        width = std::numeric_limits<unsigned>::max();
+        width = 0;
         for(const auto& line : lines)
-            width = std::min(width, font->getWidth(line));
+            width = std::max(width, font->getWidth(line));
         width += BORDER_SIZE * 2;
         height = lines.size() * font->getHeight() + BORDER_SIZE * 2;
     }
