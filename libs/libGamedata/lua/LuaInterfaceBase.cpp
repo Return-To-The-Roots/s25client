@@ -17,6 +17,8 @@
 
 #include "commonDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceBase.h"
+#include "helpers/strUtils.h"
+#include "mygettext/LocaleInfo.h"
 #include "mygettext/mygettext.h"
 #include "mygettext/utils.h"
 #include "s25util/Log.h"
@@ -132,10 +134,18 @@ void LuaInterfaceBase::RegisterTranslations(const kaguya::LuaRef& luaTranslation
     // Init with default
     translations_ = GetTranslation(luaTranslations, "en_GB");
     // Replace with entries of current locale
-    std::string locale = mysetlocale(LC_ALL, nullptr);
-    std::map<std::string, std::string> translated = GetTranslation(luaTranslations, locale);
-    for(const auto& it : translated)
-        translations_[it.first] = it.second;
+    const std::string locale = mysetlocale(LC_ALL, nullptr);
+    const std::map<std::string, std::string> translated = GetTranslation(luaTranslations, locale);
+    if(translated.empty())
+    {
+        boost::format fmt("Did not found translation for language '%1%' in LUA file. Available translations:  %2%\n");
+        fmt % LocaleInfo(locale).getName() % helpers::join(luaTranslations.keys<std::string>(), ", ");
+        Log(fmt.str());
+    } else
+    {
+        for(const auto& it : translated)
+            translations_[it.first] = it.second;
+    }
 }
 
 std::string LuaInterfaceBase::Translate(const std::string& key)
