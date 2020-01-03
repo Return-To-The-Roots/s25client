@@ -122,7 +122,7 @@ bool glFont::CharExist(char32_t c) const
     return helpers::contains(utf8_mapping, c);
 }
 
-inline const glFont::CharInfo& glFont::GetCharInfo(char32_t c) const
+const glFont::CharInfo& glFont::GetCharInfo(char32_t c) const
 {
     if(c < asciiMapping.size())
     {
