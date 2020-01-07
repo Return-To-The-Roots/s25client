@@ -32,6 +32,7 @@ void LuaWorld::Register(kaguya::State& state)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) state[#name] = name
+    ADD_LUA_CONST(SPEC_POLARBEAR);
     ADD_LUA_CONST(SPEC_RABBITWHITE);
     ADD_LUA_CONST(SPEC_RABBITGREY);
     ADD_LUA_CONST(SPEC_FOX);
