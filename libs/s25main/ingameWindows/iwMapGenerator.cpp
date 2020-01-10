@@ -55,7 +55,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
         return;
     }
 
-    AddTextButton(0, DrawPoint(20, 360), Extent(100, 20), TC_RED2, _("Back"), NormalFont);
+    AddTextButton(0, DrawPoint(20, 360), Extent(100, 20), TC_RED1, _("Back"), NormalFont);
     AddTextButton(1, DrawPoint(130, 360), Extent(100, 20), TC_GREEN2, _("Apply"), NormalFont);
 
     ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TC_GREY, NormalFont, 100);
