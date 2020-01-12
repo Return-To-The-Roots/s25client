@@ -247,6 +247,30 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int sel
     }
 }
 
+bool iwLobbyConnect::Msg_KeyDown(const KeyEvent& ev)
+{
+    if(ev.kt != KT_TAB)
+        return false;
+    auto* user = GetCtrl<ctrlEdit>(ID_edtUser);
+    auto* pass = GetCtrl<ctrlEdit>(ID_edtPw);
+    auto* email = GetCtrl<ctrlEdit>(ID_edtEmail);
+    if(user->HasFocus())
+    {
+        user->SetFocus(false);
+        pass->SetFocus();
+    } else if(pass->HasFocus())
+    {
+        pass->SetFocus(false);
+        email->SetFocus();
+    } else if(email->HasFocus())
+    {
+        email->SetFocus(false);
+        user->SetFocus();
+    } else
+        return false;
+    return true;
+}
+
 /**
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
