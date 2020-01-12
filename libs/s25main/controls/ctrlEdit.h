@@ -36,14 +36,14 @@ public:
     void SetText(unsigned text);
 
     std::string GetText() const;
-    void SetFocus(bool focus = true) { newFocus_ = focus; }
+    void SetFocus(bool focus = true);
+    bool HasFocus() const { return focus_; }
     void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
     void SetNotify(bool notify = true) { this->notify_ = notify; }
     void SetNumberOnly(const bool activated) { this->numberOnly_ = activated; }
 
     void Resize(const Extent& newSize) override;
 
-    void Msg_PaintAfter() override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
 
@@ -65,7 +65,6 @@ private:
     bool isPassword_;
     bool isDisabled_;
     bool focus_ = false;
-    bool newFocus_ = false;
     bool notify_;
 
     std::u32string text_;

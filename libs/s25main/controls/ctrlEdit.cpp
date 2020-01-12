@@ -66,6 +66,15 @@ std::string ctrlEdit::GetText() const
     return utf8::utf32to8(text_);
 }
 
+void ctrlEdit::SetFocus(bool focus)
+{
+    if(focus_ != focus)
+    {
+        focus_ = focus;
+        txtCtrl->SetTextColor(focus_ ? 0xFFFFA000 : COLOR_YELLOW);
+    }
+}
+
 static void removeFirstCharFromString(std::string& str)
 {
     auto it = str.begin();
@@ -209,25 +218,13 @@ void ctrlEdit::Resize(const Extent& newSize)
     UpdateInternalText();
 }
 
-void ctrlEdit::Msg_PaintAfter()
-{
-    if(focus_ != newFocus_)
-    {
-        focus_ = newFocus_;
-        txtCtrl->SetTextColor(focus_ ? 0xFFFFA000 : COLOR_YELLOW);
-    }
-    Window::Msg_PaintAfter();
-}
-
 /**
  *  Maustaste-gedrückt Callback
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
-    if((newFocus_ = IsPointInRect(mc.GetPos(), GetDrawRect())))
-        return false; /// vorläufig, um Fokus zu für andere Edit-Felder zu kriegen, damit es zu keinen Doppelfokus kommt
-    else
-        return false;
+    SetFocus(IsPointInRect(mc.GetPos(), GetDrawRect()));
+    return false; // "Unhandled" so other edits can handle this too and set their focus accordingly
 }
 
 /**
