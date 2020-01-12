@@ -31,6 +31,7 @@
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "s25util/StringConversion.h"
+#include "s25util/md5.hpp"
 
 namespace {
 enum
@@ -49,7 +50,16 @@ enum
     ID_btRegister,
     ID_txtStatus
 };
+constexpr auto md5HashLen = 32;
+bool isStoredPasswordHash(const std::string& pw)
+{
+    return pw.size() == md5HashLen + 4 && pw.substr(0, 4) == "md5:";
 }
+bool isStoredPasswordHash(const std::string& storedPw, const std::string& pwToCheck)
+{
+    return isStoredPasswordHash(storedPw) && pwToCheck.size() == md5HashLen && storedPw.substr(4) == pwToCheck;
+}
+} // namespace
 
 iwLobbyConnect::iwLobbyConnect()
     : IngameWindow(CGI_LOBBYCONNECT, IngameWindow::posLastOrCenter, Extent(500, 260), _("Connecting to Lobby"),
@@ -62,7 +72,7 @@ iwLobbyConnect::iwLobbyConnect()
 
     AddText(ID_txtPw, DrawPoint(20, 70), _("Password:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* pass = AddEdit(ID_edtPw, DrawPoint(260, 70), Extent(220, 22), TC_GREEN2, NormalFont, 0, true);
-    pass->SetText(SETTINGS.lobby.password);
+    pass->SetText(isStoredPasswordHash(SETTINGS.lobby.password) ? SETTINGS.lobby.password.substr(4) : SETTINGS.lobby.password);
 
     AddText(ID_txtEmail, DrawPoint(20, 100), _("Email Address:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* email = AddEdit(ID_edtEmail, DrawPoint(260, 100), Extent(220, 22), TC_GREEN2, NormalFont);
@@ -97,10 +107,6 @@ iwLobbyConnect::~iwLobbyConnect()
 {
     try
     {
-        // Form abrufen und ggf in settings speichern
-        std::string user, pass, email;
-        ReadFromEditAndSaveLobbyData(user, pass, email);
-
         LOBBYCLIENT.RemoveListener(this);
         if(!LOBBYCLIENT.IsLoggedIn())
             LOBBYCLIENT.Stop();
@@ -120,6 +126,10 @@ void iwLobbyConnect::ReadFromEditAndSaveLobbyData(std::string& user, std::string
     pass = GetCtrl<ctrlEdit>(ID_edtPw)->GetText();
     email = GetCtrl<ctrlEdit>(ID_edtEmail)->GetText();
 
+    // Potential false positive: User uses new password which is equal to the hash of the old one. HIGHLY unlikely, so ignore
+    if(!isStoredPasswordHash(SETTINGS.lobby.password, pass))
+        pass = s25util::md5(pass).toString();
+
     // Name speichern
     SETTINGS.lobby.name = user; //-V807
 
@@ -127,7 +137,7 @@ void iwLobbyConnect::ReadFromEditAndSaveLobbyData(std::string& user, std::string
     if(SETTINGS.lobby.save_password)
     {
         // ja, Passwort speichern
-        SETTINGS.lobby.password = pass;
+        SETTINGS.lobby.password = "md5:" + pass;
 
         // Email speichern
         SETTINGS.lobby.email = email;
