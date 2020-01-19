@@ -139,6 +139,15 @@ void ctrlMultiline::RecalcWrappedLines()
     GetCtrl<ctrlScrollBar>(0)->SetRange(drawLines.size());
 }
 
+void ctrlMultiline::SetScrollBarAllowed(bool allowed)
+{
+    if(scrollbarAllowed_ != allowed)
+    {
+        scrollbarAllowed_ = allowed;
+        RecalcWrappedLines();
+    }
+}
+
 bool ctrlMultiline::Msg_LeftDown(const MouseCoords& mc)
 {
     return GetCtrl<Window>(0)->Msg_LeftDown(mc);
