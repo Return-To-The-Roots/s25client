@@ -35,29 +35,48 @@
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
 
+namespace {
+enum
+{
+    ID_imgSoldier,
+    ID_txtRttr,
+    ID_txtVersion,
+    ID_txtCopyright,
+    ID_btKeyboardLayout,
+    ID_txtKeyboardLayout,
+    ID_btReadme,
+    ID_txtReadme,
+    ID_btSave,
+    ID_txtSave,
+    ID_btSoundEffects,
+    ID_btMusic,
+    ID_pgEffectVol,
+    ID_pgMusicVol,
+    ID_btMusicPlayer,
+    ID_btAdvanced,
+    ID_btSurrender,
+    ID_btEndGame
+};
+}
+
 iwOptionsWindow::iwOptionsWindow()
     : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 515), _("Game menu"), LOADER.GetImageN("resource", 41))
 {
     // Der Soldat oben
-    AddImage(1, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
+    AddImage(ID_imgSoldier, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
-    // Versionszeile
-    AddFormattedText(2, DrawPoint(150, 76), "Return To The Roots - %1%", COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, NormalFont)
-      % RTTR_Version::GetReadableVersion();
-    // Copyright
-    AddFormattedText(3, DrawPoint(150, 96),
+    AddText(ID_txtRttr, DrawPoint(150, 60), "Return To The Roots", COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    AddText(ID_txtVersion, DrawPoint(150, 77), RTTR_Version::GetReadableVersion(), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    AddFormattedText(ID_txtCopyright, DrawPoint(150, 94),
                      "\xC2\xA9"
-                     " 2005 - %s Settlers Freaks",
-                     COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, NormalFont)
+                     "2005 - %s Settlers Freaks",
+                     COLOR_YELLOW, FontStyle::CENTER, NormalFont)
       % RTTR_Version::GetYear();
 
-    // "Tastaturbelegung"
-    AddImageButton(4, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
-    AddText(5, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
-
-    // "'Lies mich'-Datei laden"
-    AddImageButton(6, DrawPoint(35, 160), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
-    AddText(7, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    AddImageButton(ID_btKeyboardLayout, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
+    AddText(ID_txtKeyboardLayout, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    AddImageButton(ID_btReadme, DrawPoint(35, 160), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
+    AddText(ID_txtReadme, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
     // "Spiel laden!"
     // TODO: Implement
@@ -66,96 +85,69 @@ iwOptionsWindow::iwOptionsWindow()
 
     // "Spiel speichern!"
     // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
-    AddImageButton(10, DrawPoint(35, 230), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 47));
-    AddText(11, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    AddImageButton(ID_btSave, DrawPoint(35, 230), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 47));
+    AddText(ID_txtSave, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
     // Geräusche an/aus
-    AddImageButton(12, DrawPoint(35, 300), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807
+    AddImageButton(ID_btSoundEffects, DrawPoint(35, 300), Extent(35, 35), TC_GREEN2,
+                   LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807
 
     // Musik an/aus
-    AddImageButton(13, DrawPoint(35, 340), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
+    AddImageButton(ID_btMusic, DrawPoint(35, 340), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
 
     // Geräuschlautstärke
-    AddProgress(14, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 10)->SetPosition(SETTINGS.sound.effekte_volume * 10 / 255);
+    AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 10)
+      ->SetPosition(SETTINGS.sound.effekte_volume * 10 / 255);
 
     // Musiklautstärke
-    AddProgress(15, DrawPoint(100, 346), Extent(160, 22), TC_GREEN2, 139, 138, 10)->SetPosition(SETTINGS.sound.musik_volume * 10 / 255);
+    AddProgress(ID_pgMusicVol, DrawPoint(100, 346), Extent(160, 22), TC_GREEN2, 139, 138, 10)
+      ->SetPosition(SETTINGS.sound.musik_volume * 10 / 255);
 
-    //// Music Player
-    AddTextButton(16, DrawPoint(100, 380), Extent(160, 22), TC_GREEN2, _("Music player"), NormalFont);
-
-    // Advanced Options
-    AddTextButton(18, DrawPoint(67, 412), Extent(168, 24), TC_GREEN2, _("Advanced"), NormalFont);
-
-    // "Spiel aufgeben"
-    AddTextButton(17, DrawPoint(67, 443), Extent(168, 24), TC_RED1, _("Surrender"), NormalFont);
-    // "Spiel beenden"
-    AddTextButton(0, DrawPoint(67, 474), Extent(168, 24), TC_RED1, _("End game"), NormalFont);
+    AddTextButton(ID_btMusicPlayer, DrawPoint(100, 380), Extent(160, 22), TC_GREEN2, _("Music player"), NormalFont);
+    AddTextButton(ID_btAdvanced, DrawPoint(67, 412), Extent(168, 24), TC_GREEN2, _("Advanced"), NormalFont);
+    AddTextButton(ID_btSurrender, DrawPoint(67, 443), Extent(168, 24), TC_RED1, _("Surrender"), NormalFont);
+    AddTextButton(ID_btEndGame, DrawPoint(67, 474), Extent(168, 24), TC_RED1, _("End game"), NormalFont);
 }
 
 void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 0: // "Spiel beenden"
-        {
+        case ID_btEndGame:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwEndgame>());
             Close();
-        }
-        break;
-        case 4: // "Tastaturbelegung laden"
-        {
+            break;
+        case ID_btKeyboardLayout:
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
-        }
-        break;
-        case 6: // "'Lies mich'-Datei laden"
-        {
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
-        }
-        break;
-        case 10: // "Spiel speichern"
-        {
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
-        }
-        break;
+            break;
+        case ID_btReadme: WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!"))); break;
+        case ID_btSave: WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>()); break;
 
-        case 12: // Geräusche an/aus
-        {
+        case ID_btSoundEffects:
             SETTINGS.sound.effekte = !SETTINGS.sound.effekte; //-V807
             GetCtrl<ctrlImageButton>(12)->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effekte));
 
             if(!SETTINGS.sound.effekte)
                 SOUNDMANAGER.StopAll();
-        }
-        break;
+            break;
 
-        case 13: // Musik an/aus
-        {
+        case ID_btMusic:
             SETTINGS.sound.musik = !SETTINGS.sound.musik;
             GetCtrl<ctrlImageButton>(13)->SetImage(LOADER.GetTextureN("io", 116 + !SETTINGS.sound.musik));
             if(SETTINGS.sound.musik)
                 MUSICPLAYER.Play();
             else
                 MUSICPLAYER.Stop();
-        }
-        break;
-        case 16: // Music player
-        {
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
-        }
-        break;
-        case 17: // Aufgeben
-        {
+            break;
+        case ID_btMusicPlayer: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>()); break;
+        case ID_btSurrender:
             WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSurrender>());
             Close();
-        }
-        break;
-        case 18: // Advanced
-        {
+            break;
+        case ID_btAdvanced:
             WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSettings>());
             Close();
-        }
-        break;
+            break;
     }
 }
 
@@ -163,17 +155,13 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned 
 {
     switch(ctrl_id)
     {
-        case 14:
-        {
+        case ID_pgEffectVol:
             SETTINGS.sound.effekte_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
             AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
-        }
-        break;
-        case 15:
-        {
+            break;
+        case ID_pgMusicVol:
             SETTINGS.sound.musik_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
             AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musik_volume);
-        }
-        break;
+            break;
     }
 }
