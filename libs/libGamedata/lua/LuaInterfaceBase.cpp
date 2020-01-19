@@ -53,37 +53,32 @@ void LuaInterfaceBase::Register(kaguya::State& state)
 
 void LuaInterfaceBase::ErrorHandlerNoThrow(int /*status*/, const char* message)
 {
-    LOG.write(_("Lua error: %s\n")) % (message ? message : "Unknown");
+    LOG.write(_("Lua error: %s\n")) % (message ? message : _("Unknown"));
     errorOccured_ = true;
 }
 
 void LuaInterfaceBase::ErrorHandler(int status, const char* message)
 {
     ErrorHandlerNoThrow(status, message);
-    throw LuaExecutionError(message ? message : "Unknown error");
+    throw LuaExecutionError(message ? message : _("Unknown error"));
 }
 
 bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
 {
-    script_.clear();
     bnw::ifstream scriptFile(scriptPath.c_str());
     std::string tmpScript;
     tmpScript.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
     if(!scriptFile)
     {
-        LOG.write("Failed to read lua file '%1%'\n") % scriptPath;
+        LOG.write(_("Failed to read lua file '%1%'\n")) % scriptPath;
         return false;
     }
-    if(!ValidateUTF8(tmpScript))
-        return false;
-    try
+    // Remove UTF-8 BOM if present
+    if(tmpScript.substr(0, 3) == "\xef\xbb\xbf")
+        tmpScript.erase(0, 3);
+    if(!LoadScriptString(tmpScript))
     {
-        if(!lua.dofile(scriptPath))
-            return false;
-        else
-            script_ = tmpScript;
-    } catch(LuaExecutionError&)
-    {
+        LOG.write(_("Failed to load lua file '%1%'\n")) % scriptPath;
         return false;
     }
     return true;
