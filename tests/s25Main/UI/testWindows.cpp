@@ -19,7 +19,7 @@
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlGroup.h"
-#include "controls/ctrlText.h"
+#include "controls/ctrlMultiline.h"
 #include "desktops/Desktop.h"
 #include "ingameWindows/iwVictory.h"
 #include "uiHelper/uiHelpers.hpp"
@@ -40,14 +40,16 @@ BOOST_AUTO_TEST_CASE(Victory)
     // 2 buttons
     BOOST_REQUIRE_EQUAL(wnd.GetCtrls<ctrlButton>().size(), 2u);
     // Find a text field containing all winner names
-    std::vector<const ctrlText*> txts = wnd.GetCtrls<ctrlText>();
+    const auto txts = wnd.GetCtrls<ctrlMultiline>();
     bool found = false;
-    for(const ctrlText* txt : txts)
+    for(const ctrlMultiline* txt : txts)
     {
+        if(txt->GetNumLines() != winnerNames.size())
+            continue;
         bool curFound = true;
-        for(const std::string& name : winnerNames)
+        for(unsigned i = 0; i < winnerNames.size(); i++)
         {
-            curFound &= txt->GetText().find(name) != std::string::npos;
+            curFound &= txt->GetLine(i) == winnerNames[i];
         }
         found |= curFound;
     }

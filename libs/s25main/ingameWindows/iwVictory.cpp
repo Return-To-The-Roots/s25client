@@ -15,12 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwVictory.h"
 #include "Loader.h"
 #include "WindowManager.h"
-#include "controls/ctrlText.h"
-#include "helpers/strUtils.h"
+#include "controls/ctrlMultiline.h"
 #include "iwEndgame.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
@@ -40,9 +38,13 @@ iwVictory::iwVictory(const std::vector<std::string>& winnerNames)
 {
     AddText(ID_TITLE, DrawPoint(120, 40), winnerNames.size() > 1u ? _("The winners:") : _("The winner:"), COLOR_YELLOW, FontStyle::CENTER,
             NormalFont);
-    ctrlText* names = AddText(ID_NAMES, DrawPoint(0, 70), helpers::join(winnerNames, "\n"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    Rect txtBounds = names->GetBoundaryRect();
-    txtBounds.setOrigin(names->GetPos());
+    auto* names = AddMultiline(ID_NAMES, DrawPoint(0, 70), Extent(800, 600), TC_INVISIBLE, NormalFont);
+    names->SetNumVisibleLines(winnerNames.size());
+    names->ShowBackground(false);
+    names->SetScrollBarAllowed(false);
+    for(const auto& name : winnerNames)
+        names->AddString(name, COLOR_YELLOW);
+    const auto txtBounds = Rect(names->GetPos(), names->GetContentSize());
     Extent iwSize = GetIwSize();
     if(iwSize.x + 20u < txtBounds.getSize().x)
         iwSize.x = txtBounds.getSize().x + 20u;
