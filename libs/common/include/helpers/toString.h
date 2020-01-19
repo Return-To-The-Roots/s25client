@@ -25,13 +25,13 @@ namespace helpers {
 
 /// Wrapper around std::to_string handling correct casts for small ints and enums
 template<typename T, std::enable_if_t<std::is_floating_point<T>::value, int> = 0>
-std::string toString(T value)
+std::string toString(const T value)
 {
     return std::to_string(value);
 }
 
 template<typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
-std::string toString(T value)
+std::string toString(const T value)
 {
     constexpr bool typeAtLeastInt = sizeof(T) >= sizeof(int);
     using TargetType = std::conditional_t<typeAtLeastInt, T, std::conditional_t<std::is_signed<T>::value, int, unsigned>>;
@@ -39,7 +39,7 @@ std::string toString(T value)
 }
 
 template<typename T, std::enable_if_t<std::is_enum<T>::value, int> = 0>
-std::string toString(T value)
+std::string toString(const T value)
 {
     return toString(static_cast<std::underlying_type_t<T>>(value));
 }
