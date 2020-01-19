@@ -22,6 +22,7 @@
 #include "GamePlayer.h"
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
+#include <boost/optional.hpp>
 
 Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
     : Game(settings, std::make_unique<EventManager>(startGF), players)
@@ -105,30 +106,37 @@ void Game::CheckObjective()
     if(finished_ || (ggs_.objective != GO_CONQUER3_4 && ggs_.objective != GO_TOTALDOMINATION))
         return;
 
-    // check winning condition
-    unsigned maxPoints = 0, totalPoints = 0, bestPlayer = 0xFFFF, maxTeamPoints = 0, bestTeam = 0xFFFF;
+    unsigned maxPoints = 0, maxTeamPoints = 0, totalPoints = 0, bestPlayer = 0;
+    boost::optional<unsigned> bestTeam;
+
+    const auto getPlayerMask = [](unsigned playerId) { return 1u << playerId; };
 
     // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
     for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
     {
-        GamePlayer& player = world_.GetPlayer(i);
+        const GamePlayer& player = world_.GetPlayer(i);
         if(player.IsDefeated())
             continue;
+        const unsigned points = player.GetStatisticCurrentValue(STAT_COUNTRY);
+        if(points > maxPoints)
+        {
+            maxPoints = points;
+            bestPlayer = i;
+        }
+        totalPoints += points;
         if(ggs_.lockedTeams) // in games with locked team settings check for team victory
         {
-            unsigned curTeam = 0;
-            unsigned teamPoints = 0;
-            // Add points of all players in this players team (including himself)
+            unsigned curTeam = getPlayerMask(i);
+            unsigned teamPoints = points;
+            // Add points of all players in this players team (excluding himself)
             for(unsigned j = 0; j < world_.GetNumPlayers(); ++j)
             {
-                if(!player.IsAlly(j))
+                if(i == j || !player.IsAlly(j))
                     continue;
-                GamePlayer& teamPlayer = world_.GetPlayer(j);
+                curTeam = curTeam | getPlayerMask(j);
+                const GamePlayer& teamPlayer = world_.GetPlayer(j);
                 if(!teamPlayer.IsDefeated())
-                {
-                    curTeam = curTeam | (1 << j);
                     teamPoints += teamPlayer.GetStatisticCurrentValue(STAT_COUNTRY);
-                }
             }
             if(teamPoints > maxTeamPoints)
             {
@@ -136,14 +144,6 @@ void Game::CheckObjective()
                 bestTeam = curTeam;
             }
         }
-        unsigned points = player.GetStatisticCurrentValue(STAT_COUNTRY);
-        if(points > maxPoints)
-        {
-            maxPoints = points;
-            bestPlayer = i;
-        }
-
-        totalPoints += points;
     }
     // No one has land -> All lost?
     if(totalPoints == 0u)
@@ -152,16 +152,12 @@ void Game::CheckObjective()
     switch(ggs_.objective)
     {
         case GO_CONQUER3_4: // at least 3/4 of the land
-            if(maxTeamPoints * 4 >= totalPoints * 3)
-                finished_ = true;
-            else if(maxPoints * 4 >= totalPoints * 3)
+            if(maxTeamPoints * 4u >= totalPoints * 3u || maxPoints * 4u >= totalPoints * 3u)
                 finished_ = true;
             break;
 
         case GO_TOTALDOMINATION: // whole populated land
-            if(maxTeamPoints == totalPoints)
-                finished_ = true;
-            else if(maxPoints == totalPoints)
+            if(maxTeamPoints == totalPoints || maxPoints == totalPoints)
                 finished_ = true;
             break;
         default: break;
@@ -170,10 +166,12 @@ void Game::CheckObjective()
     // We have a winner!
     if(finished_)
     {
-        if(maxPoints >= maxTeamPoints)
-            world_.GetGameInterface()->GI_Winner(bestPlayer);
+        // If there is a team that is best and it does not only consist of the best player
+        // then it is a team victory, else a single players victory
+        if(bestTeam && *bestTeam != getPlayerMask(bestPlayer))
+            world_.GetGameInterface()->GI_TeamWinner(*bestTeam);
         else
-            world_.GetGameInterface()->GI_TeamWinner(bestTeam);
+            world_.GetGameInterface()->GI_Winner(bestPlayer);
     }
 }
 
