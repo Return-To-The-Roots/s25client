@@ -19,34 +19,22 @@
 #define SafeEnum_h__
 
 #include "helpers/MaxEnumValue.h"
-#include <stdexcept>
-#include <type_traits>
+#include "lua/LuaHelpers.h"
 
 namespace lua {
 /// Wrapper around an enum which checks the int passed on ctor to be in range of the enum
 template<class T_Enum, unsigned maxValue = helpers::MaxEnumValue_v<T_Enum>>
 struct SafeEnum
 {
-    static constexpr T_Enum cast(int value)
+    static T_Enum cast(int value)
     {
-        return (value < 0 || static_cast<unsigned>(value) > maxValue) ? throw std::out_of_range("Enum value is out of range") :
-                                                                        static_cast<T_Enum>(value);
+        assertTrue(value >= 0 && static_cast<unsigned>(value) <= maxValue, "Enum value is out of range");
+        return static_cast<T_Enum>(value);
     }
     T_Enum value_;
     SafeEnum(int value) : value_(cast(value)) {}
     constexpr operator T_Enum() const noexcept { return value_; };
 };
 } // namespace lua
-
-namespace std {
-template<class T, unsigned m>
-struct is_enum<lua::SafeEnum<T, m>> : std::true_type
-{
-};
-template<class T, unsigned m>
-struct underlying_type<lua::SafeEnum<T, m>> : std::underlying_type<T>
-{
-};
-} // namespace std
 
 #endif // SafeEnum_h__

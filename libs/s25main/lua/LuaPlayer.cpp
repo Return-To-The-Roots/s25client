@@ -75,7 +75,6 @@ void LuaPlayer::Register(kaguya::State& state)
 
 void LuaPlayer::EnableBuilding(lua::SafeEnum<BuildingType> bld, bool notify)
 {
-    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     player.EnableBuilding(bld);
     if(notify)
     {
@@ -87,7 +86,6 @@ void LuaPlayer::EnableBuilding(lua::SafeEnum<BuildingType> bld, bool notify)
 
 void LuaPlayer::DisableBuilding(lua::SafeEnum<BuildingType> bld)
 {
-    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     player.DisableBuilding(bld);
 }
 
@@ -193,7 +191,7 @@ void LuaPlayer::ClearResources()
         warehouse->Clear();
 }
 
-bool LuaPlayer::AddWares(const std::map<lua::SafeEnum<GoodType, NUM_WARE_TYPES - 1>, unsigned>& wares)
+bool LuaPlayer::AddWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& wares)
 {
     nobBaseWarehouse* warehouse = player.GetFirstWH();
 
@@ -202,12 +200,9 @@ bool LuaPlayer::AddWares(const std::map<lua::SafeEnum<GoodType, NUM_WARE_TYPES -
 
     Inventory goods;
 
-    for(auto ware : wares)
+    for(const auto& ware : wares)
     {
-        if(unsigned(ware.first) < NUM_WARE_TYPES)
-            goods.Add(ware.first, ware.second);
-        else
-            throw LuaExecutionError(std::string("Invalid ware in AddWares: ") + helpers::toString(ware.first));
+        goods.Add(ware.first, ware.second);
     }
 
     warehouse->AddGoods(goods, true);
@@ -223,12 +218,9 @@ bool LuaPlayer::AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
 
     Inventory goods;
 
-    for(auto it : people)
+    for(const auto& it : people)
     {
-        if(unsigned(it.first) < NUM_JOB_TYPES)
-            goods.Add(it.first, it.second);
-        else
-            throw LuaExecutionError(std::string("Invalid job in AddPeople: ") + helpers::toString(it.first));
+        goods.Add(it.first, it.second);
     }
 
     warehouse->AddGoods(goods, true);
@@ -237,27 +229,21 @@ bool LuaPlayer::AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
 
 unsigned LuaPlayer::GetNumBuildings(lua::SafeEnum<BuildingType> bld) const
 {
-    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
-
     return player.GetBuildingRegister().GetBuildingNums().buildings[bld];
 }
 
 unsigned LuaPlayer::GetNumBuildingSites(lua::SafeEnum<BuildingType> bld) const
 {
-    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
-
     return player.GetBuildingRegister().GetBuildingNums().buildingSites[bld];
 }
 
 unsigned LuaPlayer::GetNumWares(lua::SafeEnum<GoodType> ware) const
 {
-    lua::assertTrue(unsigned(ware) < NUM_WARE_TYPES, "Invalid ware");
     return player.GetInventory().goods[ware];
 }
 
 unsigned LuaPlayer::GetNumPeople(lua::SafeEnum<Job> job) const
 {
-    lua::assertTrue(unsigned(job) < NUM_JOB_TYPES, "Invalid ware");
     return player.GetInventory().people[job];
 }
 
@@ -266,7 +252,6 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<Buildi
     // Only for actual AIs
     if(!player.isUsed() || player.isHuman())
         return false;
-    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     GameWorldGame& world = player.GetGameWorld();
     lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
     lua::assertTrue(y < world.GetHeight(), "y coordinate to large");

@@ -18,6 +18,7 @@
 #ifndef LuaTraits_h__
 #define LuaTraits_h__
 
+#include "SafeEnum.h"
 #include <kaguya/kaguya.hpp>
 #include <utility>
 
@@ -103,6 +104,22 @@ struct lua_type_traits<std::pair<T1, T2>>
         table.setRawField(2, v.second);
         return 1;
     }
+};
+
+template<class T_Enum, unsigned maxValue>
+struct lua_type_traits<::lua::SafeEnum<T_Enum, maxValue>> : lua_type_traits<luaInt>
+{
+    using get_type = ::lua::SafeEnum<T_Enum, maxValue>;
+    using opt_type = optional<get_type>;
+
+    using parent = lua_type_traits<luaInt>;
+    static opt_type opt(lua_State* l, int index) noexcept
+    {
+        if(const auto t = parent::opt(l, index))
+            return opt_type(static_cast<get_type>(*t));
+        return {};
+    }
+    static get_type get(lua_State* l, int index) { return parent::get(l, index); }
 };
 } // namespace kaguya
 

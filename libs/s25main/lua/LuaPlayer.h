@@ -19,6 +19,7 @@
 #define LuaPlayer_h__
 
 #include "LuaPlayerBase.h"
+#include "lua/LuaTraits.h"
 #include "lua/SafeEnum.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
