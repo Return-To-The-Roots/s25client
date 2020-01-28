@@ -107,7 +107,7 @@ void Reshaper::ElevateContrast(std::vector<unsigned char>& heightMap,
     {
         for (int y = 0; y < size.y; ++y)
         {
-            alpha = 1.0 - abs(float(heightMap[x + y * size.x]) - mean) / maximum;
+            alpha = 1.0 - abs(double(heightMap[x + y * size.x]) - mean) / maximum;
             heightMap[x + y * size.x] += Scale(alpha, scale);
         }
     }
