@@ -75,15 +75,7 @@ Map* Migration::Create(const MapSettings& settings)
 
     std::vector<std::vector<Position> > islands(players);
     
-    HeightSettings islandSettings(heightSettings);
-    
-    switch (size.x + size.y)
-    {
-        case 128:  islandSettings = HeightSettings(0, 23); break;
-        case 256:  islandSettings = HeightSettings(0, 26); break;
-    }
-    
-    IslandPlacer islandPlacer(islandSettings);
+    IslandPlacer islandPlacer(heightSettings);
     Island island(rnd_, islandPlacer);
     
     double percentageOfWaterForPlayerIslands;
