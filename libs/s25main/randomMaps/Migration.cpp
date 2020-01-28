@@ -86,7 +86,7 @@ Map* Migration::Create(const MapSettings& settings)
     IslandPlacer islandPlacer(islandSettings);
     Island island(rnd_, islandPlacer);
     
-    float percentageOfWaterForPlayerIslands = 0.6;
+    float percentageOfWaterForPlayerIslands;
     
     switch (size.x + size.y)
     {
@@ -95,6 +95,7 @@ Map* Migration::Create(const MapSettings& settings)
         case 512:  percentageOfWaterForPlayerIslands = 0.3; break;
         case 1024: percentageOfWaterForPlayerIslands = 0.2; break;
         case 2048: percentageOfWaterForPlayerIslands = 0.2; break;
+        default:   percentageOfWaterForPlayerIslands = 0.6; break;
     }
     
     const int maximumNumberOfPlayers = 7;
