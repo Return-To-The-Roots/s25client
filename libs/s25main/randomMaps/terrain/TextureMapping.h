@@ -36,8 +36,8 @@ public:
     GreenlandMapping() {}
     ~GreenlandMapping() {}
     
-    unsigned char Get(TextureType texture);
-    unsigned char GetType();
+    unsigned char Get(TextureType texture) override;
+    unsigned char GetType() override;
 };
 
 class WastelandMapping : public TextureMapping
@@ -46,8 +46,8 @@ public:
     WastelandMapping() {}
     ~WastelandMapping() {}
     
-    unsigned char Get(TextureType texture);
-    unsigned char GetType();
+    unsigned char Get(TextureType texture) override;
+    unsigned char GetType() override;
 };
 
 class WinterMapping : public TextureMapping
@@ -56,8 +56,8 @@ public:
     WinterMapping() {}
     ~WinterMapping() {}
     
-    unsigned char Get(TextureType texture);
-    unsigned char GetType();
+    unsigned char Get(TextureType texture) override;
+    unsigned char GetType() override;
 };
 
 #endif // TextureMapping_h__

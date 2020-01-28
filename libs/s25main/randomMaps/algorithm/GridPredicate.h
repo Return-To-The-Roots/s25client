@@ -43,7 +43,7 @@ public:
     
     ~DistancePredicate() {}
     
-    bool Check(const Position& p, const MapExtent& size) const
+    bool Check(const Position& p, const MapExtent& size) const override
     {
         return GridUtility::Distance(reference_, p, size) < distance_;
     }
@@ -61,7 +61,7 @@ public:
     
     ~ThresholdPredicate() {}
     
-    bool Check(const Position& p, const MapExtent& size) const
+    bool Check(const Position& p, const MapExtent& size) const override
     {
         return values_[p.x + p.y * size.x] < threshold_;
     }
@@ -79,7 +79,7 @@ public:
     
     ~CharThresholdPredicate() {}
     
-    bool Check(const Position& p, const MapExtent& size) const
+    bool Check(const Position& p, const MapExtent& size) const override
     {
         return values_[p.x + p.y * size.x] < threshold_;
     }
@@ -94,7 +94,7 @@ public:
     ExclusionPredicate(const std::vector<bool>& exclude) : exclude_(exclude) {}
     ~ExclusionPredicate() {}
     
-    bool Check(const Position& p, const MapExtent& size) const
+    bool Check(const Position& p, const MapExtent& size) const override
     {
         return !exclude_[p.x + p.y * size.x];
     }
@@ -109,7 +109,7 @@ public:
     IncludePredicate(const std::vector<bool>& include) : include_(include) {}
     ~IncludePredicate() {}
     
-    bool Check(const Position& p, const MapExtent& size) const
+    bool Check(const Position& p, const MapExtent& size) const override
     {
         return include_[p.x + p.y * size.x];
     }

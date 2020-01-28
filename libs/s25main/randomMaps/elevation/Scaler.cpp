@@ -20,14 +20,12 @@
 
 #include <cmath>
 
-#include <iostream>
-
 void Scaler::Scale(std::vector<unsigned char>& heightMap)
 {
     auto size = (int) heightMap.size();
     
-    auto minimum = *std::min_element(heightMap.begin(), heightMap.end());
-    auto maximum = *std::max_element(heightMap.begin(), heightMap.end());
+    auto minimum = *min_element(heightMap.begin(), heightMap.end());
+    auto maximum = *max_element(heightMap.begin(), heightMap.end());
     
     auto diff = height_.maximum - height_.minimum;
     
@@ -45,8 +43,8 @@ std::vector<unsigned char> Scaler::Scale(const std::vector<int>& map)
     std::vector<unsigned char> heightMap(map.size());
     auto size = (int) map.size();
     
-    auto minimum = *std::min_element(map.begin(), map.end());
-    auto maximum = *std::max_element(map.begin(), map.end());
+    auto minimum = *min_element(map.begin(), map.end());
+    auto maximum = *max_element(map.begin(), map.end());
     
     auto maxDiff = maximum - minimum;
     

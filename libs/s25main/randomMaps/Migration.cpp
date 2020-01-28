@@ -86,7 +86,7 @@ Map* Migration::Create(const MapSettings& settings)
     IslandPlacer islandPlacer(islandSettings);
     Island island(rnd_, islandPlacer);
     
-    float percentageOfWaterForPlayerIslands;
+    double percentageOfWaterForPlayerIslands;
     
     switch (size.x + size.y)
     {

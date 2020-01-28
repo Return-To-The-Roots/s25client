@@ -39,7 +39,7 @@ private:
 public:
     ConditionFilter(GridPredicate& condition, const MapExtent& size) : condition_(condition), size_(size) {}
     ~ConditionFilter() {}
-    std::vector<Position> Apply(const std::vector<Position>& input)
+    std::vector<Position> Apply(const std::vector<Position>& input) override
     {
         std::vector<Position> result;
         
@@ -64,7 +64,7 @@ private:
 public:
     ItemFilter(const std::vector<Position>& remove) : remove_(remove) {}
     ~ItemFilter() {}
-    std::vector<Position> Apply(const std::vector<Position>& input)
+    std::vector<Position> Apply(const std::vector<Position>& input) override
     {
         std::vector<Position> result;
         
