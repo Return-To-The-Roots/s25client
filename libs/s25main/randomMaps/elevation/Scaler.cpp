@@ -19,6 +19,7 @@
 #include "randomMaps/elevation/Scaler.h"
 
 #include <cmath>
+#include <algorithm>
 
 void Scaler::Scale(std::vector<unsigned char>& heightMap)
 {

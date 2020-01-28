@@ -56,7 +56,8 @@ Map* Edgecase::Create(const MapSettings& settings)
     scaler.Scale(z);
     
     double pctMountain, pctSea;
-    switch ((size.x + size.y) / 2) {
+    switch ((size.x + size.y) / 2)
+    {
         case  64: pctMountain = 0.40; pctSea = 0.155; break;
         case 128: pctMountain = 0.45; pctSea = 0.160; break;
         case 256: pctMountain = 0.46; pctSea = 0.182; break;
@@ -64,9 +65,8 @@ Map* Edgecase::Create(const MapSettings& settings)
         default:  pctMountain = 0.50; pctSea = 0.190; break;
     }
     
-    Level level;
-    auto mountainLevel = level.Mountain(z, pctMountain);
-    auto seaLevel      = level.Water(   z, pctSea);
+    auto mountainLevel = Level::Mountain(z, pctMountain);
+    auto seaLevel      = Level::Water(z, pctSea);
     auto waterMap      = WaterMap::Create(z, size, seaLevel);
 
     TextureTranslator textureTranslator(heightSettings);

@@ -67,9 +67,8 @@ Map* Continent::Create(const MapSettings& settings)
         default:   percentageMountain = 0.18; break;
     }
     
-    Level level;
-    auto mountainLevel = level.Mountain(z, percentageMountain);
-    auto seaLevel      = level.Water(z, percentageWater);
+    auto mountainLevel = Level::Mountain(z, percentageMountain);
+    auto seaLevel      = Level::Water(z, percentageWater);
     auto waterMap      = WaterMap::Create(z, size, seaLevel);
     
     TextureTranslator textureTranslator(heightSettings);

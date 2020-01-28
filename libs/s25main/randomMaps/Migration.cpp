@@ -56,14 +56,12 @@ Map* Migration::Create(const MapSettings& settings)
     smoother.Smooth(z);
     scaler.Scale(z);
     
-    Level level;
-    auto seaLevel = level.Water(z, 0.7);
+    auto seaLevel = Level::Water(z, 0.7);
+    auto mountainLevel = Level::Mountain(z, 0.1);
     auto waterMap = WaterMap::Create(z, size, seaLevel);
     
     TextureTranslator textureTranslator(heightSettings);
     TextureMap textureMap(textureTranslator);
-
-    auto mountainLevel = level.Mountain(z, 0.1);
     
     auto textures = textureMap.Create(z, waterMap, size, seaLevel, mountainLevel);
     
@@ -92,7 +90,7 @@ Map* Migration::Create(const MapSettings& settings)
     
     const int maximumNumberOfPlayers = 7;
     
-    auto waterTiles = level.CountBelowOrEqual(z, seaLevel);
+    auto waterTiles = Level::CountBelowOrEqual(z, seaLevel);
     auto waterTilesPerPlayer = int(waterTiles
                                    * percentageOfWaterForPlayerIslands
                                    / maximumNumberOfPlayers);
