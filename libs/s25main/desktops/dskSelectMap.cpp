@@ -41,7 +41,7 @@
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
 #include "lua/GameDataLoader.h"
-#include "randomMaps/MapGenerator.h"
+#include "mapGenerator/RandomMap.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Map.h"
@@ -323,7 +323,7 @@ void dskSelectMap::CreateRandomMap()
     try
     {
         // create a random map and save filepath
-        MapGenerator::Create(mapPath, rndMapSettings);
+        rttr::mapGenerator::CreateRandomMap(mapPath, rndMapSettings);
         newRandMapPath = mapPath;
     } catch(std::runtime_error& e)
     {

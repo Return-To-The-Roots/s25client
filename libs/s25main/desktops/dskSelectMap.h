@@ -18,7 +18,7 @@
 #pragma once
 
 #include "Desktop.h"
-#include "randomMaps/MapSettings.h"
+#include "mapGenerator/MapSettings.h"
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
 #include "liblobby/LobbyInterface.h"
@@ -71,7 +71,7 @@ private:
     void OnMapCreated(const boost::filesystem::path& mapPath);
 
     CreateServerInfo csi;
-    MapSettings rndMapSettings;
+    rttr::mapGenerator::MapSettings rndMapSettings;
     boost::thread* mapGenThread;
     boost::filesystem::path newRandMapPath;
     std::string randMapGenError;

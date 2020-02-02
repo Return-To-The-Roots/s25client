@@ -26,12 +26,15 @@
 template<typename T_Node>
 class NodeMapBase final : public MapBase
 {
+protected:
     std::vector<T_Node> nodes;
 
 public:
     using Node = T_Node;
 
     void Resize(const MapExtent& newSize) override;
+    void Resize(const MapExtent& newSize, const Node& defaultValue);
+
     /// Access given node
     Node& operator[](unsigned idx) { return nodes[idx]; }
     const Node& operator[](unsigned idx) const { return nodes[idx]; }
@@ -61,3 +64,12 @@ void NodeMapBase<T_Node>::Resize(const MapExtent& newSize)
     nodes.clear();
     nodes.resize(prodOfComponents(newSize));
 }
+
+template<typename T_Node>
+void NodeMapBase<T_Node>::Resize(const MapExtent& newSize, const T_Node& defaultValue)
+{
+    MapBase::Resize(newSize);
+    nodes.clear();
+    nodes.resize(prodOfComponents(newSize), defaultValue);
+}
+
