@@ -44,7 +44,7 @@ install:
   - |
     BOOST_VERSION=${BOOST_VERSION:-1.64.0}
     export BOOST_ROOT="${DEPS_DIR}/boost${BOOST_VERSION}"
-    export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBoost_NO_SYSTEM_PATHS=ON"
+    export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBoost_NO_SYSTEM_PATHS=ON -DBoost_NO_BOOST_CMAKE=ON"
     external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_ROOT}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
 
 before_script: source external/libutil/tools/ci/setupXServer.sh
