@@ -39,8 +39,8 @@ else
     boostLibDir="$(echo "${CMAKE_VARS}" | grep Boost_DIR | cut -d "=" -f2)"
     boostLibDir="${boostLibDir%/lib/*}/lib"
 fi
-export DYLD_LIBRARY_PATH="${boostLibDir}:${DYLD_LIBRARY_PATH:-}"
-export LD_LIBRARY_PATH="${boostLibDir}:${LD_LIBRARY_PATH:-}"
+export DYLD_LIBRARY_PATH="${boostLibDir}${DYLD_LIBRARY_PATH+":$DYLD_LIBRARY_PATH"}"
+export LD_LIBRARY_PATH="${boostLibDir}${LD_LIBRARY_PATH+":$LD_LIBRARY_PATH"}"
 
 # Execute tests
 export RTTR_DISABLE_ASSERT_BREAKPOINT=1
