@@ -39,8 +39,11 @@ else
     boostLibDir="$(echo "${CMAKE_VARS}" | grep Boost_DIR | cut -d "=" -f2)"
     boostLibDir="${boostLibDir%/lib/*}/lib"
 fi
-export DYLD_LIBRARY_PATH="${boostLibDir}${DYLD_LIBRARY_PATH+":$DYLD_LIBRARY_PATH"}"
-export LD_LIBRARY_PATH="${boostLibDir}${LD_LIBRARY_PATH+":$LD_LIBRARY_PATH"}"
+# ... but not if it is a system boost because that would fail on OSX due to messing up the search order
+if ! [[ "$boostLibDir" =~ ^/usr/ ]]; then
+	export DYLD_LIBRARY_PATH="${boostLibDir}${DYLD_LIBRARY_PATH+":$DYLD_LIBRARY_PATH"}"
+	export LD_LIBRARY_PATH="${boostLibDir}${LD_LIBRARY_PATH+":$LD_LIBRARY_PATH"}"
+fi
 
 # Execute tests
 export RTTR_DISABLE_ASSERT_BREAKPOINT=1
