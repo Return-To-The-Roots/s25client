@@ -53,7 +53,7 @@ void LuaInterfaceBase::Register(kaguya::State& state)
 
 void LuaInterfaceBase::ErrorHandlerNoThrow(int /*status*/, const char* message)
 {
-    LOG.write(_("Lua error: %s\n")) % (message ? message : _("Unknown"));
+    LOG.write(_("Lua error: %s\n")) % (message ? message : _("Unknown error"));
     errorOccured_ = true;
 }
 
