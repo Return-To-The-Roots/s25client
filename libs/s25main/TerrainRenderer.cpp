@@ -973,7 +973,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     glTexCoordPointer(2, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].tx);
     glColorPointer(3, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].r);
 
-    for(const auto& itRoad : sorted_roads | boost::adaptors::indexed())
+    for(const auto itRoad : sorted_roads | boost::adaptors::indexed())
     {
         if(itRoad.value().empty())
             continue;
