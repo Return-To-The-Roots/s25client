@@ -11,7 +11,7 @@ This module defines:
 
 ::
 
-  SDL_Mixer::SDL_Mixer target to link to
+  SDL{1,2}_Mixer::SDL_Mixer target to link to
   SDL_MIXER_FOUND, if false, do not try to link against
   SDL_MIXER_VERSION - human-readable string containing the
                              version of SDL_mixer
@@ -26,13 +26,16 @@ module, but with modifications to recognize OS X frameworks and
 additional Unix paths (FreeBSD, etc).
 #]=======================================================================]
 
+unset(SDL_MIXER_LIBRARY CACHE)
+unset(SDL_MIXER_INCLUDE_DIR CACHE)
+
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(VC_LIB_PATH_SUFFIX lib/x64)
 else()
   set(VC_LIB_PATH_SUFFIX lib/x86)
 endif()
 
-if(PACKAGE_FIND_VERSION_MAJOR EQUAL "2")
+if(SDL_mixer_FIND_VERSION VERSION_GREATER_EQUAL 2)
   set(libName SDL2_mixer)
   set(pathSuffixes SDL2 include/SDL2 include)
 else()
@@ -80,7 +83,6 @@ if(SDL_MIXER_INCLUDE_DIR AND EXISTS "${SDL_MIXER_INCLUDE_DIR}/SDL_mixer.h")
   unset(SDL_MIXER_VERSION_MAJOR_LINE)
   unset(SDL_MIXER_VERSION_MINOR_LINE)
   unset(SDL_MIXER_VERSION_PATCH_LINE)
-  unset(SDL_MIXER_VERSION_MAJOR)
   unset(SDL_MIXER_VERSION_MINOR)
   unset(SDL_MIXER_VERSION_PATCH)
 else()
@@ -104,21 +106,22 @@ find_package_handle_standard_args(SDL_mixer
                                   REQUIRED_VARS SDL_MIXER_LIBRARY SDL_MIXER_INCLUDE_DIR ${additionalVars}
                                   VERSION_VAR SDL_MIXER_VERSION)
 
-if(NOT TARGET SDL_mixer::SDL_mixer)
-  add_library(SDL_mixer-SDL_mixer INTERFACE)
-  add_library(SDL_mixer::SDL_mixer ALIAS SDL_mixer-SDL_mixer)
-  target_link_libraries(SDL_mixer-SDL_mixer INTERFACE ${SDL_MIXER_LIBRARY})
-  target_include_directories(SDL_mixer-SDL_mixer SYSTEM INTERFACE ${SDL_MIXER_INCLUDE_DIR})
+if(NOT TARGET SDL${SDL_MIXER_VERSION_MAJOR}_mixer::SDL_mixer)
+  add_library(SDL${SDL_MIXER_VERSION_MAJOR}_mixer-SDL_mixer INTERFACE)
+  add_library(SDL${SDL_MIXER_VERSION_MAJOR}_mixer::SDL_mixer ALIAS SDL${SDL_MIXER_VERSION_MAJOR}_mixer-SDL_mixer)
+  target_link_libraries(SDL${SDL_MIXER_VERSION_MAJOR}_mixer-SDL_mixer INTERFACE ${SDL_MIXER_LIBRARY})
+  target_include_directories(SDL${SDL_MIXER_VERSION_MAJOR}_mixer-SDL_mixer SYSTEM INTERFACE ${SDL_MIXER_INCLUDE_DIR})
   # Add correct SDL dependency
   if(SDL_MIXER_VERSION VERSION_LESS "2")
     if(NOT SDL_VERSION_STRING VERSION_LESS "2")
       message(FATAL_ERROR "SDL_Mixer ${SDL_MIXER_VERSION} not compatible with SDL ${SDL_VERSION_STRING}")
     endif()
-    target_link_libraries(SDL_mixer-SDL_mixer INTERFACE ${SDL_LIBRARY})
-    target_include_directories(SDL_mixer-SDL_mixer SYSTEM INTERFACE ${SDL_INCLUDE_DIR})
+    target_link_libraries(SDL${SDL_MIXER_VERSION_MAJOR}_mixer-SDL_mixer INTERFACE ${SDL_LIBRARY})
+    target_include_directories(SDL${SDL_MIXER_VERSION_MAJOR}_mixer-SDL_mixer SYSTEM INTERFACE ${SDL_INCLUDE_DIR})
   else()
-    target_link_libraries(SDL_mixer-SDL_mixer INTERFACE SDL2::SDL2)
+    target_link_libraries(SDL${SDL_MIXER_VERSION_MAJOR}_mixer-SDL_mixer INTERFACE SDL2::SDL2)
   endif()
 endif()
 
 mark_as_advanced(SDL_MIXER_LIBRARY SDL_MIXER_INCLUDE_DIR)
+unset(SDL_MIXER_VERSION_MAJOR)
