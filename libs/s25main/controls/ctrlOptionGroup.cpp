@@ -17,21 +17,18 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlOptionGroup.h"
-class MouseCoords;
 
-ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, int select_type)
-    : ctrlGroup(parent, id), selection_(0xFFFF), select_type(select_type)
-{}
+ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, int select_type) : ctrlGroup(parent, id), select_type(select_type) {}
 
 /**
  *  wählt einen Button aus der Gruppe aus.
  */
-void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
+void ctrlOptionGroup::SetSelection(unsigned selection, bool notify)
 {
     // Aktuellen ausgewählten Button wieder normal machen
-    if(this->selection_ != 0xFFFF)
+    if(this->selection_)
     {
-        auto* button = GetCtrl<ctrlButton>(this->selection_);
+        auto* button = GetCtrl<ctrlButton>(this->selection_.get());
         RTTR_Assert(button);
         switch(select_type)
         {
@@ -42,22 +39,26 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
     }
 
     // Neuen Button auswählen
-    if(selection != 0xFFFF)
+    auto* button = GetCtrl<ctrlButton>(selection);
+    RTTR_Assert(button);
+    switch(select_type)
     {
-        auto* button = GetCtrl<ctrlButton>(selection);
-        RTTR_Assert(button);
-        switch(select_type)
-        {
-            case ILLUMINATE: button->SetIlluminated(true); break;
-            case CHECK: button->SetChecked(true); break;
-            case SHOW: button->SetVisible(false); break;
-        }
+        case ILLUMINATE: button->SetIlluminated(true); break;
+        case CHECK: button->SetChecked(true); break;
+        case SHOW: button->SetVisible(false); break;
     }
 
     this->selection_ = selection;
 
     if(notify && GetParent())
         GetParent()->Msg_OptionGroupChange(GetID(), selection);
+}
+
+unsigned ctrlOptionGroup::GetSelection() const
+{
+    if(!selection_)
+        throw std::logic_error("No button selected in option group");
+    return selection_.get();
 }
 
 void ctrlOptionGroup::Msg_ButtonClick(const unsigned ctrl_id)

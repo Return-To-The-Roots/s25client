@@ -230,7 +230,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {

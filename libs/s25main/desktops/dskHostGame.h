@@ -66,7 +66,7 @@ private:
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
     void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
 
     void LC_RankingInfo(const LobbyPlayerInfo& player) override;
 

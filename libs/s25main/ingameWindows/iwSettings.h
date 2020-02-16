@@ -31,7 +31,7 @@ public:
 
 private:
     std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
-    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
 };
 

@@ -68,7 +68,7 @@ void ctrlGroup::Msg_ScrollShow(const unsigned ctrl_id, const bool visible)
     GetParent()->Msg_Group_ScrollShow(this->GetID(), ctrl_id, visible);
 }
 
-void ctrlGroup::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void ctrlGroup::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     GetParent()->Msg_Group_OptionGroupChange(this->GetID(), ctrl_id, selection);
 }
@@ -178,7 +178,7 @@ void ctrlGroup::Msg_Group_ScrollShow(const unsigned /*group_id*/, const unsigned
     GetParent()->Msg_Group_ScrollShow(this->GetID(), ctrl_id, visible);
 }
 
-void ctrlGroup::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)
+void ctrlGroup::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id, unsigned selection)
 {
     GetParent()->Msg_Group_OptionGroupChange(this->GetID(), ctrl_id, selection);
 }

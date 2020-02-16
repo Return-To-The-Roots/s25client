@@ -113,7 +113,7 @@ void iwDirectIPCreate::Msg_EditEnter(const unsigned ctrl_id)
     }
 }
 
-void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {

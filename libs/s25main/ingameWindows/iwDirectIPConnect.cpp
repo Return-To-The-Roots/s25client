@@ -154,7 +154,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {

@@ -800,7 +800,7 @@ void dskHostGame::Msg_CheckboxChange(const unsigned ctrl_id, const bool /*checke
     }
 }
 
-void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     if(ctrl_id == ID_CHAT_TAB)
     {

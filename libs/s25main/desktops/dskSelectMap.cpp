@@ -149,7 +149,7 @@ dskSelectMap::~dskSelectMap()
     GAMECLIENT.RemoveInterface(this);
 }
 
-void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int selection)
+void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
     auto* table = GetCtrl<ctrlTable>(1);
 

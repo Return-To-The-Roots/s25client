@@ -195,7 +195,7 @@ void ctrlTab::Msg_Group_ScrollShow(const unsigned /*group_id*/, const unsigned c
     GetParent()->Msg_Group_ScrollShow(this->GetID(), ctrl_id, visible);
 }
 
-void ctrlTab::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)
+void ctrlTab::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned selection)
 {
     GetParent()->Msg_Group_OptionGroupChange(this->GetID(), ctrl_id, selection);
 }

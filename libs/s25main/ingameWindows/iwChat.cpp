@@ -50,7 +50,7 @@ void iwChat::Msg_PaintBefore()
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
-void iwChat::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int selection)
+void iwChat::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
     chat_dest = static_cast<unsigned char>(selection);
     GetCtrl<ctrlEdit>(0)->SetFocus();

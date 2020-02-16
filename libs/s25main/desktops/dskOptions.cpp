@@ -402,7 +402,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
     }
 }
 
-void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)
+void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {
@@ -496,7 +496,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
     }
 }
 
-void dskOptions::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void dskOptions::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {

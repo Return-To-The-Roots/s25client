@@ -19,14 +19,13 @@
 #include "ctrlMultiSelectGroup.h"
 class MouseCoords;
 
-ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type)
-    : ctrlGroup(parent, id), selectedItems_(std::set<unsigned short>()), select_type(select_type)
+ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type) : ctrlGroup(parent, id), select_type(select_type)
 {}
 
 /**
  *  Selektiert einen neuen Button aus der Gruppe.
  */
-void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
+void ctrlMultiSelectGroup::AddSelection(unsigned selection, bool notify)
 {
     // Neuen Button auswählen
     auto* button = GetCtrl<ctrlButton>(selection);
@@ -47,7 +46,7 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 /**
  *  Entfernt die Selektion eines Buttons aus der Gruppe.
  */
-void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify)
+void ctrlMultiSelectGroup::RemoveSelection(unsigned selection, bool notify)
 {
     // Neuen Button auswählen
     auto* button = GetCtrl<ctrlButton>(selection);
@@ -68,7 +67,7 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
 /**
  *  Wechselt zwischen selektiert/nicht selektiert
  */
-void ctrlMultiSelectGroup::ToggleSelection(unsigned short selection, bool notify)
+void ctrlMultiSelectGroup::ToggleSelection(unsigned selection, bool notify)
 {
     if(IsSelected(selection))
         RemoveSelection(selection, notify);
@@ -76,7 +75,7 @@ void ctrlMultiSelectGroup::ToggleSelection(unsigned short selection, bool notify
         AddSelection(selection, notify);
 }
 
-bool ctrlMultiSelectGroup::IsSelected(unsigned short selection) const
+bool ctrlMultiSelectGroup::IsSelected(unsigned selection) const
 {
     return (this->selectedItems_.count(selection) == 1);
 }

@@ -40,15 +40,15 @@ public:
     ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type);
 
     /// Selektiert einen neuen Button
-    void AddSelection(unsigned short selection, bool notify = false);
+    void AddSelection(unsigned selection, bool notify = false);
     /// Entfernt einen selektierten Button aus der Selektion
-    void RemoveSelection(unsigned short selection, bool notify = false);
+    void RemoveSelection(unsigned selection, bool notify = false);
     /// Wechselt zwischen selektiert/nicht selektiert
-    void ToggleSelection(unsigned short selection, bool notify = false);
+    void ToggleSelection(unsigned selection, bool notify = false);
     /// Gibt Liste der aktuell selektierten Buttons zurück
-    const std::set<unsigned short>& GetSelection() const { return selectedItems_; }
+    const std::set<unsigned>& GetSelection() const { return selectedItems_; }
     /// Prüft ob ein Button ausgewählt ist
-    bool IsSelected(unsigned short selection) const;
+    bool IsSelected(unsigned selection) const;
     // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
     ctrlButton* GetButton(unsigned id) { return GetCtrl<ctrlButton>(id); }
 
@@ -60,8 +60,8 @@ public:
     bool Msg_MouseMove(const MouseCoords& mc) override;
 
 private:
-    std::set<unsigned short> selectedItems_; /// aktuell ausgewählte Buttons
-    int select_type;                         /// Typ der Selektierung
+    std::set<unsigned> selectedItems_; /// aktuell ausgewählte Buttons
+    int select_type;                   /// Typ der Selektierung
 };
 
 #endif // !CTRLMULTISELECTGROUP_H_INCLUDED
