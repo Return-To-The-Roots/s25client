@@ -29,15 +29,16 @@ class AddonRefundMaterials : public AddonList
 {
 public:
     AddonRefundMaterials()
-        : AddonList(AddonId::REFUND_MATERIALS, ADDONGROUP_ECONOMY, _("Refund materials for destroyed buildings"),
-                    _("Get building materials back when a building is destroyed."), 0)
-    {
-        addOption(_("No refund"));
-        addOption(_("Refund 25%"));
-        addOption(_("Refund 50%"));
-        addOption(_("Refund 75%"));
-        addOption(_("Get all back"));
-    }
+        : AddonList(AddonId::REFUND_MATERIALS, AddonGroup::Economy, _("Refund materials for destroyed buildings"),
+                    _("Get building materials back when a building is destroyed."),
+                    {
+                      _("No refund"),
+                      _("Refund 25%"),
+                      _("Refund 50%"),
+                      _("Refund 75%"),
+                      _("Get all back"),
+                    })
+    {}
 };
 
 #endif // !ADDONREFUNDMATERIALS_H_INCLUDED

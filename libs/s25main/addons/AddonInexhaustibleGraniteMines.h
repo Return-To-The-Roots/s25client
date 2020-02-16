@@ -13,8 +13,8 @@ class AddonInexhaustibleGraniteMines : public AddonBool
 {
 public:
     AddonInexhaustibleGraniteMines()
-        : AddonBool(AddonId::INEXHAUSTIBLE_GRANITEMINES, ADDONGROUP_ECONOMY, _("Inexhaustible Granite Mines"),
-                    _("Granite mines will never be depleted."), 0)
+        : AddonBool(AddonId::INEXHAUSTIBLE_GRANITEMINES, AddonGroup::Economy, _("Inexhaustible Granite Mines"),
+                    _("Granite mines will never be depleted."))
     {}
 };
 

@@ -49,22 +49,24 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy,
     ctrlOptionGroup* optiongroup = AddOptionGroup(5, ctrlOptionGroup::CHECK);
     btSize = Extent(120, 22);
     // "Alle"
-    optiongroup->AddTextButton(ADDONGROUP_ALL, DrawPoint(20, 50), btSize, TC_GREEN2, _("All"), NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::All), DrawPoint(20, 50), btSize, TC_GREEN2, _("All"), NormalFont);
     // "Militär"
-    optiongroup->AddTextButton(ADDONGROUP_MILITARY, DrawPoint(150, 50), btSize, TC_GREEN2, _("Military"), NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Military), DrawPoint(150, 50), btSize, TC_GREEN2, _("Military"),
+                               NormalFont);
     // "Wirtschaft"
-    optiongroup->AddTextButton(ADDONGROUP_ECONOMY, DrawPoint(290, 50), btSize, TC_GREEN2, _("Economy"), NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Economy), DrawPoint(290, 50), btSize, TC_GREEN2, _("Economy"), NormalFont);
     // "Spielverhalten"
-    optiongroup->AddTextButton(ADDONGROUP_GAMEPLAY, DrawPoint(430, 50), btSize, TC_GREEN2, _("Gameplay"), NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::GamePlay), DrawPoint(430, 50), btSize, TC_GREEN2, _("Gameplay"),
+                               NormalFont);
     // "Sonstiges"
-    optiongroup->AddTextButton(ADDONGROUP_OTHER, DrawPoint(560, 50), btSize, TC_GREEN2, _("Other"), NormalFont);
+    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Other), DrawPoint(560, 50), btSize, TC_GREEN2, _("Other"), NormalFont);
 
     ctrlScrollBar* scrollbar =
       AddScrollBar(6, DrawPoint(GetSize().x - SCROLLBAR_WIDTH - 20, 90), Extent(SCROLLBAR_WIDTH, GetSize().y - 140), SCROLLBAR_WIDTH,
                    TC_GREEN2, (GetSize().y - 140) / 30 - 1);
     scrollbar->SetRange(ggs.getNumAddons());
 
-    optiongroup->SetSelection(ADDONGROUP_ALL, true);
+    optiongroup->SetSelection(static_cast<unsigned>(AddonGroup::All), true);
 }
 
 iwAddons::~iwAddons() = default;
@@ -140,7 +142,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 }
 
 /// Aktualisiert die Addons, die angezeigt werden sollen
-void iwAddons::UpdateView(const unsigned short selection)
+void iwAddons::UpdateView(const AddonGroup selection)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
     unsigned short y = 90;
@@ -153,12 +155,12 @@ void iwAddons::UpdateView(const unsigned short selection)
 
         if(!addon)
             continue;
-        unsigned groups = addon->getGroups();
+        const bool isVisible = (addon->getGroups() & selection) != AddonGroup(0);
 
-        if((groups & selection) == selection)
+        if(isVisible)
             ++numAddonsInCurCategory;
         // hide addon's gui if addon is beyond selected group or is beyond current page scope
-        if(((groups & selection) != selection) || numAddonsInCurCategory < scrollbar->GetScrollPos() + 1
+        if(!isVisible || numAddonsInCurCategory < scrollbar->GetScrollPos() + 1
            || numAddonsInCurCategory > (unsigned)(scrollbar->GetScrollPos() + scrollbar->GetPageSize()) + 1)
         {
             addon->hideGui(this, id);
@@ -175,15 +177,14 @@ void iwAddons::UpdateView(const unsigned short selection)
     }
 }
 
-void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {
         case 5: // richtige Kategorie anzeigen
         {
-            auto* scrollbar = GetCtrl<ctrlScrollBar>(6);
-            scrollbar->SetScrollPos(0);
-            UpdateView(selection);
+            GetCtrl<ctrlScrollBar>(6)->SetScrollPos(0);
+            UpdateView(static_cast<AddonGroup>(selection));
         }
         break;
     }
@@ -195,7 +196,7 @@ void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection
 void iwAddons::Msg_ScrollChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     auto* optiongroup = GetCtrl<ctrlOptionGroup>(5);
-    UpdateView(optiongroup->GetSelection());
+    UpdateView(static_cast<AddonGroup>(optiongroup->GetSelection()));
 }
 
 bool iwAddons::Msg_WheelUp(const MouseCoords& /*mc*/)

@@ -19,6 +19,7 @@
 #define GlobalGameSettings_H_INCLUDED
 
 #include "gameTypes/GameSettingTypes.h"
+#include <memory>
 #include <vector>
 
 class Serializer;
@@ -48,10 +49,8 @@ public:
     bool randomStartPosition;
 
     unsigned getNumAddons() const { return addons.size(); }
-    const Addon* getAddon(unsigned nr, unsigned& status) const;
-    const Addon* getAddon(unsigned nr) const;
-    /// clears the addon memory.
-    void clearAddons();
+    const Addon* getAddon(unsigned idx, unsigned& status) const;
+    const Addon* getAddon(unsigned idx) const;
 
     void registerAllAddons();
 
@@ -74,19 +73,17 @@ public:
     unsigned GetNumScoutsExedition() const;
 
 private:
-    void registerAddon(Addon* addon);
-
     struct AddonWithState
     {
-        AddonWithState() : addon(nullptr), status(0) {}
-        explicit AddonWithState(Addon* addon);
+        explicit AddonWithState(std::unique_ptr<Addon> addon);
 
-        Addon* addon;
+        std::unique_ptr<Addon> addon;
         unsigned status;
-
-        inline bool operator==(const AddonId& rhs) const;
-        inline bool operator<(const AddonWithState& rhs) const;
     };
+
+    void registerAddon(std::unique_ptr<Addon> addon);
+    const AddonWithState* getAddon(AddonId id) const;
+    AddonWithState* getAddon(AddonId id);
 
     std::vector<AddonWithState> addons;
 };

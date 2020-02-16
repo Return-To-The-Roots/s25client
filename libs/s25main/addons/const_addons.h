@@ -20,6 +20,7 @@
 #pragma once
 
 #include "helpers/EnumWithString.h"
+#include "s25util/enumUtils.h"
 
 // Addon Author List
 //
@@ -81,13 +82,15 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
                  FRONTIER_DISTANCE_REACHABLE = 0x00D0000, COINS_CAPTURED_BLD = 0x00D0001, DEMOLISH_BLD_WO_RES = 0x00D0002)
 //-V:AddonId:801
 
-enum AddonGroup
+enum class AddonGroup : unsigned
 {
-    ADDONGROUP_ALL = 1,
-    ADDONGROUP_MILITARY = 2,
-    ADDONGROUP_ECONOMY = 4,
-    ADDONGROUP_GAMEPLAY = 8,
-    ADDONGROUP_OTHER = 16
+    Military = 1,
+    Economy = 2,
+    GamePlay = 4,
+    Other = 8,
+    All = 0xFFFFFFFF
 };
+
+MAKE_BITSET_STRONG(AddonGroup);
 
 #endif // !CONST_ADDONS_H_INCLUDED

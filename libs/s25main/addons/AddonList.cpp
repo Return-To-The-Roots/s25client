@@ -20,7 +20,15 @@
 #include "Loader.h"
 #include "Window.h"
 #include "controls/ctrlComboBox.h"
-#include "helpers/containerUtils.h"
+#include <stdexcept>
+
+AddonList::AddonList(const AddonId id, AddonGroup groups, const std::string& name, const std::string& description,
+                     std::vector<std::string> options, unsigned defaultStatus /*=0*/)
+    : Addon(id, groups, name, description, defaultStatus), options(std::move(options))
+{
+    if(defaultStatus >= this->options.size())
+        throw std::logic_error("Invalid default option");
+}
 
 void AddonList::hideGui(Window* window, unsigned id) const
 {
@@ -76,15 +84,4 @@ unsigned AddonList::getGuiStatus(Window* window, unsigned id, bool& failed) cons
 unsigned AddonList::getNumOptions() const
 {
     return options.size();
-}
-
-void AddonList::removeOptions()
-{
-    options.clear();
-}
-
-void AddonList::addOption(const std::string& name)
-{
-    if(!helpers::contains(options, name))
-        options.push_back(name);
 }

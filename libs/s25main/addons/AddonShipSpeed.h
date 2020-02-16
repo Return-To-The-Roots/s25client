@@ -28,14 +28,17 @@
 class AddonShipSpeed : public AddonList
 {
 public:
-    AddonShipSpeed() : AddonList(AddonId::SHIP_SPEED, ADDONGROUP_ECONOMY, _("Set ship speed"), _("Changes the ship movement speed"), 2)
-    {
-        addOption(_("Very slow"));
-        addOption(_("Slow"));
-        addOption(_("Normal"));
-        addOption(_("Fast"));
-        addOption(_("Very fast"));
-    }
+    AddonShipSpeed()
+        : AddonList(AddonId::SHIP_SPEED, AddonGroup::Economy, _("Set ship speed"), _("Changes the ship movement speed"),
+                    {
+                      _("Very slow"),
+                      _("Slow"),
+                      _("Normal"),
+                      _("Fast"),
+                      _("Very fast"),
+                    },
+                    2)
+    {}
 };
 
 #endif

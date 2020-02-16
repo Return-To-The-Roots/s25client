@@ -48,13 +48,10 @@ public:
 
 protected:
     void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_ScrollChange(unsigned ctrl_id, unsigned short position) override;
     bool Msg_WheelUp(const MouseCoords& mc) override;
     bool Msg_WheelDown(const MouseCoords& mc) override;
-
-    /// Aktualisiert die Addons, die angezeigt werden sollen
-    void UpdateView(unsigned short selection);
 
 private:
     /// settings we edit in this window
@@ -62,6 +59,9 @@ private:
     ChangePolicy policy;
     std::vector<AddonId> addonIds;
     unsigned short numAddonsInCurCategory_;
+
+    /// Aktualisiert die Addons, die angezeigt werden sollen
+    void UpdateView(AddonGroup selection);
 };
 
 #endif // !iwENHANCEMENTS_H_INCLUDED

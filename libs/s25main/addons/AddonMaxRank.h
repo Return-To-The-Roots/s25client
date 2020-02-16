@@ -38,14 +38,16 @@
 class AddonMaxRank : public AddonList
 {
 public:
-    AddonMaxRank() : AddonList(AddonId::MAX_RANK, ADDONGROUP_MILITARY, _("Set max rank"), _("Limit the rank for soldiers"), 0)
-    {
-        addOption(_("General (4)"));
-        addOption(_("Officer (3)"));
-        addOption(_("Sergeant (2)"));
-        addOption(_("Privatefc (1)"));
-        addOption(_("Private (0)"));
-    }
+    AddonMaxRank()
+        : AddonList(AddonId::MAX_RANK, AddonGroup::Military, _("Set max rank"), _("Limit the rank for soldiers"),
+                    {
+                      _("General (4)"),
+                      _("Officer (3)"),
+                      _("Sergeant (2)"),
+                      _("Privatefc (1)"),
+                      _("Private (0)"),
+                    })
+    {}
 };
 
 #endif

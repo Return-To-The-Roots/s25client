@@ -61,73 +61,58 @@ GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
     return *this;
 }
 
-GlobalGameSettings::~GlobalGameSettings()
-{
-    // clear memory and dont register addons again
-    clearAddons();
-}
-
-/**
- *  clears the addon memory.
- */
-void GlobalGameSettings::clearAddons()
-{
-    for(auto& addon : addons)
-        delete addon.addon;
-
-    addons.clear();
-}
+GlobalGameSettings::~GlobalGameSettings() = default;
 
 void GlobalGameSettings::registerAllAddons()
 {
-    registerAddon(new AddonLimitCatapults);
-    registerAddon(new AddonInexhaustibleMines);
-    registerAddon(new AddonRefundMaterials);
-    registerAddon(new AddonExhaustibleWater);
-    registerAddon(new AddonRefundOnEmergency);
-    registerAddon(new AddonManualRoadEnlargement);
-    registerAddon(new AddonCatapultGraphics);
-    registerAddon(new AddonMetalworksBehaviorOnZero);
+    registerAddon(std::make_unique<AddonLimitCatapults>());
+    registerAddon(std::make_unique<AddonInexhaustibleMines>());
+    registerAddon(std::make_unique<AddonRefundMaterials>());
+    registerAddon(std::make_unique<AddonExhaustibleWater>());
+    registerAddon(std::make_unique<AddonRefundOnEmergency>());
+    registerAddon(std::make_unique<AddonManualRoadEnlargement>());
+    registerAddon(std::make_unique<AddonCatapultGraphics>());
+    registerAddon(std::make_unique<AddonMetalworksBehaviorOnZero>());
 
-    registerAddon(new AddonDemolitionProhibition);
-    registerAddon(new AddonCharburner);
-    registerAddon(new AddonTrade);
+    registerAddon(std::make_unique<AddonDemolitionProhibition>());
+    registerAddon(std::make_unique<AddonCharburner>());
+    registerAddon(std::make_unique<AddonTrade>());
 
-    registerAddon(new AddonChangeGoldDeposits);
-    registerAddon(new AddonMaxWaterwayLength);
-    registerAddon(new AddonCustomBuildSequence);
-    registerAddon(new AddonStatisticsVisibility);
+    registerAddon(std::make_unique<AddonChangeGoldDeposits>());
+    registerAddon(std::make_unique<AddonMaxWaterwayLength>());
+    registerAddon(std::make_unique<AddonCustomBuildSequence>());
+    registerAddon(std::make_unique<AddonStatisticsVisibility>());
 
-    registerAddon(new AddonDefenderBehavior);
-    registerAddon(new AddonAIDebugWindow);
+    registerAddon(std::make_unique<AddonDefenderBehavior>());
+    registerAddon(std::make_unique<AddonAIDebugWindow>());
 
-    registerAddon(new AddonNoCoinsDefault);
+    registerAddon(std::make_unique<AddonNoCoinsDefault>());
 
-    registerAddon(new AddonAdjustMilitaryStrength);
+    registerAddon(std::make_unique<AddonAdjustMilitaryStrength>());
 
-    registerAddon(new AddonToolOrdering);
+    registerAddon(std::make_unique<AddonToolOrdering>());
 
-    registerAddon(new AddonMilitaryAid);
-    registerAddon(new AddonInexhaustibleGraniteMines);
-    registerAddon(new AddonMaxRank);
-    registerAddon(new AddonSeaAttack);
-    registerAddon(new AddonInexhaustibleFish);
+    registerAddon(std::make_unique<AddonMilitaryAid>());
+    registerAddon(std::make_unique<AddonInexhaustibleGraniteMines>());
+    registerAddon(std::make_unique<AddonMaxRank>());
+    registerAddon(std::make_unique<AddonSeaAttack>());
+    registerAddon(std::make_unique<AddonInexhaustibleFish>());
 
-    registerAddon(new AddonShipSpeed);
-    registerAddon(new AddonMoreAnimals);
-    registerAddon(new AddonBurnDuration);
-    registerAddon(new AddonNoAlliedPush);
-    registerAddon(new AddonBattlefieldPromotion);
-    registerAddon(new AddonHalfCostMilEquip);
-    registerAddon(new AddonMilitaryControl);
+    registerAddon(std::make_unique<AddonShipSpeed>());
+    registerAddon(std::make_unique<AddonMoreAnimals>());
+    registerAddon(std::make_unique<AddonBurnDuration>());
+    registerAddon(std::make_unique<AddonNoAlliedPush>());
+    registerAddon(std::make_unique<AddonBattlefieldPromotion>());
+    registerAddon(std::make_unique<AddonHalfCostMilEquip>());
+    registerAddon(std::make_unique<AddonMilitaryControl>());
 
-    registerAddon(new AddonMilitaryHitpoints);
+    registerAddon(std::make_unique<AddonMilitaryHitpoints>());
 
-    registerAddon(new AddonNumScoutsExploration);
+    registerAddon(std::make_unique<AddonNumScoutsExploration>());
 
-    registerAddon(new AddonFrontierDistanceReachable);
-    registerAddon(new AddonCoinsCapturedBld);
-    registerAddon(new AddonDemolishBldWORes);
+    registerAddon(std::make_unique<AddonFrontierDistanceReachable>());
+    registerAddon(std::make_unique<AddonCoinsCapturedBld>());
+    registerAddon(std::make_unique<AddonDemolishBldWORes>());
 }
 
 void GlobalGameSettings::resetAddons()
@@ -136,49 +121,60 @@ void GlobalGameSettings::resetAddons()
         addon.status = addon.addon->getDefaultStatus();
 }
 
-const Addon* GlobalGameSettings::getAddon(unsigned nr, unsigned& status) const
+const Addon* GlobalGameSettings::getAddon(unsigned idx, unsigned& status) const
 {
-    const Addon* addon = getAddon(nr);
-    if(!addon)
-        return nullptr;
-
-    status = addons[nr].status;
+    const Addon* addon = getAddon(idx);
+    if(addon)
+        status = addons[idx].status;
     return addon;
 }
 
-const Addon* GlobalGameSettings::getAddon(unsigned nr) const
+const Addon* GlobalGameSettings::getAddon(unsigned idx) const
 {
-    if(nr >= addons.size())
+    if(idx >= addons.size())
         return nullptr;
     else
-        return addons[nr].addon;
+        return addons[idx].addon.get();
+}
+
+GlobalGameSettings::AddonWithState* GlobalGameSettings::getAddon(AddonId id)
+{
+    auto it = helpers::find_if(addons, [id](const AddonWithState& cur) { return cur.addon->getId() == id; });
+    return it != addons.end() ? &*it : nullptr;
+}
+
+const GlobalGameSettings::AddonWithState* GlobalGameSettings::getAddon(AddonId id) const
+{
+    auto it = helpers::find_if(addons, [id](const AddonWithState& cur) { return cur.addon->getId() == id; });
+    return it != addons.end() ? &*it : nullptr;
 }
 
 bool GlobalGameSettings::isEnabled(AddonId id) const
 {
-    auto it = std::find(addons.begin(), addons.end(), id);
-    return it != addons.end() && it->status != it->addon->getDefaultStatus();
+    const auto* addon = getAddon(id);
+    return addon && addon->status != addon->addon->getDefaultStatus();
 }
 
 unsigned GlobalGameSettings::getSelection(AddonId id) const
 {
-    auto it = std::find(addons.begin(), addons.end(), id);
-    if(it == addons.end())
-        return 0;
-    return it->status;
+    const auto* addon = getAddon(id);
+    return addon ? addon->status : 0;
 }
 
-void GlobalGameSettings::registerAddon(Addon* addon)
+void GlobalGameSettings::registerAddon(std::unique_ptr<Addon> addon)
 {
     if(!addon)
         return;
 
-    if(helpers::contains(addons, addon->getId()))
+    if(getAddon(addon->getId()))
         throw std::runtime_error("Addon already registered");
 
     // Insert sorted
-    AddonWithState newItem(addon);
-    addons.insert(std::upper_bound(addons.begin(), addons.end(), newItem), newItem);
+    AddonWithState newItem(std::move(addon));
+    const auto cmpByName = [](const AddonWithState& lhs, const AddonWithState& rhs) {
+        return lhs.addon->getName().compare(rhs.addon->getName()) < 0;
+    };
+    addons.insert(std::upper_bound(addons.begin(), addons.end(), newItem, cmpByName), std::move(newItem));
 }
 
 /**
@@ -258,11 +254,11 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
 void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
 {
-    auto it = std::find(addons.begin(), addons.end(), id);
-    if(it == addons.end())
+    auto* addon = getAddon(id);
+    if(!addon)
         LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % static_cast<unsigned>(id);
     else
-        it->status = selection;
+        addon->status = selection;
 }
 
 unsigned GlobalGameSettings::GetMaxMilitaryRank() const
@@ -277,14 +273,6 @@ unsigned GlobalGameSettings::GetNumScoutsExedition() const
     return selection + 1;
 }
 
-GlobalGameSettings::AddonWithState::AddonWithState(Addon* addon) : addon(addon), status(addon->getDefaultStatus()) {}
-
-bool GlobalGameSettings::AddonWithState::operator<(const AddonWithState& rhs) const
-{
-    return addon->getName().compare(rhs.addon->getName()) < 0;
-}
-
-bool GlobalGameSettings::AddonWithState::operator==(const AddonId& rhs) const
-{
-    return addon->getId() == rhs;
-}
+GlobalGameSettings::AddonWithState::AddonWithState(std::unique_ptr<Addon> addon)
+    : addon(std::move(addon)), status(this->addon->getDefaultStatus())
+{}

@@ -28,9 +28,7 @@
 class AddonBool : public Addon
 {
 public:
-    AddonBool(const AddonId id, unsigned groups, const std::string& name, const std::string& description, const unsigned default_status)
-        : Addon(id, groups, name, description, default_status)
-    {}
+    AddonBool(const AddonId id, AddonGroup groups, const std::string& name, const std::string& description);
 
     void hideGui(Window* window, unsigned id) const override;
     void createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const override;

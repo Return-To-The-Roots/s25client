@@ -30,11 +30,10 @@ class AddonMilitaryControl : public AddonBool
 {
 public:
     AddonMilitaryControl()
-        : AddonBool(AddonId::MILITARY_CONTROL, ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY, _("Military Control"),
+        : AddonBool(AddonId::MILITARY_CONTROL, AddonGroup::GamePlay | AddonGroup::Military, _("Military Control"),
                     _("Adds the 'send home' button to military buildings.\n"
                       "Pressing this button will send all soldiers of the highest available rank to a warehouse (at least 1 Soldier will "
-                      "remain in the building)"),
-                    0)
+                      "remain in the building)"))
     {}
 };
 

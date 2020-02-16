@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "AddonBool.h"
+#include "AddonList.h"
 #include "mygettext/mygettext.h"
 
 /**
@@ -30,17 +30,19 @@ class AddonNumScoutsExploration : public AddonList
 {
 public:
     AddonNumScoutsExploration()
-        : AddonList(AddonId::NUM_SCOUTS_EXPLORATION, ADDONGROUP_ECONOMY, _("Number of scouts required for exploration expedition"),
+        : AddonList(AddonId::NUM_SCOUTS_EXPLORATION, AddonGroup::Economy, _("Number of scouts required for exploration expedition"),
                     _("Change the required number of scouts for an exploration via ship\n"
                       "Note: Setting this to low might make some maps imbalanced!"),
+
+                    {
+                      _("Minimal"),
+                      _("Fewer"),
+                      _("Normal"),
+                      _("More"),
+                      _("Maximal"),
+                    },
                     2)
-    {
-        addOption(_("Minimal"));
-        addOption(_("Fewer"));
-        addOption(_("Normal"));
-        addOption(_("More"));
-        addOption(_("Maximal"));
-    }
+    {}
 };
 
 #endif // AddonNumScoutsExploration_h__

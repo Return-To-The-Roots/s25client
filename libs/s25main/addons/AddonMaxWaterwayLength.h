@@ -32,7 +32,7 @@ class AddonMaxWaterwayLength : public AddonList
 {
 public:
     AddonMaxWaterwayLength()
-        : AddonList(AddonId::MAX_WATERWAY_LENGTH, ADDONGROUP_GAMEPLAY, _("Set maximum waterway length"),
+        : AddonList(AddonId::MAX_WATERWAY_LENGTH, AddonGroup::GamePlay, _("Set maximum waterway length"),
                     _("Limits the distance settlers may travel per boat.\n\n"
                       "Possible values are:\n"
                       "Short: 3 tiles\n"
@@ -41,15 +41,16 @@ public:
                       "Longer: 13 tiles\n"
                       "Very long: 21 tiles\n"
                       "and Unlimited."),
+                    {
+                      _("Short"),
+                      _("Default"),
+                      _("Long"),
+                      _("Longer"),
+                      _("Very long"),
+                      _("Unlimited"),
+                    },
                     1)
-    {
-        addOption(_("Short"));
-        addOption(_("Default"));
-        addOption(_("Long"));
-        addOption(_("Longer"));
-        addOption(_("Very long"));
-        addOption(_("Unlimited"));
-    }
+    {}
 };
 
 #endif // !ADDONMAXWATERWAYLENGTH_H_INCLUDED
