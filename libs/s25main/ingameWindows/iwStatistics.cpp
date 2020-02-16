@@ -199,7 +199,7 @@ void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {

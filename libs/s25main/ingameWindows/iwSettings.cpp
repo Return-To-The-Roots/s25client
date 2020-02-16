@@ -92,7 +92,7 @@ iwSettings::~iwSettings()
     }
 }
 
-void iwSettings::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void iwSettings::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {

@@ -38,7 +38,7 @@ public:
 
 private:
     void Msg_PaintBefore() override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_EditEnter(unsigned ctrl_id) override;
 };
 

@@ -33,7 +33,7 @@ protected:
     void Msg_EditChange(unsigned ctrl_id) override;
     void Msg_EditEnter(unsigned ctrl_id) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
 
 private:
     void SetText(const std::string& text, unsigned color, bool button);

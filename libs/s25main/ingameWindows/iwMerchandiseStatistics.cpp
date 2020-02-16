@@ -117,18 +117,15 @@ void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 17: // Alle abwählen
         {
-            const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
-            for(auto it = active.begin(); it != active.end();)
-            {
-                auto curIt = it++;
-                GetCtrl<ctrlMultiSelectGroup>(22)->RemoveSelection(*curIt);
-            }
+            const std::set<unsigned> active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
+            for(unsigned sel : active)
+                GetCtrl<ctrlMultiSelectGroup>(22)->RemoveSelection(sel);
         }
         break;
     }
 }
 
-void iwMerchandiseStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
+void iwMerchandiseStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {
@@ -162,14 +159,14 @@ void iwMerchandiseStatistics::DrawStatistic()
     const int stepX = sizeX / NUM_STAT_STEPS; // 6
 
     // Aktive Buttons holen (Achtung ID == BarColor + 1)
-    const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
+    const std::set<unsigned>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
 
     // Statistik holen
     const GamePlayer::Statistic stat = player.GetStatistic(currentTime);
 
     // Maximalwert suchen
     unsigned short max = 1;
-    for(unsigned short it : active)
+    for(unsigned it : active)
     {
         for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
         {

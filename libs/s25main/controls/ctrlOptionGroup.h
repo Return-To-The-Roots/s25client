@@ -21,6 +21,7 @@
 
 #include "ctrlButton.h"
 #include "ctrlGroup.h"
+#include <boost/optional.hpp>
 class MouseCoords;
 class Window;
 
@@ -39,9 +40,9 @@ public:
     ctrlOptionGroup(Window* parent, unsigned id, int select_type);
 
     /// Selektiert einen neuen Button
-    void SetSelection(unsigned short selection, bool notify = false);
+    void SetSelection(unsigned selection, bool notify = false);
     /// Gibt den aktuell selektierten Button zurück
-    unsigned short GetSelection() const { return selection_; }
+    unsigned GetSelection() const;
     // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
     ctrlButton* GetButton(unsigned id) { return GetCtrl<ctrlButton>(id); }
 
@@ -53,8 +54,8 @@ public:
     bool Msg_MouseMove(const MouseCoords& mc) override;
 
 private:
-    unsigned short selection_; /// aktuell ausgewählter Button ( @p 0xFFFF = nicht selektiert )
-    int select_type;           /// Typ der Selektierung
+    boost::optional<unsigned> selection_; /// Currently selected button ID, must be set via SetSelection after initialization
+    int select_type;                      /// Typ der Selektierung
 };
 
 #endif // !CTRLOPTIONGROUP_H_INCLUDED

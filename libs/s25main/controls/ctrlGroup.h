@@ -37,7 +37,7 @@ public:
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
     void Msg_ProgressChange(unsigned ctrl_id, unsigned short position) override;
     void Msg_ScrollShow(unsigned ctrl_id, bool visible) override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, int selection) override;
+    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_Timer(unsigned ctrl_id) override;
     void Msg_TableSelectItem(unsigned ctrl_id, int selection) override;
     void Msg_TableRightButton(unsigned ctrl_id, int selection) override;
@@ -52,7 +52,7 @@ public:
     void Msg_Group_CheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;
     void Msg_Group_ProgressChange(unsigned group_id, unsigned ctrl_id, unsigned short position) override;
     void Msg_Group_ScrollShow(unsigned group_id, unsigned ctrl_id, bool visible) override;
-    void Msg_Group_OptionGroupChange(unsigned group_id, unsigned ctrl_id, int selection) override;
+    void Msg_Group_OptionGroupChange(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void Msg_Group_Timer(unsigned group_id, unsigned ctrl_id) override;
     void Msg_Group_TableSelectItem(unsigned group_id, unsigned ctrl_id, int selection) override;
     void Msg_Group_TableRightButton(unsigned group_id, unsigned ctrl_id, int selection) override;
