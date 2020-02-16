@@ -30,10 +30,9 @@ class AddonRefundOnEmergency : public AddonBool
 {
 public:
     AddonRefundOnEmergency()
-        : AddonBool(AddonId::REFUND_ON_EMERGENCY, ADDONGROUP_ECONOMY, _("Refund materials in emergency program"),
+        : AddonBool(AddonId::REFUND_ON_EMERGENCY, AddonGroup::Economy, _("Refund materials in emergency program"),
                     _("Get building materials back when a building is destroyed "
-                      "and your emergency program is active."),
-                    0)
+                      "and your emergency program is active."))
     {}
 };
 

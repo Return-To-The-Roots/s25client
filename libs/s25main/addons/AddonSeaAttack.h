@@ -35,12 +35,14 @@ class AddonSeaAttack : public AddonList
 {
 public:
     AddonSeaAttack()
-        : AddonList(AddonId::SEA_ATTACK, ADDONGROUP_MILITARY, _("Sea attack settings"), _("Set restriction level for sea attacks"), 2)
-    {
-        addOption(_("Enemy harbors don't block"));
-        addOption(_("Enemy harbors block"));
-        addOption(_("No sea attacks"));
-    }
+        : AddonList(AddonId::SEA_ATTACK, AddonGroup::Military, _("Sea attack settings"), _("Set restriction level for sea attacks"),
+                    {
+                      _("Enemy harbors don't block"),
+                      _("Enemy harbors block"),
+                      _("No sea attacks"),
+                    },
+                    2)
+    {}
 };
 
 #endif

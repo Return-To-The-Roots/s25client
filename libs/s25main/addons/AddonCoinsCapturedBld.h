@@ -30,13 +30,14 @@ class AddonCoinsCapturedBld : public AddonList
 {
 public:
     AddonCoinsCapturedBld()
-        : AddonList(AddonId::COINS_CAPTURED_BLD, ADDONGROUP_MILITARY, _("Coins on captured buildings"),
-                    _("Change the coin setting for captured military buildings."), 0)
-    {
-        this->addOption(_("Keep setting"));
-        this->addOption(_("Enable"));
-        this->addOption(_("Disable"));
-    }
+        : AddonList(AddonId::COINS_CAPTURED_BLD, AddonGroup::Military, _("Coins on captured buildings"),
+                    _("Change the coin setting for captured military buildings."),
+                    {
+                      _("Keep setting"),
+                      _("Enable"),
+                      _("Disable"),
+                    })
+    {}
 };
 
 #endif // !COINSCAPTUREDBLD_H_INCLUDED

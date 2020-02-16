@@ -20,7 +20,10 @@
 #include "Loader.h"
 #include "Window.h"
 #include "controls/ctrlCheck.h"
-#include "mygettext/mygettext.h"
+
+AddonBool::AddonBool(const AddonId id, AddonGroup groups, const std::string& name, const std::string& description)
+    : Addon(id, groups, name, description, 0)
+{}
 
 void AddonBool::hideGui(Window* window, unsigned id) const
 {
@@ -53,7 +56,7 @@ void AddonBool::setGuiStatus(Window* window, unsigned id, unsigned status) const
     auto* check = window->GetCtrl<ctrlCheck>(id + 2);
 
     if(check)
-        check->SetCheck((status != 0));
+        check->SetCheck(status != 0);
 }
 
 unsigned AddonBool::getGuiStatus(Window* window, unsigned id, bool& failed) const

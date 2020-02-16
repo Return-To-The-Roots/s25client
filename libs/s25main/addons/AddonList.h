@@ -25,14 +25,12 @@
 
 /**
  *  Addon baseclass for option-list addons
- *  first option added will be the default one
  */
 class AddonList : public Addon
 {
 public:
-    AddonList(const AddonId id, unsigned groups, const std::string& name, const std::string& description, const unsigned default_status)
-        : Addon(id, groups, name, description, default_status)
-    {}
+    AddonList(const AddonId id, AddonGroup groups, const std::string& name, const std::string& description,
+              std::vector<std::string> options, unsigned defaultStatus = 0);
 
     void hideGui(Window* window, unsigned id) const override;
     void createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const override;
@@ -40,10 +38,6 @@ public:
     unsigned getGuiStatus(Window* window, unsigned id, bool& failed) const override;
 
     unsigned getNumOptions() const override;
-
-protected:
-    void removeOptions();
-    void addOption(const std::string& name);
 
 private:
     std::vector<std::string> options;
