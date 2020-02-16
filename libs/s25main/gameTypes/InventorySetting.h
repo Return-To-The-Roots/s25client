@@ -21,27 +21,16 @@
 #include <array>
 
 /// Setting for each item in a warehouses inventory
-struct EInventorySetting
+enum class EInventorySetting : unsigned
 {
-    enum Type
-    {
-        STOP = 0,
-        SEND = 1,
-        COLLECT = 2
-    };
-    static const int COUNT = COLLECT + 1;
-
-    Type t_;
-    EInventorySetting() : t_(STOP) {}
-    EInventorySetting(Type t) : t_(t) { RTTR_Assert(t_ >= STOP && t_ < COUNT); }
-    operator Type() const { return t_; }
+    STOP = 0,
+    SEND = 1,
+    COLLECT = 2
 };
-//-V:EInventorySetting:801
 
 struct InventorySetting
 {
     InventorySetting() : state(0) {}
-    InventorySetting(const EInventorySetting::Type setting) : state(MakeBitField(setting)) {}
     InventorySetting(const EInventorySetting setting) : state(MakeBitField(setting)) {}
     explicit InventorySetting(unsigned char state) : state(state) { MakeValid(); }
     inline bool IsSet(EInventorySetting setting) const;
