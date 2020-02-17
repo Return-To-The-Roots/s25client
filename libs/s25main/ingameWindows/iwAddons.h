@@ -21,29 +21,26 @@
 
 #include "IngameWindow.h"
 #include "addons/const_addons.h"
+#include <memory>
 #include <vector>
 
+class AddonGui;
 class GlobalGameSettings;
 class MouseCoords;
 
+enum class AddonChangeAllowed
+{
+    All,
+    WhitelistOnly,
+    None,
+    AllAndSaveToConfig
+};
+
 class iwAddons : public IngameWindow
 {
-    /// Breite der Scrollbar
-    static const unsigned short SCROLLBAR_WIDTH = 20;
-
 public:
-    enum ChangePolicy
-    {
-        HOSTGAME,
-        /// Allow only whitelisted addons to change
-        HOSTGAME_WHITELIST,
-        READONLY,
-        SETDEFAULTS
-    };
-
-public:
-    iwAddons(GlobalGameSettings& ggs, Window* parent = nullptr, ChangePolicy policy = SETDEFAULTS,
-             std::vector<AddonId> addonIds = std::vector<AddonId>());
+    iwAddons(GlobalGameSettings& ggs, Window* parent = nullptr, AddonChangeAllowed policy = AddonChangeAllowed::AllAndSaveToConfig,
+             std::vector<AddonId> whitelistedAddons = {});
     ~iwAddons() override;
 
 protected:
@@ -56,12 +53,13 @@ protected:
 private:
     /// settings we edit in this window
     GlobalGameSettings& ggs;
-    ChangePolicy policy;
-    std::vector<AddonId> addonIds;
-    unsigned short numAddonsInCurCategory_;
+    AddonChangeAllowed policy_;
+    std::vector<AddonId> whitelistedAddons_;
+    std::vector<std::unique_ptr<AddonGui>> addonGuis_;
 
     /// Aktualisiert die Addons, die angezeigt werden sollen
     void UpdateView(AddonGroup selection);
+    bool isReadOnly(AddonId) const;
 };
 
 #endif // !iwENHANCEMENTS_H_INCLUDED

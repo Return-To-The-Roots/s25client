@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "AddonBool.h"
 #include "Loader.h"
 #include "Window.h"
@@ -25,54 +24,32 @@ AddonBool::AddonBool(const AddonId id, AddonGroup groups, const std::string& nam
     : Addon(id, groups, name, description, 0)
 {}
 
-void AddonBool::hideGui(Window* window, unsigned id) const
+std::unique_ptr<AddonGui> AddonBool::createGui(Window& window, bool readonly) const
 {
-    Addon::hideGui(window, id);
-    auto* check = window->GetCtrl<ctrlCheck>(id + 2);
-    if(check)
-        check->SetVisible(false);
-}
-
-void AddonBool::createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const
-{
-    Addon::createGui(window, id, y, readonly, status);
-    DrawPoint cbPos(430, y);
-
-    auto* check = window->GetCtrl<ctrlCheck>(id + 2);
-    if(!check)
-    {
-        check = window->AddCheckBox(id + 2, DrawPoint(0, 0), Extent(220, 20), TC_GREY, _("Use"), NormalFont, readonly);
-        setGuiStatus(window, id, status);
-    }
-
-    check->SetVisible(true);
-    check->SetPos(cbPos);
-
-    y += 30;
-}
-
-void AddonBool::setGuiStatus(Window* window, unsigned id, unsigned status) const
-{
-    auto* check = window->GetCtrl<ctrlCheck>(id + 2);
-
-    if(check)
-        check->SetCheck(status != 0);
-}
-
-unsigned AddonBool::getGuiStatus(Window* window, unsigned id, bool& failed) const
-{
-    auto* check = window->GetCtrl<ctrlCheck>(id + 2);
-    if(!check)
-    {
-        failed = true;
-        return getDefaultStatus();
-    }
-    failed = false;
-
-    return (check->GetCheck() ? 1 : 0);
+    return std::make_unique<Gui>(*this, window, readonly);
 }
 
 unsigned AddonBool::getNumOptions() const
 {
     return 2;
+}
+
+AddonBool::Gui::Gui(const Addon& addon, Window& window, bool readonly) : AddonGui(addon, window, readonly)
+{
+    DrawPoint cbPos(430, 0);
+    window.AddCheckBox(2, cbPos, Extent(220, 20), TC_GREY, _("Use"), NormalFont, readonly);
+}
+
+void AddonBool::Gui::setStatus(Window& window, unsigned status)
+{
+    auto* cb = window.GetCtrl<ctrlCheck>(2);
+    RTTR_Assert(cb);
+    cb->SetCheck(status != 0);
+}
+
+unsigned AddonBool::Gui::getStatus(const Window& window)
+{
+    const auto* cb = window.GetCtrl<ctrlCheck>(2);
+    RTTR_Assert(cb);
+    return cb->GetCheck() ? 1 : 0;
 }

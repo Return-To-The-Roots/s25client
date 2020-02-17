@@ -15,39 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "Addon.h"
 #include "Loader.h"
 #include "Window.h"
-#include "controls/ctrlButton.h"
-#include "controls/ctrlText.h"
 #include "s25util/colors.h"
 
-void Addon::hideGui(Window* window, unsigned id) const
+AddonGui::AddonGui(const Addon& addon, Window& window, bool /*readonly*/)
 {
-    auto* text = window->GetCtrl<ctrlText>(id);
-    if(text)
-        text->SetVisible(false);
-
-    auto* button = window->GetCtrl<ctrlButton>(id + 1);
-    if(button)
-        button->SetVisible(false);
-}
-
-void Addon::createGui(Window* window, unsigned id, unsigned short& y, bool /*readonly*/, unsigned /*status*/) const //-V669
-{
-    DrawPoint btPos(20, y), txtPos(52, y + 4);
-    auto* text = window->GetCtrl<ctrlText>(id);
-    if(!text)
-        text = window->AddText(id, txtPos, name_, COLOR_YELLOW, FontStyle{}, NormalFont);
-
-    text->SetVisible(true);
-    text->SetPos(txtPos);
-
-    auto* button = window->GetCtrl<ctrlButton>(id + 1);
-    if(!button)
-        button = window->AddImageButton(id + 1, btPos, Extent(22, 22), TC_GREY, LOADER.GetImageN("io", 21), description_);
-
-    button->SetVisible(true);
-    button->SetPos(btPos);
+    DrawPoint btPos(20, 0), txtPos(52, 4);
+    window.AddText(0, txtPos, addon.getName(), COLOR_YELLOW, FontStyle{}, NormalFont);
+    window.AddImageButton(1, btPos, Extent(22, 22), TC_GREY, LOADER.GetImageN("io", 21), addon.getDescription());
 }

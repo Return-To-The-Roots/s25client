@@ -27,15 +27,20 @@
  */
 class AddonBool : public Addon
 {
-public:
-    AddonBool(const AddonId id, AddonGroup groups, const std::string& name, const std::string& description);
+    class Gui : public AddonGui
+    {
+    public:
+        Gui(const Addon& addon, Window& window, bool readonly);
+        void setStatus(Window& window, unsigned status) override;
+        unsigned getStatus(const Window& window) override;
+    };
 
-    void hideGui(Window* window, unsigned id) const override;
-    void createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const override;
-    void setGuiStatus(Window* window, unsigned id, unsigned status) const override;
-    unsigned getGuiStatus(Window* window, unsigned id, bool& failed) const override;
+public:
+    AddonBool(AddonId id, AddonGroup groups, const std::string& name, const std::string& description);
 
     unsigned getNumOptions() const override;
+
+    std::unique_ptr<AddonGui> createGui(Window& window, bool readonly) const override;
 };
 
 #endif // AddonBool_h__
