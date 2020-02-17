@@ -668,11 +668,12 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
             {
                 std::unique_ptr<iwAddons> w;
                 if(allowAddonChange && (!lua || lua->IsChangeAllowed("addonsAll")))
-                    w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME);
+                    w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, AddonChangeAllowed::All);
                 else if(allowAddonChange)
-                    w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
+                    w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, AddonChangeAllowed::WhitelistOnly,
+                                                   lua->GetAllowedAddons());
                 else
-                    w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, iwAddons::READONLY);
+                    w = std::make_unique<iwAddons>(gameLobby->getSettings(), this, AddonChangeAllowed::None);
                 WINDOWMANAGER.Show(std::move(w));
             }
         }

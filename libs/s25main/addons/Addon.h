@@ -21,10 +21,20 @@
 #define ADDON_H_INCLUDED
 
 #include "const_addons.h"
+#include <memory>
 #include <string>
-#include <utility>
 
 class Window;
+class Addon;
+
+class AddonGui
+{
+public:
+    AddonGui(const Addon& addon, Window& window, bool readonly);
+    virtual ~AddonGui() = default;
+    virtual void setStatus(Window& window, unsigned status) = 0;
+    virtual unsigned getStatus(const Window& window) = 0;
+};
 
 /**
  *  Addon baseclass
@@ -37,10 +47,7 @@ public:
     {}
     virtual ~Addon() = default;
 
-    virtual void hideGui(Window* window, unsigned id) const;
-    virtual void createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const;
-    virtual void setGuiStatus(Window* /*window*/, unsigned /*id*/, unsigned /*status*/) const = 0;
-    virtual unsigned getGuiStatus(Window* /*window*/, unsigned /*id*/, bool& failed) const = 0;
+    virtual std::unique_ptr<AddonGui> createGui(Window& window, bool readonly) const = 0;
 
     AddonId getId() const { return id_; }
     AddonGroup getGroups() const { return groups_; }

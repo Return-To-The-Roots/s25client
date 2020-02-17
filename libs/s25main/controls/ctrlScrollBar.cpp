@@ -139,8 +139,11 @@ void ctrlScrollBar::Msg_ButtonClick(const unsigned ctrl_id)
  */
 void ctrlScrollBar::SetScrollPos(unsigned short scroll_pos)
 {
-    this->scroll_pos = scroll_pos;
-    UpdateSliderFromPos();
+    if(this->scroll_pos != scroll_pos)
+    {
+        this->scroll_pos = scroll_pos;
+        UpdateSliderFromPos();
+    }
 }
 
 /**
@@ -148,8 +151,11 @@ void ctrlScrollBar::SetScrollPos(unsigned short scroll_pos)
  */
 void ctrlScrollBar::SetRange(unsigned short scroll_range)
 {
-    this->scroll_range = scroll_range;
-    RecalculateSizes();
+    if(this->scroll_range != scroll_range)
+    {
+        this->scroll_range = scroll_range;
+        RecalculateSizes();
+    }
 }
 
 /**
@@ -157,8 +163,11 @@ void ctrlScrollBar::SetRange(unsigned short scroll_range)
  */
 void ctrlScrollBar::SetPageSize(unsigned short pagesize)
 {
-    this->pagesize = pagesize;
-    RecalculateSizes();
+    if(this->pagesize != pagesize)
+    {
+        this->pagesize = pagesize;
+        RecalculateSizes();
+    }
 }
 
 void ctrlScrollBar::Resize(const Extent& newSize)
