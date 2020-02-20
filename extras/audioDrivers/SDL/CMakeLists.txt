@@ -1,5 +1,5 @@
 set(SDL_BUILDING_LIBRARY ON)
-find_package(SDL_mixer)
+find_package(SDL_mixer 2.0.1)
 
 if(NOT SDL_MIXER_FOUND)
   message(WARNING "SDL_mixer library not found: Not building SDL audiodriver")

@@ -59,7 +59,7 @@ B. Installation
     Zunächst benötigt man folgende Pakete
     (ggf über Paketmanager/per Hand installieren):
 
-    libsdl1.2 libsdl-mixer1.2 gettext
+    libsdl2 libsdl-mixer2 gettext
 
     Weiterhin sollte man sicherstellen, dass DirectRendering funktioniert:
 

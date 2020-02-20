@@ -48,7 +48,7 @@ void FreeAudioInstance(IAudioDriver* driver)
 
 const char* GetDriverName()
 {
-    return "(SDL) Audio via SDL_mixer-Library";
+    return "(SDL2) Audio via SDL2_mixer-Library";
 }
 
 /** @class AudioSDL
@@ -182,7 +182,7 @@ SoundHandle AudioSDL::LoadMusic(const std::vector<char>& data, const std::string
     // Need to copy data as it is used by SDL
     auto* handle = new SoundSDL_Music(data);
     SDL_RWops* rwOps = SDL_RWFromConstMem(&handle->data[0], static_cast<int>(data.size()));
-    Mix_Music* music = Mix_LoadMUS_RW(rwOps);
+    Mix_Music* music = Mix_LoadMUS_RW(rwOps, false);
     if(music == nullptr)
     {
         SDL_FreeRW(rwOps);

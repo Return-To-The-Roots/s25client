@@ -32,7 +32,7 @@ else()
   set(VC_LIB_PATH_SUFFIX lib/x86)
 endif()
 
-if(PACKAGE_FIND_VERSION_MAJOR EQUAL "2")
+if(SDL_mixer_FIND_VERSION VERSION_GREATER_EQUAL 2)
   set(libName SDL2_mixer)
   set(pathSuffixes SDL2 include/SDL2 include)
 else()

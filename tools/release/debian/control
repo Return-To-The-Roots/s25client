@@ -4,7 +4,7 @@ Priority: optional
 Bugs: <https://bugs.siedler25.org>
 Homepage: https://www.siedler25.org
 Maintainer: Return To The Roots Team <sf-team@siedler25.org>
-Build-Depends: debhelper (>= 7), debconf (>=0.2.17), cmake (>=2.6), libsdl1.2-dev, libsdl-mixer1.2-dev, gettext, libminiupnpc-dev (>=1.3), libcurl4-openssl-dev, libbz2-dev, liblua5.2-dev
+Build-Depends: debhelper (>= 7), debconf (>=0.2.17), cmake (>=3.8), libsdl2-dev, libsdl-mixer2-dev, gettext, libminiupnpc-dev (>=1.3), libcurl4-openssl-dev, libbz2-dev, liblua5.2-dev
 Standards-Version: 3.8.0
 XS-Vcs-Bzr: lp:s25rttr
 XS-Vcs-Browser: http://bazaar.launchpad.net/~flosoft/s25rttr/trunk/files
@@ -65,7 +65,7 @@ Description: Dies ist das Musikpaket von Return To The Roots
 
 Package: s25rttr
 Architecture: i386 amd64
-Depends: s25rttr-common (= ${binary:Version}), s25rttr-maps, s25rttr-music, libsdl1.2debian, libsdl-mixer1.2, libminiupnpc (>=1.3), liblua5.2-0
+Depends: s25rttr-common (= ${binary:Version}), s25rttr-maps, s25rttr-music, libsdl2-2.0-0, libsdl2-mixer-2.0-0, libminiupnpc (>=1.3), liblua5.2-0
 Replaces: s25client
 Provides: s25rttr
 Description: Return To The Roots ist eine Nachprogrammierung des bekannten Spieles "Die Siedler II" von Bluebyte. 

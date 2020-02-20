@@ -11,8 +11,6 @@ stdenv.mkDerivation {
     gettext
     libiconv
     miniupnpc
-    SDL
-    SDL_mixer
     SDL2
     SDL2_mixer
   ];
