@@ -44,9 +44,6 @@
 #include <limits>
 //#include <vld.h>
 
-#ifdef __APPLE__
-#include <SDL_main.h>
-#endif // __APPLE__
 #ifdef _WIN32
 #include "s25util/ucString.h"
 #include <windows.h>

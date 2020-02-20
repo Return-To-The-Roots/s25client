@@ -57,7 +57,7 @@ B. Installation
     You will need the following packages:
     (Use your package-manager or do it manually)
 
-    libsdl1.2 libsdl-mixer1.2 gettext
+    libsdl2 libsdl-mixer2 gettext
 
     Make sure that DirectRendering works:
 

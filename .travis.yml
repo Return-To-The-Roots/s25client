@@ -7,8 +7,6 @@ addons:
     sources: &defSrcs
       - ubuntu-toolchain-r-test
     packages: &defPackages
-      - libsdl1.2-dev
-      - libsdl-mixer1.2-dev
       - libsdl2-dev
       - libsdl2-mixer-dev
       - libcurl4-openssl-dev
@@ -18,8 +16,8 @@ addons:
   homebrew:
     packages:
       - ccache
-      - sdl
-      - sdl_mixer
+      - sdl2
+      - sdl2_mixer
       - gettext
       - miniupnpc
     update: true
