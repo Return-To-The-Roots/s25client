@@ -90,7 +90,6 @@ public:
     {
         std::string name;
         std::string password;
-        std::string email;
         bool save_password;
     } lobby;
 

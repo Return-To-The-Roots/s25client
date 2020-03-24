@@ -114,7 +114,6 @@ void Settings::LoadDefaults()
 
     lobby.name = System::getUserName();
     lobby.password.clear();
-    lobby.email.clear();
     lobby.save_password = false;
     // }
 
@@ -234,7 +233,6 @@ void Settings::Load()
         // lobby
         // {
         lobby.name = iniLobby->getValue("name");
-        lobby.email = iniLobby->getValue("email");
         lobby.password = iniLobby->getValue("password");
         lobby.save_password = (iniLobby->getValueI("save_password") != 0);
         // }
@@ -370,7 +368,6 @@ void Settings::Save()
     // lobby
     // {
     iniLobby->setValue("name", lobby.name);
-    iniLobby->setValue("email", lobby.email);
     iniLobby->setValue("password", lobby.password);
     iniLobby->setValue("save_password", (lobby.save_password ? 1 : 0));
     // }
