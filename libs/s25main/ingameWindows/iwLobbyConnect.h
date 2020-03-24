@@ -43,7 +43,7 @@ protected:
 
 private:
     void SetText(const std::string& text, unsigned color, bool button);
-    void ReadFromEditAndSaveLobbyData(std::string& user, std::string& pass, std::string& email);
+    void ReadFromEditAndSaveLobbyData(std::string& user, std::string& pass);
 };
 
 #endif // WP_LOBBYCONNECT_H_INCLUDED

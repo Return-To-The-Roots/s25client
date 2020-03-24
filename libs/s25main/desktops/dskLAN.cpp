@@ -101,9 +101,9 @@ void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskLAN::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection)
+void dskLAN::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned /*selection*/)
 {
-    if(ctrl_id == ID_tblServer && selection != 0xFFFF) // Server list
+    if(ctrl_id == ID_tblServer)
         ConnectToSelectedGame();
 }
 
@@ -154,12 +154,16 @@ bool dskLAN::ConnectToSelectedGame()
     if(openGames.empty())
         return false;
 
-    auto* table = GetCtrl<ctrlTable>(ID_tblServer);
-    auto selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
-    if(selection >= openGames.size())
+    const auto* table = GetCtrl<ctrlTable>(ID_tblServer);
+    const int selectedRow = table->GetSelection();
+    if(selectedRow < 0)
+        return false;
+    const auto selectedId = boost::lexical_cast<unsigned>(table->GetItemText(selectedRow, 0));
+
+    if(selectedId >= openGames.size())
         return false;
 
-    const GameInfo& game = openGames[selection];
+    const GameInfo& game = openGames[selectedId];
     if(game.info.revision == RTTR_Version::GetRevision())
     {
         auto connect = std::make_unique<iwDirectIPConnect>(ServerType::LAN);

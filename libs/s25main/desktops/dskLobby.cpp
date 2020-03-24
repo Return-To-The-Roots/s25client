@@ -191,9 +191,9 @@ void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const int selection)
     }
 }
 
-void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection)
+void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned /*selection*/)
 {
-    if(ctrl_id == 10 && selection != 0xFFFF) // Server list
+    if(ctrl_id == 10) // Server list
         ConnectToSelectedGame();
 }
 
@@ -223,26 +223,34 @@ void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
 
 bool dskLobby::ConnectToSelectedGame()
 {
-    auto* table = GetCtrl<ctrlTable>(10);
-    auto selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
-    for(const LobbyServerInfo& server : LOBBYCLIENT.GetServerList())
+    const auto* table = GetCtrl<ctrlTable>(10);
+    const int selectedRow = table->GetSelection();
+    if(selectedRow < 0)
+        return false;
+    const auto selectedId = boost::lexical_cast<unsigned>(table->GetItemText(selectedRow, 0));
+    const auto serverList = LOBBYCLIENT.GetServerList();
+    const auto itServer =
+      helpers::find_if(serverList, [selectedId](const LobbyServerInfo& server) { return server.getId() == selectedId; });
+    if(itServer == serverList.end())
     {
-        if(server.getId() != selection)
-            continue;
-
-        std::string serverRevision = server.getVersion();
+        WINDOWMANAGER.Show(
+          std::make_unique<iwMsgbox>(_("Sorry!"), _("The selected game was not found anymore."), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+    } else
+    {
+        std::string serverRevision = itServer->getVersion();
         if(!serverRevision.empty() && serverRevision[0] == 'v')
             serverRevision = serverRevision.substr(std::string("v20001011 - ").size());
         if(serverRevision == RTTR_Version::GetShortRevision())
         {
             auto connect = std::make_unique<iwDirectIPConnect>(ServerType::LOBBY);
-            connect->Connect(server.getHost(), server.getPort(), false, server.hasPassword());
+            connect->Connect(itServer->getHost(), itServer->getPort(), false, itServer->hasPassword());
             WINDOWMANAGER.ReplaceWindow(std::move(connect));
             return true;
         } else
+        {
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK,
                                                           MSB_EXCLAMATIONRED, 1));
-        break;
+        }
     }
     return false;
 }
