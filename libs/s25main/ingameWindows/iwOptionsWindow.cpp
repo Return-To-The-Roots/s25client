@@ -97,11 +97,11 @@ iwOptionsWindow::iwOptionsWindow()
 
     // Geräuschlautstärke
     AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 10)
-      ->SetPosition(SETTINGS.sound.effekte_volume * 10 / 255);
+      ->SetPosition((SETTINGS.sound.effekte_volume * 10) / 255);
 
     // Musiklautstärke
     AddProgress(ID_pgMusicVol, DrawPoint(100, 346), Extent(160, 22), TC_GREEN2, 139, 138, 10)
-      ->SetPosition(SETTINGS.sound.musik_volume * 10 / 255);
+      ->SetPosition((SETTINGS.sound.musik_volume * 10) / 255);
 
     AddTextButton(ID_btMusicPlayer, DrawPoint(100, 380), Extent(160, 22), TC_GREEN2, _("Music player"), NormalFont);
     AddTextButton(ID_btAdvanced, DrawPoint(67, 412), Extent(168, 24), TC_GREEN2, _("Advanced"), NormalFont);
@@ -125,7 +125,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
 
         case ID_btSoundEffects:
             SETTINGS.sound.effekte = !SETTINGS.sound.effekte; //-V807
-            GetCtrl<ctrlImageButton>(12)->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effekte));
+            GetCtrl<ctrlImageButton>(ID_btSoundEffects)->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effekte));
 
             if(!SETTINGS.sound.effekte)
                 SOUNDMANAGER.StopAll();
@@ -133,7 +133,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
 
         case ID_btMusic:
             SETTINGS.sound.musik = !SETTINGS.sound.musik;
-            GetCtrl<ctrlImageButton>(13)->SetImage(LOADER.GetTextureN("io", 116 + !SETTINGS.sound.musik));
+            GetCtrl<ctrlImageButton>(ID_btMusic)->SetImage(LOADER.GetTextureN("io", 116 + !SETTINGS.sound.musik));
             if(SETTINGS.sound.musik)
                 MUSICPLAYER.Play();
             else
@@ -156,11 +156,11 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned 
     switch(ctrl_id)
     {
         case ID_pgEffectVol:
-            SETTINGS.sound.effekte_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
+            SETTINGS.sound.effekte_volume = static_cast<unsigned char>((position * 255) / 10);
             AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
             break;
         case ID_pgMusicVol:
-            SETTINGS.sound.musik_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
+            SETTINGS.sound.musik_volume = static_cast<unsigned char>((position * 255) / 10);
             AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musik_volume);
             break;
     }
