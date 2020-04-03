@@ -39,8 +39,9 @@
 #include "libsiedler2/prototypen.h"
 #include "s25util/SocketSet.h"
 #include "s25util/colors.h"
-#include "s25util/ucString.h"
+#include "s25util/utf8.h"
 #include <boost/filesystem.hpp>
+#include <boost/nowide/convert.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <cmath>
 #include <helpers/chronoIO.h>
@@ -157,7 +158,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path,
             const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
 
             playerInfos.resize(header.getNumPlayers());
-            mapinfo.title = cvStringToUTF8(header.getName());
+            mapinfo.title = s25util::ansiToUTF8(header.getName());
             ggs_.LoadSettings();
             currentGF = 0;
         }
@@ -1475,11 +1476,11 @@ void GameServer::SendAsyncLog(const std::string& asyncLogFilePath)
     if(SETTINGS.global.submit_debug_data == 1
 #ifdef _WIN32
        || (MessageBoxW(nullptr,
-                       cvUTF8ToWideString(
+                       boost::nowide::widen(
                          _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in "
                            "the future? Thank you very much!"))
                          .c_str(),
-                       cvUTF8ToWideString(_("Error")).c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
+                       boost::nowide::widen(_("Error")).c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
            == IDYES)
 #endif
     )

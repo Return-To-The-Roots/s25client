@@ -50,7 +50,7 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
-#include "s25util/ucString.h"
+#include "s25util/utf8.h"
 #include <boost/filesystem/operations.hpp>
 #include <utility>
 //#include <boost/thread.hpp>
@@ -213,7 +213,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
             else
             {
                 preview.SetMap(map);
-                txtMapName.SetText(cvStringToUTF8(map->getHeader().getName()));
+                txtMapName.SetText(s25util::ansiToUTF8(map->getHeader().getName()));
                 txtMapPath.SetText(path);
                 btContinue.SetEnabled(true);
             }
@@ -438,10 +438,10 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         std::string players = (boost::format(_("%d Player")) % static_cast<unsigned>(header.getNumPlayers())).str();
         std::string size = helpers::toString(header.getWidth()) + "x" + helpers::toString(header.getHeight());
 
-        std::string name = cvStringToUTF8(header.getName());
+        std::string name = s25util::ansiToUTF8(header.getName());
         if(hasLua)
             name += " (*)";
-        std::string author = cvStringToUTF8(header.getAuthor());
+        std::string author = s25util::ansiToUTF8(header.getAuthor());
 
         table->AddRow({name, author, players, landscapeNames[header.getGfxSet()], size, filePath});
     }

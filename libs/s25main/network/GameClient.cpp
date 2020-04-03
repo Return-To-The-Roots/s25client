@@ -61,7 +61,7 @@
 #include "s25util/System.h"
 #include "s25util/fileFuncs.h"
 #include "s25util/strFuncs.h"
-#include "s25util/ucString.h"
+#include "s25util/utf8.h"
 #include <boost/filesystem.hpp>
 #include <helpers/chronoIO.h>
 #include <memory>
@@ -997,7 +997,7 @@ bool GameClient::CreateLobby()
 
             const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
             numPlayers = header.getNumPlayers();
-            mapinfo.title = cvStringToUTF8(header.getName());
+            mapinfo.title = s25util::ansiToUTF8(header.getName());
         }
         break;
         case MAPTYPE_SAVEGAME:

@@ -25,7 +25,8 @@
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
-#include <utf8.h>
+#include <s25util/utf8.h>
+#include <boost/nowide/detail/utf.hpp>
 #include <numeric>
 
 ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
@@ -44,7 +45,7 @@ ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Exte
  */
 void ctrlEdit::SetText(const std::string& text)
 {
-    text_ = utf8::utf8to32(text);
+    text_ = s25util::utf8to32(text);
     if(numberOnly_)
         helpers::remove_if(text_, [](char32_t c) { return !(c >= '0' && c <= '9'); });
     if(maxLength_ > 0 && text_.size() > maxLength_)
@@ -63,7 +64,7 @@ void ctrlEdit::SetText(const unsigned text)
 
 std::string ctrlEdit::GetText() const
 {
-    return utf8::utf32to8(text_);
+    return s25util::utf32to8(text_);
 }
 
 void ctrlEdit::SetFocus(bool focus)
@@ -78,7 +79,7 @@ void ctrlEdit::SetFocus(bool focus)
 static void removeFirstCharFromString(std::string& str)
 {
     auto it = str.begin();
-    utf8::unchecked::next(it);
+    boost::nowide::detail::utf::utf_traits<char>::decode_valid(it);
     str.erase(str.begin(), it);
 }
 
@@ -97,13 +98,13 @@ void ctrlEdit::UpdateInternalText()
         const auto* font = txtCtrl->GetFont();
         const unsigned max_width = GetSize().x - ctrlTextDeepening::borderSize.x * 2;
         unsigned max;
-        std::string curText = utf8::utf32to8(dtext.substr(viewStart_));
+        std::string curText = s25util::utf32to8(dtext.substr(viewStart_));
         font->getWidth(curText, max_width, &max);
         // Add chars at front as long as full text is shown
         while(viewStart_ > 0 && curText.length() <= max)
         {
             --viewStart_;
-            curText = utf8::utf32to8(dtext.substr(viewStart_));
+            curText = s25util::utf32to8(dtext.substr(viewStart_));
             font->getWidth(curText, max_width, &max);
         }
         // Remove chars from front until remaining string can be fully shown
@@ -118,10 +119,10 @@ void ctrlEdit::UpdateInternalText()
         if(viewStart_ + 5 > cursorPos_)
         {
             viewStart_ = std::max(0, static_cast<int>(cursorPos_) - 5);
-            curText = utf8::utf32to8(dtext.substr(viewStart_));
+            curText = s25util::utf32to8(dtext.substr(viewStart_));
         }
         if(cursorPos_ > viewStart_)
-            cursorOffsetX_ = font->getWidth(utf8::utf32to8(dtext.substr(viewStart_, cursorPos_ - viewStart_)));
+            cursorOffsetX_ = font->getWidth(s25util::utf32to8(dtext.substr(viewStart_, cursorPos_ - viewStart_)));
         else
             cursorOffsetX_ = 0;
         txtCtrl->SetText(curText);

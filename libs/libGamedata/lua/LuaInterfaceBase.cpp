@@ -22,7 +22,8 @@
 #include "mygettext/mygettext.h"
 #include "mygettext/utils.h"
 #include "s25util/Log.h"
-#include <utf8.h>
+#include "s25util/utf8.h"
+#include <boost/nowide/convert.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 
@@ -154,7 +155,7 @@ std::string LuaInterfaceBase::Translate(const std::string& key)
 
 bool LuaInterfaceBase::ValidateUTF8(const std::string& scriptTxt)
 {
-    const auto it = utf8::find_invalid(scriptTxt.begin(), scriptTxt.end());
+    const auto it = s25util::findInvalidUTF8(scriptTxt);
     if(it == scriptTxt.end())
         return true;
     size_t invPos = std::distance(scriptTxt.begin(), it);
@@ -169,24 +170,9 @@ bool LuaInterfaceBase::ValidateUTF8(const std::string& scriptTxt)
         lineEnd = scriptTxt.size();
     else
         lineEnd--;
-    std::string faultyLine = scriptTxt.substr(lineBegin, lineEnd - lineBegin);
-    std::string fixedLine;
-    fixedLine.reserve(faultyLine.length());
-    while(true) //-V776
-    {
-        try
-        {
-            utf8::replace_invalid(faultyLine.begin(), faultyLine.end(), std::back_inserter(fixedLine));
-            break;
-        } catch(utf8::not_enough_room&)
-        {
-            // Add zeroes until we have enough room (truncated UTF8) to detect the error
-            faultyLine.push_back('\0');
-            fixedLine.clear();
-        }
-    }
+    const std::string faultyLine = boost::nowide::detail::convert_string<char>(&scriptTxt[lineBegin], &scriptTxt[lineEnd]);
     boost::format fmt("Found invalid UTF8 char at line %1%.\nContent: %2%\n");
-    fmt % lineNum % fixedLine;
+    fmt % lineNum % faultyLine;
     Log(fmt.str());
     return false;
 }
