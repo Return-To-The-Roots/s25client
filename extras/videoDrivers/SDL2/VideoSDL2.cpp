@@ -24,13 +24,13 @@
 #include "helpers/containerUtils.h"
 #include "icon.h"
 #include "openglCfg.hpp"
-#include <utf8.h>
+#include <s25util/utf8.h>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
 
 #ifdef _WIN32
-#include "s25util/ucString.h"
+#include <boost/nowide/convert.hpp>
 #include <SDL_syswm.h>
 #endif // _WIN32
 
@@ -163,7 +163,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     context = SDL_GL_CreateContext(window);
 
 #ifdef _WIN32
-    SetWindowTextW(GetConsoleWindow(), cvUTF8ToWideString(title).c_str());
+    SetWindowTextW(GetConsoleWindow(), boost::nowide::widen(title).c_str());
 #endif
 
     std::fill(keyboard.begin(), keyboard.end(), false);
@@ -348,14 +348,12 @@ bool VideoSDL2::MessageLoop()
             break;
             case SDL_TEXTINPUT:
             {
-                using iterator = utf8::iterator<std::string::const_iterator>;
-                const std::string text = ev.text.text;
-                iterator end(text.end(), text.begin(), text.end());
+                const std::u32string text = s25util::utf8to32(ev.text.text);
                 SDL_Keymod mod = SDL_GetModState();
                 KeyEvent ke = {KT_CHAR, 0, (mod & KMOD_CTRL) != 0, (mod & KMOD_SHIFT) != 0, (mod & KMOD_ALT) != 0};
-                for(iterator it(text.begin(), text.begin(), text.end()); it != end; ++it)
+                for(char32_t c : text)
                 {
-                    ke.c = *it;
+                    ke.c = static_cast<unsigned>(c);
                     CallBack->Msg_KeyDown(ke);
                 }
                 break;

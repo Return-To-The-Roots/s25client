@@ -44,7 +44,7 @@
 //#include <vld.h>
 
 #ifdef _WIN32
-#include "s25util/ucString.h"
+#include <boost/nowide/convert.hpp>
 #include <windows.h>
 #include <s25clientResources.h>
 #if defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS
@@ -106,8 +106,8 @@ void CExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_p
 bool askForDebugData()
 {
 #ifdef _WIN32
-    std::wstring title = cvUTF8ToWideString(_("Error"));
-    std::wstring text = cvUTF8ToWideString(_(
+    std::wstring title = boost::nowide::widen(_("Error"));
+    std::wstring text = boost::nowide::widen(_(
       "RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"));
     return (MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES);
 #else
@@ -123,7 +123,7 @@ void showCrashMessage()
 {
     std::string text = _("RttR crashed. Please restart the application!");
 #ifdef _WIN32
-    MessageBoxW(nullptr, cvUTF8ToWideString(text).c_str(), cvUTF8ToWideString(_("Error")).c_str(),
+    MessageBoxW(nullptr, boost::nowide::widen(text).c_str(), boost::nowide::widen(_("Error")).c_str(),
                 MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
 #else
     bnw::cerr << text << std::endl;

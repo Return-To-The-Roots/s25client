@@ -30,7 +30,7 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 #include "rttr/test/random.hpp"
-#include <boost/locale/utf.hpp>
+#include <boost/nowide/detail/utf.hpp>
 #include <boost/test/unit_test.hpp>
 #include <Loader.h>
 #include <array>
@@ -118,7 +118,7 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     {
         curChars.push_back(chars[rttr::test::randomValue<size_t>(0u, chars.size() - 1)]);
         auto it = curChars.back().begin();
-        const char32_t c = boost::locale::utf::utf_traits<char>::decode_valid(it);
+        const char32_t c = boost::nowide::detail::utf::utf_traits<char>::decode_valid(it);
         std::string curText = std::accumulate(curChars.begin(), curChars.end(), std::string{});
         edt.SetText(curText);
         // Activate

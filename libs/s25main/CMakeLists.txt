@@ -58,7 +58,7 @@ target_link_libraries(s25Main PUBLIC
     glad
     driver
     Boost::filesystem Boost::disable_autolinking
-    PRIVATE BZip2::BZip2 utf8::cpp Boost::iostreams Boost::locale nowide::static samplerate_cpp
+    PRIVATE BZip2::BZip2 Boost::iostreams Boost::locale Boost::nowide samplerate_cpp
 )
 
 if(WIN32)

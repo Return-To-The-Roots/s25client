@@ -26,7 +26,7 @@ TARGET_LINK_LIBRARIES(gamedata PUBLIC
 	s25Common
 	kaguya
 	${LUA_LIBRARIES}
-	PRIVATE utf8::cpp rttrConfig nowide::static
+	PRIVATE rttrConfig Boost::nowide
 )
 include(EnableWarnings)
 enable_warnings(gamedata)

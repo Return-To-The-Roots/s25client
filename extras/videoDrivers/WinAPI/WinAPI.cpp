@@ -22,7 +22,7 @@
 #include "driver/VideoInterface.h"
 #include "helpers/containerUtils.h"
 #include "s25clientResources.h"
-#include "s25util/ucString.h"
+#include <boost/nowide/convert.hpp>
 #include <GL/gl.h>
 #include <cstdlib>
 #include <cstring>
@@ -266,7 +266,7 @@ RECT VideoWinAPI::CalculateWindowRect(bool fullscreen, VideoMode& size) const
 
 bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, bool fullscreen)
 {
-    std::wstring wTitle = cvUTF8ToWideString(title);
+    std::wstring wTitle = boost::nowide::widen(title);
     windowClassName = wTitle.substr(0, wTitle.find(' '));
 
     // Register window class
