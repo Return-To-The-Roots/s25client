@@ -22,6 +22,7 @@ addons:
       - sdl_mixer
       - gettext
       - miniupnpc
+      - git-lfs
     update: true
 
 cache:
@@ -33,6 +34,8 @@ before_install:
   - eval "${MATRIX_EVAL}"
   - DEPS_DIR="${HOME}/.cache"
   - mkdir -p "${DEPS_DIR}"
+  - git lfs install
+  - git lfs pull
 
 install:
   - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew link gettext --force; fi
