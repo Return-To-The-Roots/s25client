@@ -37,7 +37,7 @@ Coverage:
 ### Prerequisite Linux:
 - C++14 compatible compiler (e.g. GCC-6)
 - cmake
-- git + git-lfs
+- git
 - libboost-dev (at least v1.64.0, i.e http://www.boost.org/)
 - libboost-locale-dev, libboost-iostreams-dev, libboost-filesystem-dev, libboost-program-options-dev (at least v1.64.0)
 - libsdl1.2-dev
@@ -54,7 +54,7 @@ All of them can be installed with the package manager.
 
 ### Prerequisite MacOSX:
 - cmake
-- git + git-lfs
+- git
 - boost
 - sdl2
 - sdl2_mixer
@@ -70,7 +70,6 @@ Nix users can open a nix-shell to get a development environment with all package
 ```
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
-git lfs pull
 nix-shell # Optional, for Nix users only
 mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -78,9 +77,6 @@ make
 ```
 Note: by using the `-G` option of `cmake` you can specify a generator, e.g. `cmake -G Xcode -DCMAKE_BUILD_TYPE=Release ..` will generate an Xcode project. 
 Please check `cmake --help` for more options. 
-
-The `git lfs pull` should not be required if you have properly set up git-lfs before by running `git lfs install`.
-This is recommended to do either before and/or after the clone.
 
 ### Optimizations:
 There are various CMake options to control the build and optimization including ARM (Rasberry PI etc.) related ones. Examples:
