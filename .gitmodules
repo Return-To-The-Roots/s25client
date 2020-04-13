@@ -31,3 +31,6 @@
 [submodule "external/libsamplerate"]
 	path = external/libsamplerate
 	url = https://github.com/erikd/libsamplerate.git
+[submodule "external/dev-tools"]
+	path = external/dev-tools
+	url = https://github.com/Flamefire/rttr-devtools.git
