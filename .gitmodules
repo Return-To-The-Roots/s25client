@@ -34,3 +34,6 @@
 [submodule "external/dev-tools"]
 	path = external/dev-tools
 	url = https://github.com/Flamefire/rttr-devtools.git
+[submodule "data/RTTR/MAPS"]
+	path = data/RTTR/MAPS
+	url = https://github.com/Flamefire/rttr-maps.git
