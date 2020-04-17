@@ -46,4 +46,7 @@ add_subdirectory(s25edit)
 if(RTTR_BUILD_UPDATER)
     add_subdirectory(s25update)
 endif()
+
+# No tests for turtle
+set(BUILD_TESTING OFF)
 add_subdirectory(turtle)
