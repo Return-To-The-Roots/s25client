@@ -33,7 +33,7 @@
 	url = https://github.com/erikd/libsamplerate.git
 [submodule "external/dev-tools"]
 	path = external/dev-tools
-	url = https://github.com/Flamefire/rttr-devtools.git
+	url = https://github.com/Return-To-The-Roots/dev-tools.git
 [submodule "data/RTTR/MAPS"]
 	path = data/RTTR/MAPS
-	url = https://github.com/Flamefire/rttr-maps.git
+	url = https://github.com/Return-To-The-Roots/s25maps.git
