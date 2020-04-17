@@ -26,7 +26,8 @@ Checks: >-
   -readability-magic-numbers,
   -readability-named-parameter,
   -readability-static-accessed-through-instance,
-  -readability-uppercase-literal-suffix
+  -readability-uppercase-literal-suffix,
+  -clang-diagnostic-inconsistent-missing-override
 CheckOptions:
   - key: performance-for-range-copy.AllowedTypes
     value: 'Point<.*?>;MapPoint;Position;Extent;DrawPoint'
