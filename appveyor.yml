@@ -42,9 +42,6 @@ for:
 install:
   - dir C:\Libraries
   - appveyor-retry git submodule update --init
-  - cd external
-  - 7z x full-contrib-msvc.7z
-  - cd ..
 
 before_build:
   - if exist build\ (rmdir /S /Q build)
