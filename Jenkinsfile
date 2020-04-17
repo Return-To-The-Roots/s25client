@@ -59,7 +59,6 @@ pipeline {
                         doGenerateSubmoduleConfigurations: false,
                         extensions: scm.extensions + [
                             [$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: true, recursiveSubmodules: true, reference: '', trackingSubmodules: false],
-                            [$class: 'GitLFSPull'],
                             [$class: 'AuthorInChangelog'],
                             [$class: 'CleanCheckout']
                         ],
