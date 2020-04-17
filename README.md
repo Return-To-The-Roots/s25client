@@ -118,8 +118,6 @@ Then just run (tests or application) as usual.
      - Rightclick on the newly created folder -> TortoiseGit-> Submodule Update
      - Make sure all modules are selected and "Initialize submodules (--init)" is checked
      - press OK
-- Extract external/full-contrib-msvc.7z to external
-  (so that external/full-contrib-msvc/bin, external/full-contrib-msvc/include and external/full-contrib-msvc/lib exist)
 - If you havent installed boost, install boost
   Fast Way:
   - extract boost-1.64.zip (i.e to external/boost, so that external/boost/bootstrap.bat exist)
