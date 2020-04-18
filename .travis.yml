@@ -33,7 +33,7 @@ before_install:
   - mkdir -p "${DEPS_DIR}"
 
 install:
-  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew link gettext --force; fi
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then export PATH="/usr/local/opt/gettext/bin:$PATH"; fi
   # Minimum requirements: CMake 3.8.2, Boost 1.64
   - |
     CMAKE_DIR="${DEPS_DIR}/cmake"
