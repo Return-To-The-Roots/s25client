@@ -1,4 +1,4 @@
-include(AddMacros)
+include(AddTestcase)
 add_testcase(NAME gameData
     LIBS gamedata legacyTestfiles testHelpers
 )
