@@ -27,7 +27,7 @@ add_subdirectory(libendian)
 set(RTTR_BUILD_LOBBY_CLIENT ON)
 add_subdirectory(liblobby)
 
-option(RTTR_USE_SYSTEM_SAMPLERATE OFF "Use system installed libsamplerate. Fails if not found!")
+option(RTTR_USE_SYSTEM_SAMPLERATE "${RTTR_USE_SYSTEM_LIBS}" "Use system installed libsamplerate. Fails if not found!")
 if(RTTR_USE_SYSTEM_SAMPLERATE)
 	find_package(Samplerate 0.1.9 REQUIRED)
 	unset(samplerate_LIB_DEPENDS CACHE)
