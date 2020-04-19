@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "Debug.h"
 #include "GameManager.h"
 #include "QuickStartGame.h"
@@ -56,6 +55,8 @@
 #include <csignal>
 #endif
 
+namespace bfs = boost::filesystem;
+namespace bnw = boost::nowide;
 namespace po = boost::program_options;
 
 // Throw this to terminate gracefully
@@ -416,19 +417,37 @@ int main(int argc, char** argv)
     bnw::args _(argc, argv);
 
     po::options_description desc("Allowed options");
-    desc.add_options()("help,h", "Show help")("map,m", po::value<std::string>(),
-                                              "Map to load")("test", "Run in test mode (shows errors during run)");
+    // clang-format off
+    desc.add_options()
+        ("help,h", "Show help")
+        ("map,m", po::value<std::string>(),"Map to load")
+        ("version", "Show version information and exit")
+        ;
+    // clang-format on
     po::positional_options_description positionalOptions;
     positionalOptions.add("map", 1);
 
     po::variables_map options;
-    po::store(po::command_line_parser(argc, argv).options(desc).positional(positionalOptions).run(), options);
+    try
+    {
+        po::store(po::command_line_parser(argc, argv).options(desc).positional(positionalOptions).run(), options);
+    } catch(const po::error& e)
+    {
+        bnw::cerr << "Error: " << e.what() << "\n\n";
+        bnw::cerr << desc << "\n";
+        return 1;
+    }
     po::notify(options);
 
     if(options.count("help"))
     {
         bnw::cout << desc << "\n";
-        return 1;
+        return 0;
+    }
+    if(options.count("version"))
+    {
+        bnw::cout << GetProgramDescription() << std::endl;
+        return 0;
     }
 
     int result;
