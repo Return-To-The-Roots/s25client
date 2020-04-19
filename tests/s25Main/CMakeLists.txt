@@ -24,7 +24,7 @@ add_library(testWorldFixtures STATIC
 target_link_libraries(testWorldFixtures PUBLIC s25Main PRIVATE testHelpers)
 target_include_directories(testWorldFixtures PUBLIC .)
 
-include(AddMacros)
+include(AddTestcase)
 
 add_subdirectory(audio)
 add_subdirectory(drivers)

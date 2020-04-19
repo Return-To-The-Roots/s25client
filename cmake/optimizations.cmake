@@ -1,11 +1,11 @@
 if(MSVC)
-    include(AddFlags)
+    include(AppendToStringUnique)
     # systemintern functions for faster code; Optimize whole program
-    add_flags(CMAKE_CXX_FLAGS_RELEASE /Oi /GL)
+    append_to_string_unique(CMAKE_CXX_FLAGS_RELEASE /Oi /GL)
     # Strip unused symbols and us COMDAT folding
-    add_flags(CMAKE_EXE_LINKER_FLAGS_RELEASE /OPT:REF /OPT:ICF)
-    add_flags(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL /OPT:REF /OPT:ICF)
-    add_flags(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO /OPT:REF /OPT:ICF)
+    append_to_string_unique(CMAKE_EXE_LINKER_FLAGS_RELEASE /OPT:REF /OPT:ICF)
+    append_to_string_unique(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL /OPT:REF /OPT:ICF)
+    append_to_string_unique(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO /OPT:REF /OPT:ICF)
 else()
     include(CheckAndAddFlag)
     include(SetIfUnset)
@@ -21,6 +21,8 @@ else()
                 CheckAndAddFlags(${arm_flags})
             endif()
         endif()
+        # Exception support is required. See #855
+        CheckAndAddFlags(--exceptions)
     else()
         set_if_unset(RTTR_OPTIMIZATION_VECTOR_EXT_DEFAULT SSE2)
         set(RTTR_OPTIMIZATION_VECTOR_EXT ${RTTR_OPTIMIZATION_VECTOR_EXT_DEFAULT} CACHE STRING "Vector extension to use")
@@ -42,12 +44,12 @@ else()
 
     # Don't use this for GCC < 8 on apple due to ICE: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78380
     if(NOT (APPLE AND CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8))
-        CheckAndAddFlags(-ffast-math)
+        CheckAndAddFlag(-ffast-math CXX)
     endif()
-    CheckAndAddFlags(-fomit-frame-pointer)
+    CheckAndAddFlag(-fomit-frame-pointer)
 
     if(RTTR_OPTIMIZATION_TUNE)
-        CheckAndAddFlags(-mtune=${RTTR_OPTIMIZATION_TUNE})
+        CheckAndAddFlag(-mtune=${RTTR_OPTIMIZATION_TUNE})
     endif()
 
     if(APPLE)

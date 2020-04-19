@@ -1,4 +1,4 @@
-include(AddMacros)
+include(AddTestcase)
 add_testcase(NAME common
     LIBS s25Common testHelpers
 )
