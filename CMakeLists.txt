@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
+if(POLICY CMP0093)
+  cmake_policy(SET CMP0093 NEW) # Use Boost_VERSION x.y.z in CMake >= 3.15 or BoostConfig
+endif()
 
 project(s25client)
 
@@ -217,6 +220,8 @@ endif()
 include(RttrCoverageCfg)
 include(EnableSanitizers)
 
+option(RTTR_USE_SYSTEM_LIBS OFF "Default to using system-wide installed libs for external dependencies that have known system versions.")
+
 ################################################################################
 # Configure files
 ################################################################################
@@ -285,6 +290,23 @@ if(Boost_VERSION VERSION_EQUAL 1.70)
     else()
         set(BUILD_SHARED_LIBS ON)
     endif()
+endif()
+
+option(RTTR_USE_SYSTEM_NOWIDE "${RTTR_USE_SYSTEM_LIBS}" "Use system installed Boost.Nowide. Fails if not found!")
+
+if(Boost_VERSION_MINOR GREATER_EQUAL "73" OR RTTR_USE_SYSTEM_NOWIDE)
+  # Boost 1.73 contains Boost.Nowide.
+  find_package(Boost COMPONENTS nowide)
+endif()
+# Prefer system version, either as part of Boost or preinstalled
+if(NOT Boost_NOWIDE_FOUND)
+  if(RTTR_USE_SYSTEM_NOWIDE)
+    set(bnw_required REQUIRED)
+  else()
+    set(bnw_required QUIET)
+  endif()
+  find_package(boost_nowide 10.0.0 ${bnw_required})
+  # Fallback in libutil, but find_package must be done here so all subprojects can use it
 endif()
 
 add_subdirectory(external)
