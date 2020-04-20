@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwTools.h"
-
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -56,9 +54,9 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
         {
             Extent btSize = Extent(20, 13);
-            ctrlButton* bt = AddImageButton(100 + i * 2, DrawPoint(174, 25 + i * 28), btSize, TC_GREY, LOADER.GetImageN("io", 33), "+1");
+            ctrlButton* bt = AddImageButton(100 + i * 2, DrawPoint(174, 27 + i * 28), btSize, TC_GREY, LOADER.GetImageN("io", 33), "+1");
             AddImageButton(101 + i * 2, bt->GetPos() + DrawPoint(0, btSize.y), btSize, TC_GREY, LOADER.GetImageN("io", 34), "-1");
-            AddTextDeepening(200 + i, DrawPoint(151, 4 + bt->GetPos().y), Extent(20, 18), TC_GREY, "", NormalFont, COLOR_YELLOW);
+            AddTextDeepening(200 + i, DrawPoint(151, 4 + bt->GetPos().y), Extent(22, 18), TC_GREY, "", NormalFont, COLOR_YELLOW);
         }
         pendingOrderChanges.fill(0);
         UpdateTexts();
@@ -175,7 +173,7 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
                 return;
             --pendingOrderChanges[tool];
             --curOrders;
-        } else if(curOrders > 99)
+        } else if(curOrders >= 99)
             return;
         else
         {
