@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMainMenu.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -82,7 +81,7 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
     bool enableAIDebug = true;
 #endif
     if(gwv.GetViewer().GetPlayer().isHost && enableAIDebug)
-        AddTextButton(13, DrawPoint(80, 210), Extent(20, 20), TC_GREY, _("AI"), NormalFont, _("AI Debug Window"));
+        AddTextButton(13, DrawPoint(80, 210), Extent(22, 22), TC_GREY, _("AI"), NormalFont, _("AI Debug Window"));
 
     // Optionen
     AddImageButton(30, DrawPoint(12, 231), Extent(165, 32), TC_GREY, LOADER.GetImageN("io", 37), _("Options"));
