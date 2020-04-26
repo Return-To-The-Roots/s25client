@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlTextDeepening.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
@@ -53,6 +52,12 @@ DrawPoint ctrlTextDeepening::CalcTextPos() const
     else
         pos.y += GetSize().y;
     return pos;
+}
+
+void ctrlTextDeepening::ResizeForMaxChars(unsigned numChars)
+{
+    const auto maxTextWidth = font->getDx() * numChars;
+    Resize(Extent(maxTextWidth + borderSize.x * 2, GetSize().y));
 }
 
 void ctrlTextDeepening::DrawContent() const

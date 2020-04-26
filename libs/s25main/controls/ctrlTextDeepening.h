@@ -33,6 +33,8 @@ public:
                       const glFont* font, unsigned color, FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
 
     Rect GetBoundaryRect() const override;
+    /// Changes width so at most this many chars can be shown
+    void ResizeForMaxChars(unsigned numChars);
 
 protected:
     void DrawContent() const override;

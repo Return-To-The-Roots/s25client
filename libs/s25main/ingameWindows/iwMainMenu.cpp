@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "WindowManager.h"
 #include "addons/const_addons.h"
+#include "controls/ctrlTextButton.h"
 #include "iwAIDebug.h"
 #include "iwBuildOrder.h"
 #include "iwBuildingProductivities.h"
@@ -81,7 +82,11 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
     bool enableAIDebug = true;
 #endif
     if(gwv.GetViewer().GetPlayer().isHost && enableAIDebug)
-        AddTextButton(13, DrawPoint(80, 210), Extent(22, 22), TC_GREY, _("AI"), NormalFont, _("AI Debug Window"));
+    {
+        auto* bt = static_cast<ctrlTextButton*>(
+          AddTextButton(13, DrawPoint(80, 210), Extent(0, 22), TC_GREY, _("AI"), NormalFont, _("AI Debug Window")));
+        bt->ResizeForMaxChars(bt->GetText().size());
+    }
 
     // Optionen
     AddImageButton(30, DrawPoint(12, 231), Extent(165, 32), TC_GREY, LOADER.GetImageN("io", 37), _("Options"));

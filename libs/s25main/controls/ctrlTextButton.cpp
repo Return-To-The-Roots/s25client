@@ -15,15 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlTextButton.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
+
+/// Offset of text to origin of the button
+static constexpr unsigned contentOffset = 2;
 
 ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                const std::string& text, const glFont* font, const std::string& tooltip)
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
 {}
+
+void ctrlTextButton::ResizeForMaxChars(unsigned numChars)
+{
+    const auto maxTextWidth = font->getDx() * numChars;
+    Resize(Extent(maxTextWidth + contentOffset * 2, GetSize().y));
+}
 
 void ctrlTextButton::DrawContent() const
 {
@@ -36,7 +44,7 @@ void ctrlTextButton::DrawContent() const
     else
         color = this->color_;
 
-    const unsigned short maxTextWidth = GetSize().x - 4; // reduced by border
+    const unsigned short maxTextWidth = GetSize().x - contentOffset * 2; // reduced by border
 
     if(GetTooltip().empty() && state == BUTTON_HOVER)
     {
@@ -46,7 +54,7 @@ void ctrlTextButton::DrawContent() const
             ShowTooltip(text);
     }
 
-    const unsigned short offset = isPressed ? 2 : 0;
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER, color,
+    const unsigned short offset = isPressed ? contentOffset : 0;
+    font->Draw(GetDrawPos() + GetSize() / 2u + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER, color,
                maxTextWidth);
 }

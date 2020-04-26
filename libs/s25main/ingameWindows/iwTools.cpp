@@ -24,6 +24,7 @@
 #include "controls/ctrlBaseText.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlProgress.h"
+#include "controls/ctrlTextDeepening.h"
 #include "helpers/mathFuncs.h"
 #include "helpers/toString.h"
 #include "iwHelp.h"
@@ -53,10 +54,14 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
         // qx:tools
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
         {
-            Extent btSize = Extent(20, 13);
-            ctrlButton* bt = AddImageButton(100 + i * 2, DrawPoint(174, 27 + i * 28), btSize, TC_GREY, LOADER.GetImageN("io", 33), "+1");
+            constexpr Extent btSize(20, 13);
+            auto* txt = static_cast<ctrlTextDeepening*>(
+              AddTextDeepening(200 + i, DrawPoint(151, 31 + i * 28), Extent(22, 18), TC_GREY, "", NormalFont, COLOR_YELLOW));
+            txt->ResizeForMaxChars(2);
+            const auto txtSize = txt->GetSize();
+            ctrlButton* bt =
+              AddImageButton(100 + i * 2, txt->GetPos() + DrawPoint(txtSize.x + 1, -4), btSize, TC_GREY, LOADER.GetImageN("io", 33), "+1");
             AddImageButton(101 + i * 2, bt->GetPos() + DrawPoint(0, btSize.y), btSize, TC_GREY, LOADER.GetImageN("io", 34), "-1");
-            AddTextDeepening(200 + i, DrawPoint(151, 4 + bt->GetPos().y), Extent(22, 18), TC_GREY, "", NormalFont, COLOR_YELLOW);
         }
         pendingOrderChanges.fill(0);
         UpdateTexts();
