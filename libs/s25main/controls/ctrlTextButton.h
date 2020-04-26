@@ -30,6 +30,9 @@ public:
     ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
                    const glFont* font, const std::string& tooltip);
 
+    /// Changes width so at most this many chars can be shown
+    void ResizeForMaxChars(unsigned numChars);
+
 protected:
     /// Draw actual content (text here)
     void DrawContent() const override;
