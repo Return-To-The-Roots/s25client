@@ -31,11 +31,11 @@ struct Point //-V690
     using ElementType = T;
 
     T x, y;
-    constexpr Point() : x(getInvalidValue()), y(getInvalidValue()) {}
-    constexpr Point(const T x, const T y) : x(x), y(y) {}
+    constexpr Point() noexcept : x(getInvalidValue()), y(getInvalidValue()) {}
+    constexpr Point(const T x, const T y) noexcept : x(x), y(y) {}
     constexpr Point(const Point&) = default;
     template<typename U>
-    constexpr explicit Point(const Point<U>& pt) : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
+    constexpr explicit Point(const Point<U>& pt) noexcept : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
     {}
 
     static constexpr Point Invalid() { return Point(); }
