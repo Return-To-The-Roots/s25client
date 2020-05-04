@@ -46,6 +46,7 @@ class glArchivItem_Bob;
 class glFont;
 class SoundEffectItem;
 class glTexturePacker;
+class MusicItem;
 namespace libsiedler2 {
 class ArchivItem_Ini;
 class ArchivItem_Palette;
@@ -137,7 +138,7 @@ public:
 
     bool IsWinterGFX() const { return isWinterGFX_; }
 
-    libsiedler2::Archiv sng_lst;
+    std::vector<std::unique_ptr<MusicItem>> sng_lst;
 
     /// Animals: Species, Direction, AnimationFrame(Last = Dead)
     helpers::MultiArray<glSmartBitmap, NUM_SPECS, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;

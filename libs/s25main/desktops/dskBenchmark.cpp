@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,12 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskBenchmark.h"
 #include "Game.h"
-#include "GameLoader.h"
 #include "Loader.h"
 #include "PlayerInfo.h"
+#include "RttrForeachPt.h"
 #include "WindowManager.h"
 #include "buildings/nobMilitary.h"
 #include "controls/ctrlText.h"
@@ -40,6 +39,7 @@
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"
 #include "gameTypes/RoadBuildState.h"
+#include "gameData/GameLoader.h"
 #include "s25util/Log.h"
 #include "s25util/strFuncs.h"
 #include <helpers/chronoIO.h>
@@ -368,7 +368,7 @@ void dskBenchmark::createGame()
         MapLoader::InitShadows(world);
         MapLoader::SetMapExplored(world);
 
-        GameLoader loader(game_);
+        GameLoader loader(LOADER, game_);
         if(!loader.load())
             throw "GUI";
     } catch(...)

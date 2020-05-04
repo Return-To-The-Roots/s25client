@@ -20,8 +20,8 @@
 #pragma once
 
 #include "Desktop.h"
-#include "GameLoader.h"
 #include "network/ClientInterface.h"
+#include "gameData/GameLoader.h"
 #include "liblobby/LobbyInterface.h"
 #include <memory>
 

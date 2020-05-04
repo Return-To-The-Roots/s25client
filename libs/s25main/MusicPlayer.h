@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,50 +17,11 @@
 #ifndef MUSICPLAYER_H_INCLUDED
 #define MUSICPLAYER_H_INCLUDED
 
+#include "Playlist.h"
 #include "libsiedler2/Archiv.h"
 #include "s25util/Singleton.h"
 #include <string>
 #include <vector>
-
-#pragma once
-
-class iwMusicPlayer;
-
-/// Speichert die Daten über eine Playlist und verwaltet diese
-class Playlist
-{
-public:
-    Playlist();
-
-    /// bereitet die Playlist aufs abspielen vor.
-    void Prepare();
-
-    /// liefert den Dateinamen des aktuellen Songs
-    std::string getCurrentSong() const;
-
-    /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-    std::string getNextSong();
-
-    /// Playlist in Datei speichern
-    bool SaveAs(const std::string& filename, bool overwrite);
-    /// Playlist laden
-    bool Load(const std::string& filename);
-
-    /// Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
-    void FillMusicPlayer(iwMusicPlayer* window) const;
-    /// Liest die Werte aus dem iwMusicPlayer-Fenster
-    void ReadMusicPlayer(const iwMusicPlayer* window);
-
-    /// Wählt den Start-Song aus
-    void SetStartSong(unsigned id);
-
-protected:
-    int current;
-    unsigned repeats;               /// Anzahl der Wiederholungen
-    bool random;                    /// Zufallswiedergabe?
-    std::vector<std::string> songs; /// Dateinamen der abzuspielenden Titel
-    std::vector<unsigned> order;    /// Reihenfolge der Titel
-};
 
 /// Globaler Musikplayer bzw. eine abspielbare Playlist
 class MusicPlayer : public Singleton<MusicPlayer, SingletonPolicies::WithLongevity>
@@ -76,7 +37,7 @@ public:
     void Stop();
 
     /// Playlist laden
-    bool Load(const std::string& filename) { return list.Load(filename); }
+    bool Load(const std::string& filename);
     /// Musik wurde fertiggespielt (Callback)
     void MusicFinished() { PlayNext(); }
     /// liefert die Playlist.

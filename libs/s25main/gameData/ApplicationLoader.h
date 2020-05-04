@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,28 +14,31 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#ifndef APPLICATIONLOADER_H_INCLUDED
+#define APPLICATIONLOADER_H_INCLUDED
 
-#pragma once
-#ifndef rttrDefines_h__
-#define rttrDefines_h__
+#include <memory>
+#include <string>
 
-// IWYU pragma: begin_exports
+class Loader;
+class Log;
+class Playlist;
 
-#include "commonDefines.h"
-#include "RttrForeachPt.h"
-
-// IWYU pragma: end_exports
-
-template<typename T>
-inline T min(T a, T b)
+/// Load data (textures, playlist) at application startup
+class ApplicationLoader
 {
-    return (a < b) ? a : b;
-}
+public:
+    ApplicationLoader(Loader&, Log&, std::string playlistPath);
+    ~ApplicationLoader();
 
-template<typename T>
-inline T max(T a, T b)
-{
-    return (a < b) ? b : a;
-}
+    bool load();
+    Playlist* getPlaylist() const { return playlist_.get(); }
 
-#endif // rttrDefines_h__
+private:
+    Loader& loader_;
+    Log& logger_;
+    std::string playlistPath_;
+    std::unique_ptr<Playlist> playlist_;
+};
+
+#endif // !APPLICATIONLOADER_H_INCLUDED
