@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMusicPlayer.h"
 #include "ListDir.h"
 #include "Loader.h"
@@ -32,6 +31,7 @@
 #include "helpers/toString.h"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
+#include "s25util/Log.h"
 #include "s25util/StringConversion.h"
 #include "s25util/colors.h"
 #include <boost/filesystem.hpp>
@@ -136,7 +136,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const int se
     if(selection != 0xFFFF)
     {
         Playlist pl;
-        if(pl.Load(GetFullPlaylistPath(GetCtrl<ctrlComboBox>(2)->GetText(selection))))
+        if(pl.Load(LOG, GetFullPlaylistPath(GetCtrl<ctrlComboBox>(2)->GetText(selection))))
         {
             // Das Fenster entsprechend mit den geladenen Werten füllen
             pl.FillMusicPlayer(this);
@@ -191,7 +191,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 }
 
                 boost::system::error_code ec;
-                bfs::remove(GetFullPlaylistPath(str), ec);
+                boost::filesystem::remove(GetFullPlaylistPath(str), ec);
                 this->UpdatePlaylistCombo(SETTINGS.sound.playlist);
             }
         }
@@ -293,9 +293,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
         case 0:
         {
             bool valid = false;
-
-            // Existiert diese Datei nicht?
-            if(bfs::exists(msg))
+            if(boost::filesystem::exists(msg))
                 valid = true;
             else
             {
@@ -408,7 +406,7 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
     std::vector<std::string> playlists = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[90]), "pll");
 
     unsigned i = 0;
-    for(bfs::path playlistPath : playlists)
+    for(boost::filesystem::path playlistPath : playlists)
     {
         // Reduce to pure filename
         playlistPath = playlistPath.stem();

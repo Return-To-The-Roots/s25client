@@ -17,7 +17,7 @@
 
 #include "Loader.h"
 #include "PointOutput.h"
-#include "macros.h"
+#include "RttrForeachPt.h"
 #include "uiHelper/uiHelpers.hpp"
 #include <libsiedler2/ArchivItem_Bitmap_Player.h>
 #include <libsiedler2/ArchivItem_Bitmap_Raw.h>

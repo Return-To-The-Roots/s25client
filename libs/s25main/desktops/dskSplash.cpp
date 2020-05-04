@@ -15,18 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskSplash.h"
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "Playlist.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlTimer.h"
 #include "dskMainMenu.h"
 #include "ingameWindows/iwMusicPlayer.h"
+#include "mygettext/mygettext.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "gameData/ApplicationLoader.h"
+#include "s25util/Log.h"
 #include "s25util/error.h"
 
 dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg) : Desktop(splashImg.release()), isLoading(false), isLoaded(false)
@@ -72,15 +75,14 @@ bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
 
 void dskSplash::LoadFiles()
 {
-    LOADER.ClearOverrideFolders();
-    LOADER.AddOverrideFolder("<RTTR_RTTR>/LSTS");
-    LOADER.AddOverrideFolder("<RTTR_USERDATA>/LSTS");
-    if(LOADER.LoadFilesAtStart())
+    ApplicationLoader loader(LOADER, LOG, iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist));
+    if(loader.load())
     {
         isLoaded = true;
         AddTimer(2, 5000);
         SetFpsDisplay(true);
-        MUSICPLAYER.Load(iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist));
+        if(loader.getPlaylist())
+            MUSICPLAYER.GetPlaylist() = std::move(*loader.getPlaylist());
         if(SETTINGS.sound.musik)
             MUSICPLAYER.Play();
 

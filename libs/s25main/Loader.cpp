@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h"
 #include "Loader.h"
 #include "ListDir.h"
 #include "RttrConfig.h"
@@ -27,6 +27,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
+#include "ogl/MusicItem.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap_RLE.h"
@@ -48,6 +49,7 @@
 #include "libsiedler2/libsiedler2.h"
 #include "s25util/Log.h"
 #include "s25util/System.h"
+#include "s25util/dynamicUniqueCast.h"
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
@@ -248,14 +250,17 @@ bool Loader::LoadSounds()
     const std::string oggPath = RTTRCONFIG.ExpandPath(FILE_PATHS[50]);
     std::vector<std::string> oggFiles = ListDir(oggPath, "ogg");
 
-    unsigned i = 0;
-    sng_lst.alloc(oggFiles.size());
-    for(auto& oggFile : oggFiles)
+    sng_lst.reserve(oggFiles.size());
+    for(const auto& oggFile : oggFiles)
     {
         libsiedler2::Archiv sng;
         if(!LoadArchiv(sng, oggFile))
             return false;
-        sng_lst.set(i++, sng.release(0));
+        auto music = libutil::dynamicUniqueCast<MusicItem>(sng.release(0));
+        if(music)
+            sng_lst.emplace_back(std::move(music));
+        else
+            LOG.write(_("WARNING: Found invalid music item for %1%")) % oggFile;
     }
 
     if(sng_lst.empty())

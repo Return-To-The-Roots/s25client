@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskCredits.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -162,9 +161,8 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 
     this->itCurEntry = entries.begin();
 
-    auto* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[8]);
-    if(curSong)
-        curSong->Play(0);
+    if(LOADER.sng_lst.size() > 8)
+        LOADER.sng_lst[8]->Play(0);
 }
 
 dskCredits::~dskCredits() = default;

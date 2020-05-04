@@ -24,11 +24,12 @@
 #include <vector>
 
 class Game;
+class Loader;
 
 class GameLoader
 {
 public:
-    GameLoader(std::shared_ptr<Game> game);
+    GameLoader(Loader&, std::shared_ptr<Game> game);
     ~GameLoader();
 
     // These steps must be called in order
@@ -36,11 +37,12 @@ public:
     void initTextures();
     bool loadTextures();
 
-    /// Execute all steps and return the interface
+    /// Execute all steps
     bool load();
     const std::shared_ptr<Game>& getGame() const { return game; }
 
 private:
+    Loader& loader;
     std::shared_ptr<Game> game;
     std::vector<bool> load_nations;
     std::vector<std::string> textures;

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,17 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameLoader.h"
 #include "Game.h"
 #include "GamePlayer.h"
 #include "Loader.h"
+#include "RttrForeachPt.h"
 #include "addons/const_addons.h"
 #include "helpers/containerUtils.h"
 #include <set>
 #include <utility>
 
-GameLoader::GameLoader(std::shared_ptr<Game> game) : game(std::move(game)) {}
+GameLoader::GameLoader(Loader& loader, std::shared_ptr<Game> game) : loader(loader), game(std::move(game)) {}
 
 GameLoader::~GameLoader() = default;
 
@@ -79,19 +79,19 @@ void GameLoader::initTextures()
 
 bool GameLoader::loadTextures()
 {
-    LOADER.ClearOverrideFolders();
-    LOADER.AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME");
-    LOADER.AddOverrideFolder("<RTTR_USERDATA>/LSTS/GAME");
+    loader.ClearOverrideFolders();
+    loader.AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME");
+    loader.AddOverrideFolder("<RTTR_USERDATA>/LSTS/GAME");
     if(game->ggs_.isEnabled(AddonId::CATAPULT_GRAPHICS))
-        LOADER.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
+        loader.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
 
     const LandscapeDesc& lt = game->world_.GetDescription().get(game->world_.GetLandscapeType());
-    if(!LOADER.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, load_nations) || !LOADER.LoadFiles(textures) || !LOADER.LoadOverrideFiles())
+    if(!loader.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, load_nations) || !loader.LoadFiles(textures) || !loader.LoadOverrideFiles())
     {
         return false;
     }
 
-    LOADER.fillCaches();
+    loader.fillCaches();
     return true;
 }
 
