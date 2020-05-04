@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,19 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "QuickStartGame.h"
+#include "Loader.h"
+#include "MusicPlayer.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "desktops/dskGameLoader.h"
 #include "desktops/dskSelectMap.h"
+#include "ingameWindows/iwMusicPlayer.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
-#include <boost/filesystem/path.hpp>
+#include "gameData/ApplicationLoader.h"
+#include "s25util/Log.h"
+#include <boost/filesystem.hpp>
 #include <algorithm>
-#include <iostream>
 
 class SwitchOnStart : public ClientInterface
 {
@@ -40,10 +43,25 @@ public:
 
 bool QuickStartGame(const std::string& filePath, bool singlePlayer)
 {
-    CreateServerInfo csi(singlePlayer ? ServerType::LOCAL : ServerType::DIRECT, SETTINGS.server.localPort, _("Unlimited Play"));
+    const boost::filesystem::path mapOrReplayPath(filePath);
+    if(!exists(mapOrReplayPath))
+    {
+        LOG.write(_("Given map or replay (%1%) does not exist!")) % mapOrReplayPath;
+        return false;
+    }
 
-    std::cout << "Loading game!" << std::endl;
-    std::string extension = bfs::path(filePath).extension().string();
+    ApplicationLoader loader(LOADER, LOG, iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist));
+    if(!loader.load())
+        return false;
+    if(loader.getPlaylist())
+        MUSICPLAYER.GetPlaylist() = std::move(*loader.getPlaylist());
+    if(SETTINGS.sound.musik)
+        MUSICPLAYER.Play();
+
+    const CreateServerInfo csi(singlePlayer ? ServerType::LOCAL : ServerType::DIRECT, SETTINGS.server.localPort, _("Unlimited Play"));
+
+    LOG.write(_("Loading game...\n"));
+    std::string extension = mapOrReplayPath.extension().string();
     std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
     WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));

@@ -161,7 +161,7 @@ void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigne
 
 std::string iwMusicPlayer::GetFullPlaylistPath(const std::string& name)
 {
-    return (RTTRCONFIG.ExpandPath(FILE_PATHS[90]) + "/" + name + ".pll");
+    return RTTRCONFIG.ExpandPath(FILE_PATHS[90]) + "/" + name + ".pll";
 }
 
 void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)

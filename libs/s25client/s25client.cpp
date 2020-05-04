@@ -373,8 +373,8 @@ int RunProgram(po::variables_map& options)
         if(!InitGame())
             return 2;
 
-        if(options.count("map"))
-            QuickStartGame(options["map"].as<std::string>());
+        if(options.count("map") && !QuickStartGame(options["map"].as<std::string>()))
+            return 1;
 
         // Hauptschleife
         while(GAMEMANAGER.Run())
