@@ -36,9 +36,7 @@ if(CMAKE_VERSION VERSION_LESS 3.11)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/cmake_3.11.0")
 endif()
 
-include(CheckGitSubmodules)
-check_git_submodules()
-
+set(checkSubmodules FALSE)
 # Figure out RTTR_REVISION (git hash) and RTTR_VERSION (date)
 # Those can be manually set to override the default values
 # By default those are non-Cache variables which regenerates them on every configure run
@@ -46,12 +44,32 @@ if(NOT RTTR_REVISION)
     include(GetGitRevisionDescription)
     # Get git commit hash. Note: CMake will reconfigure if the git hash changes
     get_git_head_revision(RTTR_GIT_REF RTTR_REVISION)
-    if(NOT RTTR_REVISION)
-        message(FATAL_ERROR "Could not get git revision. The source has to be in a git repo or you have to define RTTR_REVISION")
+    if(RTTR_REVISION)
+        set(checkSubmodules TRUE)
+    else()
+        set(revisionFile "${CMAKE_CURRENT_LIST_DIR}/revision.txt")
+        if(EXISTS ${revisionFile})
+            file(READ ${revisionFile} revision)
+            string(STRIP "${revision}" revision)
+            string(LENGTH "${revision}" revisionLen)
+            if(NOT revision MATCHES "^[0-9a-f]+$" OR NOT revisionLen EQUAL "40")
+                message(FATAL_ERROR "Contents of ${revisionFile} do not contain a valid revision")
+            endif()
+            set(RTTR_REVISION ${revision})
+            # Reconfigure if the file changes
+            configure_file(${revisionFile} revision.marker COPYONLY)
+        else()
+            message(FATAL_ERROR "Could not get git revision. The source has to be in a git repo or you have to define RTTR_REVISION")
+        endif()
     endif()
 endif()
 if(NOT RTTR_VERSION)
     string(TIMESTAMP RTTR_VERSION "%Y%m%d")
+endif()
+
+if(checkSubmodules)
+    include(CheckGitSubmodules)
+    check_git_submodules()
 endif()
 
 # Just include required

@@ -17,6 +17,7 @@ jobs:
       - name: Create source distribution
         run: |
             git submodule update --init
+            git rev-parse HEAD > revision.txt
             NAME="s25client_${{steps.get_tag.outputs.tag}}"
             mkdir "/tmp/$NAME"
             cp -r * .clang-format .clang-tidy "/tmp/$NAME"
