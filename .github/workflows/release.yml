@@ -1,0 +1,49 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Create Release
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Extract tag name
+        id: get_tag
+        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+      - name: Create source distribution
+        run: |
+            git submodule update --init
+            NAME="s25client_${{steps.get_tag.outputs.tag}}"
+            mkdir "/tmp/$NAME"
+            cp -r * .clang-format .clang-tidy "/tmp/$NAME"
+            mv "/tmp/$NAME" .
+            # Cleanup
+            rm -r "$NAME"/{appveyor.yml,codecov.yml,Jenkinsfile,tools/ci}
+            find "$NAME" -name '.git*' -delete
+
+            tar -czf s25client_src.tar.gz "$NAME"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Return To The Roots (Settlers II(R) Clone)
+          draft: false
+          prerelease: false
+      - name: Upload source distribution
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./s25client_src.tar.gz
+          asset_name: s25client_src_${{steps.get_tag.outputs.tag}}.tar.gz
+          asset_content_type: application/tar.gz
