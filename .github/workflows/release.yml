@@ -14,6 +14,11 @@ jobs:
       - name: Extract tag name
         id: get_tag
         run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+      - name: Set filenames
+        id: filenames
+        run: |
+          echo "::set-output name=src::s25client_src_${{steps.get_tag.outputs.tag}}.tar.gz"
+          echo "::set-output name=devTools::s25client_dev-tools_${{steps.get_tag.outputs.tag}}.tar.gz"
       - name: Create source distribution
         run: |
             git submodule update --init
@@ -26,7 +31,9 @@ jobs:
             rm -r "$NAME"/{appveyor.yml,codecov.yml,Jenkinsfile,tools/ci}
             find "$NAME" -name '.git*' -delete
 
-            tar -czf s25client_src.tar.gz "$NAME"
+            tar -czf ${{steps.filenames.outputs.devTools}} "$NAME/external/dev-tools"
+            rm -r "$NAME/external/dev-tools"/*
+            tar -czf ${{steps.filenames.outputs.src}} "$NAME"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -37,6 +44,9 @@ jobs:
           release_name: Release ${{ github.ref }}
           body: |
             Return To The Roots (Settlers II(R) Clone)
+
+            - ${{steps.filenames.outputs.src}} contains all source files including the submodules
+            - ${{steps.filenames.outputs.devTools}} contains optional binaries for development. Extract over the source folder if required
           draft: false
           prerelease: false
       - name: Upload source distribution
@@ -45,6 +55,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./s25client_src.tar.gz
-          asset_name: s25client_src_${{steps.get_tag.outputs.tag}}.tar.gz
+          asset_path: ./${{steps.filenames.outputs.src}}
+          asset_name: ${{steps.filenames.outputs.src}}
+          asset_content_type: application/tar.gz
+      - name: Upload Dev Tools
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{steps.filenames.outputs.devTools}}
+          asset_name: ${{steps.filenames.outputs.devTools}}
           asset_content_type: application/tar.gz
