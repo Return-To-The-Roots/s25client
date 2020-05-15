@@ -1,4 +1,4 @@
-dockerRegistry = "git.ra-doersch.de:5005/"
+dockerRegistry = "registry.mytrap.de/"
 dockerCredentials = "2d20af83-9ebd-4a5a-b6ee-c77bec430970"
 dockerImages = [
     "windows.i686"    : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
@@ -109,7 +109,7 @@ pipeline {
 
         stage('deploy') {
             when {
-                expression { params.DEPLOY_TO != "none" }
+                expression { return params.DEPLOY_TO != "none" }
             }
             steps {
                 script {
