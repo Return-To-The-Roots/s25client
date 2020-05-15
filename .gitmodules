@@ -28,9 +28,6 @@
 [submodule "contrib/turtle"]
 	path = external/turtle
 	url = https://github.com/mat007/turtle.git
-[submodule "external/libsamplerate"]
-	path = external/libsamplerate
-	url = https://github.com/erikd/libsamplerate.git
 [submodule "external/dev-tools"]
 	path = external/dev-tools
 	url = https://github.com/Return-To-The-Roots/dev-tools.git

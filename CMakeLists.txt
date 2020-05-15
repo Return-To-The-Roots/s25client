@@ -35,6 +35,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURC
 if(CMAKE_VERSION VERSION_LESS 3.11)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/cmake_3.11.0")
 endif()
+if(CMAKE_VERSION VERSION_LESS 3.14)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/libutil/cmake/cmake_3.14")
+endif()
 
 set(checkSubmodules FALSE)
 # Figure out RTTR_REVISION (git hash) and RTTR_VERSION (date)

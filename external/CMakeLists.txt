@@ -32,6 +32,14 @@ add_subdirectory(libendian)
 set(RTTR_BUILD_LOBBY_CLIENT ON)
 add_subdirectory(liblobby)
 
+add_subdirectory(libsiedler2)
+add_subdirectory(libutil)
+add_subdirectory(mygettext)
+add_subdirectory(s25edit)
+if(RTTR_BUILD_UPDATER)
+    add_subdirectory(s25update)
+endif()
+
 option(RTTR_USE_SYSTEM_SAMPLERATE "${RTTR_USE_SYSTEM_LIBS}" "Use system installed libsamplerate. Fails if not found!")
 if(RTTR_USE_SYSTEM_SAMPLERATE)
 	find_package(Samplerate 0.1.9 REQUIRED)
@@ -39,17 +47,15 @@ if(RTTR_USE_SYSTEM_SAMPLERATE)
 	add_library(samplerate INTERFACE)
 	target_link_libraries(samplerate INTERFACE Samplerate::Samplerate)
 else()
+    include(FetchContent)
+    FetchContent_Declare(
+        LibSamplerate
+        GIT_REPOSITORY https://github.com/erikd/libsamplerate
+        GIT_TAG        727504026ee51c6fe29afe6255b70513504a6265
+    )
 	set(LIBSAMPLERATE_TESTS OFF CACHE INTERNAL "")
 	set(LIBSAMPLERATE_INSTALL OFF CACHE INTERNAL "")
-	add_subdirectory(libsamplerate)
-endif()
-
-add_subdirectory(libsiedler2)
-add_subdirectory(libutil)
-add_subdirectory(mygettext)
-add_subdirectory(s25edit)
-if(RTTR_BUILD_UPDATER)
-    add_subdirectory(s25update)
+    FetchContent_MakeAvailable(LibSamplerate)
 endif()
 
 # No tests for turtle
