@@ -11,8 +11,7 @@ AddDirectory(lua)
 FILE(GLOB SOURCES_OTHER *.cpp *.h)
 SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 
-# CMake < 3.2 treats version 5.2.x as not equal to 5.2 but we want to allow all 5.2 versions
-find_package(Lua 5.2 EXACT REQUIRED)
+find_package(Lua 5.1 REQUIRED)
 
 include(GatherDll)
 gather_dll(Lua)
