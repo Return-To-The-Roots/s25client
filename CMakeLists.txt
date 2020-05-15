@@ -241,7 +241,7 @@ endif()
 include(RttrCoverageCfg)
 include(EnableSanitizers)
 
-option(RTTR_USE_SYSTEM_LIBS OFF "Default to using system-wide installed libs for external dependencies that have known system versions.")
+option(RTTR_USE_SYSTEM_LIBS "Default to using system-wide installed libs for external dependencies that have known system versions." OFF)
 
 ################################################################################
 # Configure files
@@ -313,15 +313,15 @@ if(Boost_VERSION VERSION_EQUAL 1.70)
     endif()
 endif()
 
-option(RTTR_USE_SYSTEM_NOWIDE "${RTTR_USE_SYSTEM_LIBS}" "Use system installed Boost.Nowide. Fails if not found!")
+option(RTTR_USE_SYSTEM_BOOST_NOWIDE "Use system installed Boost.Nowide. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
 
-if(Boost_VERSION_MINOR GREATER_EQUAL "73" OR RTTR_USE_SYSTEM_NOWIDE)
+if(Boost_VERSION_MINOR GREATER_EQUAL "73" OR RTTR_USE_SYSTEM_BOOST_NOWIDE)
   # Boost 1.73 contains Boost.Nowide.
   find_package(Boost COMPONENTS nowide)
 endif()
 # Prefer system version, either as part of Boost or preinstalled
 if(NOT Boost_NOWIDE_FOUND)
-  if(RTTR_USE_SYSTEM_NOWIDE)
+  if(RTTR_USE_SYSTEM_BOOST_NOWIDE)
     set(bnw_required REQUIRED)
   else()
     set(bnw_required QUIET)
