@@ -101,9 +101,7 @@ jobs:
         apt:
           <<: *defApt
           packages: [*defPackages, g++-9]
-      script:
-        - tools/ci/staticValidation.sh "$(pwd)"
-        - tools/ci/travisBuild.sh
+      script: tools/ci/travisBuild.sh
     # Latest Clang with externals
     - &latest-clang-externals
       os: linux
