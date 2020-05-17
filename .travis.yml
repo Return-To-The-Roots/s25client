@@ -52,18 +52,6 @@ script: tools/ci/travisBuild.sh
 jobs:
   fast_finish: true
   include:
-    # Clang-Tidy main
-    - &clang-tidy
-      os: linux
-      addons:
-        apt:
-          sources: [*defSrcs, llvm-toolchain-xenial-8]
-          packages: [*defPackages, g++-7, clang-8, clang-tidy-8]
-      env:
-        - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
-      script: tools/ci/runClangTidy.sh main
-    - <<: *clang-tidy
-      script: tools/ci/runClangTidy.sh external
     - &linux-gcc6
       os: linux
       compiler: gcc
