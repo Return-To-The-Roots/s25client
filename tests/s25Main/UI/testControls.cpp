@@ -123,7 +123,10 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     // Use a 1 Byte and a 2 Byte UTF8 "char"
     const std::array<std::string, 6> chars = {u8"a", u8"b", u8"c", u8"\u0424", u8"\u041A", u8"\u043b"};
     std::vector<char32_t> codepoints(chars.size() + 1);
-    std::transform(chars.begin(), chars.end(), codepoints.begin(), [](const auto& c) { return utfDecoder::decode_valid(c.begin()); });
+    std::transform(chars.begin(), chars.end(), codepoints.begin(), [](const auto& c) {
+        auto it = c.begin();
+        return utfDecoder::decode_valid(it);
+    });
     codepoints.back() = '?';
     const auto font = createMockFont(codepoints);
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(90, 15), TC_GREEN1, font.get());
@@ -215,7 +218,7 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
 {
     auto font = createMockFont({'?', 'a', 'z'});
     {
-        ctrlTextDeepening txt(NULL, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(), TC_GREEN1, "foo",
+        ctrlTextDeepening txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(), TC_GREEN1, "foo",
                               font.get(), COLOR_BLACK);
         const Extent sizeBefore = txt.GetSize();
         // Don't assume size, so get size for 0 chars
@@ -227,8 +230,8 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
         BOOST_TEST(txt.GetSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
     }
     {
-        ctrlTextButton txt(NULL, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(), TC_GREEN1, "foo", font.get(),
-                           "tooltip");
+        ctrlTextButton txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(), TC_GREEN1, "foo",
+                           font.get(), "tooltip");
         const Extent sizeBefore = txt.GetSize();
         // Don't assume size, so get size for 0 chars
         txt.ResizeForMaxChars(0);
