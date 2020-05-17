@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
 
+env:
+  CC: clang-8
+  CXX: clang++-8
+  ADDITIONAL_CMAKE_FLAGS:
+
 jobs:
   StyleAndFormatting:
     runs-on: ubuntu-latest
@@ -11,9 +16,24 @@ jobs:
     - uses: actions/checkout@v2
     - run: git submodule update --init
     - name: Validation
-      run: tools/ci/staticValidation.sh "$GITHUB_WORKSPACE"      
+      run: tools/ci/staticValidation.sh "$GITHUB_WORKSPACE"
     - name: Formatting
       uses: Flamefire/clang-format-lint-action@master
       with:
         source: 'extras libs tests external/libendian external/liblobby external/libsiedler2 external/libutil external/mygettext external/s25edit external/s25update'
         clangFormatVersion: 5
+  Clang-Tidy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: git submodule update --init
+    - name: Install dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -y \
+          clang-8 clang-tidy-8 \
+          libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev gettext \
+          libboost-filesystem-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev libboost-locale-dev libboost-iostreams-dev
+    - name: Clang-Tidy Main
+      run: tools/ci/runClangTidy.sh main
+    - name: Clang-Tidy External
+      run: tools/ci/runClangTidy.sh external
