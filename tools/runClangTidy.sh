@@ -11,7 +11,7 @@ Check that it is generated (-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)" >&2
 fi
 
 
-NAMES=(run-clang-tidy-8.py run-clang-tidy.py)
+NAMES=(run-clang-tidy-9.py run-clang-tidy-8.py run-clang-tidy.py)
 for fn in "${NAMES[@]}"; do
     if which "${fn}" &> /dev/null; then
         CLANG_TIDY_CMD="${fn}"

@@ -25,7 +25,7 @@ else
     exit 1
 fi
 
-script -q -c "run-clang-tidy-8 -p . \
+script -q -c "run-clang-tidy-9 -p . \
     -j2 \
     -quiet \
     -header-filter \"${SRC_DIR}/(${HEADER_FILTER})\" \
