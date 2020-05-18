@@ -59,9 +59,20 @@ cmake \
     -DRTTR_VERSION=$RTTR_VERSION \
     -DRTTR_REVISION=OFF \
     -DRTTR_BUNDLE=ON \
+    -DRTTR_EXTERNAL_BUILD_TESTING=ON \
     $src_dir
 
 make -j4 package
+
+export RTTR_DISABLE_ASSERT_BREAKPOINT=1
+export UBSAN_OPTIONS=print_stacktrace=1
+export AUDIODEV=null                    # Avoid errors like: ALSA lib confmisc.c:768:(parse_card) cannot find card '0'
+export SDL_VIDEODRIVER=dummy            # Avoid crash on travis
+
+if ! ctest --output-on-failure -j2; then
+    echo "error: tests failed. re-running failed tests with extra verbosity now" >&2
+    ctest --output-on-failure --rerun-failed --extra-verbose
+fi
 
 files=$(find . -maxdepth 1 -name '*.zip' -o -name '*.tar.bz2')
 if [ -z "$files" ] ; then
