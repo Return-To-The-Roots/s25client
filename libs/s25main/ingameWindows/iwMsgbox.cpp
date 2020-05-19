@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,10 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMsgbox.h"
-#include "GameManager.h"
 #include "Loader.h"
+#include "WindowManager.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -103,7 +102,7 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
     const Window* defBt = GetCtrl<Window>(defaultBt + ID_BT_0);
     if(defBt)
         VIDEODRIVER.SetMousePos(defBt->GetDrawPos() + DrawPoint(defBt->GetSize()) / 2);
-    GAMEMANAGER.SetCursor();
+    WINDOWMANAGER.SetCursor();
 }
 
 iwMsgbox::~iwMsgbox() = default;

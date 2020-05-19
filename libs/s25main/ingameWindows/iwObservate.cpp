@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,12 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwObservate.h"
 #include "CollisionDetection.h"
-#include "GameManager.h"
 #include "Loader.h"
 #include "Settings.h"
+#include "WindowManager.h"
 #include "controls/ctrlImageButton.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -263,7 +262,7 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
 
         isScrolling = true;
         followMovableId = 0;
-        GAMEMANAGER.SetCursor(CURSOR_SCROLL);
+        WINDOWMANAGER.SetCursor(Cursor::Scroll);
     } else
     {
         Close();
@@ -275,7 +274,7 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
 bool iwObservate::Msg_RightUp(const MouseCoords& /*mc*/)
 {
     if(isScrolling)
-        GAMEMANAGER.SetCursor(CURSOR_HAND);
+        WINDOWMANAGER.SetCursor(Cursor::Hand);
     isScrolling = false;
 
     return true;

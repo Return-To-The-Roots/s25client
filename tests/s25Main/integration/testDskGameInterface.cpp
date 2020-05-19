@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "GameManager.h"
 #include "GamePlayer.h"
 #include "PointOutput.h"
 #include "WindowManager.h"
@@ -30,10 +29,16 @@
 #include "worldFixtures/WorldFixture.h"
 #include <boost/test/unit_test.hpp>
 
+static std::ostream& operator<<(std::ostream& os, const Cursor& cursor)
+{
+    return os << static_cast<unsigned>(cursor);
+}
+
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(GameInterfaceDesktop)
 
 namespace {
+
 struct dskGameInterfaceMock : public dskGameInterface
 {
     dskGameInterfaceMock(const std::shared_ptr<Game>& game) : dskGameInterface(game, std::shared_ptr<NWFInfo>(), 0, false) {}
@@ -52,16 +57,16 @@ struct GameInterfaceFixture : uiHelper::Fixture
         view = &gameDesktop->GetView();
     }
 };
-void checkNotScrolling(const GameWorldView& view, CursorType cursor = CURSOR_HAND)
+void checkNotScrolling(const GameWorldView& view, Cursor cursor = Cursor::Hand)
 {
     const DrawPoint pos = view.GetOffset();
     MouseCoords mouse(Position(40, 11));
     WINDOWMANAGER.Msg_MouseMove(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), cursor);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), cursor);
     BOOST_REQUIRE_EQUAL(view.GetOffset(), pos);
     mouse.pos += Position(-20, 30);
     WINDOWMANAGER.Msg_MouseMove(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), cursor);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), cursor);
     BOOST_REQUIRE_EQUAL(view.GetOffset(), pos);
 }
 } // namespace
@@ -73,21 +78,21 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
     MouseCoords mouse(startPos, false, true);
     // Regular scrolling: Right down, 2 moves, right up
     WINDOWMANAGER.Msg_RightDown(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     DrawPoint pos = view->GetOffset();
     mouse.pos = startPos + Position(4, 3);
     WINDOWMANAGER.Msg_MouseMove(mouse);
     pos += acceleration * Position(4, 3);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     mouse.pos = startPos + Position(-6, 7);
     WINDOWMANAGER.Msg_MouseMove(mouse);
     pos += acceleration * Position(-6, 7);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     mouse.rdown = false;
     WINDOWMANAGER.Msg_RightUp(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_HAND);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Hand);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     checkNotScrolling(*view);
 
@@ -101,29 +106,29 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
     key.ctrl = key.alt = key.shift = false;
     WINDOWMANAGER.Msg_KeyDown(key);
     BOOST_REQUIRE(WINDOWMANAGER.GetTopMostWindow());
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     mouse.pos = startPos + Position(-6, 7);
     WINDOWMANAGER.Msg_MouseMove(mouse);
     pos += acceleration * Position(-6, 7);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     // Closing it doesn't either
     WINDOWMANAGER.Msg_KeyDown(key);
     WINDOWMANAGER.Draw();
     BOOST_REQUIRE(gameDesktop->IsActive());
     BOOST_REQUIRE(!WINDOWMANAGER.GetTopMostWindow());
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     mouse.pos = startPos + Position(-6, 7);
     WINDOWMANAGER.Msg_MouseMove(mouse);
     pos += acceleration * Position(-6, 7);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     // Left click does cancel it
     mouse.ldown = true;
     WINDOWMANAGER.Msg_LeftDown(mouse);
     mouse.ldown = false;
     WINDOWMANAGER.Msg_LeftUp(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_HAND);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Hand);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     checkNotScrolling(*view);
 }
@@ -133,41 +138,41 @@ BOOST_FIXTURE_TEST_CASE(ScrollingWhileRoadBuilding, GameInterfaceFixture)
     const int acceleration = 2;
     MapPoint hqPos = worldFixture.world.GetPlayer(0).GetFirstWH()->GetFlagPos(); //-V522
     gameDesktop->GI_StartRoadBuilding(hqPos, false);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_RM);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Remove);
     Position startPos(10, 15);
     MouseCoords mouse(startPos, false, true);
     // Regular scrolling
     WINDOWMANAGER.Msg_RightDown(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     DrawPoint pos = view->GetOffset();
     mouse.pos = startPos + Position(4, 3);
     WINDOWMANAGER.Msg_MouseMove(mouse);
     pos += acceleration * Position(4, 3);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     mouse.rdown = false;
     WINDOWMANAGER.Msg_RightUp(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_RM);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Remove);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
-    checkNotScrolling(*view, CURSOR_RM);
+    checkNotScrolling(*view, Cursor::Remove);
 
     // left click also stops scrolling
     mouse.rdown = true;
     WINDOWMANAGER.Msg_RightDown(mouse);
     startPos = mouse.pos;
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     mouse.pos = startPos + Position(-6, 7);
     WINDOWMANAGER.Msg_MouseMove(mouse);
     pos += acceleration * Position(-6, 7);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     mouse.ldown = true;
     WINDOWMANAGER.Msg_LeftDown(mouse);
     mouse.ldown = false;
     WINDOWMANAGER.Msg_LeftUp(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_RM);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Remove);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
-    checkNotScrolling(*view, CURSOR_RM);
+    checkNotScrolling(*view, Cursor::Remove);
 }
 
 BOOST_FIXTURE_TEST_CASE(ScrollingWithCtrl, GameInterfaceFixture)
@@ -177,16 +182,16 @@ BOOST_FIXTURE_TEST_CASE(ScrollingWithCtrl, GameInterfaceFixture)
     MouseCoords mouse(startPos, true);
     uiHelper::GetVideoDriver()->modKeyState_.ctrl = true;
     WINDOWMANAGER.Msg_LeftDown(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     DrawPoint pos = view->GetOffset();
     mouse.pos = startPos + Position(4, 3);
     WINDOWMANAGER.Msg_MouseMove(mouse);
     pos += acceleration * Position(4, 3);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_SCROLL);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Scroll);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     mouse.ldown = false;
     WINDOWMANAGER.Msg_LeftUp(mouse);
-    BOOST_REQUIRE_EQUAL(GAMEMANAGER.GetCursor(), CURSOR_HAND);
+    BOOST_REQUIRE_EQUAL(WINDOWMANAGER.GetCursor(), Cursor::Hand);
     BOOST_REQUIRE_EQUAL(view->GetOffset(), pos);
     checkNotScrolling(*view);
 }

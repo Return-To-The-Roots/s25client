@@ -34,6 +34,16 @@ class MouseCoords;
 struct KeyEvent;
 class ctrlBaseTooltip;
 
+// Cursor types with values equal to indices in resource.idx
+enum class Cursor : unsigned
+{
+    None,
+    Hand = 30,
+    Scroll = 32,
+    Moon = 33,
+    Remove = 34
+};
+
 /// Verwaltet alle (offenen) Fenster bzw Desktops samt ihren Controls und Messages
 class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderInterface
 {
@@ -124,9 +134,13 @@ public:
     /// Makes the given window (desktop or ingame window) active and all others inactive
     void SetActiveWindow(Window&);
 
+    void SetCursor(Cursor cursor = Cursor::Hand);
+    Cursor GetCursor() const { return cursor_; }
+
 private:
     class Tooltip;
 
+    void DrawCursor();
     void DrawToolTip();
 
     void TakeScreenshot();
@@ -135,6 +149,7 @@ private:
     /// Actually close all ingame windows marked for closing
     void CloseMarkedIngameWnds();
 
+    Cursor cursor_;
     std::unique_ptr<Desktop> curDesktop;  /// aktueller Desktop
     std::unique_ptr<Desktop> nextdesktop; /// der nächste Desktop
     bool disable_mouse;                   /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s

@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "dskSplash.h"
-#include "GameManager.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
@@ -35,14 +34,14 @@
 dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg) : Desktop(splashImg.release()), isLoading(false), isLoaded(false)
 {
     background->setInterpolateTexture(false);
-    GAMEMANAGER.SetCursor(CURSOR_NONE);
+    WINDOWMANAGER.SetCursor(Cursor::None);
 }
 
 dskSplash::~dskSplash()
 {
     // We took ownership!
     delete background;
-    GAMEMANAGER.SetCursor();
+    WINDOWMANAGER.SetCursor();
 }
 
 void dskSplash::SetActive(bool activate)

@@ -20,7 +20,6 @@
 #include "CollisionDetection.h"
 #include "EventManager.h"
 #include "Game.h"
-#include "GameManager.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "NWFInfo.h"
@@ -202,14 +201,14 @@ void dskGameInterface::SetActive(bool activate)
 void dskGameInterface::StopScrolling()
 {
     isScrolling = false;
-    GAMEMANAGER.SetCursor(road.mode == RM_DISABLED ? CURSOR_HAND : CURSOR_RM);
+    WINDOWMANAGER.SetCursor(road.mode == RM_DISABLED ? Cursor::Hand : Cursor::Remove);
 }
 
 void dskGameInterface::StartScrolling(const Position& mousePos)
 {
     startScrollPt = mousePos;
     isScrolling = true;
-    GAMEMANAGER.SetCursor(CURSOR_SCROLL);
+    WINDOWMANAGER.SetCursor(Cursor::Scroll);
 }
 
 void dskGameInterface::SettingsChanged() {}
@@ -918,7 +917,7 @@ void dskGameInterface::GI_StartRoadBuilding(const MapPoint startPt, bool waterRo
     road.mode = waterRoad ? RM_BOAT : RM_NORMAL;
     road.route.clear();
     road.start = road.point = startPt;
-    GAMEMANAGER.SetCursor(CURSOR_RM);
+    WINDOWMANAGER.SetCursor(Cursor::Remove);
 }
 
 void dskGameInterface::GI_CancelRoadBuilding()
@@ -927,7 +926,7 @@ void dskGameInterface::GI_CancelRoadBuilding()
         return;
     road.mode = RM_DISABLED;
     worldViewer.RemoveVisualRoad(road.start, road.route);
-    GAMEMANAGER.SetCursor(isScrolling ? CURSOR_SCROLL : CURSOR_HAND);
+    WINDOWMANAGER.SetCursor(isScrolling ? Cursor::Scroll : Cursor::Hand);
 }
 
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
@@ -1059,7 +1058,7 @@ void dskGameInterface::GI_BuildRoad()
 {
     GAMECLIENT.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
     road.mode = RM_DISABLED;
-    GAMEMANAGER.SetCursor(CURSOR_HAND);
+    WINDOWMANAGER.SetCursor(Cursor::Hand);
 }
 
 void dskGameInterface::GI_WindowClosed(Window* wnd)

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h"
 #include "WindowManager.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
@@ -40,7 +40,8 @@
 #include <algorithm>
 
 WindowManager::WindowManager()
-    : disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
+    : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0), lastLeftClickTime(0),
+      lastLeftClickPos(0, 0)
 {}
 
 WindowManager::~WindowManager() = default;
@@ -50,6 +51,24 @@ void WindowManager::CleanUp()
     windows.clear();
     curDesktop.reset();
     nextdesktop.reset();
+}
+
+void WindowManager::SetCursor(Cursor cursor)
+{
+    cursor_ = cursor;
+}
+
+void WindowManager::DrawCursor()
+{
+    auto resId = static_cast<unsigned>(cursor_);
+    switch(cursor_)
+    {
+        case Cursor::Hand:
+        case Cursor::Remove: resId += VIDEODRIVER.IsLeftDown() ? 1 : 0; break;
+        default: break;
+    }
+    if(resId)
+        LOADER.GetImageN("resource", resId)->DrawFull(VIDEODRIVER.GetMousePos());
 }
 
 /**
@@ -83,6 +102,7 @@ void WindowManager::Draw()
     }
 
     DrawToolTip();
+    DrawCursor();
 }
 
 /**

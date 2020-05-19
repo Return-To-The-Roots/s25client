@@ -17,7 +17,6 @@
 
 #include "dskGameLoader.h"
 #include "Game.h"
-#include "GameManager.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlText.h"
@@ -41,7 +40,7 @@
 dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
     : Desktop(LOADER.GetImageN(LOAD_SCREENS[rand() % LOAD_SCREENS.size()], 0)), position(0), loader_(LOADER, std::move(game))
 {
-    GAMEMANAGER.SetCursor(CURSOR_NONE);
+    WINDOWMANAGER.SetCursor(Cursor::None);
 
     AddTimer(1, 50);
 
@@ -56,7 +55,7 @@ dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
 
 dskGameLoader::~dskGameLoader()
 {
-    GAMEMANAGER.SetCursor();
+    WINDOWMANAGER.SetCursor();
     LOBBYCLIENT.RemoveListener(this);
     GAMECLIENT.RemoveInterface(this);
 }
