@@ -22,16 +22,6 @@
 #include "FrameCounter.h"
 #include <boost/optional.hpp>
 
-// Die verschiedenen Cursor mit ihren Indizes in resource.idx
-enum CursorType
-{
-    CURSOR_NONE,
-    CURSOR_HAND,
-    CURSOR_SCROLL = 32,
-    CURSOR_MOON = 33,
-    CURSOR_RM = 34
-};
-
 class Log;
 class Settings;
 class VideoDriverWrapper;
@@ -57,12 +47,8 @@ public:
     unsigned GetNumFrames() { return gfCounter_.getCurNumFrames(); }
     unsigned GetAverageGFPS() { return gfCounter_.getCurFrameRate(); }
 
-    void SetCursor(CursorType cursor = CURSOR_HAND);
-    CursorType GetCursor() const { return cursor_; }
-
 private:
     bool ShowSplashscreen();
-    void DrawCursor();
 
     Log& log_;
     Settings& settings_;
@@ -76,7 +62,6 @@ private:
         unsigned time, gf;
     };
     boost::optional<SkipReport> lastSkipReport;
-    CursorType cursor_;
 };
 
 GameManager& getGlobalGameManager();

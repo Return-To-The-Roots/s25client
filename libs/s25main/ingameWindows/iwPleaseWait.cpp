@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,10 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwPleaseWait.h"
-#include "GameManager.h"
 #include "Loader.h"
+#include "WindowManager.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
 
@@ -32,11 +31,11 @@ iwPleaseWait::iwPleaseWait()
     : IngameWindow(CGI_PLEASEWAIT, IngameWindow::posLastOrCenter, Extent(300, 60), _("Please wait..."), LOADER.GetImageN("resource", 41),
                    true, false)
 {
-    GAMEMANAGER.SetCursor(CURSOR_MOON);
+    WINDOWMANAGER.SetCursor(Cursor::Moon);
     AddText(0, GetSize() / 2, _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, NormalFont);
 }
 
 iwPleaseWait::~iwPleaseWait()
 {
-    GAMEMANAGER.SetCursor();
+    WINDOWMANAGER.SetCursor();
 }

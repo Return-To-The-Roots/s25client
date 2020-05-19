@@ -38,8 +38,7 @@
 
 GameManager::GameManager(Log& log, Settings& settings, VideoDriverWrapper& videoDriver, AudioDriverWrapper& audioDriver,
                          WindowManager& windowManager)
-    : log_(log), settings_(settings), videoDriver_(videoDriver), audioDriver_(audioDriver), windowManager_(windowManager),
-      cursor_(CURSOR_HAND)
+    : log_(log), settings_(settings), videoDriver_(videoDriver), audioDriver_(audioDriver), windowManager_(windowManager)
 {
     ResetAverageGFPS();
 }
@@ -156,7 +155,6 @@ bool GameManager::Run()
     {
         videoDriver_.ClearScreen();
         windowManager_.Draw();
-        DrawCursor();
         videoDriver_.SwapBuffers();
     }
     gfCounter_.update();
@@ -202,30 +200,6 @@ bool GameManager::ShowMenu()
 void GameManager::ResetAverageGFPS()
 {
     gfCounter_ = FrameCounter(FrameCounter::clock::duration::max()); // Never update
-}
-
-/**
- *  Set the cursor type
- */
-void GameManager::SetCursor(CursorType cursor)
-{
-    cursor_ = cursor;
-}
-
-/**
- *  Draw the cursor
- */
-void GameManager::DrawCursor()
-{
-    unsigned resId;
-    switch(cursor_)
-    {
-        case CURSOR_HAND: resId = videoDriver_.IsLeftDown() ? 31 : 30; break;
-        case CURSOR_RM: resId = videoDriver_.IsLeftDown() ? 35 : 34; break;
-        default: resId = cursor_;
-    }
-    if(resId)
-        LOADER.GetImageN("resource", resId)->DrawFull(videoDriver_.GetMousePos());
 }
 
 static GameManager* globalGameManager = nullptr;
