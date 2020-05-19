@@ -22,9 +22,9 @@
 #include "ListDir.h"
 #include "RttrConfig.h"
 #include "Settings.h"
+#include "Timer.h"
 #include "addons/const_addons.h"
 #include "convertSounds.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
 #include "ogl/MusicItem.h"
@@ -55,13 +55,17 @@
 #include <boost/filesystem.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <algorithm>
+#include <chrono>
 #include <cstdio>
 #include <iomanip>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
 
-Loader::Loader() : isWinterGFX_(false), map_gfx(nullptr), stp(nullptr)
+using namespace std::chrono;
+
+Loader::Loader(Log& logger, const RttrConfig& config)
+    : logger_(logger), config_(config), isWinterGFX_(false), map_gfx(nullptr), stp(nullptr)
 {
     std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::Archiv*>(nullptr));
 }
@@ -157,7 +161,7 @@ glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
 
 void Loader::AddOverrideFolder(std::string path, bool atBack)
 {
-    path = RTTRCONFIG.ExpandPath(path);
+    path = config_.ExpandPath(path);
     if(!bfs::exists(path))
         throw std::runtime_error(std::string("Path ") + path + " does not exist");
     // Don't add folders twice although it is not an error
@@ -184,7 +188,7 @@ void Loader::AddOverrideFolder(std::string path, bool atBack)
 void Loader::AddAddonFolder(AddonId id)
 {
     std::stringstream s;
-    s << RTTRCONFIG.ExpandPath(FILE_PATHS[96]) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned>(id);
+    s << config_.ExpandPath(FILE_PATHS[96]) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned>(id);
     std::string path = s.str();
     if(bfs::exists(path))
         AddOverrideFolder(path);
@@ -233,21 +237,21 @@ bool Loader::LoadFilesAtStart()
  */
 bool Loader::LoadSounds()
 {
-    std::string soundLSTPath = RTTRCONFIG.ExpandPath(FILE_PATHS[55]);
+    std::string soundLSTPath = config_.ExpandPath(FILE_PATHS[55]);
     if(bfs::exists(soundLSTPath))
         bfs::remove(soundLSTPath);
-    if(!LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[49])))
+    if(!LoadFile(config_.ExpandPath(FILE_PATHS[49])))
         return false;
-    auto const convertStartTime = VIDEODRIVER.GetTickCount();
-    LOG.write(_("Starting sound conversion..."));
-    if(!convertSounds(GetArchive("sound"), RTTRCONFIG.ExpandPath(FILE_PATHS[56])))
+    const Timer timer(true);
+    logger_.write(_("Starting sound conversion..."));
+    if(!convertSounds(GetArchive("sound"), config_.ExpandPath(FILE_PATHS[56])))
     {
-        LOG.write(_("failed\n"));
+        logger_.write(_("failed\n"));
         return false;
     }
-    LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - convertStartTime);
+    logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
-    const std::string oggPath = RTTRCONFIG.ExpandPath(FILE_PATHS[50]);
+    const std::string oggPath = config_.ExpandPath(FILE_PATHS[50]);
     std::vector<std::string> oggFiles = ListDir(oggPath, "ogg");
 
     sng_lst.reserve(oggFiles.size());
@@ -260,12 +264,12 @@ bool Loader::LoadSounds()
         if(music)
             sng_lst.emplace_back(std::move(music));
         else
-            LOG.write(_("WARNING: Found invalid music item for %1%")) % oggFile;
+            logger_.write(_("WARNING: Found invalid music item for %1%")) % oggFile;
     }
 
     if(sng_lst.empty())
     {
-        LOG.write(
+        logger_.write(
           _("WARNING: Did not find the music files.\n\tYou have to run the updater once or copy the .ogg files manually to \"%1%\" or you "
             "won't be able to hear the music.\n"))
           % oggPath;
@@ -276,7 +280,7 @@ bool Loader::LoadSounds()
 
 bool Loader::LoadFonts()
 {
-    if(!LoadFile(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/fonts.LST"), GetPaletteN("pal5")))
+    if(!LoadFile(config_.ExpandPath("<RTTR_RTTR>/LSTS/fonts.LST"), GetPaletteN("pal5")))
         return false;
     fonts.clear();
     const auto& loadedFonts = GetArchive("fonts");
@@ -285,7 +289,7 @@ bool Loader::LoadFonts()
         const auto* curFont = dynamic_cast<const libsiedler2::ArchivItem_Font*>(loadedFonts[i]);
         if(!curFont)
         {
-            LOG.write(_("Unable to load font at index %1%\n")) % i;
+            logger_.write(_("Unable to load font at index %1%\n")) % i;
             return false;
         }
         fonts.emplace_back(*curFont);
@@ -385,7 +389,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
 
-    std::string mapGFXFile = RTTRCONFIG.ExpandPath(mapGfxPath);
+    std::string mapGFXFile = config_.ExpandPath(mapGfxPath);
     if(!LoadFile(mapGFXFile, pal5))
         return false;
     map_gfx = &GetArchive(boost::algorithm::to_lower_copy(bfs::path(mapGFXFile).stem().string()));
@@ -415,10 +419,10 @@ bool Loader::LoadFiles(const std::vector<std::string>& files)
     // load the files
     for(const std::string& curFile : files)
     {
-        std::string filePath = RTTRCONFIG.ExpandPath(curFile);
+        std::string filePath = config_.ExpandPath(curFile);
         if(!LoadFile(filePath, pal5))
         {
-            LOG.write(_("Failed to load %s\n")) % filePath;
+            logger_.write(_("Failed to load %s\n")) % filePath;
             return false;
         }
     }
@@ -569,7 +573,7 @@ void Loader::fillCaches()
                                 id += NATION_RTTR_TO_S2[nation] * 6;
                             } else if(nation == NAT_BABYLONIANS) //-V547
                             {
-                                id += NATION_RTTR_TO_S2[nation] * 6;
+                                id += NATION_RTTR_TO_S2[NAT_ROMANS] * 6;
                                 /* TODO: change this once we have own job pictures for babylonians
                                                                 //Offsets to std::make_unique<job imgs>()
                                                                 overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
@@ -914,7 +918,7 @@ bool Loader::MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archi
                 auto* otherSubArchiv = dynamic_cast<libsiedler2::Archiv*>(otherArchiv[i]);
                 if(!otherSubArchiv)
                 {
-                    LOG.write(_("Failed to merge entry %1%. Archive expected!\n")) % i;
+                    logger_.write(_("Failed to merge entry %1%. Archive expected!\n")) % i;
                     return false;
                 }
                 if(!MergeArchives(*subArchiv, *otherSubArchiv))
@@ -979,27 +983,27 @@ bool Loader::LoadSingleFile(libsiedler2::Archiv& to, const std::string& filePath
 
     if(!boost::filesystem::exists(filePath))
     {
-        LOG.write(_("File or directory does not exist: %s\n")) % filePath;
+        logger_.write(_("File or directory does not exist: %s\n")) % filePath;
         return false;
     }
     if(boost::filesystem::is_regular_file(filePath))
         return LoadArchiv(to, filePath, palette);
     if(!boost::filesystem::is_directory(filePath))
     {
-        LOG.write(_("Could not determine type of path %s\n")) % filePath;
+        logger_.write(_("Could not determine type of path %s\n")) % filePath;
         return false;
     }
 
-    LOG.write(_("Loading directory %s\n")) % filePath;
-    unsigned startTime = VIDEODRIVER.GetTickCount();
+    logger_.write(_("Loading directory %s\n")) % filePath;
+    const Timer timer(true);
     std::vector<libsiedler2::FileEntry> files = libsiedler2::ReadFolderInfo(filePath);
-    LOG.write(_("  Loading %1% entries: ")) % files.size();
+    logger_.write(_("  Loading %1% entries: ")) % files.size();
     if(int ec = libsiedler2::LoadFolder(files, to, palette))
     {
-        LOG.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
+        logger_.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
         return false;
     }
-    LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - startTime);
+    logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
     return true;
 }
@@ -1015,20 +1019,20 @@ bool Loader::LoadSingleFile(libsiedler2::Archiv& to, const std::string& filePath
  */
 bool Loader::LoadArchiv(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette)
 {
-    unsigned ladezeit = VIDEODRIVER.GetTickCount();
+    const Timer timer(true);
 
-    std::string file = RTTRCONFIG.ExpandPath(pfad);
+    std::string file = config_.ExpandPath(pfad);
 
-    LOG.write(_("Loading \"%s\": ")) % file;
+    logger_.write(_("Loading \"%s\": ")) % file;
     fflush(stdout);
 
     if(int ec = libsiedler2::Load(file, archiv, palette))
     {
-        LOG.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
+        logger_.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
         return false;
     }
 
-    LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - ladezeit);
+    logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
     return true;
 }
@@ -1037,14 +1041,14 @@ bool Loader::LoadOverrideDirectory(const std::string& path)
 {
     if(!bfs::is_directory(path))
     {
-        LOG.write(_("Directory does not exist: %s\n")) % path;
+        logger_.write(_("Directory does not exist: %s\n")) % path;
         return false;
     }
 
     // yes, load all files in the directory
-    unsigned ladezeit = VIDEODRIVER.GetTickCount();
+    const Timer timer(true);
 
-    LOG.write(_("Loading LST,LBM,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % RTTRCONFIG.ExpandPath(path);
+    logger_.write(_("Loading LST,LBM,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % config_.ExpandPath(path);
 
     std::vector<std::string> filesAndFolders = ListDir(path, "lst", true);
     filesAndFolders = ListDir(path, "lbm", true, &filesAndFolders);
@@ -1062,7 +1066,7 @@ bool Loader::LoadOverrideDirectory(const std::string& path)
         if(!LoadFile(i, pal5, true))
             return false;
     }
-    LOG.write(_("finished in %ums\n")) % (VIDEODRIVER.GetTickCount() - ladezeit);
+    logger_.write(_("finished in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
     return true;
 }
 
@@ -1078,4 +1082,10 @@ bool Loader::LoadFilesFromArray(const std::vector<unsigned>& files)
     for(unsigned curFileIdx : files)
         sFiles.push_back(FILE_PATHS[curFileIdx]);
     return LoadFiles(sFiles);
+}
+
+Loader& getGlobalLoader()
+{
+    static Loader loader{LOG, RTTRCONFIG};
+    return loader;
 }

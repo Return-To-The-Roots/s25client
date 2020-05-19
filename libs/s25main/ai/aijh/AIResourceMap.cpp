@@ -43,15 +43,9 @@ void AIResourceMap::Init()
             Change(pt, 1);
         else if(aii.gwb.GetDescription().get(aii.gwb.GetNode(pt).t1).Is(ETerrain::Walkable))
         {
-            if(res != AIResource::BORDERLAND && node.res == res)
+            if((res != AIResource::BORDERLAND && node.res == res) || (res == AIResource::BORDERLAND && aii.IsBorder(pt))
+               || (node.res == AIResource::MULTIPLE && (aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)))
                 Change(pt, 1);
-            else if(res == AIResource::BORDERLAND && aii.IsBorder(pt))
-                Change(pt, 1);
-            else if(node.res == AIResource::MULTIPLE)
-            {
-                if(aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)
-                    Change(pt, 1);
-            }
         }
     }
 }

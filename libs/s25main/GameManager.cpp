@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "Loader.h"
@@ -37,7 +36,10 @@
 #include "s25util/Log.h"
 #include "s25util/error.h"
 
-GameManager::GameManager() : cursor_(CURSOR_HAND)
+GameManager::GameManager(Log& log, Settings& settings, VideoDriverWrapper& videoDriver, AudioDriverWrapper& audioDriver,
+                         WindowManager& windowManager)
+    : log_(log), settings_(settings), videoDriver_(videoDriver), audioDriver_(audioDriver), windowManager_(windowManager),
+      cursor_(CURSOR_HAND)
 {
     ResetAverageGFPS();
 }
@@ -48,37 +50,37 @@ GameManager::GameManager() : cursor_(CURSOR_HAND)
 bool GameManager::Start()
 {
     // Einstellungen laden
-    SETTINGS.Load();
+    settings_.Load();
 
     /// Videotreiber laden
-    if(!VIDEODRIVER.LoadDriver(SETTINGS.driver.video))
+    if(!videoDriver_.LoadDriver(settings_.driver.video))
     {
         s25util::error(_("Video driver couldn't be loaded!\n"));
         return false;
     }
 
     // Fenster erstellen
-    const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
-    if(!VIDEODRIVER.CreateScreen(screenSize, SETTINGS.video.fullscreen))
+    const auto screenSize = settings_.video.fullscreen ? settings_.video.fullscreenSize : settings_.video.windowedSize; //-V807
+    if(!videoDriver_.CreateScreen(screenSize, settings_.video.fullscreen))
         return false;
-    VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync);
-    VIDEODRIVER.SetMouseWarping(SETTINGS.global.smartCursor);
+    videoDriver_.setTargetFramerate(settings_.video.vsync);
+    videoDriver_.SetMouseWarping(settings_.global.smartCursor);
 
     /// Audiodriver laden
-    if(!AUDIODRIVER.LoadDriver(SETTINGS.driver.audio))
+    if(!audioDriver_.LoadDriver(settings_.driver.audio))
     {
         s25util::warning(_("Audio driver couldn't be loaded!\n"));
         // return false;
     }
 
     /// Lautstärken gleich mit setzen
-    AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume); //-V807
-    AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musik_volume);
+    audioDriver_.SetMasterEffectVolume(settings_.sound.effekte_volume); //-V807
+    audioDriver_.SetMusicVolume(settings_.sound.musik_volume);
 
     // Treibereinstellungen abspeichern
-    SETTINGS.Save();
+    settings_.Save();
 
-    LOG.write(_("\nStarting the game\n"));
+    log_.write(_("\nStarting the game\n"));
     return ShowSplashscreen();
 }
 
@@ -91,10 +93,10 @@ void GameManager::Stop()
     GAMESERVER.Stop();
     LOBBYCLIENT.Stop();
     // Global Einstellungen speichern
-    SETTINGS.Save();
+    settings_.Save();
 
     // Fenster beenden
-    VIDEODRIVER.DestroyScreen();
+    videoDriver_.DestroyScreen();
 }
 
 /**
@@ -103,7 +105,7 @@ void GameManager::Stop()
 bool GameManager::Run()
 {
     // Nachrichtenschleife
-    if(!VIDEODRIVER.Run())
+    if(!videoDriver_.Run())
         GLOBALVARS.notdone = false;
 
     LOBBYCLIENT.Run();
@@ -116,7 +118,7 @@ bool GameManager::Run()
     if(targetSkipGF)
     {
         // if we skip drawing write a comment every 5k gf
-        unsigned current_time = VIDEODRIVER.GetTickCount();
+        unsigned current_time = videoDriver_.GetTickCount();
         const unsigned curGF = GAMECLIENT.GetGFNumber();
         if(targetSkipGF > curGF)
         {
@@ -127,10 +129,10 @@ bool GameManager::Run()
                     // Elapsed time in ms
                     const auto timeDiff = static_cast<double>(current_time - lastSkipReport->time);
                     const unsigned numGFPassed = curGF - lastSkipReport->gf;
-                    LOG.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF
+                    log_.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF
                       % curGF % (timeDiff / 1000) % (timeDiff / numGFPassed);
                 } else
-                    LOG.write(_("jumping to gf %i, now at gf %i \n")) % targetSkipGF % curGF;
+                    log_.write(_("jumping to gf %i, now at gf %i \n")) % targetSkipGF % curGF;
                 lastSkipReport = SkipReport{current_time, curGF};
             } else if(!lastSkipReport)
                 lastSkipReport = SkipReport{current_time, curGF};
@@ -142,26 +144,26 @@ bool GameManager::Run()
             {
                 const auto timeDiff = static_cast<double>(current_time - lastSkipReport->time);
                 const unsigned numGFPassed = curGF - lastSkipReport->gf;
-                LOG.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % numGFPassed
+                log_.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % numGFPassed
                   % (timeDiff / 1000) % (timeDiff / numGFPassed);
                 lastSkipReport.reset();
             } else
             {
-                LOG.write(_("jump to gf %1% complete\n")) % targetSkipGF;
+                log_.write(_("jump to gf %1% complete\n")) % targetSkipGF;
             }
         }
     } else
     {
-        VIDEODRIVER.ClearScreen();
-        WINDOWMANAGER.Draw();
+        videoDriver_.ClearScreen();
+        windowManager_.Draw();
         DrawCursor();
-        VIDEODRIVER.SwapBuffers();
+        videoDriver_.SwapBuffers();
     }
     gfCounter_.update();
 
     // Fenstermanager aufräumen
     if(!GLOBALVARS.notdone)
-        WINDOWMANAGER.CleanUp();
+        windowManager_.CleanUp();
 
     return GLOBALVARS.notdone;
 }
@@ -174,7 +176,7 @@ bool GameManager::ShowSplashscreen()
     auto image = libutil::dynamicUniqueCast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)
         return false;
-    WINDOWMANAGER.Switch(std::make_unique<dskSplash>(std::move(image)));
+    windowManager_.Switch(std::make_unique<dskSplash>(std::move(image)));
     return true;
 }
 
@@ -189,10 +191,10 @@ bool GameManager::ShowMenu()
 
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
-        WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
+        windowManager_.Switch(std::make_unique<dskLobby>());
     else
         // Hauptmenü zeigen
-        WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
+        windowManager_.Switch(std::make_unique<dskMainMenu>());
 
     return true;
 }
@@ -218,10 +220,21 @@ void GameManager::DrawCursor()
     unsigned resId;
     switch(cursor_)
     {
-        case CURSOR_HAND: resId = VIDEODRIVER.IsLeftDown() ? 31 : 30; break;
-        case CURSOR_RM: resId = VIDEODRIVER.IsLeftDown() ? 35 : 34; break;
+        case CURSOR_HAND: resId = videoDriver_.IsLeftDown() ? 31 : 30; break;
+        case CURSOR_RM: resId = videoDriver_.IsLeftDown() ? 35 : 34; break;
         default: resId = cursor_;
     }
     if(resId)
-        LOADER.GetImageN("resource", resId)->DrawFull(VIDEODRIVER.GetMousePos());
+        LOADER.GetImageN("resource", resId)->DrawFull(videoDriver_.GetMousePos());
+}
+
+static GameManager* globalGameManager = nullptr;
+
+GameManager& getGlobalGameManager()
+{
+    return *globalGameManager;
+}
+void setGlobalGameManager(GameManager& gameManager)
+{
+    globalGameManager = &gameManager;
 }

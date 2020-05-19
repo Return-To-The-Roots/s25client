@@ -35,22 +35,22 @@ class NotificationManager
     class CallbackUnregistrar;
 
 public:
-    inline NotificationManager();
-    inline ~NotificationManager();
+    NotificationManager();
+    ~NotificationManager();
 
     /// Subscribe to a specific notification.
     /// Unsubscribes when the subscription has no references left
     template<class T_Note>
-    inline Subscribtion subscribe(std::function<void(T_Note)> callback);
+    Subscribtion subscribe(std::function<void(T_Note)> callback);
     /// Manually unsubscribes the callback
-    inline void unsubscribe(Subscribtion& subscription);
+    static void unsubscribe(Subscribtion& subscription);
     /// Call the registred callbacks for the note
     template<class T_Note>
-    inline void publish(const T_Note& notification);
+    void publish(const T_Note& notification);
 
     /// Internally used by CallbackUnregistrar for unsubscribing
     template<class T_Note>
-    inline void unsubscribe(NoteCallback<T_Note>* callback);
+    void unsubscribe(NoteCallback<T_Note>* callback);
 
 private:
     /// We cannot store the real type of the callback in C++ (no mixed type list) so we store it as a void*

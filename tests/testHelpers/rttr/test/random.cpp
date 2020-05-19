@@ -29,7 +29,7 @@
 namespace rttr { namespace test {
     class randomObserver final : public boost::unit_test::test_observer
     {
-        auto getRandSeed() { return std::chrono::high_resolution_clock::now().time_since_epoch().count(); }
+        static auto getRandSeed() { return std::chrono::high_resolution_clock::now().time_since_epoch().count(); }
         void test_unit_start(boost::unit_test::test_unit const& test) override
         {
             if(test.p_type != boost::unit_test::TUT_CASE)

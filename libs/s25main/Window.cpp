@@ -406,7 +406,7 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned id, const DrawPoint& pos, con
     va_list liste;
     va_start(liste, parameters);
 
-    ctrlVarDeepening* ctrl = new ctrlVarDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, formatstr, font, color, parameters, liste);
+    auto* ctrl = new ctrlVarDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, formatstr, font, color, parameters, liste);
 
     va_end(liste);
 
@@ -437,7 +437,7 @@ ctrlVarText* Window::AddVarText(unsigned id, const DrawPoint& pos, const std::st
     va_list liste;
     va_start(liste, parameters);
 
-    ctrlVarText* ctrl = new ctrlVarText(this, id, ScaleIf(pos), formatstr, color, format, font, parameters, liste);
+    auto* ctrl = new ctrlVarText(this, id, ScaleIf(pos), formatstr, color, format, font, parameters, liste);
 
     va_end(liste);
 

@@ -162,16 +162,17 @@ unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
                 case TT_DESERT: return 0xFFc09c7c;
                 case TT_SWAMPLAND: return 0xFF649014;
                 case TT_MEADOW_FLOWERS: return 0xFF48780c;
-                case TT_MOUNTAIN1: return 0xFF9c8058;
-                case TT_MOUNTAIN2: return 0xFF9c8058;
-                case TT_MOUNTAIN3: return 0xFF9c8058;
+                case TT_MOUNTAIN1:
+                case TT_MOUNTAIN2:
+                case TT_MOUNTAIN3:
+                case TT_BUILDABLE_MOUNTAIN:
+                case TT_MOUNTAINMEADOW: return 0xFF9c8058;
                 case TT_MOUNTAIN4: return 0xFF8c7048;
                 case TT_SAVANNAH: return 0xFF649014;
                 case TT_MEADOW1: return 0xFF48780c;
                 case TT_MEADOW2: return 0xFF649014;
                 case TT_MEADOW3: return 0xFF407008;
                 case TT_STEPPE: return 0xFF88b028;
-                case TT_MOUNTAINMEADOW: return 0xFF9c8058;
                 case TT_WATER:
                 case TT_WATER_NOSHIP:
                 case TT_BUILDABLE_WATER: return 0xFF1038a4;
@@ -179,7 +180,6 @@ unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
                 case TT_LAVA2:
                 case TT_LAVA3:
                 case TT_LAVA4: return 0xFFc02020;
-                case TT_BUILDABLE_MOUNTAIN: return 0xFF9c8058;
             }
             break;
         case Landscape::WASTELAND:
@@ -192,11 +192,11 @@ unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
                 case TT_MEADOW_FLOWERS: return 0xFF444850;
                 case TT_MOUNTAIN1: return 0xFF706c54;
                 case TT_MOUNTAIN2: return 0xFF706454;
-                case TT_MOUNTAIN3: return 0xFF684c24;
+                case TT_MOUNTAIN3:
                 case TT_MOUNTAIN4: return 0xFF684c24;
                 case TT_SAVANNAH: return 0xFF444850;
                 case TT_MEADOW1: return 0xFF5c5840;
-                case TT_MEADOW2: return 0xFF646048;
+                case TT_MEADOW2:
                 case TT_MEADOW3: return 0xFF646048;
                 case TT_STEPPE: return 0xFF88b028;
                 case TT_MOUNTAINMEADOW: return 0xFF001820;
@@ -219,7 +219,7 @@ unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
                 case TT_MEADOW_FLOWERS: return 0xFF7c84ac;
                 case TT_MOUNTAIN1: return 0xFF54586c;
                 case TT_MOUNTAIN2: return 0xFF60607c;
-                case TT_MOUNTAIN3: return 0xFF686c8c;
+                case TT_MOUNTAIN3:;
                 case TT_MOUNTAIN4: return 0xFF686c8c;
                 case TT_SAVANNAH: return 0xFFa0accc;
                 case TT_MEADOW1: return 0xFFb0a494;

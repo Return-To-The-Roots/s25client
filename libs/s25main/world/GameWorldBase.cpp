@@ -561,9 +561,7 @@ std::vector<unsigned> GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const
         if(CalcDistance(harborPt, pt) <= SEAATTACK_DISTANCE)
         {
             // Wird ein Weg vom Militärgebäude zum Hafen gefunden bzw. Ziel = Hafen?
-            if(pt == harborPt)
-                harbor_points.push_back(i);
-            else if(FindHumanPath(pt, harborPt, SEAATTACK_DISTANCE) != 0xff)
+            if(pt == harborPt || FindHumanPath(pt, harborPt, SEAATTACK_DISTANCE) != 0xff)
                 harbor_points.push_back(i);
         }
     }

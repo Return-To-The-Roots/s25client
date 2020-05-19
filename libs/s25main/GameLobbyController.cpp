@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameLobbyController.h"
-
 #include "GameLobby.h"
 #include "JoinPlayerInfo.h"
-#include "network/GameClient.h"
 #include "network/GameMessages.h"
+#include "network/NetworkPlayer.h"
 #include <utility>
 
-GameLobbyController::GameLobbyController(std::shared_ptr<GameLobby> lobby) : lobby(std::move(lobby)) {}
+GameLobbyController::GameLobbyController(std::shared_ptr<GameLobby> lobby, NetworkPlayer& mainPlayer)
+    : mainPlayer_(mainPlayer), lobby(std::move(lobby))
+{}
 
 GameLobbyController::~GameLobbyController() = default;
 
@@ -45,7 +45,7 @@ void GameLobbyController::CloseSlot(unsigned playerIdx)
 
 void GameLobbyController::SetPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo)
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Player_State(playerIdx, state, aiInfo));
+    mainPlayer_.sendMsgAsync(new GameMessage_Player_State(playerIdx, state, aiInfo));
 }
 
 void GameLobbyController::TogglePlayerState(unsigned playerIdx)
@@ -87,17 +87,17 @@ void GameLobbyController::TogglePlayerState(unsigned playerIdx)
 
 void GameLobbyController::SetColor(unsigned playerIdx, unsigned newColor)
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Player_Color(playerIdx, newColor));
+    mainPlayer_.sendMsgAsync(new GameMessage_Player_Color(playerIdx, newColor));
 }
 
 void GameLobbyController::SetTeam(unsigned playerIdx, Team newTeam)
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Player_Team(playerIdx, newTeam));
+    mainPlayer_.sendMsgAsync(new GameMessage_Player_Team(playerIdx, newTeam));
 }
 
 void GameLobbyController::SetNation(unsigned playerIdx, Nation newNation)
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Player_Nation(playerIdx, newNation));
+    mainPlayer_.sendMsgAsync(new GameMessage_Player_Nation(playerIdx, newNation));
 }
 
 const GlobalGameSettings& GameLobbyController::GetGGS() const
@@ -109,30 +109,30 @@ void GameLobbyController::ChangeGlobalGameSettings(const GlobalGameSettings& ggs
 {
     // Already change this here or future changes will be ignored before the server acknowledges the change
     lobby->getSettings() = ggs;
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_GGSChange(ggs));
+    mainPlayer_.sendMsgAsync(new GameMessage_GGSChange(ggs));
 }
 
 void GameLobbyController::SwapPlayers(unsigned player1, unsigned player2)
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Player_Swap(player1, player2));
+    mainPlayer_.sendMsgAsync(new GameMessage_Player_Swap(player1, player2));
 }
 
 void GameLobbyController::StartCountdown(unsigned numSecs)
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Countdown(numSecs));
+    mainPlayer_.sendMsgAsync(new GameMessage_Countdown(numSecs));
 }
 
 void GameLobbyController::CancelCountdown()
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_CancelCountdown());
+    mainPlayer_.sendMsgAsync(new GameMessage_CancelCountdown());
 }
 
 void GameLobbyController::RemoveLuaScript()
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_RemoveLua());
+    mainPlayer_.sendMsgAsync(new GameMessage_RemoveLua());
 }
 
 void GameLobbyController::SetName(unsigned playerIdx, const std::string& name)
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Player_Name(playerIdx, name));
+    mainPlayer_.sendMsgAsync(new GameMessage_Player_Name(playerIdx, name));
 }

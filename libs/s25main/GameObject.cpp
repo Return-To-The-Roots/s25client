@@ -64,7 +64,7 @@ GameObject::~GameObject()
     --objCounter_;
 }
 
-EventManager& GameObject::GetEvMgr() const
+EventManager& GameObject::GetEvMgr()
 {
     return gwg->GetEvMgr();
 }

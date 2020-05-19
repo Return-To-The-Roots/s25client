@@ -29,7 +29,7 @@ class GameMessage : public Message
 {
 public:
     /// player ID who sent this message. Only meaningful for server
-    uint8_t senderPlayerID;
+    uint8_t senderPlayerID = 0xFF;
 
     GameMessage(uint16_t id) : Message(id) {}
 

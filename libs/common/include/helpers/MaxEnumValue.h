@@ -26,7 +26,7 @@ template<class T_Enum>
 struct MaxEnumValue;
 
 template<class T_Enum>
-constexpr unsigned MaxEnumValue_v = MaxEnumValue<T_Enum>::value;
+constexpr unsigned MaxEnumValue_v = MaxEnumValue<T_Enum>::value; // NOLINT
 
 namespace detail {
     template<class T>

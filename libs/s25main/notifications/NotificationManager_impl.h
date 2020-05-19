@@ -63,9 +63,9 @@ struct NotificationManager::NoteCallback : NoteCallbackBase
     const Callback execute;
 };
 
-NotificationManager::NotificationManager() : isPublishing(false) {}
+inline NotificationManager::NotificationManager() : isPublishing(false) {}
 
-NotificationManager::~NotificationManager()
+inline NotificationManager::~NotificationManager()
 {
     RTTR_Assert(!isPublishing);
     // Unsubscribe all callbacks so we don't get accesses to this class after destruction

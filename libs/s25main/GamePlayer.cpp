@@ -1609,9 +1609,8 @@ GamePlayer::PactState GamePlayer::GetPactState(const PactType pt, const unsigned
         if(!pacts[other_player][pt].accepted)
             return IN_PROGRESS;
 
-        if(pacts[other_player][pt].duration == 0xFFFFFFFF)
-            return ACCEPTED;
-        else if(gwg.GetEvMgr().GetCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
+        if(pacts[other_player][pt].duration == 0xFFFFFFFF
+           || gwg.GetEvMgr().GetCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
             return ACCEPTED;
     }
 

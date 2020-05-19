@@ -58,9 +58,9 @@ protected:
     /// Serialisierungsfunktion.
     void Serialize_GameObject(SerializedGameData& /*sgd*/) const {}
     // Following are some "sandbox methods". They avoid dependencies of subclasses to commonly used functions
-    EventManager& GetEvMgr() const;
+    static EventManager& GetEvMgr();
     /// Send the msg to given player
-    void SendPostMessage(unsigned player, PostMsg* msg);
+    static void SendPostMessage(unsigned player, PostMsg* msg);
 
 private:
     unsigned objId; /// unique ID

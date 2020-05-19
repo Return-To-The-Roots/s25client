@@ -180,11 +180,8 @@ void nofPlaner::HandleDerivedEvent(const unsigned id)
         Direction curDir = GetCurMoveDir();
 
         // Das erste Mal gelaufen?
-        if(pd == PD_CLOCKWISE && curDir == Direction::SOUTHWEST)
+        if((pd == PD_CLOCKWISE && curDir == Direction::SOUTHWEST) || (pd == PD_COUNTERCLOCKWISE && curDir == Direction::EAST))
             StartWalking(Direction::NORTHWEST);
-        else if(pd == PD_COUNTERCLOCKWISE && curDir == Direction::EAST)
-            StartWalking(Direction::NORTHWEST);
-
         // Fertig -> zur Baustelle zurücklaufen
         else if(pd == PD_CLOCKWISE && curDir == Direction::SOUTHEAST)
             StartWalking(Direction::WEST);

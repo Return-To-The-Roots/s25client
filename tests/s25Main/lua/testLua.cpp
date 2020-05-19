@@ -67,31 +67,31 @@ BOOST_AUTO_TEST_CASE(ScriptLoading)
     LogAccessor logAcc;
     std::string script = "assert(true)";
     LuaInterfaceGame& lua = world.GetLua();
-    BOOST_REQUIRE(lua.LoadScriptString(script));
-    BOOST_REQUIRE_EQUAL(lua.GetScript(), script);
+    BOOST_REQUIRE(lua.loadScriptString(script));
+    BOOST_REQUIRE_EQUAL(lua.getScript(), script);
     // Load from file
     TmpFile luaFile(".lua");
     script += "assert(42==42)";
     luaFile.getStream() << script;
     luaFile.close();
-    BOOST_REQUIRE(lua.LoadScript(luaFile.filePath));
-    BOOST_REQUIRE_EQUAL(lua.GetScript(), script);
+    BOOST_REQUIRE(lua.loadScript(luaFile.filePath));
+    BOOST_REQUIRE_EQUAL(lua.getScript(), script);
 
     // Test failing load
     // Invalid code
     script = "assertTypo(rue)";
-    BOOST_REQUIRE(!lua.LoadScriptString(script));
-    BOOST_REQUIRE_EQUAL(lua.GetScript(), "");
+    BOOST_REQUIRE(!lua.loadScriptString(script));
+    BOOST_REQUIRE_EQUAL(lua.getScript(), "");
     RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
     TmpFile luaFile2(".lua");
     luaFile2.getStream() << script;
     luaFile2.close();
-    BOOST_REQUIRE(!lua.LoadScript(luaFile2.filePath));
-    BOOST_REQUIRE_EQUAL(lua.GetScript(), "");
+    BOOST_REQUIRE(!lua.loadScript(luaFile2.filePath));
+    BOOST_REQUIRE_EQUAL(lua.getScript(), "");
     RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
 
     script = "msg1='foo'\nmsg2='bar'\nmsg3='\xF1'\nmsg4='ok'";
-    BOOST_REQUIRE(!lua.LoadScriptString(script));
+    BOOST_REQUIRE(!lua.loadScriptString(script));
     RTTR_REQUIRE_LOG_CONTAINS("invalid UTF8 char at line 3", false);
 }
 
@@ -702,7 +702,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     BOOST_REQUIRE_THROW(lua.Serialize(serData), LuaExecutionError);
     BOOST_REQUIRE_NE(getLog(), "");
 
-    lua.SetThrowOnError(false);
+    lua.setThrowOnError(false);
 
     executeLua("function onSave(serializer)\n  serializer:PushInt(42)\n  assert(false)\nend");
     serData.Clear();
@@ -718,7 +718,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     executeLua("function onLoad(serializer)\n  return false\nend");
     BOOST_REQUIRE(!lua.Deserialize(serData));
     // Re-enable
-    lua.SetThrowOnError(true);
+    lua.setThrowOnError(true);
 
     executeLua(
       "function onExplored(player_id, x, y, owner)\n  rttr:Log('explored: '..player_id..'('..x..', '..y..')'..tostring(owner))\nend");

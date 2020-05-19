@@ -313,7 +313,7 @@ bool VideoSDL2::MessageLoop()
                     case SDLK_DOWN: ke.kt = KT_DOWN; break;
                     case SDLK_BACKSPACE: ke.kt = KT_BACKSPACE; break;
                     case SDLK_DELETE: ke.kt = KT_DELETE; break;
-                    case SDLK_LSHIFT: ke.kt = KT_SHIFT; break;
+                    case SDLK_LSHIFT:
                     case SDLK_RSHIFT: ke.kt = KT_SHIFT; break;
                     case SDLK_TAB: ke.kt = KT_TAB; break;
                     case SDLK_HOME: ke.kt = KT_HOME; break;

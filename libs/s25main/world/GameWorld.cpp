@@ -47,7 +47,7 @@ bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, const std::string& ma
     if(bfs::exists(luaFilePath))
     {
         SetLua(std::make_unique<LuaInterfaceGame>(game));
-        if(!GetLua().LoadScript(luaFilePath) || !GetLua().CheckScriptVersion())
+        if(!GetLua().loadScript(luaFilePath) || !GetLua().CheckScriptVersion())
         {
             SetLua(nullptr);
             return false;
@@ -74,7 +74,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
         sgd.PushUnsignedInt(0);
     else
     {
-        sgd.PushLongString(GetLua().GetScript());
+        sgd.PushLongString(GetLua().getScript());
         Serializer luaSaveState;
         try
         {
@@ -112,7 +112,7 @@ void GameWorld::Deserialize(const std::shared_ptr<Game>& game, SerializedGameDat
 
         // Now init and load lua
         SetLua(std::make_unique<LuaInterfaceGame>(game));
-        if(!GetLua().LoadScriptString(luaScript))
+        if(!GetLua().loadScriptString(luaScript))
         {
             SetLua(nullptr);
             throw SerializedGameData::Error(_("Lua script failed to load."));

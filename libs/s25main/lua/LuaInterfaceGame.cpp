@@ -210,8 +210,8 @@ bool LuaInterfaceGame::Serialize(Serializer& luaSaveState)
     kaguya::LuaRef save = lua["onSave"];
     if(save.type() == LUA_TFUNCTION)
     {
-        ClearErrorOccured();
-        if(save.call<bool>(kaguya::standard::ref(luaSaveState)) && !HasErrorOccurred())
+        clearErrorOccured();
+        if(save.call<bool>(kaguya::standard::ref(luaSaveState)) && !hasErrorOccurred())
             return true;
         else
         {
@@ -227,8 +227,8 @@ bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
     kaguya::LuaRef load = lua["onLoad"];
     if(load.type() == LUA_TFUNCTION)
     {
-        ClearErrorOccured();
-        return load.call<bool>(kaguya::standard::ref(luaSaveState)) && !HasErrorOccurred();
+        clearErrorOccured();
+        return load.call<bool>(kaguya::standard::ref(luaSaveState)) && !hasErrorOccurred();
     } else
         return true;
 }

@@ -81,12 +81,12 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
       lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
     if(gameLobby->isHost())
-        lobbyHostController = std::make_unique<GameLobbyController>(gameLobby);
+        lobbyHostController = std::make_unique<GameLobbyController>(gameLobby, GAMECLIENT.GetMainPlayer());
 
     if(!GAMECLIENT.GetLuaFilePath().empty() && gameLobby->isHost())
     {
         lua = std::make_unique<LuaInterfaceSettings>(*lobbyHostController);
-        if(!lua->LoadScript(GAMECLIENT.GetLuaFilePath()))
+        if(!lua->loadScript(GAMECLIENT.GetLuaFilePath()))
         {
             WINDOWMANAGER.ShowAfterSwitch(
               std::make_unique<iwMsgbox>(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,

@@ -29,7 +29,6 @@
 #include "gameTypes/Nation.h"
 #include "gameData/AnimalConsts.h"
 #include "libsiedler2/Archiv.h"
-#include "s25util/Singleton.h"
 #include <array>
 #include <cstdint>
 #include <map>
@@ -47,6 +46,8 @@ class glFont;
 class SoundEffectItem;
 class glTexturePacker;
 class MusicItem;
+class Log;
+class RttrConfig;
 namespace libsiedler2 {
 class ArchivItem_Ini;
 class ArchivItem_Palette;
@@ -62,7 +63,7 @@ enum class FontSize
 DEFINE_MAX_ENUM_VALUE(FontSize, FontSize::Large)
 
 /// Loader Klasse.
-class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
+class Loader
 {
     /// Struct for storing loaded file entries
     struct FileEntry
@@ -81,9 +82,7 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
     };
 
 public:
-    static constexpr unsigned Longevity = 19;
-
-    Loader();
+    Loader(Log&, const RttrConfig&);
     ~Loader();
 
     /// Add a folder to the list of folders containing overrides. Files in folders added last will override prior ones
@@ -170,7 +169,7 @@ public:
 private:
     /// Get all files to load for a request of loading filepath
     std::vector<std::string> GetFilesToLoad(const std::string& filepath);
-    static bool MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archiv& otherArchiv);
+    bool MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archiv& otherArchiv);
 
     /// Lädt alle Sounds.
     bool LoadSounds();
@@ -188,6 +187,8 @@ private:
         RTTR_Assert(!item || res);
         return res;
     }
+    Log& logger_;
+    const RttrConfig& config_;
     std::vector<OverrideFolder> overrideFolders_;
     std::map<std::string, FileEntry> files_;
     std::vector<glFont> fonts;
@@ -199,7 +200,8 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-#define LOADER Loader::inst()
+Loader& getGlobalLoader();
+#define LOADER getGlobalLoader()
 
 // Helper macros for easy access to fonts
 #define SmallFont (LOADER.GetFont(FontSize::Small))

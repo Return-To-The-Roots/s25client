@@ -51,9 +51,9 @@ template<class T>
 constexpr size_t EnumData<T>::size;
 
 template<class T>
-constexpr std::size_t size = EnumData<T>::size;
+constexpr std::size_t size = EnumData<T>::size; // NOLINT
 template<class T>
-constexpr auto values = EnumData<T>::values;
+constexpr auto values = EnumData<T>::values; // NOLINT
 
 template<class T>
 std::string toString(T value)

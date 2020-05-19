@@ -20,7 +20,6 @@
 #pragma once
 
 #include "FrameCounter.h"
-#include "s25util/Singleton.h"
 #include <boost/optional.hpp>
 
 // Die verschiedenen Cursor mit ihren Indizes in resource.idx
@@ -33,13 +32,18 @@ enum CursorType
     CURSOR_RM = 34
 };
 
+class Log;
+class Settings;
+class VideoDriverWrapper;
+class AudioDriverWrapper;
+class WindowManager;
+
 /// "Die" GameManager-Klasse
-class GameManager : public Singleton<GameManager, SingletonPolicies::WithLongevity>
+class GameManager
 {
 public:
-    static constexpr unsigned Longevity = 15;
-
-    GameManager();
+    GameManager(Log& log, Settings& settings, VideoDriverWrapper& videoDriver, AudioDriverWrapper& audioDriver,
+                WindowManager& windowManager);
 
     bool Start();
     void Stop();
@@ -60,6 +64,11 @@ private:
     bool ShowSplashscreen();
     void DrawCursor();
 
+    Log& log_;
+    Settings& settings_;
+    VideoDriverWrapper& videoDriver_;
+    AudioDriverWrapper& audioDriver_;
+    WindowManager& windowManager_;
     FrameCounter gfCounter_;
 
     struct SkipReport
@@ -70,6 +79,9 @@ private:
     CursorType cursor_;
 };
 
-#define GAMEMANAGER GameManager::inst()
+GameManager& getGlobalGameManager();
+void setGlobalGameManager(GameManager& gameManager);
+
+#define GAMEMANAGER getGlobalGameManager()
 
 #endif // GAMEMANAGER_H_INCLUDED

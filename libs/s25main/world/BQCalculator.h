@@ -63,15 +63,11 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
 
     BuildingQuality curBQ;
-    if(flag_hits)
-        curBQ = BQ_FLAG;
-    else if(mine_hits == 6)
+    if(mine_hits == 6)
         curBQ = BQ_MINE;
-    else if(mine_hits)
-        curBQ = BQ_FLAG;
     else if(building_hits == 6)
         curBQ = BQ_CASTLE;
-    else if(building_hits)
+    else if(flag_hits || mine_hits || building_hits)
         curBQ = BQ_FLAG;
     else
         return BQ_NOTHING;

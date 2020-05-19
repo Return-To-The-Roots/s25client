@@ -37,7 +37,7 @@ public:
     void Draw_() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void SetActive(bool active) override;
-    bool Close();
+    static bool Close();
 
 private:
     void DrawCredit();

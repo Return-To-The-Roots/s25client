@@ -550,9 +550,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
                 bld = BLD_CATAPULT;
             else
             {
-                if(randmil % 2 == 0)
-                    bld = biggestBld;
-                else if(aii.CanBuildBuildingtype(BLD_WATCHTOWER))
+                if(randmil % 2 == 0 && aii.CanBuildBuildingtype(BLD_WATCHTOWER))
                     bld = BLD_WATCHTOWER;
                 else
                     bld = biggestBld;

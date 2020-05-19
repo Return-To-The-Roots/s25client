@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,6 +26,12 @@ class Timer
 {
 public:
     using duration = Clock::duration;
+
+    Timer(bool startNow = false)
+    {
+        if(startNow)
+            start();
+    }
     /// Start timer, throws when already running
     void start();
     /// Stop timer even when not running

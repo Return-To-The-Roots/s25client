@@ -23,7 +23,7 @@ class Coords : public GameCommand
     GC_FRIEND_DECL;
 
 private:
-    MapPoint PopMapPoint(Serializer& ser)
+    static MapPoint PopMapPoint(Serializer& ser)
     {
         MapPoint pt;
         pt.x = ser.PopUnsignedShort();

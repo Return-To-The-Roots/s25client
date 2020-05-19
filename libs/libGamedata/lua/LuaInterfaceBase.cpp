@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceBase.h"
 #include "helpers/strUtils.h"
 #include "mygettext/LocaleInfo.h"
@@ -27,7 +26,7 @@
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 
-LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), errorOccured_(false)
+LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), logger_(LOG), errorOccured_(false)
 {
     lua.openlib("base", luaopen_base);
     lua.openlib("package", luaopen_package);
@@ -36,9 +35,9 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), errorOccured_(f
     lua.openlib("math", luaopen_math);
 
     Register(lua);
-    lua.setErrorHandler([this](int status, const char* msg) { ErrorHandler(status, msg); });
+    lua.setErrorHandler([this](int status, const char* msg) { errorHandler(status, msg); });
     // Quasi-Standard translate function
-    lua["_"] = kaguya::function([this](const std::string& s) { return Translate(s); });
+    lua["_"] = kaguya::function([this](const std::string& s) { return translate(s); });
     // No-op translate (translated later)
     lua["__"] = gettext_noop;
 }
@@ -48,47 +47,47 @@ LuaInterfaceBase::~LuaInterfaceBase() = default;
 void LuaInterfaceBase::Register(kaguya::State& state)
 {
     state["RTTRBase"].setClass(kaguya::UserdataMetatable<LuaInterfaceBase>()
-                                 .addFunction("Log", &LuaInterfaceBase::Log)
-                                 .addFunction("RegisterTranslations", &LuaInterfaceBase::RegisterTranslations));
+                                 .addFunction("Log", &LuaInterfaceBase::log)
+                                 .addFunction("RegisterTranslations", &LuaInterfaceBase::registerTranslations));
 }
 
-void LuaInterfaceBase::ErrorHandlerNoThrow(int /*status*/, const char* message)
+void LuaInterfaceBase::errorHandlerNoThrow(int /*status*/, const char* message)
 {
-    LOG.write(_("Lua error: %s\n")) % (message ? message : _("Unknown error"));
+    logger_.write(_("Lua error: %s\n")) % (message ? message : _("Unknown error"));
     errorOccured_ = true;
 }
 
-void LuaInterfaceBase::ErrorHandler(int status, const char* message)
+void LuaInterfaceBase::errorHandler(int status, const char* message)
 {
-    ErrorHandlerNoThrow(status, message);
+    errorHandlerNoThrow(status, message);
     throw LuaExecutionError(message ? message : _("Unknown error"));
 }
 
-bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
+bool LuaInterfaceBase::loadScript(const std::string& scriptPath)
 {
-    bnw::ifstream scriptFile(scriptPath.c_str());
+    boost::nowide::ifstream scriptFile(scriptPath.c_str());
     std::string tmpScript;
     tmpScript.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
     if(!scriptFile)
     {
-        LOG.write(_("Failed to read lua file '%1%'\n")) % scriptPath;
+        logger_.write(_("Failed to read lua file '%1%'\n")) % scriptPath;
         return false;
     }
     // Remove UTF-8 BOM if present
     if(tmpScript.substr(0, 3) == "\xef\xbb\xbf")
         tmpScript.erase(0, 3);
-    if(!LoadScriptString(tmpScript))
+    if(!loadScriptString(tmpScript))
     {
-        LOG.write(_("Failed to load lua file '%1%'\n")) % scriptPath;
+        logger_.write(_("Failed to load lua file '%1%'\n")) % scriptPath;
         return false;
     }
     return true;
 }
 
-bool LuaInterfaceBase::LoadScriptString(const std::string& script, bool rethrowError)
+bool LuaInterfaceBase::loadScriptString(const std::string& script, bool rethrowError)
 {
     script_.clear();
-    if(!ValidateUTF8(script))
+    if(!validateUTF8(script))
         return false;
     try
     {
@@ -105,15 +104,15 @@ bool LuaInterfaceBase::LoadScriptString(const std::string& script, bool rethrowE
     return true;
 }
 
-void LuaInterfaceBase::SetThrowOnError(bool doThrow)
+void LuaInterfaceBase::setThrowOnError(bool doThrow)
 {
     if(doThrow)
-        lua.setErrorHandler([this](int status, const char* msg) { ErrorHandler(status, msg); });
+        lua.setErrorHandler([this](int status, const char* msg) { errorHandler(status, msg); });
     else
-        lua.setErrorHandler([this](int status, const char* msg) { ErrorHandlerNoThrow(status, msg); });
+        lua.setErrorHandler([this](int status, const char* msg) { errorHandlerNoThrow(status, msg); });
 }
 
-std::map<std::string, std::string> LuaInterfaceBase::GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)
+std::map<std::string, std::string> LuaInterfaceBase::getTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)
 {
     std::vector<std::string> folders = getPossibleFoldersForLangCode(code);
     for(const std::string& folder : folders)
@@ -125,18 +124,18 @@ std::map<std::string, std::string> LuaInterfaceBase::GetTranslation(const kaguya
     return std::map<std::string, std::string>();
 }
 
-void LuaInterfaceBase::RegisterTranslations(const kaguya::LuaRef& luaTranslations)
+void LuaInterfaceBase::registerTranslations(const kaguya::LuaRef& luaTranslations)
 {
     // Init with default
-    translations_ = GetTranslation(luaTranslations, "en_GB");
+    translations_ = getTranslation(luaTranslations, "en_GB");
     // Replace with entries of current locale
     const std::string locale = mysetlocale(LC_ALL, nullptr);
-    const std::map<std::string, std::string> translated = GetTranslation(luaTranslations, locale);
+    const std::map<std::string, std::string> translated = getTranslation(luaTranslations, locale);
     if(translated.empty())
     {
         boost::format fmt("Did not found translation for language '%1%' in LUA file. Available translations:  %2%\n");
         fmt % LocaleInfo(locale).getName() % helpers::join(luaTranslations.keys<std::string>(), ", ");
-        Log(fmt.str());
+        log(fmt.str());
     } else
     {
         for(const auto& it : translated)
@@ -144,7 +143,7 @@ void LuaInterfaceBase::RegisterTranslations(const kaguya::LuaRef& luaTranslation
     }
 }
 
-std::string LuaInterfaceBase::Translate(const std::string& key)
+std::string LuaInterfaceBase::translate(const std::string& key)
 {
     const auto entry = translations_.find(key);
     if(entry == translations_.end())
@@ -153,7 +152,7 @@ std::string LuaInterfaceBase::Translate(const std::string& key)
         return entry->second;
 }
 
-bool LuaInterfaceBase::ValidateUTF8(const std::string& scriptTxt)
+bool LuaInterfaceBase::validateUTF8(const std::string& scriptTxt)
 {
     const auto it = s25util::findInvalidUTF8(scriptTxt);
     if(it == scriptTxt.end())
@@ -173,11 +172,11 @@ bool LuaInterfaceBase::ValidateUTF8(const std::string& scriptTxt)
     const std::string faultyLine = boost::nowide::detail::convert_string<char>(&scriptTxt[lineBegin], &scriptTxt[lineEnd]);
     boost::format fmt("Found invalid UTF8 char at line %1%.\nContent: %2%\n");
     fmt % lineNum % faultyLine;
-    Log(fmt.str());
+    log(fmt.str());
     return false;
 }
 
-void LuaInterfaceBase::Log(const std::string& msg)
+void LuaInterfaceBase::log(const std::string& msg)
 {
-    LOG.write("%s\n") % msg;
+    logger_.write("%s\n") % msg;
 }

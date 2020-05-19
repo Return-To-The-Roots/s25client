@@ -23,6 +23,9 @@
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "SignalHandler.h"
+#include "WindowManager.h"
+#include "drivers/AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "mygettext/mygettext.h"
 #include "ogl/glAllocator.h"
@@ -329,7 +332,7 @@ bool InitDirectories()
     return true;
 }
 
-bool InitGame()
+bool InitGame(GameManager& gameManager)
 {
     libsiedler2::setAllocator(new GlAllocator());
 
@@ -342,7 +345,7 @@ bool InitGame()
     }
 
     // Spiel starten
-    if(!GAMEMANAGER.Start())
+    if(!gameManager.Start())
     {
         s25util::error("Failed to start the game");
         return false;
@@ -368,16 +371,18 @@ int RunProgram(po::variables_map& options)
     // Generator verwendet)
     srand(static_cast<unsigned>(std::time(nullptr)));
 
+    GameManager gameManager(LOG, SETTINGS, VIDEODRIVER, AUDIODRIVER, WINDOWMANAGER);
+    setGlobalGameManager(gameManager);
     try
     {
-        if(!InitGame())
+        if(!InitGame(gameManager))
             return 2;
 
         if(options.count("map") && !QuickStartGame(options["map"].as<std::string>()))
             return 1;
 
         // Hauptschleife
-        while(GAMEMANAGER.Run())
+        while(gameManager.Run())
         {
 #ifndef _WIN32
             killme = false;
@@ -385,7 +390,7 @@ int RunProgram(po::variables_map& options)
         }
 
         // Spiel beenden
-        GAMEMANAGER.Stop();
+        gameManager.Stop();
         libsiedler2::setAllocator(nullptr);
     } catch(RTTR_AssertError& error)
     {

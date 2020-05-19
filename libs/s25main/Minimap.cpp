@@ -55,7 +55,7 @@ void Minimap::BeforeDrawing() {}
 /**
  *  Variiert die übergebene Farbe zufällig in der Helligkeit
  */
-unsigned Minimap::VaryBrightness(const unsigned color, const int range) const
+unsigned Minimap::VaryBrightness(const unsigned color, const int range)
 {
     int add = 100 - rand() % (2 * range);
 
