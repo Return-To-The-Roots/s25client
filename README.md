@@ -39,10 +39,10 @@ Coverage:
 - cmake
 - git
 - libboost-dev (at least v1.64.0, i.e http://www.boost.org/)
-- libboost-locale-dev, libboost-iostreams-dev, libboost-filesystem-dev, libboost-program-options-dev (at least v1.64.0)
+  or only: libboost-test-dev libboost-locale-dev, libboost-iostreams-dev, libboost-filesystem-dev, libboost-program-options-dev (at least v1.64.0)
 - libsdl2-dev
 - libsdl2-mixer-dev
-- licurl-dev (in libcurl4-openssl-dev)
+- libcurl-dev (in libcurl4-openssl-dev)
 - libbz2-dev
 - lua5.2-dev
 - gettext
