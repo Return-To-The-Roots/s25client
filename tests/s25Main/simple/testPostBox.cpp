@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(AddMsg)
     BOOST_REQUIRE_EQUAL(box.GetMsg(0u), (PostMsg*)nullptr);
     for(unsigned i = 0; i < PostBox::GetMaxMsgs(); i++)
     {
-        PostMsg* msg = new PostMsg(0, "Test", PostCategory::General);
+        auto* msg = new PostMsg(0, "Test", PostCategory::General);
         box.AddMsg(msg);
         BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), i + 1);
         BOOST_REQUIRE_EQUAL(box.GetMsg(i), msg);
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(AddMsg)
     for(unsigned i = 0; i < PostBox::GetMaxMsgs(); i++)
         BOOST_REQUIRE_EQUAL(box.GetMsg(i), msgs[i]);
     // Overfill
-    PostMsg* msg = new PostMsg(0, "Test2", PostCategory::General);
+    auto* msg = new PostMsg(0, "Test2", PostCategory::General);
     box.AddMsg(msg);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), box.GetMaxMsgs());
     BOOST_REQUIRE_EQUAL(box.GetMsg(box.GetMaxMsgs() - 1), msg);
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(DeleteMsg)
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 1u);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(0u), true);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
-    PostMsg* msg = new PostMsg(0, "", PostCategory::General);
+    auto* msg = new PostMsg(0, "", PostCategory::General);
     box.AddMsg(msg);
     BOOST_REQUIRE_EQUAL(box.DeleteMsg(msg), true);
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);

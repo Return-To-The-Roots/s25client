@@ -458,14 +458,15 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
             unsigned short height = 0;
             switch(tab_id)
             {
-                case TAB_FLAG: height = 138; break;
-                case TAB_CUTROAD: height = 138; break;
+                case TAB_FLAG:
+                case TAB_CUTROAD:
+                case TAB_SETFLAG:
+                case TAB_WATCH: height = 138; break;
                 case TAB_BUILD:
                 {
                     height = building_tab_heights[GetCtrl<ctrlTab>(0)->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)->GetCurrentTab()];
                 }
                 break;
-                case TAB_SETFLAG: height = 138; break;
                 case TAB_ATTACK:
                 {
                     if(available_soldiers_count > 0)
@@ -482,7 +483,6 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
                         height = 130;
                 }
                 break;
-                case TAB_WATCH: height = 138; break;
             }
 
             SetHeight(height);

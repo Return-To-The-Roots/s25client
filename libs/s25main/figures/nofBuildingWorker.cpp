@@ -179,15 +179,7 @@ void nofBuildingWorker::WorkingReady()
 
 void nofBuildingWorker::TryToWork()
 {
-    // Wurde die Produktion eingestellt?
-    if(workplace->IsProductionDisabled())
-    {
-        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
-        // Nun arbeite ich nich mehr
-        workplace->StartNotWorking();
-    }
-    // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
-    else if(AreWaresAvailable())
+    if(!workplace->IsProductionDisabled() && AreWaresAvailable())
     {
         state = STATE_WAITING1;
         current_ev =

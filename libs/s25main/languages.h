@@ -37,7 +37,7 @@ class Languages : public Singleton<Languages>
 public:
     Languages();
 
-    void setLanguage(const std::string& lang_code);
+    static void setLanguage(const std::string& lang_code);
     std::string setLanguage(unsigned i);
 
     unsigned size();

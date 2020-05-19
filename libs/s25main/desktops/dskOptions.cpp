@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskOptions.h"
 #include "GlobalGameSettings.h"
 #include "GlobalVars.h"
@@ -46,10 +45,25 @@
 #include <mygettext/mygettext.h>
 #include <sstream>
 
-/** @class dskOptions
- *
- *  Klasse des Optionen Desktops.
- */
+static VideoMode getAspectRatio(const VideoMode& vm)
+{
+    // First some a bit off values where the aspect ratio is defined by convention
+    if(vm == VideoMode(1360, 1024))
+        return VideoMode(4, 3);
+    else if(vm == VideoMode(1360, 768) || vm == VideoMode(1366, 768))
+        return VideoMode(16, 9);
+
+    // Normally Aspect ration is simply width/height as integer numbers (e.g. 4:3)
+    int divisor = helpers::gcd(vm.width, vm.height);
+    VideoMode ratio(vm.width / divisor, vm.height / divisor);
+    // But there are some special cases:
+    if(ratio == VideoMode(8, 5))
+        return VideoMode(16, 10);
+    else if(ratio == VideoMode(5, 3))
+        return VideoMode(15, 9);
+    else
+        return ratio;
+}
 
 dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 {
@@ -602,28 +616,27 @@ void dskOptions::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /
     }
 }
 
-bool dskOptions::cmpVideoModes(const VideoMode& left, const VideoMode& right)
+static bool cmpVideoModes(const VideoMode& left, const VideoMode& right)
 {
     if(left == right)
         return false;
     VideoMode leftRatio = getAspectRatio(left);
     VideoMode rightRatio = getAspectRatio(right);
     // Cmp ratios descending (so 16:9 is above 4:3 as wider ones are more commonly used)
-    if(leftRatio.width > rightRatio.width)
-        return true;
-    else if(leftRatio.width < rightRatio.width)
-        return false;
-    else if(leftRatio.height > rightRatio.height)
-        return true;
-    else if(leftRatio.height < rightRatio.height)
-        return false;
-    // Same ratios -> cmp width/height
-    if(left.width < right.width)
-        return true;
-    else if(left.width > right.width)
-        return false;
-    else
-        return left.height < right.height;
+    if(leftRatio.width == rightRatio.width)
+    {
+        if(leftRatio.height == rightRatio.height)
+        {
+            // Same ratios -> cmp width/height
+            if(left.width == right.width)
+                return left.height < right.height;
+            else
+                return left.width < right.width;
+
+        } else
+            return leftRatio.height > rightRatio.height;
+    } else
+        return leftRatio.width > rightRatio.width;
 }
 
 void dskOptions::loadVideoModes()
@@ -634,26 +647,4 @@ void dskOptions::loadVideoModes()
     helpers::remove_if(video_modes, [](const auto& it) { return it.width < 800 && it.height < 600; });
     // Sort by aspect ratio
     std::sort(video_modes.begin(), video_modes.end(), cmpVideoModes);
-}
-
-VideoMode dskOptions::getAspectRatio(const VideoMode& vm)
-{
-    // First some a bit off values where the aspect ratio is defined by convention
-    if(vm == VideoMode(1360, 1024))
-        return VideoMode(4, 3);
-    else if(vm == VideoMode(1360, 768))
-        return VideoMode(16, 9);
-    else if(vm == VideoMode(1366, 768))
-        return VideoMode(16, 9);
-
-    // Normally Aspect ration is simply width/height as integer numbers (e.g. 4:3)
-    int divisor = helpers::gcd(vm.width, vm.height);
-    VideoMode ratio(vm.width / divisor, vm.height / divisor);
-    // But there are some special cases:
-    if(ratio == VideoMode(8, 5))
-        return VideoMode(16, 10);
-    else if(ratio == VideoMode(5, 3))
-        return VideoMode(15, 9);
-    else
-        return ratio;
 }

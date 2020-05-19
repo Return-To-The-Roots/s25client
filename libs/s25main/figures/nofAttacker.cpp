@@ -282,12 +282,8 @@ void nofAttacker::Walked()
         case STATE_SEAATTACKING_GOTOHARBOR: // geht von seinem Heimatmilitärgebäude zum Starthafen
         {
             // Gucken, ob der Abflughafen auch noch steht und sich in unserer Hand befindet
-            bool valid_harbor = true;
             noBase* hb = gwg->GetNO(harborPos);
-            if(hb->GetGOT() != GOT_NOB_HARBORBUILDING)
-                valid_harbor = false;
-            else if(static_cast<nobHarborBuilding*>(hb)->GetPlayer() != player)
-                valid_harbor = false;
+            const bool valid_harbor = hb->GetGOT() == GOT_NOB_HARBORBUILDING && static_cast<nobHarborBuilding*>(hb)->GetPlayer() == player;
 
             // Nicht mehr oder das angegriffene Gebäude kaputt? Dann müssen wir die ganze Aktion abbrechen
             if(!valid_harbor || !attacked_goal)

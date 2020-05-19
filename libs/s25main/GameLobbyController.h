@@ -25,11 +25,15 @@
 
 class GameLobby;
 class GlobalGameSettings;
+class NetworkPlayer;
 
-struct GameLobbyController : public IGameLobbyController
+class GameLobbyController : public IGameLobbyController
 {
+    NetworkPlayer& mainPlayer_;
+
+public:
     std::shared_ptr<GameLobby> lobby;
-    GameLobbyController(std::shared_ptr<GameLobby> lobby);
+    GameLobbyController(std::shared_ptr<GameLobby> lobby, NetworkPlayer& mainPlayer);
     ~GameLobbyController() override;
 
     unsigned GetMaxNumPlayers() const override;

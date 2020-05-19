@@ -28,7 +28,7 @@ class ctrlChat;
 class GameLobby;
 class LobbyPlayerInfo;
 class LuaInterfaceSettings;
-struct GameLobbyController;
+class GameLobbyController;
 class ILobbyClient;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster

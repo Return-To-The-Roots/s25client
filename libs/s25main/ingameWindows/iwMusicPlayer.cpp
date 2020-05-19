@@ -196,14 +196,6 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
             }
         }
         break;
-        // Save Playlist
-        case 5: {
-        }
-        break;
-        // Load Playlist
-        case 6: {
-        }
-        break;
         // Add Track
         case 7:
         {
@@ -319,19 +311,9 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
         // Add Playlist
         case 1:
         {
-            bool valid = true;
-
             // Ungültige Namen ausschließen
-            if(msg.length() == 0)
-                valid = false;
-            else if(!((msg[0] >= 'a' && msg[0] <= 'z') || (msg[0] >= 'A' && msg[0] <= 'Z')))
-                valid = false;
-
-            Playlist pl;
-            if(!pl.SaveAs(msg, true))
-                valid = false;
-
-            if(valid)
+            const auto isLetter = [](const char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); };
+            if(!msg.empty() && isLetter(msg.front()) && Playlist().SaveAs(msg, true))
             {
                 // Combobox updaten
                 UpdatePlaylistCombo(msg);

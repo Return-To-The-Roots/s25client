@@ -214,8 +214,6 @@ public:
     /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
     virtual void CancelFigure(noFigure* figure);
 
-    /// Sowas ist bei Warenhäusern nicht nötig
-    unsigned CalcDistributionPoints(noRoadNode* /*start*/, const GoodType /*type*/) { return 0; }
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
     void TakeWare(Ware* ware) override;
 

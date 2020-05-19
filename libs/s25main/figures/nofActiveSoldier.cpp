@@ -207,9 +207,7 @@ void nofActiveSoldier::ExpelEnemies()
             {
                 auto* fig = static_cast<noFigure*>(fieldFigure);
                 // The people have to be either on the point itself or they have to walk there
-                if(fig->GetPos() == pos)
-                    figures.push_back(fig);
-                else if(fig->GetDestinationForCurrentMove() == pos)
+                if(fig->GetPos() == pos || fig->GetDestinationForCurrentMove() == pos)
                     figures.push_back(fig);
             }
         }

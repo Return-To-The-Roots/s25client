@@ -1432,7 +1432,7 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 /// Starts a trade caravane from this warehouse
 void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, Job job, const unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal)
 {
-    nofTradeLeader* tl = new nofTradeLeader(pos, player, tr, this->GetPos(), goal->GetPos());
+    auto* tl = new nofTradeLeader(pos, player, tr, this->GetPos(), goal->GetPos());
     AddLeavingFigure(tl);
 
     // Create the donkeys or other people

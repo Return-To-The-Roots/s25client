@@ -588,18 +588,14 @@ void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChang
 
             // rule 1: only take territory from an ally if that ally loses a building - special case: headquarter can take territory
             const bool ownersAllied = oldOwner > 0 && newOwner > 0 && GetPlayer(oldOwner - 1).IsAlly(newOwner - 1);
-            if(ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build)
-               && triggerBld.GetBuildingType() != BLD_HEADQUARTERS)
-            {
-                region.SetOwner(pt, oldOwner);
-            }
-            // rule 2: do not gain territory when you lose a building (captured or destroyed)
-            else if(ownerOfTriggerBld == newOwner && reason != TerritoryChangeReason::Build)
-            {
-                region.SetOwner(pt, oldOwner);
-            } // rule 3: do not lose territory when you gain a building (newBuilt or capture)
-            else if((ownerOfTriggerBld == oldOwner && oldOwner > 0 && reason == TerritoryChangeReason::Build)
-                    || (newOwnerOfTriggerBld == oldOwner && reason == TerritoryChangeReason::Captured))
+            if((ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build)
+                && triggerBld.GetBuildingType() != BLD_HEADQUARTERS)
+               ||
+               // rule 2: do not gain territory when you lose a building (captured or destroyed)
+               (ownerOfTriggerBld == newOwner && reason != TerritoryChangeReason::Build) ||
+               // rule 3: do not lose territory when you gain a building (newBuilt or capture)
+               ((ownerOfTriggerBld == oldOwner && oldOwner > 0 && reason == TerritoryChangeReason::Build)
+                || (newOwnerOfTriggerBld == oldOwner && reason == TerritoryChangeReason::Captured)))
             {
                 region.SetOwner(pt, oldOwner);
             }

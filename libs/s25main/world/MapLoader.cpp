@@ -258,11 +258,8 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             case 0xC8:
             case 0xC9: // Note: 0xC9 is actually a bug and should be 0xC8. But the random map generator produced that...
             {
-                // Objekte aus der map_?_z.lst
-                if(lc <= 0x0A)
-                    obj = new noEnvObject(pt, 500 + lc);
                 // "wasserstein" aus der map_?_z.lst
-                else if(lc == 0x0B)
+                if(lc == 0x0B)
                     obj = new noStaticObject(pt, 500 + lc);
                 // Objekte aus der map_?_z.lst
                 else if(lc <= 0x0F)
@@ -291,18 +288,12 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 // Objekte aus der map.lst
                 else if(lc <= 0x2B)
                     obj = new noEnvObject(pt, 550 + lc - 0x22);
-                // tent and ruin of guardhouse
-                else if(lc <= 0x2D)
-                    obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
-                // tower ruin
-                else if(lc == 0x2E)
+                // tent, ruin of guardhouse, tower ruin, cross
+                else if(lc <= 0x2E || lc == 0x30)
                     obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
                 // castle ruin
                 else if(lc == 0x2F)
                     obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2, 2);
-                // cross
-                else if(lc == 0x30)
-                    obj = new noEnvObject(pt, (lc - 0x2C) * 2, 2);
                 // small wiking with boat
                 else if(lc == 0x31)
                     obj = new noStaticObject(pt, 0, 3);

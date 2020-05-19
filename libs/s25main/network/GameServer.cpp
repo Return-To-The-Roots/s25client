@@ -1345,9 +1345,7 @@ bool GameServer::ArePlayersReady() const
     for(const JoinPlayerInfo& player : playerInfos)
     {
         // noch nicht alle spieler da -> feierabend!
-        if(player.ps == PS_FREE)
-            return false;
-        else if(player.isHuman() && !player.isReady)
+        if(player.ps == PS_FREE || (player.isHuman() && !player.isReady))
             return false;
     }
 

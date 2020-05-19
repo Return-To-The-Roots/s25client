@@ -59,9 +59,9 @@ private:
     };
 
     void Bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmapRLE, BdrBitmap& bdrBitmap);
-    void BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmapRLE);
+    static void BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmapRLE);
 
-    void FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths, std::array<unsigned char, 3>& shouldCounts);
+    static void FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths, std::array<unsigned char, 3>& shouldCounts);
     template<size_t T_numEdges, size_t T_numFillers>
     void WriteEdgeDistribution(const ImgPos& pos, unsigned toFill,
                                bool direction, // false = waagerecht, true = senkrecht

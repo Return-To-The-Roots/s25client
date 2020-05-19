@@ -277,7 +277,7 @@ public:
     /// Setzt die initialen Bündnisse anhand der Teams
     void MakeStartPacts();
     /// returns fixed team number for randomteam players
-    Team GetFixedTeam(Team rawteam);
+    static Team GetFixedTeam(Team rawteam);
     /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
     void TestPacts();
 

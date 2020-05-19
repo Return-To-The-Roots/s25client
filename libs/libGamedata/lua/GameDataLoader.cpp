@@ -50,7 +50,7 @@ bool GameDataLoader::Load()
     errorInIncludeFile_ = false;
     try
     {
-        if(!LoadScript(curFile_))
+        if(!loadScript(curFile_))
             return false;
     } catch(std::exception& e)
     {
@@ -83,7 +83,7 @@ void GameDataLoader::Include(const std::string& filepath)
         throw std::runtime_error("Cannot load include file '" + filepath + "' outside the lua data directory!");
     std::string oldCurFile = curFile_;
     curFile_ = cleanedFilepath;
-    errorInIncludeFile_ |= !LoadScript(cleanedFilepath);
+    errorInIncludeFile_ |= !loadScript(cleanedFilepath);
     curFile_ = oldCurFile;
     RTTR_Assert(curIncludeDepth_ > 0);
     --curIncludeDepth_;
