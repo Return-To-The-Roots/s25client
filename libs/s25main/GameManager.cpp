@@ -208,7 +208,7 @@ GameManager& getGlobalGameManager()
 {
     return *globalGameManager;
 }
-void setGlobalGameManager(GameManager& gameManager)
+void setGlobalGameManager(GameManager* gameManager)
 {
-    globalGameManager = &gameManager;
+    globalGameManager = gameManager;
 }

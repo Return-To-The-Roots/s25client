@@ -62,6 +62,23 @@ namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;
 namespace po = boost::program_options;
 
+/// Calls a setGlobalInstance function for the (previously) singleton type T
+/// on construction and destruction
+template<class T>
+class SetGlobalInstanceWrapper : public T
+{
+    using Setter = void (*)(T*);
+    Setter setter_;
+
+public:
+    template<typename... Args>
+    SetGlobalInstanceWrapper(Setter setter, Args&&... args) : T(std::forward<Args>(args)...), setter_(setter)
+    {
+        setter_(static_cast<T*>(this));
+    }
+    ~SetGlobalInstanceWrapper() noexcept { setter_(nullptr); }
+};
+
 // Throw this to terminate gracefully
 struct RttrExitException : std::exception
 {
@@ -371,8 +388,7 @@ int RunProgram(po::variables_map& options)
     // Generator verwendet)
     srand(static_cast<unsigned>(std::time(nullptr)));
 
-    GameManager gameManager(LOG, SETTINGS, VIDEODRIVER, AUDIODRIVER, WINDOWMANAGER);
-    setGlobalGameManager(gameManager);
+    SetGlobalInstanceWrapper<GameManager> gameManager(setGlobalGameManager, LOG, SETTINGS, VIDEODRIVER, AUDIODRIVER, WINDOWMANAGER);
     try
     {
         if(!InitGame(gameManager))
