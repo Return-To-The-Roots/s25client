@@ -20,7 +20,7 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "notifications/Subscribtion.h"
+#include "notifications/Subscription.h"
 #include "gameTypes/GoodTypes.h"
 #include <array>
 
@@ -43,7 +43,7 @@ private:
     bool settings_changed, ordersChanged;
     bool shouldUpdateTexts;
     bool isReplay;
-    Subscribtion toolSubscription;
+    Subscription toolSubscription;
 
     void AddToolSettingSlider(unsigned id, GoodType ware);
     /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel

@@ -37,12 +37,12 @@ BOOST_AUTO_TEST_CASE(SubscribeAndNotify)
 {
     NotificationManager mgr;
     std::vector<TestNote> notes1;
-    Subscribtion subscribtion1 = mgr.subscribe<TestNote>([&notes1](const auto& note) { notes1.push_back(note); });
+    Subscription subscription1 = mgr.subscribe<TestNote>([&notes1](const auto& note) { notes1.push_back(note); });
 
     mgr.publish(TestNote("Hello"));
 
     std::vector<TestNote> notes2;
-    Subscribtion subscribtion2 = mgr.subscribe<TestNote>([&notes2](const auto& note) { notes2.push_back(note); });
+    Subscription subscription2 = mgr.subscribe<TestNote>([&notes2](const auto& note) { notes2.push_back(note); });
 
     mgr.publish(TestNote("World"));
 
@@ -58,20 +58,20 @@ BOOST_AUTO_TEST_CASE(Unsubscribe)
 {
     NotificationManager mgr;
     std::vector<TestNote> notes1, notes2;
-    Subscribtion subscribtion1 = mgr.subscribe<TestNote>([&notes1](const auto& note) { notes1.push_back(note); });
+    Subscription subscription1 = mgr.subscribe<TestNote>([&notes1](const auto& note) { notes1.push_back(note); });
 
     {
-        Subscribtion subscribtion2 = mgr.subscribe<TestNote>([&notes2](const auto& note) { notes2.push_back(note); });
+        Subscription subscription2 = mgr.subscribe<TestNote>([&notes2](const auto& note) { notes2.push_back(note); });
         mgr.publish(TestNote("Test"));
         BOOST_REQUIRE_EQUAL(notes1.size(), 1u);
         BOOST_REQUIRE_EQUAL(notes2.size(), 1u);
-        // subscribtion2 goes out of scope and should be unregistred...
+        // subscription2 goes out of scope and should be unregistred...
     }
     // ... but subscription1 should still be active
     mgr.publish(TestNote("Test"));
     BOOST_CHECK_EQUAL(notes1.size(), 2u);
     BOOST_CHECK_EQUAL(notes2.size(), 1u);
-    mgr.unsubscribe(subscribtion1);
+    mgr.unsubscribe(subscription1);
     // Nothing active anymore
     mgr.publish(TestNote("Test"));
     BOOST_CHECK_EQUAL(notes1.size(), 2u);
@@ -80,16 +80,16 @@ BOOST_AUTO_TEST_CASE(Unsubscribe)
 
 BOOST_AUTO_TEST_CASE(DestroyManager)
 {
-    Subscribtion subscribtion;
+    Subscription subscription;
     std::vector<TestNote> notes;
     {
         NotificationManager mgr;
-        subscribtion = mgr.subscribe<TestNote>([&notes](const auto& note) { notes.push_back(note); });
+        subscription = mgr.subscribe<TestNote>([&notes](const auto& note) { notes.push_back(note); });
         mgr.publish(TestNote("Test"));
         BOOST_REQUIRE_EQUAL(notes.size(), 1u);
         // Manager goes out of scope
     }
-    // But we shall not crash when subscribtion goes out of scope
+    // But we shall not crash when subscription goes out of scope
 }
 
 BOOST_AUTO_TEST_SUITE_END()

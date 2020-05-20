@@ -18,7 +18,7 @@
 #ifndef NotificationManager_h__
 #define NotificationManager_h__
 
-#include "notifications/Subscribtion.h"
+#include "notifications/Subscription.h"
 #include <functional>
 #include <unordered_map>
 #include <vector>
@@ -41,9 +41,9 @@ public:
     /// Subscribe to a specific notification.
     /// Unsubscribes when the subscription has no references left
     template<class T_Note>
-    Subscribtion subscribe(std::function<void(T_Note)> callback);
+    Subscription subscribe(std::function<void(T_Note)> callback);
     /// Manually unsubscribes the callback
-    static void unsubscribe(Subscribtion& subscription);
+    static void unsubscribe(Subscription& subscription);
     /// Call the registred callbacks for the note
     template<class T_Note>
     void publish(const T_Note& notification);
