@@ -27,7 +27,7 @@
 #include "ingameWindows/iwAction.h"
 #include "ingameWindows/iwChat.h"
 #include "network/ClientInterface.h"
-#include "notifications/Subscribtion.h"
+#include "notifications/Subscription.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/MapCoordinates.h"
@@ -167,7 +167,7 @@ private:
     size_t zoomLvl;
     bool isCheatModeOn;
     std::string curCheatTxt;
-    Subscribtion evBld;
+    Subscription evBld;
 };
 
 #endif // !dskGAMEINTERFACE_H_INCLUDED

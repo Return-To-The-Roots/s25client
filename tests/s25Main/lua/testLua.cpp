@@ -346,7 +346,7 @@ namespace {
 struct CatchConstructionNote
 {
     std::unique_ptr<BuildingNote> note_;
-    Subscribtion sub;
+    Subscription sub;
 
     CatchConstructionNote(GameWorldGame& world) : sub(world.GetNotifications().subscribe<BuildingNote>(std::ref(*this))) {}
 

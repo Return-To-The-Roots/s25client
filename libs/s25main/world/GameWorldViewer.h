@@ -19,7 +19,7 @@
 #define GameWorldViewer_h__
 
 #include "TerrainRenderer.h"
-#include "notifications/Subscribtion.h"
+#include "notifications/Subscription.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
@@ -109,7 +109,7 @@ private:
     unsigned playerId_;
     GameWorldBase& gwb;
     TerrainRenderer tr;
-    Subscribtion evVisibilityChanged, evAltitudeChanged, evRoadConstruction, evBQChanged;
+    Subscription evVisibilityChanged, evAltitudeChanged, evRoadConstruction, evBQChanged;
     std::vector<VisualMapNode> visualNodes;
 
     void InitVisualData();

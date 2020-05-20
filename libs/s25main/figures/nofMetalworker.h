@@ -19,7 +19,7 @@
 #define NOF_METALWORKER_H_
 
 #include "nofWorkman.h"
-#include "notifications/Subscribtion.h"
+#include "notifications/Subscription.h"
 
 class SerializedGameData;
 class nobUsual;
@@ -28,7 +28,7 @@ class nobUsual;
 class nofMetalworker : public nofWorkman
 {
     GoodType nextProducedTool;
-    Subscribtion toolOrderSub;
+    Subscription toolOrderSub;
 
 protected:
     /// Zeichnet ihn beim Arbeiten

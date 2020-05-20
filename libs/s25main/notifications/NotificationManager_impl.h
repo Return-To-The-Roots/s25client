@@ -31,11 +31,11 @@ class NotificationManager::CallbackUnregistrar
 
 public:
     explicit CallbackUnregistrar(NotificationManager& noteMgr) : noteMgr(noteMgr) {}
-    void operator()(void* subscribtion)
+    void operator()(void* subscription)
     {
-        if(!subscribtion)
+        if(!subscription)
             return; // Nothing to do
-        auto* callback = static_cast<NoteCallback<T_Note>*>(subscribtion);
+        auto* callback = static_cast<NoteCallback<T_Note>*>(subscription);
         // Check if we are still subscribed
         if(callback->IsSubscribed())
             noteMgr.unsubscribe<T_Note>(callback);
@@ -74,20 +74,20 @@ inline NotificationManager::~NotificationManager()
             static_cast<NoteCallbackBase*>(itCallback)->SetUnsubscribed();
 }
 
-inline void NotificationManager::unsubscribe(Subscribtion& subscription)
+inline void NotificationManager::unsubscribe(Subscription& subscription)
 {
     // We can simply call reset as this calls the deleter which releases the subscription
     subscription.reset();
 }
 
 template<class T_Note>
-Subscribtion NotificationManager::subscribe(std::function<void(T_Note)> callback)
+Subscription NotificationManager::subscribe(std::function<void(T_Note)> callback)
 {
     if(isPublishing)
         throw std::runtime_error("Cannot subscribe during publishing of messages");
     auto* subscriber = new NoteCallback<T_Note>(callback);
     noteId2Subscriber[T_Note::getNoteId()].push_back(subscriber);
-    return Subscribtion(subscriber, CallbackUnregistrar<T_Note>(*this));
+    return Subscription(subscriber, CallbackUnregistrar<T_Note>(*this));
 }
 
 template<class T_Note>

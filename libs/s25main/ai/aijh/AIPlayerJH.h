@@ -258,7 +258,7 @@ private:
     BuildingPlanner* bldPlanner;
     AIConstruction* construction;
 
-    Subscribtion subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
+    Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
 
     void UpdateNodeBQ(const MapPoint& pt);
 };
