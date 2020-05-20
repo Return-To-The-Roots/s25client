@@ -65,7 +65,7 @@ private:
 };
 
 GameManager& getGlobalGameManager();
-void setGlobalGameManager(GameManager& gameManager);
+void setGlobalGameManager(GameManager* gameManager);
 
 #define GAMEMANAGER getGlobalGameManager()
 
