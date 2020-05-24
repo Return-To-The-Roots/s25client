@@ -38,31 +38,31 @@ std::unique_ptr<libsiedler2::ArchivItem> GlAllocator::create(libsiedler2::BobTyp
 {
     switch(type)
     {
-        case libsiedler2::BOBTYPE_SOUND: // WAVs, MIDIs
+        case libsiedler2::BobType::Sound: // WAVs, MIDIs
             switch(subtype)
             {
-                case libsiedler2::SOUNDTYPE_NONE: break;
-                case libsiedler2::SOUNDTYPE_MIDI: // MIDI
+                case libsiedler2::SoundType::None: break;
+                case libsiedler2::SoundType::Midi: // MIDI
                     return std::make_unique<glArchivItem_Sound_Midi>();
-                case libsiedler2::SOUNDTYPE_WAVE: // WAV
+                case libsiedler2::SoundType::Wave: // WAV
                     return std::make_unique<glArchivItem_Sound_Wave>();
-                case libsiedler2::SOUNDTYPE_XMIDI: // XMIDI
+                case libsiedler2::SoundType::XMidi: // XMIDI
                     return std::make_unique<glArchivItem_Sound_XMidi>();
                 default: // Andere
                     return std::make_unique<glArchivItem_Sound_Other>(subtype);
             }
             break;
-        case libsiedler2::BOBTYPE_BOB: // Bob-File
+        case libsiedler2::BobType::Bob: // Bob-File
             return std::make_unique<glArchivItem_Bob>();
-        case libsiedler2::BOBTYPE_BITMAP_RLE: // RLE komprimiertes Bitmap
+        case libsiedler2::BobType::BitmapRLE: // RLE komprimiertes Bitmap
             return std::make_unique<glArchivItem_Bitmap_RLE>();
-        case libsiedler2::BOBTYPE_BITMAP_PLAYER: // Bitmap mit spezifischer Spielerfarbe
+        case libsiedler2::BobType::BitmapPlayer: // Bitmap mit spezifischer Spielerfarbe
             return std::make_unique<glArchivItem_Bitmap_Player>();
-        case libsiedler2::BOBTYPE_BITMAP_SHADOW: // Schatten
+        case libsiedler2::BobType::BitmapShadow: // Schatten
             return std::make_unique<glArchivItem_Bitmap_Shadow>();
-        case libsiedler2::BOBTYPE_MAP: // Map
+        case libsiedler2::BobType::Map: // Map
             return std::make_unique<glArchivItem_Map>();
-        case libsiedler2::BOBTYPE_BITMAP_RAW: // unkomprimiertes Bitmap
+        case libsiedler2::BobType::Bitmap: // unkomprimiertes Bitmap
             return std::make_unique<glArchivItem_Bitmap_Raw>();
         default: break;
     }

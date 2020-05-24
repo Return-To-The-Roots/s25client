@@ -158,7 +158,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
         if(t.kind == TerrainKind::WATER)
         {
             map.z[index] = GetMaxTerrainHeight(textures[level]);
-            map.animal[index] = helper.objGen.CreateDuck(3);
+            map.animal[index] = static_cast<uint8_t>(helper.objGen.CreateDuck(3));
         } else if(t.humidity > 0 && t.IsUsableByAnimals())
         {
             std::vector<int> positions = VertexUtility::GetNeighbors(pt, map.size, 1);
@@ -171,7 +171,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
                     break;
                 }
             }
-            map.animal[index] = treeFound ? helper.objGen.CreateRandomForestAnimal(4) : helper.objGen.CreateSheep(4);
+            map.animal[index] = static_cast<uint8_t>(treeFound ? helper.objGen.CreateRandomForestAnimal(4) : helper.objGen.CreateSheep(4));
         }
     }
 

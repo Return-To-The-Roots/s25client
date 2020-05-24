@@ -52,7 +52,7 @@ void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= CO
         dstSize.y = srcSize.y;
     dstArea.setSize(dstSize);
 
-    RTTR_Assert(getBobType() != libsiedler2::BOBTYPE_BITMAP_PLAYER);
+    RTTR_Assert(getBobType() != libsiedler2::BobType::BitmapPlayer);
 
     std::array<Point<GLfloat>, 4> texCoords, vertices;
 

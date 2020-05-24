@@ -57,49 +57,49 @@ bool ObjectGenerator::IsEmpty(const Map& map, int index)
     return (map.objectType[index] == libsiedler2::OT_Empty && map.objectInfo[index] == libsiedler2::OI_Empty);
 }
 
-uint8_t ObjectGenerator::CreateDuck(int likelihood)
+libsiedler2::Animal ObjectGenerator::CreateDuck(int likelihood)
 {
-    return config.Rand(100) < likelihood ? libsiedler2::A_Duck : libsiedler2::A_None;
+    return config.Rand(100) < likelihood ? libsiedler2::Animal::Duck : libsiedler2::Animal::None;
 }
 
-uint8_t ObjectGenerator::CreateSheep(int likelihood)
+libsiedler2::Animal ObjectGenerator::CreateSheep(int likelihood)
 {
-    return config.Rand(100) < likelihood ? libsiedler2::A_Sheep : libsiedler2::A_None;
+    return config.Rand(100) < likelihood ? libsiedler2::Animal::Sheep : libsiedler2::Animal::None;
 }
 
-uint8_t ObjectGenerator::CreateRandomForestAnimal(int likelihood)
+libsiedler2::Animal ObjectGenerator::CreateRandomForestAnimal(int likelihood)
 {
     if(config.Rand(100) >= likelihood)
     {
-        return libsiedler2::A_None;
+        return libsiedler2::Animal::None;
     }
 
     switch(config.Rand(5))
     {
-        case 0: return libsiedler2::A_Rabbit;
-        case 1: return libsiedler2::A_Fox;
-        case 2: return libsiedler2::A_Stag;
-        case 3: return libsiedler2::A_Deer;
-        default: return libsiedler2::A_Deer2;
+        case 0: return libsiedler2::Animal::Rabbit;
+        case 1: return libsiedler2::Animal::Fox;
+        case 2: return libsiedler2::Animal::Stag;
+        case 3: return libsiedler2::Animal::Deer;
+        default: return libsiedler2::Animal::Deer2;
     }
 }
 
-uint8_t ObjectGenerator::CreateRandomAnimal(int likelihood)
+libsiedler2::Animal ObjectGenerator::CreateRandomAnimal(int likelihood)
 {
     if(config.Rand(100) >= likelihood)
     {
-        return libsiedler2::A_None;
+        return libsiedler2::Animal::None;
     }
 
     switch(config.Rand(7))
     {
-        case 0: return libsiedler2::A_Rabbit;
-        case 1: return libsiedler2::A_Fox;
-        case 2: return libsiedler2::A_Stag;
-        case 3: return libsiedler2::A_Deer;
-        case 4: return libsiedler2::A_Sheep;
-        case 5: return libsiedler2::A_Donkey;
-        default: return libsiedler2::A_Deer2;
+        case 0: return libsiedler2::Animal::Rabbit;
+        case 1: return libsiedler2::Animal::Fox;
+        case 2: return libsiedler2::Animal::Stag;
+        case 3: return libsiedler2::Animal::Deer;
+        case 4: return libsiedler2::Animal::Sheep;
+        case 5: return libsiedler2::Animal::Donkey;
+        default: return libsiedler2::Animal::Deer2;
     }
 }
 

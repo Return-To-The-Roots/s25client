@@ -766,7 +766,7 @@ void Loader::fillCaches()
 
             std::vector<unsigned char> buffer(width * height, 254);
 
-            image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, 0, 0, width, height);
+            image->print(&buffer.front(), width, height, libsiedler2::TextureFormat::Paletted, palette, 0, 0, 0, 0, width, height);
 
             for(unsigned char i = 0; i < color_count; ++i)
             {
@@ -787,7 +787,7 @@ void Loader::fillCaches()
                 }
 
                 auto bitmap = std::make_unique<glArchivItem_Bitmap_Raw>();
-                bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
+                bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::TextureFormat::Paletted, palette);
                 bitmap->setNx(image->getNx());
                 bitmap->setNy(image->getNy());
 

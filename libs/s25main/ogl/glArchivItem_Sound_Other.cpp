@@ -22,9 +22,9 @@
 SoundHandle glArchivItem_Sound_Other::Load()
 {
     std::string extension = ".tmp";
-    if(getType() == libsiedler2::SOUNDTYPE_OGG)
+    if(getType() == libsiedler2::SoundType::OGG)
         extension = ".ogg";
-    else if(getType() == libsiedler2::SOUNDTYPE_MP3)
+    else if(getType() == libsiedler2::SoundType::MP3)
         extension = ".mp3";
 
     return AUDIODRIVER.LoadMusic(*this, extension);

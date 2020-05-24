@@ -40,8 +40,8 @@ using utf8 = utf::utf_traits<char>;
 
 glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getDx(), font.getDy()), asciiMapping{}
 {
-    fontWithOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RAW);
-    fontNoOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BOBTYPE_BITMAP_RAW);
+    fontWithOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BobType::Bitmap);
+    fontNoOutline = libsiedler2::getAllocator().create<glArchivItem_Bitmap>(libsiedler2::BobType::Bitmap);
 
     // first, we have to find how much chars we really have
     unsigned numChars = 0;

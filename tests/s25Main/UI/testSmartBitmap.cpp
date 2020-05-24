@@ -46,7 +46,7 @@ std::unique_ptr<ArchivItem_Bitmap_Raw> createRandBmp(unsigned percentTransparent
     const auto* pal = LOADER.GetPaletteN("pal5");
     auto bmp = std::make_unique<ArchivItem_Bitmap_Raw>();
     const Extent size = rttr::test::randomPoint<Extent>(10, 50);
-    bmp->init(size.x, size.y, TextureFormat::FORMAT_BGRA);
+    bmp->init(size.x, size.y, TextureFormat::BGRA);
     const auto offset = rttr::test::randomPoint<Position>(-100, 100);
     bmp->setNx(offset.x);
     bmp->setNy(offset.y);

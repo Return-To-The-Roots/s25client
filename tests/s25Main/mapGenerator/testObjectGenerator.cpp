@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "libsiedler2/enumTypes.h"
@@ -33,6 +32,13 @@ public:
 };
 } // namespace
 
+namespace libsiedler2 {
+static std::ostream& boost_test_print_type(std::ostream& os, Animal animal)
+{
+    return os << static_cast<unsigned>(animal);
+}
+} // namespace libsiedler2
+
 BOOST_AUTO_TEST_SUITE(ObjectGeneratorTest)
 
 /**
@@ -41,7 +47,7 @@ BOOST_AUTO_TEST_SUITE(ObjectGeneratorTest)
  */
 BOOST_FIXTURE_TEST_CASE(CreateDuck_FullLikelyhood, ObjGenFixture)
 {
-    BOOST_REQUIRE_EQUAL(objGen.CreateDuck(100), libsiedler2::A_Duck);
+    BOOST_REQUIRE_EQUAL(objGen.CreateDuck(100), libsiedler2::Animal::Duck);
 }
 
 /**
@@ -50,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(CreateDuck_FullLikelyhood, ObjGenFixture)
  */
 BOOST_FIXTURE_TEST_CASE(CreateDuck_ZeroLikelyhood, ObjGenFixture)
 {
-    BOOST_REQUIRE_EQUAL(objGen.CreateDuck(0), libsiedler2::A_None);
+    BOOST_REQUIRE_EQUAL(objGen.CreateDuck(0), libsiedler2::Animal::None);
 }
 
 /**
