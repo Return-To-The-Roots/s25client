@@ -25,6 +25,7 @@
 #include "Settings.h"
 
 #include "CollisionDetection.h"
+#include "controls/ctrlButton.h"
 #include "controls/ctrlTimer.h"
 #include "desktops/dskCredits.h"
 #include "desktops/dskIntro.h"
@@ -59,7 +60,7 @@ dskMainMenu::dskMainMenu()
     // "Optionen"
     AddTextButton(ID_btOptions, DrawPoint(115, 250), Extent(220, 22), TC_GREEN2, _("Options"), NormalFont);
     // "Intro"
-    AddTextButton(ID_btIntro, DrawPoint(115, 280), Extent(220, 22), TC_GREEN2, _("Intro"), NormalFont);
+    AddTextButton(ID_btIntro, DrawPoint(115, 280), Extent(220, 22), TC_GREEN2, _("Intro"), NormalFont)->SetEnabled(false);
     // "ReadMe"
     AddTextButton(ID_btReadme, DrawPoint(115, 310), Extent(220, 22), TC_GREEN2, _("Readme"), NormalFont);
     // "Credits"
