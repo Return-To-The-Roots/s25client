@@ -32,6 +32,8 @@ public:
     dskCredits();
     ~dskCredits() override;
 
+    bool Msg_LeftUp(const MouseCoords& mc) override;
+    bool Msg_RightUp(const MouseCoords& mc) override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
     void Draw_() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
@@ -40,6 +42,9 @@ public:
     static bool Close();
 
 private:
+    void GotoNextPage();
+    void GotoPrevPage();
+
     void DrawCredit();
     void DrawBobs();
     static glArchivItem_Bitmap* GetCreditsImgOrDefault(const std::string& name);

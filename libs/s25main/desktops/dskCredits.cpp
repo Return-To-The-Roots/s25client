@@ -54,7 +54,219 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     // "Credits"
     AddText(2, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
-    itCurEntry = entries.end();
+    // order by last name (alphabetical)
+    CreditsEntry entry = CreditsEntry("Alexander Grund (Flamefire):", GetCreditsImgOrDefault("flamefire"));
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entries.push_back(entry);
+
+    entry = CreditsEntry("Patrick Haak (Demophobie):", GetCreditsImgOrDefault("demophobie"));
+    entry.lines.push_back(_("Website Administration"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entries.push_back(entry);
+
+    entry = CreditsEntry("Jan-Henrik Kluth (jh):", GetCreditsImgOrDefault("jh"));
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Artificial Intelligence (AI)"));
+    entries.push_back(entry);
+
+    entry = CreditsEntry("Christopher Kuehnel (Spikeone):", GetCreditsImgOrDefault("spikeone"));
+    entry.lines.push_back(_("Additional graphics"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entry.lines.push_back(_("Mapping"));
+    entries.push_back(entry);
+
+    entry = CreditsEntry("Stefan Schüchl (Z-Stef):", GetCreditsImgOrDefault("z-stef"));
+    entry.lines.push_back(_("Website Administration"));
+    entry.lines.push_back(_("Website Programming"));
+    entries.push_back(entry);
+
+    entry = CreditsEntry("Marcus Ströbel (Maqs):", GetCreditsImgOrDefault("maqs"));
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entries.push_back(entry);
+
+    entry = CreditsEntry("Jonas Trampe (NastX):", GetCreditsImgOrDefault("nastx"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entry.lines.push_back(_("Mapping"));
+    entries.push_back(entry);
+
+    // founder members
+    entry = CreditsEntry("Oliver Siebert (Oliverr):", GetCreditsImgOrDefault("oliverr"));
+    entry.lines.push_back(_("Project founder"));
+    entry.lines.push_back(_("Project management"));
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entries.push_back(entry);
+
+    entry = CreditsEntry("Florian Doersch (FloSoft):", GetCreditsImgOrDefault("flosoft"));
+    entry.lines.push_back(_("Project founder"));
+    entry.lines.push_back(_("Project management"));
+    entry.lines.push_back(_("Server management"));
+    entry.lines.push_back(_("Programming"));
+    entry.lines.push_back(_("Website Administration"));
+    entry.lines.push_back(_("Website Programming"));
+    entry.lines.push_back(_("Quality Assurance"));
+    entry.lines.push_back(_("Finances"));
+    entries.push_back(entry);
+
+    // alphabetical again
+    entry = CreditsEntry(_("Additional Programming:"));
+    entry.lines.push_back("Ikhar Beq (PoC)");
+    entry.lines.push_back("Cat666");
+    entry.lines.push_back("Devil");
+    entry.lines.push_back("Divan");
+    entry.lines.push_back("Christoph Erhardt (Airhardt)");
+    entry.lines.push_back("Siegfried Oleg Pammer (siegi44)");
+    entry.lines.push_back("Lienhart Woitok (liwo)");
+    entry.lines.push_back("");
+    entry.lines.push_back(_("all developers who contributed via Github"));
+    entries.push_back(entry);
+
+    // alphabetical again
+    entry = CreditsEntry(_("Additional Graphics:"));
+    entry.lines.push_back("Marcus Bullin (Parasit)");
+    entries.push_back(entry);
+
+    // alphabetical again
+    entry = CreditsEntry(_("Additional Support:"));
+    entry.lines.push_back("Fenan");
+    entry.lines.push_back("Phil Groenewold (Phil333)");
+    entry.lines.push_back("muhahahaha");
+    entry.lines.push_back("Sotham");
+    entry.lines.push_back("Marc Vester (xaser)");
+    entries.push_back(entry);
+
+    const std::vector<std::string> donators = {
+      _("various anonymous donators"),
+      // A                              // 
+      "Bob Kromonos Achten",            // 
+      "Alles Adam",                     // 
+      "Niklas Anders",                  // 
+      "Christian Arpe",                 // 
+      // B                              // 
+      "Karsten Backhaus (K-Duke)",      // 
+      "Günter Baumann",                 // 
+      "Felix Becker",                   // 
+      "Markus Becker",                  // 
+      "Sebastian Bernhard",             // 
+      "Gilles Bordelais",               // 
+      "André Brem",                     // 
+      "Hannes Brüske",                  // 
+      "Andreas Brüske",                 // 
+      // C                              // 
+      // D                              // 
+      "Jannes Dirks",                   // 
+      // E                              // 
+      "Gerrit Eberhardt",               // 
+      // F                              // 
+      "Alexander Faber",                // 
+      "Niklas Faig",                    // 
+      "Christopher Flocke",             // 
+      "Christopher Funke-Kaiser",       // 
+      // G                              // 
+      "Hans Gabathuler",                // 
+      "Thomas Georg",                   // 
+      "Konrad Greinke",                 // 
+      "Stefan Gunkel",                  // 
+      // H                              // 
+      "Patrick Haak (Demophobie)",      // 
+      "Marius Hacker",                  // 
+      "Daniel Hampf",                   // 
+      "Nathan Hall",                    // 
+      "Christoph Hartmann",             // 
+      "Andreas Hauer",                  // 
+      "Stephan Hesse",                  // 
+      "Daniel Holle",                   // 
+      "Rene Hopf",                      // 
+      "Hanso Hunder",                   // 
+      "Benjamin Hünig",                 // 
+      // I                              // 
+      // J                              // 
+      "Dominic Jonas",                  // 
+      "Simon Jais",                     // 
+      // K                              // 
+      "Silvio Karbe",                   // 
+      "Ralli Kasikas",                  // 
+      "Jörg Kesten",                    // 
+      "Thorsten Kindel",                // 
+      "Holger Klötzner",                // 
+      "Andreas Kniep",                  // 
+      "Vladislav Kolaja",               // 
+      "Daniel Krsiak",                  // 
+      "Andreas Krimm",                  // 
+      "Christopher Kuehnel (Spikeone)", // 
+      // L                              // 
+      "Alexander Lambio",               // 
+      "Oliver Lang",                    // 
+      "Marius Loewe",                   // 
+      "Eric Lutter",                    // 
+      // M                              // 
+      "Jan Montag",                     // 
+      "Kai Müller",                     // 
+      "morlock",                        // 
+      "Jan Mozgawa",                    // 
+      // N                              // 
+      // O                              // 
+      // P                              // 
+      "Wojciech Pieklik",               // 
+      "Mike Plackowski",                // 
+      "Daniel Platt",                   // 
+      // Q                              // 
+      // R                              // 
+      "Philip Rau",                     // 
+      "Ronny Richter",                  // 
+      // S                              // 
+      "Daniel Seindl",                  // 
+      "Vasilyev Sergey",                // 
+      "Patrick Schefczyk",              // 
+      "Marcel Schneider",               // 
+      "Alexander Schoedon",             // 
+      "Max Skuratov",                   // 
+      "Philipp Strathausen",            // 
+      "Benjamin Stoisch",               // 
+      "Felix Stolle",                   // 
+      // T                              // 
+      "Nina Tillmann",                  // 
+      "Angelo Tiegs",                   // 
+      // U                              // 
+      // V                              // 
+      // W                              // 
+      "Niels Wiederanders",             // 
+      "Philipp Wohlleben"               // 
+      // X                              // 
+      // Y                              // 
+      // Z                              // 
+    };
+
+    // alphabetical again, two rows
+    entry = CreditsEntry(_("Donators"), _("Thank you for your donations!"));
+
+    const size_t page_size = 15;
+    const size_t middle = std::min(page_size, donators.size()) / 2;
+    size_t pos = 0;
+    for(const auto& donator : donators)
+    {
+        const size_t column = (pos < middle ? 0 : 1);
+        entry.lines.push_back(CreditsEntry::Line(donator, column ));
+        ++pos;
+        // create new page
+        if(pos > page_size) 
+        {
+            entries.push_back(entry);
+            entry.lines.clear();
+            pos = 0;
+        }
+    }
+
+    if(!entry.lines.empty())
+    {
+        entries.push_back(entry);
+    }
+
+    entry = CreditsEntry(_("We hope you enjoy playing Return To The Roots!"), _("THE END"));
+    entry.lines.push_back(_("Thank you!"));
+    entries.push_back(entry);
 
     WorldDescription worldDesc;
     GameDataLoader gdLoader(worldDesc);
@@ -75,103 +287,6 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
                                                       MSB_EXCLAMATIONRED, 0));
         return;
     }
-    CreditsEntry entry = CreditsEntry("Florian Doersch (FloSoft):", GetCreditsImgOrDefault("flosoft"));
-    entry.lines.push_back(_("Project management"));
-    entry.lines.push_back(_("Server management"));
-    entry.lines.push_back(_("Programming"));
-    entry.lines.push_back(_("Website Administration"));
-    entry.lines.push_back(_("Website Programming"));
-    entry.lines.push_back(_("Quality Assurance"));
-    entries.push_back(entry);
-
-    entry = CreditsEntry("Oliver Siebert (Oliverr):", GetCreditsImgOrDefault("oliverr"));
-    entry.lines.push_back(_("Project management"));
-    entry.lines.push_back(_("Programming"));
-    entry.lines.push_back(_("Quality Assurance"));
-    entries.push_back(entry);
-
-    entry = CreditsEntry("Stefan Schüchl (Z-Stef):", GetCreditsImgOrDefault("z-stef"));
-    entry.lines.push_back(_("Website Administration"));
-    entry.lines.push_back(_("Website Programming"));
-    entries.push_back(entry);
-
-    entry = CreditsEntry("Patrick Haak (Demophobie):", GetCreditsImgOrDefault("demophobie"));
-    entry.lines.push_back(_("Website Administration"));
-    entry.lines.push_back(_("Quality Assurance"));
-    entries.push_back(entry);
-
-    entry = CreditsEntry("Jonas Trampe (NastX):", GetCreditsImgOrDefault("nastx"));
-    entry.lines.push_back(_("Quality Assurance"));
-    entry.lines.push_back(_("Mapping"));
-    entries.push_back(entry);
-
-    entry = CreditsEntry("Jan-Henrik Kluth (jh):", GetCreditsImgOrDefault("jh"));
-    entry.lines.push_back(_("Programming"));
-    entry.lines.push_back(_("Artificial Intelligence (AI)"));
-    entries.push_back(entry);
-
-    entry = CreditsEntry("Christopher Kuehnel (Spikeone):", GetCreditsImgOrDefault("spikeone"));
-    entry.lines.push_back(_("Additional graphics"));
-    entry.lines.push_back(_("Quality Assurance"));
-    entry.lines.push_back(_("Mapping"));
-    entries.push_back(entry);
-
-    entry = CreditsEntry("Marcus Ströbel (Maqs):", GetCreditsImgOrDefault("maqs"));
-    entry.lines.push_back(_("Programming"));
-    entry.lines.push_back(_("Quality Assurance"));
-    entries.push_back(entry);
-
-    entry = CreditsEntry("Alex Grund (Flamefire):", GetCreditsImgOrDefault("flamefire"));
-    entry.lines.push_back(_("Programming"));
-    entry.lines.push_back(_("Quality Assurance"));
-    entries.push_back(entry);
-
-    entry = CreditsEntry(_("Additional Programming:"));
-    entry.lines.push_back("Siegfried Oleg Pammer (siegi44)");
-    entry.lines.push_back("Lienhart Woitok (liwo)");
-    entry.lines.push_back("Christoph Erhardt (Airhardt)");
-    entry.lines.push_back("Divan");
-    entry.lines.push_back("Cat666");
-    entry.lines.push_back("Devil");
-    entry.lines.push_back("Ikhar Beq (PoC)");
-    entries.push_back(entry);
-
-    entry = CreditsEntry(_("Additional Graphics:"));
-    entry.lines.push_back("Marcus Bullin (Parasit)");
-    entries.push_back(entry);
-
-    entry = CreditsEntry(_("Other Support:"));
-    entry.lines.push_back("muhahahaha");
-    entry.lines.push_back("Sotham");
-    entry.lines.push_back("Fenan");
-    entry.lines.push_back("Phil Groenewold (Phil333)");
-    entry.lines.push_back("Marc Vester (xaser)");
-    entries.push_back(entry);
-
-    entry = CreditsEntry(_("Donators"), _("Thank you for your donations!"));
-    entry.lines.push_back(_("various anonymous donators"));
-    entry.lines.push_back("Markus Becker");
-    entry.lines.push_back("Karsten Backhaus (K-Duke)");
-    entry.lines.push_back("Patrick Haak (Demophobie)");
-    entry.lines.push_back("Gilles Bordelais");
-    entry.lines.push_back("Dominic Jonas");
-    entry.lines.push_back("Rene Hopf");
-    entry.lines.push_back("Christopher Kuehnel (Spikeone)");
-    entry.lines.push_back("Philipp Strathausen");
-
-    entry.lines.push_back(CreditsEntry::Line("Max Skuratov", 1));
-    entry.lines.push_back(CreditsEntry::Line("Marius Loewe", 1));
-    entry.lines.push_back(CreditsEntry::Line("Eric Lutter", 1));
-    entry.lines.push_back(CreditsEntry::Line("Bob Kromonos Achten", 1));
-    entry.lines.push_back(CreditsEntry::Line("morlock", 1));
-    entry.lines.push_back(CreditsEntry::Line("Hans Gabathuler", 1));
-    entry.lines.push_back(CreditsEntry::Line("Jan Montag", 1));
-    entry.lines.push_back(CreditsEntry::Line("Patrick Schefczyk", 1));
-    entries.push_back(entry);
-
-    entry = CreditsEntry(_("We hope you enjoy playing Return To The Roots!"), _("THE END"));
-    entry.lines.push_back(_("Thank you!"));
-    entries.push_back(entry);
 
     this->itCurEntry = entries.begin();
 
@@ -191,16 +306,31 @@ void dskCredits::Draw_()
     }
 }
 
+void dskCredits::GotoNextPage()
+{
+    // Next page
+    ++this->itCurEntry;
+    if(this->itCurEntry == entries.end())
+        this->itCurEntry = entries.begin();
+    startTime = VIDEODRIVER.GetTickCount();
+}
+
+void dskCredits::GotoPrevPage()
+{
+    // Prev page
+    if(this->itCurEntry == entries.begin())
+        this->itCurEntry = std::prev(entries.end());
+    else
+        --this->itCurEntry;
+    startTime = VIDEODRIVER.GetTickCount();
+}
+
 void dskCredits::DrawCredit()
 {
     unsigned time = VIDEODRIVER.GetTickCount() - startTime;
     if(time > PAGE_TIME)
     {
-        // Next page
-        ++this->itCurEntry;
-        if(this->itCurEntry == entries.end())
-            this->itCurEntry = entries.begin();
-        startTime = VIDEODRIVER.GetTickCount();
+        GotoNextPage();
     }
 
     // calculate text transparency
@@ -346,7 +476,20 @@ glArchivItem_Bitmap* dskCredits::GetCreditsImgOrDefault(const std::string& name)
 
 bool dskCredits::Msg_KeyDown(const KeyEvent& /*ke*/)
 {
-    return Close();
+    GotoNextPage();
+    return true;
+}
+
+bool dskCredits::Msg_LeftUp(const MouseCoords& /*mc*/)
+{
+    GotoNextPage();
+    return true;
+}
+
+bool dskCredits::Msg_RightUp(const MouseCoords& mc)
+{
+    GotoPrevPage();
+    return true;
 }
 
 void dskCredits::Msg_ButtonClick(const unsigned /*ctrl_id*/)
