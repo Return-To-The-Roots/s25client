@@ -187,11 +187,15 @@ void dskCredits::DrawCredit()
     }
 
     // calculate text transparency
-    unsigned transparency = 0xFF;
+    unsigned transparency;
     if(time < FADING_TIME)
         transparency = 0xFF * time / FADING_TIME;
-    if(time > PAGE_TIME - FADING_TIME)
+    else if(time >= PAGE_TIME)
+        transparency = 0;
+    else if(time > PAGE_TIME - FADING_TIME)
         transparency = (0xFF - 0xFF * (time - (PAGE_TIME - FADING_TIME)) / FADING_TIME);
+    else
+        transparency = 0xFF;
 
     // draw text
     LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, FontStyle{}, SetAlpha(COLOR_RED, transparency));
@@ -314,9 +318,9 @@ bool dskCredits::Close()
 
 glArchivItem_Bitmap* dskCredits::GetCreditsImgOrDefault(const std::string& name)
 {
-    glArchivItem_Bitmap* result = LOADER.GetImage("credits", name + ".bmp");
+    glArchivItem_Bitmap* result = LOADER.GetImage("credits", name);
     if(!result)
-        result = LOADER.GetImage("credits", "default.bmp");
+        result = LOADER.GetImage("credits", "default");
     return result;
 }
 
