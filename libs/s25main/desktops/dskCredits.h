@@ -18,6 +18,8 @@
 #pragma once
 
 #include "Desktop.h"
+#include "Timer.h"
+
 #include "libsiedler2/ImgDir.h"
 #include <utility>
 #include <vector>
@@ -62,10 +64,10 @@ private:
         std::string lastLine;
         glArchivItem_Bitmap* pic;
         std::vector<Line> lines;
-        explicit CreditsEntry(std::string title, std::string lastLine = "")
+        explicit CreditsEntry(std::string title, std::string lastLine = std::string())
             : title(std::move(title)), lastLine(std::move(lastLine)), pic(nullptr)
         {}
-        CreditsEntry(std::string title, glArchivItem_Bitmap* pic, std::string lastLine = "")
+        CreditsEntry(std::string title, glArchivItem_Bitmap* pic, std::string lastLine = std::string())
             : title(std::move(title)), lastLine(std::move(lastLine)), pic(pic)
         {}
     };
@@ -87,7 +89,7 @@ private:
 
     std::vector<Bob> bobs;
 
-    unsigned startTime;
+    Timer timer;
     unsigned bobTime;
     unsigned bobSpawnTime;
 };
