@@ -312,7 +312,7 @@ void dskCredits::GotoNextPage()
     ++this->itCurEntry;
     if(this->itCurEntry == entries.end())
         this->itCurEntry = entries.begin();
-    startTime = VIDEODRIVER.GetTickCount();
+    timer.restart();
 }
 
 void dskCredits::GotoPrevPage()
@@ -322,12 +322,12 @@ void dskCredits::GotoPrevPage()
         this->itCurEntry = std::prev(entries.end());
     else
         --this->itCurEntry;
-    startTime = VIDEODRIVER.GetTickCount();
+    timer.restart();
 }
 
 void dskCredits::DrawCredit()
 {
-    unsigned time = VIDEODRIVER.GetTickCount() - startTime;
+    const unsigned time = static_cast<unsigned>(std::chrono::duration_cast<std::chrono::milliseconds>(timer.getElapsed()).count());
     if(time > PAGE_TIME)
     {
         GotoNextPage();
@@ -507,6 +507,7 @@ void dskCredits::SetActive(bool active)
     Desktop::SetActive(active);
     if(active)
     {
-        startTime = bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
+        bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
+        timer.restart();
     }
 }
