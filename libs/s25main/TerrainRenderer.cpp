@@ -127,7 +127,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
         if(cur.palAnimIdx >= 0)
         {
             libsiedler2::ArchivItem* animItem = LOADER.GetArchive(textureName)[cur.palAnimIdx];
-            if(!texBmp->getPalette() || !animItem || animItem->getBobType() != libsiedler2::BOBTYPE_PALETTE_ANIM)
+            if(!texBmp->getPalette() || !animItem || animItem->getBobType() != libsiedler2::BobType::PaletteAnim)
             {
                 LOG.write("Invalid palette animation '%1%' for '%2%'") % unsigned(cur.palAnimIdx) % cur.name;
                 terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture).release());

@@ -92,7 +92,7 @@ void glArchivItem_BitmapBase::GenerateTexture()
     if(!texture)
         return;
 
-    if(!getPalette() && getFormat() == libsiedler2::FORMAT_PALETTED)
+    if(!getPalette() && getFormat() == libsiedler2::TextureFormat::Paletted)
         setPaletteCopy(*LOADER.GetPaletteN("pal5"));
 
     VIDEODRIVER.BindTexture(texture);

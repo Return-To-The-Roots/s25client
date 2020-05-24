@@ -217,7 +217,7 @@ int CustomBorderBuilder::buildBorder(const Extent& size, std::array<glArchivItem
     for(unsigned i = 0; i < 4; i++)
     {
         glArchivItem_Bitmap* customEdgeBmp = new glArchivItem_Bitmap_Direct;
-        customEdgeBmp->init(customEdges[i].size.x, customEdges[i].size.y, libsiedler2::FORMAT_PALETTED, &palette);
+        customEdgeBmp->init(customEdges[i].size.x, customEdges[i].size.y, libsiedler2::TextureFormat::Paletted, &palette);
         BdrBitmap2Bitmap(customEdges[i], *customEdgeBmp);
         borderInfo[i] = customEdgeBmp;
     }

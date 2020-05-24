@@ -20,6 +20,7 @@
 
 #include "RandomConfig.h"
 #include "mapGenerator/Map.h"
+#include "libsiedler2/enumTypes.h"
 
 struct TerrainDesc;
 
@@ -88,21 +89,21 @@ public:
      * @param likelihood likelihood for object generation in percent
      * @return a new duck animal
      */
-    uint8_t CreateDuck(int likelihood);
+    libsiedler2::Animal CreateDuck(int likelihood);
 
     /**
      * Creates a new sheep.
      * @param likelihood likelihood for object generation in percent
      * @return a new sheep animal
      */
-    uint8_t CreateSheep(int likelihood);
+    libsiedler2::Animal CreateSheep(int likelihood);
 
     /**
      * Creates a new, random animal to be placed inside of a forest.
      * @param likelihood likelihood for object generation in percent
      * @return a new forest animal
      */
-    uint8_t CreateRandomForestAnimal(int likelihood);
+    libsiedler2::Animal CreateRandomForestAnimal(int likelihood);
 
     /**
      * Creates a new random mountain resources (gold, coal, granite, iron).
@@ -119,7 +120,7 @@ public:
      * @param likelihood likelihood for object generation in percent
      * @return a new ground animal
      */
-    uint8_t CreateRandomAnimal(int likelihood);
+    libsiedler2::Animal CreateRandomAnimal(int likelihood);
 
     /**
      * Checks whether or not the specified object is a tree.
