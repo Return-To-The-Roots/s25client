@@ -18,7 +18,7 @@
 #pragma once
 
 #include "Desktop.h"
-#include "mapGenerator/MapSettings.h"
+#include "randomMaps/MapSettings.h"
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
 #include "liblobby/LobbyInterface.h"

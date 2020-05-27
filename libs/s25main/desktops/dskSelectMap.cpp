@@ -41,7 +41,7 @@
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
 #include "lua/GameDataLoader.h"
-#include "mapGenerator/MapGenerator.h"
+#include "randomMaps/MapGenerator.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Map.h"

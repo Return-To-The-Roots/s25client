@@ -20,7 +20,6 @@
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlProgress.h"
 #include "lua/GameDataLoader.h"
-#include "mapGenerator/MapSettings.h"
 #include "gameData/MaxPlayers.h"
 #include "gameData/WorldDescription.h"
 #include "gameData/const_gui_ids.h"
@@ -62,12 +61,10 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
         combo->AddString(boost::str(boost::format(_("%1% players")) % n));
 
     combo = AddComboBox(CTRL_MAP_STYLE, DrawPoint(20, 60), Extent(210, 20), TC_GREY, NormalFont, 100);
-    combo->AddString(_("Islands"));
     combo->AddString(_("Continent"));
-    combo->AddString(_("Greenland"));
+    combo->AddString(_("Edgecase"));
     combo->AddString(_("Migration"));
-    combo->AddString(_("Riverland"));
-    combo->AddString(_("Ringland"));
+    combo->AddString(_("Rivers"));
     combo->AddString(_("Random"));
 
     combo = AddComboBox(CTRL_MAP_SIZE, DrawPoint(20, 90), Extent(210, 20), TC_GREY, NormalFont, 100);
@@ -132,13 +129,11 @@ void iwMapGenerator::Apply()
 
     switch(GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection().get())
     {
-        case 0: mapSettings.style = MapStyle::Islands; break;
-        case 1: mapSettings.style = MapStyle::Continent; break;
-        case 2: mapSettings.style = MapStyle::Greenland; break;
-        case 3: mapSettings.style = MapStyle::Migration; break;
-        case 4: mapSettings.style = MapStyle::Riverland; break;
-        case 5: mapSettings.style = MapStyle::Ringland; break;
-        case 6: mapSettings.style = MapStyle::Random; break;
+        case 0: mapSettings.style = MapStyle::Continent; break;
+        case 1: mapSettings.style = MapStyle::Edgecase; break;
+        case 2: mapSettings.style = MapStyle::Migration; break;
+        case 3: mapSettings.style = MapStyle::Rivers; break;
+        case 4: mapSettings.style = MapStyle::Random; break;
         default: break;
     }
     switch(GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->GetSelection().get())
@@ -153,28 +148,22 @@ void iwMapGenerator::Apply()
     switch(GetCtrl<ctrlComboBox>(CTRL_PLAYER_RADIUS)->GetSelection().get())
     {
         case 0:
-            mapSettings.minPlayerRadius = 0.19;
-            mapSettings.maxPlayerRadius = 0.3; //-V525
+            mapSettings.minPlayerRadius = 0.05;
             break;
         case 1:
-            mapSettings.minPlayerRadius = 0.29;
-            mapSettings.maxPlayerRadius = 0.5;
+            mapSettings.minPlayerRadius = 0.1;
             break;
         case 2:
-            mapSettings.minPlayerRadius = 0.39;
-            mapSettings.maxPlayerRadius = 0.59;
+            mapSettings.minPlayerRadius = 0.15;
             break;
         case 3:
-            mapSettings.minPlayerRadius = 0.49;
-            mapSettings.maxPlayerRadius = 0.61;
+            mapSettings.minPlayerRadius = 0.22;
             break;
         case 4:
-            mapSettings.minPlayerRadius = 0.71;
-            mapSettings.maxPlayerRadius = 0.72;
+            mapSettings.minPlayerRadius = 0.3;
             break;
         case 5:
-            mapSettings.minPlayerRadius = 0.5;
-            mapSettings.maxPlayerRadius = 0.5;
+            mapSettings.minPlayerRadius = 0.4;
             break;
         default: break;
     }
@@ -200,13 +189,11 @@ void iwMapGenerator::Reset()
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE);
     switch(mapSettings.style)
     {
-        case MapStyle::Islands: combo->SetSelection(0); break;
-        case MapStyle::Continent: combo->SetSelection(1); break;
-        case MapStyle::Greenland: combo->SetSelection(2); break;
-        case MapStyle::Migration: combo->SetSelection(3); break;
-        case MapStyle::Riverland: combo->SetSelection(4); break;
-        case MapStyle::Ringland: combo->SetSelection(5); break;
-        case MapStyle::Random: combo->SetSelection(6); break;
+        case MapStyle::Continent: combo->SetSelection(0); break;
+        case MapStyle::Edgecase: combo->SetSelection(1); break;
+        case MapStyle::Migration: combo->SetSelection(2); break;
+        case MapStyle::Rivers: combo->SetSelection(3); break;
+        case MapStyle::Random: combo->SetSelection(4); break;
         default: break;
     }
 
@@ -222,18 +209,18 @@ void iwMapGenerator::Reset()
     }
 
     combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_RADIUS);
-    if(mapSettings.minPlayerRadius == 0.5) //-V550
-        combo->SetSelection(5);
-    else if(mapSettings.minPlayerRadius <= 0.2)
+    if(mapSettings.minPlayerRadius <= 0.05)
         combo->SetSelection(0);
-    else if(mapSettings.minPlayerRadius <= 0.3)
+    else if(mapSettings.minPlayerRadius <= 0.1)
         combo->SetSelection(1);
-    else if(mapSettings.minPlayerRadius <= 0.4)
+    else if(mapSettings.minPlayerRadius <= 0.15)
         combo->SetSelection(2);
-    else if(mapSettings.minPlayerRadius <= 0.5)
+    else if(mapSettings.minPlayerRadius <= 0.22)
         combo->SetSelection(3);
-    else
+    else if(mapSettings.minPlayerRadius <= 0.3)
         combo->SetSelection(4);
+    else
+        combo->SetSelection(5);
 
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE);
     combo->SetSelection(mapSettings.type.value);
