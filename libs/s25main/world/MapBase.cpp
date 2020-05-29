@@ -102,14 +102,8 @@ MapPoint MapBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
 
 std::vector<MapPoint> MapBase::GetNeighbours(const MapPoint& pt) const
 {
-    return {
-        GetNeighbour(pt, Direction::WEST),
-        GetNeighbour(pt, Direction::NORTHWEST),
-        GetNeighbour(pt, Direction::NORTHEAST),
-        GetNeighbour(pt, Direction::EAST),
-        GetNeighbour(pt, Direction::SOUTHEAST),
-        GetNeighbour(pt, Direction::SOUTHWEST)
-    };
+    return {GetNeighbour(pt, Direction::WEST), GetNeighbour(pt, Direction::NORTHWEST), GetNeighbour(pt, Direction::NORTHEAST),
+            GetNeighbour(pt, Direction::EAST), GetNeighbour(pt, Direction::SOUTHEAST), GetNeighbour(pt, Direction::SOUTHWEST)};
 }
 
 unsigned MapBase::CalcDistance(const Position& p1, const Position& p2) const

@@ -17,17 +17,16 @@
 
 #include "rttrDefines.h"
 #include "mapGenerator/Triangles.h"
-#include "testHelper.hpp"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
 
-BOOST_AUTO_TEST_SUITE(MapTests)
+BOOST_AUTO_TEST_SUITE(TriangleTests)
 
 BOOST_AUTO_TEST_CASE(GetTriangleNeighbors_ForAnyValidTriangle_ReturnsThreeTriangles)
 {
-    MapExtent size(16,8);
-    
+    MapExtent size(16, 8);
+
     RTTR_FOREACH_PT(MapPoint, size)
     {
         BOOST_REQUIRE(GetTriangleNeighbors(Triangle(true, pt), size).size() == 3);
@@ -37,7 +36,7 @@ BOOST_AUTO_TEST_CASE(GetTriangleNeighbors_ForAnyValidTriangle_ReturnsThreeTriang
 
 BOOST_AUTO_TEST_CASE(GetTriangles_ForAnyValidMapPoint_ReturnsSixTriangles)
 {
-    MapExtent size(16,8);
+    MapExtent size(16, 8);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
@@ -47,7 +46,7 @@ BOOST_AUTO_TEST_CASE(GetTriangles_ForAnyValidMapPoint_ReturnsSixTriangles)
 
 BOOST_AUTO_TEST_CASE(GetTriangleEdges_ForAnyValidTriangle_ReturnsThreePoints)
 {
-    MapExtent size(16,8);
+    MapExtent size(16, 8);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {

@@ -16,356 +16,205 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h"
-
+#include "lua/GameDataLoader.h"
 #include "mapGenerator/HeadQuarters.h"
-#include "mapGenerator/GridUtility.h"
-#include "testHelper.hpp"
-
+#include "mapGenerator/TextureHelper.h"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(HeadQuartersTests)
 
-// NEW WORLD
+template<class T_Test>
+void RunTest(const MapExtent& size, T_Test test);
+
+template<class T_Test>
+void RunTest(const MapExtent& size, T_Test test)
+{
+    DescIdx<LandscapeDesc> landscape(1);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+
+    TextureMap textures(worldDesc, landscape);
+
+    Map map(textures, size, 1, 44);
+
+    test(map, textures);
+}
+
+template<class T_Test>
+void RunTestForArea(const MapExtent& size, T_Test test);
+
+template<class T_Test>
+void RunTestForArea(const MapExtent& size, T_Test test)
+{
+    RunTest(size, [&test](Map& map, TextureMap& textures) {
+        std::vector<MapPoint> allPositions;
+
+        RTTR_FOREACH_PT(MapPoint, map.size)
+        {
+            allPositions.push_back(pt);
+        }
+
+        test(map, textures, allPositions);
+    });
+}
+
+BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_ReturnsExpectedNodes)
+{
+    MapExtent size(64, 64);
+    RunTest(size, [&size](Map& map, TextureMap& textures) {
+        auto water = textures.Find(IsShipableWater);
+        auto land = textures.Find(IsBuildableLand);
+
+        textures.Resize(size, TexturePair(water));
+
+        MapPoint centerOfLargeArea(3, 3);
+        auto largeArea = map.textures.GetPointsInRadiusWithCenter(centerOfLargeArea, 3);
+
+        for(auto node : largeArea)
+        {
+            textures.Set(node, land);
+        }
+
+        MapPoint centerOfSmallArea(30, 30);
+        auto smallArea = map.textures.GetPointsInRadiusWithCenter(centerOfSmallArea, 2);
+
+        for(auto node : smallArea)
+        {
+            textures.Set(node, land);
+        }
+
+        auto result = FindLargestConnectedArea(map);
+
+        BOOST_REQUIRE(result.size() == largeArea.size());
+
+        for(auto node : largeArea)
+        {
+            BOOST_REQUIRE(helpers::contains(result, node));
+        }
+    });
+}
 
 BOOST_AUTO_TEST_CASE(FindHqPositions_WithoutSuitablePosition_ReturnsEmpty)
 {
-    Texture texture;
-    DescIdx<LandscapeDesc> landscape;
-    MockTextureMapping mapping(landscape);
-    MapExtent size(8, 8);
-    Map map(mapping, landscape, 0x1, size);
-    map.textures.Resize(size, TexturePair(texture));
+    MapExtent size(64, 64);
+    RunTestForArea(size, [&size](Map& map, TextureMap& textures, const auto& area) {
+        textures.Resize(size, TexturePair(textures.Find(IsShipableWater)));
 
-    mapping.expectedTextures = { texture };
-    
-    auto positions = FindHqPositions(map, {});
-    
-    BOOST_REQUIRE(positions.empty());
+        auto positions = FindHqPositions(map, area);
+
+        BOOST_REQUIRE(positions.empty());
+    });
 }
 
 BOOST_AUTO_TEST_CASE(FindHqPositions_ForSinglePlayer_ReturnsSuitablePositions)
 {
-    Texture texture1(0x1);
-    Texture texture2(0x2);
-    
-    DescIdx<LandscapeDesc> landscape;
-    MockTextureMapping mapping(landscape);
-    
     MapExtent size(8, 8);
-    Map map(mapping, landscape, 0x1, size);
-    MapPoint obstacle(0, 0);
-    
-    map.textures.Resize(size, TexturePair(texture1));
-    map.textures[obstacle] = TexturePair(texture2);
+    RunTestForArea(size, [&size](Map& map, TextureMap& textures, const auto& area) {
+        auto water = textures.Find(IsShipableWater);
+        auto buildable = textures.Find(IsBuildableLand);
 
-    mapping.expectedTextures = { texture2 };
-    
-    std::vector<MapPoint> positions = FindHqPositions(map, {});
-    std::vector<MapPoint> expectedPositions { MapPoint(4,4), MapPoint(4,5) };
-    
-    BOOST_REQUIRE(positions.size() == expectedPositions.size());
-    BOOST_REQUIRE(positions[0] == expectedPositions[0]);
-    BOOST_REQUIRE(positions[1] == expectedPositions[1]);
+        MapPoint obstacle(0, 0);
+
+        map.textures.Resize(size, TexturePair(buildable));
+        map.textures[obstacle] = TexturePair(water);
+
+        std::vector<MapPoint> positions = FindHqPositions(map, area);
+        std::vector<MapPoint> expectedPositions{MapPoint(4, 2), MapPoint(3, 3), MapPoint(4, 3), MapPoint(3, 4),
+                                                MapPoint(4, 4), MapPoint(5, 4), MapPoint(3, 5), MapPoint(4, 5),
+                                                MapPoint(5, 5), MapPoint(4, 6), MapPoint(5, 6), MapPoint(4, 7)};
+
+        BOOST_REQUIRE(positions.size() == expectedPositions.size());
+        for(const MapPoint& expectedPosition : expectedPositions)
+        {
+            BOOST_REQUIRE(helpers::contains(positions, expectedPosition));
+        }
+    });
 }
 
 BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_ForAreaWithSuitablePosition_ReturnsTrue)
 {
-    Texture texture1(0x1);
-    Texture texture2(0x2);
-    
-    DescIdx<LandscapeDesc> landscape;
-    MockTextureMapping mapping(landscape);
-    
     MapExtent size(8, 8);
-    Map map(mapping, landscape, 0x1, size);
-    MapPoint obstacle(0, 0);
-    MapPoint hq(4, 4);
+    RunTest(size, [&size](Map& map, TextureMap& textures) {
+        auto water = textures.Find(IsShipableWater);
+        auto buildable = textures.Find(IsBuildableLand);
 
-    map.textures.Resize(size, TexturePair(texture1));
-    map.textures[obstacle] = TexturePair(texture2);
+        MapPoint obstacle(0, 0);
+        MapPoint hq(4, 4);
 
-    mapping.expectedTextures = { texture2 };
-    
-    auto success = PlaceHeadQuarter(map, 0, { hq });
-    
-    BOOST_REQUIRE(success);
+        map.textures.Resize(size, TexturePair(buildable));
+        map.textures[obstacle] = TexturePair(water);
+
+        std::vector<MapPoint> area{hq};
+
+        auto success = PlaceHeadQuarter(map, 0, area);
+
+        BOOST_REQUIRE(success);
+    });
 }
 
 BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_ForAreaWithSuitablePosition_PlacesHqOnMap)
 {
-    Texture texture1(0x1);
-    Texture texture2(0x2);
-    
-    DescIdx<LandscapeDesc> landscape;
-    MockTextureMapping mapping(landscape);
-    
     MapExtent size(8, 8);
-    Map map(mapping, landscape, 0x1, size);
-    MapPoint obstacle(0, 0);
-    MapPoint hq(4, 4);
-    
-    map.textures.Resize(size, TexturePair(texture1));
-    map.textures[obstacle] = TexturePair(texture2);
+    RunTest(size, [&size](Map& map, TextureMap& textures) {
+        MapPoint obstacle(0, 0);
+        MapPoint hq(4, 4);
 
-    mapping.expectedTextures = { texture2 };
-    
-    PlaceHeadQuarter(map, 3, { hq });
-    
-    BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_HeadquarterMask);
-    BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::ObjectType(3));
+        textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
+        textures[obstacle] = TexturePair(textures.Find(IsShipableWater));
+
+        std::vector<MapPoint> area{hq};
+
+        PlaceHeadQuarter(map, 3, area);
+
+        BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_HeadquarterMask);
+        BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::ObjectType(3));
+    });
 }
 
 BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForNPlayersOnEmptyMap_ReturnsTrue)
 {
-    RandomUtility rnd(0);
-    
-    Texture texture(0x1);
-    DescIdx<LandscapeDesc> landscape;
-    MockTextureMapping mapping(landscape);
     MapExtent size(64, 64);
+    RandomUtility rnd(0);
 
-    for (int players = 1; players < 8; players++)
+    for(int players = 1; players < 8; players++)
     {
-        Map map(mapping, landscape, 0x1, size);
-        map.textures.Resize(size, TexturePair(texture));
-        
-        auto success = PlaceHeadQuarters(map, rnd, players);
-        
-        BOOST_REQUIRE(success);
+        RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
+            textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
+
+            auto success = PlaceHeadQuarters(map, rnd, players);
+
+            BOOST_REQUIRE(success);
+        });
     }
 }
 
 BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForNPlayersOnEmptyMap_PlacesNHqs)
 {
-    RandomUtility rnd(0);
-    
-    Texture texture(0x1);
-    DescIdx<LandscapeDesc> landscape;
-    MockTextureMapping mapping(landscape);
     MapExtent size(64, 64);
-
-    for (int players = 1; players < 8; players++)
-    {
-        Map map(mapping, landscape, 0x1, size);
-        map.textures.Resize(size, TexturePair(texture));
-        
-        PlaceHeadQuarters(map, rnd, players);
-        
-        int hqs = 0;
-        
-        RTTR_FOREACH_PT(MapPoint, size)
-        {
-            if (map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask)
-            {
-                hqs++;
-            }
-        }
-        
-        BOOST_REQUIRE(hqs == players);
-    }
-}
-
-// OLD WORLD
-
-BOOST_AUTO_TEST_CASE(FindHeadQuarterPosition_For1stHq_ReturnsCenterOfLargestBuildableArea)
-{
-    MockTextureMapping_ mapping;
-    
-    Texture water = mapping.water;
-    Texture grass = mapping.grassland;
-    Texture coast = mapping.coast;
-    Texture lava = mapping.lava;
-
-    WorldDescription worldDesc;
-    MapExtent size(8,8);
-    Map_ map(worldDesc, size);
-    
-    Textures textures = {
-        water,  water, water, water, water, water, water, water,
-        water,  water, water, water, water, water, water, water,
-        water,  water, water, water, water, water, water, water,
-        coast,  coast, coast, coast, coast, coast, coast, coast,
-        coast,  grass, grass, grass, coast, coast, coast, coast,
-        coast,  grass, grass, grass, coast, coast, coast, coast,
-        coast,  grass, grass, grass, coast, coast, coast, coast,
-        lava,   lava,  lava,  lava,  lava,  lava,  lava,  lava
-    };
-    map.textureLsd = textures;
-    map.textureRsu = Textures(textures);
-    map.z = {
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5
-    };
-    
-    auto area = GridPositions(size);
-    auto hq = FindHeadQuarterPosition(map, mapping, area);
-    
-    BOOST_REQUIRE(hq.x == 2 && hq.y == 5);
-}
-
-BOOST_AUTO_TEST_CASE(FindHeadQuarterPosition_For2ndHq_ReturnsMaxDistFrom1stHqInBuildableArea)
-{
-    MockTextureMapping_ mapping;
-    
-    Texture water = mapping.water;
-    Texture coast = mapping.GetCoastTerrain();
-    Texture grass = mapping.grassland;
-    Texture lava = mapping.lava;
-    
-    WorldDescription worldDesc;
-    MapExtent size(8,8);
-    Map_ map(worldDesc, size);
-    
-    Textures textures {
-        water, water, water, water, water, water, water, water,
-        water, water, water, water, water, water, water, water,
-        water, water, water, water, water, water, water, water,
-        coast, grass, grass, grass, grass, grass, grass, coast,
-        coast, grass, grass, grass, grass, grass, grass, coast,
-        coast, grass, grass, grass, grass, grass, grass, coast,
-        coast, coast, coast, coast, coast, coast, coast, coast,
-        lava,   lava,  lava,  lava,  lava,  lava,  lava,  lava
-    };
-    
-    map.textureLsd = textures;
-    map.textureRsu = Textures(textures);
-
-    map.z = {
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5
-    };
-    
-    map.hqPositions.push_back(MapPoint(2,4));
-    
-    auto area = GridPositions(size);
-    auto hq = FindHeadQuarterPosition(map, mapping, area);
-    
-    BOOST_REQUIRE(hq.x == 5 && hq.y == 4);
-}
-
-
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForMap_CreatesExpectedNumberOfHqs)
-{
-    MockTextureMapping_ mapping;
-    
-    Texture water = mapping.water;
-    Texture coast = mapping.GetCoastTerrain();
-    Texture grass = mapping.grassland;
-    Texture lava = mapping.lava;
-    
-    WorldDescription worldDesc;
-    MapExtent size(8,8);
-    Map_ map(worldDesc, size);
-    
-    Textures textures {
-        water, water, water, water, water, water, water, water,
-        water, water, water, water, water, water, water, water,
-        water, water, water, water, water, water, water, water,
-        coast, grass, grass, grass, grass, grass, grass, coast,
-        coast, grass, grass, grass, grass, grass, grass, coast,
-        coast, grass, grass, grass, grass, grass, grass, coast,
-        coast, coast, coast, coast, coast, coast, coast, coast,
-        lava,   lava,  lava,  lava,  lava,  lava,  lava,  lava
-    };
-    
-    map.textureLsd = textures;
-    map.textureRsu = Textures(textures);
-
-    map.z = {
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5
-    };
-    
     RandomUtility rnd(0);
-    PlaceHeadQuarters(map, mapping, rnd, 2);
-    
-    for (int i = 0; i < 2; i++)
+
+    for(int players = 1; players < 8; players++)
     {
-        BOOST_REQUIRE(map.hqPositions[i].isValid());
-        
-        int index = map.hqPositions[i].x + map.hqPositions[i].y * size.x;
-        
-        BOOST_REQUIRE(map.objectType[index] == i);
-        BOOST_REQUIRE(map.objectInfo[index] == libsiedler2::OI_HeadquarterMask);
+        RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
+            textures.Resize(size, textures.Find(IsBuildableLand));
+
+            PlaceHeadQuarters(map, rnd, players);
+
+            int hqs = 0;
+
+            RTTR_FOREACH_PT(MapPoint, size)
+            {
+                if(map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask)
+                {
+                    hqs++;
+                }
+            }
+
+            BOOST_REQUIRE(hqs == players);
+        });
     }
-}
-
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForOneHqInAreaOnMap_PlacesOneHqInSpecifiedArea)
-{
-    MockTextureMapping_ mapping;
-    
-    Texture water = mapping.water;
-    Texture coast = mapping.GetCoastTerrain();
-    Texture grass = mapping.grassland;
-    Texture lava = mapping.lava;
-    
-    WorldDescription worldDesc;
-    MapExtent size(8,8);
-    Map_ map(worldDesc, size);
-    
-    Textures textures {
-        water, water, water, water, water, water, water, water,
-        water, water, water, water, water, water, water, water,
-        water, water, water, water, water, water, water, water,
-        coast, grass, grass, grass, grass, grass, grass, coast,
-        coast, grass, grass, grass, grass, grass, grass, coast,
-        coast, grass, grass, grass, grass, grass, grass, coast,
-        coast, coast, coast, coast, coast, coast, coast, coast,
-        lava,   lava,  lava,  lava,  lava,  lava,  lava,  lava
-    };
-    
-    map.textureLsd = textures;
-    map.textureRsu = Textures(textures);
-
-    map.z = {
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5,
-        5,5,5,5,5,5,5,5
-    };
-    
-    std::vector<Position> area = {
-        Position(1,3),
-        Position(1,4),
-        Position(1,5)
-    };
-    
-    PlaceHeadQuarter(map, mapping, 1, area);
-    
-    auto hqPosition = map.hqPositions[1];
-    
-    BOOST_REQUIRE(hqPosition.isValid());
- 
-    int index = hqPosition.x + hqPosition.y * size.x;
-        
-    BOOST_REQUIRE(map.objectType[index] == 1);
-    BOOST_REQUIRE(map.objectInfo[index] == libsiedler2::OI_HeadquarterMask);
-    BOOST_REQUIRE(hqPosition.x == 1);
-    BOOST_REQUIRE(hqPosition.y == 3 || hqPosition.y == 4 || hqPosition.y == 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

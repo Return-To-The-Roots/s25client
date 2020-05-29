@@ -15,122 +15,121 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "rttrDefines.h"
+#include "lua/GameDataLoader.h"
 #include "mapGenerator/Rivers.h"
-#include "testHelper.hpp"
-
+#include "mapGenerator/TextureHelper.h"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(RiversTests)
 
-BOOST_AUTO_TEST_CASE(RiverBrushPaint_ForRiver_TexturesRiverBanksWithMountainOrCoast)
-{
-    MockTextureMapping_ mapping;
-    
-    Texture grassland = mapping.grassland;
-    Texture mountain = mapping.mountain;
-    Texture coast = mapping.coast;
-    
-    WorldDescription worldDesc;
-    Map_ map(worldDesc, MapExtent(8,8));
-    
-    Textures textures {
-        grassland, grassland, grassland, grassland, grassland, grassland, grassland, grassland,
-        grassland, grassland, grassland, grassland, grassland, grassland, grassland, grassland,
-        grassland, grassland, grassland, grassland, grassland, grassland, grassland, grassland,
-        grassland, grassland, grassland, grassland, grassland, grassland, grassland, grassland,
-        grassland, grassland, grassland, grassland, grassland, grassland, grassland, grassland,
-        grassland, grassland, grassland, grassland, mountain,  mountain,  mountain,  mountain,
-        grassland, grassland, grassland, grassland, grassland, grassland, grassland, grassland,
-        grassland, grassland, grassland, grassland, grassland, grassland, grassland, grassland };
+template<class T_Test>
+void RunTest(T_Test test);
 
-    map.textureLsd = Textures(textures);
-    map.textureRsu = Textures(textures);
-    map.sea = 0;
-    
-    std::vector<Tile> river = {
-        Tile(Position(4,4)),
-        Tile(Position(5,4)),
-        Tile(Position(6,4)),
-        Tile(Position(7,4)) };
-    
-    RiverBrush(mapping).Paint(river, map);
-    
-    for (int x = 4; x < 8; x++)
-    {
-        BOOST_REQUIRE(map.textureRsu[x + 5 * 8] == mountain);
-        BOOST_REQUIRE(map.textureLsd[x + 5 * 8] == mountain);
-        BOOST_REQUIRE(map.textureRsu[x + 3 * 8] == coast);
-        BOOST_REQUIRE(map.textureLsd[x + 3 * 8] == coast);
-    }
+template<class T_Test>
+void RunTest(T_Test test)
+{
+    RandomUtility rnd(0);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    DescIdx<LandscapeDesc> landscape(0);
+    TextureMap textures(worldDesc, landscape);
+
+    MapExtent size(8, 8);
+    Map map(textures, size, 0x1, 44);
+
+    test(rnd, map);
 }
 
-BOOST_AUTO_TEST_CASE(CreateRivers_ForMap_PlacesAConnectedAreaOfWater)
+BOOST_AUTO_TEST_CASE(CreateStream_OfCertainLength_ReturnsExpectedNumberOfPoints)
 {
-    MockTextureMapping_ mapping;
-    
-    Texture grass = mapping.grassland;
-    Texture water = mapping.water;
-    
-    WorldDescription worldDesc;
-    MapExtent size(8,8);
-    Map_ map(worldDesc, size);
-    
-    Textures textures {
-        grass, grass, grass, grass, grass, grass, grass, grass,
-        grass, grass, grass, grass, grass, grass, grass, grass,
-        grass, grass, grass, grass, grass, grass, grass, grass,
-        grass, grass, grass, grass, grass, grass, grass, grass,
-        grass, grass, grass, grass, grass, grass, grass, grass,
-        grass, grass, grass, grass, grass, grass, grass, grass,
-        grass, grass, grass, grass, grass, grass, grass, grass,
-        grass, grass, grass, grass, grass, grass, grass, grass
-    };
-    
-    map.textureLsd = Textures(textures);
-    map.textureRsu = Textures(textures);
-    map.sea = 0;
-    
-    Tile source(Position(4,4));
-    RandomUtility rnd(0);
-    RiverBrush brush(mapping);
+    RunTest([](RandomUtility& rnd, Map& map) {
+        const MapPoint source(4, 1);
+        const int length = 6;
+        const uint8_t seaLevel = 0;
 
-    const int riverTiles = 5;
-    
-    River(brush, 0, source).ExtendBy(rnd, riverTiles, size).Create(map);
-     
-    auto waterTile = 0;
-    auto isWater = true;
-    auto current = source;
-    
-    if (map.textureRsu[current.IndexRsu(size)] == water &&
-        map.textureLsd[current.IndexLsd(size)] == water)
-    {
-        waterTile++;
-    }
-    
-    while (isWater && waterTile < riverTiles)
-    {
-        auto neighbors = current.Neighbors(size);
-        auto foundWater = false;
-        
-        for (auto neighbor : neighbors)
+        for(unsigned d = 0; d < 6; d++)
         {
-            if (map.textureRsu[neighbor.IndexRsu(size)] == water &&
-                map.textureLsd[neighbor.IndexLsd(size)] == water)
+            auto river = CreateStream(rnd, map, source, Direction(d), length, seaLevel);
+
+            // each point represents one triangle while length is given
+            // in tiles (2 triangles) - and one more for the source (which
+            // is not counted in length)
+
+            const unsigned expectedNodes = (length + 1) * 2;
+
+            BOOST_REQUIRE_EQUAL(static_cast<int>(river.size()), expectedNodes);
+        }
+    });
+}
+
+BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsConnectedNodes)
+{
+    RunTest([](RandomUtility& rnd, Map& map) {
+        const MapPoint source(3, 2);
+        const int length = 7;
+        const uint8_t seaLevel = 1;
+
+        for(unsigned d = 0; d < 6; d++)
+        {
+            auto river = CreateStream(rnd, map, source, Direction(d), length, seaLevel);
+
+            auto containedByRiver = [&river](const MapPoint& pt) { return helpers::contains(river, pt); };
+
+            for(const MapPoint& pt : river)
             {
-                waterTile++;
-                current = neighbor;
-                foundWater = true;
-                break;
+                BOOST_REQUIRE(helpers::contains_if(map.z.GetNeighbours(pt), containedByRiver));
             }
         }
-        
-        isWater = foundWater;
-    }
-    
-    BOOST_REQUIRE(waterTile == riverTiles);
+    });
+}
+
+BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesPartiallyCoveredByWater)
+{
+    RunTest([](RandomUtility& rnd, Map& map) {
+        const MapPoint source(4, 1);
+        const int length = 6;
+        const uint8_t seaLevel = 0;
+
+        for(unsigned d = 0; d < 6; d++)
+        {
+            auto river = CreateStream(rnd, map, source, Direction(d), length, seaLevel);
+
+            for(const MapPoint& pt : river)
+            {
+                BOOST_REQUIRE(map.textures.Any(pt, IsWater));
+            }
+        }
+    });
+}
+
+BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesWithReducedHeight)
+{
+    RunTest([](RandomUtility& rnd, Map& map) {
+        map.z.Resize(map.size, 4);
+
+        ValueMap<uint8_t> originalZ(map.size);
+
+        RTTR_FOREACH_PT(MapPoint, map.size)
+        {
+            originalZ[pt] = map.z[pt];
+        }
+
+        const MapPoint source(4, 1);
+        const int length = 6;
+
+        for(unsigned d = 0; d < 6; d++)
+        {
+            auto river = CreateStream(rnd, map, source, Direction(d), length);
+
+            for(const MapPoint& pt : river)
+            {
+                BOOST_REQUIRE(map.z[pt] < originalZ[pt]);
+            }
+        }
+    });
 }
 
 BOOST_AUTO_TEST_SUITE_END()

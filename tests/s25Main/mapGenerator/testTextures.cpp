@@ -16,148 +16,224 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h"
+#include "lua/GameDataLoader.h"
+#include "mapGenerator/TextureHelper.h"
 #include "mapGenerator/Textures.h"
-#include "testHelper.hpp"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
 
-BOOST_AUTO_TEST_SUITE(TexturesTests)
+BOOST_AUTO_TEST_SUITE(TextureTests)
 
-// NEW WORLD
+template<class T_Test>
+void RunTest(T_Test test);
 
-BOOST_AUTO_TEST_CASE(IncreaseMountains_ForMap_IncreasesHeightForMountainsOnly)
+template<class T_Test>
+void RunTest(T_Test test)
 {
-    Texture mountain(0x1);
-    Texture other(0x2);
-
-    DescIdx<LandscapeDesc> landscape;
-    MockTextureMapping mapping(landscape);
     MapExtent size(8, 8);
-    Map map(mapping, landscape, 0x1, size);
-    MapPoint mountainPoint(3,4);
-    
-    map.textures.Resize(size, TexturePair(other));
-    map.textures[mountainPoint].rsu = mountain;
-    
-    mapping.expectedTextures = { mountain };
+    DescIdx<LandscapeDesc> landscape(1);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
 
-    IncreaseMountains(map);
+    TextureMap textures(worldDesc, landscape);
+    textures.Resize(size);
 
-    BOOST_REQUIRE(map.z[mountainPoint] == 1);
+    test(textures, size);
+}
 
-    RTTR_FOREACH_PT(MapPoint, size)
-    {
-        if (pt != mountainPoint)
+BOOST_AUTO_TEST_CASE(AddTextures_SetsValidTexturesForEntireMap)
+{
+    RunTest([](TextureMap& textures, const MapExtent& size) {
+        const unsigned mountainLevel = 5;
+        const unsigned coastline = 1;
+
+        ValueMap<uint8_t> z(size);
+
+        RTTR_FOREACH_PT(MapPoint, textures.GetSize())
         {
-            BOOST_REQUIRE(map.z[pt] == 0);
+            z[pt] = pt.x % 10;
         }
+
+        Texturizer texturizer(z, textures);
+
+        texturizer.AddTextures(mountainLevel, coastline);
+
+        RTTR_FOREACH_PT(MapPoint, textures.GetSize())
+        {
+            BOOST_REQUIRE(textures[pt].rsu.value != DescIdx<TerrainDesc>::INVALID);
+            BOOST_REQUIRE(textures[pt].lsd.value != DescIdx<TerrainDesc>::INVALID);
+        }
+    });
+}
+
+BOOST_AUTO_TEST_CASE(AddTextures_DoesNotOverrideAlreadySetTextures)
+{
+    RunTest([](TextureMap& textures, const MapExtent& size) {
+        const unsigned mountainLevel = 5;
+        const unsigned coastline = 1;
+
+        ValueMap<uint8_t> z(size);
+
+        auto water = textures.Find(IsWater);
+
+        textures.Resize(size, TexturePair(water));
+
+        RTTR_FOREACH_PT(MapPoint, size)
+        {
+            z[pt] = pt.x;
+        }
+
+        Texturizer texturizer(z, textures);
+
+        texturizer.AddTextures(mountainLevel, coastline);
+
+        RTTR_FOREACH_PT(MapPoint, size)
+        {
+            BOOST_REQUIRE(textures[pt].rsu == water);
+            BOOST_REQUIRE(textures[pt].lsd == water);
+        }
+    });
+}
+
+BOOST_AUTO_TEST_CASE(AddTextures_AddsWaterTextureForMinimumHeight)
+{
+    RunTest([](TextureMap& textures, const MapExtent& size) {
+        const unsigned mountainLevel = 3;
+        const unsigned coastline = 2;
+
+        ValueMap<uint8_t> z(size, 0);
+
+        Texturizer texturizer(z, textures);
+
+        texturizer.AddTextures(mountainLevel, coastline);
+
+        RTTR_FOREACH_PT(MapPoint, size)
+        {
+            BOOST_REQUIRE(textures.Check(Triangle(true, pt), IsWater));
+            BOOST_REQUIRE(textures.Check(Triangle(false, pt), IsWater));
+        }
+    });
+}
+
+BOOST_AUTO_TEST_CASE(AddTextures_AddsMountainOrSnowOrLavalTextureAboveMountainLevel)
+{
+    RunTest([](TextureMap& textures, const MapExtent& size) {
+        const unsigned mountainLevel = 10;
+        const unsigned coastline = 2;
+
+        ValueMap<uint8_t> z(size, mountainLevel);
+
+        z[0] = 1; // sea
+
+        Texturizer texturizer(z, textures);
+
+        texturizer.AddTextures(mountainLevel, coastline);
+
+        RTTR_FOREACH_PT(MapPoint, size)
+        {
+            if(z[pt] >= mountainLevel)
+            {
+                BOOST_REQUIRE(textures.Check(Triangle(true, pt), IsMountainOrSnowOrLava));
+                BOOST_REQUIRE(textures.Check(Triangle(false, pt), IsMountainOrSnowOrLava));
+            }
+        }
+    });
+}
+
+BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_ReplacesAllTexturesWithSpecifiedTexture)
+{
+    RunTest([](TextureMap& textures, const MapExtent& size) {
+        auto source = textures.Find(IsWater);
+        auto target = textures.Find(IsSnowOrLava);
+
+        auto point = MapPoint(size.x / 2, size.y / 2);
+
+        textures.Resize(size, source);
+
+        ReplaceTextureForPoint(textures, point, target, {});
+
+        BOOST_REQUIRE(textures.All(point, IsSnowOrLava));
+    });
+}
+
+BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_DoesNotReplaceExcludedTextures)
+{
+    RunTest([](TextureMap& textures, const MapExtent& size) {
+        auto source = textures.Find(IsWater);
+        auto target = textures.Find(IsSnowOrLava);
+
+        auto point = MapPoint(size.x / 2, size.y / 2);
+
+        textures.Resize(size, source);
+
+        ReplaceTextureForPoint(textures, point, target, {source});
+
+        BOOST_REQUIRE(textures.All(point, IsWater));
+    });
+}
+
+BOOST_AUTO_TEST_CASE(ReplaceTextures_ReplacesAllTexturesWithinRadius)
+{
+    std::set<MapPoint, MapPoint_compare> points{
+      MapPoint(0, 1),
+      MapPoint(1, 0),
+    };
+
+    for(unsigned radius = 0; radius < 4; radius++)
+    {
+        RunTest([radius, &points](TextureMap& textures, const MapExtent& size) {
+            auto source = textures.Find(IsWater);
+            auto target = textures.Find(IsSnowOrLava);
+
+            textures.Resize(size, source);
+
+            std::set<MapPoint, MapPoint_compare> nodes(points);
+
+            ReplaceTextures(textures, radius, nodes, target, {});
+
+            for(const MapPoint& pt : points)
+            {
+                if(radius > 0)
+                {
+                    for(const MapPoint& p : textures.GetPointsInRadius(pt, radius))
+                    {
+                        BOOST_REQUIRE(textures.All(p, IsSnowOrLava));
+                    }
+                } else
+                {
+                    BOOST_REQUIRE(textures.All(pt, IsSnowOrLava));
+                }
+            }
+        });
     }
 }
 
-// OLD WORLD
-
-BOOST_AUTO_TEST_CASE(FindCoast_ForIslandAndWaterMapReturnsCoastOfExpectedSize)
+BOOST_AUTO_TEST_CASE(ReplaceTextures_DoesNotReplaceExcludedTextures)
 {
-    MapExtent size(8,8);
-    std::vector<Position> island = {
-        Position(3,3), Position(4,3), Position(5,3),
-        Position(3,4), Position(4,4), Position(5,4),
-        Position(3,5), Position(4,5), Position(5,5)
-    };
-    
-    std::vector<bool> water = {
-        true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true,
-        true, true, true,false,false,false, true, true,
-        true, true, true,false,false,false, true, true,
-        true, true, true,false,false,false, true, true,
-        true, true, true, true, true, true, true, true,
-        true, true, true, true, true, true, true, true
-    };
-    
-    
-    auto coastLine = FindCoast(island, water, size);
-    
-    BOOST_REQUIRE(coastLine.size() == 8);
-}
-
-BOOST_AUTO_TEST_CASE(FindCoast_ForRiverBank_ReturnsNoElements)
-{
-    MapExtent size(8,8);
-    std::vector<Position> island = {
-        Position(3,0), Position(4,0), Position(5,0), Position(6,0), Position(7,0),
-        Position(3,1), Position(4,1), Position(5,1), Position(6,1), Position(7,1),
-        Position(3,2), Position(4,2), Position(5,2), Position(6,2), Position(7,2),
-        Position(3,3), Position(4,3), Position(5,3), Position(6,3), Position(7,3),
-        Position(3,4), Position(4,4), Position(5,4), Position(6,4), Position(7,4),
-        Position(3,5), Position(4,5), Position(5,5), Position(6,5), Position(7,5),
-        // ================= r i v e r ==========================================
-        Position(3,7), Position(4,7), Position(5,6), Position(6,7), Position(7,7)
-    };
-    
-    std::vector<bool> water = {
-        false,false,false,false,false,false,false,false,
-        false,false,false,false,false,false,false,false,
-        false,false,false,false,false,false,false,false,
-        false,false,false,false,false,false,false,false,
-        false,false,false,false,false,false,false,false,
-        false,false,false,false,false,false,false,false,
-        true, true, true, true, true, true, true, true,
-        false,false,false,false,false,false,false,false
-    };
-    
-    auto coastLine = FindCoast(island, water, size);
-    
-    BOOST_REQUIRE(coastLine.empty());
-}
-
-BOOST_AUTO_TEST_CASE(SmoothTextures_ForTextureMap_FlipsTrianglesToAvoidSharpCorners)
-{
-    MockTextureMapping_ mapping;
-    
-    Texture water = mapping.water;
-    Texture lava = mapping.lava;
-    Texture grass = mapping.grassland;
-    Texture coast = mapping.coast;
-    
-    Textures rsu {
-        water, lava /**/,water, water, water, water, water, water,
-        water, water,    water, water, water, water, water, water,
-        water, water,    water, water, water, water, water, water,
-        coast, grass,    grass, grass, grass, grass, grass, coast,
-        coast, grass,    grass, grass, grass, grass, grass, coast,
-        coast, grass,    grass, grass, grass, grass, grass, coast,
-        coast, coast,    coast, coast, coast, coast, coast, coast,
-        lava,   lava,    lava,   lava,  lava,  lava,  lava,  lava
-    };
-    
-    /**/
-    //should be replaced by water
-
-    Textures lsd {
-        water, water,    water, water, water, water, water, water,
-        water, water,    water, water, water, water, water, water,
-        water, water,    water, water, water, water, water, water,
-        coast, grass,    grass, grass, grass, grass, grass, coast,
-        coast, grass,    grass, grass, grass, grass, grass, coast,
-        coast, grass,    grass, grass, grass, grass, grass, coast,
-        coast, coast,    coast, coast, coast, coast, coast, coast,
-        lava,   lava,    lava,   lava,  lava,  lava,  lava,  lava
+    std::set<MapPoint, MapPoint_compare> points{
+      MapPoint(3, 1),
+      MapPoint(3, 0),
     };
 
-    WorldDescription desc;
-    MapExtent size(8,8);
-    Map_ map(desc, size);
-    
-    map.textureRsu = rsu;
-    map.textureLsd = lsd;
-    
-    SmoothTextures(map, mapping);
-    
-    BOOST_REQUIRE(map.textureRsu[1]  == water);
-    BOOST_REQUIRE(map.textureLsd[34] == grass);
+    for(unsigned radius = 0; radius < 4; radius++)
+    {
+        RunTest([radius, &points](TextureMap& textures, const MapExtent& size) {
+            auto source = textures.Find(IsWater);
+            auto target = textures.Find(IsSnowOrLava);
+
+            textures.Resize(size, source);
+
+            std::set<MapPoint, MapPoint_compare> nodes(points);
+
+            ReplaceTextures(textures, radius, nodes, target, {source});
+
+            RTTR_FOREACH_PT(MapPoint, size)
+            {
+                BOOST_REQUIRE(textures.All(pt, IsWater));
+            }
+        });
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

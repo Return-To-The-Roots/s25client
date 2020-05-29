@@ -18,75 +18,31 @@
 #ifndef RandomMap_h__
 #define RandomMap_h__
 
-#include "mapGenerator/MapSettings.h"
 #include "mapGenerator/Map.h"
+#include "mapGenerator/MapSettings.h"
 #include "mapGenerator/RandomUtility.h"
 
-namespace rttr {
-namespace mapGenerator {
+namespace rttr { namespace mapGenerator {
 
-/**
- * Smoothes the height map with respect to the size of the map and scales the height map to cover the whole
- * range of height values.
- * @param map reference to the map to post process
- */
-void PostProcessHeightMap(Map_& map);
+    // helpers
+    uint8_t ComputeGradient(const ValueMap<uint8_t>& z, const MapPoint& pt);
+    ValueMap<uint8_t> ComputeGradients(const ValueMap<uint8_t>& z);
+    void PrintStatisticsForHeightMap(const ValueMap<uint8_t>& z);
+    void PrintStructureInformation(uint8_t seaLevel, uint8_t mountainLevel);
 
-/**
- * Improves the texturing of the map by smoothing texture transitions, fixing sharp edges and removing
- * mountain transitions without mountains.
- * @param map reference to the map to post process
- * @param mapping texture mapping instance to access texture related game data
- */
-void PostProcessTextures(Map_& map, TextureMapping_& mapping);
+    unsigned GetCoastline(const MapExtent& size);
+    unsigned GetIslandRadius(const MapExtent& size);
 
-/**
- * Creates a new random map with "continent" style.
- * @param rnd random number generator
- * @param map reference to the empty map
- * @param mapping texture mapping instance to access texture related game data
- */
-void CreateContinentMap(RandomUtility& rnd, Map_& map, TextureMapping_& mapping);
+    void SmoothHeightMap(ValueMap<uint8_t>& z, const ValueRange<uint8_t>& range);
 
-/**
- * Creates a new random map with "edgecase" style.
- * @param rnd random number generator
- * @param map reference to the empty map
- * @param mapping texture mapping instance to access texture related game data
- */
-void CreateEdgecaseMap(RandomUtility& rnd, Map_& map, TextureMapping_& mapping);
+    void CreateContinental(RandomUtility& rnd, Map& map, Texturizer& texturizer);
 
-/**
- * Creates a new random map with "migration" style.
- * @param rnd random number generator
- * @param map reference to the empty map
- * @param mapping texture mapping instance to access texture related game data
- */
-void CreateMigrationMap(RandomUtility& rnd, Map_& map, TextureMapping_& mapping);
+    void CreateIslands(RandomUtility& rnd, Map& map, Texturizer& texturizer);
 
-/**
- * Creates a new random map with "rivers" style.
- * @param rnd random number generator
- * @param map reference to the empty map
- * @param mapping texture mapping instance to access texture related game data
- */
-void CreateRiversMap(RandomUtility& rnd, Map_& map, TextureMapping_& mapping);
+    void CreateValley(RandomUtility& rnd, Map& map, Texturizer& texturizer);
 
-/**
- * Creates a new random map with "crazy" (entirely random) style.
- * @param rnd random number generator
- * @param map reference to the empty map
- * @param mapping texture mapping instance to access texture related game data
- */
-void CreateCrazyMap(RandomUtility& rnd, Map_& map, TextureMapping_& mapping);
+    void CreateRandomMap(const std::string& filePath, const MapSettings& settings);
 
-/**
- * Creates a new random map with the specified settings and save it at the given file path.
- * @param filePath path to the output file for the generated random map
- * @param settings parameters for generating the random map
- */
-void CreateRandomMap(const std::string& filePath, const MapSettings& settings);
-
-}}
+}} // namespace rttr::mapGenerator
 
 #endif // RandomMap_h__

@@ -21,87 +21,95 @@
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
 
-namespace rttr {
-namespace mapGenerator {
+namespace rttr { namespace mapGenerator {
 
-// NEW WORLD
+    /**
+     * Find the largest connected area on the map. An area still counts as "connected" when it's divided by a tiny river or small mountains.
+     * However, all nodes within a connected area should be reachable for any player. Even though tiny rivers do not disconnect an area,
+     * water and mountain tiles are not considered part of the area.
+     *
+     * @param map reference to the map to look for the largest connected area
+     *
+     * @returns all map points within the largest connected area of the map.
+     */
+    std::vector<MapPoint> FindLargestConnectedArea(const Map& map);
 
-/**
- * Finds the most suitable position for a HQ in the specified area of the map.
- * To find the most suitable position for the entire map just leave the area empty.
- * The resulting HQ positions are sorted by quality (highest quality first).
- * @param map map to search for suitable HQ positions
- * @param area area within the HQ position should be
- * @return all suitable HQ positions witihn the specified area (or the entire map if the area is empty).
- */
-std::vector<MapPoint> FindHqPositions(const Map& map, const std::vector<MapPoint>& area);
+    /**
+     * Finds the most suitable position for a HQ in the specified area of the map. To find the most suitable position for the entire map
+     * just leave the area empty. The resulting HQ positions are sorted by quality (highest quality first). Good HQ positions are positions
+     * which are far away from other HQs and in a widely buildable area.
+     *
+     * @param map map to search for suitable HQ positions
+     * @param area area within the HQ position should be
+     *
+     * @return all suitable HQ positions witihn the specified area (or the entire map if the area is empty).
+     */
+    template<class T_Container>
+    std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area)
+    {
+        auto isHeadQuarter = [&map](const MapPoint& pt) { return map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask; };
 
-/**
- * Tries to place a number of headquarters on the specified map.
- * @param map map to place head quarters for all players on
- * @param rnd random number generated used for retrying HQ placement on failures
- * @param number number of HQs to place - equal to the number of players
- * @param retries number of retries to place valid HQs on this map
- * @return false if no valid HQ position was found for at least one player, true otherwise
- */
-bool PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries = 10);
+        auto isObstacle = [&map](MapPoint point) { return map.textures.Any(point, [](auto t) { return !t.Is(ETerrain::Buildable); }); };
 
-/**
- * Tries to place a head quarter (HQ) for a single player within the specified area.
- * @param map reference to the map to place the HQ on
- * @param index player index for the HQ
- * @param area area to place the HQ in
- * @returns true if a HQ was placed fro the specified player, false otherwise.
- */
-bool PlaceHeadQuarter(Map& map, int index, const std::vector<MapPoint>& area);
+        auto quality = Distances(map.size, isHeadQuarter);
+        const auto& obstacleDistance = Distances(map.size, isObstacle);
 
-// OLD WORLD
+        auto minDistance = std::max(std::min(obstacleDistance.GetMaximum(area), 4u), 2u);
 
-/**
- * Finds the most suitable position for a HQ in the specified area of the map.
- * @param map map to search of suitable HQ position for
- * @param mapping texture mapping for accessing texture related game data
- * @param area area within the HQ position should be
- * @return most suitable HQ position witihn the specified area
- */
-Position FindHeadQuarterPosition(const Map_& map,
-                                 const TextureMapping_& mapping,
-                                 const std::vector<Position>& area);
+        std::vector<MapPoint> positions;
 
-/**
- * Resets all HQ positions.
- * @param map reference to the map to remove HQ positions from
- */
-void ResetHeadQuarters(Map_& map);
+        for(const MapPoint& pt : area)
+        {
+            if(obstacleDistance[pt] >= minDistance)
+            {
+                positions.push_back(pt);
+            } else
+            {
+                quality[pt] = 0;
+            }
+        }
 
-/**
- * Places a number of headquarters.
- * @param map map to place the HQs on
- * @param mapping texture mapping for accessing texture related game data
- * @param rnd random number generator
- * @param number number of HQs to place - equal to the number of players
- * @param retries number of retries to place valid HQs on this map
- * @return false if no valid HQ position was found for at least one player, true otherwise
- */
-bool PlaceHeadQuarters(Map_& map,
-                       TextureMapping_& mapping,
-                       RandomUtility& rnd,
-                       int number,
-                       int retries = 10);
+        auto isBetter = [&quality](MapPoint p1, MapPoint p2) { return quality[p1] > quality[p2]; };
 
-/**
- * Places the header quater for a single player within the specified area.
- * @param map map to place the HQ on
- * @param mapping texture mapping for accessing texture related game data
- * @param index index of the HQ which correlates with the player number
- * @param area area of possible HQ positions
- * @return false if no valid HQ position was found, true otherwise
- */
-bool PlaceHeadQuarter(Map_& map,
-                      TextureMapping_& mapping,
-                      int index,
-                      const std::vector<Position>& area);
+        std::sort(positions.begin(), positions.end(), isBetter);
 
-}}
+        return positions;
+    }
+
+    /**
+     * Tries to place a head quarter (HQ) for a single player within the specified area.
+     *
+     * @param map reference to the map to place the HQ on
+     * @param index player index for the HQ
+     * @param area area to place the HQ in
+     *
+     * @returns true if a HQ was placed fro the specified player, false otherwise.
+     */
+    template<class T_Container>
+    bool PlaceHeadQuarter(Map& map, int index, const T_Container& area)
+    {
+        auto positions = FindHqPositions(map, area);
+        if(positions.empty())
+        {
+            return false;
+        }
+
+        map.MarkAsHeadQuarter(positions.front(), index);
+        return true;
+    }
+
+    /**
+     * Tries to place a number of headquarters on the specified map.
+     *
+     * @param map map to place head quarters for all players on
+     * @param rnd random number generated used for retrying HQ placement on failures
+     * @param number number of HQs to place - equal to the number of players
+     * @param retries number of retries to place valid HQs on this map
+     *
+     * @return false if no valid HQ position was found for at least one player, true otherwise
+     */
+    bool PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries = 10);
+
+}} // namespace rttr::mapGenerator
 
 #endif // HeadQuarters_h__

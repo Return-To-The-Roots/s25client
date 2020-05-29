@@ -16,232 +16,83 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/HeadQuarters.h"
-#include "mapGenerator/GridUtility.h"
-#include "mapGenerator/DistanceByProperty.h"
-#include "mapGenerator/Algorithms.h"
 #include "helpers/containerUtils.h"
+#include "mapGenerator/Algorithms.h"
+#include "mapGenerator/TextureHelper.h"
+#include "mapGenerator/Utilities.h"
 
-#define MIN_BUILDABLE_RADIUS 6u
+namespace rttr { namespace mapGenerator {
 
-namespace rttr {
-namespace mapGenerator {
-
-// NEW WORLD
-
-std::vector<MapPoint> FindHqPositions(const Map& map, const std::vector<MapPoint>& area)
-{
-    auto isHeadQuarter = [&map] (const MapPoint& pt) {
-        return map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask;
-    };
-
-    auto isObstacle = [&map] (MapPoint point) {
-        return map.AnyTexture(point, [] (auto t) {
-            return !t.Is(ETerrain::Buildable);
-        });
-    };
-    
-    auto quality = Distances(map.size, isHeadQuarter);
-    auto obstacleDistance = Distances(map.size, isObstacle);
-    
-    auto minDistance = std::max(std::min(obstacleDistance.GetMaximum(), 6u), 2u);
-    
-    std::vector<MapPoint> positions;
-    
-    RTTR_FOREACH_PT(MapPoint, map.size)
+    std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     {
-        if (obstacleDistance[pt] >= minDistance)
-        {
-            positions.push_back(pt);
-        }
-        else
-        {
-            quality[pt] = 0;
-        }
-    }
-    
-    if (!area.empty())
-    {
-        helpers::remove_if(positions, [&area] (MapPoint p) {
-            return !helpers::contains(area, p);
-        });
-    }
-    
-    auto isBetter = [&quality] (MapPoint p1, MapPoint p2) {
-        return quality[p1] > quality[p2];
-    };
-    
-    std::sort(positions.begin(), positions.end(), isBetter);
-    
-    return positions;
-}
+        std::set<MapPoint, MapPoint_compare> visited;
+        std::vector<MapPoint> connectedArea;
 
-bool PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries)
-{
-    auto maxRetries = retries;
-    auto success = false;
+        auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textures.Any(pt, IsBuildableLand); };
 
-    while (!success && retries > 0)
-    {
-        success = true;
-        
-        for (int index = 0; index < number; index++)
+        auto partiallyConnected = [&map, &partiallyBuildable](const MapPoint& pt) {
+            return helpers::contains_if(map.textures.GetPointsInRadius(pt, 2), partiallyBuildable);
+        };
+
+        RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            auto possiblePositions = FindHqPositions(map, {});
-            
-            if (possiblePositions.empty())
+            if(visited.insert(pt).second)
             {
-                for (int i = 0; i < number; i++)
+                auto area = Collect(map.textures, pt, partiallyConnected);
+
+                visited.insert(area.begin(), area.end());
+
+                if(area.size() > connectedArea.size())
                 {
-                    map.MarkAsHeadQuarter(MapPoint::Invalid(), i);
+                    connectedArea = area;
                 }
-                success = false;
-                break;
             }
-            
-            auto i = retries == maxRetries ? 0 : rnd.Index(possiblePositions.size());
-            auto hq = possiblePositions[i];
-            
-            map.MarkAsHeadQuarter(hq, index);
         }
-        
-        retries--;
-    }
-    
-    return success;
-}
 
-bool PlaceHeadQuarter(Map& map, int index, const std::vector<MapPoint>& area)
-{
-    auto positions = FindHqPositions(map, area);
-    if (positions.empty())
+        // remove rivers & water around the coast which have been
+        // added before due to allowing tiny rivers to be part of
+        // connected areas
+
+        helpers::remove_if(connectedArea, [&map](const MapPoint& pt) { return map.textures.Any(pt, IsWater); });
+
+        return connectedArea;
+    }
+
+    bool PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries)
     {
-        return false;
-    }
-    
-    map.MarkAsHeadQuarter(positions[0], index);
-    return true;
-}
+        auto maxRetries = retries;
+        auto success = false;
 
-// OLD WORLD
+        auto area = FindLargestConnectedArea(map);
 
-Position FindHeadQuarterPosition(const Map_& map,
-                                 const TextureMapping_& mapping,
-                                 const std::vector<Position>& area)
-{
-    auto isNotBuildable = [&map, &mapping] (int index) {
-        
-        if (!mapping.IsBuildable(map.textureRsu[index]) ||
-            !mapping.IsBuildable(map.textureLsd[index]))
+        while(!success && retries > 0)
         {
-            return true;
-        }
-        
-        MapPoint position = (MapPoint)GridPosition(index, map.size);
+            success = true;
 
-        return
-            helpers::contains(map.hqPositions, position) ||
-            helpers::contains(map.harborsRsu, index) ||
-            helpers::contains(map.harborsLsd, index);
-    };
-    
-    auto isHeadQuarter = [&map] (int index) { return IsHeadQuarter(map, index); };
+            for(int index = 0; index < number; index++)
+            {
+                auto possiblePositions = FindHqPositions(map, area);
 
-    auto obstacleDistance = DistanceByProperty(area, map.size, isNotBuildable);
-    auto maximumDistance = std::max_element(obstacleDistance.begin(), obstacleDistance.end());
-    auto quality = DistanceByProperty(area, map.size, isHeadQuarter);
+                if(possiblePositions.empty())
+                {
+                    for(int i = 0; i < number; i++)
+                    {
+                        map.MarkAsHeadQuarter(MapPoint::Invalid(), i);
+                    }
+                    success = false;
+                    break;
+                }
 
-    const int minimumBuildableArea = std::min(*maximumDistance, (int)MIN_BUILDABLE_RADIUS);
-    
-    int size = area.size();
-    int possibleHqPositions = 0;
-    
-    for (int i = 0; i < size; ++i)
-    {
-        if (obstacleDistance[i] >= minimumBuildableArea)
-        {
-            possibleHqPositions++;
+                auto i = retries == maxRetries ? 0 : rnd.Index(possiblePositions.size());
+                auto hq = possiblePositions[i];
+
+                map.MarkAsHeadQuarter(hq, index);
+            }
+
+            retries--;
         }
-        else
-        {
-            quality[i] = 0;
-        }
-    }
-    
-    if (possibleHqPositions > 0)
-    {
-        auto maximumQuality = std::max_element(quality.begin(), quality.end());
-        auto index = std::distance(quality.begin(), maximumQuality);
-        
-        return area[index];
+
+        return success;
     }
 
-    return Position::Invalid();
-}
-
-void ResetHeadQuarters(Map_& map)
-{
-    for (auto hq : map.hqPositions)
-    {
-        if (hq.isValid())
-        {
-            map.objectType[hq.x + hq.y * map.size.x] = 0x0;
-            map.objectInfo[hq.x + hq.y * map.size.x] = 0x0;
-        }
-    }
-}
-
-bool PlaceHeadQuarters(Map_& map,
-                       TextureMapping_& mapping,
-                       RandomUtility& rnd,
-                       int number,
-                       int retries)
-{
-    auto remainingTries = retries;
-    auto area = GridPositions(map.size);
-    
-    rnd.Shuffle(area);
-    map.hqPositions = std::vector<MapPoint>(number);
-    
-    for (int i = 0; i < number; i++)
-    {
-        bool hqPlaced = PlaceHeadQuarter(map, mapping, i, area);
-        
-        while (!hqPlaced && remainingTries > 0)
-        {
-            ResetHeadQuarters(map);
-            remainingTries--;
-            
-            rnd.Shuffle(area);
-            hqPlaced = PlaceHeadQuarter(map, mapping, i, area);
-        }
-        
-        if (!hqPlaced)
-        {
-            return false;
-        }
-    }
-    
-    return true;
-}
-
-bool PlaceHeadQuarter(Map_& map,
-                      TextureMapping_& mapping,
-                      int index,
-                      const std::vector<Position>& area)
-{
-    auto position = FindHeadQuarterPosition(map, mapping, area);
-    if (!position.isValid())
-    {
-        return false;
-    }
-    
-    auto hq = MapPoint(position);
-    
-    map.objectType[hq.x + hq.y * map.size.x] = index;
-    map.objectInfo[hq.x + hq.y * map.size.x] = libsiedler2::OI_HeadquarterMask;
-    map.hqPositions[index] = hq;
-    
-    return true;
-}
-
-}}
+}} // namespace rttr::mapGenerator

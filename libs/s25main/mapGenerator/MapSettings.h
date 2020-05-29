@@ -19,48 +19,41 @@
 #define MapSettings_h__
 
 #include "gameTypes/MapCoordinates.h"
-#include "gameData/LandscapeDesc.h"
 #include "gameData/DescIdx.h"
+#include "gameData/LandscapeDesc.h"
 #include <string>
 
-namespace rttr {
-namespace mapGenerator {
+namespace rttr { namespace mapGenerator {
 
-enum class MapStyle
-{
-    Continent,
-    Edgecase,
-    Migration,
-    Rivers,
-    Random
-};
+    enum class MapStyle
+    {
+        Continental,
+        Valley,
+        Islands,
+        Rivers,
+        Random
+    };
 
-struct MapSettings
-{
-    MapSettings()
-        : numPlayers(2),
-          size(MapExtent::all(256)),
-          ratioGold(9),
-          ratioIron(36),
-          ratioCoal(40),
-          ratioGranite(15),
-          type(0),
-          style(MapStyle::Random)
-    {}
+    struct MapSettings
+    {
+        MapSettings()
+            : numPlayers(2), size(MapExtent::all(256)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15), type(0),
+              style(MapStyle::Random)
+        {}
 
-    void Validate();
+        void Validate();
 
-    std::string name, author;
-    unsigned numPlayers;
-    MapExtent size;
-    unsigned short ratioGold;
-    unsigned short ratioIron;
-    unsigned short ratioCoal;
-    unsigned short ratioGranite;
-    DescIdx<LandscapeDesc> type;
-    MapStyle style;
-};
+        std::string name, author;
+        unsigned numPlayers;
+        MapExtent size;
+        unsigned short ratioGold;
+        unsigned short ratioIron;
+        unsigned short ratioCoal;
+        unsigned short ratioGranite;
+        DescIdx<LandscapeDesc> type;
+        MapStyle style;
+    };
 
-}}
+}} // namespace rttr::mapGenerator
 
 #endif // MapSettings_h__

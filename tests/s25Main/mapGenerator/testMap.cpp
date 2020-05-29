@@ -16,47 +16,60 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h"
+#include "lua/GameDataLoader.h"
 #include "mapGenerator/Map.h"
-#include "testHelper.hpp"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(MapTests)
 
+template<class T_Test>
+void RunTest(T_Test test);
+
+template<class T_Test>
+void RunTest(T_Test test)
+{
+    DescIdx<LandscapeDesc> landscape(1);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    TextureMap textures(worldDesc, landscape);
+
+    MapExtent size(16, 8);
+    Map map(textures, size, 0x7, 44);
+
+    test(map);
+}
+
 BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_WithValidPositionAndAnyIndex_PlacesHeadQuarterWithIndex)
 {
-    DescIdx<LandscapeDesc> landscape;
-    MockTextureMapping mapping(landscape);
-    MapExtent size(16,8);
-    Map map(mapping, landscape, 0x7, size);
-    MapPoint hq (3,4);
-    
-    for (int index = 0; index < 7; index++)
-    {
-        map.MarkAsHeadQuarter(hq, index);
+    RunTest([](Map& map) {
+        MapPoint hq(3, 4);
 
-        BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_HeadquarterMask);
-        BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::ObjectType(index));
-    }
+        for(int index = 0; index < 7; index++)
+        {
+            map.MarkAsHeadQuarter(hq, index);
+
+            BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_HeadquarterMask);
+            BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::ObjectType(index));
+        }
+    });
 }
 
 BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_WithValidAndInvalidPosition_RemovesHeadQuarter)
 {
-    DescIdx<LandscapeDesc> landscape;
-    MockTextureMapping mapping(landscape);
-    MapExtent size(16,8);
-    Map map(mapping, landscape, 0x7, size);
-    MapPoint hq (3,7);
-    
-    for (int index = 0; index < 7; index++)
-    {
-        map.MarkAsHeadQuarter(hq, index);
-        map.MarkAsHeadQuarter(MapPoint::Invalid(), index);
+    RunTest([](Map& map) {
+        MapPoint hq(3, 7);
 
-        BOOST_REQUIRE(map.objectInfos[hq]  == libsiedler2::OI_Empty);
-        BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::OT_Empty);
-    }
+        for(int index = 0; index < 7; index++)
+        {
+            map.MarkAsHeadQuarter(hq, index);
+            map.MarkAsHeadQuarter(MapPoint::Invalid(), index);
+
+            BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_Empty);
+            BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::OT_Empty);
+        }
+    });
 }
 
 BOOST_AUTO_TEST_SUITE_END()

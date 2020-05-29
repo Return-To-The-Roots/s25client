@@ -18,86 +18,98 @@
 #ifndef RandomUtility_h__
 #define RandomUtility_h__
 
-#include "gameTypes/MapCoordinates.h"
 #include "random/XorShift.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
-namespace rttr {
-namespace mapGenerator {
+namespace rttr { namespace mapGenerator {
 
-using UsedRNG = XorShift;
+    using UsedRNG = XorShift;
 
-class RandomUtility
-{
-private:
-    UsedRNG rng_;
-    
-public:
-    RandomUtility();
-    RandomUtility(uint64_t seed);
-    
-    /**
-     * Returns 'true' by a %-chance.
-     * @param percentage likelihood to return true
-     */
-    bool ByChance(int percentage);
-    
-    /**
-     * Generates a random index based on the specified size.
-     * @param size range of indices (0 to size - 1)
-     * @return a random index based on the specified size.
-     */
-    int Index(const size_t& size);
-    
-    /**
-     * Returns a random item.
-     * @param items collection of all items to choose from
-     * @returns a random item out of the specified collection of items.
-     */
-    template<typename T>
-    T RandomItem(std::vector<T> items)
+    class RandomUtility
     {
-        return items[Index(items.size())];
-    }
-    
-    /**
-     * Generates a random position for a map of the specified size.
-     * @param size boundaries of the map
-     * @return a random position on the map.
-     */
-    Position RandomPoint(const MapExtent& size);
-    
-    /**
-     * Generates a random integer number between the specified minimum and maximum values.
-     * @param min minimum value for the random number
-     * @param max maximum value for the random number
-     * @return a random number between min and max (inclusive).
-     */
-    int Rand(int min, int max);
-    
-    /**
-     * Generates a random floating point value between the specified minimum and maximum values.
-     * @param min minimum value for the random number
-     * @param max maximum value for the random number
-     * @return a random float value between min and max (inclusive).
-     */
-    double DRand(double min, double max);
-    
-    /**
-     * Generates "n" unique random numbers within the range of "0" to "n-1".
-     * @param n number and range of indices to generate
-     * @return a vector of "n" random number within the range of "0" to "n-1".
-     */
-    std::vector<int> ShuffledRange(int n);
-    
-    /**
-     * Shuffles the specified vector of positions.
-     * @param area positions to shuffle.
-     */
-    void Shuffle(std::vector<Position>& area);
-};
+    private:
+        UsedRNG rng_;
 
-}}
+    public:
+        RandomUtility();
+        RandomUtility(uint64_t seed);
+
+        /**
+         * Returns 'true' by a %-chance.
+         *
+         * @param percentage likelihood to return true
+         */
+        bool ByChance(unsigned percentage);
+
+        /**
+         * Generates a random index based on the specified size.
+         *
+         * @param size range of indices (0 to size - 1)
+         *
+         * @return a random index based on the specified size.
+         */
+        unsigned Index(const size_t& size);
+
+        /**
+         * Returns a random item.
+         *
+         * @param items collection of all items to choose from
+         *
+         * @returns a random item out of the specified collection of items.
+         */
+        template<typename T>
+        T RandomItem(const std::vector<T>& items)
+        {
+            return items[Index(items.size())];
+        }
+
+        /**
+         * Generates a random position for a map of the specified size.
+         *
+         * @param size boundaries of the map
+         *
+         * @return a random position on the map.
+         */
+        MapPoint RandomPoint(const MapExtent& size);
+
+        /**
+         * Generates a random integer number between the specified minimum and maximum values.
+         *
+         * @param min minimum value for the random number
+         * @param max maximum value for the random number
+         *
+         * @return a random number between min and max (inclusive).
+         */
+        int Rand(int min, int max);
+
+        /**
+         * Generates a random floating point value between the specified minimum and maximum values.
+         *
+         * @param min minimum value for the random number
+         * @param max maximum value for the random number
+         *
+         * @return a random float value between min and max (inclusive).
+         */
+        double DRand(double min, double max);
+
+        /**
+         * Generates "n" unique random numbers within the range of "0" to "n-1".
+         *
+         * @param n number and range of indices to generate
+         *
+         * @return a vector of "n" random number within the range of "0" to "n-1".
+         */
+        std::vector<int> ShuffledRange(int n);
+
+        /**
+         * Shuffles the specified vector of positions.
+         *
+         * @param area positions to shuffle.
+         */
+        void Shuffle(std::vector<Position>& area);
+    };
+
+}} // namespace rttr::mapGenerator
 
 #endif // RandomUtility_h__
-

@@ -20,79 +20,35 @@
 
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
-#include "mapGenerator/Tile.h"
 
-namespace rttr {
-namespace mapGenerator {
+namespace rttr { namespace mapGenerator {
 
-using IslandCoverage = std::set<Tile, TileCompare>;
+    using Island = std::set<MapPoint, MapPoint_compare>;
 
-/**
- * Creates a new water map for the specified height map and sea level.
- * @param heightMap height map used to calculate the water map from
- * @param seaLevel maximum height the sea can reach
- * @returns a water map based on the specified height map and sea level.
- */
-WaterMap CreateWaterMap(HeightMap& heightMap, Height seaLevel);
+    /**
+     * Finds all islands on the map which consist of at least the specified minimum number of nodes.
+     *
+     * @param textures reference to the texture map to search for islands
+     * @param minNodes minimum number of nodes of an island
+     *
+     * @returns vector of islands which are themselves a vector of points on the map.
+     */
+    std::vector<std::vector<MapPoint>> FindIslands(const TextureMap& textures, unsigned minNodes);
 
-/**
- * Creates a new water map for the specified map based on its textures.
- * @param map map to generate a water map for
- * @param mapping texture mapping to access texture related game data
- * @returns a water map based on the textures of the specified map.
- */
-WaterMap CreateWaterMap(const Map_& map, TextureMapping_& mapping);
+    /**
+     * Creates a new island at the specified position on the map.
+     *
+     * @param map reference to the map to place the island on (manipulates textures and z-values of the map)
+     * @param rnd random number generator
+     * @param distanceToLand minimum distance of the island to land textures
+     * @param size number of nodes the island should cover (in case there's not sufficient water the island will be smaller)
+     * @param radius radius of the brush to paint the island with
+     * @param mountainCoverage preferred mountain coverage for the island in percentage (between 0 and 1)
+     *
+     * @returns a vector of nodes the new island covers.
+     */
+    Island CreateIsland(Map& map, RandomUtility& rnd, unsigned distanceToLand, unsigned size, unsigned radius, double mountainCoverage);
 
-/**
- * Find the next not-exlcuded position on the grid.
- * @param excludedPositions positions excluded from the search stored by position index
- * @param size size of the grid
- * @returns the next position which is not excluded from the search.
- */
-Position FindNextPosition(const std::vector<bool>& excludedPositions, const MapExtent& size);
-
-/**
- * Finds and returns all islands based on the specified water map.
- * @param waterMap specifies which positions on the grid are water and land
- * @param size size of the grid
- * @param minimumTilesPerIsland minimum number of tiles covered by land to consider it an island
- * @returns all islands on the map which are matching the specified criteria.
- */
-Islands FindIslands(const std::vector<bool>& waterMap, const MapExtent& size, unsigned minimumTilesPerIsland);
-
-/**
- * Finds the next, most suitable location in the sea to place an island on.
- * @param map pointer to the actual map to find a suitable island position for
- * @param landDistance distance of each map position to the next land mass
- * @returns the most suitable position for placing an island.
- */
-Position FindSuitableIslandLocation(const Map_& map, const std::vector<int>& landDistance);
-
-/**
- * Generates an island on the specified map which covers the specified positions.
- * @param coverage textures covered by the island
- * @param map map to place the island on
- * @param mapping texture mapping to access texture related game data
- */
-void PlaceIsland(const IslandCoverage& coverage,
-                 Map_& map,
-                 TextureMapping_& mapping);
-
-/**
- * Creates  a new island at the most suitable position on the specified map.
- * @param islandSize size of the island
- * @param islandLength length of the island (same unit as islandSize)
- * @param distanceToLand minimum distance of the island to other land area masses
- * @param map map to place the new island on
- * @param mapping texture mapping to access texture related game data
- */
-Island CreateIsland(RandomUtility& rnd,
-                    int islandSize,
-                    int islandLength,
-                    int distanceToLand,
-                    Map_& map,
-                    TextureMapping_& mapping);
-
-}}
+}} // namespace rttr::mapGenerator
 
 #endif // Islands_h__

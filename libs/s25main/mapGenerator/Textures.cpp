@@ -17,251 +17,252 @@
 
 #include "rttrDefines.h"
 
+#include "mapGenerator/Algorithms.h"
+#include "mapGenerator/TextureHelper.h"
 #include "mapGenerator/Textures.h"
-#include "mapGenerator/DistanceByProperty.h"
-#include "mapGenerator/GridUtility.h"
 
+#include <algorithm>
+#include <set>
 #include <stdexcept>
 
-namespace rttr {
-namespace mapGenerator {
+namespace rttr { namespace mapGenerator {
 
-// NEW WORLD
-
-void IncreaseMountains(Map& map)
-{
-    auto isMountain = [] (const TerrainDesc& desc) {
-        return
-            desc.kind == TerrainKind::MOUNTAIN ||
-            desc.kind == TerrainKind::SNOW ||
-            desc.kind == TerrainKind::LAVA;
-    };
-    
-    auto& z = map.z;
-    auto maximum = map.height.max;
-    
-    RTTR_FOREACH_PT(MapPoint, map.size)
+    void TextureMap::Set(const MapPoint& pt, const DescIdx<TerrainDesc>& texture)
     {
-        if (map.CheckTexture(Triangle(true, pt), isMountain))
-        {
-            z[pt] = std::min(z[pt] + 1, maximum);
-        }
+        const auto& triangles = GetTriangles(pt, GetSize());
 
-        if (map.CheckTexture(Triangle(false, pt), isMountain))
+        for(const Triangle& triangle : triangles)
         {
-            z[pt] = std::min(z[pt] + 1, maximum);
+            Set(triangle, texture);
         }
     }
-}
 
-// OLD WORLD
-
-bool Has40PercentWaterTilesInNeighborhood(const Position& position,
-                                          const WaterMap& water,
-                                          const MapExtent& size)
-{
-    auto neighbors = GridCollect(position, size, 4.0);
-    auto waterNeighbors = 0;
-    
-    for (auto neighbor: neighbors)
+    void TextureMap::Set(const Triangle& triangle, const DescIdx<TerrainDesc>& texture)
     {
-        if (water[neighbor.x + neighbor.y * size.x])
+        if(triangle.rsu)
         {
-            waterNeighbors++;
+            nodes[GetIdx(triangle.position)].rsu = texture;
+        } else
+        {
+            nodes[GetIdx(triangle.position)].lsd = texture;
         }
     }
-    
-    return static_cast<double>(waterNeighbors) / neighbors.size() >= 0.4;
-}
 
-Coast FindCoast(const Island& island, const WaterMap& water, const MapExtent& size)
-{
-    Coast coast;
-    
-    for (auto vertex: island)
+    DescIdx<TerrainDesc> TextureMap::Get(const Triangle& triangle) const
     {
-        auto neighbors = GridNeighbors(vertex, size);
-        
-        for (auto neighbor: neighbors)
+        if(triangle.rsu)
         {
-            if (water[neighbor.x + neighbor.y * size.x])
+            return nodes[GetIdx(triangle.position)].rsu;
+        } else
+        {
+            return nodes[GetIdx(triangle.position)].lsd;
+        }
+    }
+
+    std::vector<DescIdx<TerrainDesc>> Texturizer::CreateTextureMapping(unsigned mountainLevel)
+    {
+        if(seaLevel_ + 2 > mountainLevel)
+        {
+            throw std::invalid_argument("sea level must be below mountain level by at least 2");
+        }
+
+        const uint8_t maximum = z_.GetRange().maximum;
+
+        std::vector<DescIdx<TerrainDesc>> mapping(maximum + 1);
+
+        auto waterTexture = textures_.Find(IsShipableWater);
+
+        auto landTextures = textures_.FindAll(IsBuildableLand);
+        textures_.Sort(landTextures, ByHumidity);
+
+        auto mountainTextures = textures_.FindAll(IsMinableMountain);
+        mountainTextures.push_back(textures_.Find(IsSnowOrLava));
+
+        for(uint8_t z = 0; z <= maximum; z++)
+        {
+            if(z <= seaLevel_)
             {
-                if (Has40PercentWaterTilesInNeighborhood(vertex, water, size))
-                {
-                    coast.push_back(CoastNode(vertex,neighbor));
-                }
-                
-                break;
+                mapping[z] = waterTexture;
+            } else if(z < mountainLevel)
+            {
+                ValueRange<uint8_t> range(seaLevel_ + 1, mountainLevel - 1);
+                mapping[z] = landTextures[MapValueToIndex(z, range, landTextures.size())];
+            } else
+            {
+                ValueRange<uint8_t> range(mountainLevel, maximum);
+                mapping[z] = mountainTextures[MapValueToIndex(z, range, mountainTextures.size())];
+            }
+        }
+
+        return mapping;
+    }
+
+    void Texturizer::ApplyTexturingByHeightMap(unsigned mountainLevel)
+    {
+        const auto& mapping = CreateTextureMapping(mountainLevel);
+
+        const MapExtent size = textures_.GetSize();
+        const auto& z = this->z_;
+
+        auto interpolateEdges = [&size, z](const Triangle& triangle) {
+            const auto& edges = GetTriangleEdges(triangle, size);
+
+            // Assumptions:
+            // 1) sum of 3 height values is always < 256 (1 byte)
+            // 2) we always want to round to the next integer (ceil)
+            return static_cast<uint8_t>(std::ceil(static_cast<double>(z[edges[0]] + z[edges[1]] + z[edges[2]]) / 3));
+        };
+
+        RTTR_FOREACH_PT(MapPoint, size)
+        {
+            if(textures_[pt].rsu.value == DescIdx<TerrainDesc>::INVALID)
+            {
+                textures_[pt].rsu = mapping[interpolateEdges(Triangle(true, pt))];
+            }
+            if(textures_[pt].lsd.value == DescIdx<TerrainDesc>::INVALID)
+            {
+                textures_[pt].lsd = mapping[interpolateEdges(Triangle(false, pt))];
             }
         }
     }
-    
-    return coast;
-}
 
-void CreateTextures(Map_& map, TextureMapping_& mapping)
-{
-    const auto textures = mapping.MapHeightsToTerrains(map.height.max, map.sea, map.mountains);
-    
-    const int nodes = map.size.x * map.size.y;
-    
-    auto& rsu = map.textureRsu;
-    auto& lsd = map.textureLsd;
-    auto& z   = map.z;
-    
-    for (int i = 0; i < nodes; ++i)
+    void Texturizer::ApplyCoastTexturing(const std::vector<MapPoint>& coast, unsigned width)
     {
-        Texture texture = textures[z[i]];
-        
-        rsu[i] = texture;
-        lsd[i] = texture;
-        
-        if (texture == mapping.water)
+        std::vector<DescIdx<TerrainDesc>> transition;
+        std::set<DescIdx<TerrainDesc>> excludedTextures;
+        std::set<MapPoint, MapPoint_compare> visited;
+        std::copy(coast.begin(), coast.end(), std::inserter(visited, visited.begin()));
+
+        auto water = textures_.Find(IsShipableWater);
+        auto coastland = textures_.FindAll(IsBuildableCoast);
+        auto mountain = textures_.FindAll(IsMountainOrSnowOrLava);
+
+        for(const auto& texture : mountain)
         {
-            z[i] = map.sea;
+            excludedTextures.insert(texture);
+        }
+
+        textures_.Sort(coastland, ByHumidity);
+
+        transition.push_back(textures_.Find(IsCoastTerrain));
+        transition.push_back(coastland[0]);
+        transition.push_back(coastland[1]);
+
+        excludedTextures.insert(water);
+
+        for(unsigned i = 0; i < 3; ++i)
+        {
+            unsigned appliedWidth = width - (i == 0 ? 1 : 0);
+
+            ReplaceTextures(textures_, appliedWidth, visited, transition[i], excludedTextures);
+
+            excludedTextures.insert(transition[i]);
         }
     }
-}
 
-void AddCoastTextures(Map_& map, TextureMapping_& mapping)
-{
-    const int nodes = map.size.x * map.size.y;
-    
-    auto isWater = [&map, &mapping] (int index) { return IsWater(map, mapping, index); };
-    const auto distance = DistanceByProperty(map.size, isWater);
-    const Texture water = mapping.water;
-    
-    auto& rsu = map.textureRsu;
-    auto& lsd = map.textureLsd;
-    
-    int d;
-    for (int i = 0; i < nodes; ++i)
+    void Texturizer::ApplyMountainTransitions(const std::vector<MapPoint>& mountainFoot)
     {
-        d = distance[i];
-        
-        if (d >= 0 && d <= 3)
+        std::set<DescIdx<TerrainDesc>> excludedTextures{textures_.Find(IsShipableWater)};
+
+        const auto& mountainTextures = textures_.FindAll(IsMountainOrSnowOrLava);
+
+        for(const auto& mountainTexture : mountainTextures)
         {
-            if (rsu[i] != water)
-            {
-                rsu[i] = mapping.GetCoastTerrain(d > 0 ? d - 1 : 0);
-            }
-            
-            if (lsd[i] != water)
-            {
-                lsd[i] = mapping.GetCoastTerrain(d > 0 ? d - 1 : 0);
-            }
+            excludedTextures.insert(mountainTexture);
+        }
+
+        auto mountainTransition = textures_.Find(IsBuildableMountain);
+
+        for(const MapPoint& point : mountainFoot)
+        {
+            ReplaceTextureForPoint(textures_, point, mountainTransition, excludedTextures);
         }
     }
-}
 
-void AddMountainTransition(Map_& map, TextureMapping_& mapping)
-{
-    auto isMountain = [&map, &mapping] (int index) {
-        
-        return
-            mapping.IsMineableMountain(map.textureRsu[index]) ||
-            mapping.IsMineableMountain(map.textureLsd[index]);
-    };
-    
-    const auto distance = DistanceByProperty(map.size, isMountain);
-    const Texture transition = mapping.mountainTransition;
-    const int nodes = map.size.x * map.size.y;
-    
-    auto& rsu = map.textureRsu;
-    auto& lsd = map.textureLsd;
-    
-    for (int i = 0; i < nodes; ++i)
+    void Texturizer::AddTextures(unsigned mountainLevel, unsigned coastline)
     {
-        if (distance[i] <= 2)
+        ApplyTexturingByHeightMap(mountainLevel);
+
+        const auto& textures = textures_;
+        const auto& size = textures.GetSize();
+
+        std::vector<MapPoint> coast;
+
+        RTTR_FOREACH_PT(MapPoint, size)
         {
-            if (!mapping.IsMountain(rsu[i]))
+            if(textures.Any(pt, IsLand) && textures.Any(pt, IsWater))
             {
-                rsu[i] = transition;
-            }
-            
-            if (!mapping.IsMountain(lsd[i]))
-            {
-                lsd[i] = transition;
+                coast.push_back(pt);
             }
         }
+
+        ApplyCoastTexturing(coast, 1); // small for tiny rivers
+
+        auto isRiver = [textures](const MapPoint& pt) {
+            auto suroundedByWater = [textures](const MapPoint& pt) { return textures.All(pt, IsWater); };
+
+            return !helpers::contains_if(textures.GetNeighbours(pt), suroundedByWater);
+        };
+
+        helpers::remove_if(coast, isRiver);
+
+        ApplyCoastTexturing(coast, coastline);
+
+        std::vector<MapPoint> footOfMountain;
+
+        RTTR_FOREACH_PT(MapPoint, size)
+        {
+            if(textures.Any(pt, IsMinableMountain) && !textures.All(pt, IsMountainOrSnowOrLava))
+            {
+                footOfMountain.push_back(pt);
+            }
+        }
+
+        ApplyMountainTransitions(footOfMountain);
     }
-}
 
-void SmoothTextures(Map_& map, TextureMapping_& mapping, bool ignoreWater)
-{
-    const Texture water = mapping.water;
-    const auto size = map.size;
-    const int nodes = size.x * size.y;
-    
-    auto& rsu = map.textureRsu;
-    auto& lsd = map.textureLsd;
-    
-    Texture texture;
-    Texture textureRight;
-    Texture textureLeft;
-    Texture textureMiddle;
-
-    for (int index = 0; index < nodes; ++index)
+    void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point, const DescIdx<TerrainDesc>& texture,
+                                const std::set<DescIdx<TerrainDesc>>& excluded)
     {
-        if (ignoreWater && rsu[index] == water)
-        {
-            continue;
-        }
+        auto triangles = GetTriangles(point, textures.GetSize());
 
-        texture = rsu[index];
-
-        auto pos = GridPosition(index, size);
-        auto neighbors = GridNeighborsOfRsuTriangle(pos, size);
-
-        textureRight  = lsd[neighbors[0].x + neighbors[0].y * size.x];
-        textureLeft   = lsd[neighbors[1].x + neighbors[1].y * size.x];
-        textureMiddle = lsd[neighbors[2].x + neighbors[2].y * size.x];
-        
-        if (textureRight == textureLeft &&
-            texture != textureRight && texture != textureLeft)
+        for(const Triangle& triangle : triangles)
         {
-            rsu[index] = textureRight;
-            continue;
-        }
-        
-        else if (textureMiddle == textureLeft &&
-            texture != textureMiddle && texture != textureLeft)
-        {
-            rsu[index] = textureMiddle;
-            continue;
-        }
+            auto& pair = textures[triangle.position];
+            auto& currentTexture = triangle.rsu ? pair.rsu : pair.lsd;
 
-        if (textureMiddle == textureRight &&
-            texture != textureMiddle && texture != textureRight)
-        {
-            rsu[index] = textureMiddle;
+            if(!helpers::contains(excluded, currentTexture))
+            {
+                currentTexture = texture;
+            }
         }
     }
-}
 
-void IncreaseMountains(Map_& map, TextureMapping_& mapping)
-{
-    const int nodes = map.size.x * map.size.y;
-    const unsigned char maximumHeight = map.height.max;
-    
-    const auto& rsu = map.textureRsu;
-    const auto& lsd = map.textureLsd;
-    
-    auto& z = map.z;
-    
-    for (int i = 0; i < nodes; ++i)
+    void ReplaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPoint_compare>& nodes,
+                         const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded)
     {
-        if (mapping.IsMountain(rsu[i]))
+        if(radius == 0)
         {
-            z[i] = std::min(static_cast<unsigned char>(z[i] + 1), maximumHeight);
+            for(const MapPoint& pt : nodes)
+            {
+                ReplaceTextureForPoint(textures, pt, texture, excluded);
+            }
+
+            return;
         }
-        
-        if (mapping.IsMountain(lsd[i]))
+
+        std::set<MapPoint, MapPoint_compare> initialNodes(nodes);
+
+        for(const MapPoint& pt : initialNodes)
         {
-            z[i] = std::min(static_cast<unsigned char>(z[i] + 1), maximumHeight);
+            auto points = textures.GetPointsInRadius(pt, radius);
+
+            for(const MapPoint& p : points)
+            {
+                ReplaceTextureForPoint(textures, p, texture, excluded);
+                nodes.insert(p);
+            }
         }
     }
-}
 
-
-}}
+}} // namespace rttr::mapGenerator
