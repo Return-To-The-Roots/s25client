@@ -29,16 +29,6 @@
 
 namespace bnw = boost::nowide;
 
-/*#include "Loader.h"
-#include "drivers/AudioDriverWrapper.h"
-#include "ogl/MusicItem.h"
-#include "libsiedler2/Archiv.h"
-#include "libsiedler2/ArchivItem.h"
-#include "libsiedler2/ErrorCodes.h"
-#include "libsiedler2/prototypen.h"
-#include "s25util/StringConversion.h"
-*/
-
 Playlist::Playlist() : current(-1), repeats(1), random(false) {}
 
 /**
