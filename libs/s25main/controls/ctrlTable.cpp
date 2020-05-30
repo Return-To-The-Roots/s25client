@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlTable.h"
 #include "CollisionDetection.h"
 #include "ctrlButton.h"
@@ -24,6 +23,7 @@
 #include "driver/MouseCoords.h"
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
+#include "s25util/strAlgos.h"
 #include <cmath>
 #include <numeric>
 #include <sstream>
@@ -282,12 +282,9 @@ void ctrlTable::SortRows(int column, const bool* direction)
         done = true;
         for(unsigned r = 0; r < rows_.size() - 1; ++r)
         {
-            std::string a = rows_[r].columns[sort_column];
-            std::string b = rows_[r + 1].columns[sort_column];
-
-            // in kleinbuchstaben vergleichen
-            std::transform(a.begin(), a.end(), a.begin(), tolower);
-            std::transform(b.begin(), b.end(), b.begin(), tolower);
+            // Compare lowercase values
+            const std::string a = s25util::toLower(rows_[r].columns[sort_column]);
+            const std::string b = s25util::toLower(rows_[r + 1].columns[sort_column]);
 
             if(Compare(a, b, columns_[column].sortType) == sortCompareValue)
             {

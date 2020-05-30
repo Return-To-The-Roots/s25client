@@ -18,6 +18,7 @@
 #ifndef VBO_h__
 #define VBO_h__
 
+#include "RTTR_Assert.h"
 #include "enum_cast.hpp"
 #include "ogl/BufferHandle.h"
 #include "ogl/constants.h"

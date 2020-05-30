@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,12 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "ListDir.h"
+#include "s25util/strAlgos.h"
 #include <boost/filesystem.hpp>
 #include <algorithm>
 
-///////////////////////////////////////////////////////////////////////////////
+namespace bfs = boost::filesystem;
+
 // lists the files of a directory
 std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories,
                                  const std::vector<std::string>* const appendTo)
@@ -36,7 +37,7 @@ std::vector<std::string> ListDir(const std::string& path, std::string extension,
 
     if(!extension.empty())
     {
-        std::transform(extension.begin(), extension.end(), extension.begin(), tolower);
+        extension = s25util::toLower(extension);
         // Add dot if missing
         if(extension[0] != '.')
             extension = "." + extension;
@@ -52,8 +53,7 @@ std::vector<std::string> ListDir(const std::string& path, std::string extension,
 
         if(!extension.empty())
         {
-            std::string curExt = curPath.extension().string();
-            std::transform(curExt.begin(), curExt.end(), curExt.begin(), tolower);
+            const std::string curExt = s25util::toLower(curPath.extension().string());
             if(curExt != extension)
                 continue;
         }
