@@ -116,6 +116,7 @@ bool Playlist::Load(Log& logger, const std::string& filename)
 
     std::string line, random_str;
     std::stringstream sline;
+    sline.imbue(std::locale("C"));
 
     if(!std::getline(in, line))
         return false;
