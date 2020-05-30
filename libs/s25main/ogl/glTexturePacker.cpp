@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "glTexturePacker.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glSmartBitmap.h"
@@ -24,6 +23,7 @@
 #include "libsiedler2/PixelBufferBGRA.h"
 #include <glad/glad.h>
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 static bool isSizeGreater(glSmartBitmap* a, glSmartBitmap* b)
@@ -69,7 +69,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
         if((curSize.x * curSize.y >= total) || maxTex)
         {
             // texture packer
-            auto* root = new glTexturePackerNode(curSize);
+            auto root = std::make_unique<glTexturePackerNode>(curSize);
 
             // list to store bitmaps we could not fit in our current texture
             std::vector<glSmartBitmap*> left;
@@ -97,7 +97,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
             }
             // free texture packer, as it is not needed any more
             root->destroy(list.size());
-            delete root;
+            root.reset();
 
             if(!texture.uploadData(buffer))
                 return false;
