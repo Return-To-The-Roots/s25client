@@ -31,6 +31,7 @@
 #include "gameData/WorldDescription.h"
 #include <array>
 #include <cstdlib>
+#include <numeric>
 
 /** @class dskCredits
  *
@@ -155,7 +156,9 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     if(!gdLoader.Load())
         throw std::runtime_error("Failed to load game data");
 
-    std::vector<bool> nations(NUM_NATIVE_NATS, true);
+    std::vector<Nation> nations(NUM_NATIVE_NATS);
+    for(int i = 0; i < NUM_NATIVE_NATS; i++)
+        nations[i] = Nation(i);
 
     LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations);
 

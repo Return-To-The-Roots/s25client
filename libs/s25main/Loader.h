@@ -53,7 +53,7 @@ class ArchivItem_Ini;
 class ArchivItem_Palette;
 } // namespace libsiedler2
 
-/// Fontsizes for which we have glyph sets
+/// Font sizes for which we have glyph sets
 enum class FontSize
 {
     Small,
@@ -62,7 +62,9 @@ enum class FontSize
 };
 DEFINE_MAX_ENUM_VALUE(FontSize, FontSize::Large)
 
-/// Loader Klasse.
+/// Identifier for resources
+using ResourceId = std::string;
+
 class Loader
 {
     /// Struct for storing loaded file entries
@@ -92,12 +94,12 @@ public:
     void AddAddonFolder(AddonId id);
     void ClearOverrideFolders();
 
-    /// Lädt alle allgemeinen Dateien.
+    /// Load general files required also outside of games
     bool LoadFilesAtStart();
     bool LoadFonts();
-    /// Lädt die Spieldateien.
-    bool LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<bool>& nations);
-    /// Load all files from the override folders that have not been use yet
+    /// Load files required during a game
+    bool LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations);
+    /// Load all files from the override folders that have not been loaded yet
     bool LoadOverrideFiles();
     /// Load all given files with the default palette
     bool LoadFiles(const std::vector<std::string>& files);
@@ -105,26 +107,26 @@ public:
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
     /// Load a file and save it into the loader repo
-    bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr, bool isFromOverrideDir = false);
-    /// Load a file into the archiv
-    bool LoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool Load(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr, bool isFromOverrideDir = false);
+    /// Load a file or directory and its overrides into the archiv
+    bool Load(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
     static std::unique_ptr<glArchivItem_Bitmap> ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
     static std::unique_ptr<libsiedler2::Archiv> ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
                                                                        uint8_t start_index, uint8_t color_count);
 
-    glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned nr);
+    glArchivItem_Bitmap* GetImageN(const ResourceId& file, unsigned nr);
     /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
-    ITexture* GetTextureN(const std::string& file, unsigned nr);
-    glArchivItem_Bitmap* GetImage(const std::string& file, const std::string& name);
-    glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned nr);
+    ITexture* GetTextureN(const ResourceId& file, unsigned nr);
+    glArchivItem_Bitmap* GetImage(const ResourceId& file, const std::string& name);
+    glArchivItem_Bitmap_Player* GetPlayerImage(const ResourceId& file, unsigned nr);
     glFont* GetFont(FontSize);
-    libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned nr = 0);
-    SoundEffectItem* GetSoundN(const std::string& file, unsigned nr);
-    std::string GetTextN(const std::string& file, unsigned nr);
-    libsiedler2::Archiv& GetArchive(const std::string& file);
-    glArchivItem_Bob* GetBobN(const std::string& file);
+    libsiedler2::ArchivItem_Palette* GetPaletteN(const ResourceId& file, unsigned nr = 0);
+    SoundEffectItem* GetSoundN(const ResourceId& file, unsigned nr);
+    std::string GetTextN(const ResourceId& file, unsigned nr);
+    libsiedler2::Archiv& GetArchive(const ResourceId& file);
+    glArchivItem_Bob* GetBobN(const ResourceId& file);
     glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
     glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
     /// Same as GetNationImage but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
@@ -167,18 +169,22 @@ public:
     std::array<glSmartBitmap, 5> gateway_cache;
 
 private:
+    static ResourceId MakeResourceId(const std::string& filepath);
+
     /// Get all files to load for a request of loading filepath
     std::vector<std::string> GetFilesToLoad(const std::string& filepath);
     bool MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archiv& otherArchiv);
 
-    /// Lädt alle Sounds.
+    /// Load all sounds
     bool LoadSounds();
 
-    /// Load a file into the archiv
-    bool LoadSingleFile(libsiedler2::Archiv& to, const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette = nullptr);
-    bool LoadArchiv(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    /// Load a file or directory into the archive
+    bool DoLoadFileOrDirectory(libsiedler2::Archiv& to, const std::string& filePath,
+                               const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    /// Load the file into the archive
+    bool DoLoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadOverrideDirectory(const std::string& path);
-    bool LoadFilesFromArray(const std::vector<unsigned>& files);
+    bool LoadFiles(const std::vector<unsigned>& fileIndices);
 
     template<typename T>
     static T convertChecked(libsiedler2::ArchivItem* item)
@@ -190,7 +196,7 @@ private:
     Log& logger_;
     const RttrConfig& config_;
     std::vector<OverrideFolder> overrideFolders_;
-    std::map<std::string, FileEntry> files_;
+    std::map<ResourceId, FileEntry> files_;
     std::vector<glFont> fonts;
 
     bool isWinterGFX_;

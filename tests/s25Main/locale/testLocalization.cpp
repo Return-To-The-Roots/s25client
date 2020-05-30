@@ -34,7 +34,7 @@ struct LocaleFixture
     {
         rttr::test::LogAccessor logAcc;
         LANGUAGES.setLanguage("en");
-        LOADER.LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", nullptr, true);
+        LOADER.Load(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", nullptr, true);
         RTTR_REQUIRE_LOG_CONTAINS("Loading", true);
     }
     std::vector<std::string> getLanguageCodes()
