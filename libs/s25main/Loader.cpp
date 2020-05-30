@@ -51,7 +51,6 @@
 #include "s25util/System.h"
 #include "s25util/dynamicUniqueCast.h"
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <algorithm>
@@ -72,22 +71,22 @@ Loader::Loader(Log& logger, const RttrConfig& config)
 
 Loader::~Loader() = default;
 
-glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned nr)
+glArchivItem_Bitmap* Loader::GetImageN(const ResourceId& file, unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv[nr]);
 }
 
-ITexture* Loader::GetTextureN(const std::string& file, unsigned nr)
+ITexture* Loader::GetTextureN(const ResourceId& file, unsigned nr)
 {
     return convertChecked<ITexture*>(files_[file].archiv[nr]);
 }
 
-glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string& name)
+glArchivItem_Bitmap* Loader::GetImage(const ResourceId& file, const std::string& name)
 {
     return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.find(name));
 }
 
-glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsigned nr)
+glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const ResourceId& file, unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv[nr]);
 }
@@ -97,29 +96,29 @@ glFont* Loader::GetFont(FontSize size)
     return fonts.empty() ? nullptr : &fonts[static_cast<unsigned>(size)];
 }
 
-libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, unsigned nr)
+libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const ResourceId& file, unsigned nr)
 {
     return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv[nr]);
 }
 
-SoundEffectItem* Loader::GetSoundN(const std::string& file, unsigned nr)
+SoundEffectItem* Loader::GetSoundN(const ResourceId& file, unsigned nr)
 {
     return dynamic_cast<SoundEffectItem*>(files_[file].archiv[nr]);
 }
 
-std::string Loader::GetTextN(const std::string& file, unsigned nr)
+std::string Loader::GetTextN(const ResourceId& file, unsigned nr)
 {
     auto* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv[nr]);
     return archiv ? archiv->getText() : "text missing";
 }
 
-libsiedler2::Archiv& Loader::GetArchive(const std::string& file)
+libsiedler2::Archiv& Loader::GetArchive(const ResourceId& file)
 {
     RTTR_Assert(helpers::contains(files_, file));
     return files_[file].archiv;
 }
 
-glArchivItem_Bob* Loader::GetBobN(const std::string& file)
+glArchivItem_Bob* Loader::GetBobN(const ResourceId& file)
 {
     return dynamic_cast<glArchivItem_Bob*>(files_[file].archiv.get(0));
 }
@@ -200,28 +199,26 @@ void Loader::ClearOverrideFolders()
 }
 
 /**
- *  Lädt alle allgemeinen Dateien.
+ *  Load general files required also outside of games
  *
- *  @return @p true bei Erfolg, @p false bei Fehler.
+ *  @return @p true on success, @p false on error.
  */
 bool Loader::LoadFilesAtStart()
 {
-    using namespace boost::assign; // Adds the vector += operator
-    std::vector<unsigned> files;
-
-    files += 5, 6, 7, 8, 9, 10, 17; // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
-    if(!LoadFilesFromArray(files))
+    std::vector<unsigned> files = {
+      5, 6, 7, 8, 9, 10, 17}; // Palettes:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
+    if(!LoadFiles(files))
         return false;
 
     if(!LoadFonts())
         return false;
 
     files.clear();
-    files += 11, 12,                                                                      // Menüdateien:  resource.dat, io.dat
-      102, 103,                                                                           // Hintergründe: setup013.lbm, setup015.lbm
-      64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84; // Die ganzen Spielladescreens.
+    files = {11,  12,  // Menu graphics:  resource.dat, io.dat
+             102, 103, // Backgrounds: setup013.lbm, setup015.lbm
+             64,  65,  66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84}; // Loading screens.
 
-    if(!LoadFilesFromArray(files))
+    if(!LoadFiles(files))
         return false;
 
     if(!LoadSounds())
@@ -230,17 +227,12 @@ bool Loader::LoadFilesAtStart()
     return LoadOverrideFiles();
 }
 
-/**
- *  Lädt alle Sounds.
- *
- *  @return liefert true bei Erfolg, false bei Fehler
- */
 bool Loader::LoadSounds()
 {
     std::string soundLSTPath = config_.ExpandPath(FILE_PATHS[55]);
     if(bfs::exists(soundLSTPath))
         bfs::remove(soundLSTPath);
-    if(!LoadFile(config_.ExpandPath(FILE_PATHS[49])))
+    if(!Load(config_.ExpandPath(FILE_PATHS[49])))
         return false;
     const Timer timer(true);
     logger_.write(_("Starting sound conversion..."));
@@ -258,7 +250,7 @@ bool Loader::LoadSounds()
     for(const auto& oggFile : oggFiles)
     {
         libsiedler2::Archiv sng;
-        if(!LoadArchiv(sng, oggFile))
+        if(!DoLoadFile(sng, oggFile))
             return false;
         auto music = libutil::dynamicUniqueCast<MusicItem>(sng.release(0));
         if(music)
@@ -280,7 +272,7 @@ bool Loader::LoadSounds()
 
 bool Loader::LoadFonts()
 {
-    if(!LoadFile(config_.ExpandPath("<RTTR_RTTR>/LSTS/fonts.LST"), GetPaletteN("pal5")))
+    if(!Load(config_.ExpandPath("<RTTR_RTTR>/LSTS/fonts.LST"), GetPaletteN("pal5")))
         return false;
     fonts.clear();
     const auto& loadedFonts = GetArchive("fonts");
@@ -357,47 +349,46 @@ void Loader::LoadDummyGUIFiles()
 }
 
 /**
- *  Lädt die Spieldateien.
+ *  Load files required during a game
  *
- *  @param[in] gfxset  Das GFX-Set
- *  @param[in] nations Array der zu ladenden Nationen.
+ *  @param[in] mapGfxPath Path to map gfx files
+ *  @param[in] isWinterGFX True iff winter nation files should be loaded
+ *  @param[in] nations True entry for each nation to load
  *
- *  @return @p true bei Erfolg, @p false bei Fehler.
+ *  @return @p true on success
  */
-bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<bool>& nations)
+bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations)
 {
-    if(NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS])
+    if(helpers::contains(nations, NAT_BABYLONIANS))
         AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME/Babylonier", false);
 
-    using namespace boost::assign; // Adds the vector += operator
-    std::vector<unsigned> files;
+    std::vector<unsigned> files = {26, 44, 45, 86, 92, // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
+                                   58, 59, 60, 61, 62,
+                                   63,              // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
+                                   35, 36, 37, 38}; // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
 
-    files += 26, 44, 45, 86, 92, // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
-      58, 59, 60, 61, 62, 63,    // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
-      35, 36, 37, 38;            // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
-
-    for(unsigned char i = 0; i < NUM_NATIVE_NATS; ++i)
+    // Add nation building graphics
+    for(Nation nation : nations)
     {
-        // ggf. Völker-Grafiken laden
-        if((i < nations.size() && nations[i]) || (i == NAT_ROMANS && NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS]))
-            files.push_back(27 + i + (isWinterGFX ? NUM_NATIVE_NATS : 0));
+        // New nations are handled by loading the override folder
+        if(nation < NUM_NATIVE_NATS)
+            files.push_back(27 + nation + (isWinterGFX ? NUM_NATIVE_NATS : 0));
     }
 
-    // Load files
-    if(!LoadFilesFromArray(files))
+    if(!LoadFiles(files))
         return false;
 
     const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
 
-    std::string mapGFXFile = config_.ExpandPath(mapGfxPath);
-    if(!LoadFile(mapGFXFile, pal5))
+    const std::string mapGFXFile = config_.ExpandPath(mapGfxPath);
+    if(!Load(mapGFXFile, pal5))
         return false;
-    map_gfx = &GetArchive(boost::algorithm::to_lower_copy(bfs::path(mapGFXFile).stem().string()));
+    map_gfx = &GetArchive(MakeResourceId(mapGFXFile));
 
     isWinterGFX_ = isWinterGFX;
 
-    // TODO: Only put actually required archives here
-    for(unsigned nation = 0; nation < NUM_NATS; ++nation)
+    nation_gfx = {};
+    for(Nation nation : nations)
         nation_gfx[nation] = &files_[NATION_GFXSET_Z[isWinterGFX ? 1 : 0][nation]].archiv;
 
     return true;
@@ -420,7 +411,7 @@ bool Loader::LoadFiles(const std::vector<std::string>& files)
     for(const std::string& curFile : files)
     {
         std::string filePath = config_.ExpandPath(curFile);
-        if(!LoadFile(filePath, pal5))
+        if(!Load(filePath, pal5))
         {
             logger_.write(_("Failed to load %s\n")) % filePath;
             return false;
@@ -485,6 +476,8 @@ void Loader::fillCaches()
 
     for(unsigned nation = 0; nation < NUM_NATS; ++nation)
     {
+        if(!nation_gfx[nation])
+            continue;
         // BUILDINGS
         for(unsigned type = 0; type < NUM_BUILDING_TYPES; ++type)
         {
@@ -873,6 +866,14 @@ std::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArch
     return destination;
 }
 
+ResourceId Loader::MakeResourceId(const std::string& filepath)
+{
+    // Take the filename without the extension
+    std::string name = bfs::path(filepath).filename().stem().string();
+    // Convert to lowercase
+    return ResourceId{boost::algorithm::to_lower_copy(name)};
+}
+
 std::vector<std::string> Loader::GetFilesToLoad(const std::string& filepath)
 {
     std::vector<std::string> result;
@@ -906,7 +907,7 @@ bool Loader::MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archi
         // Skip empty entries
         if(!otherArchiv[i])
             continue;
-        // If target entry is empty, just move the std::make_unique<one>()
+        // If target entry is empty, just move the new one
         if(!targetArchiv[i])
             targetArchiv.set(i, otherArchiv.release(i));
         else
@@ -930,14 +931,14 @@ bool Loader::MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archi
     return true;
 }
 
-bool Loader::LoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::Load(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette)
 {
     archiv.clear();
     const std::vector<std::string> filesToLoad = GetFilesToLoad(pfad);
     for(const std::string& curFilepath : filesToLoad)
     {
         libsiedler2::Archiv newEntries;
-        if(!LoadSingleFile(newEntries, curFilepath, palette))
+        if(!DoLoadFileOrDirectory(newEntries, curFilepath, palette))
             return false;
         if(!MergeArchives(archiv, newEntries))
             return false;
@@ -946,23 +947,20 @@ bool Loader::LoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, cons
 }
 
 /**
- *  @brief
+ *  @brief Load the given file or directory
  *
  *  @param pfad Path to file or directory
  *  @param palette Palette to use for possible graphic files
  */
-bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isFromOverrideDir)
+bool Loader::Load(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isFromOverrideDir)
 {
-    std::string lowerPath = boost::algorithm::to_lower_copy(pfad);
-    std::string name = bfs::path(lowerPath).filename().stem().string();
-
-    FileEntry& entry = files_[name];
+    FileEntry& entry = files_[MakeResourceId(pfad)];
     // Load if: 1. Not loaded
     //          2. archive content changed BUT we are not loading an override file or the file wasn't loaded since the last override
     //          change
     if(entry.archiv.empty() || (entry.filesUsed != GetFilesToLoad(pfad) && (!isFromOverrideDir || !entry.loadedAfterOverrideChange)))
     {
-        if(!LoadFile(entry.archiv, pfad, palette))
+        if(!Load(entry.archiv, pfad, palette))
             return false;
         entry.loadedAfterOverrideChange = true;
     }
@@ -974,9 +972,9 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
  *
  *  @param filePath Path to file or directory
  *  @param palette Palette to use for possible graphic files
- *  @param to Archtive to write to
+ *  @param to Archive to write to
  */
-bool Loader::LoadSingleFile(libsiedler2::Archiv& to, const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::DoLoadFileOrDirectory(libsiedler2::Archiv& to, const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette)
 {
     if(filePath.at(0) == '~')
         throw std::logic_error("You must use resolved pathes: " + filePath);
@@ -987,7 +985,7 @@ bool Loader::LoadSingleFile(libsiedler2::Archiv& to, const std::string& filePath
         return false;
     }
     if(boost::filesystem::is_regular_file(filePath))
-        return LoadArchiv(to, filePath, palette);
+        return DoLoadFile(to, filePath, palette);
     if(!boost::filesystem::is_directory(filePath))
     {
         logger_.write(_("Could not determine type of path %s\n")) % filePath;
@@ -1017,7 +1015,7 @@ bool Loader::LoadSingleFile(libsiedler2::Archiv& to, const std::string& filePath
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadArchiv(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::DoLoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette)
 {
     const Timer timer(true);
 
@@ -1045,25 +1043,18 @@ bool Loader::LoadOverrideDirectory(const std::string& path)
         return false;
     }
 
-    // yes, load all files in the directory
     const Timer timer(true);
 
     logger_.write(_("Loading LST,LBM,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % config_.ExpandPath(path);
 
-    std::vector<std::string> filesAndFolders = ListDir(path, "lst", true);
-    filesAndFolders = ListDir(path, "lbm", true, &filesAndFolders);
-    filesAndFolders = ListDir(path, "bob", true, &filesAndFolders);
-    filesAndFolders = ListDir(path, "idx", true, &filesAndFolders);
-    filesAndFolders = ListDir(path, "bmp", true, &filesAndFolders);
-    filesAndFolders = ListDir(path, "txt", true, &filesAndFolders);
-    filesAndFolders = ListDir(path, "ger", true, &filesAndFolders);
-    filesAndFolders = ListDir(path, "eng", true, &filesAndFolders);
-    filesAndFolders = ListDir(path, "ini", true, &filesAndFolders);
+    std::vector<std::string> filesAndFolders;
+    for(const auto ext : {"lst", "lbm", "bob", "idx", "bmp", "txt", "ger", "eng", "ini"})
+        filesAndFolders = ListDir(path, ext, true, &filesAndFolders);
 
     const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
     for(const std::string& i : filesAndFolders)
     {
-        if(!LoadFile(i, pal5, true))
+        if(!Load(i, pal5, true))
             return false;
     }
     logger_.write(_("finished in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
@@ -1075,13 +1066,11 @@ bool Loader::LoadOverrideDirectory(const std::string& path)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesFromArray(const std::vector<unsigned>& files)
+bool Loader::LoadFiles(const std::vector<unsigned>& fileIndices)
 {
-    std::vector<std::string> sFiles;
-    sFiles.reserve(files.size());
-    for(unsigned curFileIdx : files)
-        sFiles.push_back(FILE_PATHS[curFileIdx]);
-    return LoadFiles(sFiles);
+    std::vector<std::string> files(fileIndices.size());
+    std::transform(fileIndices.begin(), fileIndices.end(), files.begin(), [](unsigned idx) { return FILE_PATHS[idx]; });
+    return LoadFiles(files);
 }
 
 Loader& getGlobalLoader()

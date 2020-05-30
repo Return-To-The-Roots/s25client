@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "gameTypes/Nation.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -44,7 +45,7 @@ public:
 private:
     Loader& loader;
     std::shared_ptr<Game> game;
-    std::vector<bool> load_nations;
+    std::vector<Nation> usedNations;
     std::vector<std::string> textures;
 };
 

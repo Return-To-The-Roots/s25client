@@ -70,7 +70,7 @@ const std::string overrideFolder2 = RTTR_BASE_DIR "/tests/testData/override2";
 
 BOOST_AUTO_TEST_CASE(TestPredicate)
 {
-    BOOST_REQUIRE(LOADER.LoadFile(overrideFolder1 + "/test.GER"));
+    BOOST_REQUIRE(LOADER.Load(overrideFolder1 + "/test.GER"));
     const auto& txt = LOADER.GetArchive("test");
     BOOST_REQUIRE(compareTxts(txt, "1||20"));
     BOOST_TEST(compareTxts(txt, "1|").message().str() == "Item count mismatch [3 != 2]");
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(Overrides)
     rttr::test::LogAccessor logAcc;
     // No override folders
     LOADER.ClearOverrideFolders();
-    BOOST_REQUIRE(LOADER.LoadFile(mainFile));
+    BOOST_REQUIRE(LOADER.Load(mainFile));
     BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "0|10"));
 
     // 1 override folder
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(Overrides)
     BOOST_REQUIRE(LOADER.LoadOverrideFiles());
     BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "1||20"));
     // Explicitly loading a file overwrites this and override file is used
-    BOOST_REQUIRE(LOADER.LoadFile(mainFile));
+    BOOST_REQUIRE(LOADER.Load(mainFile));
     BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "1|10|20"));
     // LoadOverrideFiles has no effect (already loaded)
     BOOST_REQUIRE(LOADER.LoadOverrideFiles());
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(Overrides)
     BOOST_REQUIRE(LOADER.LoadOverrideFiles());
     BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "2||20|30"));
     // Explicitly loading a file overwrites this and override file is used
-    BOOST_REQUIRE(LOADER.LoadFile(mainFile));
+    BOOST_REQUIRE(LOADER.Load(mainFile));
     BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "2|10|20|30"));
     // LoadOverrideFiles has no effect (already loaded)
     BOOST_REQUIRE(LOADER.LoadOverrideFiles());

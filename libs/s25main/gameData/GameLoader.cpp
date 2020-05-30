@@ -31,10 +31,11 @@ GameLoader::~GameLoader() = default;
 
 void GameLoader::initNations()
 {
-    load_nations.clear();
-    load_nations.resize(NUM_NATS, false);
+    // Use set to filter duplicates
+    std::set<Nation> tmpUsedNations;
     for(unsigned i = 0; i < game->world_.GetNumPlayers(); ++i)
-        load_nations[game->world_.GetPlayer(i).nation] = true;
+        tmpUsedNations.insert(game->world_.GetPlayer(i).nation);
+    usedNations.assign(tmpUsedNations.begin(), tmpUsedNations.end());
 }
 
 void GameLoader::initTextures()
@@ -86,7 +87,7 @@ bool GameLoader::loadTextures()
         loader.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
 
     const LandscapeDesc& lt = game->world_.GetDescription().get(game->world_.GetLandscapeType());
-    if(!loader.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, load_nations) || !loader.LoadFiles(textures) || !loader.LoadOverrideFiles())
+    if(!loader.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, usedNations) || !loader.LoadFiles(textures) || !loader.LoadOverrideFiles())
     {
         return false;
     }
