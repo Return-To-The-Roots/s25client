@@ -19,12 +19,12 @@
 #include "ingameWindows/iwMusicPlayer.h"
 #include "mygettext/mygettext.h"
 #include "s25util/Log.h"
+#include "s25util/StringConversion.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 #include <random>
-#include <sstream>
 
 namespace bnw = boost::nowide;
 
@@ -115,8 +115,7 @@ bool Playlist::Load(Log& logger, const std::string& filename)
         return false;
 
     std::string line, random_str;
-    std::stringstream sline;
-    sline.imbue(std::locale("C"));
+    s25util::ClassicImbuedStream<std::stringstream> sline;
 
     if(!std::getline(in, line))
         return false;
