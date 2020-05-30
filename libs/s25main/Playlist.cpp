@@ -79,7 +79,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
         }
     }
 
-    bnw::ofstream out(filename.c_str());
+    s25util::ClassicImbuedStream<bnw::ofstream> out(filename.c_str());
     if(!out.good())
         return false;
 
