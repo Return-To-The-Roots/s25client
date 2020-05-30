@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskTextureTest.h"
 #include "Loader.h"
 #include "RttrConfig.h"
@@ -27,8 +26,8 @@
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "s25util/strAlgos.h"
 #include <glad/glad.h>
-#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem/path.hpp>
 #include <array>
 
@@ -84,7 +83,7 @@ void dskTextureTest::Msg_ComboSelectItem(const unsigned ctrl_id, const int selec
         return;
     const TerrainDesc& cur = desc.get(curTerrainIdx);
     LOADER.Load(RTTRCONFIG.ExpandPath(cur.texturePath));
-    std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
+    std::string textureName = s25util::toLower(bfs::path(cur.texturePath).stem().string());
     glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
     curTexture = LOADER.ExtractTexture(*texBmp, cur.posInTexture);
 }

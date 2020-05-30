@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
 #include "Loader.h"
+#include "RttrForeachPt.h"
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
@@ -32,8 +32,8 @@
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "s25util/Log.h"
 #include "s25util/dynamicUniqueCast.h"
+#include "s25util/strAlgos.h"
 #include <glad/glad.h>
-#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
 #include <set>
@@ -120,7 +120,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     for(DescIdx<TerrainDesc> curIdx : usedTerrains)
     {
         const TerrainDesc& cur = desc.get(curIdx);
-        std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
+        std::string textureName = s25util::toLower(bfs::path(cur.texturePath).stem().string());
         glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
         if(!texBmp)
             throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for terrain '" + cur.name + "'");
@@ -173,7 +173,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     for(DescIdx<EdgeDesc> curIdx : usedEdges)
     {
         const EdgeDesc& cur = desc.get(curIdx);
-        std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
+        std::string textureName = s25util::toLower(bfs::path(cur.texturePath).stem().string());
         glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
         if(!texBmp)
             throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for edge '" + cur.name + "'");
@@ -185,7 +185,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
         const LandscapeDesc& cur = desc.get(curIdx);
         for(unsigned i = 0; i < cur.roadTexDesc.size(); i++)
         {
-            std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.roadTexDesc[i].texturePath).stem().string());
+            std::string textureName = s25util::toLower(bfs::path(cur.roadTexDesc[i].texturePath).stem().string());
             glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
             if(!texBmp)
                 throw std::runtime_error("Invalid texture '" + cur.roadTexDesc[i].texturePath + "' for road in landscape '" + cur.name

@@ -29,8 +29,8 @@
 #include "network/GameClient.h"
 #include "gameData/ApplicationLoader.h"
 #include "s25util/Log.h"
+#include "s25util/strAlgos.h"
 #include <boost/filesystem.hpp>
-#include <algorithm>
 
 class SwitchOnStart : public ClientInterface
 {
@@ -61,8 +61,7 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
     const CreateServerInfo csi(singlePlayer ? ServerType::LOCAL : ServerType::DIRECT, SETTINGS.server.localPort, _("Unlimited Play"));
 
     LOG.write(_("Loading game...\n"));
-    std::string extension = mapOrReplayPath.extension().string();
-    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+    const std::string extension = s25util::toLower(mapOrReplayPath.extension().string());
 
     WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
