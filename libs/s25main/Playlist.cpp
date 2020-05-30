@@ -25,6 +25,7 @@
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 #include <random>
+#include <sstream>
 
 namespace bnw = boost::nowide;
 
