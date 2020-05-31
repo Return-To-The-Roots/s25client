@@ -19,6 +19,7 @@
 #include "ingameWindows/iwMusicPlayer.h"
 #include "mygettext/mygettext.h"
 #include "s25util/Log.h"
+#include "s25util/StringConversion.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/nowide/fstream.hpp>
@@ -79,7 +80,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
         }
     }
 
-    bnw::ofstream out(filename.c_str());
+    s25util::ClassicImbuedStream<bnw::ofstream> out(filename.c_str());
     if(!out.good())
         return false;
 
@@ -115,7 +116,7 @@ bool Playlist::Load(Log& logger, const std::string& filename)
         return false;
 
     std::string line, random_str;
-    std::stringstream sline;
+    s25util::ClassicImbuedStream<std::stringstream> sline;
 
     if(!std::getline(in, line))
         return false;
