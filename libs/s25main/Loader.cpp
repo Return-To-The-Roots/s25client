@@ -50,7 +50,7 @@
 #include "s25util/Log.h"
 #include "s25util/System.h"
 #include "s25util/dynamicUniqueCast.h"
-#include <boost/algorithm/string/case_conv.hpp>
+#include "s25util/strAlgos.h"
 #include <boost/filesystem.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <algorithm>
@@ -871,7 +871,7 @@ ResourceId Loader::MakeResourceId(const std::string& filepath)
     // Take the filename without the extension
     std::string name = bfs::path(filepath).filename().stem().string();
     // Convert to lowercase
-    return ResourceId{boost::algorithm::to_lower_copy(name)};
+    return ResourceId{s25util::toLower(name)};
 }
 
 std::vector<std::string> Loader::GetFilesToLoad(const std::string& filepath)
@@ -967,6 +967,11 @@ bool Loader::Load(const std::string& pfad, const libsiedler2::ArchivItem_Palette
     return true;
 }
 
+class NestedArchive : public libsiedler2::Archiv, public libsiedler2::ArchivItem
+{
+    RTTR_CLONEABLE(NestedArchive)
+};
+
 /**
  *  @brief Loads a file or directory into an archiv
  *
@@ -974,19 +979,17 @@ bool Loader::Load(const std::string& pfad, const libsiedler2::ArchivItem_Palette
  *  @param palette Palette to use for possible graphic files
  *  @param to Archive to write to
  */
-bool Loader::DoLoadFileOrDirectory(libsiedler2::Archiv& to, const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::DoLoadFileOrDirectory(libsiedler2::Archiv& to, const boost::filesystem::path& filePath,
+                                   const libsiedler2::ArchivItem_Palette* palette)
 {
-    if(filePath.at(0) == '~')
-        throw std::logic_error("You must use resolved pathes: " + filePath);
-
-    if(!boost::filesystem::exists(filePath))
+    if(!exists(filePath))
     {
         logger_.write(_("File or directory does not exist: %s\n")) % filePath;
         return false;
     }
-    if(boost::filesystem::is_regular_file(filePath))
+    if(is_regular_file(filePath))
         return DoLoadFile(to, filePath, palette);
-    if(!boost::filesystem::is_directory(filePath))
+    if(!is_directory(filePath))
     {
         logger_.write(_("Could not determine type of path %s\n")) % filePath;
         return false;
@@ -994,37 +997,46 @@ bool Loader::DoLoadFileOrDirectory(libsiedler2::Archiv& to, const std::string& f
 
     logger_.write(_("Loading directory %s\n")) % filePath;
     const Timer timer(true);
-    std::vector<libsiedler2::FileEntry> files = libsiedler2::ReadFolderInfo(filePath);
+    std::vector<libsiedler2::FileEntry> files = libsiedler2::ReadFolderInfo(filePath.string());
     logger_.write(_("  Loading %1% entries: ")) % files.size();
-    if(int ec = libsiedler2::LoadFolder(files, to, palette))
+
+    libsiedler2::Archiv* archiveToFill = &to;
+    // Emulate bob structure: Single file where first entry is the BOB archive
+    if(s25util::toLower(filePath.extension().string()) == ".bob")
+    {
+        if(to.empty())
+            to.alloc(1);
+        to.set(0, std::make_unique<NestedArchive>());
+        archiveToFill = static_cast<NestedArchive*>(to[0]);
+    }
+
+    if(int ec = libsiedler2::LoadFolder(files, *archiveToFill, palette))
     {
         logger_.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
         return false;
     }
+
     logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
     return true;
 }
 
 /**
- *  @brief Lädt eine Datei in ein Archiv.
+ *  @brief Load a single file into the archive
  *
- *  @param[in] pfad    Der Dateipfad
- *  @param[in] palette (falls benötigt) die Palette.
- *  @param[in] archiv  Das Zielarchivinfo.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
+ *  @param[in] archiv Archive to add file to
+ *  @param[in] filePath Path to file
+ *  @param[in] palette palette to use if required
  */
-bool Loader::DoLoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::DoLoadFile(libsiedler2::Archiv& archiv, const boost::filesystem::path& filePath,
+                        const libsiedler2::ArchivItem_Palette* palette)
 {
     const Timer timer(true);
 
-    std::string file = config_.ExpandPath(pfad);
-
-    logger_.write(_("Loading \"%s\": ")) % file;
+    logger_.write(_("Loading \"%s\": ")) % filePath;
     fflush(stdout);
 
-    if(int ec = libsiedler2::Load(file, archiv, palette))
+    if(int ec = libsiedler2::Load(filePath.string(), archiv, palette))
     {
         logger_.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
         return false;
