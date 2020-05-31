@@ -29,6 +29,7 @@
 #include "gameTypes/Nation.h"
 #include "gameData/AnimalConsts.h"
 #include "libsiedler2/Archiv.h"
+#include <boost/filesystem/path.hpp>
 #include <array>
 #include <cstdint>
 #include <map>
@@ -179,10 +180,11 @@ private:
     bool LoadSounds();
 
     /// Load a file or directory into the archive
-    bool DoLoadFileOrDirectory(libsiedler2::Archiv& to, const std::string& filePath,
+    bool DoLoadFileOrDirectory(libsiedler2::Archiv& to, const boost::filesystem::path& filePath,
                                const libsiedler2::ArchivItem_Palette* palette = nullptr);
     /// Load the file into the archive
-    bool DoLoadFile(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool DoLoadFile(libsiedler2::Archiv& archiv, const boost::filesystem::path& filePath,
+                    const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadOverrideDirectory(const std::string& path);
     bool LoadFiles(const std::vector<unsigned>& fileIndices);
 
