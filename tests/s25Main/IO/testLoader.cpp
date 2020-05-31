@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "test/testConfig.h"
 #include "libsiedler2/ArchivItem_Text.h"
+#include "s25util/Log.h"
 #include "s25util/Tokenizer.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
+
+class LoaderFixture
+{
+public:
+    std::unique_ptr<Loader> loader;
+    LoaderFixture() : loader(std::make_unique<Loader>(LOG, RTTRCONFIG)) {}
+};
 
 BOOST_AUTO_TEST_SUITE(LoaderTests)
 
@@ -67,11 +75,12 @@ static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv
 const std::string mainFile = RTTR_BASE_DIR "/tests/testData/test.GER";
 const std::string overrideFolder1 = RTTR_BASE_DIR "/tests/testData/override1";
 const std::string overrideFolder2 = RTTR_BASE_DIR "/tests/testData/override2";
+const std::string overrideFolder3 = RTTR_BASE_DIR "/tests/testData/override3";
 
-BOOST_AUTO_TEST_CASE(TestPredicate)
+BOOST_FIXTURE_TEST_CASE(TestPredicate, LoaderFixture)
 {
-    BOOST_REQUIRE(LOADER.Load(overrideFolder1 + "/test.GER"));
-    const auto& txt = LOADER.GetArchive("test");
+    BOOST_REQUIRE(loader->Load(overrideFolder1 + "/test.GER"));
+    const auto& txt = loader->GetArchive("test");
     BOOST_REQUIRE(compareTxts(txt, "1||20"));
     BOOST_TEST(compareTxts(txt, "1|").message().str() == "Item count mismatch [3 != 2]");
     BOOST_TEST(compareTxts(txt, "1||20|2").message().str() == "Item count mismatch [3 != 4]");
@@ -80,39 +89,68 @@ BOOST_AUTO_TEST_CASE(TestPredicate)
     BOOST_TEST(compareTxts(txt, "4||20").message().str() == "Mismatch at 0 [1 != 4]");
 }
 
-BOOST_AUTO_TEST_CASE(Overrides)
+BOOST_FIXTURE_TEST_CASE(Overrides, LoaderFixture)
 {
     rttr::test::LogAccessor logAcc;
+
     // No override folders
-    LOADER.ClearOverrideFolders();
-    BOOST_REQUIRE(LOADER.Load(mainFile));
-    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "0|10"));
+    BOOST_REQUIRE(loader->Load(mainFile));
+    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "0|10"));
 
     // 1 override folder
-    LOADER.AddOverrideFolder(overrideFolder1);
+    loader->AddOverrideFolder(overrideFolder1);
     // LoadOverrideFiles loads simply the override file itself
-    BOOST_REQUIRE(LOADER.LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "1||20"));
+    BOOST_REQUIRE(loader->LoadOverrideFiles());
+    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "1||20"));
     // Explicitly loading a file overwrites this and override file is used
-    BOOST_REQUIRE(LOADER.Load(mainFile));
-    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "1|10|20"));
+    BOOST_REQUIRE(loader->Load(mainFile));
+    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "1|10|20"));
     // LoadOverrideFiles has no effect (already loaded)
-    BOOST_REQUIRE(LOADER.LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "1|10|20"));
+    BOOST_REQUIRE(loader->LoadOverrideFiles());
+    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "1|10|20"));
 
     // 2 override folders
-    LOADER.ClearOverrideFolders();
-    LOADER.AddOverrideFolder(overrideFolder1);
-    LOADER.AddOverrideFolder(overrideFolder2);
+    loader->ClearOverrideFolders();
+    loader->AddOverrideFolder(overrideFolder1);
+    loader->AddOverrideFolder(overrideFolder2);
     // LoadOverrideFiles loads override file from1 with override from 2
-    BOOST_REQUIRE(LOADER.LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "2||20|30"));
+    BOOST_REQUIRE(loader->LoadOverrideFiles());
+    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "2||20|30"));
     // Explicitly loading a file overwrites this and override file is used
-    BOOST_REQUIRE(LOADER.Load(mainFile));
-    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "2|10|20|30"));
+    BOOST_REQUIRE(loader->Load(mainFile));
+    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "2|10|20|30"));
     // LoadOverrideFiles has no effect (already loaded)
-    BOOST_REQUIRE(LOADER.LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(LOADER.GetArchive("test"), "2|10|20|30"));
+    BOOST_REQUIRE(loader->LoadOverrideFiles());
+    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "2|10|20|30"));
+
+    // Load an override with a double extension
+    loader->ClearOverrideFolders();
+    loader->AddOverrideFolder(overrideFolder3);
+    BOOST_REQUIRE(loader->Load(mainFile));
+    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "Hello World Override|10"));
+
+    // Avoid log cluttering
+    logAcc.clearLog();
+}
+
+BOOST_FIXTURE_TEST_CASE(BobOverrides, LoaderFixture)
+{
+    rttr::test::LogAccessor logAcc;
+
+    const std::string bobFile = RTTR_BASE_DIR "/tests/testData/foo.bob";
+    BOOST_REQUIRE(loader->Load(bobFile));
+    const auto& bob = loader->GetArchive("foo");
+    // Bob override folders have special handling: They are converted into an archive containing the elements of the folder
+    // as this is how bob files are after loading
+    BOOST_TEST_REQUIRE(bob.size() == 1u);
+    const auto* nested = dynamic_cast<const libsiedler2::Archiv*>(bob[0]);
+    BOOST_TEST_REQUIRE(nested);
+    BOOST_TEST_REQUIRE(nested->size() == 2u);
+    for(unsigned i : {0, 1})
+        BOOST_TEST_REQUIRE(dynamic_cast<const libsiedler2::ArchivItem_Text*>(nested->get(i)));
+    BOOST_TEST(static_cast<const libsiedler2::ArchivItem_Text*>(nested->get(0))->getText() == "Hello");
+    BOOST_TEST(static_cast<const libsiedler2::ArchivItem_Text*>(nested->get(1))->getText() == "World");
+
     // Avoid log cluttering
     logAcc.clearLog();
 }
