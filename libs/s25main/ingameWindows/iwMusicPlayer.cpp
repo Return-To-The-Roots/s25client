@@ -329,10 +329,10 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
         // Add Track directory of tracks - Window
         case 2:
         {
-            std::vector<std::string> oggFiles = ListDir(msg, "ogg");
+            std::vector<boost::filesystem::path> oggFiles = ListDir(msg, "ogg");
 
-            for(auto& oggFile : oggFiles)
-                GetCtrl<ctrlList>(0)->AddString(oggFile);
+            for(const auto& oggFile : oggFiles)
+                GetCtrl<ctrlList>(0)->AddString(oggFile.string());
 
             changed = true;
         }
@@ -385,15 +385,15 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
 {
     GetCtrl<ctrlComboBox>(2)->DeleteAllItems();
 
-    std::vector<std::string> playlists = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[90]), "pll");
+    std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[90]), "pll");
 
     unsigned i = 0;
-    for(boost::filesystem::path playlistPath : playlists)
+    for(const auto& playlistPath : playlists)
     {
         // Reduce to pure filename
-        playlistPath = playlistPath.stem();
-        GetCtrl<ctrlComboBox>(2)->AddString(playlistPath.string());
-        if(playlistPath == highlight_entry)
+        const auto name = playlistPath.stem().string();
+        GetCtrl<ctrlComboBox>(2)->AddString(name);
+        if(name == highlight_entry)
             GetCtrl<ctrlComboBox>(2)->SetSelection(i);
         ++i;
     }

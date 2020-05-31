@@ -73,15 +73,15 @@ class Loader
     {
         libsiedler2::Archiv archiv;
         /// List of files used to build this archiv
-        std::vector<std::string> filesUsed;
+        std::vector<boost::filesystem::path> filesUsed;
         bool loadedAfterOverrideChange;
     };
     struct OverrideFolder
     {
         /// Path to the folder
-        std::string path;
+        boost::filesystem::path path;
         /// Filenames in the folder
-        std::vector<std::string> files;
+        std::vector<boost::filesystem::path> files;
     };
 
 public:
@@ -108,9 +108,10 @@ public:
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
     /// Load a file and save it into the loader repo
-    bool Load(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr, bool isFromOverrideDir = false);
+    bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr,
+              bool isFromOverrideDir = false);
     /// Load a file or directory and its overrides into the archiv
-    bool Load(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool Load(libsiedler2::Archiv& archiv, const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
     static std::unique_ptr<glArchivItem_Bitmap> ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
@@ -170,10 +171,10 @@ public:
     std::array<glSmartBitmap, 5> gateway_cache;
 
 private:
-    static ResourceId MakeResourceId(const std::string& filepath);
+    static ResourceId MakeResourceId(const boost::filesystem::path& filepath);
 
     /// Get all files to load for a request of loading filepath
-    std::vector<std::string> GetFilesToLoad(const std::string& filepath);
+    std::vector<boost::filesystem::path> GetFilesToLoad(const boost::filesystem::path& filepath);
     bool MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archiv& otherArchiv);
 
     /// Load all sounds
@@ -185,7 +186,7 @@ private:
     /// Load the file into the archive
     bool DoLoadFile(libsiedler2::Archiv& archiv, const boost::filesystem::path& filePath,
                     const libsiedler2::ArchivItem_Palette* palette = nullptr);
-    bool LoadOverrideDirectory(const std::string& path);
+    bool LoadOverrideDirectory(const boost::filesystem::path& path);
     bool LoadFiles(const std::vector<unsigned>& fileIndices);
 
     template<typename T>

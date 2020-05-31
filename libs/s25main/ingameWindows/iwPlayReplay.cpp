@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwPlayReplay.h"
 #include "ListDir.h"
 #include "Loader.h"
@@ -35,6 +34,8 @@
 #include "s25util/Log.h"
 #include <boost/filesystem.hpp>
 
+namespace bfs = boost::filesystem;
+
 namespace {
 class SwitchOnStart : public ClientInterface
 {
@@ -45,7 +46,7 @@ public:
     void CI_GameLoading(const std::shared_ptr<Game>& game) override { WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game)); }
 };
 
-std::vector<std::string> GetReplays()
+std::vector<bfs::path> GetReplays()
 {
     return ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[51]), "rpl");
 }
@@ -89,18 +90,18 @@ void iwPlayReplay::PopulateTable()
 
     unsigned numInvalid = 0;
 
-    std::vector<std::string> replays = GetReplays();
-    for(auto& it : replays)
+    const std::vector<bfs::path> replays = GetReplays();
+    for(const auto& path : replays)
     {
         Replay replay;
 
         // Datei laden
-        if(!replay.LoadHeader(it, false))
+        if(!replay.LoadHeader(path.string(), false))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
             {
-                LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % it
+                LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
                   % (replay.GetLastErrorMsg().empty() ? _("Unknown") : replay.GetLastErrorMsg());
             }
             numInvalid++;
@@ -121,14 +122,13 @@ void iwPlayReplay::PopulateTable()
         }
 
         // Dateiname noch rausextrahieren aus dem Pfad
-        bfs::path path = it;
         if(!path.has_filename())
             continue;
         std::string fileName = path.filename().string();
         std::string lastGF = helpers::toString(replay.GetLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
-        table->AddRow({fileName, dateStr, tmp_players, lastGF, it});
+        table->AddRow({fileName, dateStr, tmp_players, lastGF, path.string()});
     }
 
     // Erst einmal nach Dateiname sortieren
@@ -198,8 +198,8 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     // Sollen alle Replays gelöscht werden?
     if(msgbox_id == 1 && mbr == MSR_YES)
     {
-        std::vector<std::string> replays = GetReplays();
-        for(auto& replay : replays)
+        const std::vector<bfs::path> replays = GetReplays();
+        for(const auto& replay : replays)
         {
             boost::system::error_code ec;
             bfs::remove(replay, ec);
@@ -209,11 +209,11 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         GetCtrl<ctrlTable>(0)->DeleteAllItems();
     } else if(msgbox_id == 3 && mbr == MSR_YES)
     {
-        std::vector<std::string> replays = GetReplays();
-        for(auto& it : replays)
+        const std::vector<bfs::path> replays = GetReplays();
+        for(const auto& it : replays)
         {
             Replay replay;
-            if(!replay.LoadHeader(it, false))
+            if(!replay.LoadHeader(it.string(), false))
             {
                 replay.Close();
                 boost::system::error_code ec;

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskSinglePlayer.h"
 #include "ListDir.h"
 #include "Loader.h"
@@ -33,6 +32,8 @@
 #include "ingameWindows/iwSave.h"
 #include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
+
+namespace bfs = boost::filesystem;
 
 static CreateServerInfo createLocalGameInfo(const std::string& name)
 {
@@ -69,42 +70,38 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 3: // "Letztes Spiel fortsetzen"
         {
-            std::vector<std::string> savFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
+            const std::vector<bfs::path> savFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
 
-            bfs::path path;
+            bfs::path mostRecentFilepath;
             s25util::time64_t recent = 0;
-            for(auto& savFile : savFiles)
+            for(const auto& savFile : savFiles)
             {
                 Savegame save;
 
                 // Datei öffnen
-                if(!save.Load(savFile, false, false))
+                if(!save.Load(savFile.string(), false, false))
                     continue;
 
                 if(save.GetSaveTime() > recent)
                 {
                     recent = save.GetSaveTime();
-                    path = savFile;
+                    mostRecentFilepath = savFile;
                 }
             }
 
             if(recent != 0)
             {
                 // Dateiname noch rausextrahieren aus dem Pfad
-                if(!path.has_filename())
+                if(!mostRecentFilepath.has_filename())
                     return;
-                bfs::path fileName = path.filename();
-
-                // ".sav" am Ende weg
-                RTTR_Assert(fileName.has_extension());
-                fileName.replace_extension();
+                const bfs::path name = mostRecentFilepath.stem();
 
                 // Server info
-                CreateServerInfo csi = createLocalGameInfo(fileName.string());
+                CreateServerInfo csi = createLocalGameInfo(name.string());
 
                 WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
-                if(GAMECLIENT.HostGame(csi, path.string(), MAPTYPE_SAVEGAME))
+                if(GAMECLIENT.HostGame(csi, mostRecentFilepath.string(), MAPTYPE_SAVEGAME))
                     WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPleaseWait>());
                 else
                 {

@@ -244,7 +244,7 @@ bool Loader::LoadSounds()
     logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
     const std::string oggPath = config_.ExpandPath(FILE_PATHS[50]);
-    std::vector<std::string> oggFiles = ListDir(oggPath, "ogg");
+    std::vector<bfs::path> oggFiles = ListDir(oggPath, "ogg");
 
     sng_lst.reserve(oggFiles.size());
     for(const auto& oggFile : oggFiles)
@@ -866,33 +866,30 @@ std::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArch
     return destination;
 }
 
-ResourceId Loader::MakeResourceId(const std::string& filepath)
+/// Create a resource id which is the file name without the extension and converted to lowercase
+ResourceId Loader::MakeResourceId(const bfs::path& filepath)
 {
-    // Take the filename without the extension
-    std::string name = bfs::path(filepath).filename().stem().string();
-    // Convert to lowercase
-    return ResourceId{s25util::toLower(name)};
+    const auto name = filepath.stem();
+    return ResourceId{s25util::toLower(name.string())};
 }
 
-std::vector<std::string> Loader::GetFilesToLoad(const std::string& filepath)
+std::vector<bfs::path> Loader::GetFilesToLoad(const bfs::path& filepath)
 {
-    std::vector<std::string> result;
+    std::vector<bfs::path> result;
     result.push_back(filepath);
-    const std::string filename = bfs::path(filepath).filename().string();
+    const ResourceId resId = MakeResourceId(filepath);
     for(const OverrideFolder& overrideFolder : overrideFolders_)
     {
-        for(const std::string& overrideFile : overrideFolder.files)
+        auto itFile = helpers::find_if(overrideFolder.files, [&resId](const bfs::path& file) { return MakeResourceId(file) == resId; });
+        if(itFile != overrideFolder.files.end())
         {
-            if(overrideFile == filename)
-            {
-                const auto fullFilePath = bfs::path(overrideFolder.path) / overrideFile;
-                if(!bfs::exists(fullFilePath))
-                    continue;
-                const std::string overideFilepath = fullFilePath.string(); // NOLINT
-                if(!helpers::contains(result, overideFilepath))
-                    result.push_back(overideFilepath);
-                break;
-            }
+            const auto fullFilePath = overrideFolder.path / *itFile;
+            if(!bfs::exists(fullFilePath))
+                logger_.write(_("Skipping removed file %1% when checking for files to load for %2%")) % fullFilePath % resId;
+            else if(helpers::contains(result, fullFilePath))
+                logger_.write(_("Skipping duplicate override file %1% for %2%")) % fullFilePath % resId;
+            else
+                result.push_back(fullFilePath);
         }
     }
     return result;
@@ -931,11 +928,11 @@ bool Loader::MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archi
     return true;
 }
 
-bool Loader::Load(libsiedler2::Archiv& archiv, const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::Load(libsiedler2::Archiv& archiv, const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette)
 {
     archiv.clear();
-    const std::vector<std::string> filesToLoad = GetFilesToLoad(pfad);
-    for(const std::string& curFilepath : filesToLoad)
+    const std::vector<bfs::path> filesToLoad = GetFilesToLoad(path);
+    for(const bfs::path& curFilepath : filesToLoad)
     {
         libsiedler2::Archiv newEntries;
         if(!DoLoadFileOrDirectory(newEntries, curFilepath, palette))
@@ -952,7 +949,7 @@ bool Loader::Load(libsiedler2::Archiv& archiv, const std::string& pfad, const li
  *  @param pfad Path to file or directory
  *  @param palette Palette to use for possible graphic files
  */
-bool Loader::Load(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isFromOverrideDir)
+bool Loader::Load(const bfs::path& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isFromOverrideDir)
 {
     FileEntry& entry = files_[MakeResourceId(pfad)];
     // Load if: 1. Not loaded
@@ -1047,7 +1044,7 @@ bool Loader::DoLoadFile(libsiedler2::Archiv& archiv, const boost::filesystem::pa
     return true;
 }
 
-bool Loader::LoadOverrideDirectory(const std::string& path)
+bool Loader::LoadOverrideDirectory(const bfs::path& path)
 {
     if(!bfs::is_directory(path))
     {
@@ -1057,16 +1054,19 @@ bool Loader::LoadOverrideDirectory(const std::string& path)
 
     const Timer timer(true);
 
-    logger_.write(_("Loading LST,LBM,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % config_.ExpandPath(path);
+    logger_.write(_("Loading LST,LBM,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % path;
 
-    std::vector<std::string> filesAndFolders;
+    std::vector<bfs::path> filesAndFolders;
     for(const auto ext : {"lst", "lbm", "bob", "idx", "bmp", "txt", "ger", "eng", "ini"})
-        filesAndFolders = ListDir(path, ext, true, &filesAndFolders);
+    {
+        std::vector<bfs::path> curFiles = ListDir(path, ext, true);
+        filesAndFolders.insert(filesAndFolders.end(), curFiles.begin(), curFiles.end());
+    }
 
     const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
-    for(const std::string& i : filesAndFolders)
+    for(const bfs::path& curPath : filesAndFolders)
     {
-        if(!Load(i, pal5, true))
+        if(!Load(curPath, pal5, true))
             return false;
     }
     logger_.write(_("finished in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
