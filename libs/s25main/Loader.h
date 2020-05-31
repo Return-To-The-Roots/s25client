@@ -181,11 +181,10 @@ private:
     bool LoadSounds();
 
     /// Load a file or directory into the archive
-    bool DoLoadFileOrDirectory(libsiedler2::Archiv& to, const boost::filesystem::path& filePath,
-                               const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    libsiedler2::Archiv DoLoadFileOrDirectory(const boost::filesystem::path& filePath,
+                                              const libsiedler2::ArchivItem_Palette* palette = nullptr);
     /// Load the file into the archive
-    bool DoLoadFile(libsiedler2::Archiv& archiv, const boost::filesystem::path& filePath,
-                    const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    libsiedler2::Archiv DoLoadFile(const boost::filesystem::path& filePath, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadOverrideDirectory(const boost::filesystem::path& path);
     bool LoadFiles(const std::vector<unsigned>& fileIndices);
 
