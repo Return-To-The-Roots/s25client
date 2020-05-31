@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "DriverWrapper.h"
 #include "ListDir.h"
 #include "RttrConfig.h"
@@ -28,6 +27,7 @@
 #include "s25util/Log.h"
 #include "s25util/error.h"
 #include "s25util/warningSuppression.h"
+#include <array>
 
 namespace dll = boost::dll;
 
@@ -159,23 +159,23 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 #endif // !_WIN32
 
     LOG.write(_("Searching for drivers in %s\n")) % path;
-    std::vector<std::string> driver_files = ListDir(path, extension, false);
+    const std::vector<boost::filesystem::path> driver_files = ListDir(path, extension, false);
 
     for(auto path : driver_files)
     {
 #ifdef _WIN32
-        // check filename to "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
-        size_t filepos = path.find_last_of("/\\");
-        if(filepos != std::string::npos)
-        {
-            std::string file = path.substr(filepos + 1);
+        // check filename for "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
+        const std::string filename = path.filename().string();
+        const std::array<std::string, 2> blacklistedPrefixes =
 #ifdef _DEBUG
-            if(file.substr(0, 4) == "rls_" || file.substr(0, 8) == "Release_")
+          {"rls_", "Release_"};
 #else
-            if(file.substr(0, 4) == "dbg_" || file.substr(0, 6) == "Debug_")
+          {"dbg_", "Debug_"};
 #endif
-                continue;
-        }
+        const bool isBlacklisted = helpers::contains_if(
+          blacklistedPrefixes, [&filename](const std::string& prefix) { return filename.substr(0, prefix.length()) == prefix; });
+        if(isBlacklisted)
+            continue;
 #endif
         std::string nameOrError;
         if(!CheckLibrary(path, dt, nameOrError))

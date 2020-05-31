@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,6 +24,7 @@
 #include "network/ClientInterface.h"
 #include "network/CreateServerInfo.h"
 #include "liblobby/LobbyInterface.h"
+#include <boost/filesystem/path.hpp>
 #include <string>
 #include <vector>
 
@@ -40,7 +41,7 @@ public:
 private:
     void Draw_() override;
 
-    void FillTable(const std::vector<std::string>& files);
+    void FillTable(const std::vector<boost::filesystem::path>& files);
 
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
@@ -79,7 +80,7 @@ private:
     /// Mapping of s2 ids to landscape names
     std::map<uint8_t, std::string> landscapeNames;
     /// Maps that we already know are broken
-    std::vector<std::string> brokenMapPaths;
+    std::vector<boost::filesystem::path> brokenMapPaths;
 };
 
 #endif //! dskSELECTMAP_H_INCLUDED

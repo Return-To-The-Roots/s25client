@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,14 +20,13 @@
 
 #pragma once
 
+#include <boost/filesystem/path.hpp>
 #include <string>
 #include <vector>
 
 /// List all files in the given path with a given extension
 /// @extension Extension that files/folders must have (dot is added automatically to front) or empty to list all
 /// @includeDirectories tells whether directories should be added too
-/// @appendTo Appends to given vector (if specified)
-std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories = false,
-                                 const std::vector<std::string>* appendTo = nullptr);
+std::vector<boost::filesystem::path> ListDir(const boost::filesystem::path& path, std::string extension, bool includeDirectories = false);
 
 #endif // LISTDIR_H_INCLUDED

@@ -23,16 +23,11 @@
 namespace bfs = boost::filesystem;
 
 // lists the files of a directory
-std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories,
-                                 const std::vector<std::string>* const appendTo)
+std::vector<bfs::path> ListDir(const bfs::path& path, std::string extension, bool includeDirectories)
 {
-    std::vector<std::string> result;
-    if(appendTo)
-        result = *appendTo;
+    std::vector<bfs::path> result;
 
-    bfs::path fullPath(path);
-
-    if(!bfs::exists(fullPath))
+    if(!bfs::exists(path))
         return result;
 
     if(!extension.empty())
@@ -43,21 +38,20 @@ std::vector<std::string> ListDir(const std::string& path, std::string extension,
             extension = "." + extension;
     }
 
-    for(const auto& it : bfs::directory_iterator(fullPath))
+    for(const auto& it : bfs::directory_iterator(path))
     {
-        if(bfs::is_directory(it.status()) && !includeDirectories)
+        if(!includeDirectories && bfs::is_directory(it.status()))
             continue;
-
-        bfs::path curPath = it.path();
-        curPath.make_preferred();
 
         if(!extension.empty())
         {
-            const std::string curExt = s25util::toLower(curPath.extension().string());
+            const std::string curExt = s25util::toLower(it.path().extension().string());
             if(curExt != extension)
                 continue;
         }
-        result.push_back(curPath.string());
+        bfs::path curPath = it.path();
+        curPath.make_preferred();
+        result.emplace_back(std::move(curPath));
     }
 
     std::sort(result.begin(), result.end());

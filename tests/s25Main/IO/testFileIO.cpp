@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "ListDir.h"
 #include <s25util/utf8.h>
 #include <boost/filesystem.hpp>
@@ -23,6 +22,9 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
+
+namespace bfs = boost::filesystem;
+namespace bnw = boost::nowide;
 
 BOOST_AUTO_TEST_SUITE(FileIOSuite)
 
@@ -62,32 +64,19 @@ struct FileOpenFixture
 
 BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
 {
-    std::string parentPath = tmpPath.string();
-    std::vector<std::string> files = ListDir(parentPath, "txt");
+    const std::vector<bfs::path> files = ListDir(tmpPath, "txt");
     BOOST_TEST_REQUIRE(files.size() == 3u);
-    for(const std::string& file : files)
+    for(const bfs::path& file : files)
     {
         BOOST_REQUIRE(bfs::exists(file));
-        BOOST_REQUIRE(bfs::path(file).is_absolute());
-        // Filepath must be utf8 encoded
-        BOOST_REQUIRE(s25util::isValidUTF8(file));
+        BOOST_REQUIRE(file.is_absolute());
 
-        bfs::path filePath(file);
         // String result must still be utf8
-        BOOST_REQUIRE(s25util::isValidUTF8(filePath.string()));
+        BOOST_REQUIRE(s25util::isValidUTF8(file.string()));
 
         // Scopes for auto-close
         {
             // path input
-            bnw::ifstream sFile(filePath);
-            BOOST_REQUIRE(sFile);
-            std::string content;
-            BOOST_REQUIRE(sFile >> content);
-            BOOST_TEST_REQUIRE(content == "OK");
-        }
-
-        {
-            // string input
             bnw::ifstream sFile(file);
             BOOST_REQUIRE(sFile);
             std::string content;

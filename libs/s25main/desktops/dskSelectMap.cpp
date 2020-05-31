@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h"
 #include "dskSelectMap.h"
 #include "ListDir.h"
 #include "Loader.h"
@@ -54,6 +54,8 @@
 #include <boost/filesystem/operations.hpp>
 #include <utility>
 //#include <boost/thread.hpp>
+
+namespace bfs = boost::filesystem;
 
 /**
  *  Konstruktor von @p dskSelectMap.
@@ -413,17 +415,17 @@ void dskSelectMap::Draw_()
     Desktop::Draw_();
 }
 
-void dskSelectMap::FillTable(const std::vector<std::string>& files)
+void dskSelectMap::FillTable(const std::vector<bfs::path>& files)
 {
     auto* table = GetCtrl<ctrlTable>(1);
 
-    for(const std::string& filePath : files)
+    for(const bfs::path& filePath : files)
     {
         if(helpers::contains(brokenMapPaths, filePath))
             continue;
         // Karteninformationen laden
         libsiedler2::Archiv map;
-        if(libsiedler2::loader::LoadMAP(filePath, map, true) != 0)
+        if(libsiedler2::loader::LoadMAP(filePath.string(), map, true) != 0)
             continue;
 
         const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map[0])->getHeader();
@@ -443,7 +445,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
             name += " (*)";
         std::string author = s25util::ansiToUTF8(header.getAuthor());
 
-        table->AddRow({name, author, players, landscapeNames[header.getGfxSet()], size, filePath});
+        table->AddRow({name, author, players, landscapeNames[header.getGfxSet()], size, filePath.string()});
     }
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwSave.h"
 #include "ListDir.h"
 #include "Loader.h"
@@ -74,13 +73,13 @@ void iwSaveLoad::RefreshTable()
 
     GetCtrl<ctrlTable>(0)->DeleteAllItems();
 
-    std::vector<std::string> saveFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
-    for(auto& saveFile : saveFiles)
+    std::vector<boost::filesystem::path> saveFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
+    for(const auto& saveFile : saveFiles)
     {
         Savegame save;
 
         // Datei öffnen
-        if(!save.Load(saveFile, false, false))
+        if(!save.Load(saveFile.string(), false, false))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
@@ -95,16 +94,15 @@ void iwSaveLoad::RefreshTable()
         std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
 
         // Dateiname noch rausextrahieren aus dem Pfad
-        bfs::path path = saveFile;
-        if(!path.has_filename())
+        if(!saveFile.has_filename())
             continue;
         // Just filename w/o extension
-        bfs::path fileName = path.stem();
+        const auto fileName = saveFile.stem().string();
 
         std::string startGF = helpers::toString(save.start_gf);
 
         // Und das Zeug zur Tabelle hinzufügen
-        GetCtrl<ctrlTable>(0)->AddRow({fileName.string(), save.GetMapName(), dateStr, startGF, saveFile});
+        GetCtrl<ctrlTable>(0)->AddRow({fileName, save.GetMapName(), dateStr, startGF, saveFile.string()});
     }
 
     // Nach Zeit Sortieren
