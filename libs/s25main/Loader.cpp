@@ -869,7 +869,12 @@ std::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArch
 /// Create a resource id which is the file name without the extension and converted to lowercase
 ResourceId Loader::MakeResourceId(const bfs::path& filepath)
 {
-    const auto name = filepath.stem();
+    auto name = filepath.stem();
+    // remove all additional extensions
+    while(name.has_extension())
+    {
+        name = name.replace_extension();
+    }
     return ResourceId{s25util::toLower(name.string())};
 }
 
