@@ -161,7 +161,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
     LOG.write(_("Searching for drivers in %s\n")) % path;
     const std::vector<boost::filesystem::path> driver_files = ListDir(path, extension, false);
 
-    for(auto path : driver_files)
+    for(const auto& path : driver_files)
     {
 #ifdef _WIN32
         // check filename for "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)

@@ -1002,15 +1002,15 @@ bool Loader::Load(libsiedler2::Archiv& archiv, const bfs::path& path, const libs
  *  @param pfad Path to file or directory
  *  @param palette Palette to use for possible graphic files
  */
-bool Loader::Load(const bfs::path& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isFromOverrideDir)
+bool Loader::Load(const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette, bool isFromOverrideDir)
 {
-    FileEntry& entry = files_[MakeResourceId(pfad)];
+    FileEntry& entry = files_[MakeResourceId(path)];
     // Load if: 1. Not loaded
     //          2. archive content changed BUT we are not loading an override file or the file wasn't loaded since the last override
     //          change
-    if(entry.archiv.empty() || (entry.filesUsed != GetFilesToLoad(pfad) && (!isFromOverrideDir || !entry.loadedAfterOverrideChange)))
+    if(entry.archiv.empty() || (entry.filesUsed != GetFilesToLoad(path) && (!isFromOverrideDir || !entry.loadedAfterOverrideChange)))
     {
-        if(!Load(entry.archiv, pfad, palette))
+        if(!Load(entry.archiv, path, palette))
             return false;
         entry.loadedAfterOverrideChange = true;
     }
@@ -1091,7 +1091,7 @@ bool Loader::LoadOverrideDirectory(const bfs::path& path)
     std::vector<bfs::path> filesAndFolders;
     for(const auto ext : {"lst", "lbm", "bob", "idx", "bmp", "txt", "ger", "eng", "ini"})
     {
-        std::vector<bfs::path> curFiles = ListDir(path, ext, true);
+        const std::vector<bfs::path> curFiles = ListDir(path, ext, true);
         filesAndFolders.insert(filesAndFolders.end(), curFiles.begin(), curFiles.end());
     }
 
