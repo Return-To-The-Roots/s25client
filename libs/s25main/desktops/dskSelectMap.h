@@ -25,6 +25,7 @@
 #include "network/CreateServerInfo.h"
 #include "liblobby/LobbyInterface.h"
 #include <boost/filesystem/path.hpp>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -70,7 +71,6 @@ private:
     void CreateRandomMap();
 
     void OnMapCreated(const std::string& mapPath);
-    void MarkMapAsBroken(int tableIdx, const std::string& reason);
 
     CreateServerInfo csi;
     MapSettings rndMapSettings;
@@ -80,7 +80,7 @@ private:
     /// Mapping of s2 ids to landscape names
     std::map<uint8_t, std::string> landscapeNames;
     /// Maps that we already know are broken
-    std::vector<boost::filesystem::path> brokenMapPaths;
+    std::set<boost::filesystem::path> brokenMapPaths;
 };
 
 #endif //! dskSELECTMAP_H_INCLUDED
