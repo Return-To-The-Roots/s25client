@@ -34,6 +34,7 @@
 #include "desktops/dskSinglePlayer.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
 #include "helpers/toString.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
@@ -50,10 +51,12 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
+#include "s25util/Log.h"
+#include "s25util/dynamicUniqueCast.h"
 #include "s25util/utf8.h"
 #include <boost/filesystem/operations.hpp>
+#include <stdexcept>
 #include <utility>
-//#include <boost/thread.hpp>
 
 namespace bfs = boost::filesystem;
 
@@ -161,6 +164,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
     static const std::array<unsigned, 9> ids = {{39, 40, 41, 42, 43, 52, 91, 93, 48}};
 
+    const size_t numFaultyMapsPrior = brokenMapPaths.size();
     const std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]);
     FillTable(ListDir(mapPath, "swd"));
     FillTable(ListDir(mapPath, "wld"));
@@ -172,12 +176,35 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
         FillTable(ListDir(worldsPath, "wld"));
     }
 
+    if(brokenMapPaths.size() > numFaultyMapsPrior)
+    {
+        std::string errorTxt =
+          helpers::format(_("%1% map(s) could not be loaded. Check the log for details"), brokenMapPaths.size() - numFaultyMapsPrior);
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+    }
+
     // Dann noch sortieren
     bool sortAsc = true;
     table->SortRows(0, &sortAsc);
 
     // und Auswahl zurücksetzen
     table->SetSelection(0);
+}
+
+/// Load a map, throw on error
+static std::unique_ptr<glArchivItem_Map> loadAndVerifyMap(const std::string& path)
+{
+    libsiedler2::Archiv archive;
+    if(int ec = libsiedler2::loader::LoadMAP(path, archive))
+        throw std::runtime_error(libsiedler2::getErrorString(ec));
+    auto map = libutil::dynamicUniqueCast<glArchivItem_Map>(archive.release(0));
+    if(!map)
+        throw std::runtime_error(_("Unexpected dynamic type of map"));
+    if(map->getHeader().getWidth() > MAX_MAP_SIZE || map->getHeader().getHeight() > MAX_MAP_SIZE)
+        throw std::runtime_error(helpers::format(_("Map is bigger than allowed size of %1% nodes"), MAX_MAP_SIZE));
+    if(map->getHeader().getNumPlayers() > MAX_PLAYERS)
+        throw std::runtime_error(helpers::format(_("Map has more than %1% players"), MAX_PLAYERS));
+    return map;
 }
 
 /**
@@ -187,8 +214,6 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
 {
     if(ctrl_id != 1)
         return;
-    ctrlTable& table = *GetCtrl<ctrlTable>(1);
-    const std::string& path = table.GetItemText(selection, 5);
 
     ctrlPreviewMinimap& preview = *GetCtrl<ctrlPreviewMinimap>(11);
     ctrlText& txtMapName = *GetCtrl<ctrlText>(12);
@@ -200,33 +225,33 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
     btContinue.SetEnabled(false);
 
     // is the selection valid?
-    if(!path.empty())
+    if(selection >= 0)
     {
-        libsiedler2::Archiv ai;
-        // load map data
-        int ec = libsiedler2::loader::LoadMAP(path, ai);
-        if(ec || !dynamic_cast<glArchivItem_Map*>(ai[0]))
-            MarkMapAsBroken(selection, libsiedler2::getErrorString(ec));
-        else
+        ctrlTable& table = *GetCtrl<ctrlTable>(1);
+        const std::string& path = table.GetItemText(selection, 5);
+        if(!path.empty())
         {
-            const glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai[0]);
-            if(map->getHeader().getWidth() > MAX_MAP_SIZE || map->getHeader().getHeight() > MAX_MAP_SIZE)
-                MarkMapAsBroken(selection, "Map is bigger than allowed size of " + std::to_string(MAX_MAP_SIZE) + " nodes");
-            else
+            try
             {
-                preview.SetMap(map);
+                std::unique_ptr<glArchivItem_Map> map = loadAndVerifyMap(path);
+                RTTR_Assert(map);
+                preview.SetMap(map.get());
                 txtMapName.SetText(s25util::ansiToUTF8(map->getHeader().getName()));
                 txtMapPath.SetText(path);
                 btContinue.SetEnabled(true);
+            } catch(const std::runtime_error& e)
+            {
+                const std::string errorTxt = helpers::format(_("Could not load map:\n%1%\n%2%"), path, e.what());
+                LOG.write("%1%\n") % errorTxt;
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+                brokenMapPaths.insert(path);
+                table.RemoveRow(selection);
             }
         }
     }
-    DrawPoint txtPos = txtMapName.GetPos();
-    txtPos.x = preview.GetPos().x + preview.GetSize().x + 10;
-    txtMapName.SetPos(txtPos);
-    txtPos = txtMapPath.GetPos();
-    txtPos.x = preview.GetPos().x + preview.GetSize().x + 10;
-    txtMapPath.SetPos(txtPos);
+    const unsigned txtXPos = preview.GetPos().x + preview.GetSize().x + 10;
+    txtMapName.SetPos(DrawPoint(txtXPos, txtMapName.GetPos().y));
+    txtMapPath.SetPos(DrawPoint(txtXPos, txtMapPath.GetPos().y));
 }
 
 void dskSelectMap::GoBack()
@@ -425,13 +450,14 @@ void dskSelectMap::FillTable(const std::vector<bfs::path>& files)
             continue;
         // Karteninformationen laden
         libsiedler2::Archiv map;
-        if(libsiedler2::loader::LoadMAP(filePath.string(), map, true) != 0)
+        if(int ec = libsiedler2::loader::LoadMAP(filePath.string(), map, true))
+        {
+            LOG.write(_("Failed to load map %1%: %2%\n")) % filePath % libsiedler2::getErrorString(ec);
+            brokenMapPaths.insert(filePath);
             continue;
+        }
 
         const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map[0])->getHeader();
-
-        if(header.getNumPlayers() > MAX_PLAYERS)
-            continue;
 
         const bfs::path luaFilepath = bfs::path(filePath).replace_extension("lua");
         const bool hasLua = bfs::is_regular_file(luaFilepath);
@@ -447,14 +473,4 @@ void dskSelectMap::FillTable(const std::vector<bfs::path>& files)
 
         table->AddRow({name, author, players, landscapeNames[header.getGfxSet()], size, filePath.string()});
     }
-}
-
-void dskSelectMap::MarkMapAsBroken(const int tableIdx, const std::string& reason)
-{
-    ctrlTable& table = *GetCtrl<ctrlTable>(1);
-    const std::string& path = table.GetItemText(tableIdx, 5);
-    brokenMapPaths.emplace_back(path);
-    std::string errorTxt = _("Could not load map:\n") + path + '\n' + reason;
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
-    table.RemoveRow(tableIdx);
 }
