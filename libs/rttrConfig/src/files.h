@@ -24,6 +24,106 @@
 #include <array>
 #include <string>
 
+RTTR_IGNORE_DIAGNOSTIC("-Wunused-variable")
+
+namespace s25 {
+namespace folders {
+    constexpr auto config = "<RTTR_CONFIG>";                   // Einstellungsordner
+    constexpr auto data = "<RTTR_GAME>/DATA";                  // S2 game data
+    constexpr auto driver = "<RTTR_DRIVER>";                   // Treiberordner
+    constexpr auto gameLstsGlobal = "<RTTR_RTTR>/LSTS/GAME";   // systemweite lstfiles (immer bei spielstart geladen)
+    constexpr auto gameLstsUser = "<RTTR_USERDATA>/LSTS/GAME"; // persönliche lstfiles (immer bei spielstart geladen)
+    constexpr auto gamedata = "<RTTR_RTTR>/gamedata";          // Path to the gamedata
+    constexpr auto languages = "<RTTR_RTTR>/languages";        // die ganzen Sprachdateien
+    constexpr auto logs = "<RTTR_USERDATA>/LOGS";              // Log-Ordner
+    constexpr auto lstsGlobal = "<RTTR_RTTR>/LSTS";            // systemweite lstfiles (immer bei start geladen)
+    constexpr auto lstsUser = "<RTTR_USERDATA>/LSTS";          // persönliche lstfiles (immer bei start geladen)
+    constexpr auto maps = "<RTTR_GAME>/DATA/MAPS";
+    constexpr auto maps2 = "<RTTR_GAME>/DATA/MAPS2";
+    constexpr auto maps3 = "<RTTR_GAME>/DATA/MAPS3";
+    constexpr auto maps4 = "<RTTR_GAME>/DATA/MAPS4";
+    constexpr auto mapsNew = "<RTTR_RTTR>/MAPS/NEW";  // unsere eigenen neuen Karten
+    constexpr auto mapsUser = "<RTTR_USERDATA>/MAPS"; // die heruntergeladenen Karten
+    constexpr auto music = "<RTTR_RTTR>/MUSIC";
+    constexpr auto other = "<RTTR_RTTR>/MAPS/OTHER";            // Andere Maps
+    constexpr auto replays = "<RTTR_USERDATA>/REPLAYS";         // Replayordner
+    constexpr auto save = "<RTTR_USERDATA>/SAVE";               // Der Speicherordner
+    constexpr auto screenshots = "<RTTR_USERDATA>/screenshots"; // Screenshots
+    constexpr auto sea = "<RTTR_RTTR>/MAPS/SEA";                // Seefahrtkarten
+    constexpr auto sng = "<RTTR_RTTR>/MUSIC/SNG";               // die musik
+    constexpr auto texte = "<RTTR_RTTR>/texte";
+    constexpr auto textures = "<RTTR_GAME>/GFX/TEXTURES"; // Terrain textures
+    constexpr auto worlds = "<RTTR_USERDATA>/WORLDS";
+} // namespace folders
+namespace files {
+    constexpr auto soundOrig = "<RTTR_GAME>/DATA/SOUNDDAT/SOUND.LST"; // die originale sound.lst
+    constexpr auto soundScript = "<RTTR_RTTR>/sound.scs";             // Das konvertier-script
+} // namespace files
+namespace resources {
+    constexpr auto afr_icon = "<RTTR_GAME>/DATA/MBOB/AFR_ICON.LST";
+    constexpr auto afr_z = "<RTTR_GAME>/DATA/MBOB/AFR_Z.LST"; // Afrikaner
+    constexpr auto africa = "<RTTR_GAME>/GFX/PICS/MISSION/AFRICA.LBM";
+    constexpr auto austra = "<RTTR_GAME>/GFX/PICS/MISSION/AUSTRA.LBM";
+    constexpr auto boat = "<RTTR_GAME>/DATA/BOBS/BOAT.LST";
+    constexpr auto boot_z = "<RTTR_GAME>/DATA/BOOT_Z.LST";
+    constexpr auto carrier = "<RTTR_GAME>/DATA/BOBS/CARRIER.BOB";
+    constexpr auto colors = "<RTTR_RTTR>/COLORS.ACT";   // Spezialpalette wegen Schriften usw
+    constexpr auto config = "<RTTR_CONFIG>/CONFIG.INI"; // die Einstellungsdatei
+    constexpr auto europe = "<RTTR_GAME>/GFX/PICS/MISSION/EUROPE.LBM";
+    constexpr auto green = "<RTTR_GAME>/GFX/PICS/MISSION/GREEN.LBM";
+    constexpr auto io = "<RTTR_GAME>/DATA/IO/IO.DAT";
+    constexpr auto jap_icon = "<RTTR_GAME>/DATA/MBOB/JAP_ICON.LST";
+    constexpr auto jap_z = "<RTTR_GAME>/DATA/MBOB/JAP_Z.LST"; // Japaner
+    constexpr auto japan = "<RTTR_GAME>/GFX/PICS/MISSION/JAPAN.LBM";
+    constexpr auto jobs = "<RTTR_GAME>/DATA/BOBS/JOBS.BOB";
+    constexpr auto mis0bobs = "<RTTR_GAME>/DATA/MIS0BOBS.LST";
+    constexpr auto mis1bobs = "<RTTR_GAME>/DATA/MIS1BOBS.LST";
+    constexpr auto mis2bobs = "<RTTR_GAME>/DATA/MIS2BOBS.LST";
+    constexpr auto mis3bobs = "<RTTR_GAME>/DATA/MIS3BOBS.LST";
+    constexpr auto mis4bobs = "<RTTR_GAME>/DATA/MIS4BOBS.LST";
+    constexpr auto mis5bobs = "<RTTR_GAME>/DATA/MIS5BOBS.LST";
+    constexpr auto namerica = "<RTTR_GAME>/GFX/PICS/MISSION/NAMERICA.LBM";
+    constexpr auto nasia = "<RTTR_GAME>/GFX/PICS/MISSION/NASIA.LBM";
+    constexpr auto pal5 = "<RTTR_GAME>/GFX/PALETTE/PAL5.BBM"; // die ganzen Paletten
+    constexpr auto pal6 = "<RTTR_GAME>/GFX/PALETTE/PAL6.BBM";
+    constexpr auto pal7 = "<RTTR_GAME>/GFX/PALETTE/PAL7.BBM";
+    constexpr auto paletti0 = "<RTTR_GAME>/GFX/PALETTE/PALETTI0.BBM";
+    constexpr auto paletti1 = "<RTTR_GAME>/GFX/PALETTE/PALETTI1.BBM";
+    constexpr auto paletti8 = "<RTTR_GAME>/GFX/PALETTE/PALETTI8.BBM";
+    constexpr auto resource = "<RTTR_GAME>/DATA/RESOURCE.DAT";
+    constexpr auto rom_bobs = "<RTTR_GAME>/DATA/CBOB/ROM_BOBS.LST";
+    constexpr auto rom_icon = "<RTTR_GAME>/DATA/MBOB/ROM_ICON.LST";
+    constexpr auto rom_z = "<RTTR_GAME>/DATA/MBOB/ROM_Z.LST"; // Römer
+    constexpr auto rttr = "<RTTR_RTTR>/RTTR.LST";
+    constexpr auto samerica = "<RTTR_GAME>/GFX/PICS/MISSION/SAMERICA.LBM";
+    constexpr auto sasia = "<RTTR_GAME>/GFX/PICS/MISSION/SASIA.LBM";
+    constexpr auto setup013 = "<RTTR_GAME>/GFX/PICS/SETUP013.LBM"; // Optionen
+    constexpr auto setup015 = "<RTTR_GAME>/GFX/PICS/SETUP015.LBM"; // Freies Spiel
+    constexpr auto setup666 = "<RTTR_GAME>/GFX/PICS/SETUP666.LBM"; // die Karten-Lade-Screens
+    constexpr auto setup667 = "<RTTR_GAME>/GFX/PICS/SETUP667.LBM";
+    constexpr auto setup801 = "<RTTR_GAME>/GFX/PICS/SETUP801.LBM";
+    constexpr auto setup802 = "<RTTR_GAME>/GFX/PICS/SETUP802.LBM";
+    constexpr auto setup803 = "<RTTR_GAME>/GFX/PICS/SETUP803.LBM";
+    constexpr auto setup804 = "<RTTR_GAME>/GFX/PICS/SETUP804.LBM";
+    constexpr auto setup805 = "<RTTR_GAME>/GFX/PICS/SETUP805.LBM";
+    constexpr auto setup806 = "<RTTR_GAME>/GFX/PICS/SETUP806.LBM";
+    constexpr auto setup810 = "<RTTR_GAME>/GFX/PICS/SETUP810.LBM";
+    constexpr auto setup811 = "<RTTR_GAME>/GFX/PICS/SETUP811.LBM";
+    constexpr auto setup895 = "<RTTR_GAME>/GFX/PICS/SETUP895.LBM";
+    constexpr auto setup896 = "<RTTR_GAME>/GFX/PICS/SETUP896.LBM";
+    constexpr auto sngs = "<RTTR_GAME>/DATA/SOUNDDAT/SNG/SNG_*.DAT";
+    constexpr auto sound = "<RTTR_USERDATA>/LSTS/SOUND.LST"; // Die konvertierte sound.lst
+    constexpr auto vik_icon = "<RTTR_GAME>/DATA/MBOB/VIK_ICON.LST";
+    constexpr auto vik_z = "<RTTR_GAME>/DATA/MBOB/VIK_Z.LST";   // Wikinger
+    constexpr auto wafr_z = "<RTTR_GAME>/DATA/MBOB/WAFR_Z.LST"; // Afrikaner Winter
+    constexpr auto wjap_z = "<RTTR_GAME>/DATA/MBOB/WJAP_Z.LST"; // Japaner Winter
+    constexpr auto wrom_z = "<RTTR_GAME>/DATA/MBOB/WROM_Z.LST"; // Römer Winter
+    constexpr auto wvik_z = "<RTTR_GAME>/DATA/MBOB/WVIK_Z.LST"; // Wikinger Winter
+} // namespace resources
+} // namespace s25
+
+RTTR_POP_DIAGNOSTIC
+
 ///////////////////////////////////////////////////////////////////////////////
 // Konstanten
 const std::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
