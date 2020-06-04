@@ -188,7 +188,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
     table->SortRows(0, &sortAsc);
 
     // und Auswahl zurücksetzen
-    table->SetSelection(0);
+    table->SetSelection(-1);
 }
 
 /// Load a map, throw on error
