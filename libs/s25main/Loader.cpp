@@ -906,9 +906,9 @@ std::vector<bfs::path> Loader::GetFilesToLoad(const bfs::path& filepath)
         {
             const auto fullFilePath = overrideFolder.path / *itFile;
             if(!bfs::exists(fullFilePath))
-                logger_.write(_("Skipping removed file %1% when checking for files to load for %2%")) % fullFilePath % resId;
+                logger_.write(_("Skipping removed file %1% when checking for files to load for %2%\n")) % fullFilePath % resId;
             else if(helpers::contains(result, fullFilePath))
-                logger_.write(_("Skipping duplicate override file %1% for %2%")) % fullFilePath % resId;
+                logger_.write(_("Skipping duplicate override file %1% for %2%\n")) % fullFilePath % resId;
             else
                 result.push_back(fullFilePath);
         }
