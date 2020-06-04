@@ -270,7 +270,7 @@ bool Loader::LoadSounds()
         } catch(const LoadError& e)
         {
             if(e.what() != std::string())
-                logger_.write("%1%\n") % e.what();
+                logger_.write("Exception caught: %1%\n") % e.what();
             return false;
         }
     }
@@ -989,7 +989,7 @@ bool Loader::Load(libsiedler2::Archiv& archiv, const bfs::path& path, const libs
         } catch(const LoadError& e)
         {
             if(e.what() != std::string())
-                logger_.write("%s") % e.what();
+                logger_.write("Exception caught: %1%\n") % e.what();
             return false;
         }
     }
