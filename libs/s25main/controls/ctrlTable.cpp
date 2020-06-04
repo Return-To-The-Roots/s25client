@@ -242,7 +242,7 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
     if(row >= rows_.size() || column >= columns_.size())
         return empty;
 
-    return rows_.at(row).columns.at(column);
+    return rows_[row].columns[column];
 }
 
 /**
