@@ -245,7 +245,7 @@ bool Loader::LoadSounds()
     if(!Load(config_.ExpandPath(FILE_PATHS[49])))
         return false;
     const Timer timer(true);
-    logger_.write(_("Starting sound conversion..."));
+    logger_.write(_("Starting sound conversion: "));
     if(!convertSounds(GetArchive("sound"), config_.ExpandPath(FILE_PATHS[56])))
     {
         logger_.write(_("failed\n"));
@@ -266,11 +266,11 @@ bool Loader::LoadSounds()
             if(music)
                 sng_lst.emplace_back(std::move(music));
             else
-                logger_.write(_("WARNING: Found invalid music item for %1%")) % oggFile;
+                logger_.write(_("WARNING: Found invalid music item for %1%\n")) % oggFile;
         } catch(const LoadError& e)
         {
             if(e.what() != std::string())
-                logger_.write("%1%") % e.what();
+                logger_.write("%1%\n") % e.what();
             return false;
         }
     }
