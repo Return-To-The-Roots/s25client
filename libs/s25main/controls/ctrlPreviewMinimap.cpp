@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlPreviewMinimap.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
@@ -33,13 +32,16 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent, const unsigned id, const 
  */
 void ctrlPreviewMinimap::Draw_()
 {
+    if(mapSize == Extent::all(0))
+        return;
+
     // Button drumrum zeichnen
     Draw3DBorder(GetBoundaryRect(), TC_GREY, true);
 
     // Map ansich zeichnen
     DrawMap(minimap);
 
-    Extent playerPxlSize(4, 4);
+    const Extent playerPxlSize(4, 4);
     const DrawPoint basePos = GetDrawPos();
     // Startpositionen zeichnen
     for(const Player& player : players)
@@ -67,8 +69,8 @@ void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
         return;
     }
 
-    unsigned short map_width = s2map->getHeader().getWidth();
-    unsigned short map_height = s2map->getHeader().getHeight();
+    const unsigned short map_width = s2map->getHeader().getWidth();
+    const unsigned short map_height = s2map->getHeader().getHeight();
     SetMapSize(Extent(map_width, map_height));
     minimap.SetMap(*s2map);
 
@@ -80,8 +82,8 @@ void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
             // Startposition eines Spielers an dieser Stelle?
             if(s2map->GetMapDataAt(MAP_TYPE, x, y) != 0x80)
                 continue;
-            unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
-            if(player < MAX_PLAYERS)
+            const unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
+            if(player < players.size())
             {
                 players[player].pos = MapPoint(x, y);
                 players[player].color = PLAYER_COLORS[player % PLAYER_COLORS.size()];
