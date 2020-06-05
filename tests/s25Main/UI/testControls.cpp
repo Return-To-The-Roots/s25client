@@ -1,4 +1,4 @@
-// Copyright (c) 2016 -2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,6 +19,7 @@
 #include "controls/ctrlDeepening.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlPreviewMinimap.h"
+#include "controls/ctrlTable.h"
 #include "controls/ctrlTextButton.h"
 #include "controls/ctrlTextDeepening.h"
 #include "driver/KeyEvent.h"
@@ -39,6 +40,11 @@
 #include <Loader.h>
 #include <array>
 #include <numeric>
+
+static std::ostream& boost_test_print_type(std::ostream& stream, TableSortDir dir)
+{
+    return stream << static_cast<int>(dir);
+}
 
 static std::unique_ptr<glFont> createMockFont(const std::vector<char32_t>& chars)
 {
@@ -242,5 +248,66 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
         BOOST_TEST(txt.GetSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
     }
 }
+
+static std::vector<std::string> getRow(const ctrlTable& table, unsigned row)
+{
+    std::vector<std::string> values(table.GetNumColumns());
+    for(unsigned i = 0; i < table.GetNumColumns(); i++)
+        values[i] = table.GetItemText(row, i);
+    return values;
+}
+
+BOOST_AUTO_TEST_CASE(TableSorting)
+{
+    auto font = createMockFont({'?', 'a', 'z'});
+    ctrlTable table(nullptr, 0, DrawPoint::all(0), Extent(400, 300), TC_GREEN1, font.get(),
+                    ctrlTable::Columns{{"String", 1, TableSortType::String},
+                                       {"MapSize", 2, TableSortType::MapSize},
+                                       {"Number", 3, TableSortType::Number},
+                                       {"Date", 5, TableSortType::Date}});
+    const std::vector<std::string> r1 = {"acc", "10x20", "1", "10.11.2000 - 10:12"};
+    const std::vector<std::string> r2 = {"abc", "10x20", "2", "10.11.2000 - 10:14"};
+    const std::vector<std::string> r3 = {"acd", "8x20", "5", "10.11.2000 - 11:12"};
+    const std::vector<std::string> r4 = {"ccc", "10x30", "10", "09.11.2000 - 10:12"};
+    const std::vector<std::string> r5 = {"zcc", "30x10", "13", "10.12.2000 - 10:12"};
+    const std::vector<std::string> r6 = {"tts", "10x22", "42", "10.11.2001 - 10:12"};
+    table.AddRow(r1);
+    table.AddRow(r2);
+    table.AddRow(r3);
+    table.AddRow(r4);
+    table.AddRow(r5);
+    table.AddRow(r6);
+
+    auto testRowsEqual = [&table](std::array<const std::vector<std::string>*, 6> rows) {
+        for(unsigned i = 0; i < rows.size(); i++)
+        {
+            BOOST_TEST_CONTEXT("row " << i) { BOOST_TEST(getRow(table, i) == *rows[i], boost::test_tools::per_element()); }
+        }
+    };
+
+    table.SortRows(0, TableSortDir::Descending);
+    BOOST_TEST(table.GetSortColumn() == 0);
+    BOOST_TEST(table.GetSortDirection() == TableSortDir::Descending);
+    BOOST_TEST_CONTEXT("String column") testRowsEqual({&r5, &r6, &r4, &r3, &r1, &r2});
+
+    table.SortRows(1, TableSortDir::Ascending);
+    BOOST_TEST(table.GetSortColumn() == 1);
+    BOOST_TEST(table.GetSortDirection() == TableSortDir::Ascending);
+    BOOST_TEST_CONTEXT("MapSize column") testRowsEqual({&r3, &r1, &r2, &r6, &r4, &r5});
+
+    table.SortRows(2, TableSortDir::Descending);
+    BOOST_TEST(table.GetSortColumn() == 2);
+    BOOST_TEST(table.GetSortDirection() == TableSortDir::Descending);
+    BOOST_TEST_CONTEXT("Number column") testRowsEqual({&r6, &r5, &r4, &r3, &r2, &r1});
+
+    table.SortRows(3, TableSortDir::Ascending);
+    BOOST_TEST(table.GetSortColumn() == 3);
+    BOOST_TEST(table.GetSortDirection() == TableSortDir::Ascending);
+    BOOST_TEST_CONTEXT("Date column") testRowsEqual({&r4, &r1, &r2, &r3, &r5, &r6});
+    table.SortRows(3, TableSortDir::Descending);
+    BOOST_TEST(table.GetSortColumn() == 3);
+    BOOST_TEST(table.GetSortDirection() == TableSortDir::Descending);
+    BOOST_TEST_CONTEXT("Date column") testRowsEqual({&r6, &r5, &r3, &r2, &r1, &r4});
+};
 
 BOOST_AUTO_TEST_SUITE_END()

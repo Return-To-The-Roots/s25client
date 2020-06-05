@@ -47,8 +47,12 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
             RTTR_Assert(ss_a);
             RTTR_Assert(ss_b);
             if(x_a * y_a == x_b * y_b)
-                return 0;
-            else
+            {
+                if(x_a == x_b)
+                    return 0;
+                else
+                    return (x_a < x_b) ? -1 : 1;
+            } else
                 return (x_a * y_a < x_b * y_b) ? -1 : 1;
         }
         break;
@@ -115,7 +119,7 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
 }
 
 ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
-                     std::vector<Column> columns)
+                     Columns columns)
     : Window(parent, id, pos, elMax(size, Extent(20, 30))), tc(tc), font(font), columns_(std::move(columns)), selection_(-1),
       sortColumn_(-1), sortDir_(TableSortDir::Ascending)
 {
