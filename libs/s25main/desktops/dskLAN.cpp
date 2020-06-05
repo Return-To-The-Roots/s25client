@@ -127,13 +127,13 @@ void dskLAN::UpdateServerList()
 
     auto* servertable = GetCtrl<ctrlTable>(ID_tblServer);
 
-    unsigned selection = servertable->GetSelection();
-    if(selection == 0xFFFF)
+    int selection = servertable->GetSelection();
+    if(selection == -1)
         selection = 0;
-    unsigned short column = servertable->GetSortColumn();
-    if(column == 0xFFFF)
-        column = 0;
-    bool direction = servertable->GetSortDirection();
+    int sortColumn = servertable->GetSortColumn();
+    if(sortColumn == -1)
+        sortColumn = 0;
+    const auto direction = servertable->GetSortDirection();
     servertable->DeleteAllItems();
 
     unsigned curId = 0;
@@ -145,7 +145,8 @@ void dskLAN::UpdateServerList()
         servertable->AddRow({id, name, gameInfo.info.map, player, gameInfo.info.version});
     }
 
-    servertable->SortRows(column, &direction);
+    if(sortColumn >= 0)
+        servertable->SortRows(sortColumn, direction);
     servertable->SetSelection(selection);
 }
 

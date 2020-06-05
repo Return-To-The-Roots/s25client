@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,7 +21,6 @@
 
 #include "Window.h"
 #include "gameTypes/TextureColor.h"
-#include <cstdarg>
 #include <string>
 #include <vector>
 
@@ -36,6 +35,11 @@ enum class TableSortType
     Number,
     Date,
     Default
+};
+enum class TableSortDir
+{
+    Ascending,
+    Descending
 };
 
 struct TableColumn
@@ -64,9 +68,9 @@ public:
     /// liefert den Wert eines Feldes.
     const std::string& GetItemText(unsigned short row, unsigned short column) const;
     /// sortiert die Zeilen.
-    void SortRows(int column, const bool* direction = nullptr);
-    int GetSortColumn() const { return sort_column; }
-    bool GetSortDirection() const { return sort_direction; }
+    void SortRows(unsigned column, TableSortDir sortDir);
+    int GetSortColumn() const { return sortColumn_; }
+    TableSortDir GetSortDirection() const { return sortDir_; }
     unsigned short GetNumRows() const { return static_cast<unsigned short>(rows_.size()); }
     unsigned short GetNumColumns() const { return static_cast<unsigned short>(columns_.size()); }
     int GetSelection() const { return selection_; }
@@ -104,8 +108,8 @@ private:
     /// Selected row. -1 for none
     int selection_;
     /// Column to sort by. -1 for none
-    int sort_column;
-    bool sort_direction;
+    int sortColumn_;
+    TableSortDir sortDir_;
 
     struct Row
     {

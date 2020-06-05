@@ -117,8 +117,12 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
 ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                      std::vector<Column> columns)
     : Window(parent, id, pos, elMax(size, Extent(20, 30))), tc(tc), font(font), columns_(std::move(columns)), selection_(-1),
-      sort_column(-1), sort_direction(true)
+      sortColumn_(-1), sortDir_(TableSortDir::Ascending)
 {
+    // We use unsigned short when handling the column count
+    if(columns_.size() > std::numeric_limits<unsigned short>::max())
+        throw std::range_error("Maximum amount of columns exceeded");
+
     header_height = font->getHeight() + 10;
     line_count = (GetSize().y - header_height - 2) / font->getHeight();
 
@@ -174,8 +178,8 @@ void ctrlTable::DeleteAllItems()
     GetCtrl<ctrlScrollBar>(0)->SetRange(0);
 
     SetSelection(-1);
-    sort_column = -1;
-    sort_direction = true;
+    sortColumn_ = -1;
+    sortDir_ = TableSortDir::Ascending;
 }
 
 /**
@@ -206,6 +210,9 @@ void ctrlTable::SetSelection(int selection)
 
 void ctrlTable::AddRow(std::vector<std::string> row)
 {
+    // We use unsigned short when handling the row count
+    if(rows_.size() == std::numeric_limits<unsigned short>::max())
+        throw std::range_error("Maximum amount of rows exceeded");
     if(row.size() > GetNumColumns())
         throw std::logic_error("Invalid number of columns for added row");
     for(unsigned i = row.size(); i < GetNumColumns(); ++i)
@@ -249,33 +256,27 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  *  sortiert die Zeilen.
  *
  *  @param[in] column    Die Spalte nach der sortiert werden soll.
- *  @param[in] direction Die Richtung in die sortiert werden soll
- *                         @p nullptr  - Wechsel,
+ *  @param[in] ascending Die Richtung in die sortiert werden soll
  *                         @p true  - A-Z,
  *                         @p false - Z-A
  */
-void ctrlTable::SortRows(int column, const bool* direction)
+void ctrlTable::SortRows(unsigned column, const TableSortDir sortDir)
 {
     if(columns_.empty())
         return;
     if(rows_.empty())
         return;
-    if(column >= static_cast<int>(columns_.size()))
+    if(column >= columns_.size())
         column = 0;
 
-    if(direction)
-        sort_direction = *direction;
-    else if(sort_column == column)
-        sort_direction = !sort_direction;
-    else
-        sort_direction = true;
-    sort_column = column;
+    sortDir_ = sortDir;
+    sortColumn_ = column;
 
-    if(sort_column < 0 || sort_column >= GetNumColumns())
+    if(sortColumn_ >= GetNumColumns())
         return;
 
     // On which value of compare (-1,0,1) to swap
-    int sortCompareValue = sort_direction ? 1 : -1;
+    int sortCompareValue = sortDir_ == TableSortDir::Ascending ? 1 : -1;
     bool done;
     do
     {
@@ -283,8 +284,8 @@ void ctrlTable::SortRows(int column, const bool* direction)
         for(unsigned r = 0; r < rows_.size() - 1; ++r)
         {
             // Compare lowercase values
-            const std::string a = s25util::toLower(rows_[r].columns[sort_column]);
-            const std::string b = s25util::toLower(rows_[r + 1].columns[sort_column]);
+            const std::string a = s25util::toLower(rows_[r].columns[sortColumn_]);
+            const std::string b = s25util::toLower(rows_[r + 1].columns[sortColumn_]);
 
             if(Compare(a, b, columns_[column].sortType) == sortCompareValue)
             {
@@ -337,7 +338,10 @@ void ctrlTable::Draw_()
 
 void ctrlTable::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    SortRows(ctrl_id - 1);
+    RTTR_Assert(ctrl_id > 0);
+    const int column = ctrl_id - 1;
+    SortRows(column, column == GetSortColumn() && GetSortDirection() == TableSortDir::Ascending ? TableSortDir::Descending :
+                                                                                                  TableSortDir::Ascending);
     SetSelection(selection_);
 }
 

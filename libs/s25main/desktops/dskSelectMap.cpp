@@ -184,8 +184,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
     }
 
     // Dann noch sortieren
-    bool sortAsc = true;
-    table->SortRows(0, &sortAsc);
+    table->SortRows(0, TableSortDir::Ascending);
 
     // und Auswahl zurücksetzen
     table->SetSelection(-1);
