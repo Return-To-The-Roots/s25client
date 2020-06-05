@@ -56,8 +56,7 @@ public:
     using SortType = TableSortType;
     using Columns = std::vector<Column>;
 
-    ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
-              std::vector<Column> columns);
+    ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font, Columns columns);
 
     void Resize(const Extent& newSize) override;
     /// löscht alle Items.
