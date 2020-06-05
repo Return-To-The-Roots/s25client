@@ -319,13 +319,13 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
     auto* servertable = GetCtrl<ctrlTable>(10);
     bool first = servertable->GetNumRows() == 0;
 
-    unsigned selection = servertable->GetSelection();
-    if(selection == 0xFFFF)
+    int selection = servertable->GetSelection();
+    if(selection == -1)
         selection = 0;
-    unsigned short column = servertable->GetSortColumn();
-    if(column == 0xFFFF)
-        column = 0;
-    bool direction = servertable->GetSortDirection();
+    int sortColumn = servertable->GetSortColumn();
+    if(sortColumn == -1)
+        sortColumn = 0;
+    const auto direction = servertable->GetSortDirection();
     servertable->DeleteAllItems();
 
     std::set<unsigned> ids;
@@ -347,9 +347,9 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
         servertable->AddRow({id, name, server.getMap(), player, server.getVersion(), ping});
     }
     if(first)
-        servertable->SortRows(0);
+        servertable->SortRows(0, TableSortDir::Ascending);
     else
-        servertable->SortRows(column, &direction);
+        servertable->SortRows(sortColumn, direction);
     servertable->SetSelection(selection);
 }
 
@@ -363,13 +363,13 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
         LOADER.GetSoundN("sound", 114)->Play(255, false);
     }
 
-    unsigned selection = playertable->GetSelection();
-    if(selection == 0xFFFF)
+    int selection = playertable->GetSelection();
+    if(selection == -1)
         selection = 0;
-    unsigned short column = playertable->GetSortColumn();
-    if(column == 0xFFFF)
-        column = 0;
-    bool direction = playertable->GetSortDirection();
+    int sortColumn = playertable->GetSortColumn();
+    if(sortColumn == -1)
+        sortColumn = 0;
+    const auto direction = playertable->GetSortDirection();
     playertable->DeleteAllItems();
 
     for(const LobbyPlayerInfo& player : players)
@@ -384,9 +384,9 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
         }
     }
     if(first)
-        playertable->SortRows(0);
+        playertable->SortRows(0, TableSortDir::Ascending);
     else
-        playertable->SortRows(column, &direction);
+        playertable->SortRows(sortColumn, direction);
     playertable->SetSelection(selection);
 }
 

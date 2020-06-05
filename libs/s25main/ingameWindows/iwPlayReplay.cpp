@@ -73,8 +73,7 @@ iwPlayReplay::iwPlayReplay()
     PopulateTable();
 
     // Nach Zeit Sortieren
-    bool bFalse = false;
-    GetCtrl<ctrlTable>(0)->SortRows(1, &bFalse);
+    GetCtrl<ctrlTable>(0)->SortRows(1, TableSortDir::Descending);
 }
 
 void iwPlayReplay::PopulateTable()
@@ -82,10 +81,10 @@ void iwPlayReplay::PopulateTable()
     static bool loadedOnce = false;
 
     auto* table = GetCtrl<ctrlTable>(0);
-    unsigned short sortCol = table->GetSortColumn();
-    if(sortCol == 0xFFFF)
+    int sortCol = table->GetSortColumn();
+    if(sortCol == -1)
         sortCol = 0;
-    bool sortDir = table->GetSortDirection();
+    const auto sortDir = table->GetSortDirection();
     table->DeleteAllItems();
 
     unsigned numInvalid = 0;
@@ -132,7 +131,7 @@ void iwPlayReplay::PopulateTable()
     }
 
     // Erst einmal nach Dateiname sortieren
-    table->SortRows(sortCol, &sortDir);
+    table->SortRows(sortCol, sortDir);
 
     auto* btDelInvalid = GetCtrl<ctrlTextButton>(5);
     if(numInvalid == 0)

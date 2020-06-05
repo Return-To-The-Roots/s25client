@@ -106,8 +106,7 @@ void iwSaveLoad::RefreshTable()
     }
 
     // Nach Zeit Sortieren
-    bool bFalse = false;
-    GetCtrl<ctrlTable>(0)->SortRows(2, &bFalse);
+    GetCtrl<ctrlTable>(0)->SortRows(2, TableSortDir::Descending);
     loadedOnce = true;
 }
 
