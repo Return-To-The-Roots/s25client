@@ -165,6 +165,24 @@ BOOST_AUTO_TEST_CASE(DetectFolderEscape)
     RTTR_REQUIRE_LOG_CONTAINS("outside the lua data directory", false);
 }
 
+#ifndef BOOST_WINDOWS_API
+BOOST_AUTO_TEST_CASE(DetectAbsolute)
+{
+    rttr::test::TmpFolder tmp;
+    bfs::path basePath(tmp.get() / "gameData");
+    create_directories(basePath);
+    {
+        bnw::ofstream file(basePath / "default.lua");
+        file << "include(\"/tmp/foo.lua\")\n";
+    }
+    WorldDescription desc;
+    GameDataLoader loader(desc, basePath.string());
+    rttr::test::LogAccessor logAcc;
+    BOOST_TEST(!loader.Load());
+    RTTR_REQUIRE_LOG_CONTAINS("relative", false);
+}
+#endif
+
 BOOST_AUTO_TEST_CASE(TextureCoords)
 {
     rttr::test::TmpFolder tmp;
