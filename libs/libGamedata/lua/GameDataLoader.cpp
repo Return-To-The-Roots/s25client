@@ -90,6 +90,8 @@ void GameDataLoader::Include(const std::string& filepath)
         };
         if(helpers::contains_if(filepath, [isAllowedChar](const char c) { return !isAllowedChar(c); }))
             throw LuaIncludeError("It contains disallowed chars. Allowed: alpha-numeric, underscore, slash and dot.");
+        if(bfs::path(filepath).is_absolute())
+            throw LuaIncludeError("Path to file must be relative to current file");
         bfs::path absFilePath = bfs::absolute(filepath, bfs::path(curFile_).parent_path());
         if(!bfs::is_regular_file(absFilePath))
             throw LuaIncludeError("File not found!");
