@@ -308,6 +308,6 @@ BOOST_AUTO_TEST_CASE(TableSorting)
     BOOST_TEST(table.GetSortColumn() == 3);
     BOOST_TEST(table.GetSortDirection() == TableSortDir::Descending);
     BOOST_TEST_CONTEXT("Date column") testRowsEqual({&r6, &r5, &r3, &r2, &r1, &r4});
-};
+}
 
 BOOST_AUTO_TEST_SUITE_END()
