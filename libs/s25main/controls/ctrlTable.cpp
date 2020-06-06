@@ -225,7 +225,7 @@ void ctrlTable::AddRow(std::vector<std::string> row)
     }
 
     rows_.emplace_back(Row{std::move(row)});
-    GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows_.size()));
+    GetCtrl<ctrlScrollBar>(0)->SetRange(GetNumRows());
 }
 
 void ctrlTable::RemoveRow(unsigned rowIdx)
@@ -270,35 +270,25 @@ void ctrlTable::SortRows(unsigned column, const TableSortDir sortDir)
         return;
     if(rows_.empty())
         return;
-    if(column >= columns_.size())
+    if(column >= GetNumColumns())
         column = 0;
 
     sortDir_ = sortDir;
     sortColumn_ = column;
 
-    if(sortColumn_ >= GetNumColumns())
-        return;
+    // On which value of compare (-1 or 1) to swap
+    const int sortCompareValue = sortDir_ == TableSortDir::Ascending ? 1 : -1;
 
-    // On which value of compare (-1,0,1) to swap
-    int sortCompareValue = sortDir_ == TableSortDir::Ascending ? 1 : -1;
-    bool done;
-    do
-    {
-        done = true;
-        for(unsigned r = 0; r < rows_.size() - 1; ++r)
+    std::sort(rows_.begin(), rows_.end(), [&](const Row& a, const Row& b) {
+        const std::string ea = s25util::toLower(a.columns[sortColumn_]);
+        const std::string eb = s25util::toLower(b.columns[sortColumn_]);
+        if(ea == eb)
         {
-            // Compare lowercase values
-            const std::string a = s25util::toLower(rows_[r].columns[sortColumn_]);
-            const std::string b = s25util::toLower(rows_[r + 1].columns[sortColumn_]);
-
-            if(Compare(a, b, columns_[column].sortType) == sortCompareValue)
-            {
-                using std::swap;
-                swap(rows_[r], rows_[r + 1]);
-                done = false;
-            }
+            return false;
         }
-    } while(!done);
+        const bool result = Compare(ea, eb, columns_[column].sortType) != sortCompareValue;
+        return result;
+    });
 }
 
 /**
