@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,11 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "GameDataLoader.h"
 #include "CheckedLuaTable.h"
 #include "RttrConfig.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
 #include "gameData/EdgeDesc.h"
 #include "gameData/LandscapeDesc.h"
 #include "gameData/TerrainDesc.h"
@@ -28,6 +29,8 @@
 #include <kaguya/kaguya.hpp>
 #include <boost/filesystem.hpp>
 #include <stdexcept>
+
+namespace bfs = boost::filesystem;
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)
     : worldDesc_(worldDesc), basePath_(bfs::path(basePath).lexically_normal().make_preferred().string()), curIncludeDepth_(0),
@@ -68,25 +71,44 @@ void GameDataLoader::Register(kaguya::State& state)
                                      .addFunction("AddTerrain", &GameDataLoader::AddTerrain));
 }
 
+class LuaIncludeError : public std::runtime_error
+{
+public:
+    using std::runtime_error::runtime_error;
+};
+
 void GameDataLoader::Include(const std::string& filepath)
 {
-    constexpr int maxIncludeDepth = 10;
-    // Protect against cycles and stack overflows
-    if(++curIncludeDepth_ >= maxIncludeDepth)
-        throw std::runtime_error("Include file '" + filepath + "' cannot be included as the maximum include depth of 10 is reached!");
-    bfs::path absFilePath = bfs::absolute(filepath, bfs::path(curFile_).parent_path());
-    if(!bfs::is_regular_file(absFilePath))
-        throw std::runtime_error("Cannot find include file '" + filepath + "'!");
-    absFilePath = absFilePath.lexically_normal().make_preferred();
-    std::string cleanedFilepath = absFilePath.string();
-    if(cleanedFilepath.find(basePath_) == std::string::npos)
-        throw std::runtime_error("Cannot load include file '" + filepath + "' outside the lua data directory!");
-    std::string oldCurFile = curFile_;
-    curFile_ = cleanedFilepath;
-    errorInIncludeFile_ |= !loadScript(cleanedFilepath);
-    curFile_ = oldCurFile;
-    RTTR_Assert(curIncludeDepth_ > 0);
-    --curIncludeDepth_;
+    try
+    {
+        constexpr int maxIncludeDepth = 10;
+        // Protect against cycles and stack overflows
+        if(++curIncludeDepth_ >= maxIncludeDepth)
+            throw LuaIncludeError(helpers::format("Maximum include depth of %1% is reached!", maxIncludeDepth));
+        const auto isAllowedChar = [](const char c) {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '/' || c == '.';
+        };
+        if(helpers::contains_if(filepath, [isAllowedChar](const char c) { return !isAllowedChar(c); }))
+            throw LuaIncludeError("It contains disallowed chars. Allowed: alpha-numeric, underscore, slash and dot.");
+        bfs::path absFilePath = bfs::absolute(filepath, bfs::path(curFile_).parent_path());
+        if(!bfs::is_regular_file(absFilePath))
+            throw LuaIncludeError("File not found!");
+        absFilePath = absFilePath.lexically_normal().make_preferred();
+        if(absFilePath.extension() != ".lua")
+            throw LuaIncludeError("File must have .lua as the extension!");
+        const std::string cleanedFilepath = absFilePath.string();
+        if(cleanedFilepath.find(basePath_) != 0)
+            throw LuaIncludeError("File is outside the lua data directory!");
+        const std::string oldCurFile = curFile_;
+        curFile_ = cleanedFilepath;
+        errorInIncludeFile_ |= !loadScript(cleanedFilepath);
+        curFile_ = oldCurFile;
+        RTTR_Assert(curIncludeDepth_ > 0);
+        --curIncludeDepth_;
+    } catch(const LuaIncludeError& e)
+    {
+        throw std::runtime_error(helpers::format("Include file '%1%' cannot be included: %2%", filepath, e.what()));
+    }
 }
 
 void GameDataLoader::AddLandscape(const kaguya::LuaTable& data)

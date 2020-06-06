@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "PointOutput.h"
 #include "TerrainBQOutput.h"
 #include "helpers/containerUtils.h"
@@ -24,10 +23,15 @@
 #include "gameData/EdgeDesc.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
+#include "rttr/test/LogAccessor.hpp"
+#include "rttr/test/TmpFolder.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
 #include <sstream>
+
+namespace bfs = boost::filesystem;
+namespace bnw = boost::nowide;
 
 BOOST_AUTO_TEST_SUITE(GameData)
 
@@ -85,12 +89,87 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
     // TerrainData::PrintEdgePrios();
 }
 
-BOOST_AUTO_TEST_CASE(TextureCoords)
+BOOST_AUTO_TEST_CASE(DetectRecursion)
 {
-    bfs::path basePath("testGameData");
-    bfs::create_directories(basePath);
+    rttr::test::TmpFolder tmp;
+    {
+        bnw::ofstream file(tmp.get() / "default.lua");
+        file << "include(\"foo.lua\")\n";
+        bnw::ofstream file2(tmp.get() / "foo.lua");
+        file2 << "include(\"default.lua\")\n";
+    }
+    WorldDescription desc;
+    GameDataLoader loader(desc, tmp.get().string());
+    rttr::test::LogAccessor logAcc;
+    BOOST_TEST(!loader.Load());
+    RTTR_REQUIRE_LOG_CONTAINS("Maximum include depth", false);
+}
+
+BOOST_AUTO_TEST_CASE(DetectInvalidFilenames)
+{
+    rttr::test::TmpFolder tmp;
+    {
+        bnw::ofstream file(tmp.get() / "default.lua");
+        file << "include(\"foo(=.lua\")\n";
+    }
+    WorldDescription desc;
+    GameDataLoader loader(desc, tmp.get().string());
+    rttr::test::LogAccessor logAcc;
+    BOOST_TEST(!loader.Load());
+    RTTR_REQUIRE_LOG_CONTAINS("disallowed chars", false);
+}
+
+BOOST_AUTO_TEST_CASE(DetectNonexistingFile)
+{
+    rttr::test::TmpFolder tmp;
+    {
+        bnw::ofstream file(tmp.get() / "default.lua");
+        file << "include(\"foo.lua\")\n";
+    }
+    WorldDescription desc;
+    GameDataLoader loader(desc, tmp.get().string());
+    rttr::test::LogAccessor logAcc;
+    BOOST_TEST(!loader.Load());
+    RTTR_REQUIRE_LOG_CONTAINS("File not found", false);
+}
+
+BOOST_AUTO_TEST_CASE(DetectWrongExtension)
+{
+    rttr::test::TmpFolder tmp;
+    {
+        bnw::ofstream file(tmp.get() / "default.lua");
+        file << "include(\"foo.txt\")\n";
+        bnw::ofstream file2(tmp.get() / "foo.txt");
+    }
+    WorldDescription desc;
+    GameDataLoader loader(desc, tmp.get().string());
+    rttr::test::LogAccessor logAcc;
+    BOOST_TEST(!loader.Load());
+    RTTR_REQUIRE_LOG_CONTAINS("File must have .lua as the extension", false);
+}
+
+BOOST_AUTO_TEST_CASE(DetectFolderEscape)
+{
+    rttr::test::TmpFolder tmp;
+    bfs::path basePath(tmp.get() / "gameData");
+    create_directories(basePath);
     {
         bnw::ofstream file(basePath / "default.lua");
+        file << "include(\"../foo.lua\")\n";
+        bnw::ofstream file2(tmp.get() / "foo.lua");
+    }
+    WorldDescription desc;
+    GameDataLoader loader(desc, basePath.string());
+    rttr::test::LogAccessor logAcc;
+    BOOST_TEST(!loader.Load());
+    RTTR_REQUIRE_LOG_CONTAINS("outside the lua data directory", false);
+}
+
+BOOST_AUTO_TEST_CASE(TextureCoords)
+{
+    rttr::test::TmpFolder tmp;
+    {
+        bnw::ofstream file(tmp.get() / "default.lua");
         file << "rttr:AddLandscape{\
             name = \"testland\",\
             mapGfx = \"<RTTR_GAME>/DATA/MAP_0_Z.LST\",\
@@ -115,7 +194,7 @@ BOOST_AUTO_TEST_CASE(TextureCoords)
             pos = { 10, 20, 32, 31 }, texType = \"rotated\" }";
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, basePath.string());
+    GameDataLoader loader(desc, tmp.get().string());
     BOOST_REQUIRE(loader.Load());
     using PointF = TerrainDesc::PointF;
     // Border points are inset by half a pixel for OpenGL (sample middle of pixel!)
