@@ -48,14 +48,9 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
             ss_b >> x_b >> x >> y_b;
             RTTR_Assert(ss_a);
             RTTR_Assert(ss_b);
-            if(x_a * y_a == x_b * y_b)
-            {
-                if(x_a == x_b)
-                    return 0;
-                else
-                    return (x_a < x_b) ? -1 : 1;
-            } else
-                return (x_a * y_a < x_b * y_b) ? -1 : 1;
+            const int result = x_a * y_a - x_b * y_b;
+            // In case of same number of nodes sort by first value
+            return (result == 0) ? x_a - x_b : result;
         }
         break;
         case SRT::Number:
@@ -67,10 +62,7 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
             ss_b >> num_b;
             RTTR_Assert(ss_a);
             RTTR_Assert(ss_b);
-            if(num_a == num_b)
-                return 0;
-            else
-                return (num_a < num_b) ? -1 : 1;
+            return num_a - num_b;
         }
         break;
         case SRT::Date:
@@ -88,13 +80,13 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
             RTTR_Assert(ss_a);
             RTTR_Assert(ss_b);
             if(y_a != y_b)
-                return (y_a < y_b) ? -1 : 1;
+                return y_a - y_b;
 
             if(m_a != m_b)
-                return (m_a < m_b) ? -1 : 1;
+                return m_a - m_b;
 
             if(d_a != d_b)
-                return (d_a < d_b) ? -1 : 1;
+                return d_a - d_b;
 
             // " - "
             ss_a >> c;
@@ -109,11 +101,8 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
             RTTR_Assert(ss_a);
             RTTR_Assert(ss_b);
             if(h_a != h_b)
-                return (h_a < h_b) ? -1 : 1;
-            if(min_a != min_b)
-                return (min_a < min_b) ? -1 : 1;
-
-            return 0;
+                return h_a - h_b;
+            return min_a - min_b;
         }
         break;
     }
@@ -268,15 +257,14 @@ const std::string& ctrlTable::GetItemText(unsigned short row, unsigned short col
  */
 void ctrlTable::SortRows(unsigned column, const TableSortDir sortDir)
 {
-    if(columns_.empty())
-        return;
-    if(rows_.empty())
-        return;
-    if(column >= GetNumColumns())
-        column = 0;
-
     sortDir_ = sortDir;
     sortColumn_ = column;
+
+    if(sortColumn_ >= GetNumColumns())
+    {
+        sortColumn_ = -1;
+        return;
+    }
 
     const TableSortType sortType = columns_[column].sortType;
     const auto compareFunc = [sortType, sortDir, column](const Row& lhs, const Row& rhs) {
