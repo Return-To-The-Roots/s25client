@@ -24,10 +24,12 @@
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
 #include "s25util/strAlgos.h"
+#include <algorithm>
 #include <cmath>
 #include <numeric>
 #include <sstream>
 
+/// Return <0 for a < b; >0 for a>b and 0 for a==b
 static int Compare(const std::string& a, const std::string& b, ctrlTable::SortType sortType)
 {
     using SRT = ctrlTable::SortType;
@@ -38,8 +40,8 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
         case SRT::MapSize:
         {
             // Nach Mapgrößen-String sortieren: ZahlxZahl
-            std::istringstream ss_a(a);
-            std::istringstream ss_b(b);
+            s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
+            s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
             char x;
             int x_a, y_a, x_b, y_b;
             ss_a >> x_a >> x >> y_a;
@@ -58,8 +60,8 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
         break;
         case SRT::Number:
         {
-            std::istringstream ss_a(a);
-            std::istringstream ss_b(b);
+            s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
+            s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
             int num_a, num_b;
             ss_a >> num_a;
             ss_b >> num_b;
@@ -276,19 +278,14 @@ void ctrlTable::SortRows(unsigned column, const TableSortDir sortDir)
     sortDir_ = sortDir;
     sortColumn_ = column;
 
-    // On which value of compare (-1 or 1) to swap
-    const int sortCompareValue = sortDir_ == TableSortDir::Ascending ? 1 : -1;
-
-    std::sort(rows_.begin(), rows_.end(), [&](const Row& a, const Row& b) {
-        const std::string ea = s25util::toLower(a.columns[sortColumn_]);
-        const std::string eb = s25util::toLower(b.columns[sortColumn_]);
-        if(ea == eb)
-        {
-            return false;
-        }
-        const bool result = Compare(ea, eb, columns_[column].sortType) != sortCompareValue;
-        return result;
-    });
+    const TableSortType sortType = columns_[column].sortType;
+    const auto compareFunc = [sortType, sortDir, column](const Row& lhs, const Row& rhs) {
+        const std::string a = s25util::toLower(lhs.columns[column]);
+        const std::string b = s25util::toLower(rhs.columns[column]);
+        const int cmpResult = Compare(a, b, sortType);
+        return (sortDir == TableSortDir::Ascending) ? cmpResult < 0 : cmpResult > 0;
+    };
+    std::sort(rows_.begin(), rows_.end(), compareFunc);
 }
 
 /**
