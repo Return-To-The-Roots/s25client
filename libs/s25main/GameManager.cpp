@@ -28,6 +28,7 @@
 #include "desktops/dskSplash.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "files.h"
 #include "network/GameClient.h"
 #include "network/GameServer.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -169,7 +170,7 @@ bool GameManager::Run()
 bool GameManager::ShowSplashscreen()
 {
     libsiedler2::Archiv arSplash;
-    if(!LOADER.Load(arSplash, RTTRCONFIG.ExpandPath("<RTTR_RTTR>/splash.bmp")))
+    if(!LOADER.Load(arSplash, RTTRCONFIG.ExpandPath(s25::files::splash)))
         return false;
     auto image = libutil::dynamicUniqueCast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)

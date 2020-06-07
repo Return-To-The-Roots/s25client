@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "RttrForeachPt.h"
 #include "addons/const_addons.h"
+#include "files.h"
 #include "helpers/containerUtils.h"
 #include <set>
 #include <utility>
@@ -81,8 +82,8 @@ void GameLoader::initTextures()
 bool GameLoader::loadTextures()
 {
     loader.ClearOverrideFolders();
-    loader.AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME");
-    loader.AddOverrideFolder("<RTTR_USERDATA>/LSTS/GAME");
+    loader.AddOverrideFolder(s25::folders::gameLstsGlobal);
+    loader.AddOverrideFolder(s25::folders::gameLstsUser);
     if(game->ggs_.isEnabled(AddonId::CATAPULT_GRAPHICS))
         loader.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
 

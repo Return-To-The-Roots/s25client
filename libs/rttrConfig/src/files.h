@@ -59,6 +59,7 @@ namespace folders {
     constexpr auto textures = "<RTTR_GAME>/GFX/TEXTURES"; // Terrain textures
 } // namespace folders
 namespace files {
+    constexpr auto splash = "<RTTR_RTTR>/splash.bmp";
     constexpr auto soundOrig = "<RTTR_GAME>/DATA/SOUNDDAT/SOUND.LST"; // die originale sound.lst
     constexpr auto soundScript = "<RTTR_RTTR>/sound.scs";             // Das konvertier-script
 } // namespace files
@@ -69,6 +70,7 @@ namespace resources {
     constexpr auto colors = "<RTTR_RTTR>/COLORS.ACT";   // Spezialpalette wegen Schriften usw
     constexpr auto config = "<RTTR_CONFIG>/CONFIG.INI"; // die Einstellungsdatei
     constexpr auto io = "<RTTR_GAME>/DATA/IO/IO.DAT";
+    constexpr auto fonts = "<RTTR_RTTR>/LSTS/fonts.LST";
     constexpr auto jobs = "<RTTR_GAME>/DATA/BOBS/JOBS.BOB";
     constexpr auto mis0bobs = "<RTTR_GAME>/DATA/MIS0BOBS.LST";
     constexpr auto mis1bobs = "<RTTR_GAME>/DATA/MIS1BOBS.LST";
