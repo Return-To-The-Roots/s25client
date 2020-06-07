@@ -285,7 +285,9 @@ bool InitDirectories()
     LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
-    std::array<unsigned, 9> dirs = {{94, 41, 47, 48, 51, 85, 98, 99, 100}}; // settingsdir muss zuerst angelegt werden (94)
+    const std::array<std::string, 9> dirs = {{s25::folders::config, s25::folders::worlds, s25::folders::logs, s25::folders::mapsUser,
+                                              s25::folders::replays, s25::folders::save, s25::folders::lstsUser, s25::folders::gameLstsUser,
+                                              s25::folders::screenshots}}; // settingsdir muss zuerst angelegt werden (94)
 
     std::string oldSettingsDir;
 
@@ -296,7 +298,7 @@ bool InitDirectories()
 #endif
     if(!oldSettingsDir.empty() && bfs::is_directory(oldSettingsDir))
     {
-        const std::string newSettingsDir = RTTRCONFIG.ExpandPath(FILE_PATHS[94]);
+        const std::string newSettingsDir = RTTRCONFIG.ExpandPath(s25::folders::config);
         if(bfs::exists(newSettingsDir))
         {
             s25util::error(std::string("Old and new settings directory found. Please delete the one you don't want to keep!\nOld: ")
@@ -313,10 +315,13 @@ bool InitDirectories()
             return false;
         }
     }
+    const std::string soundLSTPath = RTTRCONFIG.ExpandPath(s25::folders::lstsUser) + "/SOUND.LST";
+    if(bfs::exists(soundLSTPath))
+        bfs::remove(soundLSTPath);
 
-    for(unsigned dirIdx : dirs)
+    for(const std::string& rawDir : dirs)
     {
-        std::string dir = RTTRCONFIG.ExpandPath(FILE_PATHS[dirIdx]);
+        std::string dir = RTTRCONFIG.ExpandPath(rawDir);
         boost::system::error_code ec;
         bfs::create_directories(dir, ec);
         if(ec != boost::system::errc::success)
@@ -335,7 +340,7 @@ bool InitDirectories()
         }
     }
     // Write this to file too, after folders are created
-    LOG.setLogFilepath(RTTRCONFIG.ExpandPath(FILE_PATHS[47]));
+    LOG.setLogFilepath(RTTRCONFIG.ExpandPath(s25::folders::logs));
     try
     {
         LOG.open();

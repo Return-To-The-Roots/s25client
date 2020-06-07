@@ -70,7 +70,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 3: // "Letztes Spiel fortsetzen"
         {
-            const std::vector<bfs::path> savFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
+            const std::vector<bfs::path> savFiles = ListDir(RTTRCONFIG.ExpandPath(s25::folders::save), "sav");
 
             bfs::path mostRecentFilepath;
             s25util::time64_t recent = 0;

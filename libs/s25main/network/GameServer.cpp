@@ -1428,7 +1428,7 @@ std::string GameServer::SaveAsyncLog()
     LOG.write(_("There are %1% identical async log entries.\n")) % numIdentical;
 
     std::string filePath =
-      RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
+      RTTRCONFIG.ExpandPath(s25::folders::logs) + "/" + s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
 
     // open async log
     bnw::ofstream file(filePath);

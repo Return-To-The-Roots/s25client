@@ -196,11 +196,14 @@ void Loader::AddOverrideFolder(std::string path, bool atBack)
 
 void Loader::AddAddonFolder(AddonId id)
 {
-    std::stringstream s;
-    s << config_.ExpandPath(FILE_PATHS[96]) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned>(id);
-    std::string path = s.str();
-    if(bfs::exists(path))
-        AddOverrideFolder(path);
+    for(const std::string rawFolder : {s25::folders::gameLstsGlobal, s25::folders::gameLstsUser})
+    {
+        std::stringstream s;
+        s << config_.ExpandPath(rawFolder) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned>(id);
+        const std::string path = s.str();
+        if(bfs::exists(path))
+            AddOverrideFolder(path);
+    }
 }
 
 void Loader::ClearOverrideFolders()
@@ -215,8 +218,10 @@ void Loader::ClearOverrideFolders()
  */
 bool Loader::LoadFilesAtStart()
 {
-    std::vector<unsigned> files = {
-      5, 6, 7, 8, 9, 10, 17}; // Palettes:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
+    namespace res = s25::resources;
+    std::vector<std::string> files = {res::pal5,     res::pal6, res::pal7, res::paletti0, res::paletti1,
+                                      res::paletti8, // Palettes
+                                      res::colors};
     if(!LoadFiles(files))
         return false;
 
@@ -224,9 +229,20 @@ bool Loader::LoadFilesAtStart()
         return false;
 
     files.clear();
-    files = {11,  12,  // Menu graphics:  resource.dat, io.dat
-             102, 103, // Backgrounds: setup013.lbm, setup015.lbm
-             64,  65,  66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84}; // Loading screens.
+    files = {res::resource,
+             res::io,                       // Menu graphics
+             res::setup013, res::setup015}; // Backgrounds for options and free play
+
+    const std::array<bfs::path, 2> loadScreenFolders{config_.ExpandPath(s25::folders::loadScreens),
+                                                     config_.ExpandPath(s25::folders::loadScreensMissions)};
+    for(const std::string& loadScreenId : LOAD_SCREENS)
+    {
+        const std::string filename = s25util::toUpper(loadScreenId) + ".LBM";
+        if(exists(loadScreenFolders[0] / filename))
+            files.push_back((loadScreenFolders[0] / filename).string());
+        else
+            files.push_back((loadScreenFolders[1] / filename).string());
+    }
 
     if(!LoadFiles(files))
         return false;
@@ -239,21 +255,18 @@ bool Loader::LoadFilesAtStart()
 
 bool Loader::LoadSounds()
 {
-    std::string soundLSTPath = config_.ExpandPath(FILE_PATHS[55]);
-    if(bfs::exists(soundLSTPath))
-        bfs::remove(soundLSTPath);
-    if(!Load(config_.ExpandPath(FILE_PATHS[49])))
+    if(!Load(config_.ExpandPath(s25::files::soundOrig)))
         return false;
     const Timer timer(true);
     logger_.write(_("Starting sound conversion: "));
-    if(!convertSounds(GetArchive("sound"), config_.ExpandPath(FILE_PATHS[56])))
+    if(!convertSounds(GetArchive("sound"), config_.ExpandPath(s25::files::soundScript)))
     {
         logger_.write(_("failed\n"));
         return false;
     }
     logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
-    const std::string oggPath = config_.ExpandPath(FILE_PATHS[50]);
+    const std::string oggPath = config_.ExpandPath(s25::folders::sng);
     std::vector<bfs::path> oggFiles = ListDir(oggPath, "ogg");
 
     sng_lst.reserve(oggFiles.size());
@@ -378,17 +391,21 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     if(helpers::contains(nations, NAT_BABYLONIANS))
         AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME/Babylonier", false);
 
-    std::vector<unsigned> files = {26, 44, 45, 86, 92, // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
-                                   58, 59, 60, 61, 62,
-                                   63,              // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
-                                   35, 36, 37, 38}; // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
+    namespace res = s25::resources;
+    std::vector<std::string> files = {res::rom_bobs, res::carrier,  res::jobs,     res::boat,     res::boot_z,  res::mis0bobs,
+                                      res::mis1bobs, res::mis2bobs, res::mis3bobs, res::mis4bobs, res::mis5bobs};
 
     // Add nation building graphics
+    const std::string natPrefix = isWinterGFX ? "W" : "";
     for(Nation nation : nations)
     {
         // New nations are handled by loading the override folder
         if(nation < NUM_NATIVE_NATS)
-            files.push_back(27 + nation + (isWinterGFX ? NUM_NATIVE_NATS : 0));
+        {
+            const auto shortName = s25util::toUpper(std::string(NationNames[nation], 0, 3));
+            files.push_back(std::string(s25::folders::mbob) + "/" + shortName + "_ICON.LST");
+            files.push_back(std::string(s25::folders::mbob) + "/" + natPrefix + shortName + "_Z.LST");
+        }
     }
 
     if(!LoadFiles(files))
@@ -1103,18 +1120,6 @@ bool Loader::LoadOverrideDirectory(const bfs::path& path)
     }
     logger_.write(_("finished in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
     return true;
-}
-
-/**
- *  Lädt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::LoadFiles(const std::vector<unsigned>& fileIndices)
-{
-    std::vector<std::string> files(fileIndices.size());
-    std::transform(fileIndices.begin(), fileIndices.end(), files.begin(), [](unsigned idx) { return FILE_PATHS[idx]; });
-    return LoadFiles(files);
 }
 
 Loader& getGlobalLoader()

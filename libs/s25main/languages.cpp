@@ -39,7 +39,7 @@ Languages::Languages() : loaded(false)
 {
     const char* domain = "rttr";
     mybind_textdomain_codeset(domain, "UTF-8");
-    mybindtextdomain(domain, RTTRCONFIG.ExpandPath(FILE_PATHS[15]).c_str());
+    mybindtextdomain(domain, RTTRCONFIG.ExpandPath(s25::folders::languages).c_str());
     mytextdomain(domain);
 }
 

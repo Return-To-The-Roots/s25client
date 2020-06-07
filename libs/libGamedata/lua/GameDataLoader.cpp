@@ -42,7 +42,9 @@ GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& b
     lua["include"] = kaguya::function([this](const std::string& file) { Include(file); });
 }
 
-GameDataLoader::GameDataLoader(WorldDescription& worldDesc) : GameDataLoader(worldDesc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world") {}
+GameDataLoader::GameDataLoader(WorldDescription& worldDesc)
+    : GameDataLoader(worldDesc, RTTRCONFIG.ExpandPath(s25::folders::gamedata) + "/world")
+{}
 
 GameDataLoader::~GameDataLoader() = default;
 
