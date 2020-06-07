@@ -22,6 +22,7 @@
 #include "controls/ctrlComboBox.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
+#include "files.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
@@ -68,8 +69,7 @@ void dskTextureTest::Load()
         selection = 0;
     cb->DeleteAllItems();
     LOADER.ClearOverrideFolders();
-    LOADER.AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME");
-    LOADER.AddOverrideFolder("<RTTR_USERDATA>/LSTS/GAME");
+    LOADER.AddOverrideFolder(s25::folders::gameLstsGlobal);
     for(DescIdx<TerrainDesc> i(0); i.value < desc.terrain.size(); i.value++)
         cb->AddString(desc.get(i).name);
     cb->SetSelection(selection);

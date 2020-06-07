@@ -301,7 +301,7 @@ bool Loader::LoadSounds()
 
 bool Loader::LoadFonts()
 {
-    if(!Load(config_.ExpandPath("<RTTR_RTTR>/LSTS/fonts.LST"), GetPaletteN("pal5")))
+    if(!Load(config_.ExpandPath(s25::resources::fonts), GetPaletteN("pal5")))
         return false;
     fonts.clear();
     const auto& loadedFonts = GetArchive("fonts");
@@ -388,9 +388,6 @@ void Loader::LoadDummyGUIFiles()
  */
 bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations)
 {
-    if(helpers::contains(nations, NAT_BABYLONIANS))
-        AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME/Babylonier", false);
-
     namespace res = s25::resources;
     std::vector<std::string> files = {res::rom_bobs, res::carrier,  res::jobs,     res::boat,     res::boot_z,  res::mis0bobs,
                                       res::mis1bobs, res::mis2bobs, res::mis3bobs, res::mis4bobs, res::mis5bobs};
@@ -405,6 +402,10 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
             const auto shortName = s25util::toUpper(std::string(NationNames[nation], 0, 3));
             files.push_back(std::string(s25::folders::mbob) + "/" + shortName + "_ICON.LST");
             files.push_back(std::string(s25::folders::mbob) + "/" + natPrefix + shortName + "_Z.LST");
+        } else
+        {
+            for(const std::string folder : {s25::folders::gameLstsGlobal, s25::folders::gameLstsUser})
+                AddOverrideFolder(folder + "/" + NationNames[nation], false);
         }
     }
 

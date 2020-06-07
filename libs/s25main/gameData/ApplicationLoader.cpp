@@ -18,6 +18,7 @@
 #include "ApplicationLoader.h"
 #include "Loader.h"
 #include "Playlist.h"
+#include "files.h"
 
 ApplicationLoader::ApplicationLoader(Loader& loader, Log& log, std::string playlistPath)
     : loader_(loader), logger_(log), playlistPath_(std::move(playlistPath))
@@ -28,8 +29,8 @@ ApplicationLoader::~ApplicationLoader() = default;
 bool ApplicationLoader::load()
 {
     loader_.ClearOverrideFolders();
-    loader_.AddOverrideFolder("<RTTR_RTTR>/LSTS");
-    loader_.AddOverrideFolder("<RTTR_USERDATA>/LSTS");
+    loader_.AddOverrideFolder(s25::folders::lstsGlobal);
+    loader_.AddOverrideFolder(s25::folders::lstsUser);
     if(!loader_.LoadFilesAtStart())
         return false;
     if(!playlistPath_.empty())
