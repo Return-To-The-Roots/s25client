@@ -879,7 +879,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
         LOG.write("Invalid filename received!\n");
         OnError(CE_INVALID_MAP);
     }
-    mapinfo.filepath = RTTRCONFIG.ExpandPath(s25::folders::mapsUser) + "/" + portFilename;
+    mapinfo.filepath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) + "/" + portFilename;
     mapinfo.type = msg.mt;
 
     // lua script file path
@@ -1434,7 +1434,7 @@ bool GameClient::StartReplay(const std::string& path)
         case MAPTYPE_OLDMAP:
         {
             // Richtigen Pfad zur Map erstellen
-            bfs::path mapFilePath = bfs::path(RTTRCONFIG.ExpandPath(s25::folders::mapsUser)) / bfs::path(mapinfo.filepath).filename();
+            bfs::path mapFilePath = bfs::path(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed)) / bfs::path(mapinfo.filepath).filename();
             mapinfo.filepath = mapFilePath.string();
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {

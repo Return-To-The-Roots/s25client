@@ -162,9 +162,9 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
     table->DeleteAllItems();
 
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
-    static const std::array<std::string, 9> ids = {{s25::folders::maps3, s25::folders::maps4, s25::folders::worlds, s25::folders::maps2,
-                                                    s25::folders::maps, s25::folders::mapsNew, s25::folders::mapsOther,
-                                                    s25::folders::mapsSea, s25::folders::mapsUser}};
+    static const std::array<std::string, 9> ids = {{s25::folders::mapsOld, s25::folders::mapsNew, s25::folders::mapsOwn,
+                                                    s25::folders::mapsContinents, s25::folders::mapsCampaign, s25::folders::mapsRttr,
+                                                    s25::folders::mapsOther, s25::folders::mapsSea, s25::folders::mapsPlayed}};
 
     const size_t numFaultyMapsPrior = brokenMapPaths.size();
     const std::string mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
@@ -315,7 +315,7 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigne
 void dskSelectMap::CreateRandomMap()
 {
     // setup filepath for the random map
-    std::string mapPath = (bfs::path(RTTRCONFIG.ExpandPath(s25::folders::mapsUser)) / "Random.swd").string();
+    std::string mapPath = (bfs::path(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed)) / "Random.swd").string();
 
     try
     {

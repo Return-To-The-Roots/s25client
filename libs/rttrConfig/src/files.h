@@ -40,15 +40,16 @@ namespace folders {
     constexpr auto logs = "<RTTR_USERDATA>/LOGS";     // Log-Ordner
     constexpr auto lstsGlobal = "<RTTR_RTTR>/LSTS";   // systemweite lstfiles (immer bei start geladen)
     constexpr auto lstsUser = "<RTTR_USERDATA>/LSTS"; // persönliche lstfiles (immer bei start geladen)
-    constexpr auto maps = "<RTTR_GAME>/DATA/MAPS";
-    constexpr auto maps2 = "<RTTR_GAME>/DATA/MAPS2";
-    constexpr auto maps3 = "<RTTR_GAME>/DATA/MAPS3";
-    constexpr auto maps4 = "<RTTR_GAME>/DATA/MAPS4";
-    constexpr auto mapsNew = "<RTTR_RTTR>/MAPS/NEW";     // unsere eigenen neuen Karten
+    constexpr auto mapsCampaign = "<RTTR_GAME>/DATA/MAPS";
+    constexpr auto mapsContinents = "<RTTR_GAME>/DATA/MAPS2";
+    constexpr auto mapsNew = "<RTTR_GAME>/DATA/MAPS4";
+    constexpr auto mapsOld = "<RTTR_GAME>/DATA/MAPS3";
     constexpr auto mapsOther = "<RTTR_RTTR>/MAPS/OTHER"; // Andere Maps
-    constexpr auto mapsSea = "<RTTR_RTTR>/MAPS/SEA";     // Seefahrtkarten
-    constexpr auto mapsUser = "<RTTR_USERDATA>/MAPS";    // die heruntergeladenen Karten
-    constexpr auto mbob = "<RTTR_GAME>/DATA/MBOB";       // Nation graphics
+    constexpr auto mapsOwn = "<RTTR_USERDATA>/WORLDS";
+    constexpr auto mapsPlayed = "<RTTR_USERDATA>/MAPS"; // die heruntergeladenen Karten
+    constexpr auto mapsRttr = "<RTTR_RTTR>/MAPS/NEW";   // unsere eigenen neuen Karten
+    constexpr auto mapsSea = "<RTTR_RTTR>/MAPS/SEA";    // Seefahrtkarten
+    constexpr auto mbob = "<RTTR_GAME>/DATA/MBOB";      // Nation graphics
     constexpr auto music = "<RTTR_RTTR>/MUSIC";
     constexpr auto replays = "<RTTR_USERDATA>/REPLAYS";         // Replayordner
     constexpr auto save = "<RTTR_USERDATA>/SAVE";               // Der Speicherordner
@@ -56,7 +57,6 @@ namespace folders {
     constexpr auto sng = "<RTTR_RTTR>/MUSIC/SNG";               // die musik
     constexpr auto texte = "<RTTR_RTTR>/texte";
     constexpr auto textures = "<RTTR_GAME>/GFX/TEXTURES"; // Terrain textures
-    constexpr auto worlds = "<RTTR_USERDATA>/WORLDS";
 } // namespace folders
 namespace files {
     constexpr auto soundOrig = "<RTTR_GAME>/DATA/SOUNDDAT/SOUND.LST"; // die originale sound.lst
