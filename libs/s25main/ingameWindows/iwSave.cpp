@@ -73,7 +73,7 @@ void iwSaveLoad::RefreshTable()
 
     GetCtrl<ctrlTable>(0)->DeleteAllItems();
 
-    std::vector<boost::filesystem::path> saveFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
+    std::vector<boost::filesystem::path> saveFiles = ListDir(RTTRCONFIG.ExpandPath(s25::folders::save), "sav");
     for(const auto& saveFile : saveFiles)
     {
         Savegame save;
@@ -115,7 +115,7 @@ void iwSaveLoad::FillSaveTable(const std::string&, void*) {}
 void iwSave::SaveLoad()
 {
     // Speichern
-    std::string savePath = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/" + GetCtrl<ctrlEdit>(1)->GetText() + ".sav";
+    std::string savePath = RTTRCONFIG.ExpandPath(s25::folders::save) + "/" + GetCtrl<ctrlEdit>(1)->GetText() + ".sav";
 
     // Speichern
     GAMECLIENT.SaveToFile(savePath);

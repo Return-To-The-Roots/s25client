@@ -186,7 +186,6 @@ private:
     /// Load the file into the archive
     libsiedler2::Archiv DoLoadFile(const boost::filesystem::path& filePath, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadOverrideDirectory(const boost::filesystem::path& path);
-    bool LoadFiles(const std::vector<unsigned>& fileIndices);
 
     template<typename T>
     static T convertChecked(libsiedler2::ArchivItem* item)

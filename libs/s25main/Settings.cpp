@@ -149,7 +149,7 @@ void Settings::LoadDefaults()
 void Settings::Load()
 {
     libsiedler2::Archiv settings;
-    std::string settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);
+    std::string settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
     try
     {
         if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SECTION_NAMES.size())
@@ -404,7 +404,7 @@ void Settings::Save()
         iniAddons->addValue(s25util::toStringClassic(it.first), s25util::toStringClassic(it.second));
     // }
 
-    bfs::path settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);
+    bfs::path settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
     if(libsiedler2::Write(settingsPath.string(), settings) == 0)
         bfs::permissions(settingsPath, bfs::owner_read | bfs::owner_write);
 }

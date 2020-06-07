@@ -791,7 +791,8 @@ void WindowManager::TakeScreenshot()
     libsiedler2::PixelBufferBGRA buffer(curRenderSize.x, curRenderSize.y);
     glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     flipVertical(buffer);
-    bfs::path outFilepath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[100])) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
+    bfs::path outFilepath =
+      bfs::path(RTTRCONFIG.ExpandPath(s25::folders::screenshots)) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
     try
     {
         saveBitmap(buffer, outFilepath);

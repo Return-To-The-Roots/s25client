@@ -44,7 +44,7 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
 
     // Pfad mit gewählter Sprache auswählen
     std::vector<bfs::path> paths;
-    const bfs::path basePath = RTTRCONFIG.ExpandPath(FILE_PATHS[88]);
+    const bfs::path basePath = RTTRCONFIG.ExpandPath(s25::folders::texte);
     for(const auto& folderName : getPossibleFoldersForLangCode(mysetlocale(0, nullptr)))
         paths.push_back(basePath / folderName / filename);
     paths.push_back(basePath / filename);

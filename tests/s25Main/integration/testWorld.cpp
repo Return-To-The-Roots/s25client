@@ -36,7 +36,7 @@
 struct MapTestFixture
 {
     const std::string testMapPath;
-    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(std::string(FILE_PATHS[52]) + "/Bergruft.swd")) {}
+    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(s25::folders::mapsNew) + "/Bergruft.swd") {}
 };
 
 BOOST_FIXTURE_TEST_SUITE(MapTestSuite, MapTestFixture)

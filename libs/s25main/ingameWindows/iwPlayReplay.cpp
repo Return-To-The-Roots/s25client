@@ -48,7 +48,7 @@ public:
 
 std::vector<bfs::path> GetReplays()
 {
-    return ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[51]), "rpl");
+    return ListDir(RTTRCONFIG.ExpandPath(s25::folders::replays), "rpl");
 }
 } // namespace
 

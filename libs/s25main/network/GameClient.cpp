@@ -829,8 +829,8 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     fileName += "_" + s25util::toStringClassic(mainPlayer.playerId) + "_";
     fileName += GetPlayer(mainPlayer.playerId).name;
 
-    std::string filePathSave = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/" + makePortableFileName(fileName + ".sav");
-    std::string filePathLog = RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + makePortableFileName(fileName + "Player.log");
+    std::string filePathSave = RTTRCONFIG.ExpandPath(s25::folders::save) + "/" + makePortableFileName(fileName + ".sav");
+    std::string filePathLog = RTTRCONFIG.ExpandPath(s25::folders::logs) + "/" + makePortableFileName(fileName + "Player.log");
     RANDOM.SaveLog(filePathLog);
     SaveToFile(filePathSave);
     LOG.write(_("Async log saved at \"%s\",\ngame saved at \"%s\"\n")) % filePathLog % filePathSave;
@@ -879,7 +879,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
         LOG.write("Invalid filename received!\n");
         OnError(CE_INVALID_MAP);
     }
-    mapinfo.filepath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/" + portFilename;
+    mapinfo.filepath = RTTRCONFIG.ExpandPath(s25::folders::mapsUser) + "/" + portFilename;
     mapinfo.type = msg.mt;
 
     // lua script file path
@@ -1297,7 +1297,7 @@ void GameClient::HandleAutosave()
     // Alle .... GF
     if(GetGFNumber() % SETTINGS.interface.autosave_interval == 0)
     {
-        std::string tmp = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/";
+        std::string tmp = RTTRCONFIG.ExpandPath(s25::folders::save) + "/";
 
         if(mapinfo.title.empty())
         {
@@ -1372,7 +1372,7 @@ void GameClient::StartReplayRecording(const unsigned random_init)
     replayinfo->replay.ggs = game->ggs_;
 
     // Datei speichern
-    if(!replayinfo->replay.StartRecording(RTTRCONFIG.ExpandPath(FILE_PATHS[51]) + "/" + replayinfo->fileName, mapinfo))
+    if(!replayinfo->replay.StartRecording(RTTRCONFIG.ExpandPath(s25::folders::replays) + "/" + replayinfo->fileName, mapinfo))
     {
         LOG.write(_("Replayfile couldn't be opened. No replay will be recorded\n"));
         replayinfo.reset();
@@ -1434,7 +1434,7 @@ bool GameClient::StartReplay(const std::string& path)
         case MAPTYPE_OLDMAP:
         {
             // Richtigen Pfad zur Map erstellen
-            bfs::path mapFilePath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[48])) / bfs::path(mapinfo.filepath).filename();
+            bfs::path mapFilePath = bfs::path(RTTRCONFIG.ExpandPath(s25::folders::mapsUser)) / bfs::path(mapinfo.filepath).filename();
             mapinfo.filepath = mapFilePath.string();
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {

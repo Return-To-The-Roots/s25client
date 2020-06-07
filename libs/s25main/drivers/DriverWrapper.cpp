@@ -146,7 +146,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 {
     std::vector<DriverItem> driver_list;
 
-    std::string path = RTTRCONFIG.ExpandPath(FILE_PATHS[46]) + "/" + getName(dt);
+    std::string path = RTTRCONFIG.ExpandPath(s25::folders::driver) + "/" + getName(dt);
     std::string extension =
 #ifdef _WIN32
       "dll";

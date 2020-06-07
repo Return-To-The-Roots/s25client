@@ -161,7 +161,7 @@ void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigne
 
 std::string iwMusicPlayer::GetFullPlaylistPath(const std::string& name)
 {
-    return RTTRCONFIG.ExpandPath(FILE_PATHS[90]) + "/" + name + ".pll";
+    return RTTRCONFIG.ExpandPath(s25::folders::music) + "/" + name + ".pll";
 }
 
 void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
@@ -385,7 +385,7 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
 {
     GetCtrl<ctrlComboBox>(2)->DeleteAllItems();
 
-    std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[90]), "pll");
+    std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.ExpandPath(s25::folders::music), "pll");
 
     unsigned i = 0;
     for(const auto& playlistPath : playlists)
