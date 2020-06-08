@@ -28,47 +28,47 @@ RTTR_IGNORE_DIAGNOSTIC("-Wunused-variable")
 
 namespace s25 {
 namespace folders {
-    constexpr auto config = "<RTTR_CONFIG>";                   // Einstellungsordner
-    constexpr auto data = "<RTTR_GAME>/DATA";                  // S2 game data
-    constexpr auto driver = "<RTTR_DRIVER>";                   // Treiberordner
-    constexpr auto gameLstsGlobal = "<RTTR_RTTR>/LSTS/GAME";   // systemweite lstfiles (immer bei spielstart geladen)
-    constexpr auto gameLstsUser = "<RTTR_USERDATA>/LSTS/GAME"; // persönliche lstfiles (immer bei spielstart geladen)
+    constexpr auto config = "<RTTR_CONFIG>";
+    constexpr auto data = "<RTTR_GAME>/DATA"; // S2 game data
+    constexpr auto driver = "<RTTR_DRIVER>";
+    constexpr auto gameLstsGlobal = "<RTTR_RTTR>/LSTS/GAME";   // global lst files loaded on game start
+    constexpr auto gameLstsUser = "<RTTR_USERDATA>/LSTS/GAME"; // user lst files  loaded on game start
     constexpr auto gamedata = "<RTTR_RTTR>/gamedata";          // Path to the gamedata
-    constexpr auto languages = "<RTTR_RTTR>/languages";        // die ganzen Sprachdateien
+    constexpr auto languages = "<RTTR_RTTR>/languages";        // translation files
     constexpr auto loadScreens = "<RTTR_GAME>/GFX/PICS";
     constexpr auto loadScreensMissions = "<RTTR_GAME>/GFX/PICS/MISSION";
-    constexpr auto logs = "<RTTR_USERDATA>/LOGS";     // Log-Ordner
-    constexpr auto lstsGlobal = "<RTTR_RTTR>/LSTS";   // systemweite lstfiles (immer bei start geladen)
-    constexpr auto lstsUser = "<RTTR_USERDATA>/LSTS"; // persönliche lstfiles (immer bei start geladen)
+    constexpr auto logs = "<RTTR_USERDATA>/LOGS";
+    constexpr auto lstsGlobal = "<RTTR_RTTR>/LSTS";   // global lst files loaded on program start
+    constexpr auto lstsUser = "<RTTR_USERDATA>/LSTS"; // user lst files  loaded on program start
     constexpr auto mapsCampaign = "<RTTR_GAME>/DATA/MAPS";
     constexpr auto mapsContinents = "<RTTR_GAME>/DATA/MAPS2";
     constexpr auto mapsNew = "<RTTR_GAME>/DATA/MAPS4";
     constexpr auto mapsOld = "<RTTR_GAME>/DATA/MAPS3";
-    constexpr auto mapsOther = "<RTTR_RTTR>/MAPS/OTHER"; // Andere Maps
+    constexpr auto mapsOther = "<RTTR_RTTR>/MAPS/OTHER";
     constexpr auto mapsOwn = "<RTTR_USERDATA>/WORLDS";
-    constexpr auto mapsPlayed = "<RTTR_USERDATA>/MAPS"; // die heruntergeladenen Karten
-    constexpr auto mapsRttr = "<RTTR_RTTR>/MAPS/NEW";   // unsere eigenen neuen Karten
-    constexpr auto mapsSea = "<RTTR_RTTR>/MAPS/SEA";    // Seefahrtkarten
-    constexpr auto mbob = "<RTTR_GAME>/DATA/MBOB";      // Nation graphics
+    constexpr auto mapsPlayed = "<RTTR_USERDATA>/MAPS"; // downloaded maps
+    constexpr auto mapsRttr = "<RTTR_RTTR>/MAPS/NEW";   // maps added by RTTR
+    constexpr auto mapsSea = "<RTTR_RTTR>/MAPS/SEA";    // seafaring maps
+    constexpr auto mbob = "<RTTR_GAME>/DATA/MBOB";      // nation graphics
     constexpr auto music = "<RTTR_RTTR>/MUSIC";
-    constexpr auto replays = "<RTTR_USERDATA>/REPLAYS";         // Replayordner
-    constexpr auto save = "<RTTR_USERDATA>/SAVE";               // Der Speicherordner
-    constexpr auto screenshots = "<RTTR_USERDATA>/screenshots"; // Screenshots
-    constexpr auto sng = "<RTTR_RTTR>/MUSIC/SNG";               // die musik
+    constexpr auto replays = "<RTTR_USERDATA>/REPLAYS";
+    constexpr auto save = "<RTTR_USERDATA>/SAVE";
+    constexpr auto screenshots = "<RTTR_USERDATA>/screenshots";
+    constexpr auto sng = "<RTTR_RTTR>/MUSIC/SNG"; // downloaded background music files
     constexpr auto texte = "<RTTR_RTTR>/texte";
     constexpr auto textures = "<RTTR_GAME>/GFX/TEXTURES"; // Terrain textures
 } // namespace folders
 namespace files {
     constexpr auto splash = "<RTTR_RTTR>/splash.bmp";
-    constexpr auto soundOrig = "<RTTR_GAME>/DATA/SOUNDDAT/SOUND.LST"; // die originale sound.lst
-    constexpr auto soundScript = "<RTTR_RTTR>/sound.scs";             // Das konvertier-script
+    constexpr auto soundOrig = "<RTTR_GAME>/DATA/SOUNDDAT/SOUND.LST"; // original sound.lst
+    constexpr auto soundScript = "<RTTR_RTTR>/sound.scs";             // converter script
 } // namespace files
 namespace resources {
     constexpr auto boat = "<RTTR_GAME>/DATA/BOBS/BOAT.LST";
     constexpr auto boot_z = "<RTTR_GAME>/DATA/BOOT_Z.LST";
     constexpr auto carrier = "<RTTR_GAME>/DATA/BOBS/CARRIER.BOB";
-    constexpr auto colors = "<RTTR_RTTR>/COLORS.ACT";   // Spezialpalette wegen Schriften usw
-    constexpr auto config = "<RTTR_CONFIG>/CONFIG.INI"; // die Einstellungsdatei
+    constexpr auto colors = "<RTTR_RTTR>/COLORS.ACT";   // special palette for player colors
+    constexpr auto config = "<RTTR_CONFIG>/CONFIG.INI"; // main config file
     constexpr auto io = "<RTTR_GAME>/DATA/IO/IO.DAT";
     constexpr auto fonts = "<RTTR_RTTR>/LSTS/fonts.LST";
     constexpr auto jobs = "<RTTR_GAME>/DATA/BOBS/JOBS.BOB";
@@ -78,7 +78,7 @@ namespace resources {
     constexpr auto mis3bobs = "<RTTR_GAME>/DATA/MIS3BOBS.LST";
     constexpr auto mis4bobs = "<RTTR_GAME>/DATA/MIS4BOBS.LST";
     constexpr auto mis5bobs = "<RTTR_GAME>/DATA/MIS5BOBS.LST";
-    constexpr auto pal5 = "<RTTR_GAME>/GFX/PALETTE/PAL5.BBM"; // die ganzen Paletten
+    constexpr auto pal5 = "<RTTR_GAME>/GFX/PALETTE/PAL5.BBM";
     constexpr auto pal6 = "<RTTR_GAME>/GFX/PALETTE/PAL6.BBM";
     constexpr auto pal7 = "<RTTR_GAME>/GFX/PALETTE/PAL7.BBM";
     constexpr auto paletti0 = "<RTTR_GAME>/GFX/PALETTE/PALETTI0.BBM";
@@ -86,8 +86,8 @@ namespace resources {
     constexpr auto paletti8 = "<RTTR_GAME>/GFX/PALETTE/PALETTI8.BBM";
     constexpr auto resource = "<RTTR_GAME>/DATA/RESOURCE.DAT";
     constexpr auto rom_bobs = "<RTTR_GAME>/DATA/CBOB/ROM_BOBS.LST";
-    constexpr auto setup013 = "<RTTR_GAME>/GFX/PICS/SETUP013.LBM"; // Optionen
-    constexpr auto setup015 = "<RTTR_GAME>/GFX/PICS/SETUP015.LBM"; // Freies Spiel
+    constexpr auto setup013 = "<RTTR_GAME>/GFX/PICS/SETUP013.LBM"; // option backgrond
+    constexpr auto setup015 = "<RTTR_GAME>/GFX/PICS/SETUP015.LBM"; // free play background
 } // namespace resources
 } // namespace s25
 

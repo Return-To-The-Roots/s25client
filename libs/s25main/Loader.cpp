@@ -400,8 +400,8 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
         if(nation < NUM_NATIVE_NATS)
         {
             const auto shortName = s25util::toUpper(std::string(NationNames[nation], 0, 3));
-            files.push_back(std::string(s25::folders::mbob) + "/" + shortName + "_ICON.LST");
-            files.push_back(std::string(s25::folders::mbob) + "/" + natPrefix + shortName + "_Z.LST");
+            files.push_back(std::string(s25::folders::mbob).append("/").append(shortName).append("_ICON.LST"));
+            files.push_back(std::string(s25::folders::mbob).append("/").append(natPrefix).append(shortName).append("_Z.LST"));
         } else
         {
             for(const std::string folder : {s25::folders::gameLstsGlobal, s25::folders::gameLstsUser})
