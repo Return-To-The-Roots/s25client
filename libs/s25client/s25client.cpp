@@ -322,6 +322,7 @@ bool MigrateFilesAndDirectories()
                 throw std::runtime_error(helpers::format("Expected file but %1% is not a file", oldName));
             if(entry.newName.empty())
             {
+                LOG.write("Removing %1% which is no longer needed\n", LogTarget::Stdout) % oldName;
                 boost::system::error_code ec;
                 if(!remove(oldName, ec))
                     throw std::runtime_error(helpers::format("Failed to delete %1%: %2%", oldName, ec.message()));
@@ -334,6 +335,7 @@ bool MigrateFilesAndDirectories()
                       helpers::format("Old and new %1% found. Please delete the one you don't want to keep!\nOld: %2%\nNew: %3%",
                                       is_directory(oldName) ? "directory" : "file", oldName, newName));
                 }
+                LOG.write("Filepath of %1% has changed to %2%. Renaming...\n", LogTarget::Stdout) % oldName % newName;
                 boost::system::error_code ec;
                 rename(oldName, newName, ec);
                 if(ec)
@@ -346,7 +348,7 @@ bool MigrateFilesAndDirectories()
         }
     } catch(const std::exception& e)
     {
-        bnw::cerr << "ERROR: Migration of folders and files to new locations failed: " << e.what();
+        LOG.write("ERROR: Migration of folders and files to new locations failed: %1%\n", LogTarget::Stderr) % e.what();
         return false;
     }
     return true;
