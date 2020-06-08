@@ -392,33 +392,53 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     for(unsigned bld = 0; bld < NUM_BUILDING_TYPES; bld++)
         BOOST_REQUIRE(player.IsBuildingEnabled(BuildingType(bld)));
 
+    std::array<unsigned, 5> numReserveClaimedBefore, numReserveVisualClaimedBefore;
+    for(unsigned rank = 0; rank < SOLDIER_JOBS.size(); rank++)
+    {
+        numReserveClaimedBefore[rank] = hq->GetReserveClaimed(rank);
+        numReserveVisualClaimedBefore[rank] = *hq->GetReserveClaimedVisualPointer(rank);
+    }
+
     executeLua("player:ClearResources()");
-    for(unsigned gd = 0; gd < NUM_WARE_TYPES; gd++)
-    {
-        BOOST_REQUIRE_EQUAL(hq->GetNumRealWares(GoodType(gd)), 0u);
-        BOOST_REQUIRE_EQUAL(hq->GetNumVisualWares(GoodType(gd)), 0u);
-    }
-    for(unsigned job = 0; job < NUM_JOB_TYPES; job++)
-    {
-        BOOST_REQUIRE_EQUAL(hq->GetNumRealFigures(Job(job)), 0u);
-        BOOST_REQUIRE_EQUAL(hq->GetNumVisualFigures(Job(job)), 0u);
-    }
+    const Inventory& playerInv = player.GetInventory();
+    for(auto gd = GoodType(0); gd < NUM_WARE_TYPES; gd = GoodType(gd + 1))
+        BOOST_TEST_CONTEXT("Good: " << gd)
+        {
+            BOOST_TEST(hq->GetNumRealWares(gd) == 0u);
+            BOOST_TEST(hq->GetNumVisualWares(gd) == 0u);
+            BOOST_TEST(playerInv[gd] == 0u);
+        }
+    for(auto job = Job(0); job < NUM_JOB_TYPES; job = Job(job + 1))
+        BOOST_TEST_CONTEXT("Job: " << job)
+        {
+            BOOST_TEST(hq->GetNumRealFigures(job) == 0u);
+            BOOST_TEST(hq->GetNumVisualFigures(job) == 0u);
+            BOOST_TEST(playerInv[job] == 0u);
+        }
+    for(unsigned rank = 0; rank < SOLDIER_JOBS.size(); rank++)
+        BOOST_TEST_CONTEXT("Rank: " << rank)
+        {
+            // Claimed is not touched
+            BOOST_TEST(hq->GetReserveClaimed(rank) == numReserveClaimedBefore[rank]);
+            BOOST_TEST(*hq->GetReserveClaimedVisualPointer(rank) == numReserveVisualClaimedBefore[rank]);
+            // But available/used ones are reset
+            BOOST_TEST(*hq->GetReserveAvailablePointer(rank) == 0u);
+        }
 
     executeLua("wares = {[GD_HAMMER]=8,[GD_AXE]=6,[GD_SAW]=3}\n"
                "people = {[JOB_HELPER] = 30,[JOB_WOODCUTTER] = 6,[JOB_FISHER] = 0,[JOB_FORESTER] = 2}");
     executeLua("assert(player:AddWares(wares))");
-    const Inventory& inv = player.GetInventory();
-    BOOST_REQUIRE_EQUAL(inv.goods[GD_HAMMER], 8u);
-    BOOST_REQUIRE_EQUAL(inv.goods[GD_AXE], 6u);
-    BOOST_REQUIRE_EQUAL(inv.goods[GD_SAW], 3u);
+    BOOST_REQUIRE_EQUAL(playerInv.goods[GD_HAMMER], 8u);
+    BOOST_REQUIRE_EQUAL(playerInv.goods[GD_AXE], 6u);
+    BOOST_REQUIRE_EQUAL(playerInv.goods[GD_SAW], 3u);
     BOOST_CHECK_EQUAL(hq->GetNumRealWares(GD_HAMMER), 8u);
     BOOST_CHECK_EQUAL(hq->GetNumRealWares(GD_AXE), 6u);
     BOOST_CHECK_EQUAL(hq->GetNumRealWares(GD_SAW), 3u);
     executeLua("assert(player:AddPeople(people))");
-    BOOST_REQUIRE_EQUAL(inv.people[JOB_HELPER], 30u);
-    BOOST_REQUIRE_EQUAL(inv.people[JOB_WOODCUTTER], 6u);
-    BOOST_REQUIRE_EQUAL(inv.people[JOB_FISHER], 0u);
-    BOOST_REQUIRE_EQUAL(inv.people[JOB_FORESTER], 2u);
+    BOOST_REQUIRE_EQUAL(playerInv.people[JOB_HELPER], 30u);
+    BOOST_REQUIRE_EQUAL(playerInv.people[JOB_WOODCUTTER], 6u);
+    BOOST_REQUIRE_EQUAL(playerInv.people[JOB_FISHER], 0u);
+    BOOST_REQUIRE_EQUAL(playerInv.people[JOB_FORESTER], 2u);
     BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_HELPER), 30u);
     BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_WOODCUTTER), 6u);
     BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_FISHER), 0u);

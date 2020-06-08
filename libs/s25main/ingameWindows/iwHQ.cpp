@@ -51,7 +51,7 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
                                _("More"));
         // Anzahl-Text
         reserve.AddVarText(21 + i, DrawPoint(100, 117 + Y_DISTANCE * i), _("%u/%u"), 0xFFFFFF00, FontStyle::CENTER, NormalFont, 2,
-                           wh->GetReservePointerAvailable(i), wh->GetReservePointerClaimed(i));
+                           wh->GetReserveAvailablePointer(i), wh->GetReserveClaimedVisualPointer(i));
     }
 }
 
