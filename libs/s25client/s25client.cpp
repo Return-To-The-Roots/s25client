@@ -287,6 +287,15 @@ bool MigrateFilesAndDirectories()
         std::string oldName, newName;
         bool isFolder;
     };
+    const std::string sharedLibext =
+#ifdef _WIN32
+      "dll";
+#elif defined(__APPLE__)
+      "dylib";
+#else
+      "so";
+#endif
+
     // Mapping from old files or directories to new ones
     // Handled in order so multiple renamings are possible
     // Empty newName = Delete
@@ -297,6 +306,7 @@ bool MigrateFilesAndDirectories()
       {"~/.s25rttr", s25::folders::config, true},
 #endif
       {std::string(s25::folders::lstsUser).append("/SOUND.LST"), "", false},
+      {std::string(s25::folders::driver).append("/video/libvideoSDL.").append(sharedLibext), "", false},
     };
 
     try
