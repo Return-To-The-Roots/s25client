@@ -27,6 +27,7 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
+#include "helpers/format.hpp"
 #include "mygettext/mygettext.h"
 #include "ogl/glAllocator.h"
 #include "libsiedler2/libsiedler2.h"
@@ -44,6 +45,7 @@
 #include <ctime>
 #include <iostream>
 #include <limits>
+#include <vector>
 //#include <vld.h>
 
 #ifdef _WIN32
@@ -278,6 +280,68 @@ void SetAppSymbol()
 #endif // _WIN32
 }
 
+bool MigrateFilesAndDirectories()
+{
+    struct MigrationEntry
+    {
+        std::string oldName, newName;
+        bool isFolder;
+    };
+    // Mapping from old files or directories to new ones
+    // Handled in order so multiple renamings are possible
+    // Empty newName = Delete
+    const std::vector<MigrationEntry> migrations = {
+#ifdef _WIN32
+      {"~/Siedler II.5 RttR", s25::folders::config, true},
+#elif defined(__APPLE__)
+      {"~/.s25rttr", s25::folders::config, true},
+#endif
+      {std::string(s25::folders::lstsUser).append("/SOUND.LST"), "", false},
+    };
+
+    try
+    {
+        for(const MigrationEntry& entry : migrations)
+        {
+            const bfs::path oldName = RTTRCONFIG.ExpandPath(entry.oldName);
+            if(!exists(oldName))
+                continue;
+            if(entry.isFolder && !is_directory(oldName))
+                throw std::runtime_error(helpers::format("Expected folder but %1% is not a folder", oldName));
+            else if(!entry.isFolder && !is_regular_file(oldName))
+                throw std::runtime_error(helpers::format("Expected file but %1% is not a file", oldName));
+            if(entry.newName.empty())
+            {
+                boost::system::error_code ec;
+                if(!remove(oldName, ec))
+                    throw std::runtime_error(helpers::format("Failed to delete %1%: %2%", oldName, ec.message()));
+            } else
+            {
+                const bfs::path newName = RTTRCONFIG.ExpandPath(entry.newName);
+                if(exists(newName))
+                {
+                    throw std::runtime_error(
+                      helpers::format("Old and new %1% found. Please delete the one you don't want to keep!\nOld: %2%\nNew: %3%",
+                                      is_directory(oldName) ? "directory" : "file", oldName, newName));
+                }
+                boost::system::error_code ec;
+                rename(oldName, newName, ec);
+                if(ec)
+                {
+                    throw std::runtime_error(helpers::format(
+                      "Renaming %1% to %2% failed\nError: %3%\nRename it yourself and/or make sure the directory is writable!", oldName,
+                      newName, ec.message()));
+                }
+            }
+        }
+    } catch(const std::exception& e)
+    {
+        bnw::cerr << "ERROR: Migration of folders and files to new locations failed: " << e.what();
+        return false;
+    }
+    return true;
+}
+
 bool InitDirectories()
 {
     // Note: Do not use logger yet. Filepath may not exist
@@ -289,35 +353,8 @@ bool InitDirectories()
                                               s25::folders::replays, s25::folders::save, s25::folders::lstsUser, s25::folders::gameLstsUser,
                                               s25::folders::screenshots}}; // settingsdir muss zuerst angelegt werden (94)
 
-    std::string oldSettingsDir;
-
-#ifdef _WIN32
-    oldSettingsDir = RTTRCONFIG.ExpandPath("~/Siedler II.5 RttR");
-#elif defined(__APPLE__)
-    oldSettingsDir = RTTRCONFIG.ExpandPath("~/.s25rttr");
-#endif
-    if(!oldSettingsDir.empty() && bfs::is_directory(oldSettingsDir))
-    {
-        const std::string newSettingsDir = RTTRCONFIG.ExpandPath(s25::folders::config);
-        if(bfs::exists(newSettingsDir))
-        {
-            s25util::error(std::string("Old and new settings directory found. Please delete the one you don't want to keep!\nOld: ")
-                           + oldSettingsDir + "\nNew: " + newSettingsDir);
-            return false;
-        }
-        boost::system::error_code ec;
-        bfs::rename(oldSettingsDir, newSettingsDir, ec);
-        if(ec != boost::system::errc::success)
-        {
-            s25util::error(std::string("Old settings directory found at ") + oldSettingsDir
-                           + "\n Renaming to new name failed: " + newSettingsDir + "\nError: " + ec.message()
-                           + "\nRename it yourself and/or make sure the directory is writable!");
-            return false;
-        }
-    }
-    const std::string soundLSTPath = RTTRCONFIG.ExpandPath(s25::folders::lstsUser) + "/SOUND.LST";
-    if(bfs::exists(soundLSTPath))
-        bfs::remove(soundLSTPath);
+    if(!MigrateFilesAndDirectories())
+        return false;
 
     for(const std::string& rawDir : dirs)
     {
