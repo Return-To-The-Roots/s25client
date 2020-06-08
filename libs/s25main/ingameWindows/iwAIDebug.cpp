@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,14 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwAIDebug.h"
 #include "Loader.h"
 #include "ai/AIEvents.h"
 #include "ai/aijh/AIPlayerJH.h"
 #include "ai/aijh/Jobs.h"
 #include "controls/ctrlComboBox.h"
-#include "controls/ctrlText.h"
+#include "controls/ctrlMultiline.h"
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
@@ -82,7 +81,7 @@ public:
 };
 
 iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais)
-    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(300, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(280, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)),
       gwv(gwv), text(nullptr), printer(nullptr)
 {
     for(const AIPlayer* ai : ais)
@@ -119,10 +118,10 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
     overlays->AddString("Borderland");
     overlays->AddString("Fish");
 
-    text = AddText(ID_Text, DrawPoint(15, 120), "", COLOR_YELLOW, FontStyle::LEFT | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
-
     // Show 7 lines of text and 1 empty line
-    SetIwSize(Extent(GetIwSize().x, text->GetPos().y + 8 * text->GetFont()->getHeight()));
+    text = AddMultiline(ID_Text, DrawPoint(15, 120), Extent(250, 8 * NormalFont->getHeight()), TC_GREY, NormalFont, FontStyle::NO_OUTLINE);
+
+    SetIwSize(Extent(GetIwSize().x, text->GetPos().y + text->GetSize().y));
 
     players->SetSelection(0);
     overlays->SetSelection(0);
@@ -156,7 +155,8 @@ void iwAIDebug::Msg_PaintBefore()
     const AIJH::Job* currentJob = printer->ai->GetCurrentJob();
     if(!currentJob)
     {
-        text->SetText(_("No current job"));
+        text->Clear();
+        text->AddString(_("No current job"), COLOR_YELLOW);
         return;
     }
 
@@ -218,5 +218,6 @@ void iwAIDebug::Msg_PaintBefore()
         default: ss << "Unknown status"; break;
     }
 
-    text->SetText(ss.str());
+    text->Clear();
+    text->AddString(ss.str(), COLOR_YELLOW);
 }
