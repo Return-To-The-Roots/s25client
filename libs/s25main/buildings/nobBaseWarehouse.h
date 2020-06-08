@@ -275,8 +275,8 @@ public:
     void RefreshReserve(unsigned rank);
 
     /// Gibt Zeiger auf dir Reserve zurück für das GUI
-    const unsigned* GetReservePointerAvailable(unsigned rank) const { return &reserve_soldiers_available[rank]; }
-    const unsigned* GetReservePointerClaimed(unsigned rank) const { return &reserve_soldiers_claimed_visual[rank]; }
+    const unsigned* GetReserveAvailablePointer(unsigned rank) const { return &reserve_soldiers_available[rank]; }
+    const unsigned* GetReserveClaimedVisualPointer(unsigned rank) const { return &reserve_soldiers_claimed_visual[rank]; }
     unsigned GetReserveClaimed(unsigned rank) const { return reserve_soldiers_claimed_real[rank]; }
 
     /// Available goods of a specific type that can be used for trading

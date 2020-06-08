@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h"
 #include "nobBaseWarehouse.h"
 #include "BurnedWarehouse.h"
 #include "EventManager.h"
@@ -65,8 +65,9 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, 
     producinghelpers_event =
       GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
     // Reserve nullen
-    for(unsigned i = 0; i < 5; ++i)
-        reserve_soldiers_available[i] = reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = 0;
+    reserve_soldiers_available.fill(0);
+    reserve_soldiers_claimed_visual.fill(0);
+    reserve_soldiers_claimed_real.fill(0);
 }
 
 nobBaseWarehouse::~nobBaseWarehouse()
@@ -185,11 +186,17 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
 
 void nobBaseWarehouse::Clear()
 {
+    // Add reserve soldiers back
+    for(unsigned i = 0; i < reserve_soldiers_available.size(); i++)
+        inventory.Add(SOLDIER_JOBS[i], reserve_soldiers_available[i]);
+    reserve_soldiers_available.fill(0);
+
+    GamePlayer& owner = gwg->GetPlayer(player);
     for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
-        gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
+        owner.DecreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
     for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
-        gwg->GetPlayer(player).DecreaseInventoryJob(Job(i), inventory[Job(i)]);
+        owner.DecreaseInventoryJob(Job(i), inventory[Job(i)]);
 
     inventory.clear();
 
@@ -201,14 +208,6 @@ void nobBaseWarehouse::Clear()
     }
 
     waiting_wares.clear();
-
-    for(unsigned i = 0; i < 5; ++i)
-    {
-        // TODO: inventory!?
-        reserve_soldiers_available[i] = 0;
-        reserve_soldiers_claimed_visual[i] = 0;
-        reserve_soldiers_claimed_real[i] = 0;
-    }
 }
 
 void nobBaseWarehouse::OrderCarrier(noRoadNode& goal, RoadSegment& workplace)
@@ -1311,14 +1310,12 @@ bool nobBaseWarehouse::AreWaresToEmpty() const
 
 bool nobBaseWarehouse::DefendersAvailable() const
 {
-    // Warenbestand und Reserve prüfen
-    for(unsigned i = 0; i < SOLDIER_JOBS.size(); ++i)
+    const auto isNonZero = [](const unsigned ct) { return ct != 0; };
+    if(helpers::contains_if(reserve_soldiers_available, isNonZero))
+        return true;
+    for(Job job : SOLDIER_JOBS)
     {
-        // Reserve
-        if(reserve_soldiers_available[i])
-            return true;
-        // Warenbestand
-        if(inventory[SOLDIER_JOBS[i]])
+        if(inventory[job])
             return true;
     }
 
@@ -1413,7 +1410,7 @@ unsigned nobBaseWarehouse::GetAvailableWaresForTrading(const GoodType gt) const
     if(!inventory[JOB_HELPER])
         return 0;
 
-    return min(inventory[gt], inventory[JOB_PACKDONKEY]);
+    return std::min(inventory[gt], inventory[JOB_PACKDONKEY]);
 }
 
 /// Available figures of a speciefic type that can be used for trading
@@ -1426,7 +1423,7 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
     if(job == JOB_HELPER)
         return (inventory[JOB_HELPER] - 1) / 2; // need one as leader
     else
-        return min(inventory[job], inventory[JOB_HELPER] - 1);
+        return std::min(inventory[job], inventory[JOB_HELPER] - 1);
 }
 
 /// Starts a trade caravane from this warehouse

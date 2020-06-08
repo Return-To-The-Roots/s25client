@@ -883,7 +883,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     {
         // We already have soldier per rank as reserve
         BOOST_REQUIRE_EQUAL(wh->GetReserveClaimed(i), 1u);
-        BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), 1u);
+        BOOST_REQUIRE_EQUAL(*wh->GetReserveAvailablePointer(i), 1u);
 
         unsigned newVal = i * 5 + 2;
         unsigned numSoldiersAv = wh->GetNumVisualFigures(SOLDIER_JOBS[i]);
@@ -891,7 +891,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
         // Update reserve -> Removed from inventory
         this->ChangeReserve(hqPos, i, newVal);
         BOOST_REQUIRE_EQUAL(wh->GetReserveClaimed(i), newVal);
-        BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), newVal);
+        BOOST_REQUIRE_EQUAL(*wh->GetReserveAvailablePointer(i), newVal);
         // Current figure ct should be old figure count minus the new reserve soldiers (currentVal - 1 for old reserve val)
         BOOST_REQUIRE_EQUAL(wh->GetNumVisualFigures(SOLDIER_JOBS[i]), numSoldiersAv - (newVal - 1));
         BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(SOLDIER_JOBS[i]), numSoldiersAv - (newVal - 1));
@@ -901,11 +901,11 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     {
         unsigned newVal = i * 3 + 1;
         unsigned numSoldiersAv = wh->GetNumVisualFigures(SOLDIER_JOBS[i]);
-        unsigned numSoldiersReleased = *wh->GetReservePointerAvailable(i) - newVal;
+        unsigned numSoldiersReleased = *wh->GetReserveAvailablePointer(i) - newVal;
         // Release some soldiers from reserve -> Added to inventory
         this->ChangeReserve(hqPos, i, newVal);
         BOOST_REQUIRE_EQUAL(wh->GetReserveClaimed(i), newVal);
-        BOOST_REQUIRE_EQUAL(*wh->GetReservePointerAvailable(i), newVal);
+        BOOST_REQUIRE_EQUAL(*wh->GetReserveAvailablePointer(i), newVal);
         BOOST_REQUIRE_EQUAL(wh->GetNumVisualFigures(SOLDIER_JOBS[i]), numSoldiersAv + numSoldiersReleased);
         BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(SOLDIER_JOBS[i]), numSoldiersAv + numSoldiersReleased);
     }
