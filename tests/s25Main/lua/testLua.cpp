@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,11 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameWithLuaAccess.h"
 #include "PointOutput.h"
+#include "RttrForeachPt.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
+#include "helpers/EnumRange.h"
 #include "lua/LuaTraits.h" // IWYU pragma: keep
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
@@ -401,14 +402,14 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
 
     executeLua("player:ClearResources()");
     const Inventory& playerInv = player.GetInventory();
-    for(auto gd = GoodType(0); gd < NUM_WARE_TYPES; gd = GoodType(gd + 1))
+    for(const GoodType gd : helpers::EnumRange<GoodType>{})
         BOOST_TEST_CONTEXT("Good: " << gd)
         {
             BOOST_TEST(hq->GetNumRealWares(gd) == 0u);
             BOOST_TEST(hq->GetNumVisualWares(gd) == 0u);
             BOOST_TEST(playerInv[gd] == 0u);
         }
-    for(auto job = Job(0); job < NUM_JOB_TYPES; job = Job(job + 1))
+    for(const Job job : helpers::EnumRange<Job>{})
         BOOST_TEST_CONTEXT("Job: " << job)
         {
             BOOST_TEST(hq->GetNumRealFigures(job) == 0u);
