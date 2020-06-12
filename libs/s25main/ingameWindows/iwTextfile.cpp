@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 // Copyright (c) 2013 Nevik Rehnel (hai.kataker at gmx.de)
 //
 // This file is part of Return To The Roots.
@@ -16,7 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwTextfile.h"
 #include "Loader.h"
 #include "RttrConfig.h"
@@ -29,6 +28,8 @@
 #include <mygettext/mygettext.h>
 #include <mygettext/utils.h>
 #include <sstream>
+
+namespace bfs = boost::filesystem;
 
 /**
  *  Konstruktor von @p iwTextfile.
@@ -45,12 +46,12 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     // Pfad mit gewählter Sprache auswählen
     std::vector<bfs::path> paths;
     const bfs::path basePath = RTTRCONFIG.ExpandPath(s25::folders::texte);
-    for(const auto& folderName : getPossibleFoldersForLangCode(mysetlocale(0, nullptr)))
+    for(const auto& folderName : mygettext::getPossibleFoldersForLangCode(mygettext::setlocale(0, nullptr)))
         paths.push_back(basePath / folderName / filename);
     paths.push_back(basePath / filename);
 
     const auto existingFilePath = helpers::find_if(paths, [](const auto& path) { return bfs::exists(path); });
-    bnw::ifstream file;
+    boost::nowide::ifstream file;
     if(existingFilePath != paths.end())
         file.open(*existingFilePath);
     if(!file)

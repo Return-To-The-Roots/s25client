@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,8 +24,8 @@ namespace rttr { namespace test {
     struct LocaleResetter
     {
         const std::string oldLoc;
-        LocaleResetter(const char* newLoc) : oldLoc(mysetlocale(LC_ALL, nullptr)) { mysetlocale(LC_ALL, newLoc); }
-        ~LocaleResetter() { mysetlocale(LC_ALL, oldLoc.c_str()); }
+        LocaleResetter(const char* newLoc) : oldLoc(mygettext::setlocale(LC_ALL, nullptr)) { mygettext::setlocale(LC_ALL, newLoc); }
+        ~LocaleResetter() { mygettext::setlocale(LC_ALL, oldLoc.c_str()); }
     };
 }} // namespace rttr::test
 

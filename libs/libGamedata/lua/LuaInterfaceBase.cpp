@@ -114,7 +114,7 @@ void LuaInterfaceBase::setThrowOnError(bool doThrow)
 
 std::map<std::string, std::string> LuaInterfaceBase::getTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)
 {
-    std::vector<std::string> folders = getPossibleFoldersForLangCode(code);
+    std::vector<std::string> folders = mygettext::getPossibleFoldersForLangCode(code);
     for(const std::string& folder : folders)
     {
         kaguya::LuaRef entry = luaTranslations[folder];
@@ -129,12 +129,12 @@ void LuaInterfaceBase::registerTranslations(const kaguya::LuaRef& luaTranslation
     // Init with default
     translations_ = getTranslation(luaTranslations, "en_GB");
     // Replace with entries of current locale
-    const std::string locale = mysetlocale(LC_ALL, nullptr);
+    const std::string locale = mygettext::setlocale(LC_ALL, nullptr);
     const std::map<std::string, std::string> translated = getTranslation(luaTranslations, locale);
     if(translated.empty())
     {
         boost::format fmt("Did not found translation for language '%1%' in LUA file. Available translations:  %2%\n");
-        fmt % LocaleInfo(locale).getName() % helpers::join(luaTranslations.keys<std::string>(), ", ");
+        fmt % mygettext::LocaleInfo(locale).getName() % helpers::join(luaTranslations.keys<std::string>(), ", ");
         log(fmt.str());
     } else
     {
