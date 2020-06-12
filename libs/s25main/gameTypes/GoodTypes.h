@@ -20,6 +20,7 @@
 
 #include "helpers/MaxEnumValue.h"
 #include "mygettext/mygettext.h"
+#include <string>
 
 // Warentypen
 enum GoodType

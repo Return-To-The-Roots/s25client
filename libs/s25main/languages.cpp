@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "languages.h"
 #include "Loader.h"
 #include "RttrConfig.h"
@@ -38,9 +37,9 @@ static bool operator<(const Language& o1, const Language& o2)
 Languages::Languages() : loaded(false)
 {
     const char* domain = "rttr";
-    mybind_textdomain_codeset(domain, "UTF-8");
-    mybindtextdomain(domain, RTTRCONFIG.ExpandPath(s25::folders::languages).c_str());
-    mytextdomain(domain);
+    mygettext::bind_textdomain_codeset(domain, "UTF-8");
+    mygettext::bindtextdomain(domain, RTTRCONFIG.ExpandPath(s25::folders::languages).c_str());
+    mygettext::textdomain(domain);
 }
 
 void Languages::loadLanguages()
@@ -88,7 +87,7 @@ unsigned Languages::size()
 
 void Languages::setLanguage(const std::string& lang_code)
 {
-    mysetlocale(LC_ALL, lang_code.c_str());
+    mygettext::setlocale(LC_ALL, lang_code.c_str());
 }
 
 std::string Languages::setLanguage(unsigned i)
