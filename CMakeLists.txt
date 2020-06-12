@@ -334,12 +334,6 @@ add_subdirectory(external)
 add_subdirectory(libs)
 add_subdirectory(extras)
 
-# include Test
-include(RttrTestingCfg)
-if(BUILD_TESTING)
-    add_subdirectory(tests)
-endif()
-
 find_package(Gettext REQUIRED)
 file(GLOB RTTR_PO_FILES external/languages/*.po)
 set(RTTR_TRANSLATION_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gen/languages) # Used by copyDepsToBuildDir
@@ -348,6 +342,12 @@ gettext_create_translations(external/languages/rttr.pot ALL
     INSTALL_DESTINATION ${RTTR_DATADIR}/RTTR/languages
     FILES ${RTTR_PO_FILES}
 )
+
+# include Test
+include(RttrTestingCfg)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
 
 # Copy the RTTR folder with the updated translations to the directory of the client.
 configure_file(copyDepsToBuildDir.cmake . @ONLY)

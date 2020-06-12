@@ -1,4 +1,5 @@
 add_subdirectory(common)
+add_subdirectory(languages)
 add_subdirectory(legacyFiles)
 add_subdirectory(libGameData)
 add_subdirectory(libsamplerate_cpp)
