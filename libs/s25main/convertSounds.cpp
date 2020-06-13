@@ -17,42 +17,32 @@
 #include "convertSounds.h"
 #include <libsiedler2/Archiv.h>
 #include <libsiedler2/ArchivItem_Sound_Wave.h>
-#include <boost/nowide/fstream.hpp>
+#include <libsiedler2/loadMapping.h>
+#include <s25util/StringConversion.h>
 #include <cmath>
 #include <samplerate.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
 
-namespace bnw = boost::nowide;
-
-bool convertSounds(libsiedler2::Archiv& sounds, const bfs::path& scriptPath)
+void convertSounds(libsiedler2::Archiv& sounds, const boost::filesystem::path& scriptPath)
 {
-    bnw::ifstream file(scriptPath); // script
     samplerate::State converter(samplerate::Converter::SincFastest, 1);
     std::vector<float> input, output;
-    std::string line;
-    const unsigned targetFrequency = 44100;
-    while(std::getline(file, line))
-    {
-        if(line.empty() || line[0] == '#' || line == "empty")
-            continue;
-        int item, frequency;
-        std::istringstream ss(line);
-        if(!(ss >> item >> frequency))
-            continue;
-        auto* sound = dynamic_cast<libsiedler2::ArchivItem_Sound_Wave*>(sounds[item]);
+    libsiedler2::loadMapping(scriptPath, [&sounds, &converter, &input, &output](unsigned idx, const std::string& sFrequency) {
+        constexpr unsigned targetFrequency = 44100;
+
+        const auto frequency = s25util::fromStringClassic<unsigned>(sFrequency);
+        auto* sound = dynamic_cast<libsiedler2::ArchivItem_Sound_Wave*>(sounds[idx]);
         if(!sound)
-            return false;
+            throw std::runtime_error("No wave sound at index " + std::to_string(idx));
         auto header = sound->getHeader();
-        if(header.samplesPerSec == targetFrequency)
-            continue;
         if(header.numChannels != 1)
-            throw std::runtime_error("Unexpected number of channels for item " + std::to_string(item));
+            throw std::runtime_error("Unexpected number of channels for item " + std::to_string(idx));
         if(header.frameSize != 1 || header.bitsPerSample != 8)
-            throw std::runtime_error("Unsupported format for item " + std::to_string(item));
+            throw std::runtime_error("Unsupported format for item " + std::to_string(idx));
         converter.reset();
-        double rate = static_cast<double>(targetFrequency) / sound->getHeader().samplesPerSec;
+        const double rate = static_cast<double>(targetFrequency) / frequency;
         input.resize(sound->getData().size());
         std::transform(sound->getData().begin(), sound->getData().end(), input.begin(),
                        [](uint8_t value) { return static_cast<float>(value) / std::numeric_limits<uint8_t>::max() * 2.f - 1.f; });
@@ -71,6 +61,5 @@ bool convertSounds(libsiedler2::Archiv& sounds, const bfs::path& scriptPath)
         header.fileSize = data.size() + sizeof(header);
         sound->setHeader(header);
         sound->setData(data);
-    }
-    return true;
+    });
 }

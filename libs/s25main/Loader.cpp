@@ -259,9 +259,12 @@ bool Loader::LoadSounds()
         return false;
     const Timer timer(true);
     logger_.write(_("Starting sound conversion: "));
-    if(!convertSounds(GetArchive("sound"), config_.ExpandPath(s25::files::soundScript)))
+    try
     {
-        logger_.write(_("failed\n"));
+        convertSounds(GetArchive("sound"), config_.ExpandPath(s25::files::soundScript));
+    } catch(const std::runtime_error& e)
+    {
+        logger_.write(_("failed: %1%\n")) % e.what();
         return false;
     }
     logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();

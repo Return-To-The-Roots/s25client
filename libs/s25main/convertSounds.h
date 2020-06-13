@@ -19,11 +19,10 @@
 
 #include <boost/filesystem/path.hpp>
 
-namespace bfs = boost::filesystem;
 namespace libsiedler2 {
 class Archiv;
 }
 
-bool convertSounds(libsiedler2::Archiv& sounds, const bfs::path& scriptPath);
+void convertSounds(libsiedler2::Archiv& sounds, const boost::filesystem::path& scriptPath);
 
 #endif // convertSounds_h__
