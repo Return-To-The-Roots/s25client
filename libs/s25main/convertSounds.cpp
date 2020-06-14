@@ -15,6 +15,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "convertSounds.h"
+#include "helpers/mathFuncs.h"
 #include <libsiedler2/Archiv.h>
 #include <libsiedler2/ArchivItem_Sound_Wave.h>
 #include <libsiedler2/loadMapping.h>
@@ -53,10 +54,13 @@ void convertSounds(libsiedler2::Archiv& sounds, const boost::filesystem::path& s
             int converted = std::lrint((value + 1.f) / 2.f * std::numeric_limits<uint8_t>::max());
             return static_cast<uint8_t>(std::min<int>(std::numeric_limits<uint8_t>::max(), std::max(0, converted)));
         });
-        header.samplesPerSec = targetFrequency;
-        header.bytesPerSec = targetFrequency;
-        header.frameSize = 1;
+        // Those 2 are checked above, but for completeness here again
+        header.numChannels = 1;
         header.bitsPerSample = 8;
+
+        header.samplesPerSec = targetFrequency;
+        header.frameSize = header.numChannels * helpers::divCeil(header.bitsPerSample, 8);
+        header.bytesPerSec = header.samplesPerSec * header.frameSize;
         header.dataSize = data.size();
         header.fileSize = data.size() + sizeof(header);
         sound->setHeader(header);
