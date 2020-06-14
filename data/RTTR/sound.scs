@@ -1,63 +1,9 @@
 # Format:
 # <itemnr> <source-frequency>
 #
-# The destination item nr is implicit. So the 3rd uncommented line will refer to the 3rd item.
+# The item at index <itemnr> is converted using <source-frequency> as the frequency
+# All others are left untouched
 #
-# if <itemnr> is "empty", an empty item will be inserted and <source-frequency> is ignored (can be left out),
-# if <source-frequency> is "copy", the item <itemnr> will be copied
-# otherwise the item <itemnr> is converted using <source-frequency> as the frequency
-#
-0 copy
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
-empty
 051 11025
 052 11025
 053 11025
@@ -67,10 +13,10 @@ empty
 057 11025
 058 11025
 059 11025
-empty
+# empty
 061 11025
 062 11025
-empty
+# empty
 064 11025
 065 11025
 066 11025
@@ -78,19 +24,19 @@ empty
 068 11025
 069 11025
 070 11025
-empty
+# empty
 072 11025
-empty
+# empty
 074 11025
-empty
+# empty
 076 11025
 077 11025
 078 6000
-empty
-empty
+# empty
+# empty
 081 11025
 082 9000
-empty
+# empty
 084 11025
 085 11025
 086 11025
@@ -104,7 +50,7 @@ empty
 094 6000
 095 11025
 096 11025
-empty
+# empty
 098 11025
 099 11025
 100 11025
@@ -113,9 +59,9 @@ empty
 103 11025
 104 06500
 105 10025
-empty
+# empty
 107 9000
-empty
+# empty
 109 11025
 110 9000
 111 11025

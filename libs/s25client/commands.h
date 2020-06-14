@@ -1,3 +1,4 @@
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,15 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef convertSounds_h__
-#define convertSounds_h__
+#ifndef rttr_s25client_commands_h__
+#define rttr_s25client_commands_h__
 
 #include <boost/filesystem/path.hpp>
 
-namespace libsiedler2 {
-class Archiv;
-}
+class RttrConfig;
 
-void convertSounds(libsiedler2::Archiv& sounds, const boost::filesystem::path& scriptPath);
+void convertAndSaveSounds(const RttrConfig& config, const boost::filesystem::path& targetFolder);
 
-#endif // convertSounds_h__
+#endif // rttr_s25client_commands_h__

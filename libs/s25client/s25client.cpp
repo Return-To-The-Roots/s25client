@@ -24,6 +24,7 @@
 #include "Settings.h"
 #include "SignalHandler.h"
 #include "WindowManager.h"
+#include "commands.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
@@ -442,6 +443,19 @@ int RunProgram(po::variables_map& options)
     // Generator verwendet)
     srand(static_cast<unsigned>(std::time(nullptr)));
 
+    if(options.count("convert-sounds"))
+    {
+        try
+        {
+            convertAndSaveSounds(RTTRCONFIG, RTTRCONFIG.ExpandPath("<RTTR_USERDATA>/convertedSoundeffects"));
+            return 0;
+        } catch(const std::runtime_error& e)
+        {
+            bnw::cerr << "Error: " << e.what() << "\n";
+            return 1;
+        }
+    }
+
     SetGlobalInstanceWrapper<GameManager> gameManager(setGlobalGameManager, LOG, SETTINGS, VIDEODRIVER, AUDIODRIVER, WINDOWMANAGER);
     try
     {
@@ -452,6 +466,7 @@ int RunProgram(po::variables_map& options)
             return 1;
 
         // Hauptschleife
+
         while(gameManager.Run())
         {
 #ifndef _WIN32
@@ -497,6 +512,7 @@ int main(int argc, char** argv)
         ("help,h", "Show help")
         ("map,m", po::value<std::string>(),"Map to load")
         ("version", "Show version information and exit")
+        ("convert-sounds", "Convert sounds and exit")
         ;
     // clang-format on
     po::positional_options_description positionalOptions;
