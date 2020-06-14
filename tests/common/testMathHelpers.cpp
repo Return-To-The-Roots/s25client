@@ -111,4 +111,25 @@ BOOST_AUTO_TEST_CASE(SmoothedValue)
     BOOST_REQUIRE_EQUAL(val.get(), (2 + 11 + 102 + 1 + 7) / 5);
 }
 
+BOOST_AUTO_TEST_CASE(DivCeilResults)
+{
+    BOOST_TEST(helpers::divCeil(0, 3) == 0u);
+    BOOST_TEST(helpers::divCeil(1, 3) == 1u);
+    BOOST_TEST(helpers::divCeil(2, 3) == 1u);
+    BOOST_TEST(helpers::divCeil(3, 3) == 1u);
+    BOOST_TEST(helpers::divCeil(4, 3) == 2u);
+    BOOST_TEST(helpers::divCeil(5, 3) == 2u);
+    BOOST_TEST(helpers::divCeil(6, 3) == 2u);
+
+    BOOST_TEST(helpers::divCeil(1, 8) == 1u);
+    BOOST_TEST(helpers::divCeil(2, 8) == 1u);
+    BOOST_TEST(helpers::divCeil(3, 8) == 1u);
+    BOOST_TEST(helpers::divCeil(4, 8) == 1u);
+    BOOST_TEST(helpers::divCeil(5, 8) == 1u);
+    BOOST_TEST(helpers::divCeil(6, 8) == 1u);
+    BOOST_TEST(helpers::divCeil(7, 8) == 1u);
+    BOOST_TEST(helpers::divCeil(8, 8) == 1u);
+    BOOST_TEST(helpers::divCeil(9, 8) == 2u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
