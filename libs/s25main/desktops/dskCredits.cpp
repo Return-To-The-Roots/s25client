@@ -278,9 +278,9 @@ void dskCredits::DrawBobs()
     for(auto& bob : bobs)
     {
         if(!bob.hasWare)
-            LOADER.GetBobN("jobs")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
+            LOADER.GetBob("jobs")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
         else
-            LOADER.GetBobN("carrier")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
+            LOADER.GetBob("carrier")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
 
         if(msSinceLastBobAnim > (1000 / bobAnimStepsPerSec))
         {

@@ -128,7 +128,7 @@ public:
     SoundEffectItem* GetSoundN(const ResourceId& file, unsigned nr);
     std::string GetTextN(const ResourceId& file, unsigned nr);
     libsiedler2::Archiv& GetArchive(const ResourceId& file);
-    glArchivItem_Bob* GetBobN(const ResourceId& file);
+    glArchivItem_Bob* GetBob(const ResourceId& file);
     glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
     glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
     /// Same as GetNationImage but returns a ITexture. Note glArchivItem_Bitmap is a ITexture

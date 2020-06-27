@@ -245,9 +245,9 @@ void iwShip::DrawCargo()
             if(i == JOB_PACKDONKEY)
                 LOADER.GetMapImageN(2016)->DrawFull(drawPt);
             else if(i == JOB_BOATCARRIER)
-                LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, drawPt, owner.color);
+                LOADER.GetBob("carrier")->Draw(GD_BOAT, 5, false, 0, drawPt, owner.color);
             else
-                LOADER.GetBobN("jobs")->Draw(i, 5, JOB_SPRITE_CONSTS[i].isFat(), 0, drawPt, owner.color);
+                LOADER.GetBob("jobs")->Draw(i, 5, JOB_SPRITE_CONSTS[i].isFat(), 0, drawPt, owner.color);
 
             drawPt.x += xStep;
             lineCounter++;
