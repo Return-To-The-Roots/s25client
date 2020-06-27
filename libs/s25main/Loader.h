@@ -90,7 +90,10 @@ public:
 
     /// Add a folder to the list of folders containing overrides. Files in folders added last will override prior ones
     /// Paths with macros will be resolved
-    void AddOverrideFolder(std::string path, bool atBack = true);
+    void AddOverrideFolder(const std::string& path, bool atBack = true);
+    void AddOverrideFolder(const char* path, bool atBack = true) { AddOverrideFolder(std::string(path), atBack); }
+    /// Add a folder to the list of folders containing overrides. Files in folders added last will override prior ones
+    void AddOverrideFolder(const boost::filesystem::path& path, bool atBack = true);
     /// Add the folder form an addon to the override folders
     void AddAddonFolder(AddonId id);
     void ClearOverrideFolders();
