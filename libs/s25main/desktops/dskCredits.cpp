@@ -265,12 +265,7 @@ void dskCredits::DrawBobs()
             b.hasWare = true;
         } else
         {
-            if(job == JOB_SCOUT)
-                job = 35 + NATION_RTTR_TO_S2[rand() % 4] * 6;
-            else if(job >= JOB_PRIVATE && job <= JOB_GENERAL)
-                job = 30 + NATION_RTTR_TO_S2[rand() % 4] * 6 + job - JOB_PRIVATE;
-            else
-                job = JOB_CONSTS[job].jobs_bob_id;
+            job = JOB_SPRITE_CONSTS[job].getBobId(Nation(rand() % NUM_NATS));
             b.hasWare = false;
         }
 

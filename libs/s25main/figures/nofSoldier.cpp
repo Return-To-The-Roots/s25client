@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofSoldier.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -60,10 +59,10 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
     hitpoints = sgd.PopUnsignedChar();
 }
 
-void nofSoldier::DrawSoldierWalking(DrawPoint drawPt, bool waitingsoldier)
+void nofSoldier::DrawSoldierWaiting(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, LOADER.GetBobN("jobs"), 30 + NATION_RTTR_TO_S2[gwg->GetPlayer(player).nation] * 6 + job_ - JOB_PRIVATE, false,
-                waitingsoldier);
+    const GamePlayer& owner = gwg->GetPlayer(player);
+    LOADER.bob_jobs_cache[owner.nation][job_][GetCurMoveDir().toUInt()][2].drawForPlayer(drawPt, owner.color);
 }
 
 void nofSoldier::AbrogateWorkplace()

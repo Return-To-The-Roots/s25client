@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h"
 #include "nofTradeLeader.h"
 #include "EventManager.h"
 #include "GameObject.h"
@@ -128,8 +128,7 @@ void nofTradeLeader::AbrogateWorkplace() {}
 
 void nofTradeLeader::Draw(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, LOADER.GetBobN("jobs"), JOB_CONSTS[JOB_SCOUT].jobs_bob_id + NATION_RTTR_TO_S2[gwg->GetPlayer(player).nation] * 6,
-                false);
+    DrawWalkingBobJobs(drawPt, JOB_SCOUT);
 }
 
 void nofTradeLeader::LostWork() {}

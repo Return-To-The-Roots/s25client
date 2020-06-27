@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofPlaner.h"
-
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -125,10 +123,7 @@ void nofPlaner::Draw(DrawPoint drawPt)
     switch(state)
     {
         case STATE_FIGUREWORK:
-        case STATE_WALKING:
-        {
-            DrawWalkingBobJobs(drawPt, JOB_PLANER);
-            //          DrawWalking(x,y,LOADER.GetBobN("jobs"),JOB_CONSTS[JOB_PLANER].jobs_bob_id,false);
+        case STATE_WALKING: { DrawWalkingBobJobs(drawPt, JOB_PLANER);
         }
         break;
         case STATE_PLANING:

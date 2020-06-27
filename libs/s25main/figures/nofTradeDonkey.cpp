@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofTradeDonkey.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -103,9 +102,7 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
 {
     if(job_ == JOB_PACKDONKEY)
     {
-        // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
-        // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
-        unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
+        const unsigned ani_step = CalcWalkAnimationFrame();
 
         drawPt += CalcFigurRelative();
 

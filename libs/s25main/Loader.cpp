@@ -593,32 +593,14 @@ void Loader::fillCaches()
                         id = 0;
                     } else
                     {
-                        id = JOB_CONSTS[job].jobs_bob_id;
-                        fat = JOB_CONSTS[job].fat;
-
-                        if((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
-                        {
-                            if(nation < NUM_NATIVE_NATS)
-                            {
-                                id += NATION_RTTR_TO_S2[nation] * 6;
-                            } else if(nation == NAT_BABYLONIANS) //-V547
-                            {
-                                id += NATION_RTTR_TO_S2[NAT_ROMANS] * 6;
-                                /* TODO: change this once we have own job pictures for babylonians
-                                                                //Offsets to std::make_unique<job imgs>()
-                                                                overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
-
-                                                                //8 Frames * 6 Directions * 6 Types
-                                                                overlayOffset += (nation - NUM_NATIVE_NATS) * (8 * 6 * 6);
-                                */
-                            } else
-                                throw std::runtime_error("Wrong nation");
-                        }
+                        id = JOB_SPRITE_CONSTS[job].getBobId(Nation(nation));
+                        fat = JOB_SPRITE_CONSTS[job].isFat();
                     }
 
                     unsigned good = id * 96 + ani_step * 12 + ((dir + 3) % 6) + fat * 6;
                     unsigned body = fat * 48 + ((dir + 3) % 6) * 8 + ani_step;
 
+                    RTTR_Assert(good < bob_jobs->getNumItems());
                     if(bob_jobs->getLink(good) == 92)
                     {
                         good -= fat * 6;

@@ -75,6 +75,7 @@ public:
     void generateTexture();
     void DrawFull(const Position& dstPos, unsigned color = 0xFFFFFFFF) override { draw(dstPos, color); }
     void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
+    void drawForPlayer(DrawPoint drawPt, unsigned player_color) { draw(drawPt, 0xFFFFFFFF, player_color); }
     void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
     /// Draw the bitmap(s) to the specified buffer at the position starting at bufOffset (must be positive)
     void drawTo(libsiedler2::PixelBufferBGRA& buffer, const Extent& bufOffset = Extent(0, 0)) const;
