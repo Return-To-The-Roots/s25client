@@ -962,6 +962,24 @@ static bool isBobOverride(bfs::path filePath)
     return s25util::toLower(filePath.extension().string()) == ".bob";
 }
 
+static std::map<unsigned, uint16_t> extractBobMapping(libsiedler2::Archiv& archive, const bfs::path& filepath)
+{
+    std::unique_ptr<libsiedler2::ArchivItem_Text> txtItem;
+    for(auto& entry : archive)
+    {
+        if(entry && entry->getBobType() == libsiedler2::BobType::Text)
+        {
+            if(txtItem)
+                throw LoadError(_("Bob-like file contained multiple text entries: %s\n"), filepath);
+            txtItem.reset(static_cast<libsiedler2::ArchivItem_Text*>(entry.release()));
+        }
+    }
+    if(!txtItem)
+        return {};
+    std::istringstream s(txtItem->getText());
+    return libsiedler2::ArchivItem_Bob::readLinks(s);
+}
+
 class NestedArchive : public libsiedler2::Archiv, public libsiedler2::ArchivItem
 {
 public:
@@ -979,8 +997,10 @@ bool Loader::Load(libsiedler2::Archiv& archiv, const bfs::path& path, const libs
         {
             libsiedler2::Archiv newEntries = DoLoadFileOrDirectory(curFilepath, palette);
 
+            std::map<unsigned, uint16_t> bobMapping;
             if(isBobOverride(curFilepath))
             {
+                bobMapping = extractBobMapping(newEntries, curFilepath);
                 // Emulate bob structure: Single file where first entry is the BOB archive
                 libsiedler2::Archiv bobArchive;
                 bobArchive.push(std::make_unique<NestedArchive>(std::move(newEntries)));
@@ -989,6 +1009,8 @@ bool Loader::Load(libsiedler2::Archiv& archiv, const bfs::path& path, const libs
             }
             if(!MergeArchives(archiv, newEntries))
                 return false;
+            if(!bobMapping.empty() && !archiv.empty() && archiv[0]->getBobType() == libsiedler2::BobType::Bob)
+                checkedCast<glArchivItem_Bob*>(archiv[0])->mergeLinks(bobMapping);
         } catch(const LoadError& e)
         {
             if(e.what() != std::string())

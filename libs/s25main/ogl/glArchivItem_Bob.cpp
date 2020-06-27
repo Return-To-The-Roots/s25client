@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Bob.h"
-
 #include "glArchivItem_Bitmap_Player.h"
 #include "s25util/colors.h"
 
@@ -46,4 +44,17 @@ void glArchivItem_Bob::Draw(unsigned item, unsigned direction, bool fat, unsigne
     auto* ware = dynamic_cast<glArchivItem_Bitmap_Player*>(get(96 + links[good]));
     if(ware)
         ware->DrawFull(drawPt, COLOR_WHITE, color);
+}
+
+void glArchivItem_Bob::mergeLinks(const std::map<unsigned, uint16_t>& overrideLinks)
+{
+    if(overrideLinks.empty())
+        return;
+    const auto maxIdx = overrideLinks.rbegin()->first;
+    if(maxIdx >= links.size())
+        links.resize(maxIdx + 1u);
+    for(const auto& newLink : overrideLinks)
+    {
+        links[newLink.first] = newLink.second;
+    }
 }
