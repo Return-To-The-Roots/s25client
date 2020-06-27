@@ -168,11 +168,15 @@ glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
     return convertChecked<glArchivItem_Bitmap_Player*>(map_gfx->get(nr));
 }
 
-void Loader::AddOverrideFolder(std::string path, bool atBack)
+void Loader::AddOverrideFolder(const std::string& path, bool atBack)
 {
-    path = config_.ExpandPath(path);
+    AddOverrideFolder(bfs::path(config_.ExpandPath(path)), atBack);
+}
+
+void Loader::AddOverrideFolder(const bfs::path& path, bool atBack)
+{
     if(!bfs::exists(path))
-        throw std::runtime_error(std::string("Path ") + path + " does not exist");
+        throw std::runtime_error(helpers::format(_("Directory does not exist: %s"), path));
     // Don't add folders twice although it is not an error
     for(const OverrideFolder& cur : overrideFolders_)
     {
@@ -200,7 +204,7 @@ void Loader::AddAddonFolder(AddonId id)
     {
         std::stringstream s;
         s << config_.ExpandPath(rawFolder) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned>(id);
-        const std::string path = s.str();
+        const bfs::path path = s.str();
         if(bfs::exists(path))
             AddOverrideFolder(path);
     }
@@ -408,7 +412,11 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
         } else
         {
             for(const std::string folder : {s25::folders::gameLstsGlobal, s25::folders::gameLstsUser})
-                AddOverrideFolder(folder + "/" + NationNames[nation], false);
+            {
+                const auto nationOverrideFolder = bfs::path(config_.ExpandPath(folder)) / NationNames[nation];
+                if(bfs::exists(nationOverrideFolder))
+                    AddOverrideFolder(nationOverrideFolder, false);
+            }
         }
     }
 
