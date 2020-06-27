@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,6 +29,8 @@ public:
     /// Zeichnet einen Animationsstep.
     void Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color);
     RTTR_CLONEABLE(glArchivItem_Bob)
+
+    void mergeLinks(const std::map<unsigned, uint16_t>& overrideLinks);
 };
 
 #endif // !GLARCHIVITEM_BOB_H_INCLUDED
