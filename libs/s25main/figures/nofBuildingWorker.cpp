@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofBuildingWorker.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
@@ -85,12 +84,9 @@ void nofBuildingWorker::Draw(DrawPoint drawPt)
     switch(state)
     {
         case STATE_FIGUREWORK:
-
         case STATE_HUNTER_CHASING:
         case STATE_HUNTER_WALKINGTOCADAVER:
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT: { DrawWalking(drawPt);
-        }
-        break;
+        case STATE_HUNTER_FINDINGSHOOTINGPOINT: DrawWalking(drawPt); break;
         case STATE_WORK:
         case STATE_HUNTER_SHOOTING:
         case STATE_HUNTER_EVISCERATING:
@@ -321,7 +317,7 @@ void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)
     unsigned short id = GetCarryID();
     // >=100 -> carrier.bob else jobs.bob!
     if(id >= 100)
-        DrawWalking(drawPt, LOADER.GetBobN("carrier"), id - 100, JOB_CONSTS[job_].fat);
+        DrawWalkingBobCarrier(drawPt, id - 100, JOB_SPRITE_CONSTS[job_].isFat());
     else
-        DrawWalking(drawPt, LOADER.GetBobN("jobs"), id, JOB_CONSTS[job_].fat);
+        DrawWalkingBobJobs(drawPt, job_);
 }

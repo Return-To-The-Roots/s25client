@@ -35,7 +35,7 @@ protected:
 
 protected:
     /// Zeichnet den Soldaten beim ganz normalen Laufen
-    void DrawSoldierWalking(DrawPoint drawPt, bool waitingsoldier = false);
+    void DrawSoldierWaiting(DrawPoint drawPt);
 
     /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
     void AbrogateWorkplace() override;

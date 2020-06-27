@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwShip.h"
 #include "DrawPoint.h"
 #include "GamePlayer.h"
@@ -185,10 +184,10 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
 void iwShip::DrawCargo()
 {
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
-    noShip* ship = owner.GetShipByID(ship_id);
+    const noShip* ship = owner.GetShipByID(ship_id);
 
-    std::vector<unsigned short> orderedWares = std::vector<unsigned short>(NUM_WARE_TYPES);
-    std::vector<unsigned short> orderedFigures = std::vector<unsigned short>(NUM_JOB_TYPES);
+    std::array<unsigned short, NUM_WARE_TYPES> orderedWares{};
+    std::array<unsigned short, NUM_JOB_TYPES> orderedFigures{};
 
     // Alle Figuren in Gruppen zählen
     const std::list<noFigure*>& figures = ship->GetFigures();
@@ -243,16 +242,12 @@ void iwShip::DrawCargo()
             }
             orderedFigures[i]--;
 
-            unsigned job_bobs_id = JOB_CONSTS[i].jobs_bob_id;
-            if((i >= JOB_PRIVATE && i <= JOB_GENERAL) || (i == JOB_SCOUT))
-                job_bobs_id += NATION_RTTR_TO_S2[gwv.GetWorld().GetPlayer(player).nation] * 6;
-
             if(i == JOB_PACKDONKEY)
                 LOADER.GetMapImageN(2016)->DrawFull(drawPt);
             else if(i == JOB_BOATCARRIER)
                 LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, drawPt, owner.color);
             else
-                LOADER.GetBobN("jobs")->Draw(job_bobs_id, 5, JOB_CONSTS[i].fat, 0, drawPt, owner.color);
+                LOADER.GetBobN("jobs")->Draw(i, 5, JOB_SPRITE_CONSTS[i].isFat(), 0, drawPt, owner.color);
 
             drawPt.x += xStep;
             lineCounter++;

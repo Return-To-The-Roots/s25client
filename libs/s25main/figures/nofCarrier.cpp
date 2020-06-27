@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofCarrier.h"
-
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -272,9 +270,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][0]);
             } else
             {
-                // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
-                // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
-                unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
+                const unsigned ani_step = CalcWalkAnimationFrame();
 
                 drawPt += CalcFigurRelative();
 
@@ -308,9 +304,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir().toUInt()]);
             } else
             {
-                // Wenn wir warten auf ein freies Plätzchen, müssen wir den (fest)stehend zeichnen!
-                // Wenn event = 0, dann sind wir mittem auf dem Weg angehalten!
-                unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
+                const unsigned ani_step = CalcWalkAnimationFrame();
 
                 drawPt += CalcFigurRelative();
 

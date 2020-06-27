@@ -1,5 +1,4 @@
-//
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "figures/noFigure.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
@@ -752,47 +750,42 @@ void noFigure::CorrectSplitData(const RoadSegment* const rs2)
 /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
 void noFigure::CorrectSplitData_Derived() {}
 
-void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat)
+unsigned noFigure::CalcWalkAnimationFrame() const
 {
-    // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
-    unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
+    // If we are waiting for a free node use the 2nd frame, else interpolate
+    return waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
+}
 
-    // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
+DrawPoint noFigure::InterpolateWalkDrawPos(DrawPoint drawPt) const
+{
+    // Add an offset relative to the starting point calculated by how far we already walked
+    // Don't if we are waiting on our starting node
     if(!waiting_for_free_node || IsStoppedBetweenNodes())
         drawPt += CalcFigurRelative();
+    return drawPt;
+}
 
-    LOADER.carrier_cache[ware][GetCurMoveDir().toUInt()][ani_step][fat].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat)
+{
+    const unsigned ani_step = CalcWalkAnimationFrame();
+
+    LOADER.carrier_cache[ware][GetCurMoveDir().toUInt()][ani_step][fat].drawForPlayer(InterpolateWalkDrawPos(drawPt),
+                                                                                      gwg->GetPlayer(player).color);
 }
 
 void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, unsigned job)
 {
-    if((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
-    {
-        DrawWalking(drawPt, LOADER.GetBobN("jobs"), JOB_CONSTS[job].jobs_bob_id + NATION_RTTR_TO_S2[gwg->GetPlayer(player).nation] * 6,
-                    false);
-        return;
-    }
+    const unsigned ani_step = CalcWalkAnimationFrame();
 
-    // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
-    unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
-
-    // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    if(!waiting_for_free_node || IsStoppedBetweenNodes())
-        drawPt += CalcFigurRelative();
-
-    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir().toUInt()][ani_step].draw(drawPt, 0xFFFFFFFF,
-                                                                                                       gwg->GetPlayer(player).color);
+    const GamePlayer& owner = gwg->GetPlayer(player);
+    LOADER.bob_jobs_cache[owner.nation][job][GetCurMoveDir().toUInt()][ani_step].drawForPlayer(InterpolateWalkDrawPos(drawPt), owner.color);
 }
 
-void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat, bool waitingsoldier)
+void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat)
 {
-    // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
-    unsigned ani_step =
-      waiting_for_free_node || waitingsoldier ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
+    const unsigned ani_step = CalcWalkAnimationFrame();
+    drawPt = InterpolateWalkDrawPos(drawPt);
 
-    // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    if(!waitingsoldier && (!waiting_for_free_node || IsStoppedBetweenNodes()))
-        drawPt += CalcFigurRelative();
     if(file)
         file->Draw(id, GetCurMoveDir().toUInt(), fat, ani_step, drawPt, gwg->GetPlayer(player).color);
     DrawShadow(drawPt, ani_step, GetCurMoveDir());
@@ -801,12 +794,8 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id
 /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
 void noFigure::DrawWalking(DrawPoint drawPt, const char* const file, unsigned id)
 {
-    // Wenn wir warten, ani-step 2 benutzen
-    unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
-
-    // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-    if(!waiting_for_free_node || IsStoppedBetweenNodes())
-        drawPt += CalcFigurRelative();
+    const unsigned ani_step = CalcWalkAnimationFrame();
+    drawPt = InterpolateWalkDrawPos(drawPt);
 
     LOADER.GetPlayerImage(file, id + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)
       ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
@@ -820,25 +809,17 @@ void noFigure::DrawWalking(DrawPoint drawPt)
     {
         case JOB_PACKDONKEY:
         {
-            // Wenn wir warten, ani-step 2 benutzen
-            unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
-
-            // Wenn man wartet, stehend zeichnen, es sei denn man wartet mittem auf dem Weg!
-            if(!waiting_for_free_node || IsStoppedBetweenNodes())
-                drawPt += CalcFigurRelative();
+            const unsigned ani_step = CalcWalkAnimationFrame();
+            drawPt = InterpolateWalkDrawPos(drawPt);
 
             // Esel
             LOADER.GetMapImageN(2000 + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)->DrawFull(drawPt);
             // Schatten des Esels
             LOADER.GetMapImageN(2048 + GetCurMoveDir().toUInt() % 3)->DrawFull(drawPt, COLOR_SHADOW);
         }
-            return;
-        case JOB_CHARBURNER: { DrawWalking(drawPt, "charburner_bobs", 53);
-        }
-            return;
-        default: { DrawWalkingBobJobs(drawPt, job_);
-        }
-            return;
+        break;
+        case JOB_CHARBURNER: DrawWalking(drawPt, "charburner_bobs", 53); break;
+        default: DrawWalkingBobJobs(drawPt, job_); break;
     }
 }
 

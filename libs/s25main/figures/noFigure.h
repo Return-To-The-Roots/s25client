@@ -156,12 +156,16 @@ public:
     Job GetJobType() const { return job_; }
     /// Returns true if this is a soldier (they get some special handling at some points)
     bool IsSoldier() const;
+
+    unsigned CalcWalkAnimationFrame() const;
+    DrawPoint InterpolateWalkDrawPos(DrawPoint drawPt) const;
+
     /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
     void DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat);
     /// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
     void DrawWalkingBobJobs(DrawPoint drawPt, unsigned job);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft
-    void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat, bool waitingsoldier = false);
+    void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
     void DrawWalking(DrawPoint drawPt, const char* file, unsigned id);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft, nimmt automatisch richtige Job-ID/Datei

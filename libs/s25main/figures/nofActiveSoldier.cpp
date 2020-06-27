@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofActiveSoldier.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
@@ -152,7 +151,7 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case STATE_DEFENDING_WAITING:
         {
             // Draw waiting states
-            DrawSoldierWalking(drawPt, true); // cannot draw from Soldiers & Scouts from Loader::bob_jobs_cache v9102
+            DrawSoldierWaiting(drawPt);
         }
         break;
         case STATE_FIGUREWORK:
@@ -169,7 +168,7 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case STATE_SEAATTACKING_RETURNTOSHIP:
         {
             // Draw walking states
-            DrawSoldierWalking(drawPt);
+            DrawWalkingBobJobs(drawPt, job_);
         }
         break;
     }
@@ -495,7 +494,3 @@ void nofActiveSoldier::FightingStarted()
     state = STATE_FIGHTING;
     enemy = nullptr;
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// EOF
-///////////////////////////////////////////////////////////////////////////////
