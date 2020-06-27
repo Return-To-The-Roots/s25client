@@ -128,7 +128,7 @@ libsiedler2::Archiv& Loader::GetArchive(const ResourceId& file)
     return files_[file].archiv;
 }
 
-glArchivItem_Bob* Loader::GetBobN(const ResourceId& file)
+glArchivItem_Bob* Loader::GetBob(const ResourceId& file)
 {
     return dynamic_cast<glArchivItem_Bob*>(files_[file].archiv.get(0));
 }
@@ -507,7 +507,7 @@ void Loader::fillCaches()
         }
     }
 
-    glArchivItem_Bob* bob_jobs = GetBobN("jobs");
+    glArchivItem_Bob* bob_jobs = GetBob("jobs");
     if(!bob_jobs)
         throw std::runtime_error("jobs not found");
 
@@ -725,7 +725,7 @@ void Loader::fillCaches()
     }
 
     // carrier_cache[ware][direction][animation_step][fat]
-    glArchivItem_Bob* bob_carrier = GetBobN("carrier");
+    glArchivItem_Bob* bob_carrier = GetBob("carrier");
     if(!bob_carrier)
         throw std::runtime_error("carrier not found");
 

@@ -358,7 +358,7 @@ void nofShipWright::DrawOtherStates(DrawPoint drawPt)
         case STATE_WALKTOWORKPOINT:
         {
             // Schiffsbauer mit Brett zeichnen
-            DrawWalking(drawPt, LOADER.GetBobN("jobs"), 92, false);
+            DrawWalking(drawPt, LOADER.GetBob("jobs"), 92, false);
         }
         break;
         default: return;
