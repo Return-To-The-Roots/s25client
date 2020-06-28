@@ -18,11 +18,19 @@
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "test/testConfig.h"
+#include "libsiedler2/ArchivItem_Bitmap_Raw.h"
 #include "libsiedler2/ArchivItem_Text.h"
+#include "libsiedler2/PixelBufferBGRA.h"
+#include "libsiedler2/libsiedler2.h"
+#include "rttr/test/TmpFolder.hpp"
 #include "s25util/Log.h"
 #include "s25util/Tokenizer.h"
 #include <rttr/test/LogAccessor.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
+
+namespace bfs = boost::filesystem;
 
 class LoaderFixture
 {
@@ -136,8 +144,26 @@ BOOST_FIXTURE_TEST_CASE(Overrides, LoaderFixture)
 BOOST_FIXTURE_TEST_CASE(BobOverrides, LoaderFixture)
 {
     rttr::test::LogAccessor logAcc;
+    rttr::test::TmpFolder tmpFolder;
 
-    const std::string bobFile = RTTR_BASE_DIR "/tests/testData/foo.bob";
+    const bfs::path bobFile = tmpFolder.get() / "foo.bob";
+    bfs::create_directory(bobFile);
+
+    auto bmpRaw = std::make_unique<libsiedler2::ArchivItem_Bitmap_Raw>();
+    libsiedler2::PixelBufferBGRA buffer(3, 7);
+    bmpRaw->create(buffer);
+    libsiedler2::Archiv bmp;
+    bmp.push(std::move(bmpRaw));
+    BOOST_TEST_REQUIRE(libsiedler2::Write((bobFile / "0.bmp").string(), bmp) == 0);
+    BOOST_TEST_REQUIRE(libsiedler2::Write((bobFile / "1.bmp").string(), bmp) == 0);
+
+    libsiedler2::ArchivItem_Text txt;
+    txt.setText("10 332\n11 334\n"); // mapping file
+    {
+        boost::nowide::ofstream f(bobFile / "mapping.links");
+        BOOST_TEST_REQUIRE(txt.write(f, false) == 0);
+    }
+
     BOOST_REQUIRE(loader->Load(bobFile));
     const auto& bob = loader->GetArchive("foo");
     // Bob override folders have special handling: They are converted into an archive containing the elements of the folder
@@ -145,11 +171,16 @@ BOOST_FIXTURE_TEST_CASE(BobOverrides, LoaderFixture)
     BOOST_TEST_REQUIRE(bob.size() == 1u);
     const auto* nested = dynamic_cast<const libsiedler2::Archiv*>(bob[0]);
     BOOST_TEST_REQUIRE(nested);
-    BOOST_TEST_REQUIRE(nested->size() == 2u);
-    for(unsigned i : {0, 1})
-        BOOST_TEST_REQUIRE(dynamic_cast<const libsiedler2::ArchivItem_Text*>(nested->get(i)));
-    BOOST_TEST(static_cast<const libsiedler2::ArchivItem_Text*>(nested->get(0))->getText() == "Hello");
-    BOOST_TEST(static_cast<const libsiedler2::ArchivItem_Text*>(nested->get(1))->getText() == "World");
+    BOOST_TEST_REQUIRE(nested->size() == 3u);
+    BOOST_TEST(!nested->get(2)); // Text item removed
+    for(size_t i = 0; i < 2; ++i)
+    {
+        auto* curBmp = dynamic_cast<const libsiedler2::ArchivItem_Bitmap*>(nested->get(i));
+        BOOST_TEST_REQUIRE(curBmp);
+        BOOST_TEST(curBmp->getWidth() == 3);
+        BOOST_TEST(curBmp->getHeight() == 7);
+    }
+    // TODO: Test mapping merge. Can't be done ATM as it requires an actual bob file to override
 
     // Avoid log cluttering
     logAcc.clearLog();

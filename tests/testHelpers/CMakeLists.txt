@@ -13,7 +13,9 @@ add_library(testHelpers STATIC
     rttr/test/MockClock.hpp
     rttr/test/random.cpp
     rttr/test/random.hpp
+    rttr/test/stubFunction.hpp
     rttr/test/testHelpers.hpp
+    rttr/test/TmpFolder.hpp
 )
 target_link_libraries(testHelpers PRIVATE s25Common rttrConfig Boost::unit_test_framework)
 target_include_directories(testHelpers PUBLIC .)
