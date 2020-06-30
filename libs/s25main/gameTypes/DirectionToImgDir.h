@@ -14,23 +14,28 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_BOB_H_INCLUDED
-#define GLARCHIVITEM_BOB_H_INCLUDED
 
-#pragma once
+#ifndef toImgDir_h__
+#define toImgDir_h__
 
-#include "DrawPoint.h"
-#include "libsiedler2/ArchivItem_Bob.h"
+#include "RTTR_Assert.h"
+#include "gameTypes/Direction.h"
+#include "libsiedler2/ImgDir.h"
 
-/// Klasse für GL-Bobfiles.
-class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
+inline libsiedler2::ImgDir toImgDir(Direction dir)
 {
-public:
-    /// Zeichnet einen Animationsstep.
-    void Draw(unsigned item, libsiedler2::ImgDir direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color);
-    RTTR_CLONEABLE(glArchivItem_Bob)
+    using libsiedler2::ImgDir;
+    switch(dir.native_value())
+    {
+        case Direction::WEST: return ImgDir::W;
+        case Direction::NORTHWEST: return ImgDir::NW;
+        case Direction::NORTHEAST: return ImgDir::NE;
+        case Direction::EAST: return ImgDir::E;
+        case Direction::SOUTHEAST: return ImgDir::SE;
+        case Direction::SOUTHWEST: return ImgDir::SW;
+    }
+    RTTR_Assert(!"Invalid direction");
+    return ImgDir::SW;
+}
 
-    void mergeLinks(const std::map<uint16_t, uint16_t>& overrideLinks);
-};
-
-#endif // !GLARCHIVITEM_BOB_H_INCLUDED
+#endif // toImgDir_h__

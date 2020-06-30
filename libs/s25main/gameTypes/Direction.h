@@ -48,6 +48,7 @@ struct Direction
     Type native_value() const { return t_; }
     /// Return the Direction as an UInt
     unsigned toUInt() const { return t_; }
+    explicit operator unsigned() const { return t_; }
     Direction& operator+=(unsigned i);
     Direction& operator-=(unsigned i);
     Direction& operator++();

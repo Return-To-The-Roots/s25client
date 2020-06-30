@@ -22,34 +22,30 @@
 /**
  *  Zeichnet einen Animationsstep.
  */
-void glArchivItem_Bob::Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color)
+void glArchivItem_Bob::Draw(unsigned item, libsiedler2::ImgDir direction, bool fat, unsigned animationstep, DrawPoint drawPt,
+                            unsigned color)
 {
-    // Correct dir to image dir
-    direction = (direction + 3) % 6;
-    // 8 Anim steps, 2 types (fat, not fat), 6 directions -->
-    // Array [item][animStep][fat][direction]: [35][8][2][6]
-    unsigned good = ((item * 8 + animationstep) * 2 + fat) * 6 + direction;
-    // Array: [fat][direction][animStep]: [2][6][8] = 96 entries
-    unsigned body = (fat * 6 + direction) * 8 + animationstep;
-    if(links[good] == 92 && fat)
+    unsigned overlayIdx = getOverlayIdx(item, fat, direction, animationstep);
+    if(overlayIdx == 188 && fat)
     {
         // No fat version(?)
-        good -= 6;
-        body -= 6 * 8; // 48
+        overlayIdx = getOverlayIdx(item, false, direction, animationstep);
+        fat = false;
     }
 
-    auto* koerper = dynamic_cast<glArchivItem_Bitmap_Player*>(get(body));
-    if(koerper)
-        koerper->DrawFull(drawPt, COLOR_WHITE, color);
-    auto* ware = dynamic_cast<glArchivItem_Bitmap_Player*>(get(96 + links[good]));
-    if(ware)
-        ware->DrawFull(drawPt, COLOR_WHITE, color);
+    auto* body = dynamic_cast<glArchivItem_Bitmap_Player*>(getBody(fat, direction, animationstep));
+    if(body)
+        body->DrawFull(drawPt, COLOR_WHITE, color);
+    auto* overlay = dynamic_cast<glArchivItem_Bitmap_Player*>(get(overlayIdx));
+    if(overlay)
+        overlay->DrawFull(drawPt, COLOR_WHITE, color);
 }
 
-void glArchivItem_Bob::mergeLinks(const std::map<unsigned, uint16_t>& overrideLinks)
+void glArchivItem_Bob::mergeLinks(const std::map<uint16_t, uint16_t>& overrideLinks)
 {
     if(overrideLinks.empty())
         return;
+    // Get last key of sorted map
     const auto maxIdx = overrideLinks.rbegin()->first;
     if(maxIdx >= links.size())
         links.resize(maxIdx + 1u);

@@ -20,9 +20,10 @@
 #pragma once
 
 #include "Desktop.h"
-
+#include "libsiedler2/ImgDir.h"
 #include <utility>
 #include <vector>
+
 struct KeyEvent;
 class glArchivItem_Bitmap;
 
@@ -71,7 +72,7 @@ private:
     struct Bob
     {
         unsigned id;
-        unsigned direction;
+        libsiedler2::ImgDir direction;
         unsigned animationStep;
         unsigned color;
         DrawPoint pos;
