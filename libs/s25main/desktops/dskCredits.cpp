@@ -248,11 +248,11 @@ void dskCredits::DrawBobs()
         if(rand() % 2 == 0)
         {
             b.pos.x = 0;
-            b.direction = 3;
+            b.direction = libsiedler2::ImgDir::E;
         } else
         {
             b.pos.x = VIDEODRIVER.GetRenderSize().x;
-            b.direction = 6;
+            b.direction = libsiedler2::ImgDir::W;
         }
 
         b.color = PLAYER_COLORS[rand() % PLAYER_COLORS.size()];
@@ -289,16 +289,16 @@ void dskCredits::DrawBobs()
             bob.animationStep++;
             if(bob.animationStep > 7)
                 bob.animationStep = 0;
-            if(bob.direction == 3)
+            if(bob.direction == libsiedler2::ImgDir::E)
             {
                 bob.pos.x += bob.speed;
                 if(bob.pos.x > static_cast<int>(VIDEODRIVER.GetRenderSize().x))
-                    bob.direction = 6;
-            } else if(bob.direction == 6)
+                    bob.direction = libsiedler2::ImgDir::W;
+            } else if(bob.direction == libsiedler2::ImgDir::W)
             {
                 bob.pos.x -= bob.speed;
                 if(bob.pos.x < 0)
-                    bob.direction = 3;
+                    bob.direction = libsiedler2::ImgDir::E;
             }
         }
     }

@@ -36,6 +36,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noSkeleton.h"
+#include "gameTypes/DirectionToImgDir.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include "s25util/Log.h"
@@ -787,7 +788,7 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id
     drawPt = InterpolateWalkDrawPos(drawPt);
 
     if(file)
-        file->Draw(id, GetCurMoveDir().toUInt(), fat, ani_step, drawPt, gwg->GetPlayer(player).color);
+        file->Draw(id, toImgDir(GetCurMoveDir()), fat, ani_step, drawPt, gwg->GetPlayer(player).color);
     DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 

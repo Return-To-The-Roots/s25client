@@ -38,6 +38,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePacker.h"
 #include "gameTypes/Direction.h"
+#include "gameTypes/DirectionToImgDir.h"
 #include "gameData/JobConsts.h"
 #include "gameData/NationConsts.h"
 #include "libsiedler2/ArchivItem_Font.h"
@@ -583,18 +584,15 @@ void Loader::fillCaches()
         // Bobs from jobs.bob. Job = NUM_JOB_TYPES is used for fat carriers. See below.
         for(unsigned job = 0; job < NUM_JOB_TYPES + 1; ++job)
         {
-            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+            for(Direction dir : Direction{})
             {
                 for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
-                    bool fat;
-                    unsigned id;
-                    unsigned short overlayOffset = 96;
-
-                    glSmartBitmap& bmp = bob_jobs_cache[nation][job][dir][ani_step];
-
+                    glSmartBitmap& bmp = bob_jobs_cache[nation][job][static_cast<unsigned>(dir)][ani_step];
                     bmp.reset();
 
+                    bool fat;
+                    unsigned id;
                     if(job == NUM_JOB_TYPES) // used for fat carrier, so that we do not need an additional sub-array
                     {
                         fat = true;
@@ -604,20 +602,18 @@ void Loader::fillCaches()
                         id = JOB_SPRITE_CONSTS[job].getBobId(Nation(nation));
                         fat = JOB_SPRITE_CONSTS[job].isFat();
                     }
+                    const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
-                    unsigned good = id * 96 + ani_step * 12 + ((dir + 3) % 6) + fat * 6;
-                    unsigned body = fat * 48 + ((dir + 3) % 6) * 8 + ani_step;
-
-                    RTTR_Assert(good < bob_jobs->getNumItems());
-                    if(bob_jobs->getLink(good) == 92)
+                    unsigned overlayIdx = bob_jobs->getOverlayIdx(id, fat, imgDir, ani_step);
+                    if(overlayIdx == 188 && fat)
                     {
-                        good -= fat * 6;
-                        body -= fat * 48;
+                        // No fat version(?)
+                        overlayIdx = bob_jobs->getOverlayIdx(id, false, imgDir, ani_step);
+                        fat = false;
                     }
-
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(body)));
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(overlayOffset + bob_jobs->getLink(good))));
-                    bmp.addShadow(GetMapImageN(900 + ((dir + 3) % 6) * 8 + ani_step));
+                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getBody(fat, imgDir, ani_step)));
+                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(overlayIdx)));
+                    bmp.addShadow(GetMapImageN(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -739,30 +735,23 @@ void Loader::fillCaches()
 
     for(unsigned ware = 0; ware < NUM_WARE_TYPES; ++ware)
     {
-        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(Direction dir : Direction{})
         {
             for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {
-                for(unsigned fat = 0; fat < 2; ++fat)
+                for(bool fat : {true, false})
                 {
-                    glSmartBitmap& bmp = carrier_cache[ware][dir][ani_step][fat];
+                    glSmartBitmap& bmp = carrier_cache[ware][static_cast<unsigned>(dir)][ani_step][fat];
                     bmp.reset();
 
-                    unsigned id;
                     // Japanese shield is missing
-                    if(ware == GD_SHIELDJAPANESE)
-                        id = GD_SHIELDROMANS;
-                    else
-                        id = ware;
+                    const unsigned id = (ware == GD_SHIELDJAPANESE) ? static_cast<unsigned>(GD_SHIELDROMANS) : ware;
 
-                    unsigned imgDir = (dir + 3) % 6;
+                    const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
-                    unsigned good = id * 96 + ani_step * 12 + fat * 6 + imgDir;
-                    unsigned body = fat * 48 + imgDir * 8 + ani_step;
-
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(body)));
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(96 + bob_carrier->getLink(good))));
-                    bmp.addShadow(GetMapImageN(900 + imgDir * 8 + ani_step));
+                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
+                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
+                    bmp.addShadow(GetMapImageN(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -970,7 +959,7 @@ static bool isBobOverride(bfs::path filePath)
     return s25util::toLower(filePath.extension().string()) == ".bob";
 }
 
-static std::map<unsigned, uint16_t> extractBobMapping(libsiedler2::Archiv& archive, const bfs::path& filepath)
+static std::map<uint16_t, uint16_t> extractBobMapping(libsiedler2::Archiv& archive, const bfs::path& filepath)
 {
     std::unique_ptr<libsiedler2::ArchivItem_Text> txtItem;
     for(auto& entry : archive)
@@ -1005,7 +994,7 @@ bool Loader::Load(libsiedler2::Archiv& archiv, const bfs::path& path, const libs
         {
             libsiedler2::Archiv newEntries = DoLoadFileOrDirectory(curFilepath, palette);
 
-            std::map<unsigned, uint16_t> bobMapping;
+            std::map<uint16_t, uint16_t> bobMapping;
             if(isBobOverride(curFilepath))
             {
                 bobMapping = extractBobMapping(newEntries, curFilepath);
