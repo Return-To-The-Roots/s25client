@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "gameTypes/Resource.h"
+#include "gameData/JobConsts.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameTypes)
@@ -68,6 +68,20 @@ BOOST_AUTO_TEST_CASE(ResourceValues)
     BOOST_REQUIRE_EQUAL(res2.getType(), Resource::Iron);
     // Unspecified
     BOOST_REQUIRE_LT(res2.getAmount(), 17u);
+}
+
+BOOST_AUTO_TEST_CASE(NationSpecificJobBobs)
+{
+    // Helper is not nation specific
+    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_HELPER].getBobId(NAT_VIKINGS) == JOB_SPRITE_CONSTS[JOB_HELPER].getBobId(NAT_AFRICANS));
+    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_HELPER].getBobId(NAT_VIKINGS) == JOB_SPRITE_CONSTS[JOB_HELPER].getBobId(NAT_BABYLONIANS));
+    // Soldiers are
+    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_PRIVATE].getBobId(NAT_VIKINGS) != JOB_SPRITE_CONSTS[JOB_PRIVATE].getBobId(NAT_AFRICANS));
+    // Non native nations come after native ones
+    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_PRIVATE].getBobId(NAT_VIKINGS) < JOB_SPRITE_CONSTS[JOB_PRIVATE].getBobId(NAT_BABYLONIANS));
+    // Same for scouts
+    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_SCOUT].getBobId(NAT_VIKINGS) != JOB_SPRITE_CONSTS[JOB_SCOUT].getBobId(NAT_AFRICANS));
+    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_SCOUT].getBobId(NAT_VIKINGS) < JOB_SPRITE_CONSTS[JOB_SCOUT].getBobId(NAT_BABYLONIANS));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

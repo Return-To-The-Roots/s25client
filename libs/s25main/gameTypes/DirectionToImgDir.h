@@ -32,10 +32,8 @@ inline libsiedler2::ImgDir toImgDir(Direction dir)
         case Direction::NORTHEAST: return ImgDir::NE;
         case Direction::EAST: return ImgDir::E;
         case Direction::SOUTHEAST: return ImgDir::SE;
-        case Direction::SOUTHWEST: return ImgDir::SW;
+        default: RTTR_Assert(dir == Direction::SOUTHWEST); return ImgDir::SW;
     }
-    RTTR_Assert(!"Invalid direction");
-    return ImgDir::SW;
 }
 
 #endif // toImgDir_h__

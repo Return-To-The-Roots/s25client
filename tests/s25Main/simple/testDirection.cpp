@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "gameTypes/Direction.h"
+#include "gameTypes/DirectionToImgDir.h"
 #include "gameTypes/Direction_Output.h"
 #include <boost/test/unit_test.hpp>
 
@@ -91,5 +91,14 @@ BOOST_AUTO_TEST_CASE(DirectionIterator)
         }
         unsigned expectedCt = Direction::COUNT;
         BOOST_REQUIRE_EQUAL(ct, expectedCt);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(DirectionToImgDir)
+{
+    for(Direction curDir : Direction())
+    {
+        // S2 Img dir is offset by 3
+        BOOST_TEST(static_cast<unsigned>(toImgDir(curDir)) == (static_cast<unsigned>(curDir) + 3) % 6);
     }
 }
