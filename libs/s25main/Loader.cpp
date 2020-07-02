@@ -604,15 +604,8 @@ void Loader::fillCaches()
                     }
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
-                    unsigned overlayIdx = bob_jobs->getOverlayIdx(id, fat, imgDir, ani_step);
-                    if(overlayIdx == 188 && fat)
-                    {
-                        // No fat version(?)
-                        overlayIdx = bob_jobs->getOverlayIdx(id, false, imgDir, ani_step);
-                        fat = false;
-                    }
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getBody(fat, imgDir, ani_step)));
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(overlayIdx)));
+                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getOverlay(id, fat, imgDir, ani_step)));
                     bmp.addShadow(GetMapImageN(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
