@@ -25,18 +25,10 @@
 void glArchivItem_Bob::Draw(unsigned item, libsiedler2::ImgDir direction, bool fat, unsigned animationstep, DrawPoint drawPt,
                             unsigned color)
 {
-    unsigned overlayIdx = getOverlayIdx(item, fat, direction, animationstep);
-    if(overlayIdx == 188 && fat)
-    {
-        // No fat version(?)
-        overlayIdx = getOverlayIdx(item, false, direction, animationstep);
-        fat = false;
-    }
-
     auto* body = dynamic_cast<glArchivItem_Bitmap_Player*>(getBody(fat, direction, animationstep));
     if(body)
         body->DrawFull(drawPt, COLOR_WHITE, color);
-    auto* overlay = dynamic_cast<glArchivItem_Bitmap_Player*>(get(overlayIdx));
+    auto* overlay = dynamic_cast<glArchivItem_Bitmap_Player*>(getOverlay(item, fat, direction, animationstep));
     if(overlay)
         overlay->DrawFull(drawPt, COLOR_WHITE, color);
 }
