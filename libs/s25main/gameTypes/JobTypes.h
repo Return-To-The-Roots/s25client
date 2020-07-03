@@ -63,8 +63,9 @@ enum Job
 const unsigned NUM_JOB_TYPES = JOB_NOTHING;
 DEFINE_MAX_ENUM_VALUE(Job, NUM_JOB_TYPES - 1)
 
+constexpr unsigned NUM_SOLDIER_RANKS = 5;
 /// Job types of soldiers, weak ones first
-static const std::array<Job, 5> SUPPRESS_UNUSED SOLDIER_JOBS = {
+static const std::array<Job, NUM_SOLDIER_RANKS> SUPPRESS_UNUSED SOLDIER_JOBS = {
   {JOB_PRIVATE, JOB_PRIVATEFIRSTCLASS, JOB_SERGEANT, JOB_OFFICER, JOB_GENERAL}};
 
 #endif // JobTypes_h__

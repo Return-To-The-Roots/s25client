@@ -100,18 +100,16 @@ void noFighting::Draw(DrawPoint drawPt)
         case 3:
         case 4:
         {
-            unsigned animation = GAMECLIENT.Interpolate(16, current_ev);
+            const unsigned curAnimFrame = GAMECLIENT.Interpolate(16, current_ev);
+            const auto& soldier = *soldiers[turn - 3];
+            const GamePlayer& owner = gwg->GetPlayer(soldier.GetPlayer());
 
             // Sterben des einen Soldatens (letzte Phase)
 
-            if(animation < 4)
+            if(curAnimFrame < 4)
             {
                 // Noch kurz dastehen und warten, bis man stirbt
-                glArchivItem_Bitmap_Player* image = LOADER.GetPlayerImage(
-                  "rom_bobs",
-                  FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).nation][soldiers[turn - 3]->GetRank()][turn - 3]
-                    .defending[0][0]);
-                image->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).color);
+                LOADER.fight_cache[owner.nation][soldier.GetRank()][turn - 3].defending[0][0].drawForPlayer(drawPt, owner.color);
             } else
             {
                 // Sich in Luft auflösen
@@ -119,12 +117,11 @@ void noFighting::Draw(DrawPoint drawPt)
                     drawPt.x -= 12;
                 else
                     drawPt.x += 12;
-                LOADER.GetPlayerImage("rom_bobs", 903 + animation - 4)
-                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).color);
+                LOADER.GetPlayerImage("rom_bobs", 903 + curAnimFrame - 4)->DrawFull(drawPt, COLOR_WHITE, owner.color);
             }
 
             // Sterbesound abspielen
-            if(animation == 6)
+            if(curAnimFrame == 6)
                 SOUNDMANAGER.PlayNOSound(104, this, 2);
         }
         break;
@@ -133,9 +130,9 @@ void noFighting::Draw(DrawPoint drawPt)
             // Erste Phase des Kampfes, die Soldaten gehen jeweils nach links bzw. rechts
             auto x_diff = int(GAMECLIENT.Interpolate(12, current_ev));
             drawPt.x -= x_diff;
-            for(unsigned i = 0; i < 2; ++i)
+            for(unsigned i : {0, 1})
             {
-                GamePlayer& owner = gwg->GetPlayer(soldiers[i]->GetPlayer());
+                const GamePlayer& owner = gwg->GetPlayer(soldiers[i]->GetPlayer());
                 glSmartBitmap& bmp =
                   LOADER.bob_jobs_cache[owner.nation][soldiers[i]->GetJobType()][(i == 0) ? 0 : 3][GAMECLIENT.Interpolate(8, current_ev)];
                 bmp.draw(drawPt, COLOR_WHITE, owner.color);
@@ -147,65 +144,52 @@ void noFighting::Draw(DrawPoint drawPt)
         {
             // Kampf
             // Aktueller Animationsframe
-            unsigned animation = GAMECLIENT.Interpolate(8, current_ev);
+            const unsigned curAnimFrame = GAMECLIENT.Interpolate(8, current_ev);
 
-            for(unsigned i = 0; i < 2; ++i)
+            for(unsigned i : {0, 1})
             {
+                const auto& soldier = *soldiers[i];
+                const GamePlayer& owner = gwg->GetPlayer(soldier.GetPlayer());
+                auto& fightAnim = LOADER.fight_cache[owner.nation][soldier.GetRank()][i];
+
                 // Ist der Soldat mit Angreifen dran?
                 if(turn == i)
                 {
                     // Angreifen
-                    LOADER
-                      .GetPlayerImage(
-                        "rom_bobs",
-                        FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i].attacking[animation])
-                      ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
+                    fightAnim.attacking[curAnimFrame].drawForPlayer(drawPt, owner.color);
                 } else
                 {
                     // Verteidigen
                     if(defending_animation < 3)
                     {
                         // Verteidigungsanimation
-                        LOADER
-                          .GetPlayerImage(
-                            "rom_bobs",
-                            FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i] //-V781
-                              .defending[defending_animation][animation])
-                          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
+                        fightAnim.defending[defending_animation][curAnimFrame].drawForPlayer(drawPt, owner.color);
 
                         // Wenn schwache Soldaten Schild hinhalten (Ani 0 und 1) oder stärkere sich mit den Schwertern schützen (Ani 0)
                         // dann Schwert-aneinanderklirr-Sound abspielen
-                        if((animation == 5)
-                           && ((soldiers[i]->GetRank() < 2 && (defending_animation < 2))
-                               || (soldiers[i]->GetRank() > 1 && (defending_animation == 0))))
+                        if(curAnimFrame == 5
+                           && ((soldier.GetRank() < 2 && defending_animation < 2) || (soldier.GetRank() > 1 && defending_animation == 0)))
                             SOUNDMANAGER.PlayNOSound(101, this, 1);
 
                     } else
                     {
                         // Getroffen-Animation (weißes Aufblinken)
-                        if(GAMECLIENT.Interpolate(8, current_ev) == HIT_MOMENT[soldiers[!i]->GetRank()])
+                        if(curAnimFrame == HIT_MOMENT[soldiers[1 - i]->GetRank()])
                         {
                             // weiß aufblinken
-                            LOADER
-                              .GetPlayerImage("rom_bobs",
-                                              HIT_SOLDIERS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()] + i)
-                              ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
+                            fightAnim.hit.drawForPlayer(drawPt, owner.color);
 
                             // Treffersound
                             SOUNDMANAGER.PlayNOSound(105, this, 1);
                         } else
                             // normal dastehen
-                            LOADER
-                              .GetPlayerImage("rom_bobs",
-                                              FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i]
-                                                .defending[0][0])
-                              ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
+                            fightAnim.defending[0][0].drawForPlayer(drawPt, owner.color);
                     }
                 }
             }
 
             // Angriffssound
-            if(animation == 3)
+            if(curAnimFrame == 3)
                 SOUNDMANAGER.PlayNOSound(103, this, 0);
         }
         break;
@@ -313,19 +297,13 @@ void noFighting::StartAttack()
         switch(gwg->GetGGS().getSelection(AddonId::ADJUST_MILITARY_STRENGTH))
         {
             case 0: // Maximale Stärke
-            {
                 results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 6);
-            }
-            break;
+                break;
             case 1: // Mittlere Stärke
-            default: { results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 10);
-            }
-            break;
+            default: results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), soldiers[i]->GetRank() + 10); break;
             case 2: // Minimale Stärke
-            {
                 results[i] = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10);
-            }
-            break;
+                break;
         }
     }
 
@@ -347,17 +325,9 @@ bool noFighting::IsActive() const
 
 bool noFighting::IsSoldierOfPlayer(const unsigned char player) const
 {
-    // Soldat 1 prüfen
-    if(soldiers[0])
+    for(const nofSoldier* soldier : soldiers)
     {
-        if(soldiers[0]->GetPlayer() == player)
-            return true;
-    }
-
-    // Soldat 2 prüfen
-    if(soldiers[1])
-    {
-        if(soldiers[1]->GetPlayer() == player)
+        if(soldier && soldier->GetPlayer() == player)
             return true;
     }
 

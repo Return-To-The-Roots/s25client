@@ -146,6 +146,18 @@ public:
 
     std::vector<std::unique_ptr<MusicItem>> sng_lst;
 
+    /// Figure animations have 8 frames
+    using FigAnimationSprites = std::array<glSmartBitmap, 8>;
+    struct FightSprites
+    {
+        /// Attack animation
+        FigAnimationSprites attacking;
+        // 3 defend animations
+        std::array<FigAnimationSprites, 3> defending;
+        /// Sprite for the hit
+        glSmartBitmap hit;
+    };
+
     /// Animals: Species, Direction, AnimationFrame(Last = Dead)
     helpers::MultiArray<glSmartBitmap, NUM_SPECS, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
     /// Buildings: Nation, Type, Building/Skeleton
@@ -157,21 +169,23 @@ public:
     /// Trees: Type, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
     /// Jobs: Nation, Job (last is fat carrier), Direction, AnimationFrame
-    helpers::MultiArray<glSmartBitmap, NUM_NATS, NUM_JOB_TYPES + 1, 6, 8> bob_jobs_cache;
+    helpers::MultiArray<FigAnimationSprites, NUM_NATS, NUM_JOB_TYPES + 1, 6> bob_jobs_cache;
     /// Stone: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
     /// Grainfield: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
     /// Carrier w/ ware: Ware, Direction, Animation, NormalOrFat
-    helpers::MultiArray<glSmartBitmap, NUM_WARE_TYPES, 6, 8, 2> carrier_cache;
+    helpers::MultiArray<FigAnimationSprites, NUM_WARE_TYPES, 2, 6> carrier_cache;
     /// Boundary stones: Nation
     std::array<glSmartBitmap, NUM_NATS> boundary_stone_cache;
     /// BoatCarrier: Direction, AnimationFrame
-    helpers::MultiArray<glSmartBitmap, 6, 8> boat_cache;
+    std::array<FigAnimationSprites, 6> boat_cache;
     /// Donkey: Direction, AnimationFrame
-    helpers::MultiArray<glSmartBitmap, 6, 8> donkey_cache;
+    std::array<FigAnimationSprites, 6> donkey_cache;
     /// Gateway: AnimationFrame
     std::array<glSmartBitmap, 5> gateway_cache;
+    /// Fight animations for each nation, soldier type and left/right
+    helpers::MultiArray<FightSprites, NUM_NATS, NUM_SOLDIER_RANKS, 2> fight_cache;
 
 private:
     static ResourceId MakeResourceId(const boost::filesystem::path& filepath);

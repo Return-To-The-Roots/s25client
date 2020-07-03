@@ -40,6 +40,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/DirectionToImgDir.h"
 #include "gameData/JobConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include "gameData/NationConsts.h"
 #include "libsiedler2/ArchivItem_Font.h"
 #include "libsiedler2/ArchivItem_Palette.h"
@@ -613,14 +614,59 @@ void Loader::fillCaches()
             }
         }
 
-        glSmartBitmap& bmp = boundary_stone_cache[nation];
+        {
+            glSmartBitmap& bmp = boundary_stone_cache[nation];
+            bmp.reset();
 
-        bmp.reset();
+            bmp.add(GetNationPlayerImage(nation, 0));
+            bmp.addShadow(GetNationImage(nation, 1));
 
-        bmp.add(GetNationPlayerImage(nation, 0));
-        bmp.addShadow(GetNationImage(nation, 1));
+            stp->add(bmp);
+        }
 
-        stp->add(bmp);
+        libsiedler2::Archiv& romBobs = GetArchive("rom_bobs");
+        const auto getAlternative = [&romBobs](unsigned id, unsigned altId) {
+            auto* bmp = convertChecked<glArchivItem_Bitmap_Player*>(romBobs[id]);
+            return bmp ? bmp : convertChecked<glArchivItem_Bitmap_Player*>(romBobs[altId]);
+        };
+        // Special handling for non-native nats: Use roman animations if own are missing
+        const unsigned fallbackNation = nation < NUM_NATIVE_NATS ? nation : NAT_ROMANS;
+        const auto& natFightAnimIds = FIGHT_ANIMATIONS[nation];
+        const auto& altNatFightAnimIds = FIGHT_ANIMATIONS[fallbackNation];
+        const auto& natHitIds = HIT_SOLDIERS[nation];
+        const auto& altNatHitIds = HIT_SOLDIERS[fallbackNation];
+        for(unsigned rank = 0; rank < NUM_SOLDIER_RANKS; ++rank)
+        {
+            for(unsigned dir = 0; dir < 2; ++dir)
+            {
+                FightSprites& sprites = fight_cache[nation][rank][dir];
+                const auto& fightAnimIds = natFightAnimIds[rank][dir];
+                const auto& altFightAnimIds = altNatFightAnimIds[rank][dir];
+                for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+                {
+                    glSmartBitmap& bmp = sprites.attacking[ani_step];
+                    bmp.reset();
+                    bmp.add(getAlternative(fightAnimIds.attacking[ani_step], altFightAnimIds.attacking[ani_step]));
+                    stp->add(bmp);
+                }
+
+                for(unsigned i = 0; i < sprites.defending.size(); i++)
+                {
+                    for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+                    {
+                        glSmartBitmap& bmp = sprites.defending[i][ani_step];
+                        bmp.reset();
+                        bmp.add(getAlternative(fightAnimIds.defending[i][ani_step], altFightAnimIds.defending[i][ani_step]));
+                        stp->add(bmp);
+                    }
+                }
+                glSmartBitmap& bmp = sprites.hit;
+                bmp.reset();
+                // Hit sprites for left/right are consecutive
+                bmp.add(getAlternative(natHitIds[rank] + dir, altNatHitIds[rank] + dir));
+                stp->add(bmp);
+            }
+        }
     }
 
     // BUILDING FLAG ANIMATION (for military buildings)
@@ -728,13 +774,13 @@ void Loader::fillCaches()
 
     for(unsigned ware = 0; ware < NUM_WARE_TYPES; ++ware)
     {
-        for(Direction dir : Direction{})
+        for(bool fat : {true, false})
         {
-            for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+            for(Direction dir : Direction{})
             {
-                for(bool fat : {true, false})
+                for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
-                    glSmartBitmap& bmp = carrier_cache[ware][static_cast<unsigned>(dir)][ani_step][fat];
+                    glSmartBitmap& bmp = carrier_cache[ware][fat][static_cast<unsigned>(dir)][ani_step];
                     bmp.reset();
 
                     // Japanese shield is missing
