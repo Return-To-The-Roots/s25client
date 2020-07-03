@@ -85,8 +85,6 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
                                curPlayer.name)
                   ->SetBorder(false);
                 break;
-            case NUM_NATIONS:
-            case NAT_INVALID: break;
         }
 
         // Statistik-Sichtbarkeit abhängig von Auswahl
