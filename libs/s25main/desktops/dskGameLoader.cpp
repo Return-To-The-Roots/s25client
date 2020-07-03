@@ -102,7 +102,11 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
         case 3: // Objekte laden
         {
             loader_.initTextures();
-            loader_.loadTextures();
+            if(!loader_.loadTextures())
+            {
+                ShowErrorMsg(_("Failed to load game resources"));
+                return; // Don't restart timer!
+            }
 
             text->SetText(_("Game crate was picked and spread out..."));
             break;
@@ -114,7 +118,7 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
                 gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.GetNWFInfo(), GAMECLIENT.GetPlayerId());
             } catch(std::runtime_error& e)
             {
-                LC_Status_Error(std::string(_("Failed to init GUI: ")) + e.what());
+                ShowErrorMsg(std::string(_("Failed to init GUI: ")) + e.what());
                 return;
             }
             // TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
@@ -135,13 +139,18 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
     timer->Start(interval);
 }
 
+void dskGameLoader::ShowErrorMsg(const std::string& error)
+{
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    GetCtrl<ctrlTimer>(1)->Stop();
+}
+
 /**
  *  (Lobby-)Status: Benutzerdefinierter Fehler (kann auch Conn-Loss o.ä sein)
  */
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
-    GetCtrl<ctrlTimer>(1)->Stop();
+    ShowErrorMsg(error);
 }
 
 void dskGameLoader::CI_GameStarted(const std::shared_ptr<Game>&)
@@ -152,6 +161,5 @@ void dskGameLoader::CI_GameStarted(const std::shared_ptr<Game>&)
 
 void dskGameLoader::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
-    GetCtrl<ctrlTimer>(1)->Stop();
+    ShowErrorMsg(ClientErrorToStr(ce));
 }

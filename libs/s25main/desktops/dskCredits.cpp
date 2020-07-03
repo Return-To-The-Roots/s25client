@@ -21,6 +21,7 @@
 #include "controls/ctrlButton.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
+#include "ingameWindows/iwMsgbox.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
 #include "ogl/MusicItem.h"
@@ -43,7 +44,7 @@ const unsigned PAGE_TIME = 12900;
 /// Duration for fading between pages
 const unsigned FADING_TIME = 2000;
 
-dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
+dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(entries.end())
 {
     // Zurück
     AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
@@ -53,6 +54,25 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     // "Credits"
     AddText(2, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
+    itCurEntry = entries.end();
+
+    WorldDescription worldDesc;
+    GameDataLoader gdLoader(worldDesc);
+    if(!gdLoader.Load())
+    {
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game data"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+        return;
+    }
+
+    std::vector<Nation> nations(NUM_NATIVE_NATS);
+    for(int i = 0; i < NUM_NATIVE_NATS; i++)
+        nations[i] = Nation(i);
+
+    if(!LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations))
+    {
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game resources"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+        return;
+    }
     CreditsEntry entry = CreditsEntry("Florian Doersch (FloSoft):", GetCreditsImgOrDefault("flosoft"));
     entry.lines.push_back(_("Project management"));
     entry.lines.push_back(_("Server management"));
@@ -151,17 +171,6 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     entry.lines.push_back(_("Thank you!"));
     entries.push_back(entry);
 
-    WorldDescription worldDesc;
-    GameDataLoader gdLoader(worldDesc);
-    if(!gdLoader.Load())
-        throw std::runtime_error("Failed to load game data");
-
-    std::vector<Nation> nations(NUM_NATIVE_NATS);
-    for(int i = 0; i < NUM_NATIVE_NATS; i++)
-        nations[i] = Nation(i);
-
-    LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations);
-
     this->itCurEntry = entries.begin();
 
     if(LOADER.sng_lst.size() > 8)
@@ -173,8 +182,11 @@ dskCredits::~dskCredits() = default;
 void dskCredits::Draw_()
 {
     Desktop::Draw_();
-    DrawBobs();
-    DrawCredit();
+    if(itCurEntry != entries.end())
+    {
+        DrawBobs();
+        DrawCredit();
+    }
 }
 
 void dskCredits::DrawCredit()
@@ -328,6 +340,11 @@ bool dskCredits::Msg_KeyDown(const KeyEvent& /*ke*/)
 }
 
 void dskCredits::Msg_ButtonClick(const unsigned /*ctrl_id*/)
+{
+    Close();
+}
+
+void dskCredits::Msg_MsgBoxResult(unsigned, MsgboxResult)
 {
     Close();
 }

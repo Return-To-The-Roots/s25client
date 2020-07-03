@@ -37,6 +37,7 @@ public:
     bool Msg_KeyDown(const KeyEvent& ke) override;
     void Draw_() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult) override;
     void SetActive(bool active) override;
     static bool Close();
 
