@@ -238,7 +238,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
             } else if(state == CARRS_WAITFORWARESPACE || (waiting_for_free_node && !IsStoppedBetweenNodes() && carried_ware))
             {
                 // Steht und wartet (mit Ware)
-                LOADER.carrier_cache[carried_ware->type][GetCurMoveDir().toUInt()][2][fat].draw(drawPt, COLOR_WHITE,
+                LOADER.carrier_cache[carried_ware->type][fat][GetCurMoveDir().toUInt()][2].draw(drawPt, COLOR_WHITE,
                                                                                                 gwg->GetPlayer(player).color);
             } else
             {

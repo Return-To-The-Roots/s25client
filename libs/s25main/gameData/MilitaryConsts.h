@@ -20,6 +20,7 @@
 
 #include "DrawPoint.h"
 #include "helpers/MultiArray.h"
+#include "gameTypes/JobTypes.h"
 #include "gameData/NationConsts.h"
 #include <array>
 
@@ -31,7 +32,9 @@ const unsigned MAX_MILITARY_DISTANCE_NEAR = 18;
 const unsigned MAX_MILITARY_DISTANCE_MIDDLE = 26;
 
 /// highest military rank - currently ranks 0-4 available
-const unsigned MAX_MILITARY_RANK = 4;
+const unsigned MAX_MILITARY_RANK = NUM_SOLDIER_RANKS - 1u;
+/// Number of military buildings
+constexpr unsigned NUM_MILITARY_BLDS = 4;
 
 /// Basisangriffsreichweite (Angriff mit allen Soldaten möglich)
 const unsigned BASE_ATTACKING_DISTANCE = 21;
@@ -46,36 +49,38 @@ const unsigned MAX_ATTACKING_RUN_DISTANCE = 40;
 const unsigned MEET_FOR_FIGHT_DISTANCE = 5;
 
 /// Besatzung in den einzelnen Militärgebäuden und nach Nation
-const helpers::MultiArray<int, NUM_NATS, 4> NUM_TROOPS = {{{2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}}};
+const helpers::MultiArray<int, NUM_NATS, NUM_MILITARY_BLDS> NUM_TROOPS = {
+  {{2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}}};
 
 /// Gold in den einzelnen Militärgebäuden und nach Nation
-const helpers::MultiArray<unsigned short, NUM_NATS, 4> NUM_GOLDS = {{{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}}};
+const helpers::MultiArray<unsigned short, NUM_NATS, NUM_MILITARY_BLDS> NUM_GOLDS = {
+  {{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}}};
 
 /// Radien der Militärgebäude
-const std::array<unsigned, 4> SUPPRESS_UNUSED MILITARY_RADIUS = {{8, 9, 10, 11}};
+const std::array<unsigned, NUM_MILITARY_BLDS> SUPPRESS_UNUSED MILITARY_RADIUS = {{8, 9, 10, 11}};
 // Radius für einzelne Hafen(baustellen)
 const unsigned HARBOR_RADIUS = 8;
 const unsigned HQ_RADIUS = 9;
 
 /// Offset of the troop flag per nation and type from the buildings origin
-const helpers::MultiArray<DrawPoint, NUM_NATS, 4> TROOPS_FLAG_OFFSET = {{{{24, -41}, {19, -41}, {31, -88}, {35, -67}},
-                                                                         {{-9, -49}, {14, -59}, {16, -63}, {0, -44}},
-                                                                         {{-24, -36}, {9, -62}, {-2, -80}, {23, -75}},
-                                                                         {{-5, -50}, {-5, -51}, {-9, -74}, {-12, -58}},
-                                                                         {{-22, -37}, {-2, -51}, {20, -70}, {-46, -64}}}};
+const helpers::MultiArray<DrawPoint, NUM_NATS, NUM_MILITARY_BLDS> TROOPS_FLAG_OFFSET = {{{{24, -41}, {19, -41}, {31, -88}, {35, -67}},
+                                                                                         {{-9, -49}, {14, -59}, {16, -63}, {0, -44}},
+                                                                                         {{-24, -36}, {9, -62}, {-2, -80}, {23, -75}},
+                                                                                         {{-5, -50}, {-5, -51}, {-9, -74}, {-12, -58}},
+                                                                                         {{-22, -37}, {-2, -51}, {20, -70}, {-46, -64}}}};
 
 /// Offset of the troop flag per nation from the HQs origin
 const std::array<DrawPoint, NUM_NATS> TROOPS_FLAG_HQ_OFFSET = {{{-12, -102}, {-19, -94}, {-18, -112}, {20, -54}, {-33, -81}}};
 
 /// Offset of the border indicator flag per nation from the buildings origin
-const helpers::MultiArray<DrawPoint, NUM_NATS, 4> BORDER_FLAG_OFFSET = {{{{-6, -36}, {7, -48}, {-18, -28}, {-47, -64}},
-                                                                         {{17, -45}, {-3, -49}, {-30, -25}, {22, -53}},
-                                                                         {{28, -19}, {29, -18}, {-27, -12}, {-49, -62}},
-                                                                         {{24, -19}, {24, -19}, {17, -52}, {-37, -32}},
-                                                                         {{8, -26}, {13, -36}, {-1, -59}, {-10, -61}}}};
+const helpers::MultiArray<DrawPoint, NUM_NATS, NUM_MILITARY_BLDS> BORDER_FLAG_OFFSET = {{{{-6, -36}, {7, -48}, {-18, -28}, {-47, -64}},
+                                                                                         {{17, -45}, {-3, -49}, {-30, -25}, {22, -53}},
+                                                                                         {{28, -19}, {29, -18}, {-27, -12}, {-49, -62}},
+                                                                                         {{24, -19}, {24, -19}, {17, -52}, {-37, -32}},
+                                                                                         {{8, -26}, {13, -36}, {-1, -59}, {-10, -61}}}};
 
 /// maximale Hitpoints der Soldaten von jedem Volk
-const helpers::MultiArray<unsigned char, NUM_NATS, 5> HITPOINTS = {
+const helpers::MultiArray<unsigned char, NUM_NATS, NUM_SOLDIER_RANKS> HITPOINTS = {
   {{3, 4, 5, 6, 7}, {3, 4, 5, 6, 7}, {3, 4, 5, 6, 7}, {3, 4, 5, 6, 7}, {3, 4, 5, 6, 7}}};
 
 /// Max distance for an attacker to reach a building and join in capturing
@@ -115,7 +120,7 @@ struct FightAnimation
 };
 
 /// Diese gibts für alle beiden Richtung, für alle 5 Ränge und jweils nochmal für alle 4 Völker
-const FightAnimation FIGHT_ANIMATIONS[NUM_NATS][5][2] = {
+const FightAnimation FIGHT_ANIMATIONS[NUM_NATS][NUM_SOLDIER_RANKS][2] = {
   // Nubier
   {// Schütze (Rang 1)
    {{{595, 596, 597, 598, 599, 600, 601, 602},
@@ -277,54 +282,73 @@ const FightAnimation FIGHT_ANIMATIONS[NUM_NATS][5][2] = {
       {1364, 1365, 1366, 1367, 1368, 1369, 1370, 1371},
       {1348, 1349, 1350, 1351, 1352, 1353, 1354, 1355}}}}},
   // Babylonier
-  {// Schütze (Rang 1)
-   {{{444, 445, 446, 447, 448, 446, 445, 444},
-     {{922, 922, 917, 918, 919, 920, 921, 922}, {917, 918, 925, 926, 927, 928, 929, 930}, {931, 932, 933, 934, 935, 935, 935, 935}}},
-    {{481, 482, 483, 484, 485, 484, 483, 481},
-     {{1029, 1030, 1031, 1032, 1033, 1034, 1035, 1036},
-      {1036, 1037, 1038, 1039, 1040, 1041, 1042, 1042},
-      {1042, 1043, 1044, 1045, 1046, 1047, 1048, 1049}}}},
-   // Gefreiter (Rang 2)
-   {{{449, 450, 451, 452, 453, 454, 455, 456},
-     {{938, 939, 940, 941, 942, 943, 944, 945}, {946, 947, 948, 949, 950, 951, 952, 953}, {951, 952, 953, 954, 955, 956, 957, 958}}},
-    {{486, 487, 488, 489, 490, 491, 491, 492},
-     {{1050, 1051, 1052, 1053, 1054, 1055, 1056, 1057},
-      {1058, 1059, 1060, 1061, 1062, 1063, 1064, 1065},
-      {1065, 1066, 1067, 1068, 1069, 1070, 1071, 1072}}}},
-   // Unteroffizier (Rang 3)
-   {{{457, 458, 459, 460, 461, 462, 463, 464},
-     {{961, 962, 963, 964, 965, 966, 967, 967}, {968, 969, 970, 971, 972, 973, 974, 968}, {977, 978, 979, 980, 981, 982, 982, 976}}},
-    {{493, 494, 495, 496, 497, 498, 499, 500},
-     {{1073, 1074, 1075, 1076, 1077, 1078, 1079, 1080},
-      {1081, 1082, 1083, 1084, 1085, 1086, 1087, 1088},
-      {1089, 1090, 1091, 1092, 1093, 1094, 1095, 1096}}}},
-   // Offizier (Rang 4)
-   {{{465, 466, 467, 468, 469, 470, 471, 472},
-     {{985, 986, 987, 988, 989, 990, 991, 992}, {985, 993, 994, 995, 996, 996, 997, 997}, {998, 999, 1000, 1001, 1002, 1003, 1004, 998}}},
-    {{502, 503, 504, 505, 506, 507, 508, 502},
-     {{1097, 1098, 1099, 1100, 1101, 1102, 1103, 1104},
-      {1105, 1106, 1107, 1108, 1109, 1110, 1111, 1106},
-      {1112, 1113, 1114, 1115, 1116, 1117, 1118, 1112}}}},
-   // General (Rang 5)
-   {{{473, 474, 475, 476, 477, 478, 479, 480},
-     {{1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014},
-      {1015, 1016, 1017, 1018, 1019, 1020, 1020, 1015},
-      {1023, 1024, 1025, 1026, 1027, 1028, 1023, 1023}}},
-    {{510, 511, 512, 513, 514, 515, 516, 510},
-     {{1119, 1120, 1121, 1122, 1123, 1124, 1125, 1126},
-      {1127, 1128, 1129, 1130, 1131, 1132, 1133, 1134},
-      {1135, 1136, 1137, 1138, 1139, 1140, 1141, 1142}}}}},
-
+  {
+    { // Private (Rank 0)
+     {// left
+      {1810, 1811, 1812, 1813, 1814, 1815, 1816, 1817},
+      {{1818, 1819, 1820, 1821, 1822, 1823, 1824, 1825},
+       {1826, 1827, 1828, 1829, 1830, 1831, 1832, 1833},
+       {1834, 1835, 1836, 1837, 1838, 1839, 1840, 1841}}},
+     {// right
+      {1842, 1843, 1844, 1845, 1846, 1847, 1848, 1849},
+      {{1850, 1851, 1852, 1853, 1854, 1855, 1856, 1857},
+       {1858, 1859, 1860, 1861, 1862, 1863, 1864, 1865},
+       {1866, 1867, 1868, 1869, 1870, 1871, 1872, 1873}}}},
+    { // Private FC (Rank 1)
+     {// left
+      {1874, 1875, 1876, 1877, 1878, 1879, 1880, 1881},
+      {{1882, 1883, 1884, 1885, 1886, 1887, 1888, 1889},
+       {1890, 1891, 1892, 1893, 1894, 1895, 1896, 1897},
+       {1898, 1899, 1900, 1901, 1902, 1903, 1904, 1905}}},
+     {// right
+      {1906, 1907, 1908, 1909, 1910, 1911, 1912, 1913},
+      {{1914, 1915, 1916, 1917, 1918, 1919, 1920, 1921},
+       {1922, 1923, 1924, 1925, 1926, 1927, 1928, 1929},
+       {1930, 1931, 1932, 1933, 1934, 1935, 1936, 1937}}}},
+    { // Sergeant (Rank 2)
+     {// left
+      {1938, 1939, 1940, 1941, 1942, 1943, 1944, 1945},
+      {{1946, 1947, 1948, 1949, 1950, 1951, 1952, 1953},
+       {1954, 1955, 1956, 1957, 1958, 1959, 1960, 1961},
+       {1962, 1963, 1964, 1965, 1966, 1967, 1968, 1969}}},
+     {// right
+      {1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977},
+      {{1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985},
+       {1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993},
+       {1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001}}}},
+    { // Officer (Rank 3)
+     {// left
+      {2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009},
+      {{2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017},
+       {2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025},
+       {2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033}}},
+     {// right
+      {2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041},
+      {{2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049},
+       {2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057},
+       {2058, 2059, 2060, 2061, 2062, 2063, 2064, 2065}}}},
+    { // General (Rank 4)
+     {// left
+      {2066, 2067, 2068, 2069, 2070, 2071, 2072, 2073},
+      {{2074, 2075, 2076, 2077, 2078, 2079, 2080, 2081},
+       {2082, 2083, 2084, 2085, 2086, 2087, 2088, 2089},
+       {2090, 2091, 2092, 2093, 2094, 2095, 2096, 2097}}},
+     {// right
+      {2098, 2099, 2100, 2101, 2102, 2103, 2104, 2105},
+      {{2106, 2107, 2108, 2109, 2110, 2111, 2112, 2113},
+       {2114, 2115, 2116, 2117, 2118, 2119, 2120, 2121},
+       {2122, 2123, 2124, 2125, 2126, 2127, 2128, 2129}}}},
+  },
 };
 
 /// IDs für die getroffenen (aufleuchtenden) Soldaten für jedes Volk
-const helpers::MultiArray<unsigned short, NUM_NATS, 5> HIT_SOLDIERS = {{{1556, 1558, 1560, 1562, 1564},
-                                                                        {1143, 1145, 1147, 1149, 1147},
-                                                                        {895, 897, 899, 901, 899},
-                                                                        {1372, 1374, 1376, 1378, 1380},
-                                                                        {1143, 1145, 1147, 1149, 1147}}};
+const helpers::MultiArray<unsigned short, NUM_NATS, NUM_SOLDIER_RANKS> HIT_SOLDIERS = {{{1556, 1558, 1560, 1562, 1564},
+                                                                                        {1143, 1145, 1147, 1149, 1147},
+                                                                                        {895, 897, 899, 901, 899},
+                                                                                        {1372, 1374, 1376, 1378, 1380},
+                                                                                        {2130, 2132, 2134, 2136, 2138}}};
 
 /// Bestimmt den Aufblinkframe vom den Opfern der folgenden Angreifer (nach Rängen)
-const std::array<unsigned short, 5> SUPPRESS_UNUSED HIT_MOMENT = {{4, 4, 4, 4, 6}};
+const std::array<unsigned short, NUM_SOLDIER_RANKS> SUPPRESS_UNUSED HIT_MOMENT = {{4, 4, 4, 4, 6}};
 
 #endif

@@ -770,7 +770,7 @@ void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat)
 {
     const unsigned ani_step = CalcWalkAnimationFrame();
 
-    LOADER.carrier_cache[ware][GetCurMoveDir().toUInt()][ani_step][fat].drawForPlayer(InterpolateWalkDrawPos(drawPt),
+    LOADER.carrier_cache[ware][fat][GetCurMoveDir().toUInt()][ani_step].drawForPlayer(InterpolateWalkDrawPos(drawPt),
                                                                                       gwg->GetPlayer(player).color);
 }
 
