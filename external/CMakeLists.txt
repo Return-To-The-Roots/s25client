@@ -42,19 +42,19 @@ endif()
 
 option(RTTR_USE_SYSTEM_LIBSAMPLERATE "Use system installed libsamplerate. Fails if not found!" "${RTTR_USE_SYSTEM_LIBS}")
 if(RTTR_USE_SYSTEM_LIBSAMPLERATE)
-	find_package(Samplerate 0.1.9 REQUIRED)
-	unset(samplerate_LIB_DEPENDS CACHE)
-	add_library(samplerate INTERFACE)
-	target_link_libraries(samplerate INTERFACE Samplerate::Samplerate)
+    find_package(Samplerate 0.1.9 REQUIRED)
+    unset(samplerate_LIB_DEPENDS CACHE)
+    add_library(samplerate INTERFACE)
+    target_link_libraries(samplerate INTERFACE Samplerate::Samplerate)
 else()
     include(FetchContent)
     FetchContent_Declare(
         LibSamplerate
-        GIT_REPOSITORY https://github.com/erikd/libsamplerate
-        GIT_TAG        727504026ee51c6fe29afe6255b70513504a6265
+        GIT_REPOSITORY https://github.com/Flamefire/libsamplerate
+        GIT_TAG        b5d39fbfc86b656fed68c935ac7b0a06349e4aa1
     )
-	set(LIBSAMPLERATE_TESTS OFF CACHE INTERNAL "")
-	set(LIBSAMPLERATE_INSTALL OFF CACHE INTERNAL "")
+    set(LIBSAMPLERATE_TESTS OFF CACHE INTERNAL "")
+    set(LIBSAMPLERATE_INSTALL OFF CACHE INTERNAL "")
     FetchContent_MakeAvailable(LibSamplerate)
 endif()
 

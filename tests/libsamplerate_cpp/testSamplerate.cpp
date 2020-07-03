@@ -34,7 +34,7 @@ long callback(void* cb_data, float** data)
 {
     BOOST_TEST(cb_data == &test_data);
     *data = callback_data.data() + callback_pos;
-    const auto size = std::min<long>(callback_data.size() - callback_pos, 128);
+    const auto size = std::min(static_cast<int>(callback_data.size()) - callback_pos, 128);
     callback_pos += size;
     return size;
 }
