@@ -20,6 +20,8 @@
 #ifndef Nation_h__
 #define Nation_h__
 
+#include "helpers/MaxEnumValue.h"
+
 /// Nations (byte sized)
 enum Nation : unsigned char
 {
@@ -27,12 +29,12 @@ enum Nation : unsigned char
     NAT_JAPANESE,
     NAT_ROMANS,
     NAT_VIKINGS,
-    NAT_BABYLONIANS,
-    NUM_NATIONS,
-    NAT_INVALID = 0xFF
+    NAT_BABYLONIANS
 };
+DEFINE_MAX_ENUM_VALUE(Nation, NAT_BABYLONIANS)
 
 /// Number of native notions
 constexpr unsigned NUM_NATIVE_NATIONS = 4;
+constexpr unsigned NUM_NATIONS = helpers::MaxEnumValue_v<Nation> + 1u;
 
 #endif // Nation_h__
