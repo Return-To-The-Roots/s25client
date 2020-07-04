@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,13 +24,13 @@
 /// Types of pacts
 enum PactType
 {
-    TREATY_OF_ALLIANCE = 0,
+    TREATY_OF_ALLIANCE,
     NON_AGGRESSION_PACT
 };
 
+DEFINE_MAX_ENUM_VALUE(PactType, NON_AGGRESSION_PACT)
 /// Number of the various pacts
-const unsigned NUM_PACTS = 2;
-DEFINE_MAX_ENUM_VALUE(PactType, NUM_PACTS)
+constexpr unsigned NUM_PACTS = helpers::NumEnumValues_v<PactType>;
 
 /// Names of the possible pacts
 extern const std::array<const char*, NUM_PACTS> PACT_NAMES;

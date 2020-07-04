@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,7 +25,7 @@
 // Warentypen
 enum GoodType
 {
-    /*  0 */ GD_BEER = 0,       // Bier
+    /*  0 */ GD_BEER,           // Bier
     /*  1 */ GD_TONGS,          // Zange
     /*  2 */ GD_HAMMER,         // Hammer
     /*  3 */ GD_AXE,            // Axt
@@ -63,13 +63,13 @@ enum GoodType
     /* 35 */ GD_NOTHING,        // Nichts
     /* 36 */ GD_INVALID         // Placeholder to show an invalid good (does not count as a good)
 };
-// Anzahl an unterschiedlichen Warentypen
-const unsigned NUM_WARE_TYPES = GD_NOTHING;
-DEFINE_MAX_ENUM_VALUE(GoodType, NUM_WARE_TYPES - 1)
+DEFINE_MAX_ENUM_VALUE(GoodType, GD_NOTHING)
+/// Number of goods
+constexpr unsigned NUM_WARE_TYPES = helpers::NumEnumValues_v<GoodType>;
 // Number of tools
-const unsigned NUM_TOOLS = 12;
+constexpr unsigned NUM_TOOLS = 12;
 
-const std::string WARE_NAMES[GD_INVALID] = {
+const std::string WARE_NAMES[NUM_WARE_TYPES] = {
   /*  0 */ gettext_noop("Beer"),         // Bier
   /*  1 */ gettext_noop("Tongs"),        // Zange
   /*  2 */ gettext_noop("Hammer"),       // Hammer
