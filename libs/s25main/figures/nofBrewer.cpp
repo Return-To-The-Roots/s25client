@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofBrewer.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -32,7 +31,7 @@ nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofBrewer::DrawWorking(DrawPoint drawPt)
 {
-    static const std::array<DrawPoint, NUM_NATS> offsets = {{{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}}};
+    static const std::array<DrawPoint, NUM_NATIONS> offsets = {{{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}}};
 
     unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 

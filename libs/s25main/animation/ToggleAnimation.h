@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,6 +18,7 @@
 #ifndef ToggleAnimation_h__
 #define ToggleAnimation_h__
 
+#include "commonDefines.h"
 #include "animation/Animation.h"
 
 /// Animations which toggles a boolean state of an object

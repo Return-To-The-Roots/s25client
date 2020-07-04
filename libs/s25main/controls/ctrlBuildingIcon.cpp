@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlBuildingIcon.h"
 #include "Loader.h"
 #include "files.h"
@@ -37,7 +36,7 @@ void ctrlBuildingIcon::Draw_()
         LOADER.GetImageN("io", 0)->DrawPart(GetDrawRect());
     glArchivItem_Bitmap* image;
     if(type != BLD_CHARBURNER)
-        image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
+        image = LOADER.GetNationIcon(nation, type);
     else
         image = LOADER.GetImageN("charburner", nation * 8 + 8);
     if(image)

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaServerPlayer.h"
 #include "JoinPlayerInfo.h"
 #include "lua/LuaHelpers.h"
@@ -46,7 +45,7 @@ void LuaServerPlayer::Register(kaguya::State& state)
 
 void LuaServerPlayer::SetNation(Nation nat)
 {
-    lua::assertTrue(unsigned(nat) < NUM_NATS, "Invalid Nation");
+    lua::assertTrue(unsigned(nat) < NUM_NATIONS, "Invalid Nation");
     player.nation = nat;
     lobbyServerController_.SetNation(playerId, nat);
 }

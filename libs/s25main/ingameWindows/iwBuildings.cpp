@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBuildings.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -71,7 +70,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
                 break;
             glArchivItem_Bitmap* img;
             if(bts[y * 4 + x] != BLD_CHARBURNER)
-                img = LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 4 + x]);
+                img = LOADER.GetNationIcon(playerNation, bts[y * 4 + x]);
             else
                 img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
             Extent btSize = Extent(32, 32);

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,7 +27,7 @@
 extern const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_NAMES;
 
 // Konstanten für die Baukosten der Gebäude von allen 4 Völkern
-const helpers::MultiArray<BuildingCost, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_COSTS = {
+const helpers::MultiArray<BuildingCost, NUM_NATIONS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_COSTS = {
   {// Nubier
    {{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7}, {4, 0}, {4, 0}, {4, 0}, {4, 0},
     {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3},
@@ -100,7 +100,7 @@ const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WOR
 };
 
 /// Smoke consts for all buildings and nations
-const helpers::MultiArray<SmokeConst, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SMOKE_CONSTS = {
+const helpers::MultiArray<SmokeConst, NUM_NATIONS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SMOKE_CONSTS = {
   {// Nubier
    {
      SmokeConst(),
@@ -318,7 +318,7 @@ const helpers::MultiArray<SmokeConst, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNU
    }}};
 
 /// Offset of the production-/gold- stop signs per building
-const helpers::MultiArray<DrawPoint, NUM_NATS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SIGN_CONSTS = {
+const helpers::MultiArray<DrawPoint, NUM_NATIONS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SIGN_CONSTS = {
   {// Nubier
    {{0, 0},    {19, -4},  {19, -3},  {0, 0},    {23, -19}, {0, 0},    {0, 0},   {0, 0},     {0, 0},     {29, -23},
     {-2, -15}, {2, -13},  {-5, -16}, {-5, -15}, {0, 0},    {0, 0},    {0, 0},   {4, -16},   {9, -12},   {7, -10},

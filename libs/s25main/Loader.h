@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -134,6 +134,7 @@ public:
     glArchivItem_Bob* GetBob(const ResourceId& file);
     glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
     glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
+    glArchivItem_Bitmap* GetNationIcon(unsigned nation, unsigned nr);
     /// Same as GetNationImage but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
     ITexture* GetNationTex(unsigned nation, unsigned nr);
     glArchivItem_Bitmap_Player* GetNationPlayerImage(unsigned nation, unsigned nr);
@@ -161,15 +162,15 @@ public:
     /// Animals: Species, Direction, AnimationFrame(Last = Dead)
     helpers::MultiArray<glSmartBitmap, NUM_SPECS, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
     /// Buildings: Nation, Type, Building/Skeleton
-    helpers::MultiArray<glSmartBitmap, NUM_NATS, NUM_BUILDING_TYPES, 2> building_cache;
+    helpers::MultiArray<glSmartBitmap, NUM_NATIONS, NUM_BUILDING_TYPES, 2> building_cache;
     /// Flags: Nation, Type, AnimationFrame
-    helpers::MultiArray<glSmartBitmap, NUM_NATS, 3, 8> flag_cache;
+    helpers::MultiArray<glSmartBitmap, NUM_NATIONS, 3, 8> flag_cache;
     /// Military Flags: AnimationFrame
     // helpers::MultiArray<glSmartBitmap, 8> building_flag_cache;
     /// Trees: Type, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
     /// Jobs: Nation, Job (last is fat carrier), Direction, AnimationFrame
-    helpers::MultiArray<FigAnimationSprites, NUM_NATS, NUM_JOB_TYPES + 1, 6> bob_jobs_cache;
+    helpers::MultiArray<FigAnimationSprites, NUM_NATIONS, NUM_JOB_TYPES + 1, 6> bob_jobs_cache;
     /// Stone: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
     /// Grainfield: Type, Size
@@ -177,7 +178,7 @@ public:
     /// Carrier w/ ware: Ware, Direction, Animation, NormalOrFat
     helpers::MultiArray<FigAnimationSprites, NUM_WARE_TYPES, 2, 6> carrier_cache;
     /// Boundary stones: Nation
-    std::array<glSmartBitmap, NUM_NATS> boundary_stone_cache;
+    std::array<glSmartBitmap, NUM_NATIONS> boundary_stone_cache;
     /// BoatCarrier: Direction, AnimationFrame
     std::array<FigAnimationSprites, 6> boat_cache;
     /// Donkey: Direction, AnimationFrame
@@ -185,7 +186,7 @@ public:
     /// Gateway: AnimationFrame
     std::array<glSmartBitmap, 5> gateway_cache;
     /// Fight animations for each nation, soldier type and left/right
-    helpers::MultiArray<FightSprites, NUM_NATS, NUM_SOLDIER_RANKS, 2> fight_cache;
+    helpers::MultiArray<FightSprites, NUM_NATIONS, NUM_SOLDIER_RANKS, 2> fight_cache;
 
 private:
     static ResourceId MakeResourceId(const boost::filesystem::path& filepath);
@@ -218,7 +219,8 @@ private:
     std::vector<glFont> fonts;
 
     bool isWinterGFX_;
-    std::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
+    std::array<libsiedler2::Archiv*, NUM_NATIONS> nation_gfx;
+    std::array<libsiedler2::Archiv*, NUM_NATIONS> nationIcons_;
     libsiedler2::Archiv* map_gfx;
     std::unique_ptr<glTexturePacker> stp;
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,7 +21,7 @@
 
 const unsigned NUM_SHIP_NAMESS = 55;
 
-const helpers::MultiArray<const char*, NUM_NATS, NUM_SHIP_NAMESS> ship_names = {
+const helpers::MultiArray<const char*, NUM_NATIONS, NUM_SHIP_NAMESS> ship_names = {
   {/* Nubier */ {"Aica",    "Aida",   "Ainra",  "Alayna", "Alisha",  "Alma",    "Amila",        "Anina",   "Armina",   "Banu",     "Baya",
                  "Bea",     "Bia",    "Bisa",   "Cheche", "Dafina",  "Daria",   "Dina",         "Do",      "Dofi",     "Efia",     "Erin",
                  "Esi",     "Esra",   "Fahari", "Faraya", "Fujo",    "Ghiday",  "Habiaba",      "Hajunza", "Ina",      "Layla",    "Lenia",

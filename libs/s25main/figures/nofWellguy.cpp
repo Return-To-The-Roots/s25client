@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofWellguy.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -40,15 +39,15 @@ nofWellguy::nofWellguy(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 
 void nofWellguy::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPoint, NUM_NATS> offsets = {{{-20, 17}, {-18, 17}, {-20, 13}, {-20, 15}, {-18, 17}}};
+    const std::array<DrawPoint, NUM_NATIONS> offsets = {{{-20, 17}, {-18, 17}, {-20, 13}, {-20, 15}, {-18, 17}}};
 
-    const helpers::MultiArray<DrawPoint, NUM_NATS, 8> walkoffsets = // nation, schritt
+    const helpers::MultiArray<DrawPoint, NUM_NATIONS, 8> walkoffsets = // nation, schritt
       {{{{7, 7}, {9, 9}, {5, 12}, {2, 14}, {-1, 17}, {-4, 17}, {-7, 17}, {-10, 17}},
         {{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}},
         {{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 13}, {-4, 13}, {-7, 13}, {-10, 13}},
         {{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 15}, {-4, 15}, {-7, 15}, {-10, 15}},
         {{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}}}};
-    helpers::MultiArray<signed char, NUM_NATS, 6> walkdirection = {
+    helpers::MultiArray<signed char, NUM_NATIONS, 6> walkdirection = {
       {{4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}}};
 
     unsigned max_id = 112;

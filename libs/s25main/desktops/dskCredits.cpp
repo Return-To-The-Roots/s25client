@@ -64,8 +64,8 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
         return;
     }
 
-    std::vector<Nation> nations(NUM_NATIVE_NATS);
-    for(int i = 0; i < NUM_NATIVE_NATS; i++)
+    std::vector<Nation> nations(NUM_NATIVE_NATIONS);
+    for(unsigned i = 0; i < NUM_NATIVE_NATIONS; i++)
         nations[i] = Nation(i);
 
     if(!LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations))
@@ -277,7 +277,7 @@ void dskCredits::DrawBobs()
             b.hasWare = true;
         } else
         {
-            job = JOB_SPRITE_CONSTS[job].getBobId(Nation(rand() % NUM_NATS));
+            job = JOB_SPRITE_CONSTS[job].getBobId(Nation(rand() % NUM_NATIONS));
             b.hasWare = false;
         }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMiner.h"
-
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SoundManager.h"
@@ -33,7 +31,7 @@ nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
-    const helpers::MultiArray<DrawPoint, NUM_NATS, 4> offsets = // work animation offset per nation and (granite, coal, iron, gold)
+    const helpers::MultiArray<DrawPoint, NUM_NATIONS, 4> offsets = // work animation offset per nation and (granite, coal, iron, gold)
       {{
         {{5, 3}, {5, 3}, {5, 3}, {5, 3}},     // africans
         {{4, 1}, {4, 1}, {4, 1}, {4, 1}},     // japanese

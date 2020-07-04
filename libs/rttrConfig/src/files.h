@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -96,12 +96,6 @@ const std::array<const std::string, 21> LOAD_SCREENS = {{"setup666", "setup667",
                                                          "europe",   "green",    "japan",    "namerica", "nasia",    "samerica", "sasia"}};
 
 constexpr unsigned NUM_GFXSETS = 3;
-constexpr unsigned NUM_NATIONS = 5;
-
-const std::array<const std::string, NUM_NATIONS> NATION_ICON_IDS = {{"afr_icon", "jap_icon", "rom_icon", "vik_icon", "bab_icon"}};
-
-const helpers::MultiArray<const std::string, 2, NUM_NATIONS> NATION_GFXSET_Z = {
-  {{"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"}, {"wafr_z", "wjap_z", "wrom_z", "wvik_z", "wbab_z"}}};
 
 const std::array<const std::string, NUM_GFXSETS> MAP_GFXSET_Z = {{"MAP_0_Z", "MAP_1_Z", "MAP_2_Z"}};
 
