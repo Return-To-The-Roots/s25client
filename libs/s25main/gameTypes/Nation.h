@@ -35,6 +35,6 @@ DEFINE_MAX_ENUM_VALUE(Nation, NAT_BABYLONIANS)
 
 /// Number of native notions
 constexpr unsigned NUM_NATIVE_NATIONS = 4;
-constexpr unsigned NUM_NATIONS = helpers::MaxEnumValue_v<Nation> + 1u;
+constexpr unsigned NUM_NATIONS = helpers::NumEnumValues_v<Nation>;
 
 #endif // Nation_h__

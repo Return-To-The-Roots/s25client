@@ -25,8 +25,15 @@ namespace helpers {
 template<class T_Enum>
 struct MaxEnumValue;
 
+/// Return the maximum value of an Enum
+/// Needs to have the MaxEnumValue trait specialized, e.g. via DEFINE_MAX_ENUM_VALUE
 template<class T_Enum>
 constexpr unsigned MaxEnumValue_v = MaxEnumValue<T_Enum>::value; // NOLINT
+
+/// Return the number of enumerators for an enum type
+/// Assumes enumerators are contiguous and start at zero, i.e. no manual values are specified
+template<class T_Enum>
+constexpr unsigned NumEnumValues_v = MaxEnumValue<T_Enum>::value + 1u; // NOLINT
 
 namespace detail {
     template<class T>
@@ -43,10 +50,10 @@ namespace detail {
 } // namespace helpers
 
 // Helper macro to specialize the trait
-#define DEFINE_MAX_ENUM_VALUE(enum, maxValue)                                             \
+#define DEFINE_MAX_ENUM_VALUE(EnumType, maxValue)                                         \
     namespace helpers {                                                                   \
         template<>                                                                        \
-        struct MaxEnumValue<enum>                                                         \
+        struct MaxEnumValue<EnumType>                                                     \
         {                                                                                 \
             static constexpr unsigned value = detail::castPotentialEnumToValue(maxValue); \
         };                                                                                \

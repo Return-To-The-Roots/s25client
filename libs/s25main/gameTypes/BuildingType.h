@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,52 +24,52 @@
 
 enum BuildingType
 {
-    BLD_HEADQUARTERS = 0,    // ----
-    BLD_BARRACKS = 1,        // NJR
-    BLD_GUARDHOUSE = 2,      // NJR
-    BLD_NOTHING2 = 3,        // ----
-    BLD_WATCHTOWER = 4,      // NJ
-    BLD_NOTHING3 = 5,        // ----
-    BLD_NOTHING4 = 6,        // ----
-    BLD_NOTHING5 = 7,        // ----
-    BLD_NOTHING6 = 8,        // ----
-    BLD_FORTRESS = 9,        // NJR
-    BLD_GRANITEMINE = 10,    // NJR
-    BLD_COALMINE = 11,       // NJR
-    BLD_IRONMINE = 12,       // NJR
-    BLD_GOLDMINE = 13,       // NJR
-    BLD_LOOKOUTTOWER = 14,   //
-    BLD_NOTHING7 = 15,       // ----
-    BLD_CATAPULT = 16,       //
-    BLD_WOODCUTTER = 17,     // NJR
-    BLD_FISHERY = 18,        // N
-    BLD_QUARRY = 19,         // NJR
-    BLD_FORESTER = 20,       // NJR
-    BLD_SLAUGHTERHOUSE = 21, // NJR
-    BLD_HUNTER = 22,         // NJ
-    BLD_BREWERY = 23,        // NJR
-    BLD_ARMORY = 24,         // NJR
-    BLD_METALWORKS = 25,     // NJR
-    BLD_IRONSMELTER = 26,    // NJR
-    BLD_CHARBURNER = 27,     // new
-    BLD_PIGFARM = 28,        // NJR
-    BLD_STOREHOUSE = 29,     //
-    BLD_NOTHING9 = 30,       // ----
-    BLD_MILL = 31,           // NJR
-    BLD_BAKERY = 32,         // NJR
-    BLD_SAWMILL = 33,        // NJR
-    BLD_MINT = 34,           // NJR
-    BLD_WELL = 35,           // NJR
-    BLD_SHIPYARD = 36,       //
-    BLD_FARM = 37,           // NJR
-    BLD_DONKEYBREEDER = 38,  //
-    BLD_HARBORBUILDING = 39, //
-    BLD_NOTHING              // No building. Must be the last entry and never stored as it might change values
+    BLD_HEADQUARTERS,   // 0
+    BLD_BARRACKS,       // 1
+    BLD_GUARDHOUSE,     // 2
+    BLD_NOTHING2,       // 3
+    BLD_WATCHTOWER,     // 4
+    BLD_NOTHING3,       // 5
+    BLD_NOTHING4,       // 6
+    BLD_NOTHING5,       // 7
+    BLD_NOTHING6,       // 8
+    BLD_FORTRESS,       // 9
+    BLD_GRANITEMINE,    // 10
+    BLD_COALMINE,       // 11
+    BLD_IRONMINE,       // 12
+    BLD_GOLDMINE,       // 13
+    BLD_LOOKOUTTOWER,   // 14
+    BLD_NOTHING7,       // 15
+    BLD_CATAPULT,       // 16
+    BLD_WOODCUTTER,     // 17
+    BLD_FISHERY,        // 18
+    BLD_QUARRY,         // 19
+    BLD_FORESTER,       // 20
+    BLD_SLAUGHTERHOUSE, // 21
+    BLD_HUNTER,         // 22
+    BLD_BREWERY,        // 23
+    BLD_ARMORY,         // 24
+    BLD_METALWORKS,     // 25
+    BLD_IRONSMELTER,    // 26
+    BLD_CHARBURNER,     // 27
+    BLD_PIGFARM,        // 28
+    BLD_STOREHOUSE,     // 29
+    BLD_NOTHING9,       // 30
+    BLD_MILL,           // 31
+    BLD_BAKERY,         // 32
+    BLD_SAWMILL,        // 33
+    BLD_MINT,           // 34
+    BLD_WELL,           // 35
+    BLD_SHIPYARD,       // 36
+    BLD_FARM,           // 37
+    BLD_DONKEYBREEDER,  // 38
+    BLD_HARBORBUILDING, // 39
+    BLD_NOTHING         // No building. Must be the last entry and never stored as it might change values
 };
 
+DEFINE_MAX_ENUM_VALUE(BuildingType, BLD_HARBORBUILDING)
 /// Number of building types
-const unsigned NUM_BUILDING_TYPES = BLD_NOTHING;
-DEFINE_MAX_ENUM_VALUE(BuildingType, NUM_BUILDING_TYPES - 1)
+constexpr unsigned NUM_BUILDING_TYPES = helpers::NumEnumValues_v<BuildingType>;
 
 /// Number of NOTHING entries (currently unused buildings)
 const unsigned NUM_UNUSED_BLD_TYPES = 7;
