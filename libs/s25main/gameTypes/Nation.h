@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,18 +21,18 @@
 #define Nation_h__
 
 /// Nations (byte sized)
-enum Nation
+enum Nation : unsigned char
 {
     NAT_AFRICANS = 0,
     NAT_JAPANESE,
     NAT_ROMANS,
     NAT_VIKINGS,
     NAT_BABYLONIANS,
-    NUM_NATS,
+    NUM_NATIONS,
     NAT_INVALID = 0xFF
 };
 
 /// Number of native notions
-#define NUM_NATIVE_NATS 4
+constexpr unsigned NUM_NATIVE_NATIONS = 4;
 
 #endif // Nation_h__

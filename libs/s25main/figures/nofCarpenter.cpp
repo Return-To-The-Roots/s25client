@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofCarpenter.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -33,7 +32,7 @@ nofCarpenter::nofCarpenter(SerializedGameData& sgd, const unsigned obj_id) : nof
 
 void nofCarpenter::DrawWorking(DrawPoint drawPt)
 {
-    static const std::array<DrawPoint, NUM_NATS> offsets = {{{30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3}}};
+    static const std::array<DrawPoint, NUM_NATIONS> offsets = {{{30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3}}};
 
     unsigned now_id;
 

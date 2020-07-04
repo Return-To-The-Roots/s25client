@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwStatistics.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -86,7 +85,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
                                curPlayer.name)
                   ->SetBorder(false);
                 break;
-            case NUM_NATS:
+            case NUM_NATIONS:
             case NAT_INVALID: break;
         }
 

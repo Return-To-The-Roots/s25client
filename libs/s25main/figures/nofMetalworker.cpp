@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMetalworker.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
@@ -70,7 +69,7 @@ void nofMetalworker::Serialize(SerializedGameData& sgd) const
 
 void nofMetalworker::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPoint, NUM_NATS> offsets = {{{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}}};
+    const std::array<DrawPoint, NUM_NATIONS> offsets = {{{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}}};
 
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 

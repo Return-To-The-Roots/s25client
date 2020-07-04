@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMinter.h"
-
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
@@ -38,7 +36,7 @@ nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofMinter::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPoint, NUM_NATS> offsets = {{{19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12}}};
+    const std::array<DrawPoint, NUM_NATIONS> offsets = {{{19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12}}};
 
     unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
 

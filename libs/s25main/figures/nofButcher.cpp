@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofButcher.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -33,7 +32,7 @@ nofButcher::nofButcher(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 
 void nofButcher::DrawWorking(DrawPoint drawPt)
 {
-    static const std::array<DrawPoint, NUM_NATS> offsets = {{{38, 2}, {-3, 5}, {21, -1}, {26, -5}, {-7, 2}}};
+    static const std::array<DrawPoint, NUM_NATIONS> offsets = {{{38, 2}, {-3, 5}, {21, -1}, {26, -5}, {-7, 2}}};
 
     unsigned now_id;
 

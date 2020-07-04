@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofArmorer.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
@@ -46,7 +45,7 @@ nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 
 void nofArmorer::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPoint, NUM_NATS> offsets = {{{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}}};
+    const std::array<DrawPoint, NUM_NATIONS> offsets = {{{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}}};
 
     unsigned max_id = 280;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);

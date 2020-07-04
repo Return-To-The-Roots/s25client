@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,7 +24,7 @@
 
 // Konstanten für den Punkt, ab dem die Träger "verschwinden" bei einem Gebäude, jeweils als Y-Angabe
 
-const helpers::MultiArray<signed char, NUM_NATS, NUM_BUILDING_TYPES> DOOR_CONSTS = {
+const helpers::MultiArray<signed char, NUM_NATIONS, NUM_BUILDING_TYPES> DOOR_CONSTS = {
   {// Nubier
    {5, 10, 13, 0,  10, 0,  0,  0, 0,  6,  8, 8,  8,  8, 6,  0, 10, 10, 12, 14,
     9, 5,  11, 19, 19, 12, 18, 0, -6, 19, 0, 12, 11, 6, 10, 0, 0,  -1, 4,  13},

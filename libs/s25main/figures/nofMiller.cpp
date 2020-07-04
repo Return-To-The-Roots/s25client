@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMiller.h"
-
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
@@ -42,8 +40,8 @@ nofMiller::nofMiller(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofMiller::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPoint, NUM_NATS> offsets = {{{20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8}}};
-    const std::array<DrawPoint, NUM_NATS> offsets_sitdown = {{{23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8}}};
+    const std::array<DrawPoint, NUM_NATIONS> offsets = {{{20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8}}};
+    const std::array<DrawPoint, NUM_NATIONS> offsets_sitdown = {{{23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8}}};
     const std::array<DrawPoint, 8> walkoffsets = {{{8, 8}, {10, 9}, {12, 10}, {14, 11}, {16, 10}, {18, 9}, {20, 8}, {22, 8}}};
 
     unsigned max_id = 120;

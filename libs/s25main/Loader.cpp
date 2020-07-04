@@ -145,6 +145,11 @@ glArchivItem_Bitmap* Loader::GetNationImage(unsigned nation, unsigned nr)
     return checkedCast<glArchivItem_Bitmap*>(GetNationImageN(nation, nr));
 }
 
+glArchivItem_Bitmap* Loader::GetNationIcon(unsigned nation, unsigned nr)
+{
+    return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(nr));
+}
+
 ITexture* Loader::GetNationTex(unsigned nation, unsigned nr)
 {
     return checkedCast<ITexture*>(GetNationImage(nation, nr));
@@ -406,7 +411,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     for(Nation nation : nations)
     {
         // New nations are handled by loading the override folder
-        if(nation < NUM_NATIVE_NATS)
+        if(nation < NUM_NATIVE_NATIONS)
         {
             const auto shortName = s25util::toUpper(std::string(NationNames[nation], 0, 3));
             files.push_back(std::string(s25::folders::mbob).append("/").append(shortName).append("_ICON.LST"));
@@ -434,9 +439,15 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     isWinterGFX_ = isWinterGFX;
 
-    nation_gfx = {};
+    nation_gfx = nationIcons_ = {};
     for(Nation nation : nations)
-        nation_gfx[nation] = &files_[NATION_GFXSET_Z[isWinterGFX ? 1 : 0][nation]].archiv;
+    {
+        const auto shortName = s25util::toLower(std::string(NationNames[nation], 0, 3));
+        const auto gfxName = s25util::toLower(natPrefix) + shortName + "_z";
+        const auto iconName = s25util::toLower(shortName) + "_icon";
+        nation_gfx[nation] = &files_[gfxName].archiv;
+        nationIcons_[nation] = &files_[iconName].archiv;
+    }
 
     return true;
 }
@@ -521,7 +532,7 @@ void Loader::fillCaches()
     if(!bob_jobs)
         throw std::runtime_error("jobs not found");
 
-    for(unsigned nation = 0; nation < NUM_NATS; ++nation)
+    for(unsigned nation = 0; nation < NUM_NATIONS; ++nation)
     {
         if(!nation_gfx[nation])
             continue;
@@ -629,8 +640,8 @@ void Loader::fillCaches()
             auto* bmp = convertChecked<glArchivItem_Bitmap_Player*>(romBobs[id]);
             return bmp ? bmp : convertChecked<glArchivItem_Bitmap_Player*>(romBobs[altId]);
         };
-        // Special handling for non-native nats: Use roman animations if own are missing
-        const unsigned fallbackNation = nation < NUM_NATIVE_NATS ? nation : NAT_ROMANS;
+        // Special handling for non-native nations: Use roman animations if own are missing
+        const unsigned fallbackNation = nation < NUM_NATIVE_NATIONS ? nation : static_cast<unsigned>(NAT_ROMANS);
         const auto& natFightAnimIds = FIGHT_ANIMATIONS[nation];
         const auto& altNatFightAnimIds = FIGHT_ANIMATIONS[fallbackNation];
         const auto& natHitIds = HIT_SOLDIERS[nation];

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskHostGame.h"
 #include "GameLobby.h"
 #include "GameLobbyController.h"
@@ -491,7 +490,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
             if(playerId == localPlayerId_ || gameLobby->isHost())
             {
                 JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-                player.nation = Nation((unsigned(player.nation) + 1) % NUM_NATS);
+                player.nation = Nation((unsigned(player.nation) + 1) % NUM_NATIONS);
                 if(gameLobby->isHost())
                     lobbyHostController->SetNation(playerId, player.nation);
                 else

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,7 +29,7 @@ inline GoodType ConvertShields(const GoodType& good)
 }
 
 /// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
-const std::array<GoodType, NUM_NATS> SUPPRESS_UNUSED SHIELD_TYPES = {GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS,
-                                                                     GD_SHIELDVIKINGS, GD_SHIELDJAPANESE};
+const std::array<GoodType, NUM_NATIONS> SUPPRESS_UNUSED SHIELD_TYPES = {GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS,
+                                                                        GD_SHIELDVIKINGS, GD_SHIELDJAPANESE};
 
 #endif // ShieldConsts_h__

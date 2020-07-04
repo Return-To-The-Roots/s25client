@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nobHarborBuilding.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
@@ -217,18 +216,19 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
 }
 
 // Relative Position des Bauarbeiters
-const std::array<Position, NUM_NATS> BUILDER_POS = {
+const std::array<Position, NUM_NATIONS> BUILDER_POS = {
   {Position(-20, 18), Position(-28, 17), Position(-20, 15), Position(-38, 17), Position(-38, 17)}};
 /// Relative Position der Brettertürme
-const std::array<Position, NUM_NATS> BOARDS_POS = {
+const std::array<Position, NUM_NATIONS> BOARDS_POS = {
   {Position(-75, -5), Position(-60, -5), Position(-55, -5), Position(-65, -5), Position(-65, -5)}};
 /// Relative Position der Steintürme
-const std::array<Position, NUM_NATS> STONES_POS = {
+const std::array<Position, NUM_NATIONS> STONES_POS = {
   {Position(-65, 10), Position(-52, 10), Position(-42, 10), Position(-52, 10), Position(-52, 10)}};
 /// Relative Postion der inneren Hafenfeuer
-const std::array<Position, NUM_NATS> FIRE_POS = {{Position(36, -51), Position(0, 0), Position(0, 0), Position(5, -80), Position(0, 0)}};
+const std::array<Position, NUM_NATIONS> FIRE_POS = {{Position(36, -51), Position(0, 0), Position(0, 0), Position(5, -80), Position(0, 0)}};
 /// Relative Postion der äußeren Hafenfeuer
-const std::array<Position, NUM_NATS> EXTRAFIRE_POS = {{Position(0, 0), Position(0, 0), Position(8, -115), Position(0, 0), Position(0, 0)}};
+const std::array<Position, NUM_NATIONS> EXTRAFIRE_POS = {
+  {Position(0, 0), Position(0, 0), Position(8, -115), Position(0, 0), Position(0, 0)}};
 
 void nobHarborBuilding::Draw(DrawPoint drawPt)
 {

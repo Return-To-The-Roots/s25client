@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofDonkeybreeder.h"
-
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "buildings/nobUsual.h"
@@ -41,8 +39,8 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id) : n
 void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 {
     const Nation nation = workplace->GetNation();
-    const std::array<DrawPoint, NUM_NATS> walk_start = {{{2, 2}, {-6, -6}, {-7, -7}, {-7, -7}, {-6, -6}}};
-    const std::array<int8_t, NUM_NATS> walk_length = {22, 19, 19, 23, 19};
+    const std::array<DrawPoint, NUM_NATIONS> walk_start = {{{2, 2}, {-6, -6}, {-7, -7}, {-7, -7}, {-6, -6}}};
+    const std::array<int8_t, NUM_NATIONS> walk_length = {22, 19, 19, 23, 19};
     const unsigned color = gwg->GetPlayer(player).color;
 
     unsigned now_id = GAMECLIENT.Interpolate(9600, current_ev);
