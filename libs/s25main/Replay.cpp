@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "Replay.h"
 #include "Savegame.h"
 #include "network/PlayerGameCommands.h"
@@ -32,7 +31,7 @@ std::string Replay::GetSignature() const
 uint16_t Replay::GetVersion() const
 {
     /// Version des Replay-Formates
-    return 5;
+    return 6;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -59,7 +58,7 @@ void Replay::StopRecording()
 bool Replay::StartRecording(const std::string& filename, const MapInfo& mapInfo)
 {
     // Deny overwrite, also avoids double-opening by different processes
-    if(bfs::exists(filename))
+    if(boost::filesystem::exists(filename))
         return false;
     // Datei öffnen
     if(!file.Open(filename, OFM_WRITE))
@@ -204,7 +203,7 @@ void Replay::AddChatCommand(unsigned gf, uint8_t player, uint8_t dest, const std
 
     file.WriteUnsignedInt(gf);
 
-    file.WriteUnsignedChar(RC_CHAT);
+    file.WriteUnsignedChar(static_cast<uint8_t>(ReplayCommand::Chat));
     file.WriteUnsignedChar(player);
     file.WriteUnsignedChar(dest);
     file.WriteLongString(str);
@@ -221,7 +220,7 @@ void Replay::AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommand
 
     file.WriteUnsignedInt(gf);
 
-    file.WriteUnsignedChar(RC_GAME);
+    file.WriteUnsignedChar(static_cast<uint8_t>(ReplayCommand::Game));
     Serializer ser;
     ser.PushUnsignedChar(player);
     cmds.Serialize(ser);
@@ -247,7 +246,7 @@ bool Replay::ReadGF(unsigned* gf)
     return true;
 }
 
-Replay::ReplayCommand Replay::ReadRCType()
+ReplayCommand Replay::ReadRCType()
 {
     RTTR_Assert(IsReplaying());
     // Type auslesen

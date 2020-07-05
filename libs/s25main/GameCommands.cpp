@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameCommands.h"
 #include "GamePlayer.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -241,7 +240,7 @@ void TradeOverLand::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
     auto* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
     if(bld)
-        gwg.GetPlayer(playerId).Trade(bld, gt, job, count);
+        gwg.GetPlayer(playerId).Trade(bld, what, count);
 }
 
 } // namespace gc

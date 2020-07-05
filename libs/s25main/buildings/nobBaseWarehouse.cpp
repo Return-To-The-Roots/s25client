@@ -37,6 +37,7 @@
 #include "network/GameClient.h"
 #include "nobMilitary.h"
 #include "random/Random.h"
+#include "variant.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/JobConsts.h"
@@ -522,7 +523,7 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
             // vorher nich genug Träger da waren
             owner.FindCarrierForAllRoads();
             // evtl Träger mit Werkzeug kombiniert -> neuer Beruf
-            owner.FindWarehouseForAllJobs(JOB_NOTHING);
+            owner.FindWarehouseForAllJobs();
         }
     } else if(inventory[JOB_HELPER] > 100)
     {
@@ -804,7 +805,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
                 // evtl als Träger auf Straßen schicken
                 owner.FindCarrierForAllRoads();
                 // evtl Träger mit Werkzeug kombiniert -> neuer Beruf
-                owner.FindWarehouseForAllJobs(JOB_NOTHING);
+                owner.FindWarehouseForAllJobs();
             }
         }
     }
@@ -1427,7 +1428,8 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 }
 
 /// Starts a trade caravane from this warehouse
-void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, Job job, const unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal)
+void nobBaseWarehouse::StartTradeCaravane(const boost::variant<GoodType, Job>& what, const unsigned count, const TradeRoute& tr,
+                                          nobBaseWarehouse* goal)
 {
     auto* tl = new nofTradeLeader(pos, player, tr, this->GetPos(), goal->GetPos());
     AddLeavingFigure(tl);
@@ -1436,7 +1438,7 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, Job job, const unsi
     nofTradeDonkey* last = nullptr;
     for(unsigned i = 0; i < count; ++i)
     {
-        auto* next = new nofTradeDonkey(pos, player, gt, job);
+        auto* next = new nofTradeDonkey(pos, player, what);
 
         if(last)
             last->SetSuccessor(next);
@@ -1453,20 +1455,19 @@ void nobBaseWarehouse::StartTradeCaravane(const GoodType gt, Job job, const unsi
     owner.DecreaseInventoryJob(JOB_HELPER, 1);
 
     // Also diminish the count of donkeys
-    if(job == JOB_NOTHING)
-    {
-        // Diminish the goods in the warehouse
-        RTTR_Assert(gt != GD_NOTHING);
-        inventory.real.Remove(gt, count);
-        owner.DecreaseInventoryWare(gt, count);
-        // now that we have removed the goods lets remove the donkeys
-        inventory.real.Remove(JOB_PACKDONKEY, count);
-        owner.DecreaseInventoryJob(JOB_PACKDONKEY, count);
-    } else
-    {
-        RTTR_Assert(gt == GD_NOTHING);
-        // remove the jobs
-        inventory.real.Remove(job, count);
-        owner.DecreaseInventoryJob(job, count);
-    }
+    boost::apply_visitor(composeVisitor(
+                           [&](const Job job) {
+                               // remove the jobs
+                               inventory.real.Remove(job, count);
+                               owner.DecreaseInventoryJob(job, count);
+                           },
+                           [&](const GoodType gt) {
+                               // Diminish the goods in the warehouse
+                               inventory.real.Remove(gt, count);
+                               owner.DecreaseInventoryWare(gt, count);
+                               // now that we have removed the goods lets remove the donkeys
+                               inventory.real.Remove(JOB_PACKDONKEY, count);
+                               owner.DecreaseInventoryJob(JOB_PACKDONKEY, count);
+                           }),
+                         what);
 }

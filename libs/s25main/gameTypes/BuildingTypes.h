@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,6 +22,7 @@
 #include "GoodTypes.h"
 #include "JobTypes.h"
 #include "Point.h"
+#include <boost/optional/optional.hpp>
 #include <array>
 
 struct BuildingCost
@@ -62,12 +63,13 @@ struct WaresNeeded : std::array<GoodType, 3>
 /// Describes the work the building does
 struct BldWorkDescription
 {
-    BldWorkDescription(Job job = JOB_NOTHING, GoodType producedWare = GD_NOTHING, WaresNeeded waresNeeded = WaresNeeded(),
+    BldWorkDescription(boost::optional<Job> job = boost::none, GoodType producedWare = GD_NOTHING, WaresNeeded waresNeeded = WaresNeeded(),
                        uint8_t numSpacesPerWare = 6, bool useOneWareEach = true)
-        : job(job), producedWare(producedWare), waresNeeded(waresNeeded), numSpacesPerWare(numSpacesPerWare), useOneWareEach(useOneWareEach)
+        : job(std::move(job)), producedWare(producedWare), waresNeeded(waresNeeded), numSpacesPerWare(numSpacesPerWare),
+          useOneWareEach(useOneWareEach)
     {}
     /// Worker belonging to the building
-    Job job;
+    boost::optional<Job> job;
     /// Ware produced (maybe nothing or invalid)
     GoodType producedWare;
     /// Wares the building needs (maybe nothing)

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "JobFactory.h"
-
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -141,7 +139,6 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
         case JOB_SHIPWRIGHT: RTTR_Assert(dynamic_cast<nobUsual*>(goal)); return new nofShipWright(pt, player, static_cast<nobUsual*>(goal));
         case JOB_CHARBURNER: RTTR_Assert(dynamic_cast<nobUsual*>(goal)); return new nofCharburner(pt, player, static_cast<nobUsual*>(goal));
         case JOB_BOATCARRIER: throw std::runtime_error("Cannot create a boat carrier job (try creating JOB_HELPER)."); break;
-        case JOB_NOTHING: throw std::runtime_error("Cannot create a nothing job"); break;
     }
     throw std::runtime_error("Invalid job type " + helpers::toString(job_id));
 }

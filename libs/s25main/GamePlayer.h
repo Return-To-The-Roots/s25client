@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,6 +28,7 @@
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/StatisticTypes.h"
 #include "gameData/MaxPlayers.h"
+#include <boost/variant/variant_fwd.hpp>
 #include <array>
 #include <list>
 
@@ -122,6 +123,7 @@ public:
     /// Für alle unbesetzen Straßen Weg neu berechnen
     void FindCarrierForAllRoads();
     /// Versucht für alle Arbeitsplätze eine Arbeitskraft zu suchen
+    void FindWarehouseForAllJobs();
     void FindWarehouseForAllJobs(Job job);
 
     /// Lässt alle Baustellen ggf. noch vorhandenes Baumaterial bestellen
@@ -285,7 +287,7 @@ public:
     /// IMPORTANT: Warehouses can be destroyed. So check them first before using!
     std::vector<nobBaseWarehouse*> GetWarehousesForTrading(const nobBaseWarehouse& goalWh) const;
     /// Send wares to warehouse wh
-    void Trade(nobBaseWarehouse* goalWh, GoodType gt, Job job, unsigned count) const;
+    void Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, Job>& what, unsigned count) const;
 
     void EnableBuilding(BuildingType type) { building_enabled[type] = true; }
     void DisableBuilding(BuildingType type) { building_enabled[type] = false; }

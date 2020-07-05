@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwTrade.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -34,6 +33,7 @@
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/const_gui_ids.h"
+#include <boost/variant/variant.hpp>
 
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(wh.GetPos()), IngameWindow::posAtMouse, Extent(400, 194), _("Trade"),
@@ -101,17 +101,20 @@ void iwTrade::Msg_PaintBefore()
 void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     // pressed the send button
-    unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection();
-    bool ware_figure = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1;
-    GoodType gt = ware_figure ? GD_NOTHING : wares[ware_figure_selection];
-    Job job = ware_figure ? jobs[ware_figure_selection] : JOB_NOTHING;
+    const unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection();
+    const bool isJob = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1;
+    boost::variant<Job, GoodType> what;
+    if(isJob)
+        what = jobs[ware_figure_selection];
+    else
+        what = wares[ware_figure_selection];
 
     const std::string number_str = GetCtrl<ctrlEdit>(6)->GetText();
 
     // Start trading
     if(!GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->IsVisible() && helpers::fromString(number_str, 0) > 0)
     {
-        gcFactory.TradeOverLand(wh.GetPos(), gt, job, helpers::fromString(number_str, 0));
+        gcFactory.TradeOverLand(wh.GetPos(), what, helpers::fromString(number_str, 0));
         this->Close();
     }
 }

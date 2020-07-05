@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameCommands.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
 #include "PointOutput.h"
 #include "Replay.h"
+#include "RttrForeachPt.h"
 #include "Savegame.h"
 #include "SerializedGameData.h"
 #include "buildings/nobUsual.h"
@@ -43,6 +43,13 @@ std::ostream& operator<<(std::ostream& os, const DescIdx<T>& d)
 {
     return os << d.value;
 }
+namespace boost { namespace test_tools { namespace tt_detail {
+    template<>
+    struct print_log_value<ReplayCommand>
+    {
+        void operator()(std::ostream& os, ReplayCommand const& rc) { os << static_cast<unsigned>(rc); }
+    };
+}}} // namespace boost::test_tools::tt_detail
 // LCOV_EXCL_STOP
 
 namespace {
@@ -112,7 +119,7 @@ void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
     unsigned gf;
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));
     BOOST_REQUIRE_EQUAL(gf, 1u);
-    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), Replay::RC_CHAT);
+    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), ReplayCommand::Chat);
     uint8_t player, dst;
     std::string txt;
     loadReplay.ReadChatCommand(player, dst, txt);
@@ -122,7 +129,7 @@ void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));
     BOOST_REQUIRE_EQUAL(gf, 1u);
-    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), Replay::RC_CHAT);
+    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), ReplayCommand::Chat);
     loadReplay.ReadChatCommand(player, dst, txt);
     BOOST_REQUIRE_EQUAL(player, 3);
     BOOST_REQUIRE_EQUAL(dst, 1);
@@ -130,7 +137,7 @@ void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));
     BOOST_REQUIRE_EQUAL(gf, 2u);
-    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), Replay::RC_CHAT);
+    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), ReplayCommand::Chat);
     loadReplay.ReadChatCommand(player, dst, txt);
     BOOST_REQUIRE_EQUAL(player, 2);
     BOOST_REQUIRE_EQUAL(dst, 2);
@@ -138,7 +145,7 @@ void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));
     BOOST_REQUIRE_EQUAL(gf, 2u);
-    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), Replay::RC_GAME);
+    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), ReplayCommand::Game);
     PlayerGameCommands cmds;
     loadReplay.ReadGameCommand(player, cmds);
     BOOST_REQUIRE_EQUAL(player, 0u);
@@ -149,7 +156,7 @@ void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));
     BOOST_REQUIRE_EQUAL(gf, 2u);
-    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), Replay::RC_CHAT);
+    BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), ReplayCommand::Chat);
     loadReplay.ReadChatCommand(player, dst, txt);
     BOOST_REQUIRE_EQUAL(player, 2);
     BOOST_REQUIRE_EQUAL(dst, 3);

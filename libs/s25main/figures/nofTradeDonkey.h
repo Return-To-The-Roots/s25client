@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,7 +19,9 @@
 
 #include "figures/noFigure.h"
 #include "gameTypes/GoodTypes.h"
+#include <boost/variant.hpp>
 #include <deque>
+
 class SerializedGameData;
 
 /// For wares: donkey who carry the wares and follow the leader
@@ -48,7 +50,7 @@ private:
     }
 
 public:
-    nofTradeDonkey(MapPoint pos, unsigned char player, GoodType gt, Job job);
+    nofTradeDonkey(MapPoint pos, unsigned char player, const boost::variant<GoodType, Job>& what);
     nofTradeDonkey(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override

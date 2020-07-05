@@ -55,8 +55,7 @@ enum Job
     JOB_SCOUT,             // 28
     JOB_PACKDONKEY,        // 29
     JOB_BOATCARRIER,       // 30
-    JOB_CHARBURNER,        // 31
-    JOB_NOTHING            // 32
+    JOB_CHARBURNER         // 31
 };
 
 DEFINE_MAX_ENUM_VALUE(Job, JOB_CHARBURNER)

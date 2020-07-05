@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameCommandFactory.h"
 #include "GameCommands.h"
 #include <stdexcept>
@@ -217,7 +216,7 @@ bool GameCommandFactory::StartStopExplorationExpedition(const MapPoint pt, bool 
     return AddGC(new gc::StartStopExplorationExpedition(pt, start));
 }
 
-bool GameCommandFactory::TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count)
+bool GameCommandFactory::TradeOverLand(const MapPoint pt, const boost::variant<GoodType, Job>& what, unsigned count)
 {
-    return AddGC(new gc::TradeOverLand(pt, gt, job, count));
+    return AddGC(new gc::TradeOverLand(pt, what, count));
 }

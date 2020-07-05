@@ -22,14 +22,16 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "variant.h"
 #include "world/GameWorldGame.h"
 #include "world/TradeRoute.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 
-nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
-    : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(nullptr), gt(gt)
+nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const boost::variant<GoodType, Job>& what)
+    : noFigure(holds_alternative<Job>(what) ? boost::get<Job>(what) : JOB_PACKDONKEY, pos, player), successor(nullptr),
+      gt(holds_alternative<GoodType>(what) ? boost::get<GoodType>(what) : GD_NOTHING)
 {}
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
