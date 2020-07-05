@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameManager.h"
 #include "PlayerGameCommands.h"
 #include "ReplayInfo.h"
@@ -36,9 +35,9 @@ void GameClient::ExecuteGameFrame_Replay()
     while(replayinfo->next_gf == curGF)
     {
         // What type of command follows?
-        Replay::ReplayCommand rc = replayinfo->replay.ReadRCType();
+        ReplayCommand rc = replayinfo->replay.ReadRCType();
 
-        if(rc == Replay::RC_CHAT)
+        if(rc == ReplayCommand::Chat)
         {
             uint8_t player, dest;
             std::string message;
@@ -46,7 +45,7 @@ void GameClient::ExecuteGameFrame_Replay()
 
             if(ci)
                 ci->CI_Chat(player, ChatDestination(dest), message);
-        } else if(rc == Replay::RC_GAME)
+        } else if(rc == ReplayCommand::Game)
         {
             cmdsExecuted = true;
 

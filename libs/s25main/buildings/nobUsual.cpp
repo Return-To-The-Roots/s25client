@@ -359,7 +359,7 @@ void nobUsual::WorkerLost()
 
     // neuen Arbeiter bestellen
     worker = nullptr;
-    gwg->GetPlayer(player).AddJobWanted(BLD_WORK_DESC[bldType_].job, this);
+    gwg->GetPlayer(player).AddJobWanted(BLD_WORK_DESC[bldType_].job.value(), this);
 }
 
 bool nobUsual::WaresAvailable()

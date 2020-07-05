@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBuilding.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -53,7 +52,8 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     // Exception: charburner
     if(building->GetBuildingType() != BLD_CHARBURNER)
     {
-        AddImage(13, DrawPoint(28, 39), LOADER.GetMapImageN(2300 + BLD_WORK_DESC[building->GetBuildingType()].job));
+        if(const Job* job = BLD_WORK_DESC[building->GetBuildingType()].job.get_ptr())
+            AddImage(13, DrawPoint(28, 39), LOADER.GetMapImageN(2300 + *job));
     } else
     {
         AddImage(13, DrawPoint(28, 39), LOADER.GetImageN("io_new", 5));

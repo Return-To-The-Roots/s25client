@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,6 +27,7 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/ShipDirection.h"
+#include <boost/variant/variant_fwd.hpp>
 #include <vector>
 
 struct InventorySetting;
@@ -95,7 +96,7 @@ public:
     /// Cancels an expedition
     bool CancelExpedition(unsigned shipID);
     bool StartStopExplorationExpedition(MapPoint pt, bool start);
-    bool TradeOverLand(MapPoint pt, GoodType gt, Job job, unsigned count);
+    bool TradeOverLand(MapPoint pt, const boost::variant<GoodType, Job>& what, unsigned count);
 
 protected:
     virtual ~GameCommandFactory() = default;

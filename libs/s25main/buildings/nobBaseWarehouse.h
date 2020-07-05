@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,6 +23,7 @@
 #include "nobBaseMilitary.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VirtualInventory.h"
+#include <boost/variant/variant_fwd.hpp>
 #include <array>
 #include <list>
 
@@ -284,7 +285,7 @@ public:
     /// Available figures of a specific type that can be used for trading
     unsigned GetAvailableFiguresForTrading(Job job) const;
     /// Starts a trade caravane from this warehouse
-    void StartTradeCaravane(GoodType gt, Job job, unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal);
+    void StartTradeCaravane(const boost::variant<GoodType, Job>& what, unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal);
 
     /// For debug only
     bool IsDependentFigure(noFigure* fig) const;

@@ -1,7 +1,25 @@
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
+//
+// This file is part of Return To The Roots.
+//
+// Return To The Roots is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// Return To The Roots is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef GAME_COMMANDS_H_
 #define GAME_COMMANDS_H_
 
 #include "GameCommand.h"
+#include "variant.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/InventorySetting.h"
@@ -809,29 +827,34 @@ private:
 class TradeOverLand : public Coords
 {
     GC_FRIEND_DECL;
-    GoodType gt;
-    Job job;
+    boost::variant<GoodType, Job> what;
     /// Number of wares/figures we want to trade
     uint32_t count;
 
 protected:
     /// Note: Can only trade wares or figures!
-    TradeOverLand(const MapPoint pt, const GoodType gt, const Job job, const uint32_t count)
-        : Coords(TRADE, pt), gt(gt), job(job), count(count)
-    {
-        RTTR_Assert((gt == GD_NOTHING) != (job == JOB_NOTHING));
-    }
-    TradeOverLand(Serializer& ser)
-        : Coords(TRADE, ser), gt(GoodType(ser.PopUnsignedChar())), job(Job(ser.PopUnsignedChar())), count(ser.PopUnsignedInt())
+    TradeOverLand(const MapPoint pt, boost::variant<GoodType, Job> what, const uint32_t count)
+        : Coords(TRADE, pt), what(std::move(what)), count(count)
     {}
+    TradeOverLand(Serializer& ser) : Coords(TRADE, ser)
+    {
+        const bool isJob = ser.PopBool();
+        if(isJob)
+            what = Job(ser.PopUnsignedChar());
+        else
+            what = GoodType(ser.PopUnsignedChar());
+        count = ser.PopUnsignedInt();
+    }
 
 public:
     void Serialize(Serializer& ser) const override
     {
         Coords::Serialize(ser);
 
-        ser.PushUnsignedChar(static_cast<uint8_t>(gt));
-        ser.PushUnsignedChar(static_cast<uint8_t>(job));
+        ser.PushBool(holds_alternative<Job>(what));
+        boost::apply_visitor(composeVisitor([&](const Job job) { ser.PushUnsignedChar(static_cast<uint8_t>(job)); },
+                                            [&](const GoodType gt) { ser.PushUnsignedChar(static_cast<uint8_t>(gt)); }),
+                             what);
         ser.PushUnsignedInt(count);
     }
 

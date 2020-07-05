@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
@@ -40,6 +39,7 @@
 #include "postSystem/DiplomacyPostQuestion.h"
 #include "postSystem/PostManager.h"
 #include "random/Random.h"
+#include "variant.h"
 #include "world/GameWorldGame.h"
 #include "world/TradeRoute.h"
 #include "nodeObjs/noFlag.h"
@@ -439,9 +439,9 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
 
     // Order a worker if needed
     const auto& description = BLD_WORK_DESC[bldType];
-    if(description.job != JOB_NOTHING && description.job != JOB_PRIVATE)
+    if(description.job && description.job != JOB_PRIVATE)
     {
-        AddJobWanted(description.job, bld);
+        AddJobWanted(description.job.get(), bld);
     }
 
     if(bldType == BLD_HARBORBUILDING)
@@ -498,7 +498,7 @@ void GamePlayer::NewRoadConnection(RoadSegment* rs)
         rs->TryGetDonkey();
 
     // Alle Arbeitsplätze müssen nun gucken, ob sie einen Weg zu einem Lagerhaus mit entsprechender Arbeitskraft finden
-    FindWarehouseForAllJobs(JOB_NOTHING);
+    FindWarehouseForAllJobs();
 
     // Alle Baustellen müssen nun gucken, ob sie ihr benötigtes Baumaterial bekommen (evtl war vorher die Straße zum Lagerhaus unterbrochen
     FindMaterialForBuildingSites();
@@ -818,11 +818,22 @@ bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode* goal)
     return false;
 }
 
+void GamePlayer::FindWarehouseForAllJobs()
+{
+    for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
+    {
+        if(FindWarehouseForJob(it->job, it->workplace))
+            it = jobs_wanted.erase(it);
+        else
+            ++it;
+    }
+}
+
 void GamePlayer::FindWarehouseForAllJobs(const Job job)
 {
     for(auto it = jobs_wanted.begin(); it != jobs_wanted.end();)
     {
-        if(job == JOB_NOTHING || it->job == job)
+        if(it->job == job)
         {
             if(FindWarehouseForJob(it->job, it->workplace))
                 it = jobs_wanted.erase(it);
@@ -2186,7 +2197,7 @@ struct WarehouseDistanceComparator
 };
 
 /// Send wares to warehouse wh
-void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job job, unsigned count) const
+void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, Job>& what, unsigned count) const
 {
     if(!gwg.GetGGS().isEnabled(AddonId::TRADE))
         return;
@@ -2209,18 +2220,13 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
     for(nobBaseWarehouse* wh : whs)
     {
         // Get available wares
-        unsigned available = 0;
-        if(gt != GD_NOTHING)
-            available = wh->GetAvailableWaresForTrading(gt);
-        else
-        {
-            RTTR_Assert(job != JOB_NOTHING);
-            available = wh->GetAvailableFiguresForTrading(job);
-        }
+        const unsigned available = boost::apply_visitor(composeVisitor([wh](GoodType gt) { return wh->GetAvailableWaresForTrading(gt); },
+                                                                       [wh](Job job) { return wh->GetAvailableFiguresForTrading(job); }),
+                                                        what);
         if(available == 0)
             continue;
 
-        available = std::min(available, count);
+        const unsigned actualCount = std::min(available, count);
 
         // Find a trade path from flag to flag
         TradeRoute tr(gwg, GetPlayerId(), wh->GetFlag()->GetPos(), goalFlagPos);
@@ -2231,7 +2237,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
             // Add to cache for future searches
             TradePathCache::inst().AddEntry(gwg, tr.GetTradePath(), GetPlayerId());
 
-            wh->StartTradeCaravane(gt, job, available, tr, goalWh);
+            wh->StartTradeCaravane(what, actualCount, tr, goalWh);
             count -= available;
             if(count == 0)
                 return;

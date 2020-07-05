@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,6 +27,14 @@
 class MapInfo;
 struct PlayerGameCommands;
 
+/// Replay-Command-Art
+enum class ReplayCommand
+{
+    End,
+    Chat,
+    Game
+};
+
 /// Holds a replay that is being recorded or was recorded and loaded
 /// It has a header that holds minimal information:
 ///     File header (version etc.), record time, map name, player names, length (last GF), savegame header (if applicable)
@@ -34,14 +42,6 @@ struct PlayerGameCommands;
 class Replay : public SavedFile
 {
 public:
-    /// Replay-Command-Art
-    enum ReplayCommand
-    {
-        RC_REPLAYEND = 0,
-        RC_CHAT,
-        RC_GAME
-    };
-
     Replay();
     ~Replay() override;
 
