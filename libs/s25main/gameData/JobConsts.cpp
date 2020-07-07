@@ -27,7 +27,7 @@ struct FullJobData
     const char* name;
 };
 
-constexpr std::array<FullJobData, NUM_JOB_TYPES> fullJobData = {{
+const std::array<FullJobData, NUM_JOB_TYPES> fullJobData = {{
   // Start data
   {{GD_NOTHING, 385, 190, 5}, {false, 0}, gettext_noop("Helper")},
   {{GD_AXE, 148, 789, 5}, {false, 5}, gettext_noop("Woodchopper")},
@@ -50,16 +50,16 @@ constexpr std::array<FullJobData, NUM_JOB_TYPES> fullJobData = {{
   {{GD_HAMMER, 940, 170, 5}, {true, 4}, gettext_noop("Armorer")},
   {{GD_HAMMER, 0, 0, 5}, {false, 23}, gettext_noop("Builder")},
   {{GD_SHOVEL, 130, 0, 5}, {false, 22}, gettext_noop("Planer")},
-  {{GD_INVALID, 0, 0, 0}, {false, -30}, gettext_noop("Private")},
-  {{GD_INVALID, 0, 0, 0}, {false, -31}, gettext_noop("Private first class")},
-  {{GD_INVALID, 0, 0, 0}, {false, -32}, gettext_noop("Sergeant")},
-  {{GD_INVALID, 0, 0, 0}, {false, -33}, gettext_noop("Officer")},
-  {{GD_INVALID, 0, 0, 0}, {false, -34}, gettext_noop("General")},
+  {{}, {false, -30}, gettext_noop("Private")},
+  {{}, {false, -31}, gettext_noop("Private first class")},
+  {{}, {false, -32}, gettext_noop("Sergeant")},
+  {{}, {false, -33}, gettext_noop("Officer")},
+  {{}, {false, -34}, gettext_noop("General")},
   {{GD_HAMMER, 0, 0, 0}, {false, 26}, gettext_noop("Geologist")},
   {{GD_HAMMER, 1250, 100, 5}, {false, 25}, gettext_noop("Shipwright")}, // Todo: Timing wenn Schiffe bauen möglich
   {{GD_BOW, 0, 0, 0}, {false, -35}, gettext_noop("Scout")},
-  {{GD_INVALID, 0, 0, 0}, {false, 37}, gettext_noop("Pack donkey")},
-  {{GD_INVALID, 0, 0, 0}, {false, 37}, gettext_noop("Boat carrier")},
+  {{}, {false, 37}, gettext_noop("Pack donkey")},
+  {{}, {false, 37}, gettext_noop("Boat carrier")},
   {{GD_SHOVEL, 117, 106, 5}, {false, 37}, gettext_noop("Charburner")}
   // End data
 }};

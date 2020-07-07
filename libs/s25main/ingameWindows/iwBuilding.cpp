@@ -63,8 +63,8 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     AddImage(1, DrawPoint(117, 114), building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
-    GoodType producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
-    if(producedWare != GD_NOTHING && producedWare != GD_INVALID)
+    const GoodType producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
+    if(producedWare != GD_NOTHING)
     {
         AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
         AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(2250 + producedWare));
