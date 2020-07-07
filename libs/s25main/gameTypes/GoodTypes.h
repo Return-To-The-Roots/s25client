@@ -60,10 +60,9 @@ enum GoodType
     /* 32 */ GD_MEAT,           // Fleisch
     /* 33 */ GD_HAM,            // Schinken ( Schwein )
     /* 34 */ GD_SHIELDJAPANESE, // Schild
-    /* 35 */ GD_NOTHING,        // Nichts
-    /* 36 */ GD_INVALID         // Placeholder to show an invalid good (does not count as a good)
+    /* 35 */ GD_NOTHING         // Nothing. Is not counted as a good. TODO: Remove
 };
-DEFINE_MAX_ENUM_VALUE(GoodType, GD_NOTHING)
+DEFINE_MAX_ENUM_VALUE(GoodType, GD_SHIELDJAPANESE)
 /// Number of goods
 constexpr unsigned NUM_WARE_TYPES = helpers::NumEnumValues_v<GoodType>;
 // Number of tools
@@ -105,6 +104,6 @@ const std::string WARE_NAMES[NUM_WARE_TYPES] = {
   /* 32 */ gettext_noop("Meat"),         // Fleisch
   /* 33 */ gettext_noop("Ham"),          // Schinken ( Schwein )
   /* 34 */ "",                           // Schild
-  /* 35 */ ""};
+};
 
 #endif // GoodTypes_h__

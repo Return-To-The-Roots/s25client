@@ -1152,11 +1152,12 @@ void nobBaseWarehouse::AddToInventory()
 
 bool nobBaseWarehouse::CanRecruit(const Job job) const
 {
-    if(JOB_CONSTS[job].tool == GD_INVALID)
+    if(const GoodType* requiredTool = JOB_CONSTS[job].tool.get_ptr())
+    {
+        // Do we have a helper and a tool (if required)?
+        return inventory[JOB_HELPER] > 0 && (*requiredTool == GD_NOTHING || inventory[*requiredTool] > 0);
+    } else // Cannot recruit
         return false;
-
-    // Do we have a helper and a tool (if required)?
-    return inventory[JOB_HELPER] > 0 && (JOB_CONSTS[job].tool == GD_NOTHING || inventory[JOB_CONSTS[job].tool] > 0);
 }
 
 bool nobBaseWarehouse::TryRecruitJob(const Job job)
@@ -1165,18 +1166,20 @@ bool nobBaseWarehouse::TryRecruitJob(const Job job)
     if(!CanRecruit(job))
         return false;
 
-    // All ok, recruit him
-    if(JOB_CONSTS[job].tool != GD_NOTHING)
+    auto& owner = gwg->GetPlayer(player);
+
+    const GoodType requiredTool = JOB_CONSTS[job].tool.get(); // Validity checked in CanRecruit
+    if(requiredTool != GD_NOTHING)
     {
-        inventory.Remove(JOB_CONSTS[job].tool);
-        gwg->GetPlayer(player).DecreaseInventoryWare(JOB_CONSTS[job].tool, 1);
+        inventory.Remove(requiredTool);
+        owner.DecreaseInventoryWare(requiredTool, 1);
     }
 
     inventory.Remove(JOB_HELPER);
-    gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, 1);
+    owner.DecreaseInventoryJob(JOB_HELPER, 1);
 
     inventory.Add(job);
-    gwg->GetPlayer(player).IncreaseInventoryJob(job, 1);
+    owner.IncreaseInventoryJob(job, 1);
     return true;
 }
 

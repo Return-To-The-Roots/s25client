@@ -23,6 +23,7 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Nation.h"
+#include <boost/optional/optional.hpp>
 #include <array>
 
 extern const std::array<std::string, NUM_JOB_TYPES> JOB_NAMES;
@@ -30,9 +31,9 @@ extern const std::array<std::string, NUM_JOB_TYPES> JOB_NAMES;
 /// Game data for each job
 struct JobConst
 {
-    /// Tool for this job, GD_INVALID if recruiting is not possible
-    GoodType tool;
-    /// Arbeitszeit in gf, Wartezeit (vor dem Arbeiten) in gf
+    /// Tool required to recruit this job (helper + tool = new worker). Empty if recruiting is not possible
+    boost::optional<GoodType> tool;
+    /// Duration of working and waiting (before and between work steps) in GFs
     unsigned short work_length, wait1_length, wait2_length;
 };
 

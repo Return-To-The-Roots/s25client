@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -164,7 +164,6 @@ public:
             case GD_WATER: return ("GD_WATER");
             case GD_WATEREMPTY: return ("GD_WATEREMPTY");
             case GD_WOOD: return ("GD_WOOD");
-            case GD_INVALID: break;
         }
         RTTR_Assert(false);
         return ("unknown");
