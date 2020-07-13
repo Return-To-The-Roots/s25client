@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskGameInterface.h"
 #include "CollisionDetection.h"
 #include "EventManager.h"
@@ -161,7 +160,7 @@ PostBox& dskGameInterface::GetPostBox()
 {
     PostBox* postBox = worldViewer.GetWorld().GetPostMgr().GetPostBox(worldViewer.GetPlayerId());
     if(!postBox)
-        postBox = worldViewer.GetWorldNonConst().GetPostMgr().AddPostBox(worldViewer.GetPlayerId());
+        postBox = &worldViewer.GetWorldNonConst().GetPostMgr().AddPostBox(worldViewer.GetPlayerId());
     RTTR_Assert(postBox != nullptr);
     return *postBox;
 }

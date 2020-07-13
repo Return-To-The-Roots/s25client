@@ -17,7 +17,6 @@
 
 #define BOOST_TEST_MODULE RTTR_GameData
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include <rttr/test/Fixture.hpp>
 #include <boost/test/unit_test.hpp>
 

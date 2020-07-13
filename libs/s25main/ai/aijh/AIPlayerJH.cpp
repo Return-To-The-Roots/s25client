@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "AIPlayerJH.h"
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
 #include "Jobs.h"
+#include "RttrForeachPt.h"
 #include "addons/const_addons.h"
 #include "ai/AIEvents.h"
 #include "boost/filesystem/fstream.hpp"
@@ -56,48 +56,52 @@
 namespace {
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
 {
-    AIEvent::Base* ev;
+    std::unique_ptr<AIEvent::Base> ev;
     switch(note.type)
     {
-        case BuildingNote::Constructed: ev = new AIEvent::Building(AIEvent::BuildingFinished, note.pos, note.bld); break;
-        case BuildingNote::Destroyed: ev = new AIEvent::Building(AIEvent::BuildingDestroyed, note.pos, note.bld); break;
-        case BuildingNote::Captured: ev = new AIEvent::Building(AIEvent::BuildingConquered, note.pos, note.bld); break;
-        case BuildingNote::Lost: ev = new AIEvent::Building(AIEvent::BuildingLost, note.pos, note.bld); break;
-        case BuildingNote::LostLand: ev = new AIEvent::Building(AIEvent::LostLand, note.pos, note.bld); break;
-        case BuildingNote::NoRessources: ev = new AIEvent::Building(AIEvent::NoMoreResourcesReachable, note.pos, note.bld); break;
-        case BuildingNote::LuaOrder: ev = new AIEvent::Building(AIEvent::LuaConstructionOrder, note.pos, note.bld); break;
+        case BuildingNote::Constructed: ev = std::make_unique<AIEvent::Building>(AIEvent::BuildingFinished, note.pos, note.bld); break;
+        case BuildingNote::Destroyed: ev = std::make_unique<AIEvent::Building>(AIEvent::BuildingDestroyed, note.pos, note.bld); break;
+        case BuildingNote::Captured: ev = std::make_unique<AIEvent::Building>(AIEvent::BuildingConquered, note.pos, note.bld); break;
+        case BuildingNote::Lost: ev = std::make_unique<AIEvent::Building>(AIEvent::BuildingLost, note.pos, note.bld); break;
+        case BuildingNote::LostLand: ev = std::make_unique<AIEvent::Building>(AIEvent::LostLand, note.pos, note.bld); break;
+        case BuildingNote::NoRessources:
+            ev = std::make_unique<AIEvent::Building>(AIEvent::NoMoreResourcesReachable, note.pos, note.bld);
+            break;
+        case BuildingNote::LuaOrder: ev = std::make_unique<AIEvent::Building>(AIEvent::LuaConstructionOrder, note.pos, note.bld); break;
         default: RTTR_Assert(false); return;
     }
-    eventMgr.AddAIEvent(ev);
+    eventMgr.AddAIEvent(std::move(ev));
 }
 void HandleExpeditionNote(AIEventManager& eventMgr, const ExpeditionNote& note)
 {
     switch(note.type)
     {
-        case ExpeditionNote::Waiting: eventMgr.AddAIEvent(new AIEvent::Location(AIEvent::ExpeditionWaiting, note.pos)); break;
-        case ExpeditionNote::ColonyFounded: eventMgr.AddAIEvent(new AIEvent::Location(AIEvent::NewColonyFounded, note.pos)); break;
+        case ExpeditionNote::Waiting: eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::ExpeditionWaiting, note.pos)); break;
+        case ExpeditionNote::ColonyFounded:
+            eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::NewColonyFounded, note.pos));
+            break;
     }
 }
 void HandleResourceNote(AIEventManager& eventMgr, const ResourceNote& note)
 {
-    eventMgr.AddAIEvent(new AIEvent::Resource(AIEvent::ResourceFound, note.pos, note.res));
+    eventMgr.AddAIEvent(std::make_unique<AIEvent::Resource>(AIEvent::ResourceFound, note.pos, note.res));
 }
 void HandleRoadNote(AIEventManager& eventMgr, const RoadNote& note)
 {
     switch(note.type)
     {
         case RoadNote::Constructed:
-            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionComplete, note.pos, note.route.front()));
+            eventMgr.AddAIEvent(std::make_unique<AIEvent::Direction>(AIEvent::RoadConstructionComplete, note.pos, note.route.front()));
             break;
         case RoadNote::ConstructionFailed:
-            eventMgr.AddAIEvent(new AIEvent::Direction(AIEvent::RoadConstructionFailed, note.pos, note.route.front()));
+            eventMgr.AddAIEvent(std::make_unique<AIEvent::Direction>(AIEvent::RoadConstructionFailed, note.pos, note.route.front()));
             break;
     }
 }
 void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 {
     if(note.type == ShipNote::Constructed)
-        eventMgr.AddAIEvent(new AIEvent::Location(AIEvent::ShipBuilt, note.pos));
+        eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::ShipBuilt, note.pos));
 }
 } // namespace
 
@@ -367,7 +371,7 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 void AIPlayerJH::AddBuildJob(BuildingType type, const MapPoint pt, bool front, bool searchPosition)
 {
     if(type != BLD_NOTHING)
-        construction->AddBuildJob(new BuildJob(*this, type, pt, searchPosition ? SEARCHMODE_RADIUS : SEARCHMODE_NONE), front);
+        construction->AddBuildJob(std::make_unique<BuildJob>(*this, type, pt, searchPosition ? SEARCHMODE_RADIUS : SEARCHMODE_NONE), front);
 }
 
 void AIPlayerJH::AddBuildJobAroundEveryWarehouse(BuildingType bt)
@@ -1781,7 +1785,7 @@ void AIPlayerJH::TrySeaAttack()
     unsigned limit = 15;
     unsigned skip = 0;
     if(searcharoundharborspots.size() > 15)
-        skip = max<int>(rand() % (searcharoundharborspots.size() / 15 + 1) * 15, 1) - 1;
+        skip = std::max<int>(rand() % (searcharoundharborspots.size() / 15 + 1) * 15, 1) - 1;
     for(unsigned i = skip; i < searcharoundharborspots.size() && limit > 0; i++)
     {
         limit--;
@@ -1908,9 +1912,9 @@ const AIResourceMap& AIPlayerJH::GetResMap(AIResource res) const
     return resourceMaps[static_cast<unsigned>(res)];
 }
 
-void AIPlayerJH::SendAIEvent(AIEvent::Base* ev)
+void AIPlayerJH::SendAIEvent(std::unique_ptr<AIEvent::Base> ev)
 {
-    eventManager.AddAIEvent(ev);
+    eventManager.AddAIEvent(std::move(ev));
 }
 
 bool AIPlayerJH::IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag, unsigned char excludeDir, bool init,
@@ -2269,15 +2273,15 @@ void AIPlayerJH::ExecuteLuaConstructionOrder(const MapPoint pt, BuildingType bt,
                // from the ai)
     {
         aii.SetBuildingSite(pt, bt);
-        auto* j = new BuildJob(*this, bt, pt);
+        auto j = std::make_unique<BuildJob>(*this, bt, pt);
         j->SetState(JOB_EXECUTING_ROAD1);
         j->SetTarget(pt);
-        construction->AddBuildJob(j, true); // connects the buildingsite to roadsystem
+        construction->AddBuildJob(std::move(j), true); // connects the buildingsite to roadsystem
     } else
     {
         if(construction->Wanted(bt))
         {
-            construction->AddBuildJob(new BuildJob(*this, bt, pt), true); // add build job to the front of the list
+            construction->AddBuildJob(std::make_unique<BuildJob>(*this, bt, pt), true); // add build job to the front of the list
         }
     }
 }

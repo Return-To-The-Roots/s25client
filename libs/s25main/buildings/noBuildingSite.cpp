@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "buildings/noBuildingSite.h"
 #include "FOWObjects.h"
 #include "GamePlayer.h"
@@ -228,7 +227,7 @@ void noBuildingSite::Draw(DrawPoint drawPt)
             // Haus besteht nur aus Brettern, dann 50:50
             maxProgressBld = maxProgressRaw = BUILDING_COSTS[nation][bldType_].boards * 4;
         }
-        progressRaw = min<unsigned>(build_progress, maxProgressRaw);
+        progressRaw = std::min<unsigned>(build_progress, maxProgressRaw);
         progressBld = ((build_progress > maxProgressRaw) ? (build_progress - maxProgressRaw) : 0);
 
         // Rohbau

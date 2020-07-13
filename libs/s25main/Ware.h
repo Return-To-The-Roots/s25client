@@ -19,6 +19,7 @@
 #define WARE_H_
 
 #include "GameObject.h"
+#include "RTTR_Assert.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/MapCoordinates.h"
 

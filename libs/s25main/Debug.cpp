@@ -17,7 +17,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "Debug.h"
 #include "RTTR_Version.h"
 #include "Replay.h"

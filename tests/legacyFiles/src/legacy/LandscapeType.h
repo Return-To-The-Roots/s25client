@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,11 +18,16 @@
 #ifndef LandscapeType_h__
 #define LandscapeType_h__
 
-#include <boost/core/scoped_enum.hpp>
+#include <cstdint>
 
-BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(Landscape, uint8_t){GREENLAND, WASTELAND, WINTERWORLD} BOOST_SCOPED_ENUM_DECLARE_END(Landscape)
+enum class Landscape : uint8_t
+{
+    GREENLAND,
+    WASTELAND,
+    WINTERWORLD
+};
 
-  // Keep this in sync with LandscapeType
-  static const uint8_t NUM_LTS = 3;
+// Keep this in sync with LandscapeType
+static const uint8_t NUM_LTS = 3;
 
 #endif // LandscapeType_h__

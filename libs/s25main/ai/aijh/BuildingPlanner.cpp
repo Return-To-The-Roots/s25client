@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "BuildingPlanner.h"
 #include "AIPlayerJH.h"
 #include "GlobalGameSettings.h"
@@ -254,7 +253,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         buildingsWanted[BLD_WELL] =
           buildingsWanted[BLD_BAKERY] + buildingsWanted[BLD_PIGFARM] + buildingsWanted[BLD_DONKEYBREEDER] + buildingsWanted[BLD_BREWERY];
 
-        buildingsWanted[BLD_FARM] = min<unsigned>(inventory.goods[GD_SCYTHE] + inventory.people[JOB_FARMER], foodusers + 3);
+        buildingsWanted[BLD_FARM] = std::min<unsigned>(inventory.goods[GD_SCYTHE] + inventory.people[JOB_FARMER], foodusers + 3);
 
         if(inventory.goods[GD_PICKAXE] + inventory.people[JOB_MINER] < 3)
         {
@@ -312,7 +311,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
                 resourcelimit = inventory.people[JOB_CHARBURNER] + inventory.goods[GD_SHOVEL];
                 if(aijh.ggs.isEnabled(AddonId::CHARBURNER)
                    && (GetNumBuildings(BLD_COALMINE) < 1 && (GetNumBuildings(BLD_IRONMINE) + GetNumBuildings(BLD_GOLDMINE) > 0)))
-                    buildingsWanted[BLD_CHARBURNER] = min(1, resourcelimit);
+                    buildingsWanted[BLD_CHARBURNER] = std::min(1, resourcelimit);
             }
             if(GetNumBuildings(BLD_QUARRY) + 1 < buildingsWanted[BLD_QUARRY]
                && aijh.AmountInStorage(GD_STONES) < 100) // no quarry and low stones -> try granitemines.

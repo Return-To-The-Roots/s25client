@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "FrameCounter.h"
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include <algorithm>

@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "noShipBuildingSite.h"
 
 #include "EventManager.h"
@@ -108,7 +107,8 @@ void noShipBuildingSite::MakeBuildStep()
         gwg->RecalcBQAroundPointBig(pos);
 
         // Spieler über Fertigstellung benachrichtigen
-        SendPostMessage(player, new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A new ship is ready"), PostCategory::Economy, *ship));
+        SendPostMessage(player,
+                        std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(), _("A new ship is ready"), PostCategory::Economy, *ship));
         gwg->GetNotifications().publish(ShipNote(ShipNote::Constructed, player, pos));
     }
 }

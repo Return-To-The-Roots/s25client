@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "worldFixtures/CreateEmptyWorld.h"
+#include "RttrForeachPt.h"
 #include "initGameRNG.hpp"
 #include "lua/GameDataLoader.h"
 #include "world/GameWorldGame.h"
@@ -61,8 +61,8 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
         std::vector<MapPoint> hqPositions;
         for(unsigned y = 0; y < numPlayersPerDim.y; y++)
         {
-            numPlayersPerDim.x = min<unsigned>(numPlayersPerDim.x, numPlayers - hqPositions.size());
-            playerDist.x = size_.x / numPlayersPerDim.x;
+            numPlayersPerDim.x = std::min<unsigned>(numPlayersPerDim.x, numPlayers - hqPositions.size());
+            playerDist.x = size_.x / std::max(1u, numPlayersPerDim.x);
             curPt.x = playerDist.x / 2;
             for(unsigned x = 0; x < numPlayersPerDim.x; x++)
             {

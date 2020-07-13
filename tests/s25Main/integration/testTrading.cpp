@@ -262,7 +262,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
 BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
 {
     initGameRNG();
-    PostBox* postbox = world.GetPostMgr().AddPostBox(0);
+    const PostBox& postbox = world.GetPostMgr().AddPostBox(0);
 
     this->TradeOverLand(players[0]->GetHQPos(), JOB_WOODCUTTER, 2);
     numHelpers -= 1;
@@ -274,7 +274,7 @@ BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
     // warriors are recruited
     numHelpers -= numSwords;
 
-    const PostMsg* post = postbox->GetMsg(0);
+    const PostMsg* post = postbox.GetMsg(0);
     BOOST_REQUIRE(post);
     const auto* msg = dynamic_cast<const PostMsgWithBuilding*>(post);
     BOOST_REQUIRE(msg->GetText().find('2') != std::string::npos);
@@ -290,7 +290,7 @@ BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
     distance = world.CalcDistance(curWh->GetPos(), players[0]->GetHQPos()) + 2;
     RTTR_SKIP_GFS(20 * distance);
 
-    const PostMsg* post2 = postbox->GetMsg(1);
+    const PostMsg* post2 = postbox.GetMsg(1);
     BOOST_REQUIRE(post2);
     const auto* msg2 = dynamic_cast<const PostMsgWithBuilding*>(post2);
     BOOST_REQUIRE(msg2->GetText().find('2') != std::string::npos);

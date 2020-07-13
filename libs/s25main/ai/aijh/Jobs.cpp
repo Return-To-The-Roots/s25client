@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "Jobs.h"
 #include "ai/AIEvents.h"
 #include "ai/AIInterface.h"
@@ -283,10 +282,9 @@ void BuildJob::TryToBuildSecondaryRoad()
         state = JOB_FINISHED;
 }
 
-EventJob::~EventJob()
-{
-    delete ev;
-}
+EventJob::EventJob(AIPlayerJH& aijh, std::unique_ptr<AIEvent::Base> ev) : Job(aijh), ev(std::move(ev)) {}
+
+EventJob::~EventJob() = default;
 
 void EventJob::ExecuteJob() // for now it is assumed that all these will be finished or failed after execution (no wait or progress)
 {
@@ -294,100 +292,100 @@ void EventJob::ExecuteJob() // for now it is assumed that all these will be fini
     {
         case AIEvent::BuildingConquered:
         {
-            auto* evb = checkedCast<AIEvent::Building*>(ev);
-            aijh.HandleNewMilitaryBuilingOccupied(evb->GetPos());
+            const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
+            aijh.HandleNewMilitaryBuilingOccupied(evb.GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::BuildingLost:
         {
-            auto* evb = checkedCast<AIEvent::Building*>(ev);
-            aijh.HandleMilitaryBuilingLost(evb->GetPos());
+            const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
+            aijh.HandleMilitaryBuilingLost(evb.GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::LostLand:
         {
-            auto* evb = checkedCast<AIEvent::Building*>(ev);
-            aijh.HandleLostLand(evb->GetPos());
+            const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
+            aijh.HandleLostLand(evb.GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::BuildingDestroyed:
         {
             // todo maybe do sth about it?
-            auto* evb = checkedCast<AIEvent::Building*>(ev);
-            aijh.HandleBuilingDestroyed(evb->GetPos(), evb->GetBuildingType());
+            const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
+            aijh.HandleBuilingDestroyed(evb.GetPos(), evb.GetBuildingType());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::NoMoreResourcesReachable:
         {
-            auto* evb = checkedCast<AIEvent::Building*>(ev);
-            aijh.HandleNoMoreResourcesReachable(evb->GetPos(), evb->GetBuildingType());
+            const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
+            aijh.HandleNoMoreResourcesReachable(evb.GetPos(), evb.GetBuildingType());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::BorderChanged:
         {
-            auto* evb = checkedCast<AIEvent::Building*>(ev);
-            aijh.HandleBorderChanged(evb->GetPos());
+            const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
+            aijh.HandleBorderChanged(evb.GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::BuildingFinished:
         {
-            auto* evb = checkedCast<AIEvent::Building*>(ev);
-            aijh.HandleBuildingFinished(evb->GetPos(), evb->GetBuildingType());
+            const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
+            aijh.HandleBuildingFinished(evb.GetPos(), evb.GetBuildingType());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::ExpeditionWaiting:
         {
-            auto* lvb = checkedCast<AIEvent::Location*>(ev);
-            aijh.HandleExpedition(lvb->GetPos());
+            const auto& lvb = *checkedCast<AIEvent::Location*>(ev.get());
+            aijh.HandleExpedition(lvb.GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::TreeChopped:
         {
-            auto* lvb = checkedCast<AIEvent::Location*>(ev);
-            aijh.HandleTreeChopped(lvb->GetPos());
+            const auto& lvb = *checkedCast<AIEvent::Location*>(ev.get());
+            aijh.HandleTreeChopped(lvb.GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::NewColonyFounded:
         {
-            auto* lvb = checkedCast<AIEvent::Location*>(ev);
-            aijh.HandleNewColonyFounded(lvb->GetPos());
+            const auto& lvb = *checkedCast<AIEvent::Location*>(ev.get());
+            aijh.HandleNewColonyFounded(lvb.GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::ShipBuilt:
         {
-            auto* lvb = checkedCast<AIEvent::Location*>(ev);
-            aijh.HandleShipBuilt(lvb->GetPos());
+            const auto& lvb = *checkedCast<AIEvent::Location*>(ev.get());
+            aijh.HandleShipBuilt(lvb.GetPos());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::RoadConstructionComplete:
         {
-            auto* dvb = checkedCast<AIEvent::Direction*>(ev);
-            aijh.HandleRoadConstructionComplete(dvb->GetPos(), dvb->GetDirection());
+            const auto& dvb = *checkedCast<AIEvent::Direction*>(ev.get());
+            aijh.HandleRoadConstructionComplete(dvb.GetPos(), dvb.GetDirection());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::RoadConstructionFailed:
         {
-            auto* dvb = checkedCast<AIEvent::Direction*>(ev);
-            aijh.HandleRoadConstructionFailed(dvb->GetPos(), dvb->GetDirection());
+            const auto& dvb = *checkedCast<AIEvent::Direction*>(ev.get());
+            aijh.HandleRoadConstructionFailed(dvb.GetPos(), dvb.GetDirection());
             state = JOB_FINISHED;
         }
         break;
         case AIEvent::LuaConstructionOrder:
         {
-            auto* evb = checkedCast<AIEvent::Building*>(ev);
-            aijh.ExecuteLuaConstructionOrder(evb->GetPos(), evb->GetBuildingType(), true);
+            const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
+            aijh.ExecuteLuaConstructionOrder(evb.GetPos(), evb.GetBuildingType(), true);
             state = JOB_FINISHED;
         }
         break;

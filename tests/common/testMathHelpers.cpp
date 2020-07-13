@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "helpers/SmoothedValue.hpp"
 #include "helpers/mathFuncs.h"
 #include "helpers/roundToNextPow2.h"

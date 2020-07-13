@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,10 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameObject.h"
 #include "EventManager.h"
 #include "SerializedGameData.h"
+#include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include <iostream>
 
@@ -69,9 +69,9 @@ EventManager& GameObject::GetEvMgr()
     return gwg->GetEvMgr();
 }
 
-void GameObject::SendPostMessage(unsigned player, PostMsg* msg)
+void GameObject::SendPostMessage(unsigned player, std::unique_ptr<PostMsg> msg)
 {
-    gwg->GetPostMgr().SendMsg(player, msg);
+    gwg->GetPostMgr().SendMsg(player, std::move(msg));
 }
 
 void GameObject::DetachWorld(GameWorldGame* gameWorld)

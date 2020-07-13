@@ -17,7 +17,6 @@
 
 #define BOOST_TEST_MODULE RTTR_Network
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "TestServer.h"
 #include <rttr/test/Fixture.hpp>
 #include <s25util/Socket.h>

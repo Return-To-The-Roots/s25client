@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,6 +24,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
+#include <memory>
 #include <vector>
 
 namespace AIEvent {
@@ -119,13 +120,13 @@ private:
 class EventJob : public Job
 {
 public:
-    EventJob(AIPlayerJH& aijh, AIEvent::Base* ev) : Job(aijh), ev(ev) {}
+    EventJob(AIPlayerJH& aijh, std::unique_ptr<AIEvent::Base> ev);
     ~EventJob() override;
     void ExecuteJob() override;
-    AIEvent::Base* GetEvent() const { return ev; }
+    const AIEvent::Base& GetEvent() const { return *ev; }
 
 private:
-    AIEvent::Base* ev;
+    std::unique_ptr<AIEvent::Base> ev;
 };
 
 class SearchJob : public Job

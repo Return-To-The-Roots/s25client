@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,6 +20,7 @@
 
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
+#include "s25util/warningSuppression.h"
 #include <array>
 #include <tuple>
 

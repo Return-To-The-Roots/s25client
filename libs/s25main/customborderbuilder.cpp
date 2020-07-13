@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -38,8 +38,8 @@ rechts, wobei die Ecken zu oben/unten gehören. Sie müssen also an den Stellen 
 Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette auf ein ArchivItem_Palette* gesetzt werden.
  */
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "customborderbuilder.h"
+#include "RttrForeachPt.h"
 #include "ogl/glArchivItem_Bitmap_Direct.h"
 #include "libsiedler2/Archiv.h"
 

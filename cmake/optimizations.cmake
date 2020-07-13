@@ -44,9 +44,21 @@ else()
 
     # Don't use this for GCC < 8 on apple due to ICE: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78380
     if(NOT (APPLE AND CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8))
-        CheckAndAddFlag(-ffast-math CXX)
+        # Need to check this because Clang-9 with GLIBC > 1.31 generates undefined references to buildins
+        # https://bugs.llvm.org/show_bug.cgi?id=45034
+        include(CheckCXXSourceCompiles)
+        set(CMAKE_REQUIRED_FLAGS -ffastmath)
+        check_cxx_source_compiles("
+#include <cmath>
+
+int main(int argc, char** argv){
+  return static_cast<int>(std::pow(2., argc));
+}"      FAST_MATH_SUPPORTED)
+        unset(CMAKE_REQUIRED_FLAGS)
+        if(FAST_MATH_SUPPORTED)
+            add_compile_options($<$<COMPILE_LANGUAGE:CXX>:${flag}>)
+        endif()
     endif()
-    CheckAndAddFlag(-fomit-frame-pointer)
 
     if(RTTR_OPTIMIZATION_TUNE)
         CheckAndAddFlag(-mtune=${RTTR_OPTIMIZATION_TUNE})

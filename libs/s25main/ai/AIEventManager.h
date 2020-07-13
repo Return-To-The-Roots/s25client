@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,7 +19,9 @@
 
 #pragma once
 
+#include <memory>
 #include <queue>
+
 namespace AIEvent {
 class Base;
 }
@@ -29,13 +31,13 @@ class AIEventManager
 public:
     AIEventManager();
     ~AIEventManager();
-    void AddAIEvent(AIEvent::Base* ev) { events.push(ev); }
-    AIEvent::Base* GetEvent();
+    void AddAIEvent(std::unique_ptr<AIEvent::Base> ev);
+    std::unique_ptr<AIEvent::Base> GetEvent();
     bool EventAvailable() const { return !events.empty(); }
     unsigned GetEventNum() const { return events.size(); }
 
 protected:
-    std::queue<AIEvent::Base*> events;
+    std::queue<std::unique_ptr<AIEvent::Base>> events;
 };
 
 #endif // !AIEVENTMANAGER_H_INCLUDED

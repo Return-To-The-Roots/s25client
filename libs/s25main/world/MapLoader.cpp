@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
 #include "PointOutput.h"
+#include "RttrForeachPt.h"
 #include "factories/BuildingFactory.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/glArchivItem_Map.h"

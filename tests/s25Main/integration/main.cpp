@@ -17,7 +17,6 @@
 
 #define BOOST_TEST_MODULE RTTR_Integration
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "BQOutput.h"
 #include <rttr/test/Fixture.hpp>
 #include <boost/test/unit_test.hpp>

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "AIEventManager.h"
 #include "AIEvents.h"
 
 AIEventManager::AIEventManager() = default;
+AIEventManager::~AIEventManager() = default;
 
-AIEventManager::~AIEventManager()
+void AIEventManager::AddAIEvent(std::unique_ptr<AIEvent::Base> ev)
 {
-    while(AIEvent::Base* ev = GetEvent())
-        deletePtr(ev);
+    events.push(std::move(ev));
 }
 
-AIEvent::Base* AIEventManager::GetEvent()
+std::unique_ptr<AIEvent::Base> AIEventManager::GetEvent()
 {
     if(events.empty())
         return nullptr;
 
-    AIEvent::Base* ev = events.front();
+    std::unique_ptr<AIEvent::Base> ev = std::move(events.front());
     events.pop();
     return ev;
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,6 +20,7 @@
 
 #include "gameData/MaxPlayers.h"
 #include <array>
+#include <memory>
 #include <string>
 
 class PostMsg;
@@ -30,14 +31,14 @@ class PostManager
 public:
     PostManager();
     ~PostManager();
-    PostBox* AddPostBox(unsigned player);
+    PostBox& AddPostBox(unsigned player);
     PostBox* GetPostBox(unsigned player) const;
     void RemovePostBox(unsigned player);
-    void SendMsg(unsigned player, PostMsg* msg);
+    void SendMsg(unsigned player, std::unique_ptr<PostMsg> msg);
     void SetMissionGoal(unsigned player, const std::string& newGoal);
 
 private:
-    std::array<PostBox*, MAX_PLAYERS> postBoxes;
+    std::array<std::unique_ptr<PostBox>, MAX_PLAYERS> postBoxes;
 };
 
 #endif // PostManager_h__

@@ -15,30 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h"
 #include "PostBox.h"
 #include "PostMsg.h"
 #include <algorithm>
 
-PostBox::PostBox() : numMessages(0)
-{
-    std::fill(messages.begin(), messages.end(), (PostMsg*)nullptr);
-}
+PostBox::PostBox() = default;
+PostBox::~PostBox() = default;
 
-PostBox::~PostBox()
-{
-    for(unsigned i = 0; i < numMessages; i++)
-        delete messages[i];
-}
-
-void PostBox::AddMsg(const PostMsg* msg)
+void PostBox::AddMsg(std::unique_ptr<const PostMsg> msg)
 {
     if(numMessages == MAX_MESSAGES)
         DeleteMsg(0, false);
-    messages[numMessages] = msg;
+    messages[numMessages] = std::move(msg);
     numMessages++;
     if(evNewMsg)
-        evNewMsg(*msg, numMessages);
+        evNewMsg(*messages[numMessages - 1u], numMessages);
 }
 
 bool PostBox::DeleteMsg(const PostMsg* msg)
@@ -47,7 +39,7 @@ bool PostBox::DeleteMsg(const PostMsg* msg)
         return false;
     for(unsigned i = 0; i < numMessages; ++i)
     {
-        if(messages[i] == msg)
+        if(messages[i].get() == msg)
             return DeleteMsg(i);
     }
     return false;
@@ -62,10 +54,9 @@ bool PostBox::DeleteMsg(unsigned idx, bool notify)
 {
     if(idx >= numMessages)
         return false;
-    deletePtr(messages[idx]);
     // Shift messages
     for(unsigned i = idx + 1; i < numMessages; i++)
-        messages[i - 1] = messages[i];
+        messages[i - 1] = std::move(messages[i]);
     numMessages--;
     if(notify && evDelMsg)
         evDelMsg(numMessages);
@@ -82,7 +73,7 @@ const PostMsg* PostBox::GetMsg(unsigned idx) const
 {
     if(idx >= numMessages)
         return nullptr;
-    return messages[idx];
+    return messages[idx].get();
 }
 
 void PostBox::SetCurrentMissionGoal(const std::string& goal)

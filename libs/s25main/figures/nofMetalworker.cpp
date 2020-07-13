@@ -171,7 +171,8 @@ GoodType nofMetalworker::GetOrderedTool()
     owner.ToolOrderProcessed(toolIdx);
 
     if(!HasToolOrder())
-        SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PostCategory::Economy));
+        SendPostMessage(
+          player, std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PostCategory::Economy));
 
     return TOOLS[toolIdx];
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,6 +17,8 @@
 
 #ifndef DescIdx_h__
 #define DescIdx_h__
+
+#include <cstdint>
 
 /// Type safe index for a description
 //-V:DescIdx:801

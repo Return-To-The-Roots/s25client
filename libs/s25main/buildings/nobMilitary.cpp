@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nobMilitary.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
@@ -177,7 +176,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
     DrawBaseBuilding(drawPt);
 
     // (max 4) Besatzungs-Fähnchen zeichnen
-    auto flags = min<unsigned>(troops.size() + this->leave_house.size(), 4);
+    auto flags = std::min<unsigned>(troops.size() + this->leave_house.size(), 4);
 
     for(unsigned i = 0; i < flags; ++i)
     {
@@ -680,8 +679,8 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
     // Wurde dieses Gebäude zum ersten Mal besetzt?
     if(new_built)
     {
-        SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building occupied"), PostCategory::Military,
-                                                        *this, SoundEffect::Fanfare));
+        SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Military building occupied"),
+                                                                      PostCategory::Military, *this, SoundEffect::Fanfare));
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben
@@ -981,10 +980,10 @@ void nobMilitary::Capture(const unsigned char new_owner)
     }
 
     // Post verschicken, an den alten Besitzer und an den neuen Besitzer
-    SendPostMessage(old_player,
-                    new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building lost"), PostCategory::Military, *this));
-    SendPostMessage(player,
-                    new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building captured"), PostCategory::Military, *this));
+    SendPostMessage(old_player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Military building lost"),
+                                                                      PostCategory::Military, *this));
+    SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Military building captured"),
+                                                                  PostCategory::Military, *this));
 
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, bldType_));
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, old_player, pos, bldType_));
@@ -1223,8 +1222,8 @@ void nobMilitary::HitOfCatapultStone()
         RegulateTroops();
 
     // Post verschicken
-    SendPostMessage(player,
-                    new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("A catapult is firing upon us!"), PostCategory::Military, *this));
+    SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("A catapult is firing upon us!"),
+                                                                  PostCategory::Military, *this));
 }
 
 /**

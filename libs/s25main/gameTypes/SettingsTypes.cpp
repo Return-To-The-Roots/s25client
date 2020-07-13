@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,10 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "SettingsTypes.h"
 
-const DistributionMap SUPPRESS_UNUSED distributionMap = {{
+const DistributionMap distributionMap = {{
   DistributionMapping(GD_FISH, BLD_GRANITEMINE, 3),     DistributionMapping(GD_FISH, BLD_COALMINE, 5),
   DistributionMapping(GD_FISH, BLD_IRONMINE, 7),        DistributionMapping(GD_FISH, BLD_GOLDMINE, 10),
 

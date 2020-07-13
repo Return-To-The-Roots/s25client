@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,14 +19,7 @@
 #ifndef commonDefines_h__
 #define commonDefines_h__
 
-// IWYU pragma: begin_exports
-
 #include "RTTR_Assert.h"
-// Fixed width types like uint32_t shall be treated like build-in types
-#include <s25util/warningSuppression.h>
-#include <cstdint>
-
-// IWYU pragma: end_exports
 
 /// Call a member function trough an object and a member function pointer
 #define CALL_MEMBER_FN(object, ptrToMember) ((object).*(ptrToMember))

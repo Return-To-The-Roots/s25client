@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "SignalHandler.h"
 #include "GlobalVars.h"
 #ifndef _WIN32
@@ -51,9 +50,9 @@ void ConsoleSignalHandler(int sig)
     if(sig == SIGINT)
     {
         if(!killme)
-            bnw::cout << "Do you really want to terminate the program (y/n) : " << std::flush;
+            boost::nowide::cout << "Do you really want to terminate the program (y/n) : " << std::flush;
         else
-            bnw::cout << "Do you really want to kill the program (y/n) : " << std::flush;
+            boost::nowide::cout << "Do you really want to kill the program (y/n) : " << std::flush;
 
         int c = getchar();
         if(c == 'j' || c == 'y' || c == 1079565930)

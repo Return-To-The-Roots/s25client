@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlOptionGroup.h"
 
 ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, int select_type) : ctrlGroup(parent, id), select_type(select_type) {}

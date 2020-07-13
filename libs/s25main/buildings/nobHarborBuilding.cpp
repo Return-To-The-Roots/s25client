@@ -88,8 +88,8 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
         seaIds[i] = gwg->GetSeaFromCoastalPoint(gwg->GetNeighbour(pos, Direction::fromInt(i)));
 
     // Post versenden
-    SendPostMessage(player,
-                    new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("New harbor building finished"), PostCategory::Economy, *this));
+    SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("New harbor building finished"),
+                                                                  PostCategory::Economy, *this));
 }
 
 void nobHarborBuilding::DestroyBuilding()

@@ -20,6 +20,7 @@
 
 #include <array>
 #include <functional>
+#include <memory>
 #include <string>
 
 class PostMsg;
@@ -34,7 +35,7 @@ public:
     ~PostBox();
 
     /// Add the message, possibly deleting the oldest message
-    void AddMsg(const PostMsg* msg);
+    void AddMsg(std::unique_ptr<const PostMsg> msg);
     /// Delete the message. Return true, when it existed
     bool DeleteMsg(const PostMsg* msg);
     /// Delete the message by its index. Return true, if it was valid
@@ -58,8 +59,8 @@ public:
 private:
     static constexpr unsigned MAX_MESSAGES = 20;
     bool DeleteMsg(unsigned idx, bool notify);
-    std::array<const PostMsg*, MAX_MESSAGES> messages;
-    unsigned numMessages;
+    std::array<std::unique_ptr<const PostMsg>, MAX_MESSAGES> messages;
+    unsigned numMessages = 0;
     /// Current mission goal. Shown as a special message
     std::string currentMissionGoal;
     NewMsgCallback evNewMsg;
