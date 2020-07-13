@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,9 +17,10 @@
 
 #define _USE_MATH_DEFINES
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/MapUtility.h"
+#include "RTTR_Assert.h"
 #include "RandomConfig.h"
+#include "RttrForeachPt.h"
 #include "mapGenerator/Map.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"

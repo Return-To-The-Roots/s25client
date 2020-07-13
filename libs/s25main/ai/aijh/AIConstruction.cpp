@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "GlobalGameSettings.h"
@@ -52,28 +51,19 @@ AIConstruction::AIConstruction(AIPlayerJH& aijh)
     : aijh(aijh), aii(aijh.GetInterface()), bldPlanner(aijh.GetBldPlanner()), constructionorders(NUM_BUILDING_TYPES)
 {}
 
-AIConstruction::~AIConstruction()
-{
-    for(AIJH::BuildJob* job : buildJobs)
-        delete job;
-    for(AIJH::ConnectJob* job : connectJobs)
-        delete job;
-}
+AIConstruction::~AIConstruction() = default;
 
-void AIConstruction::AddBuildJob(BuildJob* job, bool front)
+void AIConstruction::AddBuildJob(std::unique_ptr<BuildJob> job, bool front)
 {
     if(job->GetType() == BLD_SHIPYARD && aijh.IsInvalidShipyardPosition(job->GetAround()))
-    {
-        delete job;
         return;
-    }
     if(BuildingProperties::IsMilitary(
          job->GetType())) // non military buildings can only be added once to the contruction que for every location
     {
         if(front)
-            buildJobs.push_front(job);
+            buildJobs.push_front(std::move(job));
         else
-            buildJobs.push_back(job);
+            buildJobs.push_back(std::move(job));
     } else // check if the buildjob is already in list and if so dont add it again
     {
         bool alreadyinlist = false;
@@ -88,13 +78,9 @@ void AIConstruction::AddBuildJob(BuildJob* job, bool front)
         if(!alreadyinlist)
         {
             if(front)
-                buildJobs.push_front(job);
+                buildJobs.push_front(std::move(job));
             else
-                buildJobs.push_back(job);
-        } else
-        {
-            // LOG.write(("duplicate buildorders type %i at %i,%i \n",job->GetType(),job->GetTargetX(),job->GetTargetY());
-            delete job;
+                buildJobs.push_back(std::move(job));
         }
     }
 }
@@ -116,27 +102,22 @@ void AIConstruction::ExecuteJobs(unsigned limit)
     for(; i < limit && !connectJobs.empty() && i < initconjobs;
         i++) // go through list, until limit is reached or list empty or when every entry has been checked
     {
-        ConnectJob* job = connectJobs.front();
+        auto job = std::move(connectJobs.front());
+        connectJobs.pop_front();
         job->ExecuteJob();
         if(job->GetState() != JOB_FINISHED && job->GetState() != JOB_FAILED) // couldnt do job? -> move to back of list
         {
-            connectJobs.push_back(job);
-            connectJobs.pop_front();
-        } else // job done of failed -> delete job and remove from list
-        {
-            connectJobs.pop_front();
-            delete job;
+            connectJobs.push_back(std::move(job));
         }
     }
     for(; i < limit && !buildJobs.empty() && i < (initconjobs + initbuildjobs); i++)
     {
-        BuildJob* job = GetBuildJob();
+        auto job = GetBuildJob();
         job->ExecuteJob();
         if(job->GetState() != JOB_FINISHED && job->GetState() != JOB_FAILED) // couldnt do job? -> move to back of list
         {
-            buildJobs.push_back(job);
-        } else // job done of failed -> delete job
-            delete job;
+            buildJobs.push_back(std::move(job));
+        }
     }
 }
 
@@ -158,12 +139,12 @@ void AIConstruction::SetFlagsAlongRoad(const noRoadNode& roadNode, Direction dir
     }
 }
 
-BuildJob* AIConstruction::GetBuildJob()
+std::unique_ptr<BuildJob> AIConstruction::GetBuildJob()
 {
     if(buildJobs.empty())
         return nullptr;
 
-    BuildJob* job = buildJobs.front();
+    std::unique_ptr<BuildJob> job = std::move(buildJobs.front());
     buildJobs.pop_front();
     return job;
 }
@@ -177,7 +158,7 @@ void AIConstruction::AddConnectFlagJob(const noFlag* flag)
             return;
     }
     // add to list
-    connectJobs.push_back(new ConnectJob(aijh, flag->GetPos()));
+    connectJobs.push_back(std::make_unique<ConnectJob>(aijh, flag->GetPos()));
 }
 
 bool AIConstruction::CanStillConstructHere(const MapPoint pt) const

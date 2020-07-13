@@ -31,6 +31,7 @@
 #include <boost/variant/variant_fwd.hpp>
 #include <array>
 #include <list>
+#include <memory>
 
 struct Direction;
 class GameWorldGame;
@@ -297,7 +298,7 @@ public:
     std::vector<MapPoint>& GetRestrictedArea() { return restricted_area; }
     const std::vector<MapPoint>& GetRestrictedArea() const { return restricted_area; }
 
-    void SendPostMessage(PostMsg* msg);
+    void SendPostMessage(std::unique_ptr<PostMsg> msg);
 
     /// Returns number of tools ordered for the given tool including visual orders (not yet committed)
     unsigned GetToolsOrderedVisual(unsigned toolIdx) const;

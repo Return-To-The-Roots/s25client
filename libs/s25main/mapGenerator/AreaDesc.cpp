@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/VertexUtility.h"
 
@@ -28,7 +27,7 @@ AreaDesc::AreaDesc(const Point<double>& center, double minDist, double maxDist, 
 bool AreaDesc::IsInArea(const Position& point, double playerDistance, const MapExtent& size)
 {
     Position tile(size * center);
-    double distance = VertexUtility::Distance(point, tile, size) / min(size.x / 2, size.y / 2);
+    double distance = VertexUtility::Distance(point, tile, size) / std::min(size.x / 2, size.y / 2);
 
     if(maxPlayerDistance <= 0)
     {

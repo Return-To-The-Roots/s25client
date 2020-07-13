@@ -74,7 +74,7 @@ void nofTradeLeader::GoalReached()
         std::string text =
           str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares % waresName % owner.name);
         SendPostMessage(targetWarehouse->GetPlayer(),
-                        new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), text, PostCategory::Economy, *targetWarehouse));
+                        std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), text, PostCategory::Economy, *targetWarehouse));
         successor->AddNextDir(REACHED_GOAL);
         successor = nullptr;
     }

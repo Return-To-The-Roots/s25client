@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nobHQ.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -368,7 +367,7 @@ void nobHQ::Draw(DrawPoint drawPt)
         const unsigned numSoldiers =
           std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetNumSoldiers());
         DrawPoint flagsPos = drawPt + TROOPS_FLAG_HQ_OFFSET[nation];
-        for(auto i = min<unsigned>(numSoldiers, 4); i; --i)
+        for(auto i = std::min<unsigned>(numSoldiers, 4); i; --i)
         {
             glArchivItem_Bitmap_Player* bitmap =
               LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));

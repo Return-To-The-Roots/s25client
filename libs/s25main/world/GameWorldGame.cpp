@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldGame.h"
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "RttrForeachPt.h"
 #include "TradePathCache.h"
 #include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"
@@ -482,8 +482,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if(reason == TerritoryChangeReason::Build && sizeChanges[i] < 0)
         {
-            GetPostMgr().SendMsg(
-              i, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lost land by this building"), PostCategory::Military, building));
+            GetPostMgr().SendMsg(i, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Lost land by this building"),
+                                                                          PostCategory::Military, building));
             GetNotifications().publish(BuildingNote(BuildingNote::LostLand, i, building.GetPos(), building.GetBuildingType()));
         }
     }

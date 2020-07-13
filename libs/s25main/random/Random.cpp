@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "random/Random.h"
 #include "RttrConfig.h"
 #include "s25util/Serializer.h"
@@ -117,7 +116,7 @@ template<class T_PRNG>
 void Random<T_PRNG>::SaveLog(const std::string& filename)
 {
     const std::vector<RandomEntry> log = GetAsyncLog();
-    bnw::ofstream file(filename);
+    boost::nowide::ofstream file(filename);
 
     for(const auto& curLog : log)
         file << curLog << std::endl;
@@ -163,7 +162,7 @@ template<class T_PRNG>
 std::ostream& Random<T_PRNG>::RandomEntry::print(std::ostream& os) const
 {
     static const std::string rttrSrcBaseName = std::string(RttrConfig::GetSourceDir().generic_string()) + "/";
-    std::string strippedSrcFile = bfs::path(src_name).generic_string();
+    std::string strippedSrcFile = boost::filesystem::path(src_name).generic_string();
     if(strippedSrcFile.find(rttrSrcBaseName) == 0)
         strippedSrcFile = strippedSrcFile.substr(rttrSrcBaseName.size());
     return os << counter << ":R(" << max << ")=" << GetValue() << ",z=" << std::hex << std::setw(8) << rngState << std::dec << std::setw(0)

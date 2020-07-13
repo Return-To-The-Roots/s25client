@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,6 +19,7 @@
 #define TERRITORY_REGION_H_
 
 #include "Point.h"
+#include "RTTR_Assert.h"
 #include "gameTypes/MapCoordinates.h"
 #include <vector>
 

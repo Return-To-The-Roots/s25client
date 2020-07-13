@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "VideoSDL2.h"
 #include "driver/Interface.h"
 #include "driver/VideoDriverLoaderInterface.h"
@@ -220,7 +219,7 @@ bool VideoSDL2::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 
 void VideoSDL2::PrintError(const std::string& msg) const
 {
-    bnw::cerr << msg << std::endl;
+    boost::nowide::cerr << msg << std::endl;
 }
 
 void VideoSDL2::HandlePaste()

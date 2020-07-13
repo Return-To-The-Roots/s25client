@@ -88,7 +88,7 @@ public:
 
     void PlanNewBuildings(unsigned gf);
 
-    void SendAIEvent(AIEvent::Base* ev);
+    void SendAIEvent(std::unique_ptr<AIEvent::Base> ev);
 
     Node& GetAINode(const MapPoint pt) { return aiMap[pt]; }
     /// Executes a job form the job queue

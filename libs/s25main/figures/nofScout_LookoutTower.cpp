@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
 #include "EventManager.h"
 #include "buildings/nobUsual.h"
@@ -58,8 +57,8 @@ void nofScout_LookoutTower::WorkplaceReached()
     gwg->MakeVisibleAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
-    SendPostMessage(player,
-                    new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"), PostCategory::Military, *workplace));
+    SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"),
+                                                                  PostCategory::Military, *workplace));
 }
 
 bool nofScout_LookoutTower::AreWaresAvailable() const

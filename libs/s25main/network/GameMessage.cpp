@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h"
 #include "GameMessage.h"
 #include "GameMessage_GameCommand.h"
 #include "GameMessages.h"

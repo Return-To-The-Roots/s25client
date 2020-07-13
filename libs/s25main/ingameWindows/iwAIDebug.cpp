@@ -174,7 +174,7 @@ void iwAIDebug::Msg_PaintBefore()
     {
 #define RTTR_PRINT_EV(ev) \
     case AIEvent::ev: ss << #ev << std::endl; break
-        switch(ej->GetEvent()->GetType())
+        switch(ej->GetEvent().GetType())
         {
             RTTR_PRINT_EV(BuildingDestroyed);
             RTTR_PRINT_EV(BuildingConquered);
@@ -196,7 +196,7 @@ void iwAIDebug::Msg_PaintBefore()
         }
 #undef RTTR_PRINT_EV
 
-        auto* evb = dynamic_cast<AIEvent::Building*>(ej->GetEvent());
+        const auto* evb = dynamic_cast<const AIEvent::Building*>(&ej->GetEvent());
         if(evb)
         {
             ss << evb->GetX() << " / " << evb->GetY() << std::endl;

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,6 +18,7 @@
 #ifndef AIResource_h__
 #define AIResource_h__
 
+#include "s25util/warningSuppression.h"
 #include <array>
 
 enum class AIResource : unsigned

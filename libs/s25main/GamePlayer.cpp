@@ -760,9 +760,9 @@ void GamePlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
         jobs_wanted.erase(it);
 }
 
-void GamePlayer::SendPostMessage(PostMsg* msg)
+void GamePlayer::SendPostMessage(std::unique_ptr<PostMsg> msg)
 {
-    gwg.GetPostMgr().SendMsg(GetPlayerId(), msg);
+    gwg.GetPostMgr().SendMsg(GetPlayerId(), std::move(msg));
 }
 
 unsigned GamePlayer::GetToolsOrderedVisual(unsigned toolIdx) const
@@ -1581,7 +1581,7 @@ void GamePlayer::SuggestPact(const unsigned char targetPlayerId, const PactType 
         GamePlayer targetPlayer = gwg.GetPlayer(targetPlayerId);
         if(targetPlayer.isHuman())
             targetPlayer.SendPostMessage(
-              new DiplomacyPostQuestion(gwg.GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayerId][pt].start, *this, duration));
+              std::make_unique<DiplomacyPostQuestion>(gwg.GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayerId][pt].start, *this, duration));
         else if(gwg.HasLua())
             gwg.GetLua().EventSuggestPact(pt, GetPlayerId(), targetPlayerId, duration);
     }
@@ -1608,7 +1608,7 @@ void GamePlayer::MakePact(const PactType pt, const unsigned char other_player, c
     pacts[other_player][pt].duration = duration;
     pacts[other_player][pt].want_cancel = false;
 
-    SendPostMessage(new PostMsg(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(other_player), true));
+    SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(other_player), true));
 }
 
 /// Zeigt an, ob ein Pakt besteht
@@ -1634,7 +1634,7 @@ void GamePlayer::NotifyAlliesOfLocation(const MapPoint pt)
     for(unsigned i = 0; i < gwg.GetNumPlayers(); ++i)
     {
         if(i != GetPlayerId() && IsAlly(i))
-            gwg.GetPlayer(i).SendPostMessage(new PostMsg(
+            gwg.GetPlayer(i).SendPostMessage(std::make_unique<PostMsg>(
               gwg.GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"), PostCategory::Diplomacy, pt));
     }
 }
@@ -1684,8 +1684,8 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
             otherPlayer.pacts[GetPlayerId()][pt].want_cancel = false;
 
             // Den Spielern eine Informationsnachricht schicken
-            gwg.GetPlayer(otherPlayerIdx).SendPostMessage(new PostMsg(gwg.GetEvMgr().GetCurrentGF(), pt, *this, false));
-            SendPostMessage(new PostMsg(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(otherPlayerIdx), false));
+            gwg.GetPlayer(otherPlayerIdx).SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, *this, false));
+            SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(otherPlayerIdx), false));
             PactChanged(pt);
             otherPlayer.PactChanged(pt);
             if(gwg.HasLua())
@@ -1695,7 +1695,7 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
             // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
             if(otherPlayer.isHuman())
                 otherPlayer.SendPostMessage(
-                  new DiplomacyPostQuestion(gwg.GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
+                  std::make_unique<DiplomacyPostQuestion>(gwg.GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
             else if(!gwg.HasLua() || gwg.GetLua().EventCancelPactRequest(pt, GetPlayerId(), otherPlayerIdx))
             {
                 // AI accepts cancels, if there is no lua-interace
@@ -2061,8 +2061,8 @@ void GamePlayer::TestForEmergencyProgramm()
         if(!emergency)
         {
             emergency = true;
-            SendPostMessage(
-              new PostMsg(gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
+            SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."),
+                                                      PostCategory::Economy));
         }
     } else
     {
@@ -2070,8 +2070,8 @@ void GamePlayer::TestForEmergencyProgramm()
         if(emergency)
         {
             emergency = false;
-            SendPostMessage(
-              new PostMsg(gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."), PostCategory::Economy));
+            SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."),
+                                                      PostCategory::Economy));
             FindMaterialForBuildingSites();
         }
     }

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "RttrConfig.h"
 #include "s25util/Log.h"
 #include "s25util/System.h"
 #include <boost/filesystem.hpp>
 #include <build_paths.h>
 #include <stdexcept>
+
+namespace bfs = boost::filesystem;
 
 // Expected: RTTR_BINDIR, RTTR_DATADIR, RTTR_GAMEDIR, RTTR_LIBDIR, RTTR_DRIVERDIR
 #if !(defined(RTTR_BINDIR) && defined(RTTR_DATADIR) && defined(RTTR_GAMEDIR) && defined(RTTR_LIBDIR) && defined(RTTR_DRIVERDIR))

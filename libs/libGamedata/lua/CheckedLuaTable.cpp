@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h" // IWYU pragma: keep
 #include "CheckedLuaTable.h"
 #include "s25util/Log.h"
 #include <boost/algorithm/string/join.hpp>

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceGame.h"
 #include "EventManager.h"
 #include "Game.h"
@@ -285,14 +284,16 @@ void LuaInterfaceGame::SetMissionGoal(int playerIdx, const std::string& newGoal)
 void LuaInterfaceGame::PostMessageLua(int playerIdx, const std::string& msg)
 {
     lua::assertTrue(playerIdx >= 0, "Invalid player idx");
-    gw.GetPostMgr().SendMsg(static_cast<unsigned>(playerIdx), new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General));
+    gw.GetPostMgr().SendMsg(static_cast<unsigned>(playerIdx),
+                            std::make_unique<PostMsg>(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General));
 }
 
 void LuaInterfaceGame::PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y)
 {
     lua::assertTrue(playerIdx >= 0, "Invalid player idx");
-    gw.GetPostMgr().SendMsg(static_cast<unsigned>(playerIdx),
-                            new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General, gw.MakeMapPoint(Position(x, y))));
+    gw.GetPostMgr().SendMsg(
+      static_cast<unsigned>(playerIdx),
+      std::make_unique<PostMsg>(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General, gw.MakeMapPoint(Position(x, y))));
 }
 
 LuaPlayer LuaInterfaceGame::GetPlayer(int playerIdx)

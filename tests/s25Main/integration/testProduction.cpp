@@ -1,4 +1,4 @@
-// Copyright (c) 2016 -2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
@@ -63,8 +62,8 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     toolOrder[0] = 1;
     toolOrder[1] = 1;
     toolOrder[2] = 1;
-    PostBox* postbox = world.GetPostMgr().AddPostBox(0);
-    postbox->Clear();
+    PostBox& postbox = world.GetPostMgr().AddPostBox(0);
+    postbox.Clear();
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     Inventory expectedInventory = curInventory;
     expectedInventory.Add(TOOLS[0], toolOrder[0]);
@@ -74,8 +73,8 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     this->ChangeTools(toolSettings, toolOrder.data());
     RTTR_REQUIRE_LOG_CONTAINS("Committing an order", true);
     // Wait for completion message
-    RTTR_EXEC_TILL(3000, postbox->GetNumMsgs() == 1u);
-    BOOST_REQUIRE_EQUAL(postbox->GetMsg(0)->GetCategory(), PostCategory::Economy);
+    RTTR_EXEC_TILL(3000, postbox.GetNumMsgs() == 1u);
+    BOOST_REQUIRE_EQUAL(postbox.GetMsg(0)->GetCategory(), PostCategory::Economy);
     // Stop it and wait till goods are produced
     this->SetProductionEnabled(bldPos, false);
     this->SetProductionEnabled(bldPos2, false);

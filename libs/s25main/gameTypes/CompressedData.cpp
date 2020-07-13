@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,24 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "CompressedData.h"
 #include "FileChecksum.h"
 #include "s25util/Log.h"
 #include <boost/nowide/fstream.hpp>
 #include <bzlib.h>
-#include <cerrno>
 #include <cmath>
-#include <cstring>
 #include <memory>
 
 bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* checksum)
 {
-    bnw::ofstream file(filePath, std::ios::binary);
+    boost::nowide::ofstream file(filePath, std::ios::binary);
 
     if(!file)
     {
-        LOG.write("FATAL ERROR: can't write to %s: %s\n") % filePath % strerror(errno);
+        LOG.write("FATAL ERROR: can't write to %s\n") % filePath;
         return false;
     }
 
@@ -67,7 +64,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
 
 bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* checksum /* = nullptr */)
 {
-    bnw::ifstream file(filePath, std::ios::binary | std::ios::ate);
+    boost::nowide::ifstream file(filePath, std::ios::binary | std::ios::ate);
     length = static_cast<unsigned>(file.tellg());
     data.resize(static_cast<int>(std::ceil(length * 1.1)) + 600); // Buffer should be at most 1% bigger + 600 Bytes according to docu
     file.seekg(0);

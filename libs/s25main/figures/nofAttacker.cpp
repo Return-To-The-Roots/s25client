@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofAttacker.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
@@ -262,8 +261,8 @@ void nofAttacker::Walked()
                     // Inform the owner of the building
                     const std::string msg = (attacked_goal->GetGOT() == GOT_NOB_HQ) ? _("Our headquarters was destroyed!") :
                                                                                       _("This harbor building was destroyed");
-                    SendPostMessage(attacked_goal->GetPlayer(),
-                                    new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), msg, PostCategory::Military, *attacked_goal));
+                    SendPostMessage(attacked_goal->GetPlayer(), std::make_unique<PostMsgWithBuilding>(
+                                                                  GetEvMgr().GetCurrentGF(), msg, PostCategory::Military, *attacked_goal));
 
                     // abreißen
                     nobBaseMilitary* tmp_goal = attacked_goal; // attacked_goal wird evtl auf 0 gesetzt!
@@ -591,8 +590,9 @@ void nofAttacker::ReachedDestination()
         }
 
         // Post schicken "Wir werden angegriffen" TODO evtl. unschön, da jeder Attacker das dann aufruft
-        SendPostMessage(attacked_goal->GetPlayer(), new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("We are under attack!"),
-                                                                            PostCategory::Military, *attacked_goal));
+        SendPostMessage(attacked_goal->GetPlayer(),
+                        std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("We are under attack!"), PostCategory::Military,
+                                                              *attacked_goal));
 
         // Dann Verteidiger rufen
         if(attacked_goal->CallDefender(this))

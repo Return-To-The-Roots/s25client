@@ -22,6 +22,7 @@
 
 #include "commonDefines.h"
 #include "gameTypes/GO_Type.h"
+#include <memory>
 #include <string>
 
 class SerializedGameData;
@@ -61,7 +62,7 @@ protected:
     // Following are some "sandbox methods". They avoid dependencies of subclasses to commonly used functions
     static EventManager& GetEvMgr();
     /// Send the msg to given player
-    static void SendPostMessage(unsigned player, PostMsg* msg);
+    static void SendPostMessage(unsigned player, std::unique_ptr<PostMsg> msg);
 
 private:
     unsigned objId; /// unique ID

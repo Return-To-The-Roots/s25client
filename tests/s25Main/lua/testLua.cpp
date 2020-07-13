@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE(MissionGoal)
 {
     initWorld();
 
-    const PostBox& postBox = *world.GetPostMgr().AddPostBox(1);
+    const PostBox& postBox = world.GetPostMgr().AddPostBox(1);
     BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty()); //-V807
 
     // Set goal for non-existing or other player
@@ -881,11 +881,11 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     BOOST_REQUIRE(player.IsAttackable(1));
     BOOST_REQUIRE_EQUAL(getLog(), "Pact canceled\n");
 
-    PostBox* postbox = world.GetPostMgr().AddPostBox(0);
+    const PostBox& postbox = world.GetPostMgr().AddPostBox(0);
     // Suggest Pact from Lua
     executeLua("player:SuggestPact(0, TREATY_OF_ALLIANCE, DURATION_INFINITE)");
     game->executeAICommands();
-    const auto* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox->GetMsg(0));
+    const auto* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox.GetMsg(0));
     this->AcceptPact(msg->GetPactId(), TREATY_OF_ALLIANCE, 1);
     BOOST_REQUIRE(!player.IsAttackable(1));
     executeLua("assert(not player:IsAttackable(0))");

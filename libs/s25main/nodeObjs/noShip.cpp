@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "noShip.h"
 #include "EventManager.h"
 #include "GameEvent.h"
@@ -248,8 +247,8 @@ void noShip::HandleEvent(const unsigned id)
                 state = STATE_EXPEDITION_WAITING;
 
                 // Spieler benachrichtigen
-                SendPostMessage(ownerId_, new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A ship is ready for an expedition."),
-                                                          PostCategory::Economy, *this));
+                SendPostMessage(ownerId_, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(), _("A ship is ready for an expedition."),
+                                                                        PostCategory::Economy, *this));
                 gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, ownerId_, pos));
                 break;
             case STATE_EXPLORATIONEXPEDITION_LOADING:
@@ -385,8 +384,8 @@ void noShip::Driven()
     {
         // Send message if necessary
         if(gwg->GetPlayer(ownerId_).ShipDiscoveredHostileTerritory(enemy_territory_discovered))
-            SendPostMessage(ownerId_, new PostMsg(GetEvMgr().GetCurrentGF(), _("A ship disovered an enemy territory"),
-                                                  PostCategory::Military, enemy_territory_discovered));
+            SendPostMessage(ownerId_, std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(), _("A ship disovered an enemy territory"),
+                                                                PostCategory::Military, enemy_territory_discovered));
     }
 
     switch(state)
@@ -683,9 +682,9 @@ void noShip::HandleState_ExpeditionDriving()
                 state = STATE_EXPEDITION_WAITING;
 
                 // Spieler benachrichtigen
-                SendPostMessage(ownerId_,
-                                new ShipPostMsg(GetEvMgr().GetCurrentGF(), _("A ship has reached the destination of its expedition."),
-                                                PostCategory::Economy, *this));
+                SendPostMessage(ownerId_, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(),
+                                                                        _("A ship has reached the destination of its expedition."),
+                                                                        PostCategory::Economy, *this));
                 gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, ownerId_, pos));
             }
         }

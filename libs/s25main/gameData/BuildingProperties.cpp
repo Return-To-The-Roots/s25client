@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "BuildingProperties.h"
 
 boost::container::static_vector<BuildingType, NUM_BUILDING_TYPES / 4u> BuildingProperties::militaryBldTypes;

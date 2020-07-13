@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -23,6 +23,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 #include <deque>
+#include <memory>
 #include <vector>
 
 class AIInterface;
@@ -48,9 +49,9 @@ public:
     ~AIConstruction();
 
     /// Adds a build job to the queue
-    void AddBuildJob(BuildJob* job, bool front);
+    void AddBuildJob(std::unique_ptr<BuildJob> job, bool front);
 
-    BuildJob* GetBuildJob();
+    std::unique_ptr<BuildJob> GetBuildJob();
     unsigned GetBuildJobNum() const { return buildJobs.size(); }
     unsigned GetConnectJobNum() const { return connectJobs.size(); }
 
@@ -101,8 +102,8 @@ private:
     AIInterface& aii;
     const BuildingPlanner& bldPlanner;
     /// Contains the build jobs the AI should try to execute
-    std::deque<BuildJob*> buildJobs;
-    std::deque<ConnectJob*> connectJobs;
+    std::deque<std::unique_ptr<BuildJob>> buildJobs;
+    std::deque<std::unique_ptr<ConnectJob>> connectJobs;
     /// contains the locations pt at which the ai has done some kind of construction since the last nwf
     // -> so the commands are not yet executed and for now the ai will just not build again in the area until the next nwf
     std::deque<MapPoint> constructionlocations;

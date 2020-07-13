@@ -17,7 +17,6 @@
 
 #define BOOST_TEST_MODULE RTTR_Simple
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include <rttr/test/BaseFixture.hpp>
 #include <boost/test/unit_test.hpp>
 

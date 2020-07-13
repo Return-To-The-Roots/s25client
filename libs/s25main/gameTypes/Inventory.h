@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,6 +17,7 @@
 
 #include "GoodTypes.h"
 #include "JobTypes.h"
+#include "RTTR_Assert.h"
 #include <array>
 
 #ifndef Inventory_h__

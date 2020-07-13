@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,51 +15,40 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "PostManager.h"
 #include "PostBox.h"
 #include "PostMsg.h"
 #include <algorithm>
 #include <stdexcept>
 
-PostManager::PostManager()
-{
-    std::fill(postBoxes.begin(), postBoxes.end(), (PostBox*)nullptr);
-}
+PostManager::PostManager() = default;
+PostManager::~PostManager() = default;
 
-PostManager::~PostManager()
-{
-    for(auto& postBoxe : postBoxes)
-        delete postBoxe;
-}
-
-PostBox* PostManager::AddPostBox(unsigned player)
+PostBox& PostManager::AddPostBox(unsigned player)
 {
     if(player >= postBoxes.size())
         throw std::out_of_range("Invalid player for new postbox");
     if(GetPostBox(player))
         throw std::logic_error("Postbox already exists");
-    postBoxes[player] = new PostBox();
-    return postBoxes[player];
+    postBoxes[player] = std::make_unique<PostBox>();
+    return *postBoxes[player];
 }
 
 PostBox* PostManager::GetPostBox(unsigned player) const
 {
-    return (player < postBoxes.size()) ? postBoxes[player] : nullptr;
+    return (player < postBoxes.size()) ? postBoxes[player].get() : nullptr;
 }
 
 void PostManager::RemovePostBox(unsigned player)
 {
-    deletePtr(postBoxes[player]);
+    postBoxes[player].reset();
 }
 
-void PostManager::SendMsg(unsigned player, PostMsg* msg)
+void PostManager::SendMsg(unsigned player, std::unique_ptr<PostMsg> msg)
 {
     PostBox* box = GetPostBox(player);
     if(box)
-        box->AddMsg(msg);
-    else
-        deletePtr(msg);
+        box->AddMsg(std::move(msg));
 }
 
 void PostManager::SetMissionGoal(unsigned player, const std::string& newGoal)
