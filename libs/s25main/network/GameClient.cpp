@@ -461,7 +461,6 @@ bool GameClient::OnGameMessage(const GameMessage_Player_New& msg)
     playerInfo.name = msg.name;
     playerInfo.ps = PS_OCCUPIED;
     playerInfo.ping = 0;
-    playerInfo.InitRating();
 
     if(ci)
         ci->CI_NewPlayer(msg.player);
@@ -506,7 +505,6 @@ bool GameClient::OnGameMessage(const GameMessage_Player_State& msg)
     bool wasUsed = playerInfo.isUsed();
     playerInfo.ps = msg.ps;
     playerInfo.aiInfo = msg.aiInfo;
-    playerInfo.InitRating();
 
     if(ci)
     {

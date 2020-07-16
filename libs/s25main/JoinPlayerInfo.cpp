@@ -21,21 +21,18 @@
 #include "s25util/Serializer.h"
 #include <boost/format.hpp>
 
-JoinPlayerInfo::JoinPlayerInfo() : rating(0), isReady(false) {}
+JoinPlayerInfo::JoinPlayerInfo() = default;
 
-JoinPlayerInfo::JoinPlayerInfo(const BasePlayerInfo& baseInfo) : PlayerInfo(baseInfo), originName(name), rating(0), isReady(false) {}
+JoinPlayerInfo::JoinPlayerInfo(const BasePlayerInfo& baseInfo) : PlayerInfo(baseInfo), originName(name) {}
 
-JoinPlayerInfo::JoinPlayerInfo(const PlayerInfo& playerInfo) : PlayerInfo(playerInfo), originName(name), rating(0), isReady(false) {}
+JoinPlayerInfo::JoinPlayerInfo(const PlayerInfo& playerInfo) : PlayerInfo(playerInfo), originName(name) {}
 
-JoinPlayerInfo::JoinPlayerInfo(Serializer& ser)
-    : PlayerInfo(ser), originName(ser.PopLongString()), rating(ser.PopUnsignedInt()), isReady(ser.PopBool())
-{}
+JoinPlayerInfo::JoinPlayerInfo(Serializer& ser) : PlayerInfo(ser), originName(ser.PopLongString()), isReady(ser.PopBool()) {}
 
 void JoinPlayerInfo::Serialize(Serializer& ser) const
 {
     PlayerInfo::Serialize(ser);
     ser.PushLongString(originName);
-    ser.PushUnsignedInt(rating);
     ser.PushBool(isReady);
 }
 
@@ -50,26 +47,6 @@ void JoinPlayerInfo::FixSwappedSaveSlot(JoinPlayerInfo& other)
     swap(nation, other.nation);
     swap(color, other.color);
     swap(team, other.team);
-}
-
-void JoinPlayerInfo::InitRating()
-{
-    if(ps == PS_OCCUPIED)
-        rating = 1000;
-    else if(ps == PS_AI)
-    {
-        if(aiInfo.type == AI::DEFAULT)
-        {
-            switch(aiInfo.level)
-            {
-                case AI::EASY: rating = 42; break;
-                case AI::MEDIUM: rating = 666; break;
-                case AI::HARD: rating = 1337; break;
-            }
-        } else
-            rating = 0;
-    } else
-        rating = 0;
 }
 
 void JoinPlayerInfo::SetAIName(unsigned playerId)

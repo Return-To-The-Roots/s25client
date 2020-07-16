@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,8 +24,7 @@
 struct JoinPlayerInfo : public PlayerInfo
 {
     std::string originName;
-    unsigned rating;
-    bool isReady;
+    bool isReady = false;
 
     JoinPlayerInfo();
     explicit JoinPlayerInfo(const BasePlayerInfo& baseInfo);
@@ -35,7 +34,6 @@ struct JoinPlayerInfo : public PlayerInfo
     // Serialize complete struct
     void Serialize(Serializer& ser) const;
 
-    void InitRating();
     void SetAIName(unsigned playerId);
     // Recovers fixed data in savegames after player slots are swapped
     void FixSwappedSaveSlot(JoinPlayerInfo& other);

@@ -62,7 +62,7 @@ public:
 
 private:
     void Msg_ListChooseItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
 
     void Msg_Input(unsigned win_id, const std::string& msg);

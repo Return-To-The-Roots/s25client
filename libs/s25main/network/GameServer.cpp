@@ -179,7 +179,6 @@ bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path,
                 // If it was a human we make it free, so someone can join
                 if(playerInfos[i].ps == PS_OCCUPIED)
                     playerInfos[i].ps = PS_FREE;
-                playerInfos[i].InitRating();
             }
 
             ggs_ = save.ggs;

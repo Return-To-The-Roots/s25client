@@ -76,7 +76,7 @@ void dskTextureTest::Load()
     Msg_ComboSelectItem(ID_cbTexture, selection);
 }
 
-void dskTextureTest::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
+void dskTextureTest::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
     curTerrainIdx = desc.terrain.getIndex(GetCtrl<ctrlComboBox>(ctrl_id)->GetText(selection));
     if(!curTerrainIdx)

@@ -228,7 +228,7 @@ public:
     virtual void Msg_TabChange(unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
     virtual void Msg_ListSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
     virtual void Msg_ListChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_ComboSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_ComboSelectItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
     virtual void Msg_CheckboxChange(unsigned /*ctrl_id*/, bool /*checked*/) {}
     virtual void Msg_ProgressChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
     virtual void Msg_ScrollChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
@@ -249,7 +249,7 @@ public:
     virtual void Msg_Group_EditChange(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
     virtual void Msg_Group_TabChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
     virtual void Msg_Group_ListSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
-    virtual void Msg_Group_ComboSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_Group_ComboSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
     virtual void Msg_Group_CheckboxChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*checked*/) {}
     virtual void Msg_Group_ProgressChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*position*/) {}
     virtual void Msg_Group_ScrollShow(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*visible*/) {}

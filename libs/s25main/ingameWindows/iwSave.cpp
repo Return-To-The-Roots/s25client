@@ -166,7 +166,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     RefreshTable();
 }
 
-void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const int selection)
+void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
     // Erster Eintrag --> deaktiviert
     if(selection == 0)

@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
     MouseCoords mc{cb->GetPos() + Position(randomValue(0u, cb->GetSize().x - 1u), randomValue(0u, cb->GetSize().y - 1u))};
     for(int i = 0; i < 3; i++)
     {
-        MOCK_EXPECT(wnd.Msg_ComboSelectItem).once().with(cb->GetID(), i).in(s);
+        MOCK_EXPECT(wnd.Msg_ComboSelectItem).once().with(cb->GetID(), static_cast<unsigned>(i)).in(s);
         cb->Msg_WheelDown(mc);
         REQUIRE(cb->GetSelection() == i);
     }
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
     // Same but up
     for(int i = 1; i >= 0; i--)
     {
-        MOCK_EXPECT(wnd.Msg_ComboSelectItem).once().with(cb->GetID(), i).in(s);
+        MOCK_EXPECT(wnd.Msg_ComboSelectItem).once().with(cb->GetID(), static_cast<unsigned>(i)).in(s);
         cb->Msg_WheelUp(mc);
         REQUIRE(cb->GetSelection() == i);
     }

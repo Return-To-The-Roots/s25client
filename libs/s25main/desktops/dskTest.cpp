@@ -117,7 +117,7 @@ void dskTest::Msg_EditChange(const unsigned ctrl_id)
         GetCtrl<ctrlText>(ID_txtTest)->SetText(GetCtrl<ctrlEdit>(ID_edtTest)->GetText());
 }
 
-void dskTest::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
+void dskTest::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
     if(ctrl_id == ID_cbTxtSize)
     {

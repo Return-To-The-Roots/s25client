@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -52,8 +52,8 @@ bool GameMessage_Player_List::Run(GameMessageInterface* callback) const
     for(unsigned i = 0; i < playerInfos.size(); ++i)
     {
         const JoinPlayerInfo& playerInfo = playerInfos[i];
-        LOG.writeToFile("    %d: %s %d %d %d %d %d %d %s\n") % i % playerInfo.name % playerInfo.ps % playerInfo.rating % playerInfo.ping
-          % playerInfo.nation % playerInfo.color % playerInfo.team % (playerInfo.isReady ? "true" : "false");
+        LOG.writeToFile("    %d: %s %d %d %d %d %d %s\n") % i % playerInfo.name % playerInfo.ps % playerInfo.ping % playerInfo.nation
+          % playerInfo.color % playerInfo.team % (playerInfo.isReady ? "true" : "false");
     }
     return callback->OnGameMessage(*this);
 }

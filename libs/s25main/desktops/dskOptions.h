@@ -37,7 +37,7 @@ private:
 
     void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void Msg_Group_ProgressChange(unsigned group_id, unsigned ctrl_id, unsigned short position) override;
-    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, int selection) override;
+    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void Msg_Group_OptionGroupChange(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
 
 private:

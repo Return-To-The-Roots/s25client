@@ -357,7 +357,7 @@ void dskOptions::Msg_Group_ProgressChange(const unsigned /*group_id*/, const uns
     }
 }
 
-void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection)
+void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const unsigned selection)
 {
     auto* group = GetCtrl<ctrlGroup>(group_id);
     auto* combo = group->GetCtrl<ctrlComboBox>(ctrl_id);

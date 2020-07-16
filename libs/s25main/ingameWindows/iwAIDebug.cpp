@@ -138,7 +138,7 @@ iwAIDebug::~iwAIDebug()
     }
 }
 
-void iwAIDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
+void iwAIDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {

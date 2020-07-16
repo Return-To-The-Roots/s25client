@@ -33,7 +33,7 @@ private:
     class DebugPrinter;
     class EventChecker;
 
-    void Msg_ComboSelectItem(unsigned ctrl_id, int select) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned select) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
     void Msg_Timer(unsigned ctrl_id) override;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -60,15 +60,13 @@ private:
     void Msg_PaintBefore() override;
     void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void Msg_Group_CheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;
-    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, int selection) override;
+    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_EditEnter(unsigned ctrl_id) override;
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
-
-    void LC_RankingInfo(const LobbyPlayerInfo& player) override;
 
     void CI_Error(ClientError ce) override;
 

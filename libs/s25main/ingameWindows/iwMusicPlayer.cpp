@@ -129,22 +129,19 @@ iwMusicPlayer::~iwMusicPlayer()
     }
 }
 
-void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const int selection)
+void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
     // Entsprechende Datei geladen
-    if(selection != 0xFFFF)
+    Playlist pl;
+    if(pl.Load(LOG, GetFullPlaylistPath(GetCtrl<ctrlComboBox>(2)->GetText(selection))))
     {
-        Playlist pl;
-        if(pl.Load(LOG, GetFullPlaylistPath(GetCtrl<ctrlComboBox>(2)->GetText(selection))))
-        {
-            // Das Fenster entsprechend mit den geladenen Werten füllen
-            pl.FillMusicPlayer(this);
-            changed = true;
-        } else
-            // Fehler, konnte nicht geladen werden
-            WINDOWMANAGER.Show(
-              std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
-    }
+        // Das Fenster entsprechend mit den geladenen Werten füllen
+        pl.FillMusicPlayer(this);
+        changed = true;
+    } else
+        // Fehler, konnte nicht geladen werden
+        WINDOWMANAGER.Show(
+          std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
 }
 
 void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigned selection)

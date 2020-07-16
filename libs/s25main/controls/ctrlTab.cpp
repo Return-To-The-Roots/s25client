@@ -174,7 +174,7 @@ void ctrlTab::Msg_Group_ListSelectItem(const unsigned /*group_id*/, const unsign
     GetParent()->Msg_Group_ListSelectItem(this->GetID(), ctrl_id, selection);
 }
 
-void ctrlTab::Msg_Group_ComboSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)
+void ctrlTab::Msg_Group_ComboSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned selection)
 {
     GetParent()->Msg_Group_ComboSelectItem(this->GetID(), ctrl_id, selection);
 }

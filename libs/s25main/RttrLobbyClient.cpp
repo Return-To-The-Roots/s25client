@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -38,11 +38,6 @@ void RttrLobbyClient::RemoveListener(LobbyInterface* listener)
 void RttrLobbyClient::SendServerJoinRequest()
 {
     client_.SendServerJoinRequest();
-}
-
-void RttrLobbyClient::SendRankingInfoRequest(const std::string& name)
-{
-    client_.SendRankingInfoRequest(name);
 }
 
 void RttrLobbyClient::SendChat(const std::string& text)

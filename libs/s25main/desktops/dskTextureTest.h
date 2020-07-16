@@ -32,7 +32,7 @@ public:
 
     void Load();
 
-    void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_PaintAfter() override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
