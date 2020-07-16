@@ -53,7 +53,7 @@ private:
     // Speichert Datei
     void SaveLoad() override;
 
-    void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
 };
 
 class iwLoad : public iwSaveLoad

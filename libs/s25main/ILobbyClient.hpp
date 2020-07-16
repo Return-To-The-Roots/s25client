@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,7 +31,6 @@ public:
     virtual void AddListener(LobbyInterface* listener) = 0;
     virtual void RemoveListener(LobbyInterface* listener) = 0;
     virtual void SendServerJoinRequest() = 0;
-    virtual void SendRankingInfoRequest(const std::string& name) = 0;
     virtual void SendChat(const std::string& text) = 0;
 };
 

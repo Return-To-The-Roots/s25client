@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -39,7 +39,6 @@ MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
     MOCK_METHOD(AddListener, 1);
     MOCK_METHOD(RemoveListener, 1);
     MOCK_METHOD(SendServerJoinRequest, 0);
-    MOCK_METHOD(SendRankingInfoRequest, 1);
     MOCK_METHOD(SendChat, 1);
 };
 /* clang-format on */
@@ -60,7 +59,6 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
     MOCK_EXPECT(client->AddListener).exactly(1).in(s);
     MOCK_EXPECT(client->RemoveListener).exactly(1).in(s);
     MOCK_EXPECT(client->SendServerJoinRequest).exactly(1).in(s2);
-    MOCK_EXPECT(client->SendRankingInfoRequest).at_least(1);
     MOCK_EXPECT(client->SendChat).exactly(1);
 
     // TODO: How to trigger through dskHostGame?

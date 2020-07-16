@@ -33,7 +33,7 @@ public:
     void Msg_EditChange(unsigned ctrl_id) override;
     void Msg_TabChange(unsigned ctrl_id, unsigned short tab_id) override;
     void Msg_ListSelectItem(unsigned ctrl_id, int selection) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
     void Msg_ProgressChange(unsigned ctrl_id, unsigned short position) override;
     void Msg_ScrollShow(unsigned ctrl_id, bool visible) override;
@@ -48,7 +48,7 @@ public:
     void Msg_Group_EditChange(unsigned group_id, unsigned ctrl_id) override;
     void Msg_Group_TabChange(unsigned group_id, unsigned ctrl_id, unsigned short tab_id) override;
     void Msg_Group_ListSelectItem(unsigned group_id, unsigned ctrl_id, int selection) override;
-    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, int selection) override;
+    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void Msg_Group_CheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;
     void Msg_Group_ProgressChange(unsigned group_id, unsigned ctrl_id, unsigned short position) override;
     void Msg_Group_ScrollShow(unsigned group_id, unsigned ctrl_id, bool visible) override;

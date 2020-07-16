@@ -223,17 +223,13 @@ iwMapDebug::~iwMapDebug()
     gwv.RemoveDrawNodeCallback(printer.get());
 }
 
-void iwMapDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const int select)
+void iwMapDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned select)
 {
     if(ctrl_id == ID_cbShowWhat)
-    {
-        if(select >= 0)
-            printer->showDataIdx = static_cast<unsigned>(select);
-    } else if(ctrl_id == ID_cbShowForPlayer)
-    {
-        if(select >= 0)
-            printer->playerIdx = static_cast<unsigned>(select);
-    } else if(ctrl_id == ID_cbCheckEventForPlayer)
+        printer->showDataIdx = select;
+    else if(ctrl_id == ID_cbShowForPlayer)
+        printer->playerIdx = select;
+    else if(ctrl_id == ID_cbCheckEventForPlayer)
     {
         if(select == 0)
         {

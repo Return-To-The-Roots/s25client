@@ -115,9 +115,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     AddText(0, DrawPoint(400, 5), GAMECLIENT.GetGameName(), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     // "Spielername"
-    AddText(10, DrawPoint(95, 40), _("Player Name"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    // "Einstufung"
-    AddText(11, DrawPoint(205, 40), _("Classification"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    AddText(10, DrawPoint(125, 40), _("Player Name"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     // "Volk"
     AddText(12, DrawPoint(285, 40), _("Race"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     // "Farbe"
@@ -134,7 +132,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     }
     // "Swap"
     if(gameLobby->isHost() && !gameLobby->isSavegame())
-        AddText(24, DrawPoint(10, 40), _("Swap"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+        AddText(24, DrawPoint(0, 40), _("Swap"), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
     // "Verschieben" (nur bei Savegames!)
     if(gameLobby->isSavegame())
         AddText(17, DrawPoint(645, 40), _("Past player"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
@@ -264,7 +262,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         for(unsigned i = 0; i < gameLobby->getNumPlayers(); i++)
         {
             DrawPoint rowPos = GetCtrl<Window>(ID_PLAYER_GROUP_START + i)->GetCtrl<Window>(1)->GetPos();
-            ctrlButton* bt = AddTextButton(ID_SWAP_BUTTON + i, DrawPoint(5, 0), Extent(10, 22), TC_RED1, _("-"), NormalFont);
+            ctrlButton* bt = AddTextButton(ID_SWAP_BUTTON + i, DrawPoint(5, 0), Extent(22, 22), TC_RED1, _("-"), NormalFont);
             bt->SetPos(DrawPoint(bt->GetPos().x, rowPos.y));
         }
     }
@@ -274,13 +272,6 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     {
         lobbyClient_->AddListener(this);
         lobbyClient_->SendServerJoinRequest();
-        lobbyClient_->SendRankingInfoRequest(gameLobby->getPlayer(localPlayerId_).name);
-        for(unsigned char i = 0; i < gameLobby->getNumPlayers(); ++i)
-        {
-            const JoinPlayerInfo& player = gameLobby->getPlayer(i);
-            if(player.ps == PS_OCCUPIED)
-                lobbyClient_->SendRankingInfoRequest(player.name);
-        }
     }
 
     GAMECLIENT.SetInterface(this);
@@ -366,9 +357,9 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 
     // Spielername, beim Hosts Spielerbuttons, aber nich beim ihm selber, er kann sich ja nich selber kicken!
     if(gameLobby->isHost() && !player.isHost && (!lua || lua->IsChangeAllowed("playerState")))
-        group->AddTextButton(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont);
+        group->AddTextButton(1, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont);
     else
-        group->AddTextDeepening(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont, COLOR_YELLOW);
+        group->AddTextDeepening(1, DrawPoint(30, cy), Extent(200, 22), tc, name, NormalFont, COLOR_YELLOW);
     auto* text = group->GetCtrl<ctrlBaseText>(1);
 
     // Is das der Host? Dann farblich markieren
@@ -378,12 +369,6 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     // Bei geschlossenem nicht sichtbar
     if(player.isUsed())
     {
-        /// Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
-        group->AddVarDeepening(2, DrawPoint(180, cy), Extent(50, 22), tc,
-                               ((lobbyClient_ && lobbyClient_->IsLoggedIn()) || player.ps == PS_AI ? _("%d") : _("n/a")), NormalFont,
-                               COLOR_YELLOW, 1,
-                               &player.rating); //-V111
-
         // If not in savegame -> Player can change own row and host can change AIs
         const bool allowPlayerChange = ((gameLobby->isHost() && player.ps == PS_AI) || localPlayerId_ == row) && !gameLobby->isSavegame();
         bool allowNationChange = allowPlayerChange;
@@ -430,12 +415,12 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         // Verschieben (nur bei Savegames und beim Host!)
         if(gameLobby->isSavegame() && player.ps == PS_OCCUPIED)
         {
-            ctrlComboBox* combo = group->AddComboBox(8, DrawPoint(570, cy), Extent(150, 22), tc, NormalFont, 150, !gameLobby->isHost());
+            ctrlComboBox* combo = group->AddComboBox(8, DrawPoint(560, cy), Extent(160, 22), tc, NormalFont, 150, !gameLobby->isHost());
 
             // Mit den alten Namen füllen
             for(unsigned i = 0; i < gameLobby->getNumPlayers(); ++i)
             {
-                if(gameLobby->getPlayer(i).originName.length())
+                if(!gameLobby->getPlayer(i).originName.empty())
                 {
                     combo->AddString(gameLobby->getPlayer(i).originName);
                     if(i == row)
@@ -584,30 +569,27 @@ void dskHostGame::Msg_Group_CheckboxChange(const unsigned group_id, const unsign
         SetPlayerReady(playerId, checked);
 }
 
-void dskHostGame::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned /*ctrl_id*/, const int selection)
+void dskHostGame::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned /*ctrl_id*/, const unsigned selection)
 {
     if(!gameLobby->isHost())
         return;
-    unsigned playerId = group_id - ID_PLAYER_GROUP_START;
+    // Swap players
+    const unsigned playerId = group_id - ID_PLAYER_GROUP_START;
 
-    // Spieler wurden vertauscht
-
-    // 2. Player herausfinden (Strings vergleichen
-    unsigned player2;
-    for(player2 = 0; player2 < gameLobby->getNumPlayers(); ++player2)
+    int player2 = -1;
+    for(unsigned i = 0, playerCtr = 0; i < gameLobby->getNumPlayers(); ++i)
     {
-        if(gameLobby->getPlayer(player2).originName == GetCtrl<ctrlGroup>(group_id)->GetCtrl<ctrlComboBox>(8)->GetText(selection))
+        if(!gameLobby->getPlayer(i).originName.empty() && playerCtr++ == selection)
+        {
+            player2 = i;
             break;
+        }
     }
 
-    // Keinen Namen gefunden?
-    if(player2 == gameLobby->getNumPlayers())
-    {
-        LOG.write("dskHostGame: ERROR: No Origin Name found, stop swapping!\n");
-        return;
-    }
-
-    lobbyHostController->SwapPlayers(playerId, player2);
+    if(player2 < 0)
+        LOG.write("dskHostGame: ERROR: Selected player not found, stop swapping!\n");
+    else
+        lobbyHostController->SwapPlayers(playerId, static_cast<unsigned>(player2));
 }
 
 void dskHostGame::GoBack()
@@ -766,7 +748,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     }
 }
 
-void dskHostGame::Msg_ComboSelectItem(const unsigned ctrl_id, const int /*selection*/)
+void dskHostGame::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned /*selection*/)
 {
     switch(ctrl_id)
     {
@@ -915,13 +897,6 @@ void dskHostGame::CI_NewPlayer(const unsigned playerId)
     // Spielername setzen
     UpdatePlayerRow(playerId);
 
-    // Rankinginfo abrufen
-    if(lobbyClient_ && lobbyClient_->IsLoggedIn())
-    {
-        const JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-        if(player.ps == PS_OCCUPIED)
-            lobbyClient_->SendRankingInfoRequest(player.name);
-    }
     if(lua && gameLobby->isHost())
         lua->EventPlayerJoined(playerId);
 }
@@ -942,12 +917,6 @@ void dskHostGame::CI_GameLoading(const std::shared_ptr<Game>& game)
 void dskHostGame::CI_PlayerDataChanged(unsigned playerId)
 {
     UpdatePlayerRow(playerId);
-    if(lobbyClient_ && lobbyClient_->IsLoggedIn())
-    {
-        const JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-        if(player.ps == PS_OCCUPIED)
-            lobbyClient_->SendRankingInfoRequest(player.name);
-    }
 }
 
 void dskHostGame::CI_PingChanged(const unsigned playerId, const unsigned short /*ping*/)
@@ -1011,18 +980,6 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
 void dskHostGame::CI_Error(const ClientError ce)
 {
     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
-}
-
-/**
- *  (Lobby-)RankingInfo: Rankinginfo eines bestimmten Benutzers empfangen
- */
-void dskHostGame::LC_RankingInfo(const LobbyPlayerInfo& player)
-{
-    for(unsigned i = 0; i < gameLobby->getNumPlayers(); ++i)
-    {
-        if(gameLobby->getPlayer(i).name == player.getName())
-            gameLobby->getPlayer(i).rating = player.getPunkte();
-    }
 }
 
 /**
