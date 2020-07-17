@@ -318,9 +318,7 @@ bool VideoSDL2::MessageLoop()
                     case SDLK_HOME: ke.kt = KT_HOME; break;
                     case SDLK_END: ke.kt = KT_END; break;
                     case SDLK_ESCAPE: ke.kt = KT_ESCAPE; break;
-                    case SDLK_PRINTSCREEN:
-                        ke.kt = KT_PRINT;
-                        break;
+                    case SDLK_PRINTSCREEN: ke.kt = KT_PRINT; break;
                     // case SDLK_BACKQUOTE: ev.key.keysym.scancode = '^'; break;
                     case SDLK_v:
                         if(SDL_GetModState() & KMOD_CTRL)
@@ -385,7 +383,9 @@ bool VideoSDL2::MessageLoop()
                     CallBack->Msg_RightUp(mouse_xy);
                 }
                 break;
-            case SDL_MOUSEWHEEL: { int y = ev.wheel.y;
+            case SDL_MOUSEWHEEL:
+            {
+                int y = ev.wheel.y;
 #if SDL_VERSION_ATLEAST(2, 0, 4)
                 if(ev.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
                     y = -y;

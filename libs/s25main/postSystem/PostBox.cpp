@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h"
 #include "PostBox.h"
 #include "PostMsg.h"
+#include "commonDefines.h"
 #include <algorithm>
 
 PostBox::PostBox() = default;

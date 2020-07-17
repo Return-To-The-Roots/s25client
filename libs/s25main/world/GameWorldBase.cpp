@@ -194,7 +194,8 @@ bool IsMilBldOfOwner(const GameWorldBase& gwb, MapPoint pt, unsigned char owner)
 bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const
 {
     // Im Umkreis von 4 Punkten ein Militärgebäude suchen
-    return CheckPointsInRadius(nPt, 4, [this, player](auto pt, auto) { return IsMilBldOfOwner(*this, pt, player + 1); }, false);
+    return CheckPointsInRadius(
+      nPt, 4, [this, player](auto pt, auto) { return IsMilBldOfOwner(*this, pt, player + 1); }, false);
 }
 
 bool GameWorldBase::IsMilitaryBuildingOnNode(const MapPoint pt, bool attackBldsOnly) const

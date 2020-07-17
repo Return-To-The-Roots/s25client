@@ -107,7 +107,9 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
             pass->SetFocus(true);
         }
         break;
-        case 5: { Msg_ButtonClick(7);
+        case 5:
+        {
+            Msg_ButtonClick(7);
         }
         break;
     }
@@ -147,7 +149,9 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
                 GetCtrl<ctrlButton>(ctrl_id)->SetEnabled(false);
         }
         break;
-        case 8: { Close();
+        case 8:
+        {
+            Close();
         }
         break;
     }

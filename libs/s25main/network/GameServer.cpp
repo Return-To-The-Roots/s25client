@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h"
 #include "GameServer.h"
 #include "Debug.h"
 #include "GameMessage.h"
@@ -26,6 +25,7 @@
 #include "RttrConfig.h"
 #include "Savegame.h"
 #include "Settings.h"
+#include "commonDefines.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
 #include "network/CreateServerInfo.h"
@@ -141,9 +141,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path,
     // Maps, Random-Maps, Savegames - Header laden und relevante Informationen rausschreiben (Map-Titel, Spieleranzahl)
     switch(mapinfo.type)
     {
-        default:
-            LOG.write("GameServer::Start: ERROR: Map-Type %u not supported!\n") % mapinfo.type;
-            return false;
+        default: LOG.write("GameServer::Start: ERROR: Map-Type %u not supported!\n") % mapinfo.type; return false;
         // Altes S2-Mapformat von BB
         case MAPTYPE_OLDMAP:
         {

@@ -134,7 +134,9 @@ void nofHunter::HandleDerivedEvent(const unsigned id)
             if(id == 2)
                 HandleStateFindingShootingPoint();
             break;
-        case STATE_HUNTER_SHOOTING: { HandleStateShooting();
+        case STATE_HUNTER_SHOOTING:
+        {
+            HandleStateShooting();
         }
         break;
         case STATE_HUNTER_EVISCERATING:
@@ -224,16 +226,24 @@ void nofHunter::WalkedDerived()
     switch(state)
     {
         default: break;
-        case STATE_HUNTER_CHASING: { HandleStateChasing();
+        case STATE_HUNTER_CHASING:
+        {
+            HandleStateChasing();
         }
         break;
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT: { HandleStateFindingShootingPoint();
+        case STATE_HUNTER_FINDINGSHOOTINGPOINT:
+        {
+            HandleStateFindingShootingPoint();
         }
         break;
-        case STATE_HUNTER_WALKINGTOCADAVER: { HandleStateWalkingToCadaver();
+        case STATE_HUNTER_WALKINGTOCADAVER:
+        {
+            HandleStateWalkingToCadaver();
         }
         break;
-        case STATE_WALKINGHOME: { WalkHome();
+        case STATE_WALKINGHOME:
+        {
+            WalkHome();
         }
         break;
     }

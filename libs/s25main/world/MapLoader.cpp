@@ -359,9 +359,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
         switch(map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y))
         {
             // TODO: Welche ID ist Polarb�r?
-            case 1:
-                species = Species(SPEC_RABBITWHITE + RANDOM.Rand(__FILE__, __LINE__, 0, 2));
-                break; // zuf�llige Hasenart nehmen
+            case 1: species = Species(SPEC_RABBITWHITE + RANDOM.Rand(__FILE__, __LINE__, 0, 2)); break; // zuf�llige Hasenart nehmen
             case 2: species = SPEC_FOX; break;
             case 3: species = SPEC_STAG; break;
             case 4: species = SPEC_DEER; break;

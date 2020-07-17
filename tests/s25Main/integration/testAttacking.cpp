@@ -190,9 +190,9 @@ template<unsigned T_numPlayers = 2, unsigned T_width = AttackDefaults::width, un
 struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
 {
     using Parent = AttackFixtureBase<T_numPlayers, T_width, T_height>;
-    using Parent::MakeVisible;
     using Parent::curPlayer;
     using Parent::hqPos;
+    using Parent::MakeVisible;
     using Parent::world;
 
     /// Tested positions for military buildings

@@ -55,13 +55,11 @@ namespace detail {
 
     template<class T, class = void>
     struct has_src_clone : std::false_type
-    {
-    };
+    {};
 
     template<class T>
     struct has_src_clone<T, void_t<decltype(src_clone(std::declval<T>(), nullptr))>> : std::true_type
-    {
-    };
+    {};
 
     template<typename T, bool = has_src_clone<T*>::value>
     class State

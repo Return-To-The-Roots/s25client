@@ -247,8 +247,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 
     switch(ke.kt)
     {
-        default:
-            return false;
+        default: return false;
         // Wird bereits über Char geliefert !!
         case KT_SPACE: // Leertaste
             AddChar(0x20);

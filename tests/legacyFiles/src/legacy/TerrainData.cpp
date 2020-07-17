@@ -185,8 +185,7 @@ unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
         case Landscape::WASTELAND:
             switch(t)
             {
-                case TT_SNOW:
-                    return 0xFF860000; // TT_SNOW is lava, too
+                case TT_SNOW: return 0xFF860000; // TT_SNOW is lava, too
                 case TT_DESERT: return 0xFF9c7c64;
                 case TT_SWAMPLAND: return 0xFF001820;
                 case TT_MEADOW_FLOWERS: return 0xFF444850;

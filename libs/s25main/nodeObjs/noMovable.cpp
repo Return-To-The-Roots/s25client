@@ -86,9 +86,7 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
     // runter natürlich nich so viel schneller werden wie langsamer hoch
     switch(int(gwg->GetNeighbourNode(pos, dir).altitude) - int(gwg->GetNode(pos).altitude))
     {
-        default:
-            ascent = 3;
-            break; // gerade
+        default: ascent = 3; break; // gerade
         case 1:
             ascent = 4;
             gf_length += (gf_length / 2);
@@ -102,18 +100,12 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
         case 5:
             ascent = 6;
             gf_length *= 3;
-            break; // steil hoch
-        case -1:
-            ascent = 2;
-            break; // leicht runter
+            break;                  // steil hoch
+        case -1: ascent = 2; break; // leicht runter
         case -2:
-        case -3:
-            ascent = 1;
-            break; // mittelsteil runter
+        case -3: ascent = 1; break; // mittelsteil runter
         case -4:
-        case -5:
-            ascent = 0;
-            break; // steil runter
+        case -5: ascent = 0; break; // steil runter
     }
 
     current_ev = GetEvMgr().AddEvent(this, gf_length);

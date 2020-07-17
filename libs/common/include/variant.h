@@ -26,12 +26,10 @@ template<typename...>
 struct indexOf;
 template<typename T, typename... Rest>
 struct indexOf<T, T, Rest...> : std::integral_constant<size_t, 0>
-{
-};
+{};
 template<typename T, typename U, typename... Rest>
 struct indexOf<T, U, Rest...> : std::integral_constant<size_t, 1 + indexOf<T, Rest...>::value>
-{
-};
+{};
 
 template<typename... Lambdas>
 struct lambda_visitor;

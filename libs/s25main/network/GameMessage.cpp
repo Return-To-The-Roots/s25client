@@ -15,10 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h"
 #include "GameMessage.h"
 #include "GameMessage_GameCommand.h"
 #include "GameMessages.h"
+#include "commonDefines.h"
 
 bool GameMessage::run(MessageInterface* callback, unsigned senderPlayerID)
 {

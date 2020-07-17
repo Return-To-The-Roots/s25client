@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h"
 #include "WindowManager.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "Window.h"
+#include "commonDefines.h"
 #include "desktops/Desktop.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"

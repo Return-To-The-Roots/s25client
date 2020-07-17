@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h"
 #include "nofTradeLeader.h"
 #include "EventManager.h"
 #include "GameObject.h"
@@ -23,6 +22,7 @@
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "commonDefines.h"
 #include "nofTradeDonkey.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"

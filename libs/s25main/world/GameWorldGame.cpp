@@ -1073,8 +1073,8 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
 
     // Check scouts and soldiers
     const unsigned range = std::max(VISUALRANGE_SCOUT, VISUALRANGE_SOLDIER);
-    if(CheckPointsInRadius(pt, range, [this, player](auto pt, auto distance) { return this->IsScoutingFigureOnNode(pt, player, distance); },
-                           true))
+    if(CheckPointsInRadius(
+         pt, range, [this, player](auto pt, auto distance) { return this->IsScoutingFigureOnNode(pt, player, distance); }, true))
     {
         return true;
     }

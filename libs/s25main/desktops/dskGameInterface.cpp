@@ -689,7 +689,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case KT_F9: // Readme
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
-        case KT_F10: {
+        case KT_F10:
+        {
 #ifdef NDEBUG
             const bool allowHumanAI = isCheatModeOn;
 #else

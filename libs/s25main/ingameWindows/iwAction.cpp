@@ -419,30 +419,44 @@ void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned
     {
         default: break;
 
-        case TAB_ATTACK: { Msg_ButtonClick_TabAttack(ctrl_id);
+        case TAB_ATTACK:
+        {
+            Msg_ButtonClick_TabAttack(ctrl_id);
         }
         break;
-        case TAB_SEAATTACK: { Msg_ButtonClick_TabSeaAttack(ctrl_id);
-        }
-        break;
-
-        case TAB_FLAG: { Msg_ButtonClick_TabFlag(ctrl_id);
-        }
-        break;
-
-        case TAB_BUILD: { Msg_ButtonClick_TabBuild(ctrl_id);
+        case TAB_SEAATTACK:
+        {
+            Msg_ButtonClick_TabSeaAttack(ctrl_id);
         }
         break;
 
-        case TAB_SETFLAG: { Msg_ButtonClick_TabSetFlag(ctrl_id);
+        case TAB_FLAG:
+        {
+            Msg_ButtonClick_TabFlag(ctrl_id);
         }
         break;
 
-        case TAB_CUTROAD: { Msg_ButtonClick_TabCutRoad(ctrl_id);
+        case TAB_BUILD:
+        {
+            Msg_ButtonClick_TabBuild(ctrl_id);
         }
         break;
 
-        case TAB_WATCH: { Msg_ButtonClick_TabWatch(ctrl_id);
+        case TAB_SETFLAG:
+        {
+            Msg_ButtonClick_TabSetFlag(ctrl_id);
+        }
+        break;
+
+        case TAB_CUTROAD:
+        {
+            Msg_ButtonClick_TabCutRoad(ctrl_id);
+        }
+        break;
+
+        case TAB_WATCH:
+        {
+            Msg_ButtonClick_TabWatch(ctrl_id);
         }
         break;
     }

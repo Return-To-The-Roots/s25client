@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h"
 #include "dskSelectMap.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "RttrLobbyClient.hpp"
 #include "WindowManager.h"
+#include "commonDefines.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPreviewMinimap.h"

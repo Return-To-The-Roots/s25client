@@ -111,10 +111,14 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
             LOADER.GetMapImageN(692 + 3 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 35), 0x99EEEEEE);
         }
             return;
-        case STATE_REMOVECOVER: { LOADER.GetImageN("charburner_bobs", 28 + step)->DrawFull(drawPt);
+        case STATE_REMOVECOVER:
+        {
+            LOADER.GetImageN("charburner_bobs", 28 + step)->DrawFull(drawPt);
         }
             return;
-        case STATE_HARVEST: { LOADER.GetImageN("charburner_bobs", 34 + step)->DrawFull(drawPt);
+        case STATE_HARVEST:
+        {
+            LOADER.GetImageN("charburner_bobs", 34 + step)->DrawFull(drawPt);
         }
             return;
         default: return;

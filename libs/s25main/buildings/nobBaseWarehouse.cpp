@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h"
 #include "nobBaseWarehouse.h"
 #include "BurnedWarehouse.h"
 #include "EventManager.h"
@@ -24,6 +23,7 @@
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
+#include "commonDefines.h"
 #include "factories/JobFactory.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofCarrier.h"
