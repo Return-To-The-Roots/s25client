@@ -17,13 +17,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "commonDefines.h"
 #include "Loader.h"
 #include "ListDir.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "Timer.h"
 #include "addons/const_addons.h"
+#include "commonDefines.h"
 #include "convertSounds.h"
 #include "files.h"
 #include "helpers/containerUtils.h"

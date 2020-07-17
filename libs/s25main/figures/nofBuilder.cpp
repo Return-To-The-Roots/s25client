@@ -288,7 +288,9 @@ void nofBuilder::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
-        case STATE_FIGUREWORK: { DrawWalkingBobJobs(drawPt, JOB_BUILDER);
+        case STATE_FIGUREWORK:
+        {
+            DrawWalkingBobJobs(drawPt, JOB_BUILDER);
         }
         break;
         case STATE_BUILDFREEWALK:

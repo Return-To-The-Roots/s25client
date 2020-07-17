@@ -79,7 +79,9 @@ void nofAggressiveDefender::Walked()
     switch(state)
     {
         default: nofActiveSoldier::Walked(); return;
-        case STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR: { MissAggressiveDefendingWalk();
+        case STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR:
+        {
+            MissAggressiveDefendingWalk();
         }
             return;
     }

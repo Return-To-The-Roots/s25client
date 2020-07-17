@@ -123,7 +123,9 @@ void nofPlaner::Draw(DrawPoint drawPt)
     switch(state)
     {
         case STATE_FIGUREWORK:
-        case STATE_WALKING: { DrawWalkingBobJobs(drawPt, JOB_PLANER);
+        case STATE_WALKING:
+        {
+            DrawWalkingBobJobs(drawPt, JOB_PLANER);
         }
         break;
         case STATE_PLANING:

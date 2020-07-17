@@ -115,8 +115,7 @@ iwMusicPlayer::~iwMusicPlayer()
                 WINDOWMANAGER.Show(
                   std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be saved!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         } catch(std::exception&)
-        {
-        }
+        {}
 
         // Entsprechenden Dateipfad speichern
         SETTINGS.sound.playlist = GetCtrl<ctrlComboBox>(2)->GetText(selection);
@@ -169,7 +168,9 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         // Add Playlist
-        case 3: { WINDOWMANAGER.Show(std::make_unique<InputWindow>(*this, 1, _("Specify the playlist name")));
+        case 3:
+        {
+            WINDOWMANAGER.Show(std::make_unique<InputWindow>(*this, 1, _("Specify the playlist name")));
         }
         break;
         // Remove Playlist

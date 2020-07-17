@@ -61,7 +61,7 @@ do                                                                           \
         BOOST_TEST(e.what() == (MSG));                                       \
     }                                                                        \
 } while(false)
-    /* clang-format on */
+/* clang-format on */
 
 #define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) \
     BOOST_REQUIRE_EQUAL_COLLECTIONS((Col1).begin(), (Col1).end(), (Col2).begin(), (Col2).end())

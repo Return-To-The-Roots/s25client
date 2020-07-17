@@ -151,7 +151,9 @@ void noShip::Draw(DrawPoint drawPt)
         }
         break;
 
-        case STATE_GOTOHARBOR: { DrawDriving(drawPt);
+        case STATE_GOTOHARBOR:
+        {
+            DrawDriving(drawPt);
         }
         break;
         case STATE_EXPEDITION_LOADING:
@@ -161,17 +163,23 @@ void noShip::Draw(DrawPoint drawPt)
         case STATE_SEAATTACK_LOADING:
         case STATE_SEAATTACK_UNLOADING:
         case STATE_EXPLORATIONEXPEDITION_LOADING:
-        case STATE_EXPLORATIONEXPEDITION_UNLOADING: { DrawFixed(drawPt, false);
+        case STATE_EXPLORATIONEXPEDITION_UNLOADING:
+        {
+            DrawFixed(drawPt, false);
         }
         break;
         case STATE_EXPLORATIONEXPEDITION_WAITING:
-        case STATE_EXPEDITION_WAITING: { DrawFixed(drawPt, true);
+        case STATE_EXPEDITION_WAITING:
+        {
+            DrawFixed(drawPt, true);
         }
         break;
         case STATE_EXPEDITION_DRIVING:
         case STATE_TRANSPORT_DRIVING:
         case STATE_SEAATTACK_DRIVINGTODESTINATION:
-        case STATE_EXPLORATIONEXPEDITION_DRIVING: { DrawDrivingWithWares(drawPt);
+        case STATE_EXPLORATIONEXPEDITION_DRIVING:
+        {
+            DrawDrivingWithWares(drawPt);
         }
         break;
         case STATE_SEAATTACK_RETURN_DRIVING:
@@ -629,8 +637,7 @@ void noShip::HandleState_GoToHarbor()
     Result res = DriveToHarbour();
     switch(res)
     {
-        case DRIVING:
-            return; // Continue
+        case DRIVING: return; // Continue
         case GOAL_REACHED:
         {
             MapPoint goal(gwg->GetHarborPoint(goal_harborId));
@@ -792,8 +799,7 @@ void noShip::HandleState_SeaAttackDriving()
     Result res = DriveToHarbourPlace();
     switch(res)
     {
-        case DRIVING:
-            return; // OK
+        case DRIVING: return; // OK
         case GOAL_REACHED:
             // Ziel erreicht, dann stellen wir das Schiff hier hin und die Soldaten laufen nacheinander raus zum Ziel
             state = STATE_SEAATTACK_WAITING;

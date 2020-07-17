@@ -132,7 +132,9 @@ void noTree::Draw(DrawPoint drawPt)
             LOADER.tree_cache[type][11 + i].draw(drawPt);
         }
         break;
-        case STATE_FALLING_FALLEN: { LOADER.tree_cache[type][14].draw(drawPt);
+        case STATE_FALLING_FALLEN:
+        {
+            LOADER.tree_cache[type][14].draw(drawPt);
         }
         break;
     }

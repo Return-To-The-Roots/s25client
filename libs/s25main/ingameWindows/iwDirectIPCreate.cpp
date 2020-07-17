@@ -162,7 +162,9 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
             WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
         }
         break;
-        case 8: { Close();
+        case 8:
+        {
+            Close();
         }
         break;
     }

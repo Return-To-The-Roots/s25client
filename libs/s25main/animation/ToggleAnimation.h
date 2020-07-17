@@ -18,8 +18,8 @@
 #ifndef ToggleAnimation_h__
 #define ToggleAnimation_h__
 
-#include "commonDefines.h"
 #include "animation/Animation.h"
+#include "commonDefines.h"
 
 /// Animations which toggles a boolean state of an object
 template<class T>

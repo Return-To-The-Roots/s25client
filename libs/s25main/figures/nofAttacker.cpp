@@ -143,7 +143,9 @@ void nofAttacker::Walked()
     switch(state)
     {
         default: nofActiveSoldier::Walked(); break;
-        case STATE_ATTACKING_WALKINGTOGOAL: { MissAttackingWalk();
+        case STATE_ATTACKING_WALKINGTOGOAL:
+        {
+            MissAttackingWalk();
         }
         break;
         case STATE_ATTACKING_ATTACKINGFLAG:
@@ -274,7 +276,9 @@ void nofAttacker::Walked()
             }
         }
         break;
-        case STATE_ATTACKING_CAPTURINGNEXT: { CapturingWalking();
+        case STATE_ATTACKING_CAPTURINGNEXT:
+        {
+            CapturingWalking();
         }
         break;
 

@@ -73,13 +73,11 @@ unsigned short nofArmorer::GetCarryID() const
         // Je nach Nation einen bestimmtem Schild fertigen
         switch(gwg->GetPlayer(player).nation)
         {
-            case NAT_AFRICANS:
-                return 60; //-V525
+            case NAT_AFRICANS: return 60; //-V525
             case NAT_JAPANESE: return 58;
             case NAT_ROMANS: return 57;
             case NAT_VIKINGS: return 59;
-            case NAT_BABYLONIANS:
-                return 58; // babylonians use japanese shield carry-animation
+            case NAT_BABYLONIANS: return 58; // babylonians use japanese shield carry-animation
             default: RTTR_Assert(false); return 0;
         }
     }
@@ -105,10 +103,14 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
             }
         }
         break;
-        case STATE_WORK: { HandleStateWork();
+        case STATE_WORK:
+        {
+            HandleStateWork();
         }
         break;
-        case STATE_WAITING2: { HandleStateWaiting2();
+        case STATE_WAITING2:
+        {
+            HandleStateWaiting2();
         }
         break;
         default: break;

@@ -151,9 +151,7 @@ void noFigure::ActAtFirst()
     {
         default: break;
         case FS_GOTOGOAL: WalkToGoal(); break;
-        case FS_JOB:
-            StartWalking(Direction::SOUTHEAST);
-            break; // erstmal rauslaufen, darum kümmern sich dann die abgeleiteten Klassen
+        case FS_JOB: StartWalking(Direction::SOUTHEAST); break; // erstmal rauslaufen, darum kümmern sich dann die abgeleiteten Klassen
         case FS_GOHOME:
         {
             // Wenn ich gleich wieder nach Hause geschickt wurde und aus einem Lagerhaus rauskomme, gar nicht erst rausgehen!
@@ -171,9 +169,7 @@ void noFigure::ActAtFirst()
                 WalkToGoal();
         }
         break;
-        case FS_WANDER:
-            StartWalking(Direction::SOUTHEAST);
-            break; // erstmal rauslaufen, darum kümmern sich dann die Wander-Funktionen
+        case FS_WANDER: StartWalking(Direction::SOUTHEAST); break; // erstmal rauslaufen, darum kümmern sich dann die Wander-Funktionen
     }
 }
 
@@ -397,7 +393,9 @@ void noFigure::HandleEvent(const unsigned id)
         switch(fs)
         {
             case FS_GOHOME:
-            case FS_GOTOGOAL: { WalkToGoal();
+            case FS_GOTOGOAL:
+            {
+                WalkToGoal();
             }
             break;
 

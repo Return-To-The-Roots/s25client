@@ -146,10 +146,11 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
 
     switch(ctrl_id)
     {
-        default:
-            break;
+        default: break;
         // Erstes Schiff
-        case 3: { ship_id = 0;
+        case 3:
+        {
+            ship_id = 0;
         }
         break;
         // Eins zurück
@@ -170,7 +171,9 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
         }
         break;
         // Letztes Schiff
-        case 6: { ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetNumShips() - 1;
+        case 6:
+        {
+            ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetNumShips() - 1;
         }
         break;
         case 7: // "Gehe Zu Ort"

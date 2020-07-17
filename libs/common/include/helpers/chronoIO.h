@@ -36,7 +36,7 @@ RTTR_DEF_GETTIMEUNIT(std::chrono::seconds::period, "s")
 RTTR_DEF_GETTIMEUNIT(std::chrono::minutes::period, "min")
 RTTR_DEF_GETTIMEUNIT(std::chrono::hours::period, "h")
 #undef RTTR_DEF_GETTIMEUNIT
-}
+} // namespace helpers
 
 // Undefined behavior but should be fine
 namespace std { namespace chrono {

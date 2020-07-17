@@ -508,7 +508,9 @@ void nofCarrier::Walked()
             Walked();
         }
         break;
-        case CARRS_BOATCARRIER_WANDERONWATER: { WanderOnWater();
+        case CARRS_BOATCARRIER_WANDERONWATER:
+        {
+            WanderOnWater();
         }
         break;
     }

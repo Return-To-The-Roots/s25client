@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
 #include "RttrConfig.h"
 #include "helperFuncs.h"
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "s25util/System.h"
 #include "s25util/ucString.h"
 #include <boost/filesystem/operations.hpp>

@@ -27,8 +27,7 @@ namespace rttrEnum {
 namespace detail {
     template<class T_Enum>
     struct Tag
-    {
-    };
+    {};
     constexpr void getValues(...);
     constexpr void getRawNames(...);
 } // namespace detail

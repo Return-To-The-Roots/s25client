@@ -283,7 +283,7 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
         points += 500;
     else if(routes[dir.toUInt()]->hasCarrier(0) && routes[dir.toUInt()]->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK
             && !routes[dir.toUInt()]->hasCarrier(
-                 1)) // no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
+              1)) // no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
         points += 50;
 
     return points;

@@ -126,8 +126,7 @@ void iwMilitary::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        default:
-            return;
+        default: return;
         // Default button
         case 20:
         {

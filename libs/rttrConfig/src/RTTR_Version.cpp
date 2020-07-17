@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "build_version_defines.h"
 #include "RTTR_Version.h"
+#include "build_version_defines.h"
 
 std::string RTTR_Version::GetTitle()
 {

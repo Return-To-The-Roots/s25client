@@ -64,10 +64,14 @@ void nofScout_Free::Walked()
     switch(state)
     {
         default: break;
-        case STATE_GOTOFLAG: { GoToFlag();
+        case STATE_GOTOFLAG:
+        {
+            GoToFlag();
         }
         break;
-        case STATE_SCOUT_SCOUTING: { Scout();
+        case STATE_SCOUT_SCOUTING:
+        {
+            Scout();
         }
         break;
     }
@@ -81,10 +85,11 @@ void nofScout_Free::LostWork()
 
     switch(state)
     {
-        default:
-            break;
+        default: break;
         // Wenn wir noch hingehen, dann zurückgehen
-        case STATE_FIGUREWORK: { GoHome();
+        case STATE_FIGUREWORK:
+        {
+            GoHome();
         }
         break;
         case STATE_GOTOFLAG:

@@ -85,8 +85,7 @@ dskBenchmark::~dskBenchmark()
     {
         printTimes();
     } catch(...)
-    {
-    }
+    {}
 }
 
 bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)

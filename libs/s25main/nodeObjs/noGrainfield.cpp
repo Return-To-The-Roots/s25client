@@ -69,7 +69,9 @@ void noGrainfield::Draw(DrawPoint drawPt)
     switch(state)
     {
         case STATE_GROWING_WAITING:
-        case STATE_NORMAL: { LOADER.grainfield_cache[type][size].draw(drawPt);
+        case STATE_NORMAL:
+        {
+            LOADER.grainfield_cache[type][size].draw(drawPt);
         }
         break;
         case STATE_GROWING:

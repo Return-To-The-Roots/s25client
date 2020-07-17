@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "commonDefines.h"
 #include "driver/VideoDriver.h"
+#include "commonDefines.h"
 #include <algorithm>
 #include <stdexcept>
 
