@@ -125,7 +125,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # ClangFormat
 ################################################################################
 
-find_package(ClangFormat 5.0.0)
+find_package(ClangFormat 9)
 
 ################################################################################
 # Set paths.
