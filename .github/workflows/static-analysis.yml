@@ -5,8 +5,8 @@ on:
   pull_request:
 
 env:
-  CC: clang-8
-  CXX: clang++-8
+  CC: clang-9
+  CXX: clang++-9
   ADDITIONAL_CMAKE_FLAGS:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       uses: Flamefire/clang-format-lint-action@master
       with:
         source: 'extras libs tests external/libendian external/liblobby external/libsiedler2 external/libutil external/mygettext external/s25edit external/s25update'
-        clangFormatVersion: 5
+        clangFormatVersion: 9
   Clang-Tidy:
     runs-on: ubuntu-latest
     steps:

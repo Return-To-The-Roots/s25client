@@ -1,26 +1,30 @@
 ---
 Language:        Cpp
-BasedOnStyle:  LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
+AlignConsecutiveMacros: false
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: Left
-AlignOperands: true
+AlignOperands:   true
 AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: false
+AllowShortLambdasOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: true
+AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: true
 BinPackParameters: true
 BraceWrapping:
+  AfterCaseLabel:  true
   AfterClass:      true
   AfterControlStatement: true
   AfterEnum:       true
@@ -29,6 +33,7 @@ BraceWrapping:
   AfterObjCDeclaration: true
   AfterStruct:     true
   AfterUnion:      true
+  AfterExternBlock: true
   BeforeCatch:     false
   BeforeElse:      false
   IndentBraces:    false
@@ -38,12 +43,13 @@ BraceWrapping:
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BreakBeforeInheritanceComma: false
+BreakInheritanceList: AfterColon
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: false
 BreakConstructorInitializers: BeforeColon
 BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: true
-ColumnLimit: 140
+ColumnLimit:     140
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -54,39 +60,40 @@ DerivePointerAlignment: false
 DisableFormat:   false
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
-ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH, BOOST_REVERSE_FOREACH, RTTR_FOREACH_PT ]
+ForEachMacros:
+  - RTTR_FOREACH_PT
+IncludeBlocks:   Preserve
 IncludeCategories:
-  - Regex:    '[dD]efines.h'
-    Priority: -1
-  - Regex:    '^"world/'
-    Priority: 2
-  - Regex:    '^"nodeObjs/'
-    Priority: 3
-  - Regex:    '^"gameTypes/'
-    Priority: 8
-  - Regex:    '^"gameData/'
-    Priority: 9
-  - Regex:    '^"test/'
-    Priority: 50
-  - Regex:    '^(<|")lib.*/'
-    Priority: 90
-  - Regex:    '^(<|")s25util.*/'
-    Priority: 90
-  - Regex:    '(<|")rttr/'
-    Priority: 90
-  - Regex:    '<(utf8.h|kaguya|turtle|glad|KHR)'
-    Priority: 95
-  - Regex:    '<boost/'
-    Priority: 99
-  - Regex:    '^<windows'
-    Priority: 100
-  - Regex:    '^<'
-    Priority: 110
-  - Regex:    '.*'
-    Priority: 1
+  - Regex:           '^"world/'
+    Priority:        2
+  - Regex:           '^"nodeObjs/'
+    Priority:        3
+  - Regex:           '^"gameTypes/'
+    Priority:        8
+  - Regex:           '^"gameData/'
+    Priority:        9
+  - Regex:           '^"test/'
+    Priority:        50
+  - Regex:           '^(<|")lib.*/'
+    Priority:        90
+  - Regex:           '^(<|")s25util.*/'
+    Priority:        90
+  - Regex:           '(<|")rttr/'
+    Priority:        90
+  - Regex:           '<(kaguya|turtle|glad|KHR)'
+    Priority:        95
+  - Regex:           '<boost/'
+    Priority:        99
+  - Regex:           '^<windows'
+    Priority:        100
+  - Regex:           '^<'
+    Priority:        110
+  - Regex:           '.*'
+    Priority:        1
 IncludeIsMainRegex: '(Impl|_Win32|_Other)?$'
 IndentCaseLabels: true
-IndentWidth: 4
+IndentPPDirectives: None
+IndentWidth:     4
 IndentWrappedFunctionNames: false
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
@@ -95,6 +102,7 @@ MacroBlockBegin: ''
 MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: Inner
+ObjCBinPackProtocolList: Auto
 ObjCBlockIndentWidth: 2
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
@@ -103,6 +111,7 @@ PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 300
 PenaltyBreakFirstLessLess: 120
 PenaltyBreakString: 1000
+PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 10000
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Left
@@ -110,9 +119,14 @@ ReflowComments:  true
 SortIncludes:    true
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
 SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: Never
+SpaceBeforeRangeBasedForLoopColon: true
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles:  false
@@ -121,5 +135,8 @@ SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 Standard:        Cpp11
+StatementMacros:
+  - Q_UNUSED
+  - QT_REQUIRE_VERSION
 TabWidth:        4
 UseTab:          Never
