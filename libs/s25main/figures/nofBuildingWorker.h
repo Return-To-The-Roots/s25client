@@ -48,8 +48,8 @@ public:
         STATE_HUNTER_WALKINGTOCADAVER,              /// Jäger: Zum Kadaver laufen
         STATE_HUNTER_EVISCERATING,                  /// Jäger: Tier ausnehmen
         STATE_CATAPULT_TARGETBUILDING,              /// Katapult: Dreht den Katapult oben auf das Ziel zu und schießt
-        STATE_CATAPULT_BACKOFF                      /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
-
+        STATE_CATAPULT_BACKOFF,                     /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
+        STATE_HUNTER_WAITING_FOR_ANIMAL_READY,      /// Hunter: Arrived at shooting pos and waiting for animal to be ready to be shot
     };
 
 protected:

@@ -60,6 +60,9 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
         animal = sgd.PopObject<noAnimal>(GOT_ANIMAL);
         shootingPos = sgd.PopMapPoint();
         shooting_dir = Direction::fromInt(sgd.PopUnsignedChar());
+        // https://github.com/Return-To-The-Roots/s25client/issues/1126
+        if(sgd.GetGameDataVersion() < 4 && state == STATE_HUNTER_FINDINGSHOOTINGPOINT && pos == shootingPos)
+            state = STATE_HUNTER_WAITING_FOR_ANIMAL_READY;
     } else
     {
         animal = nullptr;
@@ -69,16 +72,20 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
 
 void nofHunter::DrawWorking(DrawPoint drawPt)
 {
+    const GamePlayer& owner = gwg->GetPlayer(player);
     switch(state)
     {
         default: break;
+        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY:
+            LOADER.bob_jobs_cache[owner.nation][JOB_HUNTER][static_cast<unsigned>(shooting_dir)][0].drawForPlayer(drawPt, owner.color);
+            break;
         case STATE_HUNTER_SHOOTING:
         {
             if(shooting_dir == Direction::EAST)
             {
                 // die Animation in dieser Richtung ist etwas anders als die in den restlichen
                 unsigned short id = GAMECLIENT.Interpolate(13, current_ev);
-                LOADER.GetPlayerImage("rom_bobs", 219 + id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 219 + id)->drawForPlayer(drawPt, owner.color);
 
                 if(id == 12)
                 {
@@ -88,8 +95,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             } else
             {
                 unsigned short id = GAMECLIENT.Interpolate(8, current_ev);
-                LOADER.GetPlayerImage("rom_bobs", 1686 + (shooting_dir + 2u).toUInt() * 8 + id)
-                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 1686 + (shooting_dir + 2u).toUInt() * 8 + id)->drawForPlayer(drawPt, owner.color);
 
                 if(id == 7)
                 {
@@ -113,44 +119,21 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             else
                 draw_id = 244 + id - 36;
 
-            LOADER.GetPlayerImage("rom_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+            LOADER.GetPlayerImage("rom_bobs", draw_id)->drawForPlayer(drawPt, owner.color);
         }
         break;
     }
 }
 
-void nofHunter::HandleDerivedEvent(const unsigned id)
+void nofHunter::HandleDerivedEvent(unsigned /*id*/)
 {
     switch(state)
     {
         default: break;
-        case STATE_WAITING1:
-        {
-            // Fertig mit warten --> anfangen zu arbeiten
-            TryStartHunting();
-        }
-        break;
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT:
-            if(id == 2)
-                HandleStateFindingShootingPoint();
-            break;
-        case STATE_HUNTER_SHOOTING:
-        {
-            HandleStateShooting();
-        }
-        break;
-        case STATE_HUNTER_EVISCERATING:
-        {
-            HandleStateEviscerating();
-
-            // Evtl. Sounds löschen
-            if(was_sounding)
-            {
-                SOUNDMANAGER.WorkingFinished(this);
-                was_sounding = false;
-            }
-        }
-        break;
+        case STATE_WAITING1: TryStartHunting(); break;
+        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY: HandleStateWaitingForAnimalReady(); break;
+        case STATE_HUNTER_SHOOTING: HandleStateShooting(); break;
+        case STATE_HUNTER_EVISCERATING: HandleStateEviscerating(); break;
     }
 }
 
@@ -345,20 +328,8 @@ void nofHunter::HandleStateFindingShootingPoint()
     // Are we there yet?
     if(shootingPos == pos)
     {
-        // Is the animal ready?
-        if(animal->IsReadyForShooting())
-        {
-            // fire!
-            state = STATE_HUNTER_SHOOTING;
-            current_ev = GetEvMgr().AddEvent(this, 16, 1);
-        } else if(animal->IsGettingReadyForShooting())
-            current_ev = GetEvMgr().AddEvent(this, 15, 2); // Give the animal some time for getting ready
-        else
-        {
-            // Something went wrong, animal is doing something else?
-            StartWalkingHome();
-            WalkHome();
-        }
+        state = STATE_HUNTER_WAITING_FOR_ANIMAL_READY;
+        HandleStateWaitingForAnimalReady();
     } else
     {
         // Weg dorthin suchen
@@ -373,6 +344,24 @@ void nofHunter::HandleStateFindingShootingPoint()
             StartWalkingHome();
             WalkHome();
         }
+    }
+}
+
+void nofHunter::HandleStateWaitingForAnimalReady()
+{
+    // Is the animal ready?
+    if(animal->IsReadyForShooting())
+    {
+        // fire!
+        state = STATE_HUNTER_SHOOTING;
+        current_ev = GetEvMgr().AddEvent(this, 16, 1);
+    } else if(animal->IsGettingReadyForShooting())
+        current_ev = GetEvMgr().AddEvent(this, 15, 2); // Give the animal some time for getting ready
+    else
+    {
+        // Something went wrong, animal is doing something else?
+        StartWalkingHome();
+        WalkHome();
     }
 }
 
@@ -412,6 +401,12 @@ void nofHunter::HandleStateWalkingToCadaver()
 
 void nofHunter::HandleStateEviscerating()
 {
+    // Evtl. Sounds löschen
+    if(was_sounding)
+    {
+        SOUNDMANAGER.WorkingFinished(this);
+        was_sounding = false;
+    }
     // Tier verschwinden lassen
     gwg->RemoveFigure(pos, animal);
     // Tier vernichten
@@ -473,34 +468,25 @@ void nofHunter::AnimalLost()
         default: return;
         case STATE_HUNTER_CHASING:
         case STATE_HUNTER_FINDINGSHOOTINGPOINT:
-        case STATE_HUNTER_WALKINGTOCADAVER:
-        {
-            // nach Haue laufen
-            StartWalkingHome();
-        }
-        break;
+        case STATE_HUNTER_WALKINGTOCADAVER: StartWalkingHome(); break;
         case STATE_HUNTER_SHOOTING:
         case STATE_HUNTER_EVISCERATING:
-        {
+        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY:
             // Arbeits-Event abmelden
             GetEvMgr().RemoveEvent(current_ev);
             // Nach Hause laufen
             StartWalkingHome();
             WalkHome();
-        }
-        break;
+            break;
     }
 }
 
 void nofHunter::WorkAborted()
 {
     // Tier Bescheid sagen
-    if(state == STATE_HUNTER_CHASING || state == STATE_HUNTER_FINDINGSHOOTINGPOINT || state == STATE_HUNTER_SHOOTING)
+    if(animal)
     {
-        if(animal)
-        {
-            animal->StopHunting();
-            animal = nullptr;
-        }
+        animal->StopHunting();
+        animal = nullptr;
     }
 }

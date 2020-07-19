@@ -55,6 +55,7 @@ private:
     /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
     void HandleStateChasing();
     void HandleStateFindingShootingPoint();
+    void HandleStateWaitingForAnimalReady();
     void HandleStateShooting();
     void HandleStateWalkingToCadaver();
     void HandleStateEviscerating();

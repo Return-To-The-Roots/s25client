@@ -90,6 +90,7 @@ void nofBuildingWorker::Draw(DrawPoint drawPt)
         case STATE_WORK:
         case STATE_HUNTER_SHOOTING:
         case STATE_HUNTER_EVISCERATING:
+        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY:
         case STATE_CATAPULT_TARGETBUILDING:
         case STATE_CATAPULT_BACKOFF: DrawWorking(drawPt); break;
         case STATE_CARRYOUTWARE: DrawWalkingWithWare(drawPt); break;
@@ -246,6 +247,7 @@ void nofBuildingWorker::LostWork()
         case STATE_WAITFORWARESPACE:
         case STATE_HUNTER_SHOOTING:
         case STATE_HUNTER_EVISCERATING:
+        case STATE_HUNTER_WAITING_FOR_ANIMAL_READY:
         case STATE_CATAPULT_TARGETBUILDING:
         case STATE_CATAPULT_BACKOFF:
         {
