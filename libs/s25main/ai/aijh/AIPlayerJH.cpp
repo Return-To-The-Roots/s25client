@@ -108,10 +108,9 @@ void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 namespace AIJH {
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-    : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), isInitGfCompleted(false), defeated(player.IsDefeated())
+    : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), isInitGfCompleted(false), defeated(player.IsDefeated()),
+      bldPlanner(std::make_unique<BuildingPlanner>(*this)), construction(std::make_unique<AIConstruction>(*this))
 {
-    bldPlanner = new BuildingPlanner(*this);
-    construction = new AIConstruction(*this);
     InitNodes();
     InitResourceMaps();
 #ifdef DEBUG_AI
@@ -158,15 +157,23 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     });
     subBQ = notifications.subscribe<NodeNote>([this](const NodeNote& note) {
         if(note.type == NodeNote::BQ)
-            UpdateNodeBQ(note.pos);
+            nodesWithOutdatedBQ.push_back(note.pos);
+        else if(note.type == NodeNote::Owner)
+        {
+            // Owner changes border, which changes where buildings can be placed next to it
+            // And as flags are need for buildings we need range 2 (e.g. range 1 is flag, range 2 building)
+            this->gwb.CheckPointsInRadius(
+              note.pos, 2,
+              [this](const MapPoint pt, unsigned) {
+                  nodesWithOutdatedBQ.push_back(pt);
+                  return false;
+              },
+              true);
+        }
     });
 }
 
-AIPlayerJH::~AIPlayerJH()
-{
-    delete construction;
-    delete bldPlanner;
-}
+AIPlayerJH::~AIPlayerJH() = default;
 
 /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
 void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
@@ -186,11 +193,6 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         isInitGfCompleted++;
         return; //  1 init -> 2 test defeat -> 3 do other ai stuff -> goto 2
     }
-    bldPlanner->Update(gf, *this);
-
-    if(gfisnwf) // nwf -> now the orders have been executed -> new constructions can be started
-        construction->ConstructionsExecuted();
-
     if(gf == 100)
     {
         if(aii.GetMilitaryBuildings().empty() && aii.GetStorehouses().size() < 2)
@@ -200,6 +202,19 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
             // Chat(_("And I may crash your game sometimes..."));
         }
     }
+
+    if(!nodesWithOutdatedBQ.empty())
+    {
+        helpers::makeUnique(nodesWithOutdatedBQ, MapPointLess());
+        for(const MapPoint pt : nodesWithOutdatedBQ)
+            aiMap[pt].bq = aii.GetBuildingQuality(pt);
+        nodesWithOutdatedBQ.clear();
+    }
+
+    bldPlanner->Update(gf, *this);
+
+    if(gfisnwf) // nwf -> now the orders have been executed -> new constructions can be started
+        construction->ConstructionsExecuted();
 
     // LOG.write(("ai doing stuff %i \n",playerId);
     if(gf % 100 == 0)
@@ -578,18 +593,6 @@ void AIPlayerJH::UpdateNodesAround(const MapPoint pt, unsigned radius)
         node.bq = aii.GetBuildingQuality(pt);
         node.owned = aii.IsOwnTerritory(pt);
         node.border = aii.IsBorder(pt);
-    }
-}
-
-void AIPlayerJH::UpdateNodeBQ(const MapPoint& pt)
-{
-    BuildingQuality newBQ = aii.GetBuildingQuality(pt);
-    if(aiMap[pt].bq != newBQ)
-    {
-        aiMap[pt].bq = newBQ;
-        // Neighbour points might change to (flags at borders etc.)
-        for(const MapPoint& curPt : gwb.GetPointsInRadius(pt, 1))
-            UpdateNodeBQ(curPt);
     }
 }
 

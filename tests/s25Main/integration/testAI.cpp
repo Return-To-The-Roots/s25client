@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "PointOutput.h"
 #include "RttrForeachPt.h"
 #include "ai/AIPlayer.h"
 #include "ai/aijh/AIPlayerJH.h"
@@ -24,12 +25,14 @@
 #include "buildings/nobMilitary.h"
 #include "factories/AIFactory.h"
 #include "factories/BuildingFactory.h"
+#include "notifications/NodeNote.h"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/BuildingProperties.h"
 #include <boost/test/unit_test.hpp>
 #include <memory>
+#include <set>
 
 // We need border land
 using BiggerWorldWithGCExecution = WorldWithGCExecution<1, 24, 22>;
@@ -80,7 +83,13 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     const AIJH::AIPlayerJH& aijh = static_cast<AIJH::AIPlayerJH&>(*ai);
     RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
     {
-        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
+    }
+    // 100GFs for initialization
+    for(unsigned gf = 0; gf < 100; ++gf)
+    {
+        em.ExecuteNextGF();
+        ai->RunGF(em.GetCurrentGF(), true);
     }
 
     // Set flag
@@ -91,7 +100,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     ai->RunGF(em.GetCurrentGF(), true);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
     }
 
     // Build road
@@ -101,7 +110,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     ai->RunGF(em.GetCurrentGF(), true);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
     }
 
     // Destroy road and flag
@@ -110,7 +119,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     ai->RunGF(em.GetCurrentGF(), true);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
     }
 
     // Build building
@@ -121,7 +130,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     ai->RunGF(em.GetCurrentGF(), true);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
     }
     this->BuildRoad(world.GetNeighbour(bldPos, Direction::SOUTHEAST), false, std::vector<Direction>(6, Direction::WEST));
     em.ExecuteNextGF();
@@ -131,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     ai->RunGF(em.GetCurrentGF(), false);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
     }
     // Gain land
     const nobMilitary* bld = world.GetSpecObj<nobMilitary>(bldPos);
@@ -145,7 +154,63 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     BOOST_REQUIRE(bld->GetNumTroops() > 0);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
+    }
+
+    // Move the boundary by one node
+    std::set<MapPoint, MapPointLess> outerBoundaryNodes;
+    std::vector<MapPoint> borderNodes;
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        if(world.IsBorderNode(pt, curPlayer + 1))
+        {
+            borderNodes.push_back(pt);
+            world.CheckPointsInRadius(
+              pt, 1,
+              [&outerBoundaryNodes, &world = this->world, curPlayer = this->curPlayer](const MapPoint curPt, unsigned) {
+                  if(world.GetNode(curPt).owner != curPlayer + 1)
+                      outerBoundaryNodes.insert(curPt);
+                  return false;
+              },
+              false);
+        }
+    }
+    // Once to outside
+    for(const MapPoint pt : outerBoundaryNodes)
+        world.SetOwner(pt, curPlayer + 1);
+    world.RecalcBorderStones(Position(0, 0), Extent(world.GetSize()));
+    for(const MapPoint pt : outerBoundaryNodes)
+        world.GetNotifications().publish(NodeNote(NodeNote::Owner, pt));
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), false);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
+    }
+    // And back
+    for(const MapPoint pt : outerBoundaryNodes)
+        world.SetOwner(pt, 0);
+    world.RecalcBorderStones(Position(0, 0), Extent(world.GetSize()));
+    for(const MapPoint pt : outerBoundaryNodes)
+        world.GetNotifications().publish(NodeNote(NodeNote::Owner, pt));
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), false);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
+    }
+    // And once to inside
+    for(const MapPoint pt : borderNodes)
+        world.SetOwner(pt, 0);
+    world.RecalcBorderStones(Position(0, 0), Extent(world.GetSize()));
+    for(const MapPoint pt : borderNodes)
+        world.GetNotifications().publish(NodeNote(NodeNote::Owner, pt));
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), false);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_TEST_INFO(pt);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
     }
 }
 
