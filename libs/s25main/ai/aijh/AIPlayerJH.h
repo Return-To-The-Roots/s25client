@@ -255,12 +255,11 @@ private:
     /// resigned yes/no
     bool defeated;
     AIEventManager eventManager;
-    BuildingPlanner* bldPlanner;
-    AIConstruction* construction;
+    std::unique_ptr<BuildingPlanner> bldPlanner;
+    std::unique_ptr<AIConstruction> construction;
 
     Subscription subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
-
-    void UpdateNodeBQ(const MapPoint& pt);
+    std::vector<MapPoint> nodesWithOutdatedBQ;
 };
 
 } // namespace AIJH

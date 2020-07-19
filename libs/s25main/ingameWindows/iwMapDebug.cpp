@@ -115,12 +115,27 @@ public:
                 bqMap[pt][playerIdx] = gw.GetBQ(pt, playerIdx);
         }
         nodeSub = gw.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
-            if(note.type == NodeNote::BQ || note.type == NodeNote::Owner)
-                this->updateBq(note.pos);
+            if(note.type == NodeNote::BQ)
+                pointsToUpdate.push_back(note.pos);
+            else if(note.type == NodeNote::Owner)
+            {
+                // Owner changes border, which changes where buildings can be placed next to it
+                // And as flags are need for buildings we need range 2 (e.g. range 1 is flag, range 2 building)
+                this->gw.CheckPointsInRadius(
+                  note.pos, 2,
+                  [this](const MapPoint pt, unsigned) {
+                      pointsToUpdate.push_back(pt);
+                      return false;
+                  },
+                  true);
+            }
         });
     }
     void check()
     {
+        for(const MapPoint pt : pointsToUpdate)
+            updateBq(pt);
+        pointsToUpdate.clear();
         RTTR_FOREACH_PT(MapPoint, bqMap.GetSize())
         {
             for(const unsigned playerIdx : usedPlayerIdxs)
@@ -135,26 +150,16 @@ public:
     }
 
 private:
-    void updateBq(MapPoint pt, unsigned playerIdx)
-    {
-        const BuildingQuality newBQ = gw.GetBQ(pt, playerIdx);
-        if(bqMap[pt][playerIdx] != newBQ)
-        {
-            bqMap[pt][playerIdx] = newBQ;
-            // Neighbour points might change to (flags at borders etc.)
-            for(const MapPoint& curPt : gw.GetPointsInRadius(pt, 1))
-                updateBq(curPt, playerIdx);
-        }
-    }
     void updateBq(MapPoint pt)
     {
         for(const unsigned playerIdx : usedPlayerIdxs)
-            updateBq(pt, playerIdx);
+            bqMap[pt][playerIdx] = gw.GetBQ(pt, playerIdx);
     }
     const GameWorldBase& gw;
     std::vector<unsigned> usedPlayerIdxs;
     using BqNode = std::array<BuildingQuality, MAX_PLAYERS>;
     NodeMapBase<BqNode> bqMap;
+    std::vector<MapPoint> pointsToUpdate;
     Subscription nodeSub;
 };
 
@@ -248,7 +253,7 @@ void iwMapDebug::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
         printer->showCoords = checked;
 }
 
-void iwMapDebug::Msg_Timer(unsigned ctrl_id)
+void iwMapDebug::Msg_Timer(unsigned /*ctrl_id*/)
 {
     if(eventChecker)
         eventChecker->check();
