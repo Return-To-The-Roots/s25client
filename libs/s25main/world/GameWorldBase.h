@@ -43,7 +43,7 @@ class GameWorldBase : public World
     std::unique_ptr<RoadPathFinder> roadPathFinder;
     std::unique_ptr<FreePathFinder> freePathFinder;
     PostManager postManager;
-    NotificationManager notifications;
+    mutable NotificationManager notifications;
 
     std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
@@ -139,8 +139,10 @@ public:
     const PostManager& GetPostMgr() const { return postManager; }
     NotificationManager& GetNotifications() const
     {
-        return const_cast<GameWorldBase*>(this)->notifications;
-    } // We want to be abled to add notifications even on a const world
+        // We want to be abled to add notifications even on a const world
+        // Hence return as non-const
+        return this->notifications;
+    }
 
     struct PotentialSeaAttacker
     {

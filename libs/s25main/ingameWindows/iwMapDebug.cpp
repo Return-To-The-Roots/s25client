@@ -18,15 +18,33 @@
 #include "iwMapDebug.h"
 #include "GamePlayer.h"
 #include "Loader.h"
+#include "PointOutput.h"
+#include "RttrForeachPt.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
+#include "controls/ctrlTimer.h"
 #include "helpers/toString.h"
+#include "notifications/NodeNote.h"
 #include "ogl/glFont.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
+#include "world/NodeMapBase.h"
 #include "world/TerritoryRegion.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/const_gui_ids.h"
+#include <boost/nowide/iostream.hpp>
+
+namespace {
+enum
+{
+    ID_cbShowCoordinates,
+    ID_cbShowWhat,
+    ID_cbShowForPlayer,
+    ID_cbCheckEventForPlayer,
+    ID_lblCheckEvents,
+    ID_tmrCheckEvents,
+};
+}
 
 class iwMapDebug::DebugPrinter : public IDrawNodeCallback
 {
@@ -62,7 +80,6 @@ public:
                     data = isAllowed ? "y" : "n";
                 break;
             }
-            default: return;
         }
 
         if(showCoords)
@@ -81,17 +98,86 @@ public:
     const glFont* font;
 };
 
-iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
-    : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 110), _("Map Debug"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), printer(new DebugPrinter(gwv.GetWorld()))
+class iwMapDebug::EventChecker
 {
-    gwv.AddDrawNodeCallback(printer);
+public:
+    EventChecker(const GameWorldBase& gw) : gw(gw)
+    {
+        bqMap.Resize(gw.GetSize());
+        for(unsigned i = 0; i < gw.GetNumPlayers(); i++)
+        {
+            if(gw.GetPlayer(i).isUsed())
+                usedPlayerIdxs.push_back(i);
+        }
+        RTTR_FOREACH_PT(MapPoint, bqMap.GetSize())
+        {
+            for(const unsigned playerIdx : usedPlayerIdxs)
+                bqMap[pt][playerIdx] = gw.GetBQ(pt, playerIdx);
+        }
+        nodeSub = gw.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
+            if(note.type == NodeNote::BQ)
+                this->updateBq(note.pos);
+        });
+    }
+    void check()
+    {
+        RTTR_FOREACH_PT(MapPoint, bqMap.GetSize())
+        {
+            for(const unsigned playerIdx : usedPlayerIdxs)
+            {
+                if(bqMap[pt][playerIdx] != gw.GetBQ(pt, playerIdx))
+                    boost::nowide::cerr << "BQs mismatch at " << pt << "\n";
+            }
+        }
+    }
 
-    ctrlCheck* cbShowCoords = AddCheckBox(0, DrawPoint(15, 25), Extent(200, 20), TC_GREY, _("Show coordinates"), NormalFont);
+private:
+    void updateBq(MapPoint pt, unsigned playerIdx)
+    {
+        const BuildingQuality newBQ = gw.GetBQ(pt, playerIdx);
+        if(bqMap[pt][playerIdx] != newBQ)
+        {
+            bqMap[pt][playerIdx] = newBQ;
+            // Neighbour points might change to (flags at borders etc.)
+            for(const MapPoint& curPt : gw.GetPointsInRadius(pt, 1))
+                updateBq(curPt, playerIdx);
+        }
+    }
+    void updateBq(MapPoint pt)
+    {
+        for(const unsigned playerIdx : usedPlayerIdxs)
+            updateBq(pt, playerIdx);
+    }
+    const GameWorldBase& gw;
+    std::vector<unsigned> usedPlayerIdxs;
+    using BqNode = std::array<BuildingQuality, MAX_PLAYERS>;
+    NodeMapBase<BqNode> bqMap;
+    Subscription nodeSub;
+};
+
+static const std::array<unsigned, 6> BQ_CHECK_INTERVALS = {10000, 1000, 500, 250, 100, 50};
+
+iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
+    : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 135), _("Map Debug"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv), printer(std::make_unique<DebugPrinter>(gwv.GetWorld()))
+{
+    gwv.AddDrawNodeCallback(printer.get());
+
+    ctrlCheck* cbShowCoords =
+      AddCheckBox(ID_cbShowCoordinates, DrawPoint(15, 25), Extent(200, 20), TC_GREY, _("Show coordinates"), NormalFont);
     cbShowCoords->SetCheck(true);
+    ctrlComboBox* cbCheckEvents = AddComboBox(ID_cbCheckEventForPlayer, DrawPoint(15, 50), Extent(200, 20), TC_GREY, NormalFont, 100);
+    cbCheckEvents->AddString(_("BQ check disabled"));
+    for(unsigned ms : BQ_CHECK_INTERVALS)
+    {
+        cbCheckEvents->AddString((boost::format(_("BQ check every %1%ms")) % ms).str());
+    }
+    cbCheckEvents->SetSelection(0);
+    AddTimer(ID_tmrCheckEvents, 500)->Stop();
+
     if(allowCheating)
     {
-        ctrlComboBox* data = AddComboBox(1, DrawPoint(15, 50), Extent(200, 20), TC_GREY, NormalFont, 100);
+        ctrlComboBox* data = AddComboBox(ID_cbShowWhat, DrawPoint(15, 75), Extent(200, 20), TC_GREY, NormalFont, 100);
         data->AddString(_("Nothing"));
         data->AddString(_("Reserved"));
         data->AddString(_("Altitude"));
@@ -100,7 +186,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
         data->AddString(_("Owner"));
         data->AddString(_("Restricted area"));
         data->SetSelection(1);
-        ctrlComboBox* players = AddComboBox(2, DrawPoint(15, 75), Extent(200, 20), TC_GREY, NormalFont, 100);
+        ctrlComboBox* players = AddComboBox(ID_cbShowForPlayer, DrawPoint(15, 100), Extent(200, 20), TC_GREY, NormalFont, 100);
         for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetNumPlayers(); pIdx++)
         {
             const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);
@@ -126,27 +212,41 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
 
 iwMapDebug::~iwMapDebug()
 {
-    gwv.RemoveDrawNodeCallback(printer);
-    delete printer;
+    gwv.RemoveDrawNodeCallback(printer.get());
 }
 
 void iwMapDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const int select)
 {
-    if(ctrl_id == 1)
+    if(ctrl_id == ID_cbShowWhat)
     {
         if(select >= 0)
             printer->showDataIdx = static_cast<unsigned>(select);
-    }
-    if(ctrl_id == 2)
+    } else if(ctrl_id == ID_cbShowForPlayer)
     {
         if(select >= 0)
             printer->playerIdx = static_cast<unsigned>(select);
+    } else if(ctrl_id == ID_cbCheckEventForPlayer)
+    {
+        if(select == 0)
+        {
+            eventChecker.reset();
+            GetCtrl<ctrlTimer>(ID_tmrCheckEvents)->Stop();
+        } else
+        {
+            eventChecker = std::make_unique<EventChecker>(gwv.GetWorld());
+            GetCtrl<ctrlTimer>(ID_tmrCheckEvents)->Start(BQ_CHECK_INTERVALS[select - 1]);
+        }
     }
 }
 
 void iwMapDebug::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
 {
-    if(ctrl_id != 0)
-        return;
-    printer->showCoords = checked;
+    if(ctrl_id == ID_cbShowCoordinates)
+        printer->showCoords = checked;
+}
+
+void iwMapDebug::Msg_Timer(unsigned ctrl_id)
+{
+    if(eventChecker)
+        eventChecker->check();
 }
