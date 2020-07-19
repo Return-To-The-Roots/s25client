@@ -18,7 +18,6 @@
 #ifndef Map_h__
 #define Map_h__
 
-#include "rttrDefines.h"
 #include "helpers/containerUtils.h"
 #include "mapGenerator/Textures.h"
 #include "mapGenerator/Triangles.h"

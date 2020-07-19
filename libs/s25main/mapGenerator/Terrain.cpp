@@ -15,10 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h"
-
-#include "mapGenerator/Algorithms.h"
 #include "mapGenerator/Terrain.h"
+#include "mapGenerator/Algorithms.h"
 #include "mapGenerator/TextureHelper.h"
 
 #include <algorithm>
@@ -76,7 +74,7 @@ namespace rttr { namespace mapGenerator {
             maximum = map.height.maximum;
             Scale(coastDistance, minimum, maximum);
         }
-        
+
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
             if(coastDistance[pt] > minimum)

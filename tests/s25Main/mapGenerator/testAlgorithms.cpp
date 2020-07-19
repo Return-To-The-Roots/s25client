@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h"
 #include "helpers/containerUtils.h"
 #include "mapGenerator/Algorithms.h"
 #include <boost/test/unit_test.hpp>
@@ -223,7 +222,7 @@ BOOST_AUTO_TEST_CASE(Distances_ForValuesAndEvaluator_ReturnsExpectedDistances)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CountReturnsNodesGreaterThanMinimumAndLessOrEqualToMaximum)
+BOOST_AUTO_TEST_CASE(Count_NodesWithinThreshold_ReturnsExpectedNumber)
 {
     MapExtent size(8, 16);
     ValueMap<int> values(size);
@@ -232,9 +231,61 @@ BOOST_AUTO_TEST_CASE(CountReturnsNodesGreaterThanMinimumAndLessOrEqualToMaximum)
     {
         values[i] = i;
     }
+
+    auto result = Count(values, 5, 10);
+
+    BOOST_REQUIRE_EQUAL(6, result);
 }
 
-BOOST_AUTO_TEST_CASE(LimitForIgnoresNodesBelowMinimum)
+BOOST_AUTO_TEST_CASE(Count_NodesInAreaWithinThresholds_ReturnsExpectedNumber)
+{
+    MapExtent size(16, 16);
+    ValueMap<int> values(size);
+
+    for(int i = 0; i < size.x * size.y; i++)
+    {
+        values[i] = i;
+    }
+
+    const std::vector<MapPoint> area{MapPoint(6, 0), MapPoint(7, 0), MapPoint(8, 0), MapPoint(11, 0)};
+
+    const auto result = Count(values, area, 5, 10);
+
+    BOOST_REQUIRE_EQUAL(3, result);
+}
+
+BOOST_AUTO_TEST_CASE(LimitFor_IgnoresNodesOutsideOfArea)
+{
+    MapExtent size(8, 16);
+    ValueMap<int> values(size);
+
+    for(int i = 0; i < size.x * size.y; i++)
+    {
+        values[i] = i;
+    }
+
+    const std::vector<MapPoint> area{MapPoint(4, 0), MapPoint(5, 0), MapPoint(6, 0), MapPoint(7, 0)};
+
+    const double coverage = 0.5;
+    const int minimum = 1;
+
+    int limit = LimitFor(values, area, coverage, minimum);
+
+    auto expectedNodes = static_cast<unsigned>(area.size() * coverage);
+    unsigned actualNodes = 0;
+
+    for(const auto& pt : area)
+    {
+        if(values[pt] >= minimum && values[pt] <= limit)
+        {
+            actualNodes++;
+        }
+    }
+
+    BOOST_REQUIRE_EQUAL(actualNodes, expectedNodes);
+}
+
+BOOST_AUTO_TEST_CASE(LimitFor_IgnoresNodesBelowMinimum)
 {
     MapExtent size(8, 16);
     ValueMap<int> values(size);
@@ -263,7 +314,7 @@ BOOST_AUTO_TEST_CASE(LimitForIgnoresNodesBelowMinimum)
     BOOST_REQUIRE_EQUAL(actualNodes, expectedNodes);
 }
 
-BOOST_AUTO_TEST_CASE(LimitForAlwaysChoosesClosestValue)
+BOOST_AUTO_TEST_CASE(LimitFor_AlwaysChoosesClosestValue)
 {
     MapExtent size(8, 8);
     ValueMap<int> values(size);

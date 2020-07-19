@@ -18,7 +18,7 @@
 #ifndef Utilities_h__
 #define Utilities_h__
 
-#include "rttrDefines.h"
+#include "RttrForeachPt.h"
 #include "world/NodeMapBase.h"
 #include <iostream>
 
@@ -27,7 +27,7 @@ namespace rttr { namespace mapGenerator {
     template<typename T_Value>
     unsigned MaximumDigits(const NodeMapBase<T_Value>& values, const MapPoint& pt, unsigned digits)
     {
-        const unsigned value = static_cast<unsigned>(values[pt]);
+        const auto value = static_cast<unsigned>(values[pt]);
 
         if(value > 99)
         {

@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h"
 #include "lua/GameDataLoader.h"
 #include "mapGenerator/HeadQuarters.h"
 #include "mapGenerator/TextureHelper.h"
@@ -62,7 +61,7 @@ void RunTestForArea(const MapExtent& size, T_Test test)
 
 BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_ReturnsExpectedNodes)
 {
-    MapExtent size(64, 64);
+    MapExtent size(32, 32);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
         auto water = textures.Find(IsShipableWater);
         auto land = textures.Find(IsBuildableLand);
@@ -77,7 +76,7 @@ BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_ReturnsExpectedNodes)
             textures.Set(node, land);
         }
 
-        MapPoint centerOfSmallArea(30, 30);
+        MapPoint centerOfSmallArea(15, 15);
         auto smallArea = map.textures.GetPointsInRadiusWithCenter(centerOfSmallArea, 2);
 
         for(auto node : smallArea)
@@ -98,7 +97,7 @@ BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_ReturnsExpectedNodes)
 
 BOOST_AUTO_TEST_CASE(FindHqPositions_WithoutSuitablePosition_ReturnsEmpty)
 {
-    MapExtent size(64, 64);
+    MapExtent size(32, 32);
     RunTestForArea(size, [&size](Map& map, TextureMap& textures, const auto& area) {
         textures.Resize(size, TexturePair(textures.Find(IsShipableWater)));
 
@@ -175,7 +174,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_ForAreaWithSuitablePosition_PlacesHqOnMap)
 
 BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForNPlayersOnEmptyMap_ReturnsTrue)
 {
-    MapExtent size(64, 64);
+    MapExtent size(32, 32);
     RandomUtility rnd(0);
 
     for(int players = 1; players < 8; players++)
@@ -192,7 +191,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForNPlayersOnEmptyMap_ReturnsTrue)
 
 BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForNPlayersOnEmptyMap_PlacesNHqs)
 {
-    MapExtent size(64, 64);
+    MapExtent size(32, 32);
     RandomUtility rnd(0);
 
     for(int players = 1; players < 8; players++)

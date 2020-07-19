@@ -15,11 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h"
-
+#include "mapGenerator/Textures.h"
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/TextureHelper.h"
-#include "mapGenerator/Textures.h"
 
 #include <algorithm>
 #include <set>

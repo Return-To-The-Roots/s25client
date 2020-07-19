@@ -18,7 +18,7 @@
 #ifndef Algorithms_h__
 #define Algorithms_h__
 
-#include "rttrDefines.h"
+#include "RttrForeachPt.h"
 #include "mapGenerator/ValueMap.h"
 #include "world/NodeMapBase.h"
 

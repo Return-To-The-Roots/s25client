@@ -19,8 +19,7 @@
 #include "helpers/containerUtils.h"
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/TextureHelper.h"
-#include "mapGenerator/Utilities.h"
-
+#
 namespace rttr { namespace mapGenerator {
 
     std::vector<MapPoint> FindLargestConnectedArea(const Map& map)

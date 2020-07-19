@@ -15,12 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h"
-
+#include "mapGenerator/RandomMap.h"
 #include "mapGenerator/Harbors.h"
 #include "mapGenerator/HeadQuarters.h"
 #include "mapGenerator/Islands.h"
-#include "mapGenerator/RandomMap.h"
 #include "mapGenerator/Rivers.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
@@ -104,8 +102,7 @@ namespace rttr { namespace mapGenerator {
     {
         switch(size.x + size.y)
         {
-            case 128: return 1;
-
+            case 128:
             case 256: return 1;
 
             case 512: return 2;
@@ -114,7 +111,7 @@ namespace rttr { namespace mapGenerator {
 
             case 2048: return 4;
 
-            default: return 2;
+            default: return 5;
         }
     }
 
@@ -122,8 +119,7 @@ namespace rttr { namespace mapGenerator {
     {
         switch(size.x + size.y)
         {
-            case 128: return 2;
-
+            case 128:
             case 256: return 2;
 
             case 512: return 3;
@@ -132,7 +128,7 @@ namespace rttr { namespace mapGenerator {
 
             case 2048: return 5;
 
-            default: return 2;
+            default: return 6;
         }
     }
 

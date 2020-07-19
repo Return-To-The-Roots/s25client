@@ -69,7 +69,7 @@ namespace rttr { namespace mapGenerator {
             }
         }
 
-        unsigned seaLevel = static_cast<unsigned>(map.height.minimum);
+        auto seaLevel = static_cast<unsigned>(map.height.minimum);
 
         for(const MapPoint& node : river)
         {
