@@ -115,7 +115,7 @@ public:
                 bqMap[pt][playerIdx] = gw.GetBQ(pt, playerIdx);
         }
         nodeSub = gw.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
-            if(note.type == NodeNote::BQ)
+            if(note.type == NodeNote::BQ || note.type == NodeNote::Owner)
                 this->updateBq(note.pos);
         });
     }
@@ -126,7 +126,10 @@ public:
             for(const unsigned playerIdx : usedPlayerIdxs)
             {
                 if(bqMap[pt][playerIdx] != gw.GetBQ(pt, playerIdx))
-                    boost::nowide::cerr << "BQs mismatch at " << pt << "\n";
+                {
+                    boost::nowide::cerr << "BQs mismatch at " << pt << " for player " << playerIdx << ": " << bqMap[pt][playerIdx]
+                                        << "!=" << gw.GetBQ(pt, playerIdx) << "\n";
+                }
             }
         }
     }

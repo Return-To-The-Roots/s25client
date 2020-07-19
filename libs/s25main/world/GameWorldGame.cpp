@@ -33,6 +33,7 @@
 #include "lua/LuaInterfaceGame.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
+#include "notifications/NodeNote.h"
 #include "notifications/RoadNote.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "pathfinding/PathConditionRoad.h"
@@ -453,6 +454,10 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
             continue;
         flag->DestroyRoad(dir);
     }
+
+    // Notify
+    for(const MapPoint& curMapPt : ptsWithChangedOwners)
+        GetNotifications().publish(NodeNote(NodeNote::Owner, curMapPt));
 
     for(const MapPoint& pt : ptsHandled)
     {
