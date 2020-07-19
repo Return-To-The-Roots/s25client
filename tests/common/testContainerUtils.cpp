@@ -19,41 +19,65 @@
 #include "helpers/reverse.h"
 #include "s25util/warningSuppression.h"
 #include <rttr/test/random.hpp>
-#include <boost/assign/std/vector.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(ContainerUtils)
+
+BOOST_AUTO_TEST_CASE(MakeUniqueStable)
+{
+    // Empty vector -> Not modified
+    std::vector<int> vec;
+    helpers::makeUniqueStable(vec);
+    BOOST_TEST_REQUIRE(vec.empty());
+    // 1 el -> Not modified
+    vec.push_back(1);
+    helpers::makeUniqueStable(vec);
+    BOOST_TEST_REQUIRE(vec.at(0) == 1);
+    // 2 same els -> Only 1 remains
+    vec.push_back(1);
+    helpers::makeUniqueStable(vec);
+    BOOST_TEST_REQUIRE(vec.size() == 1u);
+    BOOST_TEST_REQUIRE(vec[0] == 1);
+    // 2 different els -> Both remain
+    vec.push_back(-1);
+    helpers::makeUniqueStable(vec);
+    BOOST_TEST_REQUIRE(vec.size() == 2u);
+    BOOST_TEST_REQUIRE(vec[0] == 1);
+    BOOST_TEST_REQUIRE(vec[1] == -1);
+    // More mixed elements
+    vec = {5, 6, 5, 5, 2, 6, 1, 5, 7, 7, 3, -1, 3};
+    std::vector<int> expectedVec = {5, 6, 2, 1, 7, 3, -1};
+    helpers::makeUniqueStable(vec);
+    BOOST_TEST_REQUIRE(vec == expectedVec, boost::test_tools::per_element());
+}
 
 BOOST_AUTO_TEST_CASE(MakeUnique)
 {
     // Empty vector -> Not modified
     std::vector<int> vec;
     helpers::makeUnique(vec);
-    BOOST_REQUIRE(vec.empty());
+    BOOST_TEST_REQUIRE(vec.empty());
     // 1 el -> Not modified
     vec.push_back(1);
     helpers::makeUnique(vec);
-    BOOST_REQUIRE_EQUAL(vec.at(0), 1);
+    BOOST_TEST_REQUIRE(vec.at(0) == 1);
     // 2 same els -> Only 1 remains
     vec.push_back(1);
     helpers::makeUnique(vec);
-    BOOST_REQUIRE_EQUAL(vec.size(), 1u);
-    BOOST_REQUIRE_EQUAL(vec[0], 1);
+    BOOST_TEST_REQUIRE(vec.size() == 1u);
+    BOOST_TEST_REQUIRE(vec[0] == 1);
     // 2 different els -> Both remain
     vec.push_back(-1);
     helpers::makeUnique(vec);
-    BOOST_REQUIRE_EQUAL(vec.size(), 2u);
-    BOOST_REQUIRE_EQUAL(vec[0], 1);
-    BOOST_REQUIRE_EQUAL(vec[1], -1);
+    BOOST_TEST_REQUIRE(vec.size() == 2u);
+    BOOST_TEST_REQUIRE(vec[0] == -1);
+    BOOST_TEST_REQUIRE(vec[1] == 1);
     // More mixed elements
-    vec.clear();
-    using namespace boost::assign;
-    vec += 5, 6, 5, 5, 2, 6, 1, 5, 7, 7, 3, -1, 3;
-    std::vector<int> expectedVec;
-    expectedVec += 5, 6, 2, 1, 7, 3, -1;
+    vec = {5, 6, 5, 5, 2, 6, 1, 5, 7, 7, 3, -1, 3};
+    std::vector<int> expectedVec = {-1, 1, 2, 3, 5, 6, 7};
     helpers::makeUnique(vec);
-    BOOST_REQUIRE_EQUAL_COLLECTIONS(vec.begin(), vec.end(), expectedVec.begin(), expectedVec.end());
+    BOOST_TEST_REQUIRE(vec == expectedVec, boost::test_tools::per_element());
 }
 
 BOOST_AUTO_TEST_CASE(IndexOf)

@@ -128,9 +128,29 @@ bool contains_if(const T& container, T_Predicate&& predicate)
     return find_if(container, std::forward<T_Predicate>(predicate)) != end(container);
 }
 
-/// Remove duplicate values from the given container without changing the order
+/// Remove duplicate values from the given sorted container
+template<class T>
+void makeUniqueSorted(T& container)
+{
+    const auto newEnd = std::unique(begin(container), end(container));
+    container.erase(newEnd, end(container));
+}
+/// Remove duplicate values from the given container, sorts it first
 template<class T>
 void makeUnique(T& container)
+{
+    std::sort(begin(container), end(container));
+    makeUniqueSorted(container);
+}
+template<class T, class T_Predicate>
+void makeUnique(T& container, T_Predicate&& predicate)
+{
+    std::sort(begin(container), end(container), std::forward<T_Predicate>(predicate));
+    makeUniqueSorted(container);
+}
+/// Remove duplicate values from the given container without changing the order
+template<class T>
+void makeUniqueStable(T& container)
 {
     // Containers with less than 2 elements are always unique
     if(container.size() < 2u)
