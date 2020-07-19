@@ -35,11 +35,6 @@
 
 using namespace boost::assign;
 
-struct MapPointComp
-{
-    bool operator()(const MapPoint& lhs, const MapPoint& rhs) const { return (lhs.y < rhs.y) || ((lhs.y == rhs.y) && (lhs.x < rhs.x)); }
-};
-
 BOOST_AUTO_TEST_SUITE(TerritoryRegionTestSuite)
 
 BOOST_AUTO_TEST_CASE(IsPointValid)
@@ -64,7 +59,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     std::reverse(outer_reversed.begin(), outer_reversed.end());
 
     // Set of MapPoints that should return true
-    std::set<MapPoint, MapPointComp> results;
+    std::set<MapPoint, MapPointLess> results;
 
     // Auto-generated data (from different implementation with tests)
     results += MapPoint(10, 10), MapPoint(10, 11), MapPoint(10, 12), MapPoint(10, 13), MapPoint(10, 14);

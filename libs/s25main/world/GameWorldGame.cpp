@@ -381,13 +381,6 @@ void GameWorldGame::RecalcBorderStones(Position startPt, Extent areaSize)
 #endif
 }
 
-namespace {
-struct MapPointComp
-{
-    bool operator()(const MapPoint& lhs, const MapPoint& rhs) const { return (lhs.y < rhs.y) || ((lhs.y == rhs.y) && (lhs.x < rhs.x)); }
-};
-} // namespace
-
 void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeReason reason)
 {
     // Additional radius to eliminate border stones or odd remaining territory parts
@@ -422,7 +415,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
             sizeChanges[oldOwner - 1]--;
     }
 
-    std::set<MapPoint, MapPointComp> ptsHandled;
+    std::set<MapPoint, MapPointLess> ptsHandled;
     // Destroy everything from old player on all nodes where the owner has changed
     for(const MapPoint& curMapPt : ptsWithChangedOwners)
     {
