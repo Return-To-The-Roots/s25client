@@ -34,18 +34,6 @@
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(BuildingSuite)
 
-struct MapPointLess
-{
-    bool operator()(const MapPoint& lhs, const MapPoint& rhs) const
-    {
-        if(lhs.y < rhs.y)
-            return true;
-        if(lhs.y == rhs.y)
-            return lhs.x < rhs.x;
-        return false;
-    }
-};
-
 namespace {
 using EmptyWorldFixture0P = WorldFixture<CreateEmptyWorld, 0>;
 using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
