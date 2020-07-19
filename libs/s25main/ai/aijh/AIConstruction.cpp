@@ -212,7 +212,7 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
     // When the radius is at least half the size of the map then we may have duplicates that need to be removed
     if(radius >= std::min(aii.gwb.GetSize().x, aii.gwb.GetSize().y))
     {
-        helpers::makeUnique(flags);
+        helpers::makeUniqueStable(flags);
         // If at this pos is a flag, then it might be included due to wrapping.
         // This is wrong and needs to be removed
         const auto* flag = aii.gwb.GetSpecObj<noFlag>(pt);
