@@ -19,6 +19,7 @@
 #define iwMapDebug_h__
 
 #include "IngameWindow.h"
+#include <memory>
 
 class GameWorldView;
 
@@ -30,12 +31,15 @@ public:
 
 private:
     class DebugPrinter;
+    class EventChecker;
 
     void Msg_ComboSelectItem(unsigned ctrl_id, int select) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
+    void Msg_Timer(unsigned ctrl_id) override;
 
     GameWorldView& gwv;
-    DebugPrinter* printer;
+    std::unique_ptr<DebugPrinter> printer;
+    std::unique_ptr<EventChecker> eventChecker;
 };
 
 #endif // iwMapDebug_h__
