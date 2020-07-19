@@ -175,7 +175,7 @@ public:
     helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
     /// Grainfield: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
-    /// Carrier w/ ware: Ware, Direction, Animation, NormalOrFat
+    /// Carrier w/ ware: Ware, NormalOrFat, Direction, Animation
     helpers::MultiArray<FigAnimationSprites, NUM_WARE_TYPES, 2, 6> carrier_cache;
     /// Boundary stones: Nation
     std::array<glSmartBitmap, NUM_NATIONS> boundary_stone_cache;

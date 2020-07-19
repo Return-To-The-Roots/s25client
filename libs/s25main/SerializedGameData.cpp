@@ -94,7 +94,7 @@
 /// If a format change occurred that can still be handled increase this version and handle it in the loading code.
 /// If the change is to big to handle increase the version in Savegame.cpp  and remove all code referencing GetGameDataVersion. Then reset
 /// this number to 1.
-static const unsigned currentGameDataVersion = 3;
+static const unsigned currentGameDataVersion = 4;
 
 GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
 {

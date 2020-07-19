@@ -36,11 +36,13 @@ public:
     RTTR_CLONEABLE(glArchivItem_Bitmap_Player)
 
     /// Draw the texture in the given rect, stretching if required
-    /// equivalent to Draw(origin, w, h, 0, 0, 0, 0, color)
+    /// equivalent to Draw(destArea, {0, 0, 0, 0}, color)
     void DrawFull(const Rect& destArea, unsigned color = COLOR_WHITE, unsigned player_color = COLOR_WHITE);
     /// Draw the texture to the given position with full size
-    /// equivalent to Draw(dst, 0, 0, 0, 0, 0, 0, color, player_color)
+    /// equivalent to Draw({dst, 0, 0}, {0, 0, 0, 0}, color, player_color)
     void DrawFull(const DrawPoint& dst, unsigned color = COLOR_WHITE, unsigned player_color = COLOR_WHITE);
+    /// Draw in player colors
+    void drawForPlayer(const DrawPoint& dst, unsigned playerColor);
 
 protected:
     void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE, unsigned player_color = COLOR_WHITE);
