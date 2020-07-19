@@ -23,6 +23,7 @@
 #include "s25util/Log.h"
 #include "s25util/utf8.h"
 #include <boost/nowide/convert.hpp>
+#include <boost/nowide/detail/convert.hpp> // TODO: Remove when requiring Nowide 11 / Boost 1.74
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 

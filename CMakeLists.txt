@@ -326,7 +326,7 @@ if(NOT Boost_NOWIDE_FOUND)
   else()
     set(bnw_required QUIET)
   endif()
-  find_package(boost_nowide 10.0.0 ${bnw_required})
+  find_package(boost_nowide 11.0.0 ${bnw_required})
   # Fallback in libutil, but find_package must be done here so all subprojects can use it
 endif()
 
