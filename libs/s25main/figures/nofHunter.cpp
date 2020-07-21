@@ -20,6 +20,7 @@
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "Loader.h"
+#include "RTTR_Assert.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
@@ -129,7 +130,7 @@ void nofHunter::HandleDerivedEvent(unsigned /*id*/)
 {
     switch(state)
     {
-        default: break;
+        default: RTTR_Assert(false); break;
         case STATE_WAITING1: TryStartHunting(); break;
         case STATE_HUNTER_WAITING_FOR_ANIMAL_READY: HandleStateWaitingForAnimalReady(); break;
         case STATE_HUNTER_SHOOTING: HandleStateShooting(); break;
@@ -209,26 +210,10 @@ void nofHunter::WalkedDerived()
     switch(state)
     {
         default: break;
-        case STATE_HUNTER_CHASING:
-        {
-            HandleStateChasing();
-        }
-        break;
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT:
-        {
-            HandleStateFindingShootingPoint();
-        }
-        break;
-        case STATE_HUNTER_WALKINGTOCADAVER:
-        {
-            HandleStateWalkingToCadaver();
-        }
-        break;
-        case STATE_WALKINGHOME:
-        {
-            WalkHome();
-        }
-        break;
+        case STATE_HUNTER_CHASING: HandleStateChasing(); break;
+        case STATE_HUNTER_FINDINGSHOOTINGPOINT: HandleStateFindingShootingPoint(); break;
+        case STATE_HUNTER_WALKINGTOCADAVER: HandleStateWalkingToCadaver(); break;
+        case STATE_WALKINGHOME: HandleStateWalkingHome(); break;
     }
 }
 
@@ -303,7 +288,6 @@ void nofHunter::HandleStateChasing()
         {
             // kein Punkt gefunden --> nach Hause gehen
             StartWalkingHome();
-            WalkHome();
         }
 
     } else
@@ -318,7 +302,6 @@ void nofHunter::HandleStateChasing()
         {
             // kein Weg gefunden --> nach Hause laufen
             StartWalkingHome();
-            WalkHome();
         }
     }
 }
@@ -342,7 +325,6 @@ void nofHunter::HandleStateFindingShootingPoint()
         {
             // kein Weg gefunden --> nach Hause laufen
             StartWalkingHome();
-            WalkHome();
         }
     }
 }
@@ -361,7 +343,6 @@ void nofHunter::HandleStateWaitingForAnimalReady()
     {
         // Something went wrong, animal is doing something else?
         StartWalkingHome();
-        WalkHome();
     }
 }
 
@@ -394,7 +375,6 @@ void nofHunter::HandleStateWalkingToCadaver()
         {
             // kein Weg gefunden --> nach Hause laufen
             StartWalkingHome();
-            WalkHome();
         }
     }
 }
@@ -417,22 +397,18 @@ void nofHunter::HandleStateEviscerating()
     ware = GD_MEAT;
     // und zurück zur Hütte
     StartWalkingHome();
-    WalkHome();
 }
 
 void nofHunter::StartWalkingHome()
 {
-    // Lebt das Tier noch, müssen wir ihm Bescheid sagen
-    if(animal)
-    {
-        animal->StopHunting();
-        animal = nullptr;
-    }
-
+    WorkAborted();
     state = STATE_WALKINGHOME;
+    // We may be still walking in which case we delay finding a path home until we reached the next node
+    if(!IsMoving())
+        HandleStateWalkingHome();
 }
 
-void nofHunter::WalkHome()
+void nofHunter::HandleStateWalkingHome()
 {
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
     MapPoint homeFlagPos = gwg->GetNeighbour(workplace->GetPos(), Direction::SOUTHEAST);
@@ -476,7 +452,6 @@ void nofHunter::AnimalLost()
             GetEvMgr().RemoveEvent(current_ev);
             // Nach Hause laufen
             StartWalkingHome();
-            WalkHome();
             break;
     }
 }
