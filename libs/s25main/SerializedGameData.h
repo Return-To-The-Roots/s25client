@@ -57,6 +57,9 @@ public:
     /// Reads the snapshot from the internal buffer
     void ReadSnapshot(const std::shared_ptr<Game>& game);
 
+    /// Get the format version the data is saved in. Deserializing methods can use this to support
+    /// loading data saved in an earlier format.
+    /// See `currentGameDataVersion` in SerializedGameData.cpp for version history
     unsigned GetGameDataVersion() const { return gameDataVersion; }
 
     //////////////////////////////////////////////////////////////////////////
