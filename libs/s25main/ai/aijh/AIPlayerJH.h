@@ -41,6 +41,10 @@ class BuildingPlanner;
 class AIConstruction;
 class Job;
 
+/// Create a subscription which records all nodes for which the BQ (may) have changed
+/// Requires arguments to have the same lifetime as the subscription
+Subscription recordBQsToUpdate(const GameWorldBase& gw, std::vector<MapPoint>& bqsToUpdate);
+
 /// Klasse für die besser JH-KI
 class AIPlayerJH : public AIPlayer
 {

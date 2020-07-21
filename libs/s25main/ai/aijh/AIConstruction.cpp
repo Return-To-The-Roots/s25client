@@ -408,7 +408,6 @@ bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target
     // Wenn Pfad gefunden, Befehl zum Straße bauen und Flagen setzen geben
     if(foundPath)
     {
-        aii.SetFlag(target->GetPos());
         aii.BuildRoad(start->GetPos(), false, route);
         // set flags along the road just after contruction - todo: handle failed road construction by removing the useless flags!
         /*MapCoord tx=x,ty=y;
