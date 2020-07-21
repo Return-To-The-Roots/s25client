@@ -20,6 +20,7 @@
 #include "Loader.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "ai/aijh/AIPlayerJH.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlTimer.h"
@@ -114,22 +115,7 @@ public:
             for(const unsigned playerIdx : usedPlayerIdxs)
                 bqMap[pt][playerIdx] = gw.GetBQ(pt, playerIdx);
         }
-        nodeSub = gw.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
-            if(note.type == NodeNote::BQ)
-                pointsToUpdate.push_back(note.pos);
-            else if(note.type == NodeNote::Owner)
-            {
-                // Owner changes border, which changes where buildings can be placed next to it
-                // And as flags are need for buildings we need range 2 (e.g. range 1 is flag, range 2 building)
-                this->gw.CheckPointsInRadius(
-                  note.pos, 2,
-                  [this](const MapPoint pt, unsigned) {
-                      pointsToUpdate.push_back(pt);
-                      return false;
-                  },
-                  true);
-            }
-        });
+        nodeSub = AIJH::recordBQsToUpdate(this->gw, this->pointsToUpdate);
     }
     void check()
     {

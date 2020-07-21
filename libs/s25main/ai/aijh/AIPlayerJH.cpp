@@ -107,6 +107,26 @@ void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 
 namespace AIJH {
 
+Subscription recordBQsToUpdate(const GameWorldBase& gw, std::vector<MapPoint>& bqsToUpdate)
+{
+    auto addToBqsToUpdate = [&bqsToUpdate](const MapPoint pt, unsigned) {
+        bqsToUpdate.push_back(pt);
+        return false;
+    };
+    return gw.GetNotifications().subscribe<NodeNote>([&gw, addToBqsToUpdate](const NodeNote& note) {
+        if(note.type == NodeNote::BQ)
+        {
+            // Need to check surrounding nodes for possible/impossible flags (e.g. near border)
+            gw.CheckPointsInRadius(note.pos, 1, addToBqsToUpdate, true);
+        } else if(note.type == NodeNote::Owner)
+        {
+            // Owner changes border, which changes where buildings can be placed next to it
+            // And as flags are need for buildings we need range 2 (e.g. range 1 is flag, range 2 building)
+            gw.CheckPointsInRadius(note.pos, 2, addToBqsToUpdate, true);
+        }
+    });
+}
+
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), isInitGfCompleted(false), defeated(player.IsDefeated()),
       bldPlanner(std::make_unique<BuildingPlanner>(*this)), construction(std::make_unique<AIConstruction>(*this))
@@ -155,22 +175,7 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
         if(note.player == playerId)
             HandleShipNote(eventManager, note);
     });
-    subBQ = notifications.subscribe<NodeNote>([this](const NodeNote& note) {
-        if(note.type == NodeNote::BQ)
-            nodesWithOutdatedBQ.push_back(note.pos);
-        else if(note.type == NodeNote::Owner)
-        {
-            // Owner changes border, which changes where buildings can be placed next to it
-            // And as flags are need for buildings we need range 2 (e.g. range 1 is flag, range 2 building)
-            this->gwb.CheckPointsInRadius(
-              note.pos, 2,
-              [this](const MapPoint pt, unsigned) {
-                  nodesWithOutdatedBQ.push_back(pt);
-                  return false;
-              },
-              true);
-        }
-    });
+    subBQ = recordBQsToUpdate(this->gwb, this->nodesWithOutdatedBQ);
 }
 
 AIPlayerJH::~AIPlayerJH() = default;
