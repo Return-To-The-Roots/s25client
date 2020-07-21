@@ -47,7 +47,7 @@ private:
     /// Trifft Vorbereitungen fürs nach Hause - Laufen
     void StartWalkingHome();
     /// Läuft wieder zu seiner Hütte zurück
-    void WalkHome();
+    void HandleStateWalkingHome();
 
     /// Prüft, ob der Schießpunkt geeignet ist
     bool IsShootingPointGood(MapPoint pt);
