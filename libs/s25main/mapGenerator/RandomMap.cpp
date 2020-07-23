@@ -23,7 +23,6 @@
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
 #include "mapGenerator/Textures.h"
-#include "mapGenerator/Utilities.h"
 
 #include "lua/GameDataLoader.h"
 #include "libsiedler2/libsiedler2.h"

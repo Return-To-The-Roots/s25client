@@ -17,7 +17,6 @@
 
 #include "mapGenerator/Islands.h"
 #include "mapGenerator/TextureHelper.h"
-#include "mapGenerator/Utilities.h"
 #include <cmath>
 
 namespace rttr { namespace mapGenerator {
