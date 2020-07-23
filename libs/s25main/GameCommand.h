@@ -20,6 +20,7 @@
 
 #include <boost/smart_ptr/intrusive_ptr.hpp>
 #include <RTTR_Assert.h>
+#include <cstdint>
 
 class Serializer;
 class GameWorldGame;

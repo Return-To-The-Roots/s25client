@@ -28,6 +28,7 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "s25util/Serializer.h"
+#include <cstdint>
 #include <utility>
 #include <vector>
 

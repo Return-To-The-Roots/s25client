@@ -19,6 +19,7 @@
 #define XorShift_h__
 
 #include <array>
+#include <cstdint>
 #include <iosfwd>
 #include <limits>
 #include <type_traits>

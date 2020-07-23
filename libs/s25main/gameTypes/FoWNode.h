@@ -20,6 +20,7 @@
 
 #include "gameTypes/MapTypes.h"
 #include <array>
+#include <cstdint>
 
 class FOWObject;
 class SerializedGameData;
