@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_SUITE(AlgorithmsTests)
 BOOST_AUTO_TEST_CASE(MapPointCompareCanBeUsedAsValidComparorForSet)
 {
     MapExtent size(19, 45);
-    std::set<MapPoint, MapPoint_compare> setOfMapPoints;
+    std::set<MapPoint, MapPointLess> setOfMapPoints;
 
     RTTR_FOREACH_PT(MapPoint, size)
     {

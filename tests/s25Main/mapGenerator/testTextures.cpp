@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_DoesNotReplaceExcludedTextures)
 
 BOOST_AUTO_TEST_CASE(ReplaceTextures_ReplacesAllTexturesWithinRadius)
 {
-    std::set<MapPoint, MapPoint_compare> points{
+    std::set<MapPoint, MapPointLess> points{
       MapPoint(0, 1),
       MapPoint(1, 0),
     };
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextures_ReplacesAllTexturesWithinRadius)
 
             textures.Resize(size, source);
 
-            std::set<MapPoint, MapPoint_compare> nodes(points);
+            std::set<MapPoint, MapPointLess> nodes(points);
 
             ReplaceTextures(textures, radius, nodes, target, {});
 
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextures_ReplacesAllTexturesWithinRadius)
 
 BOOST_AUTO_TEST_CASE(ReplaceTextures_DoesNotReplaceExcludedTextures)
 {
-    std::set<MapPoint, MapPoint_compare> points{
+    std::set<MapPoint, MapPointLess> points{
       MapPoint(3, 1),
       MapPoint(3, 0),
     };
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextures_DoesNotReplaceExcludedTextures)
 
             textures.Resize(size, source);
 
-            std::set<MapPoint, MapPoint_compare> nodes(points);
+            std::set<MapPoint, MapPointLess> nodes(points);
 
             ReplaceTextures(textures, radius, nodes, target, {source});
 

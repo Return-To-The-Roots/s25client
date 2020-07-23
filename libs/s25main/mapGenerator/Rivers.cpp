@@ -25,7 +25,7 @@ namespace rttr { namespace mapGenerator {
     {
         const MapExtent& size = map.textures.GetSize();
 
-        std::set<MapPoint, MapPoint_compare> river;
+        River river;
         std::vector<Direction> exlcuded{direction + 2, direction + 3, direction + 4};
 
         auto water = map.textures.Find(IsWater);

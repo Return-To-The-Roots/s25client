@@ -23,7 +23,7 @@
 
 namespace rttr { namespace mapGenerator {
 
-    using River = std::set<MapPoint, MapPoint_compare>;
+    using River = std::set<MapPoint, MapPointLess>;
 
     /**
      * Creates a small stream of water for the specified map with the specified initial direction, length and split rate.

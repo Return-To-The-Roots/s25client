@@ -24,7 +24,7 @@ namespace rttr { namespace mapGenerator {
 
     std::vector<std::vector<MapPoint>> FindIslands(const TextureMap& textures, unsigned minNodes)
     {
-        std::set<MapPoint, MapPoint_compare> visited;
+        std::set<MapPoint, MapPointLess> visited;
         std::vector<std::vector<MapPoint>> islands;
 
         auto containsLand = [&textures](const MapPoint& pt) { return textures.Any(pt, IsLand); };

@@ -128,7 +128,7 @@ namespace rttr { namespace mapGenerator {
     {
         std::vector<DescIdx<TerrainDesc>> transition;
         std::set<DescIdx<TerrainDesc>> excludedTextures;
-        std::set<MapPoint, MapPoint_compare> visited;
+        std::set<MapPoint, MapPointLess> visited;
         std::copy(coast.begin(), coast.end(), std::inserter(visited, visited.begin()));
 
         auto water = textures_.Find(IsShipableWater);
@@ -236,7 +236,7 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
-    void ReplaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPoint_compare>& nodes,
+    void ReplaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPointLess>& nodes,
                          const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded)
     {
         if(radius == 0)
@@ -249,7 +249,7 @@ namespace rttr { namespace mapGenerator {
             return;
         }
 
-        std::set<MapPoint, MapPoint_compare> initialNodes(nodes);
+        std::set<MapPoint, MapPointLess> initialNodes(nodes);
 
         for(const MapPoint& pt : initialNodes)
         {

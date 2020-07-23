@@ -24,7 +24,7 @@ namespace rttr { namespace mapGenerator {
 
     std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     {
-        std::set<MapPoint, MapPoint_compare> visited;
+        std::set<MapPoint, MapPointLess> visited;
         std::vector<MapPoint> connectedArea;
 
         auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textures.Any(pt, IsBuildableLand); };

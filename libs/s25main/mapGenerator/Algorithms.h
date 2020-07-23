@@ -29,14 +29,6 @@
 namespace rttr { namespace mapGenerator {
 
     /**
-     * Compare operator for MapPoint class.
-     */
-    struct MapPoint_compare
-    {
-        bool operator()(const MapPoint& p1, const MapPoint& p2) const { return (p1.y < p2.y) || (p1.y == p2.y && p1.x < p2.x); }
-    };
-
-    /**
      * Smoothes a single value for the specified map point to lower the gradient to neighboring nodes.
      *
      * @param pt map point to smooth the value for
@@ -124,7 +116,7 @@ namespace rttr { namespace mapGenerator {
     template<typename T_Node>
     std::vector<MapPoint> Collect(const MapBase& map, const MapPoint& pt, T_Node&& evaluator)
     {
-        std::set<MapPoint, MapPoint_compare> visited;
+        std::set<MapPoint, MapPointLess> visited;
         std::vector<MapPoint> body;
         std::queue<MapPoint> searchSpace;
 

@@ -23,7 +23,7 @@
 
 namespace rttr { namespace mapGenerator {
 
-    using Island = std::set<MapPoint, MapPoint_compare>;
+    using Island = std::set<MapPoint, MapPointLess>;
 
     /**
      * Finds all islands on the map which consist of at least the specified minimum number of nodes.

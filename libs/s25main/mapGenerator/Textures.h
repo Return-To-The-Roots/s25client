@@ -233,7 +233,7 @@ namespace rttr { namespace mapGenerator {
      * @param texture texture to apply to nodes' triangles
      * @param excluded set of texture which shouldn't get replaced
      */
-    void ReplaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPoint_compare>& nodes,
+    void ReplaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPointLess>& nodes,
                          const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded);
 
 }} // namespace rttr::mapGenerator
