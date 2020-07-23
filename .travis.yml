@@ -1,11 +1,10 @@
 language: cpp
+os: linux
 dist: xenial
 if: branch = master
 
 addons:
   apt: &defApt
-    sources: &defSrcs
-      - ubuntu-toolchain-r-test
     packages: &defPackages
       - libsdl2-dev
       - libsdl2-mixer-dev
@@ -28,7 +27,20 @@ cache:
     - ${HOME}/.cache
 
 before_install:
-  - eval "${MATRIX_EVAL}"
+  - |
+    echo "CC=$CC, CXX=$CXX, GCOV=$GCOV"
+    export CC=$TRAVIS_COMPILER
+    if [[ "$TRAVIS_COMPILER" =~ clang ]]; then
+      export CXX=${TRAVIS_COMPILER/clang/clang++}
+    elif [[ "$TRAVIS_COMPILER" =~ gcc ]]; then
+      export CXX=${TRAVIS_COMPILER/gcc/g++}
+    fi
+    ver=7 # default
+    if [[ "$TRAVIS_COMPILER" =~ gcc- ]]; then
+      ver="${TRAVIS_COMPILER##*gcc-}"
+    fi
+    export GCOV=gcov-${ver}
+    echo "CC=$CC, CXX=$CXX, GCOV=$GCOV"
   - DEPS_DIR="${HOME}/.cache"
   - mkdir -p "${DEPS_DIR}"
 
@@ -49,62 +61,51 @@ before_script: source external/libutil/tools/ci/setupXServer.sh
 
 script: tools/ci/travisBuild.sh
 
+anchors:
+  llvm-toolchain-xenial-10: &llvm-toolchain-xenial-10
+    sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-10 main'
+    key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+  gcc-6:  &gcc-6  { apt: { packages: [ *defPackages, "g++-6"  ], sources: [ ubuntu-toolchain-r-test ] } }
+  gcc-9:  &gcc-9  { apt: { packages: [ *defPackages, "g++-9"  ], sources: [ ubuntu-toolchain-r-test ] } }
+  clang-7:  &clang-7  { apt: { packages: [ *defPackages, "clang-7", "libstdc++-8-dev" ], sources: [ ubuntu-toolchain-r-test, "llvm-toolchain-xenial-7"  ] } }
+  clang-10: &clang-10 { apt: { packages: [ *defPackages, "clang-10" ],                   sources: [ ubuntu-toolchain-r-test, *llvm-toolchain-xenial-10, ] } }
+
 jobs:
   fast_finish: true
   include:
     - &linux-gcc6
-      os: linux
-      compiler: gcc
-      env:
-        - MATRIX_EVAL="CXX=g++-6 && CC=gcc-6"
-        - BUILD_TYPE=Release
-      addons:
-        apt:
-          <<: *defApt
-          packages: [*defPackages, g++-6]
+      compiler: gcc-6
+      addons: *gcc-6
+      env: BUILD_TYPE=Release
     # With coverage and external tests
     - <<: *linux-gcc6
       env:
-        - MATRIX_EVAL="CXX=g++-6 && CC=gcc-6" GCOV=gcov-6
         - BUILD_TYPE=Debug
         - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON"
       after_success: tools/ci/uploadCoverageData.sh
-    - &linux-clang
-      # GCC6 headers required
-      <<: *linux-gcc6
-      compiler: clang
+    - compiler: clang-7
+      addons: *clang-7
       env: BUILD_TYPE=Release
-    - <<: *linux-clang
+    - compiler: clang-7
+      addons: *clang-7
       env: BUILD_TYPE=Debug
     - os: osx
       compiler: clang
       env: BUILD_TYPE=Debug
-    # Latest version GCC with static analysis
-    - os: linux
-      compiler: gcc
-      env:
-        - MATRIX_EVAL="CXX=g++-9 && CC=gcc-9"
-        - BUILD_TYPE=Debug
-      addons:
-        apt:
-          <<: *defApt
-          packages: [*defPackages, g++-9]
-      script: tools/ci/travisBuild.sh
+    # Latest GCC
+    - compiler: gcc-9
+      addons: *gcc-9
+      env: BUILD_TYPE=Debug
     # Latest Clang with externals
-    - &latest-clang-externals
-      os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources: [*defSrcs, llvm-toolchain-xenial-8]
-          packages: [*defPackages, g++-7, clang-8]
+    - compiler: clang-10
+      addons: *clang-10
       env:
-        - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
         - BUILD_TYPE=Debug
         - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"
-    - <<: *latest-clang-externals
+    # Latest Clang with latest boost
+    - compiler: clang-10
+      addons: *clang-10
       env:
-        - MATRIX_EVAL="CXX=clang++-8 && CC=clang-8"
         - BUILD_TYPE=Debug
         - ADDITIONAL_CMAKE_FLAGS="-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"
-        - BOOST_VERSION=1.70.0
+        - BOOST_VERSION=1.73.0
