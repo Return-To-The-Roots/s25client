@@ -22,6 +22,12 @@ jobs:
       with:
         source: 'extras libs tests external/libendian external/liblobby external/libsiedler2 external/libutil external/mygettext external/s25edit external/s25update'
         clangFormatVersion: 9
+    - name: Lint markdown files
+      uses: avto-dev/markdown-lint@v1.3.0
+      with:
+        args:  --ignore data/RTTR/MAPS .
+        ignore: external
+
   Clang-Tidy:
     runs-on: ubuntu-latest
     steps:
