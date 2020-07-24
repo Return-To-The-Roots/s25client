@@ -140,10 +140,10 @@ LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance) : gw
     lua["RES_GRANITE"] = Resource::Granite;
     lua["RES_WATER"] = Resource::Water;
 
-    lua["NON_AGGRESSION_PACT"] = NON_AGGRESSION_PACT;
-    lua["TREATY_OF_ALLIANCE"] = TREATY_OF_ALLIANCE;
+    ADD_LUA_CONST(NON_AGGRESSION_PACT);
+    ADD_LUA_CONST(TREATY_OF_ALLIANCE);
     // infinite pact duration, see GamePlayer::GetRemainingPactTime
-    lua["DURATION_INFINITE"] = 0xFFFFFFFF;
+    ADD_LUA_CONST(DURATION_INFINITE);
 
 #undef ADD_LUA_CONST
 #define ADD_LUA_CONST(name) lua[#name] = iwMissionStatement::name

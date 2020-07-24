@@ -1620,7 +1620,7 @@ GamePlayer::PactState GamePlayer::GetPactState(const PactType pt, const unsigned
         if(!pacts[other_player][pt].accepted)
             return IN_PROGRESS;
 
-        if(pacts[other_player][pt].duration == 0xFFFFFFFF
+        if(pacts[other_player][pt].duration == DURATION_INFINITE
            || gwg.GetEvMgr().GetCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
             return ACCEPTED;
     }
@@ -1639,15 +1639,15 @@ void GamePlayer::NotifyAlliesOfLocation(const MapPoint pt)
     }
 }
 
-/// Gibt die verbleibende Dauer zurück, die ein Bündnis noch laufen wird (0xFFFFFFFF = für immer)
+/// Gibt die verbleibende Dauer zurück, die ein Bündnis noch laufen wird (DURATION_INFINITE = für immer)
 unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char other_player) const
 {
     if(pacts[other_player][pt].duration)
     {
         if(pacts[other_player][pt].accepted)
         {
-            if(pacts[other_player][pt].duration == 0xFFFFFFFF)
-                return 0xFFFFFFFF;
+            if(pacts[other_player][pt].duration == DURATION_INFINITE)
+                return DURATION_INFINITE;
             else if(gwg.GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
                 return ((pacts[other_player][pt].start + pacts[other_player][pt].duration) - gwg.GetEvMgr().GetCurrentGF());
         }
@@ -1741,7 +1741,7 @@ void GamePlayer::MakeStartPacts()
             continue;
         for(unsigned z = 0; z < NUM_PACTS; ++z)
         {
-            pacts[i][z].duration = 0xFFFFFFFF;
+            pacts[i][z].duration = DURATION_INFINITE;
             pacts[i][z].start = 0;
             pacts[i][z].accepted = true;
             pacts[i][z].want_cancel = false;

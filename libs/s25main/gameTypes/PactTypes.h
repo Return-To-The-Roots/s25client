@@ -32,6 +32,8 @@ DEFINE_MAX_ENUM_VALUE(PactType, NON_AGGRESSION_PACT)
 /// Number of the various pacts
 constexpr unsigned NUM_PACTS = helpers::NumEnumValues_v<PactType>;
 
+constexpr unsigned DURATION_INFINITE = 0xFFFFFFFF;
+
 /// Names of the possible pacts
 extern const std::array<const char*, NUM_PACTS> PACT_NAMES;
 

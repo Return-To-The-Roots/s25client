@@ -846,7 +846,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     executeLua("function onPactCanceled(pt, canceledByPlayerId, targetPlayerId) rttr:Log('Pact canceled') end");
 
     // create alliance and check players state
-    player.SuggestPact(1, TREATY_OF_ALLIANCE, 0xFFFFFFFF);
+    player.SuggestPact(1, TREATY_OF_ALLIANCE, DURATION_INFINITE);
     game->executeAICommands();
     BOOST_REQUIRE(player.IsAlly(1));
     executeLua("assert(player:IsAlly(0))");
@@ -870,7 +870,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
 
     // accept cancel-request via lua callback
     executeLua("function onCancelPactRequest(pt, player, ai) return true end");
-    player.SuggestPact(1, NON_AGGRESSION_PACT, 0xFFFFFFFF);
+    player.SuggestPact(1, NON_AGGRESSION_PACT, DURATION_INFINITE);
     game->executeAICommands();
     // non aggression was created
     BOOST_REQUIRE(!player.IsAttackable(1));
