@@ -31,36 +31,11 @@ namespace boost { namespace test_tools { namespace tt_detail {
     };
 }}} // namespace boost::test_tools::tt_detail
 
-template<typename T1, typename T2>
-inline boost::test_tools::predicate_result testCmp(const char* cmp, const T1& l, const T2& r, bool equal)
-{
-    if((l == r) != equal)
-    {
-        boost::test_tools::predicate_result res(false);
-        res.message() << cmp << " [" << l << (equal ? "!=" : "==") << r << "]";
-        return res;
-    }
-
-    return true;
-}
-
 /// Check that an exception of the given type is thrown and it contains the message
-/* clang-format off */
-#define RTTR_CHECK_THROW(S, E, MSG)                                          \
-do                                                                           \
-{                                                                            \
-    try                                                                      \
-    {                                                                        \
-        BOOST_TEST_PASSPOINT();                                              \
-        S;                                                                   \
-        RTTR_IGNORE_UNREACHABLE_CODE                                         \
-        BOOST_TEST_ERROR("Exception " << #E << " expected but not thrown");  \
-        RTTR_POP_DIAGNOSTIC                                                  \
-    } catch(const E& e)                                                      \
-    {                                                                        \
-        BOOST_TEST(e.what() == (MSG));                                       \
-    }                                                                        \
-} while(false)
-/* clang-format on */
+#define RTTR_CHECK_EXCEPTION_MSG(S, E, MSG)         \
+    BOOST_CHECK_EXCEPTION(S, E, [](const E& e) {    \
+        BOOST_TEST(std::string(e.what()) == (MSG)); \
+        return std::string(e.what()) == (MSG);      \
+    })
 
 #endif // testHelpers_h__
