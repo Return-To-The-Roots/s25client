@@ -37,6 +37,7 @@ class GameObject;
 class EventManager;
 class GameEvent;
 class Game;
+class ILocalGameState;
 
 /// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer
@@ -55,7 +56,7 @@ public:
     void MakeSnapshot(const std::shared_ptr<Game>& game);
 
     /// Reads the snapshot from the internal buffer
-    void ReadSnapshot(const std::shared_ptr<Game>& game);
+    void ReadSnapshot(const std::shared_ptr<Game>& game, ILocalGameState& localGameState);
 
     /// Get the format version the data is saved in. Deserializing methods can use this to support
     /// loading data saved in an earlier format.

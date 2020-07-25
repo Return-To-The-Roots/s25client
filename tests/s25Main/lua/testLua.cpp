@@ -22,8 +22,6 @@
 #include "buildings/nobHQ.h"
 #include "helpers/EnumRange.h"
 #include "lua/LuaTraits.h" // IWYU pragma: keep
-#include "network/ClientInterface.h"
-#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/DiplomacyPostQuestion.h"
 #include "postSystem/PostBox.h"
@@ -37,7 +35,7 @@
 #include "s25util/tmpFile.h"
 #include <rttr/test/LocaleResetter.hpp>
 #include <rttr/test/testHelpers.hpp>
-#include <boost/assign/std/vector.hpp>
+#include <turtle/mock.hpp>
 #include <boost/test/unit_test.hpp>
 #include <map>
 #include <memory>
@@ -118,13 +116,13 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
 
     BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));
 
-    GAMECLIENT.SetIsHost(true);
+    MOCK_EXPECT(localGameState.IsHost).once().returns(true);
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "true"));
-    GAMECLIENT.SetIsHost(false);
+    MOCK_EXPECT(localGameState.IsHost).once().returns(false);
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "false"));
     BOOST_CHECK(isLuaEqual("rttr:GetNumPlayers()", "3"));
-    // Set Player ID
-    GAMECLIENT.SetTestPlayerId(1);
+
+    MOCK_EXPECT(localGameState.GetPlayerId).once().returns(1);
     BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
 }
 
@@ -170,37 +168,6 @@ BOOST_AUTO_TEST_CASE(Translations)
     }
 }
 
-namespace {
-struct StoreChat : public ClientInterface
-{
-    unsigned lastPlayerId;
-    ChatDestination lastCD;
-    std::string lastMsg;
-
-    StoreChat()
-    {
-        Clear();
-        GAMECLIENT.SetInterface(this);
-    }
-
-    ~StoreChat() override { GAMECLIENT.RemoveInterface(this); }
-
-    void Clear()
-    {
-        lastPlayerId = 1337;
-        lastCD = CD_ALL;
-        lastMsg.clear();
-    }
-
-    void CI_Chat(unsigned playerId, const ChatDestination cd, const std::string& msg) override
-    {
-        lastPlayerId = playerId;
-        lastCD = cd;
-        lastMsg = msg;
-    }
-};
-} // namespace
-
 BOOST_AUTO_TEST_CASE(GameFunctions)
 {
     initWorld();
@@ -231,21 +198,19 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
         world.GetEvMgr().ExecuteNextGF();
     }
 
-    StoreChat storeChat;
     // Set player id
-    GAMECLIENT.SetTestPlayerId(1);
-    BOOST_REQUIRE_EQUAL(GAMECLIENT.GetPlayerId(), 1u);
+    MOCK_EXPECT(localGameState.GetPlayerId).returns(1);
     // Send to other player
+    MOCK_EXPECT(localGameState.SystemChat).never();
     executeLua("rttr:Chat(0, 'Hello World')");
-    BOOST_REQUIRE_EQUAL(storeChat.lastMsg, "");
-    // Send to this player
+    MOCK_VERIFY(localGameState.SystemChat);
+    MOCK_RESET(localGameState.SystemChat);
+    // Send to this player and all
+    MOCK_EXPECT(localGameState.SystemChat).once().with("Hello World");
+    MOCK_EXPECT(localGameState.SystemChat).once().with("Hello All");
     executeLua("rttr:Chat(1, 'Hello World')");
-    BOOST_REQUIRE_EQUAL(storeChat.lastMsg, "Hello World");
-    BOOST_REQUIRE_EQUAL(storeChat.lastCD, CD_SYSTEM);
-    // Send to all
     executeLua("rttr:Chat(-1, 'Hello All')");
-    BOOST_REQUIRE_EQUAL(storeChat.lastMsg, "Hello All");
-    BOOST_REQUIRE_EQUAL(storeChat.lastCD, CD_SYSTEM);
+    MOCK_VERIFY(localGameState.SystemChat);
 
     world.GetPostMgr().AddPostBox(1);
     const PostBox& postBox = *world.GetPostMgr().GetPostBox(1);

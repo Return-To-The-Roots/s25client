@@ -29,6 +29,7 @@
 #include "lua/GameDataLoader.h"
 #include "lua/LuaInterfaceGame.h"
 #include "worldFixtures/GCExecutor.h"
+#include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/initGameRNG.hpp"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
@@ -96,11 +97,12 @@ struct LuaTestsFixture : public rttr::test::LogAccessor, public LuaBaseFixture, 
 public:
     std::shared_ptr<GameWithLuaAccess> game;
     GameWorld& world;
+    MockLocalGameState localGameState;
     std::vector<MapPoint> hqPositions;
 
     LuaTestsFixture() : game(std::make_shared<GameWithLuaAccess>()), world(game->world_)
     {
-        game->world_.SetLua(std::make_unique<LuaInterfaceGame>(game));
+        game->world_.SetLua(std::make_unique<LuaInterfaceGame>(game, localGameState));
         setLua(&game->world_.GetLua());
     }
 

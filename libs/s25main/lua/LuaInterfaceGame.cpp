@@ -25,13 +25,13 @@
 #include "lua/LuaHelpers.h"
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
-#include "network/GameClient.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
 #include "s25util/Serializer.h"
 
-LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance) : gw(gameInstance.lock()->world_), game(gameInstance)
+LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILocalGameState& localGameState)
+    : LuaInterfaceGameBase(localGameState), localGameState(localGameState), gw(gameInstance.lock()->world_), game(gameInstance)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name
@@ -250,10 +250,10 @@ unsigned LuaInterfaceGame::GetNumPlayers() const
 
 void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
 {
-    if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
+    if(playerIdx >= 0 && localGameState.GetPlayerId() != unsigned(playerIdx))
         return;
 
-    GAMECLIENT.SystemChat(msg);
+    localGameState.SystemChat(msg);
 }
 
 void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title, const std::string& msg)
@@ -268,7 +268,7 @@ void LuaInterfaceGame::MissionStatement2(int playerIdx, const std::string& title
 
 void LuaInterfaceGame::MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx, bool pause)
 {
-    if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
+    if(playerIdx >= 0 && localGameState.GetPlayerId() != unsigned(playerIdx))
         return;
 
     WINDOWMANAGER.Show(

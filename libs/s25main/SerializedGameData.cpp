@@ -252,7 +252,7 @@ void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
     writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game)
+void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game, ILocalGameState& localGameState)
 {
     Prepare(true);
 
@@ -261,7 +261,7 @@ void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game)
 
     expectedNumObjects = PopUnsignedInt();
 
-    gw.Deserialize(game, *this);
+    gw.Deserialize(game, localGameState, *this);
     em->Deserialize(*this);
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
         gw.GetPlayer(i).Deserialize(*this);

@@ -296,7 +296,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     GameWorld& gameWorld = game->world_;
     if(mapinfo.savegame)
-        mapinfo.savegame->sgd.ReadSnapshot(game);
+        mapinfo.savegame->sgd.ReadSnapshot(game, *this);
     else
     {
         RTTR_Assert(mapinfo.type != MAPTYPE_SAVEGAME);
@@ -304,7 +304,7 @@ void GameClient::StartGame(const unsigned random_init)
         for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
             gameWorld.GetPlayer(i).MakeStartPacts();
 
-        if(!gameWorld.LoadMap(game, mapinfo.filepath, mapinfo.luaFilepath))
+        if(!gameWorld.LoadMap(game, *this, mapinfo.filepath, mapinfo.luaFilepath))
         {
             OnError(CE_INVALID_MAP);
             return;
@@ -758,7 +758,7 @@ bool GameClient::OnGameMessage(const GameMessage_Chat& msg)
 {
     if(msg.destination == CD_SYSTEM)
     {
-        SystemChat(msg.text, msg.player);
+        SystemChat(msg.text, (msg.player < game->world_.GetNumPlayers()) ? msg.player : GetPlayerId());
         return true;
     }
     if(state == CS_GAME)
@@ -1354,11 +1354,6 @@ void GameClient::OnGameStart()
     }
 }
 
-void GameClient::SetTestPlayerId(unsigned id)
-{
-    mainPlayer.playerId = id;
-}
-
 void GameClient::StartReplayRecording(const unsigned random_init)
 {
     replayinfo = std::make_unique<ReplayInfo>();
@@ -1577,18 +1572,20 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
     SetPause(true);
 }
 
-void GameClient::SystemChat(const std::string& text, unsigned char player)
+void GameClient::SystemChat(const std::string& text)
 {
-    if(!ci)
-        return;
-    if(player == 0xFF)
-        player = mainPlayer.playerId;
-    ci->CI_Chat(player, CD_SYSTEM, text);
+    SystemChat(text, mainPlayer.playerId);
+}
+
+void GameClient::SystemChat(const std::string& text, unsigned char fromPlayerIdx)
+{
+    if(ci)
+        ci->CI_Chat(fromPlayerIdx, CD_SYSTEM, text);
 }
 
 bool GameClient::SaveToFile(const std::string& filename)
 {
-    mainPlayer.sendMsg(GameMessage_Chat(0xFF, CD_SYSTEM, "Saving game..."));
+    mainPlayer.sendMsg(GameMessage_Chat(GetPlayerId(), CD_SYSTEM, "Saving game..."));
 
     // Mond malen
     Position moonPos = VIDEODRIVER.GetMousePos();
@@ -1616,7 +1613,7 @@ bool GameClient::SaveToFile(const std::string& filename)
         return save.Save(filename, mapinfo.title);
     } catch(std::exception& e)
     {
-        OnGameMessage(GameMessage_Chat(0xFF, CD_SYSTEM, std::string("Error during saving: ") + e.what()));
+        SystemChat(std::string("Error during saving: ") + e.what());
         return false;
     }
 }

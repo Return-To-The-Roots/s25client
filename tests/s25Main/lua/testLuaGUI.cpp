@@ -24,7 +24,6 @@
 #include "controls/ctrlMultiline.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "network/GameClient.h"
 #include "ogl/glFont.h"
 #include "uiHelper/uiHelpers.hpp"
 #include <boost/assign/std/vector.hpp>
@@ -36,7 +35,7 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     uiHelper::initGUITests();
 
     // Set player
-    GAMECLIENT.SetTestPlayerId(1);
+    MOCK_EXPECT(localGameState.GetPlayerId).returns(1);
 
     BOOST_REQUIRE(!WINDOWMANAGER.GetTopMostWindow());
 

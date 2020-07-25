@@ -31,7 +31,8 @@ struct AddonIdWrapper
     constexpr operator AddonId() const { return value; }
 };
 
-LuaInterfaceSettings::LuaInterfaceSettings(IGameLobbyController& lobbyServerController) : lobbyServerController_(lobbyServerController)
+LuaInterfaceSettings::LuaInterfaceSettings(IGameLobbyController& lobbyServerController, const ILocalGameState& localGameState)
+    : LuaInterfaceGameBase(localGameState), lobbyServerController_(lobbyServerController)
 {
     Register(lua);
     LuaServerPlayer::Register(lua);

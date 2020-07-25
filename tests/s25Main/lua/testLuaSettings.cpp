@@ -21,6 +21,7 @@
 #include "addons/Addon.h"
 #include "lua/LuaInterfaceSettings.h"
 #include "network/IGameLobbyController.h"
+#include "worldFixtures/MockLocalGameState.h"
 #include "s25util/colors.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
@@ -40,6 +41,7 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
 {
     std::vector<JoinPlayerInfo> players;
     GlobalGameSettings ggs;
+    MockLocalGameState localGameState;
     LuaInterfaceSettings lua;
 
     unsigned GetMaxNumPlayers() const override { return players.size(); }
@@ -57,7 +59,7 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
     void SetTeam(unsigned playerIdx, Team newTeam) override { GetJoinPlayer(playerIdx).team = newTeam; }
     void SetNation(unsigned playerIdx, Nation newNation) override { GetJoinPlayer(playerIdx).nation = newNation; }
 
-    LuaSettingsTestsFixture() : lua(*this)
+    LuaSettingsTestsFixture() : lua(*this, localGameState)
     {
         setLua(&lua);
 

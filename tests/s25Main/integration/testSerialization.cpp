@@ -28,6 +28,7 @@
 #include "factories/GameCommandFactory.h"
 #include "network/PlayerGameCommands.h"
 #include "worldFixtures/CreateEmptyWorld.h"
+#include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
 #include "nodeObjs/noFire.h"
 #include "gameTypes/MapInfo.h"
@@ -277,7 +278,8 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
             std::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
             GameWorld& newWorld = sharedGame->world_;
-            save.sgd.ReadSnapshot(sharedGame);
+            MockLocalGameState localGameState;
+            save.sgd.ReadSnapshot(sharedGame, localGameState);
             auto& newEm = static_cast<TestEventManager&>(sharedGame->world_.GetEvMgr());
 
             BOOST_REQUIRE_EQUAL(newWorld.GetSize(), world.GetSize());
