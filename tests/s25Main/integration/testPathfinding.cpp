@@ -140,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     BOOST_REQUIRE_EQUAL(route.size(), 6u);
     const std::vector<Direction> expectedRoute{Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHEAST,
                                                Direction::NORTHEAST, Direction::EAST,      Direction::EAST};
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(route, expectedRoute);
+    BOOST_TEST_REQUIRE(route == expectedRoute, boost::test_tools::per_element());
     // Inverse route
     BOOST_REQUIRE_NE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route), INVALID_DIR);
     BOOST_REQUIRE_EQUAL(length, 6u);
@@ -150,7 +150,7 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     {
         expectedRevRoute.push_back(dir + 3u);
     }
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(route, expectedRevRoute);
+    BOOST_TEST(route == expectedRevRoute, boost::test_tools::per_element());
 }
 
 BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)

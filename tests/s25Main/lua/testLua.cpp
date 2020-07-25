@@ -503,7 +503,7 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12)");
     std::vector<MapPoint> expectedRestrictedArea;
     expectedRestrictedArea = {MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12)};
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea); //-V807
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element()); //-V807
     executeLua("assert(not player:IsInRestrictedArea(1, 2))");
     executeLua("assert(not player:IsInRestrictedArea(0, 0))");
     executeLua("assert(player:IsInRestrictedArea(6, 8))");
@@ -513,28 +513,28 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     executeLua("player:SetRestrictedArea(0,0, 1,1, 10,1, 10,10, 1,10, 1,1, 0,0, 5,5, 7,5, 7,7, 5,5, 0,0)");
     expectedRestrictedArea = {MapPoint(0, 0), MapPoint(1, 1), MapPoint(10, 1), MapPoint(10, 10), MapPoint(1, 10), MapPoint(1, 1),
                               MapPoint(0, 0), MapPoint(5, 5), MapPoint(7, 5),  MapPoint(7, 7),   MapPoint(5, 5),  MapPoint(0, 0)};
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     BOOST_REQUIRE_EQUAL(getLog(), "");
     // Some prefer using nils
     executeLua("player:SetRestrictedArea(nil,nil, 1,1, 10,1, 10,10, 1,10, 1,1, nil,nil, 5,5, 7,5, 7,7, 5,5, nil,nil)");
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     RTTR_REQUIRE_LOG_CONTAINS("don't need leading nils", false);
 
     // New API: Single nil and no double point
     executeLua("player:SetRestrictedArea(1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7)");
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     // Although you could use nil at the end...
     executeLua("player:SetRestrictedArea(1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7, nil)");
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     // ...or beginning
     executeLua("player:SetRestrictedArea(nil,1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7)");
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     RTTR_REQUIRE_LOG_CONTAINS("don't need leading nils", false);
 
     // Also for single polygon
     executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12, nil)");
     expectedRestrictedArea = {MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12)};
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
 
     executeLua("player:SetRestrictedArea()");
     BOOST_REQUIRE_EQUAL(player.GetRestrictedArea().size(), 0u);
@@ -760,7 +760,7 @@ BOOST_AUTO_TEST_CASE(onOccupied)
         Points& luaPts = luaPtsPerPlayer[i];
         std::sort(gamePts.begin(), gamePts.end());
         std::sort(luaPts.begin(), luaPts.end());
-        RTTR_REQUIRE_EQUAL_COLLECTIONS(luaPts, gamePts);
+        BOOST_TEST_REQUIRE(luaPts == gamePts, boost::test_tools::per_element());
     }
 }
 
@@ -792,7 +792,7 @@ BOOST_AUTO_TEST_CASE(onExplored)
         Points& luaPts = luaPtsPerPlayer[i];
         std::sort(gamePts.begin(), gamePts.end());
         std::sort(luaPts.begin(), luaPts.end());
-        RTTR_REQUIRE_EQUAL_COLLECTIONS(luaPts, gamePts);
+        BOOST_TEST_REQUIRE(luaPts == gamePts, boost::test_tools::per_element());
     }
 }
 
