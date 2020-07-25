@@ -239,6 +239,9 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     BOOST_REQUIRE_NE(getLog(), "");
 
     executeLua("assert(rttr:GetWorld())");
+
+    MOCK_EXPECT(localGameState.FormatGFTime).once().with(1023u).returns("01:13:17");
+    BOOST_TEST(isLuaEqual("rttr:FormatNumGFs(1023)", "'01:13:17'"));
 }
 
 BOOST_AUTO_TEST_CASE(MissionGoal)

@@ -183,6 +183,7 @@ void LuaInterfaceGame::Register(kaguya::State& state)
     state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceGameBase>()
                                  .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
                                  .addFunction("GetGF", &LuaInterfaceGame::GetGF)
+                                 .addFunction("FormatNumGFs", &LuaInterfaceGame::FormatNumGFs)
                                  .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
                                  .addFunction("GetNumPlayers", &LuaInterfaceGame::GetNumPlayers)
                                  .addFunction("Chat", &LuaInterfaceGame::Chat)
@@ -241,6 +242,11 @@ void LuaInterfaceGame::ClearResources()
 unsigned LuaInterfaceGame::GetGF() const
 {
     return gw.GetEvMgr().GetCurrentGF();
+}
+
+std::string LuaInterfaceGame::FormatNumGFs(unsigned numGFs) const
+{
+    return localGameState.FormatGFTime(numGFs);
 }
 
 unsigned LuaInterfaceGame::GetNumPlayers() const

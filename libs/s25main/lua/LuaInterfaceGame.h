@@ -57,6 +57,7 @@ public:
     // Callable from Lua
     void ClearResources();
     unsigned GetGF() const;
+    std::string FormatNumGFs(unsigned numGFs) const;
     unsigned GetNumPlayers() const;
     void Chat(int playerIdx, const std::string& msg);
     void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);

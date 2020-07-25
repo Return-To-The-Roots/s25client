@@ -138,6 +138,10 @@ Remove all workers and wares from all players warehouses.
 **rttr:GetGF()**  
 Return the current game frame number.
 
+**rttr:FormatNumGFs(numGFs)**  
+Return the real time duration for this number of game frames based on the current speed.
+Output will be in `HH:MM:SS` format with hours omitted if zero.
+
 **rttr:Chat(player, message)**  
 Send message to player (-1 for all players).
 
