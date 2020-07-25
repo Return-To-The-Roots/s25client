@@ -25,63 +25,51 @@
 #include "worldFixtures/WorldFixture.h"
 #include "world/GameWorld.h"
 #include "world/TerritoryRegion.h"
-#include <boost/assign/std/set.hpp>
-#include <boost/assign/std/vector.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/test/unit_test.hpp>
 #include <array>
 #include <iostream>
+#include <set>
 #include <vector>
-
-using namespace boost::assign;
 
 BOOST_AUTO_TEST_SUITE(TerritoryRegionTestSuite)
 
 BOOST_AUTO_TEST_CASE(IsPointValid)
 {
     // Max tested point is (20, 20) -> size > 20
-    MapExtent worldSize(24, 22);
-    std::vector<MapPoint> hole, hole_reversed;
-    std::vector<MapPoint> outer, outer_reversed;
+    const MapExtent worldSize(24, 22);
 
     // Hole
-    hole += MapPoint(14, 14), MapPoint(16, 14), MapPoint(16, 16), MapPoint(14, 16), MapPoint(14, 14);
+    const std::vector<MapPoint> hole{MapPoint(14, 14), MapPoint(16, 14), MapPoint(16, 16), MapPoint(14, 16), MapPoint(14, 14)};
 
     // Reverse it...
-    hole_reversed = hole;
+    std::vector<MapPoint> hole_reversed = hole;
     std::reverse(hole_reversed.begin(), hole_reversed.end());
 
     // Outer polygon
-    outer += MapPoint(10, 10), MapPoint(20, 10), MapPoint(20, 20), MapPoint(10, 20), MapPoint(10, 10);
+    const std::vector<MapPoint> outer{MapPoint(10, 10), MapPoint(20, 10), MapPoint(20, 20), MapPoint(10, 20), MapPoint(10, 10)};
 
     // Reverse it...
-    outer_reversed = outer;
+    std::vector<MapPoint> outer_reversed = outer;
     std::reverse(outer_reversed.begin(), outer_reversed.end());
 
     // Set of MapPoints that should return true
-    std::set<MapPoint, MapPointLess> results;
-
     // Auto-generated data (from different implementation with tests)
-    results += MapPoint(10, 10), MapPoint(10, 11), MapPoint(10, 12), MapPoint(10, 13), MapPoint(10, 14);
-    results += MapPoint(10, 15), MapPoint(10, 16), MapPoint(10, 17), MapPoint(10, 18), MapPoint(10, 19);
-    results += MapPoint(11, 10), MapPoint(11, 11), MapPoint(11, 12), MapPoint(11, 13), MapPoint(11, 14);
-    results += MapPoint(11, 15), MapPoint(11, 16), MapPoint(11, 17), MapPoint(11, 18), MapPoint(11, 19);
-    results += MapPoint(12, 10), MapPoint(12, 11), MapPoint(12, 12), MapPoint(12, 13), MapPoint(12, 14);
-    results += MapPoint(12, 15), MapPoint(12, 16), MapPoint(12, 17), MapPoint(12, 18), MapPoint(12, 19);
-    results += MapPoint(13, 10), MapPoint(13, 11), MapPoint(13, 12), MapPoint(13, 13), MapPoint(13, 14);
-    results += MapPoint(13, 15), MapPoint(13, 16), MapPoint(13, 17), MapPoint(13, 18), MapPoint(13, 19);
-    results += MapPoint(14, 10), MapPoint(14, 11), MapPoint(14, 12), MapPoint(14, 13), MapPoint(14, 16);
-    results += MapPoint(14, 17), MapPoint(14, 18), MapPoint(14, 19), MapPoint(15, 10), MapPoint(15, 11);
-    results += MapPoint(15, 12), MapPoint(15, 13), MapPoint(15, 16), MapPoint(15, 17), MapPoint(15, 18);
-    results += MapPoint(15, 19), MapPoint(16, 10), MapPoint(16, 11), MapPoint(16, 12), MapPoint(16, 13);
-    results += MapPoint(16, 14), MapPoint(16, 15), MapPoint(16, 16), MapPoint(16, 17), MapPoint(16, 18);
-    results += MapPoint(16, 19), MapPoint(17, 10), MapPoint(17, 11), MapPoint(17, 12), MapPoint(17, 13);
-    results += MapPoint(17, 14), MapPoint(17, 15), MapPoint(17, 16), MapPoint(17, 17), MapPoint(17, 18);
-    results += MapPoint(17, 19), MapPoint(18, 10), MapPoint(18, 11), MapPoint(18, 12), MapPoint(18, 13);
-    results += MapPoint(18, 14), MapPoint(18, 15), MapPoint(18, 16), MapPoint(18, 17), MapPoint(18, 18);
-    results += MapPoint(18, 19), MapPoint(19, 10), MapPoint(19, 11), MapPoint(19, 12), MapPoint(19, 13);
-    results += MapPoint(19, 14), MapPoint(19, 15), MapPoint(19, 16), MapPoint(19, 17), MapPoint(19, 18);
-    results += MapPoint(19, 19);
+    std::set<MapPoint, MapPointLess> results{
+      MapPoint(10, 10), MapPoint(10, 11), MapPoint(10, 12), MapPoint(10, 13), MapPoint(10, 14), MapPoint(10, 15), MapPoint(10, 16),
+      MapPoint(10, 17), MapPoint(10, 18), MapPoint(10, 19), MapPoint(11, 10), MapPoint(11, 11), MapPoint(11, 12), MapPoint(11, 13),
+      MapPoint(11, 14), MapPoint(11, 15), MapPoint(11, 16), MapPoint(11, 17), MapPoint(11, 18), MapPoint(11, 19), MapPoint(12, 10),
+      MapPoint(12, 11), MapPoint(12, 12), MapPoint(12, 13), MapPoint(12, 14), MapPoint(12, 15), MapPoint(12, 16), MapPoint(12, 17),
+      MapPoint(12, 18), MapPoint(12, 19), MapPoint(13, 10), MapPoint(13, 11), MapPoint(13, 12), MapPoint(13, 13), MapPoint(13, 14),
+      MapPoint(13, 15), MapPoint(13, 16), MapPoint(13, 17), MapPoint(13, 18), MapPoint(13, 19), MapPoint(14, 10), MapPoint(14, 11),
+      MapPoint(14, 12), MapPoint(14, 13), MapPoint(14, 16), MapPoint(14, 17), MapPoint(14, 18), MapPoint(14, 19), MapPoint(15, 10),
+      MapPoint(15, 11), MapPoint(15, 12), MapPoint(15, 13), MapPoint(15, 16), MapPoint(15, 17), MapPoint(15, 18), MapPoint(15, 19),
+      MapPoint(16, 10), MapPoint(16, 11), MapPoint(16, 12), MapPoint(16, 13), MapPoint(16, 14), MapPoint(16, 15), MapPoint(16, 16),
+      MapPoint(16, 17), MapPoint(16, 18), MapPoint(16, 19), MapPoint(17, 10), MapPoint(17, 11), MapPoint(17, 12), MapPoint(17, 13),
+      MapPoint(17, 14), MapPoint(17, 15), MapPoint(17, 16), MapPoint(17, 17), MapPoint(17, 18), MapPoint(17, 19), MapPoint(18, 10),
+      MapPoint(18, 11), MapPoint(18, 12), MapPoint(18, 13), MapPoint(18, 14), MapPoint(18, 15), MapPoint(18, 16), MapPoint(18, 17),
+      MapPoint(18, 18), MapPoint(18, 19), MapPoint(19, 10), MapPoint(19, 11), MapPoint(19, 12), MapPoint(19, 13), MapPoint(19, 14),
+      MapPoint(19, 15), MapPoint(19, 16), MapPoint(19, 17), MapPoint(19, 18), MapPoint(19, 19)};
 
     // check the whole area
     std::array<std::vector<MapPoint>, 8> polygon;
@@ -93,13 +81,11 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         // i = 2, 3, 6, 7 -> hole reversed
         // i = 4, 5, 6, 7 -> outer reversed
 
-        polygon[i] += MapPoint(0, 0);
-        polygon[i] = boost::push_back(polygon[i],
-                                      (i & (1 << 0)) ? ((i & (1 << 1)) ? hole : hole_reversed) : ((i & (1 << 2)) ? outer : outer_reversed));
-        polygon[i] += MapPoint(0, 0);
-        polygon[i] = boost::push_back(polygon[i],
-                                      (i & (1 << 0)) ? ((i & (1 << 2)) ? outer : outer_reversed) : ((i & (1 << 1)) ? hole : hole_reversed));
-        polygon[i] += MapPoint(0, 0);
+        polygon[i].emplace_back(0, 0);
+        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 1)) ? hole : hole_reversed) : ((i & (1 << 2)) ? outer : outer_reversed));
+        polygon[i].emplace_back(0, 0);
+        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 2)) ? outer : outer_reversed) : ((i & (1 << 1)) ? hole : hole_reversed));
+        polygon[i].emplace_back(0, 0);
     }
 
     for(const auto& i : polygon)
@@ -117,13 +103,10 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
 
     // Make a rectangle (10,5)->(15,10) and 2 parallelograms below
     std::array<std::vector<MapPoint>, 4> rectAreas;
-    rectAreas[0] += MapPoint(10, 5), MapPoint(15, 5), MapPoint(15, 10);
-    rectAreas[0] += MapPoint(18, 13), MapPoint(15, 15);
-    rectAreas[0] += MapPoint(10, 15);
-    rectAreas[0] += MapPoint(13, 13), MapPoint(10, 10);
+    rectAreas[0] = {MapPoint(10, 5),  MapPoint(15, 5),  MapPoint(15, 10), MapPoint(18, 13),
+                    MapPoint(15, 15), MapPoint(10, 15), MapPoint(13, 13), MapPoint(10, 10)};
     // With duplicate start point
-    rectAreas[1].clear();
-    boost::push_back(rectAreas[1], rectAreas[0]) += rectAreas[0][0];
+    boost::push_back(rectAreas[1], rectAreas[0]).push_back(rectAreas[0][0]);
     rectAreas[2].resize(rectAreas[0].size());
     std::reverse_copy(rectAreas[0].begin(), rectAreas[0].end(), rectAreas[2].begin());
     rectAreas[3].resize(rectAreas[1].size());
@@ -150,24 +133,30 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     }
     // Get the points exactly at the border and just outside of it
     std::vector<MapPoint> borderPts;
-    std::vector<MapPoint> outsidePts;
-    outsidePts += MapPoint(9, 4), MapPoint(16, 4), MapPoint(16, 16), MapPoint(9, 16);
-    outsidePts += MapPoint(10, 12), MapPoint(10, 13), MapPoint(11, 13), MapPoint(10, 14);
+    std::vector<MapPoint> outsidePts{MapPoint(9, 4),   MapPoint(16, 4),  MapPoint(16, 16), MapPoint(9, 16),
+                                     MapPoint(10, 12), MapPoint(10, 13), MapPoint(11, 13), MapPoint(10, 14)};
     for(int x = 10; x <= 15; x++)
     {
-        borderPts += MapPoint(x, 5), MapPoint(x, 15);
-        outsidePts += MapPoint(x, 5 - 1), MapPoint(x, 15 + 1);
+        borderPts.emplace_back(x, 5);
+        borderPts.emplace_back(x, 15);
+        outsidePts.emplace_back(x, 5 - 1);
+        outsidePts.emplace_back(x, 15 + 1);
     }
     for(int y = 5; y <= 10; y++)
     {
-        borderPts += MapPoint(10, y), MapPoint(15, y);
-        outsidePts += MapPoint(10 - 1, y), MapPoint(15 + 1, y);
+        borderPts.emplace_back(10, y);
+        borderPts.emplace_back(15, y);
+        outsidePts.emplace_back(10 - 1, y);
+        outsidePts.emplace_back(15 + 1, y);
     }
     // Border at the parallelogram (not really all border, but hard to figure out which are outside
     for(int y = 11; y < 15; y++)
     {
         for(int x = 0; x <= 3; x++)
-            borderPts += MapPoint(x + 11, y), MapPoint(x + 16, y);
+        {
+            borderPts.emplace_back(x + 11, y);
+            borderPts.emplace_back(x + 16, y);
+        }
     }
     for(const auto& rectArea : rectAreas)
     {
@@ -187,26 +176,25 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
             BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt), isValid);
     }
 
-    std::vector<MapPoint> fullMapArea;
     // Note the usage of width and height to include the border points
-    fullMapArea += MapPoint(0, 0), MapPoint(0, worldSize.y), MapPoint(worldSize), MapPoint(worldSize.x, 0), MapPoint(0, 0);
+    std::vector<MapPoint> fullMapArea{MapPoint(0, 0), MapPoint(0, worldSize.y), MapPoint(worldSize), MapPoint(worldSize.x, 0),
+                                      MapPoint(0, 0)};
     std::vector<MapPoint> fullMapAreaReversed(fullMapArea.size());
     std::reverse_copy(fullMapArea.begin(), fullMapArea.end(), fullMapAreaReversed.begin());
 
     for(unsigned i = 0; i < 4; i++)
     {
-        std::vector<MapPoint> fullArea;
-        fullArea += MapPoint(0, 0);
+        std::vector<MapPoint> fullArea{MapPoint(0, 0)};
         if(i < 2)
             boost::push_back(fullArea, fullMapArea);
         else
             boost::push_back(fullArea, fullMapAreaReversed);
-        fullArea += MapPoint(0, 0);
+        fullArea.emplace_back(0, 0);
         if(i % 2 == 0)
             boost::push_back(fullArea, rectAreas[1]);
         else
             boost::push_back(fullArea, rectAreas[3]);
-        fullArea += MapPoint(0, 0);
+        fullArea.emplace_back(0, 0);
 
         // check the whole area
         RTTR_FOREACH_PT(MapPoint, worldSize)

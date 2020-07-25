@@ -19,6 +19,7 @@
 #define Direction_h__
 
 #include "RTTR_Assert.h"
+#include "helpers/EnumRange.h"
 #include <iterator>
 
 /// "Enum" to represent one of the 6 directions from each node
@@ -182,5 +183,25 @@ inline Direction::const_iterator Direction::end() const
 {
     return const_iterator(t_ + COUNT);
 }
+
+namespace helpers {
+template<>
+struct EnumRange<Direction>
+{
+    class iterator
+    {
+        unsigned value;
+
+    public:
+        explicit BOOST_FORCEINLINE iterator(unsigned value) : value(value) {}
+        BOOST_FORCEINLINE Direction operator*() const { return Direction::fromInt(value); }
+        BOOST_FORCEINLINE void operator++() { ++value; }
+        BOOST_FORCEINLINE bool operator!=(iterator rhs) const { return value != rhs.value; }
+    };
+
+    BOOST_FORCEINLINE iterator begin() const { return iterator(0); }
+    BOOST_FORCEINLINE iterator end() const { return iterator(Direction::COUNT); }
+};
+} // namespace helpers
 
 #endif // Direction_h__

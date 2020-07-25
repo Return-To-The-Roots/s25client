@@ -19,14 +19,13 @@
 #include "world/MapBase.h"
 #include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
-#include <boost/assign/std/vector.hpp>
 #include <boost/test/unit_test.hpp>
+#include <array>
 
 BOOST_AUTO_TEST_SUITE(WorldCreationSuite)
 
 BOOST_AUTO_TEST_CASE(NeighbourPts)
 {
-    using namespace boost::assign;
     MapBase world;
     world.Resize(MapExtent(20, 30));
 
@@ -49,15 +48,14 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
     oddPtMod[Direction::SOUTHWEST] = Position(0, 1);
     evenPtMod[Direction::SOUTHEAST] = Position(0, 1);
     oddPtMod[Direction::SOUTHEAST] = Position(1, 1);
-    std::vector<Position> testPoints;
-    // Test a simple even and odd point
-    testPoints += Position(10, 10), Position(10, 9);
-    // Test border points
-    testPoints += Position(0, 0), Position(0, world.GetHeight() - 1), Position(world.GetWidth() - 1, 0),
-      Position(world.GetWidth() - 1, world.GetHeight() - 1);
-    // Test border points with 1 offset in Y
-    testPoints += Position(0, 1), Position(0, world.GetHeight() - 2), Position(world.GetWidth() - 1, 1),
-      Position(world.GetWidth() - 1, world.GetHeight() - 2);
+    std::vector<Position> testPoints{// Test a simple even and odd point
+                                     Position(10, 10), Position(10, 9),
+                                     // Test border points
+                                     Position(0, 0), Position(0, world.GetHeight() - 1), Position(world.GetWidth() - 1, 0),
+                                     Position(world.GetWidth() - 1, world.GetHeight() - 1),
+                                     // Test border points with 1 offset in Y
+                                     Position(0, 1), Position(0, world.GetHeight() - 2), Position(world.GetWidth() - 1, 1),
+                                     Position(world.GetWidth() - 1, world.GetHeight() - 2)};
     for(const Position& pt : testPoints)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; dir++)
@@ -82,10 +80,10 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
         BOOST_REQUIRE_EQUAL(world.CalcDistance(curPt, curTargetPoint), 2u);
         BOOST_REQUIRE_EQUAL(world.GetNeighbour2(curPt, 0), curTargetPoint);
         // We now go 2 steps in each direction to describe the circle
-        // (Note: Could iterator over directions, but to easily indentifiy errors and make intentions clear we do it explicitely)
-        std::vector<Direction> steps;
-        steps += Direction::NORTHEAST, Direction::NORTHEAST, Direction::EAST, Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHEAST;
-        steps += Direction::SOUTHWEST, Direction::SOUTHWEST, Direction::WEST, Direction::WEST, Direction::NORTHWEST;
+        // (Note: Could iterator over directions, but to easily identify errors and make intentions clear we do it explicitely)
+        const std::array<Direction, 11> steps{Direction::NORTHEAST, Direction::NORTHEAST, Direction::EAST,      Direction::EAST,
+                                              Direction::SOUTHEAST, Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::SOUTHWEST,
+                                              Direction::WEST,      Direction::WEST,      Direction::NORTHWEST};
         // Note: 0==12 already handled
         for(unsigned j = 1; j < 12; j++)
         {

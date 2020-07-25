@@ -42,8 +42,6 @@
 #include <utility>
 #include <vector>
 
-using namespace boost::assign;
-
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
 
 BOOST_AUTO_TEST_CASE(LuaEqual_IsCorrect)
@@ -501,7 +499,7 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     // Just a single polygon
     executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12)");
     std::vector<MapPoint> expectedRestrictedArea;
-    expectedRestrictedArea += MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12);
+    expectedRestrictedArea = {MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12)};
     RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea); //-V807
     executeLua("assert(not player:IsInRestrictedArea(1, 2))");
     executeLua("assert(not player:IsInRestrictedArea(0, 0))");
@@ -510,9 +508,8 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
 
     // Polygon with hole
     executeLua("player:SetRestrictedArea(0,0, 1,1, 10,1, 10,10, 1,10, 1,1, 0,0, 5,5, 7,5, 7,7, 5,5, 0,0)");
-    expectedRestrictedArea.clear();
-    expectedRestrictedArea += MapPoint(0, 0), MapPoint(1, 1), MapPoint(10, 1), MapPoint(10, 10), MapPoint(1, 10), MapPoint(1, 1);
-    expectedRestrictedArea += MapPoint(0, 0), MapPoint(5, 5), MapPoint(7, 5), MapPoint(7, 7), MapPoint(5, 5), MapPoint(0, 0);
+    expectedRestrictedArea = {MapPoint(0, 0), MapPoint(1, 1), MapPoint(10, 1), MapPoint(10, 10), MapPoint(1, 10), MapPoint(1, 1),
+                              MapPoint(0, 0), MapPoint(5, 5), MapPoint(7, 5),  MapPoint(7, 7),   MapPoint(5, 5),  MapPoint(0, 0)};
     RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
     BOOST_REQUIRE_EQUAL(getLog(), "");
     // Some prefer using nils
@@ -533,8 +530,7 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
 
     // Also for single polygon
     executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12, nil)");
-    expectedRestrictedArea.clear();
-    expectedRestrictedArea += MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12);
+    expectedRestrictedArea = {MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12)};
     RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
 
     executeLua("player:SetRestrictedArea()");

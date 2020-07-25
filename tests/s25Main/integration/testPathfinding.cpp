@@ -23,12 +23,9 @@
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
 #include <rttr/test/testHelpers.hpp>
-#include <boost/assign/std/vector.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
-
-using namespace boost::assign;
 
 // Tests are designed to check for every possible direction and terrain distribution
 // To understand what is tested check test/testPathfindingIllustration.png. It consists
@@ -88,9 +85,6 @@ void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, DescIdx<Te
 
 BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
 {
-    std::vector<Direction> testDirections;
-    testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
-    testDirections += Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST;
     std::vector<DescIdx<TerrainDesc>> friendlyTerrains;
     for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
     {
@@ -103,7 +97,7 @@ BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
     for(DescIdx<TerrainDesc> friendlyTerrain : friendlyTerrains)
     {
         clearWorld(world, friendlyTerrain);
-        for(Direction dir : testDirections)
+        for(Direction dir : helpers::EnumRange<Direction>())
         {
             // 3 steps in dir
             MapPoint endPt(startPt);
@@ -144,9 +138,8 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     BOOST_REQUIRE_NE(world.FindHumanPath(startPt, endPt, 99, false, &length, &route), INVALID_DIR);
     BOOST_REQUIRE_EQUAL(length, 6u);
     BOOST_REQUIRE_EQUAL(route.size(), 6u);
-    std::vector<Direction> expectedRoute;
-    expectedRoute += Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHEAST, Direction::NORTHEAST, Direction::EAST,
-      Direction::EAST;
+    const std::vector<Direction> expectedRoute{Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHEAST,
+                                               Direction::NORTHEAST, Direction::EAST,      Direction::EAST};
     RTTR_REQUIRE_EQUAL_COLLECTIONS(route, expectedRoute);
     // Inverse route
     BOOST_REQUIRE_NE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route), INVALID_DIR);
@@ -169,9 +162,9 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
     }
     // Start far enough away from the HQ in the middle
     const MapPoint startPt(1, 2);
-    std::vector<Direction> testDirections;
-    // Test cases 2         a)                 b)                     c)
-    testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
+    // Test cases 2                                    a)                 b)                     c)
+    const std::vector<Direction> testDirections{Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST};
+
     std::vector<DescIdx<TerrainDesc>> deepWaterTerrains;
     for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
     {
@@ -229,11 +222,10 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
     }
     // Start far enough away from the HQ in the middle
     const MapPoint startPt(1, 2);
-    std::vector<Direction> testDirections;
-    // Test cases 3         a)                 b)                     c)
-    testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
-    // Test cases 4         a)                 b)                     c)
-    testDirections += Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST;
+    const std::vector<Direction> testDirections{// Test cases 3 a)        b)                    c)
+                                                Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST,
+                                                // Test cases 4 a)        b)                    c)
+                                                Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST};
     std::vector<DescIdx<TerrainDesc>> deadlyTerrains;
     const WorldDescription& worldDescription = world.GetDescription();
     for(DescIdx<TerrainDesc> t(0); t.value < worldDescription.terrain.size(); t.value++)

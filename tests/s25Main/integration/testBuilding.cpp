@@ -28,7 +28,6 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
-#include <boost/assign/std/vector.hpp>
 #include <boost/test/unit_test.hpp>
 
 // Test stuff related to building/building quality
@@ -443,11 +442,9 @@ BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
     const MapPoint hqPos = world.GetPlayer(0).GetHQPos();
     const MapPoint startPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
     const MapPoint endPos = world.MakeMapPoint(startPos + Position(4, 0));
-    std::vector<unsigned> ids;
-    using namespace boost::assign;
     // Place these env objs
-    ids += 505, 506, 507, 508, 509, 510, 512, 513, 514, 515, 531, 536, 541, 542, 543, 544, 545, 546, 547, 548, 550, 551, 552, 553, 554, 555,
-      556, 557, 558, 559;
+    const std::vector<unsigned> ids{505, 506, 507, 508, 509, 510, 512, 513, 514, 515, 531, 536, 541, 542, 543,
+                                    544, 545, 546, 547, 548, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559};
     for(unsigned curId : ids)
     {
         MapPoint curPos = startPos;
