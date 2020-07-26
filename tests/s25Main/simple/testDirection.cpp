@@ -76,7 +76,8 @@ BOOST_AUTO_TEST_CASE(DirectionIncDec)
     }
 }
 
-BOOST_AUTO_TEST_CASE(DirectionIterator)
+/*
+BOOST_AUTO_TEST_CASE(DirectionIteratorWithOffset)
 {
     for(unsigned i = 0; i < Direction::COUNT; i++)
     {
@@ -92,11 +93,11 @@ BOOST_AUTO_TEST_CASE(DirectionIterator)
         unsigned expectedCt = Direction::COUNT;
         BOOST_REQUIRE_EQUAL(ct, expectedCt);
     }
-}
+}*/
 
 BOOST_AUTO_TEST_CASE(DirectionToImgDir)
 {
-    for(Direction curDir : Direction())
+    for(Direction curDir : helpers::EnumRange<Direction>{})
     {
         // S2 Img dir is offset by 3
         BOOST_TEST(static_cast<unsigned>(toImgDir(curDir)) == (static_cast<unsigned>(curDir) + 3) % 6);

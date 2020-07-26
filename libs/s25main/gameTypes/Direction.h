@@ -57,11 +57,6 @@ struct Direction
     Direction& operator--();
     Direction operator--(int);
 
-    struct iterator;
-    using const_iterator = iterator;
-    const_iterator begin() const;
-    const_iterator end() const;
-
 private:
     // Disallow int operators
     Direction& operator+=(int i);
@@ -145,43 +140,6 @@ inline bool operator!=(const Direction::Type& lhs, const Direction& rhs)
 inline bool operator!=(const Direction& lhs, const Direction::Type& rhs)
 {
     return lhs.t_ != rhs;
-}
-
-struct Direction::iterator
-{
-    using iterator_category = std::forward_iterator_tag;
-    using value_type = Direction;
-    using reference = Direction;
-    using pointer = const Direction*;
-    using difference_type = std::ptrdiff_t;
-
-    explicit iterator(unsigned value) : value_(value) {}
-    iterator& operator++()
-    {
-        ++value_;
-        return *this;
-    }
-    iterator operator++(int)
-    {
-        iterator retval = *this;
-        ++(*this);
-        return retval;
-    }
-    bool operator==(iterator other) const { return value_ == other.value_; }
-    bool operator!=(iterator other) const { return !(*this == other); }
-    Direction operator*() const { return Direction::fromInt(value_ < COUNT ? value_ : value_ - COUNT); }
-
-private:
-    unsigned value_;
-};
-
-inline Direction::const_iterator Direction::begin() const
-{
-    return const_iterator(t_);
-}
-inline Direction::const_iterator Direction::end() const
-{
-    return const_iterator(t_ + COUNT);
 }
 
 namespace helpers {

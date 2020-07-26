@@ -551,7 +551,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             if(selObj.GetType() != NOP_FLAG && selObj.GetType() != NOP_BUILDING)
             {
                 // Check if there are roads
-                for(Direction dir : Direction())
+                for(Direction dir : helpers::EnumRange<Direction>{})
                 {
                     uint8_t curRoad = worldViewer.GetVisiblePointRoad(cSel, dir);
                     if(curRoad)

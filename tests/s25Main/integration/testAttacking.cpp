@@ -804,7 +804,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
     for(const MapPoint& bldPt : bldPts)
     {
         MapPoint flagPt = world.GetNeighbour(bldPt, Direction::SOUTHEAST);
-        for(Direction i : Direction())
+        for(Direction i : helpers::EnumRange<Direction>{})
         {
             // No routes except the main road
             if(i != Direction::NORTHWEST)
