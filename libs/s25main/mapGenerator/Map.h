@@ -40,9 +40,9 @@ namespace rttr { namespace mapGenerator {
     public:
         ValueMap<uint8_t> z;
         TextureMap& textures;
-        NodeMapBase<libsiedler2::ObjectInfo> objectInfos;
-        NodeMapBase<libsiedler2::ObjectType> objectTypes;
-        NodeMapBase<libsiedler2::Resource> resources;
+        NodeMapBase<uint8_t> objectInfos;
+        NodeMapBase<uint8_t> objectTypes;
+        NodeMapBase<uint8_t> resources;
         NodeMapBase<libsiedler2::Animal> animals;
         std::vector<Triangle> harbors;
 

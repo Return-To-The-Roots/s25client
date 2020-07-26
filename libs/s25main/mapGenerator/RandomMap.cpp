@@ -19,6 +19,7 @@
 #include "mapGenerator/Harbors.h"
 #include "mapGenerator/HeadQuarters.h"
 #include "mapGenerator/Islands.h"
+#include "mapGenerator/Resources.h"
 #include "mapGenerator/Rivers.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
@@ -431,6 +432,8 @@ namespace rttr { namespace mapGenerator {
             PlaceHarbors(map, 20, 25, rivers);
             PlaceHeadQuarters(map, rnd, settings.numPlayers);
         }
+        AddObjects(map, rnd);
+        AddResources(map, rnd, settings);
 
         libsiedler2::Write(filePath, map.CreateArchiv());
     }

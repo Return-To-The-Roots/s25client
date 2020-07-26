@@ -24,43 +24,24 @@
 
 namespace rttr { namespace mapGenerator {
 
-    /*
-    bool IsHeadQuarterOrHarborPosition(const Map_& map, int index);
+    /**
+     * Custom representation of a tree specifically for tree placement on random maps.
+     * Each instance of a tree represents a different type of tree and can vary in animation state,
+     * represented by various object indices per tree.
+     */
+    class Tree
+    {
+    public:
+        uint8_t type;
+        uint8_t index;
+        Tree(uint8_t objectType, uint8_t objectIndex) : type(objectType), index(objectIndex) {}
+    };
 
-    std::vector<int> GetTreeTypes(const Texture& texture, const TextureMapping_& mapping);
+    std::vector<Tree> CreateTrees(const TextureMap& textures);
 
-    std::vector<int> GetTreeInfos(const Texture& texture, const TextureMapping_& mapping);
+    void AddObjects(Map& map, RandomUtility& rnd);
 
-    std::vector<libsiedler2::Animal> GetAnimals(const Texture& texture, const TextureMapping_& mapping);
-
-    int GetTreeProbability(const Texture& texture, const TextureMapping_& mapping, int freeZoneDistance);
-
-    int GetStoneProbability(const Texture& texture, const TextureMapping_& mapping, int freeZoneDistance);
-
-    int GetAnimalProbability(const Texture& texture, const TextureMapping_& mapping);
-
-    void PlaceTrees(Map_& map,
-                    RandomUtility& rnd,
-                    const TextureMapping_& mapping,
-                    const std::vector<int>& freeZone);
-
-    void PlaceStones(Map_& map,
-                     RandomUtility& rnd,
-                     const TextureMapping_& mapping,
-                     const std::vector<int>& freeZone);
-
-    void PlaceMinesAndFish(Map_& map,
-                           RandomUtility& rnd,
-                           const TextureMapping_& mapping,
-                           const MapSettings& settings);
-
-    void PlaceAnimals(Map_& map, RandomUtility& rnd, const TextureMapping_& mapping);
-
-    void PlaceResources(Map_& map,
-                        RandomUtility& rnd,
-                        const TextureMapping_& mapping,
-                        const MapSettings& settings);
-    */
+    void AddResources(Map& map, RandomUtility& rnd, const MapSettings& settings);
 
 }} // namespace rttr::mapGenerator
 
