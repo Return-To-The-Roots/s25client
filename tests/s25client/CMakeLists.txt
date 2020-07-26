@@ -7,7 +7,7 @@ set_tests_properties(s25client_showHelp PROPERTIES
 add_test(NAME s25client_showVersion COMMAND s25client --version
          WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 set_tests_properties(s25client_showVersion PROPERTIES
-  PASS_REGULAR_EXPRESSION "^Return To The Roots v[0-9]+-[0-9a-f]+\n"
+  PASS_REGULAR_EXPRESSION "^Return To The Roots v[0-9.]+-[0-9a-f]+\n"
 )
 
 add_test(NAME s25client_invalidOption COMMAND s25client --nonExistantOption
