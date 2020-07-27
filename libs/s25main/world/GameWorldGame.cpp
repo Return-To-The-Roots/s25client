@@ -423,7 +423,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         // Do not destroy the triggering building or its flag
         // TODO: What about this point?
         const uint8_t owner = GetNode(curMapPt).owner;
-        for(Direction dir : Direction())
+        for(Direction dir : helpers::EnumRange<Direction>{})
         {
             MapPoint neighbourPt = GetNeighbour(curMapPt, dir);
             if(ptsHandled.insert(neighbourPt).second)

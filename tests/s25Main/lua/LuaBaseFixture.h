@@ -22,6 +22,7 @@
 #include "lua/LuaInterfaceGameBase.h"
 #include <boost/format.hpp>
 #include <boost/test/unit_test.hpp>
+#include <sstream>
 
 /// Provide lua execution methods and check if lua values equal given value
 class LuaBaseFixture
@@ -43,7 +44,12 @@ public:
     {
         try
         {
-            executeLua(std::string("assert(") + luaVal + "==" + expectedValue + ", 'xxx=' .. tostring(" + luaVal + "))");
+            std::ostringstream ss;
+            // Save to temporaries to run code only once
+            ss << "_isVal = " << luaVal << "\n";
+            ss << "_expectedVal = " << expectedValue << "\n";
+            ss << "assert(_isVal == _expectedVal, 'xxx=' .. tostring(_isVal))";
+            executeLua(ss.str());
         } catch(std::runtime_error& e)
         {
             boost::test_tools::predicate_result result(false);

@@ -32,7 +32,8 @@ GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGam
 {}
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, const std::string& mapFilePath, const std::string& luaFilePath)
+bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, ILocalGameState& localgameState, const std::string& mapFilePath,
+                        const std::string& luaFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;
@@ -45,7 +46,7 @@ bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, const std::string& ma
 
     if(bfs::exists(luaFilePath))
     {
-        SetLua(std::make_unique<LuaInterfaceGame>(game));
+        SetLua(std::make_unique<LuaInterfaceGame>(game, localgameState));
         if(!GetLua().loadScript(luaFilePath) || !GetLua().CheckScriptVersion())
         {
             SetLua(nullptr);
@@ -90,7 +91,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     }
 }
 
-void GameWorld::Deserialize(const std::shared_ptr<Game>& game, SerializedGameData& sgd)
+void GameWorld::Deserialize(const std::shared_ptr<Game>& game, ILocalGameState& localgameState, SerializedGameData& sgd)
 {
     MapSerializer::Deserialize(*this, GetNumPlayers(), sgd);
 
@@ -110,7 +111,7 @@ void GameWorld::Deserialize(const std::shared_ptr<Game>& game, SerializedGameDat
             throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 
         // Now init and load lua
-        SetLua(std::make_unique<LuaInterfaceGame>(game));
+        SetLua(std::make_unique<LuaInterfaceGame>(game, localgameState));
         if(!GetLua().loadScriptString(luaScript))
         {
             SetLua(nullptr);

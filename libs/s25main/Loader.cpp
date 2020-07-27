@@ -596,7 +596,7 @@ void Loader::fillCaches()
         // Bobs from jobs.bob. Job = NUM_JOB_TYPES is used for fat carriers. See below.
         for(unsigned job = 0; job < NUM_JOB_TYPES + 1; ++job)
         {
-            for(Direction dir : Direction{})
+            for(Direction dir : helpers::EnumRange<Direction>{})
             {
                 for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
@@ -787,7 +787,7 @@ void Loader::fillCaches()
     {
         for(bool fat : {true, false})
         {
-            for(Direction dir : Direction{})
+            for(Direction dir : helpers::EnumRange<Direction>{})
             {
                 for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {

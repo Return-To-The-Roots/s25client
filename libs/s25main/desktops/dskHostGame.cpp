@@ -84,7 +84,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
 
     if(!GAMECLIENT.GetLuaFilePath().empty() && gameLobby->isHost())
     {
-        lua = std::make_unique<LuaInterfaceSettings>(*lobbyHostController);
+        lua = std::make_unique<LuaInterfaceSettings>(*lobbyHostController, GAMECLIENT);
         if(!lua->loadScript(GAMECLIENT.GetLuaFilePath()))
         {
             WINDOWMANAGER.ShowAfterSwitch(

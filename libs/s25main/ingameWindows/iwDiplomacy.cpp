@@ -147,7 +147,7 @@ void iwDiplomacy::Msg_PaintBefore()
             {
                 unsigned duration = gwv.GetPlayer().GetRemainingPactTime(PactType(z), i);
                 // Überhaupt ein Bündnis abgeschlossen und Bündnis nicht für die Ewigkeit?
-                if(duration > 0 && duration != 0xFFFFFFFF)
+                if(duration > 0 && duration != DURATION_INFINITE)
                     // Dann entsprechende Zeit setzen
                     GetCtrl<ctrlText>(500 + z * 100 + i)->SetText(GAMECLIENT.FormatGFTime(duration));
                 else
@@ -254,7 +254,7 @@ void iwSuggestPact::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     /// Dauer auswählen (wenn id == NUM_DURATIONS, dann "für alle Ewigkeit" ausgewählt)
     unsigned selected_id = GetCtrl<ctrlComboBox>(6)->GetSelection();
-    unsigned duration = (selected_id == NUM_DURATIONS) ? 0xFFFFFFFF : DURATIONS[selected_id];
+    unsigned duration = (selected_id == NUM_DURATIONS) ? DURATION_INFINITE : DURATIONS[selected_id];
     gcFactory.SuggestPact(player.GetPlayerId(), this->pt, duration);
     Close();
 }

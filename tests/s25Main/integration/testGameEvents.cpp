@@ -222,10 +222,10 @@ BOOST_AUTO_TEST_CASE(RemoveEvent)
     BOOST_CHECK(!evMgr.ObjectHasEvents(obj));
 }
 
+#if RTTR_ENABLE_ASSERTS
 BOOST_AUTO_TEST_CASE(InvalidEvent)
 {
     rttr::test::LogAccessor logAcc;
-#if RTTR_ENABLE_ASSERTS
     EventManager evMgr(100);
     TestEventHandler obj;
     // Need object
@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE(InvalidEvent)
     RTTR_REQUIRE_ASSERT(evMgr.AddEvent(nullptr, 50, 0, 50));
     // continued event cannot start before the game
     RTTR_REQUIRE_ASSERT(evMgr.AddEvent(nullptr, 200, 0, 150));
-#endif
 }
+#endif
 
 BOOST_AUTO_TEST_SUITE_END()

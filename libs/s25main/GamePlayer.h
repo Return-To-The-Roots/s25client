@@ -275,7 +275,7 @@ public:
         ACCEPTED     /// Bündnis in Kraft
     };
     PactState GetPactState(PactType pt, unsigned char other_player) const;
-    /// Gibt die verbleibende Dauer zurück, die ein Bündnis noch laufen wird (0xFFFFFFFF = für immer)
+    /// Gibt die verbleibende Dauer zurück, die ein Bündnis noch laufen wird (DURATION_INFINITE = für immer)
     unsigned GetRemainingPactTime(PactType pt, unsigned char other_player) const;
     /// Setzt die initialen Bündnisse anhand der Teams
     void MakeStartPacts();
@@ -399,7 +399,7 @@ private:
     /// Bündnisse mit anderen Spielern
     struct Pact
     {
-        /// Dauer (in GF), 0 = kein Bündnise, 0xFFFFFFFF = Bündnis auf Ewigkeit
+        /// Dauer (in GF), 0 = kein Bündnise, DURATION_INFINITE = Bündnis auf Ewigkeit
         unsigned duration;
         /// Startzeitpunkt (in GF)
         unsigned start;

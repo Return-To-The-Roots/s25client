@@ -33,7 +33,7 @@ class Game;
 class LuaInterfaceGame : public LuaInterfaceGameBase
 {
 public:
-    LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance);
+    LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILocalGameState& localGameState);
     virtual ~LuaInterfaceGame();
 
     static void Register(kaguya::State& state);
@@ -57,6 +57,7 @@ public:
     // Callable from Lua
     void ClearResources();
     unsigned GetGF() const;
+    std::string FormatNumGFs(unsigned numGFs) const;
     unsigned GetNumPlayers() const;
     void Chat(int playerIdx, const std::string& msg);
     void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);
@@ -67,6 +68,7 @@ public:
     void PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y);
 
 private:
+    ILocalGameState& localGameState;
     GameWorldGame& gw;
     std::weak_ptr<Game> game;
     LuaPlayer GetPlayer(int playerIdx);

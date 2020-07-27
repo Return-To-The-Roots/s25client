@@ -23,6 +23,7 @@
 #include <string>
 
 class SerializedGameData;
+class ILocalGameState;
 class Game;
 
 class GameWorld : public GameWorldGame
@@ -31,11 +32,12 @@ public:
     GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
 
     /// Lädt eine Karte
-    bool LoadMap(const std::shared_ptr<Game>& game, const std::string& mapFilePath, const std::string& luaFilePath);
+    bool LoadMap(const std::shared_ptr<Game>& game, ILocalGameState& localgameState, const std::string& mapFilePath,
+                 const std::string& luaFilePath);
 
     /// Serialisiert den gesamten GameWorld
     void Serialize(SerializedGameData& sgd) const;
-    void Deserialize(const std::shared_ptr<Game>& game, SerializedGameData& sgd);
+    void Deserialize(const std::shared_ptr<Game>& game, ILocalGameState& localgameState, SerializedGameData& sgd);
 };
 
 #endif // GameWorld_h__

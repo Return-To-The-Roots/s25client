@@ -19,6 +19,7 @@
 #define Direction_h__
 
 #include "RTTR_Assert.h"
+#include "helpers/EnumRange.h"
 #include <iterator>
 
 /// "Enum" to represent one of the 6 directions from each node
@@ -55,11 +56,6 @@ struct Direction
     Direction operator++(int);
     Direction& operator--();
     Direction operator--(int);
-
-    struct iterator;
-    using const_iterator = iterator;
-    const_iterator begin() const;
-    const_iterator end() const;
 
 private:
     // Disallow int operators
@@ -146,41 +142,24 @@ inline bool operator!=(const Direction& lhs, const Direction::Type& rhs)
     return lhs.t_ != rhs;
 }
 
-struct Direction::iterator
+namespace helpers {
+template<>
+struct EnumRange<Direction>
 {
-    using iterator_category = std::forward_iterator_tag;
-    using value_type = Direction;
-    using reference = Direction;
-    using pointer = const Direction*;
-    using difference_type = std::ptrdiff_t;
-
-    explicit iterator(unsigned value) : value_(value) {}
-    iterator& operator++()
+    class iterator
     {
-        ++value_;
-        return *this;
-    }
-    iterator operator++(int)
-    {
-        iterator retval = *this;
-        ++(*this);
-        return retval;
-    }
-    bool operator==(iterator other) const { return value_ == other.value_; }
-    bool operator!=(iterator other) const { return !(*this == other); }
-    Direction operator*() const { return Direction::fromInt(value_ < COUNT ? value_ : value_ - COUNT); }
+        unsigned value;
 
-private:
-    unsigned value_;
+    public:
+        explicit BOOST_FORCEINLINE iterator(unsigned value) : value(value) {}
+        BOOST_FORCEINLINE Direction operator*() const { return Direction::fromInt(value); }
+        BOOST_FORCEINLINE void operator++() { ++value; }
+        BOOST_FORCEINLINE bool operator!=(iterator rhs) const { return value != rhs.value; }
+    };
+
+    BOOST_FORCEINLINE iterator begin() const { return iterator(0); }
+    BOOST_FORCEINLINE iterator end() const { return iterator(Direction::COUNT); }
 };
-
-inline Direction::const_iterator Direction::begin() const
-{
-    return const_iterator(t_);
-}
-inline Direction::const_iterator Direction::end() const
-{
-    return const_iterator(t_ + COUNT);
-}
+} // namespace helpers
 
 #endif // Direction_h__

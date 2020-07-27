@@ -28,6 +28,7 @@
 #include "factories/GameCommandFactory.h"
 #include "network/PlayerGameCommands.h"
 #include "worldFixtures/CreateEmptyWorld.h"
+#include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
 #include "nodeObjs/noFire.h"
 #include "gameTypes/MapInfo.h"
@@ -277,7 +278,8 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
             std::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
             GameWorld& newWorld = sharedGame->world_;
-            save.sgd.ReadSnapshot(sharedGame);
+            MockLocalGameState localGameState;
+            save.sgd.ReadSnapshot(sharedGame, localGameState);
             auto& newEm = static_cast<TestEventManager&>(sharedGame->world_.GetEvMgr());
 
             BOOST_REQUIRE_EQUAL(newWorld.GetSize(), world.GetSize());
@@ -298,7 +300,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             {
                 const MapNode& worldNode = world.GetNode(pt);
                 const MapNode& loadNode = newWorld.GetNode(pt);
-                RTTR_REQUIRE_EQUAL_COLLECTIONS(loadNode.roads, worldNode.roads);
+                BOOST_TEST_REQUIRE(loadNode.roads == worldNode.roads, boost::test_tools::per_element());
                 BOOST_REQUIRE_EQUAL(loadNode.altitude, worldNode.altitude);
                 BOOST_REQUIRE_EQUAL(loadNode.shadow, worldNode.shadow);
                 BOOST_REQUIRE_EQUAL(loadNode.t1, worldNode.t1);
@@ -420,8 +422,8 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
         BOOST_REQUIRE_EQUAL(newMap.type, map.type);
         BOOST_REQUIRE_EQUAL(newMap.title, map.title);
         BOOST_REQUIRE_EQUAL(newMap.filepath, map.filepath);
-        RTTR_REQUIRE_EQUAL_COLLECTIONS(newMap.mapData.data, map.mapData.data);
-        RTTR_REQUIRE_EQUAL_COLLECTIONS(newMap.luaData.data, map.luaData.data);
+        BOOST_TEST_REQUIRE(newMap.mapData.data == map.mapData.data, boost::test_tools::per_element());
+        BOOST_TEST_REQUIRE(newMap.luaData.data == map.luaData.data, boost::test_tools::per_element());
         BOOST_REQUIRE(loadReplay.IsReplaying());
 
         CheckReplayCmds(loadReplay, cmds);

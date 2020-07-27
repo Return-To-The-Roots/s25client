@@ -19,7 +19,6 @@
 #include "WindowManager.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "mygettext/mygettext.h"
-#include "network/GameClient.h"
 #include "s25util/Log.h"
 
 unsigned LuaInterfaceGameBase::GetVersion()
@@ -32,7 +31,7 @@ unsigned LuaInterfaceGameBase::GetFeatureLevel()
     return 3;
 }
 
-LuaInterfaceGameBase::LuaInterfaceGameBase()
+LuaInterfaceGameBase::LuaInterfaceGameBase(const ILocalGameState& localGameState) : localGameState(localGameState)
 {
     Register(lua);
 }
@@ -70,12 +69,12 @@ bool LuaInterfaceGameBase::CheckScriptVersion()
 
 bool LuaInterfaceGameBase::IsHost() const
 {
-    return GAMECLIENT.IsHost();
+    return localGameState.IsHost();
 }
 
 unsigned LuaInterfaceGameBase::GetLocalPlayerIdx() const
 {
-    return GAMECLIENT.GetPlayerId();
+    return localGameState.GetPlayerId();
 }
 
 void LuaInterfaceGameBase::MsgBox(const std::string& title, const std::string& msg, bool isError)

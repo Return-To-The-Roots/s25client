@@ -31,8 +31,8 @@ BOOST_AUTO_TEST_SUITE(Helpers)
 
 BOOST_AUTO_TEST_CASE(MakeExceptionDefault)
 {
-    RTTR_CHECK_THROW(throw makeException("Test"), std::runtime_error, "Test");
-    RTTR_CHECK_THROW(throw makeException("Test", 1, "bar", 42), std::runtime_error, "Test1bar42");
+    RTTR_CHECK_EXCEPTION_MSG(throw makeException("Test"), std::runtime_error, "Test");
+    RTTR_CHECK_EXCEPTION_MSG(throw makeException("Test", 1, "bar", 42), std::runtime_error, "Test1bar42");
 }
 
 struct CustomException : std::runtime_error
@@ -42,8 +42,8 @@ struct CustomException : std::runtime_error
 
 BOOST_AUTO_TEST_CASE(MakeExceptionCustom)
 {
-    RTTR_CHECK_THROW(throw makeException<CustomException>("Test"), CustomException, "Test");
-    RTTR_CHECK_THROW(throw makeException<CustomException>("Test", 1, "bar", 42), CustomException, "Test1bar42");
+    RTTR_CHECK_EXCEPTION_MSG(throw makeException<CustomException>("Test"), CustomException, "Test");
+    RTTR_CHECK_EXCEPTION_MSG(throw makeException<CustomException>("Test", 1, "bar", 42), CustomException, "Test1bar42");
 }
 
 BOOST_AUTO_TEST_CASE(MakeLastSystemError)

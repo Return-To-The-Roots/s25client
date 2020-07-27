@@ -21,6 +21,7 @@
 #include "FramesInfo.h"
 #include "GameCommand.h"
 #include "GameMessageInterface.h"
+#include "ILocalGameState.h"
 #include "NetworkPlayer.h"
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/ChatDestination.h"
@@ -51,7 +52,11 @@ class NWFInfo;
 struct CreateServerInfo;
 struct ReplayInfo;
 
-class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
+class GameClient final :
+    public Singleton<GameClient, SingletonPolicies::WithLongevity>,
+    public GameMessageInterface,
+    public GameCommandFactory,
+    public ILocalGameState
 {
 public:
     static constexpr unsigned Longevity = 5;
@@ -76,12 +81,12 @@ public:
         if(this->ci == ci)
             this->ci = nullptr;
     }
-    bool IsHost() const { return clientconfig.isHost; }
+    bool IsHost() const override { return clientconfig.isHost; }
     /// Manually set the host status. Normally done in connect call
     void SetIsHost(bool isHost) { clientconfig.isHost = isHost; }
     std::string GetGameName() const { return clientconfig.gameName; }
 
-    unsigned GetPlayerId() const { return mainPlayer.playerId; }
+    unsigned GetPlayerId() const override { return mainPlayer.playerId; }
 
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host,
                  bool use_ipv6);
@@ -144,7 +149,7 @@ public:
     /// Gibt Replay-Ende (GF) zurück
     unsigned GetLastReplayGF() const;
     /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
-    std::string FormatGFTime(unsigned gf) const;
+    std::string FormatGFTime(unsigned gf) const override;
 
     /// Gibt Replay-Dateiname zurück
     const std::string& GetReplayFileName() const;
@@ -167,14 +172,12 @@ public:
     bool SaveToFile(const std::string& filename);
     /// Visuelle Einstellungen aus den richtigen ableiten
     void ResetVisualSettings();
-    void SystemChat(const std::string& text, unsigned char player = 0xFF);
+    void SystemChat(const std::string& text) override;
+    void SystemChat(const std::string& text, unsigned char fromPlayerIdx);
 
     void ToggleHumanAIPlayer();
 
     NetworkPlayer& GetMainPlayer() { return mainPlayer; }
-
-    /// TESTS ONLY: Set player id. TODO: Anything better?
-    void SetTestPlayerId(unsigned id);
 
 private:
     /// Create an AI player for the current world

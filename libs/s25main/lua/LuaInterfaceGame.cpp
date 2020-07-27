@@ -25,13 +25,13 @@
 #include "lua/LuaHelpers.h"
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
-#include "network/GameClient.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
 #include "s25util/Serializer.h"
 
-LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance) : gw(gameInstance.lock()->world_), game(gameInstance)
+LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILocalGameState& localGameState)
+    : LuaInterfaceGameBase(localGameState), localGameState(localGameState), gw(gameInstance.lock()->world_), game(gameInstance)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name
@@ -140,10 +140,10 @@ LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance) : gw
     lua["RES_GRANITE"] = Resource::Granite;
     lua["RES_WATER"] = Resource::Water;
 
-    lua["NON_AGGRESSION_PACT"] = NON_AGGRESSION_PACT;
-    lua["TREATY_OF_ALLIANCE"] = TREATY_OF_ALLIANCE;
+    ADD_LUA_CONST(NON_AGGRESSION_PACT);
+    ADD_LUA_CONST(TREATY_OF_ALLIANCE);
     // infinite pact duration, see GamePlayer::GetRemainingPactTime
-    lua["DURATION_INFINITE"] = 0xFFFFFFFF;
+    ADD_LUA_CONST(DURATION_INFINITE);
 
 #undef ADD_LUA_CONST
 #define ADD_LUA_CONST(name) lua[#name] = iwMissionStatement::name
@@ -183,6 +183,7 @@ void LuaInterfaceGame::Register(kaguya::State& state)
     state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceGameBase>()
                                  .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
                                  .addFunction("GetGF", &LuaInterfaceGame::GetGF)
+                                 .addFunction("FormatNumGFs", &LuaInterfaceGame::FormatNumGFs)
                                  .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
                                  .addFunction("GetNumPlayers", &LuaInterfaceGame::GetNumPlayers)
                                  .addFunction("Chat", &LuaInterfaceGame::Chat)
@@ -243,6 +244,11 @@ unsigned LuaInterfaceGame::GetGF() const
     return gw.GetEvMgr().GetCurrentGF();
 }
 
+std::string LuaInterfaceGame::FormatNumGFs(unsigned numGFs) const
+{
+    return localGameState.FormatGFTime(numGFs);
+}
+
 unsigned LuaInterfaceGame::GetNumPlayers() const
 {
     return gw.GetNumPlayers();
@@ -250,10 +256,10 @@ unsigned LuaInterfaceGame::GetNumPlayers() const
 
 void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
 {
-    if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
+    if(playerIdx >= 0 && localGameState.GetPlayerId() != unsigned(playerIdx))
         return;
 
-    GAMECLIENT.SystemChat(msg);
+    localGameState.SystemChat(msg);
 }
 
 void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title, const std::string& msg)
@@ -268,7 +274,7 @@ void LuaInterfaceGame::MissionStatement2(int playerIdx, const std::string& title
 
 void LuaInterfaceGame::MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx, bool pause)
 {
-    if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
+    if(playerIdx >= 0 && localGameState.GetPlayerId() != unsigned(playerIdx))
         return;
 
     WINDOWMANAGER.Show(

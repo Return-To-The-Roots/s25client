@@ -18,6 +18,7 @@
 #ifndef LuaInterfaceGameBase_h__
 #define LuaInterfaceGameBase_h__
 
+#include "ILocalGameState.h"
 #include "lua/LuaInterfaceBase.h"
 
 class LuaInterfaceGameBase : public LuaInterfaceBase
@@ -33,7 +34,7 @@ public:
     static unsigned GetFeatureLevel();
 
 protected:
-    LuaInterfaceGameBase();
+    explicit LuaInterfaceGameBase(const ILocalGameState& localGameState);
 
     /// Return true, if local player is the host
     bool IsHost() const;
@@ -46,6 +47,9 @@ protected:
     /// Shows a message with a custom icon. Image with iconIdx must exist in iconFile and iconFile must be loaded!
     void MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx);
     void MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx, int iconX, int iconY);
+
+private:
+    const ILocalGameState& localGameState;
 };
 
 #endif // LuaInterfaceGameBase_h__

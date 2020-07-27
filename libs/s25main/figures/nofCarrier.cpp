@@ -36,7 +36,6 @@
 #include "s25util/Log.h"
 #include "s25util/MyTime.h"
 #include "s25util/colors.h"
-#include <boost/assign/std/vector.hpp>
 #include <array>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,56 +54,32 @@ const unsigned NEXT_ANIMATION_RANDOM = 200; // was noch dazu zufälliges addiert
 const unsigned FRAME_GF = 3;
 
 /// Animation indices, 1st Dim: small or big, 2nd Dim: Animation, 3rd Dim: Index in map.lst of the frame
-using AnimationsType = std::array<std::vector<std::vector<unsigned short>>, 2>;
-
-static AnimationsType fillAnimations()
-{
-    AnimationsType animations;
-    using namespace boost::assign; // Adds the vector += operator
-    std::vector<unsigned short> idxs;
-    // Small ones
-    // Hoola Hoop
-    idxs += 1745, 1746, 1747, 1748, 1749, 1750, 1751, 1748, 1748, 1747, 1746;
-    animations[0] += idxs;
-    // Wink
-    idxs.clear();
-    idxs += 1752, 1753, 1754, 1755, 1756, 1757, 1758, 1754, 1753, 1752;
-    animations[0] += idxs;
-    // Read newspaper
-    idxs.clear();
-    idxs += 1759, 1760, 1761, 1762, 1763, 1763, 1763, 1765, 1763, 1763, 1763, 1765, 1763, 1762, 1765, 1763, 1764, 1764, 1763, 1763, 1763,
-      1765, 1765, 1765, 1763, 1763, 1763, 1765, 1763, 1763, 1763, 1765, 1765, 1764, 1761;
-    animations[0] += idxs;
-    // Yawn
-    idxs.clear();
-    idxs += 1752, 1753, 1754, 1755, 1756, 1757, 1758, 1754, 1753, 1752;
-    animations[0] += idxs;
-    // Wink
-    idxs.clear();
-    idxs += 1752, 1770, 1771, 1772, 1773, 1772, 1773, 1772, 1773, 1772, 1773, 1771, 1771, 1773, 1771, 1771, 1771, 1771, 1770, 1752;
-    animations[0] += idxs;
-
-    // Fat ones
-    // Sneeze
-    idxs.clear();
-    idxs += 1726, 1727, 1728, 1729, 1730, 1730, 1729, 1728, 1727;
-    animations[1] += idxs;
-    // Chew bubblegum
-    idxs.clear();
-    idxs += 1731, 1732, 1733, 1734, 1734, 1735, 1736, 1737, 1737, 1736, 1736, 1737;
-    animations[1] += idxs;
-    // Blow bubblegum
-    idxs.clear();
-    idxs += 1738, 1739, 1740, 1739, 1738, 1739, 1740, 1739, 1741, 1742, 1743, 1744;
-    animations[1] += idxs;
-    // Touch pocket
-    idxs.clear();
-    idxs += 1726, 1766, 1767, 1768, 1769, 1768, 1769, 1768, 1769, 1766, 1767, 1766, 1726;
-    animations[1] += idxs;
-
-    return animations;
-}
-static const AnimationsType ANIMATIONS = fillAnimations();
+static const std::array<std::vector<std::vector<unsigned short>>, 2> ANIMATIONS = {
+  {// Small ones
+   {
+     // Hoola Hoop
+     {1745, 1746, 1747, 1748, 1749, 1750, 1751, 1748, 1748, 1747, 1746},
+     // Wink
+     {1752, 1753, 1754, 1755, 1756, 1757, 1758, 1754, 1753, 1752},
+     // Read newspaper
+     {1759, 1760, 1761, 1762, 1763, 1763, 1763, 1765, 1763, 1763, 1763, 1765, 1763, 1762, 1765, 1763, 1764, 1764,
+      1763, 1763, 1763, 1765, 1765, 1765, 1763, 1763, 1763, 1765, 1763, 1763, 1763, 1765, 1765, 1764, 1761},
+     // Yawn
+     {1752, 1753, 1754, 1755, 1756, 1757, 1758, 1754, 1753, 1752},
+     // Wink
+     {1752, 1770, 1771, 1772, 1773, 1772, 1773, 1772, 1773, 1772, 1773, 1771, 1771, 1773, 1771, 1771, 1771, 1771, 1770, 1752},
+   },
+   // Fat ones
+   {
+     // Sneeze
+     {1726, 1727, 1728, 1729, 1730, 1730, 1729, 1728, 1727},
+     // Chew bubblegum
+     {1731, 1732, 1733, 1734, 1734, 1735, 1736, 1737, 1737, 1736, 1736, 1737},
+     // Blow bubblegum
+     {1738, 1739, 1740, 1739, 1738, 1739, 1740, 1739, 1741, 1742, 1743, 1744},
+     // Touch pocket
+     {1726, 1766, 1767, 1768, 1769, 1768, 1769, 1768, 1769, 1766, 1767, 1766, 1726},
+   }}};
 
 const std::array<Job, 3> JOB_TYPES = {{JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER}};
 

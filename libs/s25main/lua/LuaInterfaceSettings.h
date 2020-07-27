@@ -24,13 +24,14 @@
 
 class LuaServerPlayer;
 class IGameLobbyController;
+class ILocalGameState;
 enum class AddonId;
 struct AddonIdWrapper;
 
 class LuaInterfaceSettings : public LuaInterfaceGameBase
 {
 public:
-    LuaInterfaceSettings(IGameLobbyController& lobbyServerController);
+    LuaInterfaceSettings(IGameLobbyController& lobbyServerController, const ILocalGameState& localGameState);
     virtual ~LuaInterfaceSettings();
 
     static void Register(kaguya::State& state);

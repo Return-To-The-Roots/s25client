@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,26 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PactTypes_h__
-#define PactTypes_h__
+#ifndef ILocalGameState_h__
+#define ILocalGameState_h__
 
-#include "helpers/MaxEnumValue.h"
-#include <array>
+#include <string>
 
-/// Types of pacts
-enum PactType
+class ILocalGameState
 {
-    TREATY_OF_ALLIANCE,
-    NON_AGGRESSION_PACT
+public:
+    /// Get the local player id
+    virtual unsigned GetPlayerId() const = 0;
+    /// Return true if the local player is the host
+    virtual bool IsHost() const = 0;
+    /// Convert a number of GameFrames into real time (HH:MM:SS or MM:SS if hours = 0)
+    virtual std::string FormatGFTime(unsigned numGFs) const = 0;
+    /// Send a chat message to the local player
+    virtual void SystemChat(const std::string& text) = 0;
 };
 
-DEFINE_MAX_ENUM_VALUE(PactType, NON_AGGRESSION_PACT)
-/// Number of the various pacts
-constexpr unsigned NUM_PACTS = helpers::NumEnumValues_v<PactType>;
-
-constexpr unsigned DURATION_INFINITE = 0xFFFFFFFF;
-
-/// Names of the possible pacts
-extern const std::array<const char*, NUM_PACTS> PACT_NAMES;
-
-#endif // PactTypes_h__
+#endif // ILocalGameState_h__

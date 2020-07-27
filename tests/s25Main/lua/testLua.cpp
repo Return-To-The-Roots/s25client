@@ -22,8 +22,6 @@
 #include "buildings/nobHQ.h"
 #include "helpers/EnumRange.h"
 #include "lua/LuaTraits.h" // IWYU pragma: keep
-#include "network/ClientInterface.h"
-#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/DiplomacyPostQuestion.h"
 #include "postSystem/PostBox.h"
@@ -37,14 +35,12 @@
 #include "s25util/tmpFile.h"
 #include <rttr/test/LocaleResetter.hpp>
 #include <rttr/test/testHelpers.hpp>
-#include <boost/assign/std/vector.hpp>
+#include <turtle/mock.hpp>
 #include <boost/test/unit_test.hpp>
 #include <map>
 #include <memory>
 #include <utility>
 #include <vector>
-
-using namespace boost::assign;
 
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
 
@@ -118,13 +114,13 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
 
     BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));
 
-    GAMECLIENT.SetIsHost(true);
+    MOCK_EXPECT(localGameState.IsHost).once().returns(true);
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "true"));
-    GAMECLIENT.SetIsHost(false);
+    MOCK_EXPECT(localGameState.IsHost).once().returns(false);
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "false"));
     BOOST_CHECK(isLuaEqual("rttr:GetNumPlayers()", "3"));
-    // Set Player ID
-    GAMECLIENT.SetTestPlayerId(1);
+
+    MOCK_EXPECT(localGameState.GetPlayerId).once().returns(1);
     BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
 }
 
@@ -170,37 +166,6 @@ BOOST_AUTO_TEST_CASE(Translations)
     }
 }
 
-namespace {
-struct StoreChat : public ClientInterface
-{
-    unsigned lastPlayerId;
-    ChatDestination lastCD;
-    std::string lastMsg;
-
-    StoreChat()
-    {
-        Clear();
-        GAMECLIENT.SetInterface(this);
-    }
-
-    ~StoreChat() override { GAMECLIENT.RemoveInterface(this); }
-
-    void Clear()
-    {
-        lastPlayerId = 1337;
-        lastCD = CD_ALL;
-        lastMsg.clear();
-    }
-
-    void CI_Chat(unsigned playerId, const ChatDestination cd, const std::string& msg) override
-    {
-        lastPlayerId = playerId;
-        lastCD = cd;
-        lastMsg = msg;
-    }
-};
-} // namespace
-
 BOOST_AUTO_TEST_CASE(GameFunctions)
 {
     initWorld();
@@ -231,21 +196,19 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
         world.GetEvMgr().ExecuteNextGF();
     }
 
-    StoreChat storeChat;
     // Set player id
-    GAMECLIENT.SetTestPlayerId(1);
-    BOOST_REQUIRE_EQUAL(GAMECLIENT.GetPlayerId(), 1u);
+    MOCK_EXPECT(localGameState.GetPlayerId).returns(1);
     // Send to other player
+    MOCK_EXPECT(localGameState.SystemChat).never();
     executeLua("rttr:Chat(0, 'Hello World')");
-    BOOST_REQUIRE_EQUAL(storeChat.lastMsg, "");
-    // Send to this player
+    MOCK_VERIFY(localGameState.SystemChat);
+    MOCK_RESET(localGameState.SystemChat);
+    // Send to this player and all
+    MOCK_EXPECT(localGameState.SystemChat).once().with("Hello World");
+    MOCK_EXPECT(localGameState.SystemChat).once().with("Hello All");
     executeLua("rttr:Chat(1, 'Hello World')");
-    BOOST_REQUIRE_EQUAL(storeChat.lastMsg, "Hello World");
-    BOOST_REQUIRE_EQUAL(storeChat.lastCD, CD_SYSTEM);
-    // Send to all
     executeLua("rttr:Chat(-1, 'Hello All')");
-    BOOST_REQUIRE_EQUAL(storeChat.lastMsg, "Hello All");
-    BOOST_REQUIRE_EQUAL(storeChat.lastCD, CD_SYSTEM);
+    MOCK_VERIFY(localGameState.SystemChat);
 
     world.GetPostMgr().AddPostBox(1);
     const PostBox& postBox = *world.GetPostMgr().GetPostBox(1);
@@ -276,6 +239,9 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     BOOST_REQUIRE_NE(getLog(), "");
 
     executeLua("assert(rttr:GetWorld())");
+
+    MOCK_EXPECT(localGameState.FormatGFTime).once().with(1023u).returns("01:13:17");
+    BOOST_TEST(isLuaEqual("rttr:FormatNumGFs(1023)", "'01:13:17'"));
 }
 
 BOOST_AUTO_TEST_CASE(MissionGoal)
@@ -536,8 +502,8 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     // Just a single polygon
     executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12)");
     std::vector<MapPoint> expectedRestrictedArea;
-    expectedRestrictedArea += MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12);
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea); //-V807
+    expectedRestrictedArea = {MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12)};
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element()); //-V807
     executeLua("assert(not player:IsInRestrictedArea(1, 2))");
     executeLua("assert(not player:IsInRestrictedArea(0, 0))");
     executeLua("assert(player:IsInRestrictedArea(6, 8))");
@@ -545,32 +511,30 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
 
     // Polygon with hole
     executeLua("player:SetRestrictedArea(0,0, 1,1, 10,1, 10,10, 1,10, 1,1, 0,0, 5,5, 7,5, 7,7, 5,5, 0,0)");
-    expectedRestrictedArea.clear();
-    expectedRestrictedArea += MapPoint(0, 0), MapPoint(1, 1), MapPoint(10, 1), MapPoint(10, 10), MapPoint(1, 10), MapPoint(1, 1);
-    expectedRestrictedArea += MapPoint(0, 0), MapPoint(5, 5), MapPoint(7, 5), MapPoint(7, 7), MapPoint(5, 5), MapPoint(0, 0);
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    expectedRestrictedArea = {MapPoint(0, 0), MapPoint(1, 1), MapPoint(10, 1), MapPoint(10, 10), MapPoint(1, 10), MapPoint(1, 1),
+                              MapPoint(0, 0), MapPoint(5, 5), MapPoint(7, 5),  MapPoint(7, 7),   MapPoint(5, 5),  MapPoint(0, 0)};
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     BOOST_REQUIRE_EQUAL(getLog(), "");
     // Some prefer using nils
     executeLua("player:SetRestrictedArea(nil,nil, 1,1, 10,1, 10,10, 1,10, 1,1, nil,nil, 5,5, 7,5, 7,7, 5,5, nil,nil)");
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     RTTR_REQUIRE_LOG_CONTAINS("don't need leading nils", false);
 
     // New API: Single nil and no double point
     executeLua("player:SetRestrictedArea(1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7)");
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     // Although you could use nil at the end...
     executeLua("player:SetRestrictedArea(1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7, nil)");
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     // ...or beginning
     executeLua("player:SetRestrictedArea(nil,1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7)");
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     RTTR_REQUIRE_LOG_CONTAINS("don't need leading nils", false);
 
     // Also for single polygon
     executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12, nil)");
-    expectedRestrictedArea.clear();
-    expectedRestrictedArea += MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12);
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    expectedRestrictedArea = {MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12)};
+    BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
 
     executeLua("player:SetRestrictedArea()");
     BOOST_REQUIRE_EQUAL(player.GetRestrictedArea().size(), 0u);
@@ -796,7 +760,7 @@ BOOST_AUTO_TEST_CASE(onOccupied)
         Points& luaPts = luaPtsPerPlayer[i];
         std::sort(gamePts.begin(), gamePts.end());
         std::sort(luaPts.begin(), luaPts.end());
-        RTTR_REQUIRE_EQUAL_COLLECTIONS(luaPts, gamePts);
+        BOOST_TEST_REQUIRE(luaPts == gamePts, boost::test_tools::per_element());
     }
 }
 
@@ -828,7 +792,7 @@ BOOST_AUTO_TEST_CASE(onExplored)
         Points& luaPts = luaPtsPerPlayer[i];
         std::sort(gamePts.begin(), gamePts.end());
         std::sort(luaPts.begin(), luaPts.end());
-        RTTR_REQUIRE_EQUAL_COLLECTIONS(luaPts, gamePts);
+        BOOST_TEST_REQUIRE(luaPts == gamePts, boost::test_tools::per_element());
     }
 }
 
@@ -846,7 +810,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     executeLua("function onPactCanceled(pt, canceledByPlayerId, targetPlayerId) rttr:Log('Pact canceled') end");
 
     // create alliance and check players state
-    player.SuggestPact(1, TREATY_OF_ALLIANCE, 0xFFFFFFFF);
+    player.SuggestPact(1, TREATY_OF_ALLIANCE, DURATION_INFINITE);
     game->executeAICommands();
     BOOST_REQUIRE(player.IsAlly(1));
     executeLua("assert(player:IsAlly(0))");
@@ -870,7 +834,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
 
     // accept cancel-request via lua callback
     executeLua("function onCancelPactRequest(pt, player, ai) return true end");
-    player.SuggestPact(1, NON_AGGRESSION_PACT, 0xFFFFFFFF);
+    player.SuggestPact(1, NON_AGGRESSION_PACT, DURATION_INFINITE);
     game->executeAICommands();
     // non aggression was created
     BOOST_REQUIRE(!player.IsAttackable(1));

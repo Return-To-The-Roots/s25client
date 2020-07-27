@@ -24,10 +24,8 @@
 #include "controls/ctrlMultiline.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "network/GameClient.h"
 #include "ogl/glFont.h"
 #include "uiHelper/uiHelpers.hpp"
-#include <boost/assign/std/vector.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(LuaGUITestSuite, LuaTestsFixture)
 
@@ -36,7 +34,7 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     uiHelper::initGUITests();
 
     // Set player
-    GAMECLIENT.SetTestPlayerId(1);
+    MOCK_EXPECT(localGameState.GetPlayerId).returns(1);
 
     BOOST_REQUIRE(!WINDOWMANAGER.GetTopMostWindow());
 
@@ -157,10 +155,8 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_REQUIRE_LE(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2));
     BOOST_REQUIRE_GT(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2 - bt->GetSize().x));
 
-    using namespace boost::assign;
-    std::vector<DrawPoint> imgPts;
     // Left, right, top, bottom
-    imgPts += DrawPoint(30, 30), DrawPoint(300, 30), DrawPoint(150, 30), DrawPoint(150, 300);
+    const std::vector<DrawPoint> imgPts{DrawPoint(30, 30), DrawPoint(300, 30), DrawPoint(150, 30), DrawPoint(150, 300)};
     for(const auto& imgPt : imgPts)
     {
         const_cast<iwMsgbox*>(wnd)->MoveIcon(imgPt);
