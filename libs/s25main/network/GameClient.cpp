@@ -292,7 +292,7 @@ void GameClient::StartGame(const unsigned random_init)
         ci->CI_GameLoading(game);
 
     // Get standard settings before they get overwritten
-    GetPlayer(mainPlayer.playerId).FillVisualSettings(default_settings);
+    GetPlayer(GetPlayerId()).FillVisualSettings(default_settings);
 
     GameWorld& gameWorld = game->world_;
     if(mapinfo.savegame)
@@ -777,12 +777,12 @@ bool GameClient::OnGameMessage(const GameMessage_Chat& msg)
         if(player.IsDefeated() && msg.destination != CD_ALL)
             return true;
         // Entscheiden, ob ich ein Gegner oder Vebündeter bin vom Absender
-        bool ally = player.IsAlly(mainPlayer.playerId);
+        bool ally = player.IsAlly(GetPlayerId());
 
         // Chatziel unerscheiden und ggf. nicht senden
         if(!ally && msg.destination == CD_ALLIES)
             return true;
-        if(ally && msg.destination == CD_ENEMIES && msg.player != mainPlayer.playerId)
+        if(ally && msg.destination == CD_ENEMIES && msg.player != GetPlayerId())
             return true;
     } else if(state == CS_CONFIG)
     {
@@ -823,8 +823,8 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
         ci->CI_Async(checksum_list.str());
 
     std::string fileName = s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
-    fileName += "_" + s25util::toStringClassic(mainPlayer.playerId) + "_";
-    fileName += GetPlayer(mainPlayer.playerId).name;
+    fileName += "_" + s25util::toStringClassic(GetPlayerId()) + "_";
+    fileName += GetPlayer(GetPlayerId()).name;
 
     std::string filePathSave = RTTRCONFIG.ExpandPath(s25::folders::save) + "/" + makePortableFileName(fileName + ".sav");
     std::string filePathLog = RTTRCONFIG.ExpandPath(s25::folders::logs) + "/" + makePortableFileName(fileName + "Player.log");
@@ -1008,7 +1008,7 @@ bool GameClient::CreateLobby()
         default: return false;
     }
 
-    if(mainPlayer.playerId >= numPlayers)
+    if(GetPlayerId() >= numPlayers)
         return false;
 
     gameLobby = std::make_shared<GameLobby>(mapinfo.type == MAPTYPE_SAVEGAME, IsHost(), numPlayers);
@@ -1568,13 +1568,13 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
     unsigned ticks = VIDEODRIVER.GetTickCount() - start_ticks;
     boost::format text(_("Jump finished (%1$.3g seconds)."));
     text % (ticks / 1000.0);
-    ci->CI_Chat(mainPlayer.playerId, CD_SYSTEM, text.str());
+    SystemChat(text.str());
     SetPause(true);
 }
 
 void GameClient::SystemChat(const std::string& text)
 {
-    SystemChat(text, mainPlayer.playerId);
+    SystemChat(text, GetPlayerId());
 }
 
 void GameClient::SystemChat(const std::string& text, unsigned char fromPlayerIdx)
@@ -1620,7 +1620,7 @@ bool GameClient::SaveToFile(const std::string& filename)
 
 void GameClient::ResetVisualSettings()
 {
-    GetPlayer(mainPlayer.playerId).FillVisualSettings(visual_settings);
+    GetPlayer(GetPlayerId()).FillVisualSettings(visual_settings);
 }
 
 void GameClient::SetPause(bool pause)
@@ -1665,7 +1665,7 @@ unsigned GameClient::GetLastReplayGF() const
 bool GameClient::AddGC(gc::GameCommandPtr gc)
 {
     // Nicht in der Pause oder wenn er besiegt wurde
-    if(framesinfo.isPaused || GetPlayer(mainPlayer.playerId).IsDefeated() || IsReplayModeOn())
+    if(framesinfo.isPaused || GetPlayer(GetPlayerId()).IsDefeated() || IsReplayModeOn())
         return false;
 
     gameCommands_.push_back(gc);
@@ -1747,7 +1747,7 @@ void GameClient::ToggleHumanAIPlayer()
     if(it != game->aiPlayers_.end())
         game->aiPlayers_.erase(it);
     else
-        game->AddAIPlayer(CreateAIPlayer(mainPlayer.playerId, AI::Info(AI::DEFAULT, AI::EASY)));
+        game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), AI::Info(AI::DEFAULT, AI::EASY)));
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)
