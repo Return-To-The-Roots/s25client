@@ -19,11 +19,13 @@
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "Loader.h"
+#include "RTTR_Assert.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "Ware.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobUsual.h"
+#include "helpers/MaxEnumValue.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/JobConsts.h"
@@ -319,7 +321,10 @@ void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)
     unsigned short id = GetCarryID();
     // >=100 -> carrier.bob else jobs.bob!
     if(id >= 100)
-        DrawWalkingBobCarrier(drawPt, id - 100, JOB_SPRITE_CONSTS[job_].isFat());
-    else
-        DrawWalkingBobJobs(drawPt, job_);
+    {
+        id -= 100;
+        RTTR_Assert(id <= helpers::MaxEnumValue_v<GoodType>);
+        DrawWalkingBobCarrier(drawPt, GoodType(id), JOB_SPRITE_CONSTS[job_].isFat());
+    } else
+        DrawWalking(drawPt, LOADER.GetBob("jobs"), id, JOB_SPRITE_CONSTS[job_].isFat());
 }
