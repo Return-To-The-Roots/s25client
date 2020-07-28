@@ -64,7 +64,6 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
     }
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
 unsigned short nofFarmer::GetCarryID() const
 {
     return 71;

@@ -48,7 +48,6 @@ void nofStonemason::DrawWorking(DrawPoint drawPt)
     }
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
 unsigned short nofStonemason::GetCarryID() const
 {
     return 63;

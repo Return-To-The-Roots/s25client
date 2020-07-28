@@ -82,9 +82,12 @@ private:
     void Walked() override;      // wenn man gelaufen ist
     void GoalReached() override; // wenn das Ziel erreicht wurde
 
+protected:
     /// Malt den Arbeiter beim Arbeiten
     virtual void DrawWorking(DrawPoint drawPt) = 0;
-    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+    static constexpr unsigned short CARRY_ID_CARRIER_OFFSET = 100;
+    /// Ask derived class for an ID into JOBS.BOB when the figure is carrying a ware
+    /// Use GD_* + CARRY_ID_CARRIER_OFFSET for using carrier graphics
     virtual unsigned short GetCarryID() const = 0;
     /// Laufen an abgeleitete Klassen weiterleiten
     virtual void WalkedDerived() = 0;

@@ -22,6 +22,10 @@
 class SerializedGameData;
 class nobUsual;
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
+#endif
+
 class nofCharburner : public nofFarmhand
 {
     /// Is he harvesting a charburner pile (or planting?)
@@ -36,8 +40,8 @@ class nofCharburner : public nofFarmhand
 private:
     /// Malt den Arbeiter beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
-    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-    unsigned short GetCarryID() const override;
+    /// Id in jobs.bob or carrier.bob when carrying a ware
+    [[noreturn]] unsigned short GetCarryID() const override;
 
     /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
     void WorkStarted() override;

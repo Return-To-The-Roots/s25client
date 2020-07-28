@@ -27,6 +27,7 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noCharburnerPile.h"
 #include "gameData/TerrainDesc.h"
+#include <stdexcept>
 
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)
@@ -62,10 +63,9 @@ void nofCharburner::DrawWorking(DrawPoint drawPt)
           ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
 unsigned short nofCharburner::GetCarryID() const
 {
-    return 1000;
+    throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)

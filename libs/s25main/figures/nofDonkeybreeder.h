@@ -41,7 +41,7 @@ private:
     /// Wird aufgerufen, wenn er fertig mit arbeiten ist
     void WorkFinished() override;
 
-    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override { return 0; }
 };
 

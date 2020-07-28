@@ -54,7 +54,6 @@ void nofForester::DrawWorking(DrawPoint drawPt)
     }
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
 unsigned short nofForester::GetCarryID() const
 {
     return 0;

@@ -76,7 +76,6 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     }
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
 unsigned short nofWoodcutter::GetCarryID() const
 {
     return 61;

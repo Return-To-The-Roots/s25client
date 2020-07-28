@@ -28,7 +28,7 @@ class nofButcher : public nofWorkman
 {
     /// Zeichnet ihn beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
-    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override { return 74; }
     /// Der Arbeiter erzeugt eine Ware
     GoodType ProduceWare() override;

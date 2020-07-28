@@ -94,7 +94,6 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
     DrawShadow(drawPt, 0, Direction(fishing_dir));
 }
 
-/// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
 unsigned short nofFisher::GetCarryID() const
 {
     return 70;
