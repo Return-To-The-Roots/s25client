@@ -32,7 +32,7 @@ private:
 
 protected:
     void DrawWorking(DrawPoint drawPt) override;
-    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
     GoodType ProduceWare() override;

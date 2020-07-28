@@ -319,10 +319,10 @@ void nofBuildingWorker::DrawOtherStates(DrawPoint) {}
 void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)
 {
     unsigned short id = GetCarryID();
-    // >=100 -> carrier.bob else jobs.bob!
-    if(id >= 100)
+    // >=CARRY_ID_CARRIER_OFFSET -> carrier.bob else jobs.bob!
+    if(id >= CARRY_ID_CARRIER_OFFSET)
     {
-        id -= 100;
+        id -= CARRY_ID_CARRIER_OFFSET;
         RTTR_Assert(id <= helpers::MaxEnumValue_v<GoodType>);
         DrawWalkingBobCarrier(drawPt, GoodType(id), JOB_SPRITE_CONSTS[job_].isFat());
     } else

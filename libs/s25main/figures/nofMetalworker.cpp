@@ -96,8 +96,8 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
     last_id = now_id;
 }
 
-// Zuordnungnen Richtige IDs - Trage-IDs in der JOBS.BOB
-const std::array<uint8_t, NUM_TOOLS> CARRYTOOLS_IDS = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 86};
+// Mapping of indices in TOOLS to IDs in JOBS.BOB
+constexpr std::array<uint8_t, NUM_TOOLS> CARRYTOOLS_IDS = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 86};
 
 unsigned short nofMetalworker::GetCarryID() const
 {

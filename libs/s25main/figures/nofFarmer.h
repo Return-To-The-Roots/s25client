@@ -31,7 +31,7 @@ private:
 private:
     /// Malt den Arbeiter beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
-    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+    /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override;
 
     /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
