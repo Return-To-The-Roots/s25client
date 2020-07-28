@@ -32,7 +32,7 @@ protected:
     void DrawWorking(DrawPoint drawPt) override;
     /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
     // TODO:der Brunnentyphat keine ID in JOBS.BOB
-    unsigned short GetCarryID() const override { return 111; }
+    unsigned short GetCarryID() const override { return 100 + GD_WATER; }
     /// Der Arbeiter erzeugt eine Ware
     GoodType ProduceWare() override;
 
