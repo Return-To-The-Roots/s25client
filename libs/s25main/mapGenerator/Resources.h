@@ -43,6 +43,8 @@ namespace rttr { namespace mapGenerator {
 
     void AddResources(Map& map, RandomUtility& rnd, const MapSettings& settings);
 
+    void AddAnimals(Map& map, RandomUtility& rnd);
+
 }} // namespace rttr::mapGenerator
 
 #endif // Resources_h__

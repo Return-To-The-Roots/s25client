@@ -198,42 +198,28 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
-    /*
-    Animals GetAnimals(const Texture& texture, const TextureMapping_& mapping)
+    void AddAnimals(Map& map, RandomUtility& rnd)
     {
-        if (mapping.water == texture)
-        {
-            return { A_Duck, A_Duck2 };
-        }
+        std::vector<libsiedler2::Animal> landAnimals{libsiedler2::Animal::Rabbit, libsiedler2::Animal::Fox, libsiedler2::Animal::Stag,
+                                                     libsiedler2::Animal::Deer, libsiedler2::Animal::Sheep};
+        std::vector<libsiedler2::Animal> waterAnimals{libsiedler2::Animal::Duck, libsiedler2::Animal::Duck2};
 
-        if (mapping.IsGrassland(texture))
+        RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            return { A_Rabbit, A_Sheep, A_Deer, A_Fox };
+            if(rnd.ByChance(3))
+            {
+                if(map.textures.All(pt, IsWater))
+                {
+                    map.animals[pt] = waterAnimals[rnd.Index(waterAnimals.size())];
+                } else
+                {
+                    map.animals[pt] = landAnimals[rnd.Index(landAnimals.size())];
+                }
+            }
         }
-
-        if (mapping.IsMountain(texture))
-        {
-            return { A_Deer, A_Fox };
-        }
-
-        if (mapping.IsCoast(texture))
-        {
-            return { A_Fox };
-        }
-
-        if (mapping.IsCoast(texture, 1))
-        {
-            return { A_Fox, A_Rabbit };
-        }
-
-        if (mapping.IsCoast(texture, 2))
-        {
-            return { A_Rabbit, A_Sheep };
-        }
-
-        return {};
     }
 
+    /*
     int GetStoneProbability(const Texture& texture, const TextureMapping_& mapping, int freeZoneDistance)
     {
         if (freeZoneDistance < 10 || texture == mapping.water)
@@ -242,11 +228,6 @@ namespace rttr { namespace mapGenerator {
         }
 
         return 2;
-    }
-
-    int GetAnimalProbability(const Texture& texture, const TextureMapping_& mapping)
-    {
-        return mapping.GetHumidity(texture) / 10 + 2;
     }
 
     void PlaceStones(Map_& map,
@@ -278,28 +259,6 @@ namespace rttr { namespace mapGenerator {
                         map.objectInfo[index] = stoneTypes[type];
                     }
                 }
-            }
-        }
-    }
-
-    void PlaceAnimals(Map_& map, RandomUtility& rnd, const TextureMapping_& mapping)
-    {
-        auto size = map.size.x * map.size.y;
-        auto textures = map.textureRsu;
-        auto& animalsOnMap = map.animal;
-
-        Texture texture;
-
-        for (int i = 0; i < size; ++i)
-        {
-            texture = textures[i];
-
-            auto animals = GetAnimals(texture, mapping);
-            auto prob = GetAnimalProbability(texture, mapping);
-
-            if (rnd.ByChance(prob) && !animals.empty())
-            {
-                animalsOnMap[i] = animals[rnd.Index(animals.size())];
             }
         }
     }

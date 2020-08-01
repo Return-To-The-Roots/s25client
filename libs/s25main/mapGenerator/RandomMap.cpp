@@ -434,6 +434,7 @@ namespace rttr { namespace mapGenerator {
         }
         AddObjects(map, rnd);
         AddResources(map, rnd, settings);
+        AddAnimals(map, rnd);
 
         libsiedler2::Write(filePath, map.CreateArchiv());
     }

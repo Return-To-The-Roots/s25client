@@ -183,4 +183,24 @@ BOOST_AUTO_TEST_CASE(AddResources_UpdatesResourceMapAccordingToTexture)
     });
 }
 
+BOOST_AUTO_TEST_CASE(AddAnimals_UpdatesAnimalMapAccordingToTexture)
+{
+    RunTest([](Map& map) {
+        RandomUtility rnd(0);
+
+        AddAnimals(map, rnd);
+
+        RTTR_FOREACH_PT(MapPoint, map.size)
+        {
+            if(map.textures.All(pt, IsWater))
+            {
+                BOOST_REQUIRE(map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck || map.animals[pt] == Animal::Duck2);
+            } else
+            {
+                BOOST_REQUIRE(map.animals[pt] != Animal::Duck && map.animals[pt] != Animal::Duck2);
+            }
+        }
+    });
+}
+
 BOOST_AUTO_TEST_SUITE_END()
