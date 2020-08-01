@@ -102,17 +102,17 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
     }
 
     // dont build on the border
-    if(GetNode(pt).boundary_stones[0])
+    if(GetNode(pt).boundary_stones[BorderStonePos::OnPoint])
         return false;
 
-    for(unsigned z = 0; z < 6; ++z)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
         // Roads around charburner piles are not possible
-        if(GetNO(GetNeighbour(pt, Direction::fromInt(z)))->GetBM() == BlockingManner::NothingAround)
+        if(GetNO(GetNeighbour(pt, dir))->GetBM() == BlockingManner::NothingAround)
             return false;
 
         // Other roads at this point?
-        if(GetPointRoad(pt, Direction::fromInt(z)))
+        if(GetPointRoad(pt, dir) != PointRoad::None)
             return false;
     }
 
@@ -121,9 +121,9 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
     {
         bool flagPossible = false;
 
-        for(unsigned char i = 0; i < 6; ++i)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            TerrainBQ bq = GetDescription().get(GetRightTerrain(pt, Direction::fromInt(i))).GetBQ();
+            TerrainBQ bq = GetDescription().get(GetRightTerrain(pt, dir)).GetBQ();
             if(bq == TerrainBQ::DANGER)
                 return false;
             else if(bq != TerrainBQ::NOTHING)
@@ -147,7 +147,7 @@ bool GameWorldBase::RoadAlreadyBuilt(const bool /*boat_road*/, const MapPoint st
     for(unsigned i = 0; i < route.size() - 1; ++i)
     {
         // Richtiger Weg auf diesem Punkt?
-        if(!GetPointRoad(tmp, route[i]))
+        if(GetPointRoad(tmp, route[i]) == PointRoad::None)
             return false;
 
         tmp = GetNeighbour(tmp, route[i]);
@@ -157,20 +157,24 @@ bool GameWorldBase::RoadAlreadyBuilt(const bool /*boat_road*/, const MapPoint st
 
 bool GameWorldBase::IsOnRoad(const MapPoint& pt) const
 {
-    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
-        if(GetRoad(pt, roadDir))
+    // This must be fast for BQ calculation so don't use GetVisiblePointRoad
+    for(const auto roadDir : helpers::EnumRange<RoadDir>{})
+        if(GetRoad(pt, roadDir) != PointRoad::None)
             return true;
-    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
-        if(GetRoad(GetNeighbour(pt, Direction::fromInt(roadDir)), roadDir))
+    for(const auto roadDir : helpers::EnumRange<RoadDir>{})
+    {
+        const Direction oppositeDir = getOppositeDir(roadDir);
+        if(GetRoad(GetNeighbour(pt, oppositeDir), roadDir) != PointRoad::None)
             return true;
+    }
     return false;
 }
 
 bool GameWorldBase::IsFlagAround(const MapPoint& pt) const
 {
-    for(unsigned i = 0; i < 6; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(GetNO(GetNeighbour(pt, Direction::fromInt(i)))->GetBM() == BlockingManner::Flag)
+        if(GetNO(GetNeighbour(pt, dir))->GetBM() == BlockingManner::Flag)
             return true;
     }
     return false;
@@ -180,8 +184,8 @@ void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
 {
     RecalcBQ(pt);
 
-    for(unsigned i = 3; i < 6; ++i)
-        RecalcBQ(GetNeighbour(pt, Direction::fromInt(i)));
+    for(const Direction dir : {Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST})
+        RecalcBQ(GetNeighbour(pt, dir));
 }
 
 namespace {
@@ -218,7 +222,7 @@ sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     return militarySquares.GetBuildingsInRange(pt, radius);
 }
 
-noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir)
+noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, const helpers::OptionalEnum<Direction> prevDir)
 {
     // Getting a flag is const
     const noFlag* flag = const_cast<const GameWorldBase*>(this)->GetRoadFlag(pt, dir, prevDir);
@@ -226,31 +230,33 @@ noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir
     return const_cast<noFlag*>(flag);
 }
 
-const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir) const
+const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, helpers::OptionalEnum<Direction> prevDir) const
 {
-    unsigned i = 0;
-
     while(true)
     {
         // suchen, wo der Weg weitergeht
-        for(i = 0; i < Direction::COUNT; ++i)
+        helpers::OptionalEnum<Direction> nextDir;
+        for(const auto i : helpers::EnumRange<Direction>{})
         {
-            if(i != prevDir && GetPointRoad(pt, Direction::fromInt(i)))
+            if(i != prevDir && GetPointRoad(pt, i) != PointRoad::None)
+            {
+                nextDir = i;
                 break;
+            }
         }
 
-        if(i == 6)
+        if(!nextDir)
             return nullptr;
 
-        pt = GetNeighbour(pt, Direction::fromInt(i));
+        pt = GetNeighbour(pt, *nextDir);
 
         // endlich am Ende des Weges und an einer Flagge angekommen?
         if(GetNO(pt)->GetType() == NOP_FLAG)
         {
-            dir = Direction(i + 3);
+            dir = *nextDir + 3u;
             return GetSpecObj<noFlag>(pt);
         }
-        prevDir = (i + 3) % 6;
+        prevDir = *nextDir + 3u;
     }
 }
 
@@ -274,8 +280,8 @@ void GameWorldBase::AltitudeChanged(const MapPoint pt)
 void GameWorldBase::RecalcBQAroundPoint(const MapPoint pt)
 {
     RecalcBQ(pt);
-    for(unsigned char i = 0; i < 6; ++i)
-        RecalcBQ(GetNeighbour(pt, Direction::fromInt(i)));
+    for(const auto dir : helpers::EnumRange<Direction>{})
+        RecalcBQ(GetNeighbour(pt, dir));
 }
 
 void GameWorldBase::RecalcBQAroundPointBig(const MapPoint pt)
@@ -335,21 +341,21 @@ unsigned GameWorldBase::GetHarborInDir(const MapPoint pt, const unsigned origin_
     RTTR_Assert(origin_harborId);
 
     // Herausfinden, in welcher Richtung sich dieser Punkt vom Ausgangspunkt unterscheidet
-    unsigned char coastal_point_dir = 0xFF;
+    helpers::OptionalEnum<Direction> coastal_point_dir;
     const MapPoint hbPt = GetHarborPoint(origin_harborId);
 
-    for(unsigned char i = 0; i < 6; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(GetNeighbour(hbPt, Direction::fromInt(i)) == pt)
+        if(GetNeighbour(hbPt, dir) == pt)
         {
-            coastal_point_dir = i;
+            coastal_point_dir = dir;
             break;
         }
     }
 
-    RTTR_Assert(coastal_point_dir != 0xff);
+    RTTR_Assert(coastal_point_dir);
 
-    unsigned short seaId = GetSeaId(origin_harborId, Direction::fromInt(coastal_point_dir));
+    unsigned short seaId = GetSeaId(origin_harborId, *coastal_point_dir);
     const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(origin_harborId, dir);
 
     for(auto neighbor : neighbors)
@@ -420,7 +426,7 @@ bool GameWorldBase::IsAHarborInSeaAttackDistance(const MapPoint pos) const
     {
         if(CalcDistance(pos, GetHarborPoint(i)) < SEAATTACK_DISTANCE)
         {
-            if(FindHumanPath(pos, GetHarborPoint(i), SEAATTACK_DISTANCE) != 0xff)
+            if(FindHumanPath(pos, GetHarborPoint(i), SEAATTACK_DISTANCE))
                 return true;
         }
     }
@@ -453,14 +459,14 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
 
         // add seaIds from which we can actually attack the harbor
         bool harborinlist = false;
-        for(unsigned z = 0; z < 6; ++z)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const unsigned short seaId = GetSeaId(curHbId, Direction::fromInt(z));
+            const unsigned short seaId = GetSeaId(curHbId, dir);
             if(!seaId)
                 continue;
             // checks previously tested sea ids to skip pathfinding
             bool previouslytested = false;
-            for(unsigned k = 0; k < z; k++)
+            for(unsigned k = 0; k < rttr::enum_cast(dir); k++)
             {
                 if(seaId == GetSeaId(curHbId, Direction::fromInt(k)))
                 {
@@ -473,7 +479,7 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
 
             // Can figures reach flag from coast
             const MapPoint coastalPt = GetCoastalPoint(curHbId, seaId);
-            if((flagPt == coastalPt) || FindHumanPath(flagPt, coastalPt, SEAATTACK_DISTANCE) != INVALID_DIR)
+            if((flagPt == coastalPt) || FindHumanPath(flagPt, coastalPt, SEAATTACK_DISTANCE))
             {
                 use_seas.at(seaId - 1) = true;
                 if(!harborinlist)
@@ -512,9 +518,9 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
                 continue;
         }
 
-        for(unsigned z = 0; z < 6; ++z)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const unsigned short seaId = GetSeaId(curHbId, Direction::fromInt(z));
+            const unsigned short seaId = GetSeaId(curHbId, dir);
             if(!seaId)
                 continue;
             // sea id is not in compare list or already confirmed? -> skip rest
@@ -523,7 +529,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
 
             // checks previously tested sea ids to skip pathfinding
             bool previouslytested = false;
-            for(unsigned k = 0; k < z; k++)
+            for(unsigned k = 0; k < rttr::enum_cast(dir); k++)
             {
                 if(seaId == GetSeaId(curHbId, Direction::fromInt(k)))
                 {
@@ -536,7 +542,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
 
             // Can figures reach flag from coast
             MapPoint coastalPt = GetCoastalPoint(curHbId, seaId);
-            if((flagPt == coastalPt) || FindHumanPath(flagPt, coastalPt, SEAATTACK_DISTANCE) != INVALID_DIR)
+            if((flagPt == coastalPt) || FindHumanPath(flagPt, coastalPt, SEAATTACK_DISTANCE))
             {
                 confirmedSeaIds.push_back(seaId);
                 // all sea ids confirmed? return without changes
@@ -561,7 +567,7 @@ std::vector<unsigned> GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const
         if(CalcDistance(harborPt, pt) <= SEAATTACK_DISTANCE)
         {
             // Wird ein Weg vom Militärgebäude zum Hafen gefunden bzw. Ziel = Hafen?
-            if(pt == harborPt || FindHumanPath(pt, harborPt, SEAATTACK_DISTANCE) != 0xff)
+            if(pt == harborPt || FindHumanPath(pt, harborPt, SEAATTACK_DISTANCE))
                 harbor_points.push_back(i);
         }
     }
@@ -637,9 +643,9 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen
         bool is_at_sea = false;
-        for(unsigned i = 0; i < 6; ++i)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const unsigned short seaId = GetSeaId(harbor->GetHarborPosID(), Direction::fromInt(i));
+            const unsigned short seaId = GetSeaId(harbor->GetHarborPosID(), dir);
             if(seaId && use_seas[seaId - 1])
             {
                 is_at_sea = true;

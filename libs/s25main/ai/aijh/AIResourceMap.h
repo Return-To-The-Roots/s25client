@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "AIMap.h"
 #include "ai/AIResource.h"
 #include "world/NodeMapBase.h"
 #include "gameTypes/BuildingQuality.h"
@@ -26,7 +27,6 @@
 
 class AIInterface;
 namespace AIJH {
-class AIMap;
 
 class AIResourceMap
 {

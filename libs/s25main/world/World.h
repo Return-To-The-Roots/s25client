@@ -18,6 +18,7 @@
 #ifndef World_h__
 #define World_h__
 
+#include "enum_cast.hpp"
 #include "world/MapBase.h"
 #include "world/MilitarySquares.h"
 #include "gameTypes/Direction.h"
@@ -177,12 +178,36 @@ public:
     /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
     unsigned short GetSeaFromCoastalPoint(MapPoint pt) const;
 
-    /// Return the road type of this point in the given direction (E, SE, SW) or 0 if no road
-    unsigned char GetRoad(MapPoint pt, unsigned char dir) const;
-    /// Return the road type from this point in the given direction (Full circle direction)
-    unsigned char GetPointRoad(MapPoint pt, Direction dir) const;
+    RoadDir toRoadDir(MapPoint& pt, const Direction dir) const
+    {
+        // Uses knowledge about Direction<->RoadDir to avoid switch, see static_asserts
+        using rttr::enum_cast;
+        auto iDir = enum_cast(dir);
+        if(iDir >= enum_cast(Direction::EAST))
+        {
+            static_assert(enum_cast(Direction::EAST) - 3 == enum_cast(RoadDir::East)
+                            && enum_cast(Direction::SOUTHEAST) - 3 == enum_cast(RoadDir::SouthEast)
+                            && enum_cast(Direction::SOUTHWEST) - 3 == enum_cast(RoadDir::SouthWest),
+                          "Mismatch");
+            iDir -= 3u; // Map East->East etc
+        } else
+        {
+            // Will map iDir to opposite
+            static_assert(enum_cast(Direction::WEST) == enum_cast(RoadDir::East)
+                            && enum_cast(Direction::NORTHWEST) == enum_cast(RoadDir::SouthEast)
+                            && enum_cast(Direction::NORTHEAST) == enum_cast(RoadDir::SouthWest),
+                          "Mismatch");
+            pt = GetNeighbour(pt, dir);
+        }
+        return RoadDir(iDir);
+    }
+
+    /// Return the road type of this point in the given direction
+    PointRoad GetRoad(MapPoint pt, RoadDir dir) const;
+    /// Return the road type from this point in the given direction
+    PointRoad GetPointRoad(MapPoint pt, Direction dir) const;
     /// Return the FOW road type for a player
-    unsigned char GetPointFOWRoad(MapPoint pt, Direction dir, unsigned char viewing_player) const;
+    PointRoad GetPointFOWRoad(MapPoint pt, Direction dir, unsigned char viewing_player) const;
 
     /// Adds a catapult stone currently flying
     void AddCatapultStone(CatapultStone* cs);
@@ -198,7 +223,7 @@ protected:
     /// Notify derived classes of changed visibility
     virtual void VisibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) = 0;
     /// Sets the road for the given (road) direction
-    void SetRoad(MapPoint pt, unsigned char roadDir, unsigned char type);
+    void SetRoad(MapPoint pt, RoadDir roadDir, PointRoad type);
     BoundaryStones& GetBoundaryStones(const MapPoint pt) { return GetNodeInt(pt).boundary_stones; }
     /// Set the BQ at the point and return true if it was changed
     bool SetBQ(MapPoint pt, BuildingQuality bq);
@@ -235,9 +260,9 @@ template<class T_Predicate>
 inline bool World::IsOfTerrain(const MapPoint pt, T_Predicate predicate) const
 {
     // NOTE: This is '!HasTerrain(pt, !predicate)'
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        DescIdx<TerrainDesc> t = GetRightTerrain(pt, Direction::fromInt(i));
+        DescIdx<TerrainDesc> t = GetRightTerrain(pt, dir);
         if(!predicate(GetDescription().get(t)))
             return false;
     }
@@ -247,9 +272,9 @@ inline bool World::IsOfTerrain(const MapPoint pt, T_Predicate predicate) const
 template<class T_Predicate>
 inline bool World::HasTerrain(const MapPoint pt, T_Predicate predicate) const
 {
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        DescIdx<TerrainDesc> t = GetRightTerrain(pt, Direction::fromInt(i));
+        DescIdx<TerrainDesc> t = GetRightTerrain(pt, dir);
         if(predicate(GetDescription().get(t)))
             return true;
     }

@@ -17,11 +17,12 @@
 
 #include "gameTypes/FoWNode.h"
 #include "SerializedGameData.h"
+#include "enum_cast.hpp"
 #include <algorithm>
 
 FoWNode::FoWNode() : last_update_time(0), visibility(VIS_INVISIBLE), object(nullptr), owner(0)
 {
-    std::fill(roads.begin(), roads.end(), 0);
+    std::fill(roads.begin(), roads.end(), PointRoad::None);
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
 }
 
@@ -33,8 +34,8 @@ void FoWNode::Serialize(SerializedGameData& sgd) const
     {
         sgd.PushUnsignedInt(last_update_time);
         sgd.PushFOWObject(object);
-        for(unsigned char road : roads)
-            sgd.PushUnsignedChar(road);
+        for(const PointRoad road : roads)
+            sgd.PushUnsignedChar(rttr::enum_cast(road));
         sgd.PushUnsignedChar(owner);
         for(unsigned char boundary_stone : boundary_stones)
             sgd.PushUnsignedChar(boundary_stone);
@@ -49,8 +50,8 @@ void FoWNode::Deserialize(SerializedGameData& sgd)
     {
         last_update_time = sgd.PopUnsignedInt();
         object = sgd.PopFOWObject();
-        for(unsigned char& road : roads)
-            road = sgd.PopUnsignedChar();
+        for(PointRoad& road : roads)
+            road = PointRoad(sgd.PopUnsignedChar());
         owner = sgd.PopUnsignedChar();
         for(unsigned char& boundary_stone : boundary_stones)
             boundary_stone = sgd.PopUnsignedChar();
@@ -58,8 +59,8 @@ void FoWNode::Deserialize(SerializedGameData& sgd)
     {
         last_update_time = 0;
         object = nullptr;
-        for(unsigned char& road : roads)
-            road = 0;
+        for(PointRoad& road : roads)
+            road = PointRoad::None;
         owner = 0;
         for(unsigned char& boundary_stone : boundary_stones)
             boundary_stone = 0;

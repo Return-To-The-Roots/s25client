@@ -37,14 +37,14 @@ GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb) : player
 
 void GameWorldViewer::InitVisualData()
 {
-    visualNodes.resize(gwb.GetWidth() * gwb.GetHeight());
+    visualNodes.Resize(gwb.GetSize());
     RTTR_FOREACH_PT(MapPoint, gwb.GetSize())
     {
-        VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
+        VisualMapNode& vNode = visualNodes[pt];
         const MapNode& node = gwb.GetNode(pt);
         vNode.bq = node.bq;
-        // Roads are only overlays. At first we don't have any -> 0=use real road
-        std::fill(vNode.roads.begin(), vNode.roads.end(), 0);
+        // Roads are only overlays. At first we don't have any -> PointRoad::None=use real road
+        std::fill(vNode.roads.begin(), vNode.roads.end(), PointRoad::None);
     }
     evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>([this](const RoadNote& note) { RoadConstructionEnded(note); });
     evBQChanged = gwb.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
@@ -101,7 +101,7 @@ unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
 
 BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
 {
-    return GetWorld().AdjustBQ(pt, playerId_, visualNodes[GetWorld().GetIdx(pt)].bq);
+    return GetWorld().AdjustBQ(pt, playerId_, visualNodes[pt].bq);
 }
 
 Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
@@ -143,85 +143,78 @@ void GameWorldViewer::RecalcAllColors()
 }
 
 /// liefert sichtbare Straße, im FoW entsprechend die FoW-Straße
-unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char roadDir, const Visibility visibility) const
+PointRoad GameWorldViewer::GetVisibleRoad(const MapPoint pt, RoadDir roadDir, const Visibility visibility) const
 {
     if(visibility == VIS_VISIBLE)
         return GetVisibleRoad(pt, roadDir);
     else if(visibility == VIS_FOW)
         return GetYoungestFOWNode(pt).roads[roadDir];
     else
-        return 0; // No road
+        return PointRoad::None;
 }
 
-unsigned char GameWorldViewer::GetVisibleRoad(const MapPoint pt, unsigned char roadDir) const
+PointRoad GameWorldViewer::GetVisibleRoad(const MapPoint pt, RoadDir roadDir) const
 {
-    unsigned char visualResult = visualNodes[GetWorld().GetIdx(pt)].roads[roadDir];
-    if(visualResult)
+    const PointRoad visualResult = visualNodes[pt].roads[roadDir];
+    if(visualResult != PointRoad::None)
         return visualResult;
     else
         return GetWorld().GetRoad(pt, roadDir);
 }
 
-unsigned char GameWorldViewer::GetVisiblePointRoad(const MapPoint pt, Direction dir) const
+PointRoad GameWorldViewer::GetVisiblePointRoad(MapPoint pt, Direction dir) const
 {
-    if(dir.toUInt() >= 3)
-        return GetVisibleRoad(pt, dir.toUInt() - 3);
-    else
-        return GetVisibleRoad(GetNeighbour(pt, dir), dir.toUInt());
+    const RoadDir rDir = GetWorld().toRoadDir(pt, dir);
+    return GetVisibleRoad(pt, rDir);
 }
 
-void GameWorldViewer::SetVisiblePointRoad(const MapPoint& pt, Direction dir, unsigned char type)
+void GameWorldViewer::SetVisiblePointRoad(MapPoint pt, Direction dir, PointRoad type)
 {
-    MapPoint nodePt;
-    if(dir.toUInt() >= 3)
-    {
-        nodePt = pt;
-        dir = Direction::fromInt(dir.toUInt() - 3);
-    } else
-        nodePt = GetNeighbour(pt, dir);
-    visualNodes[GetWorld().GetIdx(nodePt)].roads[dir.toUInt()] = type;
+    const RoadDir rDir = GetWorld().toRoadDir(pt, dir);
+    visualNodes[pt].roads[rDir] = type;
 }
 
 bool GameWorldViewer::IsOnRoad(const MapPoint& pt) const
 {
-    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
-        if(GetVisibleRoad(pt, roadDir))
+    // This must be fast for BQ calculation so don't use GetVisiblePointRoad
+    for(const auto roadDir : helpers::EnumRange<RoadDir>{})
+        if(GetVisibleRoad(pt, roadDir) != PointRoad::None)
             return true;
-    for(unsigned roadDir = 0; roadDir < 3; ++roadDir)
-        if(GetVisibleRoad(GetNeighbour(pt, Direction::fromInt(roadDir)), roadDir))
+    for(const auto roadDir : helpers::EnumRange<RoadDir>{})
+    {
+        const Direction oppositeDir = getOppositeDir(roadDir);
+        if(GetVisibleRoad(GetNeighbour(pt, oppositeDir), roadDir) != PointRoad::None)
             return true;
+    }
     return false;
 }
 
 /// Return a ship at this position owned by the given player. Prefers ships that need instructions.
-noShip* GameWorldViewer::GetShip(const MapPoint pt) const
+const noShip* GameWorldViewer::GetShip(const MapPoint pt) const
 {
-    noShip* resultShip = nullptr;
+    const noShip* resultShip = nullptr;
 
-    for(unsigned i = 0; i < 7; ++i)
-    {
-        MapPoint curPt;
-
-        if(i == 6)
-            curPt = pt;
-        else
-            curPt = GetWorld().GetNeighbour(pt, Direction::fromInt(i));
-
-        const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
-        for(auto figure : figures)
+    // Check if we want this ship and set resultShip. Return true if we found a ship which is waiting for instructions
+    auto checkShip = [pt, &resultShip, playerId = playerId_](const noShip& ship) {
+        if(ship.GetPlayerId() == playerId && (ship.GetPos() == pt || ship.GetDestinationForCurrentMove() == pt))
         {
-            if(figure->GetGOT() != GOT_SHIP)
-                continue;
-            auto* curShip = static_cast<noShip*>(figure);
-
-            if(curShip->GetPlayerId() == playerId_ && (curShip->GetPos() == pt || curShip->GetDestinationForCurrentMove() == pt))
-            {
-                if(curShip->IsWaitingForExpeditionInstructions())
-                    return curShip;
-                resultShip = curShip;
-            }
+            resultShip = &ship;
+            if(ship.IsWaitingForExpeditionInstructions())
+                return true;
         }
-    }
+        return false;
+    };
+    const auto& world = GetWorld();
+    auto checkPointForShips = [&world, checkShip](const MapPoint curPt, auto /*radius*/) {
+        const std::list<noBase*>& figures = world.GetFigures(curPt);
+        for(const auto* figure : figures)
+        {
+            if(figure->GetGOT() == GOT_SHIP && checkShip(static_cast<const noShip&>(*figure)))
+                return true;
+        }
+        return false;
+    };
+    world.CheckPointsInRadius(pt, 1u, checkPointForShips, true);
 
     return resultShip;
 }
@@ -262,15 +255,15 @@ void GameWorldViewer::RoadConstructionEnded(const RoadNote& note)
 void GameWorldViewer::RecalcBQ(const MapPoint& pt)
 {
     BQCalculator calcBQ(GetWorld());
-    visualNodes[GetWorld().GetIdx(pt)].bq = calcBQ(pt, [this](const MapPoint& pos) { return IsOnRoad(pos); });
+    visualNodes[pt].bq = calcBQ(pt, [this](const MapPoint& pos) { return IsOnRoad(pos); });
 }
 
 void GameWorldViewer::RecalcBQForRoad(const MapPoint& pt)
 {
     RecalcBQ(pt);
 
-    for(unsigned i = 3; i < 6; ++i)
-        RecalcBQ(GetNeighbour(pt, Direction::fromInt(i)));
+    for(const Direction dir : {Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST})
+        RecalcBQ(GetNeighbour(pt, dir));
 }
 
 void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<Direction>& route)
@@ -278,7 +271,7 @@ void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<
     MapPoint curPt = start;
     for(auto i : route)
     {
-        SetVisiblePointRoad(curPt, i, 0);
+        SetVisiblePointRoad(curPt, i, PointRoad::None);
         RecalcBQForRoad(curPt);
         curPt = GetWorld().GetNeighbour(curPt, i);
     }

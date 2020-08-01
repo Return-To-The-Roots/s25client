@@ -23,6 +23,7 @@
 #include "ai/AIPlayer.h"
 #include "ai/aijh/AIMap.h"
 #include "ai/aijh/AIResourceMap.h"
+#include "helpers/OptionalEnum.h"
 #include "gameTypes/MapCoordinates.h"
 #include <boost/container/static_vector.hpp>
 #include <list>
@@ -133,8 +134,8 @@ public:
     // set default start values for the ai for distribution
     void InitDistribution();
     // returns true if we can get to the startflag in <maxlen without turning back
-    bool IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag, unsigned char excludeDir, bool init,
-                            std::vector<MapPoint> oldFlags);
+    bool IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag, helpers::OptionalEnum<Direction> excludeDir,
+                            std::vector<const noFlag*> oldFlags);
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found
     MapPoint FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius = -1,
@@ -217,8 +218,8 @@ public:
 
     void SetFarmedNodes(MapPoint pt, bool set);
     // removes a no longer used road(and its flags) returns true when there is a building at the flag that might need a new connection
-    bool RemoveUnusedRoad(const noFlag& startFlag, unsigned char excludeDir = 0xFF, bool firstflag = true, bool allowcircle = true,
-                          bool keepstartflag = false);
+    bool RemoveUnusedRoad(const noFlag& startFlag, helpers::OptionalEnum<Direction> excludeDir, bool firstflag = true,
+                          bool allowcircle = true, bool keepstartflag = false);
     // finds all unused flags and roads, removes flags or reconnects them as neccessary
     void RemoveAllUnusedRoads(MapPoint pt);
     void CheckForUnconnectedBuildingSites();

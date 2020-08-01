@@ -34,7 +34,7 @@
 #include <sstream>
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
-    : next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),
+    : state(STATE_WAITINWAREHOUSE), location(location),
       type(type == GD_SHIELDROMANS ? SHIELD_TYPES[gwg->GetPlayer(location->GetPlayer()).nation] :
                                      type), // Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
       goal(goal), next_harbor(MapPoint::Invalid())
@@ -65,7 +65,7 @@ void Ware::Serialize_Ware(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);
 
-    sgd.PushUnsignedChar(next_dir);
+    sgd.PushUnsignedChar(rttr::enum_cast(next_dir));
     sgd.PushUnsignedChar(static_cast<unsigned char>(state));
     sgd.PushObject(location, false);
     sgd.PushUnsignedChar(static_cast<unsigned char>(type));
@@ -74,7 +74,7 @@ void Ware::Serialize_Ware(SerializedGameData& sgd) const
 }
 
 Ware::Ware(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id), next_dir(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())),
+    : GameObject(sgd, obj_id), next_dir(RoadPathDirection(sgd.PopUnsignedChar())), state(State(sgd.PopUnsignedChar())),
       location(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)), type(GoodType(sgd.PopUnsignedChar())),
       goal(sgd.PopObject<noBaseBuilding>(GOT_UNKNOWN)), next_harbor(sgd.PopMapPoint())
 {}
@@ -92,10 +92,10 @@ void Ware::RecalcRoute()
     if(location && goal)
         next_dir = gwg->FindPathForWareOnRoads(*location, *goal, nullptr, &next_harbor);
     else
-        next_dir = INVALID_DIR;
+        next_dir = RoadPathDirection::None;
 
     // Evtl gibts keinen Weg mehr? Dann wieder zurück ins Lagerhaus (wenns vorher überhaupt zu nem Ziel ging)
-    if(next_dir == INVALID_DIR && goal)
+    if(next_dir == RoadPathDirection::None && goal)
     {
         RTTR_Assert(location);
         // Tell goal about this
@@ -116,7 +116,7 @@ void Ware::RecalcRoute()
     {
         // If we waited in the harbor for the ship before and don't want to travel now
         // -> inform the harbor so that it can remove us from its list
-        if(state == STATE_WAITFORSHIP && next_dir != SHIP_DIR)
+        if(state == STATE_WAITFORSHIP && next_dir != RoadPathDirection::Ship)
         {
             RTTR_Assert(location);
             RTTR_Assert(location->GetGOT() == GOT_NOB_HARBORBUILDING);
@@ -169,19 +169,19 @@ void Ware::GoalDestroyed()
             } else // at the goal (which was just destroyed) and get carried out right now? -> we are about to get destroyed...
             {
                 goal = nullptr;
-                next_dir = INVALID_DIR;
+                next_dir = RoadPathDirection::None;
             }
         }
         // Wenn sie an einer Flagge liegt, muss der Weg neu berechnet werden und dem Träger Bescheid gesagt werden
         else if(state == STATE_WAITATFLAG)
         {
             goal = nullptr;
-            unsigned char oldNextDir = next_dir;
+            const auto oldNextDir = next_dir;
             FindRouteToWarehouse();
             if(oldNextDir != next_dir)
             {
                 RemoveWareJobForDir(oldNextDir);
-                if(next_dir != INVALID_DIR)
+                if(next_dir != RoadPathDirection::None)
                 {
                     RTTR_Assert(goal); // Having a nextDir implies having a goal
                     CallCarrier();
@@ -247,7 +247,7 @@ void Ware::NotifyGoalAboutLostWare()
     {
         goal->WareLost(this);
         goal = nullptr;
-        next_dir = INVALID_DIR;
+        next_dir = RoadPathDirection::None;
     }
 }
 
@@ -263,15 +263,15 @@ void Ware::WareLost(const unsigned char player)
     gwg->GetPlayer(player).RemoveWare(this);
 }
 
-void Ware::RemoveWareJobForDir(const unsigned char last_next_dir)
+void Ware::RemoveWareJobForDir(const RoadPathDirection last_next_dir)
 {
     // last_next_dir war die letzte Richtung, in die die Ware eigentlich wollte,
     // aber nun nicht mehr will, deshalb muss dem Träger Bescheid gesagt werden
 
     // War's überhaupt ne richtige Richtung?
-    if(last_next_dir >= Direction::COUNT)
+    if(last_next_dir == RoadPathDirection::None || last_next_dir == RoadPathDirection::Ship)
         return;
-    Direction lastDir = Direction::fromInt(last_next_dir);
+    Direction lastDir = toDirection(last_next_dir);
     // Existiert da noch ne Straße?
     if(!location->GetRoute(lastDir))
         return;
@@ -289,9 +289,9 @@ void Ware::RemoveWareJobForDir(const unsigned char last_next_dir)
 void Ware::CallCarrier()
 {
     RTTR_Assert(IsWaitingAtFlag());
-    RTTR_Assert(next_dir != INVALID_DIR);
+    RTTR_Assert(next_dir != RoadPathDirection::None && next_dir != RoadPathDirection::Ship);
     RTTR_Assert(location);
-    location->GetRoute(Direction::fromInt(next_dir))->AddWareJob(location);
+    location->GetRoute(toDirection(next_dir))->AddWareJob(location);
 }
 
 bool Ware::FindRouteToWarehouse()
@@ -306,74 +306,63 @@ bool Ware::FindRouteToWarehouse()
         if(state != STATE_CARRIED)
         {
             if(location == goal)
-                next_dir = INVALID_DIR; // Warehouse will detect this
+                next_dir = RoadPathDirection::None; // Warehouse will detect this
             else
             {
                 next_dir = gwg->FindPathForWareOnRoads(*location, *goal, nullptr, &next_harbor);
-                RTTR_Assert(next_dir != INVALID_DIR);
+                RTTR_Assert(next_dir != RoadPathDirection::None);
             }
         }
     } else
-        next_dir = INVALID_DIR; // Make sure we are not going anywhere
+        next_dir = RoadPathDirection::None; // Make sure we are not going anywhere
     return goal != nullptr;
 }
 
 /// a lost ware got ordered
-unsigned Ware::CheckNewGoalForLostWare(noBaseBuilding* newgoal)
+unsigned Ware::CheckNewGoalForLostWare(const noBaseBuilding& newgoal) const
 {
-    unsigned tlength = 0xFFFFFFFF;
     if(!IsWaitingAtFlag()) // todo: check all special cases for wares being carried right now and where possible allow them to be ordered
         return 0xFFFFFFFF;
-    unsigned char possibledir = gwg->FindPathForWareOnRoads(*location, *newgoal, &tlength);
-    if(possibledir != INVALID_DIR) // there is a valid path to the goal? -> ordered!
+    return CalcPathToGoal(newgoal).length;
+}
+
+Ware::RouteParams Ware::CalcPathToGoal(const noBaseBuilding& newgoal) const
+{
+    RTTR_Assert(location);
+    unsigned length = 0xFFFFFFFF;
+    RoadPathDirection possibledir = gwg->FindPathForWareOnRoads(*location, newgoal, &length);
+    if(possibledir != RoadPathDirection::None) // there is a valid path to the goal? -> ordered!
     {
         // in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses
         // cannot just carry in new wares they need a helper to do this
-        if(possibledir == 1 && newgoal->GetFlag()->GetPos() == location->GetPos())
+        if(possibledir == RoadPathDirection::NorthWest && newgoal.GetFlag()->GetPos() == location->GetPos())
         {
-            for(unsigned dir = 0; dir < 6; dir++)
+            for(const auto dir : helpers::EnumRange<Direction>{})
             {
-                if(dir != 1 && location->GetRoute(Direction::fromInt(dir)))
+                if(dir != Direction::NORTHWEST && location->GetRoute(dir))
                 {
-                    possibledir = dir;
+                    possibledir = toRoadPathDirection(dir);
                     break;
                 }
             }
-            if(possibledir == 1) // got no other route from the flag -> impossible
-                return 0xFFFFFFFF;
+            if(possibledir == RoadPathDirection::NorthWest) // got no other route from the flag -> impossible
+                return {0xFFFFFFFF, RoadPathDirection::None};
         }
-        // at this point there either is a road to the goal or if we are at the flag of the goal we have a road to a different flag to
-        // bounce off of to get to the goal
-        return tlength;
-    } else
-        return 0xFFFFFFFF;
+        // at this point there either is a road to the goal
+        // or we are at the flag of the goal and have a road to a different flag to bounce off of to get to the goal
+        return {length, possibledir};
+    }
+    return {0xFFFFFFFF, RoadPathDirection::None};
 }
 
 /// this assumes that the ware is at a flag (todo: handle carried wares) and that there is a valid path to the goal
 void Ware::SetNewGoalForLostWare(noBaseBuilding* newgoal)
 {
-    RTTR_Assert(location && newgoal);
-    unsigned char possibledir = gwg->FindPathForWareOnRoads(*location, *newgoal);
-    if(possibledir != INVALID_DIR) // there is a valid path to the goal? -> ordered!
+    RTTR_Assert(newgoal);
+    const auto newDir = CalcPathToGoal(*newgoal).dir;
+    if(newDir != RoadPathDirection::None) // there is a valid path to the goal? -> ordered!
     {
-        // in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses
-        // cannot just carry in new wares they need a helper to do this
-        if(possibledir == 1 && newgoal->GetFlag()->GetPos() == location->GetPos())
-        {
-            for(unsigned dir = 0; dir < 6; dir++)
-            {
-                if(dir != 1 && location->GetRoute(Direction::fromInt(dir)))
-                {
-                    possibledir = dir;
-                    break;
-                }
-            }
-            if(possibledir == 1) // got no other route from the flag -> impossible
-                return;
-        }
-        // at this point there either is a road to the goal or if we are at the flag of the goal we have a road to a different flag to
-        // bounce off of to get to the goal
-        next_dir = possibledir;
+        next_dir = newDir;
         SetGoal(newgoal);
         CallCarrier();
     }
@@ -386,7 +375,7 @@ bool Ware::IsRouteToGoal()
         return false;
     if(location == goal)
         return true; // We are at our goal. All ok
-    return (gwg->FindPathForWareOnRoads(*location, *goal) != INVALID_DIR);
+    return gwg->FindPathForWareOnRoads(*location, *goal) != RoadPathDirection::None;
 }
 
 /// Informiert Ware, dass eine Schiffsreise beginnt

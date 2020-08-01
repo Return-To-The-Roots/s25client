@@ -123,14 +123,16 @@ void nofScout_Free::Scout()
     } else
     {
         // Weg suchen
-        unsigned char dir = gwg->FindHumanPath(pos, nextPos, 30);
+        const auto dir = gwg->FindHumanPath(pos, nextPos, 30);
 
         // Wenns keinen gibt, neuen suchen, ansonsten hinlaufen
-        if(dir == INVALID_DIR)
+        if(dir)
+            StartWalking(*dir);
+        else
+        {
             // Neuen Punkt suchen
             GoToNewNode();
-        else
-            StartWalking(Direction::fromInt(dir));
+        }
     }
 }
 
@@ -160,8 +162,7 @@ void nofScout_Free::GoToNewNode()
     {
         // Is there a path to this point and is the point also not to far away from the flag?
         // (Second check avoids running around mountains with a very far way back)
-        if(gwg->FindHumanPath(pos, pt, SCOUT_RANGE * 2) != 0xFF
-           && gwg->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4) != 0xFF)
+        if(gwg->FindHumanPath(pos, pt, SCOUT_RANGE * 2) && gwg->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4))
         {
             // Take it
             nextPos = pt;

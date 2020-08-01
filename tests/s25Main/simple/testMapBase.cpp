@@ -16,6 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "PointOutput.h"
+#include "enum_cast.hpp"
+#include "helpers/EnumArray.h"
 #include "world/MapBase.h"
 #include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
@@ -31,8 +33,7 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
 
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
     Modifications for the dirs: */
-    std::vector<Position> evenPtMod(6);
-    std::vector<Position> oddPtMod(6);
+    helpers::EnumArray<Position, Direction> evenPtMod, oddPtMod;
     // In x dir there is no difference
     evenPtMod[Direction::WEST] = Position(-1, 0);
     oddPtMod[Direction::WEST] = Position(-1, 0);
@@ -58,7 +59,7 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
                                      Position(world.GetWidth() - 1, world.GetHeight() - 2)};
     for(const Position& pt : testPoints)
     {
-        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
             const bool isEvenRow = pt.y % 2 == 0;
             const Position targetPointRaw = pt + (isEvenRow ? evenPtMod : oddPtMod)[dir];
@@ -66,12 +67,12 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
                                        (targetPointRaw.y + world.GetHeight()) % world.GetHeight());
             BOOST_REQUIRE_EQUAL(world.CalcDistance(MapPoint(pt), targetPoint), 1u);
 
-            BOOST_REQUIRE_EQUAL(world.GetNeighbour(MapPoint(pt), Direction::fromInt(dir)), targetPoint);
+            BOOST_REQUIRE_EQUAL(world.GetNeighbour(MapPoint(pt), dir), targetPoint);
             // Consistency check: The inverse must also match
             BOOST_REQUIRE_EQUAL(world.GetNeighbour(targetPoint, Direction(dir + 3)), MapPoint(pt));
             // Also the global function must return the same:
-            BOOST_REQUIRE_EQUAL(::GetNeighbour(Position(pt), Direction::fromInt(dir)), targetPointRaw);
-            BOOST_REQUIRE_EQUAL(world.MakeMapPoint(::GetNeighbour(Position(pt), Direction::fromInt(dir))), targetPoint);
+            BOOST_REQUIRE_EQUAL(::GetNeighbour(Position(pt), dir), targetPointRaw);
+            BOOST_REQUIRE_EQUAL(world.MakeMapPoint(::GetNeighbour(Position(pt), dir)), targetPoint);
         }
 
         // Neighbour 2 -> Radius 2, right circle
@@ -96,8 +97,8 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
         std::vector<MapPoint> radiusPts = world.GetPointsInRadiusWithCenter(curPt, 3);
         BOOST_REQUIRE_EQUAL(radiusPts.size(), 1u + 6u + 12u + 18u);
         BOOST_REQUIRE_EQUAL(radiusPts[0], curPt);
-        for(unsigned j = 0; j < 6; j++)
-            BOOST_REQUIRE_EQUAL(radiusPts[j + 1], world.GetNeighbour(curPt, Direction::fromInt(j)));
+        for(const auto j : helpers::EnumRange<Direction>{})
+            BOOST_REQUIRE_EQUAL(radiusPts[rttr::enum_cast(j) + 1], world.GetNeighbour(curPt, j));
         for(unsigned j = 0; j < 12; j++)
             BOOST_REQUIRE_EQUAL(radiusPts[j + 7], world.GetNeighbour2(curPt, j));
         for(unsigned j = 0; j < 18; j++)

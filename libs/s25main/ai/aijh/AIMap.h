@@ -35,10 +35,8 @@ struct Node
     bool farmed;
 };
 
-/// Map of AINodes.
-/// Note: Could be a typedef only but this allows fwd declarations
-class AIMap : public NodeMapBase<Node>
-{};
+/// Map of AINodes
+using AIMap = NodeMapBase<Node>;
 
 } // namespace AIJH
 

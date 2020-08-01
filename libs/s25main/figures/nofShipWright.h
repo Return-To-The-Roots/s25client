@@ -25,7 +25,7 @@ class nobUsual;
 class nofShipWright : public nofWorkman
 {
     /// Punkt, an dem das Schiff steht, an dem er gerade arbeitet
-    MapPoint dest;
+    MapPoint curShipBuildPos;
 
 private:
     /// Zeichnet ihn beim Arbeiten
@@ -36,7 +36,7 @@ private:
     GoodType ProduceWare() override { return GD_BOAT; }
 
     /// Startet das Laufen zu der Arbeitsstelle, dem Schiff
-    void StartWalkingToShip(unsigned char first_dir);
+    void StartWalkingToShip();
 
     /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
     bool IsPointGood(MapPoint pt) const;

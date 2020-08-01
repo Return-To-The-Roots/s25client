@@ -38,7 +38,7 @@
 #include "gameData/ShieldConsts.h"
 #include "gameData/const_gui_ids.h"
 
-iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship, const DrawPoint& pos)
+iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* const ship, const DrawPoint& pos)
     : IngameWindow(CGI_SHIP, pos, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)), gwv(gwv), gcFactory(gcFactory),
       player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
       ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
@@ -54,14 +54,16 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
     // Die Expeditionsweiterfahrbuttons
     AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))->SetVisible(false);
 
-    const std::array<DrawPoint, 6> BUTTON_POS = {{{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}}};
+    constexpr helpers::EnumArray<DrawPoint, ShipDirection> BUTTON_POS = {{{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}}};
+    constexpr helpers::EnumArray<unsigned, ShipDirection> BUTTON_IDs = {{185, 186, 181, 182, 183, 184}};
 
     // Expedition abbrechen
     AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))->SetVisible(false);
 
     // Die 6 Richtungen
-    for(unsigned i = 0; i < 6; ++i)
-        AddImageButton(12 + i, BUTTON_POS[i], Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 181 + (i + 4) % 6))->SetVisible(false);
+    for(const auto dir : helpers::EnumRange<ShipDirection>{})
+        AddImageButton(12 + rttr::enum_cast(dir), BUTTON_POS[dir], Extent(18, 18), TC_GREY, LOADER.GetImageN("io", BUTTON_IDs[dir]))
+          ->SetVisible(false);
 }
 
 void iwShip::Draw_()
@@ -102,10 +104,9 @@ void iwShip::Draw_()
         GetCtrl<Window>(10)->SetVisible(ship->IsAbleToFoundColony());
         GetCtrl<Window>(11)->SetVisible(true);
 
-        for(unsigned char i = 0; i < 6; ++i)
-            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(),
-                                                                                      ShipDirection::fromInt(i), ship->GetPlayerId())
-                                                > 0);
+        for(const auto dir : helpers::EnumRange<ShipDirection>{})
+            GetCtrl<Window>(12 + rttr::enum_cast(dir))
+              ->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), dir, ship->GetPlayerId()) > 0);
     } else
     {
         // Alle Buttons inklusive Anker in der Mitte ausblenden

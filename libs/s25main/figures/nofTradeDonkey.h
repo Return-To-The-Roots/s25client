@@ -19,6 +19,7 @@
 
 #include "figures/noFigure.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/TradeDirection.h"
 #include <boost/variant.hpp>
 #include <deque>
 
@@ -33,7 +34,7 @@ class nofTradeDonkey : public noFigure
     /// Ware this donkey carries (GD_NOTHING if this is a normal figure)
     GoodType gt;
     /// Last dir this donkey used
-    std::deque<unsigned char> next_dirs;
+    std::deque<TradeDirection> next_dirs;
 
 private:
     void GoalReached() override;
@@ -42,9 +43,9 @@ private:
     void AbrogateWorkplace() override;
 
     /// Returns next direction
-    unsigned char GetNextDir()
+    TradeDirection GetNextDir()
     {
-        unsigned char dir = next_dirs.front();
+        TradeDirection dir = next_dirs.front();
         next_dirs.pop_front();
         return dir;
     }
@@ -69,7 +70,7 @@ public:
     void LostWork();
 
     /// Adds the next direction, this is usually done by the predecessor
-    void AddNextDir(unsigned char dir) { next_dirs.push_back(dir); }
+    void AddNextDir(TradeDirection dir) { next_dirs.push_back(dir); }
 
     /// Gets the type of ware this donkey is carrying
     GoodType GetCarriedWare() const { return gt; }

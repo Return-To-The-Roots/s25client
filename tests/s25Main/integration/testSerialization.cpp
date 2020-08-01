@@ -31,8 +31,10 @@
 #include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
 #include "nodeObjs/noFire.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/MapInfo.h"
 #include "s25util/tmpFile.h"
+#include <rttr/test/random.hpp>
 #include <rttr/test/testHelpers.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/test/unit_test.hpp>
@@ -61,12 +63,12 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             MapNode& worldNode = world.GetNodeWriteable(pt);
-            worldNode.altitude = rand() % 10 + 0xA;
-            worldNode.shadow = rand() % 20;
-            worldNode.resources = Resource(rand() % 0xFF);
-            worldNode.reserved = rand() % 2 == 0;
-            worldNode.seaId = rand() % 20;
-            worldNode.harborId = rand() % 20;
+            worldNode.altitude = rttr::test::randomValue(10, 20);
+            worldNode.shadow = rttr::test::randomValue(0, 20);
+            worldNode.resources = Resource(rttr::test::randomValue<uint8_t>());
+            worldNode.reserved = rttr::test::randomValue(0, 1) == 0;
+            worldNode.seaId = rttr::test::randomValue(0, 20);
+            worldNode.harborId = rttr::test::randomValue(0, 20);
         }
         world.InitAfterLoad();
         world.GetPlayer(0).name = "Human";
@@ -194,7 +196,7 @@ BOOST_AUTO_TEST_CASE(Serializer)
     BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0xFFFFFFFFu);
 }
 
-BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
+BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture, *boost::unit_test::label("seed=42"))
 {
     MapPoint hqPos = world.GetPlayer(0).GetHQPos();
     MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));

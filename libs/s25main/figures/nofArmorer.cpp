@@ -78,8 +78,9 @@ unsigned short nofArmorer::GetCarryID() const
             case NAT_ROMANS: return 57;
             case NAT_VIKINGS: return 59;
             case NAT_BABYLONIANS: return 58; // babylonians use japanese shield carry-animation
-            default: RTTR_Assert(false); return 0;
         }
+        RTTR_Assert(false);
+        return 0;
     }
 }
 

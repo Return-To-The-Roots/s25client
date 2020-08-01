@@ -22,7 +22,7 @@
 #include <s25util/warningSuppression.h>
 #include <array>
 
-enum Job
+enum Job : unsigned char
 {
     JOB_HELPER,            // 0
     JOB_WOODCUTTER,        // 1

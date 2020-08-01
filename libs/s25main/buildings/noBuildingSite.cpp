@@ -43,13 +43,13 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
         // Höhe auf dem Punkt, wo die Baustelle steht
         int altitude = gwg->GetNode(pos).altitude;
 
-        for(unsigned i = 0; i < Direction::COUNT; ++i)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
             // Richtung 4 wird nicht planiert (Flagge)
-            if(i != Direction::SOUTHEAST)
+            if(dir != Direction::SOUTHEAST)
             {
                 // Gibt es da Differenzen?
-                if(altitude - gwg->GetNeighbourNode(pos, Direction::fromInt(i)).altitude != 0)
+                if(altitude - gwg->GetNeighbourNode(pos, dir).altitude != 0)
                     state = STATE_PLANING;
             }
         }

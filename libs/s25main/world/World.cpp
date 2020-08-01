@@ -23,6 +23,7 @@
 #endif
 #include "FOWObjects.h"
 #include "RoadSegment.h"
+#include "enum_cast.hpp"
 #include "helpers/containerUtils.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainDesc.h"
@@ -60,11 +61,11 @@ void World::Unload()
     {
         if(!node.obj || node.obj->GetGOT() != GOT_FLAG)
             continue;
-        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            if(static_cast<noFlag*>(node.obj)->GetRoute(Direction::fromInt(dir)))
+            if(static_cast<noFlag*>(node.obj)->GetRoute(dir))
             {
-                roadsegments.insert(static_cast<noFlag*>(node.obj)->GetRoute(Direction::fromInt(dir)));
+                roadsegments.insert(static_cast<noFlag*>(node.obj)->GetRoute(dir));
             }
         }
     }
@@ -121,9 +122,9 @@ void World::AddFigure(const MapPoint pt, noBase* fig)
     figures.push_back(fig);
 
 #if RTTR_ENABLE_ASSERTS
-    for(unsigned char i = 0; i < 6; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        MapPoint nb = GetNeighbour(pt, Direction::fromInt(i));
+        MapPoint nb = GetNeighbour(pt, dir);
         RTTR_Assert(!helpers::contains(GetNode(nb).figures, fig)); // Added figure that is in surrounding?
     }
 #endif
@@ -218,8 +219,8 @@ void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
 
     // Schattierung neu berechnen von diesem Punkt und den Punkten drumherum
     RecalcShadow(pt);
-    for(unsigned i = 0; i < 6; ++i)
-        RecalcShadow(GetNeighbour(pt, Direction::fromInt(i)));
+    for(const auto dir : helpers::EnumRange<Direction>{})
+        RecalcShadow(GetNeighbour(pt, dir));
 
     // Abgeleiteter Klasse Bescheid sagen
     AltitudeChanged(pt);
@@ -233,9 +234,9 @@ bool World::IsPlayerTerritory(const MapPoint pt, const unsigned char owner) cons
         return false;
 
     // Neighbour nodes must belong to this player
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(GetNeighbourNode(pt, Direction::fromInt(i)).owner != ptOwner)
+        if(GetNeighbourNode(pt, dir).owner != ptOwner)
             return false;
     }
 
@@ -255,9 +256,9 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
     if(nodeBQ != BQ_FLAG && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
     {
         // Check for close flags, that prohibit to build a flag but not a building at this spot
-        for(unsigned i = Direction::WEST; i <= Direction::NORTHEAST; i++)
+        for(const Direction dir : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
         {
-            if(GetNO(GetNeighbour(pt, Direction::fromInt(i)))->GetBM() == BlockingManner::Flag)
+            if(GetNO(GetNeighbour(pt, dir))->GetBM() == BlockingManner::Flag)
                 return BQ_NOTHING;
         }
         return BQ_FLAG;
@@ -296,8 +297,8 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
     fow.object = obj->CreateFOWObject();
 
     // Wege speichern, aber nur richtige, keine, die gerade gebaut werden
-    for(unsigned i = 0; i < 3; ++i)
-        fow.roads[i] = GetNode(pt).roads[i];
+    for(const auto dir : helpers::EnumRange<RoadDir>{})
+        fow.roads[dir] = GetNode(pt).roads[dir];
 
     // Store ownership so FoW boundary stones can be drawn
     fow.owner = GetNode(pt).owner;
@@ -324,7 +325,7 @@ unsigned World::GetSeaSize(const unsigned seaId) const
 unsigned short World::GetSeaId(const unsigned harborId, const Direction dir) const
 {
     RTTR_Assert(harborId);
-    return harbor_pos[harborId].cps[dir.toUInt()].seaId;
+    return harbor_pos[harborId].cps[dir].seaId;
 }
 
 /// Grenzt der Hafen an ein bestimmtes Meer an?
@@ -338,40 +339,33 @@ MapPoint World::GetCoastalPoint(const unsigned harborId, const unsigned short se
     RTTR_Assert(harborId);
     RTTR_Assert(seaId);
 
-    // Take point at NW last as often there is no path from it if the harbor is north of an island
-    for(unsigned i = 2; i < 6 + 2; ++i)
+    for(auto dir : helpers::EnumRange<Direction>{})
     {
-        if(harbor_pos[harborId].cps[i % 6].seaId == seaId)
-            return GetNeighbour(harbor_pos[harborId].pos, Direction(i));
+        // Take point at NW last as often there is no path from it if the harbor is north of an island
+        dir += 2u;
+        if(harbor_pos[harborId].cps[dir].seaId == seaId)
+            return GetNeighbour(harbor_pos[harborId].pos, dir);
     }
 
     // Keinen Punkt gefunden
     return MapPoint::Invalid();
 }
 
-unsigned char World::GetRoad(const MapPoint pt, unsigned char dir) const
+PointRoad World::GetRoad(const MapPoint pt, RoadDir dir) const
 {
-    RTTR_Assert(dir < 3);
-
     return GetNode(pt).roads[dir];
 }
 
-unsigned char World::GetPointRoad(const MapPoint pt, Direction dir) const
+PointRoad World::GetPointRoad(MapPoint pt, Direction dir) const
 {
-    if(dir.toUInt() >= 3u)
-        return GetRoad(pt, dir.toUInt() - 3u);
-    else
-        return GetRoad(GetNeighbour(pt, dir), dir.toUInt());
+    const RoadDir rDir = toRoadDir(pt, dir);
+    return GetRoad(pt, rDir);
 }
 
-unsigned char World::GetPointFOWRoad(MapPoint pt, Direction dir, const unsigned char viewing_player) const
+PointRoad World::GetPointFOWRoad(MapPoint pt, Direction dir, const unsigned char viewing_player) const
 {
-    if(dir.toUInt() >= 3)
-        dir = dir - 3u;
-    else
-        pt = GetNeighbour(pt, dir);
-
-    return GetNode(pt).fow[viewing_player].roads[dir.toUInt()];
+    const RoadDir rDir = toRoadDir(pt, dir);
+    return GetNode(pt).fow[viewing_player].roads[rDir];
 }
 
 void World::AddCatapultStone(CatapultStone* cs)
@@ -396,7 +390,7 @@ MapPoint World::GetHarborPoint(const unsigned harborId) const
 const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbors(const unsigned harborId, const ShipDirection& dir) const
 {
     RTTR_Assert(harborId);
-    return harbor_pos[harborId].neighbors[dir.toUInt()];
+    return harbor_pos[harborId].neighbors[dir];
 }
 
 /// Berechnet die Entfernung zwischen 2 Hafenpunkten
@@ -404,9 +398,9 @@ unsigned World::CalcHarborDistance(unsigned habor_id1, unsigned harborId2) const
 {
     if(habor_id1 == harborId2) // special case: distance to self
         return 0;
-    for(unsigned i = 0; i < 6; ++i)
+    for(const auto dir : helpers::EnumRange<ShipDirection>{})
     {
-        for(const HarborPos::Neighbor& n : harbor_pos[habor_id1].neighbors[i])
+        for(const HarborPos::Neighbor& n : harbor_pos[habor_id1].neighbors[dir])
         {
             if(n.id == harborId2)
                 return n.distance;
@@ -427,9 +421,9 @@ unsigned short World::GetSeaFromCoastalPoint(const MapPoint pt) const
         return 0;
 
     // Surrounding must be valid sea
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        unsigned short seaId = GetNeighbourNode(pt, Direction::fromInt(i)).seaId;
+        unsigned short seaId = GetNeighbourNode(pt, dir).seaId;
         if(seaId)
         {
             // Check size (TODO: Others checks like harbor spots?)
@@ -441,9 +435,8 @@ unsigned short World::GetSeaFromCoastalPoint(const MapPoint pt) const
     return 0;
 }
 
-void World::SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type)
+void World::SetRoad(const MapPoint pt, RoadDir roadDir, PointRoad type)
 {
-    RTTR_Assert(roadDir < 3);
     GetNodeInt(pt).roads[roadDir] = type;
 }
 

@@ -20,36 +20,33 @@
 
 #include "RTTR_Assert.h"
 #include "helpers/EnumRange.h"
-#include <iterator>
+#include "helpers/EnumTraits.h"
+#include "helpers/MaxEnumValue.h"
 
 /// "Enum" to represent one of the 6 directions from each node
 struct Direction
 {
-    enum Type
+    enum Type : unsigned char
     {
-        WEST,      // 0
-        NORTHWEST, // 1
-        NORTHEAST, // 2
-        EAST,      // 3
-        SOUTHEAST, // 4
-        SOUTHWEST  // 5
+        WEST,      /// 0
+        NORTHWEST, /// 1
+        NORTHEAST, /// 2
+        EAST,      /// 3
+        SOUTHEAST, /// 4
+        SOUTHWEST  /// 5
     };
     static constexpr unsigned COUNT = SOUTHWEST + 1;
 
     Type t_;
     Direction() : t_(WEST) {}
-    Direction(Type t) : t_(t) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
+    Direction(Type t) : t_(t) { RTTR_Assert(static_cast<unsigned>(t_) < COUNT); }
     /// Convert an UInt safely to a Direction
-    explicit Direction(unsigned t) : t_(Type(t % COUNT)) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
+    explicit Direction(unsigned t) : t_(Type(t % COUNT)) { RTTR_Assert(static_cast<unsigned>(t_) < COUNT); }
     /// Convert an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static Direction fromInt(unsigned t) { return Type(t); }
-    static Direction fromInt(int t) { return Type(t); }
-    static Direction fromInt(unsigned char t) { return Type(t); }
     /// Use this for use in switches
     Type native_value() const { return t_; }
-    /// Return the Direction as an UInt
-    unsigned toUInt() const { return t_; }
-    explicit operator unsigned() const { return t_; }
+    explicit operator unsigned char() const { return t_; }
     Direction& operator+=(unsigned i);
     Direction& operator-=(unsigned i);
     Direction& operator++();
@@ -63,6 +60,14 @@ private:
     Direction& operator-=(int i);
 };
 //-V:Direction:801
+
+namespace helpers {
+template<>
+struct is_enum<Direction> : std::true_type
+{};
+} // namespace helpers
+
+DEFINE_MAX_ENUM_VALUE(Direction, Direction::SOUTHWEST)
 
 //////////////////////////////////////////////////////////////////////////
 // Implementation

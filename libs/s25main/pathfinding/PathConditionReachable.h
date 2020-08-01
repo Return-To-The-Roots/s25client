@@ -32,9 +32,9 @@ struct PathConditionReachable
     BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
     {
         bool goodTerrainFound = false;
-        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const TerrainDesc& t = world.GetDescription().get(world.GetRightTerrain(pt, Direction::fromInt(dir)));
+            const TerrainDesc& t = world.GetDescription().get(world.GetRightTerrain(pt, dir));
             if(t.Is(ETerrain::Unreachable))
                 return false;
             else if(t.Is(ETerrain::Walkable))

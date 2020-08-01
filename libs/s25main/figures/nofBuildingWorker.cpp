@@ -154,6 +154,7 @@ void nofBuildingWorker::WorkingReady()
         {
             // Ware erzeugen
             auto* real_ware = new Ware(ware, nullptr, flag);
+            real_ware->WaitAtFlag(flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
             GoodType ware_type = ConvertShields(real_ware->type);
             gwg->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
@@ -163,7 +164,6 @@ void nofBuildingWorker::WorkingReady()
             real_ware->RecalcRoute();
             // Ware ablegen
             flag->AddWare(real_ware);
-            real_ware->WaitAtFlag(flag);
             // Warenstatistik erhöhen
             gwg->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware);
             // Tragen nun keine Ware mehr
@@ -324,7 +324,7 @@ void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)
     {
         id -= CARRY_ID_CARRIER_OFFSET;
         RTTR_Assert(id <= helpers::MaxEnumValue_v<GoodType>);
-        DrawWalkingBobCarrier(drawPt, GoodType(id), JOB_SPRITE_CONSTS[job_].isFat());
+        DrawWalkingCarrier(drawPt, GoodType(id), JOB_SPRITE_CONSTS[job_].isFat());
     } else
         DrawWalking(drawPt, LOADER.GetBob("jobs"), id, JOB_SPRITE_CONSTS[job_].isFat());
 }

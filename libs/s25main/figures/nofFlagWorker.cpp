@@ -103,10 +103,12 @@ void nofFlagWorker::GoToFlag()
     } else
     {
         // Weg suchen
-        unsigned char dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
+        const auto dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
 
         // Wenns keinen gibt, rumirren, ansonsten hinlaufen
-        if(dir == 0xFF)
+        if(dir)
+            StartWalking(*dir);
+        else
         {
             Abrogate();
             StartWandering();
@@ -114,9 +116,6 @@ void nofFlagWorker::GoToFlag()
             state = STATE_FIGUREWORK;
 
             flag = nullptr;
-        } else
-        {
-            StartWalking(Direction::fromInt(dir));
         }
     }
 }

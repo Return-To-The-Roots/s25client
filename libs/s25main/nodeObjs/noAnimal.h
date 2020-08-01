@@ -18,6 +18,7 @@
 #ifndef NO_ANIMAL_H_
 #define NO_ANIMAL_H_
 
+#include "helpers/OptionalEnum.h"
 #include "noMovable.h"
 #include "gameTypes/AnimalTypes.h"
 
@@ -52,7 +53,7 @@ private:
     /// entscheidet, was nach einem gelaufenen Abschnitt weiter zu tun ist
     void Walked();
     /// Sucht eine Richtung, in die das Tier gehen kann
-    unsigned char FindDir();
+    helpers::OptionalEnum<Direction> FindDir();
     /// Fängt an zu laufen
     void StartWalking(Direction dir);
     /// Sucht eine neue Richtung und läuft in diese, ansonsten stirbt es

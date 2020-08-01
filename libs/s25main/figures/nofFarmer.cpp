@@ -137,9 +137,9 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
     else
     {
         // Nicht auf Straßen bauen!
-        for(unsigned char i = 0; i < 6; ++i)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            if(gwg->GetPointRoad(pt, Direction::fromInt(i)))
+            if(gwg->GetPointRoad(pt, dir) != PointRoad::None)
                 return PQ_NOTPOSSIBLE;
         }
 
@@ -152,10 +152,10 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
         if(noType != NOP_ENVIRONMENT && noType != NOP_NOTHING)
             return PQ_NOTPOSSIBLE;
 
-        for(unsigned char i = 0; i < 6; ++i)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
             // Nicht direkt neben andere Getreidefelder und Gebäude setzen!
-            noType = gwg->GetNO(gwg->GetNeighbour(pt, Direction::fromInt(i)))->GetType();
+            noType = gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType();
             if(noType == NOP_GRAINFIELD || noType == NOP_BUILDING || noType == NOP_BUILDINGSITE)
                 return PQ_NOTPOSSIBLE;
         }

@@ -27,6 +27,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/EnumArray.h"
 #include "helpers/containerUtils.h"
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
@@ -223,13 +224,13 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
-    std::array<MapPoint, 6> road_points;
+    helpers::EnumArray<MapPoint, Direction> road_points;
 
     unsigned maxWaterWayLen = 0;
     if(rb.mode != RM_DISABLED)
     {
-        for(unsigned i = 0; i < Direction::COUNT; ++i)
-            road_points[i] = GetWorld().GetNeighbour(rb.point, Direction::fromInt(i));
+        for(const auto dir : helpers::EnumRange<Direction>{})
+            road_points[dir] = GetWorld().GetNeighbour(rb.point, dir);
 
         const unsigned index = GetWorld().GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
         RTTR_Assert(index < waterwayLengths.size());
@@ -297,7 +298,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 continue;
 
             // render special icon for route revert
-            if(!rb.route.empty() && road_points[(rb.route.back() + 3u).toUInt()] == curPt)
+            if(!rb.route.empty() && road_points[rb.route.back() + 3u] == curPt)
             {
                 LOADER.GetMapImageN(67)->DrawFull(curPos);
                 continue;
@@ -504,31 +505,30 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
     if(vis == VIS_INVISIBLE)
         return;
 
-    bool isFoW = vis == VIS_FOW;
+    const bool isFoW = vis == VIS_FOW;
 
     const BoundaryStones& boundary_stones = isFoW ? gwv.GetYoungestFOWNode(pt).boundary_stones : GetWorld().GetNode(pt).boundary_stones;
-    unsigned char owner = boundary_stones[0];
+    const unsigned char owner = boundary_stones[BorderStonePos::OnPoint];
 
     if(!owner)
         return;
 
-    unsigned nation = GetWorld().GetPlayer(owner - 1).nation;
+    const unsigned nation = GetWorld().GetPlayer(owner - 1).nation;
     unsigned player_color = GetWorld().GetPlayer(owner - 1).color;
     if(isFoW)
         player_color = CalcPlayerFOWDrawColor(player_color);
 
-    LOADER.boundary_stone_cache[nation].draw(pos, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
-
-    for(unsigned i = 0; i < 3; ++i)
+    const auto curVertexPos = gwv.GetTerrainRenderer().GetVertexPos(pt);
+    for(const auto bPos : helpers::EnumRange<BorderStonePos>{})
     {
-        if(boundary_stones[i + 1])
-        {
-            DrawPoint tmp =
-              pos
-              - DrawPoint((gwv.GetTerrainRenderer().GetVertexPos(pt) - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, 3 + i)) / 2.0f);
-
-            LOADER.boundary_stone_cache[nation].draw(tmp, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
-        }
+        DrawPoint curPos;
+        if(bPos == BorderStonePos::OnPoint)
+            curPos = pos;
+        else if(boundary_stones[bPos])
+            curPos = pos - DrawPoint((curVertexPos - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, toDirection(bPos))) / 2.0f);
+        else
+            continue;
+        LOADER.boundary_stone_cache[nation].draw(curPos, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
     }
 }
 

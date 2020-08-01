@@ -23,7 +23,7 @@
 #include <string>
 
 // Warentypen
-enum GoodType
+enum GoodType : unsigned char
 {
     /*  0 */ GD_BEER,           // Bier
     /*  1 */ GD_TONGS,          // Zange

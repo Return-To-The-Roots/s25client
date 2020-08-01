@@ -20,12 +20,6 @@
 
 #include "figures/noFigure.h"
 
-// Enumforwarddeklaration bei VC nutzen
-#ifdef _MSC_VER
-enum GoodType;
-#else
-#endif
-
 class Ware;
 class SerializedGameData;
 
@@ -36,7 +30,7 @@ class nofWarehouseWorker : public noFigure
     friend class nobBaseWarehouse;
 
 private:
-    // Die Ware, die er gerade trägt (GD_NOTHING wenn er nix trägt?)
+    /// Ware currently being carried or nullptr
     Ware* carried_ware;
 
     // Aufgabe, die der Warenhaustyp hat (Ware raustragen (0) oder reinholen)

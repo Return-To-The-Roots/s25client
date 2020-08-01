@@ -18,8 +18,10 @@
 #ifndef GameWorldGame_h__
 #define GameWorldGame_h__
 
+#include "helpers/OptionalEnum.h"
 #include "world/GameWorldBase.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/RoadPathDirection.h"
 #include <vector>
 
 class GameInterface;
@@ -81,14 +83,13 @@ public:
     /// Kann dieser Punkt von auf Straßen laufenden Menschen betreten werden? (Kämpfe!)
     bool IsRoadNodeForFigures(MapPoint pt);
     /// Lässt alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)
-    void StopOnRoads(MapPoint pt, unsigned char dir = 0xff);
+    void StopOnRoads(MapPoint pt, helpers::OptionalEnum<Direction> dir = boost::none);
 
     /// Sagt Bescheid, dass der Punkt wieder freigeworden ist und lässt ggf. Figuren drumherum wieder weiterlaufen
     void RoadNodeAvailable(MapPoint pt);
 
-    /// Flagge an x,y setzen, dis_dir ist der aus welche Richtung der Weg kommt, wenn man einen Weg mit Flagge baut
-    /// kann ansonsten auf 255 gesetzt werden
-    void SetFlag(MapPoint pt, unsigned char player, unsigned char dis_dir = 255);
+    /// Place a flag for the player specific
+    void SetFlag(MapPoint pt, unsigned char player);
     /// Flagge soll zerstrört werden
     void DestroyFlag(MapPoint pt, unsigned char playerId);
     /// Baustelle setzen
@@ -96,24 +97,25 @@ public:
     /// Gebäude bzw Baustelle abreißen
     void DestroyBuilding(MapPoint pt, unsigned char player);
 
-    /// Find a path for people using roads. Result will be a direction, INVALID_DIR or SHIP_DIR
-    unsigned char FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = nullptr,
-                                       MapPoint* firstPt = nullptr, const RoadSegment* forbidden = nullptr);
-    /// Find a path for wares using roads. Result will be a direction, INVALID_DIR or SHIP_DIR
-    unsigned char FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = nullptr,
-                                         MapPoint* firstPt = nullptr, unsigned max = std::numeric_limits<unsigned>::max());
+    /// Find a path for people using roads.
+    RoadPathDirection FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = nullptr,
+                                           MapPoint* firstPt = nullptr, const RoadSegment* forbidden = nullptr);
+    /// Find a path for wares using roads.
+    RoadPathDirection FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = nullptr,
+                                             MapPoint* firstPt = nullptr, unsigned max = std::numeric_limits<unsigned>::max());
     /// Prüft, ob eine Schiffsroute noch Gültigkeit hat
     bool CheckShipRoute(MapPoint start, const std::vector<Direction>& route, unsigned pos, MapPoint* dest);
     /// Find a route for trade caravanes
-    unsigned char FindTradePath(MapPoint start, MapPoint dest, unsigned char player, unsigned max_route = 0xffffffff,
-                                bool random_route = false, std::vector<Direction>* route = nullptr, unsigned* length = nullptr) const;
+    helpers::OptionalEnum<Direction> FindTradePath(MapPoint start, MapPoint dest, unsigned char player, unsigned max_route = 0xffffffff,
+                                                   bool random_route = false, std::vector<Direction>* route = nullptr,
+                                                   unsigned* length = nullptr) const;
     /// Check whether trade path (starting from point @param start and at index @param startRouteIdx) is still valid. Optionally returns
     /// destination pt
     bool CheckTradeRoute(MapPoint start, const std::vector<Direction>& route, unsigned pos, unsigned char player,
                          MapPoint* dest = nullptr) const;
 
     /// setzt den Straßen-Wert um den Punkt X,Y.
-    void SetPointRoad(MapPoint pt, Direction dir, unsigned char type);
+    void SetPointRoad(MapPoint pt, Direction dir, PointRoad type);
 
     /// Baut eine Straße ( nicht nur visuell, sondern auch wirklich )
     void BuildRoad(unsigned char playerId, bool boat_road, MapPoint start, const std::vector<Direction>& route);

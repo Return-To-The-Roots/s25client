@@ -84,8 +84,8 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     }
 
     /// Die Meere herausfinden, an die dieser Hafen grenzt
-    for(unsigned i = 0; i < 6; ++i)
-        seaIds[i] = gwg->GetSeaFromCoastalPoint(gwg->GetNeighbour(pos, Direction::fromInt(i)));
+    for(const auto dir : helpers::EnumRange<Direction>{})
+        seaIds[dir] = gwg->GetSeaFromCoastalPoint(gwg->GetNeighbour(pos, dir));
 
     // Post versenden
     SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("New harbor building finished"),
@@ -646,12 +646,12 @@ void nobHarborBuilding::AddWare(Ware*& ware)
         ware->RecalcRoute();
 
         // Will diese Ware mit dem Schiff irgendwo hin fahren?
-        if(ware->GetNextDir() == SHIP_DIR)
+        if(ware->GetNextDir() == RoadPathDirection::Ship)
         {
             // Dann fügen wir die mal bei uns hinzu
             AddWareForShip(ware);
             return;
-        } else if(ware->GetNextDir() != INVALID_DIR)
+        } else if(ware->GetNextDir() != RoadPathDirection::None)
         {
             // Travel on roads -> Carry out
             RTTR_Assert(ware->GetGoal() != this);
@@ -990,8 +990,8 @@ bool nobHarborBuilding::UseWareAtOnce(Ware* ware, noBaseBuilding& goal)
     //         Otherwise the ware will notify the goal which will order a new ware resulting in an infinite loop
     RTTR_Assert(gwg->GetRoadPathFinder().PathExists(*this, goal, true));
     ware->RecalcRoute(); // Also sets nextHarbor!
-    RTTR_Assert(ware->GetNextDir() != INVALID_DIR);
-    if(ware->GetNextDir() == SHIP_DIR)
+    RTTR_Assert(ware->GetNextDir() != RoadPathDirection::None);
+    if(ware->GetNextDir() == RoadPathDirection::Ship)
     {
         // Dann fügen wir die mal bei uns hinzu
         AddWareForShip(ware);
@@ -1010,7 +1010,7 @@ bool nobHarborBuilding::UseFigureAtOnce(noFigure* fig, noRoadNode& goal)
         return false;
 
     MapPoint next_harbor;
-    if(gwg->FindHumanPathOnRoads(*this, goal, nullptr, &next_harbor) == SHIP_DIR)
+    if(gwg->FindHumanPathOnRoads(*this, goal, nullptr, &next_harbor) == RoadPathDirection::Ship)
     {
         // Reduce figure count because figures don't go through the house leaving process
         // And therefore the visual count reducement
@@ -1042,10 +1042,10 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
             figure->SetGoalTonullptr();
         else if(!figure->HasNoGoal())
         {
-            unsigned char nextDir;
+            RoadPathDirection nextDir;
             MapPoint next_harbor = figure->ExamineRouteBeforeShipping(nextDir); //-V821
 
-            if(nextDir == 4)
+            if(nextDir == RoadPathDirection::SouthEast)
             {
                 // Increase visual count
                 if(figure->GetJobType() == JOB_BOATCARRIER)
@@ -1055,13 +1055,13 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
                 } else
                     inventory.visual.Add(figure->GetJobType());
                 AddLeavingFigure(figure);
-            } else if(nextDir == SHIP_DIR)
+            } else if(nextDir == RoadPathDirection::Ship)
             {
                 AddFigureForShip(figure, next_harbor);
             } else
             {
                 // No or invalid path -> Store here
-                RTTR_Assert(nextDir == 0xFF);
+                RTTR_Assert(nextDir == RoadPathDirection::None);
                 figure->SetGoalTonullptr();
                 AddDependentFigure(figure);
             }
@@ -1170,7 +1170,7 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
             continue;
 
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(gwg->FindHumanPath(all_building->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE) == 0xFF)
+        if(!gwg->FindHumanPath(all_building->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             continue;
 
         // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
@@ -1329,17 +1329,17 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
     for(auto it = figures_for_ships.begin(); it != figures_for_ships.end();)
     {
         noFigure* const fig = it->fig;
-        unsigned char nextDir;
+        RoadPathDirection nextDir;
         it->dest = fig->ExamineRouteBeforeShipping(nextDir);
 
-        if(nextDir == 0xff)
+        if(nextDir == RoadPathDirection::None)
         {
             // No route found!
             // I.E. insert the worker in this harbor
             it = figures_for_ships.erase(it);
             AddDependentFigure(fig);
             AddFigure(fig, false);
-        } else if(nextDir != SHIP_DIR)
+        } else if(nextDir != RoadPathDirection::Ship)
         {
             // Figure want to continue walking to its goal but not on ship anymore
             it = figures_for_ships.erase(it);

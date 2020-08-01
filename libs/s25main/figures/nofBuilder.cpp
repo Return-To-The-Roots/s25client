@@ -301,8 +301,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
             drawPt.y += GAMECLIENT.Interpolate(offsetSite.y, nextOffsetSite.y, current_ev);
             drawPt += building_site->GetDoorPoint();
 
-            LOADER
-              .bob_jobs_cache[building_site->GetNation()][JOB_BUILDER][GetCurMoveDir().toUInt()][GAMECLIENT.Interpolate(12, current_ev) % 8]
+            LOADER.getBobSprite(building_site->GetNation(), JOB_BUILDER, GetCurMoveDir(), GAMECLIENT.Interpolate(12, current_ev) % 8u)
               .draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
         }
         break;

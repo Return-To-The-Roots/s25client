@@ -69,6 +69,7 @@
 #include "figures/nofWellguy.h"
 #include "figures/nofWoodcutter.h"
 #include "helpers/containerUtils.h"
+#include "helpers/format.hpp"
 #include "helpers/toString.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
@@ -457,6 +458,11 @@ unsigned short SerializedGameData::GetSafetyCode(const GameObject& go)
 unsigned short SerializedGameData::GetSafetyCode(const GameEvent& ev)
 {
     return 0xFFFF ^ ev.GetInstanceId();
+}
+
+SerializedGameData::Error SerializedGameData::makeOutOfRange(unsigned value, unsigned maxValue)
+{
+    return Error(helpers::format("%s is out of range. Maximum allowed value: %s", value, maxValue));
 }
 
 void SerializedGameData::AddObject(GameObject* go)

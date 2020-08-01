@@ -173,9 +173,9 @@ unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
  */
 bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 {
-    for(unsigned i = 0; i < 3; ++i)
+    for(const auto dir : helpers::EnumRange<RoadDir>{})
     {
-        if(gwv.GetVisibleRoad(pt, i, visibility))
+        if(gwv.GetVisibleRoad(pt, dir, visibility) != PointRoad::None)
             return true;
     }
 

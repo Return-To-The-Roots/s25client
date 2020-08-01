@@ -18,6 +18,8 @@
 #ifndef MapTypes_h__
 #define MapTypes_h__
 
+#include "helpers/MaxEnumValue.h"
+
 /// Sichtbarkeit für ALLE Spieler
 enum Visibility
 {
@@ -40,4 +42,24 @@ enum FlagType
     FT_LARGE,
     FT_WATER
 };
+
+/// Direction from a point where a road can go. Opposites are stored in neighbors
+enum class RoadDir
+{
+    East,
+    SouthEast,
+    SouthWest
+};
+DEFINE_MAX_ENUM_VALUE(RoadDir, RoadDir::SouthWest)
+
+/// Type of the road "owned" by a point
+enum class PointRoad : unsigned char
+{
+    None,
+    Normal,
+    Donkey,
+    Boat
+};
+DEFINE_MAX_ENUM_VALUE(PointRoad, PointRoad::Boat)
+
 #endif // MapTypes_h__

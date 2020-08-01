@@ -17,19 +17,16 @@
 #ifndef NOFIGURE_H_INCLUDED
 #define NOFIGURE_H_INCLUDED
 
+#include "helpers/OptionalEnum.h"
 #include "nodeObjs/noMovable.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/RoadPathDirection.h"
 
 class RoadSegment;
 class noRoadNode;
 class glArchivItem_Bob;
-
-// Enumforwarddeklaration bei VC nutzen
-#ifdef _MSC_VER
-enum Job;
-#else
-#include "gameTypes/JobTypes.h"
-#endif
+enum Job : unsigned char;
+enum GoodType : unsigned char;
 
 enum FigureState
 {
@@ -161,9 +158,9 @@ public:
     DrawPoint InterpolateWalkDrawPos(DrawPoint drawPt) const;
 
     /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
-    void DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat);
+    void DrawWalkingCarrier(DrawPoint drawPt, helpers::OptionalEnum<GoodType> ware, bool fat);
     /// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
-    void DrawWalkingBobJobs(DrawPoint drawPt, unsigned job);
+    void DrawWalkingBobJobs(DrawPoint drawPt, Job job);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft
     void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
@@ -239,7 +236,7 @@ public:
     /// Examines the route (maybe harbor, road destroyed?) before start shipping
     /// Returns (maybe new) destination harbor ((0,0) if he doesn't go by ship)
     /// and also the new direction it wants to travel which can be the (otherwise invalid) SHIP_DIR if the figure stays on board
-    MapPoint ExamineRouteBeforeShipping(unsigned char& newDir);
+    MapPoint ExamineRouteBeforeShipping(RoadPathDirection& newDir);
 };
 
 #endif

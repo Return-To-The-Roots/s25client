@@ -240,13 +240,13 @@ void nofGeologist::Walked()
         } else
         {
             // Weg zum nächsten Punkt suchen
-            unsigned char dir = gwg->FindHumanPath(pos, node_goal, 20);
+            const auto dir = gwg->FindHumanPath(pos, node_goal, 20);
 
             // Wenns keinen gibt
-            if(dir == INVALID_DIR)
+            if(!dir)
                 GoToNextNode();
             else
-                StartWalking(Direction::fromInt(dir));
+                StartWalking(*dir);
         }
     } else if(state == STATE_GOTOFLAG)
     {
@@ -337,16 +337,16 @@ void nofGeologist::LookForNewNodes()
 
 bool nofGeologist::IsValidTargetNode(const MapPoint pt) const
 {
-    return (IsNodeGood(pt) && !gwg->GetNode(pt).reserved && (pos == pt || gwg->FindHumanPath(pos, pt, 20) != 0xFF));
+    return (IsNodeGood(pt) && !gwg->GetNode(pt).reserved && (pos == pt || gwg->FindHumanPath(pos, pt, 20)));
 }
 
-unsigned char nofGeologist::GetNextNode()
+helpers::OptionalEnum<Direction> nofGeologist::GetNextNode()
 {
     // Überhaupt noch Schilder zum Aufstellen
     if(!signs)
     {
         node_goal = MapPoint::Invalid();
-        return INVALID_DIR;
+        return boost::none;
     }
 
     do
@@ -363,13 +363,11 @@ unsigned char nofGeologist::GetNextNode()
             if(!IsNodeGood(node_goal) || gwg->GetNode(node_goal).reserved)
                 continue;
 
-            unsigned char ret_dir;
-            if(pos == node_goal)
-                ret_dir = INVALID_DIR;
-            else
+            helpers::OptionalEnum<Direction> ret_dir;
+            if(pos != node_goal)
             {
                 ret_dir = gwg->FindHumanPath(pos, node_goal, 20);
-                if(ret_dir == INVALID_DIR)
+                if(!ret_dir)
                     continue;
             }
             // Reservieren
@@ -382,7 +380,7 @@ unsigned char nofGeologist::GetNextNode()
     } while(!available_nodes.empty());
 
     node_goal = MapPoint::Invalid();
-    return INVALID_DIR;
+    return boost::none;
 }
 
 void nofGeologist::GoToNextNode()
@@ -397,13 +395,13 @@ void nofGeologist::GoToNextNode()
     }
 
     // ersten Punkt suchen
-    unsigned char dir = GetNextNode();
+    const auto dir = GetNextNode();
 
-    if(dir != INVALID_DIR)
+    if(dir)
     {
         // Wenn es einen Punkt gibt, dann hingehen
         state = STATE_GEOLOGIST_GOTONEXTNODE;
-        StartWalking(Direction::fromInt(dir));
+        StartWalking(*dir);
         --signs;
     } else if(node_goal == pos)
     {

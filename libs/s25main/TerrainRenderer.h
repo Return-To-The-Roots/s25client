@@ -19,7 +19,9 @@
 
 #include "Point.h"
 #include "ogl/VBO.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -58,7 +60,7 @@ public:
     /// Get position of node in pixels (VertexPos)
     PointF GetVertexPos(const MapPoint pt) const { return GetVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to GetNodePos(pt)
-    PointF GetNeighbourVertexPos(MapPoint pt, unsigned dir) const;
+    PointF GetNeighbourVertexPos(MapPoint pt, Direction dir) const;
 
     /// Callback function for altitude changes
     void AltitudeChanged(MapPoint pt, const GameWorldViewer& gwv);
@@ -89,9 +91,9 @@ private:
     {
         Position pos, pos2;
         float color1, color2;
-        unsigned char dir;
+        RoadDir dir;
 
-        PreparedRoad(Position pos, Position pos2, float color1, float color2, unsigned char dir)
+        PreparedRoad(Position pos, Position pos2, float color1, float color2, RoadDir dir)
             : pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir)
         {}
     };
@@ -194,7 +196,7 @@ private:
     /// liefert den Rand-Vertex an der Stelle X,Y
     PointF GetBorderPos(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderPos[triangle]; }
     /// Get neighbour border position of a node (VertexPos) potentially shifted so that the returned value is next to GetBorderPos(pt)
-    PointF GetNeighbourBorderPos(MapPoint pt, unsigned char triangle, unsigned char dir) const;
+    PointF GetNeighbourBorderPos(MapPoint pt, unsigned char triangle, Direction dir) const;
     /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
     float GetBorderColor(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderColor[triangle]; }
 

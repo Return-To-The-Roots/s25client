@@ -61,11 +61,11 @@ public:
     /// Calculate the resource value for a given point
     int GetResourceRating(MapPoint pt, AIResource res) const;
     /// Test whether a given point is part of the border or not
-    bool IsBorder(const MapPoint pt) const { return gwb.GetNode(pt).boundary_stones[0] == (playerID_ + 1); }
+    bool IsBorder(const MapPoint pt) const { return gwb.GetNode(pt).boundary_stones[BorderStonePos::OnPoint] == (playerID_ + 1); }
     /// Test whether a given point is part of own territory
     bool IsOwnTerritory(const MapPoint pt) const { return gwb.GetNode(pt).owner == (playerID_ + 1); }
 
-    bool IsRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir) > 0; }
+    bool IsRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir) != PointRoad::None; }
     /// Test whether there is a object of a certain type on a spot
     bool IsObjectTypeOnNode(const MapPoint pt, NodalObjectType objectType) const { return gwb.GetNO(pt)->GetType() == objectType; }
     /// Test whether there is specific building on a spot

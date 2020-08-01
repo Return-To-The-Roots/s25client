@@ -20,10 +20,12 @@
 #pragma once
 
 #include "Rect.h"
+#include "enum_cast.hpp"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/MultiArray.h"
 #include "ogl/glSmartBitmap.h"
 #include "gameTypes/BuildingType.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Nation.h"
@@ -161,6 +163,11 @@ public:
 
     /// Animals: Species, Direction, AnimationFrame(Last = Dead)
     helpers::MultiArray<glSmartBitmap, NUM_SPECS, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
+    glSmartBitmap& getAnimalSprite(Species species, Direction dir, unsigned aniFrame)
+    {
+        return animal_cache(species, rttr::enum_cast(dir), aniFrame);
+    }
+
     /// Buildings: Nation, Type, Building/Skeleton
     helpers::MultiArray<glSmartBitmap, NUM_NATIONS, NUM_BUILDING_TYPES, 2> building_cache;
     /// Flags: Nation, Type, AnimationFrame
@@ -171,18 +178,32 @@ public:
     helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
     /// Jobs: Nation, Job (last is fat carrier), Direction, AnimationFrame
     helpers::MultiArray<FigAnimationSprites, NUM_NATIONS, NUM_JOB_TYPES + 1, 6> bob_jobs_cache;
+    glSmartBitmap& getBobSprite(Nation nat, Job job, Direction dir, unsigned aniFrame)
+    {
+        return bob_jobs_cache(nat, job, rttr::enum_cast(dir))[aniFrame];
+    }
+    glSmartBitmap& getCarrierBobSprite(Nation nat, bool fat, Direction dir, unsigned aniFrame)
+    {
+        return bob_jobs_cache(nat, fat ? NUM_JOB_TYPES : rttr::enum_cast(JOB_HELPER), rttr::enum_cast(dir))[aniFrame];
+    }
     /// Stone: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
     /// Grainfield: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
     /// Carrier w/ ware: Ware, NormalOrFat, Direction, Animation
     helpers::MultiArray<FigAnimationSprites, NUM_WARE_TYPES, 2, 6> carrier_cache;
+    glSmartBitmap& getCarrierSprite(GoodType ware, bool fat, Direction dir, unsigned aniFrame)
+    {
+        return carrier_cache(ware, fat, rttr::enum_cast(dir))[aniFrame];
+    }
     /// Boundary stones: Nation
     std::array<glSmartBitmap, NUM_NATIONS> boundary_stone_cache;
     /// BoatCarrier: Direction, AnimationFrame
     std::array<FigAnimationSprites, 6> boat_cache;
+    glSmartBitmap& getBoatCarrierSprite(Direction dir, unsigned aniFrame) { return boat_cache[rttr::enum_cast(dir)][aniFrame]; }
     /// Donkey: Direction, AnimationFrame
     std::array<FigAnimationSprites, 6> donkey_cache;
+    glSmartBitmap& getDonkeySprite(Direction dir, unsigned aniFrame) { return donkey_cache[rttr::enum_cast(dir)][aniFrame]; }
     /// Gateway: AnimationFrame
     std::array<glSmartBitmap, 5> gateway_cache;
     /// Fight animations for each nation, soldier type and left/right

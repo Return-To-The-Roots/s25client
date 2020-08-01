@@ -113,7 +113,7 @@ struct And : private T_Func1, private T_Func2
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf Stra�en
 template<class T_AdditionalCosts, class T_SegmentConstraints>
 bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max, const T_AdditionalCosts addCosts,
-                                  const T_SegmentConstraints isSegmentAllowed, unsigned* const length, unsigned char* const firstDir,
+                                  const T_SegmentConstraints isSegmentAllowed, unsigned* const length, RoadPathDirection* const firstDir,
                                   MapPoint* const firstNodePos)
 {
     if(&start == &goal)
@@ -126,7 +126,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         if(length)
             *length = 0;
         if(firstDir)
-            *firstDir = 0xff;
+            *firstDir = RoadPathDirection::None;
         if(firstNodePos)
             *firstNodePos = start.GetPos();
         return true;
@@ -155,7 +155,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     start.last_visit = currentVisit;
     start.prev = nullptr;
     start.cost = 0;
-    start.dir_ = 0;
+    start.dir_ = RoadPathDirection::None;
 
     todo.push(&start);
 
@@ -179,7 +179,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             }
 
             if(firstDir)
-                *firstDir = (unsigned char)firstNode->dir_;
+                *firstDir = firstNode->dir_;
 
             if(firstNodePos)
                 *firstNodePos = firstNode->GetPos();
@@ -189,9 +189,8 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         }
 
         // Nachbarflagge bzw. Wege in allen 6 Richtungen verfolgen
-        for(unsigned iDir = 0; iDir < 6; ++iDir)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const Direction dir = Direction::fromInt(iDir);
             // Gibt es auch einen solchen Weg bzw. Nachbarflagge?
             noRoadNode* neighbour = best.GetNeighbour(dir);
 
@@ -234,14 +233,14 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                     neighbour->prev = &best;
                     neighbour->estimate = neighbour->targetDistance + cost;
                     todo.rearrange(neighbour);
-                    neighbour->dir_ = iDir;
+                    neighbour->dir_ = toRoadPathDirection(dir);
                 }
             } else
             {
                 // Not visited yet -> Add to list
                 neighbour->last_visit = currentVisit;
                 neighbour->cost = cost;
-                neighbour->dir_ = iDir;
+                neighbour->dir_ = toRoadPathDirection(dir);
                 neighbour->prev = &best;
 
                 neighbour->targetDistance = gwb_.CalcDistance(neighbour->GetPos(), goal.GetPos());
@@ -271,7 +270,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                     // Dann nur ggf. Weg und Vorg�nger korrigieren, falls der Weg k�rzer ist
                     if(cost < dest.cost)
                     {
-                        dest.dir_ = SHIP_DIR;
+                        dest.dir_ = RoadPathDirection::Ship;
                         dest.cost = cost;
                         dest.prev = &best;
                         dest.estimate = dest.targetDistance + cost;
@@ -282,7 +281,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                     // Not visited yet -> Add to list
                     dest.last_visit = currentVisit;
 
-                    dest.dir_ = SHIP_DIR;
+                    dest.dir_ = RoadPathDirection::Ship;
                     dest.prev = &best;
                     dest.cost = cost;
 
@@ -300,7 +299,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
 }
 
 bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, const bool wareMode, const unsigned max,
-                              const RoadSegment* const forbidden, unsigned* const length, unsigned char* const firstDir,
+                              const RoadSegment* const forbidden, unsigned* const length, RoadPathDirection* const firstDir,
                               MapPoint* const firstNodePos)
 {
     RTTR_Assert(length || firstDir || firstNodePos); // If none of them is set use the \ref PathExist function!

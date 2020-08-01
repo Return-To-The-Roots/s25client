@@ -62,7 +62,7 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
 void nofSoldier::DrawSoldierWaiting(DrawPoint drawPt)
 {
     const GamePlayer& owner = gwg->GetPlayer(player);
-    LOADER.bob_jobs_cache[owner.nation][job_][GetCurMoveDir().toUInt()][2].drawForPlayer(drawPt, owner.color);
+    LOADER.getBobSprite(owner.nation, job_, GetCurMoveDir(), 2).drawForPlayer(drawPt, owner.color);
 }
 
 void nofSoldier::AbrogateWorkplace()

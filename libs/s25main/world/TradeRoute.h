@@ -18,14 +18,13 @@
 #ifndef TradeRoute_h__
 #define TradeRoute_h__
 
+#include "helpers/OptionalEnum.h"
 #include "world/TradePath.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/TradeDirection.h"
 
 class SerializedGameData;
 class GameWorldGame;
-
-/// Constants used for Pathfinding
-const unsigned char REACHED_GOAL = 0xDD;
 
 /// active route for trading. Has a state and supports automatic recalculation of the path
 class TradeRoute
@@ -36,7 +35,7 @@ class TradeRoute
     MapPoint curPos;
     unsigned curRouteIdx;
 
-    unsigned char RecalcRoute();
+    helpers::OptionalEnum<TradeDirection> RecalcRoute();
 
 public:
     TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal);
@@ -44,8 +43,8 @@ public:
 
     void Serialize(SerializedGameData& sgd) const;
 
-    /// Gets the next direction the caravane has to take, REACHED_GOAL or INVALID_DIR
-    unsigned char GetNextDir();
+    /// Gets the next direction the caravane has to take, TradeDirection::ReachedGoal or boost::none
+    helpers::OptionalEnum<TradeDirection> GetNextDir();
     /// Returns the current position. This is assumed to be the position currently walking to and reached by the time GetNextDir should be
     /// called
     MapPoint GetCurPos() const { return curPos; }

@@ -114,7 +114,7 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
     sgd.PushObject(carriers_[1], true);
 
     for(auto i : route)
-        sgd.PushUnsignedChar(i.toUInt());
+        sgd.PushUnsignedChar(rttr::enum_cast(i));
 }
 
 /**
@@ -310,7 +310,7 @@ void RoadSegment::UpgradeDonkeyRoad()
     MapPoint pt = f1->GetPos();
     for(auto i : route)
     {
-        gwg->SetPointRoad(pt, i, RT_DONKEY + 1);
+        gwg->SetPointRoad(pt, i, PointRoad::Donkey);
         pt = gwg->GetNeighbour(pt, i);
     }
 

@@ -19,8 +19,10 @@
 #define MapNode_h__
 
 #include "Resource.h"
+#include "helpers/EnumArray.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/FoWNode.h"
+#include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
 #include "gameData/MaxPlayers.h"
 #include <array>
@@ -36,7 +38,7 @@ struct WorldDescription;
 struct MapNode
 {
     /// Roads from this point: E, SE, SW
-    std::array<unsigned char, 3> roads;
+    helpers::EnumArray<PointRoad, RoadDir> roads;
     /// Height
     unsigned char altitude;
     /// Schattierung

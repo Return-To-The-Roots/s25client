@@ -33,7 +33,7 @@ class iwShip : public IngameWindow
     unsigned ship_id;     /// ID des Schiffes, welches gerade angezeigt wird
 
 public:
-    iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* ship, const DrawPoint& pos = IngameWindow::posAtMouse);
+    iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* ship, const DrawPoint& pos = IngameWindow::posAtMouse);
 
 private:
     void Draw_() override;

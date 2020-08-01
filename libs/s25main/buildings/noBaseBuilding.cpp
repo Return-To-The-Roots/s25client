@@ -46,9 +46,9 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
-    if(!gwg->GetPointRoad(pos, Direction::SOUTHEAST))
+    if(gwg->GetPointRoad(pos, Direction::SOUTHEAST) == PointRoad::None)
     {
-        gwg->SetPointRoad(pos, Direction::SOUTHEAST, RoadSegment::RT_NORMAL + 1);
+        gwg->SetPointRoad(pos, Direction::SOUTHEAST, PointRoad::Normal);
 
         // Straßenverbindung erstellen zwischen Flagge und Haus
         // immer von Flagge ZU Gebäude (!)
@@ -70,9 +70,9 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     // Werde/Bin ich (mal) ein großes Schloss? Dann müssen die Anbauten gesetzt werden
     if(GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
     {
-        for(unsigned i = 0; i < 3; ++i)
+        for(const Direction i : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
         {
-            MapPoint pos2 = gwg->GetNeighbour(pos, Direction::fromInt(i));
+            MapPoint pos2 = gwg->GetNeighbour(pos, i);
             gwg->DestroyNO(pos2, false);
             gwg->SetNO(pos2, new noExtension(this));
         }
@@ -126,6 +126,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                 {
                     // Ware erzeugen
                     auto* ware = new Ware(goods[which], nullptr, flag);
+                    ware->WaitAtFlag(flag);
                     // Inventur anpassen
                     gwg->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden
@@ -134,7 +135,6 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                     ware->RecalcRoute();
                     // Ware ablegen
                     flag->AddWare(ware);
-                    ware->WaitAtFlag(flag);
 
                     if(!which)
                         --boards;
@@ -233,9 +233,9 @@ void noBaseBuilding::DestroyBuildingExtensions()
     // Nur bei großen Gebäuden gibts diese Anbauten
     if(GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
     {
-        for(unsigned i = 0; i < 3; ++i)
+        for(const Direction i : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
         {
-            gwg->DestroyNO(gwg->GetNeighbour(pos, Direction::fromInt(i)));
+            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
         }
     }
 }

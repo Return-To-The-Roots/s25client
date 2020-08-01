@@ -31,7 +31,7 @@
 #include "worldFixtures/initGameRNG.hpp"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
-#include "gameTypes/Direction_Output.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "gameData/SettingTypeConv.h"
 #include <boost/test/unit_test.hpp>
 #include <iostream>
@@ -115,7 +115,7 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
         std::vector<Direction> road = FindPathForRoad(world, start, end, false);
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(start, false, road);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(start, road.front()), RoadSegment::RT_NORMAL + 1);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(start, road.front()), PointRoad::Normal);
     }
 
     void AddSoldiersWithRank(MapPoint bldPos, unsigned numSoldiers, unsigned rank)
@@ -810,7 +810,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
             if(i != Direction::NORTHWEST)
             {
                 BOOST_REQUIRE(!world.GetSpecObj<noRoadNode>(flagPt)->GetRoute(i));
-                BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt, i), 0u);
+                BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt, i), PointRoad::None);
             }
         }
     }

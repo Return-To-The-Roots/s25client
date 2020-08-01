@@ -15,9 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "enum_cast.hpp"
 #include "gameTypes/Direction.h"
 #include "gameTypes/DirectionToImgDir.h"
-#include "gameTypes/Direction_Output.h"
+#include "gameTypes/GameTypesOutput.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_CASE(DirectionCmp)
@@ -41,7 +42,7 @@ BOOST_AUTO_TEST_CASE(DirectionIncDec)
     for(unsigned startDir = 0; startDir < Direction::COUNT; startDir++)
     {
         // Fit back to range
-        BOOST_REQUIRE_EQUAL(Direction(startDir + Direction::COUNT).toUInt(), startDir);
+        BOOST_REQUIRE_EQUAL(rttr::enum_cast(Direction(startDir + Direction::COUNT)), startDir);
         // Increment
         Direction testDir(startDir);
         BOOST_REQUIRE_EQUAL(testDir++, Direction(startDir));
@@ -100,6 +101,6 @@ BOOST_AUTO_TEST_CASE(DirectionToImgDir)
     for(Direction curDir : helpers::EnumRange<Direction>{})
     {
         // S2 Img dir is offset by 3
-        BOOST_TEST(static_cast<unsigned>(toImgDir(curDir)) == (static_cast<unsigned>(curDir) + 3) % 6);
+        BOOST_TEST(static_cast<unsigned>(toImgDir(curDir)) == rttr::enum_cast(curDir + 3u));
     }
 }

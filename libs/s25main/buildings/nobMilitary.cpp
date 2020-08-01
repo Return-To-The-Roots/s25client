@@ -807,7 +807,7 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
     }
 
     // und auch der Weg zu Fuß darf dann nicht so weit sein, wenn das alles bestanden ist, können wir ihn nehmen..
-    if(soldiers_count && gwg->FindHumanPath(pos, dest, MAX_ATTACKING_RUN_DISTANCE) != 0xFF)
+    if(soldiers_count && gwg->FindHumanPath(pos, dest, MAX_ATTACKING_RUN_DISTANCE))
         // Soldaten davon nehmen
         return soldiers_count;
     else
@@ -955,7 +955,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
         {
             if(figure->GetType() == NOP_FIGURE)
             {
-                if(static_cast<noFigure*>(figure)->GetCurrentRoad() == routes[4]
+                if(static_cast<noFigure*>(figure)->GetCurrentRoad() == GetRoute(Direction::SOUTHEAST)
                    && static_cast<noFigure*>(figure)->GetPlayer() != new_owner)
                 {
                     static_cast<noFigure*>(figure)->Abrogate();
@@ -1027,7 +1027,7 @@ void nobMilitary::NeedOccupyingTroops()
             if(aggressor->GetRadius() >= best_radius)
                 continue;
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 10, false) != 0xFF)
+            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 10, false))
             {
                 // Dann is das der bisher beste
                 best_attacker = aggressor;
@@ -1319,7 +1319,7 @@ void nobMilitary::CallNextFarAwayCapturer(nofAttacker* attacker)
             continue;
         RTTR_Assert(far_away_capturer->GetPos() != flagPos); // Impossible. This should be the current attacker
         unsigned length;
-        if(gwg->FindHumanPath(far_away_capturer->GetPos(), flagPos, MAX_FAR_AWAY_CAPTURING_DISTANCE, false, &length) == INVALID_DIR)
+        if(!gwg->FindHumanPath(far_away_capturer->GetPos(), flagPos, MAX_FAR_AWAY_CAPTURING_DISTANCE, false, &length))
             continue;
         if(length < minLength)
         {

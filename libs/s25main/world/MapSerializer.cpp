@@ -18,8 +18,10 @@
 #include "world/MapSerializer.h"
 #include "CatapultStone.h"
 #include "SerializedGameData.h"
+#include "helpers/Range.h"
 #include "lua/GameDataLoader.h"
 #include "world/World.h"
+#include "s25util/warningSuppression.h"
 #include <mygettext/mygettext.h>
 
 void MapSerializer::Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd)
@@ -49,13 +51,13 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
     for(const auto& curHarborPos : world.harbor_pos)
     {
         sgd.PushMapPoint(curHarborPos.pos);
-        for(unsigned z = 0; z < 6; ++z)
-            sgd.PushUnsignedShort(curHarborPos.cps[z].seaId);
-        for(unsigned z = 0; z < 6; ++z)
+        for(const auto& cp : curHarborPos.cps)
+            sgd.PushUnsignedShort(cp.seaId);
+        for(const auto& curNeighbors : curHarborPos.neighbors)
         {
-            sgd.PushUnsignedInt(curHarborPos.neighbors[z].size());
+            sgd.PushUnsignedInt(curNeighbors.size());
 
-            for(auto c : curHarborPos.neighbors[z])
+            for(const auto& c : curNeighbors)
             {
                 sgd.PushUnsignedInt(c.id);
                 sgd.PushUnsignedInt(c.distance);
@@ -134,19 +136,26 @@ void MapSerializer::Deserialize(World& world, const unsigned numPlayers, Seriali
     }
 
     // Hafenpositionen serialisieren
-    world.harbor_pos.resize(sgd.PopUnsignedInt());
-    for(auto& curHarborPos : world.harbor_pos)
+    const unsigned numHarborPositions = sgd.PopUnsignedInt();
+    world.harbor_pos.clear();
+    world.harbor_pos.reserve(numHarborPositions);
+    for(const auto i : helpers::Range<unsigned>{numHarborPositions})
     {
-        curHarborPos.pos = sgd.PopMapPoint();
-        for(unsigned z = 0; z < 6; ++z)
-            curHarborPos.cps[z].seaId = sgd.PopUnsignedShort();
-        for(unsigned z = 0; z < 6; ++z)
+        RTTR_UNUSED(i);
+        world.harbor_pos.emplace_back(sgd.PopMapPoint());
+        auto& curHarborPos = world.harbor_pos.back();
+        for(auto& cp : curHarborPos.cps)
+            cp.seaId = sgd.PopUnsignedShort();
+        for(auto& neighbor : curHarborPos.neighbors)
         {
-            curHarborPos.neighbors[z].resize(sgd.PopUnsignedInt());
-            for(auto& c : curHarborPos.neighbors[z])
+            const unsigned numNeighbors = sgd.PopUnsignedInt();
+            neighbor.reserve(numNeighbors);
+            for(const auto j : helpers::Range<unsigned>{numNeighbors})
             {
-                c.id = sgd.PopUnsignedInt();
-                c.distance = sgd.PopUnsignedInt();
+                RTTR_UNUSED(j);
+                const auto id = sgd.PopUnsignedInt();
+                const auto distance = sgd.PopUnsignedInt();
+                neighbor.emplace_back(id, distance);
             }
         }
     }

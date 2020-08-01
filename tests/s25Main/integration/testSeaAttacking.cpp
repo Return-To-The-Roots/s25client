@@ -33,6 +33,7 @@
 #include "world/MapLoader.h"
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainDesc.h"
 #include <boost/test/unit_test.hpp>
@@ -178,7 +179,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         std::vector<Direction> road = FindPathForRoad(world, start, end, false);
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(start, false, road);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(start, road.front()), RoadSegment::RT_NORMAL + 1);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(start, road.front()), PointRoad::Normal);
     }
 
     void SetCurPlayer(unsigned playerIdx)

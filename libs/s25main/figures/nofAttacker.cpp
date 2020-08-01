@@ -194,8 +194,10 @@ void nofAttacker::Walked()
                     ContinueAtFlag();
             } else
             {
-                unsigned char dir = gwg->FindHumanPath(pos, goalFlagPos, 5, true);
-                if(dir == 0xFF)
+                const auto dir = gwg->FindHumanPath(pos, goalFlagPos, 5, true);
+                if(dir)
+                    StartWalking(*dir);
+                else
                 {
                     // es wurde kein Weg mehr gefunden --> neues Plätzchen suchen und warten
                     state = STATE_ATTACKING_WALKINGTOGOAL;
@@ -203,10 +205,6 @@ void nofAttacker::Walked()
                     // der Verteidiger muss darüber informiert werden
                     if(defender)
                         defender->AttackerArrested();
-                } else
-                {
-                    // Hinlaufen
-                    StartWalking(Direction(dir));
                 }
             }
         }
@@ -316,8 +314,8 @@ void nofAttacker::Walked()
             else
             {
                 // Weg zum Hafen suchen
-                unsigned char dir = gwg->FindHumanPath(pos, harborFlagPos, MAX_ATTACKING_RUN_DISTANCE, false, nullptr);
-                if(dir == 0xff)
+                const auto dir = gwg->FindHumanPath(pos, harborFlagPos, MAX_ATTACKING_RUN_DISTANCE, false, nullptr);
+                if(!dir)
                 {
                     // Kein Weg gefunden? Dann auch abbrechen!
                     ReturnHomeMissionAttacking();
@@ -325,7 +323,7 @@ void nofAttacker::Walked()
                 }
 
                 // Und schön weiterlaufen
-                StartWalking(Direction(dir));
+                StartWalking(*dir);
             }
         }
         break;
@@ -560,16 +558,16 @@ void nofAttacker::MissAttackingWalk()
     TryToOrderAggressiveDefender();
 
     // Ansonsten Weg zum Ziel suchen
-    unsigned char dir = gwg->FindHumanPath(pos, goal, MAX_ATTACKING_RUN_DISTANCE, true);
+    const auto dir = gwg->FindHumanPath(pos, goal, MAX_ATTACKING_RUN_DISTANCE, true);
     // Keiner gefunden? Nach Hause gehen
-    if(dir == 0xff)
+    if(!dir)
     {
         ReturnHomeMissionAttacking();
         return;
     }
 
     // Start walking
-    StartWalking(Direction(dir));
+    StartWalking(*dir);
 }
 
 /// Ist am Militärgebäude angekommen
@@ -758,9 +756,9 @@ void nofAttacker::AttackedGoalDestroyed()
 bool nofAttacker::AttackFlag(nofDefender* /*defender*/)
 {
     // Zur Flagge laufen, findet er einen Weg?
-    unsigned char tmp_dir = gwg->FindHumanPath(pos, attacked_goal->GetFlag()->GetPos(), 3, true);
+    const auto dir = gwg->FindHumanPath(pos, attacked_goal->GetFlag()->GetPos(), 3, true);
 
-    if(tmp_dir != 0xFF)
+    if(dir)
     {
         // Hat er drumrum gewartet?
         bool waiting_around_building = (state == STATE_ATTACKING_WAITINGAROUNDBUILDING);
@@ -769,7 +767,7 @@ bool nofAttacker::AttackFlag(nofDefender* /*defender*/)
 
         // Wenn er steht, muss er loslaufen
         if(waiting_around_building)
-            StartWalking(Direction(tmp_dir));
+            StartWalking(*dir);
 
         state = STATE_ATTACKING_ATTACKINGFLAG;
 
@@ -882,8 +880,10 @@ void nofAttacker::CapturingWalking()
         }
 
         // weiter zur Flagge laufen
-        unsigned char dir = gwg->FindHumanPath(pos, attFlagPos, 10, true);
-        if(dir == 0xFF)
+        const auto dir = gwg->FindHumanPath(pos, attFlagPos, 10, true);
+        if(dir)
+            StartWalking(*dir);
+        else
         {
             // auweia, es wurde kein Weg mehr gefunden
 
@@ -892,8 +892,7 @@ void nofAttacker::CapturingWalking()
             static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops();
             // Nach Hause gehen
             ReturnHomeMissionAttacking();
-        } else
-            StartWalking(Direction(dir));
+        }
     }
 }
 
@@ -1130,9 +1129,10 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
         Wander();
         return;
     }
-    unsigned char dir = gwg->FindHumanPath(pos, shipPos, MAX_ATTACKING_RUN_DISTANCE);
-    // oder finden wir gar keinen Weg mehr?
-    if(dir == 0xFF)
+    const auto dir = gwg->FindHumanPath(pos, shipPos, MAX_ATTACKING_RUN_DISTANCE);
+    if(dir)
+        StartWalking(*dir);
+    else
     {
         // Kein Weg gefunden --> Rumirren
         StartWandering();
@@ -1143,12 +1143,6 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
         building->SoldierLost(this);
         // Und dem Schiff
         CancelAtShip();
-    }
-    // oder ist alles ok? :)
-    else
-    {
-        // weiterlaufen
-        StartWalking(Direction(dir));
     }
 }
 
