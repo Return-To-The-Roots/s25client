@@ -472,7 +472,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         const MapPoint cSel = gwv.GetSelectedPt();
 
         // Vielleicht steht hier auch ein Schiff?
-        if(noShip* ship = worldViewer.GetShip(cSel))
+        if(const noShip* ship = worldViewer.GetShip(cSel))
         {
             WINDOWMANAGER.Show(std::make_unique<iwShip>(gwv, GAMECLIENT, ship));
             return true;
@@ -551,13 +551,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             if(selObj.GetType() != NOP_FLAG && selObj.GetType() != NOP_BUILDING)
             {
                 // Check if there are roads
-                for(Direction dir : helpers::EnumRange<Direction>{})
+                for(const Direction dir : helpers::EnumRange<Direction>{})
                 {
-                    uint8_t curRoad = worldViewer.GetVisiblePointRoad(cSel, dir);
-                    if(curRoad)
+                    const PointRoad curRoad = worldViewer.GetVisiblePointRoad(cSel, dir);
+                    if(curRoad != PointRoad::None)
                     {
                         action_tabs.cutroad = true;
-                        action_tabs.upgradeRoad |= (curRoad - 1) == RoadSegment::RT_NORMAL;
+                        action_tabs.upgradeRoad |= (curRoad == PointRoad::Normal);
                     }
                 }
             }
@@ -959,11 +959,11 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
     }
 
     // Weg (visuell) bauen
-    for(auto i : new_route)
+    for(const auto dir : new_route)
     {
-        worldViewer.SetVisiblePointRoad(road.point, i, (road.mode == RM_BOAT) ? 3 : 1);
+        worldViewer.SetVisiblePointRoad(road.point, dir, (road.mode == RM_BOAT) ? PointRoad::Boat : PointRoad::Normal);
         worldViewer.RecalcBQForRoad(road.point);
-        road.point = worldViewer.GetWorld().GetNeighbour(road.point, i);
+        road.point = worldViewer.GetWorld().GetNeighbour(road.point, dir);
     }
     worldViewer.RecalcBQForRoad(road.point);
 
@@ -1236,7 +1236,7 @@ void dskGameInterface::DemolishRoad(const unsigned start_id)
     {
         MapPoint t = road.point;
         road.point = worldViewer.GetWorld().GetNeighbour(road.point, road.route[i - 1] + 3u);
-        worldViewer.SetVisiblePointRoad(road.point, road.route[i - 1], 0);
+        worldViewer.SetVisiblePointRoad(road.point, road.route[i - 1], PointRoad::None);
         worldViewer.RecalcBQForRoad(t);
     }
 

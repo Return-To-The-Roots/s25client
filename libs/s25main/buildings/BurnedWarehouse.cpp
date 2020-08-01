@@ -72,10 +72,10 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
 
     // Mögliche Richtungen zählen und speichern
     PathConditionHuman pathChecker(*gwg);
-    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, Direction::fromInt(dir))))
-            possibleDirs[possibleDirCt++] = Direction::fromInt(dir);
+        if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, dir)))
+            possibleDirs[possibleDirCt++] = dir;
     }
 
     // GAR KEINE Richtungen?

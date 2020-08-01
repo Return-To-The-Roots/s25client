@@ -45,8 +45,8 @@ struct PathConditionHuman : PathConditionReachable
     BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // If there is a road (but no boat road) we can pass
-        unsigned char road = world.GetPointRoad(fromPt, dir);
-        if(road && road != RoadSegment::RT_BOAT + 1)
+        const PointRoad road = world.GetPointRoad(fromPt, dir);
+        if(road != PointRoad::None && road != PointRoad::Boat)
             return true;
 
         // Check terrain for node transition

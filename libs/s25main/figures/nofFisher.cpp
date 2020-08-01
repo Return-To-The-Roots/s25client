@@ -23,6 +23,7 @@
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
+#include "enum_cast.hpp"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "pathfinding/PathConditionHuman.h"
@@ -37,7 +38,7 @@ void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
 {
     Serialize_nofFarmhand(sgd);
 
-    sgd.PushUnsignedChar(fishing_dir);
+    sgd.PushUnsignedChar(rttr::enum_cast(fishing_dir));
     sgd.PushBool(successful);
 }
 
@@ -54,10 +55,11 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
     if(id < 16)
     {
         // Angel reinlassen
-        if(fishing_dir < 3)
-            draw_id = 1566 + 8 * fishing_dir + (id / 2);
+        const unsigned iFishingDir = rttr::enum_cast(fishing_dir);
+        if(iFishingDir < 3)
+            draw_id = 1566 + 8 * iFishingDir + (id / 2);
         else
-            draw_id = 108 + 8 * (fishing_dir - 3) + (id / 2);
+            draw_id = 108 + 8 * (iFishingDir - 3) + (id / 2);
 
         if(id / 2 == 1)
         {
@@ -67,20 +69,21 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
     } else if(id < 216)
     {
         // Angel im Wasser hängen lassen und warten
-        draw_id = 1590 + 8 * ((fishing_dir + 3) % 6) + (id % 8);
+        draw_id = 1590 + 8 * rttr::enum_cast(fishing_dir + 3) + (id % 8);
     } else
     {
         // Angel wieder rausholn
         if(successful)
             // Mit Fisch an der Angel
-            draw_id = 1638 + 8 * ((fishing_dir + 3) % 6) + (id - 216) / 2;
+            draw_id = 1638 + 8 * rttr::enum_cast(fishing_dir + 3) + (id - 216) / 2;
         else
         {
             // Ohne Fisch (wie das Reinlassen, bloß umgekehrt)
-            if(fishing_dir < 3)
-                draw_id = 1566 + 8 * fishing_dir + 7 - +(id - 216) / 2;
+            const unsigned iFishingDir = rttr::enum_cast(fishing_dir);
+            if(iFishingDir < 3)
+                draw_id = 1566 + 8 * iFishingDir + 7 - (id - 216) / 2;
             else
-                draw_id = 108 + 8 * (fishing_dir - 3) + 7 - (id - 216) / 2;
+                draw_id = 108 + 8 * (iFishingDir - 3) + 7 - (id - 216) / 2;
         }
 
         if((id - 216) / 2 == 1)
@@ -104,19 +107,17 @@ void nofFisher::WorkStarted()
 {
     unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
     // Punkt mit Fisch suchen (mit zufälliger Richtung beginnen)
-    Direction tmpFishingDir;
-    for(unsigned char i = 0; i < 6; ++i)
+    for(Direction dir : helpers::EnumRange<Direction>{})
     {
-        tmpFishingDir = Direction(i + doffset);
-        Resource neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources;
+        fishing_dir = dir + doffset;
+        Resource neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources;
         if(neighbourRes.has(Resource::Fish))
             break;
     }
 
     // Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
-    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources.getAmount()) * 10;
+    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources.getAmount()) * 10;
     successful = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 100) < probability);
-    fishing_dir = tmpFishingDir.toUInt();
 }
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
@@ -126,7 +127,7 @@ void nofFisher::WorkFinished()
     if(successful)
     {
         if(!gwg->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
-            gwg->ReduceResource(gwg->GetNeighbour(pos, Direction::fromInt(fishing_dir)));
+            gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
         ware = GD_FISH;
     } else
         ware = GD_NOTHING;
@@ -140,9 +141,9 @@ nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
         return PQ_NOTPOSSIBLE;
 
     // irgendwo drumherum muss es Fisch geben
-    for(unsigned char i = 0; i < 6; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources.has(Resource::Fish))
+        if(gwg->GetNode(gwg->GetNeighbour(pt, dir)).resources.has(Resource::Fish))
             return PQ_CLASS1;
     }
 

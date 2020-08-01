@@ -19,6 +19,8 @@
 #define ShipDirection_h__
 
 #include "RTTR_Assert.h"
+#include "helpers/EnumTraits.h"
+#include "helpers/MaxEnumValue.h"
 
 /// "Enum" to represent one of the 6 directions a ship can go
 struct ShipDirection
@@ -33,24 +35,38 @@ struct ShipDirection
         NORTHWEST  // 5
     };
     static const int COUNT = NORTHWEST + 1;
+    using Underlying = std::underlying_type_t<Type>;
 
     Type t_;
-    ShipDirection(Type t) : t_(t) { RTTR_Assert(t_ >= NORTH && t_ < COUNT); }
+    constexpr ShipDirection(Type t) : t_(t) {}
     /// Converts an UInt safely to a Direction
     explicit ShipDirection(unsigned t) : t_(Type(t % COUNT)) { RTTR_Assert(t_ >= NORTH && t_ < COUNT); }
-    /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
-    static ShipDirection fromInt(unsigned t) { return Type(t); }
-    static ShipDirection fromInt(unsigned char t) { return Type(t); }
-    static ShipDirection fromInt(int t) { return Type(t); }
     operator Type() const { return t_; }
-    /// Returns the Direction as an UInt (for legacy code)
-    unsigned toUInt() const { return t_; }
+    operator Underlying() const { return t_; }
     ShipDirection operator+(unsigned i) const { return ShipDirection(t_ + i); }
-    // TODO: Add iterator to iterate over all values from a given value
+    ShipDirection& operator+=(unsigned i)
+    {
+        t_ = Type((t_ + i) % COUNT);
+        return *this;
+    }
+
 private:
     // prevent automatic conversion for any other built-in types such as bool, int, etc
     template<typename T>
     operator T() const;
 };
+
+DEFINE_MAX_ENUM_VALUE(ShipDirection, ShipDirection::NORTHWEST)
+DEFINE_MAX_ENUM_VALUE(ShipDirection::Type, ShipDirection::NORTHWEST)
+
+namespace helpers {
+template<>
+struct is_enum<ShipDirection> : std::true_type
+{};
+
+template<>
+struct EnumRange<ShipDirection> : EnumRange<ShipDirection::Type>
+{};
+} // namespace helpers
 
 #endif // ShipDirection_h__

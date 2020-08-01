@@ -603,7 +603,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
 
         // Init road walking for figures walking on roads
         if(fig->IsWalkingOnRoad())
-            fig->InitializeRoadWalking(routes[4], 0, true);
+            fig->InitializeRoadWalking(GetRoute(Direction::SOUTHEAST), 0, true);
 
         fig->ActAtFirst();
         // Bei Lagerhausarbeitern das nicht abziehen!

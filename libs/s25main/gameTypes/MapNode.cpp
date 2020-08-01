@@ -17,6 +17,7 @@
 
 #include "gameTypes/MapNode.h"
 #include "SerializedGameData.h"
+#include "enum_cast.hpp"
 #include "nodeObjs/noBase.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
@@ -25,14 +26,14 @@
 MapNode::MapNode()
     : altitude(10), shadow(64), t1(0), t2(0), resources(0), reserved(false), owner(0), bq(BQ_NOTHING), seaId(0), harborId(0), obj(nullptr)
 {
-    std::fill(roads.begin(), roads.end(), 0);
+    std::fill(roads.begin(), roads.end(), PointRoad::None);
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
 }
 
 void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const
 {
-    for(unsigned char road : roads)
-        sgd.PushUnsignedChar(road);
+    for(PointRoad road : roads)
+        sgd.PushUnsignedChar(rttr::enum_cast(road));
 
     sgd.PushUnsignedChar(altitude);
     sgd.PushUnsignedChar(shadow);
@@ -56,10 +57,11 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
 void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
                           const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains)
 {
-    for(unsigned char& road : roads)
+    for(PointRoad& road : roads)
     {
-        road = sgd.PopUnsignedChar();
-        RTTR_Assert(road < 4);
+        unsigned char iRoad = sgd.PopUnsignedChar();
+        RTTR_Assert(iRoad < helpers::MaxEnumValue_v<PointRoad>);
+        road = PointRoad(iRoad);
     }
 
     altitude = sgd.PopUnsignedChar();

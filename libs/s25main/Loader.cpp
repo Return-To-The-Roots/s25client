@@ -486,16 +486,16 @@ void Loader::fillCaches()
     // Animals
     for(unsigned species = 0; species < NUM_SPECS; ++species)
     {
-        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
             for(unsigned ani_step = 0; ani_step < ANIMALCONSTS[species].animation_steps; ++ani_step)
             {
-                glSmartBitmap& bmp = animal_cache[species][dir][ani_step];
+                glSmartBitmap& bmp = getAnimalSprite(Species(species), dir, ani_step);
 
                 bmp.reset();
 
-                bmp.add(
-                  GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ((dir + 3) % 6) + ani_step));
+                bmp.add(GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * rttr::enum_cast(dir + 3u)
+                                     + ani_step));
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
@@ -504,7 +504,7 @@ void Loader::fillCaches()
                         bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id));
                     else
                         // ansonsten immer pro Richtung einen Schatten
-                        bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id + (dir + 3) % 6));
+                        bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id + rttr::enum_cast(dir + 3u)));
                 }
 
                 stp->add(bmp);
@@ -600,7 +600,7 @@ void Loader::fillCaches()
             {
                 for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
-                    glSmartBitmap& bmp = bob_jobs_cache[nation][job][static_cast<unsigned>(dir)][ani_step];
+                    glSmartBitmap& bmp = bob_jobs_cache(nation, job, rttr::enum_cast(dir))[ani_step];
                     bmp.reset();
 
                     bool fat;
@@ -747,32 +747,32 @@ void Loader::fillCaches()
     }
 
     // Donkeys
-    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
         for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
-            glSmartBitmap& bmp = donkey_cache[dir][ani_step];
+            glSmartBitmap& bmp = getDonkeySprite(dir, ani_step);
 
             bmp.reset();
 
-            bmp.add(GetMapImageN(2000 + ((dir + 3) % 6) * 8 + ani_step));
-            bmp.addShadow(GetMapImageN(2048 + dir % 3));
+            bmp.add(GetMapImageN(2000 + rttr::enum_cast(dir + 3u) * 8 + ani_step));
+            bmp.addShadow(GetMapImageN(2048 + rttr::enum_cast(dir) % 3));
 
             stp->add(bmp);
         }
     }
 
     // Boats
-    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
         for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
-            glSmartBitmap& bmp = boat_cache[dir][ani_step];
+            glSmartBitmap& bmp = getBoatCarrierSprite(dir, ani_step);
 
             bmp.reset();
 
-            bmp.add(GetPlayerImage("boat", ((dir + 3) % 6) * 8 + ani_step));
-            bmp.addShadow(GetMapImageN(2048 + dir % 3));
+            bmp.add(GetPlayerImage("boat", rttr::enum_cast(dir + 3u) * 8 + ani_step));
+            bmp.addShadow(GetMapImageN(2048 + rttr::enum_cast(dir) % 3));
 
             stp->add(bmp);
         }
@@ -783,7 +783,7 @@ void Loader::fillCaches()
     if(!bob_carrier)
         throw std::runtime_error("carrier not found");
 
-    for(unsigned ware = 0; ware < NUM_WARE_TYPES; ++ware)
+    for(const auto ware : helpers::EnumRange<GoodType>{})
     {
         for(bool fat : {true, false})
         {
@@ -791,11 +791,11 @@ void Loader::fillCaches()
             {
                 for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
-                    glSmartBitmap& bmp = carrier_cache[ware][fat][static_cast<unsigned>(dir)][ani_step];
+                    glSmartBitmap& bmp = getCarrierSprite(ware, fat, dir, ani_step);
                     bmp.reset();
 
                     // Japanese shield is missing
-                    const unsigned id = (ware == GD_SHIELDJAPANESE) ? static_cast<unsigned>(GD_SHIELDROMANS) : ware;
+                    const unsigned id = rttr::enum_cast((ware == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : ware);
 
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 

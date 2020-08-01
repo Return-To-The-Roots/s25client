@@ -24,7 +24,7 @@
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
 {
-    return out << dir.toUInt();
+    return out << static_cast<int>(rttr::enum_cast(dir));
 }
 // LCOV_EXCL_STOP
 
@@ -127,11 +127,11 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
         BOOST_REQUIRE_NE(world.GetSeaFromCoastalPoint(coastPt), 0);
         // Sea in the direction of the coast must match
         bool coastPtFound = false;
-        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            if(world.GetNeighbour(curHarborPt, Direction::fromInt(dir)) == coastPt)
+            if(world.GetNeighbour(curHarborPt, dir) == coastPt)
             {
-                BOOST_REQUIRE_EQUAL(world.GetSeaId(curHarborId, Direction::fromInt(dir)), seaId);
+                BOOST_REQUIRE_EQUAL(world.GetSeaId(curHarborId, dir), seaId);
                 coastPtFound = true;
                 break;
             }

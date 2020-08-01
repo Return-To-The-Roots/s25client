@@ -93,5 +93,5 @@ void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, De
 
 void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
 {
-    setRightTerrain(world, pt, Direction(dir.toUInt() + 6 - 1), t);
+    setRightTerrain(world, pt, dir - 1u, t);
 }

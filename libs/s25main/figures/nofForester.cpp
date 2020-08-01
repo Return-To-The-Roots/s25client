@@ -66,9 +66,9 @@ void nofForester::WorkStarted() {}
 void nofForester::WorkFinished()
 {
     // Wenn irgendwo ne Straße schon ist, NICHT einsetzen!
-    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(gwg->GetPointRoad(pos, Direction::fromInt(dir)))
+        if(gwg->GetPointRoad(pos, dir) != PointRoad::None)
             return;
     }
 
@@ -108,20 +108,20 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
         return PQ_NOTPOSSIBLE;
 
     // Kein Grenzstein darf da stehen
-    if(gwg->GetNode(pt).boundary_stones[0])
+    if(gwg->GetNode(pt).boundary_stones[BorderStonePos::OnPoint])
         return PQ_NOTPOSSIBLE;
 
     // darf außerdem nich auf einer Straße liegen
-    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(gwg->GetPointRoad(pt, Direction::fromInt(dir)))
+        if(gwg->GetPointRoad(pt, dir) != PointRoad::None)
             return PQ_NOTPOSSIBLE;
     }
 
     // es dürfen außerdem keine Gebäude rund um den Baum stehen
-    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(gwg->GetNO(gwg->GetNeighbour(pt, Direction::fromInt(dir)))->GetType() == NOP_BUILDING)
+        if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() == NOP_BUILDING)
             return PQ_NOTPOSSIBLE;
     }
 

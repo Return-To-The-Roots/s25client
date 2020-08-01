@@ -22,6 +22,7 @@
 #include "RTTR_Assert.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/RoadPathDirection.h"
 
 class noBaseBuilding;
 class nobHarborBuilding;
@@ -34,7 +35,7 @@ class SerializedGameData;
 class Ware : public GameObject
 {
     /// Die Richtung von der Fahne auf dem Weg, auf dem die Ware transportiert werden will als nächstes
-    unsigned char next_dir;
+    RoadPathDirection next_dir;
     /// In welchem Status die Ware sich gerade befindet
     enum State
     {
@@ -74,8 +75,7 @@ public:
 
     GO_Type GetGOT() const override { return GOT_WARE; }
 
-    /// siehe oben
-    inline unsigned char GetNextDir() const { return next_dir; }
+    RoadPathDirection GetNextDir() const { return next_dir; }
     /// Gibt nächsten Hafen zurück, falls vorhanden
     MapPoint GetNextHarbor() const { return next_harbor; }
     noBaseBuilding* GetGoal() const { return goal; }
@@ -84,7 +84,8 @@ public:
     /// Berechnet den Weg neu zu ihrem Ziel
     void RecalcRoute();
     /// set new next dir
-    void SetNextDir(unsigned char newnextdir) { next_dir = newnextdir; }
+    void SetNextDir(RoadPathDirection newNextDir) { next_dir = newNextDir; }
+    void SetNextDir(Direction newNextDir) { next_dir = toRoadPathDirection(newNextDir); }
     /// Wird aufgerufen, wenn es das Ziel der Ware nicht mehr gibt und sie wieder "nach Hause" getragen werden muss
     void GoalDestroyed();
     /// Changes the state of the ware
@@ -100,7 +101,7 @@ public:
     bool IsWaitingInWarehouse() const { return (state == STATE_WAITINWAREHOUSE); }
     bool IsWaitingForShip() const { return (state == STATE_WAITFORSHIP); }
     /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
-    void RemoveWareJobForDir(unsigned char last_next_dir);
+    void RemoveWareJobForDir(RoadPathDirection last_next_dir);
     /// Überprüft, ob es noch ein Weg zum Ziel gibt
     bool IsRouteToGoal();
     /// Tells the ware that it should look for a warehouse to go to and notifies that (if found)
@@ -109,7 +110,7 @@ public:
     /// Tells a carrier that we want to be carried
     void CallCarrier();
     /// a building is looking for a ware - check if this lost ware can be send to the building and then do it
-    unsigned CheckNewGoalForLostWare(noBaseBuilding* newgoal);
+    unsigned CheckNewGoalForLostWare(const noBaseBuilding& newgoal) const;
     void SetNewGoalForLostWare(noBaseBuilding* newgoal);
     /// Gibt Ort der Ware zurück
     noRoadNode* GetLocation() { return location; }
@@ -169,6 +170,14 @@ public:
         RTTR_Assert(false);
         return ("unknown");
     }
+
+private:
+    struct RouteParams
+    {
+        unsigned length;
+        RoadPathDirection dir;
+    };
+    RouteParams CalcPathToGoal(const noBaseBuilding& newgoal) const;
 };
 
 #endif

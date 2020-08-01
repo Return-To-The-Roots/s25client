@@ -116,19 +116,8 @@ void nofActiveSoldier::WalkingHome()
         gwg->RemoveFigure(pos, this);
         return;
     }
-    unsigned char dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100);
-    // Or we don't find a route?
-    if(dir == 0xFF)
-    {
-        // Inform our home building that we're not coming anymore
-        Abrogate();
-        // Start wandering around then
-        StartWandering();
-        state = STATE_FIGUREWORK;
-        Wander();
-    }
-    // All ok?
-    else
+    const auto dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100);
+    if(dir)
     {
         // Find all sorts of enemies (attackers, aggressive defenders..) nearby
         if(FindEnemiesNearby())
@@ -136,7 +125,15 @@ void nofActiveSoldier::WalkingHome()
             return;
 
         // Start walking
-        StartWalking(Direction(dir));
+        StartWalking(*dir);
+    } else
+    {
+        // Inform our home building that we're not coming anymore
+        Abrogate();
+        // Start wandering around then
+        StartWandering();
+        state = STATE_FIGUREWORK;
+        Wander();
     }
 }
 
@@ -195,9 +192,9 @@ void nofActiveSoldier::ExpelEnemies()
     }
 
     // And around this point
-    for(unsigned i = 0; i < 6; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetNeighbour(pos, Direction::fromInt(i)));
+        const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetNeighbour(pos, dir));
         for(auto fieldFigure : fieldFigures)
         {
             // Normal settler?
@@ -366,10 +363,10 @@ void nofActiveSoldier::MeetingEnemy()
     // Not at the fighting spot yet, continue walking there
     else
     {
-        unsigned char dir = gwg->FindHumanPath(pos, fightSpot_, MAX_ATTACKING_RUN_DISTANCE);
-        if(dir != 0xFF)
+        const auto dir = gwg->FindHumanPath(pos, fightSpot_, MAX_ATTACKING_RUN_DISTANCE);
+        if(dir)
         {
-            StartWalking(Direction(dir));
+            StartWalking(*dir);
         } else
         {
             // qx: Couldnt find a way from current location to fighting spot -> cancel fight (Fix for #1189150)
@@ -465,23 +462,14 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
     }
     RTTR_Assert(gwg->CalcDistance(otherPos, middle) <= std::max<unsigned>(mapWidth, mapHeight) / 4u);
 
-    // Test Middle point first
-    if(gwg->ValidPointForFighting(middle, true, nullptr)
-       && (GetPos() == middle || gwg->FindHumanPath(pos, middle, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff)
-       && (other->GetPos() == middle || gwg->FindHumanPath(other->GetPos(), middle, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff))
-    {
-        // Great, then let's take this one
-        *fight_spot = middle;
-        return true;
-    }
-
-    std::vector<MapPoint> pts = gwg->GetPointsInRadius<1>(
-      middle, MEET_FOR_FIGHT_DISTANCE, Identity<MapPoint>(), [gwg = this->gwg, pos = this->pos, other](const auto& pt) {
-          // Did we find a good spot?
-          return gwg->ValidPointForFighting(pt, true, nullptr)
-                 && (pos == pt || gwg->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff)
-                 && (other->GetPos() == pt || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr) != 0xff);
-      });
+    const auto isGoodFightingSpot = [gwg = this->gwg, pos = this->pos, other](const auto& pt) {
+        // Did we find a good spot?
+        return gwg->ValidPointForFighting(pt, true, nullptr)
+               && (pos == pt || gwg->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr))
+               && (other->GetPos() == pt || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr));
+    };
+    const std::vector<MapPoint> pts =
+      gwg->GetPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, Identity<MapPoint>(), isGoodFightingSpot, true);
     if(pts.empty())
         return false;
     *fight_spot = pts.front();

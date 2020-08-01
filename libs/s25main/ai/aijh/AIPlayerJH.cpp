@@ -263,7 +263,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
                    && !sawmill->AreThereAnyOrderedWares())
                 {
                     aii.DestroyBuilding(sawmill);
-                    RemoveUnusedRoad(*sawmill->GetFlag(), 1, true);
+                    RemoveUnusedRoad(*sawmill->GetFlag(), Direction::NORTHWEST, true);
                     burns++;
                 }
             }
@@ -526,9 +526,9 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint> toCheck)
         MapPoint curPt = toCheck.front();
 
         // Coordinates to test around this reachable coordinate
-        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            MapPoint curNeighbour = aiMap.GetNeighbour(curPt, Direction::fromInt(dir));
+            MapPoint curNeighbour = aiMap.GetNeighbour(curPt, dir);
             Node& node = aiMap[curNeighbour];
 
             // already reached, don't test again
@@ -1272,7 +1272,7 @@ void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, Direction)
     if(flag->GetPlayer() != playerId)
         return;
     // if it isnt a useless flag AND it has no current road connection then retry to build a road.
-    if(RemoveUnusedRoad(*flag, INVALID_DIR, true, false))
+    if(RemoveUnusedRoad(*flag, boost::none, true, false))
         construction->AddConnectFlagJob(flag);
 }
 
@@ -1420,7 +1420,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
         SetResourceMap(AIResource::FISH, pt, 0);
 
     UpdateNodesAround(pt, 11); // todo: fix radius
-    RemoveUnusedRoad(*gwb.GetSpecObj<noFlag>(gwb.GetNeighbour(pt, Direction::SOUTHEAST)), 1, true);
+    RemoveUnusedRoad(*gwb.GetSpecObj<noFlag>(gwb.GetNeighbour(pt, Direction::SOUTHEAST)), Direction::NORTHWEST, true);
 
     // try to expand, maybe res blocked a passage
     AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
@@ -1521,7 +1521,7 @@ void AIPlayerJH::MilUpgradeOptim()
                     } else if(!milBld->IsNewBuilt()) // 0-1 soldier remains and the building has had at least 1 soldier at some point and
                                                      // the building is not new on the list-> cancel road (and fix roadsystem if necessary)
                     {
-                        RemoveUnusedRoad(*milBld->GetFlag(), 1, true, true, true);
+                        RemoveUnusedRoad(*milBld->GetFlag(), Direction::NORTHWEST, true, true, true);
                     }
                 } else if(milBld->GetFrontierDistance() >= 1) // frontier building - connect to road system
                 {
@@ -1925,45 +1925,38 @@ void AIPlayerJH::SendAIEvent(std::unique_ptr<AIEvent::Base> ev)
     eventManager.AddAIEvent(std::move(ev));
 }
 
-bool AIPlayerJH::IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag, unsigned char excludeDir, bool init,
-                                    std::vector<MapPoint> oldFlags)
+bool AIPlayerJH::IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag,
+                                    helpers::OptionalEnum<Direction> excludeDir, std::vector<const noFlag*> oldFlags)
 {
-    if(!init && &startFlag == &curFlag)
+    // If oldFlags is empty we just started
+    if(!oldFlags.empty() && &startFlag == &curFlag)
         return true;
     if(maxlen < 1)
         return false;
-    bool partofcircle = false;
-    unsigned iTestDir = 0;
-    while(iTestDir < 6 && !partofcircle)
+    for(Direction testDir : helpers::EnumRange<Direction>{})
     {
-        Direction testDir = Direction::fromInt(iTestDir);
-        if(iTestDir == excludeDir)
-        {
-            iTestDir++;
+        if(testDir == excludeDir)
             continue;
-        }
-        if(iTestDir == 1
+        if(testDir == Direction::NORTHWEST
            && (aii.IsObjectTypeOnNode(gwb.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST), NOP_BUILDING)
                || aii.IsObjectTypeOnNode(gwb.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST), NOP_BUILDINGSITE)))
         {
-            iTestDir++;
             continue;
         }
-        RoadSegment* route = curFlag.GetRoute(testDir);
+        const RoadSegment* route = curFlag.GetRoute(testDir);
         if(route)
         {
             const noFlag& flag = route->GetOtherFlag(curFlag);
-            bool alreadyinlist = helpers::contains(oldFlags, flag.GetPos());
-            if(!alreadyinlist)
+            if(!helpers::contains(oldFlags, &flag))
             {
-                oldFlags.push_back(flag.GetPos());
+                oldFlags.push_back(&flag);
                 Direction revDir = route->GetOtherFlagDir(curFlag) + 3u;
-                partofcircle = IsFlagPartofCircle(startFlag, maxlen - 1, flag, revDir.toUInt(), false, oldFlags);
+                if(IsFlagPartofCircle(startFlag, maxlen - 1, flag, revDir, oldFlags))
+                    return true;
             }
         }
-        iTestDir++;
     }
-    return partofcircle;
+    return false;
 }
 
 void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
@@ -1973,7 +1966,7 @@ void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
     std::vector<const noFlag*> reconnectflags;
     for(auto& flag : flags)
     {
-        if(RemoveUnusedRoad(*flag, 255, true, false))
+        if(RemoveUnusedRoad(*flag, boost::none, true, false))
             reconnectflags.push_back(flag);
     }
     UpdateNodesAround(pt, 25);
@@ -1989,11 +1982,11 @@ void AIPlayerJH::CheckForUnconnectedBuildingSites()
     {
         noFlag* flag = bldSite->GetFlag();
         bool foundRoute = false;
-        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
             if(dir == Direction::NORTHWEST)
                 continue;
-            if(flag->GetRoute(Direction::fromInt(dir)))
+            if(flag->GetRoute(dir))
             {
                 foundRoute = true;
                 break;
@@ -2004,14 +1997,13 @@ void AIPlayerJH::CheckForUnconnectedBuildingSites()
     }
 }
 
-bool AIPlayerJH::RemoveUnusedRoad(const noFlag& startFlag, unsigned char excludeDir /*= 0xFF*/, bool firstflag /*= true*/,
+bool AIPlayerJH::RemoveUnusedRoad(const noFlag& startFlag, helpers::OptionalEnum<Direction> excludeDir, bool firstflag /*= true*/,
                                   bool allowcircle /*= true*/, bool keepstartflag /*= false*/)
 {
-    unsigned char foundDir = INVALID_DIR;
-    unsigned char foundDir2 = INVALID_DIR;
+    helpers::OptionalEnum<Direction> foundDir, foundDir2;
     unsigned char finds = 0;
     // Count roads from this flag...
-    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
+    for(Direction dir : helpers::EnumRange<Direction>{})
     {
         if(dir == excludeDir)
             continue;
@@ -2023,7 +2015,7 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag& startFlag, unsigned char exclude
             // it(burning takes place at the pathfinding job))
             return true;
         }
-        if(startFlag.GetRoute(Direction::fromInt(dir)))
+        if(startFlag.GetRoute(dir))
         {
             finds++;
             if(finds == 1)
@@ -2039,8 +2031,7 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag& startFlag, unsigned char exclude
     {
         if(allowcircle)
         {
-            std::vector<MapPoint> flagcheck;
-            if(!IsFlagPartofCircle(startFlag, 10, startFlag, 7, true, flagcheck))
+            if(!IsFlagPartofCircle(startFlag, 10, startFlag, boost::none, {}))
                 return false;
             if(!firstflag)
                 return false;
@@ -2051,22 +2042,22 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag& startFlag, unsigned char exclude
     // kill the flag
     if(keepstartflag)
     {
-        if(foundDir != INVALID_DIR)
-            aii.DestroyRoad(startFlag.GetPos(), Direction::fromInt(foundDir));
+        if(foundDir)
+            aii.DestroyRoad(startFlag.GetPos(), *foundDir);
     } else
         aii.DestroyFlag(&startFlag);
 
     // nothing found?
-    if(foundDir == INVALID_DIR)
+    if(!foundDir)
         return false;
     // at least 1 road exists
-    Direction revDir1 = startFlag.GetRoute(Direction::fromInt(foundDir))->GetOtherFlagDir(startFlag) + 3u;
-    RemoveUnusedRoad(startFlag.GetRoute(Direction::fromInt(foundDir))->GetOtherFlag(startFlag), revDir1.toUInt(), false);
+    Direction revDir1 = startFlag.GetRoute(*foundDir)->GetOtherFlagDir(startFlag) + 3u;
+    RemoveUnusedRoad(startFlag.GetRoute(*foundDir)->GetOtherFlag(startFlag), revDir1, false);
     // 2 roads exist
-    if(foundDir2 != 0xFF)
+    if(foundDir2)
     {
-        Direction revDir2 = startFlag.GetRoute(Direction::fromInt(foundDir2))->GetOtherFlagDir(startFlag) + 3u;
-        RemoveUnusedRoad(startFlag.GetRoute(Direction::fromInt(foundDir2))->GetOtherFlag(startFlag), revDir2.toUInt(), false);
+        Direction revDir2 = startFlag.GetRoute(*foundDir2)->GetOtherFlagDir(startFlag) + 3u;
+        RemoveUnusedRoad(startFlag.GetRoute(*foundDir2)->GetOtherFlag(startFlag), revDir2, false);
     }
     return false;
 }
@@ -2130,7 +2121,7 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
                     if(!static_cast<const noAnimal*>(fig)->CanHunted())
                         continue;
                     // Und komme ich hin?
-                    if(gwb.FindHumanPath(pt, static_cast<const noAnimal*>(fig)->GetPos(), maxrange) != 0xFF)
+                    if(gwb.FindHumanPath(pt, static_cast<const noAnimal*>(fig)->GetPos(), maxrange))
                     // Dann nehmen wir es
                     {
                         if(++huntablecount >= min)
@@ -2241,7 +2232,7 @@ bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
                     // not already getting cut down or a freaking pineapple thingy?
                     if(!gwb.GetNode(t2).reserved && gwb.GetSpecObj<noTree>(t2)->ProducesWood())
                     {
-                        if(gwb.FindHumanPath(pt, t2, 20) != 0xFF)
+                        if(gwb.FindHumanPath(pt, t2, 20))
                             return true;
                     }
                 }
@@ -2264,7 +2255,7 @@ bool AIPlayerJH::ValidStoneinRange(const MapPoint pt)
                 // point has tree & path is available?
                 if(gwb.GetNO(t2)->GetType() == NOP_GRANITE)
                 {
-                    if(gwb.FindHumanPath(pt, t2, 20) != 0xFF)
+                    if(gwb.FindHumanPath(pt, t2, 20))
                         return true;
                 }
             }
@@ -2384,9 +2375,9 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty) const
         return false;
     }
 
-    for(unsigned r = 0; r < 6; r++)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        const unsigned short seaId = gwb.GetSeaId(harborid, Direction::fromInt(r));
+        const unsigned short seaId = gwb.GetSeaId(harborid, dir);
         if(!seaId)
             continue;
 
@@ -2454,9 +2445,9 @@ bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
                 {
                     // LOG.write(("found fish at %i,%i ",t2);
                     // try to find a path to a neighboring node on the coast
-                    for(int j = 0; j < 6; j++)
+                    for(const auto j : helpers::EnumRange<Direction>{})
                     {
-                        if(gwb.FindHumanPath(pt, gwb.GetNeighbour(t2, Direction::fromInt(j)), 10) != 0xFF)
+                        if(gwb.FindHumanPath(pt, gwb.GetNeighbour(t2, j), 10))
                             return true;
                     }
                 }
@@ -2468,13 +2459,13 @@ bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
 
 unsigned AIPlayerJH::GetNumAIRelevantSeaIds() const
 {
-    std::list<unsigned short> validseaids;
+    std::vector<unsigned short> validseaids;
     std::list<unsigned short> onetimeuseseaids;
     for(unsigned i = 1; i <= gwb.GetNumHarborPoints(); i++)
     {
-        for(unsigned r = 0; r < 6; r++)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const unsigned short seaId = gwb.GetSeaId(i, Direction::fromInt(r));
+            const unsigned short seaId = gwb.GetSeaId(i, dir);
             if(!seaId)
                 continue;
             // there is a sea id? -> check if it is already a validid or a once found id

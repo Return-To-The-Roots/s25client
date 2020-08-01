@@ -25,7 +25,7 @@ class nobUsual;
 class nofFisher : public nofFarmhand
 {
     /// Richtung, in die er fischt
-    unsigned char fishing_dir;
+    Direction fishing_dir;
     /// Fängt er einen Fisch?
     bool successful;
 

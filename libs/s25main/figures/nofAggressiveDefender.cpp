@@ -246,18 +246,18 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     RTTR_Assert(pos != attacker->GetPos()); // If so, why was it not found?
 
     // Calc next walking direction
-    unsigned char dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);
+    const auto dir = gwg->FindHumanPath(pos, attacker->GetPos(), 100, true);
 
-    if(dir == 0xFF)
+    if(dir)
+    {
+        // Continue walking towards him
+        StartWalking(*dir);
+    } else
     {
         // No route found
         // Look for new attacker
         CancelAtAttacker();
         MissionAggressiveDefendingLookForNewAggressor();
-    } else
-    {
-        // Continue walking towards him
-        StartWalking(Direction(dir));
     }
 }
 

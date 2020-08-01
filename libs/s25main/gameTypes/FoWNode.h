@@ -18,15 +18,40 @@
 #ifndef FoWNode_h__
 #define FoWNode_h__
 
+#include "Direction.h"
+#include "helpers/EnumArray.h"
+#include "helpers/MaxEnumValue.h"
 #include "gameTypes/MapTypes.h"
-#include <array>
 #include <cstdint>
+#include <stdexcept>
 
 class FOWObject;
 class SerializedGameData;
 
+enum class BorderStonePos
+{
+    OnPoint,
+    HalfEast,
+    HalfSouthEast,
+    HalfSouthWest
+};
+
+DEFINE_MAX_ENUM_VALUE(BorderStonePos, BorderStonePos::HalfSouthWest)
+
+inline Direction toDirection(BorderStonePos dir)
+{
+    switch(dir)
+    {
+        case BorderStonePos::HalfEast: return Direction::EAST;
+        case BorderStonePos::HalfSouthEast: return Direction::SOUTHEAST;
+        case BorderStonePos::HalfSouthWest: return Direction::SOUTHWEST;
+        case BorderStonePos::OnPoint: break;
+    }
+    throw std::logic_error("Can't convert");
+}
+
 /// Border stones on 1 node: Directly on Point and halfway to E, SE and SW
-using BoundaryStones = std::array<uint8_t, 4>;
+using BoundaryStones = helpers::EnumArray<uint8_t, BorderStonePos>;
 
 /// How a player sees the point in FoW
 struct FoWNode
@@ -37,7 +62,7 @@ struct FoWNode
     Visibility visibility;
     /// FOW-Objekt
     FOWObject* object;
-    std::array<uint8_t, 3> roads;
+    helpers::EnumArray<PointRoad, RoadDir> roads;
     unsigned char owner;
     BoundaryStones boundary_stones;
 

@@ -45,7 +45,7 @@ bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start,
     }
 
     TradePath path;
-    if(gwg.FindTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &path.route) == INVALID_DIR)
+    if(!gwg.FindTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &path.route))
         return false;
 
     path.start = start;

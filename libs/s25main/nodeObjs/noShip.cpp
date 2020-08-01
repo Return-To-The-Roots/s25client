@@ -27,6 +27,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "figures/noFigure.h"
 #include "figures/nofAttacker.h"
+#include "helpers/EnumArray.h"
 #include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "notifications/ExpeditionNote.h"
@@ -39,6 +40,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/ShipNames.h"
 #include "s25util/Log.h"
+#include <array>
 
 /// Zeit zum Beladen des Schiffes
 const unsigned LOADING_TIME = 200;
@@ -51,11 +53,13 @@ const unsigned MAX_EXPLORATION_EXPEDITION_DISTANCE = 100;
 const unsigned EXPLORATION_EXPEDITION_WAITING_TIME = 300;
 
 /// Positionen der Flaggen am Schiff für die 6 unterschiedlichen Richtungen jeweils
-const helpers::MultiArray<DrawPoint, 2, 6> SHIPS_FLAG_POS = { // break
-  {                                                           /* Standing (sails down) */
-   {{-3, -77}, {-6, -71}, {-3, -71}, {-1, -71}, {5, -63}, {-1, -70}},
-   // Driving
-   {{3, -70}, {0, -64}, {3, -64}, {-1, -70}, {5, -63}, {5, -63}}}};
+constexpr std::array<helpers::EnumArray<DrawPoint, Direction>, 2> SHIPS_FLAG_POS = {{
+  // break
+
+  {{{-3, -77}, {-6, -71}, {-3, -71}, {-1, -71}, {5, -63}, {-1, -70}}}, // Standing (sails down)
+
+  {{{3, -70}, {0, -64}, {3, -64}, {-1, -70}, {5, -63}, {5, -63}}} // Driving
+}};
 
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos), ownerId_(player), state(STATE_IDLE), seaId_(0), goal_harborId(0), goal_dir(0),
@@ -63,9 +67,9 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
       lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        unsigned short seaId = gwg->GetNeighbourNode(pos, Direction::fromInt(i)).seaId;
+        unsigned short seaId = gwg->GetNeighbourNode(pos, dir).seaId;
         if(seaId)
             this->seaId_ = seaId;
     }
@@ -100,7 +104,7 @@ void noShip::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(home_harbor);
     sgd.PushUnsignedInt(covered_distance);
     for(auto i : route_)
-        sgd.PushUnsignedChar(i.toUInt());
+        sgd.PushUnsignedChar(rttr::enum_cast(i));
     sgd.PushObjectContainer(figures, false);
     sgd.PushObjectContainer(wares, true);
 }
@@ -112,8 +116,8 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
       route_(sgd.PopUnsignedInt()), lost(sgd.PopBool()), remaining_sea_attackers(sgd.PopUnsignedInt()), home_harbor(sgd.PopUnsignedInt()),
       covered_distance(sgd.PopUnsignedInt())
 {
-    for(auto& i : route_)
-        i = Direction::fromInt(sgd.PopUnsignedChar());
+    for(auto& dir : route_)
+        dir = Direction::fromInt(sgd.PopUnsignedChar());
     sgd.PopObjectContainer(figures, GOT_UNKNOWN);
     sgd.PopObjectContainer(wares, GOT_WARE);
 }
@@ -193,22 +197,22 @@ void noShip::Draw(DrawPoint drawPt)
     }
 
     LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId()))
-      ->DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir().toUInt()], COLOR_WHITE, gwg->GetPlayer(ownerId_).color);
+      ->DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir()], COLOR_WHITE, gwg->GetPlayer(ownerId_).color);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= STATE_EXPEDITION_LOADING && state <= STATE_EXPEDITION_DRIVING)
         LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId() + 4))
-          ->DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir().toUInt()]);
+          ->DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir()]);
 }
 
 /// Zeichnet das Schiff stehend mit oder ohne Waren
 void noShip::DrawFixed(DrawPoint drawPt, const bool draw_wares)
 {
-    LOADER.GetImageN("boot_z", (GetCurMoveDir() + 3u).toUInt() * 2 + 1)->DrawFull(drawPt, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", (GetCurMoveDir() + 3u).toUInt() * 2)->DrawFull(drawPt);
+    LOADER.GetImageN("boot_z", rttr::enum_cast(GetCurMoveDir() + 3u) * 2 + 1)->DrawFull(drawPt, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", rttr::enum_cast(GetCurMoveDir() + 3u) * 2)->DrawFull(drawPt);
 
     if(draw_wares)
         /// Waren zeichnen
-        LOADER.GetImageN("boot_z", 30 + (GetCurMoveDir() + 3u).toUInt())->DrawFull(drawPt);
+        LOADER.GetImageN("boot_z", 30 + rttr::enum_cast(GetCurMoveDir() + 3u))->DrawFull(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
@@ -217,8 +221,8 @@ void noShip::DrawDriving(DrawPoint& drawPt)
     // Interpolieren zwischen beiden Knotenpunkten
     drawPt += CalcWalkingRelative();
 
-    LOADER.GetImageN("boot_z", 13 + (GetCurMoveDir() + 3u).toUInt() * 2)->DrawFull(drawPt, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", 12 + (GetCurMoveDir() + 3u).toUInt() * 2)->DrawFull(drawPt);
+    LOADER.GetImageN("boot_z", 13 + rttr::enum_cast(GetCurMoveDir() + 3u) * 2)->DrawFull(drawPt, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", 12 + rttr::enum_cast(GetCurMoveDir() + 3u) * 2)->DrawFull(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer mit Gütern
@@ -226,7 +230,7 @@ void noShip::DrawDrivingWithWares(DrawPoint& drawPt)
 {
     DrawDriving(drawPt);
     /// Waren zeichnen
-    LOADER.GetImageN("boot_z", 30 + (GetCurMoveDir() + 3u).toUInt())->DrawFull(drawPt);
+    LOADER.GetImageN("boot_z", 30 + rttr::enum_cast(GetCurMoveDir() + 3u))->DrawFull(drawPt);
 }
 
 void noShip::HandleEvent(const unsigned id)

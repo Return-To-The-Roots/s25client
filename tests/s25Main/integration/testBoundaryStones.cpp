@@ -17,9 +17,11 @@
 
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "helpers/EnumRange.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "gameTypes/FoWNode.h"
+#include "gameTypes/GameTypesOutput.h"
 #include <boost/test/unit_test.hpp>
 
 namespace {
@@ -31,12 +33,12 @@ boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, co
     {
         const BoundaryStones& isValue = world.GetNode(pt).boundary_stones;
         const BoundaryStones& expectedValue = expected[world.GetIdx(pt)];
-        for(unsigned i = 0; i < isValue.size(); i++)
+        for(const auto bPos : helpers::EnumRange<BorderStonePos>{})
         {
-            if(isValue[i] != expectedValue[i])
+            if(isValue[bPos] != expectedValue[bPos])
             {
                 boost::test_tools::predicate_result result(false);
-                result.message() << unsigned(isValue[i]) << "!=" << unsigned(expectedValue[i]) << " at " << pt << "[" << i << "]";
+                result.message() << unsigned(isValue[bPos]) << "!=" << unsigned(expectedValue[bPos]) << " at " << pt << "[" << bPos << "]";
                 return result;
             }
         }
@@ -50,8 +52,8 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
     std::vector<BoundaryStones> expectedBoundaryStones(world.GetWidth() * world.GetHeight());
     // Sanity check
     BOOST_TEST(boundaryStonesMatch(world, expectedBoundaryStones));
-    expectedBoundaryStones[world.GetIdx(MapPoint(7, 5))][2] = 1u;
-    BOOST_TEST(boundaryStonesMatch(world, expectedBoundaryStones).message().str() == "0!=1 at (7, 5)[2]");
+    expectedBoundaryStones[world.GetIdx(MapPoint(7, 5))][BorderStonePos::HalfSouthEast] = 1u;
+    BOOST_TEST(boundaryStonesMatch(world, expectedBoundaryStones).message().str() == "0!=1 at (7, 5)[HalfSouthEast]");
 
     // Check some point in the middle and at 0,0 which causes wrapping
     for(const auto middlePt : {MapPoint(5, 5), MapPoint(0, 0)})
@@ -67,31 +69,31 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
         // Set only the middle pt and recalc
         world.SetOwner(middlePt, 1);
         // Only middle pt has a single boundary stone
-        expectedBoundaryStones[world.GetIdx(middlePt)][0] = 1u;
+        expectedBoundaryStones[world.GetIdx(middlePt)][BorderStonePos::OnPoint] = 1u;
         BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
 
         for(MapPoint pt : radius1Pts)
             world.SetOwner(pt, 1);
         // Midle pt lost its stone
-        expectedBoundaryStones[world.GetIdx(middlePt)][0] = 0u;
+        expectedBoundaryStones[world.GetIdx(middlePt)][BorderStonePos::OnPoint] = 0u;
         // Each border node should have a boundary stone at the center
         for(MapPoint pt : radius1Pts)
-            expectedBoundaryStones[world.GetIdx(pt)][0] = 1u;
-        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][2] = 1u;
-        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][1] = 1u;
-        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][3] = 1u;
-        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHEAST])][2] = 1u;
-        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::EAST])][3] = 1u;
+            expectedBoundaryStones[world.GetIdx(pt)][BorderStonePos::OnPoint] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][BorderStonePos::HalfSouthEast] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][BorderStonePos::HalfEast] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][BorderStonePos::HalfSouthWest] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHEAST])][BorderStonePos::HalfSouthEast] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::EAST])][BorderStonePos::HalfSouthWest] = 1u;
         // SE has no other stone
-        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::SOUTHWEST])][1] = 1u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::SOUTHWEST])][BorderStonePos::HalfEast] = 1u;
         BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
 
         // Now obtain another node:
         const MapPoint doubleWestPt = world.GetNeighbour(radius1Pts[Direction::WEST], Direction::WEST);
         world.SetOwner(doubleWestPt, 1);
         // Still the same, but that node has 2 stones
-        expectedBoundaryStones[world.GetIdx(doubleWestPt)][0] = 1u;
-        expectedBoundaryStones[world.GetIdx(doubleWestPt)][1] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt)][BorderStonePos::OnPoint] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt)][BorderStonePos::HalfEast] = 1u;
         BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
 
         // Next, actually increasing our territory
@@ -102,18 +104,18 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
         world.SetOwner(doubleWestPt2, 1);
         world.SetOwner(doubleWestPt3, 1);
         // New points get some stones: Top
-        expectedBoundaryStones[world.GetIdx(doubleWestPt2)][0] = 1u;
-        expectedBoundaryStones[world.GetIdx(doubleWestPt2)][1] = 1u;
-        expectedBoundaryStones[world.GetIdx(doubleWestPt2)][3] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt2)][BorderStonePos::OnPoint] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt2)][BorderStonePos::HalfEast] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt2)][BorderStonePos::HalfSouthWest] = 1u;
         // Bottom
-        expectedBoundaryStones[world.GetIdx(doubleWestPt3)][0] = 1u;
-        expectedBoundaryStones[world.GetIdx(doubleWestPt3)][1] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt3)][BorderStonePos::OnPoint] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt3)][BorderStonePos::HalfEast] = 1u;
         // Middle (gets one to bottom, looses one to right, as WEST point is now no border node anymore (affects 2 more)
-        expectedBoundaryStones[world.GetIdx(doubleWestPt)][2] = 1u;
-        expectedBoundaryStones[world.GetIdx(doubleWestPt)][1] = 0u;
-        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][0] = 0u;
-        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][2] = 0u;
-        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][3] = 0u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt)][BorderStonePos::HalfSouthEast] = 1u;
+        expectedBoundaryStones[world.GetIdx(doubleWestPt)][BorderStonePos::HalfEast] = 0u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][BorderStonePos::OnPoint] = 0u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::WEST])][BorderStonePos::HalfSouthEast] = 0u;
+        expectedBoundaryStones[world.GetIdx(radius1Pts[Direction::NORTHWEST])][BorderStonePos::HalfSouthWest] = 0u;
         BOOST_REQUIRE(boundaryStonesMatch(world, expectedBoundaryStones));
     }
 }

@@ -123,7 +123,7 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
     {
         MapNode& node = world_.GetNodeInt(pt);
 
-        std::fill(node.roads.begin(), node.roads.end(), 0);
+        std::fill(node.roads.begin(), node.roads.end(), PointRoad::None);
         node.altitude = map.GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y);
         unsigned char t1 = map.GetMapDataAt(MAP_TERRAIN1, pt.x, pt.y), t2 = map.GetMapDataAt(MAP_TERRAIN2, pt.x, pt.y);
 
@@ -178,7 +178,7 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
             fow.last_update_time = 0;
             fow.visibility = fowVisibility;
             fow.object = nullptr;
-            std::fill(fow.roads.begin(), fow.roads.end(), 0);
+            std::fill(fow.roads.begin(), fow.roads.end(), PointRoad::None);
             fow.owner = 0;
             std::fill(fow.boundary_stones.begin(), fow.boundary_stones.end(), 0);
         }
@@ -443,18 +443,17 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     {
         std::vector<bool> hasCoastAtSea(world.seas.size() + 1, false);
         bool foundCoast = false;
-        for(unsigned z = 0; z < 6; ++z)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
             // Skip point at NW as often there is no path from it if the harbor is north of an island
-            unsigned short seaId =
-              (z == Direction::NORTHWEST) ? 0 : world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, Direction::fromInt(z)));
+            unsigned short seaId = (dir == Direction::NORTHWEST) ? 0 : world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, dir));
             // Only 1 coastal point per sea
             if(hasCoastAtSea[seaId])
                 seaId = 0;
             else
                 hasCoastAtSea[seaId] = true;
 
-            it->cps[z].seaId = seaId;
+            it->cps[dir].seaId = seaId;
             if(seaId)
                 foundCoast = true;
         }
@@ -507,8 +506,8 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 {
     for(HarborPos& harbor : world.harbor_pos)
     {
-        for(unsigned z = 0; z < 6; ++z)
-            harbor.neighbors[z].clear();
+        for(const auto dir : helpers::EnumRange<ShipDirection>{})
+            harbor.neighbors[dir].clear();
     }
     PathConditionShip shipPathChecker(world);
 
@@ -542,13 +541,13 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         // mark coastal points around harbors
         for(unsigned otherHbId = 1; otherHbId < world.harbor_pos.size(); ++otherHbId)
         {
-            for(unsigned d = 0; d < Direction::COUNT; d++)
+            for(const auto dir : helpers::EnumRange<Direction>{})
             {
-                unsigned seaId = world.GetSeaId(otherHbId, Direction::fromInt(d));
+                unsigned seaId = world.GetSeaId(otherHbId, dir);
                 // No sea? -> Next
                 if(!seaId)
                     continue;
-                const MapPoint coastPt = world.GetNeighbour(world.GetHarborPoint(otherHbId), Direction::fromInt(d));
+                const MapPoint coastPt = world.GetNeighbour(world.GetHarborPoint(otherHbId), dir);
                 // This should not be marked for visit
                 unsigned idx = world.GetIdx(coastPt);
                 RTTR_Assert(ptToVisitOrHb[idx] != -1);
@@ -572,7 +571,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
             {
                 ShipDirection shipDir = world.GetShipDir(ownCoastPt, ownCoastPt);
-                world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(HarborPos::Neighbor(it->second, 0));
+                world.harbor_pos[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(it->second, 0));
                 hbFound[it->second] = true;
             }
             todo_list.push(CalcHarborPosNeighborsNode(ownCoastPt, 0));
@@ -583,9 +582,9 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             CalcHarborPosNeighborsNode curNode = todo_list.front();
             todo_list.pop();
 
-            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+            for(const auto dir : helpers::EnumRange<Direction>{})
             {
-                MapPoint curPt = world.GetNeighbour(curNode.pos, Direction::fromInt(dir));
+                MapPoint curPt = world.GetNeighbour(curNode.pos, dir);
                 unsigned idx = world.GetIdx(curPt);
 
                 int ptValue = ptToVisitOrHb[idx];
@@ -593,7 +592,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                 if(ptValue == 0)
                     continue;
                 // Not reachable
-                if(!shipPathChecker.IsEdgeOk(curNode.pos, Direction::fromInt(dir)))
+                if(!shipPathChecker.IsEdgeOk(curNode.pos, dir))
                     continue;
 
                 if(ptValue > 0) // found harbor(s)
@@ -608,15 +607,14 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                             continue;
 
                         hbFound[otherHbId] = true;
-                        world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(
-                          HarborPos::Neighbor(otherHbId, curNode.distance + 1));
+                        world.harbor_pos[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(otherHbId, curNode.distance + 1));
 
                         // Make this the only coastal point of this harbor for this sea
                         HarborPos& otherHb = world.harbor_pos[otherHbId];
                         RTTR_Assert(seaId);
-                        for(unsigned hbDir = 0; hbDir < Direction::COUNT; ++hbDir)
+                        for(const auto hbDir : helpers::EnumRange<Direction>{})
                         {
-                            if(otherHb.cps[hbDir].seaId == seaId && world.GetNeighbour(otherHb.pos, Direction::fromInt(hbDir)) != curPt)
+                            if(otherHb.cps[hbDir].seaId == seaId && world.GetNeighbour(otherHb.pos, hbDir) != curPt)
                                 otherHb.cps[hbDir].seaId = 0;
                         }
                     }
@@ -650,9 +648,9 @@ unsigned MapLoader::MeasureSea(World& world, const MapPoint start, unsigned shor
         RTTR_Assert(visited[world.GetIdx(p)]);
         world.GetNodeInt(p).seaId = seaId;
 
-        for(unsigned i = 0; i < 6; ++i)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            MapPoint neighbourPt = world.GetNeighbour(p, Direction::fromInt(i));
+            MapPoint neighbourPt = world.GetNeighbour(p, dir);
             if(visited[world.GetIdx(neighbourPt)])
                 continue;
             visited[world.GetIdx(neighbourPt)] = true;

@@ -164,7 +164,7 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
         if(gwg->CalcDistance(attackerPos, defenderPos) <= 5)
         {
             // Check it further (e.g. if they have to walk around a river...)
-            if(gwg->FindHumanPath(attackerPos, defenderPos, 5) != INVALID_DIR)
+            if(gwg->FindHumanPath(attackerPos, defenderPos, 5))
             {
                 aggressor->LetsFight(defender);
                 return aggressor;
@@ -223,7 +223,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
         unsigned length = 0;
         // Gültiger Weg gefunden
-        if(gwg->FindHumanPath(soldierPos, node.first, 100, false, &length) != INVALID_DIR)
+        if(gwg->FindHumanPath(soldierPos, node.first, 100, false, &length))
         {
             // Kürzer als bisher kürzester Weg? --> Dann nehmen wir diesen Punkt (vorerst)
             if(length < min_length)
@@ -305,7 +305,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
         {
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
             // vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 5, false) != 0xFF)
+            if(gwg->FindHumanPath(aggressor->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 5, false))
             {
                 // dann kann der zur Flagge gehen
                 aggressor->AttackFlag();
@@ -326,7 +326,7 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
             if(aggressor->GetRadius() > radius)
             {
                 // Und findet er einen zu diesem Punkt?
-                if(gwg->FindHumanPath(aggressor->GetPos(), pt, 50, false) != 0xFF)
+                if(gwg->FindHumanPath(aggressor->GetPos(), pt, 50, false))
                 {
                     // dann soll er dorthin gehen
                     aggressor->StartSucceeding(pt, radius);

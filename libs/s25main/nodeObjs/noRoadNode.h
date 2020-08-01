@@ -19,9 +19,10 @@
 #define NO_ROADNODE_H_
 
 #include "RoadSegment.h"
+#include "helpers/EnumArray.h"
 #include "noCoordBase.h"
 #include "gameTypes/Direction.h"
-#include <array>
+#include "gameTypes/RoadPathDirection.h"
 
 class Ware;
 class SerializedGameData;
@@ -31,7 +32,9 @@ class noRoadNode : public noCoordBase
 {
 protected:
     unsigned char player;
-    std::array<RoadSegment*, 6> routes;
+
+private:
+    helpers::EnumArray<RoadSegment*, Direction> routes;
 
 public:
     // For Pathfinding
@@ -44,7 +47,7 @@ public:
     mutable unsigned last_visit;
     mutable const noRoadNode* prev; //-V730_NOINIT
     /// Direction to previous node, includes SHIP_DIR
-    mutable unsigned dir_; //-V730_NOINIT
+    mutable RoadPathDirection dir_; //-V730_NOINIT
 public:
     noRoadNode(NodalObjectType nop, MapPoint pos, unsigned char player);
     noRoadNode(SerializedGameData& sgd, unsigned obj_id);
@@ -64,8 +67,8 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noRoadNode(sgd); }
 
-    RoadSegment* GetRoute(const Direction dir) const { return routes[dir.toUInt()]; }
-    void SetRoute(const Direction dir, RoadSegment* route) { routes[dir.toUInt()] = route; }
+    RoadSegment* GetRoute(const Direction dir) const { return routes[dir]; }
+    void SetRoute(const Direction dir, RoadSegment* route) { routes[dir] = route; }
     noRoadNode* GetNeighbour(Direction dir) const;
 
     void DestroyRoad(Direction dir);
@@ -85,7 +88,7 @@ public:
 
 inline noRoadNode* noRoadNode::GetNeighbour(const Direction dir) const
 {
-    const RoadSegment* route = routes[dir.toUInt()];
+    const RoadSegment* route = GetRoute(dir);
     if(!route)
         return nullptr;
     else if(route->GetF1() == this)

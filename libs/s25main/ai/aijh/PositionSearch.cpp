@@ -59,9 +59,9 @@ AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIPlayerJH& player
         }
 
         // now insert neighbouring nodes...
-        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            MapPoint neighbourPt = player.GetWorld().GetNeighbour(pt, Direction::fromInt(dir));
+            MapPoint neighbourPt = player.GetWorld().GetNeighbour(pt, dir);
             unsigned nIdx = player.GetWorld().GetIdx(neighbourPt);
 
             // test if already tested or not in territory

@@ -76,7 +76,7 @@ void noAnimal::Draw(DrawPoint drawPt)
               GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
-            LOADER.animal_cache[species][GetCurMoveDir().toUInt()][ani_step].draw(drawPt);
+            LOADER.getAnimalSprite(species, GetCurMoveDir(), ani_step).draw(drawPt);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
@@ -99,7 +99,7 @@ void noAnimal::Draw(DrawPoint drawPt)
         case STATE_PAUSED:
         {
             // Stehend zeichnen
-            LOADER.animal_cache[species][GetCurMoveDir().toUInt()][0].draw(drawPt);
+            LOADER.getAnimalSprite(species, GetCurMoveDir(), 0).draw(drawPt);
         }
         break;
         case STATE_DEAD:
@@ -122,7 +122,7 @@ void noAnimal::Draw(DrawPoint drawPt)
             } else
             {
                 // Stehend zeichnen
-                LOADER.animal_cache[species][GetCurMoveDir().toUInt()][0].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.getAnimalSprite(species, GetCurMoveDir(), 0).draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
             }
         }
         break;
@@ -189,8 +189,8 @@ void noAnimal::StartWalking(const Direction dir)
 void noAnimal::StandardWalking()
 {
     // neuen Weg suchen
-    unsigned char dir = FindDir();
-    if(dir == INVALID_DIR)
+    const helpers::OptionalEnum<Direction> dir = FindDir();
+    if(!dir)
     {
         // Sterben, weil kein Weg mehr gefunden wurde
         Die();
@@ -203,7 +203,7 @@ void noAnimal::StandardWalking()
     } else
     {
         // weiterlaufen
-        StartWalking(Direction::fromInt(dir));
+        StartWalking(*dir);
     }
 }
 
@@ -249,28 +249,28 @@ void noAnimal::Walked()
     }
 }
 
-unsigned char noAnimal::FindDir()
+helpers::OptionalEnum<Direction> noAnimal::FindDir()
 {
     // mit zufälliger Richtung anfangen
     unsigned doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
 
-    for(unsigned char dtmp = 0; dtmp < 6; ++dtmp)
+    for(auto dir : helpers::EnumRange<Direction>{})
     {
-        Direction d(dtmp + doffset);
+        dir += doffset;
 
-        DescIdx<TerrainDesc> tLeft = gwg->GetLeftTerrain(pos, d);
-        DescIdx<TerrainDesc> tRight = gwg->GetRightTerrain(pos, d);
+        DescIdx<TerrainDesc> tLeft = gwg->GetLeftTerrain(pos, dir);
+        DescIdx<TerrainDesc> tRight = gwg->GetRightTerrain(pos, dir);
 
         if(species == SPEC_DUCK)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein
             if(gwg->GetDescription().get(tLeft).kind == TerrainKind::WATER && gwg->GetDescription().get(tRight).kind == TerrainKind::WATER)
-                return d.toUInt();
+                return dir;
         } else if(species == SPEC_POLARBEAR)
         {
             // Polarbären laufen nur auf Schnee rum
             if(gwg->GetDescription().get(tLeft).kind == TerrainKind::SNOW && gwg->GetDescription().get(tRight).kind == TerrainKind::SNOW)
-                return d.toUInt();
+                return dir;
         } else
         {
             // Die anderen Tiere dürfen nur auf Wiesen,Savannen usw. laufen, nicht auf Bergen oder in der Wüste!
@@ -278,7 +278,7 @@ unsigned char noAnimal::FindDir()
                 continue;
 
             // Außerdem dürfen keine Hindernisse im Weg sein
-            MapPoint dst = gwg->GetNeighbour(pos, d);
+            MapPoint dst = gwg->GetNeighbour(pos, dir);
             noBase* no = gwg->GetNO(dst);
 
             if(no->GetType() != NOP_NOTHING && no->GetType() != NOP_ENVIRONMENT && no->GetType() != NOP_TREE)
@@ -289,23 +289,17 @@ unsigned char noAnimal::FindDir()
                 continue;
 
             // Und möglichst auch keine Straßen
-            bool roads = false;
-            for(unsigned char d2 = 0; d2 < Direction::COUNT; ++d2)
+            for(const auto dir2 : helpers::EnumRange<Direction>{})
             {
-                if(gwg->GetPointRoad(dst, Direction::fromInt(d2)))
-                {
-                    roads = true;
-                    break;
-                }
+                if(gwg->GetPointRoad(dst, dir2) != PointRoad::None)
+                    return boost::none;
             }
-
-            if(!roads)
-                return d.toUInt();
+            return dir;
         }
     }
 
     // kein Weg mehr gefunden
-    return INVALID_DIR;
+    return boost::none;
 }
 
 bool noAnimal::CanHunted() const

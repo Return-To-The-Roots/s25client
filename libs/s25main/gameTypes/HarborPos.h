@@ -18,8 +18,9 @@
 #ifndef HarborPos_h__
 #define HarborPos_h__
 
+#include "ShipDirection.h"
+#include "helpers/EnumArray.h"
 #include "gameTypes/MapCoordinates.h"
-#include <array>
 #include <vector>
 
 struct HarborPos
@@ -28,26 +29,23 @@ struct HarborPos
 
     struct CoastalPoint
     {
-        unsigned short seaId;
-        CoastalPoint() : seaId(0) {}
+        unsigned short seaId = 0;
     };
-    std::array<CoastalPoint, 6> cps;
+    helpers::EnumArray<CoastalPoint, Direction> cps;
 
     struct Neighbor
     {
         unsigned id;
         unsigned distance;
 
-        Neighbor() = default; //-V730
-        Neighbor(unsigned id, unsigned distance) : id(id), distance(distance) {}
+        Neighbor(unsigned id, unsigned distance) noexcept : id(id), distance(distance) {}
 
         bool operator<(const Neighbor& two) const { return (distance < two.distance) || (distance == two.distance && id < two.id); }
     };
 
-    std::array<std::vector<Neighbor>, 6> neighbors;
+    helpers::EnumArray<std::vector<Neighbor>, ShipDirection> neighbors;
 
-    HarborPos() = default; //-V730
-    HarborPos(const MapPoint pt) : pos(pt) {}
+    HarborPos(const MapPoint pt) noexcept : pos(pt) {}
 };
 
 #endif // HarborPos_h__

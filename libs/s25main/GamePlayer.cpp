@@ -548,30 +548,32 @@ void GamePlayer::RoadDestroyed()
         Ware* ware = *it;
         if(ware->IsWaitingAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
         {
-            unsigned char last_next_dir = ware->GetNextDir();
+            RoadPathDirection last_next_dir = ware->GetNextDir();
             ware->RecalcRoute();
             // special case: ware was lost some time ago and the new goal is at this flag and not a warehouse,hq,harbor and the "flip-route"
             // picked so a carrier would pick up the ware carry it away from goal then back and drop  it off at the goal was just destroyed?
             // -> try to pick another flip route or tell the goal about failure.
             noRoadNode& wareLocation = *ware->GetLocation();
             noBaseBuilding* wareGoal = ware->GetGoal();
-            if(wareGoal && ware->GetNextDir() == 1 && wareLocation.GetPos() == wareGoal->GetFlag()->GetPos()
+            if(wareGoal && ware->GetNextDir() == RoadPathDirection::NorthWest && wareLocation.GetPos() == wareGoal->GetFlag()->GetPos()
                && ((wareGoal->GetBuildingType() != BLD_STOREHOUSE && wareGoal->GetBuildingType() != BLD_HEADQUARTERS
                     && wareGoal->GetBuildingType() != BLD_HARBORBUILDING)
                    || wareGoal->GetType() == NOP_BUILDINGSITE))
             {
-                unsigned gotfliproute = 1;
-                for(unsigned i = 2; i < 7; i++)
+                Direction newWareDir = Direction::NORTHWEST;
+                for(auto dir : helpers::EnumRange<Direction>{})
                 {
-                    if(wareLocation.GetRoute(Direction(i)))
+                    dir += 2u; // Need to skip Direction::NORTHWEST and we used to start with an offset of 2. TODO: Increase gameDataVersion
+                               // and just skip NW
+                    if(wareLocation.GetRoute(dir))
                     {
-                        gotfliproute = i;
+                        newWareDir = dir;
                         break;
                     }
                 }
-                if(gotfliproute != 1)
+                if(newWareDir != Direction::NORTHWEST)
                 {
-                    ware->SetNextDir(gotfliproute % 6);
+                    ware->SetNextDir(toRoadPathDirection(newWareDir));
                 } else // no route to goal -> notify goal, try to send ware to a warehouse
                 {
                     ware->NotifyGoalAboutLostWare();
@@ -585,7 +587,7 @@ void GamePlayer::RoadDestroyed()
             {
                 // notify current flag that transport in the old direction might not longer be required
                 ware->RemoveWareJobForDir(last_next_dir);
-                if(ware->GetNextDir() != 0xFF)
+                if(ware->GetNextDir() != RoadPathDirection::None)
                     ware->CallCarrier();
             }
         } else if(ware->IsWaitingInWarehouse())
@@ -872,7 +874,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
             if(curWare->IsLostWare() && curWare->type == ware)
             {
                 // got a lost ware with a road to goal -> find best
-                unsigned curLength = curWare->CheckNewGoalForLostWare(goal);
+                unsigned curLength = curWare->CheckNewGoalForLostWare(*goal);
                 if(curLength < bestLength)
                 {
                     bestLength = curLength;
@@ -926,8 +928,8 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
             noRoadNode* current_best_goal = nullptr;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
-            bool isF1Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, nullptr, roadSeg) != 0xFF;
-            bool isF2Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, nullptr, roadSeg) != 0xFF;
+            bool isF1Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, nullptr, roadSeg) != RoadPathDirection::None;
+            bool isF2Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, nullptr, roadSeg) != RoadPathDirection::None;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
             if(!isF1Reachable)
@@ -1085,7 +1087,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         // This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
         // to conclude that there is no possible path.
         if(gwg.FindPathForWareOnRoads(*start, *possibleClient.bld, &path_length, nullptr, (possibleClient.points - best_points) * 2 - 1)
-           != 0xFF)
+           != RoadPathDirection::None)
         {
             unsigned score = possibleClient.points - (path_length / 2);
 
@@ -1140,7 +1142,7 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(Ware* ware) const
         if(points)
         {
             // Weg dorthin berechnen
-            if(gwg.FindPathForWareOnRoads(*ware->GetLocation(), *milBld, &way_points) != 0xFF)
+            if(gwg.FindPathForWareOnRoads(*ware->GetLocation(), *milBld, &way_points) != RoadPathDirection::None)
             {
                 // Die Wegpunkte noch davon abziehen
                 points -= way_points;

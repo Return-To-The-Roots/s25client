@@ -20,6 +20,7 @@
 
 #include "Point.h"
 #include "RTTR_Assert.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 #include <vector>
 
@@ -50,7 +51,7 @@ public:
     void SetOwner(const Position& pt, uint8_t owner) { GetNode(pt).owner = owner; }
     /// Return true, if all points surrounding the given point (relative to map origin!!!) have the same owner
     /// Direction exceptDir will not be checked
-    bool WillBePlayerTerritory(const Position& mapPos, uint8_t owner, unsigned exceptDir);
+    bool WillBePlayerTerritory(const Position& mapPos, uint8_t owner, Direction exceptDir);
 
     /// Start position (inclusive)
     const Position startPt;

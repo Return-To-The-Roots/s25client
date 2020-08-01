@@ -229,7 +229,7 @@ void noFigure::StartWalking(const Direction dir)
         FaceDir(dir);
         waiting_for_free_node = true;
         // Andere Figuren stoppen
-        gwg->StopOnRoads(pos, dir.toUInt());
+        gwg->StopOnRoads(pos, dir);
     } else
     {
         // Normal hinlaufen
@@ -239,7 +239,7 @@ void noFigure::StartWalking(const Direction dir)
 
 void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, Direction dir)
 {
-    glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(900 + (dir + 3u).toUInt() * 8 + anistep);
+    glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(900 + rttr::enum_cast(dir + 3u) * 8 + anistep);
     if(bitmap)
         bitmap->DrawFull(drawPt, COLOR_SHADOW);
 }
@@ -318,9 +318,10 @@ void noFigure::WalkToGoal()
             MapPoint next_harbor;
             // Neuen Weg berechnen
             auto* const curRoadNode = gwg->GetSpecObj<noRoadNode>(pos);
-            unsigned char route = curRoadNode ? gwg->FindHumanPathOnRoads(*curRoadNode, *goal_, nullptr, &next_harbor) : 0xFF;
+            RoadPathDirection route =
+              curRoadNode ? gwg->FindHumanPathOnRoads(*curRoadNode, *goal_, nullptr, &next_harbor) : RoadPathDirection::None;
             // Kein Weg zum Ziel... nächstes Lagerhaus suchen
-            if(route == 0xFF)
+            if(route == RoadPathDirection::None)
             {
                 // Arbeisplatz oder Laghaus Bescheid sagen
                 Abrogate();
@@ -333,7 +334,7 @@ void noFigure::WalkToGoal()
                     WalkToGoal(); // Nach Hause laufen...
             }
             // Oder müssen wir das Schiff nehmen?
-            else if(route == SHIP_DIR)
+            else if(route == RoadPathDirection::Ship)
             {
                 // Uns in den Hafen einquartieren
                 noBase* hb = gwg->GetNO(pos);
@@ -360,7 +361,7 @@ void noFigure::WalkToGoal()
             } else
             {
                 // Get next street we are walking on
-                Direction walkDir = Direction::fromInt(route);
+                const Direction walkDir = toDirection(route);
                 cur_rs = curRoadNode->GetRoute(walkDir);
                 StartWalking(walkDir);
                 rs_pos = 0;
@@ -560,7 +561,7 @@ void noFigure::Wander()
             if(way < best_way)
             {
                 // Are we at that flag or is there a path to it?
-                if(way == 0 || gwg->FindHumanPath(pos, flag->GetPos(), wander_radius, false, &way) != 0xFF)
+                if(way == 0 || gwg->FindHumanPath(pos, flag->GetPos(), wander_radius, false, &way))
                 {
                     // gucken, ob ein Weg zu einem Warenhaus führt
                     if(gwg->GetPlayer(player).FindWarehouse(*flag, FW::AcceptsFigure(job_), true, false))
@@ -625,10 +626,10 @@ bool noFigure::WalkInRandomDir()
 {
     PathConditionHuman pathChecker(*gwg);
     // Check all dirs starting with a random one and taking the first possible
-    unsigned char dirOffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
-    for(unsigned char iDir = 0; iDir < Direction::COUNT; ++iDir)
+    unsigned dirOffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
+    for(auto dir : helpers::EnumRange<Direction>{})
     {
-        Direction dir(iDir + dirOffset);
+        dir += dirOffset;
 
         if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, dir)) && pathChecker.IsEdgeOk(pos, dir))
         {
@@ -683,11 +684,11 @@ void noFigure::WanderToFlag()
 
     // Weiter zur Flagge gehen
     // Gibts noch nen Weg dahin bzw. existiert die Flagge noch?
-    unsigned char dir = gwg->FindHumanPath(pos, flagPos_, 60, false);
-    if(dir != 0xFF)
+    const auto dir = gwg->FindHumanPath(pos, flagPos_, 60, false);
+    if(dir)
     {
         // weiter hinlaufen
-        StartWalking(Direction::fromInt(dir));
+        StartWalking(*dir);
     } else
     {
         // Wenn nicht, wieder normal weiter rumirren
@@ -764,20 +765,20 @@ DrawPoint noFigure::InterpolateWalkDrawPos(DrawPoint drawPt) const
     return drawPt;
 }
 
-void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat)
+void noFigure::DrawWalkingCarrier(DrawPoint drawPt, helpers::OptionalEnum<GoodType> ware, bool fat)
 {
     const unsigned ani_step = CalcWalkAnimationFrame();
-
-    LOADER.carrier_cache[ware][fat][GetCurMoveDir().toUInt()][ani_step].drawForPlayer(InterpolateWalkDrawPos(drawPt),
-                                                                                      gwg->GetPlayer(player).color);
+    const GamePlayer& owner = gwg->GetPlayer(player);
+    auto& sprite = ware ? LOADER.getCarrierSprite(*ware, fat, GetCurMoveDir(), ani_step) :
+                          LOADER.getCarrierBobSprite(owner.nation, fat, GetCurMoveDir(), ani_step);
+    sprite.drawForPlayer(InterpolateWalkDrawPos(drawPt), owner.color);
 }
 
-void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, unsigned job)
+void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, Job job)
 {
     const unsigned ani_step = CalcWalkAnimationFrame();
-
     const GamePlayer& owner = gwg->GetPlayer(player);
-    LOADER.bob_jobs_cache[owner.nation][job][GetCurMoveDir().toUInt()][ani_step].drawForPlayer(InterpolateWalkDrawPos(drawPt), owner.color);
+    LOADER.getBobSprite(owner.nation, job, GetCurMoveDir(), ani_step).drawForPlayer(InterpolateWalkDrawPos(drawPt), owner.color);
 }
 
 void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat)
@@ -796,7 +797,7 @@ void noFigure::DrawWalking(DrawPoint drawPt, const char* const file, unsigned id
     const unsigned ani_step = CalcWalkAnimationFrame();
     drawPt = InterpolateWalkDrawPos(drawPt);
 
-    LOADER.GetPlayerImage(file, id + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)
+    LOADER.GetPlayerImage(file, id + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)
       ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
     DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
@@ -812,9 +813,9 @@ void noFigure::DrawWalking(DrawPoint drawPt)
             drawPt = InterpolateWalkDrawPos(drawPt);
 
             // Esel
-            LOADER.GetMapImageN(2000 + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)->DrawFull(drawPt);
+            LOADER.GetMapImageN(2000 + rttr::enum_cast(GetCurMoveDir() + 3u) * 8 + ani_step)->DrawFull(drawPt);
             // Schatten des Esels
-            LOADER.GetMapImageN(2048 + GetCurMoveDir().toUInt() % 3)->DrawFull(drawPt, COLOR_SHADOW);
+            LOADER.GetMapImageN(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
         }
         break;
         case JOB_CHARBURNER: DrawWalking(drawPt, "charburner_bobs", 53); break;
@@ -919,7 +920,7 @@ void noFigure::StopIfNecessary(const MapPoint pt)
             // Dann stehenbleiben
             PauseWalking();
             waiting_for_free_node = true;
-            gwg->StopOnRoads(this->pos, GetCurMoveDir().toUInt());
+            gwg->StopOnRoads(this->pos, GetCurMoveDir());
         }
     }
 }
@@ -952,21 +953,21 @@ void noFigure::ArrivedByShip(const MapPoint harborPos)
 }
 
 /// Examines the route (maybe harbor, road destroyed?) before start shipping
-MapPoint noFigure::ExamineRouteBeforeShipping(unsigned char& newDir)
+MapPoint noFigure::ExamineRouteBeforeShipping(RoadPathDirection& newDir)
 {
     MapPoint next_harbor;
     // Calc new route
     const noRoadNode* roadNode = gwg->GetSpecObj<noRoadNode>(pos);
     if(!roadNode || !goal_)
-        newDir = INVALID_DIR;
+        newDir = RoadPathDirection::None;
     else
         newDir = gwg->FindHumanPathOnRoads(*roadNode, *goal_, nullptr, &next_harbor);
 
-    if(newDir == 0xff)
+    if(newDir == RoadPathDirection::None)
         Abrogate();
 
     // Going by ship?
-    if(newDir == SHIP_DIR)
+    if(newDir == RoadPathDirection::Ship)
         // All ok, return next harbor (could be another one!)
         return next_harbor;
     else

@@ -21,11 +21,12 @@
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "s25util/warningSuppression.h"
 
 noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player) : noCoordBase(nop, pos), player(player)
 {
-    for(unsigned i = 0; i < 6; ++i)
-        routes[i] = nullptr;
+    for(const auto dir : helpers::EnumRange<Direction>{})
+        routes[dir] = nullptr;
     last_visit = 0;
 }
 
@@ -34,7 +35,6 @@ noRoadNode::~noRoadNode() = default;
 void noRoadNode::Destroy_noRoadNode()
 {
     DestroyAllRoads();
-
     Destroy_noCoordBase();
 }
 
@@ -50,22 +50,23 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
         // this is a trick:
         // -> initialize routes for flag with nullptr
         // -> RoadSegment will set these later
-        for(unsigned i = 0; i < 6; ++i)
+        for(const auto i : helpers::EnumRange<Direction>{})
         {
+            RTTR_UNUSED(i);
             sgd.PushObject(static_cast<GameObject*>(nullptr), true);
         }
     } else
     {
-        for(unsigned i = 0; i < 6; ++i)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            sgd.PushObject(routes[i], true);
+            sgd.PushObject(routes[dir], true);
         }
     }
 }
 
 noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar())
 {
-    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
         routes[dir] = sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT);
     }
@@ -87,26 +88,25 @@ void noRoadNode::DestroyRoad(const Direction dir)
     MapPoint t = route->GetF1()->GetPos();
     for(unsigned z = 0; z < route->GetLength(); ++z)
     {
-        gwg->SetPointRoad(t, route->GetRoute(z), 0);
+        gwg->SetPointRoad(t, route->GetRoute(z), PointRoad::None);
         gwg->RecalcBQForRoad(t);
         t = gwg->GetNeighbour(t, route->GetRoute(z));
     }
 
-    noRoadNode* oflag;
+    noRoadNode* otherFlag;
 
     if(route->GetF1() == this)
-        oflag = route->GetF2();
+        otherFlag = route->GetF2();
     else
-        oflag = route->GetF1();
+        otherFlag = route->GetF1();
 
-    for(unsigned z = 0; z < 6; ++z)
+    for(const auto z : helpers::EnumRange<Direction>{})
     {
-        if(oflag->routes[z] == route)
+        if(otherFlag->routes[z] == route)
         {
-            oflag->routes[z] = nullptr;
+            otherFlag->routes[z] = nullptr;
             break;
-        } else
-            RTTR_Assert(z < 5); // Need to find it before last iteration
+        }
     }
 
     SetRoute(dir, nullptr);
@@ -122,6 +122,6 @@ void noRoadNode::DestroyRoad(const Direction dir)
 void noRoadNode::DestroyAllRoads()
 {
     // Alle Straßen um mich herum zerstören
-    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
-        DestroyRoad(Direction::fromInt(dir));
+    for(const auto dir : helpers::EnumRange<Direction>{})
+        DestroyRoad(dir);
 }

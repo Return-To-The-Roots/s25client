@@ -186,8 +186,8 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     {
         for(const MapPoint& curPt : world.GetPointsInRadius(pt, 1))
         {
-            for(unsigned dir = 0; dir < Direction::COUNT; dir++)
-                setRightTerrain(world, curPt, Direction::fromInt(dir), tLand);
+            for(const auto dir : helpers::EnumRange<Direction>{})
+                setRightTerrain(world, curPt, dir, tLand);
         }
     }
 
@@ -202,8 +202,8 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
 
     for(const MapPoint& pt : waterPts)
     {
-        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
-            setRightTerrain(world, pt, Direction::fromInt(dir), tWater);
+        for(const auto dir : helpers::EnumRange<Direction>{})
+            setRightTerrain(world, pt, dir, tWater);
     }
 
     // Check if this works
@@ -212,13 +212,13 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     BOOST_REQUIRE_EQUAL(world.GetNumHarborPoints(), hbPos.size());
     for(unsigned startHb = 1; startHb < world.GetNumHarborPoints(); startHb++)
     {
-        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            unsigned seaId = world.GetSeaId(startHb, Direction::fromInt(dir));
+            unsigned seaId = world.GetSeaId(startHb, dir);
             if(!seaId)
                 continue;
             MapPoint startPt = world.GetCoastalPoint(startHb, seaId);
-            BOOST_REQUIRE_EQUAL(startPt, world.GetNeighbour(world.GetHarborPoint(startHb), Direction::fromInt(dir)));
+            BOOST_REQUIRE_EQUAL(startPt, world.GetNeighbour(world.GetHarborPoint(startHb), dir));
             for(unsigned targetHb = 1; targetHb < world.GetNumHarborPoints(); targetHb++)
             {
                 MapPoint destPt = world.GetCoastalPoint(targetHb, seaId);

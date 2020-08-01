@@ -104,22 +104,10 @@ protected:
     BuildRoad(const MapPoint pt, bool boat_road, std::vector<Direction> route)
         : Coords(BUILD_ROAD, pt), boat_road(boat_road), route(std::move(route))
     {}
-    BuildRoad(Serializer& ser) : Coords(BUILD_ROAD, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
-    {
-        for(auto& i : route)
-            i = Direction(ser.PopUnsignedChar());
-    }
+    BuildRoad(Serializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
-    {
-        Coords::Serialize(ser);
-
-        ser.PushBool(boat_road);
-        ser.PushUnsignedInt(route.size());
-        for(auto i : route)
-            ser.PushUnsignedChar(i.toUInt());
-    }
+    void Serialize(Serializer& ser) const override;
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
 };
@@ -133,15 +121,10 @@ class DestroyRoad : public Coords
 
 protected:
     DestroyRoad(const MapPoint pt, const Direction start_dir) : Coords(DESTROY_ROAD, pt), start_dir(start_dir) {}
-    DestroyRoad(Serializer& ser) : Coords(DESTROY_ROAD, ser), start_dir(ser.PopUnsignedChar()) {}
+    DestroyRoad(Serializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
-    {
-        Coords::Serialize(ser);
-
-        ser.PushUnsignedChar(start_dir.toUInt());
-    }
+    void Serialize(Serializer& ser) const override;
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
 };
@@ -155,14 +138,10 @@ class UpgradeRoad : public Coords
 
 protected:
     UpgradeRoad(const MapPoint pt, const Direction start_dir) : Coords(UPGRADE_ROAD, pt), start_dir(start_dir) {}
-    UpgradeRoad(Serializer& ser) : Coords(UPGRADE_ROAD, ser), start_dir(ser.PopUnsignedChar()) {}
+    UpgradeRoad(Serializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
-    {
-        Coords::Serialize(ser);
-        ser.PushUnsignedChar(start_dir.toUInt());
-    }
+    void Serialize(Serializer& ser) const override;
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
 };

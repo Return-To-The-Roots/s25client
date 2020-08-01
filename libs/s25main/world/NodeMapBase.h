@@ -26,7 +26,7 @@
 /// Base class for a map with the geometry of the world (MapBase)
 /// Provides nodes of a given type with accessors to the node accepting flat indices or points
 template<typename T_Node>
-class NodeMapBase : public MapBase
+class NodeMapBase final : public MapBase
 {
     std::vector<T_Node> nodes;
 

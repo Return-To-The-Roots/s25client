@@ -38,13 +38,13 @@ void TradeRoute::Serialize(SerializedGameData& sgd) const
 }
 
 /// Gets the next direction the caravane has to take
-unsigned char TradeRoute::GetNextDir()
+helpers::OptionalEnum<TradeDirection> TradeRoute::GetNextDir()
 {
     if(curPos == path.goal)
-        return REACHED_GOAL;
+        return TradeDirection::ReachedGoal;
 
     if(curRouteIdx >= path.route.size())
-        return INVALID_DIR;
+        return boost::none;
 
     Direction nextDir;
     // Check if the route is still valid
@@ -53,31 +53,34 @@ unsigned char TradeRoute::GetNextDir()
     else
     {
         // If not, recalc it
-        uint8_t calculatedNextDir = RecalcRoute();
+        const auto calculatedNextDir = RecalcRoute();
         // Check if we found a valid direction
-        if(calculatedNextDir >= 6)
-            return calculatedNextDir; // If not, bail out
-        nextDir = Direction::fromInt(calculatedNextDir);
+        if(!calculatedNextDir)
+            return calculatedNextDir;              // If not, bail out
+        nextDir = toDirection(*calculatedNextDir); // ReachedGoal is not possible
     }
 
     RTTR_Assert(nextDir == path.route[curRouteIdx]);
     curRouteIdx++;
     curPos = gwg.GetNeighbour(curPos, nextDir);
-    return nextDir.toUInt();
+    return TradeDirection(rttr::enum_cast(nextDir));
 }
 
 /// Recalc local route and returns next direction
-unsigned char TradeRoute::RecalcRoute()
+helpers::OptionalEnum<TradeDirection> TradeRoute::RecalcRoute()
 {
     /// Are we at the goal?
     if(curPos == path.goal)
-        return REACHED_GOAL;
+        return TradeDirection::ReachedGoal;
 
     path.start = curPos;
     path.route.clear();
-    unsigned char nextDir = gwg.FindTradePath(path.start, path.goal, player, std::numeric_limits<unsigned>::max(), false, &path.route);
+    const auto nextDir = gwg.FindTradePath(path.start, path.goal, player, std::numeric_limits<unsigned>::max(), false, &path.route);
     curRouteIdx = 0;
-    return nextDir;
+    if(nextDir)
+        return TradeDirection(rttr::enum_cast(*nextDir));
+    else
+        return boost::none;
 }
 
 /// Assigns new start and goal positions and hence, a new route

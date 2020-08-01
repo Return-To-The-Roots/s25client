@@ -80,7 +80,7 @@ MilitarySquares& GameWorldGame::GetMilitarySquares()
     return militarySquares;
 }
 
-void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir)
+void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player)
 {
     if(GetBQ(pt, player) == BQ_NOTHING)
         return;
@@ -92,7 +92,7 @@ void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player, const
     if(GetNO(pt)->GetType() != NOP_FLAG)
     {
         DestroyNO(pt, false);
-        SetNO(pt, new noFlag(pt, player, dis_dir));
+        SetNO(pt, new noFlag(pt, player));
 
         RecalcBQAroundPointBig(pt);
     }
@@ -129,14 +129,10 @@ void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
         gi->GI_FlagDestroyed(pt);
 }
 
-void GameWorldGame::SetPointRoad(MapPoint pt, Direction dir, unsigned char type)
+void GameWorldGame::SetPointRoad(MapPoint pt, const Direction dir, const PointRoad type)
 {
-    if(dir.toUInt() >= 3)
-        dir = dir - 3u;
-    else
-        pt = GetNeighbour(pt, dir);
-
-    SetRoad(pt, dir.toUInt(), type);
+    const RoadDir rDir = toRoadDir(pt, dir);
+    SetRoad(pt, rDir, type);
 
     if(gi)
         gi->GI_UpdateMinimap(pt);
@@ -250,7 +246,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
             return;
         }
         // keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
-        SetFlag(curPt, playerId, (route[route.size() - 1] + 3u).toUInt());
+        SetFlag(curPt, playerId);
     }
 
     // Evtl Zierobjekte abreißen (Anfangspunkt)
@@ -260,7 +256,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     MapPoint end(start);
     for(auto i : route)
     {
-        SetPointRoad(end, i, boat_road ? (RoadSegment::RT_BOAT + 1) : (RoadSegment::RT_NORMAL + 1));
+        SetPointRoad(end, i, boat_road ? PointRoad::Boat : PointRoad::Normal);
         RecalcBQForRoad(end);
         end = GetNeighbour(end, i);
 
@@ -315,23 +311,21 @@ void GameWorldGame::RecalcBorderStones(Position startPt, Extent areaSize)
         // Is this a border node?
         if(owner && IsBorderNode(curMapPt, owner))
         {
-            boundaryStones[0] = owner;
-
             // Check which neighbors are also border nodes and place the half-way stones to them
-            for(unsigned i = 0; i < 3; ++i)
+            for(const auto bPos : helpers::EnumRange<BorderStonePos>{})
             {
-                if(IsBorderNode(GetNeighbour(curMapPt, Direction::fromInt(3 + i)), owner))
-                    boundaryStones[i + 1] = owner;
+                if(bPos == BorderStonePos::OnPoint || IsBorderNode(GetNeighbour(curMapPt, toDirection(bPos)), owner))
+                    boundaryStones[bPos] = owner;
                 else
-                    boundaryStones[i + 1] = 0;
+                    boundaryStones[bPos] = 0;
             }
 
 #ifdef PREVENT_BORDER_STONE_BLOCKING
             // Count number of border nodes with same owner
             int idx = pt.y * width + pt.x;
-            for(unsigned i = 0; i < 6; ++i)
+            for(const auto dir : helpers::EnumRange<Direction>{})
             {
-                if(GetNeighbourNode(curMapPt, i).boundary_stones[0] == owner)
+                if(GetNeighbourNode(curMapPt, dir).boundary_stones[0] == owner)
                     ++neighbors[idx];
             }
 #endif
@@ -349,7 +343,7 @@ void GameWorldGame::RecalcBorderStones(Position startPt, Extent areaSize)
         const MapPoint curMapPt = MakeMapPoint(pt + startPt);
 
         // Do we have a stone here?
-        const unsigned char owner = GetNode(curMapPt).boundary_stones[0];
+        const unsigned char owner = GetNode(curMapPt).boundary_stones[BorderStonePos::OnPoint];
         if(!owner)
             continue;
 
@@ -521,9 +515,9 @@ bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& buildin
         if(GetDescription().get(node.t1).Is(ETerrain::Walkable) && GetDescription().get(node.t2).Is(ETerrain::Walkable))
             return true;
         // also check neighboring nodes since border will still count as player territory but not allow any buildings!
-        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const MapNode& nNode = GetNeighbourNode(curMapPt, Direction::fromInt(dir));
+            const MapNode& nNode = GetNeighbourNode(curMapPt, dir);
             if(GetDescription().get(nNode.t1).Is(ETerrain::Walkable) || GetDescription().get(nNode.t2).Is(ETerrain::Walkable))
                 return true;
         }
@@ -608,13 +602,13 @@ void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChang
             continue;
         // Check if any neighbour is fully surrounded by player territory
         bool isPlayerTerritoryNear = false;
-        for(unsigned d = 0; d < Direction::COUNT; ++d)
+        for(const auto d : helpers::EnumRange<Direction>{})
         {
-            Position neighbour = ::GetNeighbour(pt + region.startPt, Direction::fromInt(d));
+            Position neighbour = ::GetNeighbour(pt + region.startPt, d);
             if(region.SafeGetOwner(neighbour - region.startPt) != owner)
                 continue;
             // Don't check this point as it is always true
-            unsigned exceptDir = (Direction::fromInt(d) + 3u).toUInt();
+            const Direction exceptDir = d + 3u;
             if(region.WillBePlayerTerritory(neighbour, owner, exceptDir))
             {
                 isPlayerTerritoryNear = true;
@@ -627,15 +621,15 @@ void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChang
             continue;
         // No neighbouring player territory found. Look for another
         uint8_t newOwner = 0;
-        for(unsigned d = 0; d < Direction::COUNT; ++d)
+        for(const auto d : helpers::EnumRange<Direction>{})
         {
-            Position neighbour = ::GetNeighbour(pt + region.startPt, Direction::fromInt(d));
+            Position neighbour = ::GetNeighbour(pt + region.startPt, d);
             uint8_t nbOwner = region.SafeGetOwner(neighbour - region.startPt);
             // No or same player?
             if(!nbOwner || nbOwner == owner)
                 continue;
             // Don't check this point as it would always fail
-            unsigned exceptDir = (Direction::fromInt(d) + 3u).toUInt();
+            const Direction exceptDir = d + 3u;
             // First one found gets it
             if(region.WillBePlayerTerritory(neighbour, nbOwner, exceptDir))
             {
@@ -686,14 +680,14 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner
 void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
 {
     // Figuren direkt daneben
-    for(unsigned char i = 0; i < 6; ++i)
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
         // Nochmal prüfen, ob er nun wirklich verfügbar ist (evtl blocken noch mehr usw.)
         if(!IsRoadNodeForFigures(pt))
             continue;
 
         // Koordinaten um den Punkt herum
-        MapPoint nb = GetNeighbour(pt, Direction::fromInt(i));
+        MapPoint nb = GetNeighbour(pt, dir);
 
         // Figuren Bescheid sagen
         for(noBase* object : GetFigures(nb))
@@ -893,35 +887,32 @@ bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
 }
 
 /// Lässt alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)
-void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
+void GameWorldGame::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<Direction> dir)
 {
     // Figuren drumherum sammeln (auch von dem Punkt hier aus)
-    std::vector<noBase*> figures;
+    std::vector<noFigure*> figures;
 
     // Auch vom Ausgangspunkt aus, da sie im GameWorldGame wegem Zeichnen auch hier hängen können!
     const std::list<noBase*>& fieldFigures = GetFigures(pt);
     for(auto fieldFigure : fieldFigures)
         if(fieldFigure->GetType() == NOP_FIGURE)
-            figures.push_back(fieldFigure);
+            figures.push_back(static_cast<noFigure*>(fieldFigure));
 
     // Und natürlich in unmittelbarer Umgebung suchen
-    for(unsigned d = 0; d < Direction::COUNT; ++d)
+    for(Direction dir : helpers::EnumRange<Direction>{})
     {
-        const std::list<noBase*>& fieldFigures = GetFigures(GetNeighbour(pt, Direction::fromInt(d)));
+        const std::list<noBase*>& fieldFigures = GetFigures(GetNeighbour(pt, dir));
         for(auto fieldFigure : fieldFigures)
             if(fieldFigure->GetType() == NOP_FIGURE)
-                figures.push_back(fieldFigure);
+                figures.push_back(static_cast<noFigure*>(fieldFigure));
     }
 
     for(auto& figure : figures)
     {
-        if(dir < Direction::COUNT)
+        if(dir && *dir + 3u == static_cast<noFigure*>(figure)->GetCurMoveDir())
         {
-            if(Direction(dir + 3) == static_cast<noFigure*>(figure)->GetCurMoveDir())
-            {
-                if(GetNeighbour(pt, Direction::fromInt(dir)) == static_cast<noFigure*>(figure)->GetPos())
-                    continue;
-            }
+            if(GetNeighbour(pt, *dir) == static_cast<noFigure*>(figure)->GetPos())
+                continue;
         }
 
         // Derjenige muss ggf. stoppen, wenn alles auf ihn zutrifft
@@ -978,7 +969,7 @@ bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttack
             return false;
     }
     // object wall or impassable terrain increasing my path to target length to a higher value than the direct distance?
-    return FindHumanPath(pt, center, CalcDistance(pt, center)) != 0xff;
+    return FindHumanPath(pt, center, CalcDistance(pt, center)) != boost::none;
 }
 
 bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_military_building_flags, nofActiveSoldier* exception)
@@ -1318,9 +1309,9 @@ void GameWorldGame::PlaceAndFixWater()
         }
 
         uint8_t minHumidity = 100;
-        for(unsigned i = 0; i < Direction::COUNT; ++i)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            DescIdx<TerrainDesc> t = GetRightTerrain(pt, Direction::fromInt(i));
+            DescIdx<TerrainDesc> t = GetRightTerrain(pt, dir);
             uint8_t curHumidity = GetDescription().get(t).humidity;
             if(curHumidity < minHumidity)
             {

@@ -187,7 +187,7 @@ bool nofFarmhand::IsPointAvailable(const MapPoint pt) const
     if(GetPointQuality(pt) != PQ_NOTPOSSIBLE)
     {
         // Gucken, ob ein Weg hinführt
-        return gwg->FindHumanPath(this->pos, pt, 20) != 0xFF;
+        return gwg->FindHumanPath(this->pos, pt, 20) != boost::none;
     } else
         return false;
 }
@@ -205,8 +205,8 @@ void nofFarmhand::WalkToWorkpoint()
     }
 
     // Weg suchen und gucken ob der Punkt noch in Ordnung ist
-    unsigned char dir = gwg->FindHumanPath(pos, dest, 20);
-    if(dir == 0xFF || GetPointQuality(dest) == PQ_NOTPOSSIBLE)
+    const auto dir = gwg->FindHumanPath(pos, dest, 20);
+    if(!dir || GetPointQuality(dest) == PQ_NOTPOSSIBLE)
     {
         // Punkt freigeben
         gwg->SetReserved(dest, false);
@@ -214,8 +214,8 @@ void nofFarmhand::WalkToWorkpoint()
         StartWalkingHome();
     } else
     {
-        // Alles ok, wir können hinlaufen
-        StartWalking(Direction::fromInt(dir));
+        // All good, let's start walking there
+        StartWalking(*dir);
     }
 }
 
@@ -239,9 +239,9 @@ void nofFarmhand::WalkHome()
         return;
     }
 
-    unsigned char dir = gwg->FindHumanPath(pos, dest, 40);
+    const auto dir = gwg->FindHumanPath(pos, dest, 40);
     // Weg suchen und ob wir überhaupt noch nach Hause kommen
-    if(dir == 0xFF)
+    if(!dir)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
         AbrogateWorkplace();
@@ -249,8 +249,8 @@ void nofFarmhand::WalkHome()
         Wander();
     } else
     {
-        // Alles ok, wir können hinlaufen
-        StartWalking(Direction::fromInt(dir));
+        // All good, let's start walking there
+        StartWalking(*dir);
     }
 }
 

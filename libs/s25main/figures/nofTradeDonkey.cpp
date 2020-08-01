@@ -24,7 +24,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "variant.h"
 #include "world/GameWorldGame.h"
-#include "world/TradeRoute.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
@@ -71,13 +70,16 @@ void nofTradeDonkey::GoalReached()
 void nofTradeDonkey::Walked()
 {
     if(next_dirs.empty())
-        return;
+    {
+        CancelTradeCaravane();
+        WanderFailedTrade();
+    }
 
-    unsigned char nextDir = GetNextDir();
+    TradeDirection nextDir = GetNextDir();
     if(successor)
         successor->AddNextDir(nextDir);
     // Are we now at the goal?
-    if(nextDir == REACHED_GOAL)
+    if(nextDir == TradeDirection::ReachedGoal)
     {
         // Does target still exist?
         noBase* nob = gwg->GetNO(pos);
@@ -88,13 +90,8 @@ void nofTradeDonkey::Walked()
             CancelTradeCaravane();
             WanderFailedTrade();
         }
-    } else if(nextDir != INVALID_DIR)
-        StartWalking(Direction::fromInt(nextDir));
-    else
-    {
-        CancelTradeCaravane();
-        WanderFailedTrade();
-    }
+    } else
+        StartWalking(toDirection(nextDir));
 }
 
 void nofTradeDonkey::HandleDerivedEvent(const unsigned /*id*/) {}
@@ -111,12 +108,12 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
         // Läuft normal mit oder ohne Ware
 
         // Esel
-        LOADER.donkey_cache[GetCurMoveDir().toUInt()][ani_step].draw(drawPt);
+        LOADER.getDonkeySprite(GetCurMoveDir(), ani_step).draw(drawPt);
 
         if(gt != GD_NOTHING)
         {
             // Ware im Korb zeichnen
-            LOADER.GetMapImageN(2350 + gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][ani_step]);
+            LOADER.GetMapImageN(2350 + gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
         }
     } else
         DrawWalking(drawPt);
@@ -127,7 +124,6 @@ void nofTradeDonkey::LostWork() {}
 void nofTradeDonkey::CancelTradeCaravane()
 {
     next_dirs.clear();
-    next_dirs.push_back(INVALID_DIR);
     if(successor)
     {
         successor->CancelTradeCaravane();

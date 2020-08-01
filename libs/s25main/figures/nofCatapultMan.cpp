@@ -23,6 +23,7 @@
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "enum_cast.hpp"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
@@ -208,7 +209,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             }
 
             // "Drehschritte" ausrechnen, da von Richtung 4 aus gedreht wird
-            wheel_steps = int(shooting_dir.toUInt()) - 4;
+            wheel_steps = int(rttr::enum_cast(shooting_dir)) - 4;
             if(wheel_steps < -3)
                 wheel_steps = 6 + wheel_steps;
 
@@ -240,7 +241,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             } else
             {
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
-                unsigned d = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
+                unsigned d = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), Direction::COUNT);
 
                 destMap = gwg->GetNeighbour(target.pos, Direction::fromInt(d));
             }

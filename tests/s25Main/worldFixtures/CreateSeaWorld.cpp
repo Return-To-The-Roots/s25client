@@ -38,16 +38,16 @@ bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbo
         if(world.GetNode(curPt).bq != BQ_CASTLE)
             continue;
         // We must have a coast around
-        for(unsigned i = 0; i < 6; i++)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            MapPoint posCoastPt = world.GetNeighbour(curPt, Direction::fromInt(i));
+            MapPoint posCoastPt = world.GetNeighbour(curPt, dir);
             // Coast must not be water
             if(world.IsWaterPoint(posCoastPt))
                 continue; // LCOV_EXCL_LINE
             // But somewhere around must be a sea
-            for(unsigned j = 0; j < 6; j++)
+            for(const auto j : helpers::EnumRange<Direction>{})
             {
-                MapPoint posSeaPt = world.GetNeighbour(posCoastPt, Direction::fromInt(j));
+                MapPoint posSeaPt = world.GetNeighbour(posCoastPt, j);
                 if(world.IsSeaPoint(posSeaPt))
                 {
                     harbors.push_back(curPt);

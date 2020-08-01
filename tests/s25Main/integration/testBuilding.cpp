@@ -28,6 +28,7 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
+#include "gameTypes/GameTypesOutput.h"
 #include <boost/test/unit_test.hpp>
 
 // Test stuff related to building/building quality
@@ -182,7 +183,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
     for(unsigned i = 0; i < 6; i++)
     {
         roadPts.push_back(curPt);
-        world.SetPointRoad(curPt, Direction::SOUTHEAST, 1);
+        world.SetPointRoad(curPt, Direction::SOUTHEAST, PointRoad::Normal);
         world.RecalcBQForRoad(curPt);
         curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
     }
@@ -458,7 +459,7 @@ BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
         curPos = startPos;
         for(unsigned i = 0; i < 3; i++)
         {
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(curPos, Direction::EAST), 1u);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(curPos, Direction::EAST), PointRoad::Normal);
             curPos = world.GetNeighbour(curPos, Direction::EAST);
             BOOST_REQUIRE_EQUAL(world.GetNO(curPos)->GetType(), NOP_NOTHING);
         }

@@ -20,6 +20,7 @@
 #include "EventManager.h"
 #include "GameEvent.h"
 #include "SerializedGameData.h"
+#include "enum_cast.hpp"
 #include "network/GameClient.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MapConsts.h"
@@ -35,7 +36,7 @@ void noMovable::Serialize(SerializedGameData& sgd) const
 {
     noCoordBase::Serialize(sgd);
 
-    sgd.PushUnsignedChar(curMoveDir.toUInt());
+    sgd.PushUnsignedChar(rttr::enum_cast(curMoveDir));
     sgd.PushUnsignedChar(ascent);
     sgd.PushEvent(current_ev);
     sgd.PushUnsignedInt(pauseEv.elapsed);

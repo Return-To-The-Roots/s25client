@@ -19,6 +19,7 @@
 #define RoadPathFinder_h__
 
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/RoadPathDirection.h"
 #include <limits>
 
 class GameWorldBase;
@@ -35,7 +36,7 @@ public:
 
     /// Calculates the best path from start to goal
     /// Outputs are only valid if true is returned!
-    /// Direction might additionally be INVALID_DIR or SHIP_DIR
+    /// Direction might additionally be boost::none or SHIP_DIR
     ///
     /// @param wareMode True when path will be used by a ware (Allow boat roads and check for faster roads when road points have already
     /// many wares)
@@ -45,7 +46,7 @@ public:
     /// @param firstDir If != nullptr will receive the first direction to travel
     /// @param firstNodePos If != nullptr will receive the position of the first node
     bool FindPath(const noRoadNode& start, const noRoadNode& goal, bool wareMode, unsigned max = std::numeric_limits<unsigned>::max(),
-                  const RoadSegment* forbidden = nullptr, unsigned* length = nullptr, unsigned char* firstDir = nullptr,
+                  const RoadSegment* forbidden = nullptr, unsigned* length = nullptr, RoadPathDirection* firstDir = nullptr,
                   MapPoint* firstNodePos = nullptr);
 
     /// Checks if there is ANY path from start to goal
@@ -59,7 +60,7 @@ public:
 private:
     template<class T_AdditionalCosts, class T_SegmentConstraints>
     bool FindPathImpl(const noRoadNode& start, const noRoadNode& goal, unsigned max, T_AdditionalCosts addCosts,
-                      T_SegmentConstraints isSegmentAllowed, unsigned* length = nullptr, unsigned char* firstDir = nullptr,
+                      T_SegmentConstraints isSegmentAllowed, unsigned* length = nullptr, RoadPathDirection* firstDir = nullptr,
                       MapPoint* firstNodePos = nullptr);
 };
 

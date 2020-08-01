@@ -19,6 +19,8 @@
 #define GameWorldBase_h__
 
 #include "buildings/nobBaseMilitary.h"
+#include "enum_cast.hpp"
+#include "helpers/OptionalEnum.h"
 #include "lua/LuaInterfaceGame.h"
 #include "notifications/NotificationManager.h"
 #include "postSystem/PostManager.h"
@@ -36,6 +38,24 @@ class noFlag;
 class nobHarborBuilding;
 class nofPassiveSoldier;
 class RoadPathFinder;
+
+inline Direction getOppositeDir(const RoadDir roadDir) noexcept
+{
+    static_assert(rttr::enum_cast(Direction::WEST) == rttr::enum_cast(RoadDir::East)
+                    && rttr::enum_cast(Direction::NORTHWEST) == rttr::enum_cast(RoadDir::SouthEast)
+                    && rttr::enum_cast(Direction::NORTHEAST) == rttr::enum_cast(RoadDir::SouthWest),
+                  "Opposite directions don't match");
+    return Direction::fromInt(rttr::enum_cast(roadDir));
+}
+
+inline Direction toDirection(const RoadDir roadDir) noexcept
+{
+    static_assert(rttr::enum_cast(Direction::EAST) == rttr::enum_cast(RoadDir::East) + 3u
+                    && rttr::enum_cast(Direction::SOUTHEAST) == rttr::enum_cast(RoadDir::SouthEast) + 3u
+                    && rttr::enum_cast(Direction::SOUTHWEST) == rttr::enum_cast(RoadDir::SouthWest) + 3u,
+                  "Directions don't match");
+    return Direction::fromInt(rttr::enum_cast(roadDir) + 3u);
+}
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
 class GameWorldBase : public World
@@ -88,9 +108,10 @@ public:
     /// Erstellt eine Liste mit allen Milit�rgeb�uden in der Umgebung, radius bestimmt wie viele K�stchen nach einer Richtung im Umkreis
     sortedMilitaryBlds LookForMilitaryBuildings(MapPoint pt, unsigned short radius) const;
 
-    /// Finds a path for figures. Returns 0xFF if none found
-    unsigned char FindHumanPath(MapPoint start, MapPoint dest, unsigned max_route = 0xFFFFFFFF, bool random_route = false,
-                                unsigned* length = nullptr, std::vector<Direction>* route = nullptr) const;
+    /// Finds a path for figures. Returns first direction to walk in if found
+    helpers::OptionalEnum<Direction> FindHumanPath(MapPoint start, MapPoint dest, unsigned max_route = 0xFFFFFFFF,
+                                                   bool random_route = false, unsigned* length = nullptr,
+                                                   std::vector<Direction>* route = nullptr) const;
     /// Find path for ships to a specific harbor and see. Return true on success
     bool FindShipPathToHarbor(MapPoint start, unsigned harborId, unsigned seaId, std::vector<Direction>* route, unsigned* length);
     /// Find path for ships with a limited distance. Return true on success
@@ -100,8 +121,8 @@ public:
 
     /// Return flag that is on road at given point. dir will be set to the direction of the road from the returned flag
     /// prevDir (if set) will be skipped when searching for the road points
-    noFlag* GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir = 255);
-    const noFlag* GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir = 255) const;
+    noFlag* GetRoadFlag(MapPoint pt, Direction& dir, helpers::OptionalEnum<Direction> prevDir = boost::none);
+    const noFlag* GetRoadFlag(MapPoint pt, Direction& dir, helpers::OptionalEnum<Direction> prevDir = boost::none) const;
 
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
     Position GetNodePos(MapPoint pt) const;

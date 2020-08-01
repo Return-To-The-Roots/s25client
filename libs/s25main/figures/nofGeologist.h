@@ -18,6 +18,7 @@
 #ifndef NOF_GEOLOGIST_H_
 #define NOF_GEOLOGIST_H_
 
+#include "helpers/OptionalEnum.h"
 #include "nofFlagWorker.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
@@ -53,9 +54,8 @@ private:
     void LookForNewNodes();
     /// Checks if the node is valid as a new target
     inline bool IsValidTargetNode(MapPoint pt) const;
-    /// Bestimmt einen neuen Punkt,wo man hingehen kann, falls es keinen mehr gibt, wird ein ungültiger
-    /// Iterator gesetzt, liefert die Richtung in die man zum Punkt gehen muss, zurück
-    unsigned char GetNextNode();
+    /// Searches for a new point to go to. Returns the direction to walk in if any point was found, else sets node_goal to invalid
+    helpers::OptionalEnum<Direction> GetNextNode();
     /// Sucht sich einen neuen Punkt und geht dorthin oder geht wieder nach Hause wenn alle Schilder aufgestellt wurden
     /// oder es keinen Punkt mehr gibt
     void GoToNextNode();

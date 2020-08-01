@@ -17,6 +17,7 @@
 
 #include "world/TradePath.h"
 #include "SerializedGameData.h"
+#include "enum_cast.hpp"
 
 TradePath::TradePath(SerializedGameData& sgd) : start(sgd.PopMapPoint()), goal(sgd.PopMapPoint())
 {
@@ -34,6 +35,6 @@ void TradePath::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(route.size());
     for(const Direction& dir : route)
     {
-        sgd.PushUnsignedChar(dir.toUInt());
+        sgd.PushUnsignedChar(rttr::enum_cast(dir));
     }
 }

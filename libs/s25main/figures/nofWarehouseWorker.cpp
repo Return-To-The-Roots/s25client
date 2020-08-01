@@ -69,9 +69,9 @@ void nofWarehouseWorker::Draw(DrawPoint drawPt)
 {
     // Trage ich ne Ware oder nicht?
     if(carried_ware)
-        DrawWalkingBobCarrier(drawPt, carried_ware->type, fat);
+        DrawWalkingCarrier(drawPt, carried_ware->type, fat);
     else
-        DrawWalkingBobJobs(drawPt, fat ? NUM_JOB_TYPES : 0);
+        DrawWalkingCarrier(drawPt, boost::none, fat);
 }
 
 void nofWarehouseWorker::GoalReached()

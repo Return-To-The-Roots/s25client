@@ -21,6 +21,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
+#include "enum_cast.hpp"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
@@ -37,9 +38,34 @@ void DestroyFlag::Execute(GameWorldGame& gwg, uint8_t playerId)
     gwg.DestroyFlag(pt_, playerId);
 }
 
+BuildRoad::BuildRoad(Serializer& ser) : Coords(BUILD_ROAD, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
+{
+    for(auto& i : route)
+        i = Direction(ser.PopUnsignedChar());
+}
+
+void BuildRoad::Serialize(Serializer& ser) const
+{
+    Coords::Serialize(ser);
+
+    ser.PushBool(boat_road);
+    ser.PushUnsignedInt(route.size());
+    for(auto i : route)
+        ser.PushUnsignedChar(rttr::enum_cast(i));
+}
+
 void BuildRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
     gwg.BuildRoad(playerId, boat_road, pt_, route);
+}
+
+DestroyRoad::DestroyRoad(Serializer& ser) : Coords(DESTROY_ROAD, ser), start_dir(ser.PopUnsignedChar()) {}
+
+void DestroyRoad::Serialize(Serializer& ser) const
+{
+    Coords::Serialize(ser);
+
+    ser.PushUnsignedChar(rttr::enum_cast(start_dir));
 }
 
 void DestroyRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
@@ -47,6 +73,14 @@ void DestroyRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
     auto* flag = gwg.GetSpecObj<noFlag>(pt_);
     if(flag && flag->GetPlayer() == playerId)
         flag->DestroyRoad(start_dir);
+}
+
+UpgradeRoad::UpgradeRoad(Serializer& ser) : Coords(UPGRADE_ROAD, ser), start_dir(ser.PopUnsignedChar()) {}
+
+void UpgradeRoad::Serialize(Serializer& ser) const
+{
+    Coords::Serialize(ser);
+    ser.PushUnsignedChar(rttr::enum_cast(start_dir));
 }
 
 void UpgradeRoad::Execute(GameWorldGame& gwg, uint8_t playerId)

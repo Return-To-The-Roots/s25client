@@ -18,7 +18,9 @@
 #ifndef GameWorldViewer_h__
 #define GameWorldViewer_h__
 
+#include "NodeMapBase.h"
 #include "TerrainRenderer.h"
+#include "helpers/EnumArray.h"
 #include "notifications/Subscription.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/Direction.h"
@@ -72,11 +74,11 @@ public:
     MapPoint GetNeighbour(MapPoint pt, Direction dir) const;
 
     /// liefert sichtbare Strasse, im Nebel entsprechend die FoW-Strasse
-    unsigned char GetVisibleRoad(MapPoint pt, unsigned char roadDir, Visibility visibility) const;
-    unsigned char GetVisibleRoad(MapPoint pt, unsigned char roadDir) const;
+    PointRoad GetVisibleRoad(MapPoint pt, RoadDir roadDir, Visibility visibility) const;
+    PointRoad GetVisibleRoad(MapPoint pt, RoadDir roadDir) const;
     /// Get road, including virtual ones
-    unsigned char GetVisiblePointRoad(MapPoint pt, Direction dir) const;
-    void SetVisiblePointRoad(const MapPoint& pt, Direction dir, unsigned char type);
+    PointRoad GetVisiblePointRoad(MapPoint pt, Direction dir) const;
+    void SetVisiblePointRoad(MapPoint pt, Direction dir, PointRoad type);
     bool IsOnRoad(const MapPoint& pt) const;
     /// Remove a visual (not yet built) road
     void RemoveVisualRoad(const MapPoint& start, const std::vector<Direction>& route);
@@ -91,7 +93,7 @@ public:
     const FoWNode& GetYoungestFOWNode(MapPoint pos) const;
 
     /// Get first found ship of this player at that point or nullptr of none
-    noShip* GetShip(MapPoint pt) const;
+    const noShip* GetShip(MapPoint pt) const;
 
     /// Schattierungen (vor allem FoW) neu berechnen
     void RecalcAllColors();
@@ -103,14 +105,14 @@ private:
     /// Visual node status (might be different than world if GameCommand is just sent) to hide network latency
     struct VisualMapNode
     {
-        std::array<unsigned char, 3> roads; // If != 0 then this road value is used (road construction) else real road is used
+        helpers::EnumArray<PointRoad, RoadDir> roads; // If != 0 then this road value is used (road construction) else real road is used
         BuildingQuality bq;
     };
     unsigned playerId_;
     GameWorldBase& gwb;
     TerrainRenderer tr;
     Subscription evVisibilityChanged, evAltitudeChanged, evRoadConstruction, evBQChanged;
-    std::vector<VisualMapNode> visualNodes;
+    NodeMapBase<VisualMapNode> visualNodes;
 
     void InitVisualData();
     inline void VisibilityChanged(const MapPoint& pt, unsigned player);

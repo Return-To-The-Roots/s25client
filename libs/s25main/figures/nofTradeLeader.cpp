@@ -75,7 +75,7 @@ void nofTradeLeader::GoalReached()
           str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares % waresName % owner.name);
         SendPostMessage(targetWarehouse->GetPlayer(),
                         std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), text, PostCategory::Economy, *targetWarehouse));
-        successor->AddNextDir(REACHED_GOAL);
+        successor->AddNextDir(TradeDirection::ReachedGoal);
         successor = nullptr;
     }
 
@@ -104,8 +104,8 @@ void nofTradeLeader::Walked()
     else
     {
         RTTR_Assert(pos == tr.GetCurPos());
-        unsigned char next_dir = tr.GetNextDir();
-        if(next_dir == INVALID_DIR)
+        auto next_dir = tr.GetNextDir();
+        if(!next_dir)
         {
             if(TryToGoHome())
                 Walked();
@@ -115,11 +115,11 @@ void nofTradeLeader::Walked()
                 WanderFailedTrade();
             }
             return;
-        } else if(next_dir == REACHED_GOAL)
-            next_dir = Direction::NORTHWEST; // Walk into building
-        StartWalking(Direction::fromInt(next_dir));
+        } else if(*next_dir == TradeDirection::ReachedGoal)
+            next_dir = TradeDirection(Direction::NORTHWEST); // Walk into building
+        StartWalking(toDirection(*next_dir));
         if(successor)
-            successor->AddNextDir(next_dir);
+            successor->AddNextDir(*next_dir);
     }
 }
 

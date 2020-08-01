@@ -29,7 +29,7 @@ class noFigure;
 class noFlag : public noRoadNode
 {
 public:
-    noFlag(MapPoint pos, unsigned char player, unsigned char dis_dir = 0xFF);
+    noFlag(MapPoint pos, unsigned char player);
     noFlag(SerializedGameData& sgd, unsigned obj_id);
     ~noFlag() override;
 

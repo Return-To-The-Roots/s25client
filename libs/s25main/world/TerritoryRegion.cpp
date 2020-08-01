@@ -20,6 +20,7 @@
 #include "MapGeometry.h"
 #include "buildings/noBaseBuilding.h"
 #include "buildings/nobMilitary.h"
+#include "helpers/EnumRange.h"
 #include "world/GameWorldBase.h"
 #include <stdexcept>
 
@@ -183,13 +184,13 @@ uint8_t TerritoryRegion::SafeGetOwner(const Position& pt) const
     return node->owner;
 }
 
-bool TerritoryRegion::WillBePlayerTerritory(const Position& mapPos, uint8_t owner, unsigned exceptDir)
+bool TerritoryRegion::WillBePlayerTerritory(const Position& mapPos, uint8_t owner, Direction exceptDir)
 {
-    for(unsigned d = 0; d < Direction::COUNT; ++d)
+    for(const auto d : helpers::EnumRange<Direction>{})
     {
         if(d == exceptDir)
             continue;
-        if(SafeGetOwner(::GetNeighbour(mapPos, Direction::fromInt(d)) - startPt) != owner)
+        if(SafeGetOwner(::GetNeighbour(mapPos, d) - startPt) != owner)
             return false;
     }
     return true;

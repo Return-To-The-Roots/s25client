@@ -23,15 +23,17 @@
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "buildings/noBuilding.h"
+#include "enum_cast.hpp"
 #include "figures/nofCarrier.h"
+#include "helpers/EnumRange.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
 #include "gameData/TerrainDesc.h"
+#include <algorithm>
 
-noFlag::noFlag(const MapPoint pos, const unsigned char player, const unsigned char dis_dir)
-    : noRoadNode(NOP_FLAG, pos, player), ani_offset(rand() % 20000)
+noFlag::noFlag(const MapPoint pos, const unsigned char player) : noRoadNode(NOP_FLAG, pos, player), ani_offset(rand() % 20000)
 {
     for(auto& ware : wares)
         ware = nullptr;
@@ -45,7 +47,7 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player, const unsigned ch
 
     // Gucken, ob die Flagge auf einen bereits bestehenden Weg gesetzt wurde
     Direction dir;
-    noFlag* flag = gwg->GetRoadFlag(pos, dir, dis_dir);
+    noFlag* flag = gwg->GetRoadFlag(pos, dir);
 
     if(flag && flag->GetRoute(dir))
         flag->GetRoute(dir)->SplitRoad(this);
@@ -156,8 +158,9 @@ void noFlag::AddWare(Ware*& ware)
 
         i = ware;
         // Träger Bescheid sagen
-        if(ware->GetNextDir() != 0xFF)
-            routes[ware->GetNextDir()]->AddWareJob(this);
+        const RoadPathDirection nextDir = ware->GetNextDir();
+        if(nextDir != RoadPathDirection::None)
+            GetRoute(toDirection(nextDir))->AddWareJob(this);
         return;
     }
     RTTR_Assert(false); // No place found???
@@ -195,7 +198,7 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
     {
         if(!wares[i])
             continue;
-        if(wares[i]->GetNextDir() == roadDir.toUInt())
+        if(wares[i]->GetNextDir() == toRoadPathDirection(roadDir))
         {
             if(best_ware)
             {
@@ -224,12 +227,13 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
     {
         // Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl Warenhäusern
         // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
-        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            if(!routes[dir])
+            const auto* route = GetRoute(dir);
+            if(!route)
                 continue;
 
-            if(routes[dir]->GetLength() == 1)
+            if(route->GetLength() == 1)
             {
                 // Gebäude?
 
@@ -243,9 +247,9 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
                 // Richtiger Weg --> Träger Bescheid sagen
                 for(unsigned char c = 0; c < 2; ++c)
                 {
-                    if(routes[dir]->hasCarrier(c))
+                    if(route->hasCarrier(c))
                     {
-                        if(routes[dir]->getCarrier(c)->SpaceAtFlag(this == routes[dir]->GetF2()))
+                        if(route->getCarrier(c)->SpaceAtFlag(this == route->GetF2()))
                             break;
                     }
                 }
@@ -258,14 +262,9 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
 
 unsigned noFlag::GetNumWaresForRoad(const Direction dir) const
 {
-    unsigned ret = 0;
-
-    for(auto ware : wares)
-    {
-        if(ware && (ware->GetNextDir() == dir.toUInt()))
-            ret++;
-    }
-    return ret;
+    const auto roadDir = toRoadPathDirection(dir);
+    return static_cast<unsigned>(
+      std::count_if(wares.cbegin(), wares.cend(), [roadDir](const Ware* ware) { return ware && (ware->GetNextDir() == roadDir); }));
 }
 
 /**
@@ -278,12 +277,11 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
     unsigned points = GetNumWaresForRoad(dir) * 2;
 
     // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
-    const RoadSegment* routeInDir = routes[dir.toUInt()];
+    const RoadSegment* routeInDir = GetRoute(dir);
     if(!routeInDir->isOccupied())
         points += 500;
-    else if(routes[dir.toUInt()]->hasCarrier(0) && routes[dir.toUInt()]->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK
-            && !routes[dir.toUInt()]->hasCarrier(
-              1)) // no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
+    else if(routeInDir->hasCarrier(0) && routeInDir->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK
+            && !routeInDir->hasCarrier(1)) // no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
         points += 50;
 
     return points;
@@ -317,11 +315,11 @@ void noFlag::Upgrade()
  */
 void noFlag::Capture(const unsigned char new_owner)
 {
-    // Alle Straßen um mich herum zerstören bis auf die zum Gebäude (also Nr. 1)
-    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+    // Alle Straßen um mich herum zerstören bis auf die zum Gebäude
+    for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(dir != 1)
-            DestroyRoad(Direction::fromInt(dir));
+        if(dir != Direction::NORTHWEST)
+            DestroyRoad(dir);
     }
 
     // Waren vernichten
