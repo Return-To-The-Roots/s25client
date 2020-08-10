@@ -18,6 +18,7 @@
 #define MUSICPLAYER_H_
 
 #include "IngameWindow.h"
+#include <boost/filesystem/path.hpp>
 
 /// Fenster zum Einstellen des Musik-Players
 class iwMusicPlayer : public IngameWindow
@@ -57,10 +58,10 @@ public:
     /// Updatet die Playlist- Combo, selektiert entsprechenden Eintrag, falls vorhanden
     void UpdatePlaylistCombo(const std::string& highlight_entry);
 
-    /// Get the full path to a playlist by its name
-    static std::string GetFullPlaylistPath(const std::string& name);
-
 private:
+    /// Get the full path to a playlist by its name
+    static boost::filesystem::path GetFullPlaylistPath(const std::string& name);
+
     void Msg_ListChooseItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;

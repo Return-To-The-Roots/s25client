@@ -18,6 +18,7 @@
 #include "QuickStartGame.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "RttrConfig.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "desktops/dskGameLoader.h"
@@ -50,7 +51,7 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
         return false;
     }
 
-    ApplicationLoader loader(LOADER, LOG, iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist));
+    ApplicationLoader loader(RTTRCONFIG, LOADER, LOG, SETTINGS.sound.playlist);
     if(!loader.load())
         return false;
     if(loader.getPlaylist())

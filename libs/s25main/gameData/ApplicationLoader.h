@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 
+class RttrConfig;
 class Loader;
 class Log;
 class Playlist;
@@ -28,13 +29,14 @@ class Playlist;
 class ApplicationLoader
 {
 public:
-    ApplicationLoader(Loader&, Log&, std::string playlistPath);
+    ApplicationLoader(const RttrConfig&, Loader&, Log&, std::string playlistPath);
     ~ApplicationLoader();
 
     bool load();
     Playlist* getPlaylist() const { return playlist_.get(); }
 
 private:
+    const RttrConfig& rttrConfig_;
     Loader& loader_;
     Log& logger_;
     std::string playlistPath_;

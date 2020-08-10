@@ -105,7 +105,7 @@ void Settings::LoadDefaults()
     sound.musik_volume = 30;
     sound.effekte = true;
     sound.effekte_volume = 75;
-    sound.playlist = "S2_Standard";
+    sound.playlist = s25::files::defaultPlaylist;
     // }
 
     // lobby
