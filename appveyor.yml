@@ -1,11 +1,12 @@
 version: 0.8.3.{build}
+
 branches:
   only:
   - master
 
 image:
-  - Visual Studio 2015
   - Visual Studio 2017
+  - Visual Studio 2019
 
 configuration:
   - Debug
@@ -16,11 +17,9 @@ platform:
   - x64
 
 environment:
-  BOOST_DIR: C:\Libraries\boost_1_65_1
-  GENERATOR: Visual Studio 14 2015
-  MSVC: 14.0
+  BOOST_ROOT: C:\Libraries\boost_1_71_0
+  GENERATOR: Visual Studio 16 2019
   RTTR_DISABLE_ASSERT_BREAKPOINT: 1
-  EXTERNAL_TESTS: OFF
 
 matrix:
   fast_finish: true
@@ -34,10 +33,8 @@ for:
       only:
         - image: Visual Studio 2017
     environment:
-      BOOST_DIR: C:\Libraries\boost_1_67_0
+      BOOST_ROOT: C:\Libraries\boost_1_67_0
       GENERATOR: Visual Studio 15 2017
-      MSVC: 14.1
-      EXTERNAL_TESTS: ON
 
 install:
   - dir C:\Libraries
@@ -49,15 +46,12 @@ before_build:
   - if exist %INSTALL_DIR%\ (rmdir /S /Q %INSTALL_DIR%)
   - mkdir build
   - cd build
-  - if %platform% == x64 (set "GENERATOR=%GENERATOR% Win64")
+  - if %platform% == x64 (if "%GENERATOR%" == "Visual Studio 2017" (set "GENERATOR=%GENERATOR% Win64"))
   # Enable LTCG for release builds (speeds up linking as /GL compiled modules are used)
   - if %configuration% == Release (set "cmakeFlags=-DCMAKE_EXE_LINKER_FLAGS=/LTCG -DCMAKE_SHARED_LINKER_FLAGS=/LTCG")
-  - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_DIR%"
-  - cmake -G "%GENERATOR%" -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DBOOST_ROOT="%BOOST_DIR%" -DRTTR_EXTERNAL_BUILD_TESTING=%EXTERNAL_TESTS% %cmakeFlags% ..
+  - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_ROOT%"
+  - cmake -G "%GENERATOR%" -A %platform% -DRTTR_ENABLE_WERROR=ON -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DRTTR_EXTERNAL_BUILD_TESTING=ON %cmakeFlags% ..
 
-build:
-  project: build/s25client.sln
-  parallel: true
+build_script: cmake --build . --config %configuration% --parallel 4
 
-test_script:
-  - ctest --output-on-failure -C %configuration% --parallel 4
+test_script: ctest --output-on-failure -C %configuration% --parallel 4
