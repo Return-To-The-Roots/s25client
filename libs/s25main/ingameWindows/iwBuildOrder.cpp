@@ -69,7 +69,7 @@ iwBuildOrder::~iwBuildOrder()
 {
     try
     {
-        GAMECLIENT.visual_settings.useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() == 1;
+        GAMECLIENT.visual_settings.useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() == 1u;
 
         TransmitSettings();
     } catch(...)
@@ -86,7 +86,7 @@ void iwBuildOrder::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        GAMECLIENT.ChangeBuildOrder(GetCtrl<ctrlComboBox>(6)->GetSelection() != 0, GAMECLIENT.visual_settings.build_order);
+        GAMECLIENT.ChangeBuildOrder(GetCtrl<ctrlComboBox>(6)->GetSelection() != 0u, GAMECLIENT.visual_settings.build_order);
         settings_changed = false;
     }
 }
@@ -123,12 +123,14 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
     if(GAMECLIENT.IsReplayModeOn())
         return;
     auto* list = GetCtrl<ctrlList>(0);
-    unsigned short auswahl = list->GetSelection();
-    unsigned short anzahl = list->GetNumLines();
+
+    if(!list->GetSelection())
+        return;
+
+    unsigned selection = *list->GetSelection();
+    unsigned numOptions = list->GetNumLines();
 
     // Auswahl gültig?
-    if(auswahl >= anzahl)
-        return;
 
     switch(ctrl_id)
     {
@@ -136,42 +138,42 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
 
         case 1: // Nach ganz oben
         {
-            while(auswahl > 0)
+            while(selection > 0)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[auswahl - 1], GAMECLIENT.visual_settings.build_order[auswahl]);
-                list->Swap(auswahl - 1, auswahl);
-                --auswahl;
+                std::swap(GAMECLIENT.visual_settings.build_order[selection - 1], GAMECLIENT.visual_settings.build_order[selection]);
+                list->Swap(selection - 1, selection);
+                --selection;
             }
             settings_changed = true;
         }
         break;
         case 2: // Hoch
         {
-            if(auswahl > 0)
+            if(selection > 0)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[auswahl - 1], GAMECLIENT.visual_settings.build_order[auswahl]);
-                list->Swap(auswahl - 1, auswahl);
+                std::swap(GAMECLIENT.visual_settings.build_order[selection - 1], GAMECLIENT.visual_settings.build_order[selection]);
+                list->Swap(selection - 1, selection);
             }
             settings_changed = true;
         }
         break;
         case 3: // Runter
         {
-            if(auswahl < anzahl - 1)
+            if(selection < numOptions - 1u)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[auswahl + 1], GAMECLIENT.visual_settings.build_order[auswahl]);
-                list->Swap(auswahl + 1, auswahl);
+                std::swap(GAMECLIENT.visual_settings.build_order[selection + 1], GAMECLIENT.visual_settings.build_order[selection]);
+                list->Swap(selection + 1, selection);
             }
             settings_changed = true;
         }
         break;
         case 4: // Nach ganz unten
         {
-            while(auswahl < anzahl - 1)
+            while(selection < numOptions - 1u)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[auswahl + 1], GAMECLIENT.visual_settings.build_order[auswahl]);
-                list->Swap(auswahl + 1, auswahl);
-                ++auswahl;
+                std::swap(GAMECLIENT.visual_settings.build_order[selection + 1], GAMECLIENT.visual_settings.build_order[selection]);
+                list->Swap(selection + 1, selection);
+                ++selection;
             }
             settings_changed = true;
         }

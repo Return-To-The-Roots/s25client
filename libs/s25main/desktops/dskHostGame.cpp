@@ -424,7 +424,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
                 {
                     combo->AddString(gameLobby->getPlayer(i).originName);
                     if(i == row)
-                        combo->SetSelection(combo->GetNumItems() - 1);
+                        combo->SetSelection(combo->GetNumItems() - 1u);
                 }
             }
         }
@@ -809,13 +809,13 @@ void dskHostGame::UpdateGGS()
     GlobalGameSettings& ggs = gameLobby->getSettings();
 
     // Geschwindigkeit
-    ggs.speed = static_cast<GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection());
+    ggs.speed = static_cast<GameSpeed>(GetCtrl<ctrlComboBox>(43)->GetSelection().get());
     // Spielziel
-    ggs.objective = static_cast<GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection());
+    ggs.objective = static_cast<GameObjective>(GetCtrl<ctrlComboBox>(42)->GetSelection().get());
     // Waren zu Beginn
-    ggs.startWares = static_cast<StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection());
+    ggs.startWares = static_cast<StartWares>(GetCtrl<ctrlComboBox>(41)->GetSelection().get());
     // Aufklärung
-    ggs.exploration = static_cast<Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection());
+    ggs.exploration = static_cast<Exploration>(GetCtrl<ctrlComboBox>(40)->GetSelection().get());
     // Teams gesperrt
     ggs.lockedTeams = GetCtrl<ctrlCheck>(20)->GetCheck();
     // Team sicht

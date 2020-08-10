@@ -148,7 +148,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
             auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz oben sind, gehts nicht weiter höher
-            while(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
+            while(group->GetSelection() > 0)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()],
                           GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
@@ -167,7 +167,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
             auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz oben sind, gehts nicht weiter höher
-            if(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
+            if(group->GetSelection() > 0)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()],
                           GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
@@ -186,7 +186,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
             auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz unten sind, gehts nicht weiter runter
-            if(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
+            if(group->GetSelection() < 13)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()],
                           GAMECLIENT.visual_settings.transport_order[group->GetSelection() + 1]);
@@ -205,7 +205,7 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
             auto* group = GetCtrl<ctrlOptionGroup>(6);
 
             // Wenn wir schon ganz unten sind, gehts nicht weiter runter
-            while(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
+            while(group->GetSelection() < 13)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()],
                           GAMECLIENT.visual_settings.transport_order[group->GetSelection() + 1]);

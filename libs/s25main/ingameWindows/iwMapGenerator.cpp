@@ -124,13 +124,13 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 
 void iwMapGenerator::Apply()
 {
-    mapSettings.numPlayers = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)->GetSelection() + 2;
+    mapSettings.numPlayers = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)->GetSelection().get() + 2;
     mapSettings.ratioGold = GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->GetPosition();
     mapSettings.ratioIron = GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->GetPosition();
     mapSettings.ratioCoal = GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->GetPosition();
     mapSettings.ratioGranite = GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->GetPosition();
 
-    switch(GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection())
+    switch(GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection().get())
     {
         case 0: mapSettings.style = MapStyle::Islands; break;
         case 1: mapSettings.style = MapStyle::Continent; break;
@@ -141,7 +141,7 @@ void iwMapGenerator::Apply()
         case 6: mapSettings.style = MapStyle::Random; break;
         default: break;
     }
-    switch(GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->GetSelection())
+    switch(GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->GetSelection().get())
     {
         case 0: mapSettings.size = MapExtent::all(64); break;
         case 1: mapSettings.size = MapExtent::all(128); break;
@@ -150,7 +150,7 @@ void iwMapGenerator::Apply()
         case 4: mapSettings.size = MapExtent::all(1024); break;
         default: break;
     }
-    switch(GetCtrl<ctrlComboBox>(CTRL_PLAYER_RADIUS)->GetSelection())
+    switch(GetCtrl<ctrlComboBox>(CTRL_PLAYER_RADIUS)->GetSelection().get())
     {
         case 0:
             mapSettings.minPlayerRadius = 0.19;
@@ -178,9 +178,9 @@ void iwMapGenerator::Apply()
             break;
         default: break;
     }
-    int mapType = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection();
-    if(mapType >= 0)
-        mapSettings.type = DescIdx<LandscapeDesc>(mapType);
+    const auto& mapType = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection();
+    if(mapType)
+        mapSettings.type = DescIdx<LandscapeDesc>(*mapType);
 }
 
 void iwMapGenerator::Reset()

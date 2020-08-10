@@ -61,10 +61,10 @@ void iwSaveLoad::Msg_ButtonClick(const unsigned /*ctrl_id*/)
     SaveLoad();
 }
 
-void iwSaveLoad::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const int selection)
+void iwSaveLoad::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const boost::optional<unsigned>& selection)
 {
     // Dateiname ins Edit schreiben, wenn wir entsprechende Einträge auswählen
-    GetCtrl<ctrlEdit>(1)->SetText(GetCtrl<ctrlTable>(0)->GetItemText(selection, 0));
+    GetCtrl<ctrlEdit>(1)->SetText(selection ? GetCtrl<ctrlTable>(0)->GetItemText(*selection, 0) : "");
 }
 
 void iwSaveLoad::RefreshTable()
@@ -191,8 +191,10 @@ void iwLoad::SaveLoad()
 {
     // Server starten
     auto* table = GetCtrl<ctrlTable>(0);
+    if(!table->GetSelection())
+        return;
 
-    if(!GAMECLIENT.HostGame(csi, table->GetItemText(table->GetSelection(), 4), MAPTYPE_SAVEGAME))
+    if(!GAMECLIENT.HostGame(csi, table->GetItemText(*table->GetSelection(), 4), MAPTYPE_SAVEGAME))
     {
         // Server starten
         if(LOBBYCLIENT.IsLoggedIn())

@@ -29,6 +29,7 @@
 #include "gameTypes/Nation.h"
 #include "gameTypes/TextureColor.h"
 #include "s25util/colors.h"
+#include <boost/optional/optional_fwd.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <map>
 #include <vector>
@@ -235,10 +236,10 @@ public:
     virtual void Msg_ScrollShow(unsigned /*ctrl_id*/, bool /*visible*/) {}
     virtual void Msg_OptionGroupChange(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
     virtual void Msg_Timer(unsigned /*ctrl_id*/) {}
-    virtual void Msg_TableSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_TableSelectItem(unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
     virtual void Msg_TableChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_TableRightButton(unsigned /*ctrl_id*/, int /*selection*/) {}
-    virtual void Msg_TableLeftButton(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_TableRightButton(unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
+    virtual void Msg_TableLeftButton(unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
 
     // Sonstiges
     virtual void Msg_MsgBoxResult(unsigned /*msgbox_id*/, MsgboxResult /*mbr*/) {}
@@ -255,9 +256,9 @@ public:
     virtual void Msg_Group_ScrollShow(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*visible*/) {}
     virtual void Msg_Group_OptionGroupChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
     virtual void Msg_Group_Timer(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_TableSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
-    virtual void Msg_Group_TableRightButton(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
-    virtual void Msg_Group_TableLeftButton(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void Msg_Group_TableSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
+    virtual void Msg_Group_TableRightButton(unsigned /*group_id*/, unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
+    virtual void Msg_Group_TableLeftButton(unsigned /*group_id*/, unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
 
 protected:
     enum ButtonState

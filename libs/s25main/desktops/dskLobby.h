@@ -62,7 +62,7 @@ protected:
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_EditEnter(unsigned ctrl_id) override;
-    void Msg_TableRightButton(unsigned ctrl_id, int selection) override;
+    void Msg_TableRightButton(unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
     void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
     /**

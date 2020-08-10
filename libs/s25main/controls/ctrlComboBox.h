@@ -36,7 +36,7 @@ public:
     void DeleteAllItems();
 
     void SetSelection(unsigned short selection);
-    int GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
+    const boost::optional<unsigned>& GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
     unsigned short GetNumItems() const { return GetCtrl<ctrlList>(0)->GetNumLines(); }
     const std::string& GetText(unsigned short item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
 

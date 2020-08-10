@@ -162,28 +162,29 @@ void dskLobby::Msg_EditEnter(const unsigned ctrl_id)
     }
 }
 
-void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const int selection)
+void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
 {
+    if(!selection)
+        return;
     auto* table = GetCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
     {
         case 10: // Server list
         {
-            const std::string& item = table->GetItemText(selection, 0);
+            const std::string& item = table->GetItemText(*selection, 0);
 
             if(boost::lexical_cast<unsigned>(item.c_str()) != 0)
             {
                 if(serverInfoWnd)
                 {
-                    if(serverInfoWnd->GetServerId() == boost::lexical_cast<unsigned>(item.c_str()))
+                    if(serverInfoWnd->GetServerId() == boost::lexical_cast<unsigned>(item))
                         return; // raus
 
                     WINDOWMANAGER.Close(serverInfoWnd);
                 }
 
-                serverInfoWnd =
-                  &WINDOWMANAGER.ReplaceWindow(std::make_unique<iwLobbyServerInfo>(boost::lexical_cast<unsigned>(item.c_str())));
-                serverInfoWnd->SetTitle(table->GetItemText(selection, 1));
+                serverInfoWnd = &WINDOWMANAGER.ReplaceWindow(std::make_unique<iwLobbyServerInfo>(boost::lexical_cast<unsigned>(item)));
+                serverInfoWnd->SetTitle(table->GetItemText(*selection, 1));
             }
         }
         break;
@@ -223,10 +224,10 @@ void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
 bool dskLobby::ConnectToSelectedGame()
 {
     const auto* table = GetCtrl<ctrlTable>(10);
-    const int selectedRow = table->GetSelection();
-    if(selectedRow < 0)
+    const auto& selectedRow = table->GetSelection();
+    if(!selectedRow)
         return false;
-    const auto selectedId = boost::lexical_cast<unsigned>(table->GetItemText(selectedRow, 0));
+    const auto selectedId = boost::lexical_cast<unsigned>(table->GetItemText(*selectedRow, 0));
     const auto serverList = LOBBYCLIENT.GetServerList();
     const auto itServer =
       helpers::find_if(serverList, [selectedId](const LobbyServerInfo& server) { return server.getId() == selectedId; });
@@ -318,9 +319,7 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
     auto* servertable = GetCtrl<ctrlTable>(10);
     bool first = servertable->GetNumRows() == 0;
 
-    int selection = servertable->GetSelection();
-    if(selection == -1)
-        selection = 0;
+    const unsigned selection = servertable->GetSelection().value_or(0u);
     int sortColumn = servertable->GetSortColumn();
     if(sortColumn == -1)
         sortColumn = 0;
@@ -362,9 +361,7 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
         LOADER.GetSoundN("sound", 114)->Play(255, false);
     }
 
-    int selection = playertable->GetSelection();
-    if(selection == -1)
-        selection = 0;
+    const unsigned selection = playertable->GetSelection().value_or(0u);
     int sortColumn = playertable->GetSortColumn();
     if(sortColumn == -1)
         sortColumn = 0;

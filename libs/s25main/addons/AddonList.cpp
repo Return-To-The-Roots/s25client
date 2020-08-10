@@ -59,5 +59,5 @@ unsigned AddonList::Gui::getStatus(const Window& window)
 {
     const auto* cb = window.GetCtrl<ctrlComboBox>(2);
     RTTR_Assert(cb);
-    return cb->GetSelection();
+    return cb->GetSelection().get();
 }

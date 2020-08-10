@@ -126,9 +126,7 @@ void dskLAN::UpdateServerList()
 
     auto* servertable = GetCtrl<ctrlTable>(ID_tblServer);
 
-    int selection = servertable->GetSelection();
-    if(selection == -1)
-        selection = 0;
+    const unsigned selection = servertable->GetSelection().value_or(0u);
     int sortColumn = servertable->GetSortColumn();
     if(sortColumn == -1)
         sortColumn = 0;
@@ -155,10 +153,10 @@ bool dskLAN::ConnectToSelectedGame()
         return false;
 
     const auto* table = GetCtrl<ctrlTable>(ID_tblServer);
-    const int selectedRow = table->GetSelection();
-    if(selectedRow < 0)
+    const auto& selectedRow = table->GetSelection();
+    if(!selectedRow)
         return false;
-    const auto selectedId = boost::lexical_cast<unsigned>(table->GetItemText(selectedRow, 0));
+    const auto selectedId = boost::lexical_cast<unsigned>(table->GetItemText(*selectedRow, 0));
 
     if(selectedId >= openGames.size())
         return false;

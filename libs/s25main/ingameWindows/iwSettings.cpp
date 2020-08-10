@@ -73,7 +73,7 @@ iwSettings::~iwSettings()
     try
     {
         auto* SizeCombo = GetCtrl<ctrlComboBox>(0);
-        SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection()];
+        SETTINGS.video.fullscreenSize = video_modes[SizeCombo->GetSelection().get()];
 
         if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
            || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())

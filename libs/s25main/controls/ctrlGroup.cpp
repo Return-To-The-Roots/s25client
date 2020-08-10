@@ -77,17 +77,17 @@ void ctrlGroup::Msg_Timer(const unsigned ctrl_id)
     GetParent()->Msg_Group_Timer(this->GetID(), ctrl_id);
 }
 
-void ctrlGroup::Msg_TableSelectItem(const unsigned ctrl_id, const int selection)
+void ctrlGroup::Msg_TableSelectItem(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableSelectItem(this->GetID(), ctrl_id, selection);
 }
 
-void ctrlGroup::Msg_TableRightButton(const unsigned ctrl_id, const int selection)
+void ctrlGroup::Msg_TableRightButton(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableRightButton(this->GetID(), ctrl_id, selection);
 }
 
-void ctrlGroup::Msg_TableLeftButton(const unsigned ctrl_id, const int selection)
+void ctrlGroup::Msg_TableLeftButton(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableLeftButton(this->GetID(), ctrl_id, selection);
 }
@@ -187,17 +187,17 @@ void ctrlGroup::Msg_Group_Timer(const unsigned /*group_id*/, const unsigned ctrl
     GetParent()->Msg_Group_Timer(this->GetID(), ctrl_id);
 }
 
-void ctrlGroup::Msg_Group_TableSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)
+void ctrlGroup::Msg_Group_TableSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableSelectItem(this->GetID(), ctrl_id, selection);
 }
 
-void ctrlGroup::Msg_Group_TableRightButton(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)
+void ctrlGroup::Msg_Group_TableRightButton(const unsigned /*group_id*/, const unsigned ctrl_id, const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableRightButton(this->GetID(), ctrl_id, selection);
 }
 
-void ctrlGroup::Msg_Group_TableLeftButton(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)
+void ctrlGroup::Msg_Group_TableLeftButton(const unsigned /*group_id*/, const unsigned ctrl_id, const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableLeftButton(this->GetID(), ctrl_id, selection);
 }

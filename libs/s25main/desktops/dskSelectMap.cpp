@@ -189,7 +189,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
     table->SortRows(0, TableSortDir::Ascending);
 
     // und Auswahl zurücksetzen
-    table->SetSelection(-1);
+    table->SetSelection(boost::none);
 }
 
 /// Load a map, throw on error
@@ -211,7 +211,7 @@ static std::unique_ptr<glArchivItem_Map> loadAndVerifyMap(const std::string& pat
 /**
  *  Occurs when user changes the selection in the table of maps.
  */
-void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selection)
+void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
 {
     if(ctrl_id != 1)
         return;
@@ -226,10 +226,10 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
     btContinue.SetEnabled(false);
 
     // is the selection valid?
-    if(selection >= 0)
+    if(selection)
     {
         ctrlTable& table = *GetCtrl<ctrlTable>(1);
-        const std::string& path = table.GetItemText(selection, 5);
+        const std::string& path = table.GetItemText(*selection, 5);
         if(!path.empty())
         {
             try
@@ -246,7 +246,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
                 LOG.write("%1%\n") % errorTxt;
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
                 brokenMapPaths.insert(path);
-                table.RemoveRow(selection);
+                table.RemoveRow(*selection);
             }
         }
     }
@@ -357,13 +357,13 @@ void dskSelectMap::OnMapCreated(const std::string& mapPath)
 void dskSelectMap::StartServer()
 {
     auto* table = GetCtrl<ctrlTable>(1);
-    unsigned short selection = table->GetSelection();
+    const auto& selection = table->GetSelection();
 
     // Ist die Auswahl gültig?
-    if(selection < table->GetNumRows())
+    if(selection)
     {
         // Kartenpfad aus Tabelle holen
-        const std::string& mapPath = table->GetItemText(selection, 5);
+        const std::string& mapPath = table->GetItemText(*selection, 5);
 
         // Server starten
         if(!GAMECLIENT.HostGame(csi, mapPath, MAPTYPE_OLDMAP))
