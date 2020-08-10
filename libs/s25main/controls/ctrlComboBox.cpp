@@ -152,8 +152,8 @@ bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
     if(IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
         // Don't scroll too far down
-        if(list->GetSelection() > 0)
-            list->SetSelection(list->GetSelection() - 1);
+        if(list->GetSelection().value_or(0u) > 0u)
+            list->SetSelection(*list->GetSelection() - 1u);
         return true;
     }
 
@@ -176,7 +176,7 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
     if(IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
         // Will be ignored by the list if to high
-        list->SetSelection(list->GetSelection() + 1);
+        list->SetSelection(list->GetSelection() ? *list->GetSelection() + 1u : 0u);
         return true;
     }
 

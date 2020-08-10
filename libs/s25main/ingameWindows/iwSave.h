@@ -38,7 +38,7 @@ private:
 
     void Msg_EditEnter(unsigned ctrl_id) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, int selection) override;
+    void Msg_TableSelectItem(unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
 
     /// Callbackfunktion zum Eintragen eines Spielstandes in die Tabelle
     static void FillSaveTable(const std::string& filePath, void* param);

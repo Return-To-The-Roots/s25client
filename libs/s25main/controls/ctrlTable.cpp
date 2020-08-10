@@ -172,7 +172,7 @@ void ctrlTable::DeleteAllItems()
 
     GetCtrl<ctrlScrollBar>(0)->SetRange(0);
 
-    SetSelection(-1);
+    SetSelection(boost::none);
     sortColumn_ = -1;
     sortDir_ = TableSortDir::Ascending;
 }
@@ -182,21 +182,21 @@ void ctrlTable::DeleteAllItems()
  *
  *  @param[in] selection Der Auswahlindex
  */
-void ctrlTable::SetSelection(int selection)
+void ctrlTable::SetSelection(const boost::optional<unsigned>& selection)
 {
-    if(selection < 0)
-        selection_ = -1;
-    else if(static_cast<unsigned>(selection) >= rows_.size())
+    if(!selection)
+        selection_ = boost::none;
+    else if(*selection >= rows_.size())
         return;
     else
     {
         selection_ = selection;
         // Scroll into view
         auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
-        if(selection_ < scrollbar->GetScrollPos())
-            scrollbar->SetScrollPos(selection_);
-        else if(selection_ >= scrollbar->GetScrollPos() + scrollbar->GetPageSize())
-            scrollbar->SetScrollPos(selection_ - scrollbar->GetPageSize() + 1);
+        if(*selection_ < scrollbar->GetScrollPos())
+            scrollbar->SetScrollPos(*selection_);
+        else if(*selection_ >= static_cast<unsigned>(scrollbar->GetScrollPos() + scrollbar->GetPageSize()))
+            scrollbar->SetScrollPos(*selection_ - scrollbar->GetPageSize() + 1);
     }
 
     if(GetParent())
@@ -225,8 +225,13 @@ void ctrlTable::RemoveRow(unsigned rowIdx)
         return;
     rows_.erase(rows_.begin() + rowIdx);
     GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows_.size()));
-    if(selection_ >= 0 && static_cast<unsigned>(selection_) >= rows_.size())
-        selection_ = static_cast<int>(rows_.size()) - 1;
+    if(selection_ && *selection_ >= rows_.size())
+    {
+        if(rows_.empty())
+            selection_.reset();
+        else
+            selection_ = rows_.size() - 1u;
+    }
     SetSelection(selection_);
 }
 
@@ -287,13 +292,13 @@ void ctrlTable::Draw_()
 
     Window::Draw_();
 
-    const auto lines = static_cast<int>(line_count > rows_.size() ? rows_.size() : line_count);
+    const auto lines = static_cast<unsigned>(line_count > rows_.size() ? rows_.size() : line_count);
     const auto* scroll = GetCtrl<ctrlScrollBar>(0);
     DrawPoint curPos = GetDrawPos() + DrawPoint(2, 2 + header_height);
-    for(int i = 0; i < lines; ++i)
+    for(unsigned i = 0; i < lines; ++i)
     {
-        const int curRow = i + scroll->GetScrollPos();
-        RTTR_Assert(curRow >= 0 && curRow < GetNumRows());
+        const unsigned curRow = i + scroll->GetScrollPos();
+        RTTR_Assert(curRow < GetNumRows());
         const bool isSelected = selection_ == curRow;
         if(isSelected)
         {
@@ -365,9 +370,15 @@ bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
         return RelayMouseMessage(&Window::Msg_RightDown, mc);
 }
 
-int ctrlTable::GetSelectionFromMouse(const MouseCoords& mc)
+boost::optional<unsigned> ctrlTable::GetSelectionFromMouse(const MouseCoords& mc) const
 {
-    return (mc.pos.y - GetContentDrawArea().top) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
+    const int visibleItem = (mc.pos.y - GetContentDrawArea().top) / font->getHeight();
+    if(visibleItem < 0)
+        return boost::none;
+    const unsigned itemIdx = static_cast<unsigned>(visibleItem) + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
+    if(itemIdx >= GetNumRows())
+        return boost::none;
+    return itemIdx;
 }
 
 bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
@@ -399,11 +410,11 @@ bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
     {
         if(mc.dbl_click && GetParent())
         {
-            int selection = GetSelectionFromMouse(mc);
-            SetSelection(selection);
-            if(selection_ >= 0 && selection == selection_)
+            const auto oldSelection = GetSelection();
+            SetSelection(GetSelectionFromMouse(mc));
+            if(selection_ && oldSelection == selection_)
             {
-                GetParent()->Msg_TableChooseItem(this->GetID(), selection_);
+                GetParent()->Msg_TableChooseItem(this->GetID(), *selection_);
                 return true;
             }
         }
@@ -456,9 +467,9 @@ bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)
     {
         default: return false;
         case KT_UP:
-            if(selection_ > 0)
-                SetSelection(selection_ - 1);
+            if(selection_.value_or(0u) > 0u)
+                SetSelection(*selection_ - 1);
             return true;
-        case KT_DOWN: SetSelection(selection_ + 1); return true;
+        case KT_DOWN: SetSelection(selection_.value_or(0u) + 1u); return true;
     }
 }

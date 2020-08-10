@@ -304,7 +304,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         if(SETTINGS.video.vsync == framerate)
             cbFrameRate->SetSelection(cbFrameRate->GetNumItems() - 1);
     }
-    if(cbFrameRate->GetSelection() < 0)
+    if(!cbFrameRate->GetSelection())
         cbFrameRate->SetSelection(0);
 
     // "VBO" setzen

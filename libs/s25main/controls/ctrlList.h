@@ -21,8 +21,10 @@
 
 #include "Window.h"
 #include "controls/ctrlBaseTooltip.h"
+#include <boost/optional.hpp>
 #include <string>
 #include <vector>
+
 class MouseCoords;
 class glFont;
 
@@ -44,15 +46,15 @@ public:
     /// liefert den Wert einer Zeile.
     const std::string& GetItemText(unsigned short line) const;
     /// liefert den Wert der aktuell gewählten Zeile.
-    const std::string& GetSelItemText() const { return GetItemText(selection_); };
+    const std::string& GetSelItemText() const;
     /// Vertauscht zwei Zeilen.
-    void Swap(unsigned short first, unsigned short second);
+    void Swap(unsigned first, unsigned second);
     /// Löscht ein Element
     void Remove(unsigned short index);
 
     unsigned short GetNumLines() const { return static_cast<unsigned short>(lines.size()); }
-    int GetSelection() const { return selection_; };
-    void SetSelection(int selection);
+    const boost::optional<unsigned>& GetSelection() const { return selection_; };
+    void SetSelection(const boost::optional<unsigned>& selection);
 
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -66,7 +68,7 @@ protected:
     void Draw_() override;
 
 private:
-    int GetItemFromPos(const Position& pos) const;
+    boost::optional<unsigned> GetItemFromPos(const Position& pos) const;
     Rect GetFullDrawArea() const;
     Rect GetListDrawArea() const;
 
@@ -76,8 +78,8 @@ private:
 
     std::vector<std::string> lines;
 
-    int selection_;
-    int mouseover;
+    boost::optional<unsigned> selection_;
+    boost::optional<unsigned> mouseover_;
     unsigned pagesize;
 };
 

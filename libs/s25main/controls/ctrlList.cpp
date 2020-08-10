@@ -22,7 +22,7 @@
 #include "ogl/glFont.h"
 
 ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font)
-    : Window(parent, id, pos, elMax(size, Extent(22, 4))), tc(tc), font(font), selection_(-1), mouseover(-1)
+    : Window(parent, id, pos, elMax(size, Extent(22, 4))), tc(tc), font(font)
 {
     pagesize = (GetSize().y - 4) / font->getHeight();
 
@@ -34,15 +34,13 @@ ctrlList::~ctrlList()
     DeleteAllItems();
 }
 
-void ctrlList::SetSelection(int selection)
+void ctrlList::SetSelection(const boost::optional<unsigned>& selection)
 {
-    if(selection < 0)
-        selection = -1;
-    if(selection != selection_ && selection < static_cast<int>(lines.size()))
+    if(selection != selection_ && (!selection || *selection < lines.size()))
     {
         selection_ = selection;
-        if(selection >= 0 && GetParent())
-            GetParent()->Msg_ListSelectItem(GetID(), selection);
+        if(selection && GetParent())
+            GetParent()->Msg_ListSelectItem(GetID(), *selection);
     }
 }
 
@@ -50,11 +48,11 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-    mouseover = GetItemFromPos(mc.pos);
+    mouseover_ = GetItemFromPos(mc.pos);
     // Wenn Maus in der Liste
-    if(mouseover >= 0)
+    if(mouseover_)
     {
-        const std::string itemTxt = GetItemText(mouseover + scrollbar->GetScrollPos());
+        const std::string itemTxt = GetItemText(*mouseover_);
         tooltip_.ShowTooltip((font->getWidth(itemTxt) > GetListDrawArea().getSize().x) ? itemTxt : "");
         return true;
     }
@@ -69,11 +67,11 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
-    auto itemIdx = GetItemFromPos(mc.pos);
-    if(itemIdx >= 0)
+    const auto itemIdx = GetItemFromPos(mc.pos);
+    if(itemIdx)
     {
         tooltip_.HideTooltip();
-        SetSelection(itemIdx + scrollbar->GetScrollPos());
+        SetSelection(*itemIdx);
         return true;
     }
 
@@ -86,10 +84,10 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     auto itemIdx = GetItemFromPos(mc.pos);
-    if(itemIdx >= 0)
+    if(itemIdx)
     {
         tooltip_.HideTooltip();
-        SetSelection(itemIdx + scrollbar->GetScrollPos());
+        SetSelection(*itemIdx);
         return true;
     }
 
@@ -105,8 +103,8 @@ bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
     if(IsPointInRect(mc.GetPos(), GetListDrawArea()))
     {
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
-        if(mc.dbl_click && GetParent() && selection_ >= 0)
-            GetParent()->Msg_ListChooseItem(GetID(), selection_);
+        if(mc.dbl_click && GetParent() && selection_)
+            GetParent()->Msg_ListChooseItem(GetID(), *selection_);
 
         return true;
     }
@@ -158,15 +156,15 @@ void ctrlList::Draw_()
     Window::Draw_();
 
     // Wieviele Linien anzeigen?
-    unsigned show_lines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);
+    const unsigned show_lines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);
 
-    int scrollbarPos = GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
+    const unsigned scrollbarPos = GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
     DrawPoint curPos = GetDrawPos() + DrawPoint(2, 2);
     // Listeneinträge zeichnen
-    for(unsigned short i = 0; i < show_lines; ++i)
+    for(unsigned i = 0; i < show_lines; ++i)
     {
         // Schwarze Markierung, wenn die Maus drauf ist
-        if(i == mouseover)
+        if(i + scrollbarPos == mouseover_)
             DrawRectangle(Rect(curPos, Extent(GetSize().x - 22, font->getHeight())), 0x80000000);
 
         // Text an sich
@@ -201,7 +199,7 @@ void ctrlList::SetString(const std::string& text, const unsigned id)
 void ctrlList::DeleteAllItems()
 {
     lines.clear();
-    selection_ = -1;
+    selection_ = boost::none;
 }
 
 /**
@@ -213,11 +211,17 @@ void ctrlList::DeleteAllItems()
  */
 const std::string& ctrlList::GetItemText(unsigned short line) const
 {
-    static const std::string EMPTY;
-    if(line < lines.size())
-        return lines[line];
+    RTTR_Assert(line < lines.size());
+    return lines[line];
+}
 
-    return EMPTY;
+const std::string& ctrlList::GetSelItemText() const
+{
+    static const std::string EMPTY;
+    if(selection_)
+        return GetItemText(*selection_);
+    else
+        return EMPTY;
 }
 
 /**
@@ -248,7 +252,7 @@ void ctrlList::Resize(const Extent& newSize)
 /**
  *  vertauscht zwei Zeilen
  */
-void ctrlList::Swap(unsigned short first, unsigned short second)
+void ctrlList::Swap(unsigned first, unsigned second)
 {
     // Evtl Selection auf das jeweilige Element beibehalten?
     if(first == selection_)
@@ -268,18 +272,20 @@ void ctrlList::Remove(const unsigned short index)
     if(index < lines.size())
     {
         lines.erase(lines.begin() + index);
+        if(!selection_)
+            return;
 
         // Keep current item selected
-        if(selection_ > index)
-            --selection_;
-        else if(selection_ == index)
+        if(*selection_ > index)
+            --*selection_;
+        else if(*selection_ == index)
         {
             // Current item deleted -> clear selection
-            selection_ = -1;
+            selection_ = boost::none;
             if(index < GetNumLines())
                 SetSelection(index); // select item now at deleted position
-            else
-                SetSelection(index - 1); // or previous if item at end deleted
+            else if(index > 0u)
+                SetSelection(index - 1u); // or previous if item at end deleted
         }
     }
 }
@@ -294,13 +300,15 @@ Rect ctrlList::GetListDrawArea() const
     return result;
 }
 
-int ctrlList::GetItemFromPos(const Position& pos) const
+boost::optional<unsigned> ctrlList::GetItemFromPos(const Position& pos) const
 {
     const Rect listDrawArea = GetListDrawArea();
-    if(IsPointInRect(pos, listDrawArea))
-        return (pos.y - listDrawArea.getOrigin().y) / font->getHeight();
-    else
-        return -1;
+    if(!IsPointInRect(pos, listDrawArea))
+        return boost::none;
+    const unsigned itemIdx = (pos.y - listDrawArea.getOrigin().y) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
+    if(itemIdx >= GetNumLines())
+        return boost::none;
+    return itemIdx;
 }
 
 Rect ctrlList::GetFullDrawArea() const

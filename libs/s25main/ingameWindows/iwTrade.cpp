@@ -101,8 +101,8 @@ void iwTrade::Msg_PaintBefore()
 void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     // pressed the send button
-    const unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection();
-    const bool isJob = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1;
+    const unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection().get();
+    const bool isJob = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1u;
     boost::variant<Job, GoodType> what;
     if(isJob)
         what = jobs[ware_figure_selection];
@@ -147,7 +147,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selecti
         case 4:
         {
             unsigned number;
-            if(this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 0)
+            if(this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 0u)
             {
                 // Wares
 

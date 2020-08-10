@@ -243,7 +243,7 @@ void Settings::Load()
         // {
         server.last_ip = iniServer->getValue("last_ip");
         boost::optional<uint16_t> port = validate::checkPort(iniServer->getValue("local_port"));
-        server.localPort = port.get_value_or(3665);
+        server.localPort = port.value_or(3665);
         server.ipv6 = (iniServer->getValueI("ipv6") != 0);
         // }
 
@@ -251,7 +251,7 @@ void Settings::Load()
         // {
         proxy.hostname = iniProxy->getValue("proxy");
         port = validate::checkPort(iniProxy->getValue("port"));
-        proxy.port = port.get_value_or(1080);
+        proxy.port = port.value_or(1080);
         proxy.type = ProxyType(iniProxy->getValueI("typ"));
         // }
 
