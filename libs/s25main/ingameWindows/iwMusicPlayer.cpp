@@ -66,10 +66,10 @@ enum
 }
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
-    : IngameWindow(CGI_INPUTWINDOW, IngameWindow::posAtMouse, Extent(300, 100), title, LOADER.GetImageN("resource", 41), true),
+    : IngameWindow(CGI_INPUTWINDOW, IngameWindow::posCenter, Extent(300, 100), title, LOADER.GetImageN("resource", 41), true),
       win_id(win_id), playerWnd_(playerWnd)
 {
-    AddEdit(ID_edtName, DrawPoint(20, 30), Extent(GetSize().x - 40, 22), TC_GREEN2, NormalFont);
+    AddEdit(ID_edtName, DrawPoint(20, 30), Extent(GetSize().x - 40, 22), TC_GREEN2, NormalFont)->SetFocus();
     AddTextButton(ID_btOk, DrawPoint(20, 60), Extent(100, 22), TC_GREEN1, _("OK"), NormalFont);
     AddTextButton(ID_btAbort, DrawPoint(130, 60), Extent(100, 22), TC_RED1, _("Abort"), NormalFont);
 }
@@ -318,7 +318,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
         {
             // Ungültige Namen ausschließen
             const auto isLetter = [](const char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); };
-            if(!msg.empty() && isLetter(msg.front()) && Playlist().SaveAs(msg, true))
+            if(!msg.empty() && isLetter(msg.front()) && Playlist().SaveAs(GetFullPlaylistPath(msg), true))
             {
                 // Combobox updaten
                 UpdatePlaylistCombo(msg);
@@ -391,7 +391,7 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
     auto* cbPlaylist = GetCtrl<ctrlComboBox>(ID_cbPlaylist);
     cbPlaylist->DeleteAllItems();
 
-    std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.ExpandPath(s25::folders::music), "pll");
+    const std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.ExpandPath(s25::folders::music), "pll");
 
     unsigned i = 0;
     for(const auto& playlistPath : playlists)
