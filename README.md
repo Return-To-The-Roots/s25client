@@ -113,7 +113,7 @@ Then just run (tests or application) as usual.
 
 - cmake (i.e from <http://www.cmake.org/download/>)
 - boost (i.e from <http://www.boost.org/>)
-- Visual Studio (at least 2015, you can get the community edition for free)
+- Visual Studio (at least 2017, you can get the community edition for free)
 - Git Client (i.e TortoiseGit)
 
 #### Steps
