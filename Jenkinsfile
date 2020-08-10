@@ -1,5 +1,5 @@
 dockerRegistry = "registry.mytrap.de/"
-dockerCredentials = "2d20af83-9ebd-4a5a-b6ee-c77bec430970"
+dockerCredentials = "gitlab-Flow86"
 dockerImages = [
     "windows.i686"    : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
     "windows.x86_64"  : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
