@@ -17,6 +17,7 @@
 #ifndef PLAYLIST_H_INCLUDED
 #define PLAYLIST_H_INCLUDED
 
+#include <boost/filesystem/path.hpp>
 #include <string>
 #include <vector>
 
@@ -41,9 +42,9 @@ public:
     std::string getNextSong();
 
     /// Playlist in Datei speichern
-    bool SaveAs(const std::string& filename, bool overwrite);
+    bool SaveAs(const boost::filesystem::path& filepath, bool overwrite);
     /// Playlist laden
-    bool Load(Log& logger, const std::string& filename);
+    bool Load(Log& logger, const boost::filesystem::path& filepath);
 
     /// Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
     void FillMusicPlayer(iwMusicPlayer* window) const;

@@ -51,6 +51,7 @@ namespace folders {
     constexpr auto mapsSea = "<RTTR_RTTR>/MAPS/SEA";    // seafaring maps
     constexpr auto mbob = "<RTTR_GAME>/DATA/MBOB";      // nation graphics
     constexpr auto music = "<RTTR_RTTR>/MUSIC";
+    constexpr auto playlists = "<RTTR_USERDATA>/playlists";
     constexpr auto replays = "<RTTR_USERDATA>/REPLAYS";
     constexpr auto save = "<RTTR_USERDATA>/SAVE";
     constexpr auto screenshots = "<RTTR_USERDATA>/screenshots";
@@ -62,6 +63,7 @@ namespace files {
     constexpr auto splash = "<RTTR_RTTR>/splash.bmp";
     constexpr auto soundOrig = "<RTTR_GAME>/DATA/SOUNDDAT/SOUND.LST"; // original sound.lst
     constexpr auto soundScript = "<RTTR_RTTR>/sound.scs";             // converter script
+    constexpr auto defaultPlaylist = "<RTTR_RTTR>/MUSIC/S2_Standard.pll";
 } // namespace files
 namespace resources {
     constexpr auto boat = "<RTTR_GAME>/DATA/BOBS/BOAT.LST";

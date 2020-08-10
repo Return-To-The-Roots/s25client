@@ -362,9 +362,9 @@ bool InitDirectories()
     LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
-    const std::array<std::string, 9> dirs = {{s25::folders::config, s25::folders::mapsOwn, s25::folders::logs, s25::folders::mapsPlayed,
-                                              s25::folders::replays, s25::folders::save, s25::folders::lstsUser, s25::folders::gameLstsUser,
-                                              s25::folders::screenshots}}; // settingsdir muss zuerst angelegt werden (94)
+    const std::array<std::string, 10> dirs = {{s25::folders::config, s25::folders::mapsOwn, s25::folders::logs, s25::folders::mapsPlayed,
+                                               s25::folders::replays, s25::folders::save, s25::folders::lstsUser,
+                                               s25::folders::gameLstsUser, s25::folders::screenshots, s25::folders::playlists}};
 
     if(!MigrateFilesAndDirectories())
         return false;

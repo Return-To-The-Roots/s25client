@@ -20,6 +20,7 @@
 #include "Loader.h"
 #include "MusicPlayer.h"
 #include "Playlist.h"
+#include "RttrConfig.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlTimer.h"
@@ -74,7 +75,7 @@ bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
 
 void dskSplash::LoadFiles()
 {
-    ApplicationLoader loader(LOADER, LOG, iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist));
+    ApplicationLoader loader(RTTRCONFIG, LOADER, LOG, SETTINGS.sound.playlist);
     if(loader.load())
     {
         isLoaded = true;

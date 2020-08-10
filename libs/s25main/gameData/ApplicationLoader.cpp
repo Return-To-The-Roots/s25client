@@ -18,10 +18,11 @@
 #include "ApplicationLoader.h"
 #include "Loader.h"
 #include "Playlist.h"
+#include "RttrConfig.h"
 #include "files.h"
 
-ApplicationLoader::ApplicationLoader(Loader& loader, Log& log, std::string playlistPath)
-    : loader_(loader), logger_(log), playlistPath_(std::move(playlistPath))
+ApplicationLoader::ApplicationLoader(const RttrConfig& rttrConfig, Loader& loader, Log& log, std::string playlistPath)
+    : rttrConfig_(rttrConfig), loader_(loader), logger_(log), playlistPath_(std::move(playlistPath))
 {}
 
 ApplicationLoader::~ApplicationLoader() = default;
@@ -36,7 +37,7 @@ bool ApplicationLoader::load()
     if(!playlistPath_.empty())
     {
         playlist_ = std::make_unique<Playlist>();
-        if(!playlist_->Load(logger_, playlistPath_))
+        if(!playlist_->Load(logger_, playlistPath_) && !playlist_->Load(logger_, rttrConfig_.ExpandPath(s25::files::defaultPlaylist)))
             return false;
     }
     return true;

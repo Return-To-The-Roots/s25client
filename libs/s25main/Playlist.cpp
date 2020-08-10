@@ -57,11 +57,11 @@ std::string Playlist::getCurrentSong() const
 /**
  *  Playlist in Datei speichern
  */
-bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
+bool Playlist::SaveAs(const boost::filesystem::path& filepath, const bool overwrite)
 {
     if(!overwrite)
     {
-        bnw::ifstream in(filename.c_str());
+        bnw::ifstream in(filepath);
         if(in.good())
         {
             // Datei existiert und wir sollen sie nicht überschreiben
@@ -70,7 +70,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
         }
     }
 
-    s25util::ClassicImbuedStream<bnw::ofstream> out(filename.c_str());
+    s25util::ClassicImbuedStream<bnw::ofstream> out(filepath);
     if(!out.good())
         return false;
 
@@ -89,17 +89,14 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
 /**
  *  Playlist laden
  */
-bool Playlist::Load(Log& logger, const std::string& filename)
+bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
 {
     songs.clear();
-    if(filename.empty())
+    if(filepath.empty())
         return false;
 
-    logger.write(_("Loading \"%s\"\n")) % filename;
+    logger.write(_("Loading \"%s\"\n")) % filepath;
 
-    boost::filesystem::path filepath(filename);
-    if(filepath.extension() != ".pll")
-        filepath.replace_extension("pll");
     bnw::ifstream in(filepath);
 
     if(in.fail())
