@@ -54,6 +54,7 @@ enum
     ID_btIncRepeat,
     ID_btDecRepeat,
     ID_btRandom,
+    ID_btSave,
 
     ID_edtName,
     ID_btOk,
@@ -88,7 +89,7 @@ void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned /*ctrl_id*/)
 }
 
 iwMusicPlayer::iwMusicPlayer()
-    : IngameWindow(CGI_MUSICPLAYER, IngameWindow::posLastOrCenter, Extent(430, 330), _("Music player"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_MUSICPLAYER, IngameWindow::posLastOrCenter, Extent(440, 330), _("Music player"), LOADER.GetImageN("resource", 41)),
       changed(false)
 {
     AddList(ID_lstSongs, DrawPoint(20, 30), Extent(330, 200), TC_GREEN1, NormalFont);
@@ -98,26 +99,32 @@ iwMusicPlayer::iwMusicPlayer()
     // Playlistbuttons
     const unsigned short button_distance = 10;
     const Extent buttonSize((330 - button_distance) / 2, 22);
-    ctrlButton* b1 = AddTextButton(ID_btAddPlaylist, DrawPoint(20, 290), buttonSize, TC_GREEN2, _("Add"), NormalFont);
+    ctrlButton* b1 = AddTextButton(ID_btAddPlaylist, DrawPoint(20, 288), buttonSize, TC_GREEN2, _("Add"), NormalFont);
     AddTextButton(ID_btRemovePlaylist, b1->GetPos() + DrawPoint(buttonSize.x + button_distance, 0), buttonSize, TC_GREEN2, _("Remove"),
                   NormalFont);
 
     // Buttons für die Musikstücke
-    AddImageButton(ID_btAddTrack, DrawPoint(370, 30), Extent(40, 40), TC_GREY, LOADER.GetImageN("io", 138), _("Add track"));
-    AddImageButton(ID_btAddTrackDir, DrawPoint(370, 80), Extent(40, 40), TC_GREY, LOADER.GetImageN("io_new", 2),
+    AddImageButton(ID_btAddTrack, DrawPoint(360, 30), Extent(30, 40), TC_GREY, LOADER.GetImageN("io", 138), _("Add track"));
+    AddImageButton(ID_btAddTrackDir, DrawPoint(390, 30), Extent(30, 40), TC_GREY, LOADER.GetImageN("io_new", 2),
                    _("Add directory of tracks"));
-    AddImageButton(ID_btRemoveTrack, DrawPoint(370, 130), Extent(40, 40), TC_RED1, LOADER.GetImageN("io", 220), _("Remove track"));
-    AddImageButton(ID_btUp, DrawPoint(370, 180), Extent(40, 15), TC_GREY, LOADER.GetImageN("io", 33), _("Upwards"));
-    AddImageButton(ID_btDown, DrawPoint(370, 195), Extent(40, 15), TC_GREY, LOADER.GetImageN("io", 34), _("Downwards"));
-    AddTextDeepening(ID_txtRepeat, DrawPoint(370, 220), Extent(40, 20), TC_GREY, "1", NormalFont, COLOR_YELLOW);
-    AddImageButton(ID_btDecRepeat, DrawPoint(370, 240), Extent(20, 20), TC_RED1, LOADER.GetImageN("io", 139), _("Less repeats"));
-    AddImageButton(ID_btIncRepeat, DrawPoint(390, 240), Extent(20, 20), TC_GREY, LOADER.GetImageN("io", 138), _("More repeats"));
-    AddImageButton(ID_btRandom, DrawPoint(370, 270), Extent(40, 40), TC_GREY, LOADER.GetImageN("io", 107),
-                   _("Playback in this order")); // 225
+    AddImageButton(ID_btRemoveTrack, DrawPoint(370, 80), Extent(40, 40), TC_RED1, LOADER.GetImageN("io", 220), _("Remove track"));
+    AddImageButton(ID_btUp, DrawPoint(370, 130), Extent(40, 15), TC_GREY, LOADER.GetImageN("io", 33), _("Upwards"));
+    AddImageButton(ID_btDown, DrawPoint(370, 145), Extent(40, 15), TC_GREY, LOADER.GetImageN("io", 34), _("Downwards"));
+    AddTextDeepening(ID_txtRepeat, DrawPoint(370, 170), Extent(40, 20), TC_GREY, "1", NormalFont, COLOR_YELLOW);
+    AddImageButton(ID_btDecRepeat, DrawPoint(370, 190), Extent(20, 20), TC_RED1, LOADER.GetImageN("io", 139), _("Less repeats"));
+    AddImageButton(ID_btIncRepeat, DrawPoint(390, 190), Extent(20, 20), TC_GREY, LOADER.GetImageN("io", 138), _("More repeats"));
+    AddImageButton(ID_btRandom, DrawPoint(370, 220), Extent(40, 40), TC_GREY, LOADER.GetImageN("io", 107), _("Playback in this order"));
+    AddImageButton(ID_btSave, DrawPoint(370, 270), Extent(40, 40), TC_GREY, LOADER.GetImageN("io", 37), _("Save playlist"));
 
     // Mit Werten füllen
     MUSICPLAYER.GetPlaylist().FillMusicPlayer(this);
     UpdatePlaylistCombo(SETTINGS.sound.playlist);
+    auto* cbPlayList = GetCtrl<ctrlComboBox>(ID_cbPlaylist);
+    if(!cbPlayList->GetSelection() && cbPlayList->GetNumItems() > 0u)
+    {
+        cbPlayList->SetSelection(0u);
+        Msg_ComboSelectItem(ID_cbPlaylist, 0u);
+    }
 }
 
 static bool isReadonlyPlaylist(const std::string& name)
@@ -128,35 +135,12 @@ static bool isReadonlyPlaylist(const std::string& name)
 
 iwMusicPlayer::~iwMusicPlayer()
 {
-    // Playlist ggf. speichern, die ausgewählt ist, falls eine ausgewählt ist
+    SaveCurrentPlaylist();
+
     const auto& selection = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelection();
 
-    // Entsprechende Datei speichern
     if(selection)
-    {
-        Playlist pl;
-        pl.ReadMusicPlayer(this);
-
-        const std::string playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(*selection);
-
-        if(isReadonlyPlaylist(playlistName))
-            return;
-
-        const auto fullPlaylistPath = GetFullPlaylistPath(playlistName);
-        try
-        {
-            if(!pl.SaveAs(fullPlaylistPath, true))
-            {
-                // Fehler, konnte nicht gespeichert werden
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be saved!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
-            }
-        } catch(std::exception&)
-        {}
-
-        // Entsprechenden Dateipfad speichern
-        SETTINGS.sound.playlist = fullPlaylistPath.string();
-    }
+        SETTINGS.sound.playlist = GetFullPlaylistPath(GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(*selection)).string();
 
     // Werte in Musikplayer bringen
     if(changed)
@@ -168,7 +152,6 @@ iwMusicPlayer::~iwMusicPlayer()
 
 void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
-    // Entsprechende Datei geladen
     Playlist pl;
     if(pl.Load(LOG, GetFullPlaylistPath(GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(selection))))
     {
@@ -197,6 +180,24 @@ boost::filesystem::path iwMusicPlayer::GetFullPlaylistPath(const std::string& na
 {
     const boost::filesystem::path folder = RTTRCONFIG.ExpandPath(isReadonlyPlaylist(name) ? s25::folders::music : s25::folders::playlists);
     return folder / (name + ".pll");
+}
+
+bool iwMusicPlayer::SaveCurrentPlaylist()
+{
+    const auto& selection = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelection();
+    if(!selection)
+        return false;
+
+    Playlist pl;
+    pl.ReadMusicPlayer(this);
+
+    const std::string playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(*selection);
+    const auto fullPlaylistPath = GetFullPlaylistPath(playlistName);
+
+    if(isReadonlyPlaylist(playlistName))
+        return false;
+
+    return pl.SaveAs(fullPlaylistPath, true);
 }
 
 void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
@@ -289,6 +290,17 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
             changed = true;
         }
         break;
+        case ID_btSave:
+            if(SaveCurrentPlaylist())
+            {
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwMsgbox>(_("Ok"), _("The playlist was saved!"), nullptr, MSB_OK, MSB_EXCLAMATIONGREEN));
+            } else
+            {
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be saved!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+            }
+            break;
     }
 }
 
