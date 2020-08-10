@@ -21,10 +21,10 @@
 #include <boost/filesystem/path.hpp>
 
 /// Fenster zum Einstellen des Musik-Players
-class iwMusicPlayer : public IngameWindow
+class iwMusicPlayer final : public IngameWindow
 {
     /// Kleines Fenster zur Eingabe von Text
-    class InputWindow : public IngameWindow
+    class InputWindow final : public IngameWindow
     {
         const unsigned win_id;
         iwMusicPlayer& playerWnd_;
@@ -61,6 +61,8 @@ public:
 private:
     /// Get the full path to a playlist by its name
     static boost::filesystem::path GetFullPlaylistPath(const std::string& name);
+
+    bool SaveCurrentPlaylist();
 
     void Msg_ListChooseItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
