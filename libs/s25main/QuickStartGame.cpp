@@ -55,7 +55,7 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
     if(!loader.load())
         return false;
     if(loader.getPlaylist())
-        MUSICPLAYER.GetPlaylist() = std::move(*loader.getPlaylist());
+        MUSICPLAYER.SetPlaylist(std::move(*loader.getPlaylist()));
     if(SETTINGS.sound.musik)
         MUSICPLAYER.Play();
 

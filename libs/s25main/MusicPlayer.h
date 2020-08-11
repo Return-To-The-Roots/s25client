@@ -36,12 +36,11 @@ public:
     /// Stoppt Abspielvorgang
     void Stop();
 
-    /// Playlist laden
-    bool Load(const std::string& filename);
     /// Musik wurde fertiggespielt (Callback)
     void MusicFinished() { PlayNext(); }
     /// liefert die Playlist.
-    Playlist& GetPlaylist() { return list; }
+    const Playlist& GetPlaylist() const { return list; }
+    void SetPlaylist(Playlist pl) { list = std::move(pl); }
 
 protected:
     /// Spielt nächstes Stück ab

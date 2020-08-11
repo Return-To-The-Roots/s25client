@@ -23,17 +23,14 @@
 
 #pragma once
 
-class iwMusicPlayer;
 class Log;
 
 /// Speichert die Daten über eine Playlist und verwaltet diese
 class Playlist
 {
 public:
-    Playlist();
-
-    /// bereitet die Playlist aufs abspielen vor.
-    void Prepare();
+    Playlist() = default;
+    Playlist(std::vector<std::string> songs, unsigned numRepeats, bool random);
 
     /// liefert den Dateinamen des aktuellen Songs
     std::string getCurrentSong() const;
@@ -42,24 +39,26 @@ public:
     std::string getNextSong();
 
     /// Playlist in Datei speichern
-    bool SaveAs(const boost::filesystem::path& filepath, bool overwrite);
+    bool SaveAs(const boost::filesystem::path& filepath, bool overwrite) const;
     /// Playlist laden
     bool Load(Log& logger, const boost::filesystem::path& filepath);
 
-    /// Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
-    void FillMusicPlayer(iwMusicPlayer* window) const;
-    /// Liest die Werte aus dem iwMusicPlayer-Fenster
-    void ReadMusicPlayer(const iwMusicPlayer* window);
+    const auto& getSongs() const { return songs_; }
+    unsigned getNumRepeats() const { return numRepeats_; }
+    bool isRandomized() const { return random_; }
 
     /// Wählt den Start-Song aus
     void SetStartSong(unsigned id);
 
-protected:
-    int current;
-    unsigned repeats;               /// Anzahl der Wiederholungen
-    bool random;                    /// Zufallswiedergabe?
-    std::vector<std::string> songs; /// Dateinamen der abzuspielenden Titel
-    std::vector<unsigned> order;    /// Reihenfolge der Titel
+private:
+    /// Get the playlist ready for playing
+    void Prepare();
+
+    std::vector<std::string> songs_; /// Filenames of titles to play
+    unsigned numRepeats_ = 1;        /// How often to repeat all songs
+    bool random_ = false;            /// True for random order, else in-order
+    std::vector<unsigned> order_;    /// Actual order of the songs, indices into songs
+    std::string currentSong_;
 };
 
 #endif // !PLAYLIST_H_INCLUDED

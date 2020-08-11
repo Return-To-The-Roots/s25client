@@ -28,6 +28,7 @@
 #include "controls/ctrlList.h"
 #include "controls/ctrlTextDeepening.h"
 #include "files.h"
+#include "helpers/Range.h"
 #include "helpers/toString.h"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
@@ -117,7 +118,7 @@ iwMusicPlayer::iwMusicPlayer()
     AddImageButton(ID_btSave, DrawPoint(370, 270), Extent(40, 40), TC_GREY, LOADER.GetImageN("io", 37), _("Save playlist"));
 
     // Mit Werten füllen
-    MUSICPLAYER.GetPlaylist().FillMusicPlayer(this);
+    UpdateFromPlaylist(MUSICPLAYER.GetPlaylist());
     UpdatePlaylistCombo(SETTINGS.sound.playlist);
     auto* cbPlayList = GetCtrl<ctrlComboBox>(ID_cbPlaylist);
     if(!cbPlayList->GetSelection() && cbPlayList->GetNumItems() > 0u)
@@ -145,7 +146,7 @@ iwMusicPlayer::~iwMusicPlayer()
     // Werte in Musikplayer bringen
     if(changed)
     {
-        MUSICPLAYER.GetPlaylist().ReadMusicPlayer(this);
+        MUSICPLAYER.SetPlaylist(MakePlaylist());
         MUSICPLAYER.Play();
     }
 }
@@ -156,8 +157,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsign
     const std::string playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(selection);
     if(pl.Load(LOG, GetFullPlaylistPath(playlistName)))
     {
-        // Das Fenster entsprechend mit den geladenen Werten füllen
-        pl.FillMusicPlayer(this);
+        UpdateFromPlaylist(pl);
         changed = true;
     } else
     {
@@ -172,8 +172,9 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsign
 void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
     // Werte in Musikplayer bringen
-    MUSICPLAYER.GetPlaylist().ReadMusicPlayer(this);
-    MUSICPLAYER.GetPlaylist().SetStartSong(selection);
+    Playlist pl = MakePlaylist();
+    pl.SetStartSong(selection);
+    MUSICPLAYER.SetPlaylist(std::move(pl));
     MUSICPLAYER.Play();
 
     // Wir haben ab jetzt quasi keine Veränderungen mehr --> damit Musik nicht neugestartet werden muss
@@ -192,8 +193,7 @@ bool iwMusicPlayer::SaveCurrentPlaylist()
     if(!selection)
         return false;
 
-    Playlist pl;
-    pl.ReadMusicPlayer(this);
+    const Playlist pl = MakePlaylist();
 
     const std::string playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(*selection);
     const auto fullPlaylistPath = GetFullPlaylistPath(playlistName);
@@ -202,6 +202,41 @@ bool iwMusicPlayer::SaveCurrentPlaylist()
         return false;
 
     return pl.SaveAs(fullPlaylistPath, true);
+}
+
+void iwMusicPlayer::UpdateFromPlaylist(const Playlist& playlist)
+{
+    auto* lstSongs = GetCtrl<ctrlList>(ID_lstSongs);
+    lstSongs->DeleteAllItems();
+
+    for(const auto& song : playlist.getSongs())
+        lstSongs->AddString(song);
+
+    const auto currentSong = playlist.getCurrentSong();
+    if(!currentSong.empty())
+    {
+        for(const auto i : helpers::Range<unsigned>{lstSongs->GetNumLines()})
+        {
+            if(currentSong == lstSongs->GetItemText(i))
+            {
+                lstSongs->SetSelection(i);
+                break;
+            }
+        }
+    }
+
+    SetRepeats(playlist.getNumRepeats());
+    SetRandomPlayback(playlist.isRandomized());
+}
+
+Playlist iwMusicPlayer::MakePlaylist()
+{
+    const auto* lstSongs = GetCtrl<ctrlList>(ID_lstSongs);
+    std::vector<std::string> songs;
+    for(const auto i : helpers::Range<unsigned>{lstSongs->GetNumLines()})
+        songs.push_back(lstSongs->GetItemText(i));
+
+    return Playlist(songs, GetRepeats(), GetRandomPlayback());
 }
 
 void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
@@ -369,45 +404,25 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
     }
 }
 
-void iwMusicPlayer::SetSegments(const std::vector<std::string>& segments)
+unsigned iwMusicPlayer::GetRepeats() const
 {
-    GetCtrl<ctrlList>(ID_lstSongs)->DeleteAllItems();
-
-    for(const auto& segment : segments)
-        GetCtrl<ctrlList>(ID_lstSongs)->AddString(segment);
+    return boost::lexical_cast<unsigned>(GetCtrl<ctrlTextDeepening>(ID_txtRepeat)->GetText());
 }
+
 void iwMusicPlayer::SetRepeats(unsigned repeats)
 {
     GetCtrl<ctrlTextDeepening>(ID_txtRepeat)->SetText(helpers::toString(repeats));
+}
+
+bool iwMusicPlayer::GetRandomPlayback() const
+{
+    return GetCtrl<ctrlImageButton>(ID_btRandom)->GetImage() != LOADER.GetTextureN("io", 107);
 }
 
 void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
 {
     GetCtrl<ctrlImageButton>(ID_btRandom)->SetImage(random_playback ? LOADER.GetTextureN("io", 225) : LOADER.GetTextureN("io", 107));
     GetCtrl<ctrlImageButton>(ID_btRandom)->SetTooltip(random_playback ? _("Playback in this order") : _("Random playback"));
-}
-
-void iwMusicPlayer::SetCurrentSong(const unsigned selection)
-{
-    GetCtrl<ctrlList>(ID_lstSongs)->SetSelection(selection);
-}
-
-std::vector<std::string> iwMusicPlayer::GetSegments() const
-{
-    std::vector<std::string> segments;
-    for(unsigned i = 0; i < GetCtrl<ctrlList>(ID_lstSongs)->GetNumLines(); ++i)
-        segments.push_back(GetCtrl<ctrlList>(ID_lstSongs)->GetItemText(i));
-    return segments;
-}
-
-unsigned iwMusicPlayer::GetRepeats() const
-{
-    return boost::lexical_cast<unsigned>(GetCtrl<ctrlTextDeepening>(ID_txtRepeat)->GetText());
-}
-
-bool iwMusicPlayer::GetRandomPlayback() const
-{
-    return GetCtrl<ctrlImageButton>(ID_btRandom)->GetImage() != LOADER.GetTextureN("io", 107);
 }
 
 /// Updatet die Playlist - Combo

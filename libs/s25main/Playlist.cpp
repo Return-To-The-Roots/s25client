@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "Playlist.h"
-#include "ingameWindows/iwMusicPlayer.h"
 #include "mygettext/mygettext.h"
 #include "s25util/Log.h"
 #include "s25util/StringConversion.h"
@@ -29,35 +28,38 @@
 
 namespace bnw = boost::nowide;
 
-Playlist::Playlist() : current(-1), repeats(1), random(false) {}
+Playlist::Playlist(std::vector<std::string> songs, unsigned numRepeats, bool random)
+    : songs_(std::move(songs)), numRepeats_(numRepeats), random_(random)
+{
+    Prepare();
+}
 
 /**
  *  startet das Abspielen der Playlist.
  */
 void Playlist::Prepare()
 {
+    currentSong_.clear();
     // Add one entry per song repeated if required
-    order.resize(songs.size() * repeats);
+    order_.resize(songs_.size() * numRepeats_);
 
-    for(unsigned i = 0; i < songs.size() * repeats; ++i)
-        order[i] = i % songs.size();
+    for(unsigned i = 0; i < songs_.size() * numRepeats_; ++i)
+        order_[i] = i % songs_.size();
 
     // Shuffle if requested
-    if(random)
-        std::shuffle(order.begin(), order.end(), std::mt19937(std::random_device()()));
+    if(random_)
+        std::shuffle(order_.begin(), order_.end(), std::mt19937(std::random_device()()));
 }
 
 std::string Playlist::getCurrentSong() const
 {
-    if(order.empty() || order.front() >= songs.size())
-        return "";
-    return songs[order.front()];
+    return currentSong_;
 }
 
 /**
  *  Playlist in Datei speichern
  */
-bool Playlist::SaveAs(const boost::filesystem::path& filepath, const bool overwrite)
+bool Playlist::SaveAs(const boost::filesystem::path& filepath, const bool overwrite) const
 {
     if(!overwrite)
     {
@@ -74,11 +76,11 @@ bool Playlist::SaveAs(const boost::filesystem::path& filepath, const bool overwr
     if(!out.good())
         return false;
 
-    out << repeats << " ";
-    out << (random ? "random" : "ordered") << std::endl;
+    out << numRepeats_ << " ";
+    out << (random_ ? "random" : "ordered") << std::endl;
 
     // songs reinschreiben
-    for(const auto& song : songs)
+    for(const auto& song : songs_)
         out << song << "\n";
 
     out.close();
@@ -91,7 +93,7 @@ bool Playlist::SaveAs(const boost::filesystem::path& filepath, const bool overwr
  */
 bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
 {
-    songs.clear();
+    songs_.clear();
     if(filepath.empty())
         return false;
 
@@ -109,17 +111,17 @@ bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
         return false;
     sline.clear();
     sline << line;
-    if(!(sline >> repeats >> random_str))
+    if(!(sline >> numRepeats_ >> random_str))
         return false;
 
-    random = (random_str == "random_playback" || random_str == "random");
+    random_ = (random_str == "random_playback" || random_str == "random");
 
     while(std::getline(in, line))
     {
         boost::algorithm::trim_if(line, [](char c) { return c == '\r' || c == '\n'; });
         if(line.empty())
             break;
-        songs.push_back(line);
+        songs_.push_back(line);
     }
 
     if(in.bad())
@@ -130,40 +132,14 @@ bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
     return true;
 }
 
-/**
- *  Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
- */
-void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
-{
-    window->SetSegments(songs);
-    window->SetRepeats(repeats);
-    window->SetRandomPlayback(random);
-
-    if(current >= 0)
-        window->SetCurrentSong(current);
-}
-
-/**
- *  Liest die Werte aus dem iwMusicPlayer-Fenster
- */
-void Playlist::ReadMusicPlayer(const iwMusicPlayer* const window)
-{
-    repeats = window->GetRepeats();
-    random = window->GetRandomPlayback();
-    songs = window->GetSegments();
-
-    // zum Abspielen vorbereiten
-    Prepare();
-}
-
 // Wählt den Start-Song aus
 void Playlist::SetStartSong(const unsigned id)
 {
-    for(unsigned int& i : order)
+    for(auto& i : order_)
     {
         if(i == id)
         {
-            std::swap(order[0], i);
+            std::swap(order_.front(), i);
             return;
         }
     }
@@ -172,9 +148,12 @@ void Playlist::SetStartSong(const unsigned id)
 /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
 std::string Playlist::getNextSong()
 {
-    const std::string tmp = getCurrentSong();
-    current = tmp.empty() ? -1 : static_cast<int>(order.front());
-    if(!order.empty())
-        order.erase(order.begin());
-    return tmp;
+    if(order_.empty())
+        currentSong_.clear();
+    else
+    {
+        currentSong_ = songs_.at(order_.front());
+        order_.erase(order_.begin());
+    }
+    return currentSong_;
 }

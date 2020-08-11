@@ -28,11 +28,6 @@
 
 MusicPlayer::MusicPlayer() : playing(false) {}
 
-bool MusicPlayer::Load(const std::string& filename)
-{
-    return list.Load(LOG, filename);
-}
-
 /**
  *  Startet Abspielvorgang
  */
