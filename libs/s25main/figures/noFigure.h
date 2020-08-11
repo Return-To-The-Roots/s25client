@@ -17,10 +17,12 @@
 #ifndef NOFIGURE_H_INCLUDED
 #define NOFIGURE_H_INCLUDED
 
+#include "helpers/MaxEnumValue.h"
 #include "helpers/OptionalEnum.h"
 #include "nodeObjs/noMovable.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/RoadPathDirection.h"
+#include <cstdint>
 
 class RoadSegment;
 class noRoadNode;
@@ -28,13 +30,14 @@ class glArchivItem_Bob;
 enum Job : unsigned char;
 enum GoodType : unsigned char;
 
-enum FigureState
+enum FigureState : uint8_t
 {
     FS_GOTOGOAL = 0,
     FS_GOHOME,
     FS_WANDER,
     FS_JOB
 };
+DEFINE_MAX_ENUM_VALUE(FigureState, FigureState::FS_JOB)
 
 class SerializedGameData;
 

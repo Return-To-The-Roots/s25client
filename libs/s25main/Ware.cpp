@@ -65,18 +65,34 @@ void Ware::Serialize_Ware(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);
 
-    sgd.PushUnsignedChar(rttr::enum_cast(next_dir));
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(next_dir);
+    sgd.PushUnsignedChar(state);
     sgd.PushObject(location, false);
-    sgd.PushUnsignedChar(static_cast<unsigned char>(type));
+    sgd.PushEnum<uint8_t>(type);
     sgd.PushObject(goal, false);
     sgd.PushMapPoint(next_harbor);
 }
 
+static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
+{
+    if(sgd.GetGameDataVersion() < 5)
+    {
+        const auto iDir = sgd.PopUnsignedChar();
+        if(iDir == 100)
+            return RoadPathDirection::Ship;
+        if(iDir == 0xFF)
+            return RoadPathDirection::None;
+        if(iDir >= Direction::COUNT)
+            throw SerializedGameData::Error("Invalid RoadPathDirection");
+        return RoadPathDirection(iDir);
+    } else
+        return sgd.Pop<RoadPathDirection>();
+}
+
 Ware::Ware(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id), next_dir(RoadPathDirection(sgd.PopUnsignedChar())), state(State(sgd.PopUnsignedChar())),
-      location(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)), type(GoodType(sgd.PopUnsignedChar())),
-      goal(sgd.PopObject<noBaseBuilding>(GOT_UNKNOWN)), next_harbor(sgd.PopMapPoint())
+    : GameObject(sgd, obj_id), next_dir(PopRoadPathDirection(sgd)), state(State(sgd.PopUnsignedChar())),
+      location(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)), type(sgd.Pop<GoodType>()), goal(sgd.PopObject<noBaseBuilding>(GOT_UNKNOWN)),
+      next_harbor(sgd.PopMapPoint())
 {}
 
 void Ware::SetGoal(noBaseBuilding* newGoal)

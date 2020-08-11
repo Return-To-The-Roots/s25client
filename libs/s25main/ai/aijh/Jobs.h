@@ -84,11 +84,8 @@ class BuildJob : public Job, public JobWithTarget
 public:
     BuildJob(AIPlayerJH& aijh, BuildingType type, MapPoint around, SearchMode searchMode = SEARCHMODE_RADIUS)
         : Job(aijh), type(type), around(around), searchMode(searchMode)
-    {
-        RTTR_Assert(type != BLD_NOTHING);
-    }
+    {}
 
-    ~BuildJob() override = default;
     void ExecuteJob() override;
     inline BuildingType GetType() const { return type; }
     inline MapPoint GetAround() const { return around; }
@@ -108,7 +105,6 @@ class ConnectJob : public Job, public JobWithTarget
 {
 public:
     ConnectJob(AIPlayerJH& aijh, MapPoint flagPos) : Job(aijh), flagPos(flagPos) {}
-    ~ConnectJob() override = default;
     void ExecuteJob() override;
     MapPoint getFlag() const { return flagPos; }
 

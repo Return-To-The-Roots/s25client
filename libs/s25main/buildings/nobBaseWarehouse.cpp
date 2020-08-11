@@ -214,14 +214,14 @@ void nobBaseWarehouse::Clear()
 void nobBaseWarehouse::OrderCarrier(noRoadNode& goal, RoadSegment& workplace)
 {
     RTTR_Assert(workplace.getCarrier(0) == nullptr);
-    const bool isBoatRequired = workplace.GetRoadType() == RoadSegment::RT_BOAT;
+    const bool isBoatRequired = workplace.GetRoadType() == RoadType::Water;
 
     // We assume, that the caller already checked, if this is possible
     RTTR_Assert(inventory[JOB_HELPER]);
     if(isBoatRequired)
         RTTR_Assert(inventory[GD_BOAT]);
 
-    auto* carrier = new nofCarrier(isBoatRequired ? nofCarrier::CT_BOAT : nofCarrier::CT_NORMAL, pos, player, &workplace, &goal);
+    auto* carrier = new nofCarrier(isBoatRequired ? CarrierType::Boat : CarrierType::Normal, pos, player, &workplace, &goal);
     workplace.setCarrier(0, carrier);
 
     if(!UseFigureAtOnce(carrier, goal))
@@ -271,7 +271,7 @@ nofCarrier* nobBaseWarehouse::OrderDonkey(RoadSegment* road, noRoadNode* const g
     if(!inventory[JOB_PACKDONKEY])
         return nullptr;
 
-    auto* donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, goal_flag);
+    auto* donkey = new nofCarrier(CarrierType::Donkey, pos, player, road, goal_flag);
     AddLeavingFigure(donkey);
     inventory.real.Remove(JOB_PACKDONKEY);
 

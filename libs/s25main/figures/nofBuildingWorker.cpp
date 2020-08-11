@@ -51,7 +51,7 @@ void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) con
     if(fs != FS_GOHOME && fs != FS_WANDER)
     {
         sgd.PushObject(workplace, false);
-        sgd.PushUnsignedChar(static_cast<unsigned char>(ware));
+        sgd.PushEnum<uint8_t>(ware);
         sgd.PushBool(was_sounding);
     }
 }
@@ -62,7 +62,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
     if(fs != FS_GOHOME && fs != FS_WANDER)
     {
         workplace = sgd.PopObject<nobUsual>(GOT_UNKNOWN);
-        ware = GoodType(sgd.PopUnsignedChar());
+        ware = sgd.Pop<GoodType>();
         was_sounding = sgd.PopBool();
     } else
     {

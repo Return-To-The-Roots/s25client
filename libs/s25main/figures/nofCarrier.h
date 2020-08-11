@@ -19,6 +19,8 @@
 #define NOF_CARRIER_H_
 
 #include "figures/noFigure.h"
+#include "helpers/MaxEnumValue.h"
+#include <cstdint>
 #include <vector>
 
 class RoadSegment;
@@ -26,7 +28,7 @@ class Ware;
 class noRoadNode;
 class SerializedGameData;
 
-enum CarrierState
+enum CarrierState : uint8_t
 {
     CARRS_FIGUREWORK = 0,           // Aufgaben der Figur
     CARRS_WAITFORWARE,              // auf Weg auf Ware warten
@@ -40,19 +42,18 @@ enum CarrierState
     CARRS_BOATCARRIER_WANDERONWATER // Rumirren der Bootsträger auf dem Wasser, d.h. Paddeln zum
     // nächsten Ufer, nachdem der Wasserweg zerstört wurde
 };
+DEFINE_MAX_ENUM_VALUE(CarrierState, CarrierState::CARRS_BOATCARRIER_WANDERONWATER)
 
-// Stellt einen Träcer da
+enum class CarrierType : uint8_t
+{
+    Normal, // Normaler Träger
+    Donkey, // Esel
+    Boat    // Träger mit Boot
+};
+DEFINE_MAX_ENUM_VALUE(CarrierType, CarrierType::Boat)
+
 class nofCarrier : public noFigure
 {
-public:
-    /// Träger-"Typ"
-    enum CarrierType
-    {
-        CT_NORMAL, // Normaler Träger
-        CT_DONKEY, // Esel
-        CT_BOAT    // Träger mit Boot
-    };
-
 private:
     CarrierType ct;
     /// Was der Träger gerade so treibt
@@ -85,8 +86,8 @@ private:
 
     void HandleDerivedEvent(unsigned id) override;
 
-    /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht ansonsten wieder in die
-    /// Mitte
+    /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht ansonsten wieder in
+    /// die Mitte
     void LookForWares();
     /// Nimmt eine Ware auf an der aktuellen Flagge und dreht sich um, um sie zu tragen (fetch_dir ist die Richtung der Waren, die der
     /// Träger aufnehmen will)

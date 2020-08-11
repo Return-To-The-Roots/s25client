@@ -102,6 +102,8 @@ public:
     /// If front is true, then the job is enqueued at the front, else the back
     /// If searchPosition is true, then the point is searched for a good position (around that pt) otherwise the point is taken
     void AddBuildJob(BuildingType type, MapPoint pt, bool front = false, bool searchPosition = true);
+    /// Build a new military building at that position
+    void AddMilitaryBuildJob(MapPoint pt);
     /// adds buildjobs for a buildingtype around every warehouse or military building
     void AddBuildJobAroundEveryWarehouse(BuildingType bt);
     void AddBuildJobAroundEveryMilBld(BuildingType bt);
@@ -160,7 +162,7 @@ public:
     /// Recalculate the Buildingquality around a certain point
     void RecalcBQAround(MapPoint pt);
     /// Does some actions after a new military building is occupied
-    void HandleNewMilitaryBuilingOccupied(MapPoint pt);
+    void HandleNewMilitaryBuildingOccupied(MapPoint pt);
     /// Does some actions after a military building is lost
     void HandleMilitaryBuilingLost(MapPoint pt);
     /// Does some actions after a building is destroyed

@@ -80,7 +80,7 @@ struct AvoidSegment
 };
 
 /// Disallows a specific road type
-template<RoadSegment::RoadType T_roadType>
+template<RoadType T_roadType>
 struct AvoidRoadType
 {
     bool operator()(const RoadSegment& segment) const { return segment.GetRoadType() != T_roadType; }
@@ -316,10 +316,10 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, c
         if(forbidden)
             return FindPathImpl(
               start, goal, max, AdditonalCosts::None(),
-              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>>(forbidden),
+              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadType::Water>>(forbidden),
               length, firstDir, firstNodePos);
         else
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>(), length,
+            return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadType::Water>(), length,
                                 firstDir, firstNodePos);
     }
 }
@@ -338,9 +338,8 @@ bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal,
         if(forbidden)
             return FindPathImpl(
               start, goal, max, AdditonalCosts::None(),
-              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>>(
-                forbidden));
+              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadType::Water>>(forbidden));
         else
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadSegment::RT_BOAT>());
+            return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadType::Water>());
     }
 }

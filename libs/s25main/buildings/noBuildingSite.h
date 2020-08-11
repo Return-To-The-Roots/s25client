@@ -18,8 +18,10 @@
 #ifndef NO_BUILDINGSITE_H_
 #define NO_BUILDINGSITE_H_
 
+#include "helpers/MaxEnumValue.h"
 #include "noBaseBuilding.h"
 #include "gameTypes/GoodTypes.h"
+#include <cstdint>
 #include <list>
 
 class nofBuilder;
@@ -30,17 +32,19 @@ class Ware;
 class noFigure;
 class noRoadNode;
 
+enum class BuildingSiteState : uint8_t
+{
+    Planing,
+    Building
+};
+
 /// repräsentiert eine Baustelle
 class noBuildingSite : public noBaseBuilding
 {
     friend class nofBuilder;
 
     /// Typ/Status der Baustelle
-    enum State
-    {
-        STATE_PLANING = 0, // Baustelle muss erst noch planiert werden
-        STATE_BUILDING
-    } state;
+    BuildingSiteState state;
     /// Planierer
     nofPlaner* planer;
     /// Bauarbeiter, der an dieser Baustelle arbeitet
@@ -113,5 +117,6 @@ public:
     /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
     bool IsHarborBuildingSiteFromSea() const;
 };
+DEFINE_MAX_ENUM_VALUE(BuildingSiteState, BuildingSiteState::Building)
 
 #endif

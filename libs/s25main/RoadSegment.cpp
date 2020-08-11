@@ -36,14 +36,14 @@ RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* co
 }
 
 RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id), rt(static_cast<RoadType>(sgd.PopUnsignedChar())), f1(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
+    : GameObject(sgd, obj_id), rt(sgd.Pop<RoadType>()), f1(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
       f2(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)), route(sgd.PopUnsignedShort())
 {
     carriers_[0] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
     carriers_[1] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
 
     for(auto& i : route)
-        i = Direction(sgd.PopUnsignedChar());
+        i = sgd.Pop<Direction>();
 
     // tell the noRoadNodes about our existance
     f1->SetRoute(route.front(), this);
@@ -106,7 +106,7 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(rt));
+    sgd.PushEnum<uint8_t>(rt);
     sgd.PushObject(f1, false);
     sgd.PushObject(f2, false);
     sgd.PushUnsignedShort(route.size());
@@ -114,7 +114,7 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
     sgd.PushObject(carriers_[1], true);
 
     for(auto i : route)
-        sgd.PushUnsignedChar(rttr::enum_cast(i));
+        sgd.PushEnum<uint8_t>(i);
 }
 
 /**
@@ -148,7 +148,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     auto* second = new RoadSegment(rt, splitflag, f2, second_route);
 
     // Eselstraße? Dann prächtige Flagge, da sie ja wieder zwischen Eselstraßen ist
-    if(rt == RT_DONKEY)
+    if(rt == RoadType::Donkey)
         splitflag->Upgrade();
 
     // 1. Teilstück von F1 bis zu dieser F erstellen ( 1. Teilstück ist dieser Weg dann! )
@@ -203,7 +203,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
  *  Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
  *  Nur bei Straßen mit 2 Flagge aufrufen, nicht bei Hauseingängen etc. !!
  */
-bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware_immediately) const
+bool RoadSegment::AreWareJobs(const bool flag, CarrierType ct, const bool take_ware_immediately) const
 {
     unsigned jobs_count;
 
@@ -218,9 +218,9 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
     if(jobs_count == 1 && carriers_[0] && carriers_[1] && !take_ware_immediately)
     {
         // anderen Esel ermitteln
-        ct = 1 - ct;
+        unsigned otherCarrier = (ct == CarrierType::Donkey) ? 0 : 1;
 
-        switch(carriers_[ct]->GetCarrierState())
+        switch(carriers_[otherCarrier]->GetCarrierState())
         {
             default: break;
             case CARRS_FETCHWARE:
@@ -229,7 +229,7 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
             case CARRS_GOBACKFROMFLAG:
             {
                 // Läuft der in die Richtung, holt eine Ware bzw. ist schon fast da, braucht der hier nicht hinlaufen
-                if(carriers_[ct]->GetRoadDir() == !flag)
+                if(carriers_[otherCarrier]->GetRoadDir() == !flag)
                     return false;
             }
             break;
@@ -238,7 +238,8 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
             {
                 // Wenn an die Flagge ein Gebäude angrenzt und der Träger da was reinträgt, kann der auch die Ware
                 // gleich mitnehmen, der zweite muss hier also nicht kommen
-                if((carriers_[ct]->GetCurrentRoad()->f1 == f1 && !flag) || (carriers_[ct]->GetCurrentRoad()->f1 == f2 && flag))
+                if((carriers_[otherCarrier]->GetCurrentRoad()->f1 == f1 && !flag)
+                   || (carriers_[otherCarrier]->GetCurrentRoad()->f1 == f2 && flag))
                     return false;
             }
             break;
@@ -301,10 +302,10 @@ void RoadSegment::WareJobRemoved(const noFigure* const exception)
 void RoadSegment::UpgradeDonkeyRoad()
 {
     // Nur normale Straße können Eselstraßen werden
-    if(rt != RT_NORMAL)
+    if(rt != RoadType::Normal)
         return;
 
-    rt = RT_DONKEY;
+    rt = RoadType::Donkey;
 
     // Eselstraßen setzen
     MapPoint pt = f1->GetPos();
@@ -341,7 +342,7 @@ void RoadSegment::TryGetDonkey()
 void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
 {
     // Gucken, ob Träger und Esel gekündigt hat
-    if(carrier->GetCarrierType() == nofCarrier::CT_NORMAL || carrier->GetCarrierType() == nofCarrier::CT_BOAT)
+    if(carrier->GetCarrierType() == CarrierType::Normal || carrier->GetCarrierType() == CarrierType::Boat)
     {
         // Straße wieder unbesetzt, bzw. nur noch Esel
         this->carriers_[0] = nullptr;

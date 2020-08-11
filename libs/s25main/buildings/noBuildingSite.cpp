@@ -34,8 +34,8 @@
 #include <stdexcept>
 
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(STATE_BUILDING), planer(nullptr), builder(nullptr), boards(0), stones(0),
-      used_boards(0), used_stones(0), build_progress(0)
+    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(BuildingSiteState::Building), planer(nullptr), builder(nullptr), boards(0),
+      stones(0), used_boards(0), used_stones(0), build_progress(0)
 {
     // Überprüfen, ob die Baustelle erst noch planiert werden muss (nur bei mittleren/großen Gebäuden)
     if(GetSize() == BQ_HOUSE || GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
@@ -50,13 +50,13 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
             {
                 // Gibt es da Differenzen?
                 if(altitude - gwg->GetNeighbourNode(pos, dir).altitude != 0)
-                    state = STATE_PLANING;
+                    state = BuildingSiteState::Planing;
             }
         }
     }
 
     // Wir hätten gerne einen Planierer/Bauarbeiter...
-    gwg->GetPlayer(player).AddJobWanted((state == STATE_PLANING) ? JOB_PLANER : JOB_BUILDER, this);
+    gwg->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? JOB_PLANER : JOB_BUILDER, this);
 
     // Bauwaren anfordern
     OrderConstructionMaterial();
@@ -67,7 +67,7 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
 
 /// Konstruktor für Hafenbaustellen vom Schiff aus
 noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player), state(STATE_BUILDING), planer(nullptr),
+    : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player), state(BuildingSiteState::Building), planer(nullptr),
       boards(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards), stones(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), used_boards(0),
       used_stones(0), build_progress(0)
 {
@@ -133,7 +133,7 @@ void noBuildingSite::Serialize_noBuildingSite(SerializedGameData& sgd) const
 {
     Serialize_noBaseBuilding(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(planer, true);
     sgd.PushObject(builder, true);
     sgd.PushUnsignedChar(boards);
@@ -146,7 +146,7 @@ void noBuildingSite::Serialize_noBuildingSite(SerializedGameData& sgd) const
 }
 
 noBuildingSite::noBuildingSite(SerializedGameData& sgd, const unsigned obj_id)
-    : noBaseBuilding(sgd, obj_id), state(static_cast<State>(sgd.PopUnsignedChar())), planer(sgd.PopObject<nofPlaner>(GOT_NOF_PLANER)),
+    : noBaseBuilding(sgd, obj_id), state(sgd.Pop<BuildingSiteState>()), planer(sgd.PopObject<nofPlaner>(GOT_NOF_PLANER)),
       builder(sgd.PopObject<nofBuilder>(GOT_NOF_BUILDER)), boards(sgd.PopUnsignedChar()), stones(sgd.PopUnsignedChar()),
       used_boards(sgd.PopUnsignedChar()), used_stones(sgd.PopUnsignedChar()), build_progress(sgd.PopUnsignedChar())
 {
@@ -157,7 +157,7 @@ noBuildingSite::noBuildingSite(SerializedGameData& sgd, const unsigned obj_id)
 void noBuildingSite::OrderConstructionMaterial()
 {
     // Bei Planieren keine Waren bestellen
-    if(state == STATE_PLANING)
+    if(state == BuildingSiteState::Planing)
         return;
 
     // Bretter
@@ -188,7 +188,7 @@ unsigned noBuildingSite::GetMilitaryRadius() const
 
 void noBuildingSite::Draw(DrawPoint drawPt)
 {
-    if(state == STATE_PLANING)
+    if(state == BuildingSiteState::Planing)
     {
         // Baustellenschild mit Schatten zeichnen
         LOADER.GetNationImage(gwg->GetPlayer(player).nation, 450)->DrawFull(drawPt);
@@ -240,13 +240,13 @@ void noBuildingSite::Draw(DrawPoint drawPt)
 /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
 FOWObject* noBuildingSite::CreateFOWObject() const
 {
-    return new fowBuildingSite(state == STATE_PLANING, bldType_, nation, build_progress);
+    return new fowBuildingSite(state == BuildingSiteState::Planing, bldType_, nation, build_progress);
 }
 
 void noBuildingSite::GotWorker(Job /*job*/, noFigure* worker)
 {
     // Aha, wir haben nen Planierer/Bauarbeiter bekommen
-    if(state == STATE_PLANING)
+    if(state == BuildingSiteState::Planing)
     {
         RTTR_Assert(worker->GetGOT() == GOT_NOF_PLANER);
         planer = static_cast<nofPlaner*>(worker);
@@ -262,13 +262,13 @@ void noBuildingSite::Abrogate()
     planer = nullptr;
     builder = nullptr;
 
-    gwg->GetPlayer(player).AddJobWanted((state == STATE_PLANING) ? JOB_PLANER : JOB_BUILDER, this);
+    gwg->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? JOB_PLANER : JOB_BUILDER, this);
 }
 
 unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const GoodType goodtype)
 {
     // Beim Planieren brauchen wir noch gar nichts
-    if(state == STATE_PLANING)
+    if(state == BuildingSiteState::Planing)
         return 0;
 
     // We only need boards and stones.
@@ -309,7 +309,7 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
 
 void noBuildingSite::AddWare(Ware*& ware)
 {
-    RTTR_Assert(state == STATE_BUILDING);
+    RTTR_Assert(state == BuildingSiteState::Building);
 
     if(ware->type == GD_BOARDS)
     {
@@ -332,7 +332,7 @@ void noBuildingSite::AddWare(Ware*& ware)
 
 void noBuildingSite::WareLost(Ware* ware)
 {
-    RTTR_Assert(state == STATE_BUILDING);
+    RTTR_Assert(state == BuildingSiteState::Building);
 
     if(ware->type == GD_BOARDS)
     {
@@ -350,7 +350,7 @@ void noBuildingSite::WareLost(Ware* ware)
 
 void noBuildingSite::TakeWare(Ware* ware)
 {
-    RTTR_Assert(state == STATE_BUILDING);
+    RTTR_Assert(state == BuildingSiteState::Building);
 
     // Ware in die Bestellliste aufnehmen
     if(ware->type == GD_BOARDS)
@@ -385,7 +385,7 @@ unsigned char noBuildingSite::GetBuildProgress(bool percent) const
 void noBuildingSite::PlaningFinished()
 {
     /// Normale Baustelle
-    state = STATE_BUILDING;
+    state = BuildingSiteState::Building;
     planer = nullptr;
 
     // Wir hätten gerne einen Bauarbeiter...

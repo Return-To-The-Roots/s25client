@@ -434,27 +434,27 @@ bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag) const
         return false;
 }
 
-BuildingType AIConstruction::GetSmallestAllowedMilBuilding() const
+helpers::OptionalEnum<BuildingType> AIConstruction::GetSmallestAllowedMilBuilding() const
 {
     for(BuildingType bld : BuildingProperties::militaryBldTypes)
     {
         if(aii.CanBuildBuildingtype(bld))
             return bld;
     }
-    return BLD_NOTHING;
+    return boost::none;
 }
 
-BuildingType AIConstruction::GetBiggestAllowedMilBuilding() const
+helpers::OptionalEnum<BuildingType> AIConstruction::GetBiggestAllowedMilBuilding() const
 {
     for(BuildingType bld : boost::adaptors::reverse(BuildingProperties::militaryBldTypes))
     {
         if(aii.CanBuildBuildingtype(bld))
             return bld;
     }
-    return BLD_NOTHING;
+    return boost::none;
 }
 
-BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
+helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 {
     // default : 2 barracks for each guardhouse
     // stones & low soldiers -> only guardhouse (no stones -> only barracks)
@@ -463,12 +463,12 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
     // to do: important location or an area with a very low amount of buildspace? -> try large buildings
     // buildings with requirement > small have a chance to be replaced with small buildings to avoid getting stuck if there are no places
     // for medium/large buildings
-    BuildingType bld = GetSmallestAllowedMilBuilding();
+    auto bld = GetSmallestAllowedMilBuilding();
     // If we are not allowed to build a military building, return early
-    if(bld == BLD_NOTHING)
-        return BLD_NOTHING;
+    if(!bld)
+        return boost::none;
 
-    const BuildingType biggestBld = GetBiggestAllowedMilBuilding();
+    const BuildingType biggestBld = GetBiggestAllowedMilBuilding().value();
 
     const Inventory& inventory = aii.GetInventory();
     if(((rand() % 3) == 0 || inventory.people[JOB_PRIVATE] < 15)

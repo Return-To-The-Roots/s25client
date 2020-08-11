@@ -42,13 +42,13 @@ void nofActiveSoldier::Serialize_nofActiveSoldier(SerializedGameData& sgd) const
 {
     Serialize_nofSoldier(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(state);
     sgd.PushObject(enemy, false);
     sgd.PushMapPoint(fightSpot_);
 }
 
 nofActiveSoldier::nofActiveSoldier(SerializedGameData& sgd, const unsigned obj_id)
-    : nofSoldier(sgd, obj_id), state(SoldierState(sgd.PopUnsignedChar())), enemy(sgd.PopObject<nofActiveSoldier>(GOT_UNKNOWN))
+    : nofSoldier(sgd, obj_id), state(sgd.Pop<SoldierState>()), enemy(sgd.PopObject<nofActiveSoldier>(GOT_UNKNOWN))
 {
     fightSpot_ = sgd.PopMapPoint();
 }

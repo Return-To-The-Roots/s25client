@@ -43,6 +43,8 @@ struct wrapped_enum<T, false>
 };
 template<class T>
 using wrapped_enum_t = typename wrapped_enum<T>::type;
+template<class T>
+using underlying_type_t = std::underlying_type_t<wrapped_enum_t<T>>;
 
 } // namespace helpers
 

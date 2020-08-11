@@ -17,7 +17,10 @@
 #ifndef NOF_ACTIVESOLDIER_H_
 #define NOF_ACTIVESOLDIER_H_
 
+#include "helpers/MaxEnumValue.h"
 #include "nofSoldier.h"
+#include <cstdint>
+
 class SerializedGameData;
 class nobBaseMilitary;
 
@@ -28,7 +31,7 @@ class nofActiveSoldier : public nofSoldier
 {
 public:
     /// State of each soldier
-    enum SoldierState
+    enum SoldierState : uint8_t
     {
         STATE_FIGUREWORK = 0,  /// Go to work etc., all which is done by noFigure
         STATE_WALKINGHOME,     /// Walking home after work to the military building
@@ -153,5 +156,6 @@ public:
     // For debugging
     const nofActiveSoldier* GetEnemy() const { return enemy; }
 };
+DEFINE_MAX_ENUM_VALUE(nofActiveSoldier::SoldierState, nofActiveSoldier::SoldierState::STATE_DEFENDING_WALKINGFROM)
 
 #endif // !NOF_ACTIVESOLDIER_H_

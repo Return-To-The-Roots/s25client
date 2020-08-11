@@ -171,7 +171,7 @@ GamePlayer::~GamePlayer() = default;
 void GamePlayer::Serialize(SerializedGameData& sgd) const
 {
     // PlayerStatus speichern, ehemalig
-    sgd.PushUnsignedChar(static_cast<unsigned char>(ps));
+    sgd.PushEnum<uint8_t>(ps);
 
     // Nur richtige Spieler serialisieren
     if(!(ps == PS_OCCUPIED || ps == PS_AI))
@@ -272,7 +272,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 
     // Ehemaligen PS auslesen
-    auto origin_ps = PlayerState(sgd.PopUnsignedChar());
+    auto origin_ps = sgd.Pop<PlayerState>();
     // Nur richtige Spieler serialisieren
     if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_AI))
         return;
@@ -629,7 +629,7 @@ bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
     std::array<nobBaseWarehouse*, 2> best;
 
     // Braucht der ein Boot?
-    if(rs->GetRoadType() == RoadSegment::RT_BOAT)
+    if(rs->GetRoadType() == RoadType::Water)
     {
         // dann braucht man Träger UND Boot
         best[0] = FindWarehouse(*rs->GetF1(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER, false), false, false, &length[0], rs);

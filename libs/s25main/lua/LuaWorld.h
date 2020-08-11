@@ -18,6 +18,7 @@
 #ifndef LuaWorld_h__
 #define LuaWorld_h__
 
+#include "SafeEnum.h"
 #include "gameTypes/AnimalTypes.h"
 
 namespace kaguya {
@@ -35,7 +36,7 @@ public:
     static void Register(kaguya::State& state);
     bool AddEnvObject(int x, int y, unsigned id, unsigned file = 0xFFFF);
     bool AddStaticObject(int x, int y, unsigned id, unsigned file = 0xFFFF, unsigned size = 1);
-    void AddAnimal(int x, int y, Species species);
+    void AddAnimal(int x, int y, lua::SafeEnum<Species> species);
 };
 
 #endif // LuaWorld_h__

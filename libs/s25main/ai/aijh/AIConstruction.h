@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "helpers/OptionalEnum.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
@@ -72,10 +73,10 @@ public:
     /// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
     bool IsConnectedToRoadSystem(const noFlag* flag) const;
 
-    BuildingType GetSmallestAllowedMilBuilding() const;
-    BuildingType GetBiggestAllowedMilBuilding() const;
+    helpers::OptionalEnum<BuildingType> GetSmallestAllowedMilBuilding() const;
+    helpers::OptionalEnum<BuildingType> GetBiggestAllowedMilBuilding() const;
     /// Randomly chooses a military building, preferring bigger buildings if enemy nearby
-    BuildingType ChooseMilitaryBuilding(MapPoint pt);
+    helpers::OptionalEnum<BuildingType> ChooseMilitaryBuilding(MapPoint pt);
     /// Checks whether a building type is wanted atm
     bool Wanted(BuildingType type) const;
     /// Tries to build a second road to a flag, which is in any way better than the first one

@@ -36,7 +36,7 @@ void noMovable::Serialize(SerializedGameData& sgd) const
 {
     noCoordBase::Serialize(sgd);
 
-    sgd.PushUnsignedChar(rttr::enum_cast(curMoveDir));
+    sgd.PushEnum<uint8_t>(curMoveDir);
     sgd.PushUnsignedChar(ascent);
     sgd.PushEvent(current_ev);
     sgd.PushUnsignedInt(pauseEv.elapsed);
@@ -45,7 +45,7 @@ void noMovable::Serialize(SerializedGameData& sgd) const
 }
 
 noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), curMoveDir(sgd.PopUnsignedChar()), ascent(sgd.PopUnsignedChar())
+    : noCoordBase(sgd, obj_id), curMoveDir(sgd.Pop<Direction>()), ascent(sgd.PopUnsignedChar())
 {
     current_ev = sgd.PopEvent();
     pauseEv = EventState(sgd);

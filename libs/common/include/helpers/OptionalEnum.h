@@ -32,7 +32,7 @@ class OptionalEnum
 {
     static_assert(is_enum<T>::value, "Only works for enums");
     using RealEnum = wrapped_enum_t<T>;
-    using underlying_type = std::underlying_type_t<RealEnum>;
+    using underlying_type = underlying_type_t<RealEnum>;
     template<typename U>
     using RequiresIsTOrWrapped = std::enable_if_t<std::is_same<U, T>::value || std::is_same<U, RealEnum>::value>;
 

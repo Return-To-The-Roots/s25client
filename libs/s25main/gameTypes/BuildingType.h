@@ -21,8 +21,9 @@
 #define BuildingType_h__
 
 #include "helpers/MaxEnumValue.h"
+#include <cstdint>
 
-enum BuildingType
+enum BuildingType : uint8_t
 {
     BLD_HEADQUARTERS,   // 0
     BLD_BARRACKS,       // 1
@@ -64,7 +65,6 @@ enum BuildingType
     BLD_FARM,           // 37
     BLD_DONKEYBREEDER,  // 38
     BLD_HARBORBUILDING, // 39
-    BLD_NOTHING         // No building. Must be the last entry and never stored as it might change values
 };
 
 DEFINE_MAX_ENUM_VALUE(BuildingType, BLD_HARBORBUILDING)

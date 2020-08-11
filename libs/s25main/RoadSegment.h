@@ -29,17 +29,18 @@ class noRoadNode;
 class noFlag;
 class noFigure;
 class SerializedGameData;
+enum class CarrierType : uint8_t;
+
+enum class RoadType : uint8_t
+{
+    Normal, /// Normal or mountain road
+    Donkey, /// upgraded (with donkey) road
+    Water   /// waterway
+};
+DEFINE_MAX_ENUM_VALUE(RoadType, RoadType::Water)
 
 class RoadSegment : public GameObject
 {
-public:
-    enum RoadType
-    {
-        RT_NORMAL, /// Normale Straße bzw. Bergstraße
-        RT_DONKEY, /// Eselstraße
-        RT_BOAT    /// Wasserstraße
-    };
-
 public:
     RoadSegment(RoadType rt, noRoadNode* f1, noRoadNode* f2, std::vector<Direction> route);
     RoadSegment(SerializedGameData& sgd, unsigned obj_id);
@@ -79,7 +80,7 @@ public:
     /// haben wir den Carrier "nr"?
     bool hasCarrier(unsigned char nr) const { return (carriers_[nr] != nullptr); }
     /// Braucht die Straße einen Esel? Nur wenn sie auch einen Träger schon hat!
-    bool NeedDonkey() const { return (rt == RT_DONKEY && carriers_[0] && !carriers_[1]); }
+    bool NeedDonkey() const { return (rt == RoadType::Donkey && carriers_[0] && !carriers_[1]); }
     /// Hat einen Esel als Arbeiter dazubekommen.
     void GotDonkey(nofCarrier* donkey)
     {
@@ -101,7 +102,7 @@ public:
     /// zerteilt die Straße in 2 Teile.
     void SplitRoad(noFlag* splitflag);
     /// Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
-    bool AreWareJobs(bool flag, unsigned ct, bool take_ware_immediately) const;
+    bool AreWareJobs(bool flag, CarrierType ct, bool take_ware_immediately) const;
     /// Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
     void AddWareJob(const noRoadNode* rn);
     /// Eine Ware will nicht mehr befördert werden.

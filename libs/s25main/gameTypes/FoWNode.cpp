@@ -28,14 +28,14 @@ FoWNode::FoWNode() : last_update_time(0), visibility(VIS_INVISIBLE), object(null
 
 void FoWNode::Serialize(SerializedGameData& sgd) const
 {
-    sgd.PushUnsignedChar(static_cast<unsigned char>(visibility));
+    sgd.PushEnum<uint8_t>(visibility);
     // Only in FoW can be FoW objects
     if(visibility == VIS_FOW)
     {
         sgd.PushUnsignedInt(last_update_time);
         sgd.PushFOWObject(object);
         for(const PointRoad road : roads)
-            sgd.PushUnsignedChar(rttr::enum_cast(road));
+            sgd.PushEnum<uint8_t>(road);
         sgd.PushUnsignedChar(owner);
         for(unsigned char boundary_stone : boundary_stones)
             sgd.PushUnsignedChar(boundary_stone);
@@ -44,14 +44,14 @@ void FoWNode::Serialize(SerializedGameData& sgd) const
 
 void FoWNode::Deserialize(SerializedGameData& sgd)
 {
-    visibility = Visibility(sgd.PopUnsignedChar());
+    visibility = sgd.Pop<Visibility>();
     // Only in FoW can be FoW objects
     if(visibility == VIS_FOW)
     {
         last_update_time = sgd.PopUnsignedInt();
         object = sgd.PopFOWObject();
         for(PointRoad& road : roads)
-            road = PointRoad(sgd.PopUnsignedChar());
+            road = sgd.Pop<PointRoad>();
         owner = sgd.PopUnsignedChar();
         for(unsigned char& boundary_stone : boundary_stones)
             boundary_stone = sgd.PopUnsignedChar();

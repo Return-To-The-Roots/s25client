@@ -19,29 +19,33 @@
 #define MapTypes_h__
 
 #include "helpers/MaxEnumValue.h"
+#include <cstdint>
 
 /// Sichtbarkeit für ALLE Spieler
-enum Visibility
+enum Visibility : uint8_t
 {
     VIS_INVISIBLE = 0, /// Darkness
     VIS_FOW,           /// Fog of war
     VIS_VISIBLE        /// Visible
 };
+DEFINE_MAX_ENUM_VALUE(Visibility, Visibility::VIS_VISIBLE)
 
 /// Granittyp
-enum GraniteType
+enum GraniteType : uint8_t
 {
     GT_1 = 0,
     GT_2
 };
+DEFINE_MAX_ENUM_VALUE(GraniteType, GraniteType::GT_2)
 
 /// Flaggentyp
-enum FlagType
+enum FlagType : uint8_t
 {
     FT_NORMAL,
     FT_LARGE,
     FT_WATER
 };
+DEFINE_MAX_ENUM_VALUE(FlagType, FlagType::FT_WATER)
 
 /// Direction from a point where a road can go. Opposites are stored in neighbors
 enum class RoadDir

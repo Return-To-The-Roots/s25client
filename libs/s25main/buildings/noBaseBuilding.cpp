@@ -54,7 +54,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
         // immer von Flagge ZU Gebäude (!)
         std::vector<Direction> route(1, Direction::NORTHWEST);
         // Straße zuweisen
-        auto* rs = new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
+        auto* rs = new RoadSegment(RoadType::Normal, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
         gwg->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NORTHWEST, rs); // der Flagge
         SetRoute(Direction::SOUTHEAST, rs);                                      // dem Gebäude
     } else
@@ -154,15 +154,15 @@ void noBaseBuilding::Serialize_noBaseBuilding(SerializedGameData& sgd) const
 {
     Serialize_noRoadNode(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(bldType_));
-    sgd.PushUnsignedChar(nation);
+    sgd.PushEnum<uint8_t>(bldType_);
+    sgd.PushEnum<uint8_t>(nation);
     sgd.PushSignedInt(door_point_x);
     sgd.PushSignedInt(door_point_y);
 }
 
 noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id)
-    : noRoadNode(sgd, obj_id), bldType_(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar())),
-      door_point_x(sgd.PopSignedInt()), door_point_y(sgd.PopSignedInt())
+    : noRoadNode(sgd, obj_id), bldType_(sgd.Pop<BuildingType>()), nation(sgd.Pop<Nation>()), door_point_x(sgd.PopSignedInt()),
+      door_point_y(sgd.PopSignedInt())
 {}
 
 int noBaseBuilding::GetDoorPointX()

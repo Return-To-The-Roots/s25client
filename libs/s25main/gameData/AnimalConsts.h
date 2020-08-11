@@ -18,6 +18,7 @@
 #ifndef AnimalConsts_h__
 #define AnimalConsts_h__
 
+#include "helpers/EnumArray.h"
 #include "gameTypes/AnimalTypes.h"
 
 /// Informationen über die  einzelnen Tierarten
@@ -39,7 +40,7 @@ struct AnimalConst
 
 // 0 bedeutet --> kein Bild!
 
-const AnimalConst ANIMALCONSTS[NUM_SPECS] = {
+const helpers::EnumArray<AnimalConst, Species> ANIMALCONSTS{{
   {1600, 0, 1648, 1649, 8, 20}, // Polarbär
   {1700, 0, 1736, 1737, 6, 20}, // Hase hell
   {1740, 0, 1776, 1777, 6, 20}, // Hase dunkel
@@ -48,7 +49,7 @@ const AnimalConst ANIMALCONSTS[NUM_SPECS] = {
   {1910, 1960, 1958, 0, 8, 20}, // Reh
   {1970, 1976, 0, 0, 1, 50},    // Ente
   {2060, 0, 2072, 2073, 2, 40}  // Schaf
-};
+}};
 
 const unsigned ANIMAL_MAX_ANIMATION_STEPS = 8;
 

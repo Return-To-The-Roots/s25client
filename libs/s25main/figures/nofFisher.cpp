@@ -38,12 +38,12 @@ void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
 {
     Serialize_nofFarmhand(sgd);
 
-    sgd.PushUnsignedChar(rttr::enum_cast(fishing_dir));
+    sgd.PushEnum<uint8_t>(fishing_dir);
     sgd.PushBool(successful);
 }
 
 nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.PopUnsignedChar()), successful(sgd.PopBool())
+    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.Pop<Direction>()), successful(sgd.PopBool())
 {}
 
 /// Malt den Arbeiter beim Arbeiten

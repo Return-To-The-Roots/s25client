@@ -18,8 +18,11 @@
 #ifndef AnimalTypes_h__
 #define AnimalTypes_h__
 
+#include "helpers/MaxEnumValue.h"
+#include <cstdint>
+
 /// Tierarten
-enum Species
+enum Species : uint8_t
 {
     SPEC_POLARBEAR = 0,
     SPEC_RABBITWHITE,
@@ -28,10 +31,8 @@ enum Species
     SPEC_STAG,
     SPEC_DEER,
     SPEC_DUCK,
-    SPEC_SHEEP,
-    SPEC_NOTHING
+    SPEC_SHEEP
 };
-
-const unsigned NUM_SPECS = SPEC_NOTHING;
+DEFINE_MAX_ENUM_VALUE(Species, Species::SPEC_SHEEP)
 
 #endif // AnimalTypes_h__
