@@ -153,7 +153,8 @@ iwMusicPlayer::~iwMusicPlayer()
 void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
     Playlist pl;
-    if(pl.Load(LOG, GetFullPlaylistPath(GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(selection))))
+    const std::string playlistName = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetText(selection);
+    if(pl.Load(LOG, GetFullPlaylistPath(playlistName)))
     {
         // Das Fenster entsprechend mit den geladenen Werten füllen
         pl.FillMusicPlayer(this);
@@ -163,6 +164,9 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsign
         WINDOWMANAGER.Show(
           std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), this, MSB_OK, MSB_EXCLAMATIONRED));
     }
+    const bool isReadOnly = isReadonlyPlaylist(playlistName);
+    for(const auto id : {ID_btRemovePlaylist, ID_btSave})
+        GetCtrl<ctrlButton>(id)->SetEnabled(!isReadOnly);
 }
 
 void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigned selection)
