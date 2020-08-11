@@ -51,7 +51,7 @@ void nofIronfounder::DrawWorking(DrawPoint drawPt)
     }
 }
 
-GoodType nofIronfounder::ProduceWare()
+helpers::OptionalEnum<GoodType> nofIronfounder::ProduceWare()
 {
     return GD_IRON;
 }

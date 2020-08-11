@@ -113,7 +113,7 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     }
 }
 
-GoodType nofMiller::ProduceWare()
+helpers::OptionalEnum<GoodType> nofMiller::ProduceWare()
 {
     return GD_FLOUR;
 }

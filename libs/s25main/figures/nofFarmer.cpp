@@ -115,7 +115,7 @@ void nofFarmer::WorkFinished()
         }
 
         // Wir haben nur gesäht (gar nichts in die Hand nehmen)
-        ware = GD_NOTHING;
+        ware = boost::none;
     }
 
     // BQ drumrum neu berechnen

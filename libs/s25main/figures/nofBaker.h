@@ -31,7 +31,7 @@ class nofBaker : public nofWorkman
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override { return 76; }
     /// Der Arbeiter erzeugt eine Ware
-    GoodType ProduceWare() override;
+    helpers::OptionalEnum<GoodType> ProduceWare() override;
 
 public:
     nofBaker(MapPoint pos, unsigned char player, nobUsual* workplace);

@@ -72,7 +72,7 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
     }
 }
 
-GoodType nofPigbreeder::ProduceWare()
+helpers::OptionalEnum<GoodType> nofPigbreeder::ProduceWare()
 {
     return GD_HAM;
 }

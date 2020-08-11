@@ -31,8 +31,8 @@ class nofTradeDonkey : public noFigure
 {
     /// Successor (nullptr if this is the last one)
     nofTradeDonkey* successor;
-    /// Ware this donkey carries (GD_NOTHING if this is a normal figure)
-    GoodType gt;
+    /// Ware this donkey carries (empty if this is a normal figure)
+    helpers::OptionalEnum<GoodType> gt;
     /// Last dir this donkey used
     std::deque<TradeDirection> next_dirs;
 
@@ -73,7 +73,7 @@ public:
     void AddNextDir(TradeDirection dir) { next_dirs.push_back(dir); }
 
     /// Gets the type of ware this donkey is carrying
-    GoodType GetCarriedWare() const { return gt; }
+    const auto& GetCarriedWare() const { return gt; }
 
     /// Sets the successor in the caravane
     void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }

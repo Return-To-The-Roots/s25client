@@ -108,7 +108,7 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     }
 }
 
-GoodType nofBaker::ProduceWare()
+helpers::OptionalEnum<GoodType> nofBaker::ProduceWare()
 {
     return GD_BREAD;
 }

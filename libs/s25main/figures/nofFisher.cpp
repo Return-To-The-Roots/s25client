@@ -130,7 +130,7 @@ void nofFisher::WorkFinished()
             gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
         ware = GD_FISH;
     } else
-        ware = GD_NOTHING;
+        ware = boost::none;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all

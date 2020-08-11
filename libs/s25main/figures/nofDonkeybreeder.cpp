@@ -71,10 +71,10 @@ void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 /**
  *  Der Arbeiter erzeugt eine Ware.
  */
-GoodType nofDonkeybreeder::ProduceWare()
+helpers::OptionalEnum<GoodType> nofDonkeybreeder::ProduceWare()
 {
     /// @todo Wie kann ich hier eine Person erzeugen?
-    return GD_NOTHING;
+    return boost::none;
 }
 
 void nofDonkeybreeder::WorkFinished()

@@ -31,7 +31,7 @@ class nofMinter : public nofWorkman
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override { return 64; }
     /// Der Arbeiter erzeugt eine Ware
-    GoodType ProduceWare() override;
+    helpers::OptionalEnum<GoodType> ProduceWare() override;
 
 public:
     nofMinter(MapPoint pos, unsigned char player, nobUsual* workplace);

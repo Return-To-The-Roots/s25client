@@ -37,7 +37,7 @@ private:
     /// Zeichnet ihn beim Arbeiten.
     void DrawWorking(DrawPoint drawPt) override;
     /// Der Arbeiter erzeugt eine Ware.
-    GoodType ProduceWare() override;
+    helpers::OptionalEnum<GoodType> ProduceWare() override;
     /// Wird aufgerufen, wenn er fertig mit arbeiten ist
     void WorkFinished() override;
 

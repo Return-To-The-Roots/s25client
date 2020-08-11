@@ -47,7 +47,7 @@ void nofBrewer::DrawWorking(DrawPoint drawPt)
     last_id = now_id;
 }
 
-GoodType nofBrewer::ProduceWare()
+helpers::OptionalEnum<GoodType> nofBrewer::ProduceWare()
 {
     return GD_BEER;
 }

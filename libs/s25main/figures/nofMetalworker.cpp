@@ -36,7 +36,7 @@
 #include "s25util/Log.h"
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)
+    : nofWorkman(JOB_METALWORKER, pos, player, workplace)
 {
     toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
         if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged) && note.player == this->player)
@@ -44,10 +44,18 @@ nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, n
     });
 }
 
-nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
-    : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd.PopUnsignedChar()))
+nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
-    if(state == STATE_ENTERBUILDING && current_ev == nullptr && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
+    if(sgd.GetGameDataVersion() < 5)
+    {
+        const auto iWare = sgd.PopUnsignedChar();
+        if(iWare == GD_NOTHING)
+            nextProducedTool = boost::none;
+        else
+            nextProducedTool = GoodType(iWare);
+    } else
+        nextProducedTool = sgd.PopOptionalEnum<GoodType>();
+    if(state == STATE_ENTERBUILDING && current_ev == nullptr && !ware && !nextProducedTool)
     {
         LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, "
                   "report this!");
@@ -64,7 +72,7 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
 void nofMetalworker::Serialize(SerializedGameData& sgd) const
 {
     nofWorkman::Serialize(sgd);
-    sgd.PushUnsignedChar(nextProducedTool);
+    sgd.PushOptionalEnum<uint8_t>(nextProducedTool);
 }
 
 void nofMetalworker::DrawWorking(DrawPoint drawPt)
@@ -139,10 +147,10 @@ bool nofMetalworker::AreWaresAvailable() const
 bool nofMetalworker::StartWorking()
 {
     nextProducedTool = GetOrderedTool();
-    if(nextProducedTool == GD_NOTHING)
+    if(!nextProducedTool)
         nextProducedTool = GetRandomTool();
 
-    return (nextProducedTool != GD_NOTHING) && nofWorkman::StartWorking();
+    return nextProducedTool && nofWorkman::StartWorking();
 }
 
 void nofMetalworker::CheckForOrders()
@@ -152,7 +160,7 @@ void nofMetalworker::CheckForOrders()
         TryToWork();
 }
 
-GoodType nofMetalworker::GetOrderedTool()
+helpers::OptionalEnum<GoodType> nofMetalworker::GetOrderedTool()
 {
     GamePlayer& owner = gwg->GetPlayer(player);
     std::vector<uint8_t> random_array;
@@ -164,7 +172,7 @@ GoodType nofMetalworker::GetOrderedTool()
         random_array.insert(random_array.end(), toolPriority, i);
     }
     if(random_array.empty())
-        return GD_NOTHING;
+        return boost::none;
 
     unsigned toolIdx = random_array[RANDOM_RAND(GetObjId(), random_array.size())];
 
@@ -177,7 +185,7 @@ GoodType nofMetalworker::GetOrderedTool()
     return TOOLS[toolIdx];
 }
 
-GoodType nofMetalworker::GetRandomTool()
+helpers::OptionalEnum<GoodType> nofMetalworker::GetRandomTool()
 {
     GamePlayer& owner = gwg->GetPlayer(player);
 
@@ -195,7 +203,7 @@ GoodType nofMetalworker::GetRandomTool()
     {
         // do nothing if addon is enabled, otherwise produce random ware (orig S2 behavior)
         if(gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
-            return GD_NOTHING;
+            return boost::none;
         else
             return TOOLS[RANDOM_RAND(GetObjId(), TOOLS.size())];
     }
@@ -203,7 +211,7 @@ GoodType nofMetalworker::GetRandomTool()
     return TOOLS[random_array[RANDOM_RAND(GetObjId(), random_array.size())]];
 }
 
-GoodType nofMetalworker::ProduceWare()
+helpers::OptionalEnum<GoodType> nofMetalworker::ProduceWare()
 {
     return nextProducedTool;
 }

@@ -48,7 +48,7 @@ void nofButcher::DrawWorking(DrawPoint drawPt)
     last_id = now_id;
 }
 
-GoodType nofButcher::ProduceWare()
+helpers::OptionalEnum<GoodType> nofButcher::ProduceWare()
 {
     return GD_MEAT;
 }
