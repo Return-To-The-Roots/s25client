@@ -107,7 +107,7 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     }
 }
 
-GoodType nofWellguy::ProduceWare()
+helpers::OptionalEnum<GoodType> nofWellguy::ProduceWare()
 {
     return GD_WATER;
 }

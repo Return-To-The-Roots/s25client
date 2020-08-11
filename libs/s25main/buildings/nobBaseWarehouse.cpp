@@ -621,9 +621,9 @@ void nobBaseWarehouse::HandleLeaveEvent()
             if(fig->GetGOT() == GOT_NOF_TRADEDONKEY)
             {
                 // Trade donkey carrying wares?
-                GoodType carriedWare = static_cast<nofTradeDonkey*>(fig)->GetCarriedWare();
-                if(carriedWare != GD_NOTHING)
-                    inventory.visual.Remove(carriedWare);
+                const auto& carriedWare = static_cast<nofTradeDonkey*>(fig)->GetCarriedWare();
+                if(carriedWare)
+                    inventory.visual.Remove(*carriedWare);
             }
         }
 

@@ -27,7 +27,7 @@ class nobUsual;
 /// Klasse für den Schreiner
 class nofMetalworker : public nofWorkman
 {
-    GoodType nextProducedTool;
+    helpers::OptionalEnum<GoodType> nextProducedTool;
     Subscription toolOrderSub;
 
 protected:
@@ -36,11 +36,11 @@ protected:
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
-    GoodType ProduceWare() override;
+    helpers::OptionalEnum<GoodType> ProduceWare() override;
     /// Returns the next tool to be produced according to the orders
-    GoodType GetOrderedTool();
+    helpers::OptionalEnum<GoodType> GetOrderedTool();
     /// Returns a random tool according to the priorities
-    GoodType GetRandomTool();
+    helpers::OptionalEnum<GoodType> GetRandomTool();
 
     bool HasToolOrder() const;
 

@@ -56,7 +56,7 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
     last_id = now_id;
 }
 
-GoodType nofMinter::ProduceWare()
+helpers::OptionalEnum<GoodType> nofMinter::ProduceWare()
 {
     gwg->GetPlayer(player).ChangeStatisticValue(STAT_GOLD, 1);
     return GD_COINS;

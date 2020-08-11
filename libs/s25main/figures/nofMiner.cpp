@@ -67,7 +67,7 @@ unsigned short nofMiner::GetCarryID() const
     }
 }
 
-GoodType nofMiner::ProduceWare()
+helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 {
     switch(workplace->GetBuildingType())
     {

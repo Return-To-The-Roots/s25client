@@ -29,12 +29,14 @@
 #include "gameData/JobConsts.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const boost::variant<GoodType, Job>& what)
-    : noFigure(holds_alternative<Job>(what) ? boost::get<Job>(what) : JOB_PACKDONKEY, pos, player), successor(nullptr),
-      gt(holds_alternative<GoodType>(what) ? boost::get<GoodType>(what) : GD_NOTHING)
-{}
+    : noFigure(holds_alternative<Job>(what) ? boost::get<Job>(what) : JOB_PACKDONKEY, pos, player), successor(nullptr)
+{
+    if(holds_alternative<GoodType>(what))
+        gt = boost::get<GoodType>(what);
+}
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)), gt(sgd.Pop<GoodType>())
+    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)), gt(sgd.PopOptionalEnum<GoodType>())
 {
     sgd.PopContainer(next_dirs);
 }
@@ -44,7 +46,7 @@ void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
     Serialize_noFigure(sgd);
 
     sgd.PushObject(successor, true);
-    sgd.PushEnum<uint8_t>(gt);
+    sgd.PushOptionalEnum<uint8_t>(gt);
     sgd.PushContainer(next_dirs);
 }
 
@@ -55,10 +57,10 @@ void nofTradeDonkey::GoalReached()
     auto* wh = static_cast<nobBaseWarehouse*>(gwg->GetNO(pos));
     GamePlayer& whOwner = gwg->GetPlayer(wh->GetPlayer());
 
-    if(gt != GD_NOTHING)
+    if(gt)
     {
         Inventory goods;
-        goods.goods[gt] = 1;
+        goods.goods[*gt] = 1;
         wh->AddGoods(goods, true);
     }
 
@@ -110,10 +112,10 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
         // Esel
         LOADER.getDonkeySprite(GetCurMoveDir(), ani_step).draw(drawPt);
 
-        if(gt != GD_NOTHING)
+        if(gt)
         {
             // Ware im Korb zeichnen
-            LOADER.GetMapImageN(2350 + gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
+            LOADER.GetMapImageN(2350 + *gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
         }
     } else
         DrawWalking(drawPt);

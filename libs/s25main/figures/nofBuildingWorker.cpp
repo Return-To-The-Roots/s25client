@@ -32,14 +32,14 @@
 #include "gameData/ShieldConsts.h"
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), ware(GD_NOTHING), was_sounding(false)
+    : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), was_sounding(false)
 {
     RTTR_Assert(dynamic_cast<nobUsual*>(
       static_cast<GameObject*>(workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
 }
 
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
-    : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(nullptr), ware(GD_NOTHING), was_sounding(false)
+    : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(nullptr), was_sounding(false)
 {}
 
 void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) const
@@ -51,7 +51,7 @@ void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) con
     if(fs != FS_GOHOME && fs != FS_WANDER)
     {
         sgd.PushObject(workplace, false);
-        sgd.PushEnum<uint8_t>(ware);
+        sgd.PushOptionalEnum<uint8_t>(ware);
         sgd.PushBool(was_sounding);
     }
 }
@@ -62,12 +62,20 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
     if(fs != FS_GOHOME && fs != FS_WANDER)
     {
         workplace = sgd.PopObject<nobUsual>(GOT_UNKNOWN);
-        ware = sgd.Pop<GoodType>();
+        if(sgd.GetGameDataVersion() < 5)
+        {
+            const auto iWare = sgd.PopUnsignedChar();
+            if(iWare == GD_NOTHING)
+                ware = boost::none;
+            else
+                ware = GoodType(iWare);
+        } else
+            ware = sgd.PopOptionalEnum<GoodType>();
         was_sounding = sgd.PopBool();
     } else
     {
         workplace = nullptr;
-        ware = GD_NOTHING;
+        ware = boost::none;
         was_sounding = false;
     }
 }
@@ -98,7 +106,7 @@ void nofBuildingWorker::Draw(DrawPoint drawPt)
         case STATE_CARRYOUTWARE: DrawWalkingWithWare(drawPt); break;
         case STATE_WALKINGHOME:
         case STATE_ENTERBUILDING:
-            if(ware != GD_NOTHING)
+            if(ware)
                 DrawWalkingWithWare(drawPt);
             else
                 DrawWalking(drawPt);
@@ -115,7 +123,7 @@ void nofBuildingWorker::Walked()
         {
             // Hab ich noch ne Ware in der Hand?
 
-            if(ware != GD_NOTHING)
+            if(ware)
             {
                 // dann war draußen kein Platz --> ist jetzt evtl Platz?
                 state = STATE_WAITFORWARESPACE;
@@ -146,14 +154,14 @@ void nofBuildingWorker::WorkingReady()
     workplace->is_working = false;
 
     // Trage ich eine Ware?
-    if(ware != GD_NOTHING)
+    if(ware)
     {
         noFlag* flag = workplace->GetFlag();
         // Ist noch Platz an der Fahne?
         if(flag->GetNumWares() < 8)
         {
             // Ware erzeugen
-            auto* real_ware = new Ware(ware, nullptr, flag);
+            auto* real_ware = new Ware(*ware, nullptr, flag);
             real_ware->WaitAtFlag(flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
             GoodType ware_type = ConvertShields(real_ware->type);
@@ -165,9 +173,9 @@ void nofBuildingWorker::WorkingReady()
             // Ware ablegen
             flag->AddWare(real_ware);
             // Warenstatistik erhöhen
-            gwg->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware);
+            gwg->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
             // Tragen nun keine Ware mehr
-            ware = GD_NOTHING;
+            ware = boost::none;
         }
     }
 

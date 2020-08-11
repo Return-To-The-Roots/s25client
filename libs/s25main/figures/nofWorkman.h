@@ -18,6 +18,7 @@
 #ifndef NOF_WORKMAN_H_
 #define NOF_WORKMAN_H_
 
+#include "helpers/OptionalEnum.h"
 #include "nofBuildingWorker.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/Resource.h"
@@ -34,7 +35,7 @@ private:
     // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
     void WalkedDerived() override {} // man gelaufen ist
     /// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
-    virtual GoodType ProduceWare() = 0;
+    virtual helpers::OptionalEnum<GoodType> ProduceWare() = 0;
     /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
     virtual void WorkFinished() {}
 

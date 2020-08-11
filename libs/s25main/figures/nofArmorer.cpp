@@ -123,7 +123,7 @@ bool nofArmorer::AreWaresAvailable() const
     return workplace->WaresAvailable() || (gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield);
 }
 
-GoodType nofArmorer::ProduceWare()
+helpers::OptionalEnum<GoodType> nofArmorer::ProduceWare()
 {
     sword_shield = !sword_shield;
 

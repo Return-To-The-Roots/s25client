@@ -49,7 +49,7 @@ void nofCarpenter::DrawWorking(DrawPoint drawPt)
     last_id = now_id;
 }
 
-GoodType nofCarpenter::ProduceWare()
+helpers::OptionalEnum<GoodType> nofCarpenter::ProduceWare()
 {
     return GD_BOARDS;
 }

@@ -24,6 +24,7 @@
 #include "helpers/EnumTraits.h"
 #include "helpers/GetInsertIterator.hpp"
 #include "helpers/MaxEnumValue.h"
+#include "helpers/OptionalEnum.h"
 #include "helpers/ReserveElements.hpp"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
@@ -110,6 +111,11 @@ public:
         static_assert(std::numeric_limits<T_SavedType>::max() >= helpers::MaxEnumValue_v<T>, "SavedType cannot hold all enum values");
         Push(static_cast<UnderlyingType>(val));
     }
+    template<typename T_SavedType, typename T>
+    void PushOptionalEnum(const helpers::OptionalEnum<T> val)
+    {
+        PushEnum<T_SavedType>(*val); // We can simply do this due to the construction of OptionalEnum
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // Read methods
@@ -144,6 +150,9 @@ public:
 
     /// Point of map coords
     MapPoint PopMapPoint() { return PopPoint<MapPoint::ElementType>(); }
+
+    template<typename T>
+    helpers::OptionalEnum<T> PopOptionalEnum();
 
     /// Read a trivial type (integral, enum, ...)
     template<typename T>
@@ -274,6 +283,17 @@ Point<T> SerializedGameData::PopPoint()
     pt.x = Pop<T>();
     pt.y = Pop<T>();
     return pt;
+}
+
+template<typename T>
+helpers::OptionalEnum<T> SerializedGameData::PopOptionalEnum()
+{
+    using Integral = helpers::underlying_type_t<T>;
+    const auto value = Serializer::Pop<Integral>();
+    if(value > helpers::MaxEnumValue_v<T> && value != helpers::OptionalEnum<T>::invalidValue)
+        throw makeOutOfRange(value, helpers::MaxEnumValue_v<T>);
+    // We can now safely convert to the enum value
+    return helpers::wrapped_enum_t<T>(value); // Avoid additional range checks
 }
 
 template<typename T>

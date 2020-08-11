@@ -33,7 +33,7 @@ protected:
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override { return CARRY_ID_CARRIER_OFFSET + GD_WATER; }
     /// Der Arbeiter erzeugt eine Ware
-    GoodType ProduceWare() override;
+    helpers::OptionalEnum<GoodType> ProduceWare() override;
 
     bool AreWaresAvailable() const override;
     bool StartWorking() override;

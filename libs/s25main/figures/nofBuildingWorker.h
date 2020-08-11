@@ -59,7 +59,7 @@ protected:
     nobUsual* workplace;
 
     // Ware, die er evtl gerade trägt
-    GoodType ware;
+    helpers::OptionalEnum<GoodType> ware;
 
     /// Hat der Bauarbeiter bei seiner Arbeit Sounds von sich gegeben (zu Optimeriungszwecken)
     bool was_sounding;

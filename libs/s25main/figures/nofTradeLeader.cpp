@@ -62,7 +62,7 @@ void nofTradeLeader::GoalReached()
     {
         unsigned amountWares = 0;
         Job jobType = successor->GetJobType();
-        GoodType goodType = successor->GetCarriedWare();
+        const auto goodType = successor->GetCarriedWare();
         nofTradeDonkey* successorDonkey = successor;
         while(successorDonkey != nullptr)
         {
@@ -70,7 +70,7 @@ void nofTradeLeader::GoalReached()
             successorDonkey = successorDonkey->GetSuccessor();
         }
         GamePlayer& owner = gwg->GetPlayer(player);
-        std::string waresName = _(goodType == GD_NOTHING ? JOB_NAMES[jobType] : WARE_NAMES[goodType]);
+        std::string waresName = _(!goodType ? JOB_NAMES[jobType] : WARE_NAMES[*goodType]);
         std::string text =
           str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares % waresName % owner.name);
         SendPostMessage(targetWarehouse->GetPlayer(),

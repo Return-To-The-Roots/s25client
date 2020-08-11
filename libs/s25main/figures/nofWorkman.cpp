@@ -73,7 +73,7 @@ void nofWorkman::HandleStateWaiting2()
 {
     current_ev = nullptr;
     // Ware erzeugen... (noch nicht "richtig"!, sondern nur viruell erstmal)
-    if((ware = ProduceWare()) == GD_NOTHING)
+    if(!(ware = ProduceWare()).has_value())
     {
         // Soll keine erzeugt werden --> wieder anfangen zu arbeiten
         TryToWork();
