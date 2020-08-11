@@ -18,7 +18,9 @@
 #ifndef NOB_SHIPWRIGHT_H_
 #define NOB_SHIPWRIGHT_H_
 
+#include "helpers/MaxEnumValue.h"
 #include "nobUsual.h"
+#include <cstdint>
 class SerializedGameData;
 
 /// Extraklasse für ein Schiffsbauer-Gebäude, da hier extra Optionen eingestellt werden müssen
@@ -26,7 +28,7 @@ class nobShipYard : public nobUsual
 {
 public:
     /// Modi für den Schiffsbauer
-    enum Mode
+    enum Mode : uint8_t
     {
         BOATS = 0, // baut kleine Boote
         SHIPS      // baut große Schiffe
@@ -52,5 +54,6 @@ public:
     /// Schaltet Modus entsprechend um
     void SetMode(Mode newMode);
 };
+DEFINE_MAX_ENUM_VALUE(nobShipYard::Mode, nobShipYard::Mode::SHIPS)
 
 #endif

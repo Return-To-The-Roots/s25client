@@ -293,7 +293,7 @@ void EventJob::ExecuteJob() // for now it is assumed that all these will be fini
         case AIEvent::BuildingConquered:
         {
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleNewMilitaryBuilingOccupied(evb.GetPos());
+            aijh.HandleNewMilitaryBuildingOccupied(evb.GetPos());
             state = JOB_FINISHED;
         }
         break;

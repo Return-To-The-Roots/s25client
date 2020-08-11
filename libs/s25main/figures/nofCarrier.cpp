@@ -82,7 +82,7 @@ static const std::array<std::vector<std::vector<unsigned short>>, 2> ANIMATIONS 
      {1726, 1766, 1767, 1768, 1769, 1768, 1769, 1768, 1769, 1766, 1767, 1766, 1726},
    }}};
 
-const std::array<Job, 3> JOB_TYPES = {{JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER}};
+const helpers::EnumArray<Job, CarrierType> JOB_TYPES = {{JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER}};
 
 nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char player, RoadSegment* workplace, noRoadNode* const goal)
     : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct), state(CARRS_FIGUREWORK),
@@ -91,7 +91,7 @@ nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char p
 {}
 
 nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
-    : noFigure(sgd, obj_id), ct(CarrierType(sgd.PopUnsignedChar())), state(CarrierState(sgd.PopUnsignedChar())), fat(sgd.PopBool()),
+    : noFigure(sgd, obj_id), ct(sgd.Pop<CarrierType>()), state(sgd.Pop<CarrierState>()), fat(sgd.PopBool()),
       workplace(sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT)), carried_ware(sgd.PopObject<Ware>(GOT_WARE)), productivity_ev(sgd.PopEvent()),
       productivity(sgd.PopUnsignedInt()), worked_gf(sgd.PopUnsignedInt()), since_working_gf(sgd.PopUnsignedInt()), next_animation(0)
 {
@@ -99,7 +99,7 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
     {
         shore_path.resize(sgd.PopUnsignedInt());
         for(auto& it : shore_path)
-            it = Direction::fromInt(sgd.PopUnsignedChar());
+            it = sgd.Pop<Direction>();
     }
 }
 
@@ -107,8 +107,8 @@ void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(ct));
-    sgd.PushUnsignedChar(static_cast<unsigned char>(state));
+    sgd.PushEnum<uint8_t>(ct);
+    sgd.PushEnum<uint8_t>(state);
     sgd.PushBool(fat);
     sgd.PushObject(workplace, true);
     sgd.PushObject(carried_ware, true);
@@ -121,7 +121,7 @@ void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
     {
         sgd.PushUnsignedInt(shore_path.size());
         for(auto it : shore_path)
-            sgd.PushUnsignedChar(static_cast<unsigned char>(it));
+            sgd.PushEnum<uint8_t>(it);
     }
 }
 
@@ -147,7 +147,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
     // Unterscheiden, um was für eine Art von Träger es sich handelt
     switch(ct)
     {
-        case CT_NORMAL:
+        case CarrierType::Normal:
         {
             if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
@@ -226,7 +226,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
             }
         }
         break;
-        case CT_DONKEY:
+        case CarrierType::Donkey:
         {
             if(state == CARRS_WAITFORWARE || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
@@ -262,7 +262,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
             }
         }
         break;
-        case CT_BOAT:
+        case CarrierType::Boat:
         {
             if(state == CARRS_FIGUREWORK)
             {
@@ -311,7 +311,7 @@ void nofCarrier::SetNewAnimationMoment()
 void nofCarrier::Walked()
 {
     // Bootssounds ggf. löschen
-    if(ct == CT_BOAT && state != CARRS_FIGUREWORK)
+    if(ct == CarrierType::Boat && state != CARRS_FIGUREWORK)
         SOUNDMANAGER.WorkingFinished(this);
 
     switch(state)
@@ -561,7 +561,7 @@ void nofCarrier::AbrogateWorkplace()
         GetEvMgr().RemoveEvent(productivity_ev);
 
         // anderen Träger herausfinden
-        unsigned other = (ct == CT_DONKEY) ? 0 : 1;
+        unsigned other = (ct == CarrierType::Donkey) ? 0 : 1;
 
         // wenn ich in ein Gebäude gegangen bin und dann vom Weg geworfen wurde, muss der andere
         // ggf. die Waren tragen, die ich jetzt nicht mehr tragen kann
@@ -614,7 +614,7 @@ void nofCarrier::LostWork()
         LooseWare();
 
         // Is this a boat carrier (i.e. he is on the water)
-        if(ct == CT_BOAT)
+        if(ct == CarrierType::Boat)
         {
             MapPoint tmpPos(pos);
             if(state != CARRS_WAITFORWARE && state != CARRS_WAITFORWARESPACE)
@@ -696,7 +696,7 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
     }
 
     RoadSegment* otherRoad = (workplace == rs1) ? rs2 : rs1;
-    unsigned char carrierNr = ct == CT_DONKEY ? 1 : 0;
+    unsigned char carrierNr = ct == CarrierType::Donkey ? 1 : 0;
 
     // Switch road if required
     if(workplace->getCarrier(carrierNr) != this)
@@ -709,9 +709,9 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
     } else
         RTTR_Assert(otherRoad->getCarrier(carrierNr) == nullptr); // No carrier expected
 
-    if(ct == CT_NORMAL)
+    if(ct == CarrierType::Normal)
         gwg->GetPlayer(player).FindCarrierForRoad(otherRoad);
-    else if(ct == CT_DONKEY)
+    else if(ct == CarrierType::Donkey)
         otherRoad->setCarrier(1, gwg->GetPlayer(player).OrderDonkey(otherRoad));
 }
 
@@ -743,7 +743,7 @@ void nofCarrier::HandleDerivedEvent(const unsigned id)
             productivity_ev = GetEvMgr().AddEvent(this, PRODUCTIVITY_GF, 1);
 
             // Reif für einen Esel?
-            if(productivity >= DONKEY_PRODUCTIVITY && ct == CT_NORMAL)
+            if(productivity >= DONKEY_PRODUCTIVITY && ct == CarrierType::Normal)
                 workplace->UpgradeDonkeyRoad();
         }
         break;

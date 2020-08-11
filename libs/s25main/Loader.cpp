@@ -484,7 +484,7 @@ void Loader::fillCaches()
     stp = std::make_unique<glTexturePacker>();
 
     // Animals
-    for(unsigned species = 0; species < NUM_SPECS; ++species)
+    for(const auto species : helpers::EnumRange<Species>{})
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
@@ -511,7 +511,7 @@ void Loader::fillCaches()
             }
         }
 
-        glSmartBitmap& bmp = animal_cache[species][0][ANIMAL_MAX_ANIMATION_STEPS];
+        glSmartBitmap& bmp = getDeadAnimalSprite(species);
 
         bmp.reset();
 

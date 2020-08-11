@@ -135,7 +135,7 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
             // TODO: Is this ever called? If yes, then why is the home here set to nullptr?
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(goal));
             return new nofPassiveSoldier(pt, player, static_cast<nobBaseMilitary*>(goal), nullptr, job_id - JOB_PRIVATE);
-        case JOB_PACKDONKEY: return new nofCarrier(nofCarrier::CT_DONKEY, pt, player, nullptr, goal);
+        case JOB_PACKDONKEY: return new nofCarrier(CarrierType::Donkey, pt, player, nullptr, goal);
         case JOB_SHIPWRIGHT: RTTR_Assert(dynamic_cast<nobUsual*>(goal)); return new nofShipWright(pt, player, static_cast<nobUsual*>(goal));
         case JOB_CHARBURNER: RTTR_Assert(dynamic_cast<nobUsual*>(goal)); return new nofCharburner(pt, player, static_cast<nobUsual*>(goal));
         case JOB_BOATCARRIER: throw std::runtime_error("Cannot create a boat carrier job (try creating JOB_HELPER)."); break;

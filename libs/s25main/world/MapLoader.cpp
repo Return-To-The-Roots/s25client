@@ -367,24 +367,19 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
             case 6: species = SPEC_SHEEP; break;
             case 0:
             case 0xFF: // 0xFF is for (really) old S2 maps
-                species = SPEC_NOTHING;
-                break;
+                continue;
             default:
 #ifndef NDEBUG
                 unsigned unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
                 LOG.write(_("Unknown animal species at %1%: (0x%2$x)\n")) % pt % unknownAnimal;
 #endif // !NDEBUG
-                species = SPEC_NOTHING;
-                break;
+                continue;
         }
 
-        if(species != SPEC_NOTHING)
-        {
-            auto* animal = new noAnimal(species, pt);
-            world_.AddFigure(pt, animal);
-            // Loslaufen
-            animal->StartLiving();
-        }
+        auto* animal = new noAnimal(species, pt);
+        world_.AddFigure(pt, animal);
+        // Loslaufen
+        animal->StartLiving();
     }
 }
 

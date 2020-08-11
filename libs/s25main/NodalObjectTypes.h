@@ -17,9 +17,10 @@
 #ifndef NODALOBJECTTYPES_H_INCLUDED
 #define NODALOBJECTTYPES_H_INCLUDED
 
-#pragma once
+#include "helpers/MaxEnumValue.h"
+#include <cstdint>
 
-enum NodalObjectType
+enum NodalObjectType : uint8_t
 {
     NOP_NOTHING = 0,     // nichts
     NOP_GRANITE,         // Granit
@@ -37,8 +38,8 @@ enum NodalObjectType
     NOP_ANIMAL,          // Tier
     NOP_BURNEDWAREHOUSE, // abgebranntes Lagerhaus, aus dem die Menschen jetzt strömen
     NOP_SHIP,            // Schiff
-    NOP_CHARBURNERPILE,  // Holz-/Kohle-Haufen vom Köhler
-    NOP_ERROR
+    NOP_CHARBURNERPILE   // Holz-/Kohle-Haufen vom Köhler
 };
+DEFINE_MAX_ENUM_VALUE(NodalObjectType, NodalObjectType::NOP_CHARBURNERPILE)
 
 #endif // NODALOBJECTTYPES_H_INCLUDED

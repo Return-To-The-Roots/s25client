@@ -42,7 +42,7 @@
 #include "s25util/Log.h"
 #include "s25util/colors.h"
 
-const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, nullptr, nullptr, std::vector<Direction>(0, Direction::EAST));
+const RoadSegment noFigure::emulated_wanderroad(RoadType::Normal, nullptr, nullptr, std::vector<Direction>(0, Direction::EAST));
 /// Welche Strecke soll minimal und maximal zurückgelegt werden beim Rumirren, bevor eine Flagge gesucht wird
 const unsigned short WANDER_WAY_MIN = 20;
 const unsigned short WANDER_WAY_MAX = 40;
@@ -85,8 +85,8 @@ void noFigure::Serialize_noFigure(SerializedGameData& sgd) const
 {
     noMovable::Serialize(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(fs));
-    sgd.PushUnsignedChar(static_cast<unsigned char>(job_));
+    sgd.PushEnum<uint8_t>(fs);
+    sgd.PushEnum<uint8_t>(job_);
     sgd.PushUnsignedChar(player);
     sgd.PushObject(cur_rs, true);
     sgd.PushUnsignedShort(rs_pos);
@@ -109,7 +109,7 @@ void noFigure::Serialize_noFigure(SerializedGameData& sgd) const
 }
 
 noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), fs(FigureState(sgd.PopUnsignedChar())), job_(Job(sgd.PopUnsignedChar())), player(sgd.PopUnsignedChar()),
+    : noMovable(sgd, obj_id), fs(sgd.Pop<FigureState>()), job_(sgd.Pop<Job>()), player(sgd.PopUnsignedChar()),
       cur_rs(sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()), on_ship(sgd.PopBool()),
       last_id(0xFFFFFFFF)
 {

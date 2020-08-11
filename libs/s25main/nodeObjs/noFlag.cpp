@@ -60,7 +60,7 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player) : noRoadNode(NOP_
 }
 
 noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
-    : noRoadNode(sgd, obj_id), ani_offset(rand() % 20000), flagtype(FlagType(sgd.PopUnsignedChar()))
+    : noRoadNode(sgd, obj_id), ani_offset(rand() % 20000), flagtype(sgd.Pop<FlagType>())
 {
     for(auto& ware : wares)
         ware = sgd.PopObject<Ware>(GOT_WARE);
@@ -107,7 +107,7 @@ void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
 {
     Serialize_noRoadNode(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(flagtype));
+    sgd.PushEnum<uint8_t>(flagtype);
     for(auto ware : wares)
         sgd.PushObject(ware, true);
 

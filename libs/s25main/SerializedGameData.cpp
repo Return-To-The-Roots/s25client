@@ -99,7 +99,8 @@
 /// 2: All player buildings together, variable width size for containers and ship names
 /// 3: Landscape and terrain names stored as strings
 /// 4: STATE_HUNTER_WAITING_FOR_ANIMAL_READY introduced as sub-state of STATE_HUNTER_FINDINGSHOOTINGPOINT
-static const unsigned currentGameDataVersion = 4;
+/// 5: Make RoadPathDirection contiguous
+static const unsigned currentGameDataVersion = 5;
 
 GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
 {

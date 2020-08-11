@@ -40,7 +40,7 @@ void noSign::Serialize_noSign(SerializedGameData& sgd) const
 {
     noDisappearingEnvObject::Serialize(sgd);
 
-    sgd.PushUnsignedChar(static_cast<uint8_t>(resource.getValue()));
+    sgd.PushUnsignedChar(resource.getValue());
 }
 
 noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingEnvObject(sgd, obj_id), resource(sgd.PopUnsignedChar()) {}

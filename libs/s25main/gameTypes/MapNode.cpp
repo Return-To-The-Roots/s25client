@@ -17,7 +17,6 @@
 
 #include "gameTypes/MapNode.h"
 #include "SerializedGameData.h"
-#include "enum_cast.hpp"
 #include "nodeObjs/noBase.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
@@ -33,18 +32,18 @@ MapNode::MapNode()
 void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const
 {
     for(PointRoad road : roads)
-        sgd.PushUnsignedChar(rttr::enum_cast(road));
+        sgd.PushEnum<uint8_t>(road);
 
     sgd.PushUnsignedChar(altitude);
     sgd.PushUnsignedChar(shadow);
     sgd.PushString(desc.get(t1).name);
     sgd.PushString(desc.get(t2).name);
-    sgd.PushUnsignedChar(static_cast<uint8_t>(resources.getValue()));
+    sgd.PushUnsignedChar(resources.getValue());
     sgd.PushBool(reserved);
     sgd.PushUnsignedChar(owner);
     for(unsigned char boundary_stone : boundary_stones)
         sgd.PushUnsignedChar(boundary_stone);
-    sgd.PushUnsignedChar(static_cast<unsigned char>(bq));
+    sgd.PushEnum<uint8_t>(bq);
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].Serialize(sgd);
@@ -58,11 +57,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
                           const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains)
 {
     for(PointRoad& road : roads)
-    {
-        unsigned char iRoad = sgd.PopUnsignedChar();
-        RTTR_Assert(iRoad < helpers::MaxEnumValue_v<PointRoad>);
-        road = PointRoad(iRoad);
-    }
+        road = sgd.Pop<PointRoad>();
 
     altitude = sgd.PopUnsignedChar();
     shadow = sgd.PopUnsignedChar();
@@ -88,7 +83,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
     owner = sgd.PopUnsignedChar();
     for(unsigned char& boundary_stone : boundary_stones)
         boundary_stone = sgd.PopUnsignedChar();
-    bq = BuildingQuality(sgd.PopUnsignedChar());
+    bq = sgd.Pop<BuildingQuality>();
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].Deserialize(sgd);

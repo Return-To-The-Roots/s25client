@@ -320,7 +320,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
             }
         }
         if(gf > 1500 || aii.GetInventory().goods[GD_BOARDS] > 11)
-            AddBuildJob(construction->ChooseMilitaryBuilding(whPos), whPos);
+            AddMilitaryBuildJob(whPos);
     }
     // end of construction around & orders for warehouses
 
@@ -328,7 +328,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     if(militaryBuildings.empty())
         return;
-    int randomMiliBld = rand() % (militaryBuildings.size());
+    int randomMiliBld = rand() % militaryBuildings.size();
     auto it2 = militaryBuildings.begin();
     std::advance(it2, randomMiliBld);
     MapPoint bldPos = (*it2)->GetPos();
@@ -341,7 +341,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
             AddBuildJobAroundEveryMilBld(bldToTest[i]);
         }
     }
-    AddBuildJob(construction->ChooseMilitaryBuilding(bldPos), bldPos);
+    AddMilitaryBuildJob(bldPos);
     if((*it2)->IsUseless() && (*it2)->IsDemolitionAllowed() && randomMiliBld != UpdateUpgradeBuilding())
     {
         aii.DestroyBuilding(bldPos);
@@ -388,10 +388,16 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
     return wh;
 }
 
+void AIPlayerJH::AddMilitaryBuildJob(MapPoint pt)
+{
+    const auto milBld = construction->ChooseMilitaryBuilding(pt);
+    if(milBld)
+        AddBuildJob(*milBld, pt);
+}
+
 void AIPlayerJH::AddBuildJob(BuildingType type, const MapPoint pt, bool front, bool searchPosition)
 {
-    if(type != BLD_NOTHING)
-        construction->AddBuildJob(std::make_unique<BuildJob>(*this, type, pt, searchPosition ? SEARCHMODE_RADIUS : SEARCHMODE_NONE), front);
+    construction->AddBuildJob(std::make_unique<BuildJob>(*this, type, pt, searchPosition ? SEARCHMODE_RADIUS : SEARCHMODE_NONE), front);
 }
 
 void AIPlayerJH::AddBuildJobAroundEveryWarehouse(BuildingType bt)
@@ -1144,7 +1150,7 @@ unsigned AIPlayerJH::GetDensity(MapPoint pt, AIResource res, int radius)
     return (good * 100) / all;
 }
 
-void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
+void AIPlayerJH::HandleNewMilitaryBuildingOccupied(const MapPoint pt)
 {
     // kill bad flags we find
     RemoveAllUnusedRoads(pt);
@@ -1168,11 +1174,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
     if(!IsInvalidShipyardPosition(pt))
         AddBuildJob(BLD_SHIPYARD, pt);
     if(SoldierAvailable())
-    {
-        AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
-        AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
-        AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
-    }
+        AddMilitaryBuildJob(pt);
 
     // try to build one the following buildings around the new military building
 
@@ -1368,7 +1370,7 @@ void AIPlayerJH::HandleTreeChopped(const MapPoint pt)
     int random = rand();
 
     if(random % 2 == 0)
-        AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
+        AddMilitaryBuildJob(pt);
     else // if (random % 12 == 0)
         AddBuildJob(BLD_WOODCUTTER, pt);
 }
@@ -1423,8 +1425,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
     RemoveUnusedRoad(*gwb.GetSpecObj<noFlag>(gwb.GetNeighbour(pt, Direction::SOUTHEAST)), Direction::NORTHWEST, true);
 
     // try to expand, maybe res blocked a passage
-    AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
-    AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
+    AddMilitaryBuildJob(pt);
 
     // and try to rebuild the same building
     if(bld != BLD_HUNTER)
@@ -1481,7 +1482,7 @@ void AIPlayerJH::HandleBorderChanged(const MapPoint pt)
         }
         if(mil->GetBuildingType() != construction->GetBiggestAllowedMilBuilding())
         {
-            AddBuildJob(construction->ChooseMilitaryBuilding(pt), pt);
+            AddMilitaryBuildJob(pt);
         }
     }
 }

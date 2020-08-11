@@ -18,6 +18,7 @@
 #ifndef RoadPathDirection_h__
 #define RoadPathDirection_h__
 
+#include "helpers/MaxEnumValue.h"
 #include "gameTypes/Direction.h"
 #include <cstdint>
 
@@ -30,10 +31,10 @@ enum class RoadPathDirection : uint8_t
     East = Direction::EAST,
     SouthEast = Direction::SOUTHEAST,
     SouthWest = Direction::SOUTHWEST,
-    // Values required for backward compat
-    Ship = 100,
-    None = 0xFF
+    Ship,
+    None
 };
+DEFINE_MAX_ENUM_VALUE(RoadPathDirection, RoadPathDirection::None)
 
 inline RoadPathDirection toRoadPathDirection(const Direction dir) noexcept
 {

@@ -162,11 +162,10 @@ public:
     };
 
     /// Animals: Species, Direction, AnimationFrame(Last = Dead)
-    helpers::MultiArray<glSmartBitmap, NUM_SPECS, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
-    glSmartBitmap& getAnimalSprite(Species species, Direction dir, unsigned aniFrame)
-    {
-        return animal_cache(species, rttr::enum_cast(dir), aniFrame);
-    }
+    using AnimalAnimationSprites = helpers::EnumArray<std::array<glSmartBitmap, ANIMAL_MAX_ANIMATION_STEPS + 1>, Direction>;
+    helpers::EnumArray<AnimalAnimationSprites, Species> animal_cache;
+    glSmartBitmap& getAnimalSprite(Species species, Direction dir, unsigned aniFrame) { return animal_cache[species][dir][aniFrame]; }
+    glSmartBitmap& getDeadAnimalSprite(Species species) { return animal_cache[species][Direction::WEST][ANIMAL_MAX_ANIMATION_STEPS]; }
 
     /// Buildings: Nation, Type, Building/Skeleton
     helpers::MultiArray<glSmartBitmap, NUM_NATIONS, NUM_BUILDING_TYPES, 2> building_cache;

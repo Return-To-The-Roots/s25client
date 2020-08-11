@@ -20,14 +20,14 @@
 
 noBase::noBase(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id)
 {
-    nop = NodalObjectType(sgd.PopUnsignedChar());
+    nop = sgd.Pop<NodalObjectType>();
 }
 
 void noBase::Serialize_noBase(SerializedGameData& sgd) const
 {
     Serialize_GameObject(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(nop));
+    sgd.PushEnum<uint8_t>(nop);
 }
 
 FOWObject* noBase::CreateFOWObject() const

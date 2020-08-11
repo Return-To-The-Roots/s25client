@@ -662,8 +662,8 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     BOOST_REQUIRE(flag);
     RoadSegment* rs = flag->GetRoute(Direction::EAST);
     BOOST_REQUIRE(rs);
-    auto* carrierIn = new nofCarrier(nofCarrier::CT_NORMAL, flagPos, curPlayer, rs, flag);
-    auto* carrierOut = new nofCarrier(nofCarrier::CT_DONKEY, flagPos, curPlayer, rs, flag);
+    auto* carrierIn = new nofCarrier(CarrierType::Normal, flagPos, curPlayer, rs, flag);
+    auto* carrierOut = new nofCarrier(CarrierType::Donkey, flagPos, curPlayer, rs, flag);
     world.AddFigure(flagPos, carrierIn);
     world.AddFigure(flagPos, carrierOut);
     rs->setCarrier(0, carrierIn);
@@ -704,7 +704,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     BOOST_REQUIRE(flagE);
     RoadSegment* rsE = flagE->GetRoute(Direction::WEST);
     BOOST_REQUIRE(rsE);
-    auto* carrierInE = new nofCarrier(nofCarrier::CT_NORMAL, flagPosE, curPlayer, rsE, flagE);
+    auto* carrierInE = new nofCarrier(CarrierType::Normal, flagPosE, curPlayer, rsE, flagE);
     world.AddFigure(flagPosE, carrierInE);
     rsE->setCarrier(0, carrierInE);
     // He also gets 1 coin

@@ -16,8 +16,11 @@
 #ifndef BuildingQuality_h__
 #define BuildingQuality_h__
 
+#include "helpers/MaxEnumValue.h"
+#include <cstdint>
+
 /// Buildingqualities
-enum BuildingQuality
+enum BuildingQuality : uint8_t
 {
     BQ_NOTHING = 0,
     BQ_FLAG,
@@ -27,6 +30,7 @@ enum BuildingQuality
     BQ_MINE,
     BQ_HARBOR
 };
+DEFINE_MAX_ENUM_VALUE(BuildingQuality, BuildingQuality::BQ_HARBOR)
 
 /// Return true iff the BQ found matches a required BQ. E.g. A building with a given size can be constructed on a given node
 inline bool canUseBq(BuildingQuality bqIs, BuildingQuality bqRequired)

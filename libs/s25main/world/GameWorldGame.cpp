@@ -265,8 +265,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
             DestroyNO(end);
     }
 
-    auto* rs =
-      new RoadSegment(boat_road ? RoadSegment::RT_BOAT : RoadSegment::RT_NORMAL, GetSpecObj<noFlag>(start), GetSpecObj<noFlag>(end), route);
+    auto* rs = new RoadSegment(boat_road ? RoadType::Water : RoadType::Normal, GetSpecObj<noFlag>(start), GetSpecObj<noFlag>(end), route);
 
     GetSpecObj<noFlag>(start)->SetRoute(route.front(), rs);
     GetSpecObj<noFlag>(end)->SetRoute(route.back() + 3u, rs);

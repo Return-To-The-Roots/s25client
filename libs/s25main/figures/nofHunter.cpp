@@ -51,7 +51,7 @@ void nofHunter::Serialize_nofHunter(SerializedGameData& sgd) const
     {
         sgd.PushObject(animal, true);
         sgd.PushMapPoint(shootingPos);
-        sgd.PushUnsignedChar(rttr::enum_cast(shooting_dir));
+        sgd.PushEnum<uint8_t>(shooting_dir);
     }
 }
 
@@ -61,7 +61,7 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
     {
         animal = sgd.PopObject<noAnimal>(GOT_ANIMAL);
         shootingPos = sgd.PopMapPoint();
-        shooting_dir = Direction::fromInt(sgd.PopUnsignedChar());
+        shooting_dir = sgd.Pop<Direction>();
         // https://github.com/Return-To-The-Roots/s25client/issues/1126
         if(sgd.GetGameDataVersion() < 4 && state == STATE_HUNTER_FINDINGSHOOTINGPOINT && pos == shootingPos)
             state = STATE_HUNTER_WAITING_FOR_ANIMAL_READY;

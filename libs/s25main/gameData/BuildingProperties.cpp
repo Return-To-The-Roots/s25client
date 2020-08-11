@@ -75,8 +75,7 @@ bool BuildingProperties::IsValid(BuildingType bld)
         case BLD_NOTHING5:
         case BLD_NOTHING6:
         case BLD_NOTHING7:
-        case BLD_NOTHING9:
-        case BLD_NOTHING: return false;
+        case BLD_NOTHING9: return false;
         default: return true;
     }
 }
