@@ -20,6 +20,7 @@
 
 #include "helpers/MaxEnumValue.h"
 #include "lua/LuaHelpers.h"
+#include <kaguya/type.hpp>
 
 namespace lua {
 /// Wrapper around an enum which checks the int passed on ctor to be in range of the enum
@@ -36,5 +37,23 @@ struct SafeEnum
     constexpr operator T_Enum() const noexcept { return value_; };
 };
 } // namespace lua
+
+namespace kaguya {
+template<class T_Enum, unsigned maxValue>
+struct lua_type_traits<::lua::SafeEnum<T_Enum, maxValue>> : lua_type_traits<luaInt>
+{
+    using get_type = ::lua::SafeEnum<T_Enum, maxValue>;
+    using opt_type = optional<get_type>;
+
+    using parent = lua_type_traits<luaInt>;
+    static opt_type opt(lua_State* l, int index) noexcept
+    {
+        if(const auto t = parent::opt(l, index))
+            return opt_type(static_cast<get_type>(*t));
+        return {};
+    }
+    static get_type get(lua_State* l, int index) { return parent::get(l, index); }
+};
+} // namespace kaguya
 
 #endif // SafeEnum_h__

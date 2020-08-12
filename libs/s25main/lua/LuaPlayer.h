@@ -65,7 +65,7 @@ public:
     void ModifyHQ(bool isTent);
     bool IsDefeated() const;
     void Surrender(bool destroyBlds);
-    std::tuple<unsigned, unsigned> GetHQPos() const;
+    std::pair<unsigned, unsigned> GetHQPos() const;
     bool IsAlly(unsigned char otherPlayerId);
     bool IsAttackable(unsigned char otherPlayerId);
     void SuggestPact(unsigned char otherPlayerId, lua::SafeEnum<PactType> pt, unsigned duration);
