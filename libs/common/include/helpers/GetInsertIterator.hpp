@@ -19,6 +19,7 @@
 #define GetInsertIterator_h__
 
 #include <boost/type_traits/make_void.hpp>
+#include <iterator>
 #include <utility>
 
 namespace helpers {
@@ -27,13 +28,13 @@ namespace helpers {
 template<class T, typename = void>
 struct GetInsertIterator
 {
-    static auto get(T& collection) { return std::insert_iterator<T>(collection, collection.end()); }
+    static auto get(T& collection) { return std::inserter(collection, collection.end()); }
 };
 
 template<class T>
 struct GetInsertIterator<T, boost::void_t<decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))>>
 {
-    static auto get(T& collection) { return std::back_insert_iterator<T>(collection); }
+    static auto get(T& collection) { return std::back_inserter(collection); }
 };
 
 } // namespace helpers
