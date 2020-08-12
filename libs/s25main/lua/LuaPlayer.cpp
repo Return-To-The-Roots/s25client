@@ -281,9 +281,9 @@ void LuaPlayer::Surrender(bool destroyBlds)
         player.GetGameWorld().Armageddon(player.GetPlayerId());
 }
 
-std::tuple<unsigned, unsigned> LuaPlayer::GetHQPos() const
+std::pair<unsigned, unsigned> LuaPlayer::GetHQPos() const
 {
-    return std::tuple<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
+    return std::pair<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
 }
 
 bool LuaPlayer::IsAlly(unsigned char otherPlayerId)
