@@ -59,19 +59,8 @@ std::string Playlist::getCurrentSong() const
 /**
  *  Playlist in Datei speichern
  */
-bool Playlist::SaveAs(const boost::filesystem::path& filepath, const bool overwrite) const
+bool Playlist::SaveAs(const boost::filesystem::path& filepath) const
 {
-    if(!overwrite)
-    {
-        bnw::ifstream in(filepath);
-        if(in.good())
-        {
-            // Datei existiert und wir sollen sie nicht überschreiben
-            in.close();
-            return false;
-        }
-    }
-
     s25util::ClassicImbuedStream<bnw::ofstream> out(filepath);
     if(!out.good())
         return false;

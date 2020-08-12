@@ -39,7 +39,7 @@ public:
     std::string getNextSong();
 
     /// Playlist in Datei speichern
-    bool SaveAs(const boost::filesystem::path& filepath, bool overwrite) const;
+    bool SaveAs(const boost::filesystem::path& filepath) const;
     /// Playlist laden
     bool Load(Log& logger, const boost::filesystem::path& filepath);
 
