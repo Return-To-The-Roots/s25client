@@ -201,7 +201,7 @@ bool iwMusicPlayer::SaveCurrentPlaylist()
     if(isReadonlyPlaylist(playlistName))
         return false;
 
-    return pl.SaveAs(fullPlaylistPath, true);
+    return pl.SaveAs(fullPlaylistPath);
 }
 
 void iwMusicPlayer::UpdateFromPlaylist(const Playlist& playlist)
@@ -378,7 +378,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
             // Ungültige Namen ausschließen
             const auto isLetter = [](const char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); };
             const boost::filesystem::path fullPlaylistPath = GetFullPlaylistPath(msg);
-            if(!msg.empty() && isLetter(msg.front()) && Playlist().SaveAs(fullPlaylistPath, true))
+            if(!msg.empty() && isLetter(msg.front()) && Playlist().SaveAs(fullPlaylistPath))
             {
                 // Combobox updaten
                 UpdatePlaylistCombo(fullPlaylistPath.string());
