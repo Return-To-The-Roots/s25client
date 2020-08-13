@@ -27,7 +27,7 @@ fi
 FILTER="$(pwd)/(extras|libs|tests|\
 external/(libendian|liblobby|libsiedler2|\
 libutil/(tests|lib)|\
-mygettext|s-c/src|s25edit|s25update))"
+mygettext|s25edit|s25update))"
 
 ${CLANG_TIDY_CMD} -p build \
     -j $(nproc) \
