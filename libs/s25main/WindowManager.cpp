@@ -694,7 +694,7 @@ void WindowManager::Close(const IngameWindow* window)
         else
             SetActiveWindow(*windows.back());
     }
-    curDesktop->Msg_WindowClosed(const_cast<IngameWindow&>(*window));
+    curDesktop->Msg_WindowClosed(*tmpHolder);
 }
 
 /**
