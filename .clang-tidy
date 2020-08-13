@@ -29,6 +29,7 @@ Checks: >-
   -readability-named-parameter,
   -readability-static-accessed-through-instance,
   -readability-uppercase-literal-suffix,
+  -readability-identifier-naming,
   -clang-diagnostic-inconsistent-missing-override
 CheckOptions:
   - key: performance-for-range-copy.AllowedTypes
