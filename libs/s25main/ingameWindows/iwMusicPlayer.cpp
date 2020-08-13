@@ -136,7 +136,11 @@ static bool isReadonlyPlaylist(const std::string& name)
 
 iwMusicPlayer::~iwMusicPlayer()
 {
-    SaveCurrentPlaylist();
+    try
+    {
+        SaveCurrentPlaylist();
+    } catch(...)
+    {}
 
     const auto& selection = GetCtrl<ctrlComboBox>(ID_cbPlaylist)->GetSelection();
 
@@ -236,7 +240,7 @@ Playlist iwMusicPlayer::MakePlaylist()
     for(const auto i : helpers::Range<unsigned>{lstSongs->GetNumLines()})
         songs.push_back(lstSongs->GetItemText(i));
 
-    return Playlist(songs, GetRepeats(), GetRandomPlayback());
+    return Playlist(std::move(songs), GetRepeats(), GetRandomPlayback());
 }
 
 void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
