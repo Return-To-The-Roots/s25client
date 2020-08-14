@@ -15,6 +15,7 @@
 
 #include "mapGenerator/Triangles.h"
 
+#include <stdexcept>
 #include <vector>
 
 namespace rttr { namespace mapGenerator {

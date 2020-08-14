@@ -137,7 +137,7 @@ void iwMapGenerator::Apply()
         case 4: mapSettings.size = MapExtent::all(1024); break;
         default: break;
     }
-    int mapType = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection();
+    int mapType = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection().get();
     if(mapType >= 0)
         mapSettings.type = DescIdx<LandscapeDesc>(mapType);
 }

@@ -25,6 +25,7 @@
 #include <cmath>
 #include <queue>
 #include <set>
+#include <stdexcept>
 
 namespace rttr { namespace mapGenerator {
 
