@@ -53,8 +53,15 @@ namespace rttr { namespace mapGenerator {
     template<typename T_Value>
     unsigned MapValueToIndex(T_Value value, const ValueRange<T_Value>& range, size_t size)
     {
-        double slope = 1. * (size - 1) / range.GetDifference();
-        return static_cast<unsigned>(round(slope * (value - range.minimum)));
+        T_Value difference = range.GetDifference();
+        
+        if (difference)
+        {
+            double slope = 1. * (size - 1) / difference;
+            return static_cast<unsigned>(round(slope * (value - range.minimum)));
+        }
+        
+        return 0u;
     }
 
     template<typename T_Value>

@@ -36,6 +36,13 @@ BOOST_AUTO_TEST_CASE(MapValueToIndex_ForMinimumValue_ReturnsZero)
     BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0);
 }
 
+BOOST_AUTO_TEST_CASE(MapValueToIndex_ForZeroRange_ReturnsZero)
+{
+    ValueRange<int> range(4, 4);
+
+    BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0);
+}
+
 BOOST_AUTO_TEST_CASE(MapValueToIndex_ForSpecificValue_ReturnsExpectedIndex)
 {
     ValueRange<int> range(10, 20);

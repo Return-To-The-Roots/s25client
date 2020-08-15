@@ -23,7 +23,7 @@
 using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(IslandsTests)
-
+/*
 template<class T_Test>
 void RunTest(T_Test test);
 
@@ -40,5 +40,5 @@ void RunTest(T_Test test)
 
     test(textures, size);
 }
-
+*/
 BOOST_AUTO_TEST_SUITE_END()

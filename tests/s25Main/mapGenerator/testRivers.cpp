@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesPartiallyCoveredBy
         }
     });
 }
-
+/*
 BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesWithReducedHeight)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
@@ -130,5 +130,5 @@ BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesWithReducedHeight)
         }
     });
 }
-
+*/
 BOOST_AUTO_TEST_SUITE_END()
