@@ -19,7 +19,7 @@
 #include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 
-void MusicItem::Play(unsigned repeats)
+void MusicItem::Play(int repeats)
 {
     if(!SETTINGS.sound.musik)
         return;

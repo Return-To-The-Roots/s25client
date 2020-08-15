@@ -174,7 +174,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     this->itCurEntry = entries.begin();
 
     if(LOADER.sng_lst.size() > 8)
-        LOADER.sng_lst[8]->Play(0);
+        LOADER.sng_lst[8]->Play(-1);
 }
 
 dskCredits::~dskCredits() = default;

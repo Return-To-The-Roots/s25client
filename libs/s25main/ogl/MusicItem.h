@@ -24,8 +24,8 @@
 class MusicItem : public SoundItem
 {
 public:
-    /// Plays the music
-    void Play(unsigned repeats);
+    /// Plays the music repeating it if repeats is greater than zero or indefinitely when repeats is less than zero
+    void Play(int repeats = 0);
 };
 
 #endif // !MUSICITEM_H_INCLUDED

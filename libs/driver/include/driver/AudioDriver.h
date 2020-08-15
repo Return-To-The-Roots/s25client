@@ -18,9 +18,11 @@
 #define AUDIODRIVER_H_INCLUDED
 
 #include "AudioInterface.h"
-#include <array>
 #include <vector>
+
 class IAudioDriverCallback;
+
+namespace driver {
 
 /// Base class for audio drivers
 class AudioDriver : public IAudioDriver
@@ -30,40 +32,50 @@ public:
     ~AudioDriver() override;
 
     /// prüft auf Initialisierung.
-    bool IsInitialized() override { return initialized; }
+    bool IsInitialized() final override { return initialized; }
     void CleanUp() override;
 
+    EffectPlayId PlayEffect(const RawSoundHandle& sound, uint8_t volume, bool loop) final override;
+    void StopEffect(EffectPlayId play_id) final override;
+
+    void unloadSound(RawSoundHandle handle) final override;
+    /// Register this handle pointer so that the driverData is reset when the sound gets unloaded
+    void registerForUnload(RawSoundHandle* handlePtr) final override;
+
 protected:
-    /// Maximum number of channels
-    static constexpr unsigned MAX_NUM_CHANNELS = 64;
-    /// Sets the actual number of channels used. Must be called before using channels and numChannels <= MAX_NUM_CHANNELS
+    static constexpr unsigned DEFAULT_NUM_CHANNELS = 64;
+    /// Sets the actual number of channels used. Must be called before using channels
     void SetNumChannels(unsigned numChannels);
-    /// Adds an effect to a channel
-    EffectPlayId AddPlayedEffect(int channel);
     /// Get the channel an effect is being played at or -1 if not found
-    int GetEffectChannel(EffectPlayId playId);
+    int GetEffectChannel(EffectPlayId playId) const;
     /// Removes the effect from the channel list
     void RemoveEffect(EffectPlayId playId);
-    /// Creates a handle for the given sound and adds it to the sounds list
-    /// When the last reference to the handle is lost, DoUnloadSound will be called unless the IsValid flag was set to false
-    SoundHandle CreateSoundHandle(SoundDesc* sound);
-    /// Called for a still loaded sound (IsValid() == true) and should unload the sound and set IsValid to false)
-    virtual void DoUnloadSound(SoundDesc& sound) = 0;
+    /// Add the sound to the list of loaded sounds and return a RawSoundHandle
+    RawSoundHandle createRawSoundHandle(RawSoundHandle::DriverData driverData, SoundType type);
+
+    // To be implemented by actual driver
+
+    // Play the given effect. Returns the channel on which this is played
+    virtual int doPlayEffect(RawSoundHandle::DriverData driverData, uint8_t volume, bool loop) = 0;
+    // Stop the effect playing o this channel
+    virtual void doStopEffect(int channel) = 0;
+    /// Called for a still loaded sound and should unload the sound
+    virtual void doUnloadSound(RawSoundHandle sound) = 0;
 
     IAudioDriverCallback* driverCallback;
     bool initialized; /// Is initialized?
 
 private:
-    /// Callback for unloading a sound
-    static void UnloadSound(AudioDriver& driver, SoundDesc* sound);
-    /// Generates a play id. -1 for invalid
-    int GeneratePlayID();
+    /// Generates a play id
+    EffectPlayId GeneratePlayID();
     /// Next play id
     EffectPlayId nextPlayID_;
-    std::vector<SoundDesc*> sounds_;
-    unsigned numChannels_;
+    std::vector<RawSoundHandle> loadedSounds_;
+    /// RawSoundHandle that were registered to be reset on unloading that sound
+    std::vector<RawSoundHandle*> handlesRegisteredForUnload_;
     /// Which effect is played on which channel
-    std::array<EffectPlayId, MAX_NUM_CHANNELS> channels_; //-V730_NOINIT
+    std::vector<EffectPlayId> channels_;
 };
+} // namespace driver
 
 #endif // !AUDIODRIVER_H_INCLUDED

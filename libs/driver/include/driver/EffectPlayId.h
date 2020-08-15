@@ -23,6 +23,9 @@
 #include <cstdint>
 
 /// Id of a played effect
-using EffectPlayId = int32_t;
+enum class EffectPlayId : int32_t
+{
+    Invalid = -1
+};
 
 #endif // EffectPlayId_h__

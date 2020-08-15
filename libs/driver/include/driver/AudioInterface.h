@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,11 +18,13 @@
 #define AUDIOINTERFACE_H_INCLUDED
 
 #include "EffectPlayId.h"
-#include "SoundHandle.h"
+#include "RawSoundHandle.h"
 #include "exportImport.h"
 #include <cstdint>
 #include <string>
 #include <vector>
+
+namespace driver {
 
 /// Interface for audio drivers (required for use across DLL boundaries)
 class BOOST_SYMBOL_VISIBLE IAudioDriver
@@ -38,16 +40,21 @@ public:
     /// Closes all open handles of the driver (stops and unloads music and effects)
     virtual void CleanUp() = 0;
 
-    virtual SoundHandle LoadEffect(const std::string& filepath) = 0;
-    virtual SoundHandle LoadEffect(const std::vector<char>& data, const std::string& ext) = 0;
-    virtual SoundHandle LoadMusic(const std::string& filepath) = 0;
-    virtual SoundHandle LoadMusic(const std::vector<char>& data, const std::string& ext) = 0;
+    virtual RawSoundHandle LoadEffect(const std::string& filepath) = 0;
+    virtual RawSoundHandle LoadEffect(const std::vector<char>& data, const std::string& ext) = 0;
+    virtual RawSoundHandle LoadMusic(const std::string& filepath) = 0;
+    virtual RawSoundHandle LoadMusic(const std::vector<char>& data, const std::string& ext) = 0;
+
+    /// Unload the sound
+    virtual void unloadSound(RawSoundHandle handle) = 0;
+    /// Register this handle pointer so that the driverData is reset when the sound gets unloaded
+    virtual void registerForUnload(RawSoundHandle* handlePtr) = 0;
 
     /// Plays an effect at the given volume. If loop is true, effect is looped indefinitely
-    virtual EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop) = 0;
-    /// Plays the given music. Only 1 music will be played. If Repeats is 0 it will loop indefinitely,
-    /// otherwise it loops the many times. TODO: What about not looping it (e.g. playing only once?)
-    virtual void PlayMusic(const SoundHandle& sound, unsigned repeats) = 0;
+    virtual EffectPlayId PlayEffect(const RawSoundHandle& sound, uint8_t volume, bool loop) = 0;
+    /// Plays the given music. Only 1 music will be played.
+    /// If repeats is less than 0 it will loop indefinitely, otherwise it will be repeated that many times.
+    virtual void PlayMusic(const RawSoundHandle& sound, int repeats) = 0;
     /// Stop the music
     virtual void StopMusic() = 0;
     /// Stop the effect with the given id (if it is still playing)
@@ -61,11 +68,12 @@ public:
     /// Sets the music volume [0..256)
     virtual void SetMusicVolume(uint8_t volume) = 0;
 };
+} // namespace driver
 
 class IAudioDriverCallback;
 
 /// Instanzierungsfunktion der Treiber.
-RTTR_DECL IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* device_dependent);
-RTTR_DECL void FreeAudioInstance(IAudioDriver* driver);
+RTTR_DECL driver::IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* device_dependent);
+RTTR_DECL void FreeAudioInstance(driver::IAudioDriver* driver);
 
 #endif // !AUDIOINTERFACE_H_INCLUDED

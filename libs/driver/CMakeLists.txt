@@ -13,16 +13,30 @@ set(RTTR_DRIVER_INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/src/DriverInterface.cpp CA
 
 add_library(videodrv STATIC
     src/VideoDriver.cpp
+    include/driver/DriverInterfaceVersion.h
+    include/driver/exportImport.h
+    include/driver/Interface.h
+    include/driver/KeyEvent.h
+    include/driver/MouseCoords.h
     include/driver/VideoDriver.h
-    include/driver/VideoInterface.h)
+    include/driver/VideoDriverLoaderInterface.h
+    include/driver/VideoInterface.h
+    include/driver/VideoMode.h
+)
 target_link_libraries(videodrv PUBLIC driver s25Common)
 target_compile_definitions(videodrv PUBLIC BUILD_DLL)
 
 add_library(audiodrv STATIC
     src/AudioDriver.cpp
+    include/driver/DriverInterfaceVersion.h
+    include/driver/EffectPlayId.h
+    include/driver/exportImport.h
+    include/driver/IAudioDriverCallback.h
+    include/driver/Interface.h
     include/driver/AudioDriver.h
     include/driver/AudioInterface.h
-    include/driver/SoundHandle.h)
+    include/driver/RawSoundHandle.h
+)
 target_link_libraries(audiodrv PUBLIC driver s25Common)
 target_compile_definitions(audiodrv PUBLIC BUILD_DLL)
 

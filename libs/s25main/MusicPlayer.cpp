@@ -65,7 +65,7 @@ void MusicPlayer::PlayNext()
     {
         unsigned nr = s25util::fromStringClassicDef(song.substr(1), 999u);
         if(nr > 0 && nr <= LOADER.sng_lst.size())
-            LOADER.sng_lst[nr - 1]->Play(1);
+            LOADER.sng_lst[nr - 1]->Play();
         return;
     }
 
