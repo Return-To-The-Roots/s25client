@@ -30,7 +30,7 @@ int callback_pos = 0;
 std::array<float, 512> callback_data{};
 } // namespace
 
-long callback(void* cb_data, float** data)
+static long callback(void* cb_data, float** data)
 {
     BOOST_TEST(cb_data == &test_data);
     *data = callback_data.data() + callback_pos;
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(ConversionWorks)
         curInputPos += size;
         return size;
     });
-    long curPos = 0;
+    unsigned long curPos = 0;
     while(true)
     {
         const auto written =
@@ -149,6 +149,8 @@ BOOST_AUTO_TEST_CASE(ConversionWorks)
         curPos += written;
     }
     BOOST_TEST(output == output2, boost::test_tools::per_element());
-    BOOST_TEST(curInputPos == data.input_frames_used);
-    BOOST_TEST(curPos == data.output_frames_gen);
+    BOOST_TEST(data.input_frames_used >= 0);
+    BOOST_TEST(curInputPos == static_cast<size_t>(data.input_frames_used));
+    BOOST_TEST(data.output_frames_gen >= 0);
+    BOOST_TEST(curPos == static_cast<unsigned long>(data.output_frames_gen));
 }

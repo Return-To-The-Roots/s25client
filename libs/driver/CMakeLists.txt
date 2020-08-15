@@ -25,6 +25,7 @@ add_library(videodrv STATIC
 )
 target_link_libraries(videodrv PUBLIC driver s25Common)
 target_compile_definitions(videodrv PUBLIC BUILD_DLL)
+enable_warnings(videodrv)
 
 add_library(audiodrv STATIC
     src/AudioDriver.cpp
@@ -39,5 +40,6 @@ add_library(audiodrv STATIC
 )
 target_link_libraries(audiodrv PUBLIC driver s25Common)
 target_compile_definitions(audiodrv PUBLIC BUILD_DLL)
+enable_warnings(audiodrv)
 
 set_target_properties(videodrv audiodrv PROPERTIES POSITION_INDEPENDENT_CODE ON)

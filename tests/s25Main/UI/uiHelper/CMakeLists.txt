@@ -4,3 +4,4 @@ add_library(testUIHelper STATIC
 )
 target_include_directories(testUIHelper PUBLIC .)
 target_link_libraries(testUIHelper PUBLIC s25Main videoMockup testHelpers turtle)
+enable_warnings(testUIHelper)

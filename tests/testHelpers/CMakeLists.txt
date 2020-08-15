@@ -19,6 +19,8 @@ add_library(testHelpers STATIC
 )
 target_link_libraries(testHelpers PRIVATE s25Common rttrConfig Boost::unit_test_framework)
 target_include_directories(testHelpers PUBLIC .)
+enable_warnings(testHelpers)
+
 # Heuristically guess if we are compiling against dynamic boost
 if(NOT Boost_USE_STATIC_LIBS AND NOT Boost_UNIT_TEST_FRAMEWORK_LIBRARY MATCHES "\\${CMAKE_STATIC_LIBRARY_SUFFIX}\$")
     target_compile_definitions(testHelpers PRIVATE BOOST_TEST_DYN_LINK)

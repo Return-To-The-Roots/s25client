@@ -14,6 +14,7 @@ else()
 
   add_library(audioSDL SHARED ${RTTR_DRIVER_INTERFACE} AudioSDL.cpp AudioSDL.h)
   target_link_libraries(audioSDL PRIVATE audiodrv SDL_mixer::SDL_mixer)
+  enable_warnings(audioSDL)
 
   install(TARGETS audioSDL
     RUNTIME DESTINATION ${RTTR_DRIVERDIR}/audio

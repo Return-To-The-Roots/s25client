@@ -202,12 +202,12 @@ public:
     StateCallback(Converter converter, int channels, std::function<size_t(float*&)> func)
         : StateBase(createOrThrow(converter, channels, func ? StateCallback::callback : nullptr, this)), callback_(std::move(func))
     {}
-    long read(double src_ratio, size_t frames, float* data)
+    unsigned long read(double src_ratio, size_t frames, float* data)
     {
         const long framesGenerated = src_callback_read(state_, src_ratio, static_cast<long>(frames), data);
-        if(framesGenerated == 0)
+        if(framesGenerated <= 0)
             detail::throwOnError(src_error(state_));
-        return framesGenerated;
+        return static_cast<unsigned long>(framesGenerated);
     }
 };
 } // namespace samplerate

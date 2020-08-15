@@ -23,6 +23,7 @@ add_library(testWorldFixtures STATIC
 )
 target_link_libraries(testWorldFixtures PUBLIC s25Main PRIVATE testHelpers)
 target_include_directories(testWorldFixtures PUBLIC .)
+enable_warnings(testWorldFixtures)
 
 include(AddTestcase)
 
