@@ -22,6 +22,6 @@
 EffectPlayId SoundEffectItem::Play(uint8_t volume, bool loop)
 {
     if(!SETTINGS.sound.effekte)
-        return -1;
+        return EffectPlayId::Invalid;
     return AUDIODRIVER.PlayEffect(GetSoundHandle(), volume, loop);
 }

@@ -20,14 +20,15 @@
 #ifndef SoundItem_h__
 #define SoundItem_h__
 
-#include "driver/SoundHandle.h"
+#include "drivers/SoundHandle.h"
 
 /// Base class for all sound items
 class SoundItem
 {
 public:
     virtual ~SoundItem() = default;
-    SoundType getLoadedType() const { return handle.getType(); }
+    // Get the type of the sound item. Must be loaded first
+    driver::SoundType getLoadedType() const { return handle.getType(); }
 
 protected:
     /// Load the sound item into the driver
@@ -35,7 +36,7 @@ protected:
     /// Return the handle loading it if required
     SoundHandle& GetSoundHandle()
     {
-        if(!handle.isValid())
+        if(!handle)
             handle = Load();
         return handle;
     }

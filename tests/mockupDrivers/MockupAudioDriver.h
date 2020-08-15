@@ -22,56 +22,48 @@
 
 #include "driver/AudioDriver.h"
 #include "driver/IAudioDriverCallback.h"
+#include <turtle/mock.hpp>
 
-struct MockupSoundDesc : public SoundDesc
+struct MockupSoundData
 {
     static int numAlive;
-    MockupSoundDesc(SoundType type) : SoundDesc(type) { numAlive++; }
-    ~MockupSoundDesc() override { numAlive--; }
-    void setInvalid() { isValid_ = false; }
+    driver::SoundType type;
+    MockupSoundData(driver::SoundType type) : type(type) { numAlive++; }
+    ~MockupSoundData() { numAlive--; }
 };
 
-struct MockupAudioDriver final : public AudioDriver, IAudioDriverCallback
+MOCK_BASE_CLASS(MockAudioDriverCallback, IAudioDriverCallback)
 {
-protected:
-    void DoUnloadSound(SoundDesc& sound) override { static_cast<MockupSoundDesc&>(sound).setInvalid(); }
+    MOCK_NON_CONST_METHOD(Msg_MusicFinished, 0);
+};
 
-public:
-    MockupAudioDriver() : AudioDriver(this) {}
+MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)
+{
+    MockupAudioDriver(IAudioDriverCallback * callback) : AudioDriver(callback) {}
     ~MockupAudioDriver() override { CleanUp(); }
     const char* GetName() const override { return "MockupAudio"; }
     bool Initialize() override
     {
-        SetNumChannels(MAX_NUM_CHANNELS);
-        return initialized = true;
+        SetNumChannels(DEFAULT_NUM_CHANNELS);
+        initialized = true;
+        return true;
     }
-    SoundHandle LoadEffect(const std::string&) override { return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT)); }
-    SoundHandle LoadEffect(const std::vector<char>&, const std::string&) override
-    {
-        return CreateSoundHandle(new MockupSoundDesc(SD_EFFECT));
-    }
-    SoundHandle LoadMusic(const std::string&) override { return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC)); }
-    SoundHandle LoadMusic(const std::vector<char>&, const std::string&) override
-    {
-        return CreateSoundHandle(new MockupSoundDesc(SD_MUSIC));
-    }
-    EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t /*volume*/, bool /*loop*/) override
-    {
-        if(!sound.isValid())
-            return -1;
-        static int channel = 0;
-        if(static_cast<unsigned>(++channel) >= MAX_NUM_CHANNELS)
-            channel = 0;
-        return AddPlayedEffect(channel);
-    }
-    void PlayMusic(const SoundHandle&, unsigned /*repeats*/) override {}
-    void StopMusic() override {}
-    void StopEffect(EffectPlayId play_id) override { RemoveEffect(play_id); }
-    bool IsEffectPlaying(EffectPlayId play_id) override { return GetEffectChannel(play_id) >= 0; }
-    void ChangeVolume(EffectPlayId, uint8_t /*volume*/) override {}
-    void SetMasterEffectVolume(uint8_t /*volume*/) override {}
-    void SetMusicVolume(uint8_t /*volume*/) override {}
-    void Msg_MusicFinished() override {}
+    MOCK_NON_CONST_METHOD(LoadEffect, 1, driver::RawSoundHandle(const std::string&));
+    MOCK_NON_CONST_METHOD(LoadEffect, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&), LoadEffectFromData);
+    MOCK_NON_CONST_METHOD(LoadMusic, 1, driver::RawSoundHandle(const std::string&));
+    MOCK_NON_CONST_METHOD(LoadMusic, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&), LoadMusicFromData);
+    MOCK_NON_CONST_METHOD(doPlayEffect, 3, int(driver::RawSoundHandle::DriverData, uint8_t, bool));
+    MOCK_NON_CONST_METHOD(PlayMusic, 2);
+    MOCK_NON_CONST_METHOD(StopMusic, 0);
+    MOCK_NON_CONST_METHOD(doStopEffect, 1, void(int));
+    MOCK_NON_CONST_METHOD(IsEffectPlaying, 1);
+    MOCK_NON_CONST_METHOD(ChangeVolume, 2);
+    MOCK_NON_CONST_METHOD(SetMasterEffectVolume, 1);
+    MOCK_NON_CONST_METHOD(SetMusicVolume, 1);
+    MOCK_NON_CONST_METHOD(doUnloadSound, 1, void(driver::RawSoundHandle sound));
+
+    driver::RawSoundHandle doLoad(driver::SoundType type) { return createRawSoundHandle(new MockupSoundData(type), type); }
+    using driver::AudioDriver::GetEffectChannel;
 };
 
 #endif // MockupAudioDriver_h__

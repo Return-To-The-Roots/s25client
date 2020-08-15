@@ -17,100 +17,122 @@
 
 #include "driver/AudioDriver.h"
 #include "RTTR_Assert.h"
-#include "driver/SoundHandle.h"
+#include "helpers/containerUtils.h"
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
 
-class IAudioDriverCallback;
+namespace driver {
 
 // Do not inline! That would break DLL compatibility:
 // http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
 IAudioDriver::~IAudioDriver() = default;
 
 AudioDriver::AudioDriver(IAudioDriverCallback* driverCallback)
-    : driverCallback(driverCallback), initialized(false), nextPlayID_(0), numChannels_(0)
+    : driverCallback(driverCallback), initialized(false), nextPlayID_(EffectPlayId(0))
 {}
 
 AudioDriver::~AudioDriver()
 {
     // This should have been done in Cleanup or by the subclass
-    RTTR_Assert(sounds_.empty());
+    RTTR_Assert(loadedSounds_.empty());
 }
 
 void AudioDriver::CleanUp()
 {
-    for(SoundDesc* sound : sounds_)
-    {
-        RTTR_Assert(sound->isValid());
-        // Note: Don't call UnloadSound as it would also remove it from sounds invalidating the iterator
-        DoUnloadSound(*sound);
-        RTTR_Assert(!sound->isValid());
-    }
-    sounds_.clear();
+    const auto soundsCopy = loadedSounds_;
+    for(const auto& sound : soundsCopy)
+        unloadSound(sound);
     initialized = false;
 }
 
-void AudioDriver::UnloadSound(AudioDriver& driver, SoundDesc* sound)
+EffectPlayId AudioDriver::PlayEffect(const RawSoundHandle& sound, uint8_t volume, bool loop)
 {
-    if(sound->isValid())
-    {
-        auto it = std::find(driver.sounds_.begin(), driver.sounds_.end(), sound);
-        RTTR_Assert(it != driver.sounds_.end());
-        driver.DoUnloadSound(*sound);
-        RTTR_Assert(!sound->isValid());
-        driver.sounds_.erase(it); //-V783
-    }
-    delete sound;
-}
+    if(!sound.getDriverData())
+        return EffectPlayId::Invalid;
+    RTTR_Assert(sound.getType() == driver::SoundType::Effect);
+    if(sound.getType() != driver::SoundType::Effect)
+        return EffectPlayId::Invalid;
 
-void AudioDriver::SetNumChannels(unsigned numChannels)
-{
-    if(numChannels > channels_.size())
-        throw std::out_of_range("Number of channels exceeds max number of channels");
-    numChannels_ = numChannels;
-    std::fill(channels_.begin(), channels_.begin() + numChannels_, EffectPlayId(-1));
-}
-
-EffectPlayId AudioDriver::AddPlayedEffect(int channel)
-{
-    if(channel < 0)
-        return -1;
-    EffectPlayId newId = GeneratePlayID();
+    const int channel = doPlayEffect(sound.getDriverData(), volume, loop);
+    if(channel < 0 || static_cast<unsigned>(channel) >= channels_.size())
+        return EffectPlayId::Invalid;
+    const EffectPlayId newId = GeneratePlayID();
     channels_[channel] = newId;
     return newId;
 }
 
-int AudioDriver::GetEffectChannel(EffectPlayId playId)
+void AudioDriver::StopEffect(EffectPlayId play_id)
 {
-    for(unsigned i = 0; i < channels_.size(); i++)
+    const int channel = GetEffectChannel(play_id);
+    if(channel >= 0)
     {
-        if(channels_[i] == playId)
-            return static_cast<int>(i);
+        doStopEffect(channel);
+        RemoveEffect(play_id);
     }
-    return -1;
+}
+
+void AudioDriver::unloadSound(RawSoundHandle handle)
+{
+    RTTR_Assert(handle.driverData); // Otherwise handle is invalid
+    const auto it = std::find(loadedSounds_.begin(), loadedSounds_.end(), handle);
+    if(it == loadedSounds_.end())
+        throw std::invalid_argument("Sound is not currently loaded");
+    doUnloadSound(handle);
+    loadedSounds_.erase(it);
+    // Notify all subscribed handles by resetting driverData to nullptr
+    auto itNotify = handlesRegisteredForUnload_.begin();
+    while((itNotify = std::find_if(itNotify, handlesRegisteredForUnload_.end(),
+                                   [handle](const RawSoundHandle* curHandle) { return *curHandle == handle; }))
+          != handlesRegisteredForUnload_.end())
+    {
+        (*itNotify)->invalidate();
+        itNotify = handlesRegisteredForUnload_.erase(itNotify);
+    }
+}
+
+void AudioDriver::registerForUnload(RawSoundHandle* handlePtr)
+{
+    handlesRegisteredForUnload_.push_back(handlePtr);
+}
+
+void AudioDriver::SetNumChannels(unsigned numChannels)
+{
+    channels_.resize(numChannels);
+    std::fill(channels_.begin(), channels_.end(), EffectPlayId::Invalid);
+}
+
+int AudioDriver::GetEffectChannel(EffectPlayId playId) const
+{
+    const auto it = helpers::find(channels_, playId);
+    return (it == channels_.end()) ? -1 : static_cast<int>(std::distance(channels_.begin(), it));
 }
 
 void AudioDriver::RemoveEffect(EffectPlayId playId)
 {
     int channel = GetEffectChannel(playId);
     if(channel >= 0)
-        channels_[channel] = -1;
+        channels_[channel] = EffectPlayId::Invalid;
 }
 
-SoundHandle AudioDriver::CreateSoundHandle(SoundDesc* sound)
+RawSoundHandle AudioDriver::createRawSoundHandle(RawSoundHandle::DriverData driverData, SoundType type)
 {
-    RTTR_Assert(sound->isValid());
-    sounds_.push_back(sound);
-    return SoundHandle(SoundHandle::Descriptor(sound, [this](auto* sound) { UnloadSound(*this, sound); }));
+    RawSoundHandle handle(driverData, type);
+    if(driverData)
+        loadedSounds_.push_back(handle);
+    return handle;
 }
 
 EffectPlayId AudioDriver::GeneratePlayID()
 {
+    using intType = std::underlying_type_t<EffectPlayId>;
+
     EffectPlayId result = nextPlayID_;
-    if(nextPlayID_ == std::numeric_limits<EffectPlayId>::max())
-        nextPlayID_ = 0;
+    if(static_cast<intType>(nextPlayID_) == std::numeric_limits<intType>::max())
+        nextPlayID_ = EffectPlayId(0);
     else
-        nextPlayID_++;
+        nextPlayID_ = EffectPlayId(static_cast<intType>(nextPlayID_) + 1);
     return result;
 }
+
+} // namespace driver

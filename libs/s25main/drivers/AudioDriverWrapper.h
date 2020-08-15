@@ -20,15 +20,19 @@
 #include "DriverWrapper.h"
 #include "driver/EffectPlayId.h"
 #include "driver/IAudioDriverCallback.h"
+#include "drivers/SoundHandle.h"
 #include "s25util/Singleton.h"
 #include <memory>
 
-class IAudioDriver;
 class SoundHandle;
 
 namespace libsiedler2 {
 class ArchivItem_Sound;
 }
+namespace driver {
+class IAudioDriver;
+struct RawSoundHandle;
+} // namespace driver
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
@@ -41,7 +45,7 @@ public:
     ~AudioDriverWrapper();
 
     /// Loads the driver
-    bool LoadDriver(IAudioDriver* audioDriver);
+    bool LoadDriver(std::unique_ptr<driver::IAudioDriver> audioDriver);
     bool LoadDriver(std::string& preference);
     /// Unloads the driver resetting all open handles
     void UnloadDriver();
@@ -55,10 +59,10 @@ public:
     /// Spielt einen Sound
     EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop);
     /// Stoppt einen Sound
-    void StopEffect(unsigned play_id);
+    void StopEffect(EffectPlayId play_id);
 
     /// Spielt Midi ab
-    void PlayMusic(const SoundHandle& sound, unsigned repeats);
+    void PlayMusic(const SoundHandle& sound, int repeats);
 
     /// Stoppt die Musik.
     void StopMusic();
@@ -75,9 +79,10 @@ public:
     std::string GetName() const;
 
 private:
-    using Handle = std::unique_ptr<IAudioDriver, void (*)(IAudioDriver*)>;
+    using Handle = std::unique_ptr<driver::IAudioDriver, void (*)(driver::IAudioDriver*)>;
     bool Init();
     void Msg_MusicFinished() override;
+    SoundHandle createSoundHandle(const driver::RawSoundHandle& rawHandle);
 
     drivers::DriverWrapper driver_wrapper;
     Handle audiodriver_;

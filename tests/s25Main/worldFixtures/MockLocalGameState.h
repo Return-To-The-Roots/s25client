@@ -21,16 +21,6 @@
 #include "ILocalGameState.h"
 #include <turtle/mock.hpp>
 
-// Fix those macros to auto-detect signature: https://github.com/mat007/turtle/issues/93
-#undef MOCK_CONST_METHOD
-#undef MOCK_NON_CONST_METHOD
-#define MOCK_CONST_METHOD(M, ...)                                                                                         \
-    MOCK_CONST_METHOD_EXT(M, MOCK_VARIADIC_ELEM_0(__VA_ARGS__, ), MOCK_VARIADIC_ELEM_1(__VA_ARGS__, MOCK_SIGNATURE(M), ), \
-                          MOCK_VARIADIC_ELEM_2(__VA_ARGS__, M, M, ))
-#define MOCK_NON_CONST_METHOD(M, ...)                                                                                         \
-    MOCK_NON_CONST_METHOD_EXT(M, MOCK_VARIADIC_ELEM_0(__VA_ARGS__, ), MOCK_VARIADIC_ELEM_1(__VA_ARGS__, MOCK_SIGNATURE(M), ), \
-                              MOCK_VARIADIC_ELEM_2(__VA_ARGS__, M, M, ))
-
 MOCK_BASE_CLASS(MockLocalGameState, ILocalGameState)
 {
     MOCK_CONST_METHOD(GetPlayerId, 0);

@@ -17,8 +17,6 @@
 
 #include "AudioSDL.h"
 #include "RTTR_Assert.h"
-#include "SoundSDL_Effect.h"
-#include "SoundSDL_Music.h"
 #include "driver/AudioInterface.h"
 #include "driver/IAudioDriverCallback.h"
 #include "driver/Interface.h"
@@ -27,21 +25,19 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <iostream>
-
-static AudioSDL* nthis = nullptr;
+#include <memory>
 
 /**
  *  Instanzierungsfunktion von @p AudioSDL.
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  */
-IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* /*device_dependent*/)
+driver::IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* /*device_dependent*/)
 {
-    nthis = new AudioSDL(callback);
-    return nthis;
+    return new AudioSDL(callback);
 }
 
-void FreeAudioInstance(IAudioDriver* driver)
+void FreeAudioInstance(driver::IAudioDriver* driver)
 {
     delete driver;
 }
@@ -50,6 +46,14 @@ const char* GetDriverName()
 {
     return "(SDL2) Audio via SDL2_mixer-Library";
 }
+
+struct SDLMusicData
+{
+    Mix_Music* music;             /// Music handle
+    const std::vector<char> data; /// Music data if loaded from a stream
+    explicit SDLMusicData(Mix_Music* music) : music(music) {}
+    explicit SDLMusicData(std::vector<char> data) : music(nullptr), data(std::move(data)) {}
+};
 
 /** @class AudioSDL
  *
@@ -73,11 +77,8 @@ const char* AudioSDL::GetName() const
     return GetDriverName();
 }
 
-/**
- *  Treiberinitialisierungsfunktion.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler
- */
+static AudioSDL* currentInstance = nullptr;
+
 bool AudioSDL::Initialize()
 {
     initialized = false;
@@ -101,13 +102,20 @@ bool AudioSDL::Initialize()
         std::cerr << Mix_GetError() << std::endl;
         return false;
     }
-    SetNumChannels(Mix_AllocateChannels(MAX_NUM_CHANNELS));
+    SetNumChannels(Mix_AllocateChannels(DEFAULT_NUM_CHANNELS));
     Mix_SetMusicCMD(nullptr);
+    currentInstance = this;
     Mix_HookMusicFinished(AudioSDL::MusicFinished);
 
     initialized = true;
 
     return true;
+}
+
+void AudioSDL::MusicFinished()
+{
+    if(currentInstance)
+        currentInstance->driverCallback->Msg_MusicFinished();
 }
 
 /**
@@ -119,6 +127,7 @@ void AudioSDL::CleanUp()
     AudioDriver::CleanUp();
 
     Mix_CloseAudio();
+    currentInstance = nullptr;
     Mix_HookMusicFinished(nullptr);
     Mix_Quit();
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
@@ -133,30 +142,25 @@ void AudioSDL::CleanUp()
  *
  *  @return Sounddeskriptor bei Erfolg, @p nullptr bei Fehler
  */
-SoundHandle AudioSDL::LoadEffect(const std::string& filepath)
+driver::RawSoundHandle AudioSDL::LoadEffect(const std::string& filepath)
 {
     Mix_Chunk* sound = Mix_LoadWAV(filepath.c_str());
 
     if(sound == nullptr)
-    {
         std::cerr << Mix_GetError() << std::endl;
-        return SoundHandle();
-    }
 
-    return CreateSoundHandle(new SoundSDL_Effect(sound));
+    return createRawSoundHandle(sound, driver::SoundType::Effect);
 }
 
-SoundHandle AudioSDL::LoadEffect(const std::vector<char>& data, const std::string& /*ext*/)
+driver::RawSoundHandle AudioSDL::LoadEffect(const std::vector<char>& data, const std::string& /*ext*/)
 {
     SDL_RWops* rwOps = SDL_RWFromConstMem(&data[0], static_cast<int>(data.size()));
     Mix_Chunk* sound = Mix_LoadWAV_RW(rwOps, true); //-V601
-    if(sound == nullptr)
-    {
-        std::cerr << Mix_GetError() << std::endl;
-        return SoundHandle();
-    }
 
-    return CreateSoundHandle(new SoundSDL_Effect(sound));
+    if(sound == nullptr)
+        std::cerr << Mix_GetError() << std::endl;
+
+    return createRawSoundHandle(sound, driver::SoundType::Effect);
 }
 
 /**
@@ -164,64 +168,56 @@ SoundHandle AudioSDL::LoadEffect(const std::vector<char>& data, const std::strin
 
  *  @return Sounddeskriptor bei Erfolg, @p nullptr bei Fehler
  */
-SoundHandle AudioSDL::LoadMusic(const std::string& filepath)
+driver::RawSoundHandle AudioSDL::LoadMusic(const std::string& filepath)
 {
     Mix_Music* music = Mix_LoadMUS(filepath.c_str());
 
     if(music == nullptr)
     {
         std::cerr << Mix_GetError() << std::endl;
-        return SoundHandle();
+        return createRawSoundHandle(nullptr, driver::SoundType::Music);
     }
 
-    return CreateSoundHandle(new SoundSDL_Music(music));
+    return createRawSoundHandle(new SDLMusicData(music), driver::SoundType::Music);
 }
 
-SoundHandle AudioSDL::LoadMusic(const std::vector<char>& data, const std::string& /*ext*/)
+driver::RawSoundHandle AudioSDL::LoadMusic(const std::vector<char>& data, const std::string& /*ext*/)
 {
     // Need to copy data as it is used by SDL
-    auto* handle = new SoundSDL_Music(data);
-    SDL_RWops* rwOps = SDL_RWFromConstMem(&handle->data[0], static_cast<int>(data.size()));
-    Mix_Music* music = Mix_LoadMUS_RW(rwOps, false);
+    auto handle = std::make_unique<SDLMusicData>(data);
+    SDL_RWops* rwOps = SDL_RWFromConstMem(handle->data.data(), static_cast<int>(data.size()));
+    Mix_Music* music = Mix_LoadMUS_RW(rwOps, true);
     if(music == nullptr)
     {
         SDL_FreeRW(rwOps);
-        delete handle;
         std::cerr << Mix_GetError() << std::endl;
-        return SoundHandle();
+        return createRawSoundHandle(nullptr, driver::SoundType::Music);
     }
     handle->music = music;
 
-    return CreateSoundHandle(handle);
+    return createRawSoundHandle(handle.release(), driver::SoundType::Music);
 }
 
-EffectPlayId AudioSDL::PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop)
+int AudioSDL::doPlayEffect(driver::RawSoundHandle::DriverData driverData, uint8_t volume, bool loop)
 {
-    if(!sound.isValid())
-        return -1;
-    RTTR_Assert(sound.isEffect());
-    if(!sound.isEffect())
-        return -1;
-
-    int channel = Mix_PlayChannel(-1, static_cast<SoundSDL_Effect&>(*sound.getDescriptor()).sound, (loop) ? -1 : 0);
+    int channel = Mix_PlayChannel(-1, static_cast<Mix_Chunk*>(driverData), (loop) ? -1 : 0);
     if(channel < 0)
         return -1;
     Mix_Volume(channel, CalcEffectVolume(volume));
-    return AddPlayedEffect(channel);
+    return channel;
 }
 
-void AudioSDL::PlayMusic(const SoundHandle& sound, unsigned repeats)
+void AudioSDL::PlayMusic(const driver::RawSoundHandle& sound, int repeats)
 {
-    if(!sound.isValid())
+    if(!sound.getDriverData())
         return;
-    RTTR_Assert(sound.isMusic());
-    if(!sound.isMusic())
+    RTTR_Assert(sound.getType() == driver::SoundType::Music);
+    if(sound.getType() != driver::SoundType::Music)
         return;
 
-    int channel = Mix_PlayMusic(static_cast<SoundSDL_Music&>(*sound.getDescriptor()).music, repeats == 0 ? -1 : int(repeats));
+    int channel = Mix_PlayMusic(static_cast<SDLMusicData*>(sound.getDriverData())->music, repeats < 0 ? -1 : repeats + 1);
     if(channel < 0)
         return;
-    // TODO: Can we actually use multiple channels? If yes we might want to store it. Also print error message?
     Mix_VolumeMusic(master_music_volume / 2);
 }
 
@@ -234,14 +230,9 @@ void AudioSDL::StopMusic()
     Mix_FadeOutMusic(1000);
 }
 
-void AudioSDL::StopEffect(EffectPlayId play_id)
+void AudioSDL::doStopEffect(int channel)
 {
-    int channel = GetEffectChannel(play_id);
-    if(channel >= 0)
-    {
-        Mix_HaltChannel(channel);
-        RemoveEffect(play_id);
-    }
+    Mix_HaltChannel(channel);
 }
 
 bool AudioSDL::IsEffectPlaying(EffectPlayId play_id)
@@ -281,23 +272,22 @@ uint8_t AudioSDL::CalcEffectVolume(uint8_t volume) const
     return (static_cast<unsigned>(master_effects_volume) * volume) / 255 / 2;
 }
 
-void AudioSDL::MusicFinished()
+void AudioSDL::doUnloadSound(driver::RawSoundHandle sound)
 {
-    nthis->driverCallback->Msg_MusicFinished();
-}
-
-void AudioSDL::DoUnloadSound(SoundDesc& sound)
-{
-    if(sound.type_ == SD_EFFECT)
+    switch(sound.getType())
     {
-        auto& effect = static_cast<SoundSDL_Effect&>(sound);
-        Mix_FreeChunk(effect.sound);
-        effect.setInvalid();
-    } else if(sound.type_ == SD_MUSIC)
-    {
-        auto& music = static_cast<SoundSDL_Music&>(sound);
-        Mix_FreeMusic(music.music);
-        music.setInvalid();
-    } else
-        RTTR_Assert(false);
+        case driver::SoundType::Effect:
+        {
+            auto* effect = static_cast<Mix_Chunk*>(sound.getDriverData());
+            Mix_FreeChunk(effect);
+            break;
+        }
+        case driver::SoundType::Music:
+        {
+            auto* musicData = static_cast<SDLMusicData*>(sound.getDriverData());
+            Mix_FreeMusic(musicData->music);
+            delete musicData;
+            break;
+        }
+    }
 }

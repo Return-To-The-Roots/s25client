@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "Settings.h"
-#include "driver/SoundHandle.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "mockupDrivers/MockupAudioDriver.h"
 #include "ogl/MusicItem.h"
@@ -29,85 +28,165 @@
 #include "s25util/warningSuppression.h"
 #include <boost/test/unit_test.hpp>
 
+BOOST_TEST_DONT_PRINT_LOG_VALUE(EffectPlayId)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(SoundHandle)
+BOOST_TEST_DONT_PRINT_LOG_VALUE(driver::SoundType)
+
 BOOST_AUTO_TEST_SUITE(SoundTests)
+
+using driver::SoundType;
 
 struct LoadMockupAudio
 {
-    LoadMockupAudio()
+    std::unique_ptr<MockAudioDriverCallback> audioCallbackMock;
+    MockupAudioDriver* audioDriverMock;
+    LoadMockupAudio() : audioCallbackMock(std::make_unique<MockAudioDriverCallback>())
     {
         libsiedler2::setAllocator(new GlAllocator);
         SETTINGS.sound.effekte = true;
         SETTINGS.sound.musik = true;
-        AUDIODRIVER.LoadDriver(new MockupAudioDriver);
+        auto driver = std::make_unique<MockupAudioDriver>(audioCallbackMock.get());
+        audioDriverMock = driver.get();
+        AUDIODRIVER.LoadDriver(std::move(driver));
         BOOST_REQUIRE_NE(AUDIODRIVER.GetName(), "");
     }
+    ~LoadMockupAudio() { AUDIODRIVER.UnloadDriver(); }
+    /// Return a callable to be used with MOCK_EXPECT(...).calls(...) that loads a sound of the given type
+    auto makeDoLoad(SoundType type)
+    {
+        return [=](auto&&...) { return audioDriverMock->doLoad(type); };
+    };
+    auto makeUnloadHandle(SoundType type)
+    {
+        // Check that the type matches and delete the driver data
+        return [=](const driver::RawSoundHandle& handle) {
+            BOOST_TEST(type == handle.getType());
+            delete static_cast<MockupSoundData*>(handle.getDriverData());
+        };
+    };
 };
 
-BOOST_FIXTURE_TEST_CASE(SoundHandles, LoadMockupAudio)
+BOOST_AUTO_TEST_CASE(DefaultConstructedSoundHandleIsInvalid)
 {
     SoundHandle handle;
-    BOOST_REQUIRE(!handle.isValid());
-    BOOST_REQUIRE_EQUAL(handle.getType(), SD_UNKNOWN);
+    BOOST_TEST_REQUIRE(!handle);
+    BOOST_REQUIRE_THROW(handle.getRawHandle(), std::runtime_error);
+    BOOST_REQUIRE_THROW(handle.getType(), std::runtime_error);
+}
+
+BOOST_FIXTURE_TEST_CASE(SoundHandleGetUnloadedWhenLastGoesOutOfScope, LoadMockupAudio)
+{
     {
-        BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 0);
-        SoundHandle localHandle = AUDIODRIVER.LoadEffect("Foo.wav");
-        BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
-        BOOST_REQUIRE(localHandle.isValid());
-        BOOST_REQUIRE_EQUAL(localHandle.getType(), SD_EFFECT);
-        SoundHandle localHandle2 = AUDIODRIVER.LoadMusic("Foo.wav");
-        BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 2);
-        BOOST_REQUIRE(localHandle2.isValid());
-        BOOST_REQUIRE_EQUAL(localHandle2.getType(), SD_MUSIC);
+        BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
+        MOCK_EXPECT(audioDriverMock->LoadEffect).once().with("Foo.wav").calls(makeDoLoad(SoundType::Effect));
+        SoundHandle handle = AUDIODRIVER.LoadEffect("Foo.wav");
+        BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 1);
+        BOOST_TEST_REQUIRE(handle);
+        BOOST_TEST_REQUIRE(handle.getType() == SoundType::Effect);
+        MOCK_EXPECT(audioDriverMock->LoadMusic).once().with("Foo2.wav").calls(makeDoLoad(SoundType::Music));
+        SoundHandle handle2 = AUDIODRIVER.LoadMusic("Foo2.wav");
+        BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 2);
+        BOOST_TEST_REQUIRE(handle2);
+        BOOST_TEST_REQUIRE(handle2.getType() == SoundType::Music);
+
+        {
+            // Copy handle
+            const SoundHandle handleCopy = handle;
+            BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 2);
+            RTTR_UNUSED(handleCopy);
+            // Copy goes out of scope
+        }
+        BOOST_TEST_REQUIRE(handle);
+        BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 2);
+
         // Handles go out of scope -> Close them
+        MOCK_EXPECT(audioDriverMock->doUnloadSound).once().with(handle.getRawHandle()).calls(makeUnloadHandle(handle.getType()));
+        MOCK_EXPECT(audioDriverMock->doUnloadSound).once().with(handle2.getRawHandle()).calls(makeUnloadHandle(handle2.getType()));
     }
-    BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 0);
-    handle = AUDIODRIVER.LoadEffect("Foo.wav");
-    BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
-    BOOST_REQUIRE(handle.isValid());
-    BOOST_REQUIRE_EQUAL(handle.getType(), SD_EFFECT);
-    {
-        // Copy handle
-        const SoundHandle localHandle = handle;
-        BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
-        RTTR_UNUSED(localHandle);
-        // Copy goes out of scope
-    }
-    BOOST_REQUIRE(handle.isValid());
-    BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
-    // Release driver
+    BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
+    // Release driver. Nothing will be done as sounds already unloaded
     AUDIODRIVER.UnloadDriver();
-    BOOST_REQUIRE(!handle.isValid());
-    BOOST_REQUIRE_EQUAL(handle.getType(), SD_UNKNOWN);
-    // Still alive though invalid
-    BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
+    BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(SoundHandlesCanBeUnloadedByDriver, LoadMockupAudio)
+{
+    {
+        MOCK_EXPECT(audioDriverMock->LoadEffect).once().with("Foo.wav").calls(makeDoLoad(SoundType::Effect));
+        SoundHandle handle = AUDIODRIVER.LoadEffect("Foo.wav");
+        BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 1);
+        BOOST_TEST_REQUIRE(handle);
+        BOOST_TEST_REQUIRE(handle.getType() == SoundType::Effect);
+
+        // Release driver
+        MOCK_EXPECT(audioDriverMock->doUnloadSound).once().with(handle.getRawHandle()).calls(makeUnloadHandle(handle.getType()));
+        AUDIODRIVER.UnloadDriver();
+        BOOST_TEST_REQUIRE(!handle);
+        // Driver data was released
+        BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
+    }
+    // Handle now destroyed but driver not called
+    BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
 }
 
 BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
 {
-    libsiedler2::Archiv snd;
-    std::array<std::string, 3> musicFiles = {{"/test.ogg", "/testMidi.mid", "/testXMidi.xmi"}};
-    BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR "/testMono.wav", snd), 0);
-    auto* effect = dynamic_cast<SoundEffectItem*>(snd[0]);
-    BOOST_REQUIRE(effect);
-    EffectPlayId id = effect->Play(50, false); //-V522
-    BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
-    BOOST_REQUIRE_EQUAL(effect->getLoadedType(), SD_EFFECT);
-    BOOST_REQUIRE(id >= 0);
-    BOOST_REQUIRE(AUDIODRIVER.IsEffectPlaying(id));
-    AUDIODRIVER.StopEffect(id);
-    BOOST_REQUIRE(!AUDIODRIVER.IsEffectPlaying(id));
-    for(const auto& musicFile : musicFiles)
     {
-        libsiedler2::Archiv musicArchiv;
-        BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR + musicFile, musicArchiv), 0);
-        auto* music = dynamic_cast<MusicItem*>(musicArchiv[0]);
-        BOOST_REQUIRE(music);
-        BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
-        music->Play(0); //-V522
-        BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 2);
-        BOOST_REQUIRE_EQUAL(music->getLoadedType(), SD_MUSIC);
-        AUDIODRIVER.StopMusic();
+        libsiedler2::Archiv snd;
+        BOOST_TEST_REQUIRE(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR "/testMono.wav", snd) == 0);
+        auto* effect = dynamic_cast<SoundEffectItem*>(snd[0]);
+        BOOST_TEST_REQUIRE(effect);
+
+        // First call to Play loads the sound
+        mock::sequence s;
+        MOCK_EXPECT(audioDriverMock->LoadEffectFromData).in(s).once().with(mock::any, ".wav").calls(makeDoLoad(SoundType::Effect));
+        const int channel = 0;
+        MOCK_EXPECT(audioDriverMock->doPlayEffect).in(s).once().with(mock::affirm, 50, false).returns(channel);
+        EffectPlayId id = effect->Play(50, false); //-V522
+        BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 1);
+        BOOST_TEST_REQUIRE(effect->getLoadedType() == SoundType::Effect);
+        BOOST_TEST_REQUIRE(id != EffectPlayId::Invalid);
+        BOOST_TEST_REQUIRE(audioDriverMock->GetEffectChannel(id) == channel);
+        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).in(s).once().with(id).returns(true);
+        BOOST_TEST_REQUIRE(AUDIODRIVER.IsEffectPlaying(id));
+
+        // Stop playing
+        MOCK_EXPECT(audioDriverMock->doStopEffect).in(s).once().with(channel);
+        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).in(s).once().with(id).returns(false);
+        AUDIODRIVER.StopEffect(id);
+        BOOST_TEST_REQUIRE(audioDriverMock->GetEffectChannel(id) == -1);
+        BOOST_TEST_REQUIRE(!AUDIODRIVER.IsEffectPlaying(id));
+
+        // Unload when effect goes out of scope
+        MOCK_EXPECT(audioDriverMock->doUnloadSound).in(s).once().calls(makeUnloadHandle(SoundType::Effect));
     }
+    // Unloaded when it goes out of scope
+    BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
+
+    // Same for different music types
+    for(const std::string musicFile : {"/test.ogg", "/testMidi.mid", "/testXMidi.xmi"})
+    {
+        mock::sequence s;
+        // All midi types are treated as .midi
+        const auto extension = (boost::filesystem::path(musicFile).extension() == ".ogg") ? ".ogg" : ".midi";
+        libsiedler2::Archiv musicArchiv;
+        BOOST_TEST_REQUIRE(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR + musicFile, musicArchiv) == 0);
+        auto* music = dynamic_cast<MusicItem*>(musicArchiv[0]);
+        BOOST_TEST_REQUIRE(music);
+
+        // First call to Play loads the sound
+        BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
+        MOCK_EXPECT(audioDriverMock->LoadMusicFromData).in(s).once().with(mock::any, extension).calls(makeDoLoad(SoundType::Music));
+        MOCK_EXPECT(audioDriverMock->PlayMusic).in(s).once().with(mock::any, 0);
+        music->Play();
+        BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 1);
+        BOOST_TEST_REQUIRE(music->getLoadedType() == SoundType::Music);
+
+        MOCK_EXPECT(audioDriverMock->StopMusic).in(s).once();
+        AUDIODRIVER.StopMusic();
+        MOCK_EXPECT(audioDriverMock->doUnloadSound).in(s).once().calls(makeUnloadHandle(SoundType::Music));
+    }
+    BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

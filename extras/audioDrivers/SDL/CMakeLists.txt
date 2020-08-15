@@ -12,7 +12,7 @@ else()
     gather_dll_by_name(OGG libogg-0.dll)
   endif()
 
-  add_library(audioSDL SHARED ${RTTR_DRIVER_INTERFACE} AudioSDL.cpp AudioSDL.h SoundSDL_Effect.h SoundSDL_Music.h)
+  add_library(audioSDL SHARED ${RTTR_DRIVER_INTERFACE} AudioSDL.cpp AudioSDL.h)
   target_link_libraries(audioSDL PRIVATE audiodrv SDL_mixer::SDL_mixer)
 
   install(TARGETS audioSDL

@@ -24,7 +24,7 @@
 #include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
 
-SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(-1) {}
+SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(EffectPlayId::Invalid) {}
 
 SoundManager::~SoundManager() = default;
 
@@ -56,11 +56,10 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, c
 
     // Konnte er auch abgespielt werden?
 
-    if(play_id >= 0)
+    if(play_id != EffectPlayId::Invalid)
     {
         // Dann hinzufügen zur abgespielt-Liste
-        NOSound nos = {obj, id, play_id};
-        no_sounds.push_back(nos);
+        no_sounds.push_back(NOSound{obj, id, play_id});
     }
 }
 
@@ -128,7 +127,7 @@ void SoundManager::PlayOceanBrawling(const unsigned water_percent)
             // SDL Mixer may return false values here. Therefore,
             // we make sure the old effect is stopped.
             // DO NOT REMOVE - THIS PREVENTS A BUG!
-            if(ocean_play_id >= 0)
+            if(ocean_play_id != EffectPlayId::Invalid)
                 AUDIODRIVER.StopEffect(ocean_play_id);
 
             // Wenn nicht --> neuen abspielen
@@ -140,14 +139,14 @@ void SoundManager::PlayOceanBrawling(const unsigned water_percent)
     } else
     {
         // Rauschen ggf. stoppen
-        if(ocean_play_id >= 0)
+        if(ocean_play_id != EffectPlayId::Invalid)
             AUDIODRIVER.StopEffect(ocean_play_id);
     }
 }
 
 void SoundManager::StopAll()
 {
-    if(ocean_play_id >= 0)
+    if(ocean_play_id != EffectPlayId::Invalid)
         AUDIODRIVER.StopEffect(ocean_play_id);
 
     last_bird = VIDEODRIVER.GetTickCount();
