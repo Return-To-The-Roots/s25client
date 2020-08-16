@@ -40,6 +40,18 @@ void RunTest(T_Test test)
     test(map);
 }
 
+BOOST_AUTO_TEST_CASE(Constructor_ResizesAllMaps)
+{
+    RunTest([](Map& map) {
+        BOOST_REQUIRE(map.z.GetSize() == map.size);
+        BOOST_REQUIRE(map.textures.GetSize() == map.size);
+        BOOST_REQUIRE(map.objectInfos.GetSize() == map.size);
+        BOOST_REQUIRE(map.objectTypes.GetSize() == map.size);
+        BOOST_REQUIRE(map.resources.GetSize() == map.size);
+        BOOST_REQUIRE(map.animals.GetSize() == map.size);
+    });
+}
+
 BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_WithValidPositionAndAnyIndex_PlacesHeadQuarterWithIndex)
 {
     RunTest([](Map& map) {

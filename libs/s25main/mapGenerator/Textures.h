@@ -122,7 +122,6 @@ namespace rttr { namespace mapGenerator {
         bool Any(const MapPoint& point, T_Predicate predicate) const
         {
             auto condition = [this, &predicate](auto triangle) { return this->Check(triangle, predicate); };
-
             return helpers::contains_if(GetTriangles(point, this->GetSize()), condition);
         }
 
@@ -130,7 +129,6 @@ namespace rttr { namespace mapGenerator {
         bool All(const MapPoint& point, T_Predicate predicate) const
         {
             auto condition = [this, &predicate](auto triangle) { return !this->Check(triangle, predicate); };
-
             return !helpers::contains_if(GetTriangles(point, this->GetSize()), condition);
         }
 

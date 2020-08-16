@@ -23,12 +23,13 @@ namespace rttr { namespace mapGenerator {
 
     River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length, unsigned splitRate)
     {
-        const MapExtent& size = map.textures.GetSize();
+        const MapExtent& size = map.size;
 
         River river;
         std::vector<Direction> exlcuded{direction + 2, direction + 3, direction + 4};
 
-        auto water = map.textures.Find(IsWater);
+        auto& textures = map.textures;
+        auto water = textures.Find(IsWater);
 
         MapPoint currentNode = source;
         Direction currentDir = direction;
@@ -39,7 +40,7 @@ namespace rttr { namespace mapGenerator {
 
             for(const auto& triangle : triangles)
             {
-                map.textures.Set(triangle, water);
+                textures.Set(triangle, water);
 
                 const auto& edges = GetTriangleEdges(triangle, size);
                 for(const MapPoint& edge : edges)
@@ -55,7 +56,7 @@ namespace rttr { namespace mapGenerator {
                 currentDir = lastDir + (rnd.ByChance(50) ? 5 : 1);
             }
 
-            currentNode = map.textures.GetNeighbour(currentNode, lastDir);
+            currentNode = textures.GetNeighbour(currentNode, lastDir);
 
             if(rnd.ByChance(splitRate))
             {
@@ -70,15 +71,16 @@ namespace rttr { namespace mapGenerator {
         }
 
         auto seaLevel = static_cast<unsigned>(map.height.minimum);
+        auto& z = map.z;
 
         for(const MapPoint& node : river)
         {
-            if(map.z[node] > 0)
+            if(z[node] > 0)
             {
-                map.z[node] = std::max(static_cast<unsigned>(map.z[node] - 1), seaLevel);
+                z[node] = std::max(static_cast<unsigned>(z[node] - 1), seaLevel);
             } else
             {
-                map.z[node] = seaLevel;
+                z[node] = seaLevel;
             }
         }
 

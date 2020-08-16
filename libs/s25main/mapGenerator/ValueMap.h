@@ -54,13 +54,13 @@ namespace rttr { namespace mapGenerator {
     unsigned MapValueToIndex(T_Value value, const ValueRange<T_Value>& range, size_t size)
     {
         T_Value difference = range.GetDifference();
-        
-        if (difference)
+
+        if(difference)
         {
             double slope = 1. * (size - 1) / difference;
             return static_cast<unsigned>(round(slope * (value - range.minimum)));
         }
-        
+
         return 0u;
     }
 

@@ -30,13 +30,13 @@ void RunTest(T_Test test);
 template<class T_Test>
 void RunTest(T_Test test)
 {
+    MapExtent size(8, 8);
     RandomUtility rnd(0);
     WorldDescription worldDesc;
     loadGameData(worldDesc);
     DescIdx<LandscapeDesc> landscape(0);
-    TextureMap textures(worldDesc, landscape);
 
-    MapExtent size(8, 8);
+    TextureMap textures(worldDesc, landscape);
     Map map(textures, size, 0x1, 44);
 
     test(rnd, map);
@@ -47,11 +47,10 @@ BOOST_AUTO_TEST_CASE(CreateStream_OfCertainLength_ReturnsExpectedNumberOfPoints)
     RunTest([](RandomUtility& rnd, Map& map) {
         const MapPoint source(4, 1);
         const int length = 6;
-        const uint8_t seaLevel = 0;
 
         for(unsigned d = 0; d < 6; d++)
         {
-            auto river = CreateStream(rnd, map, source, Direction(d), length, seaLevel);
+            auto river = CreateStream(rnd, map, source, Direction(d), length);
 
             // each point represents one triangle while length is given
             // in tiles (2 triangles) - and one more for the source (which
@@ -69,11 +68,10 @@ BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsConnectedNodes)
     RunTest([](RandomUtility& rnd, Map& map) {
         const MapPoint source(3, 2);
         const int length = 7;
-        const uint8_t seaLevel = 1;
 
         for(unsigned d = 0; d < 6; d++)
         {
-            auto river = CreateStream(rnd, map, source, Direction(d), length, seaLevel);
+            auto river = CreateStream(rnd, map, source, Direction(d), length);
 
             auto containedByRiver = [&river](const MapPoint& pt) { return helpers::contains(river, pt); };
 
@@ -88,13 +86,14 @@ BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsConnectedNodes)
 BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesPartiallyCoveredByWater)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
-        const MapPoint source(4, 1);
-        const int length = 6;
-        const uint8_t seaLevel = 0;
+        auto land = map.textures.Find(IsBuildableLand);
+        map.textures.Resize(map.size, land);
+        const MapPoint source(3, 2);
+        const int length = 7;
 
         for(unsigned d = 0; d < 6; d++)
         {
-            auto river = CreateStream(rnd, map, source, Direction(d), length, seaLevel);
+            auto river = CreateStream(rnd, map, source, Direction(d), length);
 
             for(const MapPoint& pt : river)
             {
@@ -103,7 +102,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesPartiallyCoveredBy
         }
     });
 }
-/*
+
 BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesWithReducedHeight)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
@@ -130,5 +129,5 @@ BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesWithReducedHeight)
         }
     });
 }
-*/
+
 BOOST_AUTO_TEST_SUITE_END()
