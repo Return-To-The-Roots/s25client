@@ -196,11 +196,11 @@ BOOST_AUTO_TEST_CASE(Serializer)
     BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0xFFFFFFFFu);
 }
 
-BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture, *boost::unit_test::label("seed=42"))
+BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 {
     MapPoint hqPos = world.GetPlayer(0).GetHQPos();
     MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
-    auto* usualBld = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, usualBldPos, 0, NAT_VIKINGS));
+    auto* usualBld = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_BAKERY, usualBldPos, 0, NAT_VIKINGS));
     world.BuildRoad(0, false, world.GetNeighbour(hqPos, Direction::SOUTHEAST), std::vector<Direction>(3, Direction::EAST));
     usualBld->is_working = true;
 
