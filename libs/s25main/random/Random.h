@@ -23,6 +23,7 @@
 #include "RTTR_Assert.h"
 #include "random/XorShift.h"
 #include "s25util/Singleton.h"
+#include <boost/filesystem/path.hpp>
 #include <array>
 #include <cstddef>
 #include <iosfwd>
@@ -87,7 +88,7 @@ public:
     std::vector<RandomEntry> GetAsyncLog();
 
     /// Save the log to a file
-    void SaveLog(const std::string& filename);
+    void SaveLog(const boost::filesystem::path& filepath);
 
 private:
     PRNG rng_; /// the PRNG

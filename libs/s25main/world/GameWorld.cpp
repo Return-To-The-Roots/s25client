@@ -32,8 +32,8 @@ GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGam
 {}
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, ILocalGameState& localgameState, const std::string& mapFilePath,
-                        const std::string& luaFilePath)
+bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, ILocalGameState& localgameState, const boost::filesystem::path& mapFilePath,
+                        const boost::filesystem::path& luaFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;

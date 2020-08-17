@@ -124,7 +124,7 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     return true;
 }
 
-bool GameClient::HostGame(const CreateServerInfo& csi, const std::string& map_path, MapType map_type)
+bool GameClient::HostGame(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type)
 {
     std::string hostPw = createRandString(20);
     return GAMESERVER.Start(csi, map_path, map_type, hostPw) && Connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
@@ -826,8 +826,8 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     fileName += "_" + s25util::toStringClassic(GetPlayerId()) + "_";
     fileName += GetPlayer(GetPlayerId()).name;
 
-    std::string filePathSave = RTTRCONFIG.ExpandPath(s25::folders::save) + "/" + makePortableFileName(fileName + ".sav");
-    std::string filePathLog = RTTRCONFIG.ExpandPath(s25::folders::logs) + "/" + makePortableFileName(fileName + "Player.log");
+    const bfs::path filePathSave = RTTRCONFIG.ExpandPath(s25::folders::save) / makePortableFileName(fileName + ".sav");
+    const bfs::path filePathLog = RTTRCONFIG.ExpandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
     RANDOM.SaveLog(filePathLog);
     SaveToFile(filePathSave);
     LOG.write(_("Async log saved at \"%s\",\ngame saved at \"%s\"\n")) % filePathLog % filePathSave;
@@ -870,18 +870,18 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
         return true;
 
     // full path
-    std::string portFilename = makePortableFileName(msg.filename);
+    const std::string portFilename = makePortableFileName(msg.filename);
     if(portFilename.empty())
     {
         LOG.write("Invalid filename received!\n");
         OnError(CE_INVALID_MAP);
     }
-    mapinfo.filepath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) + "/" + portFilename;
+    mapinfo.filepath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / portFilename;
     mapinfo.type = msg.mt;
 
     // lua script file path
     if(msg.luaLen > 0)
-        mapinfo.luaFilepath = bfs::path(mapinfo.filepath).replace_extension("lua").string();
+        mapinfo.luaFilepath = bfs::path(mapinfo.filepath).replace_extension("lua");
     else
         mapinfo.luaFilepath.clear();
 
@@ -1294,20 +1294,13 @@ void GameClient::HandleAutosave()
     // Alle .... GF
     if(GetGFNumber() % SETTINGS.interface.autosave_interval == 0)
     {
-        std::string tmp = RTTRCONFIG.ExpandPath(s25::folders::save) + "/";
-
+        std::string filename;
         if(mapinfo.title.empty())
-        {
-            tmp += _("Auto-Save");
-            tmp += ".sav";
-        } else
-        {
-            tmp += mapinfo.title + " (";
-            tmp += _("Auto-Save");
-            tmp += ").sav";
-        }
+            filename = std::string(_("Auto-Save")) + ".sav";
+        else
+            filename = mapinfo.title + " (" + _("Auto-Save") + ").sav";
 
-        SaveToFile(tmp);
+        SaveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / filename);
     }
 }
 
@@ -1357,21 +1350,21 @@ void GameClient::OnGameStart()
 void GameClient::StartReplayRecording(const unsigned random_init)
 {
     replayinfo = std::make_unique<ReplayInfo>();
-    replayinfo->fileName = s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
+    replayinfo->filename = s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
     replayinfo->replay.random_init = random_init;
 
     WritePlayerInfo(replayinfo->replay);
     replayinfo->replay.ggs = game->ggs_;
 
     // Datei speichern
-    if(!replayinfo->replay.StartRecording(RTTRCONFIG.ExpandPath(s25::folders::replays) + "/" + replayinfo->fileName, mapinfo))
+    if(!replayinfo->replay.StartRecording(RTTRCONFIG.ExpandPath(s25::folders::replays) / replayinfo->filename, mapinfo))
     {
         LOG.write(_("Replayfile couldn't be opened. No replay will be recorded\n"));
         replayinfo.reset();
     }
 }
 
-bool GameClient::StartReplay(const std::string& path)
+bool GameClient::StartReplay(const boost::filesystem::path& path)
 {
     RTTR_Assert(state == CS_STOPPED);
     mapinfo.Clear();
@@ -1385,7 +1378,7 @@ bool GameClient::StartReplay(const std::string& path)
         replayinfo.reset();
         return false;
     }
-    replayinfo->fileName = bfs::path(replayinfo->replay.GetFile().getFilePath()).filename().string();
+    replayinfo->filename = replayinfo->replay.GetFile().getFilePath().filename();
 
     gameLobby = std::make_shared<GameLobby>(true, true, replayinfo->replay.GetNumPlayers());
 
@@ -1426,8 +1419,8 @@ bool GameClient::StartReplay(const std::string& path)
         case MAPTYPE_OLDMAP:
         {
             // Richtigen Pfad zur Map erstellen
-            bfs::path mapFilePath = bfs::path(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed)) / bfs::path(mapinfo.filepath).filename();
-            mapinfo.filepath = mapFilePath.string();
+            bfs::path mapFilePath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / mapinfo.filepath.filename();
+            mapinfo.filepath = mapFilePath;
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
                 LOG.write(_("Error decompressing map file"));
@@ -1436,7 +1429,7 @@ bool GameClient::StartReplay(const std::string& path)
             }
             if(mapinfo.luaData.length)
             {
-                mapinfo.luaFilepath = mapFilePath.replace_extension("lua").string();
+                mapinfo.luaFilepath = mapFilePath.replace_extension("lua");
                 if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
                 {
                     LOG.write(_("Error decompressing lua file"));
@@ -1583,7 +1576,7 @@ void GameClient::SystemChat(const std::string& text, unsigned char fromPlayerIdx
         ci->CI_Chat(fromPlayerIdx, CD_SYSTEM, text);
 }
 
-bool GameClient::SaveToFile(const std::string& filename)
+bool GameClient::SaveToFile(const boost::filesystem::path& filepath)
 {
     mainPlayer.sendMsg(GameMessage_Chat(GetPlayerId(), CD_SYSTEM, "Saving game..."));
 
@@ -1610,7 +1603,7 @@ bool GameClient::SaveToFile(const std::string& filename)
         // Spiel serialisieren
         save.sgd.MakeSnapshot(game);
         // Und alles speichern
-        return save.Save(filename, mapinfo.title);
+        return save.Save(filepath, mapinfo.title);
     } catch(std::exception& e)
     {
         SystemChat(std::string("Error during saving: ") + e.what());
@@ -1714,10 +1707,10 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
         return helpers::format("%02u:%02u", numMinutes.count(), numSeconds.count());
 }
 
-const std::string& GameClient::GetReplayFileName() const
+const boost::filesystem::path& GameClient::GetReplayFilename() const
 {
-    static std::string emptyString;
-    return replayinfo ? replayinfo->fileName : emptyString;
+    static boost::filesystem::path emptyString;
+    return replayinfo ? replayinfo->filename : emptyString;
 }
 
 Replay* GameClient::GetReplay()

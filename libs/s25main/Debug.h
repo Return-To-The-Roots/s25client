@@ -18,6 +18,7 @@
 #define DEBUG_H_
 
 #include "s25util/Socket.h"
+#include <boost/filesystem/path.hpp>
 #include <vector>
 
 class BinaryFile;
@@ -41,7 +42,7 @@ public:
 
     bool SendStackTrace(const std::vector<void*>& stacktrace);
     bool SendReplay();
-    bool SendAsyncLog(const std::string& asyncLogFilepath);
+    bool SendAsyncLog(const boost::filesystem::path& asyncLogFilepath);
     bool SendFile(BinaryFile& file);
 };
 

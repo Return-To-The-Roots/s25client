@@ -330,7 +330,8 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFileName(), FontStyle::BOTTOM, COLOR_YELLOW);
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFilename().string(), FontStyle::BOTTOM,
+                         COLOR_YELLOW);
     else
     {
         // Laggende Spieler anzeigen in Form von Schnecken

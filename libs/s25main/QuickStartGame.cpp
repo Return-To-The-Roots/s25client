@@ -42,9 +42,8 @@ public:
     void CI_GameLoading(const std::shared_ptr<Game>& game) override { WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game)); }
 };
 
-bool QuickStartGame(const std::string& filePath, bool singlePlayer)
+bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singlePlayer)
 {
-    const boost::filesystem::path mapOrReplayPath(filePath);
     if(!exists(mapOrReplayPath))
     {
         LOG.write(_("Given map or replay (%1%) does not exist!")) % mapOrReplayPath;
@@ -66,14 +65,14 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
 
     WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
-    if((extension == ".sav" && GAMECLIENT.HostGame(csi, filePath, MAPTYPE_SAVEGAME))
-       || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, filePath, MAPTYPE_OLDMAP)))
+    if((extension == ".sav" && GAMECLIENT.HostGame(csi, mapOrReplayPath, MAPTYPE_SAVEGAME))
+       || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, mapOrReplayPath, MAPTYPE_OLDMAP)))
     {
         WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPleaseWait>());
         return true;
     } else
     {
         SwitchOnStart switchOnStart;
-        return GAMECLIENT.StartReplay(filePath);
+        return GAMECLIENT.StartReplay(mapOrReplayPath);
     }
 }

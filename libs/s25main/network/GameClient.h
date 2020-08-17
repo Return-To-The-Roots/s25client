@@ -91,17 +91,17 @@ public:
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host,
                  bool use_ipv6);
     /// Start the server and connect to it
-    bool HostGame(const CreateServerInfo& csi, const std::string& map_path, MapType map_type);
+    bool HostGame(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type);
     void Run();
     void Stop();
 
     /// Gibt Map-Titel zurück
     const std::string& GetMapTitle() const { return mapinfo.title; }
     /// Gibt Pfad zu der Map zurück
-    const std::string& GetMapPath() const { return mapinfo.filepath; }
+    const boost::filesystem::path& GetMapPath() const { return mapinfo.filepath; }
     /// Gibt Map-Typ zurück
     MapType GetMapType() const { return mapinfo.type; }
-    const std::string& GetLuaFilePath() const { return mapinfo.luaFilepath; }
+    const boost::filesystem::path& GetLuaFilePath() const { return mapinfo.luaFilepath; }
 
     // Initialisiert und startet das Spiel
     void StartGame(unsigned random_init);
@@ -139,7 +139,7 @@ public:
     void DecreaseSpeed();
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
-    bool StartReplay(const std::string& path);
+    bool StartReplay(const boost::filesystem::path& path);
     void SetPause(bool pause);
     void TogglePause() { SetPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus
@@ -152,7 +152,7 @@ public:
     std::string FormatGFTime(unsigned gf) const override;
 
     /// Gibt Replay-Dateiname zurück
-    const std::string& GetReplayFileName() const;
+    const boost::filesystem::path& GetReplayFilename() const;
     /// Wird ein Replay abgespielt?
     bool IsReplayModeOn() const { return replayMode; }
 
@@ -169,7 +169,7 @@ public:
     /// Spiel pausiert?
     bool IsPaused() const { return framesinfo.isPaused; }
     /// Schreibt Header der Save-Datei
-    bool SaveToFile(const std::string& filename);
+    bool SaveToFile(const boost::filesystem::path& filepath);
     /// Visuelle Einstellungen aus den richtigen ableiten
     void ResetVisualSettings();
     void SystemChat(const std::string& text) override;

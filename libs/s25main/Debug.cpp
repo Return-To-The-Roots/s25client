@@ -308,7 +308,7 @@ bool DebugInfo::SendReplay()
     return true;
 }
 
-bool DebugInfo::SendAsyncLog(const std::string& asyncLogFilepath)
+bool DebugInfo::SendAsyncLog(const boost::filesystem::path& asyncLogFilepath)
 {
     BinaryFile file;
     if(!file.Open(asyncLogFilepath, OFM_READ))

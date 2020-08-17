@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(DetectRecursion)
         file2 << "include(\"default.lua\")\n";
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, tmp.get().string());
+    GameDataLoader loader(desc, tmp.get());
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("Maximum include depth", false);
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(DetectInvalidFilenames)
         file << "include(\"foo(=.lua\")\n";
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, tmp.get().string());
+    GameDataLoader loader(desc, tmp.get());
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("disallowed chars", false);
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(DetectNonexistingFile)
         file << "include(\"foo.lua\")\n";
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, tmp.get().string());
+    GameDataLoader loader(desc, tmp.get());
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("File not found", false);
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(DetectWrongExtension)
         bnw::ofstream file2(tmp.get() / "foo.txt");
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, tmp.get().string());
+    GameDataLoader loader(desc, tmp.get());
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("File must have .lua as the extension", false);
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(DetectFolderEscape)
         bnw::ofstream file2(tmp.get() / "foo.lua");
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, basePath.string());
+    GameDataLoader loader(desc, basePath);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("outside the lua data directory", false);
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(DetectAbsolute)
         file << "include(\"/tmp/foo.lua\")\n";
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, basePath.string());
+    GameDataLoader loader(desc, basePath);
     rttr::test::LogAccessor logAcc;
     BOOST_TEST(!loader.Load());
     RTTR_REQUIRE_LOG_CONTAINS("relative", false);
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(TextureCoords)
             pos = { 10, 20, 32, 31 }, texType = \"rotated\" }";
     }
     WorldDescription desc;
-    GameDataLoader loader(desc, tmp.get().string());
+    GameDataLoader loader(desc, tmp.get());
     BOOST_REQUIRE(loader.Load());
     using PointF = TerrainDesc::PointF;
     // Border points are inset by half a pixel for OpenGL (sample middle of pixel!)

@@ -21,6 +21,7 @@
 
 #include "IngameWindow.h"
 #include "network/CreateServerInfo.h"
+#include <boost/filesystem/path.hpp>
 
 /// Fenster fürs Speichern UND(!) Laden von Spielständen
 class iwSaveLoad : public IngameWindow
@@ -41,7 +42,7 @@ private:
     void Msg_TableSelectItem(unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
 
     /// Callbackfunktion zum Eintragen eines Spielstandes in die Tabelle
-    static void FillSaveTable(const std::string& filePath, void* param);
+    static void FillSaveTable(const boost::filesystem::path& filePath, void* param);
 };
 
 class iwSave : public iwSaveLoad

@@ -64,9 +64,9 @@ void LuaInterfaceBase::errorHandler(int status, const char* message)
     throw LuaExecutionError(message ? message : _("Unknown error"));
 }
 
-bool LuaInterfaceBase::loadScript(const std::string& scriptPath)
+bool LuaInterfaceBase::loadScript(const boost::filesystem::path& scriptPath)
 {
-    boost::nowide::ifstream scriptFile(scriptPath.c_str());
+    boost::nowide::ifstream scriptFile(scriptPath);
     std::string tmpScript;
     tmpScript.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
     if(!scriptFile)

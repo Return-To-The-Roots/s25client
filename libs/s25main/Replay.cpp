@@ -55,13 +55,13 @@ void Replay::StopRecording()
     isRecording = false;
 }
 
-bool Replay::StartRecording(const std::string& filename, const MapInfo& mapInfo)
+bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo)
 {
     // Deny overwrite, also avoids double-opening by different processes
-    if(boost::filesystem::exists(filename))
+    if(boost::filesystem::exists(filepath))
         return false;
     // Datei öffnen
-    if(!file.Open(filename, OFM_WRITE))
+    if(!file.Open(filepath, OFM_WRITE))
         return false;
 
     isRecording = true;
@@ -86,7 +86,7 @@ bool Replay::StartRecording(const std::string& filename, const MapInfo& mapInfo)
 
     // Game data
     file.WriteUnsignedInt(random_init);
-    file.WriteLongString(mapInfo.filepath);
+    file.WriteLongString(mapInfo.filepath.string());
 
     switch(mapType_)
     {
@@ -110,10 +110,10 @@ bool Replay::StartRecording(const std::string& filename, const MapInfo& mapInfo)
     return true;
 }
 
-bool Replay::LoadHeader(const std::string& filename, bool loadSettings)
+bool Replay::LoadHeader(const boost::filesystem::path& filepath, bool loadSettings)
 {
     // Datei öffnen
-    if(!file.Open(filename, OFM_READ))
+    if(!file.Open(filepath, OFM_READ))
     {
         lastErrorMsg = _("File could not be opened.");
         return false;

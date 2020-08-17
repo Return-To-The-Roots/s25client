@@ -94,10 +94,10 @@ boost::filesystem::path RttrConfig::GetSourceDir()
     return RTTR_SRCDIR;
 }
 
-std::string RttrConfig::ExpandPath(const std::string& path) const
+boost::filesystem::path RttrConfig::ExpandPath(const std::string& path) const
 {
     if(path.empty())
-        return prefixPath_.string();
+        return prefixPath_;
     bfs::path outPath;
     if(path[0] == '<')
     {
@@ -119,7 +119,7 @@ std::string RttrConfig::ExpandPath(const std::string& path) const
         outPath = homePath / outPath.string().substr(2);
 
     outPath = bfs::absolute(outPath, prefixPath_).lexically_normal();
-    return outPath.make_preferred().string();
+    return outPath.make_preferred();
 }
 
 bool RttrConfig::Init()

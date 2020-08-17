@@ -148,7 +148,7 @@ void Settings::LoadDefaults()
 void Settings::Load()
 {
     libsiedler2::Archiv settings;
-    std::string settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
+    const auto settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
     try
     {
         if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SECTION_NAMES.size())
@@ -291,7 +291,8 @@ void Settings::Load()
 
     } catch(std::runtime_error& e)
     {
-        s25util::warning(std::string("Could not use settings from \"") + settingsPath + "\", using default values. Reason: " + e.what());
+        s25util::warning(std::string("Could not use settings from \"") + settingsPath.string()
+                         + "\", using default values. Reason: " + e.what());
         LoadDefaults();
         Save();
     }
@@ -404,6 +405,6 @@ void Settings::Save()
     // }
 
     bfs::path settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
-    if(libsiedler2::Write(settingsPath.string(), settings) == 0)
+    if(libsiedler2::Write(settingsPath, settings) == 0)
         bfs::permissions(settingsPath, bfs::owner_read | bfs::owner_write);
 }

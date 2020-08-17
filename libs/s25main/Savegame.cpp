@@ -35,11 +35,11 @@ Savegame::Savegame() : start_gf(0) {}
 
 Savegame::~Savegame() = default;
 
-bool Savegame::Save(const std::string& filename, const std::string& mapName)
+bool Savegame::Save(const boost::filesystem::path& filepath, const std::string& mapName)
 {
     BinaryFile file;
 
-    return file.Open(filename, OFM_WRITE) && Save(file, mapName);
+    return file.Open(filepath, OFM_WRITE) && Save(file, mapName);
 }
 
 bool Savegame::Save(BinaryFile& file, const std::string& mapName)
@@ -52,7 +52,7 @@ bool Savegame::Save(BinaryFile& file, const std::string& mapName)
     return true;
 }
 
-bool Savegame::Load(const std::string& filePath, const SaveGameDataToLoad what)
+bool Savegame::Load(const boost::filesystem::path& filePath, const SaveGameDataToLoad what)
 {
     BinaryFile file;
 

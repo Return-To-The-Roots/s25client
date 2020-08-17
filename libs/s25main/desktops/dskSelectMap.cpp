@@ -167,13 +167,13 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
                                                     s25::folders::mapsOther, s25::folders::mapsSea, s25::folders::mapsPlayed}};
 
     const size_t numFaultyMapsPrior = brokenMapPaths.size();
-    const std::string mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
+    const bfs::path mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
     FillTable(ListDir(mapPath, "swd"));
     FillTable(ListDir(mapPath, "wld"));
     // For own maps (WORLDS folder) also use the one in the installation folder as S2 does
-    if(bfs::path(mapPath).filename() == "WORLDS")
+    if(mapPath.filename() == "WORLDS")
     {
-        const std::string worldsPath = RTTRCONFIG.ExpandPath("WORLDS");
+        const bfs::path worldsPath = RTTRCONFIG.ExpandPath("WORLDS");
         FillTable(ListDir(worldsPath, "swd"));
         FillTable(ListDir(worldsPath, "wld"));
     }
@@ -292,6 +292,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
             if(!mapGenThread)
             {
                 newRandMapPath.clear();
+                randMapGenError.clear();
                 waitWnd = &WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
                 // mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
                 CreateRandomMap();
@@ -315,7 +316,7 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigne
 void dskSelectMap::CreateRandomMap()
 {
     // setup filepath for the random map
-    std::string mapPath = (bfs::path(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed)) / "Random.swd").string();
+    const auto mapPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / "Random.swd";
 
     try
     {
@@ -324,11 +325,11 @@ void dskSelectMap::CreateRandomMap()
         newRandMapPath = mapPath;
     } catch(std::runtime_error& e)
     {
-        newRandMapPath = std::string("!") + e.what();
+        randMapGenError = e.what();
     }
 }
 
-void dskSelectMap::OnMapCreated(const std::string& mapPath)
+void dskSelectMap::OnMapCreated(const boost::filesystem::path& mapPath)
 {
     if(waitWnd)
     {
@@ -341,11 +342,10 @@ void dskSelectMap::OnMapCreated(const std::string& mapPath)
 
     // search for the random map entry and select it in the table
     auto* table = GetCtrl<ctrlTable>(1);
+    const auto& mapPathString = mapPath.string();
     for(int i = 0; i < table->GetNumRows(); i++)
     {
-        std::string entryPath = table->GetItemText(i, 5);
-
-        if(entryPath == mapPath)
+        if(table->GetItemText(i, 5) == mapPathString)
         {
             table->SetSelection(i);
             break;
@@ -425,18 +425,18 @@ void dskSelectMap::LC_Status_Error(const std::string& error)
 
 void dskSelectMap::Draw_()
 {
-    if(!newRandMapPath.empty())
+    if(!newRandMapPath.empty() || !randMapGenError.empty())
     {
         // mapGenThread->join();
         // mapGenThread = nullptr;
-        if(newRandMapPath[0] == '!')
+        if(!randMapGenError.empty())
         {
-            std::string errorTxt = _("Failed to generate random map.\nReason: ");
-            WINDOWMANAGER.Show(
-              std::make_unique<iwMsgbox>(_("Error"), errorTxt + newRandMapPath.substr(1), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+            const std::string errorTxt = _("Failed to generate random map.\nReason: ") + randMapGenError;
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         } else
             OnMapCreated(newRandMapPath);
         newRandMapPath.clear();
+        randMapGenError.clear();
     }
     Desktop::Draw_();
 }
@@ -451,7 +451,7 @@ void dskSelectMap::FillTable(const std::vector<bfs::path>& files)
             continue;
         // Karteninformationen laden
         libsiedler2::Archiv map;
-        if(int ec = libsiedler2::loader::LoadMAP(filePath.string(), map, true))
+        if(int ec = libsiedler2::loader::LoadMAP(filePath, map, true))
         {
             LOG.write(_("Failed to load map %1%: %2%\n")) % filePath % libsiedler2::getErrorString(ec);
             brokenMapPaths.insert(filePath);

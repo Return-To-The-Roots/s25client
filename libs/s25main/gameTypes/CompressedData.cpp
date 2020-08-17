@@ -23,7 +23,7 @@
 #include <cmath>
 #include <memory>
 
-bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* checksum)
+bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, unsigned* checksum)
 {
     boost::nowide::ofstream file(filePath, std::ios::binary);
 
@@ -62,7 +62,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
     return true;
 }
 
-bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* checksum /* = nullptr */)
+bool CompressedData::CompressFromFile(const boost::filesystem::path& filePath, unsigned* checksum /* = nullptr */)
 {
     boost::nowide::ifstream file(filePath, std::ios::binary | std::ios::ate);
     length = static_cast<unsigned>(file.tellg());

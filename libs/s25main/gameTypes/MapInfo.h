@@ -20,6 +20,7 @@
 
 #include "gameTypes/CompressedData.h"
 #include "gameTypes/MapType.h"
+#include <boost/filesystem/path.hpp>
 #include <memory>
 #include <string>
 
@@ -37,9 +38,9 @@ public:
     /// Name of the map
     std::string title;
     /// Path where map is/will be stored
-    std::string filepath;
+    boost::filesystem::path filepath;
     /// Path to lua file (if any)
-    std::string luaFilepath;
+    boost::filesystem::path luaFilepath;
     /// map data as received from server
     CompressedData mapData;
     /// lua script as received from server

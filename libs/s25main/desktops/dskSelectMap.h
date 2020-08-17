@@ -70,12 +70,13 @@ private:
      */
     void CreateRandomMap();
 
-    void OnMapCreated(const std::string& mapPath);
+    void OnMapCreated(const boost::filesystem::path& mapPath);
 
     CreateServerInfo csi;
     MapSettings rndMapSettings;
     boost::thread* mapGenThread;
-    std::string newRandMapPath;
+    boost::filesystem::path newRandMapPath;
+    std::string randMapGenError;
     IngameWindow* waitWnd;
     /// Mapping of s2 ids to landscape names
     std::map<uint8_t, std::string> landscapeNames;
