@@ -34,8 +34,8 @@ std::vector<bfs::path> ListDir(const bfs::path& path, std::string extension, boo
     {
         extension = s25util::toLower(extension);
         // Add dot if missing
-        if(extension[0] != '.')
-            extension = "." + extension;
+        if(extension.front() != '.')
+            extension.insert(extension.begin(), '.');
     }
 
     for(const auto& it : bfs::directory_iterator(path))

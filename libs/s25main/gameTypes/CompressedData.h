@@ -18,6 +18,7 @@
 #ifndef CompressedData_h__
 #define CompressedData_h__
 
+#include <boost/filesystem/path.hpp>
 #include <string>
 #include <vector>
 
@@ -30,8 +31,8 @@ struct CompressedData
         length = 0;
         data.clear();
     }
-    bool DecompressToFile(const std::string& filePath, unsigned* checksum = nullptr);
-    bool CompressFromFile(const std::string& filePath, unsigned* checksum = nullptr);
+    bool DecompressToFile(const boost::filesystem::path& filePath, unsigned* checksum = nullptr);
+    bool CompressFromFile(const boost::filesystem::path& filePath, unsigned* checksum = nullptr);
 
     /// Uncompressed length
     unsigned length;

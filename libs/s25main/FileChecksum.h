@@ -19,9 +19,10 @@
 
 #pragma once
 
+#include <boost/filesystem/path.hpp>
 #include <string>
 
-uint32_t CalcChecksumOfFile(const std::string& path);
+uint32_t CalcChecksumOfFile(const boost::filesystem::path& path);
 uint32_t CalcChecksumOfBuffer(const uint8_t* buffer, size_t size);
 
 inline uint32_t CalcChecksumOfBuffer(const int8_t* buffer, size_t size)

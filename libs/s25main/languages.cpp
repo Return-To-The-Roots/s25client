@@ -38,7 +38,7 @@ Languages::Languages() : loaded(false)
 {
     const char* domain = "rttr";
     mygettext::bind_textdomain_codeset(domain, "UTF-8");
-    mygettext::bindtextdomain(domain, RTTRCONFIG.ExpandPath(s25::folders::languages).c_str());
+    mygettext::bindtextdomain(domain, RTTRCONFIG.ExpandPath(s25::folders::languages).string().c_str());
     mygettext::textdomain(domain);
 }
 

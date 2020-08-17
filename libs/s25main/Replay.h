@@ -51,7 +51,7 @@ public:
     uint16_t GetVersion() const override;
 
     /// Beginnt die Save-Datei und schreibt den Header
-    bool StartRecording(const std::string& filename, const MapInfo& mapInfo);
+    bool StartRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo);
     /// Räumt auf, schließt datei
     void StopRecording();
 
@@ -61,7 +61,7 @@ public:
     bool IsReplaying() const { return !isRecording && file.IsValid(); }
 
     /// Loads the header and optionally the mapInfo (former "extended header")
-    bool LoadHeader(const std::string& filename, bool loadSettings);
+    bool LoadHeader(const boost::filesystem::path& filepath, bool loadSettings);
     bool LoadGameData(MapInfo& mapInfo);
 
     /// Fügt ein Chat-Kommando hinzu (schreibt)

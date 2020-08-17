@@ -18,6 +18,7 @@
 #ifndef MapGenerator_h__
 #define MapGenerator_h__
 
+#include <boost/filesystem/path.hpp>
 #include <string>
 
 struct MapSettings;
@@ -33,7 +34,7 @@ public:
      * @param filePath path for the output file
      * @param settings used to generate the random map
      */
-    static void Create(const std::string& filePath, const MapSettings& settings);
+    static void Create(const boost::filesystem::path& filePath, const MapSettings& settings);
 };
 
 #endif // MapGenerator_h__

@@ -32,9 +32,8 @@
 
 namespace bfs = boost::filesystem;
 
-GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)
-    : worldDesc_(worldDesc), basePath_(bfs::path(basePath).lexically_normal().make_preferred().string()), curIncludeDepth_(0),
-      errorInIncludeFile_(false)
+GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const boost::filesystem::path& basePath)
+    : worldDesc_(worldDesc), basePath_(basePath.lexically_normal().make_preferred()), curIncludeDepth_(0), errorInIncludeFile_(false)
 {
     Register(lua);
 
@@ -43,14 +42,14 @@ GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& b
 }
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc)
-    : GameDataLoader(worldDesc, RTTRCONFIG.ExpandPath(s25::folders::gamedata) + "/world")
+    : GameDataLoader(worldDesc, RTTRCONFIG.ExpandPath(s25::folders::gamedata) / "world")
 {}
 
 GameDataLoader::~GameDataLoader() = default;
 
 bool GameDataLoader::Load()
 {
-    curFile_ = (bfs::path(basePath_) / "default.lua").string();
+    curFile_ = basePath_ / "default.lua";
     curIncludeDepth_ = 0;
     errorInIncludeFile_ = false;
     try
@@ -94,18 +93,19 @@ void GameDataLoader::Include(const std::string& filepath)
             throw LuaIncludeError("It contains disallowed chars. Allowed: alpha-numeric, underscore, slash and dot.");
         if(bfs::path(filepath).is_absolute())
             throw LuaIncludeError("Path to file must be relative to current file");
-        bfs::path absFilePath = bfs::absolute(filepath, bfs::path(curFile_).parent_path());
+        bfs::path absFilePath = bfs::absolute(filepath, curFile_.parent_path());
         if(!bfs::is_regular_file(absFilePath))
             throw LuaIncludeError("File not found!");
+
+        // Normalize for below check against basePath
         absFilePath = absFilePath.lexically_normal().make_preferred();
         if(absFilePath.extension() != ".lua")
             throw LuaIncludeError("File must have .lua as the extension!");
-        const std::string cleanedFilepath = absFilePath.string();
-        if(cleanedFilepath.find(basePath_) != 0)
+        if(absFilePath.string().find(basePath_.string()) != 0)
             throw LuaIncludeError("File is outside the lua data directory!");
-        const std::string oldCurFile = curFile_;
-        curFile_ = cleanedFilepath;
-        errorInIncludeFile_ |= !loadScript(cleanedFilepath);
+        const auto oldCurFile = curFile_;
+        curFile_ = absFilePath;
+        errorInIncludeFile_ |= !loadScript(absFilePath);
         curFile_ = oldCurFile;
         RTTR_Assert(curIncludeDepth_ > 0);
         --curIncludeDepth_;

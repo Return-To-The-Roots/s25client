@@ -51,7 +51,7 @@ public:
     ~GameServer();
 
     /// Starts the server
-    bool Start(const CreateServerInfo& csi, const std::string& map_path, MapType map_type, const std::string& hostPw);
+    bool Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type, const std::string& hostPw);
 
     void Run();
 
@@ -129,8 +129,8 @@ private:
     void ExecuteNWF();
 
     bool CheckForAsync();
-    std::string SaveAsyncLog();
-    void SendAsyncLog(const std::string& asyncLogFilePath);
+    boost::filesystem::path SaveAsyncLog();
+    void SendAsyncLog(const boost::filesystem::path& asyncLogFilePath);
 
     void CheckAndKickLaggingPlayers();
     bool CheckForLaggingPlayers();

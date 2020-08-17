@@ -19,6 +19,7 @@
 #define LuaInterfaceBase_h__
 
 #include <kaguya/kaguya.hpp>
+#include <boost/filesystem/path.hpp>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -40,7 +41,7 @@ class LuaInterfaceBase
 public:
     static void Register(kaguya::State& state);
 
-    bool loadScript(const std::string& scriptPath);
+    bool loadScript(const boost::filesystem::path& scriptPath);
     bool loadScriptString(const std::string& script, bool rethrowError = false);
     const std::string& getScript() const { return script_; }
     /// Disable or re-enable throwing an exception on error.

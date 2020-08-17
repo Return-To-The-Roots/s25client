@@ -113,10 +113,10 @@ std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
 }
 
 template<class T_PRNG>
-void Random<T_PRNG>::SaveLog(const std::string& filename)
+void Random<T_PRNG>::SaveLog(const boost::filesystem::path& filepath)
 {
     const std::vector<RandomEntry> log = GetAsyncLog();
-    boost::nowide::ofstream file(filename);
+    boost::nowide::ofstream file(filepath);
 
     for(const auto& curLog : log)
         file << curLog << std::endl;
@@ -161,7 +161,7 @@ int Random<T_PRNG>::RandomEntry::GetValue() const
 template<class T_PRNG>
 std::ostream& Random<T_PRNG>::RandomEntry::print(std::ostream& os) const
 {
-    static const std::string rttrSrcBaseName = std::string(RttrConfig::GetSourceDir().generic_string()) + "/";
+    static const std::string rttrSrcBaseName = RttrConfig::GetSourceDir().generic_string() + "/";
     std::string strippedSrcFile = boost::filesystem::path(src_name).generic_string();
     if(strippedSrcFile.find(rttrSrcBaseName) == 0)
         strippedSrcFile = strippedSrcFile.substr(rttrSrcBaseName.size());

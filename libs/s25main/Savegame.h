@@ -21,6 +21,8 @@
 
 #include "SavedFile.h"
 #include "SerializedGameData.h"
+#include <boost/filesystem/path.hpp>
+
 class BinaryFile;
 
 enum class SaveGameDataToLoad
@@ -40,11 +42,11 @@ public:
     uint16_t GetVersion() const override;
 
     /// Schreibst Savegame oder Teile davon
-    bool Save(const std::string& filename, const std::string& mapName);
+    bool Save(const boost::filesystem::path& filepath, const std::string& mapName);
     bool Save(BinaryFile& file, const std::string& mapName);
 
     /// Lädt Savegame oder Teile davon
-    bool Load(const std::string& filePath, SaveGameDataToLoad what);
+    bool Load(const boost::filesystem::path& filePath, SaveGameDataToLoad what);
     bool Load(BinaryFile& file, SaveGameDataToLoad what);
 
     void WriteExtHeader(BinaryFile& file, const std::string& mapName) override;

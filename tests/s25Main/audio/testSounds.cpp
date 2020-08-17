@@ -28,6 +28,8 @@
 #include "s25util/warningSuppression.h"
 #include <boost/test/unit_test.hpp>
 
+namespace bfs = boost::filesystem;
+
 BOOST_TEST_DONT_PRINT_LOG_VALUE(EffectPlayId)
 // Doesn't fully work until Boost 1.69
 // BOOST_TEST_DONT_PRINT_LOG_VALUE(SoundHandle)
@@ -134,7 +136,7 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
 {
     {
         libsiedler2::Archiv snd;
-        BOOST_TEST_REQUIRE(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR "/testMono.wav", snd) == 0);
+        BOOST_TEST_REQUIRE(libsiedler2::Load(rttr::test::libsiedler2TestFilesDir / "testMono.wav", snd) == 0);
         auto* effect = dynamic_cast<SoundEffectItem*>(snd[0]);
         BOOST_TEST_REQUIRE(effect);
 
@@ -165,13 +167,13 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
     BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
 
     // Same for different music types
-    for(const std::string musicFile : {"/test.ogg", "/testMidi.mid", "/testXMidi.xmi"})
+    for(const bfs::path musicFile : {"test.ogg", "testMidi.mid", "testXMidi.xmi"})
     {
         mock::sequence s;
         // All midi types are treated as .midi
-        const auto extension = (boost::filesystem::path(musicFile).extension() == ".ogg") ? ".ogg" : ".midi";
+        const auto extension = (musicFile.extension() == ".ogg") ? ".ogg" : ".midi";
         libsiedler2::Archiv musicArchiv;
-        BOOST_TEST_REQUIRE(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR + musicFile, musicArchiv) == 0);
+        BOOST_TEST_REQUIRE(libsiedler2::Load(rttr::test::libsiedler2TestFilesDir / musicFile, musicArchiv) == 0);
         auto* music = dynamic_cast<MusicItem*>(musicArchiv[0]);
         BOOST_TEST_REQUIRE(music);
 

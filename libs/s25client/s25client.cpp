@@ -358,7 +358,7 @@ bool MigrateFilesAndDirectories()
 bool InitDirectories()
 {
     // Note: Do not use logger yet. Filepath may not exist
-    const std::string curPath = bfs::current_path().string();
+    const auto curPath = bfs::current_path();
     LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
@@ -371,7 +371,7 @@ bool InitDirectories()
 
     for(const std::string& rawDir : dirs)
     {
-        std::string dir = RTTRCONFIG.ExpandPath(rawDir);
+        const bfs::path dir = RTTRCONFIG.ExpandPath(rawDir);
         boost::system::error_code ec;
         bfs::create_directories(dir, ec);
         if(ec != boost::system::errc::success)
@@ -380,7 +380,7 @@ bool InitDirectories()
             // Make sure we catch that
             try
             {
-                s25util::error(std::string("Directory ") + dir + " could not be created.");
+                s25util::error(std::string("Directory ") + dir.string() + " could not be created.");
                 s25util::error("Failed to start the game");
             } catch(const std::runtime_error& error)
             {

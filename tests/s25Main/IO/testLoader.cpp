@@ -80,14 +80,14 @@ static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv
     return true;
 }
 
-const std::string mainFile = RTTR_BASE_DIR "/tests/testData/test.GER";
-const std::string overrideFolder1 = RTTR_BASE_DIR "/tests/testData/override1";
-const std::string overrideFolder2 = RTTR_BASE_DIR "/tests/testData/override2";
-const std::string overrideFolder3 = RTTR_BASE_DIR "/tests/testData/override3";
+const bfs::path mainFile = rttr::test::rttrBaseDir / "tests/testData/test.GER";
+const bfs::path overrideFolder1 = rttr::test::rttrBaseDir / "tests/testData/override1";
+const bfs::path overrideFolder2 = rttr::test::rttrBaseDir / "tests/testData/override2";
+const bfs::path overrideFolder3 = rttr::test::rttrBaseDir / "tests/testData/override3";
 
 BOOST_FIXTURE_TEST_CASE(TestPredicate, LoaderFixture)
 {
-    BOOST_REQUIRE(loader->Load(overrideFolder1 + "/test.GER"));
+    BOOST_REQUIRE(loader->Load(overrideFolder1 / "test.GER"));
     const auto& txt = loader->GetArchive("test");
     BOOST_REQUIRE(compareTxts(txt, "1||20"));
     BOOST_TEST(compareTxts(txt, "1|").message().str() == "Item count mismatch [3 != 2]");
@@ -154,8 +154,8 @@ BOOST_FIXTURE_TEST_CASE(BobOverrides, LoaderFixture)
     bmpRaw->create(buffer);
     libsiedler2::Archiv bmp;
     bmp.push(std::move(bmpRaw));
-    BOOST_TEST_REQUIRE(libsiedler2::Write((bobFile / "0.bmp").string(), bmp) == 0);
-    BOOST_TEST_REQUIRE(libsiedler2::Write((bobFile / "1.bmp").string(), bmp) == 0);
+    BOOST_TEST_REQUIRE(libsiedler2::Write((bobFile / "0.bmp"), bmp) == 0);
+    BOOST_TEST_REQUIRE(libsiedler2::Write((bobFile / "1.bmp"), bmp) == 0);
 
     libsiedler2::ArchivItem_Text txt;
     txt.setText("10 332\n11 334\n"); // mapping file

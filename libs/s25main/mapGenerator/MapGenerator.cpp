@@ -23,7 +23,7 @@
 #include "libsiedler2/libsiedler2.h"
 #include <stdexcept>
 
-void MapGenerator::Create(const std::string& filePath, const MapSettings& settings)
+void MapGenerator::Create(const boost::filesystem::path& filePath, const MapSettings& settings)
 {
     // create a random map generator based on the map style
     RandomConfig config;

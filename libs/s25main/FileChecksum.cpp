@@ -18,7 +18,7 @@
 #include "FileChecksum.h"
 #include <boost/nowide/fstream.hpp>
 
-uint32_t CalcChecksumOfFile(const std::string& path)
+uint32_t CalcChecksumOfFile(const boost::filesystem::path& path)
 {
     boost::nowide::ifstream file(path);
     if(!file)

@@ -19,6 +19,7 @@
 #define GameDataLoader_h__
 
 #include "LuaInterfaceBase.h"
+#include <boost/filesystem/path.hpp>
 
 namespace kaguya {
 class State;
@@ -29,7 +30,7 @@ struct WorldDescription;
 class GameDataLoader : public LuaInterfaceBase
 {
 public:
-    GameDataLoader(WorldDescription& worldDesc, const std::string& basePath);
+    GameDataLoader(WorldDescription& worldDesc, const boost::filesystem::path& basePath);
     GameDataLoader(WorldDescription& worldDesc);
     ~GameDataLoader() override;
 
@@ -44,7 +45,7 @@ private:
     void AddTerrain(const kaguya::LuaTable& data);
 
     WorldDescription& worldDesc_;
-    std::string basePath_, curFile_;
+    boost::filesystem::path basePath_, curFile_;
     int curIncludeDepth_;
     bool errorInIncludeFile_;
 };

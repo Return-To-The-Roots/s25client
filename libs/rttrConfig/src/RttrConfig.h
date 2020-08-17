@@ -37,7 +37,7 @@ public:
     /// Return the path from which RTTR was compiled
     static boost::filesystem::path GetSourceDir();
     /// Expand the given path to a valid, absolute path replacing placeholders like <RTTR_BINDIR>/foo.bar
-    std::string ExpandPath(const std::string& path) const;
+    boost::filesystem::path ExpandPath(const std::string& path) const;
 };
 
 #define RTTRCONFIG RttrConfig::inst()

@@ -267,7 +267,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
 
                 boost::system::error_code ec;
                 boost::filesystem::remove(GetFullPlaylistPath(playlistName), ec);
-                SETTINGS.sound.playlist = RTTRCONFIG.ExpandPath(s25::files::defaultPlaylist);
+                SETTINGS.sound.playlist = RTTRCONFIG.ExpandPath(s25::files::defaultPlaylist).string();
                 UpdatePlaylistCombo(SETTINGS.sound.playlist);
             }
         }

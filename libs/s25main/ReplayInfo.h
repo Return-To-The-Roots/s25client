@@ -21,6 +21,7 @@
 #define ReplayInfo_h__
 
 #include "Replay.h"
+#include <boost/filesystem/path.hpp>
 #include <string>
 
 struct ReplayInfo
@@ -29,7 +30,7 @@ struct ReplayInfo
 
     /// Replaydatei
     Replay replay;
-    std::string fileName;
+    boost::filesystem::path filename;
     /// Replay asynchron (Meldung nur einmal ausgeben!)
     int async;
     bool end;

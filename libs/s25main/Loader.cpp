@@ -177,7 +177,7 @@ glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
 
 void Loader::AddOverrideFolder(const std::string& path, bool atBack)
 {
-    AddOverrideFolder(bfs::path(config_.ExpandPath(path)), atBack);
+    AddOverrideFolder(config_.ExpandPath(path), atBack);
 }
 
 void Loader::AddOverrideFolder(const bfs::path& path, bool atBack)
@@ -193,7 +193,7 @@ void Loader::AddOverrideFolder(const bfs::path& path, bool atBack)
     OverrideFolder folder;
     folder.path = path;
     for(const auto& it : bfs::directory_iterator(path))
-        folder.files.push_back(it.path().filename().string());
+        folder.files.push_back(it.path().filename());
 
     std::sort(folder.files.begin(), folder.files.end());
 
@@ -210,8 +210,8 @@ void Loader::AddAddonFolder(AddonId id)
     for(const std::string rawFolder : {s25::folders::gameLstsGlobal, s25::folders::gameLstsUser})
     {
         std::stringstream s;
-        s << config_.ExpandPath(rawFolder) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned>(id);
-        const bfs::path path = s.str();
+        s << "Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned>(id);
+        const bfs::path path = config_.ExpandPath(rawFolder) / s.str();
         if(bfs::exists(path))
             AddOverrideFolder(path);
     }
@@ -239,7 +239,6 @@ bool Loader::LoadFilesAtStart()
     if(!LoadFonts())
         return false;
 
-    files.clear();
     files = {res::resource,
              res::io,                       // Menu graphics
              res::setup013, res::setup015}; // Backgrounds for options and free play
@@ -280,7 +279,7 @@ bool Loader::LoadSounds()
     }
     logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
-    const std::string oggPath = config_.ExpandPath(s25::folders::sng);
+    const bfs::path oggPath = config_.ExpandPath(s25::folders::sng);
     std::vector<bfs::path> oggFiles = ListDir(oggPath, "ogg");
 
     sng_lst.reserve(oggFiles.size());
@@ -420,7 +419,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
         {
             for(const std::string folder : {s25::folders::gameLstsGlobal, s25::folders::gameLstsUser})
             {
-                const auto nationOverrideFolder = bfs::path(config_.ExpandPath(folder)) / NationNames[nation];
+                const auto nationOverrideFolder = config_.ExpandPath(folder) / NationNames[nation];
                 if(bfs::exists(nationOverrideFolder))
                     AddOverrideFolder(nationOverrideFolder, false);
             }
@@ -432,7 +431,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
 
-    const std::string mapGFXFile = config_.ExpandPath(mapGfxPath);
+    const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
     if(!Load(mapGFXFile, pal5))
         return false;
     map_gfx = &GetArchive(MakeResourceId(mapGFXFile));
@@ -468,7 +467,7 @@ bool Loader::LoadFiles(const std::vector<std::string>& files)
     // load the files
     for(const std::string& curFile : files)
     {
-        std::string filePath = config_.ExpandPath(curFile);
+        const bfs::path filePath = config_.ExpandPath(curFile);
         if(!Load(filePath, pal5))
         {
             logger_.write(_("Failed to load %s\n")) % filePath;
@@ -1106,7 +1105,7 @@ libsiedler2::Archiv Loader::DoLoadFileOrDirectory(const boost::filesystem::path&
 
     logger_.write(_("Loading directory %s\n")) % filePath;
     const Timer timer(true);
-    std::vector<libsiedler2::FileEntry> files = libsiedler2::ReadFolderInfo(filePath.string());
+    std::vector<libsiedler2::FileEntry> files = libsiedler2::ReadFolderInfo(filePath);
     logger_.write(_("  Loading %1% entries: ")) % files.size();
 
     libsiedler2::Archiv archive;
@@ -1137,7 +1136,7 @@ libsiedler2::Archiv Loader::DoLoadFile(const boost::filesystem::path& filePath, 
     fflush(stdout);
 
     libsiedler2::Archiv archive;
-    if(int ec = libsiedler2::Load(filePath.string(), archive, palette))
+    if(int ec = libsiedler2::Load(filePath, archive, palette))
     {
         logger_.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
         throw LoadError(libsiedler2::getErrorString(ec));

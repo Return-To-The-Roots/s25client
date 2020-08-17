@@ -18,9 +18,10 @@
 #ifndef QuickStartGame_h__
 #define QuickStartGame_h__
 
+#include <boost/filesystem/path.hpp>
 #include <string>
 
 /// Tries to start a game (map, savegame or replay) and returns whether this was successfull
-bool QuickStartGame(const std::string& filePath, bool singlePlayer = false);
+bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singlePlayer = false);
 
 #endif // QuickStartGame_h__

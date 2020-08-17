@@ -79,7 +79,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 Savegame save;
 
                 // Datei öffnen
-                if(!save.Load(savFile.string(), SaveGameDataToLoad::Header))
+                if(!save.Load(savFile, SaveGameDataToLoad::Header))
                     continue;
 
                 if(save.GetSaveTime() > recent)
@@ -94,14 +94,14 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 // Dateiname noch rausextrahieren aus dem Pfad
                 if(!mostRecentFilepath.has_filename())
                     return;
-                const bfs::path name = mostRecentFilepath.stem();
+                const auto name = mostRecentFilepath.stem().string();
 
                 // Server info
-                CreateServerInfo csi = createLocalGameInfo(name.string());
+                CreateServerInfo csi = createLocalGameInfo(name);
 
                 WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
-                if(GAMECLIENT.HostGame(csi, mostRecentFilepath.string(), MAPTYPE_SAVEGAME))
+                if(GAMECLIENT.HostGame(csi, mostRecentFilepath, MAPTYPE_SAVEGAME))
                     WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPleaseWait>());
                 else
                 {

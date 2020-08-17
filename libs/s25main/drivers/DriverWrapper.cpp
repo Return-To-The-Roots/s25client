@@ -146,7 +146,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 {
     std::vector<DriverItem> driver_list;
 
-    std::string path = RTTRCONFIG.ExpandPath(s25::folders::driver) + "/" + getName(dt);
+    const auto driverDir = RTTRCONFIG.ExpandPath(s25::folders::driver) / getName(dt);
     std::string extension =
 #ifdef _WIN32
       "dll";
@@ -158,8 +158,8 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 #endif // !__APPLE__
 #endif // !_WIN32
 
-    LOG.write(_("Searching for drivers in %s\n")) % path;
-    const std::vector<boost::filesystem::path> driver_files = ListDir(path, extension, false);
+    LOG.write(_("Searching for drivers in %s\n")) % driverDir;
+    const std::vector<boost::filesystem::path> driver_files = ListDir(driverDir, extension, false);
 
     for(const auto& path : driver_files)
     {

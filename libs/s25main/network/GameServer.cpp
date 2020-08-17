@@ -124,7 +124,7 @@ GameServer::~GameServer()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spiel hosten
-bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path, MapType map_type, const std::string& hostPw)
+bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type, const std::string& hostPw)
 {
     Stop();
 
@@ -199,9 +199,9 @@ bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path,
     bfs::path luaFilePath = bfs::path(mapinfo.filepath).replace_extension("lua");
     if(bfs::is_regular_file(luaFilePath))
     {
-        if(!mapinfo.luaData.CompressFromFile(luaFilePath.string(), &mapinfo.luaChecksum))
+        if(!mapinfo.luaData.CompressFromFile(luaFilePath, &mapinfo.luaChecksum))
             return false;
-        mapinfo.luaFilepath = luaFilePath.string();
+        mapinfo.luaFilepath = luaFilePath;
     } else
         RTTR_Assert(mapinfo.luaFilepath.empty() && mapinfo.luaChecksum == 0);
 
@@ -1047,7 +1047,7 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
 
     if(msg.requestInfo)
     {
-        player->sendMsgAsync(new GameMessage_Map_Info(bfs::path(mapinfo.filepath).filename().string(), mapinfo.type, mapinfo.mapData.length,
+        player->sendMsgAsync(new GameMessage_Map_Info(mapinfo.filepath.filename().string(), mapinfo.type, mapinfo.mapData.length,
                                                       mapinfo.mapData.data.size(), mapinfo.luaData.length, mapinfo.luaData.data.size()));
     } else if(player->isMapSending())
     {
@@ -1216,7 +1216,7 @@ bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
 
     LOG.write(_("Async logs received completely.\n"));
 
-    std::string asyncFilePath = SaveAsyncLog();
+    const bfs::path asyncFilePath = SaveAsyncLog();
     if(!asyncFilePath.empty())
         SendAsyncLog(asyncFilePath);
 
@@ -1372,7 +1372,7 @@ void GameServer::PlayerDataChanged(unsigned playerIdx)
     }
 }
 
-std::string GameServer::SaveAsyncLog()
+bfs::path GameServer::SaveAsyncLog()
 {
     // Get the highest common counter number and start from there (remove all others)
     unsigned maxCtr = 0;
@@ -1424,8 +1424,8 @@ std::string GameServer::SaveAsyncLog()
 
     LOG.write(_("There are %1% identical async log entries.\n")) % numIdentical;
 
-    std::string filePath =
-      RTTRCONFIG.ExpandPath(s25::folders::logs) + "/" + s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
+    const bfs::path filePath =
+      RTTRCONFIG.ExpandPath(s25::folders::logs) / (s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log");
 
     // open async log
     bnw::ofstream file(filePath);
@@ -1466,7 +1466,7 @@ std::string GameServer::SaveAsyncLog()
     }
 }
 
-void GameServer::SendAsyncLog(const std::string& asyncLogFilePath)
+void GameServer::SendAsyncLog(const bfs::path& asyncLogFilePath)
 {
     if(SETTINGS.global.submit_debug_data == 1
 #ifdef _WIN32

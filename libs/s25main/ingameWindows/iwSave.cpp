@@ -79,7 +79,7 @@ void iwSaveLoad::RefreshTable()
         Savegame save;
 
         // Datei öffnen
-        if(!save.Load(saveFile.string(), SaveGameDataToLoad::Header))
+        if(!save.Load(saveFile, SaveGameDataToLoad::Header))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
@@ -110,12 +110,12 @@ void iwSaveLoad::RefreshTable()
     loadedOnce = true;
 }
 
-void iwSaveLoad::FillSaveTable(const std::string&, void*) {}
+void iwSaveLoad::FillSaveTable(const boost::filesystem::path&, void*) {}
 
 void iwSave::SaveLoad()
 {
     // Speichern
-    std::string savePath = RTTRCONFIG.ExpandPath(s25::folders::save) + "/" + GetCtrl<ctrlEdit>(1)->GetText() + ".sav";
+    const boost::filesystem::path savePath = RTTRCONFIG.ExpandPath(s25::folders::save) / (GetCtrl<ctrlEdit>(1)->GetText() + ".sav");
 
     // Speichern
     GAMECLIENT.SaveToFile(savePath);

@@ -28,6 +28,6 @@ void saveBitmap(const libsiedler2::PixelBufferBGRA& buffer, const boost::filesys
     bmp->create(buffer);
     libsiedler2::Archiv archive;
     archive.push(std::move(bmp));
-    if(int ec = libsiedler2::Write(path.string(), archive))
+    if(int ec = libsiedler2::Write(path, archive))
         throw std::runtime_error(libsiedler2::getErrorString(ec));
 }

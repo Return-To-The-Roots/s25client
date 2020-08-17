@@ -30,13 +30,14 @@
 #include "nodeObjs/noBase.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "s25util/tmpFile.h"
+#include <boost/filesystem/path.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
 struct MapTestFixture
 {
-    const std::string testMapPath;
-    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(s25::folders::mapsRttr) + "/Bergruft.swd") {}
+    const boost::filesystem::path testMapPath;
+    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(s25::folders::mapsRttr) / "Bergruft.swd") {}
 };
 
 BOOST_FIXTURE_TEST_SUITE(MapTestSuite, MapTestFixture)
@@ -72,7 +73,7 @@ struct LoadWorldFromFileCreator : MapTestFixture
     {
         bnw::ifstream mapFile(testMapPath, std::ios::binary);
         if(map.load(mapFile, false) != 0)
-            throw std::runtime_error("Could not load file " + testMapPath); // LCOV_EXCL_LINE
+            throw std::runtime_error("Could not load file " + testMapPath.string()); // LCOV_EXCL_LINE
         MapLoader loader(world);
         if(!loader.Load(map, EXP_FOGOFWAR))
             throw std::runtime_error("Could not load map"); // LCOV_EXCL_LINE
