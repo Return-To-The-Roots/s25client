@@ -34,7 +34,7 @@
 #include <sstream>
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
-    : state(STATE_WAITINWAREHOUSE), location(location),
+    : next_dir(RoadPathDirection::None), state(STATE_WAITINWAREHOUSE), location(location),
       type(type == GD_SHIELDROMANS ? SHIELD_TYPES[gwg->GetPlayer(location->GetPlayer()).nation] :
                                      type), // Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
       goal(goal), next_harbor(MapPoint::Invalid())

@@ -108,13 +108,20 @@ public:
     {
         using UnderlyingType = helpers::underlying_type_t<T>;
         static_assert(std::is_same<T_SavedType, UnderlyingType>::value, "Wrong saved type");
-        static_assert(std::numeric_limits<T_SavedType>::max() >= helpers::MaxEnumValue_v<T>, "SavedType cannot hold all enum values");
-        Push(static_cast<UnderlyingType>(val));
+        constexpr auto maxValue = helpers::MaxEnumValue_v<T>;
+        static_assert(std::numeric_limits<T_SavedType>::max() >= maxValue, "SavedType cannot hold all enum values");
+
+        const auto iVal = static_cast<UnderlyingType>(val);
+        RTTR_Assert(iVal <= maxValue);
+        Push(iVal);
     }
     template<typename T_SavedType, typename T>
     void PushOptionalEnum(const helpers::OptionalEnum<T> val)
     {
-        PushEnum<T_SavedType>(*val); // We can simply do this due to the construction of OptionalEnum
+        if(val)
+            PushEnum<T_SavedType>(*val);
+        else
+            Push<T_SavedType>(helpers::OptionalEnum<T>::invalidValue);
     }
 
     //////////////////////////////////////////////////////////////////////////
