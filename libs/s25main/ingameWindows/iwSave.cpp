@@ -79,7 +79,7 @@ void iwSaveLoad::RefreshTable()
         Savegame save;
 
         // Datei öffnen
-        if(!save.Load(saveFile.string(), false, false))
+        if(!save.Load(saveFile.string(), SaveGameDataToLoad::Header))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)

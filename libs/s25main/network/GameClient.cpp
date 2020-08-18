@@ -264,7 +264,7 @@ void GameClient::StartGame(const unsigned random_init)
     // Random-Generator initialisieren
     RANDOM.Init(random_init);
 
-    if(!IsReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, true, true))
+    if(!IsReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, SaveGameDataToLoad::All))
     {
         OnError(CE_INVALID_MAP);
         return;
@@ -999,7 +999,7 @@ bool GameClient::CreateLobby()
         break;
         case MAPTYPE_SAVEGAME:
             mapinfo.savegame = std::make_unique<Savegame>();
-            if(!mapinfo.savegame->Load(mapinfo.filepath, true, false))
+            if(!mapinfo.savegame->Load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
                 return false;
 
             numPlayers = mapinfo.savegame->GetNumPlayers();

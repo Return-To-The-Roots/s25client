@@ -180,7 +180,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
             case MAPTYPE_SAVEGAME:
                 // Load savegame
                 mapInfo.savegame = std::make_unique<Savegame>();
-                if(!mapInfo.savegame->Load(file, true, true))
+                if(!mapInfo.savegame->Load(file, SaveGameDataToLoad::All))
                 {
                     lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo.savegame->GetLastErrorMsg();
                     return false;
