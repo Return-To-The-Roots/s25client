@@ -166,7 +166,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path,
         {
             Savegame save;
 
-            if(!save.Load(mapinfo.filepath, true, false))
+            if(!save.Load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
                 return false;
 
             // Spieleranzahl

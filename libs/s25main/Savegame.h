@@ -23,6 +23,13 @@
 #include "SerializedGameData.h"
 class BinaryFile;
 
+enum class SaveGameDataToLoad
+{
+    Header,
+    HeaderAndSettings,
+    All
+};
+
 class Savegame : public SavedFile
 {
 public:
@@ -37,8 +44,8 @@ public:
     bool Save(BinaryFile& file, const std::string& mapName);
 
     /// Lädt Savegame oder Teile davon
-    bool Load(const std::string& filePath, bool loadSettings, bool loadGameData);
-    bool Load(BinaryFile& file, bool loadSettings, bool loadGameData);
+    bool Load(const std::string& filePath, SaveGameDataToLoad what);
+    bool Load(BinaryFile& file, SaveGameDataToLoad what);
 
     void WriteExtHeader(BinaryFile& file, const std::string& mapName) override;
     bool ReadExtHeader(BinaryFile& file) override;

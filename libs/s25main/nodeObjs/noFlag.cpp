@@ -35,8 +35,7 @@
 
 noFlag::noFlag(const MapPoint pos, const unsigned char player) : noRoadNode(NOP_FLAG, pos, player), ani_offset(rand() % 20000)
 {
-    for(auto& ware : wares)
-        ware = nullptr;
+    wares = {};
 
     // BWUs nullen
     for(auto& bwu : bwus)
@@ -129,7 +128,7 @@ void noFlag::Draw(DrawPoint drawPt)
     LOADER.flag_cache[gwg->GetPlayer(player).nation][flagtype][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 
     // Waren (von hinten anfangen zu zeichnen)
-    for(unsigned i = 8; i; --i)
+    for(unsigned i = wares.size(); i; --i)
     {
         if(wares[i - 1])
             LOADER.GetMapImageN(2200 + wares[i - 1]->type)->DrawFull(drawPt + WARES_POS[i - 1]);
@@ -171,12 +170,7 @@ void noFlag::AddWare(Ware*& ware)
  */
 unsigned noFlag::GetNumWares() const
 {
-    unsigned count = 0;
-    for(auto ware : wares)
-        if(ware)
-            ++count;
-
-    return count;
+    return static_cast<unsigned>(std::count_if(wares.begin(), wares.end(), [](const auto* ware) { return ware; }));
 }
 
 /**

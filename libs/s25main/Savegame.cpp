@@ -52,14 +52,14 @@ bool Savegame::Save(BinaryFile& file, const std::string& mapName)
     return true;
 }
 
-bool Savegame::Load(const std::string& filePath, bool loadSettings, bool loadGameData)
+bool Savegame::Load(const std::string& filePath, const SaveGameDataToLoad what)
 {
     BinaryFile file;
 
-    return file.Open(filePath, OFM_READ) && Load(file, loadSettings, loadGameData);
+    return file.Open(filePath, OFM_READ) && Load(file, what);
 }
 
-bool Savegame::Load(BinaryFile& file, bool loadSettings, bool loadGameData)
+bool Savegame::Load(BinaryFile& file, const SaveGameDataToLoad what)
 {
     try
     {
@@ -68,14 +68,16 @@ bool Savegame::Load(BinaryFile& file, bool loadSettings, bool loadGameData)
         if(!ReadAllHeaderData(file))
             return false;
 
-        if(!loadSettings)
+        if(what == SaveGameDataToLoad::Header)
             return true;
 
         ReadPlayerData(file);
         ReadGGS(file);
 
-        if(loadGameData)
-            ReadGameData(file);
+        if(what == SaveGameDataToLoad::HeaderAndSettings)
+            return true;
+
+        ReadGameData(file);
     } catch(std::runtime_error& e)
     {
         lastErrorMsg = e.what();

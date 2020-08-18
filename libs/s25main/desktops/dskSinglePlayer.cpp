@@ -79,7 +79,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 Savegame save;
 
                 // Datei öffnen
-                if(!save.Load(savFile.string(), false, false))
+                if(!save.Load(savFile.string(), SaveGameDataToLoad::Header))
                     continue;
 
                 if(save.GetSaveTime() > recent)
