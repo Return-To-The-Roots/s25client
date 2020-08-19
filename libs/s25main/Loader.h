@@ -22,13 +22,13 @@
 #include "helpers/MaxEnumValue.h"
 #include "helpers/MultiArray.h"
 #include "ogl/glSmartBitmap.h"
+#include "resources/ResourceId.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Nation.h"
 #include "gameData/AnimalConsts.h"
-#include "libsiedler2/Archiv.h"
 #include <boost/filesystem/path.hpp>
 #include <array>
 #include <cstdint>
@@ -37,19 +37,24 @@
 #include <string>
 #include <vector>
 
-enum class AddonId;
-class ITexture;
+class ArchiveLoader;
+class ArchiveLocator;
 class glArchivItem_Bitmap;
-class glArchivItem_BitmapBase;
 class glArchivItem_Bitmap_Player;
+class glArchivItem_BitmapBase;
 class glArchivItem_Bob;
 class glFont;
-class SoundEffectItem;
 class glTexturePacker;
-class MusicItem;
+class ITexture;
 class Log;
+class MusicItem;
 class RttrConfig;
+class SoundEffectItem;
+enum class AddonId;
+
 namespace libsiedler2 {
+class Archiv;
+class ArchivItem;
 class ArchivItem_Ini;
 class ArchivItem_Palette;
 } // namespace libsiedler2
@@ -63,26 +68,10 @@ enum class FontSize
 };
 DEFINE_MAX_ENUM_VALUE(FontSize, FontSize::Large)
 
-/// Identifier for resources
-using ResourceId = std::string;
-
 class Loader
 {
     /// Struct for storing loaded file entries
-    struct FileEntry
-    {
-        libsiedler2::Archiv archiv;
-        /// List of files used to build this archiv
-        std::vector<boost::filesystem::path> filesUsed;
-        bool loadedAfterOverrideChange;
-    };
-    struct OverrideFolder
-    {
-        /// Path to the folder
-        boost::filesystem::path path;
-        /// Filenames in the folder
-        std::vector<boost::filesystem::path> files;
-    };
+    struct FileEntry;
 
 public:
     Loader(Log&, const RttrConfig&);
@@ -94,7 +83,7 @@ public:
     void AddOverrideFolder(const char* path, bool atBack = true) { AddOverrideFolder(std::string(path), atBack); }
     /// Add a folder to the list of folders containing overrides. Files in folders added last will override prior ones
     void AddOverrideFolder(const boost::filesystem::path& path, bool atBack = true);
-    /// Add the folder form an addon to the override folders
+    /// Add the folder for an addon to the override folders
     void AddAddonFolder(AddonId id);
     void ClearOverrideFolders();
 
@@ -113,8 +102,8 @@ public:
     /// Load a file and save it into the loader repo
     bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr,
               bool isFromOverrideDir = false);
-    /// Load a file or directory and its overrides into the archiv
-    bool Load(libsiedler2::Archiv& archiv, const boost::filesystem::path& path,
+    /// Load a file or directory and its overrides into the archive
+    bool Load(libsiedler2::Archiv& archive, const boost::filesystem::path& path,
               const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
@@ -222,33 +211,15 @@ public:
     helpers::MultiArray<FightSprites, NUM_NATIONS, NUM_SOLDIER_RANKS, 2> fight_cache;
 
 private:
-    static ResourceId MakeResourceId(const boost::filesystem::path& filepath);
-
-    /// Get all files to load for a request of loading filepath
-    std::vector<boost::filesystem::path> GetFilesToLoad(const boost::filesystem::path& filepath);
-    bool MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archiv& otherArchiv);
-
     /// Load all sounds
     bool LoadSounds();
 
-    /// Load a file or directory into the archive
-    libsiedler2::Archiv DoLoadFileOrDirectory(const boost::filesystem::path& filePath,
-                                              const libsiedler2::ArchivItem_Palette* palette = nullptr);
-    /// Load the file into the archive
-    libsiedler2::Archiv DoLoadFile(const boost::filesystem::path& filePath,
-                                   const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadOverrideDirectory(const boost::filesystem::path& path);
 
-    template<typename T>
-    static T convertChecked(libsiedler2::ArchivItem* item)
-    {
-        T res = dynamic_cast<T>(item);
-        RTTR_Assert(!item || res);
-        return res;
-    }
     Log& logger_;
     const RttrConfig& config_;
-    std::vector<OverrideFolder> overrideFolders_;
+    std::unique_ptr<ArchiveLocator> archiveLocator_;
+    std::unique_ptr<ArchiveLoader> archiveLoader_;
     std::map<ResourceId, FileEntry> files_;
     std::vector<glFont> fonts;
 
