@@ -27,7 +27,6 @@
 #include "convertSounds.h"
 #include "files.h"
 #include "helpers/containerUtils.h"
-#include "helpers/format.hpp"
 #include "ogl/MusicItem.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -37,6 +36,9 @@
 #include "ogl/glFont.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePacker.h"
+#include "resources/ArchiveLoader.h"
+#include "resources/ArchiveLocator.h"
+#include "resources/ResolvedFile.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/DirectionToImgDir.h"
 #include "gameData/JobConsts.h"
@@ -64,43 +66,48 @@
 #include <sstream>
 #include <stdexcept>
 
-using namespace std::chrono;
-
-/// Exception thrown when loading failed
-class LoadError : public std::runtime_error
+struct Loader::FileEntry
 {
-public:
-    template<typename... T>
-    explicit LoadError(T&&... args) : std::runtime_error(helpers::format(std::forward<T>(args)...))
-    {}
+    libsiedler2::Archiv archive;
+    /// List of files used to build this archive
+    ResolvedFile resolvedFile;
+    bool loadedAfterOverrideChange = false;
 };
 
-Loader::Loader(Log& logger, const RttrConfig& config)
-    : logger_(logger), config_(config), isWinterGFX_(false), map_gfx(nullptr), stp(nullptr)
+template<typename T>
+static T convertChecked(libsiedler2::ArchivItem* item)
 {
-    std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::Archiv*>(nullptr));
+    T res = dynamic_cast<T>(item);
+    RTTR_Assert(!item || res);
+    return res;
 }
+
+Loader::Loader(Log& logger, const RttrConfig& config)
+    : logger_(logger), config_(config), archiveLocator_(std::make_unique<ArchiveLocator>(logger, config)),
+      archiveLoader_(std::make_unique<ArchiveLoader>(logger)), isWinterGFX_(false), nation_gfx(), nationIcons_(),
+      map_gfx(nullptr), stp(nullptr)
+{}
 
 Loader::~Loader() = default;
 
 glArchivItem_Bitmap* Loader::GetImageN(const ResourceId& file, unsigned nr)
 {
-    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv[nr]);
+    return convertChecked<glArchivItem_Bitmap*>(files_[file].archive[nr]);
 }
 
 ITexture* Loader::GetTextureN(const ResourceId& file, unsigned nr)
 {
-    return convertChecked<ITexture*>(files_[file].archiv[nr]);
+    return convertChecked<ITexture*>(files_[file].archive[nr]);
 }
 
 glArchivItem_Bitmap* Loader::GetImage(const ResourceId& file, const std::string& name)
 {
-    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.find(name));
+    return convertChecked<glArchivItem_Bitmap*>(files_[file].archive.find(name));
 }
 
 glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const ResourceId& file, unsigned nr)
 {
-    return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv[nr]);
+    return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archive[nr]);
 }
 
 glFont* Loader::GetFont(FontSize size)
@@ -110,29 +117,29 @@ glFont* Loader::GetFont(FontSize size)
 
 libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const ResourceId& file, unsigned nr)
 {
-    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv[nr]);
+    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archive[nr]);
 }
 
 SoundEffectItem* Loader::GetSoundN(const ResourceId& file, unsigned nr)
 {
-    return dynamic_cast<SoundEffectItem*>(files_[file].archiv[nr]);
+    return dynamic_cast<SoundEffectItem*>(files_[file].archive[nr]);
 }
 
 std::string Loader::GetTextN(const ResourceId& file, unsigned nr)
 {
-    auto* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv[nr]);
-    return archiv ? archiv->getText() : "text missing";
+    auto* archive = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archive[nr]);
+    return archive ? archive->getText() : "text missing";
 }
 
 libsiedler2::Archiv& Loader::GetArchive(const ResourceId& file)
 {
     RTTR_Assert(helpers::contains(files_, file));
-    return files_[file].archiv;
+    return files_[file].archive;
 }
 
 glArchivItem_Bob* Loader::GetBob(const ResourceId& file)
 {
-    return dynamic_cast<glArchivItem_Bob*>(files_[file].archiv.get(0));
+    return dynamic_cast<glArchivItem_Bob*>(files_[file].archive.get(0));
 }
 
 glArchivItem_BitmapBase* Loader::GetNationImageN(unsigned nation, unsigned nr)
@@ -182,27 +189,7 @@ void Loader::AddOverrideFolder(const std::string& path, bool atBack)
 
 void Loader::AddOverrideFolder(const bfs::path& path, bool atBack)
 {
-    if(!bfs::exists(path))
-        throw std::runtime_error(helpers::format(_("Directory does not exist: %s"), path));
-    // Don't add folders twice although it is not an error
-    for(const OverrideFolder& cur : overrideFolders_)
-    {
-        if(bfs::equivalent(cur.path, path))
-            return;
-    }
-    OverrideFolder folder;
-    folder.path = path;
-    for(const auto& it : bfs::directory_iterator(path))
-        folder.files.push_back(it.path().filename());
-
-    std::sort(folder.files.begin(), folder.files.end());
-
-    for(FileEntry& entry : files_ | boost::adaptors::map_values)
-        entry.loadedAfterOverrideChange = false;
-    if(atBack)
-        overrideFolders_.push_back(folder);
-    else
-        overrideFolders_.insert(overrideFolders_.begin(), folder);
+    archiveLocator_->addOverrideFolder(path, atBack);
 }
 
 void Loader::AddAddonFolder(AddonId id)
@@ -219,7 +206,7 @@ void Loader::AddAddonFolder(AddonId id)
 
 void Loader::ClearOverrideFolders()
 {
-    overrideFolders_.clear();
+    archiveLocator_->clear();
 }
 
 /**
@@ -277,6 +264,7 @@ bool Loader::LoadSounds()
         logger_.write(_("failed: %1%\n")) % e.what();
         return false;
     }
+    using namespace std::chrono;
     logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
     const bfs::path oggPath = config_.ExpandPath(s25::folders::sng);
@@ -287,16 +275,14 @@ bool Loader::LoadSounds()
     {
         try
         {
-            libsiedler2::Archiv sng = DoLoadFile(oggFile);
+            libsiedler2::Archiv sng = archiveLoader_->loadFileOrDir(oggFile);
             auto music = libutil::dynamicUniqueCast<MusicItem>(sng.release(0));
             if(music)
                 sng_lst.emplace_back(std::move(music));
             else
                 logger_.write(_("WARNING: Found invalid music item for %1%\n")) % oggFile;
-        } catch(const LoadError& e)
+        } catch(const LoadError&)
         {
-            if(e.what() != std::string())
-                logger_.write("Exception caught: %1%\n") % e.what();
             return false;
         }
     }
@@ -338,14 +324,14 @@ void Loader::LoadDummyGUIFiles()
         auto palette = std::make_unique<libsiedler2::ArchivItem_Palette>();
         for(int i = 0; i < 256; i++)
             palette->set(i, libsiedler2::ColorRGB(42, 137, i));
-        files_["pal5"].archiv.pushC(*palette);
+        files_["pal5"].archive.pushC(*palette);
         // Player color palette
         for(int i = 128; i < 128 + libsiedler2::ArchivItem_Bitmap_Player::numPlayerClrs; i++)
             palette->set(i, libsiedler2::ColorRGB(i, i, i));
-        files_["colors"].archiv.push(std::move(palette));
+        files_["colors"].archive.push(std::move(palette));
     }
     // GUI elements
-    libsiedler2::Archiv& resource = files_["resource"].archiv;
+    libsiedler2::Archiv& resource = files_["resource"].archive;
     resource.alloc(57);
     for(unsigned id = 4; id < 36; id++)
     {
@@ -361,7 +347,7 @@ void Loader::LoadDummyGUIFiles()
         bmp->create(buffer);
         resource.set(id, std::move(bmp));
     }
-    libsiedler2::Archiv& io = files_["io"].archiv;
+    libsiedler2::Archiv& io = files_["io"].archive;
     for(unsigned id = 0; id < 264; id++)
     {
         auto bmp = std::make_unique<glArchivItem_Bitmap_Raw>();
@@ -436,7 +422,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
     if(!Load(mapGFXFile, pal5))
         return false;
-    map_gfx = &GetArchive(MakeResourceId(mapGFXFile));
+    map_gfx = &GetArchive(ResourceId::make(mapGFXFile));
 
     isWinterGFX_ = isWinterGFX;
 
@@ -446,8 +432,8 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
         const auto shortName = s25util::toLower(std::string(NationNames[nation], 0, 3));
         const auto gfxName = s25util::toLower(natPrefix) + shortName + "_z";
         const auto iconName = s25util::toLower(shortName) + "_icon";
-        nation_gfx[nation] = &files_[gfxName].archiv;
-        nationIcons_[nation] = &files_[iconName].archiv;
+        nation_gfx[nation] = &files_[gfxName].archive;
+        nationIcons_[nation] = &files_[iconName].archive;
     }
 
     return true;
@@ -455,7 +441,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
 bool Loader::LoadOverrideFiles()
 {
-    for(const OverrideFolder& overrideFolder : overrideFolders_)
+    for(const auto& overrideFolder : archiveLocator_->getOverrideFolders())
     {
         if(!LoadOverrideDirectory(overrideFolder.path))
             return false;
@@ -938,142 +924,16 @@ std::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArch
     return destination;
 }
 
-/// Create a resource id which is the file name without the extension and converted to lowercase
-ResourceId Loader::MakeResourceId(const bfs::path& filepath)
+bool Loader::Load(libsiedler2::Archiv& archive, const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette)
 {
-    auto name = filepath.stem();
-    // remove all additional extensions
-    while(name.has_extension())
+    try
     {
-        name = name.replace_extension();
-    }
-    return ResourceId{s25util::toLower(name.string())};
-}
-
-std::vector<bfs::path> Loader::GetFilesToLoad(const bfs::path& filepath)
-{
-    std::vector<bfs::path> result;
-    result.push_back(filepath);
-    const ResourceId resId = MakeResourceId(filepath);
-    for(const OverrideFolder& overrideFolder : overrideFolders_)
+        archive = archiveLoader_->load(archiveLocator_->resolve(path), palette);
+        return true;
+    } catch(const LoadError&)
     {
-        auto itFile = helpers::find_if(overrideFolder.files,
-                                       [&resId](const bfs::path& file) { return MakeResourceId(file) == resId; });
-        if(itFile != overrideFolder.files.end())
-        {
-            const auto fullFilePath = overrideFolder.path / *itFile;
-            if(!bfs::exists(fullFilePath))
-                logger_.write(_("Skipping removed file %1% when checking for files to load for %2%\n")) % fullFilePath
-                  % resId;
-            else if(helpers::contains(result, fullFilePath))
-                logger_.write(_("Skipping duplicate override file %1% for %2%\n")) % fullFilePath % resId;
-            else
-                result.push_back(fullFilePath);
-        }
+        return false;
     }
-    return result;
-}
-
-bool Loader::MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archiv& otherArchiv)
-{
-    if(targetArchiv.size() < otherArchiv.size())
-        targetArchiv.alloc_inc(otherArchiv.size() - targetArchiv.size());
-    for(unsigned i = 0; i < otherArchiv.size(); i++)
-    {
-        // Skip empty entries
-        if(!otherArchiv[i])
-            continue;
-        // If target entry is empty, just move the new one
-        if(!targetArchiv[i])
-            targetArchiv.set(i, otherArchiv.release(i));
-        else
-        {
-            auto* subArchiv = dynamic_cast<libsiedler2::Archiv*>(targetArchiv[i]);
-            if(subArchiv)
-            {
-                // We have a sub-archiv -> Merge
-                auto* otherSubArchiv = dynamic_cast<libsiedler2::Archiv*>(otherArchiv[i]);
-                if(!otherSubArchiv)
-                {
-                    logger_.write(_("Failed to merge entry %1%. Archive expected!\n")) % i;
-                    return false;
-                }
-                if(!MergeArchives(*subArchiv, *otherSubArchiv))
-                    return false;
-            } else
-                targetArchiv.set(i, otherArchiv.release(i)); // Just replace
-        }
-    }
-    return true;
-}
-
-static bool isBobOverride(bfs::path filePath)
-{
-    // For files we ignore the first extension as that is the type of the file (e.g. foo.bob.lst is a bob override file
-    // packed as lst) Note that the next call to `extension()` can return an empty path if only 1 extension was present
-    // Folders can be named anything so they must be named foo.bob directly rather than foo.bob.lst
-    if(bfs::is_regular_file(filePath))
-        filePath.replace_extension();
-    return s25util::toLower(filePath.extension().string()) == ".bob";
-}
-
-static std::map<uint16_t, uint16_t> extractBobMapping(libsiedler2::Archiv& archive, const bfs::path& filepath)
-{
-    std::unique_ptr<libsiedler2::ArchivItem_Text> txtItem;
-    for(auto& entry : archive)
-    {
-        if(entry && entry->getBobType() == libsiedler2::BobType::Text)
-        {
-            if(txtItem)
-                throw LoadError(_("Bob-like file contained multiple text entries: %s\n"), filepath);
-            txtItem.reset(static_cast<libsiedler2::ArchivItem_Text*>(entry.release()));
-        }
-    }
-    if(!txtItem)
-        return {};
-    std::istringstream s(txtItem->getText());
-    return libsiedler2::ArchivItem_Bob::readLinks(s);
-}
-
-class NestedArchive : public libsiedler2::Archiv, public libsiedler2::ArchivItem
-{
-public:
-    NestedArchive(libsiedler2::Archiv&& archive) : libsiedler2::Archiv(std::move(archive)) {}
-    RTTR_CLONEABLE(NestedArchive)
-};
-
-bool Loader::Load(libsiedler2::Archiv& archiv, const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette)
-{
-    archiv.clear();
-    const std::vector<bfs::path> filesToLoad = GetFilesToLoad(path);
-    for(const bfs::path& curFilepath : filesToLoad)
-    {
-        try
-        {
-            libsiedler2::Archiv newEntries = DoLoadFileOrDirectory(curFilepath, palette);
-
-            std::map<uint16_t, uint16_t> bobMapping;
-            if(isBobOverride(curFilepath))
-            {
-                bobMapping = extractBobMapping(newEntries, curFilepath);
-                // Emulate bob structure: Single file where first entry is the BOB archive
-                libsiedler2::Archiv bobArchive;
-                bobArchive.push(std::make_unique<NestedArchive>(std::move(newEntries)));
-                using std::swap;
-                swap(bobArchive, newEntries);
-            }
-            if(!MergeArchives(archiv, newEntries))
-                return false;
-            if(!bobMapping.empty() && !archiv.empty() && archiv[0]->getBobType() == libsiedler2::BobType::Bob)
-                checkedCast<glArchivItem_Bob*>(archiv[0])->mergeLinks(bobMapping);
-        } catch(const LoadError& e)
-        {
-            if(e.what() != std::string())
-                logger_.write("Exception caught: %1%\n") % e.what();
-            return false;
-        }
-    }
-    return true;
 }
 
 /**
@@ -1084,79 +944,33 @@ bool Loader::Load(libsiedler2::Archiv& archiv, const bfs::path& path, const libs
  */
 bool Loader::Load(const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette, bool isFromOverrideDir)
 {
-    FileEntry& entry = files_[MakeResourceId(path)];
-    // Load if: 1. Not loaded
-    //          2. archive content changed BUT we are not loading an override file or the file wasn't loaded since the
-    //          last override change
-    if(entry.archiv.empty()
-       || (entry.filesUsed != GetFilesToLoad(path) && (!isFromOverrideDir || !entry.loadedAfterOverrideChange)))
+    FileEntry& entry = files_[ResourceId::make(path)];
+
+    // TODO: Remove
+    RTTR_UNUSED(isFromOverrideDir);
+
+    // Not loaded yet or "cache" invalid?
+    if(!entry.loadedAfterOverrideChange)
     {
-        if(!Load(entry.archiv, path, palette))
-            return false;
+        const auto resolvedFile = archiveLocator_->resolve(path);
+        // Do we really need to reload or can we reused the loaded version?
+        if(entry.resolvedFile != resolvedFile)
+        {
+            try
+            {
+                entry.archive = archiveLoader_->load(resolvedFile, palette);
+            } catch(const LoadError&)
+            {
+                return false;
+            }
+            // Update how we loaded this
+            entry.resolvedFile = resolvedFile;
+        }
+        // Make cache valid
         entry.loadedAfterOverrideChange = true;
     }
+    RTTR_Assert(!entry.archive.empty());
     return true;
-}
-
-/**
- *  @brief Loads a file or directory
- *
- *  @param filePath Path to file or directory
- *  @param palette Palette to use for possible graphic files
- */
-libsiedler2::Archiv Loader::DoLoadFileOrDirectory(const boost::filesystem::path& filePath,
-                                                  const libsiedler2::ArchivItem_Palette* palette)
-{
-    if(!exists(filePath))
-        throw LoadError(_("File or directory does not exist: %s\n"), filePath);
-    if(is_regular_file(filePath))
-        return DoLoadFile(filePath, palette);
-    if(!is_directory(filePath))
-        throw LoadError(_("Could not determine type of path %s\n"), filePath);
-
-    logger_.write(_("Loading directory %s\n")) % filePath;
-    const Timer timer(true);
-    std::vector<libsiedler2::FileEntry> files = libsiedler2::ReadFolderInfo(filePath);
-    logger_.write(_("  Loading %1% entries: ")) % files.size();
-
-    libsiedler2::Archiv archive;
-
-    if(int ec = libsiedler2::LoadFolder(files, archive, palette))
-    {
-        logger_.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
-        throw LoadError(libsiedler2::getErrorString(ec));
-    }
-
-    logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
-
-    return archive;
-}
-
-/**
- *  @brief Load a single file into the archive
- *
- *  @param[in] archiv Archive to add file to
- *  @param[in] filePath Path to file
- *  @param[in] palette palette to use if required
- */
-libsiedler2::Archiv Loader::DoLoadFile(const boost::filesystem::path& filePath,
-                                       const libsiedler2::ArchivItem_Palette* palette)
-{
-    const Timer timer(true);
-
-    logger_.write(_("Loading \"%s\": ")) % filePath;
-    fflush(stdout);
-
-    libsiedler2::Archiv archive;
-    if(int ec = libsiedler2::Load(filePath, archive, palette))
-    {
-        logger_.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
-        throw LoadError(libsiedler2::getErrorString(ec));
-    }
-
-    logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
-
-    return archive;
 }
 
 bool Loader::LoadOverrideDirectory(const bfs::path& path)
@@ -1184,6 +998,7 @@ bool Loader::LoadOverrideDirectory(const bfs::path& path)
         if(!Load(curPath, pal5, true))
             return false;
     }
+    using namespace std::chrono;
     logger_.write(_("finished in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
     return true;
 }

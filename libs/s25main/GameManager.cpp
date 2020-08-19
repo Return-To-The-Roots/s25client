@@ -33,6 +33,7 @@
 #include "network/GameServer.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "liblobby/LobbyClient.h"
+#include "libsiedler2/Archiv.h"
 #include "s25util//dynamicUniqueCast.h"
 #include "s25util/Log.h"
 #include "s25util/error.h"

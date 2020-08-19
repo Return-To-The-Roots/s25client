@@ -18,6 +18,7 @@
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "test/testConfig.h"
+#include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_Bitmap_Raw.h"
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libsiedler2/PixelBufferBGRA.h"
