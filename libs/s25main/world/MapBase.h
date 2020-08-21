@@ -18,6 +18,7 @@
 #pragma once
 
 #include "Identity.h"
+#include "RTTR_Assert.h"
 #include "ReturnConst.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"

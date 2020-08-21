@@ -16,7 +16,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "world/MapGeometry.h"
+#include "RTTR_Assert.h"
 #include "gameData/MapConsts.h"
+#include <boost/config.hpp>
 #include <array>
 #include <stdexcept>
 
@@ -39,8 +41,10 @@ Position GetNeighbour(const Position& p, const Direction dir)
         case Direction::NORTHEAST: return Position(p.x + (p.y & 1), p.y - 1);
         case Direction::EAST: return Position(p.x + 1, p.y);
         case Direction::SOUTHEAST: return Position(p.x + (p.y & 1), p.y + 1);
-        default: RTTR_Assert(dir == Direction::SOUTHWEST); return Position(p.x - !(p.y & 1), p.y + 1);
+        case Direction::SOUTHWEST: return Position(p.x - !(p.y & 1), p.y + 1);
     }
+    RTTR_Assert(false);
+    BOOST_UNREACHABLE_RETURN({});
 }
 
 Position GetNeighbour2(Position pt, unsigned dir)

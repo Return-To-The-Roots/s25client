@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "RTTR_Assert.h"
 #include "helpers/EnumTraits.h"
 #include "helpers/MaxEnumValue.h"
 
@@ -37,11 +36,11 @@ struct ShipDirection
     using Underlying = std::underlying_type_t<Type>;
 
     Type t_;
-    constexpr ShipDirection(Type t) : t_(t) {}
+    constexpr ShipDirection(Type t = NORTH) : t_(t) {}
     /// Converts an UInt safely to a Direction
-    explicit ShipDirection(unsigned t) : t_(Type(t % COUNT)) { RTTR_Assert(t_ >= NORTH && t_ < COUNT); }
-    operator Type() const { return t_; }
-    operator Underlying() const { return t_; }
+    explicit ShipDirection(unsigned t) : t_(Type(t % COUNT)) {}
+    constexpr operator Type() const { return t_; }
+    constexpr operator Underlying() const { return t_; }
     ShipDirection operator+(unsigned i) const { return ShipDirection(t_ + i); }
     ShipDirection& operator+=(unsigned i)
     {

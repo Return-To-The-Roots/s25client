@@ -237,7 +237,6 @@ void nofHunter::HandleStateChasing()
         // des Tieres gegenüberliegen muss (mit zufälliger Richtung beginnen)
         unsigned doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
         shootingPos = MapPoint::Invalid();
-        Direction shootingDir;
         for(const auto d : helpers::EnumRange<Direction>{})
         {
             Position delta;
