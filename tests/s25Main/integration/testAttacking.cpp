@@ -339,7 +339,7 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
     TestFailingAttack(gwv, storehousePos, attackSrc);
 
     // Try to attack newly build bld -> Fail
-    BOOST_REQUIRE_EQUAL(world.CalcVisiblityWithAllies(milBld1Pos, curPlayer), VIS_VISIBLE);
+    BOOST_REQUIRE_EQUAL(world.CalcVisiblityWithAllies(milBld1Pos, curPlayer), Visibility::Visible);
     BOOST_REQUIRE(milBld1->IsNewBuilt());
     TestFailingAttack(gwv, milBld1Pos, attackSrc);
 
@@ -348,12 +348,12 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
     BOOST_REQUIRE(!milBld1->IsNewBuilt());
     // Try to attack invisible bld -> Fail
     MapNode& node = world.GetNodeWriteable(milBld1Pos);
-    node.fow[0].visibility = VIS_FOW;
-    BOOST_REQUIRE_EQUAL(world.CalcVisiblityWithAllies(milBld1Pos, curPlayer), VIS_FOW);
+    node.fow[0].visibility = Visibility::FoW;
+    BOOST_REQUIRE_EQUAL(world.CalcVisiblityWithAllies(milBld1Pos, curPlayer), Visibility::FoW);
     TestFailingAttack(gwv, milBld1Pos, attackSrc);
 
     // Attack it
-    node.fow[0].visibility = VIS_VISIBLE;
+    node.fow[0].visibility = Visibility::Visible;
     std::vector<nofPassiveSoldier*> soldiers(attackSrc.GetTroops().begin(), attackSrc.GetTroops().end()); //-V807
     BOOST_REQUIRE_EQUAL(soldiers.size(), 6u);
     for(int i = 0; i < 3; i++)

@@ -17,57 +17,20 @@
 
 #pragma once
 
-#include "helpers/EnumTraits.h"
+#include <cstdint>
 
 /// "Enum" to represent one of the 6 directions a ship can go
-struct ShipDirection
+enum class ShipDirection : uint8_t
 {
-    enum Type
-    {
-        NORTH,     // 0
-        NORTHEAST, // 1
-        SOUTHEAST, // 2
-        SOUTH,     // 3
-        SOUTHWEST, // 4
-        NORTHWEST  // 5
-    };
-    static const int COUNT = NORTHWEST + 1;
-    using Underlying = std::underlying_type_t<Type>;
-
-    Type t_;
-    constexpr ShipDirection(Type t = NORTH) : t_(t) {}
-    /// Converts an UInt safely to a Direction
-    explicit ShipDirection(unsigned t) : t_(Type(t % COUNT)) {}
-    constexpr operator Type() const { return t_; }
-    constexpr operator Underlying() const { return t_; }
-    ShipDirection operator+(unsigned i) const { return ShipDirection(t_ + i); }
-    ShipDirection& operator+=(unsigned i)
-    {
-        t_ = Type((t_ + i) % COUNT);
-        return *this;
-    }
-
-private:
-    // prevent automatic conversion for any other built-in types such as bool, int, etc
-    template<typename T>
-    operator T() const;
+    North,     // 0
+    NorthEast, // 1
+    SouthEast, // 2
+    South,     // 3
+    SouthWest, // 4
+    NorthWest  // 5
 };
 
 constexpr auto maxEnumValue(ShipDirection)
 {
-    return ShipDirection::NORTHWEST;
+    return ShipDirection::NorthWest;
 }
-constexpr auto maxEnumValue(ShipDirection::Type)
-{
-    return ShipDirection::NORTHWEST;
-}
-
-namespace helpers {
-template<>
-struct is_enum<ShipDirection> : std::true_type
-{};
-
-template<>
-struct EnumRange<ShipDirection> : EnumRange<ShipDirection::Type>
-{};
-} // namespace helpers

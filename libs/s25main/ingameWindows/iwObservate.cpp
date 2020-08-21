@@ -100,7 +100,7 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
                           view->GetViewer().GetTerrainRenderer().ConvertCoords(Position(x, y), &curOffset);
                         DrawPoint curDrawPt = view->GetWorld().GetNodePos(curPt) - view->GetOffset() + curOffset;
 
-                        if(view->GetViewer().GetVisibility(curPt) != VIS_VISIBLE)
+                        if(view->GetViewer().GetVisibility(curPt) != Visibility::Visible)
                             continue;
 
                         const std::list<noBase*>& figures = view->GetWorld().GetFigures(curPt);
@@ -221,7 +221,7 @@ bool iwObservate::MoveToFollowedObj()
 
 bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
 {
-    if(view->GetViewer().GetVisibility(ptToCheck) != VIS_VISIBLE)
+    if(view->GetViewer().GetVisibility(ptToCheck) != Visibility::Visible)
         return false;
     const std::list<noBase*>& curObjs = view->GetWorld().GetFigures(ptToCheck);
     for(const noBase* obj : curObjs)

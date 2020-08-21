@@ -168,20 +168,20 @@ ShipDirection MapBase::GetShipDir(MapPoint fromPt, MapPoint toPt) const
     {
         // North
         if(isMainDir)
-            return ShipDirection::NORTH;
+            return ShipDirection::North;
         else if(toPt.x < fromPt.x)
-            return ShipDirection::NORTHWEST;
+            return ShipDirection::NorthWest;
         else
-            return ShipDirection::NORTHEAST;
+            return ShipDirection::NorthEast;
     } else
     {
         // South
         if(isMainDir)
-            return ShipDirection::SOUTH;
+            return ShipDirection::South;
         else if(toPt.x < fromPt.x)
-            return ShipDirection::SOUTHWEST;
+            return ShipDirection::SouthWest;
         else
-            return ShipDirection::SOUTHEAST;
+            return ShipDirection::SouthEast;
     }
 }
 

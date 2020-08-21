@@ -19,22 +19,22 @@
 
 #include <cstdint>
 
-/// Sichtbarkeit für ALLE Spieler
+/// Visibility of a node
 enum Visibility : uint8_t
 {
-    VIS_INVISIBLE = 0, /// Darkness
-    VIS_FOW,           /// Fog of war
-    VIS_VISIBLE        /// Visible
+    Invisible, /// Darkness
+    FoW,       /// Fog of war
+    Visible    /// Visible
 };
 constexpr auto maxEnumValue(Visibility)
 {
-    return Visibility::VIS_VISIBLE;
+    return Visibility::Visible;
 }
 
 /// Granittyp
 enum GraniteType : uint8_t
 {
-    GT_1 = 0,
+    GT_1,
     GT_2
 };
 constexpr auto maxEnumValue(GraniteType)

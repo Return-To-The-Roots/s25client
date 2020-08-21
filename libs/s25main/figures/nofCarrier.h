@@ -28,7 +28,7 @@ class SerializedGameData;
 
 enum CarrierState : uint8_t
 {
-    CARRS_FIGUREWORK = 0,           // Aufgaben der Figur
+    CARRS_FIGUREWORK,               // Aufgaben der Figur
     CARRS_WAITFORWARE,              // auf Weg auf Ware warten
     CARRS_GOTOMIDDLEOFROAD,         // zur Mitte seines Weges gehen
     CARRS_FETCHWARE,                // Ware holen

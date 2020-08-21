@@ -237,7 +237,7 @@ void noTree::ProduceAnimal()
 {
     // neues Tier erzeugen, zufälliger Typ
     static const std::array<Species, 6> possibleSpecies = {
-      {SPEC_RABBITWHITE, SPEC_RABBITGREY, SPEC_FOX, SPEC_STAG, SPEC_DEER, SPEC_SHEEP}};
+      {Species::RabbitWhite, Species::RabbitGrey, Species::Fox, Species::Stag, Species::Deer, Species::Sheep}};
     auto* animal =
       new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
     // In die Landschaft setzen

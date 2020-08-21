@@ -32,7 +32,7 @@ enum GoodType : unsigned char;
 
 enum FigureState : uint8_t
 {
-    FS_GOTOGOAL = 0,
+    FS_GOTOGOAL,
     FS_GOHOME,
     FS_WANDER,
     FS_JOB

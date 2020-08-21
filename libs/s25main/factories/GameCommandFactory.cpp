@@ -188,28 +188,27 @@ bool GameCommandFactory::StartStopExpedition(const MapPoint pt, bool start)
 
 bool GameCommandFactory::FoundColony(unsigned shipID)
 {
-    return AddGC(new gc::ExpeditionCommand(gc::ExpeditionCommand::FOUNDCOLONY, shipID));
+    return AddGC(new gc::ExpeditionCommand(gc::ExpeditionCommand::Action::FOUNDCOLONY, shipID));
 }
 
 bool GameCommandFactory::TravelToNextSpot(ShipDirection direction, unsigned shipID)
 {
     gc::ExpeditionCommand::Action action;
-    switch(ShipDirection::Type(direction))
+    switch(direction)
     {
-        case ShipDirection::NORTH: action = gc::ExpeditionCommand::NORTH; break;
-        case ShipDirection::NORTHEAST: action = gc::ExpeditionCommand::NORTHEAST; break;
-        case ShipDirection::SOUTHEAST: action = gc::ExpeditionCommand::SOUTHEAST; break;
-        case ShipDirection::SOUTH: action = gc::ExpeditionCommand::SOUTH; break;
-        case ShipDirection::SOUTHWEST: action = gc::ExpeditionCommand::SOUTHWEST; break;
-        case ShipDirection::NORTHWEST: action = gc::ExpeditionCommand::NORTHWEST; break;
-        default: throw std::invalid_argument("Direction");
+        case ShipDirection::North: action = gc::ExpeditionCommand::Action::NORTH; break;
+        case ShipDirection::NorthEast: action = gc::ExpeditionCommand::Action::NORTHEAST; break;
+        case ShipDirection::SouthEast: action = gc::ExpeditionCommand::Action::SOUTHEAST; break;
+        case ShipDirection::South: action = gc::ExpeditionCommand::Action::SOUTH; break;
+        case ShipDirection::SouthWest: action = gc::ExpeditionCommand::Action::SOUTHWEST; break;
+        case ShipDirection::NorthWest: action = gc::ExpeditionCommand::Action::NORTHWEST; break;
     }
     return AddGC(new gc::ExpeditionCommand(action, shipID));
 }
 
 bool GameCommandFactory::CancelExpedition(unsigned shipID)
 {
-    return AddGC(new gc::ExpeditionCommand(gc::ExpeditionCommand::CANCELEXPEDITION, shipID));
+    return AddGC(new gc::ExpeditionCommand(gc::ExpeditionCommand::Action::CANCELEXPEDITION, shipID));
 }
 
 bool GameCommandFactory::StartStopExplorationExpedition(const MapPoint pt, bool start)

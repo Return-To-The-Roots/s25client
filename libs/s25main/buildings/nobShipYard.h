@@ -28,8 +28,8 @@ public:
     /// Modi für den Schiffsbauer
     enum Mode : uint8_t
     {
-        BOATS = 0, // baut kleine Boote
-        SHIPS      // baut große Schiffe
+        BOATS, // baut kleine Boote
+        SHIPS  // baut große Schiffe
     };
     friend constexpr auto maxEnumValue(Mode) { return nobShipYard::Mode::SHIPS; }
 

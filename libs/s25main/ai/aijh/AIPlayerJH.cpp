@@ -1372,12 +1372,13 @@ void AIPlayerJH::HandleExpedition(const noShip* ship)
         aii.FoundColony(ship);
     else
     {
-        unsigned char start = rand() % ShipDirection::COUNT;
-        for(unsigned char i = start; i < start + ShipDirection::COUNT; ++i)
+        const unsigned offset = rand() % helpers::MaxEnumValue_v<ShipDirection>;
+        for(auto dir : helpers::EnumRange<ShipDirection>{})
         {
-            if(aii.IsExplorationDirectionPossible(ship->GetPos(), ship->GetCurrentHarbor(), ShipDirection(i)))
+            dir = ShipDirection((rttr::enum_cast(dir) + offset) % helpers::MaxEnumValue_v<ShipDirection>);
+            if(aii.IsExplorationDirectionPossible(ship->GetPos(), ship->GetCurrentHarbor(), dir))
             {
-                aii.TravelToNextSpot(ShipDirection(i), ship);
+                aii.TravelToNextSpot(dir, ship);
                 return;
             }
         }

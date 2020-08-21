@@ -173,7 +173,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
             DrawBoundaryStone(curPt, curPos, visibility);
 
-            if(visibility == VIS_VISIBLE)
+            if(visibility == Visibility::Visible)
             {
                 DrawObject(curPt, curPos);
                 DrawMovingFiguresFromBelow(terrainRenderer, Position(x, y), between_lines);
@@ -182,7 +182,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
                 // Construction aid mode
                 if(show_bq)
                     DrawConstructionAid(curPt, curPos);
-            } else if(visibility == VIS_FOW)
+            } else if(visibility == Visibility::FoW)
             {
                 const FOWObject* fowobj = gwv.GetYoungestFOWObject(MapPoint(curPt));
                 if(fowobj)
@@ -206,8 +206,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     // Umherfliegende Katapultsteine zeichnen
     for(auto* catapult_stone : GetWorld().catapult_stones)
     {
-        if(gwv.GetVisibility(catapult_stone->dest_building) == VIS_VISIBLE
-           || gwv.GetVisibility(catapult_stone->dest_map) == VIS_VISIBLE)
+        if(gwv.GetVisibility(catapult_stone->dest_building) == Visibility::Visible
+           || gwv.GetVisibility(catapult_stone->dest_map) == Visibility::Visible)
             catapult_stone->Draw(offset);
     }
 
@@ -507,10 +507,10 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
 
 void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis)
 {
-    if(vis == VIS_INVISIBLE)
+    if(vis == Visibility::Invisible)
         return;
 
-    const bool isFoW = vis == VIS_FOW;
+    const bool isFoW = vis == Visibility::FoW;
 
     const BoundaryStones& boundary_stones =
       isFoW ? gwv.GetYoungestFOWNode(pt).boundary_stones : GetWorld().GetNode(pt).boundary_stones;

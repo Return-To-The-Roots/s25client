@@ -261,12 +261,17 @@ void ExpeditionCommand::Execute(GameWorldGame& gwg, uint8_t playerId)
     if(!ship)
         return;
 
-    if(action == FOUNDCOLONY)
-        ship->FoundColony();
-    else if(action == CANCELEXPEDITION)
-        ship->CancelExpedition();
-    else
-        ship->ContinueExpedition(ShipDirection(action - 2));
+    switch(action)
+    {
+        case Action::FOUNDCOLONY: ship->FoundColony(); break;
+        case Action::CANCELEXPEDITION: ship->CancelExpedition(); break;
+        case Action::NORTH: ship->ContinueExpedition(ShipDirection::North); break;
+        case Action::NORTHEAST: ship->ContinueExpedition(ShipDirection::NorthEast); break;
+        case Action::SOUTHEAST: ship->ContinueExpedition(ShipDirection::SouthEast); break;
+        case Action::SOUTH: ship->ContinueExpedition(ShipDirection::South); break;
+        case Action::SOUTHWEST: ship->ContinueExpedition(ShipDirection::SouthWest); break;
+        case Action::NORTHWEST: ship->ContinueExpedition(ShipDirection::NorthWest); break;
+    }
 }
 
 /// Fuehrt das GameCommand aus

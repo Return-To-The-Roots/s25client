@@ -215,13 +215,13 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), 0u);
 
     // We want the ship to only scout unexplored harbors, so set all but one to visible
-    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_VISIBLE; //-V807
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = Visibility::Visible; //-V807
     // Team visibility, so set one to own team
     world.GetPlayer(curPlayer).team = TM_TEAM1;
     world.GetPlayer(1).team = TM_TEAM1;
     world.GetPlayer(curPlayer).MakeStartPacts();
     world.GetPlayer(1).MakeStartPacts();
-    world.GetNodeWriteable(world.GetHarborPoint(3)).fow[1].visibility = VIS_VISIBLE;
+    world.GetNodeWriteable(world.GetHarborPoint(3)).fow[1].visibility = Visibility::Visible;
     unsigned targetHbId = 8u;
 
     // Start again (everything is here)
@@ -239,7 +239,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
     BOOST_REQUIRE_LE(world.CalcDistance(world.GetHarborPoint(targetHbId), ship->GetPos()), 2u);
     // Now the ship waits and will select the next harbor. We allow another one:
-    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_FOW;
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = Visibility::FoW;
     targetHbId = 6u;
     RTTR_EXEC_TILL(350, ship->IsMoving());
     BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), hbId);
@@ -251,7 +251,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_REQUIRE_LE(world.CalcDistance(world.GetHarborPoint(targetHbId), ship->GetPos()), 2u);
 
     // Now disallow the first harbor so ship returns home
-    world.GetNodeWriteable(world.GetHarborPoint(8)).fow[curPlayer].visibility = VIS_VISIBLE;
+    world.GetNodeWriteable(world.GetHarborPoint(8)).fow[curPlayer].visibility = Visibility::Visible;
 
     RTTR_EXEC_TILL(350, ship->IsMoving());
     BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), hbId);
@@ -264,7 +264,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(ship->GetPos(), world.GetCoastalPoint(hbId, 1));
 
     // Now try to start an expedition but all harbors are explored -> Load, Unload, Idle
-    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_VISIBLE;
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = Visibility::Visible;
     this->StartStopExplorationExpedition(hbPos, true);
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
     RTTR_EXEC_TILL(2 * 200 + 5, ship->IsIdling());
@@ -289,8 +289,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     world.GetPlayer(curPlayer).MakeStartPacts();
     world.GetPlayer(1).MakeStartPacts();
 
-    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[1].visibility = VIS_VISIBLE;
-    world.GetNodeWriteable(world.GetHarborPoint(3)).fow[1].visibility = VIS_VISIBLE;
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[1].visibility = Visibility::Visible;
+    world.GetNodeWriteable(world.GetHarborPoint(3)).fow[1].visibility = Visibility::Visible;
     unsigned targetHbId = 8u;
     this->StartStopExplorationExpedition(hbPos, true);
 
@@ -306,7 +306,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     // Run till ship is coming back
     RTTR_EXEC_TILL(1000, ship->GetTargetHarbor() == hbId);
     // Avoid that it goes back to that point
-    world.GetNodeWriteable(world.GetHarborPoint(targetHbId)).fow[1].visibility = VIS_VISIBLE;
+    world.GetNodeWriteable(world.GetHarborPoint(targetHbId)).fow[1].visibility = Visibility::Visible;
 
     // Destroy home harbor
     world.DestroyNO(hbPos);
@@ -381,11 +381,11 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(msg->GetPos(), ship->GetPos()); //-V522
 
     // Harbor pos taken by other player
-    this->TravelToNextSpot(ShipDirection::SOUTHEAST, player.GetShipID(ship));
+    this->TravelToNextSpot(ShipDirection::SouthEast, player.GetShipID(ship));
     BOOST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
 
     // Last free one (far south -> North is closer)
-    this->TravelToNextSpot(ShipDirection::NORTH, player.GetShipID(ship));
+    this->TravelToNextSpot(ShipDirection::North, player.GetShipID(ship));
     BOOST_REQUIRE(!ship->IsWaitingForExpeditionInstructions());
     BOOST_REQUIRE(ship->IsMoving());
 
@@ -412,14 +412,14 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     this->FoundColony(player.GetShipID(ship));
     BOOST_REQUIRE(ship->IsWaitingForExpeditionInstructions());
     // Go back to free spot
-    this->TravelToNextSpot(ShipDirection::NORTH, player.GetShipID(ship));
+    this->TravelToNextSpot(ShipDirection::North, player.GetShipID(ship));
     BOOST_REQUIRE(!ship->IsWaitingForExpeditionInstructions());
     for(unsigned gf = 0; gf < 2; gf++)
     {
         // Send commands that should be ignored as ship is not expecting them
         this->FoundColony(player.GetShipID(ship));
         BOOST_REQUIRE(ship->IsMoving());
-        this->TravelToNextSpot(ShipDirection::SOUTH, player.GetShipID(ship));
+        this->TravelToNextSpot(ShipDirection::South, player.GetShipID(ship));
         this->CancelExpedition(player.GetShipID(ship));
         BOOST_REQUIRE(ship->IsMoving());
         this->em.ExecuteNextGF();
@@ -464,8 +464,8 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     harbor.AddGoods(newScouts, true);
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     for(unsigned i = 1; i <= 8; i++)
-        world.GetNodeWriteable(world.GetHarborPoint(i)).fow[curPlayer].visibility = VIS_VISIBLE;
-    world.GetNodeWriteable(world.GetHarborPoint(targetHbId)).fow[curPlayer].visibility = VIS_INVISIBLE;
+        world.GetNodeWriteable(world.GetHarborPoint(i)).fow[curPlayer].visibility = Visibility::Visible;
+    world.GetNodeWriteable(world.GetHarborPoint(targetHbId)).fow[curPlayer].visibility = Visibility::Invisible;
     // Start an exploration expedition
     this->StartStopExplorationExpedition(hbPos, true);
     BOOST_REQUIRE(harbor.IsExplorationExpeditionActive());

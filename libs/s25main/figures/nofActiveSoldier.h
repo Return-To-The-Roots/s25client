@@ -32,7 +32,7 @@ public:
     /// State of each soldier
     enum SoldierState : uint8_t
     {
-        STATE_FIGUREWORK = 0,  /// Go to work etc., all which is done by noFigure
+        STATE_FIGUREWORK,      /// Go to work etc., all which is done by noFigure
         STATE_WALKINGHOME,     /// Walking home after work to the military building
         STATE_MEETENEMY,       /// Prepare fighting with an enemy
         STATE_WAITINGFORFIGHT, /// Standing still and waiting for a fight

@@ -299,7 +299,7 @@ Visibility GameWorldBase::CalcVisiblityWithAllies(const MapPoint pt, const unsig
     const MapNode& node = GetNode(pt);
     Visibility best_visibility = node.fow[player].visibility;
 
-    if(best_visibility == VIS_VISIBLE)
+    if(best_visibility == Visibility::Visible)
         return best_visibility;
 
     /// Teamsicht aktiviert?

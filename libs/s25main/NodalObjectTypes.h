@@ -21,7 +21,7 @@
 
 enum NodalObjectType : uint8_t
 {
-    NOP_NOTHING = 0,  // nichts
+    NOP_NOTHING,      // nichts
     NOP_GRANITE,      // Granit
     NOP_TREE,         // Baum
     NOP_GRAINFIELD,   // Getreidefeld

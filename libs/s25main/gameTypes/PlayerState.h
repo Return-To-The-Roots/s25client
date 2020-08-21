@@ -21,7 +21,7 @@
 
 enum PlayerState : uint8_t
 {
-    PS_FREE = 0,
+    PS_FREE,
     PS_OCCUPIED,
     PS_LOCKED,
     PS_AI

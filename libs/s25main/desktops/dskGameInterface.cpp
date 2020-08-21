@@ -578,7 +578,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             }
         }
         // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
-        else if(worldViewer.GetVisibility(cSel) == VIS_VISIBLE)
+        else if(worldViewer.GetVisibility(cSel) == Visibility::Visible)
         {
             if(selObj.GetType() == NOP_BUILDING)
             {

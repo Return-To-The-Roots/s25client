@@ -224,7 +224,7 @@ void dskBenchmark::startTest(Test test)
                 return;
             RTTR_FOREACH_PT(MapPoint, game_->world_.GetSize())
             {
-                game_->world_.SetVisibility(pt, 0, VIS_VISIBLE);
+                game_->world_.SetVisibility(pt, 0, Visibility::Visible);
             }
             break;
         case TEST_BASIC_GAME:

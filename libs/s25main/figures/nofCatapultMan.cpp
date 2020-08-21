@@ -126,7 +126,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                 if(building->GetGOT() == GOT_NOB_MILITARY && gwg->GetPlayer(player).IsAttackable(building->GetPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
-                    if(gwg->GetNode(building->GetPos()).fow[player].visibility == VIS_VISIBLE
+                    if(gwg->GetNode(building->GetPos()).fow[player].visibility == Visibility::Visible
                        && !static_cast<nobMilitary*>(building)->IsNewBuilt())
                     {
                         // Entfernung ausrechnen

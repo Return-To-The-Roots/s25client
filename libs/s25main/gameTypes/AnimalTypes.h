@@ -19,19 +19,19 @@
 
 #include <cstdint>
 
-/// Tierarten
-enum Species : uint8_t
+/// Animal species
+enum class Species : uint8_t
 {
-    SPEC_POLARBEAR = 0,
-    SPEC_RABBITWHITE,
-    SPEC_RABBITGREY,
-    SPEC_FOX,
-    SPEC_STAG,
-    SPEC_DEER,
-    SPEC_DUCK,
-    SPEC_SHEEP
+    PolarBear,
+    RabbitWhite,
+    RabbitGrey,
+    Fox,
+    Stag,
+    Deer,
+    Duck,
+    Sheep
 };
 constexpr auto maxEnumValue(Species)
 {
-    return Species::SPEC_SHEEP;
+    return Species::Sheep;
 }
