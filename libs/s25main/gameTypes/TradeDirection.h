@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "RTTR_Assert.h"
 #include "gameTypes/Direction.h"
 #include <cstdint>
 

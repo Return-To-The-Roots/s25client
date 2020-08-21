@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "RTTR_Assert.h"
 #include "helpers/MaxEnumValue.h"
 #include "gameTypes/Direction.h"
 #include <cstdint>
@@ -30,7 +31,7 @@ enum class RoadPathDirection : uint8_t
     East = Direction::EAST,
     SouthEast = Direction::SOUTHEAST,
     SouthWest = Direction::SOUTHWEST,
-    Ship,
+    Ship = helpers::NumEnumValues_v<Direction>,
     None
 };
 DEFINE_MAX_ENUM_VALUE(RoadPathDirection, RoadPathDirection::None)

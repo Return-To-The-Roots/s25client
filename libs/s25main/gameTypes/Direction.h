@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "RTTR_Assert.h"
 #include "helpers/EnumRange.h"
 #include "helpers/EnumTraits.h"
 #include "helpers/MaxEnumValue.h"
@@ -37,15 +36,14 @@ struct Direction
     static constexpr unsigned COUNT = SOUTHWEST + 1;
 
     Type t_;
-    Direction() : t_(WEST) {}
-    Direction(Type t) : t_(t) { RTTR_Assert(static_cast<unsigned>(t_) < COUNT); }
+    constexpr Direction(Type t = WEST) : t_(t) {}
     /// Convert an UInt safely to a Direction
-    explicit Direction(unsigned t) : t_(Type(t % COUNT)) { RTTR_Assert(static_cast<unsigned>(t_) < COUNT); }
+    explicit Direction(unsigned t) : t_(Type(t % COUNT)) {}
     /// Convert an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static Direction fromInt(unsigned t) { return Type(t); }
     /// Use this for use in switches
-    Type native_value() const { return t_; }
-    explicit operator unsigned char() const { return t_; }
+    constexpr Type native_value() const { return t_; }
+    constexpr explicit operator unsigned char() const { return t_; }
     Direction& operator+=(unsigned i);
     Direction& operator-=(unsigned i);
     Direction& operator++();

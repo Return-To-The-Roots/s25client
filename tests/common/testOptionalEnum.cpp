@@ -43,8 +43,8 @@ struct FakeEnum
         Value2
     };
     Type t_;
-    FakeEnum(Type t) : t_(t) {}
-    explicit operator unsigned() const { return t_; }
+    constexpr FakeEnum(Type t = Value1) : t_(t) {}
+    constexpr explicit operator unsigned() const { return t_; }
 };
 // Only variant required
 static bool operator==(const FakeEnum& lhs, const FakeEnum::Type& rhs)
@@ -63,6 +63,11 @@ static std::ostream& operator<<(std::ostream& os, FakeEnum enumVal)
     return os << enumVal.t_;
 }
 
+DEFINE_MAX_ENUM_VALUE(DefaultEnum, DefaultEnum::Value2)
+DEFINE_MAX_ENUM_VALUE(SignedEnum, SignedEnum::Value2)
+DEFINE_MAX_ENUM_VALUE(UnsignedEnum, UnsignedEnum::Value2)
+DEFINE_MAX_ENUM_VALUE(FakeEnum, FakeEnum::Value2)
+
 } // namespace testEnums
 
 namespace helpers {
@@ -80,11 +85,6 @@ static std::ostream& operator<<(std::ostream& os, OptionalEnum<T> enumVal)
 } // namespace helpers
 
 using namespace testEnums;
-
-DEFINE_MAX_ENUM_VALUE(DefaultEnum, DefaultEnum::Value2)
-DEFINE_MAX_ENUM_VALUE(SignedEnum, SignedEnum::Value2)
-DEFINE_MAX_ENUM_VALUE(UnsignedEnum, UnsignedEnum::Value2)
-DEFINE_MAX_ENUM_VALUE(FakeEnum, FakeEnum::Value2)
 
 using EnumsToTest = boost::mpl::list<DefaultEnum, SignedEnum, UnsignedEnum, FakeEnum>;
 

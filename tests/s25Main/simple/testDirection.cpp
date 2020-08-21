@@ -33,7 +33,6 @@ BOOST_AUTO_TEST_CASE(DirectionCmp)
     BOOST_REQUIRE_NE(east, west);
     BOOST_REQUIRE_NE(east, Direction::WEST);
     BOOST_REQUIRE_NE(Direction::WEST, east2);
-    Direction dir;
 }
 
 BOOST_AUTO_TEST_CASE(DirectionIncDec)
