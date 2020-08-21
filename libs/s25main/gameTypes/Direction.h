@@ -19,7 +19,6 @@
 
 #include "helpers/EnumRange.h"
 #include "helpers/EnumTraits.h"
-#include "helpers/MaxEnumValue.h"
 
 /// "Enum" to represent one of the 6 directions from each node
 struct Direction
@@ -64,7 +63,10 @@ struct is_enum<Direction> : std::true_type
 {};
 } // namespace helpers
 
-DEFINE_MAX_ENUM_VALUE(Direction, Direction::SOUTHWEST)
+constexpr auto maxEnumValue(Direction)
+{
+    return Direction::SOUTHWEST;
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Implementation

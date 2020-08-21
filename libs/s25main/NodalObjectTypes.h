@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
 #include <cstdint>
 
 enum NodalObjectType : uint8_t
@@ -40,4 +39,7 @@ enum NodalObjectType : uint8_t
     NOP_SHIP,            // Schiff
     NOP_CHARBURNERPILE   // Holz-/Kohle-Haufen vom Köhler
 };
-DEFINE_MAX_ENUM_VALUE(NodalObjectType, NodalObjectType::NOP_CHARBURNERPILE)
+constexpr auto maxEnumValue(NodalObjectType)
+{
+    return NodalObjectType::NOP_CHARBURNERPILE;
+}

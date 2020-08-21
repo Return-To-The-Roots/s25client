@@ -18,7 +18,6 @@
 #pragma once
 
 #include "figures/noFigure.h"
-#include "helpers/MaxEnumValue.h"
 #include <cstdint>
 #include <vector>
 
@@ -41,7 +40,10 @@ enum CarrierState : uint8_t
     CARRS_BOATCARRIER_WANDERONWATER // Rumirren der Bootsträger auf dem Wasser, d.h. Paddeln zum
     // nächsten Ufer, nachdem der Wasserweg zerstört wurde
 };
-DEFINE_MAX_ENUM_VALUE(CarrierState, CarrierState::CARRS_BOATCARRIER_WANDERONWATER)
+constexpr auto maxEnumValue(CarrierState)
+{
+    return CarrierState::CARRS_BOATCARRIER_WANDERONWATER;
+}
 
 enum class CarrierType : uint8_t
 {
@@ -49,7 +51,10 @@ enum class CarrierType : uint8_t
     Donkey, // Esel
     Boat    // Träger mit Boot
 };
-DEFINE_MAX_ENUM_VALUE(CarrierType, CarrierType::Boat)
+constexpr auto maxEnumValue(CarrierType)
+{
+    return CarrierType::Boat;
+}
 
 class nofCarrier : public noFigure
 {

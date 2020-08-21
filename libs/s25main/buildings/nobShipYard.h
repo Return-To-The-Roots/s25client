@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
 #include "nobUsual.h"
 #include <cstdint>
 class SerializedGameData;
@@ -32,6 +31,7 @@ public:
         BOATS = 0, // baut kleine Boote
         SHIPS      // baut große Schiffe
     };
+    friend constexpr auto maxEnumValue(Mode) { return nobShipYard::Mode::SHIPS; }
 
 private:
     /// Aktueller Modus vom Schiffsbauer
@@ -53,4 +53,3 @@ public:
     /// Schaltet Modus entsprechend um
     void SetMode(Mode newMode);
 };
-DEFINE_MAX_ENUM_VALUE(nobShipYard::Mode, nobShipYard::Mode::SHIPS)

@@ -35,7 +35,10 @@ enum class RoadType : uint8_t
     Donkey, /// upgraded (with donkey) road
     Water   /// waterway
 };
-DEFINE_MAX_ENUM_VALUE(RoadType, RoadType::Water)
+constexpr auto maxEnumValue(RoadType)
+{
+    return RoadType::Water;
+}
 
 class RoadSegment : public GameObject
 {

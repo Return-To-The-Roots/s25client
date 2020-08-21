@@ -19,7 +19,6 @@
 
 #include "Rect.h"
 #include "enum_cast.hpp"
-#include "helpers/MaxEnumValue.h"
 #include "helpers/MultiArray.h"
 #include "ogl/glSmartBitmap.h"
 #include "resources/ResourceId.h"
@@ -66,7 +65,10 @@ enum class FontSize
     Normal,
     Large
 };
-DEFINE_MAX_ENUM_VALUE(FontSize, FontSize::Large)
+constexpr auto maxEnumValue(FontSize)
+{
+    return FontSize::Large;
+}
 
 void addDefaultResourceFolders(const RttrConfig& config, ArchiveLocator& locator,
                                const std::vector<Nation>& usedNations, const std::vector<AddonId>& enabledAddons);

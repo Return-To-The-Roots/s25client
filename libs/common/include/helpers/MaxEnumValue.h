@@ -40,8 +40,4 @@ constexpr unsigned MaxEnumValue_v = static_cast<helpers::underlying_type_t<T_Enu
 template<class T_Enum>
 constexpr unsigned NumEnumValues_v = MaxEnumValue_v<T_Enum> + 1u; // NOLINT
 
-// Helper macro to specialize the trait
-#define DEFINE_MAX_ENUM_VALUE(EnumType, maxValue) \
-    constexpr EnumType maxEnumValue(EnumType) { return maxValue; }
-
 } // namespace helpers

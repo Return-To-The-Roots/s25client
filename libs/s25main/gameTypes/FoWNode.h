@@ -19,7 +19,6 @@
 
 #include "Direction.h"
 #include "helpers/EnumArray.h"
-#include "helpers/MaxEnumValue.h"
 #include "gameTypes/MapTypes.h"
 #include <cstdint>
 #include <stdexcept>
@@ -35,7 +34,10 @@ enum class BorderStonePos
     HalfSouthWest
 };
 
-DEFINE_MAX_ENUM_VALUE(BorderStonePos, BorderStonePos::HalfSouthWest)
+constexpr auto maxEnumValue(BorderStonePos)
+{
+    return BorderStonePos::HalfSouthWest;
+}
 
 inline Direction toDirection(BorderStonePos dir)
 {

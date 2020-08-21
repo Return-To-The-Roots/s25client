@@ -26,8 +26,11 @@ enum PactType
     TREATY_OF_ALLIANCE,
     NON_AGGRESSION_PACT
 };
+constexpr auto maxEnumValue(PactType)
+{
+    return NON_AGGRESSION_PACT;
+}
 
-DEFINE_MAX_ENUM_VALUE(PactType, NON_AGGRESSION_PACT)
 /// Number of the various pacts
 constexpr unsigned NUM_PACTS = helpers::NumEnumValues_v<PactType>;
 

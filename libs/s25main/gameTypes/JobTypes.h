@@ -57,7 +57,10 @@ enum Job : unsigned char
     JOB_CHARBURNER         // 31
 };
 
-DEFINE_MAX_ENUM_VALUE(Job, JOB_CHARBURNER)
+constexpr auto maxEnumValue(Job)
+{
+    return JOB_CHARBURNER;
+}
 /// Number of job types
 constexpr unsigned NUM_JOB_TYPES = helpers::NumEnumValues_v<Job>;
 

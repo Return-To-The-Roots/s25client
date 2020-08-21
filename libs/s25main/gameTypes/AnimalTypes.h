@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
 #include <cstdint>
 
 /// Tierarten
@@ -32,4 +31,7 @@ enum Species : uint8_t
     SPEC_DUCK,
     SPEC_SHEEP
 };
-DEFINE_MAX_ENUM_VALUE(Species, Species::SPEC_SHEEP)
+constexpr auto maxEnumValue(Species)
+{
+    return Species::SPEC_SHEEP;
+}

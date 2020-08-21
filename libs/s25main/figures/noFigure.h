@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
 #include "helpers/OptionalEnum.h"
 #include "nodeObjs/noMovable.h"
 #include "gameTypes/MapCoordinates.h"
@@ -38,7 +37,10 @@ enum FigureState : uint8_t
     FS_WANDER,
     FS_JOB
 };
-DEFINE_MAX_ENUM_VALUE(FigureState, FigureState::FS_JOB)
+constexpr auto maxEnumValue(FigureState)
+{
+    return FigureState::FS_JOB;
+}
 
 class SerializedGameData;
 

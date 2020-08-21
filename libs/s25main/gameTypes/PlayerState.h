@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
 #include <cstdint>
 
 enum PlayerState : uint8_t
@@ -27,4 +26,7 @@ enum PlayerState : uint8_t
     PS_LOCKED,
     PS_AI
 };
-DEFINE_MAX_ENUM_VALUE(PlayerState, PlayerState::PS_AI)
+constexpr auto maxEnumValue(PlayerState)
+{
+    return PlayerState::PS_AI;
+}
