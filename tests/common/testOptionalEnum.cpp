@@ -63,10 +63,22 @@ static std::ostream& operator<<(std::ostream& os, FakeEnum enumVal)
     return os << enumVal.t_;
 }
 
-DEFINE_MAX_ENUM_VALUE(DefaultEnum, DefaultEnum::Value2)
-DEFINE_MAX_ENUM_VALUE(SignedEnum, SignedEnum::Value2)
-DEFINE_MAX_ENUM_VALUE(UnsignedEnum, UnsignedEnum::Value2)
-DEFINE_MAX_ENUM_VALUE(FakeEnum, FakeEnum::Value2)
+constexpr auto maxEnumValue(DefaultEnum)
+{
+    return DefaultEnum::Value2;
+}
+constexpr auto maxEnumValue(SignedEnum)
+{
+    return SignedEnum::Value2;
+}
+constexpr auto maxEnumValue(UnsignedEnum)
+{
+    return UnsignedEnum::Value2;
+}
+constexpr auto maxEnumValue(FakeEnum)
+{
+    return FakeEnum::Value2;
+}
 
 } // namespace testEnums
 

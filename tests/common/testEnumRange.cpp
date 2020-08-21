@@ -24,7 +24,10 @@ enum PlainEnum
     Second,
     Third
 };
-DEFINE_MAX_ENUM_VALUE(PlainEnum, PlainEnum::Third)
+constexpr auto maxEnumValue(PlainEnum)
+{
+    return PlainEnum::Third;
+}
 
 enum class IntEnum : int
 {
@@ -33,14 +36,20 @@ enum class IntEnum : int
     Third,
     Forth
 };
-DEFINE_MAX_ENUM_VALUE(IntEnum, IntEnum::Forth)
+constexpr auto maxEnumValue(IntEnum)
+{
+    return IntEnum::Forth;
+}
 
 enum class UnsignedEnum : unsigned
 {
     First,
     Second
 };
-DEFINE_MAX_ENUM_VALUE(UnsignedEnum, UnsignedEnum::Second)
+constexpr auto maxEnumValue(UnsignedEnum)
+{
+    return UnsignedEnum::Second;
+}
 
 BOOST_AUTO_TEST_CASE(PlainEnumWorks)
 {

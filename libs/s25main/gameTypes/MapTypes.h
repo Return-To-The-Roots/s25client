@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
 #include <cstdint>
 
 /// Sichtbarkeit für ALLE Spieler
@@ -27,7 +26,10 @@ enum Visibility : uint8_t
     VIS_FOW,           /// Fog of war
     VIS_VISIBLE        /// Visible
 };
-DEFINE_MAX_ENUM_VALUE(Visibility, Visibility::VIS_VISIBLE)
+constexpr auto maxEnumValue(Visibility)
+{
+    return Visibility::VIS_VISIBLE;
+}
 
 /// Granittyp
 enum GraniteType : uint8_t
@@ -35,7 +37,10 @@ enum GraniteType : uint8_t
     GT_1 = 0,
     GT_2
 };
-DEFINE_MAX_ENUM_VALUE(GraniteType, GraniteType::GT_2)
+constexpr auto maxEnumValue(GraniteType)
+{
+    return GraniteType::GT_2;
+}
 
 /// Flaggentyp
 enum FlagType : uint8_t
@@ -44,7 +49,10 @@ enum FlagType : uint8_t
     FT_LARGE,
     FT_WATER
 };
-DEFINE_MAX_ENUM_VALUE(FlagType, FlagType::FT_WATER)
+constexpr auto maxEnumValue(FlagType)
+{
+    return FlagType::FT_WATER;
+}
 
 /// Direction from a point where a road can go. Opposites are stored in neighbors
 enum class RoadDir
@@ -53,7 +61,10 @@ enum class RoadDir
     SouthEast,
     SouthWest
 };
-DEFINE_MAX_ENUM_VALUE(RoadDir, RoadDir::SouthWest)
+constexpr auto maxEnumValue(RoadDir)
+{
+    return RoadDir::SouthWest;
+}
 
 /// Type of the road "owned" by a point
 enum class PointRoad : unsigned char
@@ -63,4 +74,7 @@ enum class PointRoad : unsigned char
     Donkey,
     Boat
 };
-DEFINE_MAX_ENUM_VALUE(PointRoad, PointRoad::Boat)
+constexpr auto maxEnumValue(PointRoad)
+{
+    return PointRoad::Boat;
+}

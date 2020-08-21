@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
 #include "noBaseBuilding.h"
 #include "gameTypes/GoodTypes.h"
 #include <cstdint>
@@ -116,4 +115,7 @@ public:
     /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
     bool IsHarborBuildingSiteFromSea() const;
 };
-DEFINE_MAX_ENUM_VALUE(BuildingSiteState, BuildingSiteState::Building)
+constexpr auto maxEnumValue(BuildingSiteState)
+{
+    return BuildingSiteState::Building;
+}

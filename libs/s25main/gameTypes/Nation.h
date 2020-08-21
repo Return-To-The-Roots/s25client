@@ -22,14 +22,17 @@
 /// Nations (byte sized)
 enum Nation : unsigned char
 {
-    NAT_AFRICANS = 0,
+    NAT_AFRICANS,
     NAT_JAPANESE,
     NAT_ROMANS,
     NAT_VIKINGS,
     NAT_BABYLONIANS
 };
-DEFINE_MAX_ENUM_VALUE(Nation, NAT_BABYLONIANS)
+constexpr auto maxEnumValue(Nation)
+{
+    return NAT_BABYLONIANS;
+}
 
-/// Number of native notions
+/// Number of native nations
 constexpr unsigned NUM_NATIVE_NATIONS = 4;
 constexpr unsigned NUM_NATIONS = helpers::NumEnumValues_v<Nation>;

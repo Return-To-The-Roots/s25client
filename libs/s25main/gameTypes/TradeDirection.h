@@ -33,7 +33,10 @@ enum class TradeDirection : uint8_t
     ReachedGoal = 0xDD
 };
 
-DEFINE_MAX_ENUM_VALUE(TradeDirection, TradeDirection::ReachedGoal)
+constexpr auto maxEnumValue(TradeDirection)
+{
+    return TradeDirection::ReachedGoal;
+}
 
 inline TradeDirection toTradeDirection(const Direction dir) noexcept
 {

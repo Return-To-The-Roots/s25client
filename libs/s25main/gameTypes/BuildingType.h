@@ -64,7 +64,10 @@ enum BuildingType : uint8_t
     BLD_HARBORBUILDING, // 39
 };
 
-DEFINE_MAX_ENUM_VALUE(BuildingType, BLD_HARBORBUILDING)
+constexpr auto maxEnumValue(BuildingType)
+{
+    return BLD_HARBORBUILDING;
+}
 /// Number of building types
 constexpr unsigned NUM_BUILDING_TYPES = helpers::NumEnumValues_v<BuildingType>;
 

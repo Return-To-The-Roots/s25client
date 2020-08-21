@@ -61,7 +61,10 @@ enum GoodType : unsigned char
     /* 34 */ GD_SHIELDJAPANESE, // Schild
     /* 35 */ GD_NOTHING         // Nothing. Is not counted as a good. TODO: Remove
 };
-DEFINE_MAX_ENUM_VALUE(GoodType, GD_SHIELDJAPANESE)
+constexpr auto maxEnumValue(GoodType)
+{
+    return GD_SHIELDJAPANESE;
+}
 /// Number of goods
 constexpr unsigned NUM_WARE_TYPES = helpers::NumEnumValues_v<GoodType>;
 // Number of tools

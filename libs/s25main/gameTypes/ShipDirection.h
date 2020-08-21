@@ -18,7 +18,6 @@
 #pragma once
 
 #include "helpers/EnumTraits.h"
-#include "helpers/MaxEnumValue.h"
 
 /// "Enum" to represent one of the 6 directions a ship can go
 struct ShipDirection
@@ -54,8 +53,14 @@ private:
     operator T() const;
 };
 
-DEFINE_MAX_ENUM_VALUE(ShipDirection, ShipDirection::NORTHWEST)
-DEFINE_MAX_ENUM_VALUE(ShipDirection::Type, ShipDirection::NORTHWEST)
+constexpr auto maxEnumValue(ShipDirection)
+{
+    return ShipDirection::NORTHWEST;
+}
+constexpr auto maxEnumValue(ShipDirection::Type)
+{
+    return ShipDirection::NORTHWEST;
+}
 
 namespace helpers {
 template<>

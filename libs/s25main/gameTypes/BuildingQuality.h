@@ -15,7 +15,6 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
 #include <cstdint>
 
 /// Buildingqualities
@@ -29,7 +28,10 @@ enum BuildingQuality : uint8_t
     BQ_MINE,
     BQ_HARBOR
 };
-DEFINE_MAX_ENUM_VALUE(BuildingQuality, BuildingQuality::BQ_HARBOR)
+constexpr auto maxEnumValue(BuildingQuality)
+{
+    return BuildingQuality::BQ_HARBOR;
+}
 
 /// Return true iff the BQ found matches a required BQ. E.g. A building with a given size can be constructed on a given
 /// node
