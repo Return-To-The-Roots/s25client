@@ -460,7 +460,7 @@ void Loader::fillCaches()
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
-                    if(species == SPEC_DUCK)
+                    if(species == Species::Duck)
                         // Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
                         bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_id));
                     else

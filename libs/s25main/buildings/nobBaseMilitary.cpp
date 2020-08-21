@@ -350,7 +350,7 @@ bool nobBaseMilitary::IsAttackable(unsigned playerIdx) const
         return false;
 
     // If we cannot be seen by the player -> not attackable
-    if(gwg->CalcVisiblityWithAllies(pos, playerIdx) != VIS_VISIBLE)
+    if(gwg->CalcVisiblityWithAllies(pos, playerIdx) != Visibility::Visible)
         return false;
     // Else it depends on the team settings
     return gwg->GetPlayer(player).IsAttackable(playerIdx);

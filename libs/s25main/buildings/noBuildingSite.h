@@ -30,15 +30,15 @@ class Ware;
 class noFigure;
 class noRoadNode;
 
-enum class BuildingSiteState : uint8_t
-{
-    Planing,
-    Building
-};
-
 /// repräsentiert eine Baustelle
 class noBuildingSite : public noBaseBuilding
 {
+    enum class BuildingSiteState : uint8_t
+    {
+        Planing,
+        Building
+    };
+    friend constexpr auto maxEnumValue(BuildingSiteState) { return noBuildingSite::BuildingSiteState::Building; }
     friend class nofBuilder;
 
     /// Typ/Status der Baustelle
@@ -115,7 +115,3 @@ public:
     /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
     bool IsHarborBuildingSiteFromSea() const;
 };
-constexpr auto maxEnumValue(BuildingSiteState)
-{
-    return BuildingSiteState::Building;
-}

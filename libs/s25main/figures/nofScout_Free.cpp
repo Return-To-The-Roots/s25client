@@ -148,7 +148,7 @@ struct IsScoutable
     bool operator()(const MapPoint& pt) const
     {
         // Liegt Punkt im Nebel und für Figuren begehbar?
-        return gwg.CalcVisiblityWithAllies(pt, player) != VIS_VISIBLE && PathConditionHuman(gwg).IsNodeOk(pt);
+        return gwg.CalcVisiblityWithAllies(pt, player) != Visibility::Visible && PathConditionHuman(gwg).IsNodeOk(pt);
     }
 };
 } // namespace

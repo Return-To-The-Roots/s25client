@@ -782,7 +782,7 @@ class ExpeditionCommand : public GameCommand
 
 protected:
     /// Aktion, die ausgeführt wird
-    enum Action
+    enum class Action
     {
         FOUNDCOLONY = 0,
         CANCELEXPEDITION,

@@ -82,7 +82,7 @@ public:
                && (static_cast<const noBaseBuilding*>(no)->GetBuildingType() == bld);
     }
     /// Test whether the ai player can see a point
-    bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == VIS_VISIBLE; }
+    bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == Visibility::Visible; }
     /// Return true when the building quality at the 2nd point is lower than the bq on the first point
     bool CalcBQSumDifference(MapPoint pt1, MapPoint pt2) const;
     /// Return building quality on a given spot

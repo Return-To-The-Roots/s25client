@@ -22,6 +22,7 @@
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/MapCoordinates.h"
+#include "s25util/strAlgos.h"
 #include <kaguya/kaguya.hpp>
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, AddEnvObject, 3, 4)
@@ -30,15 +31,15 @@ KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddStaticObjectWrapper, LuaWorld, AddStaticObje
 void LuaWorld::Register(kaguya::State& state)
 {
 #pragma region ConstDefs
-#define ADD_LUA_CONST(name) state[#name] = name
-    ADD_LUA_CONST(SPEC_POLARBEAR);
-    ADD_LUA_CONST(SPEC_RABBITWHITE);
-    ADD_LUA_CONST(SPEC_RABBITGREY);
-    ADD_LUA_CONST(SPEC_FOX);
-    ADD_LUA_CONST(SPEC_STAG);
-    ADD_LUA_CONST(SPEC_DEER);
-    ADD_LUA_CONST(SPEC_DUCK);
-    ADD_LUA_CONST(SPEC_SHEEP);
+#define ADD_LUA_CONST(name) state["SPEC_" + s25util::toUpper(#name)] = Species::name
+    ADD_LUA_CONST(PolarBear);
+    ADD_LUA_CONST(RabbitWhite);
+    ADD_LUA_CONST(RabbitGrey);
+    ADD_LUA_CONST(Fox);
+    ADD_LUA_CONST(Stag);
+    ADD_LUA_CONST(Deer);
+    ADD_LUA_CONST(Duck);
+    ADD_LUA_CONST(Sheep);
 #undef ADD_LUA_CONST
 #pragma endregion ConstDefs
 

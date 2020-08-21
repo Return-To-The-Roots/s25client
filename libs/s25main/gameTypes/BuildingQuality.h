@@ -20,7 +20,7 @@
 /// Buildingqualities
 enum BuildingQuality : uint8_t
 {
-    BQ_NOTHING = 0,
+    BQ_NOTHING,
     BQ_FLAG,
     BQ_HUT,
     BQ_HOUSE,

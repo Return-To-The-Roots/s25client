@@ -38,7 +38,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 
     Visibility visibility = gwv.GetVisibility(pt);
 
-    if(visibility == VIS_INVISIBLE)
+    if(visibility == Visibility::Invisible)
     {
         dos[GetMMIdx(pt)] = DO_INVISIBLE;
         // Man sieht nichts --> schwarz
@@ -47,7 +47,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     {
         DrawnObject drawn_object = DO_INVALID;
 
-        const bool fow = (visibility == VIS_FOW);
+        const bool fow = (visibility == Visibility::FoW);
 
         unsigned char owner;
         NodalObjectType noType = NOP_NOTHING;

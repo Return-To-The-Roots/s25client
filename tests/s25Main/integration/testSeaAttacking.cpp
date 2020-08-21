@@ -62,7 +62,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         // Make sure attacking is not limited by visibility
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
-            world.SetVisibility(pt, 2, VIS_VISIBLE);
+            world.SetVisibility(pt, 2, Visibility::Visible);
         }
 
         // Block diagonals with granite so no human path is possible
@@ -426,11 +426,11 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, SeaAttackFixture)
     TestFailingSeaAttack(hqPos[1]);
 
     // Invisible point
-    world.SetVisibility(hqPos[0], 1, VIS_FOW, em.GetCurrentGF());
-    world.SetVisibility(hqPos[0], 2, VIS_FOW, em.GetCurrentGF());
+    world.SetVisibility(hqPos[0], 1, Visibility::FoW, em.GetCurrentGF());
+    world.SetVisibility(hqPos[0], 2, Visibility::FoW, em.GetCurrentGF());
     TestFailingSeaAttack(hqPos[0]);
     // Visible for ally
-    world.SetVisibility(hqPos[0], 1, VIS_VISIBLE);
+    world.SetVisibility(hqPos[0], 1, Visibility::Visible);
 
     // Attackable
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 5u);

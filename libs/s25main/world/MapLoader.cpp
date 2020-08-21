@@ -98,7 +98,7 @@ void MapLoader::SetMapExplored(World& world)
         for(unsigned i = 0; i < MAX_PLAYERS; ++i)
         {
             // If we have FoW here, save it
-            if(world.GetNode(pt).fow[i].visibility == VIS_FOW)
+            if(world.GetNode(pt).fow[i].visibility == Visibility::FoW)
                 world.SaveFOWNode(pt, i, 0);
         }
     }
@@ -165,10 +165,10 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         Visibility fowVisibility;
         switch(exploration)
         {
-            case EXP_DISABLED: fowVisibility = VIS_VISIBLE; break;
+            case EXP_DISABLED: fowVisibility = Visibility::Visible; break;
             case EXP_CLASSIC:
-            case EXP_FOGOFWAR: fowVisibility = VIS_INVISIBLE; break;
-            case EXP_FOGOFWARE_EXPLORED: fowVisibility = VIS_FOW; break;
+            case EXP_FOGOFWAR: fowVisibility = Visibility::Invisible; break;
+            case EXP_FOGOFWARE_EXPLORED: fowVisibility = Visibility::FoW; break;
             default: throw std::invalid_argument("Visibility for FoW");
         }
 
@@ -358,15 +358,15 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
         Species species;
         switch(map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y))
         {
-            // TODO: Welche ID ist Polarb�r?
+            // TODO: Which id is the polar bear?
             case 1:
-                species = Species(SPEC_RABBITWHITE + RANDOM.Rand(__FILE__, __LINE__, 0, 2));
-                break; // zuf�llige Hasenart nehmen
-            case 2: species = SPEC_FOX; break;
-            case 3: species = SPEC_STAG; break;
-            case 4: species = SPEC_DEER; break;
-            case 5: species = SPEC_DUCK; break;
-            case 6: species = SPEC_SHEEP; break;
+                species = (RANDOM.Rand(__FILE__, __LINE__, 0, 2) == 0) ? Species::RabbitWhite : Species::RabbitGrey;
+                break; // Random rabbit
+            case 2: species = Species::Fox; break;
+            case 3: species = Species::Stag; break;
+            case 4: species = Species::Deer; break;
+            case 5: species = Species::Duck; break;
+            case 6: species = Species::Sheep; break;
             case 0:
             case 0xFF: // 0xFF is for (really) old S2 maps
                 continue;

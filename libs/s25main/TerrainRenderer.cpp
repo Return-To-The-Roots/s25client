@@ -225,15 +225,15 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
     float clr = -1.f / (256.f * 256.f) * shadow * shadow + 1.f / 90.f * shadow + 0.38f;
     switch(gwv.GetVisibility(pt))
     {
-        case VIS_INVISIBLE:
+        case Visibility::Invisible:
             // Unsichtbar -> schwarz
             GetVertex(pt).color = 0.0f;
             break;
-        case VIS_FOW:
+        case Visibility::FoW:
             // Fog of War -> abgedunkelt
             GetVertex(pt).color = clr / 4.f;
             break;
-        case VIS_VISIBLE:
+        case Visibility::Visible:
             // Normal sichtbar
             GetVertex(pt).color = clr / 2.f;
             break;

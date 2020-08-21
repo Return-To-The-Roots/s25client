@@ -1163,9 +1163,9 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
             case EXP_FOGOFWAR:
             case EXP_FOGOFWARE_EXPLORED:
                 // wenn es mal sichtbar war, nun im Nebel des Krieges
-                if(visibility_before == VIS_VISIBLE)
+                if(visibility_before == Visibility::Visible)
                 {
-                    SetVisibility(pt, player, VIS_FOW, GetEvMgr().GetCurrentGF());
+                    SetVisibility(pt, player, Visibility::FoW, GetEvMgr().GetCurrentGF());
                 }
                 break;
             default: throw std::logic_error("Invalid exploration value");
@@ -1175,7 +1175,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
 
 void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
 {
-    SetVisibility(pt, player, VIS_VISIBLE);
+    SetVisibility(pt, player, Visibility::Visible);
 }
 
 void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,
@@ -1221,7 +1221,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         // Muss vorher undaufgedeckt oder FOW gewesen sein, aber in dem Fall darf dort vorher noch kein
         // Territorium entdeckt worden sein
         unsigned char current_owner = GetNode(tt).owner;
-        if(current_owner && (old_vis == VIS_INVISIBLE || (old_vis == VIS_FOW && old_owner != current_owner)))
+        if(current_owner && (old_vis == Visibility::Invisible || (old_vis == Visibility::FoW && old_owner != current_owner)))
         {
             if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {
@@ -1244,7 +1244,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         // Muss vorher undaufgedeckt oder FOW gewesen sein, aber in dem Fall darf dort vorher noch kein
         // Territorium entdeckt worden sein
         unsigned char current_owner = GetNode(tt).owner;
-        if(current_owner && (old_vis == VIS_INVISIBLE || (old_vis == VIS_FOW && old_owner != current_owner)))
+        if(current_owner && (old_vis == Visibility::Invisible || (old_vis == Visibility::FoW && old_owner != current_owner)))
         {
             if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {
@@ -1395,7 +1395,7 @@ std::vector<unsigned> GameWorldGame::GetUnexploredHarborPoints(const unsigned hb
     {
         if(i == hbIdToSkip || !IsHarborAtSea(i, seaId))
             continue;
-        if(CalcVisiblityWithAllies(GetHarborPoint(i), playerId) != VIS_VISIBLE)
+        if(CalcVisiblityWithAllies(GetHarborPoint(i), playerId) != Visibility::Visible)
             hps.push_back(i);
     }
     return hps;
@@ -1409,7 +1409,7 @@ MapNode& GameWorldGame::GetNodeWriteable(const MapPoint pt)
 void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis)
 {
     GameWorldBase::VisibilityChanged(pt, player, oldVis, newVis);
-    if(oldVis == VIS_INVISIBLE && newVis == VIS_VISIBLE && HasLua())
+    if(oldVis == Visibility::Invisible && newVis == Visibility::Visible && HasLua())
         GetLua().EventExplored(player, pt, GetNode(pt).owner);
     // Minimap Bescheid sagen
     if(gi)

@@ -35,7 +35,8 @@
 struct LandscapeDesc;
 class CatapultStone;
 class noBase;
-struct ShipDirection;
+enum class ShipDirection : uint8_t;
+
 /// Base class representing the world itself, no algorithms, handlers etc!
 class World : public MapBase
 {

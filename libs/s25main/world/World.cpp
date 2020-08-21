@@ -206,9 +206,9 @@ void World::SetVisibility(const MapPoint pt, unsigned char player, Visibility vi
         return;
 
     node.visibility = vis;
-    if(vis == VIS_VISIBLE)
+    if(vis == Visibility::Visible)
         deletePtr(node.object);
-    else if(vis == VIS_FOW)
+    else if(vis == Visibility::FoW)
         SaveFOWNode(pt, player, fowTime);
     VisibilityChanged(pt, player, oldVis, vis);
 }

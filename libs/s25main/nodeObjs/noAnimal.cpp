@@ -79,7 +79,7 @@ void noAnimal::Draw(DrawPoint drawPt)
             LOADER.getAnimalSprite(species, GetCurMoveDir(), ani_step).draw(drawPt);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
-            if(species == SPEC_DUCK || species == SPEC_SHEEP)
+            if(species == Species::Duck || species == Species::Sheep)
             {
                 unsigned now = VIDEODRIVER.GetTickCount();
                 // Wurde der Soundzeitpunkt schon überschritten?
@@ -87,7 +87,7 @@ void noAnimal::Draw(DrawPoint drawPt)
                 {
                     // Wenns in dem jeweiligen Rahmen liegt, Sound abspielen
                     if((now < sound_moment + 1000) && !GAMECLIENT.IsPaused())
-                        LOADER.GetSoundN("sound", (species == SPEC_SHEEP) ? 94 : 95)->Play(50 + rand() % 70, false);
+                        LOADER.GetSoundN("sound", (species == Species::Sheep) ? 94 : 95)->Play(50 + rand() % 70, false);
 
                     // Neuen Zeitpunkt errechnen
                     sound_moment = now + 8000 + rand() % 5000;
@@ -236,7 +236,7 @@ void noAnimal::Walked()
             }
 
             // Bei Enten und Schafen: Soundzeitpunkt ggf. setzen
-            if(species == SPEC_DUCK || species == SPEC_SHEEP)
+            if(species == Species::Duck || species == Species::Sheep)
             {
                 unsigned now = VIDEODRIVER.GetTickCount();
                 // Wurde der Soundzeitpunkt schon überschritten?
@@ -261,13 +261,13 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
         DescIdx<TerrainDesc> tLeft = gwg->GetLeftTerrain(pos, dir);
         DescIdx<TerrainDesc> tRight = gwg->GetRightTerrain(pos, dir);
 
-        if(species == SPEC_DUCK)
+        if(species == Species::Duck)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein
             if(gwg->GetDescription().get(tLeft).kind == TerrainKind::WATER
                && gwg->GetDescription().get(tRight).kind == TerrainKind::WATER)
                 return dir;
-        } else if(species == SPEC_POLARBEAR)
+        } else if(species == Species::PolarBear)
         {
             // Polarbären laufen nur auf Schnee rum
             if(gwg->GetDescription().get(tLeft).kind == TerrainKind::SNOW
@@ -308,7 +308,7 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
 bool noAnimal::CanHunted() const
 {
     // Enten sowie Tiere, die bereits gejagt werden, oder schon tot daliegen, können nicht gejagt werden
-    return (species != SPEC_DUCK && state != STATE_DEAD && state != STATE_DISAPPEARING && !hunter);
+    return (species != Species::Duck && state != STATE_DEAD && state != STATE_DISAPPEARING && !hunter);
 }
 
 void noAnimal::BeginHunting(nofHunter* hunter)

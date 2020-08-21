@@ -20,6 +20,7 @@
 #include "RttrForeachPt.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
+#include "enum_cast.hpp"
 #include "helpers/EnumRange.h"
 #include "lua/LuaTraits.h" // IWYU pragma: keep
 #include "notifications/BuildingNote.h"
@@ -41,6 +42,11 @@
 #include <memory>
 #include <utility>
 #include <vector>
+
+static std::ostream& operator<<(std::ostream& os, Species spec)
+{
+    return os << unsigned(rttr::enum_cast(spec));
+}
 
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
 
@@ -624,12 +630,12 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(figs.size(), 1u);
     const noAnimal* animal = dynamic_cast<noAnimal*>(figs.front());
     BOOST_REQUIRE(animal);
-    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), SPEC_DEER); //-V522
+    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), Species::Deer); //-V522
     executeLua(boost::format("world:AddAnimal(%1%, %2%, SPEC_FOX)") % animalPos.x % animalPos.y);
     BOOST_REQUIRE_EQUAL(figs.size(), 2u);
     animal = dynamic_cast<noAnimal*>(figs.back());
     BOOST_REQUIRE(animal);
-    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), SPEC_FOX);
+    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), Species::Fox);
 }
 
 BOOST_AUTO_TEST_CASE(WorldEvents)
@@ -787,7 +793,7 @@ BOOST_AUTO_TEST_CASE(onExplored)
         const MapNode& node = world.GetNode(pt);
         for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         {
-            if(node.fow[i].visibility == VIS_VISIBLE)
+            if(node.fow[i].visibility == Visibility::Visible)
                 gamePtsPerPlayer[i].push_back(std::pair<int, int>(pt.x, pt.y));
         }
     }

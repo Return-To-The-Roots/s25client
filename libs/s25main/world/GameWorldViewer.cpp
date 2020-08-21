@@ -109,11 +109,11 @@ Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
 {
     /// Replaymodus und FoW aus? Dann alles sichtbar
     if(GAMECLIENT.IsReplayModeOn() && GAMECLIENT.IsReplayFOWDisabled())
-        return VIS_VISIBLE;
+        return Visibility::Visible;
 
     // Spieler schon tot? Dann auch alles sichtbar?
     if(GetPlayer().IsDefeated())
-        return VIS_VISIBLE;
+        return Visibility::Visible;
 
     return GetWorld().CalcVisiblityWithAllies(pt, playerId_);
 }
@@ -146,9 +146,9 @@ void GameWorldViewer::RecalcAllColors()
 /// liefert sichtbare Straße, im FoW entsprechend die FoW-Straße
 PointRoad GameWorldViewer::GetVisibleRoad(const MapPoint pt, RoadDir roadDir, const Visibility visibility) const
 {
-    if(visibility == VIS_VISIBLE)
+    if(visibility == Visibility::Visible)
         return GetVisibleRoad(pt, roadDir);
-    else if(visibility == VIS_FOW)
+    else if(visibility == Visibility::FoW)
         return GetYoungestFOWNode(pt).roads[roadDir];
     else
         return PointRoad::None;
@@ -310,7 +310,7 @@ const FoWNode& GameWorldViewer::GetYoungestFOWNode(const MapPoint pos) const
                 continue;
             // Has the player FOW at this point at all?
             const FoWNode* curNode = &node.fow[i];
-            if(curNode->visibility == VIS_FOW)
+            if(curNode->visibility == Visibility::FoW)
             {
                 // Younger than the youngest or no object at all?
                 if(curNode->last_update_time > youngest_time)
