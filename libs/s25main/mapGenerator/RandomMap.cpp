@@ -334,7 +334,7 @@ namespace rttr { namespace mapGenerator {
         PlaceHeadQuarters(map, rnd, map.players);
     }
 
-    void CreateRandomMap(const std::string& filePath, const MapSettings& settings)
+    void CreateRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings)
     {
         std::cout << "===== NEW RANDOM MAP =====" << std::endl;
 

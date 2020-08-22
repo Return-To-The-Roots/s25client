@@ -22,6 +22,8 @@
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/RandomUtility.h"
 
+#include <boost/filesystem/path.hpp>
+
 namespace rttr { namespace mapGenerator {
 
     // helpers
@@ -41,7 +43,7 @@ namespace rttr { namespace mapGenerator {
 
     void CreateValley(RandomUtility& rnd, Map& map, Texturizer& texturizer);
 
-    void CreateRandomMap(const std::string& filePath, const MapSettings& settings);
+    void CreateRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings);
 
 }} // namespace rttr::mapGenerator
 
