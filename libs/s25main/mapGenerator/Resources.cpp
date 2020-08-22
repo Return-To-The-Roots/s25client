@@ -139,14 +139,22 @@ namespace rttr { namespace mapGenerator {
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            auto prob = probabilities[pt];
+            auto treeProb = probabilities[pt];
 
-            if(prob > 0 && rnd.ByChance(prob))
+            if(treeProb > 0 && rnd.ByChance(treeProb))
             {
                 auto tree = treeForPoint(pt);
 
                 map.objectInfos[pt] = tree.type;
                 map.objectTypes[pt] = tree.index + rnd.Rand(0, 7);
+            }
+
+            auto graniteProb = probabilities[pt] / 4;
+
+            if(graniteProb > 0 && rnd.ByChance(graniteProb))
+            {
+                map.objectInfos[pt] = rnd.ByChance(50) ? 0xCC : 0xCD;
+                map.objectTypes[pt] = rnd.Rand(1, 6);
             }
         }
     }
@@ -218,64 +226,5 @@ namespace rttr { namespace mapGenerator {
             }
         }
     }
-
-    /*
-    int GetStoneProbability(const Texture& texture, const TextureMapping_& mapping, int freeZoneDistance)
-    {
-        if (freeZoneDistance < 10 || texture == mapping.water)
-        {
-            return 0;
-        }
-
-        return 2;
-    }
-
-    void PlaceStones(Map_& map,
-                     RandomUtility& rnd,
-                     const TextureMapping_& mapping,
-                     const std::vector<int>& freeZone)
-    {
-        auto size = map.size.x * map.size.y;
-        auto textures = map.textureRsu;
-        auto stoneTypes = std::vector<int>{ 0xCC, 0xCD };
-
-        for (int i = 0; i < size; ++i)
-        {
-            auto prob = GetStoneProbability(textures[i], mapping, freeZone[i]);
-
-            if (rnd.ByChance(prob))
-            {
-                auto position = GridPosition(i, map.size);
-                auto neighbors = GridCollect(position, map.size, rnd.DRand(0.0, 2.0));
-
-                for (auto neighbor : neighbors)
-                {
-                    auto index = neighbor.x + neighbor.y * map.size.x;
-                    if (mapping.IsBuildable(textures[index]))
-                    {
-                        auto type = rnd.Index(stoneTypes.size());
-
-                        map.objectType[index] = rnd.Rand(1, 6);
-                        map.objectInfo[index] = stoneTypes[type];
-                    }
-                }
-            }
-        }
-    }
-
-    void PlaceResources(Map_& map,
-                        RandomUtility& rnd,
-                        const TextureMapping_& mapping,
-                        const MapSettings& settings)
-    {
-        auto isHqOrHarbor = [map] (int index) { return IsHeadQuarterOrHarborPosition(map, index); };
-        const auto& freeZone = DistanceByProperty(map.size, isHqOrHarbor);
-
-        PlaceTrees(map, rnd, mapping, freeZone);
-        PlaceStones(map, rnd, mapping, freeZone);
-        PlaceMinesAndFish(map, rnd, mapping, settings);
-        PlaceAnimals(map, rnd, mapping);
-    }
-    */
 
 }} // namespace rttr::mapGenerator
