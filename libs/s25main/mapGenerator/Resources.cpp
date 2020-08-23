@@ -50,7 +50,7 @@ namespace rttr { namespace mapGenerator {
 
         if(landscapeId == 0x2) // winter
         {
-            return {fir, oak, birch, cherry, pine, cypress, oak, birch, cherry, pine, cypress};
+            return {fir, oak, birch, cherry, pine, oak, birch, cherry, pine};
         }
 
         throw std::invalid_argument("invalid landscape type");
