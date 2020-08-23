@@ -60,8 +60,8 @@ namespace rttr { namespace mapGenerator {
     {
         ValueMap<unsigned> probabilities(map.size, 0u);
 
-        // Do not allow to place trees on head quarters or harbor positions
-        // to avoid inaccessible harbors or invalid player positions.
+        // Do not allow to place trees/stone piles nearby head quarters or
+        // harbor positions to avoid inaccessible harbors or invalid player positions.
 
         auto isForbidden = [&map](const MapPoint& pt) {
             return map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask
@@ -78,7 +78,7 @@ namespace rttr { namespace mapGenerator {
         // 2) probabilities
         // 2a) non-mountains: distance to water
         // 2b) mountains: max prob - distance to non-mountain
-        // 3c) forbidden area: 0
+        // 2c) forbidden area: 0
         // 3) tree type
         // 3a) non-mountains: distance to water
         // 3b) mountains: last element of trees
