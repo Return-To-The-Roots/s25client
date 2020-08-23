@@ -218,7 +218,7 @@ namespace rttr { namespace mapGenerator {
                 if(map.textures.All(pt, IsWater))
                 {
                     map.animals[pt] = libsiedler2::Animal::Duck;
-                } else
+                } else if(map.textures.All(pt, IsLand))
                 {
                     map.animals[pt] = landAnimals[rnd.Index(landAnimals.size())];
                 }
