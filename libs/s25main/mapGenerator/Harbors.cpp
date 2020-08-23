@@ -47,13 +47,16 @@ namespace rttr { namespace mapGenerator {
         auto harborTexture = textures.Find(IsBuildableCoast);
         auto triangles = GetTriangles(position, map.size);
 
-        auto containsWater = [&textures](const Triangle& triangle) { return textures.Check(triangle, IsWater); };
+        auto isWater = [&textures](const Triangle& triangle) { return textures.Check(triangle, IsWater); };
 
-        for(Triangle triangle : triangles)
+        for(const Triangle& triangle : triangles)
         {
             textures.Set(triangle, harborTexture);
+        }
 
-            if(helpers::contains_if(GetTriangleNeighbors(triangle, map.size), containsWater))
+        for(const Triangle& triangle : triangles)
+        {
+            if(helpers::contains_if(GetTriangleNeighbors(triangle, map.size), isWater))
             {
                 map.harbors.push_back(triangle);
             }
