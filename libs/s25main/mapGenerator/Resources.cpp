@@ -69,7 +69,7 @@ namespace rttr { namespace mapGenerator {
         };
 
         auto isForbiddenArea = [&isForbidden, &map](const MapPoint& pt) {
-            return helpers::contains_if(map.textures.GetPointsInRadiusWithCenter(pt, 5), isForbidden);
+            return helpers::contains_if(map.textures.GetPointsInRadiusWithCenter(pt, 5), isForbidden) || map.textures.Any(pt, IsSnowOrLava);
         };
 
         auto distanceToForbiddenArea = Distances(map.size, isForbiddenArea);
@@ -210,7 +210,6 @@ namespace rttr { namespace mapGenerator {
     {
         std::vector<libsiedler2::Animal> landAnimals{libsiedler2::Animal::Rabbit, libsiedler2::Animal::Fox, libsiedler2::Animal::Stag,
                                                      libsiedler2::Animal::Deer, libsiedler2::Animal::Sheep};
-        std::vector<libsiedler2::Animal> waterAnimals{libsiedler2::Animal::Duck, libsiedler2::Animal::Duck2};
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
@@ -218,7 +217,7 @@ namespace rttr { namespace mapGenerator {
             {
                 if(map.textures.All(pt, IsWater))
                 {
-                    map.animals[pt] = waterAnimals[rnd.Index(waterAnimals.size())];
+                    map.animals[pt] = libsiedler2::Animal::Duck;
                 } else
                 {
                     map.animals[pt] = landAnimals[rnd.Index(landAnimals.size())];
