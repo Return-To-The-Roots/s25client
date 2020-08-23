@@ -62,11 +62,9 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
         combo->AddString(boost::str(boost::format(_("%1% players")) % n));
 
     combo = AddComboBox(CTRL_MAP_STYLE, DrawPoint(20, 60), Extent(210, 20), TC_GREY, NormalFont, 100);
-    combo->AddString(_("Continental"));
-    combo->AddString(_("Valley"));
-    combo->AddString(_("Islands"));
-    combo->AddString(_("Rivers"));
-    combo->AddString(_("Random"));
+    combo->AddString(_("Water"));
+    combo->AddString(_("Land"));
+    combo->AddString(_("Mixed"));
 
     combo = AddComboBox(CTRL_MAP_SIZE, DrawPoint(20, 90), Extent(210, 20), TC_GREY, NormalFont, 100);
     combo->AddString("64 x 64");
@@ -121,11 +119,9 @@ void iwMapGenerator::Apply()
 
     switch(GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection().get())
     {
-        case 0: mapSettings.style = MapStyle::Continental; break;
-        case 1: mapSettings.style = MapStyle::Valley; break;
-        case 2: mapSettings.style = MapStyle::Islands; break;
-        case 3: mapSettings.style = MapStyle::Rivers; break;
-        case 4: mapSettings.style = MapStyle::Random; break;
+        case 0: mapSettings.style = MapStyle::Water; break;
+        case 1: mapSettings.style = MapStyle::Land; break;
+        case 2: mapSettings.style = MapStyle::Mixed; break;
         default: break;
     }
     switch(GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->GetSelection().get())
@@ -159,11 +155,9 @@ void iwMapGenerator::Reset()
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE);
     switch(mapSettings.style)
     {
-        case MapStyle::Continental: combo->SetSelection(0); break;
-        case MapStyle::Valley: combo->SetSelection(1); break;
-        case MapStyle::Islands: combo->SetSelection(2); break;
-        case MapStyle::Rivers: combo->SetSelection(3); break;
-        case MapStyle::Random: combo->SetSelection(4); break;
+        case MapStyle::Water: combo->SetSelection(0); break;
+        case MapStyle::Land: combo->SetSelection(1); break;
+        case MapStyle::Mixed: combo->SetSelection(2); break;
         default: break;
     }
 

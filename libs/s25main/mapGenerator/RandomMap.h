@@ -37,11 +37,13 @@ namespace rttr { namespace mapGenerator {
 
     void SmoothHeightMap(ValueMap<uint8_t>& z, const ValueRange<uint8_t>& range);
 
-    void CreateContinental(RandomUtility& rnd, Map& map, Texturizer& texturizer);
+    void CreateMixedMap(RandomUtility& rnd, Map& map, Texturizer& texturizer);
 
-    void CreateIslands(RandomUtility& rnd, Map& map, Texturizer& texturizer);
+    void CreateWaterMap(RandomUtility& rnd, Map& map, Texturizer& texturizer);
 
     void CreateValley(RandomUtility& rnd, Map& map, Texturizer& texturizer);
+
+    void CreateLandMap(RandomUtility& rnd, Map& map, Texturizer& texturizer);
 
     void CreateRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings);
 

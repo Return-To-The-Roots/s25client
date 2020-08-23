@@ -27,18 +27,16 @@ namespace rttr { namespace mapGenerator {
 
     enum class MapStyle
     {
-        Continental,
-        Valley,
-        Islands,
-        Rivers,
-        Random
+        Water,
+        Land,
+        Mixed
     };
 
     struct MapSettings
     {
         MapSettings()
-            : numPlayers(2), size(MapExtent::all(256)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15), type(0),
-              style(MapStyle::Random)
+            : numPlayers(2), size(MapExtent::all(128)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15), type(0),
+              style(MapStyle::Mixed)
         {}
 
         void Validate();

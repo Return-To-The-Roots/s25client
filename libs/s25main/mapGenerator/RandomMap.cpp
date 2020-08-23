@@ -148,7 +148,7 @@ namespace rttr { namespace mapGenerator {
         PrintStatisticsForHeightMap(z);
     }
 
-    void CreateContinental(RandomUtility& rnd, Map& map, Texturizer& texturizer)
+    void CreateMixedMap(RandomUtility& rnd, Map& map, Texturizer& texturizer)
     {
         MapPoint origin(0, 0);
         MapPoint center(map.size.x / 2, map.size.y / 2);
@@ -195,7 +195,7 @@ namespace rttr { namespace mapGenerator {
         PlaceHeadQuarters(map, rnd, map.players);
     }
 
-    void CreateIslands(RandomUtility& rnd, Map& map, Texturizer& texturizer)
+    void CreateWaterMap(RandomUtility& rnd, Map& map, Texturizer& texturizer)
     {
         MapPoint origin(0, 0);
         MapPoint center(map.size.x / 2, map.size.y / 2);
@@ -257,21 +257,13 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
-    void CreateValley(RandomUtility& rnd, Map& map, Texturizer& texturizer)
+    void CreateLandMap(RandomUtility& rnd, Map& map, Texturizer& texturizer)
     {
-        MapPoint origin(0, 0);
-        MapPoint center(map.size.x / 2, map.size.y / 2);
-
-        unsigned maxDistance = map.z.CalcDistance(origin, center);
-
         std::vector<MapPoint> focus;
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            auto weight = static_cast<float>(map.z.CalcDistance(pt, center)) / maxDistance;
-            auto percentage = static_cast<unsigned>(15 * weight * weight);
-
-            if(rnd.ByChance(percentage))
+            if(rnd.ByChance(5))
             {
                 focus.push_back(pt);
             }
@@ -280,57 +272,16 @@ namespace rttr { namespace mapGenerator {
         Restructure(map, focus);
         SmoothHeightMap(map.z, map.height);
 
-        const double sea = 0.15;
-        const double mountain = 0.55;
+        const double sea = rnd.DRand(0.1, 0.2);
+        const double mountain = rnd.DRand(0.2, 0.7 - sea);
         const double land = 1. - sea - mountain;
 
         ResetSeaLevel(map, rnd, LimitFor(map.z, sea, map.height.minimum));
 
         auto mountainLevel = LimitFor(map.z, land, static_cast<uint8_t>(1)) + 1;
 
-        std::vector<River> rivers;
-
-        const unsigned riverLength = (map.size.x + map.size.y) / 3;
-
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            if(rnd.ByChance(50))
-            {
-                rivers.push_back(CreateStream(rnd, map, origin, Direction(i), riverLength));
-            }
-        }
-
-        std::vector<Direction> horizontal{Direction::WEST, Direction::EAST};
-
-        const MapPoint centerLeft(0, map.size.y / 2);
-
-        for(auto dir : horizontal)
-        {
-            if(rnd.ByChance(50))
-            {
-                rivers.push_back(CreateStream(rnd, map, centerLeft, dir, riverLength));
-            }
-        }
-
-        const auto totalWaterNodes = Count(map.z, map.height.minimum, map.height.minimum);
-        const auto numberOfIslands = static_cast<unsigned>(rnd.Rand(0, 2));
-        const auto minimumIslandSize = 50u;
-
-        const auto islandRadius = GetIslandRadius(map.size);
-        const auto distanceToLand = islandRadius * 2;
-
-        auto islandNodes = static_cast<unsigned>(0.4 * totalWaterNodes);
-
-        for(unsigned i = 0; i < numberOfIslands && islandNodes > minimumIslandSize; i++)
-        {
-            const unsigned islandSize = rnd.Rand(minimumIslandSize, islandNodes);
-            const auto& island = CreateIsland(map, rnd, distanceToLand, islandSize, islandRadius, .2);
-            islandNodes -= island.size();
-        }
-
         texturizer.AddTextures(mountainLevel, GetCoastline(map.size));
 
-        PlaceHarbors(map, 20, 25, rivers);
         PlaceHeadQuarters(map, rnd, map.players);
     }
 
@@ -368,70 +319,17 @@ namespace rttr { namespace mapGenerator {
 
         map.z.Resize(settings.size, defaultHeight);
 
-        if(settings.style == MapStyle::Islands)
+        if(settings.style == MapStyle::Water)
         {
-            CreateIslands(rnd, map, texturizer);
-        } else if(settings.style == MapStyle::Valley)
+            CreateWaterMap(rnd, map, texturizer);
+        } else if(settings.style == MapStyle::Mixed)
         {
-            CreateValley(rnd, map, texturizer);
-        } else if(settings.style == MapStyle::Continental)
-        {
-            CreateContinental(rnd, map, texturizer);
+            CreateMixedMap(rnd, map, texturizer);
         } else
         {
-            RTTR_FOREACH_PT(MapPoint, map.size)
-            {
-                map.z[pt] = static_cast<uint8_t>(rnd.Rand(map.height.minimum, map.height.maximum));
-            }
-
-            for(int i = 0; i < 10; i++)
-            {
-                Restructure(map, {rnd.RandomPoint(map.size), rnd.RandomPoint(map.size)}, 1.0 / std::pow(1.5, i));
-            }
-
-            SmoothHeightMap(map.z, map.height);
-
-            const double sea = 0.2;
-            const double mountain = 0.3;
-            const double land = 1. - sea - mountain;
-
-            ResetSeaLevel(map, rnd, LimitFor(map.z, sea, map.height.minimum));
-
-            auto mountainLevel = LimitFor(map.z, land, static_cast<uint8_t>(map.height.minimum + 1));
-
-            const auto waterNodes = Count(map.z, map.height.minimum, map.height.minimum);
-            const auto numberOfIslands = static_cast<unsigned>(rnd.Rand(0, 5));
-            const auto islandNodes = static_cast<unsigned>(rnd.DRand(.1, .5) * waterNodes);
-            const auto minimumIslandSize = 10u;
-
-            const auto islandRadius = GetIslandRadius(map.size);
-            const auto distanceToLand = islandRadius * 3;
-
-            if(numberOfIslands > 0 && islandNodes > numberOfIslands * minimumIslandSize)
-            {
-                const unsigned nodesPerIsland = islandNodes / numberOfIslands;
-
-                for(unsigned i = 0; i < numberOfIslands; i++)
-                {
-                    CreateIsland(map, rnd, distanceToLand, nodesPerIsland, islandRadius, .2);
-                }
-            }
-
-            std::vector<River> rivers;
-
-            if(rnd.ByChance(50))
-            {
-                auto length = (map.size.x + map.size.y) / 2;
-                auto direction = Direction(rnd.Rand(0, 5));
-
-                rivers.push_back(CreateStream(rnd, map, rnd.RandomPoint(map.size), direction, length, 1));
-            }
-
-            texturizer.AddTextures(mountainLevel, GetCoastline(map.size));
-
-            PlaceHarbors(map, 20, 25, rivers);
-            PlaceHeadQuarters(map, rnd, settings.numPlayers);
+            CreateLandMap(rnd, map, texturizer);
         }
+
         AddObjects(map, rnd);
         AddResources(map, rnd, settings);
         AddAnimals(map, rnd);
