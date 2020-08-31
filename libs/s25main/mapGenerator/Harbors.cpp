@@ -47,7 +47,7 @@ namespace rttr { namespace mapGenerator {
         auto harborTexture = textures.Find(IsBuildableCoast);
         auto triangles = GetTriangles(position, map.size);
 
-        auto isWater = [&textures](const Triangle& triangle) { return textures.Check(triangle, IsWater); };
+        auto isWater = [&textures](const MapPoint& pt) { return textures.Any(pt, IsWater); };
 
         for(const Triangle& triangle : triangles)
         {
@@ -56,17 +56,17 @@ namespace rttr { namespace mapGenerator {
 
         for(const Triangle& triangle : triangles)
         {
-            if(helpers::contains_if(GetTriangleNeighbors(triangle, map.size), isWater))
+            if(helpers::contains_if(GetTriangleEdges(triangle, map.size), isWater))
             {
                 map.harbors.push_back(triangle);
             }
         }
     }
 
-    void PlaceHarbors(Map& map, int minimumIslandSize, int minimumCoastSize, const std::vector<River>& rivers, int maximumIslandHarbors)
+    std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vector<River>& rivers)
     {
-        auto islands = FindIslands(map.textures, minimumIslandSize);
-        const auto& textures = map.textures;
+        std::vector<std::vector<MapPoint>> coasts;
+        std::set<MapPoint, MapPointLess> visited;
 
         auto isPartOfRiver = [&rivers](const MapPoint& pt) {
             return helpers::contains_if(rivers, [&pt](const River& river) { return river.find(pt) != river.end(); });
@@ -74,54 +74,62 @@ namespace rttr { namespace mapGenerator {
 
         auto distanceToRiver = Distances(map.size, isPartOfRiver);
 
-        auto isCloseToRiver = [&distanceToRiver](const MapPoint& pt) { return distanceToRiver[pt] < 5; };
+        auto allWater = [map](const MapPoint& pt) { return map.textures.All(pt, IsWater); };
 
-        for(const auto& island : islands)
+        auto isCoast = [map, allWater, &distanceToRiver](const MapPoint& pt) {
+            return map.textures.Any(pt, IsLand) && map.textures.Any(pt, IsWater)
+                   && helpers::contains_if(map.textures.GetNeighbours(pt), allWater) && distanceToRiver[pt] >= 5;
+        };
+
+        RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            const int islandSize = island.size();
-
-            if(islandSize < minimumIslandSize)
+            if(visited.insert(pt).second)
             {
-                continue;
-            }
-
-            std::vector<MapPoint> coastland;
-
-            for(const MapPoint pt : island)
-            {
-                if(textures.Any(pt, IsLand) && textures.Any(pt, IsWater))
+                if(isCoast(pt))
                 {
-                    coastland.push_back(pt);
+                    auto coast = Collect(map.textures, pt, isCoast);
+                    coasts.push_back(coast);
+                    visited.insert(coast.begin(), coast.end());
                 }
             }
+        }
+        return coasts;
+    }
 
-            helpers::remove_if(coastland, isCloseToRiver);
-
-            const int coastSize = coastland.size();
-
-            if(coastSize < minimumCoastSize)
+    void PlaceHarbors(Map& map, const std::vector<River>& rivers, int coastSize, int nodesPerHarbor)
+    {
+        auto coasts = FindCoastlines(map, rivers);
+        for(auto coast : coasts)
+        {
+            if(coast.size() < static_cast<unsigned>(coastSize))
             {
                 continue;
             }
 
-            const int harborsForCoastSize = coastSize / minimumCoastSize;
-            const int harborPositions =
-              std::max(1, maximumIslandHarbors > 0 ? std::min(maximumIslandHarbors, harborsForCoastSize) : harborsForCoastSize);
+            int numberOfHarborsForCoast = std::max(static_cast<int>(coast.size() / nodesPerHarbor), 1);
+            int maxDistance = map.size.x * map.size.y;
 
-            PlaceHarborPosition(map, coastland[0]);
-            std::vector<MapPoint> harbors{coastland[0]};
+            std::vector<MapPoint> harbors;
 
-            auto isHarborPosition = [&harbors](const MapPoint& pt) { return helpers::contains(harbors, pt); };
+            auto distanceToHarbors = [&map, &harbors, maxDistance](const MapPoint& pt) {
+                auto calcDistance = [pt, &map](const MapPoint& hp1, const MapPoint& hp2) {
+                    return map.textures.CalcDistance(hp1, pt) < map.textures.CalcDistance(hp2, pt);
+                };
+                auto closestHarbor = std::min_element(harbors.begin(), harbors.end(), calcDistance);
+                auto minDistance = closestHarbor == harbors.end() ? maxDistance : map.textures.CalcDistance(pt, *closestHarbor);
+                return minDistance;
+            };
 
-            for(int i = 1; i < harborPositions; i++)
+            for(int i = 0; i < numberOfHarborsForCoast; i++)
             {
-                const auto& distances = Distances(map.size, coastland, 0, isHarborPosition);
-                const auto bestPosition = distances.GetMaximumPoint();
-
-                RTTR_Assert(distances[bestPosition] > 0);
-
-                PlaceHarborPosition(map, bestPosition);
-                harbors.push_back(bestPosition);
+                auto harbor = std::max_element(coast.begin(), coast.end(), [distanceToHarbors](const MapPoint& pt1, const MapPoint& pt2) {
+                    return distanceToHarbors(pt1) < distanceToHarbors(pt2);
+                });
+                if(harbor != coast.end())
+                {
+                    harbors.push_back(*harbor);
+                    PlaceHarborPosition(map, *harbor);
+                }
             }
         }
     }

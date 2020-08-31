@@ -98,13 +98,10 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_AppliesBuildableTerrainAroundPosition)
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesNoHarborsOnIslandsBelowMinimumSize)
+BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesNoHarborsOnCoastBelowMinimumSize)
 {
     RunTest([](Map& map, TextureMap& textures) {
         MapPoint island(3, 3);
-
-        const int minimumIslandSize = 200;
-        const int minimumCoastSize = 5;
 
         auto water = TexturePair(textures.Find(IsWater));
 
@@ -113,28 +110,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesNoHarborsOnIslandsBelowMinimumSize)
         auto coast = textures.Find(IsCoastTerrain);
         textures.Set(island, coast);
 
-        PlaceHarbors(map, minimumIslandSize, minimumCoastSize, {});
-
-        BOOST_REQUIRE(map.harbors.empty());
-    });
-}
-
-BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesNoHarborsOnIslandsBelowMinimumCoast)
-{
-    RunTest([](Map& map, TextureMap& textures) {
-        MapPoint island(3, 3);
-
-        const int minimumIslandSize = 1;
-        const int minimumCoastSize = 200;
-
-        auto water = TexturePair(textures.Find(IsWater));
-
-        map.textures.Resize(map.size, water);
-
-        auto coast = textures.Find(IsCoastTerrain);
-        textures.Set(island, coast);
-
-        PlaceHarbors(map, minimumIslandSize, minimumCoastSize, {});
+        PlaceHarbors(map, {}, 100);
 
         BOOST_REQUIRE(map.harbors.empty());
     });
@@ -145,9 +121,6 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesHarborOnSuitableIsland)
     RunTest([](Map& map, TextureMap& textures) {
         MapPoint island(3, 3);
 
-        const int minimumIslandSize = 1;
-        const int minimumCoastSize = 1;
-
         auto water = TexturePair(textures.Find(IsWater));
 
         map.textures.Resize(map.size, water);
@@ -155,7 +128,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesHarborOnSuitableIsland)
         auto coast = textures.Find(IsCoastTerrain);
         textures.Set(island, coast);
 
-        PlaceHarbors(map, minimumIslandSize, minimumCoastSize, {});
+        PlaceHarbors(map, {}, 5);
 
         BOOST_REQUIRE(!map.harbors.empty());
     });
@@ -166,9 +139,6 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesNoHarborNearRiver)
     RunTest([](Map& map, TextureMap& textures) {
         MapPoint island(3, 3);
 
-        const int minimumIslandSize = 1;
-        const int minimumCoastSize = 1;
-
         auto water = TexturePair(textures.Find(IsWater));
 
         map.textures.Resize(map.size, water);
@@ -178,7 +148,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesNoHarborNearRiver)
 
         River river{island};
 
-        PlaceHarbors(map, minimumIslandSize, minimumCoastSize, {river});
+        PlaceHarbors(map, {river}, 5);
 
         BOOST_REQUIRE(map.harbors.empty());
     });

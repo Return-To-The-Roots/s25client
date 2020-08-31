@@ -105,7 +105,7 @@ namespace rttr { namespace mapGenerator {
     /**
      * Collects all map points around the specified point for which the evaluator returns 'true'. The function recursively checks neighbors
      * of neighbors but only collects positively evaluated points. Whenever it hits a negative value is stops searching the neighborhood of
-     * this specific point.
+     * this specific point. The underlying implementation is breadth-first search.
      *
      * @param map reference to the map to collect map points from
      * @param pt starting point which has to be evaluated with 'true' or and empty vector will be returned

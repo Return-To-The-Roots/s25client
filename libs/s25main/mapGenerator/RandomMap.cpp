@@ -191,7 +191,7 @@ namespace rttr { namespace mapGenerator {
 
         texturizer.AddTextures(mountainLevel, GetCoastline(map.size));
 
-        PlaceHarbors(map, 20, 25, rivers);
+        PlaceHarbors(map, rivers, (map.size.x + map.size.y) / 2);
         PlaceHeadQuarters(map, rnd, map.players);
     }
 
@@ -249,7 +249,7 @@ namespace rttr { namespace mapGenerator {
 
         texturizer.AddTextures(mountainLevel, GetCoastline(map.size));
 
-        PlaceHarbors(map, 20, 25, {});
+        PlaceHarbors(map, {}, (map.size.x + map.size.y) / 4);
 
         for(unsigned i = 0; i < map.players; i++)
         {
