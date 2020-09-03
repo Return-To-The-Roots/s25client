@@ -30,7 +30,7 @@ class iwWares : public IngameWindow
 protected:
     const Inventory& inventory; /// Warenbestand
     const GamePlayer& player;
-    unsigned pageWares, pagePeople;
+    unsigned warePageID, peoplePageID;
 
 public:
     iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing, const glFont* font,
