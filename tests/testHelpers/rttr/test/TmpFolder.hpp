@@ -35,6 +35,7 @@ namespace rttr { namespace test {
             create_directories(folder);
         }
         ~TmpFolder() { boost::filesystem::remove_all(folder); }
-        boost::filesystem::path get() const { return folder; }
+        const boost::filesystem::path& get() const { return folder; }
+        operator const boost::filesystem::path &() const { return folder; }
     };
 }} // namespace rttr::test
