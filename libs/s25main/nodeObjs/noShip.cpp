@@ -456,7 +456,7 @@ void noShip::GoToHarbor(const nobHarborBuilding& hb, const std::vector<Direction
 }
 
 /// Startet eine Expedition
-void noShip::StartStopExpedition(unsigned homeHarborId)
+void noShip::StartExpedition(unsigned homeHarborId)
 {
     /// Schiff wird "beladen", also kurze Zeit am Hafen stehen, bevor wir bereit sind
     state = STATE_EXPEDITION_LOADING;
@@ -468,7 +468,7 @@ void noShip::StartStopExpedition(unsigned homeHarborId)
 }
 
 /// Startet eine Erkundungs-Expedition
-void noShip::StartStopExplorationExpedition(unsigned homeHarborId)
+void noShip::StartExplorationExpedition(unsigned homeHarborId)
 {
     /// Schiff wird "beladen", also kurze Zeit am Hafen stehen, bevor wir bereit sind
     state = STATE_EXPLORATIONEXPEDITION_LOADING;

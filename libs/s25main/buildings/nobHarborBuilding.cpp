@@ -551,7 +551,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         // Aufräumen am Hafen
         expedition.active = false;
         // Expedition starten
-        ship->StartStopExpedition(GetHarborPosID());
+        ship->StartExpedition(GetHarborPosID());
         return;
     }
     // Exploration-Expedition ready?
@@ -560,7 +560,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         // Aufräumen am Hafen
         exploration_expedition.active = false;
         // Expedition starten
-        ship->StartStopExplorationExpedition(GetHarborPosID());
+        ship->StartExplorationExpedition(GetHarborPosID());
         inventory.visual.Remove(JOB_SCOUT, exploration_expedition.scouts);
         return;
     }
