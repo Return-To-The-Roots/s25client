@@ -266,7 +266,7 @@ unsigned GlobalGameSettings::GetMaxMilitaryRank() const
     RTTR_Assert(selection <= MAX_MILITARY_RANK);
     return MAX_MILITARY_RANK - selection;
 }
-unsigned GlobalGameSettings::GetNumScoutsExedition() const
+unsigned GlobalGameSettings::GetNumScoutsExpedition() const
 {
     unsigned selection = getSelection(AddonId::NUM_SCOUTS_EXPLORATION);
     return selection + 1;

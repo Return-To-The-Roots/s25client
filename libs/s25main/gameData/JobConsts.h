@@ -27,7 +27,7 @@
 #include <boost/optional/optional.hpp>
 #include <array>
 
-extern const std::array<std::string, NUM_JOB_TYPES> JOB_NAMES;
+extern const helpers::EnumArray<std::string, Job> JOB_NAMES;
 
 /// Game data for each job
 struct JobConst
@@ -56,8 +56,8 @@ public:
 };
 
 /// Data for each job
-extern const std::array<JobConst, NUM_JOB_TYPES> JOB_CONSTS;
-extern const std::array<JobSpriteData, NUM_JOB_TYPES> JOB_SPRITE_CONSTS;
+extern const helpers::EnumArray<JobConst, Job> JOB_CONSTS;
+extern const helpers::EnumArray<JobSpriteData, Job> JOB_SPRITE_CONSTS;
 
 /// Katapultmann-Wartezeit
 const unsigned CATAPULT_WAIT1_LENGTH = 1300; // eigenlich 310 - aber hochgestellt wegen zu schneller Warenverteilung
