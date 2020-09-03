@@ -88,8 +88,8 @@ void noStaticObject::Draw(DrawPoint drawPt)
         shadow = LOADER.GetMapImageN(id + 100);
     } else if(file < 7)
     {
-        static const std::array<std::string, 7> files = {"mis0bobs", "mis1bobs", "mis2bobs",       "mis3bobs",
-                                                         "mis4bobs", "mis5bobs", "charburner_bobs"};
+        static const std::array<ResourceId, 7> files = {"mis0bobs", "mis1bobs", "mis2bobs",       "mis3bobs",
+                                                        "mis4bobs", "mis5bobs", "charburner_bobs"};
         bitmap = LOADER.GetImageN(files[file], id);
         // Use only shadows where available
         if(file < 6)

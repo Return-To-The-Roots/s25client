@@ -21,7 +21,7 @@
 #include "ogl/FontStyle.h"
 #include "s25util/colors.h"
 
-dskMenuBase::dskMenuBase() : Desktop(LOADER.GetImageN("menu", 0))
+dskMenuBase::dskMenuBase() : Desktop(LOADER.GetImageN("menu"_res, 0))
 {
     AddBottomTexts();
 }

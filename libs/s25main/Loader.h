@@ -68,6 +68,9 @@ enum class FontSize
 };
 DEFINE_MAX_ENUM_VALUE(FontSize, FontSize::Large)
 
+void addDefaultResourceFolders(const RttrConfig& config, ArchiveLocator& locator,
+                               const std::vector<Nation>& usedNations, const std::vector<AddonId>& enabledAddons);
+
 class Loader
 {
     /// Struct for storing loaded file entries
@@ -77,33 +80,28 @@ public:
     Loader(Log&, const RttrConfig&);
     ~Loader();
 
-    /// Add a folder to the list of folders containing overrides. Files in folders added last will override prior ones
-    /// Paths with macros will be resolved
-    void AddOverrideFolder(const std::string& path, bool atBack = true);
-    void AddOverrideFolder(const char* path, bool atBack = true) { AddOverrideFolder(std::string(path), atBack); }
-    /// Add a folder to the list of folders containing overrides. Files in folders added last will override prior ones
-    void AddOverrideFolder(const boost::filesystem::path& path, bool atBack = true);
-    /// Add the folder for an addon to the override folders
-    void AddAddonFolder(AddonId id);
-    void ClearOverrideFolders();
+    void initResourceFolders() { initResourceFolders({}, {}); }
+    void initResourceFolders(const std::vector<Nation>& usedNations, const std::vector<AddonId>& enabledAddons);
 
     /// Load general files required also outside of games
     bool LoadFilesAtStart();
     bool LoadFonts();
     /// Load files required during a game
-    bool LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations);
-    /// Load all files from the override folders that have not been loaded yet
-    bool LoadOverrideFiles();
+    bool LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations,
+                         const std::vector<AddonId>& enabledAddons);
     /// Load all given files with the default palette
     bool LoadFiles(const std::vector<std::string>& files);
+    bool LoadResources(const std::vector<ResourceId>& resources);
 
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
     /// Load a file and save it into the loader repo
-    bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr,
-              bool isFromOverrideDir = false);
+    bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     /// Load a file or directory and its overrides into the archive
     bool Load(libsiedler2::Archiv& archive, const boost::filesystem::path& path,
+              const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool Load(libsiedler2::Archiv& archive, const ResourceId& resId,
               const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
@@ -214,7 +212,8 @@ private:
     /// Load all sounds
     bool LoadSounds();
 
-    bool LoadOverrideDirectory(const boost::filesystem::path& path);
+    template<typename T>
+    bool LoadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palette* palette);
 
     Log& logger_;
     const RttrConfig& config_;

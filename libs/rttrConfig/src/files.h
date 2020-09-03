@@ -26,18 +26,19 @@ RTTR_IGNORE_DIAGNOSTIC("-Wunused-variable")
 
 namespace s25 {
 namespace folders {
+    constexpr auto assetsAddons = "<RTTR_RTTR>/assets/addons";       // Addon specifc assets
+    constexpr auto assetsBase = "<RTTR_RTTR>/assets/base";           // Assets introduced by rttr
+    constexpr auto assetsNations = "<RTTR_RTTR>/assets/nations";     // Addon specific assets
+    constexpr auto assetsOverrides = "<RTTR_RTTR>/assets/overrides"; // Assets overriding S2 files
+    constexpr auto assetsUserOverrides = "<RTTR_USERDATA>/LSTS";     // User overrides for assets
     constexpr auto config = "<RTTR_CONFIG>";
     constexpr auto data = "<RTTR_GAME>/DATA"; // S2 game data
     constexpr auto driver = "<RTTR_DRIVER>";
-    constexpr auto gameLstsGlobal = "<RTTR_RTTR>/LSTS/GAME";   // global lst files loaded on game start
-    constexpr auto gameLstsUser = "<RTTR_USERDATA>/LSTS/GAME"; // user lst files  loaded on game start
-    constexpr auto gamedata = "<RTTR_RTTR>/gamedata";          // Path to the gamedata
-    constexpr auto languages = "<RTTR_RTTR>/languages";        // translation files
+    constexpr auto gamedata = "<RTTR_RTTR>/gamedata";   // Path to the gamedata
+    constexpr auto languages = "<RTTR_RTTR>/languages"; // translation files
     constexpr auto loadScreens = "<RTTR_GAME>/GFX/PICS";
     constexpr auto loadScreensMissions = "<RTTR_GAME>/GFX/PICS/MISSION";
     constexpr auto logs = "<RTTR_USERDATA>/LOGS";
-    constexpr auto lstsGlobal = "<RTTR_RTTR>/LSTS";   // global lst files loaded on program start
-    constexpr auto lstsUser = "<RTTR_USERDATA>/LSTS"; // user lst files  loaded on program start
     constexpr auto mapsCampaign = "<RTTR_GAME>/DATA/MAPS";
     constexpr auto mapsContinents = "<RTTR_GAME>/DATA/MAPS2";
     constexpr auto mapsNew = "<RTTR_GAME>/DATA/MAPS4";
@@ -58,7 +59,7 @@ namespace folders {
     constexpr auto textures = "<RTTR_GAME>/GFX/TEXTURES"; // Terrain textures
 } // namespace folders
 namespace files {
-    constexpr auto splash = "<RTTR_RTTR>/splash.bmp";
+    constexpr auto splash = "<RTTR_RTTR>/assets/base/splash.bmp";
     constexpr auto soundOrig = "<RTTR_GAME>/DATA/SOUNDDAT/SOUND.LST"; // original sound.lst
     constexpr auto soundScript = "<RTTR_RTTR>/sound.scs";             // converter script
     constexpr auto defaultPlaylist = "<RTTR_RTTR>/MUSIC/S2_Standard.pll";
@@ -67,10 +68,8 @@ namespace resources {
     constexpr auto boat = "<RTTR_GAME>/DATA/BOBS/BOAT.LST";
     constexpr auto boot_z = "<RTTR_GAME>/DATA/BOOT_Z.LST";
     constexpr auto carrier = "<RTTR_GAME>/DATA/BOBS/CARRIER.BOB";
-    constexpr auto colors = "<RTTR_RTTR>/COLORS.ACT";   // special palette for player colors
     constexpr auto config = "<RTTR_CONFIG>/CONFIG.INI"; // main config file
     constexpr auto io = "<RTTR_GAME>/DATA/IO/IO.DAT";
-    constexpr auto fonts = "<RTTR_RTTR>/LSTS/fonts.LST";
     constexpr auto jobs = "<RTTR_GAME>/DATA/BOBS/JOBS.BOB";
     constexpr auto mis0bobs = "<RTTR_GAME>/DATA/MIS0BOBS.LST";
     constexpr auto mis1bobs = "<RTTR_GAME>/DATA/MIS1BOBS.LST";

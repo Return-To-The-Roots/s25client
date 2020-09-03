@@ -81,18 +81,16 @@ void GameLoader::initTextures()
 
 bool GameLoader::loadTextures()
 {
-    loader.ClearOverrideFolders();
-    loader.AddOverrideFolder(s25::folders::gameLstsGlobal);
-    loader.AddOverrideFolder(s25::folders::gameLstsUser);
-    if(game->ggs_.isEnabled(AddonId::CATAPULT_GRAPHICS))
-        loader.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
+    std::vector<AddonId> enabledAddons;
+    for(const auto id : rttrEnum::values<AddonId>)
+    {
+        if(game->ggs_.isEnabled(id))
+            enabledAddons.push_back(id);
+    }
 
     const LandscapeDesc& lt = game->world_.GetDescription().get(game->world_.GetLandscapeType());
-    if(!loader.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, usedNations) || !loader.LoadFiles(textures)
-       || !loader.LoadOverrideFiles())
-    {
+    if(!loader.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, usedNations, enabledAddons) || !loader.LoadFiles(textures))
         return false;
-    }
 
     loader.fillCaches();
     return true;
