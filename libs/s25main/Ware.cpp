@@ -35,8 +35,8 @@
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
     : next_dir(RoadPathDirection::None), state(STATE_WAITINWAREHOUSE), location(location),
-      type(type == GD_SHIELDROMANS ? SHIELD_TYPES[gwg->GetPlayer(location->GetPlayer()).nation] :
-                                     type), // Bin ich ein Schild? Dann evtl. Typ nach Nation anpassen
+      type(convertShieldToNation(type,
+                                 gwg->GetPlayer(location->GetPlayer()).nation)), // Use nation specific shield
       goal(goal), next_harbor(MapPoint::Invalid())
 {
     RTTR_Assert(location);

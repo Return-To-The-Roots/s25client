@@ -230,6 +230,12 @@ void dskCredits::DrawCredit()
         itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetRenderSize().x - 300, 70), SetAlpha(COLOR_WHITE, transparency));
 }
 
+template<typename T>
+T randEnum()
+{
+    return T(rand() % helpers::NumEnumValues_v<T>);
+}
+
 void dskCredits::DrawBobs()
 {
     // Frameratebegrenzer
@@ -268,20 +274,20 @@ void dskCredits::DrawBobs()
         }
 
         b.color = PLAYER_COLORS[rand() % PLAYER_COLORS.size()];
-        unsigned job = rand() % 29;
+        const auto job = randEnum<Job>();
 
         // exclude "headless" bobs
-        if(job == 8 || job == 9 || job == 12 || job == 18)
+        if(job == JOB_MILLER || job == JOB_BAKER || job == JOB_BREWER || job == JOB_ARMORER
+           || job == JOB_CHARBURNER /* Comes from another file */)
         {
-            job = rand() % (NUM_WARE_TYPES - 1);
+            b.id = randEnum<GoodType>();
             b.hasWare = true;
         } else
         {
-            job = JOB_SPRITE_CONSTS[job].getBobId(Nation(rand() % NUM_NATIONS));
+            b.id = JOB_SPRITE_CONSTS[job].getBobId(randEnum<Nation>());
             b.hasWare = false;
         }
 
-        b.id = job;
         b.pos.y = GetCtrl<ctrlButton>(0)->GetPos().y - 20 - rand() % 150;
         bobs.push_back(b);
     }

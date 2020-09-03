@@ -25,6 +25,8 @@
 #include "controls/ctrlButton.h"
 #include "factories/GameCommandFactory.h"
 #include "figures/noFigure.h"
+#include "helpers/EnumArray.h"
+#include "helpers/EnumRange.h"
 #include "iwHelp.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bob.h"
@@ -190,24 +192,19 @@ void iwShip::DrawCargo()
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     const noShip* ship = owner.GetShipByID(ship_id);
 
-    std::array<unsigned short, NUM_WARE_TYPES> orderedWares{};
-    std::array<unsigned short, NUM_JOB_TYPES> orderedFigures{};
-
-    // Alle Figuren in Gruppen zählen
-    const std::list<noFigure*>& figures = ship->GetFigures();
-    for(auto figure : figures)
-    {
+    // Count figures by type
+    helpers::EnumArray<unsigned short, Job> orderedFigures{};
+    for(const auto* figure : ship->GetFigures())
         orderedFigures[figure->GetJobType()]++;
-    }
 
-    // Alle Waren in Gruppen zählen
-    const std::list<Ware*>& wares = ship->GetWares();
-    for(auto ware : wares)
+    // Count wares by type
+    helpers::EnumArray<unsigned short, GoodType> orderedWares{};
+    for(const auto* ware : ship->GetWares())
     {
         orderedWares[ware->type]++;
     }
 
-    // Spezialfall Expedition:
+    // Special cases: expeditions
     if(ship->IsOnExpedition())
     {
         orderedFigures[JOB_BUILDER] = 1;
@@ -215,7 +212,7 @@ void iwShip::DrawCargo()
         orderedWares[GD_STONES] = 6;
     } else if(ship->IsOnExplorationExpedition())
     {
-        orderedFigures[JOB_SCOUT] = gwv.GetWorld().GetGGS().GetNumScoutsExedition();
+        orderedFigures[JOB_SCOUT] = gwv.GetWorld().GetGGS().GetNumScoutsExpedition();
     }
 
     // Start Offset zum malen
@@ -234,9 +231,9 @@ void iwShip::DrawCargo()
     unsigned lineCounter = 0;
 
     // Leute zeichnen
-    for(unsigned i = 0; i < orderedFigures.size(); ++i)
+    for(const auto job : helpers::EnumRange<Job>{})
     {
-        while(orderedFigures[i] > 0)
+        while(orderedFigures[job] > 0)
         {
             if(lineCounter > elementsPerLine)
             {
@@ -244,14 +241,18 @@ void iwShip::DrawCargo()
                 drawPt.y += yStep;
                 lineCounter = 0;
             }
-            orderedFigures[i]--;
+            orderedFigures[job]--;
 
-            if(i == JOB_PACKDONKEY)
+            if(job == JOB_PACKDONKEY)
                 LOADER.GetMapImageN(2016)->DrawFull(drawPt);
-            else if(i == JOB_BOATCARRIER)
+            else if(job == JOB_BOATCARRIER)
                 LOADER.GetBob("carrier")->Draw(GD_BOAT, libsiedler2::ImgDir::SW, false, 0, drawPt, owner.color);
             else
-                LOADER.GetBob("jobs")->Draw(i, libsiedler2::ImgDir::SW, JOB_SPRITE_CONSTS[i].isFat(), 0, drawPt, owner.color);
+            {
+                const auto& spriteData = JOB_SPRITE_CONSTS[job];
+                LOADER.GetBob("jobs")->Draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW, spriteData.isFat(), 0, drawPt,
+                                            owner.color);
+            }
 
             drawPt.x += xStep;
             lineCounter++;
@@ -259,9 +260,9 @@ void iwShip::DrawCargo()
     }
 
     // Waren zeichnen
-    for(unsigned i = 0; i < orderedWares.size(); ++i)
+    for(const auto ware : helpers::EnumRange<GoodType>{})
     {
-        while(orderedWares[i] > 0)
+        while(orderedWares[ware] > 0)
         {
             if(lineCounter > elementsPerLine)
             {
@@ -269,13 +270,9 @@ void iwShip::DrawCargo()
                 drawPt.y += yStep;
                 lineCounter = 0;
             }
-            orderedWares[i]--;
+            orderedWares[ware]--;
 
-            unsigned draw_id = i;
-
-            // Schilder? Dann das  Schild der jeweiligen Nationalität nehmen
-            if(draw_id == GD_SHIELDROMANS)
-                draw_id = SHIELD_TYPES[owner.nation];
+            const unsigned draw_id = convertShieldToNation(ware, owner.nation);
 
             LOADER.GetMapImageN(2200 + draw_id)->DrawFull(drawPt);
             drawPt.x += xStep;

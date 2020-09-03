@@ -115,7 +115,7 @@ void nobHarborBuilding::DestroyBuilding()
     if(exploration_expedition.active)
     {
         inventory.real.Add(JOB_SCOUT, exploration_expedition.scouts);
-        for(unsigned i = exploration_expedition.scouts; i < gwg->GetGGS().GetNumScoutsExedition(); i++)
+        for(unsigned i = exploration_expedition.scouts; i < gwg->GetGGS().GetNumScoutsExpedition(); i++)
             owner.OneJobNotWanted(JOB_SCOUT, this);
     }
     // cancel all jobs wanted for this building
@@ -398,7 +398,7 @@ void nobHarborBuilding::StartExplorationExpedition()
     exploration_expedition.scouts = 0;
 
     // Look for missing scouts
-    const unsigned numScoutsRequired = gwg->GetGGS().GetNumScoutsExedition();
+    const unsigned numScoutsRequired = gwg->GetGGS().GetNumScoutsExpedition();
     if(inventory[JOB_SCOUT] < numScoutsRequired)
     {
         unsigned missing = numScoutsRequired - inventory[JOB_SCOUT];
@@ -437,7 +437,7 @@ void nobHarborBuilding::StopExplorationExpedition()
     // Dann diese stoppen
     exploration_expedition.active = false;
     // cancel order for scouts
-    for(unsigned i = exploration_expedition.scouts; i < gwg->GetGGS().GetNumScoutsExedition(); i++)
+    for(unsigned i = exploration_expedition.scouts; i < gwg->GetGGS().GetNumScoutsExpedition(); i++)
     {
         gwg->GetPlayer(player).OneJobNotWanted(JOB_SCOUT, this);
     }
@@ -742,7 +742,7 @@ bool nobHarborBuilding::IsExplorationExpeditionReady() const
     if(!exploration_expedition.active)
         return false;
     // Alles da?
-    if(exploration_expedition.scouts < gwg->GetGGS().GetNumScoutsExedition())
+    if(exploration_expedition.scouts < gwg->GetGGS().GetNumScoutsExpedition())
         return false;
 
     return true;
@@ -811,7 +811,7 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure* figure)
         }
 
         // Wenn nicht genug Erkunder mehr kommen, müssen wir einen neuen bestellen
-        if(exploration_expedition.scouts + scouts_coming < gwg->GetGGS().GetNumScoutsExedition())
+        if(exploration_expedition.scouts + scouts_coming < gwg->GetGGS().GetNumScoutsExpedition())
             gwg->GetPlayer(player).AddJobWanted(JOB_SCOUT, this);
     }
 }

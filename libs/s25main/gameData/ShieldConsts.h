@@ -18,18 +18,25 @@
 #ifndef ShieldConsts_h__
 #define ShieldConsts_h__
 
+#include "helpers/EnumArray.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/Nation.h"
+#include "s25util/warningSuppression.h"
+
+/// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
+const helpers::EnumArray<GoodType, Nation> SUPPRESS_UNUSED SHIELD_TYPES = {GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS,
+                                                                           GD_SHIELDVIKINGS, GD_SHIELDJAPANESE};
 
 /// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
 /// die Warensysteme usw
-inline GoodType ConvertShields(const GoodType& good)
+inline constexpr GoodType ConvertShields(const GoodType& good)
 {
     return (good == GD_SHIELDVIKINGS || good == GD_SHIELDAFRICANS || good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : good;
 }
 
-/// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
-const std::array<GoodType, NUM_NATIONS> SUPPRESS_UNUSED SHIELD_TYPES = {GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS,
-                                                                        GD_SHIELDVIKINGS, GD_SHIELDJAPANESE};
+inline constexpr GoodType convertShieldToNation(const GoodType good, const Nation nation)
+{
+    return (good == GD_SHIELDROMANS) ? SHIELD_TYPES[nation] : good;
+}
 
 #endif // ShieldConsts_h__

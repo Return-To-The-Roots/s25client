@@ -303,7 +303,7 @@ void noShip::HandleEvent(const unsigned id)
                 {
                     // Späher wieder entladen
                     Inventory goods;
-                    goods.people[JOB_SCOUT] = gwg->GetGGS().GetNumScoutsExedition();
+                    goods.people[JOB_SCOUT] = gwg->GetGGS().GetNumScoutsExpedition();
                     static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods, false);
                     // Wieder idlen und ggf. neuen Job suchen
                     StartIdling();

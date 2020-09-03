@@ -610,8 +610,9 @@ void Loader::fillCaches()
                         id = 0;
                     } else
                     {
-                        id = JOB_SPRITE_CONSTS[job].getBobId(Nation(nation));
-                        fat = JOB_SPRITE_CONSTS[job].isFat();
+                        const auto& spriteData = JOB_SPRITE_CONSTS[Job(job)];
+                        id = spriteData.getBobId(Nation(nation));
+                        fat = spriteData.isFat();
                     }
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 

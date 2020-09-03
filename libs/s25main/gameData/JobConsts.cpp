@@ -68,7 +68,7 @@ template<typename T, std::size_t... I>
 constexpr auto makeJobArrayImpl(T&& getter, std::index_sequence<I...>)
 {
     using Type = decltype(getter(std::declval<FullJobData>()));
-    return std::array<Type, sizeof...(I)>{getter(fullJobData[I])...};
+    return helpers::EnumArray<Type, Job>{getter(fullJobData[I])...};
 }
 
 template<typename T>
@@ -78,9 +78,9 @@ constexpr auto makeJobArray(T&& getter)
 }
 } // namespace
 
-const std::array<std::string, NUM_JOB_TYPES> JOB_NAMES = makeJobArray([](const FullJobData& data) { return std::string(data.name); });
-const std::array<JobConst, NUM_JOB_TYPES> JOB_CONSTS = makeJobArray([](const FullJobData& data) { return data.data; });
-const std::array<JobSpriteData, NUM_JOB_TYPES> JOB_SPRITE_CONSTS = makeJobArray([](const FullJobData& data) { return data.spriteData; });
+const helpers::EnumArray<std::string, Job> JOB_NAMES = makeJobArray([](const FullJobData& data) { return std::string(data.name); });
+const helpers::EnumArray<JobConst, Job> JOB_CONSTS = makeJobArray([](const FullJobData& data) { return data.data; });
+const helpers::EnumArray<JobSpriteData, Job> JOB_SPRITE_CONSTS = makeJobArray([](const FullJobData& data) { return data.spriteData; });
 
 unsigned short JobSpriteData::getBobId(Nation nation) const
 {
