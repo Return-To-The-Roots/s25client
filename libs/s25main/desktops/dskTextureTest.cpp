@@ -66,8 +66,6 @@ void dskTextureTest::Load()
     auto* cb = GetCtrl<ctrlComboBox>(ID_cbTexture);
     const unsigned selection = cb->GetSelection().value_or(0);
     cb->DeleteAllItems();
-    LOADER.ClearOverrideFolders();
-    LOADER.AddOverrideFolder(s25::folders::gameLstsGlobal);
     for(DescIdx<TerrainDesc> i(0); i.value < desc.terrain.size(); i.value++)
         cb->AddString(desc.get(i).name);
     cb->SetSelection(selection);

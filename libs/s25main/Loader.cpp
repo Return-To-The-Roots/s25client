@@ -53,6 +53,7 @@
 #include "libsiedler2/PixelBufferPaletted.h"
 #include "libsiedler2/libsiedler2.h"
 #include "s25util/Log.h"
+#include "s25util/StringConversion.h"
 #include "s25util/System.h"
 #include "s25util/dynamicUniqueCast.h"
 #include "s25util/strAlgos.h"
@@ -71,7 +72,6 @@ struct Loader::FileEntry
     libsiedler2::Archiv archive;
     /// List of files used to build this archive
     ResolvedFile resolvedFile;
-    bool loadedAfterOverrideChange = false;
 };
 
 template<typename T>
@@ -83,12 +83,17 @@ static T convertChecked(libsiedler2::ArchivItem* item)
 }
 
 Loader::Loader(Log& logger, const RttrConfig& config)
-    : logger_(logger), config_(config), archiveLocator_(std::make_unique<ArchiveLocator>(logger, config)),
+    : logger_(logger), config_(config), archiveLocator_(std::make_unique<ArchiveLocator>(logger)),
       archiveLoader_(std::make_unique<ArchiveLoader>(logger)), isWinterGFX_(false), nation_gfx(), nationIcons_(),
       map_gfx(nullptr), stp(nullptr)
 {}
 
 Loader::~Loader() = default;
+
+void Loader::initResourceFolders(const std::vector<Nation>& usedNations, const std::vector<AddonId>& enabledAddons)
+{
+    addDefaultResourceFolders(config_, *archiveLocator_, usedNations, enabledAddons);
+}
 
 glArchivItem_Bitmap* Loader::GetImageN(const ResourceId& file, unsigned nr)
 {
@@ -182,33 +187,6 @@ glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
     return convertChecked<glArchivItem_Bitmap_Player*>(map_gfx->get(nr));
 }
 
-void Loader::AddOverrideFolder(const std::string& path, bool atBack)
-{
-    AddOverrideFolder(config_.ExpandPath(path), atBack);
-}
-
-void Loader::AddOverrideFolder(const bfs::path& path, bool atBack)
-{
-    archiveLocator_->addOverrideFolder(path, atBack);
-}
-
-void Loader::AddAddonFolder(AddonId id)
-{
-    for(const std::string rawFolder : {s25::folders::gameLstsGlobal, s25::folders::gameLstsUser})
-    {
-        std::stringstream s;
-        s << "Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << static_cast<unsigned>(id);
-        const bfs::path path = config_.ExpandPath(rawFolder) / s.str();
-        if(bfs::exists(path))
-            AddOverrideFolder(path);
-    }
-}
-
-void Loader::ClearOverrideFolders()
-{
-    archiveLocator_->clear();
-}
-
 /**
  *  Load general files required also outside of games
  *
@@ -217,18 +195,17 @@ void Loader::ClearOverrideFolders()
 bool Loader::LoadFilesAtStart()
 {
     namespace res = s25::resources;
-    std::vector<std::string> files = {res::pal5,     res::pal6, res::pal7, res::paletti0, res::paletti1,
-                                      res::paletti8, // Palettes
-                                      res::colors};
-    if(!LoadFiles(files))
+    // Palettes
+    if(!LoadFiles({res::pal5, res::pal6, res::pal7, res::paletti0, res::paletti1, res::paletti8})
+       || !Load("colors"_res))
         return false;
 
     if(!LoadFonts())
         return false;
 
-    files = {res::resource,
-             res::io,                       // Menu graphics
-             res::setup013, res::setup015}; // Backgrounds for options and free play
+    std::vector<std::string> files = {res::resource,
+                                      res::io,                       // Menu graphics
+                                      res::setup013, res::setup015}; // Backgrounds for options and free play
 
     const std::array<bfs::path, 2> loadScreenFolders{config_.ExpandPath(s25::folders::loadScreens),
                                                      config_.ExpandPath(s25::folders::loadScreensMissions)};
@@ -247,7 +224,7 @@ bool Loader::LoadFilesAtStart()
     if(!LoadSounds())
         return false;
 
-    return LoadOverrideFiles();
+    return LoadResources({"io_new"_res, "client"_res, "languages"_res, "logo"_res, "menu"_res, "rttr"_res});
 }
 
 bool Loader::LoadSounds()
@@ -300,7 +277,7 @@ bool Loader::LoadSounds()
 
 bool Loader::LoadFonts()
 {
-    if(!Load(config_.ExpandPath(s25::resources::fonts), GetPaletteN("pal5")))
+    if(!Load("fonts"_res, GetPaletteN("pal5")))
         return false;
     fonts.clear();
     const auto& loadedFonts = GetArchive("fonts");
@@ -385,39 +362,41 @@ void Loader::LoadDummyGUIFiles()
  *
  *  @return @p true on success
  */
-bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations)
+bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations,
+                             const std::vector<AddonId>& enabledAddons)
 {
+    initResourceFolders(nations, enabledAddons);
+
     namespace res = s25::resources;
     std::vector<std::string> files = {res::rom_bobs, res::carrier,  res::jobs,     res::boat,
                                       res::boot_z,   res::mis0bobs, res::mis1bobs, res::mis2bobs,
                                       res::mis3bobs, res::mis4bobs, res::mis5bobs};
 
-    // Add nation building graphics
+    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
+
+    if(!LoadFiles(files) || !Load("map_new"_res, pal5))
+        return false;
+
+    // Load nation building and icon graphics
+    nation_gfx = nationIcons_ = {};
     const std::string natPrefix = isWinterGFX ? "W" : "";
     for(Nation nation : nations)
     {
-        // New nations are handled by loading the override folder
-        if(nation < NUM_NATIVE_NATIONS)
-        {
-            const auto shortName = s25util::toUpper(std::string(NationNames[nation], 0, 3));
-            files.push_back(std::string(s25::folders::mbob).append("/").append(shortName).append("_ICON.LST"));
-            files.push_back(
-              std::string(s25::folders::mbob).append("/").append(natPrefix).append(shortName).append("_Z.LST"));
-        } else
-        {
-            for(const std::string folder : {s25::folders::gameLstsGlobal, s25::folders::gameLstsUser})
-            {
-                const auto nationOverrideFolder = config_.ExpandPath(folder) / NationNames[nation];
-                if(bfs::exists(nationOverrideFolder))
-                    AddOverrideFolder(nationOverrideFolder, false);
-            }
-        }
+        const bfs::path nationFolder = (nation < NUM_NATIVE_NATIONS) ?
+                                         config_.ExpandPath(s25::folders::mbob) :
+                                         config_.ExpandPath(s25::folders::assetsNations) / NationNames[nation];
+        const auto shortName = s25util::toUpper(std::string(NationNames[nation], 0, 3));
+        const bfs::path buildingsFilePath = nationFolder / (natPrefix + shortName + "_Z.LST");
+        const bfs::path iconsFilePath = nationFolder / (shortName + "_ICON.LST");
+        if(!Load(buildingsFilePath, pal5) || !Load(iconsFilePath, pal5))
+            return false;
+        nation_gfx[nation] = &files_[ResourceId::make(buildingsFilePath)].archive;
+        nationIcons_[nation] = &files_[ResourceId::make(iconsFilePath)].archive;
     }
 
-    if(!LoadFiles(files))
+    // TODO: Move to addon folder and make it overwrite existing file
+    if(!LoadResources({"charburner"_res, "charburner_bobs"_res}))
         return false;
-
-    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
 
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
     if(!Load(mapGFXFile, pal5))
@@ -426,26 +405,6 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     isWinterGFX_ = isWinterGFX;
 
-    nation_gfx = nationIcons_ = {};
-    for(Nation nation : nations)
-    {
-        const auto shortName = s25util::toLower(std::string(NationNames[nation], 0, 3));
-        const auto gfxName = s25util::toLower(natPrefix) + shortName + "_z";
-        const auto iconName = s25util::toLower(shortName) + "_icon";
-        nation_gfx[nation] = &files_[gfxName].archive;
-        nationIcons_[nation] = &files_[iconName].archive;
-    }
-
-    return true;
-}
-
-bool Loader::LoadOverrideFiles()
-{
-    for(const auto& overrideFolder : archiveLocator_->getOverrideFolders())
-    {
-        if(!LoadOverrideDirectory(overrideFolder.path))
-            return false;
-    }
     return true;
 }
 
@@ -459,6 +418,21 @@ bool Loader::LoadFiles(const std::vector<std::string>& files)
         if(!Load(filePath, pal5))
         {
             logger_.write(_("Failed to load %s\n")) % filePath;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Loader::LoadResources(const std::vector<ResourceId>& resources)
+{
+    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
+    for(const ResourceId& curResource : resources)
+    {
+        if(!Load(curResource, pal5))
+        {
+            logger_.write(_("Failed to load %s\n")) % curResource;
             return false;
         }
     }
@@ -936,71 +910,81 @@ bool Loader::Load(libsiedler2::Archiv& archive, const bfs::path& path, const lib
     }
 }
 
-/**
- *  @brief Load the given file or directory
- *
- *  @param pfad Path to file or directory
- *  @param palette Palette to use for possible graphic files
- */
-bool Loader::Load(const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette, bool isFromOverrideDir)
+bool Loader::Load(libsiedler2::Archiv& archive, const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette)
 {
-    FileEntry& entry = files_[ResourceId::make(path)];
-
-    // TODO: Remove
-    RTTR_UNUSED(isFromOverrideDir);
-
-    // Not loaded yet or "cache" invalid?
-    if(!entry.loadedAfterOverrideChange)
+    const ResolvedFile resolvedFile = archiveLocator_->resolve(resId);
+    if(!resolvedFile)
     {
-        const auto resolvedFile = archiveLocator_->resolve(path);
-        // Do we really need to reload or can we reused the loaded version?
-        if(entry.resolvedFile != resolvedFile)
+        logger_.write(_("Failed to resolve resource %1%\n")) % resId;
+        return false;
+    }
+    try
+    {
+        archive = archiveLoader_->load(resolvedFile, palette);
+        return true;
+    } catch(const LoadError&)
+    {
+        return false;
+    }
+}
+
+template<typename T>
+bool Loader::LoadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palette* palette)
+{
+    const auto resolvedFile = archiveLocator_->resolve(resIdOrPath);
+    if(!resolvedFile)
+    {
+        logger_.write(_("Failed to resolve resource %1%\n")) % resIdOrPath;
+        return false;
+    }
+    FileEntry& entry = files_[ResourceId::make(resIdOrPath)];
+    // Do we really need to reload or can we reused the loaded version?
+    if(entry.resolvedFile != resolvedFile)
+    {
+        try
         {
-            try
-            {
-                entry.archive = archiveLoader_->load(resolvedFile, palette);
-            } catch(const LoadError&)
-            {
-                return false;
-            }
-            // Update how we loaded this
-            entry.resolvedFile = resolvedFile;
+            entry.archive = archiveLoader_->load(resolvedFile, palette);
+        } catch(const LoadError&)
+        {
+            return false;
         }
-        // Make cache valid
-        entry.loadedAfterOverrideChange = true;
+        // Update how we loaded this
+        entry.resolvedFile = resolvedFile;
     }
     RTTR_Assert(!entry.archive.empty());
     return true;
 }
 
-bool Loader::LoadOverrideDirectory(const bfs::path& path)
+bool Loader::Load(const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette)
 {
-    if(!bfs::is_directory(path))
+    return LoadImpl(path, palette);
+}
+
+bool Loader::Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette)
+{
+    return LoadImpl(resId, palette);
+}
+
+void addDefaultResourceFolders(const RttrConfig& config, ArchiveLocator& locator,
+                               const std::vector<Nation>& usedNations, const std::vector<AddonId>& enabledAddons)
+{
+    locator.clear();
+    locator.addAssetFolder(config.ExpandPath(s25::folders::assetsBase));
+    for(Nation nation : usedNations)
     {
-        logger_.write(_("Directory does not exist: %s\n")) % path;
-        return false;
+        const auto overrideFolder = config.ExpandPath(s25::folders::assetsNations) / NationNames[nation];
+        if(bfs::exists(overrideFolder))
+            locator.addOverrideFolder(overrideFolder);
     }
-
-    const Timer timer(true);
-
-    logger_.write(_("Loading LST,LBM,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % path;
-
-    std::vector<bfs::path> filesAndFolders;
-    for(const auto* const ext : {"lst", "lbm", "bob", "idx", "bmp", "txt", "ger", "eng", "ini"})
+    locator.addOverrideFolder(config.ExpandPath(s25::folders::assetsOverrides));
+    for(AddonId addonId : enabledAddons)
     {
-        const std::vector<bfs::path> curFiles = ListDir(path, ext, true);
-        filesAndFolders.insert(filesAndFolders.end(), curFiles.begin(), curFiles.end());
+        const auto overrideFolder =
+          config.ExpandPath(s25::folders::assetsAddons) / s25util::toStringClassic(static_cast<uint32_t>(addonId));
+        if(bfs::exists(overrideFolder))
+            locator.addOverrideFolder(overrideFolder);
     }
-
-    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
-    for(const bfs::path& curPath : filesAndFolders)
-    {
-        if(!Load(curPath, pal5, true))
-            return false;
-    }
-    using namespace std::chrono;
-    logger_.write(_("finished in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
-    return true;
+    locator.addOverrideFolder(config.ExpandPath(s25::folders::assetsUserOverrides));
 }
 
 Loader& getGlobalLoader()

@@ -29,9 +29,7 @@ ApplicationLoader::~ApplicationLoader() = default;
 
 bool ApplicationLoader::load()
 {
-    loader_.ClearOverrideFolders();
-    loader_.AddOverrideFolder(s25::folders::lstsGlobal);
-    loader_.AddOverrideFolder(s25::folders::lstsUser);
+    loader_.initResourceFolders();
     if(!loader_.LoadFilesAtStart())
         return false;
     if(!playlistPath_.empty())

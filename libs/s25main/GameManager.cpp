@@ -177,7 +177,10 @@ bool GameManager::ShowSplashscreen()
         return false;
     auto image = libutil::dynamicUniqueCast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)
+    {
+        s25util::error(_("Splash screen couldn't be loaded!\n"));
         return false;
+    }
     windowManager_.Switch(std::make_unique<dskSplash>(std::move(image)));
     return true;
 }
