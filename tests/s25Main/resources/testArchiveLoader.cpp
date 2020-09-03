@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "Loader.h"
-#include "RttrConfig.h"
+#include "resources/ArchiveLoader.h"
+#include "resources/ResolvedFile.h"
 #include "test/testConfig.h"
 #include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_Bitmap_Raw.h"
@@ -31,14 +31,7 @@
 #include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
 
-namespace bfs = boost::filesystem;
-
-class LoaderFixture
-{
-public:
-    std::unique_ptr<Loader> loader;
-    LoaderFixture() : loader(std::make_unique<Loader>(LOG, RTTRCONFIG)) {}
-};
+namespace fs = boost::filesystem;
 
 BOOST_AUTO_TEST_SUITE(LoaderTests)
 
@@ -82,15 +75,22 @@ static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv
     return true;
 }
 
-const bfs::path mainFile = rttr::test::rttrBaseDir / "tests/testData/test.GER";
-const bfs::path overrideFolder1 = rttr::test::rttrBaseDir / "tests/testData/override1";
-const bfs::path overrideFolder2 = rttr::test::rttrBaseDir / "tests/testData/override2";
-const bfs::path overrideFolder3 = rttr::test::rttrBaseDir / "tests/testData/override3";
+const fs::path mainFile = rttr::test::rttrBaseDir / "tests/testData/test.GER";
+const fs::path overrideFolder1 = rttr::test::rttrBaseDir / "tests/testData/override1";
+const fs::path overrideFolder2 = rttr::test::rttrBaseDir / "tests/testData/override2";
 
-BOOST_FIXTURE_TEST_CASE(TestPredicate, LoaderFixture)
+BOOST_AUTO_TEST_CASE(TestPredicate)
 {
-    BOOST_REQUIRE(loader->Load(overrideFolder1 / "test.GER"));
-    const auto& txt = loader->GetArchive("test");
+    // Create archive of size 3 where first item is "1", second is empty and third is "20"
+    libsiedler2::Archiv txt;
+    txt.alloc(3);
+    auto txtItem = std::make_unique<libsiedler2::ArchivItem_Text>();
+    txtItem->setText("1");
+    txt.set(0, std::move(txtItem));
+    txtItem = std::make_unique<libsiedler2::ArchivItem_Text>();
+    txtItem->setText("20");
+    txt.set(2, std::move(txtItem));
+
     BOOST_REQUIRE(compareTxts(txt, "1||20"));
     BOOST_TEST(compareTxts(txt, "1|").message().str() == "Item count mismatch [3 != 2]");
     BOOST_TEST(compareTxts(txt, "1||20|2").message().str() == "Item count mismatch [3 != 4]");
@@ -99,57 +99,39 @@ BOOST_FIXTURE_TEST_CASE(TestPredicate, LoaderFixture)
     BOOST_TEST(compareTxts(txt, "4||20").message().str() == "Mismatch at 0 [1 != 4]");
 }
 
-BOOST_FIXTURE_TEST_CASE(Overrides, LoaderFixture)
+BOOST_AUTO_TEST_CASE(Overrides)
 {
     rttr::test::LogAccessor logAcc;
+    ArchiveLoader loader(LOG);
 
-    // No override folders
-    BOOST_REQUIRE(loader->Load(mainFile));
-    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "0|10"));
+    { // No override
+        const auto archive = loader.load(ResolvedFile{mainFile});
+        BOOST_REQUIRE(compareTxts(archive, "0|10"));
+    }
 
-    // 1 override folder
-    loader->AddOverrideFolder(overrideFolder1);
-    // LoadOverrideFiles loads simply the override file itself
-    BOOST_REQUIRE(loader->LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "1||20"));
-    // Explicitly loading a file overwrites this and override file is used
-    BOOST_REQUIRE(loader->Load(mainFile));
-    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "1|10|20"));
-    // LoadOverrideFiles has no effect (already loaded)
-    BOOST_REQUIRE(loader->LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "1|10|20"));
+    { // 1 override
+        // Explicitly loading a file overwrites this and override file is used
+        const auto archive = loader.load(ResolvedFile{mainFile, overrideFolder1 / mainFile.filename()});
+        BOOST_REQUIRE(compareTxts(archive, "1|10|20"));
+    }
 
-    // 2 override folders
-    loader->ClearOverrideFolders();
-    loader->AddOverrideFolder(overrideFolder1);
-    loader->AddOverrideFolder(overrideFolder2);
-    // LoadOverrideFiles loads override file from1 with override from 2
-    BOOST_REQUIRE(loader->LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "2||20|30"));
-    // Explicitly loading a file overwrites this and override file is used
-    BOOST_REQUIRE(loader->Load(mainFile));
-    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "2|10|20|30"));
-    // LoadOverrideFiles has no effect (already loaded)
-    BOOST_REQUIRE(loader->LoadOverrideFiles());
-    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "2|10|20|30"));
-
-    // Load an override with a double extension
-    loader->ClearOverrideFolders();
-    loader->AddOverrideFolder(overrideFolder3);
-    BOOST_REQUIRE(loader->Load(mainFile));
-    BOOST_REQUIRE(compareTxts(loader->GetArchive("test"), "Hello World Override|10"));
+    { // 2 overrides
+        const auto archive = loader.load(
+          ResolvedFile{mainFile, overrideFolder1 / mainFile.filename(), overrideFolder2 / mainFile.filename()});
+        BOOST_REQUIRE(compareTxts(archive, "2|10|20|30"));
+    }
 
     // Avoid log cluttering
     logAcc.clearLog();
 }
 
-BOOST_FIXTURE_TEST_CASE(BobOverrides, LoaderFixture)
+BOOST_AUTO_TEST_CASE(BobOverrides)
 {
     rttr::test::LogAccessor logAcc;
     rttr::test::TmpFolder tmpFolder;
 
-    const bfs::path bobFile = tmpFolder.get() / "foo.bob";
-    bfs::create_directory(bobFile);
+    const fs::path bobFile = tmpFolder.get() / "foo.bob";
+    fs::create_directory(bobFile);
 
     auto bmpRaw = std::make_unique<libsiedler2::ArchivItem_Bitmap_Raw>();
     libsiedler2::PixelBufferBGRA buffer(3, 7);
@@ -166,8 +148,8 @@ BOOST_FIXTURE_TEST_CASE(BobOverrides, LoaderFixture)
         BOOST_TEST_REQUIRE(txt.write(f, false) == 0);
     }
 
-    BOOST_REQUIRE(loader->Load(bobFile));
-    const auto& bob = loader->GetArchive("foo");
+    ArchiveLoader loader(LOG);
+    const auto bob = loader.load(ResolvedFile{bobFile});
     // Bob override folders have special handling: They are converted into an archive containing the elements of the
     // folder as this is how bob files are after loading
     BOOST_TEST_REQUIRE(bob.size() == 1u);
