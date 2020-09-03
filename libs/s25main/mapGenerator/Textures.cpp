@@ -196,8 +196,8 @@ namespace rttr { namespace mapGenerator {
 
         ApplyCoastTexturing(coast, 1); // small for tiny rivers
 
-        auto isRiver = [textures](const MapPoint& pt) {
-            auto suroundedByWater = [textures](const MapPoint& pt) { return textures.All(pt, IsWater); };
+        auto isRiver = [&textures](const MapPoint& pt) {
+            auto suroundedByWater = [&textures](const MapPoint& pt) { return textures.All(pt, IsWater); };
 
             return !helpers::contains_if(textures.GetNeighbours(pt), suroundedByWater);
         };

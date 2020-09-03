@@ -30,28 +30,6 @@
 namespace rttr { namespace mapGenerator {
 
     /**
-     * Smoothes a single value for the specified map point to lower the gradient to neighboring nodes.
-     *
-     * @param pt map point to smooth the value for
-     * @param nodes map of node values
-     * @param radius smoothing radius
-     */
-    template<typename T_Node>
-    void Smooth(const MapPoint& pt, NodeMapBase<T_Node>& nodes, unsigned radius)
-    {
-        const auto& points = nodes.GetPointsInRadius(pt, radius);
-
-        int sum = static_cast<int>(nodes[pt]);
-
-        for(const MapPoint& p : points)
-        {
-            sum += static_cast<int>(nodes[p]);
-        }
-
-        nodes[pt] = static_cast<T_Node>(round(static_cast<double>(sum) / (points.size() + 1)));
-    }
-
-    /**
      * Smoothes the specified nodes with a smoothing kernel of the specified extent (radius).
      *
      * @param iteration number of times to apply smoothing kernel to every node
@@ -62,12 +40,26 @@ namespace rttr { namespace mapGenerator {
     void Smooth(unsigned iterations, unsigned radius, NodeMapBase<T_Node>& nodes)
     {
         const MapExtent& size = nodes.GetSize();
+        std::vector<std::vector<MapPoint>> neighbors(size.x * size.y);
+
+        RTTR_FOREACH_PT(MapPoint, size)
+        {
+            neighbors[nodes.GetIdx(pt)] = nodes.GetPointsInRadius(pt, radius);
+        }
 
         for(unsigned i = 0; i < iterations; ++i)
         {
             RTTR_FOREACH_PT(MapPoint, size)
             {
-                Smooth(pt, nodes, radius);
+                int sum = static_cast<int>(nodes[pt]);
+                const auto& neighborPoints = neighbors[nodes.GetIdx(pt)];
+
+                for(const MapPoint& p : neighborPoints)
+                {
+                    sum += static_cast<int>(nodes[p]);
+                }
+
+                nodes[pt] = static_cast<T_Node>(round(static_cast<double>(sum) / (neighborPoints.size() + 1)));
             }
         }
     }
@@ -134,7 +126,7 @@ namespace rttr { namespace mapGenerator {
                 {
                     body.push_back(currentPoint);
 
-                    auto neighbors = map.GetNeighbours(currentPoint);
+                    const auto& neighbors = map.GetNeighbours(currentPoint);
                     for(MapPoint neighbor : neighbors)
                     {
                         searchSpace.push(neighbor);

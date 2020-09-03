@@ -105,13 +105,12 @@ namespace rttr { namespace mapGenerator {
             case 128:
             case 256: return 1;
 
-            case 512: return 2;
+            case 512:
+            case 1024: return 2;
 
-            case 1024: return 3;
+            case 2048: return 3;
 
-            case 2048: return 4;
-
-            default: return 5;
+            default: return 4;
         }
     }
 
@@ -132,20 +131,49 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
+    unsigned GetSmoothRadius(const MapExtent& size)
+    {
+        switch(size.x + size.y)
+        {
+            case 128: return 2;
+
+            case 256: return 3;
+
+            case 512: return 4;
+
+            case 1024: return 5;
+
+            case 2048: return 6;
+
+            default: return 7;
+        }
+    }
+
+    unsigned GetSmoothIterations(const MapExtent& size)
+    {
+        switch(size.x + size.y)
+        {
+            case 128: return 10;
+
+            case 256: return 12;
+
+            case 512: return 15;
+
+            case 1024: return 20;
+
+            case 2048: return 25;
+
+            default: return 50;
+        }
+    }
+
     void SmoothHeightMap(ValueMap<uint8_t>& z, const ValueRange<uint8_t>& range)
     {
-        for(int i = 0; i < 10; i++)
-        {
-            Smooth(1, 2, z);
-            Scale(z, range.minimum, range.maximum);
-        }
+        int radius = GetSmoothRadius(z.GetSize());
+        int iterations = GetSmoothIterations(z.GetSize());
 
-        while(ComputeGradients(z).GetMaximum() > 4)
-        {
-            Smooth(1, 2, z);
-        }
-
-        PrintStatisticsForHeightMap(z);
+        Smooth(iterations, radius, z);
+        Scale(z, range.minimum, range.maximum);
     }
 
     void CreateMixedMap(RandomUtility& rnd, Map& map, Texturizer& texturizer)
@@ -156,7 +184,6 @@ namespace rttr { namespace mapGenerator {
         unsigned maxDistance = map.z.CalcDistance(origin, center);
 
         std::vector<MapPoint> focus;
-
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
             auto weight = 1. - static_cast<float>(map.z.CalcDistance(pt, center)) / maxDistance;
@@ -287,8 +314,6 @@ namespace rttr { namespace mapGenerator {
 
     void CreateRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings)
     {
-        std::cout << "===== NEW RANDOM MAP =====" << std::endl;
-
         RandomUtility rnd;
         WorldDescription worldDesc;
 

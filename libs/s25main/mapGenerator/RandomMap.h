@@ -34,6 +34,8 @@ namespace rttr { namespace mapGenerator {
 
     unsigned GetCoastline(const MapExtent& size);
     unsigned GetIslandRadius(const MapExtent& size);
+    unsigned GetSmoothRadius(const MapExtent& size);
+    unsigned GetSmoothIterations(const MapExtent& size);
 
     void SmoothHeightMap(ValueMap<uint8_t>& z, const ValueRange<uint8_t>& range);
 
