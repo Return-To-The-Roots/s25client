@@ -106,13 +106,13 @@ iwBaseWarehouse::~iwBaseWarehouse()
 
 void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
-    if(group_id != pageWares + 100 && group_id != pagePeople + 100)
+    if(group_id != warePageID && group_id != peoplePageID)
         iwWares::Msg_Group_ButtonClick(group_id, ctrl_id);
     else
     {
         if(GAMECLIENT.IsReplayModeOn())
             return;
-        RTTR_Assert(GetCurPage() == pagePeople || GetCurPage() == pageWares);
+        RTTR_Assert(GetCurPage() == peoplePageID || GetCurPage() == warePageID);
         auto* optiongroup = GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP);
 
         EInventorySetting setting;
@@ -123,13 +123,13 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsig
             case ID_STOP: setting = EInventorySetting::STOP; break;
             default: throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
         }
-        InventorySetting state = GetCurPage() == pageWares ? wh->GetInventorySettingVisual(GoodType(ctrl_id - 100)) :
-                                                             wh->GetInventorySettingVisual(Job(ctrl_id - 100));
+        InventorySetting state = GetCurPage() == warePageID ? wh->GetInventorySettingVisual(GoodType(ctrl_id - 100)) :
+                                                              wh->GetInventorySettingVisual(Job(ctrl_id - 100));
         state.Toggle(setting);
-        if(gcFactory.SetInventorySetting(wh->GetPos(), GetCurPage() == pagePeople, ctrl_id - 100, state))
+        if(gcFactory.SetInventorySetting(wh->GetPos(), GetCurPage() == peoplePageID, ctrl_id - 100, state))
         {
             // optisch schonmal setzen
-            wh->SetInventorySettingVisual(GetCurPage() == pagePeople, ctrl_id - 100, state);
+            wh->SetInventorySettingVisual(GetCurPage() == peoplePageID, ctrl_id - 100, state);
             UpdateOverlay(ctrl_id - 100);
         }
     }
@@ -150,7 +150,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(GAMECLIENT.IsReplayModeOn())
                 return;
-            if(GetCurPage() != pageWares && GetCurPage() != pagePeople)
+            if(GetCurPage() != warePageID && GetCurPage() != peoplePageID)
                 return;
             auto* optiongroup = GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP);
             EInventorySetting data;
@@ -161,10 +161,10 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                 case ID_STOP: data = EInventorySetting::STOP; break;
                 default: throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
             }
-            const unsigned count = (GetCurPage() == pageWares) ? NUM_WARE_TYPES : NUM_JOB_TYPES;
+            const unsigned count = (GetCurPage() == warePageID) ? NUM_WARE_TYPES : NUM_JOB_TYPES;
             std::vector<InventorySetting> states;
             states.reserve(count);
-            if(GetCurPage() == pageWares)
+            if(GetCurPage() == warePageID)
             {
                 for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
                     states.push_back(wh->GetInventorySettingVisual(i == GD_WATEREMPTY ? GD_WATER : GoodType(i)));
@@ -190,13 +190,13 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                     states[i].Toggle(data);
             }
 
-            if(gcFactory.SetAllInventorySettings(wh->GetPos(), GetCurPage() == pagePeople, states))
+            if(gcFactory.SetAllInventorySettings(wh->GetPos(), GetCurPage() == peoplePageID, states))
             {
                 // optisch setzen
                 for(unsigned char i = 0; i < count; ++i)
                 {
                     // Status ändern
-                    wh->SetInventorySettingVisual(GetCurPage() == pagePeople, i, states[i]);
+                    wh->SetInventorySettingVisual(GetCurPage() == peoplePageID, i, states[i]);
                 }
                 UpdateOverlays();
             }
@@ -254,7 +254,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
 void iwBaseWarehouse::SetPage(unsigned page)
 {
     iwWares::SetPage(page);
-    const bool showStorageSettings = GetCurPage() == pageWares || GetCurPage() == pagePeople;
+    const bool showStorageSettings = GetCurPage() == warePageID || GetCurPage() == peoplePageID;
     GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP)->GetButton(ID_COLLECT)->SetEnabled(showStorageSettings);
     GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP)->GetButton(ID_STOP)->SetEnabled(showStorageSettings);
     GetCtrl<ctrlOptionGroup>(ID_STORE_SETTINGS_GROUP)->GetButton(ID_TAKEOUT)->SetEnabled(showStorageSettings);
@@ -263,12 +263,12 @@ void iwBaseWarehouse::SetPage(unsigned page)
 
 void iwBaseWarehouse::UpdateOverlay(unsigned i)
 {
-    UpdateOverlay(i, GetCurPage() == pageWares);
+    UpdateOverlay(i, GetCurPage() == warePageID);
 }
 
 void iwBaseWarehouse::UpdateOverlay(unsigned i, bool isWare)
 {
-    auto* group = GetCtrl<ctrlGroup>(100 + (isWare ? pageWares : pagePeople));
+    auto* group = GetCtrl<ctrlGroup>(isWare ? warePageID : peoplePageID);
     // Einlagern verbieten-Bild (de)aktivieren
     auto* image = group->GetCtrl<ctrlImage>(400 + i);
     if(image)

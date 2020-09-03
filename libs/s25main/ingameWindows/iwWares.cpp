@@ -22,16 +22,58 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
-#include "controls/ctrlVarText.h"
+#include "controls/ctrlText.h"
 #include "iwHelp.h"
 #include "ogl/FontStyle.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
+namespace {
+constexpr unsigned ID_pageOffset = 100;
+}
+
+static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPos, const Extent btSize, const unsigned idOffset,
+                       const std::string& name, glArchivItem_Bitmap* img, const bool allow_outhousing)
+{
+    // Background image, only a button when outhousing is allowed
+    if(allow_outhousing)
+    {
+        ctrlButton* b = page.AddImageButton(100 + idOffset, btPos, btSize, TC_GREY, LOADER.GetMapImageN(2298), name);
+        b->SetBorder(false);
+    } else
+        page.AddImage(100 + idOffset, btPos + btSize / 2, LOADER.GetMapImageN(2298), name);
+
+    // Background image for the amount
+    const DrawPoint bgCtPos = btPos + DrawPoint(btSize.x / 2, 32);
+    page.AddImage(200 + idOffset, bgCtPos, LOADER.GetMapImageN(2299));
+
+    // The actual image for the element
+    const DrawPoint warePos = btPos + btSize / 2;
+    page.AddImage(300 + idOffset, warePos, img);
+
+    // Overlay for "don't collect"
+    DrawPoint overlayPos = warePos - DrawPoint(0, 4);
+    ctrlImage* image = page.AddImage(400 + idOffset, overlayPos, LOADER.GetImageN("io", 222));
+    image->SetVisible(false);
+
+    // Overlay for "send out"
+    overlayPos = warePos + DrawPoint(0, 10);
+    image = page.AddImage(500 + idOffset, overlayPos, LOADER.GetImageN("io", 221));
+    image->SetVisible(false);
+
+    // Overlay for "collect"
+    image = page.AddImage(700 + idOffset, overlayPos, LOADER.GetImageN("io_new", 3));
+    image->SetVisible(false);
+
+    // Amount of the element
+    const DrawPoint txtPos = btPos + DrawPoint(btSize.x, 40);
+    page.AddText(600 + idOffset, txtPos, "", COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font);
+}
+
 // 167, 416
 iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing, const glFont* font,
                  const Inventory& inventory, const GamePlayer& player)
-    : IngameWindow(id, pos, size, title, LOADER.GetImageN("io", 5)), inventory(inventory), player(player), curPage_(0), numPages(0)
+    : IngameWindow(id, pos, size, title, LOADER.GetImageN("io", 5)), inventory(inventory), player(player), numPages(0)
 {
     if(!font)
         font = SmallFont;
@@ -54,99 +96,40 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
 
     // Warenseite hinzufügen
     ctrlGroup& waresPage = AddPage();
-    pageWares = waresPage.GetID() - 100;
+    warePageID = waresPage.GetID();
     // Figurenseite hinzufügen
     ctrlGroup& figuresPage = AddPage();
-    pagePeople = figuresPage.GetID() - 100;
+    peoplePageID = figuresPage.GetID();
 
-    bool four = true;
-    unsigned short ware_idx = 0;
-    for(int x = 0, y = 0; y < 7; ++x, ++ware_idx)
+    bool isRowWithFourElemens = true;
+    constexpr unsigned numElements = std::max(WARE_DISPLAY_ORDER.size(), JOB_DISPLAY_ORDER.size());
+    for(unsigned idx = 0, x = 0, y = 0; idx < numElements; ++x, ++idx)
     {
-        // 4er und 5er Block abwechselnd
-        if(x >= (four ? 4 : 5))
+        // Alternating rows with 4 and 5 items
+        if(x >= (isRowWithFourElemens ? 4u : 5u))
         {
             x = 0;
             ++y;
-            if(y == 7)
-                break;
 
-            four = !four;
+            isRowWithFourElemens = !isRowWithFourElemens;
         }
 
-        // Hintergrundbutton oder -bild hinter Ware, nur beim Auslagern ein Button
-        Extent btSize(26, 26);
-        DrawPoint btPos((four ? btSize.x + 1 : btSize.x / 2) + x * 28, 21 + y * 42);
-        if(allow_outhousing)
-        {
-            ctrlButton* b = waresPage.AddImageButton(100 + WARE_DISPLAY_ORDER[ware_idx], btPos, btSize, TC_GREY, LOADER.GetMapImageN(2298),
-                                                     _(WARE_NAMES[WARE_DISPLAY_ORDER[ware_idx]]));
-            b->SetBorder(false);
-        } else
-            waresPage.AddImage(100 + WARE_DISPLAY_ORDER[ware_idx], btPos + btSize / 2, LOADER.GetMapImageN(2298),
-                               _(WARE_NAMES[WARE_DISPLAY_ORDER[ware_idx]]));
+        const Extent btSize(26, 26);
+        const DrawPoint btPos((isRowWithFourElemens ? btSize.x + 1 : btSize.x / 2) + x * 28, 21 + y * 42);
 
-        if(allow_outhousing)
+        if(idx < WARE_DISPLAY_ORDER.size())
         {
-            ctrlButton* b = figuresPage.AddImageButton(100 + JOB_DISPLAY_ORDER[ware_idx], btPos, btSize, TC_GREY, LOADER.GetMapImageN(2298),
-                                                       _(JOB_NAMES[JOB_DISPLAY_ORDER[ware_idx]]));
-            b->SetBorder(false);
-        } else
-        {
-            figuresPage.AddImage(100 + JOB_DISPLAY_ORDER[ware_idx], btPos + btSize / 2, LOADER.GetMapImageN(2298),
-                                 _(JOB_NAMES[JOB_DISPLAY_ORDER[ware_idx]]));
+            const GoodType rawWare = WARE_DISPLAY_ORDER[idx];
+            const GoodType ware = convertShieldToNation(rawWare, player.nation);
+            addElement(waresPage, font, btPos, btSize, rawWare, _(WARE_NAMES[rawWare]), LOADER.GetMapImageN(2250 + ware), allow_outhousing);
         }
 
-        // Hintergrundbild hinter Anzahl
-        DrawPoint bgCtPos = btPos + DrawPoint(btSize.x / 2, 32);
-        waresPage.AddImage(200 + WARE_DISPLAY_ORDER[ware_idx], bgCtPos, LOADER.GetMapImageN(2299));
-
-        figuresPage.AddImage(200 + JOB_DISPLAY_ORDER[ware_idx], bgCtPos, LOADER.GetMapImageN(2299));
-
-        // die jeweilige Ware
-        DrawPoint warePos = btPos + btSize / 2;
-        const GoodType ware = convertShieldToNation(WARE_DISPLAY_ORDER[ware_idx], player.nation);
-        waresPage.AddImage(300 + WARE_DISPLAY_ORDER[ware_idx], warePos, LOADER.GetMapImageN(2250 + ware));
-
-        glArchivItem_Bitmap* figImage;
-        // Exception: charburner
-        if(JOB_DISPLAY_ORDER[ware_idx] != JOB_CHARBURNER)
-            figImage = LOADER.GetMapImageN(2300 + JOB_DISPLAY_ORDER[ware_idx]);
-        else
-            figImage = LOADER.GetImageN("io_new", 5);
-
-        figuresPage.AddImage(300 + JOB_DISPLAY_ORDER[ware_idx], warePos, figImage);
-
-        // Overlay für "Nicht Einlagern"
-        DrawPoint overlayPos = warePos - DrawPoint(0, 4);
-        ctrlImage* image = waresPage.AddImage(400 + WARE_DISPLAY_ORDER[ware_idx], overlayPos, LOADER.GetImageN("io", 222));
-        image->SetVisible(false);
-
-        image = figuresPage.AddImage(400 + JOB_DISPLAY_ORDER[ware_idx], overlayPos, LOADER.GetImageN("io", 222));
-        image->SetVisible(false);
-
-        // Overlay für "Auslagern"
-        overlayPos = warePos + DrawPoint(0, 10);
-        image = waresPage.AddImage(500 + WARE_DISPLAY_ORDER[ware_idx], overlayPos, LOADER.GetImageN("io", 221));
-        image->SetVisible(false);
-
-        image = figuresPage.AddImage(500 + JOB_DISPLAY_ORDER[ware_idx], overlayPos, LOADER.GetImageN("io", 221));
-        image->SetVisible(false);
-
-        // Overlay für "Einlagern"
-        image = waresPage.AddImage(700 + WARE_DISPLAY_ORDER[ware_idx], overlayPos, LOADER.GetImageN("io_new", 3));
-        image->SetVisible(false);
-
-        image = figuresPage.AddImage(700 + JOB_DISPLAY_ORDER[ware_idx], overlayPos, LOADER.GetImageN("io_new", 3));
-        image->SetVisible(false);
-
-        // die jeweilige Anzahl (Texte)
-        DrawPoint txtPos = btPos + DrawPoint(btSize.x, 40);
-        waresPage.AddVarText(600 + WARE_DISPLAY_ORDER[ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font,
-                             1, &inventory.goods[WARE_DISPLAY_ORDER[ware_idx]]);
-
-        figuresPage.AddVarText(600 + JOB_DISPLAY_ORDER[ware_idx], txtPos, _("%d"), COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font,
-                               1, &inventory.people[JOB_DISPLAY_ORDER[ware_idx]]);
+        if(idx < JOB_DISPLAY_ORDER.size())
+        {
+            const Job job = JOB_DISPLAY_ORDER[idx];
+            glArchivItem_Bitmap* figImage = (job == JOB_CHARBURNER) ? LOADER.GetImageN("io_new", 5) : LOADER.GetMapImageN(2300 + job);
+            addElement(figuresPage, font, btPos, btSize, job, _(JOB_NAMES[job]), figImage, allow_outhousing);
+        }
     }
 
     // "Blättern"
@@ -155,6 +138,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
     AddImageButton(12, DrawPoint(16, GetSize().y - 47), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 
     waresPage.SetVisible(true);
+    curPage_ = warePageID;
 }
 
 void iwWares::Msg_ButtonClick(const unsigned ctrl_id)
@@ -162,16 +146,12 @@ void iwWares::Msg_ButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case 0: // "Blättern"
-        {
             SetPage(curPage_ + 1);
-        }
-        break;
+            break;
         case 12: // Hilfe
-        {
             WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_("Here you will find a list of your entire stores of "
                                                                    "merchandise and all the inhabitants of your realm.")));
-        }
-        break;
+            break;
     }
 }
 
@@ -181,19 +161,23 @@ void iwWares::Msg_PaintBefore()
 
     // Farben ggf. aktualisieren
 
-    if(curPage_ != pagePeople && curPage_ != pageWares)
+    if(curPage_ != peoplePageID && curPage_ != warePageID)
         return;
 
-    auto* group = GetCtrl<ctrlGroup>(100 + curPage_);
+    auto* group = GetCtrl<ctrlGroup>(curPage_);
     if(group)
     {
-        unsigned count = (curPage_ == pageWares) ? 36 : 32;
+        const unsigned count = (curPage_ == warePageID) ? helpers::NumEnumValues_v<GoodType> : helpers::NumEnumValues_v<Job>;
 
         for(unsigned i = 0; i < count; ++i)
         {
-            auto* text = group->GetCtrl<ctrlVarText>(600 + i);
+            auto* text = group->GetCtrl<ctrlText>(600 + i);
             if(text)
-                text->SetTextColor((((curPage_ == pageWares) ? inventory.goods[i] : inventory.people[i]) == 0) ? COLOR_RED : COLOR_YELLOW);
+            {
+                const unsigned amount = (curPage_ == warePageID) ? inventory.goods[i] : inventory.people[i];
+                text->SetText(std::to_string(amount));
+                text->SetTextColor((amount == 0) ? COLOR_RED : COLOR_YELLOW);
+            }
         }
     }
 }
@@ -206,22 +190,22 @@ void iwWares::Msg_PaintBefore()
 void iwWares::SetPage(unsigned page)
 {
     // alte Page verstecken
-    auto* group = GetCtrl<ctrlGroup>(100 + curPage_);
+    auto* group = GetCtrl<ctrlGroup>(curPage_);
     if(group)
         group->SetVisible(false);
 
     // neue Page setzen
-    curPage_ = page % numPages;
+    curPage_ = (page - ID_pageOffset) % numPages + ID_pageOffset;
 
     // neue Page anzeigen
-    group = GetCtrl<ctrlGroup>(100 + curPage_);
+    group = GetCtrl<ctrlGroup>(curPage_);
     if(group)
         group->SetVisible(true);
 }
 
 ctrlGroup& iwWares::AddPage()
 {
-    ctrlGroup& grp = *AddGroup(100 + numPages);
+    ctrlGroup& grp = *AddGroup(ID_pageOffset + numPages);
     numPages++;
     grp.SetVisible(false);
     return grp;
