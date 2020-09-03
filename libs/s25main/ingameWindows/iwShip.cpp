@@ -35,6 +35,7 @@
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noShip.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/NationConsts.h"
 #include "gameData/ShieldConsts.h"
@@ -208,8 +209,8 @@ void iwShip::DrawCargo()
     if(ship->IsOnExpedition())
     {
         orderedFigures[JOB_BUILDER] = 1;
-        orderedWares[GD_BOARDS] = 4;
-        orderedWares[GD_STONES] = 6;
+        orderedWares[GD_BOARDS] = BUILDING_COSTS[owner.nation][BLD_HARBORBUILDING].boards;
+        orderedWares[GD_STONES] = BUILDING_COSTS[owner.nation][BLD_HARBORBUILDING].stones;
     } else if(ship->IsOnExplorationExpedition())
     {
         orderedFigures[JOB_SCOUT] = gwv.GetWorld().GetGGS().GetNumScoutsExpedition();
