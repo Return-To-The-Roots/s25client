@@ -84,7 +84,7 @@ namespace rttr { namespace mapGenerator {
                 const int min = std::max(static_cast<int>(minimum + 1), base);
                 const int max = std::min(static_cast<int>(maximum), base + 1);
 
-                z[pt] = rnd.Rand(min, max);
+                z[pt] = rnd.RandomInt(min, max);
             }
         }
     }

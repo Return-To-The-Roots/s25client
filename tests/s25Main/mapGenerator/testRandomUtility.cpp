@@ -23,7 +23,7 @@ using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(RandomUtilityTests)
 
-BOOST_AUTO_TEST_CASE(Index_ForSize_ReturnsValuesGreaterOrEqualToZeroAndLessThanSize)
+BOOST_AUTO_TEST_CASE(Index_returns_values_gte_zero_and_lt_size)
 {
     RandomUtility rnd(0u);
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(Index_ForSize_ReturnsValuesGreaterOrEqualToZeroAndLessThanS
     }
 }
 
-BOOST_AUTO_TEST_CASE(PRand_ForMapSize_ReturnsPositionOnTheMap)
+BOOST_AUTO_TEST_CASE(PRand_returns_map_point_within_size_bounaries)
 {
     RandomUtility rnd(0u);
     MapExtent size(23, 12);
@@ -46,89 +46,30 @@ BOOST_AUTO_TEST_CASE(PRand_ForMapSize_ReturnsPositionOnTheMap)
     BOOST_REQUIRE(result.y < size.y);
 }
 
-BOOST_AUTO_TEST_CASE(Rand_ForMinimumAndMaximum_ReturnsValueBetweenRange)
+BOOST_AUTO_TEST_CASE(RandomInt_returns_value_within_thresholds)
 {
     RandomUtility rnd(0u);
 
     int minimum = -10;
     int maximum = 7;
 
-    auto result = rnd.Rand(minimum, maximum);
+    auto result = rnd.RandomInt(minimum, maximum);
 
     BOOST_REQUIRE(result >= minimum);
     BOOST_REQUIRE(result <= maximum);
 }
 
-BOOST_AUTO_TEST_CASE(DRand_ReturnsValuesBetweenMinAndMax)
+BOOST_AUTO_TEST_CASE(RandomDouble_returns_value_within_thresholds)
 {
     RandomUtility rnd(0u);
 
     double minimum = -12.123;
     double maximum = 7.456;
 
-    auto result = rnd.DRand(minimum, maximum);
+    auto result = rnd.RandomDouble(minimum, maximum);
 
     BOOST_REQUIRE(result >= minimum);
     BOOST_REQUIRE(result <= maximum);
-}
-
-BOOST_AUTO_TEST_CASE(IRand_ForAmount_ReturnsSpecifiedNumberOfIndices)
-{
-    RandomUtility rnd(0u);
-
-    BOOST_REQUIRE(rnd.ShuffledRange(10).size() == 10u);
-}
-
-BOOST_AUTO_TEST_CASE(IRand_ForAmount_ReturnsOnlyUniqueValues)
-{
-    RandomUtility rnd(0u);
-
-    auto result = rnd.ShuffledRange(10);
-
-    std::set<int> values;
-
-    for(auto value : result)
-    {
-        BOOST_REQUIRE(values.insert(value).second);
-    }
-}
-
-BOOST_AUTO_TEST_CASE(IRand_ForAmount_ReturnsOnlyValuesBetweenZeroAndAmountMinusOne)
-{
-    RandomUtility rnd(0u);
-
-    auto result = rnd.ShuffledRange(10);
-
-    for(auto value : result)
-    {
-        BOOST_REQUIRE(value >= 0 && value < 10);
-    }
-}
-
-BOOST_AUTO_TEST_CASE(Shuffle_ForPositionVector_DoesNotAddOrRemovePositions)
-{
-    RandomUtility rnd(0u);
-
-    std::vector<Position> original = {Position(1, 2), Position(2, 3), Position(3, 4)};
-    std::vector<Position> area(original);
-
-    rnd.Shuffle(area);
-
-    BOOST_REQUIRE(area.size() == original.size());
-
-    for(auto p : original)
-    {
-        bool found = false;
-        for(auto q : area)
-        {
-            if(p.x == q.x && p.y == q.y)
-            {
-                found = true;
-                break;
-            }
-        }
-        BOOST_REQUIRE(found);
-    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

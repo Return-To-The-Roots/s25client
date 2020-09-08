@@ -32,15 +32,14 @@ void RunTest(T_Test test)
     DescIdx<LandscapeDesc> landscape(1);
     WorldDescription worldDesc;
     loadGameData(worldDesc);
-    TextureMap textures(worldDesc, landscape);
 
     MapExtent size(16, 8);
-    Map map(textures, size, 0x7, 44);
+    Map map(size, 0x7, worldDesc, landscape);
 
     test(map);
 }
 
-BOOST_AUTO_TEST_CASE(Constructor_ResizesAllMaps)
+BOOST_AUTO_TEST_CASE(Constructor_resizes_all_maps)
 {
     RunTest([](Map& map) {
         BOOST_REQUIRE(map.z.GetSize() == map.size);
@@ -52,7 +51,7 @@ BOOST_AUTO_TEST_CASE(Constructor_ResizesAllMaps)
     });
 }
 
-BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_WithValidPositionAndAnyIndex_PlacesHeadQuarterWithIndex)
+BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_sets_object_info_and_type_for_any_player_index)
 {
     RunTest([](Map& map) {
         MapPoint hq(3, 4);
@@ -67,7 +66,7 @@ BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_WithValidPositionAndAnyIndex_PlacesHeadQu
     });
 }
 
-BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_WithValidAndInvalidPosition_RemovesHeadQuarter)
+BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_removes_hq_for_invalid_map_point)
 {
     RunTest([](Map& map) {
         MapPoint hq(3, 7);

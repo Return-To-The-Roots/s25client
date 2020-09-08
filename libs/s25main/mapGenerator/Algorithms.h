@@ -29,6 +29,8 @@
 
 namespace rttr { namespace mapGenerator {
 
+    std::vector<MapPoint> WholeMap();
+
     /**
      * Smoothes the specified nodes with a smoothing kernel of the specified extent (radius).
      *
@@ -36,8 +38,8 @@ namespace rttr { namespace mapGenerator {
      * @param radius extent of the smoothing kernel
      * @param nodes map of node values
      */
-    template<typename T_Node>
-    void Smooth(unsigned iterations, unsigned radius, NodeMapBase<T_Node>& nodes)
+    template<typename T>
+    void Smooth(unsigned iterations, unsigned radius, NodeMapBase<T>& nodes)
     {
         const MapExtent& size = nodes.GetSize();
         std::vector<std::vector<MapPoint>> neighbors(size.x * size.y);
@@ -59,7 +61,7 @@ namespace rttr { namespace mapGenerator {
                     sum += static_cast<int>(nodes[p]);
                 }
 
-                nodes[pt] = static_cast<T_Node>(round(static_cast<double>(sum) / (neighborPoints.size() + 1)));
+                nodes[pt] = static_cast<T>(round(static_cast<double>(sum) / (neighborPoints.size() + 1)));
             }
         }
     }
@@ -71,8 +73,8 @@ namespace rttr { namespace mapGenerator {
      * @param minimum minimum value to map any values to
      * @param maximum maximum value to map any values to
      */
-    template<typename T_Value>
-    void Scale(ValueMap<T_Value>& values, T_Value minimum, T_Value maximum)
+    template<typename T>
+    void Scale(ValueMap<T>& values, T minimum, T maximum)
     {
         auto range = values.GetRange();
         auto actualRange = range.GetDifference();
@@ -90,7 +92,7 @@ namespace rttr { namespace mapGenerator {
             auto normalizer = static_cast<double>(values[pt] - actualMinimum) / actualRange;
             auto offset = round(normalizer * scaledRange);
 
-            values[pt] = static_cast<T_Value>(minimum + offset);
+            values[pt] = static_cast<T>(minimum + offset);
         }
     }
 
@@ -106,8 +108,8 @@ namespace rttr { namespace mapGenerator {
      * @returns a list of map points where every point is connected to at least one other point of the least which has also
      * been evaluated positively.
      */
-    template<typename T_Node>
-    std::vector<MapPoint> Collect(const MapBase& map, const MapPoint& pt, T_Node&& evaluator)
+    template<typename T>
+    std::vector<MapPoint> Collect(const MapBase& map, const MapPoint& pt, T&& evaluator)
     {
         std::set<MapPoint, MapPointLess> visited;
         std::vector<MapPoint> body;
@@ -159,8 +161,8 @@ namespace rttr { namespace mapGenerator {
      *
      * @return distance of each grid position to closest point which has been evaluted with `true`.
      */
-    template<typename T_Value, class T_Container>
-    ValueMap<unsigned> Distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue, T_Value&& evaluator)
+    template<typename T, class T_Container>
+    ValueMap<unsigned> Distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue, T&& evaluator)
     {
         const unsigned maximumDistance = size.x * size.y;
 
@@ -215,122 +217,72 @@ namespace rttr { namespace mapGenerator {
         return distances;
     }
 
-    template<typename T_Value, class T_Container>
-    unsigned Count(const ValueMap<T_Value>& values, const T_Container& area, T_Value minimum, T_Value maximum)
-    {
-        unsigned valuesInRange = 0;
-
-        for(const MapPoint& pt : area)
-        {
-            if(values[pt] >= minimum && values[pt] <= maximum)
-            {
-                valuesInRange++;
-            }
-        }
-
-        return valuesInRange;
-    }
-
-    template<typename T_Value, class T_Container>
-    T_Value LimitFor(const ValueMap<T_Value>& values, const T_Container& area, double coverage, T_Value minimum)
-    {
-        if(coverage < 0 || coverage > 1)
-        {
-            throw std::invalid_argument("coverage must be between 0 and 1");
-        }
-
-        const T_Value maximum = values.GetMaximum(area);
-
-        if(minimum == maximum)
-        {
-            return maximum;
-        }
-
-        const auto expectedNodes = static_cast<unsigned>(coverage * area.size());
-
-        unsigned currentNodes = 0;
-        unsigned previousNodes = 0;
-
-        T_Value limit = minimum;
-
-        while(currentNodes < expectedNodes && limit <= maximum)
-        {
-            previousNodes = currentNodes;
-            currentNodes = Count(values, area, minimum, limit);
-            limit++;
-        }
-
-        if(expectedNodes - previousNodes < currentNodes - expectedNodes)
-        {
-            return limit - 2;
-        }
-
-        return limit - 1;
-    }
-
-    /**
-     * Counts the number of values greater than the minimum value and less or equal to the maximum value.
-     *
-     * @param values reference to the grid of all available values
-     * @param minimum minimum value to consider for counting
-     * @param maximum maxmimum value to consider for counting
-     *
-     * @returns the number of values within the specified range.
-     */
-    template<typename T_Value>
-    unsigned Count(const ValueMap<T_Value>& values, T_Value minimum, T_Value maximum)
-    {
-        unsigned valuesInRange = 0;
-
-        RTTR_FOREACH_PT(MapPoint, values.GetSize())
-        {
-            if(values[pt] >= minimum && values[pt] <= maximum)
-            {
-                valuesInRange++;
-            }
-        }
-
-        return valuesInRange;
-    }
-
     /**
      * Computes an upper limit for the specified values. The number of values between the specified minimum and the computed limit is at
      * least as high as the specified coverage of the map.
      *
      * @param values map of comparable values
+     * @param area area of nodes to consider (empty for the whole map)
      * @param coverage percentage of expected map coverage (value between 0 and 1)
      * @param minimum minimum value to consider
      *
      * @returns a value between the specified minimum and the maximum value of the map.
      */
-    template<typename T_Value>
-    T_Value LimitFor(const ValueMap<T_Value>& values, double coverage, T_Value minimum)
+    template<typename T, class T_Area>
+    unsigned Count(const ValueMap<T>& values, const T_Area& area, T minimum, T maximum)
+    {
+        unsigned valuesInRange = 0;
+
+        if(area.empty())
+        {
+            RTTR_FOREACH_PT(MapPoint, values.GetSize())
+            {
+                if(values[pt] >= minimum && values[pt] <= maximum)
+                {
+                    valuesInRange++;
+                }
+            }
+        } else
+        {
+            for(const MapPoint& pt : area)
+            {
+                if(values[pt] >= minimum && values[pt] <= maximum)
+                {
+                    valuesInRange++;
+                }
+            }
+        }
+
+        return valuesInRange;
+    }
+
+    template<typename T, class T_Area>
+    T LimitFor(const ValueMap<T>& values, const T_Area& area, double coverage, T minimum)
     {
         if(coverage < 0 || coverage > 1)
         {
             throw std::invalid_argument("coverage must be between 0 and 1");
         }
 
-        const T_Value maximum = values.GetMaximum();
+        const T maximum = area.empty() ? values.GetMaximum() : values.GetMaximum(area);
 
         if(minimum == maximum)
         {
             return maximum;
         }
 
-        const MapExtent size = values.GetSize();
-
-        const auto expectedNodes = static_cast<unsigned>(coverage * size.x * size.y);
+        const auto nodes = area.empty() ? values.GetWidth() * values.GetHeight() : area.size();
+        const auto expectedNodes = static_cast<unsigned>(coverage * nodes);
 
         unsigned currentNodes = 0;
         unsigned previousNodes = 0;
 
-        T_Value limit = minimum;
+        T limit = minimum;
 
         while(currentNodes < expectedNodes && limit <= maximum)
         {
             previousNodes = currentNodes;
-            currentNodes = Count(values, minimum, limit);
+            currentNodes = Count(values, area, minimum, limit);
             limit++;
         }
 

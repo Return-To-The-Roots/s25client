@@ -24,23 +24,7 @@ using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(AlgorithmsTests)
 
-BOOST_AUTO_TEST_CASE(MapPointCompareCanBeUsedAsValidComparorForSet)
-{
-    MapExtent size(19, 45);
-    std::set<MapPoint, MapPointLess> setOfMapPoints;
-
-    RTTR_FOREACH_PT(MapPoint, size)
-    {
-        BOOST_REQUIRE(setOfMapPoints.insert(pt).second);
-    }
-
-    RTTR_FOREACH_PT(MapPoint, size)
-    {
-        BOOST_REQUIRE(!setOfMapPoints.insert(pt).second);
-    }
-}
-
-BOOST_AUTO_TEST_CASE(UpdateDistancesCorrectlyAndGoesThroughAllEnqueuedElements)
+BOOST_AUTO_TEST_CASE(UpdateDistances_updates_enqueued_elements_correctly)
 {
     MapExtent size(8, 8);
     MapPoint reference(4, 7);
@@ -62,7 +46,7 @@ BOOST_AUTO_TEST_CASE(UpdateDistancesCorrectlyAndGoesThroughAllEnqueuedElements)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Smooth_ForHomogenousNodes_KeepsNodesUnchanged)
+BOOST_AUTO_TEST_CASE(Smooth_keeps_homogenous_map_unchanged)
 {
     NodeMapBase<int> nodes;
     MapExtent size(16, 8);
@@ -81,7 +65,7 @@ BOOST_AUTO_TEST_CASE(Smooth_ForHomogenousNodes_KeepsNodesUnchanged)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Smooth_ForSinglePeakValue_InterpolatesValuesAroundPeak)
+BOOST_AUTO_TEST_CASE(Smooth_interpolates_values_around_peak)
 {
     NodeMapBase<int> nodes;
     MapExtent size(16, 8);
@@ -107,7 +91,7 @@ BOOST_AUTO_TEST_CASE(Smooth_ForSinglePeakValue_InterpolatesValuesAroundPeak)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Scale_ForMixedValues_SetsMinAndMaxValuesCorrectly)
+BOOST_AUTO_TEST_CASE(Scale_updates_minimum_and_maximum_values_correctly)
 {
     MapExtent size(16, 8);
     ValueMap<unsigned> values(size, 8u);
@@ -121,7 +105,7 @@ BOOST_AUTO_TEST_CASE(Scale_ForMixedValues_SetsMinAndMaxValuesCorrectly)
     BOOST_REQUIRE(values[1] == 0u);
 }
 
-BOOST_AUTO_TEST_CASE(Scale_ForEqualValues_DoesNotModifyAnyValues)
+BOOST_AUTO_TEST_CASE(Scale_keeps_equal_values_unchanged)
 {
     MapExtent size(16, 8);
     ValueMap<unsigned> values(size, 8u);
@@ -134,7 +118,7 @@ BOOST_AUTO_TEST_CASE(Scale_ForEqualValues_DoesNotModifyAnyValues)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Collect_ForNegativeMapPoint_ReturnsEmptyVector)
+BOOST_AUTO_TEST_CASE(Collect_returns_empty_for_negative_map_point)
 {
     NodeMapBase<int> map;
     MapExtent size(16, 8);
@@ -148,7 +132,7 @@ BOOST_AUTO_TEST_CASE(Collect_ForNegativeMapPoint_ReturnsEmptyVector)
     BOOST_REQUIRE(result.empty());
 }
 
-BOOST_AUTO_TEST_CASE(Collect_ForPositiveMap_ReturnsAllMapPoints)
+BOOST_AUTO_TEST_CASE(Collect_returns_all_map_points_for_entirely_positive_map)
 {
     NodeMapBase<int> map;
     MapExtent size(16, 8);
@@ -168,7 +152,7 @@ BOOST_AUTO_TEST_CASE(Collect_ForPositiveMap_ReturnsAllMapPoints)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Collect_ForMapWithPositiveAreas_ReturnsOnlyAreaAroundPoint)
+BOOST_AUTO_TEST_CASE(Collect_returns_only_connected_positive_map_points)
 {
     NodeMapBase<int> map;
     MapExtent size(16, 16);
@@ -203,7 +187,7 @@ BOOST_AUTO_TEST_CASE(Collect_ForMapWithPositiveAreas_ReturnsOnlyAreaAroundPoint)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Distances_ForValuesAndEvaluator_ReturnsExpectedDistances)
+BOOST_AUTO_TEST_CASE(Distances_returns_expected_distance_for_each_map_point)
 {
     MapExtent size(8, 8);
 
@@ -222,7 +206,7 @@ BOOST_AUTO_TEST_CASE(Distances_ForValuesAndEvaluator_ReturnsExpectedDistances)
     }
 }
 
-BOOST_AUTO_TEST_CASE(Count_NodesWithinThreshold_ReturnsExpectedNumber)
+BOOST_AUTO_TEST_CASE(Count_all_nodes_within_thresholds_correctly)
 {
     MapExtent size(8, 16);
     ValueMap<int> values(size);
@@ -232,12 +216,12 @@ BOOST_AUTO_TEST_CASE(Count_NodesWithinThreshold_ReturnsExpectedNumber)
         values[i] = i;
     }
 
-    auto result = Count(values, 5, 10);
+    auto result = Count(values, WholeMap(), 5, 10);
 
     BOOST_REQUIRE_EQUAL(6, result);
 }
 
-BOOST_AUTO_TEST_CASE(Count_NodesInAreaWithinThresholds_ReturnsExpectedNumber)
+BOOST_AUTO_TEST_CASE(Count_nodes_in_area_within_thresholds_correctly)
 {
     MapExtent size(16, 16);
     ValueMap<int> values(size);
@@ -254,7 +238,7 @@ BOOST_AUTO_TEST_CASE(Count_NodesInAreaWithinThresholds_ReturnsExpectedNumber)
     BOOST_REQUIRE_EQUAL(3, result);
 }
 
-BOOST_AUTO_TEST_CASE(LimitFor_IgnoresNodesOutsideOfArea)
+BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
 {
     MapExtent size(8, 16);
     ValueMap<int> values(size);
@@ -285,7 +269,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_IgnoresNodesOutsideOfArea)
     BOOST_REQUIRE_EQUAL(actualNodes, expectedNodes);
 }
 
-BOOST_AUTO_TEST_CASE(LimitFor_IgnoresNodesBelowMinimum)
+BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
 {
     MapExtent size(8, 16);
     ValueMap<int> values(size);
@@ -298,7 +282,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_IgnoresNodesBelowMinimum)
     const double coverage = 0.11;
     const int minimum = 2;
 
-    int limit = LimitFor(values, coverage, minimum);
+    int limit = LimitFor(values, WholeMap(), coverage, minimum);
 
     auto expectedNodes = static_cast<unsigned>(size.x * size.y * coverage);
     unsigned actualNodes = 0;
@@ -314,7 +298,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_IgnoresNodesBelowMinimum)
     BOOST_REQUIRE_EQUAL(actualNodes, expectedNodes);
 }
 
-BOOST_AUTO_TEST_CASE(LimitFor_AlwaysChoosesClosestValue)
+BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
 {
     MapExtent size(8, 8);
     ValueMap<int> values(size);
@@ -335,7 +319,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_AlwaysChoosesClosestValue)
         values[i] = 6;
     }
 
-    BOOST_REQUIRE_EQUAL(LimitFor(values, coverage, minimum), 5);
+    BOOST_REQUIRE_EQUAL(LimitFor(values, WholeMap(), coverage, minimum), 5);
 
     for(unsigned i = 0; i < exactNumberOfNodes + 5; i++)
     {
@@ -347,7 +331,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_AlwaysChoosesClosestValue)
         values[i] = 6;
     }
 
-    BOOST_REQUIRE_EQUAL(LimitFor(values, coverage, minimum), 5);
+    BOOST_REQUIRE_EQUAL(LimitFor(values, WholeMap(), coverage, minimum), 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

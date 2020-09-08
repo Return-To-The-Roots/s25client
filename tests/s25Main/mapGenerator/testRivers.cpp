@@ -35,14 +35,12 @@ void RunTest(T_Test test)
     WorldDescription worldDesc;
     loadGameData(worldDesc);
     DescIdx<LandscapeDesc> landscape(0);
-
-    TextureMap textures(worldDesc, landscape);
-    Map map(textures, size, 0x1, 44);
+    Map map(size, 0x1, worldDesc, landscape);
 
     test(rnd, map);
 }
 
-BOOST_AUTO_TEST_CASE(CreateStream_OfCertainLength_ReturnsExpectedNumberOfPoints)
+BOOST_AUTO_TEST_CASE(CreateStream_returns_river_of_expected_size)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
         const MapPoint source(4, 1);
@@ -63,7 +61,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_OfCertainLength_ReturnsExpectedNumberOfPoints)
     });
 }
 
-BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsConnectedNodes)
+BOOST_AUTO_TEST_CASE(CreateStream_returns_only_connected_nodes)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
         const MapPoint source(3, 2);
@@ -83,7 +81,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsConnectedNodes)
     });
 }
 
-BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesPartiallyCoveredByWater)
+BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
         auto land = map.textures.Find(IsBuildableLand);
@@ -103,7 +101,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesPartiallyCoveredBy
     });
 }
 
-BOOST_AUTO_TEST_CASE(CreateStream_ForAnyDirection_ReturnsNodesWithReducedHeight)
+BOOST_AUTO_TEST_CASE(CreateStream_reduces_height_of_river_nodes)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
         map.z.Resize(map.size, 4);

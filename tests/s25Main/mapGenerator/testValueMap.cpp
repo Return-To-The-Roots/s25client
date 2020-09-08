@@ -22,42 +22,42 @@ using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(ValueTests)
 
-BOOST_AUTO_TEST_CASE(GetDifference_ForRange_ReturnsDifferenceBetweenMaximumAndMinimum)
+BOOST_AUTO_TEST_CASE(GetDifference_returns_maximum_difference_between_range)
 {
     ValueRange<int> range(4, 20);
 
     BOOST_REQUIRE(range.GetDifference() == 16);
 }
 
-BOOST_AUTO_TEST_CASE(MapValueToIndex_ForMinimumValue_ReturnsZero)
+BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_zero_for_minimum_value)
 {
     ValueRange<int> range(4, 20);
 
     BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0);
 }
 
-BOOST_AUTO_TEST_CASE(MapValueToIndex_ForZeroRange_ReturnsZero)
+BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_zero_for_zero_range)
 {
     ValueRange<int> range(4, 4);
 
     BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0);
 }
 
-BOOST_AUTO_TEST_CASE(MapValueToIndex_ForSpecificValue_ReturnsExpectedIndex)
+BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_expected_index_for_range)
 {
     ValueRange<int> range(10, 20);
 
     BOOST_REQUIRE(MapValueToIndex(15, range, 100) == 50);
 }
 
-BOOST_AUTO_TEST_CASE(MapValueToIndex_ForMaximumValue_ReturnsLargestIndex)
+BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_largest_index_for_maximum_value)
 {
     ValueRange<int> range(4, 20);
 
     BOOST_REQUIRE(MapValueToIndex(20, range, 100) == 99);
 }
 
-BOOST_AUTO_TEST_CASE(GetRange_ForResizedValueMap_ReturnsRangeOfMapValues)
+BOOST_AUTO_TEST_CASE(GetRange_returns_range_of_map_values)
 {
     MapExtent size(16, 8);
     ValueMap<int> values(size, 2);
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(GetRange_ForResizedValueMap_ReturnsRangeOfMapValues)
     BOOST_REQUIRE(range.maximum == 7);
 }
 
-BOOST_AUTO_TEST_CASE(GetMaximum_ForResizedValueMap_ReturnsMaximumValue)
+BOOST_AUTO_TEST_CASE(GetMaximum_returns_maximum_value)
 {
     MapExtent size(16, 8);
     ValueMap<int> values(size, 4);
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(GetMaximum_ForResizedValueMap_ReturnsMaximumValue)
     BOOST_REQUIRE(values.GetMaximum() == 5);
 }
 
-BOOST_AUTO_TEST_CASE(GetMaximumPoint_ForResizedValueMap_ReturnsPointWithMaximumValue)
+BOOST_AUTO_TEST_CASE(GetMaximumPoint_returns_map_point_for_maximum_value)
 {
     MapExtent size(16, 8);
     ValueMap<int> values(size, 4);

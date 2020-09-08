@@ -34,15 +34,14 @@ void RunTest(T_Test test)
     DescIdx<LandscapeDesc> landscape(1);
     WorldDescription worldDesc;
     loadGameData(worldDesc);
-    TextureMap textures(worldDesc, landscape);
 
     MapExtent size(8, 8);
-    Map map(textures, size, 1, 44);
+    Map map(size, 1, worldDesc, landscape);
 
-    test(map, textures);
+    test(map, map.textures);
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHarborPosition_FlattensGroundInNeighborhood)
+BOOST_AUTO_TEST_CASE(PlaceHarborPosition_flattens_ground_around_harbor_position)
 {
     RunTest([](Map& map, TextureMap& textures) {
         auto land = TexturePair(textures.Find(IsBuildableLand));
@@ -72,7 +71,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_FlattensGroundInNeighborhood)
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHarborPosition_AppliesBuildableTerrainAroundPosition)
+BOOST_AUTO_TEST_CASE(PlaceHarborPosition_applies_buildable_terrain_around_position)
 {
     RunTest([](Map& map, TextureMap& textures) {
         auto coast = TexturePair(textures.Find(IsCoastTerrain));
@@ -98,7 +97,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_AppliesBuildableTerrainAroundPosition)
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesNoHarborsOnCoastBelowMinimumSize)
+BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbors_on_coast_below_minimum_size)
 {
     RunTest([](Map& map, TextureMap& textures) {
         MapPoint island(3, 3);
@@ -116,7 +115,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesNoHarborsOnCoastBelowMinimumSize)
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesHarborOnSuitableIsland)
+BOOST_AUTO_TEST_CASE(PlaceHarbors_places_harbor_on_suitable_island)
 {
     RunTest([](Map& map, TextureMap& textures) {
         MapPoint island(3, 3);
@@ -134,7 +133,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesHarborOnSuitableIsland)
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHarbors_PlacesNoHarborNearRiver)
+BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbor_near_river)
 {
     RunTest([](Map& map, TextureMap& textures) {
         MapPoint island(3, 3);

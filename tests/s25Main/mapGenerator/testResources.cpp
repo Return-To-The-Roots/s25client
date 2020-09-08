@@ -37,8 +37,7 @@ void RunTest(T_Test test)
     WorldDescription worldDesc;
     loadGameData(worldDesc);
 
-    TextureMap textures(worldDesc, landscape);
-    Map map(textures, size, 1, 44);
+    Map map(size, 1, worldDesc, landscape);
 
     auto mountain = map.textures.Find(IsMountainOrSnowOrLava);
     auto water = map.textures.Find(IsWater);
@@ -92,7 +91,7 @@ void RunTest(T_Test test)
     test(map);
 }
 
-BOOST_AUTO_TEST_CASE(AddObjects_KeepsAreaAroundHeadQuarterEmpty)
+BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_hqs_empty)
 {
     RunTest([](Map& map) {
         RandomUtility rnd(0);
@@ -112,7 +111,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_KeepsAreaAroundHeadQuarterEmpty)
     });
 }
 
-BOOST_AUTO_TEST_CASE(AddObjects_KeepsAreaAroundHarborEmpty)
+BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_harbors_empty)
 {
     RunTest([](Map& map) {
         RandomUtility rnd(0);
@@ -132,7 +131,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_KeepsAreaAroundHarborEmpty)
     });
 }
 
-BOOST_AUTO_TEST_CASE(AddObjects_AddsObjectsToTheMap)
+BOOST_AUTO_TEST_CASE(AddObjects_adds_objects_to_the_map)
 {
     RunTest([](Map& map) {
         RandomUtility rnd(0);
@@ -159,7 +158,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_AddsObjectsToTheMap)
     });
 }
 
-BOOST_AUTO_TEST_CASE(AddResources_UpdatesResourceMapAccordingToTexture)
+BOOST_AUTO_TEST_CASE(AddResources_updates_resources_according_to_textures)
 {
     RunTest([](Map& map) {
         RandomUtility rnd(0);
@@ -183,7 +182,7 @@ BOOST_AUTO_TEST_CASE(AddResources_UpdatesResourceMapAccordingToTexture)
     });
 }
 
-BOOST_AUTO_TEST_CASE(AddAnimals_UpdatesAnimalMapAccordingToTexture)
+BOOST_AUTO_TEST_CASE(AddAnimals_updates_animals_according_to_textures)
 {
     RunTest([](Map& map) {
         RandomUtility rnd(0);

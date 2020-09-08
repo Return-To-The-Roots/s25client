@@ -31,33 +31,22 @@ namespace rttr { namespace mapGenerator {
 
     RandomUtility::RandomUtility(uint64_t seed) { rng_.seed(static_cast<UsedRNG::result_type>(seed)); }
 
-    bool RandomUtility::ByChance(unsigned percentage) { return static_cast<unsigned>(Rand(1, 100)) <= percentage; }
+    bool RandomUtility::ByChance(unsigned percentage) { return static_cast<unsigned>(RandomInt(1, 100)) <= percentage; }
 
-    unsigned RandomUtility::Index(const size_t& size) { return Rand(0, static_cast<unsigned>(size - 1)); }
+    unsigned RandomUtility::Index(const size_t& size) { return RandomInt(0, static_cast<unsigned>(size - 1)); }
 
-    int RandomUtility::Rand(int min, int max)
+    int RandomUtility::RandomInt(int min, int max)
     {
         std::uniform_int_distribution<int> distr(min, max);
         return distr(rng_);
     }
 
-    MapPoint RandomUtility::RandomPoint(const MapExtent& size) { return MapPoint(Rand(0, size.x - 1), Rand(0, size.y - 1)); }
+    MapPoint RandomUtility::RandomPoint(const MapExtent& size) { return MapPoint(RandomInt(0, size.x - 1), RandomInt(0, size.y - 1)); }
 
-    double RandomUtility::DRand(double min, double max)
+    double RandomUtility::RandomDouble(double min, double max)
     {
         std::uniform_real_distribution<double> distr(min, max);
         return distr(rng_);
     }
-
-    std::vector<int> RandomUtility::ShuffledRange(int n)
-    {
-        std::vector<int> indices(n);
-        std::iota(indices.begin(), indices.end(), 0);
-        std::shuffle(indices.begin(), indices.end(), rng_);
-
-        return indices;
-    }
-
-    void RandomUtility::Shuffle(std::vector<Position>& area) { std::shuffle(area.begin(), area.end(), rng_); }
 
 }} // namespace rttr::mapGenerator

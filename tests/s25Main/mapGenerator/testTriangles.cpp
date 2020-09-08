@@ -23,7 +23,7 @@ using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(TriangleTests)
 
-BOOST_AUTO_TEST_CASE(GetTriangleNeighbors_ForAnyValidTriangle_ReturnsThreeTriangles)
+BOOST_AUTO_TEST_CASE(GetTriangleNeighbors_always_returns_three_neighbors)
 {
     MapExtent size(16, 8);
 
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(GetTriangleNeighbors_ForAnyValidTriangle_ReturnsThreeTriang
     }
 }
 
-BOOST_AUTO_TEST_CASE(GetTriangles_ForAnyValidMapPoint_ReturnsSixTriangles)
+BOOST_AUTO_TEST_CASE(GetTriangles_always_returns_six_triangles)
 {
     MapExtent size(16, 8);
 
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(GetTriangles_ForAnyValidMapPoint_ReturnsSixTriangles)
     }
 }
 
-BOOST_AUTO_TEST_CASE(GetTriangleEdges_ForAnyValidTriangle_ReturnsThreePoints)
+BOOST_AUTO_TEST_CASE(GetTriangleEdges_always_returns_three_edges)
 {
     MapExtent size(16, 8);
 

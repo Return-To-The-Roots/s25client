@@ -39,14 +39,23 @@ namespace rttr { namespace mapGenerator {
 
     void SmoothHeightMap(ValueMap<uint8_t>& z, const ValueRange<uint8_t>& range);
 
-    void CreateMixedMap(RandomUtility& rnd, Map& map, Texturizer& texturizer);
+    class RandomMap
+    {
+    private:
+        RandomUtility& rnd_;
+        Map& map_;
+        Texturizer texturizer_;
 
-    void CreateWaterMap(RandomUtility& rnd, Map& map, Texturizer& texturizer);
+        void CreateMixedMap();
+        void CreateLandMap();
+        void CreateWaterMap();
 
-    void CreateValley(RandomUtility& rnd, Map& map, Texturizer& texturizer);
+    public:
+        RandomMap(RandomUtility& rnd, Map& map);
+        void Create(const MapSettings& settings);
+    };
 
-    void CreateLandMap(RandomUtility& rnd, Map& map, Texturizer& texturizer);
-
+    Map GenerateRandomMap(RandomUtility& rnd, const WorldDescription& worldDesc, const MapSettings& settings);
     void CreateRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings);
 
 }} // namespace rttr::mapGenerator

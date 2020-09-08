@@ -81,7 +81,7 @@ namespace rttr { namespace mapGenerator {
          *
          * @return a random number between min and max (inclusive).
          */
-        int Rand(int min, int max);
+        int RandomInt(int min, int max);
 
         /**
          * Generates a random floating point value between the specified minimum and maximum values.
@@ -91,23 +91,7 @@ namespace rttr { namespace mapGenerator {
          *
          * @return a random float value between min and max (inclusive).
          */
-        double DRand(double min, double max);
-
-        /**
-         * Generates "n" unique random numbers within the range of "0" to "n-1".
-         *
-         * @param n number and range of indices to generate
-         *
-         * @return a vector of "n" random number within the range of "0" to "n-1".
-         */
-        std::vector<int> ShuffledRange(int n);
-
-        /**
-         * Shuffles the specified vector of positions.
-         *
-         * @param area positions to shuffle.
-         */
-        void Shuffle(std::vector<Position>& area);
+        double RandomDouble(double min, double max);
     };
 
 }} // namespace rttr::mapGenerator

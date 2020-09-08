@@ -34,11 +34,9 @@ void RunTest(const MapExtent& size, T_Test test)
     WorldDescription worldDesc;
     loadGameData(worldDesc);
 
-    TextureMap textures(worldDesc, landscape);
+    Map map(size, 1, worldDesc, landscape);
 
-    Map map(textures, size, 1, 44);
-
-    test(map, textures);
+    test(map, map.textures);
 }
 
 template<class T_Test>
@@ -59,7 +57,7 @@ void RunTestForArea(const MapExtent& size, T_Test test)
     });
 }
 
-BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_ReturnsExpectedNodes)
+BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_returns_expected_nodes)
 {
     MapExtent size(32, 32);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
@@ -95,7 +93,7 @@ BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_ReturnsExpectedNodes)
     });
 }
 
-BOOST_AUTO_TEST_CASE(FindHqPositions_WithoutSuitablePosition_ReturnsEmpty)
+BOOST_AUTO_TEST_CASE(FindHqPositions_returns_empty_for_map_without_suitable_position)
 {
     MapExtent size(32, 32);
     RunTestForArea(size, [&size](Map& map, TextureMap& textures, const auto& area) {
@@ -107,7 +105,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_WithoutSuitablePosition_ReturnsEmpty)
     });
 }
 
-BOOST_AUTO_TEST_CASE(FindHqPositions_ForSinglePlayer_ReturnsSuitablePositions)
+BOOST_AUTO_TEST_CASE(FindHqPositions_returns_suitable_position_for_single_player)
 {
     MapExtent size(8, 8);
     RunTestForArea(size, [&size](Map& map, TextureMap& textures, const auto& area) {
@@ -132,7 +130,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_ForSinglePlayer_ReturnsSuitablePositions)
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_ForAreaWithSuitablePosition_ReturnsTrue)
+BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_returns_true_for_area_with_suitable_position)
 {
     MapExtent size(8, 8);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
@@ -153,7 +151,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_ForAreaWithSuitablePosition_ReturnsTrue)
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_ForAreaWithSuitablePosition_PlacesHqOnMap)
+BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_places_hq_on_map_at_suitable_position)
 {
     MapExtent size(8, 8);
     RunTest(size, [&size](Map& map, TextureMap& textures) {
@@ -172,7 +170,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_ForAreaWithSuitablePosition_PlacesHqOnMap)
     });
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForNPlayersOnEmptyMap_ReturnsTrue)
+BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_returns_true_for_any_player_number_on_suitable_map)
 {
     MapExtent size(32, 32);
     RandomUtility rnd(0);
@@ -189,7 +187,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForNPlayersOnEmptyMap_ReturnsTrue)
     }
 }
 
-BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_ForNPlayersOnEmptyMap_PlacesNHqs)
+BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_places_hqs_for_any_player_number_on_suitable_map)
 {
     MapExtent size(32, 32);
     RandomUtility rnd(0);

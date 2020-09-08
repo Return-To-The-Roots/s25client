@@ -41,7 +41,7 @@ void RunTest(T_Test test)
     test(textures, size);
 }
 
-BOOST_AUTO_TEST_CASE(AddTextures_SetsValidTexturesForEntireMap)
+BOOST_AUTO_TEST_CASE(AddTextures_sets_valid_textures_for_entire_map)
 {
     RunTest([](TextureMap& textures, const MapExtent& size) {
         const unsigned mountainLevel = 5;
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(AddTextures_SetsValidTexturesForEntireMap)
     });
 }
 
-BOOST_AUTO_TEST_CASE(AddTextures_DoesNotOverrideAlreadySetTextures)
+BOOST_AUTO_TEST_CASE(AddTextures_does_not_override_textures)
 {
     RunTest([](TextureMap& textures, const MapExtent& size) {
         const unsigned mountainLevel = 5;
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(AddTextures_DoesNotOverrideAlreadySetTextures)
     });
 }
 
-BOOST_AUTO_TEST_CASE(AddTextures_AddsWaterTextureForMinimumHeight)
+BOOST_AUTO_TEST_CASE(AddTextures_sets_water_textures_for_minimum_height)
 {
     RunTest([](TextureMap& textures, const MapExtent& size) {
         const unsigned mountainLevel = 3;
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(AddTextures_AddsWaterTextureForMinimumHeight)
     });
 }
 
-BOOST_AUTO_TEST_CASE(AddTextures_AddsMountainOrSnowOrLavalTextureAboveMountainLevel)
+BOOST_AUTO_TEST_CASE(AddTextures_sets_mountain_textures_above_mountain_level)
 {
     RunTest([](TextureMap& textures, const MapExtent& size) {
         const unsigned mountainLevel = 10;
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(AddTextures_AddsMountainOrSnowOrLavalTextureAboveMountainLe
     });
 }
 
-BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_ReplacesAllTexturesWithSpecifiedTexture)
+BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_replaces_all_textures)
 {
     RunTest([](TextureMap& textures, const MapExtent& size) {
         auto source = textures.Find(IsWater);
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_ReplacesAllTexturesWithSpecifiedText
     });
 }
 
-BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_DoesNotReplaceExcludedTextures)
+BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_does_not_replace_excluded_textures)
 {
     RunTest([](TextureMap& textures, const MapExtent& size) {
         auto source = textures.Find(IsWater);
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_DoesNotReplaceExcludedTextures)
     });
 }
 
-BOOST_AUTO_TEST_CASE(ReplaceTextures_ReplacesAllTexturesWithinRadius)
+BOOST_AUTO_TEST_CASE(ReplaceTextures_replaces_textures_within_radius)
 {
     std::set<MapPoint, MapPointLess> points{
       MapPoint(0, 1),
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(ReplaceTextures_ReplacesAllTexturesWithinRadius)
     }
 }
 
-BOOST_AUTO_TEST_CASE(ReplaceTextures_DoesNotReplaceExcludedTextures)
+BOOST_AUTO_TEST_CASE(ReplaceTextures_does_not_replace_excluded_textures)
 {
     std::set<MapPoint, MapPointLess> points{
       MapPoint(3, 1),

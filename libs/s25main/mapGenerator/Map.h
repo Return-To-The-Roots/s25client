@@ -39,7 +39,7 @@ namespace rttr { namespace mapGenerator {
 
     public:
         ValueMap<uint8_t> z;
-        TextureMap& textures;
+        TextureMap textures;
         NodeMapBase<uint8_t> objectInfos;
         NodeMapBase<uint8_t> objectTypes;
         NodeMapBase<uint8_t> resources;
@@ -52,7 +52,7 @@ namespace rttr { namespace mapGenerator {
         const uint8_t players;
         const MapExtent size;
 
-        Map(TextureMap& textures, const MapExtent& size, uint8_t players, uint8_t maxHeight);
+        Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc, const DescIdx<LandscapeDesc>& landscape);
 
         /**
          * Marks the position as HQ position if set to a valid position, otherwise unmarks previously marked position.
@@ -67,7 +67,7 @@ namespace rttr { namespace mapGenerator {
          *
          * @return a new archiv containing the information of this map
          */
-        libsiedler2::Archiv CreateArchiv();
+        libsiedler2::Archiv CreateArchiv() const;
     };
 
 }} // namespace rttr::mapGenerator

@@ -33,15 +33,14 @@ void RunTest(T_Test test)
     DescIdx<LandscapeDesc> landscape(1);
     WorldDescription worldDesc;
     loadGameData(worldDesc);
-    TextureMap textures(worldDesc, landscape);
 
     MapExtent size(8, 8);
-    Map map(textures, size, 1, 44);
+    Map map(size, 1, worldDesc, landscape);
 
     test(map);
 }
 
-BOOST_AUTO_TEST_CASE(Restructure_ForFocusArea_KeepsMinimumAndMaximumHeight)
+BOOST_AUTO_TEST_CASE(Restructure_keeps_minimum_and_maximum_values_unchanged)
 {
     RunTest([](Map& map) {
         map.z.Resize(map.size, 5); // default height
@@ -58,7 +57,7 @@ BOOST_AUTO_TEST_CASE(Restructure_ForFocusArea_KeepsMinimumAndMaximumHeight)
     });
 }
 
-BOOST_AUTO_TEST_CASE(Restructure_ForFocusArea_ElevatesFocusArea)
+BOOST_AUTO_TEST_CASE(Restructure_increases_height_of_focus_area)
 {
     RunTest([](Map& map) {
         MapPoint focus(4, 4);
@@ -74,7 +73,7 @@ BOOST_AUTO_TEST_CASE(Restructure_ForFocusArea_ElevatesFocusArea)
     });
 }
 
-BOOST_AUTO_TEST_CASE(Restructure_ForPointFurtherFromFocus_ElevatesPointLessThanFocus)
+BOOST_AUTO_TEST_CASE(Restructure_increases_height_less_when_further_away_from_focus)
 {
     RunTest([](Map& map) {
         MapPoint focus(4, 4);

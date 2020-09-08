@@ -108,7 +108,7 @@ namespace rttr { namespace mapGenerator {
         for(const MapPoint& pt : island)
         {
             const int base = map.height.minimum + coastDistance[pt];
-            map.z[pt] = std::min(static_cast<unsigned>(rnd.Rand(base, base + 1)), static_cast<unsigned>(map.height.maximum));
+            map.z[pt] = std::min(static_cast<unsigned>(rnd.RandomInt(base, base + 1)), static_cast<unsigned>(map.height.maximum));
         }
 
         auto mountain = map.textures.FindAll(IsMinableMountain);

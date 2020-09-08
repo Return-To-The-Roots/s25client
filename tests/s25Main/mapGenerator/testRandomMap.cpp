@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "lua/GameDataLoader.h"
 #include "mapGenerator/RandomMap.h"
 #include <boost/test/unit_test.hpp>
 
@@ -22,6 +23,73 @@ using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(RandomMapTests)
 
-BOOST_AUTO_TEST_CASE(EmptyTest) {}
+void ValidateMap(const Map& map, const MapExtent& size, unsigned players);
+
+void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
+{
+    BOOST_REQUIRE(map.players == players);
+    BOOST_REQUIRE(map.size == size);
+
+    std::vector<uint8_t> hqs;
+
+    RTTR_FOREACH_PT(MapPoint, size)
+    {
+        if(map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask)
+        {
+            hqs.push_back(map.objectTypes[pt]);
+        }
+    }
+
+    BOOST_REQUIRE(hqs.size() == players);
+    for(unsigned index = 0; index < players; index++)
+    {
+        BOOST_REQUIRE(helpers::contains(hqs, index));
+    }
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_tiny_7_player_land_map)
+{
+    RandomUtility rnd(0);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(64, 64);
+    settings.numPlayers = 7u;
+    settings.style = MapStyle::Land;
+
+    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    ValidateMap(map, settings.size, settings.numPlayers);
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_tiny_7_player_water_map)
+{
+    RandomUtility rnd(0);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(64, 64);
+    settings.numPlayers = 7u;
+    settings.style = MapStyle::Water;
+
+    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    ValidateMap(map, settings.size, settings.numPlayers);
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_tiny_7_player_mixed_map)
+{
+    RandomUtility rnd(0);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(64, 64);
+    settings.numPlayers = 7u;
+    settings.style = MapStyle::Mixed;
+
+    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    ValidateMap(map, settings.size, settings.numPlayers);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
