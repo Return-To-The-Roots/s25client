@@ -33,6 +33,8 @@ struct EnumArray
     using iterator = T_Elements*;
     using const_iterator = const T_Elements*;
 
+    constexpr T_Elements* data() { return elems; }
+    constexpr const T_Elements* data() const { return elems; }
     static constexpr unsigned size() { return helpers::MaxEnumValue_v<T_Index> + 1u; }
 
     T_Elements& operator[](T_Index idx) noexcept { return elems[rttr::enum_cast(idx)]; }
