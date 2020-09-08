@@ -20,6 +20,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include <array>
 
 class ITexture;
 class GameWorldViewer;
@@ -28,9 +29,15 @@ class GameCommandFactory;
 class iwTransport : public IngameWindow
 {
 private:
+    struct ButtonData
+    {
+        ITexture* sprite;
+        std::string tooltip;
+    };
     const GameWorldViewer& gwv;
     GameCommandFactory& gcFactory;
-    ITexture* TRANSPORT_SPRITES[14]; /// Einzelne Bilder für die Waren.
+
+    std::array<ButtonData, 14> buttonData;
 
     /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
     bool settings_changed;
