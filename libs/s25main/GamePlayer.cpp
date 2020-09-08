@@ -1195,8 +1195,8 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
 
 void GamePlayer::ConvertTransportData(const TransportOrders& transport_data)
 {
-    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
-        transportPrio[i] = GetTransportPrioFromOrdering(transport_data, GoodType(i));
+    for(const auto ware : helpers::EnumRange<GoodType>{})
+        transportPrio[ware] = GetTransportPrioFromOrdering(transport_data, ware);
 }
 
 bool GamePlayer::IsAlly(const unsigned char playerId) const

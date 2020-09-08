@@ -18,9 +18,9 @@
 #ifndef SettingsTypes_h__
 #define SettingsTypes_h__
 
+#include "helpers/EnumArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
-#include "s25util/warningSuppression.h"
 #include <array>
 #include <tuple>
 
@@ -30,7 +30,7 @@
 using DistributionMapping = std::tuple<GoodType, BuildingType, uint8_t>;
 /// List of all possible distribution mappings ordered by GoodType
 using DistributionMap = std::array<DistributionMapping, 23>;
-extern const DistributionMap SUPPRESS_UNUSED distributionMap;
+extern const DistributionMap distributionMap;
 /// List of the percentage a building should get from a specific ware
 using Distributions = std::array<uint8_t, std::tuple_size<DistributionMap>::value>;
 /// Ordering of building types by priority. All buildings in here except unused and HQ
@@ -39,7 +39,7 @@ using BuildOrders = std::array<BuildingType, NUM_BUILDING_TYPES - NUM_UNUSED_BLD
 /// E.g. std prio of coins = 0 -> TransportOrders[0] = stdPrio[COINS] = 0
 /// New prio of coins = 1 -> TransportOrders[1] = stdPrio[COINS] = 0
 using TransportOrders = std::array<uint8_t, 14>;
-using TransportPriorities = std::array<uint8_t, NUM_WARE_TYPES>;
+using TransportPriorities = helpers::EnumArray<uint8_t, GoodType>;
 /// Priority of each tool
 using ToolSettings = std::array<uint8_t, NUM_TOOLS>;
 /// Value of each military slider
