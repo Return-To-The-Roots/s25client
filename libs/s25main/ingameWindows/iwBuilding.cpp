@@ -67,7 +67,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     if(producedWare != GD_NOTHING)
     {
         AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
-        AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(2250 + producedWare));
+        AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + producedWare));
     }
 
     // Info
@@ -128,7 +128,8 @@ void iwBuilding::Msg_PaintAfter()
         {
             for(unsigned char z = 0; z < 2; ++z)
             {
-                glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i]);
+                glArchivItem_Bitmap* bitmap =
+                  LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i]);
                 bitmap->DrawFull(curPos, (z < building->GetNumWares(i) ? 0xFFFFFFFF : 0xFF404040));
                 curPos.x += 24;
             }
@@ -151,7 +152,8 @@ void iwBuilding::Msg_PaintAfter()
 
             for(unsigned char z = 0; z < wares_count; ++z)
             {
-                glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i]);
+                glArchivItem_Bitmap* bitmap =
+                  LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i]);
                 bitmap->DrawFull(waresPos, (z < building->GetNumWares(i) ? COLOR_WHITE : 0xFF404040));
                 waresPos.x += 24;
             }

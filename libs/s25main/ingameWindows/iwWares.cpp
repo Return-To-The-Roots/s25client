@@ -121,7 +121,8 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         {
             const GoodType rawWare = WARE_DISPLAY_ORDER[idx];
             const GoodType ware = convertShieldToNation(rawWare, player.nation);
-            addElement(waresPage, font, btPos, btSize, rawWare, _(WARE_NAMES[rawWare]), LOADER.GetMapImageN(2250 + ware), allow_outhousing);
+            addElement(waresPage, font, btPos, btSize, rawWare, _(WARE_NAMES[rawWare]), LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + ware),
+                       allow_outhousing);
         }
 
         if(idx < JOB_DISPLAY_ORDER.size())

@@ -47,11 +47,11 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
 {
     // Schwert
     AddImage(0, DrawPoint(28, 39), LOADER.GetMapImageN(2298));
-    AddImage(1, DrawPoint(28, 39), LOADER.GetMapImageN(2250 + GD_SWORD));
+    AddImage(1, DrawPoint(28, 39), LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_SWORD));
 
     // Schild
     AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
-    AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(2250 + GD_SHIELDROMANS));
+    AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_SHIELDROMANS));
 
     // Hilfe
     AddImageButton(4, DrawPoint(16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));

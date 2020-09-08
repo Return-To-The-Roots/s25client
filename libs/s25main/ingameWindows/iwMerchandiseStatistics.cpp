@@ -55,22 +55,29 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
     // Waren-Buttons
     // obere Reihe
     ctrlMultiSelectGroup* types = AddMultiSelectGroup(22, ctrlOptionGroup::ILLUMINATE);
-    types->AddImageButton(1, DrawPoint(17, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_WOOD), _("Wood"));
-    types->AddImageButton(2, DrawPoint(48, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_BOARDS), _("Boards"));
-    types->AddImageButton(3, DrawPoint(79, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_STONES), _("Stones"));
+    types->AddImageButton(1, DrawPoint(17, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_WOOD), _("Wood"));
+    types->AddImageButton(2, DrawPoint(48, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_BOARDS),
+                          _("Boards"));
+    types->AddImageButton(3, DrawPoint(79, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_STONES),
+                          _("Stones"));
     types->AddImageButton(4, DrawPoint(110, 192), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 80), _("Food"));
-    types->AddImageButton(5, DrawPoint(141, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_WATER), _("Water"));
-    types->AddImageButton(6, DrawPoint(172, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_BEER), _("Beer"));
-    types->AddImageButton(7, DrawPoint(203, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_COAL), _("Coal"));
+    types->AddImageButton(5, DrawPoint(141, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_WATER),
+                          _("Water"));
+    types->AddImageButton(6, DrawPoint(172, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_BEER), _("Beer"));
+    types->AddImageButton(7, DrawPoint(203, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_COAL), _("Coal"));
 
     // untere Reihe
-    types->AddImageButton(8, DrawPoint(17, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_IRONORE), _("Ironore"));
-    types->AddImageButton(9, DrawPoint(48, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_GOLD), _("Gold"));
-    types->AddImageButton(10, DrawPoint(79, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_IRON), _("Iron"));
-    types->AddImageButton(11, DrawPoint(110, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_COINS), _("Coins"));
-    types->AddImageButton(12, DrawPoint(141, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_HAMMER), _("Tools"));
+    types->AddImageButton(8, DrawPoint(17, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_IRONORE),
+                          _("Ironore"));
+    types->AddImageButton(9, DrawPoint(48, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_GOLD), _("Gold"));
+    types->AddImageButton(10, DrawPoint(79, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_IRON), _("Iron"));
+    types->AddImageButton(11, DrawPoint(110, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_COINS),
+                          _("Coins"));
+    types->AddImageButton(12, DrawPoint(141, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_HAMMER),
+                          _("Tools"));
     types->AddImageButton(13, DrawPoint(172, 227), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 111), _("Weapons"));
-    types->AddImageButton(14, DrawPoint(203, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_BOAT), _("Boats"));
+    types->AddImageButton(14, DrawPoint(203, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_BOAT),
+                          _("Boats"));
 
     // Hilfe
     AddImageButton(16, DrawPoint(17, 261), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));

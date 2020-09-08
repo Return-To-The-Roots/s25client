@@ -48,20 +48,20 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     // Buttons der einzelnen Waren anlegen
     ctrlOptionGroup* group = AddOptionGroup(6, ctrlOptionGroup::ILLUMINATE);
 
-    buttonData = {{{LOADER.GetMapTexN(2250 + GD_COINS), WARE_NAMES[GD_COINS]},
+    buttonData = {{{LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_COINS), WARE_NAMES[GD_COINS]},
                    {LOADER.GetTextureN("io", 111), gettext_noop("Weapons")},
-                   {LOADER.GetMapTexN(2250 + GD_BEER), WARE_NAMES[GD_BEER]},
-                   {LOADER.GetMapTexN(2250 + GD_IRON), WARE_NAMES[GD_IRON]},
-                   {LOADER.GetMapTexN(2250 + GD_GOLD), WARE_NAMES[GD_GOLD]},
-                   {LOADER.GetMapTexN(2250 + GD_IRONORE), WARE_NAMES[GD_IRONORE]},
-                   {LOADER.GetMapTexN(2250 + GD_COAL), WARE_NAMES[GD_COAL]},
-                   {LOADER.GetMapTexN(2250 + GD_BOARDS), WARE_NAMES[GD_BOARDS]},
-                   {LOADER.GetMapTexN(2250 + GD_STONES), WARE_NAMES[GD_STONES]},
-                   {LOADER.GetMapTexN(2250 + GD_WOOD), WARE_NAMES[GD_WOOD]},
-                   {LOADER.GetMapTexN(2250 + GD_WATER), WARE_NAMES[GD_WATER]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_BEER), WARE_NAMES[GD_BEER]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_IRON), WARE_NAMES[GD_IRON]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_GOLD), WARE_NAMES[GD_GOLD]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_IRONORE), WARE_NAMES[GD_IRONORE]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_COAL), WARE_NAMES[GD_COAL]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_BOARDS), WARE_NAMES[GD_BOARDS]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_STONES), WARE_NAMES[GD_STONES]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_WOOD), WARE_NAMES[GD_WOOD]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_WATER), WARE_NAMES[GD_WATER]},
                    {LOADER.GetTextureN("io", 80), gettext_noop("Food")},
-                   {LOADER.GetMapTexN(2250 + GD_HAMMER), gettext_noop("Tools")},
-                   {LOADER.GetMapTexN(2250 + GD_BOAT), WARE_NAMES[GD_BOAT]}}};
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_HAMMER), gettext_noop("Tools")},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_BOAT), WARE_NAMES[GD_BOAT]}}};
     // Positionen der einzelnen Buttons
     const std::array<DrawPoint, numButtons> BUTTON_POS = {{{20, 25},
                                                            {52, 42},
