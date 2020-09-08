@@ -63,7 +63,6 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
                    {LOADER.GetMapTexN(2250 + GD_HAMMER), gettext_noop("Tools")},
                    {LOADER.GetMapTexN(2250 + GD_BOAT), WARE_NAMES[GD_BOAT]}}};
     // Positionen der einzelnen Buttons
-    constexpr auto numButtons = std::tuple_size<decltype(buttonData)>::value;
     const std::array<DrawPoint, numButtons> BUTTON_POS = {{{20, 25},
                                                            {52, 42},
                                                            {84, 59},

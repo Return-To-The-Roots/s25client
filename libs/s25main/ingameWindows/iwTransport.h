@@ -20,6 +20,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include "gameTypes/SettingsTypes.h"
 #include <array>
 
 class ITexture;
@@ -37,7 +38,8 @@ private:
     const GameWorldViewer& gwv;
     GameCommandFactory& gcFactory;
 
-    std::array<ButtonData, 14> buttonData;
+    static constexpr auto numButtons = std::tuple_size<TransportOrders>::value;
+    std::array<ButtonData, numButtons> buttonData;
 
     /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
     bool settings_changed;
