@@ -152,7 +152,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selecti
                 // Wares
 
                 // Set the new image of the ware which was selected
-                GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetMapImageN(2250 + wares[selection]));
+                GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + wares[selection]));
 
                 // Get the number of available wares
                 number = GetPossibleTradeAmount(wares[selection]);

@@ -28,11 +28,6 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
 
-const std::array<std::string, 14> TOOLTIPS = {
-  gettext_noop("Coins"),    gettext_noop("Weapons"), gettext_noop("Beer"),   gettext_noop("Iron"),   gettext_noop("Gold"),
-  gettext_noop("Iron ore"), gettext_noop("Coal"),    gettext_noop("Boards"), gettext_noop("Stones"), gettext_noop("Wood"),
-  gettext_noop("Water"),    gettext_noop("Food"),    gettext_noop("Tools"),  gettext_noop("Boats")};
-
 iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"), LOADER.GetImageN("io", 5)), gwv(gwv),
       gcFactory(gcFactory), settings_changed(false)
@@ -53,42 +48,43 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     // Buttons der einzelnen Waren anlegen
     ctrlOptionGroup* group = AddOptionGroup(6, ctrlOptionGroup::ILLUMINATE);
 
-    // Zeiger auf die Bilder für die einzelnen Waren in der Transportschlange
-    TRANSPORT_SPRITES[0] = LOADER.GetMapTexN(2250 + GD_COINS);
-    TRANSPORT_SPRITES[1] = LOADER.GetTextureN("io", 111);
-    TRANSPORT_SPRITES[2] = LOADER.GetMapTexN(2250 + GD_BEER);
-    TRANSPORT_SPRITES[3] = LOADER.GetMapTexN(2250 + GD_IRON);
-    TRANSPORT_SPRITES[4] = LOADER.GetMapTexN(2250 + GD_GOLD);
-    TRANSPORT_SPRITES[5] = LOADER.GetMapTexN(2250 + GD_IRONORE);
-    TRANSPORT_SPRITES[6] = LOADER.GetMapTexN(2250 + GD_COAL);
-    TRANSPORT_SPRITES[7] = LOADER.GetMapTexN(2250 + GD_BOARDS);
-    TRANSPORT_SPRITES[8] = LOADER.GetMapTexN(2250 + GD_STONES);
-    TRANSPORT_SPRITES[9] = LOADER.GetMapTexN(2250 + GD_WOOD);
-    TRANSPORT_SPRITES[10] = LOADER.GetMapTexN(2250 + GD_WATER);
-    TRANSPORT_SPRITES[11] = LOADER.GetTextureN("io", 80);
-    TRANSPORT_SPRITES[12] = LOADER.GetMapTexN(2250 + GD_HAMMER);
-    TRANSPORT_SPRITES[13] = LOADER.GetMapTexN(2250 + GD_BOAT);
-
+    buttonData = {{{LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_COINS), WARE_NAMES[GD_COINS]},
+                   {LOADER.GetTextureN("io", 111), gettext_noop("Weapons")},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_BEER), WARE_NAMES[GD_BEER]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_IRON), WARE_NAMES[GD_IRON]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_GOLD), WARE_NAMES[GD_GOLD]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_IRONORE), WARE_NAMES[GD_IRONORE]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_COAL), WARE_NAMES[GD_COAL]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_BOARDS), WARE_NAMES[GD_BOARDS]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_STONES), WARE_NAMES[GD_STONES]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_WOOD), WARE_NAMES[GD_WOOD]},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_WATER), WARE_NAMES[GD_WATER]},
+                   {LOADER.GetTextureN("io", 80), gettext_noop("Food")},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_HAMMER), gettext_noop("Tools")},
+                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_BOAT), WARE_NAMES[GD_BOAT]}}};
     // Positionen der einzelnen Buttons
-    const std::array<DrawPoint, 14> BUTTON_POS = {{{20, 25},
-                                                   {52, 42},
-                                                   {84, 59},
-                                                   {116, 76},
-                                                   {84, 93},
-                                                   {52, 110},
-                                                   {20, 127},
-                                                   {52, 144},
-                                                   {84, 161},
-                                                   {116, 178},
-                                                   {84, 195},
-                                                   {52, 212},
-                                                   {20, 229},
-                                                   {52, 246}}};
+    const std::array<DrawPoint, numButtons> BUTTON_POS = {{{20, 25},
+                                                           {52, 42},
+                                                           {84, 59},
+                                                           {116, 76},
+                                                           {84, 93},
+                                                           {52, 110},
+                                                           {20, 127},
+                                                           {52, 144},
+                                                           {84, 161},
+                                                           {116, 178},
+                                                           {84, 195},
+                                                           {52, 212},
+                                                           {20, 229},
+                                                           {52, 246}}};
 
     // Einstellungen festlegen
-    for(unsigned char i = 0; i < 14; ++i)
-        group->AddImageButton(i, BUTTON_POS[i], Extent(30, 30), TC_GREY, TRANSPORT_SPRITES[GAMECLIENT.visual_settings.transport_order[i]],
-                              _(TOOLTIPS[GAMECLIENT.visual_settings.transport_order[i]]));
+    for(unsigned char i = 0; i < buttonData.size(); ++i)
+    {
+        group->AddImageButton(i, BUTTON_POS[i], Extent(30, 30), TC_GREY, buttonData[GAMECLIENT.visual_settings.transport_order[i]].sprite,
+                              _(buttonData[GAMECLIENT.visual_settings.transport_order[i]].tooltip));
+    }
+    group->SetSelection(0);
 
     // Netzwerk-Übertragungs-Timer
     AddTimer(7, 2000);
@@ -131,13 +127,11 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
 
             GAMECLIENT.visual_settings.transport_order = GAMECLIENT.default_settings.transport_order;
 
-            //// Tooltips in der der Standardbelegung
-            // memcpy(tooltip_indices,STD_TOOLTIP_INDICES,14*sizeof(unsigned short));
-
-            for(unsigned char i = 0; i < 14; ++i)
+            for(unsigned char i = 0; i < buttonData.size(); ++i)
             {
-                group->GetCtrl<ctrlImageButton>(i)->SetImage(TRANSPORT_SPRITES[i]);
-                group->GetCtrl<ctrlImageButton>(i)->SetTooltip(_(TOOLTIPS[i]));
+                const auto& data = buttonData[i];
+                group->GetCtrl<ctrlImageButton>(i)->SetImage(data.sprite);
+                group->GetCtrl<ctrlImageButton>(i)->SetTooltip(_(data.tooltip));
             }
 
             settings_changed = true;
@@ -239,9 +233,10 @@ void iwTransport::UpdateSettings()
     auto* group = GetCtrl<ctrlOptionGroup>(6);
 
     // Einstellungen festlegen
-    for(unsigned char i = 0; i < 14; ++i)
+    for(unsigned char i = 0; i < buttonData.size(); ++i)
     {
-        group->GetCtrl<ctrlImageButton>(i)->SetImage(TRANSPORT_SPRITES[GAMECLIENT.visual_settings.transport_order[i]]);
-        group->GetCtrl<ctrlImageButton>(i)->SetTooltip(_(TOOLTIPS[GAMECLIENT.visual_settings.transport_order[i]]));
+        const auto& data = buttonData[GAMECLIENT.visual_settings.transport_order[i]];
+        group->GetCtrl<ctrlImageButton>(i)->SetImage(data.sprite);
+        group->GetCtrl<ctrlImageButton>(i)->SetTooltip(_(data.tooltip));
     }
 }

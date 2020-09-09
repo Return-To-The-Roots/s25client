@@ -67,6 +67,8 @@ DEFINE_MAX_ENUM_VALUE(GoodType, GD_SHIELDJAPANESE)
 constexpr unsigned NUM_WARE_TYPES = helpers::NumEnumValues_v<GoodType>;
 // Number of tools
 constexpr unsigned NUM_TOOLS = 12;
+/// Offset into the map image archive to get the ware texture
+constexpr unsigned WARES_TEX_MAP_OFFSET = 2250;
 
 const std::string WARE_NAMES[NUM_WARE_TYPES] = {
   /*  0 */ gettext_noop("Beer"),         // Bier
