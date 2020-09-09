@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,32 +21,8 @@
 
 namespace rttr { namespace mapGenerator {
 
-    std::vector<std::vector<MapPoint>> FindIslands(const TextureMap& textures, unsigned minNodes)
-    {
-        std::set<MapPoint, MapPointLess> visited;
-        std::vector<std::vector<MapPoint>> islands;
-
-        auto containsLand = [&textures](const MapPoint& pt) { return textures.Any(pt, IsLand); };
-
-        RTTR_FOREACH_PT(MapPoint, textures.GetSize())
-        {
-            if(visited.insert(pt).second)
-            {
-                auto island = Collect(textures, pt, containsLand);
-
-                std::copy(island.begin(), island.end(), std::inserter(visited, visited.end()));
-
-                if(island.size() >= minNodes)
-                {
-                    islands.push_back(island);
-                }
-            }
-        }
-
-        return islands;
-    }
-
-    Island CreateIsland(Map& map, RandomUtility& rnd, unsigned distanceToLand, unsigned size, unsigned radius, double mountainCoverage)
+    Island CreateIsland(Map& map, RandomUtility& rnd, unsigned distanceToLand, unsigned size, unsigned radius,
+                        double mountainCoverage)
     {
         Island island;
 
@@ -100,7 +76,8 @@ namespace rttr { namespace mapGenerator {
         }
 
         auto isCoast = [&map, &island](const MapPoint& pt) {
-            return helpers::contains_if(map.z.GetNeighbours(pt), [&island](const MapPoint& pt) { return !helpers::contains(island, pt); });
+            return helpers::contains_if(map.z.GetNeighbours(pt),
+                                        [&island](const MapPoint& pt) { return !helpers::contains(island, pt); });
         };
 
         const auto& coastDistance = Distances(map.size, island, 0, isCoast);
@@ -108,7 +85,8 @@ namespace rttr { namespace mapGenerator {
         for(const MapPoint& pt : island)
         {
             const int base = map.height.minimum + coastDistance[pt];
-            map.z[pt] = std::min(static_cast<unsigned>(rnd.RandomInt(base, base + 1)), static_cast<unsigned>(map.height.maximum));
+            map.z[pt] =
+              std::min(static_cast<unsigned>(rnd.RandomInt(base, base + 1)), static_cast<unsigned>(map.height.maximum));
         }
 
         auto mountain = map.textures.FindAll(IsMinableMountain);

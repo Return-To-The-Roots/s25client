@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Algorithms_h__
-#define Algorithms_h__
+#pragma once
 
 #include "RttrForeachPt.h"
 #include "mapGenerator/ValueMap.h"
@@ -97,16 +96,17 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Collects all map points around the specified point for which the evaluator returns 'true'. The function recursively checks neighbors
-     * of neighbors but only collects positively evaluated points. Whenever it hits a negative value is stops searching the neighborhood of
-     * this specific point. The underlying implementation is breadth-first search.
+     * Collects all map points around the specified point for which the evaluator returns 'true'. The function
+     * recursively checks neighbors of neighbors but only collects positively evaluated points. Whenever it hits a
+     * negative value is stops searching the neighborhood of this specific point. The underlying implementation is
+     * breadth-first search.
      *
      * @param map reference to the map to collect map points from
      * @param pt starting point which has to be evaluated with 'true' or and empty vector will be returned
      * @param evaluator evaluator function which returns 'true' or 'false' for any map point
      *
-     * @returns a list of map points where every point is connected to at least one other point of the least which has also
-     * been evaluated positively.
+     * @returns a list of map points where every point is connected to at least one other point of the least which
+     * has also been evaluated positively.
      */
     template<typename T>
     std::vector<MapPoint> Collect(const MapBase& map, const MapPoint& pt, T&& evaluator)
@@ -141,8 +141,8 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Updates the specified distance values to the values initially contained by the queue. The queue is being modified throughout the
-     * process for performance reasons.
+     * Updates the specified distance values to the values initially contained by the queue. The queue is being
+     * modified throughout the process for performance reasons.
      *
      * @param distances distance map which is being updated
      * @param queue queue with initial elements to used for distance computation
@@ -150,9 +150,9 @@ namespace rttr { namespace mapGenerator {
     void UpdateDistances(ValueMap<unsigned>& distances, std::queue<MapPoint>& queue);
 
     /**
-     * Computes a map of distance values describing the distance of each grid position to the closest position for which the evaluator
-     * returned `true`. The computation takes place only within the specified area - points outside the area are set to a maximum value of
-     * width + height of the map.
+     * Computes a map of distance values describing the distance of each grid position to the closest position for
+     * which the evaluator returned `true`. The computation takes place only within the specified area - points outside
+     * the area are set to a maximum value of width + height of the map.
      *
      * @param size size of  the map
      * @param area area to compute distance values for
@@ -162,7 +162,8 @@ namespace rttr { namespace mapGenerator {
      * @return distance of each grid position to closest point which has been evaluted with `true`.
      */
     template<typename T, class T_Container>
-    ValueMap<unsigned> Distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue, T&& evaluator)
+    ValueMap<unsigned> Distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue,
+                                 T&& evaluator)
     {
         const unsigned maximumDistance = size.x * size.y;
 
@@ -187,8 +188,8 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Computes a map of distance values describing the distance of each grid position to the closest position for which the evaluator
-     * returned `true`.
+     * Computes a map of distance values describing the distance of each grid position to the closest position for
+     * which the evaluator returned `true`.
      *
      * @param size size of  the map
      * @param evaluator evaluator function takes a MapPoint as input and returns `true` or `false`
@@ -218,8 +219,8 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Computes an upper limit for the specified values. The number of values between the specified minimum and the computed limit is at
-     * least as high as the specified coverage of the map.
+     * Computes an upper limit for the specified values. The number of values between the specified minimum and the
+     * computed limit is at least as high as the specified coverage of the map.
      *
      * @param values map of comparable values
      * @param area area of nodes to consider (empty for the whole map)
@@ -295,5 +296,3 @@ namespace rttr { namespace mapGenerator {
     }
 
 }} // namespace rttr::mapGenerator
-
-#endif // Algorithms_h__

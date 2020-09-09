@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HeadQuarters_h__
-#define HeadQuarters_h__
+#pragma once
 
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
@@ -24,9 +23,9 @@
 namespace rttr { namespace mapGenerator {
 
     /**
-     * Find the largest connected area on the map. An area still counts as "connected" when it's divided by a tiny river or small mountains.
-     * However, all nodes within a connected area should be reachable for any player. Even though tiny rivers do not disconnect an area,
-     * water and mountain tiles are not considered part of the area.
+     * Find the largest connected area on the map. An area still counts as "connected" when it's divided by a tiny river
+     * or small mountains. However, all nodes within a connected area should be reachable for any player. Even though
+     * tiny rivers do not disconnect an area, water and mountain tiles are not considered part of the area.
      *
      * @param map reference to the map to look for the largest connected area
      *
@@ -35,9 +34,9 @@ namespace rttr { namespace mapGenerator {
     std::vector<MapPoint> FindLargestConnectedArea(const Map& map);
 
     /**
-     * Finds the most suitable position for a HQ in the specified area of the map. To find the most suitable position for the entire map
-     * just leave the area empty. The resulting HQ positions are sorted by quality (highest quality first). Good HQ positions are positions
-     * which are far away from other HQs and in a widely buildable area.
+     * Finds the most suitable position for a HQ in the specified area of the map. To find the most suitable position
+     * for the entire map just leave the area empty. The resulting HQ positions are sorted by quality (highest quality
+     * first). Good HQ positions are positions which are far away from other HQs and in a widely buildable area.
      *
      * @param map map to search for suitable HQ positions
      * @param area area within the HQ position should be
@@ -47,9 +46,13 @@ namespace rttr { namespace mapGenerator {
     template<class T_Container>
     std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area)
     {
-        auto isHeadQuarter = [&map](const MapPoint& pt) { return map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask; };
+        auto isHeadQuarter = [&map](const MapPoint& pt) {
+            return map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask;
+        };
 
-        auto isObstacle = [&map](MapPoint point) { return map.textures.Any(point, [](auto t) { return !t.Is(ETerrain::Buildable); }); };
+        auto isObstacle = [&map](MapPoint point) {
+            return map.textures.Any(point, [](auto t) { return !t.Is(ETerrain::Buildable); });
+        };
 
         auto quality = Distances(map.size, isHeadQuarter);
         const auto& obstacleDistance = Distances(map.size, isObstacle);
@@ -111,5 +114,3 @@ namespace rttr { namespace mapGenerator {
     bool PlaceHeadQuarters(Map& map, RandomUtility& rnd, int number, int retries = 10);
 
 }} // namespace rttr::mapGenerator
-
-#endif // HeadQuarters_h__

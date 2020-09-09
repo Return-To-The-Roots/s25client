@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -40,12 +40,14 @@ namespace rttr { namespace mapGenerator {
 
         if(landscapeId == 0x0) // greenland
         {
-            return {pineApple, palm1, palm2, cypress, oak, birch, oak, cherry, oak, birch, cherry, oak, birch, pine, birch, pine, fir};
+            return {pineApple, palm1,  palm2, cypress, oak,  birch, oak,  cherry, oak,
+                    birch,     cherry, oak,   birch,   pine, birch, pine, fir};
         }
 
         if(landscapeId == 0x1) // wasteland
         {
-            return {pineApple, palm1, palm2, cypress, oak, birch, oak, cherry, oak, birch, cherry, oak, birch, pine, birch, pine, fir};
+            return {pineApple, palm1,  palm2, cypress, oak,  birch, oak,  cherry, oak,
+                    birch,     cherry, oak,   birch,   pine, birch, pine, fir};
         }
 
         if(landscapeId == 0x2) // winter
@@ -69,7 +71,8 @@ namespace rttr { namespace mapGenerator {
         };
 
         auto isForbiddenArea = [&isForbidden, &map](const MapPoint& pt) {
-            return helpers::contains_if(map.textures.GetPointsInRadiusWithCenter(pt, 5), isForbidden) || map.textures.Any(pt, IsSnowOrLava);
+            return helpers::contains_if(map.textures.GetPointsInRadiusWithCenter(pt, 5), isForbidden)
+                   || map.textures.Any(pt, IsSnowOrLava);
         };
 
         auto distanceToForbiddenArea = Distances(map.size, isForbiddenArea);
@@ -83,7 +86,8 @@ namespace rttr { namespace mapGenerator {
         // 3a) non-mountains: distance to water
         // 3b) mountains: last element of trees
 
-        auto mountainDistance = Distances(map.size, [&map](const MapPoint& pt) { return map.textures.Any(pt, IsMountainOrSnowOrLava); });
+        auto mountainDistance =
+          Distances(map.size, [&map](const MapPoint& pt) { return map.textures.Any(pt, IsMountainOrSnowOrLava); });
 
         auto waterDistance = Distances(map.size, [&map](const MapPoint& pt) { return map.textures.Any(pt, IsWater); });
 
@@ -99,7 +103,8 @@ namespace rttr { namespace mapGenerator {
         auto probRange = ValueRange<unsigned>(15, 40);
         auto probDiff = probRange.GetDifference();
 
-        auto mountainDepth = Distances(map.size, [&map](const MapPoint& pt) { return !map.textures.All(pt, IsMountainOrSnowOrLava); });
+        auto mountainDepth =
+          Distances(map.size, [&map](const MapPoint& pt) { return !map.textures.All(pt, IsMountainOrSnowOrLava); });
 
         auto maximumMountainDepth = mountainDepth.GetMaximum();
         auto mountainRange = mountainDepth.GetRange();
@@ -208,8 +213,9 @@ namespace rttr { namespace mapGenerator {
 
     void AddAnimals(Map& map, RandomUtility& rnd)
     {
-        std::vector<libsiedler2::Animal> landAnimals{libsiedler2::Animal::Rabbit, libsiedler2::Animal::Fox, libsiedler2::Animal::Stag,
-                                                     libsiedler2::Animal::Deer, libsiedler2::Animal::Sheep};
+        std::vector<libsiedler2::Animal> landAnimals{libsiedler2::Animal::Rabbit, libsiedler2::Animal::Fox,
+                                                     libsiedler2::Animal::Stag, libsiedler2::Animal::Deer,
+                                                     libsiedler2::Animal::Sheep};
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
@@ -220,7 +226,7 @@ namespace rttr { namespace mapGenerator {
                     map.animals[pt] = libsiedler2::Animal::Duck;
                 } else if(map.textures.All(pt, IsLand))
                 {
-                    map.animals[pt] = landAnimals[rnd.Index(landAnimals.size())];
+                    map.animals[pt] = rnd.RandomItem(landAnimals);
                 }
             }
         }

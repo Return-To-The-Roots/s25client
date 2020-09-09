@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -74,9 +74,9 @@ namespace rttr { namespace mapGenerator {
 
         auto distanceToRiver = Distances(map.size, isPartOfRiver);
 
-        auto allWater = [map](const MapPoint& pt) { return map.textures.All(pt, IsWater); };
+        auto allWater = [&map](const MapPoint& pt) { return map.textures.All(pt, IsWater); };
 
-        auto isCoast = [map, allWater, &distanceToRiver](const MapPoint& pt) {
+        auto isCoast = [&map, allWater, &distanceToRiver](const MapPoint& pt) {
             return map.textures.Any(pt, IsLand) && map.textures.Any(pt, IsWater)
                    && helpers::contains_if(map.textures.GetNeighbours(pt), allWater) && distanceToRiver[pt] >= 5;
         };
@@ -116,15 +116,17 @@ namespace rttr { namespace mapGenerator {
                     return map.textures.CalcDistance(hp1, pt) < map.textures.CalcDistance(hp2, pt);
                 };
                 auto closestHarbor = std::min_element(harbors.begin(), harbors.end(), calcDistance);
-                auto minDistance = closestHarbor == harbors.end() ? maxDistance : map.textures.CalcDistance(pt, *closestHarbor);
+                auto minDistance =
+                  closestHarbor == harbors.end() ? maxDistance : map.textures.CalcDistance(pt, *closestHarbor);
                 return minDistance;
             };
 
             for(int i = 0; i < numberOfHarborsForCoast; i++)
             {
-                auto harbor = std::max_element(coast.begin(), coast.end(), [distanceToHarbors](const MapPoint& pt1, const MapPoint& pt2) {
-                    return distanceToHarbors(pt1) < distanceToHarbors(pt2);
-                });
+                auto harbor = std::max_element(coast.begin(), coast.end(),
+                                               [distanceToHarbors](const MapPoint& pt1, const MapPoint& pt2) {
+                                                   return distanceToHarbors(pt1) < distanceToHarbors(pt2);
+                                               });
                 if(harbor != coast.end())
                 {
                     harbors.push_back(*harbor);

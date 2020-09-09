@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Resources_h__
-#define Resources_h__
+#pragma once
 
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
@@ -46,5 +45,3 @@ namespace rttr { namespace mapGenerator {
     void AddAnimals(Map& map, RandomUtility& rnd);
 
 }} // namespace rttr::mapGenerator
-
-#endif // Resources_h__

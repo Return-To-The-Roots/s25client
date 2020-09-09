@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,71 +32,6 @@
 #include <stdexcept>
 
 namespace rttr { namespace mapGenerator {
-
-    uint8_t ComputeGradient(const ValueMap<uint8_t>& z, const MapPoint& pt)
-    {
-        uint8_t gradient = 0;
-
-        const auto& neighbors = z.GetNeighbours(pt);
-        for(const MapPoint& neighbor : neighbors)
-        {
-            gradient = std::max(static_cast<unsigned>(std::abs(z[pt] - z[neighbor])), static_cast<unsigned>(gradient));
-        }
-
-        return gradient;
-    }
-
-    ValueMap<uint8_t> ComputeGradients(const ValueMap<uint8_t>& z)
-    {
-        ValueMap<uint8_t> gradient(z.GetSize(), 0);
-
-        RTTR_FOREACH_PT(MapPoint, z.GetSize())
-        {
-            gradient[pt] = ComputeGradient(z, pt);
-        }
-
-        return gradient;
-    }
-
-    void PrintStatisticsForHeightMap(const ValueMap<uint8_t>& z)
-    {
-        const auto& range = z.GetRange();
-        std::vector<unsigned> values(range.maximum + 1, 0);
-
-        RTTR_FOREACH_PT(MapPoint, z.GetSize())
-        {
-            values[z[pt]]++;
-        }
-
-        double mean = 0.;
-        for(unsigned z = range.minimum; z <= range.maximum; z++)
-        {
-            mean += values[z];
-        }
-
-        mean /= range.GetDifference();
-
-        double stdDev = 0.;
-        for(unsigned z = range.minimum; z <= range.maximum; z++)
-        {
-            stdDev += (values[z] - mean) * (values[z] - mean);
-        }
-        stdDev /= range.GetDifference();
-        stdDev = std::sqrt(stdDev);
-
-        auto gradient = ComputeGradients(z);
-        auto maximumGradient = static_cast<unsigned>(gradient.GetMaximum());
-
-        std::cout << "Distribution of Z-Values" << std::endl;
-        std::cout << "> mean: " << mean << std::endl;
-        std::cout << "> standard deviation: " << stdDev << std::endl;
-        std::cout << "> maximum gradient: " << maximumGradient << std::endl;
-
-        if(maximumGradient > 5)
-        {
-            std::cout << "WARNING: invalid height map (maximum gradient > 5)" << std::endl;
-        }
-    }
 
     unsigned GetCoastline(const MapExtent& size)
     {

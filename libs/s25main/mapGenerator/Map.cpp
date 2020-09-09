@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,9 +23,10 @@
 
 namespace rttr { namespace mapGenerator {
 
-    Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc, const DescIdx<LandscapeDesc>& landscape)
-        : hqPositions_(MAX_PLAYERS, MapPoint::Invalid()), z(size, 0), textures(TextureMap(worldDesc, landscape)), name("Random"),
-          author("Auto"), height(0, 60), players(players), size(size)
+    Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
+             const DescIdx<LandscapeDesc>& landscape)
+        : hqPositions_(MAX_PLAYERS, MapPoint::Invalid()), z(size, 0), textures(TextureMap(worldDesc, landscape)),
+          name("Random"), author("Auto"), height(0, 60), players(players), size(size)
     {
         textures.Resize(size);
         objectInfos.Resize(size, libsiedler2::OI_Empty);

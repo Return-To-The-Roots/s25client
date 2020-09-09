@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapSettings_h__
-#define MapSettings_h__
+#pragma once
 
 #include "gameTypes/MapCoordinates.h"
 #include "gameData/DescIdx.h"
@@ -35,8 +34,8 @@ namespace rttr { namespace mapGenerator {
     struct MapSettings
     {
         MapSettings()
-            : numPlayers(2), size(MapExtent::all(128)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15), type(0),
-              style(MapStyle::Mixed)
+            : numPlayers(2), size(MapExtent::all(128)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15),
+              type(0), style(MapStyle::Mixed)
         {}
 
         void Validate();
@@ -53,5 +52,3 @@ namespace rttr { namespace mapGenerator {
     };
 
 }} // namespace rttr::mapGenerator
-
-#endif // MapSettings_h__

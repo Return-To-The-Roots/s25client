@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Textures_h__
-#define Textures_h__
+#pragma once
 
 #include "helpers/containerUtils.h"
 #include "mapGenerator/Algorithms.h"
@@ -104,7 +103,9 @@ namespace rttr { namespace mapGenerator {
     class TextureMap : public NodeMapBase<TexturePair>, public TextureOperator
     {
     public:
-        TextureMap(const WorldDescription& worldDesc, const DescIdx<LandscapeDesc>& landscape) : TextureOperator(worldDesc, landscape) {}
+        TextureMap(const WorldDescription& worldDesc, const DescIdx<LandscapeDesc>& landscape)
+            : TextureOperator(worldDesc, landscape)
+        {}
 
         template<class T_Predicate>
         bool Check(const Triangle& triangle, T_Predicate predicate) const
@@ -197,7 +198,10 @@ namespace rttr { namespace mapGenerator {
         void ApplyMountainTransitions(const std::vector<MapPoint>& mountainFoot);
 
     public:
-        Texturizer(ValueMap<uint8_t>& z, TextureMap& textures) : z_(z), textures_(textures) { seaLevel_ = z.GetRange().minimum; }
+        Texturizer(ValueMap<uint8_t>& z, TextureMap& textures) : z_(z), textures_(textures)
+        {
+            seaLevel_ = z.GetRange().minimum;
+        }
 
         /**
          * Adds missing textures based on the height map and the specified sea- and mountain levels.
@@ -209,24 +213,25 @@ namespace rttr { namespace mapGenerator {
     };
 
     /**
-     * Replaces textures around the specified map point with the specified texture if the current texture is not part of the excluded
-     * textures.
+     * Replaces textures around the specified map point with the specified texture if the current texture is not part
+     * of the excluded textures.
      *
      * @param map reference to the map to replace textures for
      * @param point all triangles around this point are checked and textures being replaced
      * @param texture new texture to replace current textures with
      * @param excluded textures which are excluded from replacement
      */
-    void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point, const DescIdx<TerrainDesc>& texture,
-                                const std::set<DescIdx<TerrainDesc>>& excluded);
+    void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point,
+                                const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded);
 
     /**
-     * Replaces textures for all nodes of the map and all neighboring nodes within the specified radius by the specified texture.
-     * Triangles of nodes which contain exlcuded textures are being skipped.
+     * Replaces textures for all nodes of the map and all neighboring nodes within the specified radius by the
+     * specified texture. Triangles of nodes which contain exlcuded textures are being skipped.
      *
      * @param map reference to the map to apply texture replacement to
      * @param radius radius around specified nodes to also consider for texture replacement
-     * @param nodes initial nodes to consider for texture replacement. Other nodes which are considered for texture replacement are added to
+     * @param nodes initial nodes to consider for texture replacement. Other nodes which are considered for texture
+     * replacement are added to
      * this vector.
      * @param texture texture to apply to nodes' triangles
      * @param excluded set of texture which shouldn't get replaced
@@ -235,5 +240,3 @@ namespace rttr { namespace mapGenerator {
                          const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded);
 
 }} // namespace rttr::mapGenerator
-
-#endif // Textures_h__

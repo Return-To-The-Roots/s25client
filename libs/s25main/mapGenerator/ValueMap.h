@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ValueMap_h__
-#define ValueMap_h__
+#pragma once
 
 #include "world/NodeMapBase.h"
 #include <cmath>
@@ -97,7 +96,9 @@ namespace rttr { namespace mapGenerator {
         template<class T_Container>
         const T_Value& GetMaximum(const T_Container& area) const
         {
-            auto compare = [this](const MapPoint& rhs, const MapPoint& lhs) { return this->operator[](rhs) < this->operator[](lhs); };
+            auto compare = [this](const MapPoint& rhs, const MapPoint& lhs) {
+                return this->operator[](rhs) < this->operator[](lhs);
+            };
             auto maximum = std::max_element(area.begin(), area.end(), compare);
             return this->operator[](*maximum);
         }
@@ -112,7 +113,9 @@ namespace rttr { namespace mapGenerator {
         template<class T_Container>
         MapPoint GetMaximumPoint(const T_Container& area) const
         {
-            auto compare = [this](const MapPoint& rhs, const MapPoint& lhs) { return this->operator[](rhs) < this->operator[](lhs); };
+            auto compare = [this](const MapPoint& rhs, const MapPoint& lhs) {
+                return this->operator[](rhs) < this->operator[](lhs);
+            };
 
             return std::max_element(area.begin(), area.end(), compare);
         }
@@ -127,7 +130,9 @@ namespace rttr { namespace mapGenerator {
         template<class T_Container>
         ValueRange<T_Value> GetRange(const T_Container& area) const
         {
-            auto compare = [this](const MapPoint& rhs, const MapPoint& lhs) { return this->operator[](rhs) < this->operator[](lhs); };
+            auto compare = [this](const MapPoint& rhs, const MapPoint& lhs) {
+                return this->operator[](rhs) < this->operator[](lhs);
+            };
             auto range = std::minmax_element(area.begin(), area.end(), compare);
 
             return ValueRange<T_Value>(this->operator[](*range.first), this->operator[](*range.second));
@@ -167,5 +172,3 @@ namespace rttr { namespace mapGenerator {
     };
 
 }} // namespace rttr::mapGenerator
-
-#endif // ValueMap_h__

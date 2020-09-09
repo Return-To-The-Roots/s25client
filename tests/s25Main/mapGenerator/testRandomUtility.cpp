@@ -35,17 +35,6 @@ BOOST_AUTO_TEST_CASE(Index_returns_values_gte_zero_and_lt_size)
     }
 }
 
-BOOST_AUTO_TEST_CASE(PRand_returns_map_point_within_size_bounaries)
-{
-    RandomUtility rnd(0u);
-    MapExtent size(23, 12);
-
-    auto result = rnd.RandomPoint(size);
-
-    BOOST_REQUIRE(result.x < size.x);
-    BOOST_REQUIRE(result.y < size.y);
-}
-
 BOOST_AUTO_TEST_CASE(RandomInt_returns_value_within_thresholds)
 {
     RandomUtility rnd(0u);

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,13 +25,20 @@ namespace rttr { namespace mapGenerator {
 
     bool IsLand(const TerrainDesc& terrain) { return terrain.kind == TerrainKind::LAND; }
 
-    bool IsShipableWater(const TerrainDesc& terrain) { return terrain.kind == TerrainKind::WATER && terrain.Is(ETerrain::Shippable); }
+    bool IsShipableWater(const TerrainDesc& terrain)
+    {
+        return terrain.kind == TerrainKind::WATER && terrain.Is(ETerrain::Shippable);
+    }
 
-    bool IsBuildableLand(const TerrainDesc& terrain) { return terrain.kind == TerrainKind::LAND && terrain.Is(ETerrain::Buildable); }
+    bool IsBuildableLand(const TerrainDesc& terrain)
+    {
+        return terrain.kind == TerrainKind::LAND && terrain.Is(ETerrain::Buildable);
+    }
 
     bool IsCoastTerrain(const TerrainDesc& terrain)
     {
-        return terrain.kind == TerrainKind::LAND && terrain.Is(ETerrain::Walkable) && terrain.GetBQ() == TerrainBQ::FLAG;
+        return terrain.kind == TerrainKind::LAND && terrain.Is(ETerrain::Walkable)
+               && terrain.GetBQ() == TerrainBQ::FLAG;
     }
 
     bool IsBuildableCoast(const TerrainDesc& terrain)
@@ -44,13 +51,20 @@ namespace rttr { namespace mapGenerator {
         return terrain.kind == TerrainKind::MOUNTAIN && terrain.Is(ETerrain::Buildable);
     }
 
-    bool IsMinableMountain(const TerrainDesc& terrain) { return terrain.kind == TerrainKind::MOUNTAIN && terrain.Is(ETerrain::Mineable); }
+    bool IsMinableMountain(const TerrainDesc& terrain)
+    {
+        return terrain.kind == TerrainKind::MOUNTAIN && terrain.Is(ETerrain::Mineable);
+    }
 
-    bool IsSnowOrLava(const TerrainDesc& terrain) { return terrain.kind == TerrainKind::SNOW || terrain.kind == TerrainKind::LAVA; }
+    bool IsSnowOrLava(const TerrainDesc& terrain)
+    {
+        return terrain.kind == TerrainKind::SNOW || terrain.kind == TerrainKind::LAVA;
+    }
 
     bool IsMountainOrSnowOrLava(const TerrainDesc& terrain)
     {
-        return terrain.kind == TerrainKind::MOUNTAIN || terrain.kind == TerrainKind::SNOW || terrain.kind == TerrainKind::LAVA;
+        return terrain.kind == TerrainKind::MOUNTAIN || terrain.kind == TerrainKind::SNOW
+               || terrain.kind == TerrainKind::LAVA;
     }
 
 }} // namespace rttr::mapGenerator

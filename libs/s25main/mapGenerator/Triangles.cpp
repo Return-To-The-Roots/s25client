@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +22,9 @@ namespace rttr { namespace mapGenerator {
 
     Triangle::Triangle(bool rsu, const MapPoint& position) : rsu(rsu), position(position) {}
 
-    Triangle::Triangle(bool rsu, const Position& position, const MapExtent& size) : rsu(rsu), position(MakeMapPoint(position, size)) {}
+    Triangle::Triangle(bool rsu, const Position& position, const MapExtent& size)
+        : rsu(rsu), position(MakeMapPoint(position, size))
+    {}
 
     Triangle Triangle::Inverse() const { return Triangle(!rsu, position); }
 
@@ -44,19 +46,27 @@ namespace rttr { namespace mapGenerator {
 
             switch(direction.native_value())
             {
-                case Direction::WEST: return {Triangle(true, Position(p.x, p.y - 1), size), Triangle(false, Position(p.x - 1, p.y), size)};
+                case Direction::WEST:
+                    return {Triangle(true, Position(p.x, p.y - 1), size),
+                            Triangle(false, Position(p.x - 1, p.y), size)};
 
-                case Direction::SOUTHWEST: return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x - 1, p.y), size)};
+                case Direction::SOUTHWEST:
+                    return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x - 1, p.y), size)};
 
-                case Direction::SOUTHEAST: return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x, p.y), size)};
+                case Direction::SOUTHEAST:
+                    return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x, p.y), size)};
 
-                case Direction::EAST: return {Triangle(true, Position(p.x + 1, p.y - 1), size), Triangle(false, Position(p.x, p.y), size)};
+                case Direction::EAST:
+                    return {Triangle(true, Position(p.x + 1, p.y - 1), size),
+                            Triangle(false, Position(p.x, p.y), size)};
 
                 case Direction::NORTHEAST:
-                    return {Triangle(true, Position(p.x + 1, p.y - 1), size), Triangle(false, Position(p.x, p.y - 1), size)};
+                    return {Triangle(true, Position(p.x + 1, p.y - 1), size),
+                            Triangle(false, Position(p.x, p.y - 1), size)};
 
                 case Direction::NORTHWEST:
-                    return {Triangle(true, Position(p.x, p.y - 1), size), Triangle(false, Position(p.x, p.y - 1), size)};
+                    return {Triangle(true, Position(p.x, p.y - 1), size),
+                            Triangle(false, Position(p.x, p.y - 1), size)};
             }
         } else
         {
@@ -73,19 +83,25 @@ namespace rttr { namespace mapGenerator {
             switch(direction.native_value())
             {
                 case Direction::WEST:
-                    return {Triangle(true, Position(p.x - 1, p.y - 1), size), Triangle(false, Position(p.x - 1, p.y), size)};
+                    return {Triangle(true, Position(p.x - 1, p.y - 1), size),
+                            Triangle(false, Position(p.x - 1, p.y), size)};
 
-                case Direction::SOUTHWEST: return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x - 1, p.y), size)};
+                case Direction::SOUTHWEST:
+                    return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x - 1, p.y), size)};
 
-                case Direction::SOUTHEAST: return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x, p.y), size)};
+                case Direction::SOUTHEAST:
+                    return {Triangle(true, Position(p.x, p.y), size), Triangle(false, Position(p.x, p.y), size)};
 
-                case Direction::EAST: return {Triangle(true, Position(p.x, p.y - 1), size), Triangle(false, Position(p.x, p.y), size)};
+                case Direction::EAST:
+                    return {Triangle(true, Position(p.x, p.y - 1), size), Triangle(false, Position(p.x, p.y), size)};
 
                 case Direction::NORTHEAST:
-                    return {Triangle(true, Position(p.x, p.y - 1), size), Triangle(false, Position(p.x - 1, p.y - 1), size)};
+                    return {Triangle(true, Position(p.x, p.y - 1), size),
+                            Triangle(false, Position(p.x - 1, p.y - 1), size)};
 
                 case Direction::NORTHWEST:
-                    return {Triangle(true, Position(p.x - 1, p.y - 1), size), Triangle(false, Position(p.x - 1, p.y - 1), size)};
+                    return {Triangle(true, Position(p.x - 1, p.y - 1), size),
+                            Triangle(false, Position(p.x - 1, p.y - 1), size)};
             }
         }
 

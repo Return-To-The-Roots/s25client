@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Harbors_h__
-#define Harbors_h__
+#pragma once
 
 #include "mapGenerator/Map.h"
 #include "mapGenerator/Rivers.h"
@@ -52,5 +51,3 @@ namespace rttr { namespace mapGenerator {
     void PlaceHarbors(Map& map, const std::vector<River>& rivers, int coastSize, int nodesPerHarbor = 50);
 
 }} // namespace rttr::mapGenerator
-
-#endif // Harbors_h__

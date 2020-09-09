@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Triangles_h__
-#define Triangles_h__
+#pragma once
 
 #include "world/MapGeometry.h"
 #include <cmath>
@@ -88,5 +87,3 @@ namespace rttr { namespace mapGenerator {
     std::vector<MapPoint> GetTriangleEdges(const Triangle& triangle, const MapExtent& size);
 
 }} // namespace rttr::mapGenerator
-
-#endif // Triangles_h__

@@ -193,7 +193,8 @@ BOOST_AUTO_TEST_CASE(AddAnimals_updates_animals_according_to_textures)
         {
             if(map.textures.All(pt, IsWater))
             {
-                BOOST_REQUIRE(map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck || map.animals[pt] == Animal::Duck2);
+                BOOST_REQUIRE(map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck
+                              || map.animals[pt] == Animal::Duck2);
             } else
             {
                 BOOST_REQUIRE(map.animals[pt] != Animal::Duck && map.animals[pt] != Animal::Duck2);

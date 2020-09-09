@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TexturesHelper_h__
-#define TexturesHelper_h__
+#pragma once
 
 #include "gameData/TerrainDesc.h"
 
@@ -45,5 +44,3 @@ namespace rttr { namespace mapGenerator {
     bool IsMountainOrSnowOrLava(const TerrainDesc& terrain);
 
 }} // namespace rttr::mapGenerator
-
-#endif // TexturesHelper_h__

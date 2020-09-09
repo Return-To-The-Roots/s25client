@@ -191,8 +191,9 @@ BOOST_AUTO_TEST_CASE(Distances_returns_expected_distance_for_each_map_point)
 {
     MapExtent size(8, 8);
 
-    std::vector<int> expectedDistances{5, 5, 4, 3, 3, 3, 3, 4, 5, 4, 3, 2, 2, 2, 3, 4, 4, 4, 3, 2, 1, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3,
-                                       4, 4, 3, 2, 1, 1, 2, 3, 5, 4, 3, 2, 2, 2, 3, 4, 5, 5, 4, 3, 3, 3, 3, 4, 6, 5, 4, 4, 4, 4, 4, 5};
+    std::vector<int> expectedDistances{5, 5, 4, 3, 3, 3, 3, 4, 5, 4, 3, 2, 2, 2, 3, 4, 4, 4, 3, 2, 1, 1,
+                                       2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 4, 3, 2, 1, 1, 2, 3, 5, 4, 3, 2,
+                                       2, 2, 3, 4, 5, 5, 4, 3, 3, 3, 3, 4, 6, 5, 4, 4, 4, 4, 4, 5};
 
     auto distances = Distances(size, [](MapPoint pt) {
         return pt.x == 4 && pt.y == 3; // compute distance to P(4/3)

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -82,8 +82,7 @@ namespace rttr { namespace mapGenerator {
                     break;
                 }
 
-                auto i = retries == maxRetries ? 0 : rnd.Index(possiblePositions.size());
-                auto hq = possiblePositions[i];
+                auto hq = retries == maxRetries ? possiblePositions.front() : rnd.RandomItem(possiblePositions);
 
                 map.MarkAsHeadQuarter(hq, index);
             }

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Map_h__
-#define Map_h__
+#pragma once
 
 #include "helpers/containerUtils.h"
 #include "mapGenerator/Textures.h"
@@ -52,7 +51,8 @@ namespace rttr { namespace mapGenerator {
         const uint8_t players;
         const MapExtent size;
 
-        Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc, const DescIdx<LandscapeDesc>& landscape);
+        Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
+            const DescIdx<LandscapeDesc>& landscape);
 
         /**
          * Marks the position as HQ position if set to a valid position, otherwise unmarks previously marked position.
@@ -71,5 +71,3 @@ namespace rttr { namespace mapGenerator {
     };
 
 }} // namespace rttr::mapGenerator
-
-#endif // Map_h__

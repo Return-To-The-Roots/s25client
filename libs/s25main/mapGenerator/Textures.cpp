@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -219,8 +219,8 @@ namespace rttr { namespace mapGenerator {
         ApplyMountainTransitions(footOfMountain);
     }
 
-    void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point, const DescIdx<TerrainDesc>& texture,
-                                const std::set<DescIdx<TerrainDesc>>& excluded)
+    void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point,
+                                const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded)
     {
         auto triangles = GetTriangles(point, textures.GetSize());
 

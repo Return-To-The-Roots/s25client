@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RandomUtility_h__
-#define RandomUtility_h__
+#pragma once
 
 #include "random/XorShift.h"
 #include "gameTypes/MapCoordinates.h"
@@ -65,15 +64,6 @@ namespace rttr { namespace mapGenerator {
         }
 
         /**
-         * Generates a random position for a map of the specified size.
-         *
-         * @param size boundaries of the map
-         *
-         * @return a random position on the map.
-         */
-        MapPoint RandomPoint(const MapExtent& size);
-
-        /**
          * Generates a random integer number between the specified minimum and maximum values.
          *
          * @param min minimum value for the random number
@@ -95,5 +85,3 @@ namespace rttr { namespace mapGenerator {
     };
 
 }} // namespace rttr::mapGenerator
-
-#endif // RandomUtility_h__

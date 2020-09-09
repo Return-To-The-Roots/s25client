@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Rivers_h__
-#define Rivers_h__
+#pragma once
 
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
@@ -26,7 +25,8 @@ namespace rttr { namespace mapGenerator {
     using River = std::set<MapPoint, MapPointLess>;
 
     /**
-     * Creates a small stream of water for the specified map with the specified initial direction, length and split rate.
+     * Creates a small stream of water for the specified map with the specified initial direction, length and split
+     * rate.
      *
      * @param rnd random number generator to to create a random flow
      * @param map reference to the map to place the stream on
@@ -37,8 +37,7 @@ namespace rttr { namespace mapGenerator {
      *
      * @returns all nodes the stream (incl. split up streams) is covering.
      */
-    River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length, unsigned splitRate = 0);
+    River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
+                       unsigned splitRate = 0);
 
 }} // namespace rttr::mapGenerator
-
-#endif // Rivers_h__

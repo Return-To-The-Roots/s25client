@@ -107,8 +107,12 @@ std::vector<MapPoint> MapBase::GetNeighbours(const MapPoint& pt) const
     unsigned xplus1 = pt.x == size_.x - 1 ? 0 : pt.x + 1;
     unsigned xminus1 = (pt.x == 0 ? size_.x : pt.x) - 1;
 
-    return {MapPoint(xminus1, pt.y), MapPoint((pt.y & 1) ? pt.x : xminus1, yminus1),  MapPoint((!(pt.y & 1)) ? pt.x : xplus1, yminus1),
-            MapPoint(xplus1, pt.y),  MapPoint((!(pt.y & 1)) ? pt.x : xplus1, yplus1), MapPoint((pt.y & 1) ? pt.x : xminus1, yplus1)};
+    return {MapPoint(xminus1, pt.y),
+            MapPoint((pt.y & 1) ? pt.x : xminus1, yminus1),
+            MapPoint((!(pt.y & 1)) ? pt.x : xplus1, yminus1),
+            MapPoint(xplus1, pt.y),
+            MapPoint((!(pt.y & 1)) ? pt.x : xplus1, yplus1),
+            MapPoint((pt.y & 1) ? pt.x : xminus1, yplus1)};
 }
 
 unsigned MapBase::CalcDistance(const Position& p1, const Position& p2) const

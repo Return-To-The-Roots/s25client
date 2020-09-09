@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -40,8 +40,6 @@ namespace rttr { namespace mapGenerator {
         std::uniform_int_distribution<int> distr(min, max);
         return distr(rng_);
     }
-
-    MapPoint RandomUtility::RandomPoint(const MapExtent& size) { return MapPoint(RandomInt(0, size.x - 1), RandomInt(0, size.y - 1)); }
 
     double RandomUtility::RandomDouble(double min, double max)
     {

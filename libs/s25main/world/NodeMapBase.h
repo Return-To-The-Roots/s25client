@@ -72,4 +72,3 @@ void NodeMapBase<T_Node>::Resize(const MapExtent& newSize, const T_Node& default
     nodes.clear();
     nodes.resize(prodOfComponents(newSize), defaultValue);
 }
-

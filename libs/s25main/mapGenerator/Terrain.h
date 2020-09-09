@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Terrain_h__
-#define Terrain_h__
+#pragma once
 
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/Map.h"
@@ -30,13 +29,14 @@ namespace rttr { namespace mapGenerator {
      *
      * @param map reference to the map to manipulate
      * @param focusArea area defining the focus of elevation
-     * @param weight factor influencing the strength of elevation towards the focused area (default: 2 - quadratic drop with distance)
+     * @param weight factor influencing the strength of elevation towards the focused area (default: 2 - quadratic drop
+     * with distance)
      */
     void Restructure(Map& map, const std::vector<MapPoint>& focusArea, double weight = 2.);
 
     /**
-     * Resets the sea level to "0" by setting all sea nodes to "0" height and scaling the remaining nodes to a range between "1" and maximum
-     * height of the map.
+     * Resets the sea level to "0" by setting all sea nodes to "0" height and scaling the remaining nodes to a range
+     * between "1" and maximum height of the map.
      *
      * @param map reference to the map
      * @param seaLevel maximum height sea can reach
@@ -44,5 +44,3 @@ namespace rttr { namespace mapGenerator {
     void ResetSeaLevel(Map& map, RandomUtility& rnd, unsigned seaLevel);
 
 }} // namespace rttr::mapGenerator
-
-#endif // Terrain_h__

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,7 +21,8 @@
 
 namespace rttr { namespace mapGenerator {
 
-    River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length, unsigned splitRate)
+    River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
+                       unsigned splitRate)
     {
         const MapExtent& size = map.size;
 

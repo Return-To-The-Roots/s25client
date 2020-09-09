@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RandomMap_h__
-#define RandomMap_h__
+#pragma once
 
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
@@ -25,12 +24,6 @@
 #include <boost/filesystem/path.hpp>
 
 namespace rttr { namespace mapGenerator {
-
-    // helpers
-    uint8_t ComputeGradient(const ValueMap<uint8_t>& z, const MapPoint& pt);
-    ValueMap<uint8_t> ComputeGradients(const ValueMap<uint8_t>& z);
-    void PrintStatisticsForHeightMap(const ValueMap<uint8_t>& z);
-    void PrintStructureInformation(uint8_t seaLevel, uint8_t mountainLevel);
 
     unsigned GetCoastline(const MapExtent& size);
     unsigned GetIslandRadius(const MapExtent& size);
@@ -59,5 +52,3 @@ namespace rttr { namespace mapGenerator {
     void CreateRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings);
 
 }} // namespace rttr::mapGenerator
-
-#endif // RandomMap_h__
