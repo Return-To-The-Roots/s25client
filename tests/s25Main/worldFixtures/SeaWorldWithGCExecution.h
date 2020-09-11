@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef SeaWorldWithGCExecution_h__
+#define SeaWorldWithGCExecution_h__
+
 #include "CreateSeaWorld.h"
 #include "GCExecutor.h"
 #include "worldFixtures/WorldFixture.h"
-
-#ifndef SeaWorldWithGCExecution_h__
-#define SeaWorldWithGCExecution_h__
 
 template<unsigned T_numPlayers = 3, unsigned T_width = SeaWorldDefault::width, unsigned T_height = SeaWorldDefault::height>
 class SeaWorldWithGCExecution : public WorldFixture<CreateSeaWorld, T_numPlayers, T_width, T_height>, public GCExecutor

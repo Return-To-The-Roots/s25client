@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef WorldWithGCExecution_h__
+#define WorldWithGCExecution_h__
+
 #include "GCExecutor.h"
 #include "GamePlayer.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
-
-#ifndef WorldWithGCExecution_h__
-#define WorldWithGCExecution_h__
 
 template<unsigned T_numPlayers, unsigned T_width = WorldDefault<T_numPlayers>::width,
          unsigned T_height = WorldDefault<T_numPlayers>::height>

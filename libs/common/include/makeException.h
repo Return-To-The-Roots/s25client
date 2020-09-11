@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef makeException_h__
+#define makeException_h__
+
 #include "helpers/strUtils.h"
 #include <stdexcept>
 #include <system_error>
-
-#ifndef makeException_h__
-#define makeException_h__
 
 /// Create an exception by concatenating the passed args
 template<typename T_Exception = std::runtime_error, typename... Args>
