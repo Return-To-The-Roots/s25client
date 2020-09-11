@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef Inventory_h__
+#define Inventory_h__
+
 #include "GoodTypes.h"
 #include "JobTypes.h"
 #include "RTTR_Assert.h"
 #include <array>
-
-#ifndef Inventory_h__
-#define Inventory_h__
 
 /// Struct for wares and people (for HQs, warehouses etc)
 struct Inventory

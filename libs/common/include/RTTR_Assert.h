@@ -77,4 +77,6 @@ bool RTTR_SetBreakOnAssertFailure(bool enabled);
     } while(false)
 #endif
 
+#define RTTR_Assert_Msg(cond, msg) RTTR_Assert((cond) && (msg))
+
 #endif // RTTRAssert_h__

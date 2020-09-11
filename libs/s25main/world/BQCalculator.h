@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "World.h"
-#include "gameData/TerrainDesc.h"
-
 #ifndef BQCalculator_h__
 #define BQCalculator_h__
+
+#include "World.h"
+#include "gameData/TerrainDesc.h"
 
 struct BQCalculator
 {

@@ -24,10 +24,6 @@
 #include <cstddef>
 #include <type_traits>
 
-#ifndef RTTR_Assert_Msg
-#define RTTR_Assert_Msg(cond, msg) RTTR_Assert((cond) && (msg))
-#endif
-
 namespace helpers {
 
 /// Wrapper around a regular C-Array with multiple dimensions which provides range checking with assertions
