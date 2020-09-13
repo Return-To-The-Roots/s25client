@@ -90,15 +90,10 @@ namespace resources {
 } // namespace resources
 } // namespace s25
 
+// TODO: Make this an array of ResourceId
 const std::array<const std::string, 21> LOAD_SCREENS = {
   {"setup666", "setup667", "setup801", "setup802", "setup803", "setup804", "setup805",
    "setup806", "setup810", "setup811", "setup895", "setup896", "africa",   "austra",
    "europe",   "green",    "japan",    "namerica", "nasia",    "samerica", "sasia"}};
-
-constexpr unsigned NUM_GFXSETS = 3;
-
-const std::array<const std::string, NUM_GFXSETS> MAP_GFXSET_Z = {{"MAP_0_Z", "MAP_1_Z", "MAP_2_Z"}};
-
-const std::array<const std::string, NUM_GFXSETS> TEX_GFXSET = {{"TEX5", "TEX6", "TEX7"}};
 
 RTTR_POP_DIAGNOSTIC

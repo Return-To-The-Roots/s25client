@@ -32,7 +32,7 @@ using rttr::test::TmpFolder;
 
 BOOST_AUTO_TEST_SUITE(ArchiveLocatorTests)
 
-fs::path createFile(const fs::path& filepath)
+static fs::path createFile(const fs::path& filepath)
 {
     fs::path folder = filepath.parent_path();
     if(!exists(folder))

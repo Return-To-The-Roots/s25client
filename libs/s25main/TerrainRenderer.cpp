@@ -33,7 +33,6 @@
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "s25util/Log.h"
 #include "s25util/dynamicUniqueCast.h"
-#include "s25util/strAlgos.h"
 #include <glad/glad.h>
 #include <boost/range/adaptor/indexed.hpp>
 #include <cstdlib>
@@ -121,7 +120,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     for(DescIdx<TerrainDesc> curIdx : usedTerrains)
     {
         const TerrainDesc& cur = desc.get(curIdx);
-        std::string textureName = s25util::toLower(bfs::path(cur.texturePath).stem().string());
+        const auto textureName = ResourceId::make(bfs::path(cur.texturePath));
         glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
         if(!texBmp)
             throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for terrain '" + cur.name + "'");
@@ -176,7 +175,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     for(DescIdx<EdgeDesc> curIdx : usedEdges)
     {
         const EdgeDesc& cur = desc.get(curIdx);
-        std::string textureName = s25util::toLower(bfs::path(cur.texturePath).stem().string());
+        const auto textureName = ResourceId::make(bfs::path(cur.texturePath));
         glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
         if(!texBmp)
             throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for edge '" + cur.name + "'");
@@ -188,7 +187,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
         const LandscapeDesc& cur = desc.get(curIdx);
         for(unsigned i = 0; i < cur.roadTexDesc.size(); i++)
         {
-            std::string textureName = s25util::toLower(bfs::path(cur.roadTexDesc[i].texturePath).stem().string());
+            const auto textureName = ResourceId::make(bfs::path(cur.roadTexDesc[i].texturePath));
             glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
             if(!texBmp)
                 throw std::runtime_error("Invalid texture '" + cur.roadTexDesc[i].texturePath

@@ -31,22 +31,22 @@ ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& p
     : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), position(0), maximum(maximum), padding_(padding),
       force_color(force_color)
 {
-    const char *str1 = "io", *str2 = "io";
+    ResourceId btMinusRes = "io", btPlusRes = "io";
     if(button_minus >= 1000)
     {
-        str1 = "io_new";
+        btMinusRes = "io_new";
         button_minus -= 1000;
     }
     if(button_plus >= 1000)
     {
-        str2 = "io_new";
+        btPlusRes = "io_new";
         button_plus -= 1000;
     }
 
     Extent btSize = Extent::all(size.y);
-    AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.GetImageN(str1, button_minus),
+    AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.GetImageN(btMinusRes, button_minus),
                    (button_minus_tooltip.length() ? button_minus_tooltip : _("Less")));
-    AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.GetImageN(str2, button_plus),
+    AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.GetImageN(btPlusRes, button_plus),
                    (button_plus_tooltip.length() ? button_plus_tooltip : _("More")));
 
     // Hide left and right 3D border by making the buttons overlap the bar

@@ -24,6 +24,7 @@
 #include "gameTypes/RoadPathDirection.h"
 #include <cstdint>
 
+class ResourceId;
 class RoadSegment;
 class noRoadNode;
 class glArchivItem_Bob;
@@ -169,7 +170,7 @@ public:
     /// Zeichnet standardmäßig die Figur, wenn sie läuft
     void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
-    void DrawWalking(DrawPoint drawPt, const char* file, unsigned id);
+    void DrawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id);
     /// Zeichnet standardmäßig die Figur, wenn sie läuft, nimmt automatisch richtige Job-ID/Datei
     void DrawWalking(DrawPoint drawPt);
     /// Interpoliert die Positon zwischen zwei Knotenpunkten

@@ -27,7 +27,6 @@
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "s25util/strAlgos.h"
 #include <glad/glad.h>
 #include <boost/filesystem/path.hpp>
 #include <array>
@@ -79,7 +78,7 @@ void dskTextureTest::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned 
         return;
     const TerrainDesc& cur = desc.get(curTerrainIdx);
     LOADER.Load(RTTRCONFIG.ExpandPath(cur.texturePath));
-    std::string textureName = s25util::toLower(bfs::path(cur.texturePath).stem().string());
+    const auto textureName = ResourceId::make(bfs::path(cur.texturePath));
     glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
     curTexture = LOADER.ExtractTexture(*texBmp, cur.posInTexture);
 }

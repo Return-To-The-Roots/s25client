@@ -18,6 +18,7 @@
 #pragma once
 
 #include "IngameWindow.h"
+class ResourceId;
 class Window;
 
 class iwMsgbox : public IngameWindow
@@ -36,7 +37,7 @@ public:
     iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
              MsgboxIcon icon, unsigned msgboxid = 0);
     iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
-             const std::string& iconFile, unsigned iconIdx, unsigned msgboxid = 0);
+             const ResourceId& iconFile, unsigned iconIdx, unsigned msgboxid = 0);
 
     ~iwMsgbox() override;
 
@@ -44,7 +45,7 @@ public:
     void MoveIcon(const DrawPoint& pos);
 
 private:
-    void Init(const std::string& text, const std::string& iconFile, unsigned iconIdx);
+    void Init(const std::string& text, const ResourceId& iconFile, unsigned iconIdx);
 
     void AddButton(unsigned short id, int x, const std::string& text, TextureColor tc);
 
