@@ -48,7 +48,7 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* ms
 }
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
-                   const std::string& iconFile, unsigned iconIdx, unsigned msgboxid /* = 0 */)
+                   const ResourceId& iconFile, unsigned iconIdx, unsigned msgboxid /* = 0 */)
     : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41),
                    true, false),
       button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
@@ -56,7 +56,7 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* ms
     Init(text, iconFile, iconIdx);
 }
 
-void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsigned iconIdx)
+void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigned iconIdx)
 {
     glArchivItem_Bitmap* icon = LOADER.GetImageN(iconFile, iconIdx);
     if(icon)

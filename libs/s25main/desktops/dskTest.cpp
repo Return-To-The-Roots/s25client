@@ -206,11 +206,11 @@ bool dskTest::Msg_KeyDown(const KeyEvent& ke)
     else if(ke.kt == KT_LEFT)
     {
         curBGIdx = (curBGIdx > 0) ? curBGIdx - 1 : LOAD_SCREENS.size() - 1;
-        background = LOADER.GetImageN(LOAD_SCREENS[curBGIdx], 0);
+        background = LOADER.GetImageN(ResourceId(LOAD_SCREENS[curBGIdx]), 0);
     } else if(ke.kt == KT_RIGHT)
     {
         curBGIdx = (curBGIdx < LOAD_SCREENS.size() - 1) ? curBGIdx + 1 : 0;
-        background = LOADER.GetImageN(LOAD_SCREENS[curBGIdx], 0);
+        background = LOADER.GetImageN(ResourceId(LOAD_SCREENS[curBGIdx]), 0);
     } else if(ke.kt == KT_ESCAPE)
         WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
     else

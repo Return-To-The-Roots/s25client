@@ -197,7 +197,7 @@ bool Loader::LoadFilesAtStart()
     namespace res = s25::resources;
     // Palettes
     if(!LoadFiles({res::pal5, res::pal6, res::pal7, res::paletti0, res::paletti1, res::paletti8})
-       || !Load("colors"_res))
+       || !Load(ResourceId("colors")))
         return false;
 
     if(!LoadFonts())
@@ -224,7 +224,7 @@ bool Loader::LoadFilesAtStart()
     if(!LoadSounds())
         return false;
 
-    return LoadResources({"io_new"_res, "client"_res, "languages"_res, "logo"_res, "menu"_res, "rttr"_res});
+    return LoadResources({"io_new", "client", "languages", "logo", "menu", "rttr"});
 }
 
 bool Loader::LoadSounds()
@@ -277,7 +277,7 @@ bool Loader::LoadSounds()
 
 bool Loader::LoadFonts()
 {
-    if(!Load("fonts"_res, GetPaletteN("pal5")))
+    if(!Load(ResourceId("fonts"), GetPaletteN("pal5")))
         return false;
     fonts.clear();
     const auto& loadedFonts = GetArchive("fonts");
@@ -374,7 +374,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
 
-    if(!LoadFiles(files) || !Load("map_new"_res, pal5))
+    if(!LoadFiles(files) || !Load(ResourceId("map_new"), pal5))
         return false;
 
     // Load nation building and icon graphics
@@ -395,7 +395,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     }
 
     // TODO: Move to addon folder and make it overwrite existing file
-    if(!LoadResources({"charburner"_res, "charburner_bobs"_res}))
+    if(!LoadResources({"charburner", "charburner_bobs"}))
         return false;
 
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);

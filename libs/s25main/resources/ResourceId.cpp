@@ -18,15 +18,15 @@
 #include "ResourceId.h"
 #include "helpers/containerUtils.h"
 #include "s25util/strAlgos.h"
+#include <boost/filesystem/path.hpp>
 #include <stdexcept>
 
-bool ResourceId::isValid(const std::string& name)
+ResourceId ResourceId::make(const std::string& name)
 {
-    // Must be a valid Id: All lowercase alpha-numeric
-    const auto isInvalidChar = [](const char c) {
-        return !(('0' <= c && c <= '9') || ('a' <= c && c <= 'z') || c == '_');
-    };
-    return !name.empty() && !helpers::contains_if(name, isInvalidChar);
+    if(name.length() > maxLength || !isValid(name.c_str(), name.length()))
+        throw std::invalid_argument(name + " is not a valid resource id");
+
+    return ResourceId(name);
 }
 
 ResourceId ResourceId::make(const boost::filesystem::path& filepath)
@@ -36,9 +36,7 @@ ResourceId ResourceId::make(const boost::filesystem::path& filepath)
     while(name.has_extension())
         name.replace_extension();
     const std::string sName = s25util::toLower(name.string());
-    if(!isValid(sName))
-        throw std::invalid_argument(sName + " is not a valid resource id");
-    return ResourceId(sName, UncheckedTag());
+    return make(sName);
 }
 
 std::ostream& operator<<(std::ostream& os, const ResourceId& resId)

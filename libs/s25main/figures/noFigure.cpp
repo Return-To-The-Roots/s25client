@@ -805,7 +805,7 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id
 }
 
 /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
-void noFigure::DrawWalking(DrawPoint drawPt, const char* const file, unsigned id)
+void noFigure::DrawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id)
 {
     const unsigned ani_step = CalcWalkAnimationFrame();
     drawPt = InterpolateWalkDrawPos(drawPt);
