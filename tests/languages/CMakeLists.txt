@@ -1,5 +1,3 @@
-include(AddTestcase)
-
 configure_file(languageFiles.h.cmake languageFiles.h)
 find_package(Boost 1.64 REQUIRED COMPONENTS filesystem)
 add_testcase(NAME LanguageFiles

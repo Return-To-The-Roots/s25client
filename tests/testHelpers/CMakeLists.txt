@@ -17,7 +17,7 @@ add_library(testHelpers STATIC
     rttr/test/testHelpers.hpp
     rttr/test/TmpFolder.hpp
 )
-target_link_libraries(testHelpers PRIVATE s25Common rttrConfig Boost::unit_test_framework)
+target_link_libraries(testHelpers PUBLIC s25Common PRIVATE rttrConfig Boost::unit_test_framework)
 target_include_directories(testHelpers PUBLIC .)
 enable_warnings(testHelpers)
 
