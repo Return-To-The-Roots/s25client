@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_FONT_H_INCLUDED
-#define GLARCHIVITEM_FONT_H_INCLUDED
 
 #pragma once
 
@@ -118,5 +116,3 @@ private:
     unsigned getWidthInternal(const std::string::const_iterator& begin, const std::string::const_iterator& end, unsigned maxWidth,
                               unsigned* maxNumChars) const;
 };
-
-#endif // !GLARCHIVITEM_FONT_H_INCLUDED

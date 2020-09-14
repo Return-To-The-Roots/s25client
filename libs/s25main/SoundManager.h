@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SOUNDMANAGER_H_
-#define SOUNDMANAGER_H_
+#pragma once
 
 #include "driver/EffectPlayId.h"
 #include "s25util/Singleton.h"
@@ -75,5 +74,3 @@ public:
 };
 
 #define SOUNDMANAGER SoundManager::inst()
-
-#endif

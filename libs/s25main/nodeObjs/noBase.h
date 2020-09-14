@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOBASE_H_INCLUDED
-#define NOBASE_H_INCLUDED
 
 #pragma once
 
@@ -68,5 +66,3 @@ protected:
 protected:
     NodalObjectType nop; /// Typ des NodeObjekt ( @see NodalObjectTypes.h )
 };
-
-#endif // !NOBASE_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AnimalConsts_h__
-#define AnimalConsts_h__
+#pragma once
 
 #include "helpers/EnumArray.h"
 #include "gameTypes/AnimalTypes.h"
@@ -52,5 +51,3 @@ const helpers::EnumArray<AnimalConst, Species> ANIMALCONSTS{{
 }};
 
 const unsigned ANIMAL_MAX_ANIMATION_STEPS = 8;
-
-#endif // AnimalConsts_h__

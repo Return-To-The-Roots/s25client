@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMELOADER_H_INCLUDED
-#define GAMELOADER_H_INCLUDED
 
 #pragma once
 
@@ -48,5 +46,3 @@ private:
     std::vector<Nation> usedNations;
     std::vector<std::string> textures;
 };
-
-#endif // !GAMELOADER_H_INCLUDED

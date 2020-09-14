@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CONST_GUI_IDS_H_INCLUDED
-#define CONST_GUI_IDS_H_INCLUDED
 
 #pragma once
 
@@ -72,5 +70,3 @@ enum GUI_ID
     CGI_BUILDING, /// Building windows use this as the base ID and add a unique number for each building
     CGI_NEXT = CGI_BUILDING + MAX_MAP_SIZE * MAX_MAP_SIZE
 };
-
-#endif // !CONST_GUI_IDS_H_INCLUDED

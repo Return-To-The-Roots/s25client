@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NodeNote_h__
-#define NodeNote_h__
+#pragma once
 
 #include "notifications/notifications.h"
 #include "gameTypes/MapCoordinates.h"
@@ -37,5 +36,3 @@ struct NodeNote
     const Type type;
     const MapPoint pos;
 };
-
-#endif // NodeNote_h__

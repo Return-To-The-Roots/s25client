@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GoodTypes_h__
-#define GoodTypes_h__
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include "mygettext/mygettext.h"
@@ -107,5 +106,3 @@ const std::string WARE_NAMES[NUM_WARE_TYPES] = {
   /* 33 */ gettext_noop("Ham"),          // Schinken ( Schwein )
   /* 34 */ "",                           // Schild
 };
-
-#endif // GoodTypes_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef random_h__
-#define random_h__
+#pragma once
 
 #include <limits>
 #include <random>
@@ -42,5 +41,3 @@ namespace rttr { namespace test {
     }
     std::string randString(int len = -1);
 }} // namespace rttr::test
-
-#endif // random_h__

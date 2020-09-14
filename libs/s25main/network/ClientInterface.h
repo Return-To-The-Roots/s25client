@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CLIENTGUIINTERFACE_H_
-#define CLIENTGUIINTERFACE_H_
 
 #pragma once
 
@@ -72,5 +70,3 @@ public:
     virtual void CI_GamePaused() {}
     virtual void CI_GameResumed() {}
 };
-
-#endif

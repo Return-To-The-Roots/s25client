@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwMISSIONSTATEMENT_H_INCLUDED
-#define iwMISSIONSTATEMENT_H_INCLUDED
 
 #pragma once
 
@@ -58,5 +56,3 @@ public:
 private:
     bool pauseGame_;
 };
-
-#endif // !iwMISSIONSTATEMENT_H_INCLUDED

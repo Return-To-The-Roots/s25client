@@ -1,6 +1,3 @@
-#ifndef ADDONINEXHAUSTIBLEGRANITEMINES_H_INCLUDED
-#define ADDONINEXHAUSTIBLEGRANITEMINES_H_INCLUDED
-
 #pragma once
 
 #include "AddonBool.h"
@@ -17,5 +14,3 @@ public:
                     _("Granite mines will never be depleted."))
     {}
 };
-
-#endif // !ADDONINEXHAUSTIBLEGRANITEMINES_H_INCLUDED

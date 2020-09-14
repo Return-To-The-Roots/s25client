@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLTIMER_H_INCLUDED
-#define CTRLTIMER_H_INCLUDED
 
 #pragma once
 
@@ -38,5 +36,3 @@ private:
     unsigned timeout_;
     unsigned timer;
 };
-
-#endif // !CTRLTIMER_H_INCLUDED

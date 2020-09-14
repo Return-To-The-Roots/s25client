@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef SDL_H_INCLUDED
-#define SDL_H_INCLUDED
+
+#pragma once
 
 #include <driver/AudioDriver.h>
 class IAudioDriverCallback;
@@ -72,5 +72,3 @@ private:
     /// Callback für Audiotreiber
     static void MusicFinished();
 };
-
-#endif // !SDL_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HarborPos_h__
-#define HarborPos_h__
+#pragma once
 
 #include "ShipDirection.h"
 #include "helpers/EnumArray.h"
@@ -47,5 +46,3 @@ struct HarborPos
 
     HarborPos(const MapPoint pt) noexcept : pos(pt) {}
 };
-
-#endif // HarborPos_h__

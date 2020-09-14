@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef FindWhConditions_h__
-#define FindWhConditions_h__
+#pragma once
 
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
@@ -113,5 +112,3 @@ struct NoCondition
     bool operator()(const nobBaseWarehouse& /*wh*/) const { return true; }
 };
 } // namespace FW
-
-#endif // FindWhConditions_h__

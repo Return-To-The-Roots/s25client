@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GamePlayerInfo_h__
-#define GamePlayerInfo_h__
+#pragma once
 
 #include "PlayerInfo.h"
 
@@ -34,5 +33,3 @@ private:
 protected:
     bool isDefeated;
 };
-
-#endif // GamePlayerInfo_h__

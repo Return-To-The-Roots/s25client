@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef IDataChangedListener_h__
-#define IDataChangedListener_h__
+#pragma once
 
 /// Interface for a listener that gets notifed on specific changes
 class IDataChangedListener
@@ -28,5 +27,3 @@ public:
     /// Handles a change, changeId is the type of the change (object dependent)
     virtual void OnChange(unsigned changeId) = 0;
 };
-
-#endif // IDataChangedListener_h__

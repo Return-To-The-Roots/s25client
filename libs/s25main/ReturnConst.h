@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ReturnConst_h__
-#define ReturnConst_h__
+#pragma once
 
 /// Returns the same value of a given type for all invocations
 template<typename T_Type, T_Type T_value>
@@ -30,5 +29,3 @@ struct ReturnConst
         return T_value;
     }
 };
-
-#endif // ReturnConst_h__

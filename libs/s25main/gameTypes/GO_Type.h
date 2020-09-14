@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GO_Type_h__
-#define GO_Type_h__
+#pragma once
 
 /// To be able to load old savegames and keep ids unique, please insert new
 /// items at the end of the list.
@@ -88,5 +87,3 @@ enum GO_Type
     GOT_NOF_TRADELEADER,
     GOT_NOF_TRADEDONKEY
 };
-
-#endif // GO_Type_h__

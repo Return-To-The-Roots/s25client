@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PostBox_h__
-#define PostBox_h__
+#pragma once
 
 #include <array>
 #include <functional>
@@ -66,5 +65,3 @@ private:
     NewMsgCallback evNewMsg;
     MsgDeletedCallback evDelMsg;
 };
-
-#endif // PostBox_h__

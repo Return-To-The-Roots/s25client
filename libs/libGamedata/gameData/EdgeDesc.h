@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EdgeDesc_h__
-#define EdgeDesc_h__
+#pragma once
 
 #include "DescIdx.h"
 #include "Rect.h"
@@ -35,5 +34,3 @@ struct EdgeDesc
 
     EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
 };
-
-#endif // EdgeDesc_h__

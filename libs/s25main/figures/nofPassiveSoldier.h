@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOF_PASSIVESOLDIER_H_
-#define NOF_PASSIVESOLDIER_H_
+
+#pragma once
 
 #include "nofSoldier.h"
 
@@ -81,5 +81,3 @@ public:
     /// Tells the soldier it is not in its home building anymore (e.g. died, or converted to attacker)
     void LeftBuilding() { building = nullptr; }
 };
-
-#endif // !NOF_PASSIVESOLDIER_H_

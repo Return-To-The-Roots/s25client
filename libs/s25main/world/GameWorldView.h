@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameWorldView_h__
-#define GameWorldView_h__
+#pragma once
 
 #include "DrawPoint.h"
 #include "gameTypes/MapCoordinates.h"
@@ -143,5 +142,3 @@ private:
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse);
 };
-
-#endif // GameWorldView_h__

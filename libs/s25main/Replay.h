@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMEREPLAY_H_INCLUDED
-#define GAMEREPLAY_H_INCLUDED
 
 #pragma once
 
@@ -95,5 +93,3 @@ protected:
     unsigned last_gf_file_pos;
     MapType mapType_;
 };
-
-#endif //! GAMEREPLAY_H_INCLUDED

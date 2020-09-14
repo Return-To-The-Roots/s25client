@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONMILITARYAID_H_INCLUDED
-#define ADDONMILITARYAID_H_INCLUDED
 
 #pragma once
 
@@ -35,5 +33,3 @@ public:
                     _("Adds military building indicators in construction aid mode."))
     {}
 };
-
-#endif // !ADDONMILITARYAID_H_INCLUDED

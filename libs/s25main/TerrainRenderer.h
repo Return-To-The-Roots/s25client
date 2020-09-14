@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef TERRAIN_RENDERER_H_
-#define TERRAIN_RENDERER_H_
+
+#pragma once
 
 #include "Point.h"
 #include "ogl/VBO.h"
@@ -205,5 +205,3 @@ private:
     /// Draw the prepared roads
     void DrawWays(const PreparedRoads& sorted_roads) const;
 };
-
-#endif

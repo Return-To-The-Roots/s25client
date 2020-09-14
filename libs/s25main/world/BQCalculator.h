@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BQCalculator_h__
-#define BQCalculator_h__
+#pragma once
 
 #include "World.h"
 #include "gameData/TerrainDesc.h"
@@ -258,5 +257,3 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
     return BQ_FLAG;
 }
-
-#endif // BQCalculator_h__

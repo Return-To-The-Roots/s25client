@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMESAVEGAME_H_INCLUDED
-#define GAMESAVEGAME_H_INCLUDED
 
 #pragma once
 
@@ -61,5 +59,3 @@ protected:
     void WriteGameData(BinaryFile& file);
     bool ReadGameData(BinaryFile& file);
 };
-
-#endif //! GAMESAVEGAME_H_INCLUDED

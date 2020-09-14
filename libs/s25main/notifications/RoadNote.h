@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RoadNote_h__
-#define RoadNote_h__
+#pragma once
 
 #include "notifications/notifications.h"
 #include "gameTypes/Direction.h"
@@ -42,5 +41,3 @@ struct RoadNote
     const MapPoint pos;
     const std::vector<Direction>& route;
 };
-
-#endif // RoadNote_h__

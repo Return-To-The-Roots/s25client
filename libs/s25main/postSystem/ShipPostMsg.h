@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ShipPostMsg_h__
-#define ShipPostMsg_h__
+#pragma once
 
 #include "postSystem/PostMsg.h"
 
@@ -31,5 +30,3 @@ public:
     ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship);
     ITexture* GetImage_() const override;
 };
-
-#endif // ShipPostMsg_h__

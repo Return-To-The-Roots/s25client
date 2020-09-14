@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef toImgDir_h__
-#define toImgDir_h__
+#pragma once
 
 #include "RTTR_Assert.h"
 #include "gameTypes/Direction.h"
@@ -35,5 +34,3 @@ inline libsiedler2::ImgDir toImgDir(Direction dir)
         default: RTTR_Assert(dir == Direction::SOUTHWEST); return ImgDir::SW;
     }
 }
-
-#endif // toImgDir_h__

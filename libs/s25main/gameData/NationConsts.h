@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef NationConsts_h__
-#define NationConsts_h__
-
 #include "mygettext/mygettext.h"
 #include "gameTypes/Nation.h"
 #include <s25util/warningSuppression.h>
@@ -32,5 +29,3 @@ const std::array<const char*, NUM_NATIONS> SUPPRESS_UNUSED NationNames = {
 const std::array<unsigned char, NUM_NATIONS> SUPPRESS_UNUSED NATION_RTTR_TO_S2 = {
   3, 2, 0, 1, 0 /* Babylonians get the roman figures where no others are used */
 };
-
-#endif // NationConsts_h__

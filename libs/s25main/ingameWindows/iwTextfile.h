@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwTEXTFILE_H_INCLUDED
-#define iwTEXTFILE_H_INCLUDED
 
 #pragma once
 
@@ -26,5 +24,3 @@ class iwTextfile : public IngameWindow
 public:
     iwTextfile(const std::string& filename, const std::string& title);
 };
-
-#endif // !iwTextfile_H_INCLUDED

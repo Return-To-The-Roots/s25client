@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RoadPathDirection_h__
-#define RoadPathDirection_h__
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include "gameTypes/Direction.h"
@@ -45,5 +44,3 @@ inline Direction toDirection(const RoadPathDirection dir) noexcept
     RTTR_Assert(static_cast<uint8_t>(dir) < Direction::COUNT);
     return Direction(static_cast<uint8_t>(dir));
 }
-
-#endif // RoadPathDirection_h__

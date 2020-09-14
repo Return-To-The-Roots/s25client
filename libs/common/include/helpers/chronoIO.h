@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef chronoIO_h__
-#define chronoIO_h__
+#pragma once
 
 #include <chrono>
 #include <iosfwd>
@@ -46,5 +45,3 @@ namespace std { namespace chrono {
         return os << v.count() << ::helpers::getTimeUnit(R{});
     }
 }} // namespace std::chrono
-
-#endif // chronoIO_h__

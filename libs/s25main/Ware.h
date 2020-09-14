@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef WARE_H_
-#define WARE_H_
+#pragma once
 
 #include "GameObject.h"
 #include "RTTR_Assert.h"
@@ -179,5 +178,3 @@ private:
     };
     RouteParams CalcPathToGoal(const noBaseBuilding& newgoal) const;
 };
-
-#endif

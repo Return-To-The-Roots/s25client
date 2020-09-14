@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Subscriber_h__
-#define Subscriber_h__
+#pragma once
 
 #include <memory>
 
@@ -24,5 +23,3 @@
 /// When there are no references left, the subscription is canceled
 /// Note: Treat this as a kind of opaque handle
 using Subscription = std::shared_ptr<void>;
-
-#endif // Subscriber_h__

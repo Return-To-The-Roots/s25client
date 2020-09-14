@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CreateServerInfo_h__
-#define CreateServerInfo_h__
+#pragma once
 
 #include "gameTypes/ServerType.h"
 #include <string>
@@ -36,5 +35,3 @@ struct CreateServerInfo
         : type(type), port(port), gameName(std::move(gameName)), password(std::move(password)), ipv6(ipv6), use_upnp(useUpnp)
     {}
 };
-
-#endif // CreateServerInfo_h__

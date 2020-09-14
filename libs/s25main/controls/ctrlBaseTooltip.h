@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ctrlBaseTooltip_h__
-#define ctrlBaseTooltip_h__
+#pragma once
 
 #include <string>
 #include <utility>
@@ -41,5 +40,3 @@ public:
 protected:
     std::string tooltip_;
 };
-
-#endif // ctrlBaseTooltip_h__

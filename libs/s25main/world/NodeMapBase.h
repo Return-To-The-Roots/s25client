@@ -16,8 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#ifndef NodeMapBase_h__
-#define NodeMapBase_h__
 
 #include "MapBase.h"
 #include "gameTypes/MapCoordinates.h"
@@ -63,5 +61,3 @@ void NodeMapBase<T_Node>::Resize(const MapExtent& newSize)
     nodes.clear();
     nodes.resize(prodOfComponents(newSize));
 }
-
-#endif // NodeMapBase_h__

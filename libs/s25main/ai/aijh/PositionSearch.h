@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef PositionSearch_h__
-#define PositionSearch_h__
-
 #include "ai/AIResource.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/BuildingType.h"
@@ -72,5 +69,3 @@ private:
 };
 
 } // namespace AIJH
-
-#endif // PositionSearch_h__

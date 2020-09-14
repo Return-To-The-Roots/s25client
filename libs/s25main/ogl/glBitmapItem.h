@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef glBitmapItem_h__
-#define glBitmapItem_h__
+#pragma once
 
 #include "Point.h"
 
@@ -51,5 +50,3 @@ public:
     /// Adjusted origin
     Position origin;
 };
-
-#endif // glBitmapItem_h__

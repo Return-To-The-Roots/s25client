@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef dskGAMELOADER_H_INCLUDED
-#define dskGAMELOADER_H_INCLUDED
 
 #pragma once
 
@@ -46,5 +44,3 @@ private:
     GameLoader loader_;
     std::unique_ptr<dskGameInterface> gameInterface;
 };
-
-#endif // !dskGAMELOADER_H_INCLUDED

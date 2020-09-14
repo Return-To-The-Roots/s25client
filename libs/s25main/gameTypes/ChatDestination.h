@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ChatDestination_h__
-#define ChatDestination_h__
+#pragma once
 
 // Targets for ingame chat
 enum ChatDestination
@@ -26,5 +25,3 @@ enum ChatDestination
     CD_ALLIES,
     CD_ENEMIES
 };
-
-#endif // ChatDestination_h__

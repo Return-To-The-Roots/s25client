@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef PathConditionReachable_h__
-#define PathConditionReachable_h__
-
 #include "world/World.h"
 
 struct PathConditionReachable
@@ -52,5 +49,3 @@ struct PathConditionReachable
         return !tLeft.Is(ETerrain::Unreachable) && !tRight.Is(ETerrain::Unreachable);
     }
 };
-
-#endif // PathConditionReachable_h__

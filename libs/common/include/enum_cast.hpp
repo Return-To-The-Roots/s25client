@@ -1,5 +1,4 @@
-#ifndef enum_cast_h__
-#define enum_cast_h__
+#pragma once
 
 #include "helpers/EnumTraits.h"
 #include <type_traits>
@@ -12,5 +11,3 @@ constexpr auto enum_cast(T_Enum val)
     return static_cast<std::underlying_type_t<RealEnum>>(val);
 }
 } // namespace rttr
-
-#endif // enum_cast_h__

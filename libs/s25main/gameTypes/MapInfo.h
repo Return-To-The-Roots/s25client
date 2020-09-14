@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapInfo_h__
-#define MapInfo_h__
+#pragma once
 
 #include "gameTypes/CompressedData.h"
 #include "gameTypes/MapType.h"
@@ -50,5 +49,3 @@ public:
     /// Savegame (set if type == MAP_SAVEGAME)
     std::unique_ptr<Savegame> savegame;
 };
-
-#endif // MapInfo_h__

@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOF_TRADELEADER_H_
-#define NOF_TRADELEADER_H_
+
+#pragma once
 
 #include "figures/noFigure.h"
 #include "world/TradeRoute.h"
@@ -66,5 +66,3 @@ public:
     /// Sets the sucessor in the caravane
     void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
 };
-
-#endif //! NOF_SCOUT_FREE_H_

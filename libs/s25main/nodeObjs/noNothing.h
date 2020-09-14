@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NONOTHING_H_INCLUDED
-#define NONOTHING_H_INCLUDED
 
 #pragma once
 
@@ -42,5 +40,3 @@ public:
     /// An x,y zeichnen.
     void Draw(DrawPoint drawPt) override;
 };
-
-#endif // !NONOTHING_H_INCLUDED

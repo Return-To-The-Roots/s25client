@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef MockupAudioDriver_h__
-#define MockupAudioDriver_h__
-
 #include "driver/AudioDriver.h"
 #include "driver/IAudioDriverCallback.h"
 #include <turtle/mock.hpp>
@@ -65,5 +62,3 @@ MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)
     driver::RawSoundHandle doLoad(driver::SoundType type) { return createRawSoundHandle(new MockupSoundData(type), type); }
     using driver::AudioDriver::GetEffectChannel;
 };
-
-#endif // MockupAudioDriver_h__

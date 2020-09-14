@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_BASEBUILDING_H_
-#define NO_BASEBUILDING_H_
+#pragma once
 
 #include "nodeObjs/noRoadNode.h"
 #include "gameTypes/BuildingQuality.h"
@@ -105,5 +104,3 @@ public:
     /// Gibt ein Bild zurück für die Tür des Gebäudes
     glArchivItem_Bitmap* GetDoorImage() const;
 };
-
-#endif

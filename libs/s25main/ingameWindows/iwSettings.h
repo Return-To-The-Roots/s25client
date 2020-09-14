@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwSETTINGS_H_INCLUDED
-#define iwSETTINGS_H_INCLUDED
 
 #pragma once
 
@@ -34,5 +32,3 @@ private:
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
 };
-
-#endif // !iwSETTINGS_H_INCLUDED

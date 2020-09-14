@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AIMap_h__
-#define AIMap_h__
+#pragma once
 
 #include "ai/AIResource.h"
 #include "world/NodeMapBase.h"
@@ -38,5 +37,3 @@ struct Node
 using AIMap = NodeMapBase<Node>;
 
 } // namespace AIJH
-
-#endif // Node_h__

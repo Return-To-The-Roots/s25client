@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_MOVABLE_H_
-#define NO_MOVABLE_H_
+#pragma once
 
 #include "noCoordBase.h"
 #include "gameTypes/Direction.h"
@@ -83,5 +82,3 @@ public:
     /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
     bool IsMoving() const override;
 };
-
-#endif

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOB_HARBORBUILDING_H_
-#define NOB_HARBORBUILDING_H_
+#pragma once
 
 #include "helpers/EnumArray.h"
 #include "nobBaseWarehouse.h"
@@ -226,5 +225,3 @@ public:
     /// Is the harbor just being destroyed right now?
     bool IsBeingDestroyedNow() const;
 };
-
-#endif

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef JobFactory_h__
-#define JobFactory_h__
+#pragma once
 
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/MapCoordinates.h"
@@ -33,5 +32,3 @@ public:
     // Erstellt Job anhand der job-id
     static noFigure* CreateJob(Job job_id, MapPoint pt, unsigned char player, noRoadNode* goal);
 };
-
-#endif // JobFactory_h__

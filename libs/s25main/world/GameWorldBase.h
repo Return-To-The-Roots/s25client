@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameWorldBase_h__
-#define GameWorldBase_h__
+#pragma once
 
 #include "buildings/nobBaseMilitary.h"
 #include "enum_cast.hpp"
@@ -221,5 +220,3 @@ private:
     template<typename T_IsHarborOk>
     unsigned GetHarborInDir(MapPoint pt, unsigned origin_harborId, const ShipDirection& dir, T_IsHarborOk isHarborOk) const;
 };
-
-#endif // GameWorldBase_h__

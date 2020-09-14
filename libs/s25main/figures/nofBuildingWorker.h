@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_BUILDING_WORKER_H_
-#define NOF_BUILDING_WORKER_H_
+#pragma once
 
 #include "figures/noFigure.h"
 #include "gameTypes/GoodTypes.h"
@@ -137,5 +136,3 @@ public:
     /// Wird aufgerufen, nachdem die Produktion in dem Gebäude, wo er arbeitet, verboten wurde
     void ProductionStopped();
 };
-
-#endif

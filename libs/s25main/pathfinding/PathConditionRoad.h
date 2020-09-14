@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef PathConditionRoad_h__
-#define PathConditionRoad_h__
-
 #include <boost/config.hpp>
 
 template<class T_WorldOrViewer>
@@ -45,5 +42,3 @@ PathConditionRoad<T_WorldOrViewer> makePathConditionRoad(const T_WorldOrViewer& 
 {
     return PathConditionRoad<T_WorldOrViewer>(worldOrViewer, isBoatRoad);
 }
-
-#endif // PathConditionRoad_h__

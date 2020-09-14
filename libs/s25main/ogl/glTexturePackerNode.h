@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef glTexturePackerNode_h__
-#define glTexturePackerNode_h__
+#pragma once
 
 #include "Point.h"
 #include <vector>
@@ -44,5 +43,3 @@ public:
     bool insert(glSmartBitmap* b, libsiedler2::PixelBufferBGRA& buffer, std::vector<glTexturePackerNode*>& todo);
     void destroy(unsigned reserve = 0);
 };
-
-#endif // glTexturePackerNode_h__

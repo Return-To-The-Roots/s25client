@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef EXPORT_IMPORT_H_INCLUDED
-#define EXPORT_IMPORT_H_INCLUDED
+
+#pragma once
 
 #include <boost/config.hpp>
 
@@ -23,6 +23,4 @@
 #define RTTR_DECL extern "C" BOOST_SYMBOL_EXPORT
 #else
 #define RTTR_DECL extern "C" BOOST_SYMBOL_IMPORT
-#endif
-
 #endif

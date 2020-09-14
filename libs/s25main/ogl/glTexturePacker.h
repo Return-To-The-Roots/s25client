@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef glTexturePacker_h__
-#define glTexturePacker_h__
+#pragma once
 
 #include "Point.h"
 #include <vector>
@@ -62,5 +61,3 @@ public:
     void add(glSmartBitmap& bmp) { items.push_back(&bmp); }
     const auto& getTextures() const { return textures; }
 };
-
-#endif // glTexturePacker_h__

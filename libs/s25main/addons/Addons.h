@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ADDONS_H_INCLUDED
-#define ADDONS_H_INCLUDED
-
 // Include with all addons
 
 #include "addons/AddonCatapultGraphics.h"
@@ -70,5 +67,3 @@
 #include "addons/AddonCoinsCapturedBld.h"
 #include "addons/AddonDemolishBldWORes.h"
 #include "addons/AddonFrontierDistanceReachable.h"
-
-#endif // !ADDONS_H_INCLUDED

@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOSIGN_H_INCLUDED
-#define NOSIGN_H_INCLUDED
+
+#pragma once
 
 #include "noDisappearingEnvObject.h"
 #include "gameTypes/Resource.h"
@@ -45,5 +45,3 @@ public:
 private:
     Resource resource;
 };
-
-#endif // !NOSIGN_H_INCLUDED

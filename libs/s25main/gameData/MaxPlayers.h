@@ -15,10 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MaxPlayers_h__
-#define MaxPlayers_h__
+#pragma once
 
 /// Maximale Anzahl an Spielern
 constexpr unsigned MAX_PLAYERS = 8;
-
-#endif // MaxPlayers_h__

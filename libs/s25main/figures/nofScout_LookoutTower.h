@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOF_SCOUT_LOOKOUTTOWER
-#define NOF_SCOUT_LOOKOUTTOWER
+
+#pragma once
 
 #include "nofBuildingWorker.h"
 class SerializedGameData;
@@ -55,5 +55,3 @@ public:
 
     void HandleDerivedEvent(unsigned id) override;
 };
-
-#endif //! NOF_SCOUT_LOOKOUTTOWER

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CompressedData_h__
-#define CompressedData_h__
+#pragma once
 
 #include <boost/filesystem/path.hpp>
 #include <string>
@@ -39,5 +38,3 @@ struct CompressedData
     /// Actual data
     std::vector<char> data;
 };
-
-#endif // CompressedData_h__

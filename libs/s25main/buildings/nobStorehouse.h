@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOB_STOREHOUSE_H_
-#define NOB_STOREHOUSE_H_
+#pragma once
 
 #include "nobBaseWarehouse.h"
 class SerializedGameData;
@@ -42,5 +41,3 @@ public:
 
     void HandleEvent(unsigned id) override;
 };
-
-#endif

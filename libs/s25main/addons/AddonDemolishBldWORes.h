@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ADDONDEMOLISHBLDWORES_H_INCLUDED
-#define ADDONDEMOLISHBLDWORES_H_INCLUDED
-
 #pragma once
 
 #include "AddonBool.h"
@@ -30,5 +27,3 @@ public:
                     _("Automatically demolish a resource gathering building, like a mine, if it runs permanently out of resources."))
     {}
 };
-
-#endif

@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GLBITMAP_H_INCLUDED
-#define GLBITMAP_H_INCLUDED
-
 #pragma once
 
 #include "DrawPoint.h"
@@ -84,5 +81,3 @@ public:
     void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false);
     void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
 };
-
-#endif

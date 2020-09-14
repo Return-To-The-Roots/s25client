@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwDIRECTIPCONNECT_H_INCLUDED
-#define iwDIRECTIPCONNECT_H_INCLUDED
 
 #pragma once
 
@@ -46,5 +44,3 @@ private:
     void CI_Error(ClientError ce) override;
     void CI_NextConnectState(ConnectState cs) override;
 };
-
-#endif // !iwDIRECTIPCONNECT_H_INCLUDED

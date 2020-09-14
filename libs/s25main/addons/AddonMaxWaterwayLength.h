@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONMAXWATERWAYLENGTH_H_INCLUDED
-#define ADDONMAXWATERWAYLENGTH_H_INCLUDED
 
 #pragma once
 
@@ -53,5 +51,3 @@ public:
                     1)
     {}
 };
-
-#endif // !ADDONMAXWATERWAYLENGTH_H_INCLUDED

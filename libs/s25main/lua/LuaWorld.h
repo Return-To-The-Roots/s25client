@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaWorld_h__
-#define LuaWorld_h__
+#pragma once
 
 #include "SafeEnum.h"
 #include "gameTypes/AnimalTypes.h"
@@ -38,5 +37,3 @@ public:
     bool AddStaticObject(int x, int y, unsigned id, unsigned file = 0xFFFF, unsigned size = 1);
     void AddAnimal(int x, int y, lua::SafeEnum<Species> species);
 };
-
-#endif // LuaWorld_h__

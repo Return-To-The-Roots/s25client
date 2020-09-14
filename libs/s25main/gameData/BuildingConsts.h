@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BUILD_COSTS_H_
-#define BUILD_COSTS_H_
+#pragma once
 
 #include "DrawPoint.h"
 #include "helpers/MultiArray.h"
@@ -356,5 +355,3 @@ const std::array<DrawPoint, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
 
 /// Hilfetexte für Gebäude
 extern const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_HELP_STRINGS;
-
-#endif

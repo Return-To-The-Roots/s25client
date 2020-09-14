@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef format_h__
-#define format_h__
+#pragma once
 
 #include <boost/format.hpp>
 
@@ -41,5 +40,3 @@ std::string format(const std::string& fmtString, T&&... args)
     return format(boost::format(fmtString), std::forward<T>(args)...);
 }
 } // namespace helpers
-
-#endif

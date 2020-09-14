@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SettingsTypes_h__
-#define SettingsTypes_h__
+#pragma once
 
 #include "helpers/EnumArray.h"
 #include "gameTypes/BuildingType.h"
@@ -49,5 +48,3 @@ using ToolSettings = std::array<uint8_t, NUM_TOOLS>;
 /// 3: Ratio of used attackers to available attackers
 /// 4-7: Ratio of soldiers in buildings to full occupation for inland, middle region, harbor spots, border regions
 using MilitarySettings = std::array<uint8_t, 8>;
-
-#endif // SettingsTypes_h__

@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ctrlBaseText_h__
-#define ctrlBaseText_h__
-
 #include <string>
 
 class glFont;
@@ -42,5 +39,3 @@ protected:
     unsigned color_;
     const glFont* font;
 };
-
-#endif // ctrlBaseText_h__

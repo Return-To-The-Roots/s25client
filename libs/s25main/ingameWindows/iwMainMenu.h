@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwMAINMENU_H_INCLUDED
-#define iwMAINMENU_H_INCLUDED
 
 #pragma once
 
@@ -35,5 +33,3 @@ private:
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };
-
-#endif // !iwMAINMENU_H_INCLUDED

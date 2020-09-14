@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ResourceNote_h__
-#define ResourceNote_h__
+#pragma once
 
 #include "notifications/notifications.h"
 #include "gameTypes/MapCoordinates.h"
@@ -32,5 +31,3 @@ struct ResourceNote
     const MapPoint pos;
     const Resource res;
 };
-
-#endif // ResourceNote_h__

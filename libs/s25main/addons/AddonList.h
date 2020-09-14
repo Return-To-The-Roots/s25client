@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef AddonList_h__
-#define AddonList_h__
-
 #include "Addon.h"
 #include <vector>
 
@@ -47,5 +44,3 @@ public:
 private:
     std::vector<std::string> options;
 };
-
-#endif // AddonList_h__

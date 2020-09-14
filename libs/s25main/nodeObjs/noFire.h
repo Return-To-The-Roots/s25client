@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOP_FIRE_H_
-#define NOP_FIRE_H_
+#pragma once
 
 #include "noCoordBase.h"
 
@@ -65,5 +64,3 @@ public:
     /// Benachrichtigen, wenn neuer gf erreicht wurde
     void HandleEvent(unsigned id) override;
 };
-
-#endif

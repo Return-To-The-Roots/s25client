@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef IngameMinimap_h__
-#define IngameMinimap_h__
+#pragma once
 
 #include "Minimap.h"
 #include "gameTypes/MapTypes.h"
@@ -81,5 +80,3 @@ protected:
     /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem übergebenen drawn_object ist
     void UpdateAll(DrawnObject drawn_object);
 };
-
-#endif // IngameMinimap_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not,  see <http://www.gnu.org/licenses/>.
 
-#ifndef FreePathFinder_h__
-#define FreePathFinder_h__
+#pragma once
 
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
@@ -59,5 +58,3 @@ public:
 private:
     void IncreaseCurrentVisit();
 };
-
-#endif // FreePathFinder_h__

@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MUSICITEM_H_INCLUDED
-#define MUSICITEM_H_INCLUDED
 
 #pragma once
 
@@ -27,5 +25,3 @@ public:
     /// Plays the music repeating it if repeats is greater than zero or indefinitely when repeats is less than zero
     void Play(int repeats = 0);
 };
-
-#endif // !MUSICITEM_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaHelpers_h__
-#define LuaHelpers_h__
+#pragma once
 
 #include <string>
 
@@ -28,5 +27,3 @@ void assertTrue(bool testValue, const std::string& error);
 void validatePath(const std::string& path);
 
 } // namespace lua
-
-#endif // LuaHelpers_h__

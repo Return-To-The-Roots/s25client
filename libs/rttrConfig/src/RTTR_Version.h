@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef RTTR_Version_h__
-#define RTTR_Version_h__
-
 #include <string>
 
 class RTTR_Version
@@ -32,5 +29,3 @@ public:
     static std::string GetYear();
     static std::string GetReadableVersion();
 };
-
-#endif // RTTR_Version_h__

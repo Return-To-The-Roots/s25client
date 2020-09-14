@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOF_SCOUT_FREE_H_
-#define NOF_SCOUT_FREE_H_
+
+#pragma once
 
 #include "nofFlagWorker.h"
 #include "gameTypes/MapCoordinates.h"
@@ -65,5 +65,3 @@ public:
     ///// Ist der Erkunder am erkunden (Sichtbereich um ihn herum)?
     // bool IsScouting() const { return (state == STATE_SCOUT_SCOUTING || state == STATE_GOTOFLAG); }
 };
-
-#endif //! NOF_SCOUT_FREE_H_

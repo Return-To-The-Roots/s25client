@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_TREE_H_
-#define NO_TREE_H_
+#pragma once
 
 #include "noCoordBase.h"
 
@@ -121,5 +120,3 @@ public:
     /// Liest Draw-Counter aus
     static unsigned short QueryDrawCounter() { return DRAW_COUNTER; }
 };
-
-#endif

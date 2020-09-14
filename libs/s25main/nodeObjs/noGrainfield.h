@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_GRAINFIELD_H_
-#define NO_GRAINFIELD_H_
+#pragma once
 
 #include "noCoordBase.h"
 
@@ -82,5 +81,3 @@ public:
     /// Bauer wird beim Abernten unterbrochen
     void EndHarvesting();
 };
-
-#endif

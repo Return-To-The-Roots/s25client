@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwMINIMAP_H_
-#define iwMINIMAP_H_
+
+#pragma once
 
 #include "IngameWindow.h"
 
@@ -35,5 +35,3 @@ public:
     iwMinimap(IngameMinimap& minimap, GameWorldView& gwv);
     void Resize(const Extent& newSize) override;
 };
-
-#endif

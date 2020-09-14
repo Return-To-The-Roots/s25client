@@ -1,5 +1,4 @@
-#ifndef BUILD_PATHS_H_INCLUDED
-#define BUILD_PATHS_H_INCLUDED
+#pragma once
 
 /// Path where the source was when the application got compiled
 #cmakedefine RTTR_SRCDIR "@RTTR_SRCDIR@"
@@ -24,5 +23,3 @@
 
 ///	set driver directory (normal RTTR_LIBDIR/driver)
 #cmakedefine RTTR_DRIVERDIR "@RTTR_DRIVERDIR@"
-
-#endif // !BUILD_PATHS_H_INCLUDED

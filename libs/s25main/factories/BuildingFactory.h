@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BuildingFactory_h__
-#define BuildingFactory_h__
+#pragma once
 
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/MapCoordinates.h"
@@ -35,5 +34,3 @@ public:
 
     static noBuilding* CreateBuilding(GameWorldBase& gwg, BuildingType type, MapPoint pt, unsigned char player, Nation nation);
 };
-
-#endif // BuildingFactory_h__

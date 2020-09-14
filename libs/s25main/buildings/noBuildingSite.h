@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_BUILDINGSITE_H_
-#define NO_BUILDINGSITE_H_
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include "noBaseBuilding.h"
@@ -118,5 +117,3 @@ public:
     bool IsHarborBuildingSiteFromSea() const;
 };
 DEFINE_MAX_ENUM_VALUE(BuildingSiteState, BuildingSiteState::Building)
-
-#endif

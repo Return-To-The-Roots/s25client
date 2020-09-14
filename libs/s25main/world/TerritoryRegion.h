@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TERRITORY_REGION_H_
-#define TERRITORY_REGION_H_
+#pragma once
 
 #include "Point.h"
 #include "RTTR_Assert.h"
@@ -97,5 +96,3 @@ inline Position TerritoryRegion::GetPosFromMapPos(const MapPoint& pt) const
 {
     return pt - startPt;
 }
-
-#endif

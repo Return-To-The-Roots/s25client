@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MilitarySquares_h__
-#define MilitarySquares_h__
+#pragma once
 
 #include "gameTypes/MapCoordinates.h"
 #include <list>
@@ -41,5 +40,3 @@ public:
     void Remove(nobBaseMilitary* bld);
     sortedMilitaryBlds GetBuildingsInRange(MapPoint pt, unsigned short radius) const;
 };
-
-#endif // MilitarySquares_h__

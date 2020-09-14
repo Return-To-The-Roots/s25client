@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_FLAG_WORKER_H_
-#define NOF_FLAG_WORKER_H_
+#pragma once
 
 #include "figures/noFigure.h"
 
@@ -73,5 +72,3 @@ public:
     /// Gibt Flagge zurück
     noFlag* GetFlag() const { return flag; }
 };
-
-#endif

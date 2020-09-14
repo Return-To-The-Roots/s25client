@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapSerializer_h__
-#define MapSerializer_h__
+#pragma once
 
 class World;
 class SerializedGameData;
@@ -27,5 +26,3 @@ public:
     static void Serialize(const World& world, unsigned numPlayers, SerializedGameData& sgd);
     static void Deserialize(World& world, unsigned numPlayers, SerializedGameData& sgd);
 };
-
-#endif // MapSerializer_h__

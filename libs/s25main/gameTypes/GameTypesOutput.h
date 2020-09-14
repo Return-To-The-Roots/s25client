@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef Direction_Output_h__
-#define Direction_Output_h__
-
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
 #include "gameTypes/MapTypes.h"
@@ -77,5 +74,3 @@ inline std::ostream& operator<<(std::ostream& os, const BorderStonePos& road)
 // LCOV_EXCL_STOP
 
 #undef RTTR_CASE_OUT
-
-#endif // Direction_Output_h__

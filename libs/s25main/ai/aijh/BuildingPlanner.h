@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef BuildingPlanner_h__
-#define BuildingPlanner_h__
-
 #include "gameTypes/BuildingCount.h"
 #include "gameTypes/BuildingType.h"
 #include <vector>
@@ -64,5 +61,3 @@ private:
     bool CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const;
 };
 } // namespace AIJH
-
-#endif // BuildingPlanner_h__

@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AUDIODRIVERLOADERINTERFACE_H_INCLUDED
-#define AUDIODRIVERLOADERINTERFACE_H_INCLUDED
+
+#pragma once
 
 #include <boost/config.hpp>
 
@@ -25,5 +25,3 @@ public:
     virtual ~IAudioDriverCallback() = default;
     virtual void Msg_MusicFinished() = 0;
 };
-
-#endif // !DRIVERLOADERINTERFACE_H_INCLUDED

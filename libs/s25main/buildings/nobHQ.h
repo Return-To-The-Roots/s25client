@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOB_HQ_H_
-#define NOB_HQ_H_
+#pragma once
 
 #include "nobBaseWarehouse.h"
 #include "gameData/MilitaryConsts.h"
@@ -48,5 +47,3 @@ public:
     bool IsTent() const { return isTent_; }
     void SetIsTent(const bool isTent) { isTent_ = isTent; }
 };
-
-#endif

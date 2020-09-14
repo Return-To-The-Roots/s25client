@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOF_ATTACKER_H_
-#define NOF_ATTACKER_H_
+
+#pragma once
 
 #include "nofActiveSoldier.h"
 #include <vector>
@@ -175,5 +175,3 @@ public:
     /// Bricht einen Seeangriff ab
     void CancelSeaAttack();
 };
-
-#endif // !NOF_ATTACKER_H_

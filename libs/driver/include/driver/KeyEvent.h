@@ -13,8 +13,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef KeyEvent_h__
-#define KeyEvent_h__
+#pragma once
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -61,5 +60,3 @@ struct KeyEvent
     unsigned c;
     bool ctrl, shift, alt;
 };
-
-#endif // KeyEvent_h__

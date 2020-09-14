@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GCExecutor_h__
-#define GCExecutor_h__
+#pragma once
 
 #include "GameCommand.h"
 #include "factories/GameCommandFactory.h"
@@ -48,5 +47,3 @@ protected:
 
     virtual GameWorldGame& GetWorld() = 0;
 };
-
-#endif // GCExecutor_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef notifications_h__
-#define notifications_h__
+#pragma once
 
 #include "TypeId.h"
 
@@ -25,5 +24,3 @@
  * macro 'ENABLE_NOTIFICATION' with the type name in the public part of that type */
 #define ENABLE_NOTIFICATION(Type) \
     static uint32_t getNoteId() { return TypeId::value<Type>(); }
-
-#endif // notifications_h__

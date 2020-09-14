@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_FARMHAND_H_
-#define NOF_FARMHAND_H_
+#pragma once
 
 #include "nofBuildingWorker.h"
 class SerializedGameData;
@@ -85,5 +84,3 @@ public:
     /// Returns the quality of this working point or determines if the worker can work here at all
     virtual PointQuality GetPointQuality(MapPoint pt) const = 0;
 };
-
-#endif

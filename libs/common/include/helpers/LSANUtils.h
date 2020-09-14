@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LSAN_Utils_h__
-#define LSAN_Utils_h__
+#pragma once
 
 #ifdef __has_feature
 #define RTTR_HAS_ASAN __has_feature(address_sanitizer)
@@ -44,5 +43,3 @@ struct ScopedLeakDisabler
 };
 } // namespace rttr
 #endif
-
-#endif // LSAN_Utils_h__

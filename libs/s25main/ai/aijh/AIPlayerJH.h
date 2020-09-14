@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AIPLAYERJH_H_INCLUDED
-#define AIPLAYERJH_H_INCLUDED
 
 #pragma once
 
@@ -270,5 +268,3 @@ private:
 };
 
 } // namespace AIJH
-
-#endif //! AIPLAYERJH_H_INCLUDED

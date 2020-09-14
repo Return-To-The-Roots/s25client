@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwBUILDING_H_INCLUDED
-#define iwBUILDING_H_INCLUDED
 
 #pragma once
 
@@ -39,5 +37,3 @@ private:
     void Msg_PaintAfter() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };
-
-#endif // !iwBUILDING_H_INCLUDED

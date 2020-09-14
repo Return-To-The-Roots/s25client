@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PointOutput_h__
-#define PointOutput_h__
+#pragma once
 
 #include "Point.h"
 #include <iostream>
@@ -26,5 +25,3 @@ std::ostream& operator<<(std::ostream& out, const Point<T>& point)
 {
     return out << "(" << point.x * 1 << ", " << point.y * 1 << ")"; // *1 to convert chars to int
 }
-
-#endif // PointOutput_h__

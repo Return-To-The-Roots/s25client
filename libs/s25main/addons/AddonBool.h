@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef AddonBool_h__
-#define AddonBool_h__
-
 #include "Addon.h"
 
 /**
@@ -42,5 +39,3 @@ public:
 
     std::unique_ptr<AddonGui> createGui(Window& window, bool readonly) const override;
 };
-
-#endif // AddonBool_h__

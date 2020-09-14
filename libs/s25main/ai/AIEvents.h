@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AIEvents_h__
-#define AIEvents_h__
+#pragma once
 
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
@@ -97,5 +96,3 @@ public:
     Resource(EventType type, const MapPoint& pt, ::Resource resType) : Location(type, pt), resType(resType) {}
 };
 } // namespace AIEvent
-
-#endif // AIEvents_h__

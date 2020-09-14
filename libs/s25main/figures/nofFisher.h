@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_FISHER_H_
-#define NOF_FISHER_H_
+#pragma once
 
 #include "nofFarmhand.h"
 class SerializedGameData;
@@ -58,5 +57,3 @@ public:
 
     GO_Type GetGOT() const override { return GOT_NOF_FISHER; }
 };
-
-#endif

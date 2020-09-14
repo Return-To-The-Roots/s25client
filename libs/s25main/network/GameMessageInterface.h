@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMEMESSAGEINTERFACE_H_INCLUDED
-#define GAMEMESSAGEINTERFACE_H_INCLUDED
 
 #pragma once
 
@@ -69,5 +67,3 @@ GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
 
                                 GameMessage_GetAsyncLog, GameMessage_AsyncLog)
 RTTR_POP_DIAGNOSTIC
-
-#endif //! GAMEMESSAGEINTERFACE_H_INCLUDED

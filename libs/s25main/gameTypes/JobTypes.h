@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef JobTypes_h__
-#define JobTypes_h__
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include <s25util/warningSuppression.h>
@@ -66,5 +65,3 @@ constexpr unsigned NUM_SOLDIER_RANKS = 5;
 /// Job types of soldiers, weak ones first
 static const std::array<Job, NUM_SOLDIER_RANKS> SUPPRESS_UNUSED SOLDIER_JOBS = {
   {JOB_PRIVATE, JOB_PRIVATEFIRSTCLASS, JOB_SERGEANT, JOB_OFFICER, JOB_GENERAL}};
-
-#endif // JobTypes_h__

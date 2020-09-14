@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLPERCENT_H_INCLUDED
-#define CTRLPERCENT_H_INCLUDED
 
 #pragma once
 
@@ -40,5 +38,3 @@ private:
     const glFont* font;
     const unsigned short* percentage_;
 };
-
-#endif // !CTRLPERCENT_H_INCLUDED

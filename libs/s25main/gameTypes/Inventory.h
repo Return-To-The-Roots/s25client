@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Inventory_h__
-#define Inventory_h__
+#pragma once
 
 #include "GoodTypes.h"
 #include "JobTypes.h"
@@ -47,5 +46,3 @@ struct Inventory
         people[job] -= amount;
     }
 };
-
-#endif // Inventory_h__

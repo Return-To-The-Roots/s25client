@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Identity_h__
-#define Identity_h__
+#pragma once
 
 /// Returns the argument of type T unchanged
 template<typename T>
@@ -32,5 +31,3 @@ struct Identity
         return arg;
     }
 };
-
-#endif // Identity_h__

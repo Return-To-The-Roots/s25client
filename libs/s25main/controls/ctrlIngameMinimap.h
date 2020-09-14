@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRL_INGAMEMINIMAP_H_
-#define CTRL_INGAMEMINIMAP_H_
+
+#pragma once
 
 #include "ctrlMinimap.h"
 
@@ -47,5 +47,3 @@ public:
     void ToggleHouses();
     void ToggleRoads();
 };
-
-#endif

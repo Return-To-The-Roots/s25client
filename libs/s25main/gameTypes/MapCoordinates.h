@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef MapCoordinates_h__
-#define MapCoordinates_h__
-
 #include "Point.h"
 
 /// Data type for map coordinates (unsigned, as we can't have negative map coordinates)
@@ -43,5 +40,3 @@ struct MapPointLess
 //-V:MapPoint:813
 //-V:MapExtent:801
 //-V:MapExtent:813
-
-#endif // MapCoordinates_h__

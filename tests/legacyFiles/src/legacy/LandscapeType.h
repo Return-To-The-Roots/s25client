@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LandscapeType_h__
-#define LandscapeType_h__
+#pragma once
 
 #include <cstdint>
 
@@ -29,5 +28,3 @@ enum class Landscape : uint8_t
 
 // Keep this in sync with LandscapeType
 static const uint8_t NUM_LTS = 3;
-
-#endif // LandscapeType_h__

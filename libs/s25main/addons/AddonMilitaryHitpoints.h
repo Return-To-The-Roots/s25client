@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONMILITARYHITPOINTS_H_INCLUDED
-#define ADDONMILITARYHITPOINTS_H_INCLUDED
 
 #pragma once
 
@@ -32,5 +30,3 @@ public:
                     _("Display the hitpoints of units in military buildings."))
     {}
 };
-
-#endif

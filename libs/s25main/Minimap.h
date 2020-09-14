@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MINIMAP_H_
-#define MINIMAP_H_
+
+#pragma once
 
 #include "Rect.h"
 #include "ogl/glArchivItem_Bitmap_Direct.h"
@@ -51,5 +51,3 @@ protected:
     /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
     virtual void BeforeDrawing();
 };
-
-#endif

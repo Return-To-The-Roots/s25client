@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwDISTRIBUTION_H_INCLUDED
-#define iwDISTRIBUTION_H_INCLUDED
 
 #pragma once
 
@@ -53,5 +51,3 @@ private:
     /// Initialize the groups structure
     static void CreateGroups();
 };
-
-#endif // !iwDISTRIBUTION_H_INCLUDED

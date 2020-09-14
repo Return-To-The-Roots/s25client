@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/
 
-#ifndef TEXTURE_COLOR_H_INCLUDED
-#define TEXTURE_COLOR_H_INCLUDED
+#pragma once
 
 /// Texturfarben
 enum TextureColor
@@ -29,5 +28,3 @@ enum TextureColor
     TC_BRICKS,
     TC_INVISIBLE
 };
-
-#endif // TEXTURE_COLOR_H_INCLUDED

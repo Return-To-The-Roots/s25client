@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EnumWithString_h__
-#define EnumWithString_h__
+#pragma once
 
 #include <boost/preprocessor.hpp>
 #include <array>
@@ -110,5 +109,3 @@ namespace detail {
             constexpr std::array<const char*, size> getRawNames(Tag<EnumName>) { return {{STRINGIZE(__VA_ARGS__)}}; }          \
         }                                                                                                                      \
     }
-
-#endif // EnumWithString_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef makeException_h__
-#define makeException_h__
+#pragma once
 
 #include "helpers/strUtils.h"
 #include <stdexcept>
@@ -37,5 +36,3 @@ std::system_error makeLastSystemError(Args&&... args)
 {
     return {GetLastErrorCode(), helpers::concat(std::forward<Args>(args)...)};
 }
-
-#endif // makeException_h__

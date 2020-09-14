@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BasePlayerInfo_h__
-#define BasePlayerInfo_h__
+#pragma once
 
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/Nation.h"
@@ -52,5 +51,3 @@ struct BasePlayerInfo
     int GetColorIdx() const;
     static int GetColorIdx(unsigned color);
 };
-
-#endif // BasePlayerInfo_h__

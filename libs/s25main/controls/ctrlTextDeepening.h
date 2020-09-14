@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ctrlTextDeepening_h__
-#define ctrlTextDeepening_h__
-
 #include "controls/ctrlBaseText.h"
 #include "controls/ctrlDeepening.h"
 
@@ -43,5 +40,3 @@ private:
     DrawPoint CalcTextPos() const;
     FontStyle style_;
 };
-
-#endif // ctrlTextDeepening_h__

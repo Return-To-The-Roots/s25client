@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef toString_h__
-#define toString_h__
+#pragma once
 
 #include <string>
 #include <type_traits>
@@ -45,5 +44,3 @@ std::string toString(const T value)
 }
 
 } // namespace helpers
-
-#endif

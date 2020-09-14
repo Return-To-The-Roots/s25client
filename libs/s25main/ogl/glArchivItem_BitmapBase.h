@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_BITMAPBASE_H_INCLUDED
-#define GLARCHIVITEM_BITMAPBASE_H_INCLUDED
 
 #pragma once
 
@@ -60,5 +58,3 @@ protected:
     /// Returns the currently set texture or 0 if none created
     unsigned GetTexNoCreate() { return texture; }
 };
-
-#endif // GLARCHIVITEM_BITMAPBASE_H_INCLUDED

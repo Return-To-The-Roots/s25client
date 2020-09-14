@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOB_BASEMILITARY_H_
-#define NOB_BASEMILITARY_H_
+#pragma once
 
 #include "buildings/noBuilding.h"
 #include <boost/container/flat_set.hpp>
@@ -153,5 +152,3 @@ protected:
 
 class sortedMilitaryBlds : public boost::container::flat_set<nobBaseMilitary*, nobBaseMilitary::Comparer>
 {};
-
-#endif //! NOB_BASEMILITARY_H_

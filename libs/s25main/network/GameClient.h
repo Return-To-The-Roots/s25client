@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMECLIENT_H_
-#define GAMECLIENT_H_
+
+#pragma once
 
 #include "ClientError.h"
 #include "FramesInfo.h"
@@ -308,5 +308,3 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #define GAMECLIENT GameClient::inst()
-
-#endif

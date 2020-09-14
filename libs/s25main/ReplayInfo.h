@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ReplayInfo_h__
-#define ReplayInfo_h__
-
 #include "Replay.h"
 #include <boost/filesystem/path.hpp>
 #include <string>
@@ -39,5 +36,3 @@ struct ReplayInfo
     /// Alles sichtbar (FoW deaktiviert)
     bool all_visible;
 };
-
-#endif // ReplayInfo_h__

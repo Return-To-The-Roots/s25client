@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CI_Utils_h__
-#define CI_Utils_h__
+#pragma once
 
 #include <cstdlib>
 #include <string>
@@ -31,5 +30,3 @@ inline bool isRunningOnCI()
     return ci == "true" || ci == "True";
 }
 } // namespace rttr
-
-#endif // CI_Utils_h__

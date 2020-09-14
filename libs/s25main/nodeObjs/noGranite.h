@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_GRANITE_H_
-#define NO_GRANITE_H_
+#pragma once
 
 #include "noBase.h"
 #include "gameTypes/MapTypes.h"
@@ -60,5 +59,3 @@ public:
     /// Gibt true zurück, falls der Granitblock nur noch 1 Stein groß ist und damit dann vernichtet werden kann
     bool IsSmall() const { return (state == 0); }
 };
-
-#endif

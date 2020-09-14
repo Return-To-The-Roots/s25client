@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapTypes_h__
-#define MapTypes_h__
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include <cstdint>
@@ -65,5 +64,3 @@ enum class PointRoad : unsigned char
     Boat
 };
 DEFINE_MAX_ENUM_VALUE(PointRoad, PointRoad::Boat)
-
-#endif // MapTypes_h__

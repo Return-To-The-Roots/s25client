@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwMILITARY_H_INCLUDED
-#define iwMILITARY_H_INCLUDED
 
 #pragma once
 
@@ -46,5 +44,3 @@ private:
     void Msg_ProgressChange(unsigned ctrl_id, unsigned short position) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };
-
-#endif // !iwMILITARY_H_INCLUDED

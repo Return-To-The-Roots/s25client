@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EnumArray_h__
-#define EnumArray_h__
+#pragma once
 
 #include "MaxEnumValue.h"
 #include "enum_cast.hpp"
@@ -48,5 +47,3 @@ struct EnumArray
     T_Elements elems[size()];
 };
 } // namespace helpers
-
-#endif // EnumArray_h__

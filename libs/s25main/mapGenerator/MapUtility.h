@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapUtility_h__
-#define MapUtility_h__
+#pragma once
 
 #include "ObjectGenerator.h"
 #include "Point.h"
@@ -106,5 +105,3 @@ public:
 
     ObjectGenerator objGen;
 };
-
-#endif // MapUtility_h__

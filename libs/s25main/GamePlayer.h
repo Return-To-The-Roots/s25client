@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GAMECLIENTPLAYER_H_
-#define GAMECLIENTPLAYER_H_
+#pragma once
 
 #include "BuildingRegister.h"
 #include "GamePlayerInfo.h"
@@ -451,5 +450,3 @@ private:
     // TODO: Move to viewer. Mutable as a work-around
     mutable std::array<int8_t, NUM_TOOLS> tools_ordered_delta;
 };
-
-#endif

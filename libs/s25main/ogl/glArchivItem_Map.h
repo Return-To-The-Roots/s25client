@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_MAP_H_INCLUDED
-#define GLARCHIVITEM_MAP_H_INCLUDED
 
 #pragma once
 
@@ -79,5 +77,3 @@ public:
 private:
     const libsiedler2::ArchivItem_Map_Header* header;
 };
-
-#endif // !GLARCHIVITEM_MAP_H_INCLUDED

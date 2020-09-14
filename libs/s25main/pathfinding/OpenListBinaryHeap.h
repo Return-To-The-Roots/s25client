@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OpenListBinaryHeap_h__
-#define OpenListBinaryHeap_h__
+#pragma once
 
 #include <limits>
 #include <vector>
@@ -237,5 +236,3 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
     RTTR_Assert(arePositionsValid());
     return result;
 }
-
-#endif // OpenListBinaryHeap_h__

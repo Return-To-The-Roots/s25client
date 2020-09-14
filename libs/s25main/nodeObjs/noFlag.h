@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NO_FLAG_H_INCLUDED
-#define NO_FLAG_H_INCLUDED
+
+#pragma once
 
 #include "noRoadNode.h"
 #include "gameTypes/MapCoordinates.h"
@@ -91,5 +91,3 @@ private:
     };
     std::array<BurnedWarehouseUnit, MAX_BWU> bwus;
 };
-
-#endif // !NO_FLAG_H_INCLUDED

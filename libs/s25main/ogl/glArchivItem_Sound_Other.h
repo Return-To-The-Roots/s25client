@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_SOUND_OTHER_H_INCLUDED
-#define GLARCHIVITEM_SOUND_OTHER_H_INCLUDED
 
 #pragma once
 
@@ -31,5 +29,3 @@ public:
 protected:
     SoundHandle Load() override;
 };
-
-#endif // !GLARCHIVITEM_SOUND_OTHER_H_INCLUDED

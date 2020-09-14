@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ToolNote_h__
-#define ToolNote_h__
+#pragma once
 
 #include "notifications/notifications.h"
 
@@ -36,5 +35,3 @@ struct ToolNote
     const Type type;
     const unsigned player;
 };
-
-#endif // ToolNote_h__

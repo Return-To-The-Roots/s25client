@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_CHARBURNERPILE_H_
-#define NO_CHARBURNERPILE_H_
+#pragma once
 
 #include "noCoordBase.h"
 
@@ -90,5 +89,3 @@ public:
     };
     WareType GetNeededWareType() const;
 };
-
-#endif

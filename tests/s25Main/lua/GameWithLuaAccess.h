@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameWithLuaAccess_h__
-#define GameWithLuaAccess_h__
+#pragma once
 
 #include "EventManager.h"
 #include "Game.h"
@@ -123,5 +122,3 @@ public:
 
     virtual GameWorldGame& GetWorld() override { return world; }
 };
-
-#endif // GameWithLuaAccess_h__

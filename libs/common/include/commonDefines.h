@@ -16,8 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#ifndef commonDefines_h__
-#define commonDefines_h__
 
 #include "RTTR_Assert.h"
 
@@ -59,5 +57,3 @@ namespace nowide {
 namespace bfs = boost::filesystem;
 /// Shortcut for boost::nowide
 namespace bnw = boost::nowide;
-
-#endif // commonDefines_h__

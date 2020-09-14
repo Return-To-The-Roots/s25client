@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MockLocalGameState_h__
-#define MockLocalGameState_h__
+#pragma once
 
 #include "ILocalGameState.h"
 #include <turtle/mock.hpp>
@@ -28,5 +27,3 @@ MOCK_BASE_CLASS(MockLocalGameState, ILocalGameState)
     MOCK_CONST_METHOD(FormatGFTime, 1);
     MOCK_NON_CONST_METHOD(SystemChat, 1);
 };
-
-#endif // MockLocalGameState_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SettingTypeConv_h__
-#define SettingTypeConv_h__
+#pragma once
 
 #include "helpers/EnumArray.h"
 #include "gameTypes/GoodTypes.h"
@@ -31,5 +30,3 @@ extern const TransportPriorities STD_TRANSPORT_PRIO;
 unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType good);
 /// Converts the transport priorities to an odering of goods (good categories)
 TransportOrders GetOrderingFromTransportPrio(const TransportPriorities& priorities);
-
-#endif // SettingTypeConv_h__

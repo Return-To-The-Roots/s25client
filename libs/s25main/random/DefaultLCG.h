@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DefaultLCG_h__
-#define DefaultLCG_h__
+#pragma once
 
 #include <cstdint>
 #include <iosfwd>
@@ -79,5 +78,3 @@ inline DefaultLCG::result_type DefaultLCG::operator()()
     // Upper bits have higher period
     return state_ >> 16;
 }
-
-#endif // DefaultLCG_h__

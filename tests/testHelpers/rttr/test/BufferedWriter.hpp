@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BufferedWriter_h__
-#define BufferedWriter_h__
+#pragma once
 
 #include <s25util/TextWriterInterface.h>
 #include <memory>
@@ -48,5 +47,4 @@ namespace rttr { namespace test {
     }
 
     inline void BufferedWriter::writeText(const std::string& txt, unsigned /*color*/) { curText += txt; }
-}}     // namespace rttr::test
-#endif // BufferedWriter_h__
+}} // namespace rttr::test

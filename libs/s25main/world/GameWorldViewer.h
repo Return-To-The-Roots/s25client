@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameWorldViewer_h__
-#define GameWorldViewer_h__
+#pragma once
 
 #include "NodeMapBase.h"
 #include "TerrainRenderer.h"
@@ -119,5 +118,3 @@ private:
     inline void RoadConstructionEnded(const RoadNote& note);
     void RecalcBQ(const MapPoint& pt);
 };
-
-#endif // GameWorldViewer_h__

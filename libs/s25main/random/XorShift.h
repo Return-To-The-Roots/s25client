@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef XorShift_h__
-#define XorShift_h__
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -82,5 +81,3 @@ inline XorShift::result_type XorShift::operator()()
     state_ ^= state_ >> 27; // c
     return state_ * UINT64_C(2685821657736338717);
 }
-
-#endif // XorShift_h__

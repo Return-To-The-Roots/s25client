@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapBase_h__
-#define MapBase_h__
+#pragma once
 
 #include "Identity.h"
 #include "ReturnConst.h"
@@ -159,5 +158,3 @@ inline bool MapBase::CheckPointsInRadius(const MapPoint pt, unsigned radius, T_I
     }
     return false;
 }
-
-#endif // MapBase_h__

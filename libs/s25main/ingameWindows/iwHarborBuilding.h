@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwHARBORBUILDING_H_INCLUDED
-#define iwHARBORBUILDING_H_INCLUDED
+
+#pragma once
 
 #include "iwHQ.h"
 
@@ -36,5 +36,3 @@ private:
 
     unsigned grpIdExpedition;
 };
-
-#endif // !iwHQ_H_INCLUDED

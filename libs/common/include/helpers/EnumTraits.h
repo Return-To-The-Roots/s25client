@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EnumTraits_h__
-#define EnumTraits_h__
+#pragma once
 
 #include <type_traits>
 
@@ -47,5 +46,3 @@ template<class T>
 using underlying_type_t = std::underlying_type_t<wrapped_enum_t<T>>;
 
 } // namespace helpers
-
-#endif // EnumTraits_h__

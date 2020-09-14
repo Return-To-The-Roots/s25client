@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_METALWORKER_H_
-#define NOF_METALWORKER_H_
+#pragma once
 
 #include "nofWorkman.h"
 #include "notifications/Subscription.h"
@@ -55,5 +54,3 @@ public:
 
     GO_Type GetGOT() const override { return GOT_NOF_METALWORKER; }
 };
-
-#endif

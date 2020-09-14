@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef WorldDescription_h__
-#define WorldDescription_h__
+#pragma once
 
 #include "DescriptionContainer.h"
 #include "EdgeDesc.h"
@@ -68,5 +67,3 @@ inline const DescriptionContainer<TerrainDesc>& WorldDescription::getContainer()
 {
     return terrain;
 }
-
-#endif // WorldDescription_h__

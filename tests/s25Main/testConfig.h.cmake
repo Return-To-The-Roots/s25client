@@ -1,5 +1,4 @@
-#ifndef TESTCONFIG_H_INCLUDED
-#define TESTCONFIG_H_INCLUDED
+#pragma once
 
 #include <boost/filesystem/path.hpp>
 
@@ -15,5 +14,3 @@ namespace test
   const boost::filesystem::path libsiedler2TestFilesDir = RTTR_LIBSIEDLER2_TEST_FILES_DIR;
 }
 }
-
-#endif // !TESTCONFIG_H_INCLUDED

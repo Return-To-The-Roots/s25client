@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef dskTest_h__
-#define dskTest_h__
-
 #include "desktops/dskMenuBase.h"
 
 ///  Klasse des Intro Desktops.
@@ -40,5 +37,3 @@ public:
 private:
     unsigned curBGIdx;
 };
-
-#endif // dskTest_h__

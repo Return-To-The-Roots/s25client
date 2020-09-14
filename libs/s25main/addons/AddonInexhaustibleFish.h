@@ -1,6 +1,3 @@
-#ifndef ADDONINEXHAUSTIBLEFISH_H_INCLUDED
-#define ADDONINEXHAUSTIBLEFISH_H_INCLUDED
-
 #pragma once
 
 #include "AddonBool.h"
@@ -17,5 +14,3 @@ public:
                     _("Deactivates reduction of fish population."))
     {}
 };
-
-#endif

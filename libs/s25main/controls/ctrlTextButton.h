@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ctrlTextButton_h__
-#define ctrlTextButton_h__
-
 #include "controls/ctrlButton.h"
 #include "ctrlBaseText.h"
 
@@ -37,5 +34,3 @@ protected:
     /// Draw actual content (text here)
     void DrawContent() const override;
 };
-
-#endif // ctrlTextButton_h__

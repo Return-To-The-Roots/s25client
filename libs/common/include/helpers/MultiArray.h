@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SimpleMultiArray_h__
-#define SimpleMultiArray_h__
+#pragma once
 
 #include "RTTR_Assert.h"
 #include <boost/config.hpp>
@@ -157,5 +156,3 @@ struct MultiArray<T, T_n, T_ns...>
 };
 
 } // namespace helpers
-
-#endif // SimpleMultiArray_h__

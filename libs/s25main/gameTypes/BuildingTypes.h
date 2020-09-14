@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BuildingTypes_h__
-#define BuildingTypes_h__
+#pragma once
 
 #include "BuildingQuality.h"
 #include "GoodTypes.h"
@@ -92,5 +91,3 @@ struct SmokeConst
     /// Position of the smoke relativ to the buildings origin
     Point<int8_t> offset;
 };
-
-#endif // BuildingTypes_h__

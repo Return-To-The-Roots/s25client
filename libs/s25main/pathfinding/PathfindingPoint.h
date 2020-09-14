@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PathfindingPoint_h__
-#define PathfindingPoint_h__
+#pragma once
 
 /// Punkte als Verweise auf die obengenannen Knoten, damit nur die beiden Koordinaten x, y im set mit rumgeschleppt werden müsen
 struct PathfindingPoint
@@ -37,5 +36,3 @@ public:
             return (estimate_ < rhs.estimate_);
     }
 };
-
-#endif // PathfindingPoint_h__

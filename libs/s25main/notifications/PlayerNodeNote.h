@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PlayerNodeNote_h__
-#define PlayerNodeNote_h__
+#pragma once
 
 #include "notifications/notifications.h"
 #include "gameTypes/MapCoordinates.h"
@@ -36,5 +35,3 @@ struct PlayerNodeNote
     const MapPoint pt;
     const unsigned player; // Player for which this node has changed
 };
-
-#endif // PlayerNodeNote_h__

@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ctrlBaseImage_h__
-#define ctrlBaseImage_h__
-
 #include "DrawPoint.h"
 #include "Rect.h"
 
@@ -47,5 +44,3 @@ private:
     ITexture* img_;
     unsigned modulationColor_;
 };
-
-#endif // ctrlBaseImage_h__

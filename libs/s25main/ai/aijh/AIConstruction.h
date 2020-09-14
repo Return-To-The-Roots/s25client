@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AICONSTRUCTION_H_INCLUDED
-#define AICONSTRUCTION_H_INCLUDED
 
 #pragma once
 
@@ -113,5 +111,3 @@ private:
 };
 
 } // namespace AIJH
-
-#endif //! AICONSTRUCTION_H_INCLUDED

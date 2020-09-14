@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Handle_h__
-#define Handle_h__
+#pragma once
 
 /// Class similar to shared_pointer but with a deleter like unqiue_ptr.
 /// Not thread safe!
@@ -56,5 +55,3 @@ public:
     friend void swap(shared_handle& a, shared_handle& b) { a.swap(b); }
     Pointer get() const { return handle_; }
 };
-
-#endif // Handle_h__

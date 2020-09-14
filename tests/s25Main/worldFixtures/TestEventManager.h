@@ -16,8 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#ifndef TestEventManager_h__
-#define TestEventManager_h__
 
 #include "EventManager.h"
 #include <limits>
@@ -38,5 +36,3 @@ public:
     const GameEvent* RescheduleEvent(const GameEvent* event, unsigned targetGF);
     std::vector<const GameEvent*> GetEvents() const;
 };
-
-#endif // TestEventManager_h__

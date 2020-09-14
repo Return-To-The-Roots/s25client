@@ -1,6 +1,3 @@
-#ifndef NOCOINSDEFAULT_H_INCLUDED
-#define NOCOINSDEFAULT_H_INCLUDED
-
 #pragma once
 
 #include "AddonBool.h"
@@ -17,5 +14,3 @@ public:
                     _("Receiving coins is disabled for military buildings by default."))
     {}
 };
-
-#endif // !NOCOINSDEFAULT_H_INCLUDED

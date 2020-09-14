@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef TextFormatSetter_h__
-#define TextFormatSetter_h__
-
 #include "controls/ctrlBaseText.h"
 #include <boost/format.hpp>
 
@@ -36,5 +33,3 @@ struct TextFormatSetter
         return *this;
     }
 };
-
-#endif // TextFormatSetter_h__

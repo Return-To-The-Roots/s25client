@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONTRADE_H_INCLUDED
-#define ADDONTRADE_H_INCLUDED
+
+#pragma once
 
 #include "AddonBool.h"
 #include "mygettext/mygettext.h"
@@ -25,5 +25,3 @@ class AddonTrade : public AddonBool
 public:
     AddonTrade() : AddonBool(AddonId::TRADE, AddonGroup::Economy, _("Trade"), _("Allows to send wares/figures to allied warehouses")) {}
 };
-
-#endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED

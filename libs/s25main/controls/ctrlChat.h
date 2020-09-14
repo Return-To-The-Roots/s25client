@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLCHAT_H_INCLUDED
-#define CTRLCHAT_H_INCLUDED
 
 #pragma once
 
@@ -93,5 +91,3 @@ private:
     unsigned short bracket1_size; /// Breite der Klammer "<" um den Spielernamen
     unsigned short bracket2_size; /// Breite der Klammer ">" um den Spielernamen
 };
-
-#endif // !CTRLCHAT_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BuildingNote_h__
-#define BuildingNote_h__
+#pragma once
 
 #include "notifications/notifications.h"
 #include "gameTypes/BuildingType.h"
@@ -44,5 +43,3 @@ struct BuildingNote
     const MapPoint pos;
     const BuildingType bld;
 };
-
-#endif // BuildingNote_h__

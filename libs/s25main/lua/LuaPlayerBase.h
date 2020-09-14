@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaPlayerBase_h__
-#define LuaPlayerBase_h__
+#pragma once
 
 #include "gameTypes/Nation.h"
 #include "gameTypes/TeamTypes.h"
@@ -48,5 +47,3 @@ public:
     bool IsFree() const;
     int GetAILevel() const;
 };
-
-#endif // LuaPlayerBase_h__

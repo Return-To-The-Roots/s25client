@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef dskMenuBase_h__
-#define dskMenuBase_h__
-
 #include "Desktop.h"
 
 class glArchivItem_Bitmap;
@@ -46,5 +43,3 @@ public:
 private:
     void AddBottomTexts();
 };
-
-#endif // dskMenuBase_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ShipNote_h__
-#define ShipNote_h__
+#pragma once
 
 #include "notifications/notifications.h"
 #include "gameTypes/MapCoordinates.h"
@@ -37,5 +36,3 @@ struct ShipNote
     const unsigned player;
     const MapPoint pos;
 };
-
-#endif // ShipNote_h__

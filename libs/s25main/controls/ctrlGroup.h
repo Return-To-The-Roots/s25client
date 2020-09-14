@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLGROUP_H_INCLUDED
-#define CTRLGROUP_H_INCLUDED
 
 #pragma once
 
@@ -67,5 +65,3 @@ public:
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
 };
-
-#endif // !CTRLGROUP_H_INCLUDED

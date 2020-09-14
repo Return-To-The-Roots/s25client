@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RTTRAssert_h__
-#define RTTRAssert_h__
+#pragma once
 
 #include <s25util/warningSuppression.h>
 
@@ -78,5 +77,3 @@ bool RTTR_SetBreakOnAssertFailure(bool enabled);
 #endif
 
 #define RTTR_Assert_Msg(cond, msg) RTTR_Assert((cond) && (msg))
-
-#endif // RTTRAssert_h__

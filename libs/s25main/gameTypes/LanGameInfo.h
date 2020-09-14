@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LAN_GAME_INFO_H_INCLUDED
-#define LAN_GAME_INFO_H_INCLUDED
+#pragma once
 
 #include <string>
 
@@ -35,5 +34,3 @@ struct LanGameInfo
     bool Serialize(Serializer& serializer);
     bool Deserialize(Serializer& serializer);
 };
-
-#endif // !LAN_GAME_INFO_H_INCLUDED

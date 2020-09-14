@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AnimalTypes_h__
-#define AnimalTypes_h__
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include <cstdint>
@@ -34,5 +33,3 @@ enum Species : uint8_t
     SPEC_SHEEP
 };
 DEFINE_MAX_ENUM_VALUE(Species, Species::SPEC_SHEEP)
-
-#endif // AnimalTypes_h__

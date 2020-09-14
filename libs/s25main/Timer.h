@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Timer_h__
-#define Timer_h__
+#pragma once
 
 #include "Clock.h"
 #include <boost/optional.hpp>
@@ -45,5 +44,3 @@ public:
 private:
     boost::optional<Clock::time_point> startTime;
 };
-
-#endif // Timer_h__

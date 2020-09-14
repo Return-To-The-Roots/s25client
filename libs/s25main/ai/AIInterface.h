@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AIINTERFACE_H_
-#define AIINTERFACE_H_
+#pragma once
 
 #include "GameCommand.h"
 #include "GamePlayer.h"
@@ -179,5 +178,3 @@ private:
     /// ID of AI player
     const unsigned char playerID_;
 };
-
-#endif // AIINTERFACE_H_

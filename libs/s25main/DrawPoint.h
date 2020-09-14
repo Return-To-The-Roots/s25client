@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DrawPoint_h__
-#define DrawPoint_h__
+#pragma once
 
 #include "Point.h"
 
@@ -24,5 +23,3 @@
 using DrawPoint = Position;
 //-V:DrawPoint:801
 //-V:DrawPoint:813
-
-#endif // DrawPoint_h__

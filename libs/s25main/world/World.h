@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef World_h__
-#define World_h__
+#pragma once
 
 #include "enum_cast.hpp"
 #include "world/MapBase.h"
@@ -280,5 +279,3 @@ inline bool World::HasTerrain(const MapPoint pt, T_Predicate predicate) const
     }
     return false;
 }
-
-#endif // World_h__

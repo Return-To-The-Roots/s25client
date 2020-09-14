@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef SHIP_BUILDING_SITE_H_
-#define SHIP_BUILDING_SITE_H_
+
+#pragma once
 
 #include "noCoordBase.h"
 class SerializedGameData;
@@ -48,5 +48,3 @@ private:
     /// Baufortschritt des Schiffes
     unsigned char progress;
 };
-
-#endif // !NOSKELETON_H_INCLUDED

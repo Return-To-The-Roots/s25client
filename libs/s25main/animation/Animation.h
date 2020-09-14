@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Animation_h__
-#define Animation_h__
+#pragma once
 
 class Window;
 struct ScreenResizeEvent;
@@ -99,5 +98,3 @@ private:
     /// Whether the animation has started (frame 0 called, time set)
     bool hasStarted_;
 };
-
-#endif // Animation_h__

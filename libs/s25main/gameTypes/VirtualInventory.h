@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef VirtualInventory_h__
-#define VirtualInventory_h__
+#pragma once
 
 #include "gameTypes/Inventory.h"
 
@@ -64,5 +63,3 @@ struct VirtualInventory
     /// Returns the real number of wares of the given type
     unsigned operator[](GoodType good) const { return real.goods[good]; }
 };
-
-#endif // VirtualInventory_h__

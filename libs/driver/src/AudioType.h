@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AudioType_h__
-#define AudioType_h__
+#pragma once
 
 #include <cassert>
 
@@ -48,5 +47,3 @@ private:
     template<typename T>
     operator T() const;
 };
-
-#endif // AudioType_h__

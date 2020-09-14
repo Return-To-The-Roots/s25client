@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NewNode_h__
-#define NewNode_h__
+#pragma once
 
 #include "pathfinding/OpenListBinaryHeap.h"
 #include "pathfinding/PathfindingPoint.h"
@@ -67,4 +66,3 @@ struct FreePathNode
     MapPoint mapPt;
     OpenListBinaryHeapBase<FreePathNode>::PosMarker posMarker;
 };
-#endif // NewNode_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TradeRoute_h__
-#define TradeRoute_h__
+#pragma once
 
 #include "helpers/OptionalEnum.h"
 #include "world/TradePath.h"
@@ -57,5 +56,3 @@ public:
 
     const TradePath& GetTradePath() const { return path; }
 };
-
-#endif // TradeRoute_h__

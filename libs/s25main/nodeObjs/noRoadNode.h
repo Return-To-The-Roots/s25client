@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_ROADNODE_H_
-#define NO_ROADNODE_H_
+#pragma once
 
 #include "RoadSegment.h"
 #include "helpers/EnumArray.h"
@@ -96,5 +95,3 @@ inline noRoadNode* noRoadNode::GetNeighbour(const Direction dir) const
     else
         return route->GetF1();
 }
-
-#endif

@@ -1,7 +1,9 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by s25client.rc
-//
+
+#pragma once
+
 #define IDI_SYMBOL                      101
 #define APP_MANIFEST 					1
 

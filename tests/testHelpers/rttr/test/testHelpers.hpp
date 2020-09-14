@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef testHelpers_h__
-#define testHelpers_h__
+#pragma once
 
 #include <boost/test/unit_test.hpp>
 #include <utility>
@@ -36,5 +35,3 @@ namespace boost { namespace test_tools { namespace tt_detail {
         BOOST_TEST(std::string(e.what()) == (MSG)); \
         return std::string(e.what()) == (MSG);      \
     })
-
-#endif // testHelpers_h__

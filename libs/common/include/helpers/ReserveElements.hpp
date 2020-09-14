@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ReserveElements_h__
-#define ReserveElements_h__
+#pragma once
 
 #include <boost/type_traits/make_void.hpp>
 #include <utility>
@@ -37,5 +36,3 @@ struct ReserveElements<T, boost::void_t<decltype(std::declval<T>().reserve(0u))>
 };
 
 } // namespace helpers
-
-#endif // ReserveElements_h__

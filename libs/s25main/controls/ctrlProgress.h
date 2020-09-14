@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLPROGRESS_H_INCLUDED
-#define CTRLPROGRESS_H_INCLUDED
 
 #pragma once
 
@@ -59,5 +57,3 @@ private:
 
     unsigned CalcBarWidth() const;
 };
-
-#endif // !CTRLPROGRESS_H_INCLUDED

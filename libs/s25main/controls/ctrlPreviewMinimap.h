@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef PREVIEWMINIMAP_H_
-#define PREVIEWMINIMAP_H_
+
+#pragma once
 
 #include "PreviewMinimap.h"
 #include "ctrlMinimap.h"
@@ -52,5 +52,3 @@ public:
 
     void SetMap(const glArchivItem_Map* s2map);
 };
-
-#endif // !MapPreview_H_

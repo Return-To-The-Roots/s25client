@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef BuildingType_h__
-#define BuildingType_h__
-
 #include "helpers/MaxEnumValue.h"
 #include <cstdint>
 
@@ -75,5 +72,3 @@ constexpr unsigned NUM_BUILDING_TYPES = helpers::NumEnumValues_v<BuildingType>;
 const unsigned NUM_UNUSED_BLD_TYPES = 7;
 /// First usual building (building that produces something)
 const unsigned FIRST_USUAL_BUILDING = BLD_GRANITEMINE;
-
-#endif // BuildingType_h__

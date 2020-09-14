@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef FrameCounter_h__
-#define FrameCounter_h__
+#pragma once
 
 #include <chrono>
 
@@ -89,5 +88,3 @@ public:
     void update(clock::time_point curTime = clock::now());
     void sleepTillNextFrame(clock::time_point curTime);
 };
-
-#endif // FrameCounter_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GUICONSTS_H_
-#define GUICONSTS_H_
+#pragma once
 
 #include <array>
 
@@ -24,5 +23,3 @@ const std::array<float, 7> SUPPRESS_UNUSED ZOOM_FACTORS = {{0.5f, 0.75f, 1.f, 1.
 const size_t ZOOM_DEFAULT_INDEX = 2;
 const float ZOOM_ACCELERATION = 0.001f;
 const float ZOOM_WHEEL_INCREMENT = 0.03f;
-
-#endif // GUICONSTS_H_

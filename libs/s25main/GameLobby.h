@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameLobby_h__
-#define GameLobby_h__
+#pragma once
 
 #include "GlobalGameSettings.h"
 #include <vector>
@@ -50,5 +49,3 @@ private:
     std::vector<JoinPlayerInfo> players_;
     GlobalGameSettings ggs_;
 };
-
-#endif // GameLobby_h__

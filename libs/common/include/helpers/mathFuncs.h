@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef mathFuncs_h__
-#define mathFuncs_h__
+#pragma once
 
 #include <type_traits>
 
@@ -63,5 +62,3 @@ U clamp(T val, U min, U max) noexcept
     return static_cast<U>(clamp(static_cast<Common>(val), static_cast<Common>(min), static_cast<Common>(max)));
 }
 } // namespace helpers
-
-#endif // mathFuncs_h__

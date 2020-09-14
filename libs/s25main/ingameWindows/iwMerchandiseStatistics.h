@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwMERCHANDISE_STATISTICS_H_INCLUDED
-#define iwMERCHANDISE_STATISTICS_H_INCLUDED
 
 #pragma once
 
@@ -58,5 +56,3 @@ private:
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };
-
-#endif // !iwMERCHANDISE_STATISTICS_H_INCLUDED

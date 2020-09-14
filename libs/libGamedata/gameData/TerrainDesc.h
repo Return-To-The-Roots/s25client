@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TerrainDesc_h__
-#define TerrainDesc_h__
+#pragma once
 
 #include "DescIdx.h"
 #include "Rect.h"
@@ -110,5 +109,3 @@ inline bool TerrainDesc::Is(ETerrain what) const
 {
     return (static_cast<uint8_t>(flags) & static_cast<uint8_t>(what)) == static_cast<uint8_t>(what);
 }
-
-#endif // TerrainDesc_h__

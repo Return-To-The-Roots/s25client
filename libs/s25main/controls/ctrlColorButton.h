@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ctrlColorButton_h__
-#define ctrlColorButton_h__
-
 #include "controls/ctrlButton.h"
 #include "ctrlBaseColor.h"
 
@@ -33,5 +30,3 @@ public:
 protected:
     void DrawContent() const override;
 };
-
-#endif // ctrlColorButton_h__

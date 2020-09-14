@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef SOUNDHANDLE_H_INCLUDED
-#define SOUNDHANDLE_H_INCLUDED
-
 #include "driver/RawSoundHandle.h"
 #include <memory>
 #include <stdexcept>
@@ -56,5 +53,3 @@ public:
 private:
     std::shared_ptr<driver::RawSoundHandle> rawHandle_;
 };
-
-#endif // !SOUNDHANDLE_H_INCLUDED

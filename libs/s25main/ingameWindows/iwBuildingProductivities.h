@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwBUILDINGPRODUCTIVITIES_H_
-#define iwBUILDINGPRODUCTIVITIES_H_
+
+#pragma once
 
 #include "IngameWindow.h"
 
@@ -38,5 +38,3 @@ private:
     /// Produktivitäts-Progressbars aktualisieren
     void Msg_PaintAfter() override;
 };
-
-#endif //! iwBUILDINGPRODUCTIVITIES_H_

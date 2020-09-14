@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CreateEmptyWorld_h__
-#define CreateEmptyWorld_h__
+#pragma once
 
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
@@ -37,5 +36,3 @@ private:
 
 void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
 void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
-
-#endif // CreateEmptyWorld_h__

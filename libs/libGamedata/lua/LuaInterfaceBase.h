@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaInterfaceBase_h__
-#define LuaInterfaceBase_h__
+#pragma once
 
 #include <kaguya/kaguya.hpp>
 #include <boost/filesystem/path.hpp>
@@ -78,5 +77,3 @@ private:
 
     static std::map<std::string, std::string> getTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code);
 };
-
-#endif // LuaInterfaceBase_h__

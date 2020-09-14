@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMESERVERPLAYER_H_INCLUDED
-#define GAMESERVERPLAYER_H_INCLUDED
 
 #pragma once
 
@@ -78,5 +76,3 @@ public:
 private:
     boost::variant<JustConnectedState, MapSendingState, ActiveState> state_;
 };
-
-#endif // GAMESERVERPLAYER_H_INCLUDED

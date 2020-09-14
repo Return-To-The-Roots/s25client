@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONCHARBURNER_H_INCLUDED
-#define ADDONCHARBURNER_H_INCLUDED
+
+#pragma once
 
 #include "AddonBool.h"
 #include "mygettext/mygettext.h"
@@ -28,5 +28,3 @@ class AddonCharburner : public AddonBool
 public:
     AddonCharburner() : AddonBool(AddonId::CHARBURNER, AddonGroup::Economy, _("Enable charburner"), _("Allows to build the charburner.")) {}
 };
-
-#endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED

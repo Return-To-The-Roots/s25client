@@ -15,11 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef initGameRNG_h__
-#define initGameRNG_h__
+#pragma once
 
 /// Initialize the ingame-Random Number Generator with the given value
 /// unless RTTR_RAND_TEST is defined in which case a random value is used
 void initGameRNG(unsigned defaultValue = 1337);
-
-#endif // initGameRNG_h__

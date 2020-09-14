@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NWFInfo_h__
-#define NWFInfo_h__
+#pragma once
 
 #include "network/PlayerGameCommands.h"
 #include <queue>
@@ -85,5 +84,3 @@ public:
     /// Number of NWFs a command is sent in advance (>= 1)
     unsigned getCmdDelay() const { return cmdDelay_; }
 };
-
-#endif // NWFInfo_h__

@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwSHIP_H_INCLUDED
-#define iwSHIP_H_INCLUDED
 
 #pragma once
 
@@ -41,5 +39,3 @@ private:
 
     void DrawCargo();
 };
-
-#endif // !iwSHIP_H_INCLUDED

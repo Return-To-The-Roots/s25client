@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapGenerator_h__
-#define MapGenerator_h__
+#pragma once
 
 #include <boost/filesystem/path.hpp>
 #include <string>
@@ -36,5 +35,3 @@ public:
      */
     static void Create(const boost::filesystem::path& filePath, const MapSettings& settings);
 };
-
-#endif // MapGenerator_h__

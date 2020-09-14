@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PlayerInfo_h__
-#define PlayerInfo_h__
+#pragma once
 
 #include "BasePlayerInfo.h"
 
@@ -33,5 +32,3 @@ struct PlayerInfo : public BasePlayerInfo
     // Serialize complete struct
     void Serialize(Serializer& ser) const;
 };
-
-#endif // PlayerInfo_h__

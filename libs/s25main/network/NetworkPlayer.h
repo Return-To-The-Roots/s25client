@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NetworkPlayer_h__
-#define NetworkPlayer_h__
+#pragma once
 
 #include "s25util/MessageQueue.h"
 #include "s25util/Socket.h"
@@ -50,5 +49,3 @@ public:
 };
 
 void swap(NetworkPlayer& lhs, NetworkPlayer& rhs);
-
-#endif // NetworkPlayer_h__

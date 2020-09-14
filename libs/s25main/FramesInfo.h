@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef FramesInfo_h__
-#define FramesInfo_h__
+#pragma once
 
 #include <chrono>
 
@@ -53,5 +52,3 @@ struct FramesInfoClient : public FramesInfo
     UsedClock::time_point forcePauseStart;
     milliseconds32_t forcePauseLen;
 };
-
-#endif // FramesInfo_h__

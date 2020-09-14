@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOF_AGGRESSIVEDEFENDER_H_
-#define NOF_AGGRESSIVEDEFENDER_H_
+
+#pragma once
 
 #include "nofActiveSoldier.h"
 
@@ -98,5 +98,3 @@ public:
     // Debugging
     const nofAttacker* GetAttacker() const { return attacker; }
 };
-
-#endif // !NOF_AGGRESSIVEDEFENDER_H_

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MoveAnimation_h__
-#define MoveAnimation_h__
+#pragma once
 
 #include "DrawPoint.h"
 #include "animation/Animation.h"
@@ -35,5 +34,3 @@ protected:
 private:
     DrawPoint origPos_, newPos_;
 };
-
-#endif // MoveAnimation_h__

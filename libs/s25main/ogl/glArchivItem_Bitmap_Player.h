@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_BITMAP_PLAYER_H_INCLUDED
-#define GLARCHIVITEM_BITMAP_PLAYER_H_INCLUDED
 
 #pragma once
 
@@ -49,5 +47,3 @@ protected:
     void FillTexture() override;
     Extent CalcTextureSize() const override;
 };
-
-#endif // !GLARCHIVITEM_BITMAP_PLAYER_H_INCLUDED

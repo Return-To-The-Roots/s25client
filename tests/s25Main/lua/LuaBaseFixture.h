@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaBaseFixture_h__
-#define LuaBaseFixture_h__
+#pragma once
 
 #include "GlobalVars.h"
 #include "lua/LuaInterfaceGameBase.h"
@@ -69,5 +68,3 @@ public:
         return true;
     }
 };
-
-#endif // LuaBaseFixture_h__

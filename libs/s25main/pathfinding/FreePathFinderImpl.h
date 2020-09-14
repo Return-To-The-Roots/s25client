@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef FreePathFinderImpl_h__
-#define FreePathFinderImpl_h__
+#pragma once
 
 #include "EventManager.h"
 #include "pathfinding/FreePathFinder.h"
@@ -205,5 +204,3 @@ bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<Directio
 
     return true;
 }
-
-#endif // FreePathFinderImpl_h__

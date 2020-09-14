@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GAMEOBJECT_H_INCLUDED
-#define GAMEOBJECT_H_INCLUDED
-
 #pragma once
 
 #include "commonDefines.h"
@@ -106,5 +103,3 @@ void destroyAndDelete(T*& obj)
     obj->Destroy();
     deletePtr(obj);
 }
-
-#endif /// GAMEOBJECT_H_INCLUDED

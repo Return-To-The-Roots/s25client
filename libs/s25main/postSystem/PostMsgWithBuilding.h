@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PostMsgWithBuilding_h__
-#define PostMsgWithBuilding_h__
+#pragma once
 
 #include "postSystem/PostMsg.h"
 #include "gameTypes/BuildingType.h"
@@ -42,5 +41,3 @@ private:
     const BuildingType bldType;
     const Nation nation;
 };
-
-#endif // PostMsgWithBuilding_h__

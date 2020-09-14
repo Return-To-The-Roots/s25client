@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapLoader_h__
-#define MapLoader_h__
+#pragma once
 
 #include "gameTypes/GameSettingTypes.h"
 #include "gameTypes/MapCoordinates.h"
@@ -61,5 +60,3 @@ public:
     static bool InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
     static bool PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, bool randomStartPos);
 };
-
-#endif // MapLoader_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SeaWorldWithGCExecution_h__
-#define SeaWorldWithGCExecution_h__
+#pragma once
 
 #include "CreateSeaWorld.h"
 #include "GCExecutor.h"
@@ -31,5 +30,3 @@ public:
 protected:
     virtual GameWorldGame& GetWorld() override { return world; }
 };
-
-#endif // SeaWorldWithGCExecution_h__

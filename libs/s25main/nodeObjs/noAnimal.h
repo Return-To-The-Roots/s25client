@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_ANIMAL_H_
-#define NO_ANIMAL_H_
+#pragma once
 
 #include "helpers/OptionalEnum.h"
 #include "noMovable.h"
@@ -113,5 +112,3 @@ public:
     /// Tier wurde vom Jäger ausgenommen und muss sofort verschwinden
     void Eviscerated();
 };
-
-#endif

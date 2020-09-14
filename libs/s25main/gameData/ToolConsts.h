@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ToolConsts_h__
-#define ToolConsts_h__
+#pragma once
 
 #include "gameTypes/GoodTypes.h"
 #include <array>
@@ -36,5 +35,3 @@ const std::array<GoodType, NUM_TOOLS> SUPPRESS_UNUSED TOOLS = {
   GD_ROLLINGPIN, // Nudelholz
   GD_BOW         // Bogen
 };
-
-#endif // ToolConsts_h__

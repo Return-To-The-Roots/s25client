@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef PathConditionShip_h__
-#define PathConditionShip_h__
-
 #include "world/World.h"
 #include "gameData/TerrainDesc.h"
 #include <boost/config.hpp>
@@ -41,5 +38,3 @@ struct PathConditionShip
                && world.GetDescription().get(world.GetRightTerrain(fromPt, dir)).Is(ETerrain::Shippable);
     }
 };
-
-#endif // PathConditionShip_h__

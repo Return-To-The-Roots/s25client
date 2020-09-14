@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ServerType_h__
-#define ServerType_h__
+#pragma once
 
 // Servertypen
 enum class ServerType
@@ -26,5 +25,3 @@ enum class ServerType
     LOCAL,
     LAN
 };
-
-#endif // ServerType_h__

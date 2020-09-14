@@ -15,13 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef QuickStartGame_h__
-#define QuickStartGame_h__
+#pragma once
 
 #include <boost/filesystem/path.hpp>
 #include <string>
 
 /// Tries to start a game (map, savegame or replay) and returns whether this was successfull
 bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singlePlayer = false);
-
-#endif // QuickStartGame_h__

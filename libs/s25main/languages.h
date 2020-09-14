@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef LANGUAGES_H_INCLUDED
-#define LANGUAGES_H_INCLUDED
 
 #pragma once
 
@@ -53,5 +51,3 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #define LANGUAGES Languages::inst()
-
-#endif // !LANGUAGES_H_INCLUDED

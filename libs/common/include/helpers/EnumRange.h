@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RttrEnumRange_h__
-#define RttrEnumRange_h__
+#pragma once
 
 #include "MaxEnumValue.h"
 #include <boost/config.hpp>
@@ -45,5 +44,3 @@ struct EnumRange
     BOOST_FORCEINLINE iterator end() const { return iterator(MaxEnumValue_v<T> + 1u); }
 };
 } // namespace helpers
-
-#endif // RttrEnumRange_h__

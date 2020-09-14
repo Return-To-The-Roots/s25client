@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRL_MULTILINE_H_INCLUDED
-#define CTRL_MULTILINE_H_INCLUDED
+
+#pragma once
 
 #include "Window.h"
 #include "ogl/FontStyle.h"
@@ -93,5 +93,3 @@ private:
     void RecalcVisibleLines();
     void RecalcWrappedLines();
 };
-
-#endif /// !CTRLMULTILINE_H_INCLUDED

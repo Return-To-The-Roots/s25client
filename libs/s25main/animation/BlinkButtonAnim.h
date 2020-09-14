@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BlinkButtonAnim_h__
-#define BlinkButtonAnim_h__
+#pragma once
 
 #include "animation/ToggleAnimation.h"
 
@@ -28,5 +27,3 @@ class BlinkButtonAnim : public ToggleAnimation<ctrlButton>
 public:
     BlinkButtonAnim(ctrlButton* element, bool startValue = true, unsigned frameRate = 500, RepeatType repeat = Animation::RPT_Repeat);
 };
-
-#endif // BlinkButtonAnim_h__

@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOF_TRADEDONKEY_H_
-#define NOF_TRADEDONKEY_H_
+
+#pragma once
 
 #include "figures/noFigure.h"
 #include "gameTypes/GoodTypes.h"
@@ -84,5 +84,3 @@ public:
     /// Inform successor that the caravane is canceled
     void CancelTradeCaravane();
 };
-
-#endif //! NOF_SCOUT_FREE_H_

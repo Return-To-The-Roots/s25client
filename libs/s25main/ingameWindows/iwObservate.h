@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef iwOBSERVATE_H_INCLUDED
-#define iwOBSERVATE_H_INCLUDED
-
 #include "IngameWindow.h"
 #include "gameTypes/MapCoordinates.h"
 
@@ -59,5 +56,3 @@ private:
     bool MoveToFollowedObj();
     inline bool MoveToFollowedObj(MapPoint ptToCheck);
 };
-
-#endif // !iwOBSERVATE_H_INCLUDED

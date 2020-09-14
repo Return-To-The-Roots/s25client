@@ -15,12 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SAVE_BITMAP_H__
-#define SAVE_BITMAP_H__
+#pragma once
 
 #include <libsiedler2/PixelBufferBGRA.h>
 #include <boost/filesystem/path.hpp>
 
 void saveBitmap(const libsiedler2::PixelBufferBGRA&, const boost::filesystem::path&);
-
-#endif

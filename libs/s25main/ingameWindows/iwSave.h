@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwSAVE_H_INCLUDED
-#define iwSAVE_H_INCLUDED
 
 #pragma once
 
@@ -72,5 +70,3 @@ private:
     // Läd Datei
     void SaveLoad() override;
 };
-
-#endif // !iwSAVE_H_INCLUDED
