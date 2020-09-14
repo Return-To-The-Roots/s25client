@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOFIGURE_H_INCLUDED
-#define NOFIGURE_H_INCLUDED
+
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include "helpers/OptionalEnum.h"
@@ -241,5 +241,3 @@ public:
     /// and also the new direction it wants to travel which can be the (otherwise invalid) SHIP_DIR if the figure stays on board
     MapPoint ExamineRouteBeforeShipping(RoadPathDirection& newDir);
 };
-
-#endif

@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef MockupVideoDriver_h__
-#define MockupVideoDriver_h__
-
 #include "driver/VideoDriver.h"
 
 class MockupVideoDriver : public VideoDriver
@@ -47,5 +44,3 @@ public:
     unsigned long tickCount_;
     std::vector<VideoMode> video_modes_;
 };
-
-#endif // MockupVideoDriver_h__

@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef EffectPlayId_h__
-#define EffectPlayId_h__
-
 #include <cstdint>
 
 /// Id of a played effect
@@ -27,5 +24,3 @@ enum class EffectPlayId : int32_t
 {
     Invalid = -1
 };
-
-#endif // EffectPlayId_h__

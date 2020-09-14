@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef dskGAMEINTERFACE_H_INCLUDED
-#define dskGAMEINTERFACE_H_INCLUDED
 
 #pragma once
 
@@ -169,5 +167,3 @@ private:
     std::string curCheatTxt;
     Subscription evBld;
 };
-
-#endif // !dskGAMEINTERFACE_H_INCLUDED

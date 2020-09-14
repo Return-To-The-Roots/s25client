@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef dskLAN_H_INCLUDED
-#define dskLAN_H_INCLUDED
 
 #pragma once
 
@@ -52,5 +50,3 @@ private:
     void UpdateServerList();
     void ReadOpenGames();
 };
-
-#endif // dskLAN_H_INCLUDED

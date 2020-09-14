@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef roundToNextPow2_h__
-#define roundToNextPow2_h__
+#pragma once
 
 #include <cstdint>
 
@@ -37,5 +36,3 @@ inline uint32_t roundToNextPowerOfTwo(uint32_t v)
     return v;
 }
 } // namespace helpers
-
-#endif // roundToNextPow2_h__

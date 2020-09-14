@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CONST_ADDONS_H_INCLUDED
-#define CONST_ADDONS_H_INCLUDED
 
 #pragma once
 
@@ -92,5 +90,3 @@ enum class AddonGroup : unsigned
 };
 
 MAKE_BITSET_STRONG(AddonGroup);
-
-#endif // !CONST_ADDONS_H_INCLUDED

@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef PLAYLIST_H_INCLUDED
-#define PLAYLIST_H_INCLUDED
+
+#pragma once
 
 #include <boost/filesystem/path.hpp>
 #include <string>
@@ -60,5 +60,3 @@ private:
     std::vector<unsigned> order_;    /// Actual order of the songs, indices into songs
     std::string currentSong_;
 };
-
-#endif // !PLAYLIST_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CreateSeaWorld_h__
-#define CreateSeaWorld_h__
+#pragma once
 
 #include "gameTypes/MapCoordinates.h"
 
@@ -72,5 +71,3 @@ struct CreateWaterWorld
 private:
     MapExtent size_;
 };
-
-#endif // CreateSeaWorld_h__

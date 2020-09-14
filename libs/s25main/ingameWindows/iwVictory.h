@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef iwVictory_h__
-#define iwVictory_h__
+#pragma once
 
 #include "IngameWindow.h"
 
@@ -28,5 +27,3 @@ public:
 private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };
-
-#endif // iwVictory_h__

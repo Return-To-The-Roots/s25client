@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwMAPGENERATOR_H_INCLUDED
-#define iwMAPGENERATOR_H_INCLUDED
 
 #pragma once
 
@@ -59,5 +57,3 @@ private:
      */
     void Apply();
 };
-
-#endif // !iwMAPGENERATOR_H_INCLUDED

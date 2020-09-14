@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwLOBBYSERVERINFO_H_INCLUDED
-#define iwLOBBYSERVERINFO_H_INCLUDED
 
 #pragma once
 
@@ -36,5 +34,3 @@ public:
 protected:
     void Msg_Timer(unsigned ctrl_id) override;
 };
-
-#endif // iwLOBBYSERVERINFO_H_INCLUDED

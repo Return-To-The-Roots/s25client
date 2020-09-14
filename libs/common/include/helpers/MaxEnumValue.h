@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MaxEnumValue_h__
-#define MaxEnumValue_h__
+#pragma once
 
 #include <type_traits>
 
@@ -58,5 +57,3 @@ namespace detail {
             static constexpr unsigned value = detail::castPotentialEnumToValue(maxValue); \
         };                                                                                \
     } // namespace helpers
-
-#endif // MaxEnumValue_h__

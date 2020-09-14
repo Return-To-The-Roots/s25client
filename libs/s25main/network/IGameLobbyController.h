@@ -16,8 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#ifndef IGameLobbyController_h__
-#define IGameLobbyController_h__
 
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/Nation.h"
@@ -45,5 +43,3 @@ public:
     virtual const GlobalGameSettings& GetGGS() const = 0;
     virtual void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) = 0;
 };
-
-#endif // IGameLobbyController_h__

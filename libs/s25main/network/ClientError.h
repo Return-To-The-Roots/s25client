@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef ClientError_h__
-#define ClientError_h__
+
+#pragma once
 
 /// Fehler, die vom Client gemeldet werden
 enum ClientError
@@ -32,5 +32,3 @@ enum ClientError
 };
 
 const char* ClientErrorToStr(ClientError error);
-
-#endif // ClientError_h__

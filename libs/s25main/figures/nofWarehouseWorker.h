@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_WAREHOUSEWORKER_H_
-#define NOF_WAREHOUSEWORKER_H_
+#pragma once
 
 #include "figures/noFigure.h"
 
@@ -79,5 +78,3 @@ public:
     /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Träger-Bestände nicht beeinflussen?)
     bool MemberOfWarehouse() const override { return true; }
 };
-
-#endif

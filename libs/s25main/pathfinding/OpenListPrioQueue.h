@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not,  see <http://www.gnu.org/licenses/>.
 
-#ifndef OpenListPrioQueue_h__
-#define OpenListPrioQueue_h__
+#pragma once
 
 #include <algorithm>
 #include <queue>
@@ -53,5 +52,3 @@ public:
         return result;
     }
 };
-
-#endif // OpenListPrioQueue_h__

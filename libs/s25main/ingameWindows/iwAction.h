@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwACTION_H_INCLUDED
-#define iwACTION_H_INCLUDED
 
 #pragma once
 
@@ -106,5 +104,3 @@ private:
     void AddUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
     void DoUpgradeRoad();
 };
-
-#endif // !iwACTION_H_INCLUDED

@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwDIPLOMACY_H_INCLUDED
-#define iwDIPLOMACY_H_INCLUDED
+
+#pragma once
 
 #include "IngameWindow.h"
 #include "gameTypes/PactTypes.h"
@@ -49,5 +49,3 @@ public:
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };
-
-#endif // !iwBUILDORDER_H_INCLUDED

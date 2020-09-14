@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOF_ACTIVESOLDIER_H_
-#define NOF_ACTIVESOLDIER_H_
+
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include "nofSoldier.h"
@@ -157,5 +157,3 @@ public:
     const nofActiveSoldier* GetEnemy() const { return enemy; }
 };
 DEFINE_MAX_ENUM_VALUE(nofActiveSoldier::SoldierState, nofActiveSoldier::SoldierState::STATE_DEFENDING_WALKINGFROM)
-
-#endif // !NOF_ACTIVESOLDIER_H_

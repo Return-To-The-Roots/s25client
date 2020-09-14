@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PactTypes_h__
-#define PactTypes_h__
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include <array>
@@ -36,5 +35,3 @@ constexpr unsigned DURATION_INFINITE = 0xFFFFFFFF;
 
 /// Names of the possible pacts
 extern const std::array<const char*, NUM_PACTS> PACT_NAMES;
-
-#endif // PactTypes_h__

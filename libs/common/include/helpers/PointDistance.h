@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef POINT_DISTANCE_H_
-#define POINT_DISTANCE_H_
+#pragma once
 
 #include <cmath>
 
@@ -25,5 +24,3 @@ int PointDistance(int x1, int y1, int x2, int y2)
 {
     return std::abs(x1 - x2) + std::abs(y1 - y2);
 }
-
-#endif

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GAME_COMMANDS_H_
-#define GAME_COMMANDS_H_
+#pragma once
 
 #include "GameCommand.h"
 #include "variant.h"
@@ -842,5 +841,3 @@ public:
 };
 
 } // namespace gc
-
-#endif

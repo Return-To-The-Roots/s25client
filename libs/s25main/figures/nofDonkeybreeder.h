@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOFDONKEYBREEDER_H_INCLUDED
-#define NOFDONKEYBREEDER_H_INCLUDED
 
 #pragma once
 
@@ -44,5 +42,3 @@ private:
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override { return 0; }
 };
-
-#endif // !NOFDONKEYBREEDER_H_INCLUDED

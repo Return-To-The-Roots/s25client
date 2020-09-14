@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef helperFuncs_h__
-#define helperFuncs_h__
+#pragma once
 
 #include "BufferedWriter.hpp"
 #include "s25util/AvoidDuplicatesWriter.h"
@@ -80,5 +79,3 @@ namespace rttr { namespace test {
         RTTR_SetBreakOnAssertFailure(old);                     \
         RTTR_REQUIRE_LOG_CONTAINS("Assertion failure", false); \
     } while(false)
-
-#endif // helperFuncs_h__

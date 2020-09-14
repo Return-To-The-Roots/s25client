@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TradeDirection_h__
-#define TradeDirection_h__
+#pragma once
 
 #include "gameTypes/Direction.h"
 #include <cstdint>
@@ -44,5 +43,3 @@ inline Direction toDirection(const TradeDirection dir) noexcept
     RTTR_Assert(dir != TradeDirection::ReachedGoal);
     return Direction(static_cast<uint8_t>(dir));
 }
-
-#endif // TradeDirection_h__

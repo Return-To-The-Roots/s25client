@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MESSENGER_H_INCLUDED
-#define MESSENGER_H_INCLUDED
 
 #pragma once
 
@@ -46,5 +44,3 @@ public:
     void AddMessage(const std::string& author, unsigned color_author, ChatDestination cd, const std::string& msg,
                     unsigned color_msg = COLOR_YELLOW);
 };
-
-#endif // !MESSENGER_H_INCLUDED

@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef RttrConfig_h__
-#define RttrConfig_h__
-
 #include "s25util/Singleton.h"
 #include <boost/filesystem/path.hpp>
 #include <map>
@@ -41,5 +38,3 @@ public:
 };
 
 #define RTTRCONFIG RttrConfig::inst()
-
-#endif // RttrConfig_h__

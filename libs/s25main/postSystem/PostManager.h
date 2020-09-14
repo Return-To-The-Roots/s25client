@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PostManager_h__
-#define PostManager_h__
+#pragma once
 
 #include "gameData/MaxPlayers.h"
 #include <array>
@@ -40,5 +39,3 @@ public:
 private:
     std::array<std::unique_ptr<PostBox>, MAX_PLAYERS> postBoxes;
 };
-
-#endif // PostManager_h__

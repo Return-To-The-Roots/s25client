@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DescIdx_h__
-#define DescIdx_h__
+#pragma once
 
 #include <cstdint>
 
@@ -37,5 +36,3 @@ struct DescIdx
     bool operator<=(DescIdx rhs) const { return value <= rhs.value; }
     bool operator>=(DescIdx rhs) const { return value >= rhs.value; }
 };
-
-#endif // DescIdx_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef constants_h__
-#define constants_h__
+#pragma once
 
 #include <glad/glad.h>
 
@@ -34,5 +33,3 @@ enum class Usage : GLenum
     Stream = GL_STREAM_DRAW    // Changes every frame
 };
 } // namespace ogl
-
-#endif // constants_h__

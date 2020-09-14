@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef FILECHECKSUM_H_INCLUDED
-#define FILECHECKSUM_H_INCLUDED
 
 #pragma once
 
@@ -34,5 +32,3 @@ inline uint32_t CalcChecksumOfBuffer(const char* buffer, size_t size)
 {
     return CalcChecksumOfBuffer(reinterpret_cast<const uint8_t*>(buffer), size);
 }
-
-#endif // !FILECHECKSUM_H_INCLUDED

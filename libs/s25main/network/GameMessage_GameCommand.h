@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameMessage_GameCommand_h__
-#define GameMessage_GameCommand_h__
+#pragma once
 
 #include "GameCommand.h"
 #include "GameMessage.h"
@@ -37,5 +36,3 @@ public:
     void Deserialize(Serializer& ser) override;
     bool Run(GameMessageInterface* callback) const override;
 };
-
-#endif // GameMessage_GameCommand_h__

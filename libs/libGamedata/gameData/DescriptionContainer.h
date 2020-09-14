@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DescriptionContainer_h__
-#define DescriptionContainer_h__
+#pragma once
 
 #include "DescIdx.h"
 #include <map>
@@ -97,5 +96,3 @@ inline T& DescriptionContainer<T>::getMutable(const DescIdx<T> idx)
 {
     return items[idx.value];
 }
-
-#endif // DescriptionContainer_h__

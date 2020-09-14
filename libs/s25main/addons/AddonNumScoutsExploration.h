@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AddonNumScoutsExploration_h__
-#define AddonNumScoutsExploration_h__
-
 #pragma once
 
 #include "AddonList.h"
@@ -44,5 +41,3 @@ public:
                     2)
     {}
 };
-
-#endif // AddonNumScoutsExploration_h__

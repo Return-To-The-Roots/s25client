@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ROADSEGMENT_H_INCLUDED
-#define ROADSEGMENT_H_INCLUDED
 
 #pragma once
 
@@ -134,5 +132,3 @@ private:
     /// Träger (und ggf. Esel), der auf diesem Weg arbeitet
     std::array<nofCarrier*, 2> carriers_;
 };
-
-#endif // !ROADSEGMENT_H_INCLUDED

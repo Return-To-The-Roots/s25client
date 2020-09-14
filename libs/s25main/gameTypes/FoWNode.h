@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef FoWNode_h__
-#define FoWNode_h__
+#pragma once
 
 #include "Direction.h"
 #include "helpers/EnumArray.h"
@@ -70,5 +69,3 @@ struct FoWNode
     void Serialize(SerializedGameData& sgd) const;
     void Deserialize(SerializedGameData& sgd);
 };
-
-#endif // FoWNode_h__

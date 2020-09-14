@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GetInsertIterator_h__
-#define GetInsertIterator_h__
+#pragma once
 
 #include <boost/type_traits/make_void.hpp>
 #include <iterator>
@@ -38,5 +37,3 @@ struct GetInsertIterator<T, boost::void_t<decltype(std::declval<T>().push_back(s
 };
 
 } // namespace helpers
-
-#endif // GetInsertIterator_h__

@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOSTATICOBJECT_H_INCLUDED
-#define NOSTATICOBJECT_H_INCLUDED
 
 #pragma once
 
@@ -60,5 +58,3 @@ protected:
     unsigned short file;
     unsigned char size;
 };
-
-#endif // !NOSTATICOBJECT_H_INCLUDED

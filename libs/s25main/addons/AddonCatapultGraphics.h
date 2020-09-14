@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONCATAPULTGRAPHICS_H_INCLUDED
-#define ADDONCATAPULTGRAPHICS_H_INCLUDED
 
 #pragma once
 
@@ -35,5 +33,3 @@ public:
                     _("Adds new race-specific graphics for catapults to the game."))
     {}
 };
-
-#endif // !ADDONCATAPULTGRAPHICS_H_INCLUDED

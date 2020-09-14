@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef FILES_H_INCLUDED
-#define FILES_H_INCLUDED
 
 #pragma once
 
@@ -104,5 +102,3 @@ const std::array<const std::string, NUM_GFXSETS> MAP_GFXSET_Z = {{"MAP_0_Z", "MA
 const std::array<const std::string, NUM_GFXSETS> TEX_GFXSET = {{"TEX5", "TEX6", "TEX7"}};
 
 RTTR_POP_DIAGNOSTIC
-
-#endif // FILES_H_INCLUDED

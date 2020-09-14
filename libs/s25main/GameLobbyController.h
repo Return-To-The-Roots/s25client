@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameLobbyController_h__
-#define GameLobbyController_h__
+#pragma once
 
 #include "network/IGameLobbyController.h"
 #include "gameTypes/AIInfo.h"
@@ -52,5 +51,3 @@ public:
     void CancelCountdown();
     void RemoveLuaScript();
 };
-
-#endif // GameLobbyController_h__

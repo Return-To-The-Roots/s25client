@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_BITMAP_SHADOW_H_INCLUDED
-#define GLARCHIVITEM_BITMAP_SHADOW_H_INCLUDED
 
 #pragma once
 
@@ -33,5 +31,3 @@ public:
     {}
     RTTR_CLONEABLE(glArchivItem_Bitmap_Shadow)
 };
-
-#endif // !GLARCHIVITEM_BITMAP_SHADOW_H_INCLUDED

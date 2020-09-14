@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BuildingCount_h__
-#define BuildingCount_h__
+#pragma once
 
 #include "gameTypes/BuildingType.h"
 #include <array>
@@ -27,5 +26,3 @@ struct BuildingCount
     std::array<unsigned, NUM_BUILDING_TYPES> buildings;
     std::array<unsigned, NUM_BUILDING_TYPES> buildingSites;
 };
-
-#endif // BuildingCount_h__

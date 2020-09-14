@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef variant_h__
-#define variant_h__
+#pragma once
 
 #include <boost/variant.hpp>
 #include <type_traits>
@@ -61,4 +60,3 @@ auto composeVisitor(Fs&&... fs)
 {
     return detail::lambda_visitor<std::decay_t<Fs>...>(std::forward<Fs>(fs)...);
 }
-#endif // variant_h__

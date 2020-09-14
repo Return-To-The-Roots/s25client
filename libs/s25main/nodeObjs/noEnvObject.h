@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOENVOBJECT_H_INCLUDED
-#define NOENVOBJECT_H_INCLUDED
 
 #pragma once
 
@@ -30,5 +28,3 @@ public:
 
     GO_Type GetGOT() const override { return GOT_ENVOBJECT; }
 };
-
-#endif // !NOENVOBJECT_H_INCLUDED

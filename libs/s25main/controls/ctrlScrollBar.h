@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLSCROLLBAR_H_INCLUDED
-#define CTRLSCROLLBAR_H_INCLUDED
 
 #pragma once
 
@@ -68,5 +66,3 @@ private:
     bool isMouseScrolling;
     int last_y;
 };
-
-#endif // !CTRLSCROLLBAR_H_INCLUDED

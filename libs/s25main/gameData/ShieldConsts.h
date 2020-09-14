@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ShieldConsts_h__
-#define ShieldConsts_h__
+#pragma once
 
 #include "helpers/EnumArray.h"
 #include "gameTypes/GoodTypes.h"
@@ -38,5 +37,3 @@ inline constexpr GoodType convertShieldToNation(const GoodType good, const Natio
 {
     return (good == GD_SHIELDROMANS) ? SHIELD_TYPES[nation] : good;
 }
-
-#endif // ShieldConsts_h__

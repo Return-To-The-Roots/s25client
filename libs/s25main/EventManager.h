@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef EVENTMANAGER_H_INCLUDED
-#define EVENTMANAGER_H_INCLUDED
 
 #pragma once
 
@@ -90,5 +88,3 @@ protected:
     /// Get all events in the order they will be processed
     std::vector<const GameEvent*> GetEvents() const;
 };
-
-#endif // !EVENTMANAGER_H_INCLUDED

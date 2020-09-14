@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef APPLICATIONLOADER_H_INCLUDED
-#define APPLICATIONLOADER_H_INCLUDED
+
+#pragma once
 
 #include <memory>
 #include <string>
@@ -42,5 +42,3 @@ private:
     std::string playlistPath_;
     std::unique_ptr<Playlist> playlist_;
 };
-
-#endif // !APPLICATIONLOADER_H_INCLUDED

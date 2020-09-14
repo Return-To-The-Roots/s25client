@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AIEVENTMANAGER_H_INCLUDED
-#define AIEVENTMANAGER_H_INCLUDED
 
 #pragma once
 
@@ -39,5 +37,3 @@ public:
 protected:
     std::queue<std::unique_ptr<AIEvent::Base>> events;
 };
-
-#endif // !AIEVENTMANAGER_H_INCLUDED

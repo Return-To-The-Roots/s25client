@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ILobbyClient_h__
-#define ILobbyClient_h__
+#pragma once
 
 #include <string>
 
@@ -33,5 +32,3 @@ public:
     virtual void SendServerJoinRequest() = 0;
     virtual void SendChat(const std::string& text) = 0;
 };
-
-#endif // ILobbyClient_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RandomConfig_h__
-#define RandomConfig_h__
+#pragma once
 
 #include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/MapStyle.h"
@@ -132,5 +131,3 @@ inline std::vector<DescIdx<TerrainDesc>> RandomConfig::FilterTerrains(const std:
     }
     return result;
 }
-
-#endif // RandomConfig_h__

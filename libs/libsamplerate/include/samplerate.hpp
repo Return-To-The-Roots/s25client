@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef samplerate_hpp__
-#define samplerate_hpp__
+#pragma once
 
 #include <functional>
 #include <samplerate.h>
@@ -211,5 +210,3 @@ public:
     }
 };
 } // namespace samplerate
-
-#endif // samplerate_hpp__

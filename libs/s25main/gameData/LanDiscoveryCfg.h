@@ -15,11 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LAN_DISCOVERY_CFG_H_INCLUDED
-#define LAN_DISCOVERY_CFG_H_INCLUDED
+#pragma once
 
 #include "s25util/LANDiscovery.h"
 
 extern const LANDiscoveryBase::Config LAN_DISCOVERY_CFG;
-
-#endif // !LAN_DISCOVERY_CFG_H_INCLUDED

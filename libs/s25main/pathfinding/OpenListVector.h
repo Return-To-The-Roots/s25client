@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not,  see <http://www.gnu.org/licenses/>.
 
-#ifndef OpenListVector_h__
-#define OpenListVector_h__
+#pragma once
 
 #include <vector>
 
@@ -83,5 +82,3 @@ public:
 
     void rearrange(const T& /*target*/) {}
 };
-
-#endif // OpenListVector_h__

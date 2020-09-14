@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MUSICPLAYER_H_
-#define MUSICPLAYER_H_
+
+#pragma once
 
 #include "IngameWindow.h"
 #include <boost/filesystem/path.hpp>
@@ -68,5 +68,3 @@ private:
 
     void Msg_Input(unsigned win_id, const std::string& msg);
 };
-
-#endif

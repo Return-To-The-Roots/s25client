@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_WORKMAN_H_
-#define NOF_WORKMAN_H_
+#pragma once
 
 #include "helpers/OptionalEnum.h"
 #include "nofBuildingWorker.h"
@@ -68,5 +67,3 @@ public:
 
     void HandleDerivedEvent(unsigned id) override;
 };
-
-#endif

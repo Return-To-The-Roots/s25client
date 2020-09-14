@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwHQ_H_INCLUDED
-#define iwHQ_H_INCLUDED
 
 #pragma once
 
@@ -33,5 +31,3 @@ protected:
     void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
     unsigned grpIdReserve;
 };
-
-#endif // !iwHQ_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef luaIncludes_h__
-#define luaIncludes_h__
+#pragma once
 
 extern "C"
 {
@@ -26,5 +25,3 @@ extern "C"
 #include "lualib.h"
     // IWYU pragma: end_exports
 }
-
-#endif // luaIncludes_h__

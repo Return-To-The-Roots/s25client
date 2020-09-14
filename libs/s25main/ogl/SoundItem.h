@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef SoundItem_h__
-#define SoundItem_h__
-
 #include "drivers/SoundHandle.h"
 
 /// Base class for all sound items
@@ -45,5 +42,3 @@ private:
     /// Handle to the sound, managed by driver, hence safe to copy
     SoundHandle handle;
 };
-
-#endif // SoundItem_h__

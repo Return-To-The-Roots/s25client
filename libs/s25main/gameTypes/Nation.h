@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef Nation_h__
-#define Nation_h__
-
 #include "helpers/MaxEnumValue.h"
 
 /// Nations (byte sized)
@@ -36,5 +33,3 @@ DEFINE_MAX_ENUM_VALUE(Nation, NAT_BABYLONIANS)
 /// Number of native notions
 constexpr unsigned NUM_NATIVE_NATIONS = 4;
 constexpr unsigned NUM_NATIONS = helpers::NumEnumValues_v<Nation>;
-
-#endif // Nation_h__

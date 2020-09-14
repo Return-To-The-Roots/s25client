@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef WorldWithGCExecution_h__
-#define WorldWithGCExecution_h__
+#pragma once
 
 #include "GCExecutor.h"
 #include "GamePlayer.h"
@@ -63,5 +62,3 @@ public:
     using WorldWithGCExecution<3>::curPlayer;
     using WorldWithGCExecution<3>::hqPos;
 };
-
-#endif // WorldWithGCExecution_h__

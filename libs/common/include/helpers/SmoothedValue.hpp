@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SmoothedValue_h__
-#define SmoothedValue_h__
+#pragma once
 
 #include <boost/circular_buffer.hpp>
 #include <numeric>
@@ -41,5 +40,3 @@ public:
     size_t size() const { return pastValues_.size(); }
 };
 } // namespace helpers
-
-#endif // SmoothedValue_h__

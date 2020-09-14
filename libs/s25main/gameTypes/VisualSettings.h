@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef VisualSettings_h__
-#define VisualSettings_h__
+#pragma once
 
 #include "gameTypes/SettingsTypes.h"
 
@@ -35,5 +34,3 @@ struct VisualSettings
     /// Priority of each tool
     ToolSettings tools_settings;
 };
-
-#endif // VisualSettings_h__

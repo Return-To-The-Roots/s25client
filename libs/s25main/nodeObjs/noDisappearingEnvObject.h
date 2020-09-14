@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NO_DISAPPEARING_ENVOBJECT
-#define NO_DISAPPEARING_ENVOBJECT
+
+#pragma once
 
 #include "noCoordBase.h"
 
@@ -49,5 +49,3 @@ private:
     /// Event, das bestimmt wie lange es noch lebt
     const GameEvent* dead_event;
 };
-
-#endif

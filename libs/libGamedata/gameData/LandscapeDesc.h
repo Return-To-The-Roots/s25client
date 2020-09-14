@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LandscapeDesc_h__
-#define LandscapeDesc_h__
+#pragma once
 
 #include "Rect.h"
 #include <array>
@@ -49,5 +48,3 @@ struct LandscapeDesc
 
     LandscapeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
 };
-
-#endif // LandscapeDesc_h__

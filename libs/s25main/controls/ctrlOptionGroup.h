@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLOPTIONGROUP_H_INCLUDED
-#define CTRLOPTIONGROUP_H_INCLUDED
 
 #pragma once
 
@@ -57,5 +55,3 @@ private:
     boost::optional<unsigned> selection_; /// Currently selected button ID, must be set via SetSelection after initialization
     int select_type;                      /// Typ der Selektierung
 };
-
-#endif // !CTRLOPTIONGROUP_H_INCLUDED

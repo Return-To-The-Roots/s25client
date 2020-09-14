@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_CARRIER_H_
-#define NOF_CARRIER_H_
+#pragma once
 
 #include "figures/noFigure.h"
 #include "helpers/MaxEnumValue.h"
@@ -163,5 +162,3 @@ public:
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
     void CorrectSplitData_Derived() override;
 };
-
-#endif

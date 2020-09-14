@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaTraits_h__
-#define LuaTraits_h__
+#pragma once
 
 #include <kaguya/lua_ref.hpp>
 #include <kaguya/traits.hpp>
@@ -99,5 +98,3 @@ struct lua_type_traits<std::pair<T1, T2>>
     static int push(lua_State* l, push_type v) { return util::push_args(l, v.first, v.second); }
 };
 } // namespace kaguya
-
-#endif // LuaTraits_h__

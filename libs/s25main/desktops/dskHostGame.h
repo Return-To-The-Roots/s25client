@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef WP_HOSTGAME_H_
-#define WP_HOSTGAME_H_
+#pragma once
 
 #include "Desktop.h"
 #include "network/ClientInterface.h"
@@ -105,5 +104,3 @@ private:
     ctrlChat *gameChat, *lobbyChat;
     unsigned lobbyChatTabAnimId, localChatTabAnimId;
 };
-
-#endif

@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef TestServer_h__
-#define TestServer_h__
-
 #include "s25util/MessageQueue.h"
 #include "s25util/Socket.h"
 #include <vector>
@@ -44,5 +41,3 @@ public:
     Socket socket;
     std::vector<Connection> connections;
 };
-
-#endif // TestServer_h__

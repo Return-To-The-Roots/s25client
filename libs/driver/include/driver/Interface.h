@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef INTERFACE_H_INCLUDED
-#define INTERFACE_H_INCLUDED
 
 #pragma once
 
@@ -26,5 +24,3 @@ RTTR_DECL const char* GetDriverName();
 
 using GetDriverAPIVersion_t = decltype(GetDriverAPIVersion);
 using GetDriverName_t = decltype(GetDriverName);
-
-#endif // !INTERFACE_H_INCLUDED

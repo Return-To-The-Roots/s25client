@@ -13,8 +13,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef ScreenResizeEvent_h__
-#define ScreenResizeEvent_h__
+#pragma once
 
 #include "Point.h"
 
@@ -24,5 +23,3 @@ struct ScreenResizeEvent
     ScreenResizeEvent(const Extent& oldSize, const Extent& newSize) : oldSize(oldSize), newSize(newSize) {}
     Extent oldSize, newSize;
 };
-
-#endif // ScreenResizeEvent_h__

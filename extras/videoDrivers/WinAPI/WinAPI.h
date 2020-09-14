@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef WINAPI_H_INCLUDED
-#define WINAPI_H_INCLUDED
 
 #pragma once
 
@@ -105,5 +103,3 @@ private:
     bool isWindowResizable, isMinimized;
     std::wstring windowClassName;
 };
-
-#endif // !WINAPI_H_INCLUDED

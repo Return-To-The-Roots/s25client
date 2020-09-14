@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Clock_h__
-#define Clock_h__
+#pragma once
 
 #include <chrono>
 #include <memory>
@@ -53,5 +52,3 @@ public:
     // Set to a different clock
     static void setClock(std::unique_ptr<BaseClock> newClock) { instance() = std::move(newClock); }
 };
-
-#endif // Clock_h__

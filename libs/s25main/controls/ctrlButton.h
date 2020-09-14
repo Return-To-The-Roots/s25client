@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLBUTTON_H_INCLUDED
-#define CTRLBUTTON_H_INCLUDED
 
 #pragma once
 
@@ -71,5 +69,3 @@ protected:
     /// Button angeschalten?
     bool isEnabled;
 };
-
-#endif // CTRLBUTTON_H_INCLUDED

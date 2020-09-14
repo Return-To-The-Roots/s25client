@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef dskBenchmark_h__
-#define dskBenchmark_h__
-
 #include "FrameCounter.h"
 #include "desktops/dskMenuBase.h"
 #include <chrono>
@@ -77,5 +74,3 @@ private:
     void createGame();
     void printTimes() const;
 };
-
-#endif // dskBenchmark_h__

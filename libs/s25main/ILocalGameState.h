@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ILocalGameState_h__
-#define ILocalGameState_h__
+#pragma once
 
 #include <string>
 
@@ -32,5 +31,3 @@ public:
     /// Send a chat message to the local player
     virtual void SystemChat(const std::string& text) = 0;
 };
-
-#endif // ILocalGameState_h__

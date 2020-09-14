@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef stubFunction_h__
-#define stubFunction_h__
+#pragma once
 
 #include <boost/preprocessor/cat.hpp>
 
@@ -41,5 +40,3 @@ struct StubFunctionReset
     rttr::StubFunctionReset<decltype(newFunction)> BOOST_PP_CAT(_stub_, __COUNTER__)(function, newFunction)
 
 } // namespace rttr
-
-#endif // stubFunction_h__

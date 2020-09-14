@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaInterfaceSettings_h__
-#define LuaInterfaceSettings_h__
+#pragma once
 
 #include "LuaInterfaceGameBase.h"
 #include <string>
@@ -63,5 +62,3 @@ private:
     void ResetGameSettings();
     void SetGameSettings(const kaguya::LuaTable& settings);
 };
-
-#endif // LuaInterfaceSettings_h__

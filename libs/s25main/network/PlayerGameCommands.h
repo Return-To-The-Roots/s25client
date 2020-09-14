@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef PlayerGameCommands_h__
-#define PlayerGameCommands_h__
-
 #include "AsyncChecksum.h"
 #include "GameCommand.h"
 #include <utility>
@@ -38,5 +35,3 @@ struct PlayerGameCommands
     void Serialize(Serializer& ser) const;
     void Deserialize(Serializer& ser);
 };
-
-#endif // PlayerGameCommands_h__

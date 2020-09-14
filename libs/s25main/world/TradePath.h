@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TradePath_h__
-#define TradePath_h__
+#pragma once
 
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
@@ -38,5 +37,3 @@ struct TradePath
 
     void Serialize(SerializedGameData& sgd) const;
 };
-
-#endif // TradePath_h__

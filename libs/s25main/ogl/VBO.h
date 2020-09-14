@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef VBO_h__
-#define VBO_h__
+#pragma once
 
 #include "RTTR_Assert.h"
 #include "enum_cast.hpp"
@@ -88,5 +87,3 @@ public:
     void unbind() const { glBindBuffer(rttr::enum_cast(target_), 0u); }
 };
 } // namespace ogl
-
-#endif // VBO_h__

@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef VIDEOINTERFACE_H_INCLUDED
-#define VIDEOINTERFACE_H_INCLUDED
 
 #pragma once
 
@@ -97,5 +95,3 @@ RTTR_DECL void FreeVideoInstance(IVideoDriver* driver);
 
 using CreateVideoInstance_t = decltype(CreateVideoInstance);
 using FreeVideoInstance_t = decltype(FreeVideoInstance);
-
-#endif // !VIDEOINTERFACE_H_INCLUDED

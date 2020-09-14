@@ -16,8 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#ifndef Game_h__
-#define Game_h__
 
 #include "GlobalGameSettings.h"
 #include "world/GameWorld.h"
@@ -54,5 +52,3 @@ private:
     void CheckObjective();
     bool started_, finished_;
 };
-
-#endif // Game_h__

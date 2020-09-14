@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOSKELETON_H_INCLUDED
-#define NOSKELETON_H_INCLUDED
 
 #pragma once
 
@@ -56,5 +54,3 @@ private:
     /// GameEvent*, damit der dann gelöscht werden kann, falls das Skelett von außerhalb gelöscht wird
     const GameEvent* current_event;
 };
-
-#endif // !NOSKELETON_H_INCLUDED

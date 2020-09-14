@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef dskSELECTMAP_H_INCLUDED
-#define dskSELECTMAP_H_INCLUDED
 
 #pragma once
 
@@ -83,5 +81,3 @@ private:
     /// Maps that we already know are broken
     std::set<boost::filesystem::path> brokenMapPaths;
 };
-
-#endif //! dskSELECTMAP_H_INCLUDED

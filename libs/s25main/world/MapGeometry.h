@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MAP_GEOMETRY_H_
-#define MAP_GEOMETRY_H_
+
+#pragma once
 
 #include "Point.h"
 #include "gameTypes/Direction.h"
@@ -29,5 +29,3 @@ Position GetNodePos(MapPoint pt);
 Position GetNodePos(Position pt);
 /// Return the height adjusted point
 Position GetNodePos(MapPoint pt, uint8_t height);
-
-#endif //! MAP_GEOMETRY_H_

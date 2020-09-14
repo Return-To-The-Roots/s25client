@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef str_utils_h__
-#define str_utils_h__
+#pragma once
 
 #include <boost/lexical_cast.hpp>
 #include <sstream>
@@ -78,5 +77,3 @@ std::string concat(Args&&... args)
 }
 
 } // namespace helpers
-
-#endif // str_utils_h__

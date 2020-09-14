@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef StatisticTypes_h__
-#define StatisticTypes_h__
+#pragma once
 
 /// Statistic categories
 enum StatisticType
@@ -65,5 +64,3 @@ inline unsigned short decrStatIndex(unsigned short i, unsigned short amount)
 {
     return (i < amount) ? NUM_STAT_STEPS - (amount - i) - 1 : i - amount;
 }
-
-#endif // StatisticTypes_h__

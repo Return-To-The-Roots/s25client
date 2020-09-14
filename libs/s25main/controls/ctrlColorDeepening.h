@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ctrlColorDeepening_h__
-#define ctrlColorDeepening_h__
-
 #include "controls/ctrlBaseColor.h"
 #include "controls/ctrlDeepening.h"
 
@@ -32,5 +29,3 @@ public:
 protected:
     void DrawContent() const override;
 };
-
-#endif // ctrlColorDeepening_h__

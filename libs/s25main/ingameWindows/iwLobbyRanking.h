@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwLOBBYRANKING_H_INCLUDED
-#define iwLOBBYRANKING_H_INCLUDED
 
 #pragma once
 
@@ -34,5 +32,3 @@ protected:
     void Msg_Timer(unsigned ctrl_id) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };
-
-#endif // iwLOBBYRANKING_H_INCLUDED

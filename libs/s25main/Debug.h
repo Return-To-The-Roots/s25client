@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef DEBUG_H_
-#define DEBUG_H_
+
+#pragma once
 
 #include "s25util/Socket.h"
 #include <boost/filesystem/path.hpp>
@@ -45,5 +45,3 @@ public:
     bool SendAsyncLog(const boost::filesystem::path& asyncLogFilepath);
     bool SendFile(BinaryFile& file);
 };
-
-#endif

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapNode_h__
-#define MapNode_h__
+#pragma once
 
 #include "Resource.h"
 #include "helpers/EnumArray.h"
@@ -72,5 +71,3 @@ struct MapNode
     void Deserialize(SerializedGameData& sgd, unsigned numPlayers, const WorldDescription& desc,
                      const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains);
 };
-
-#endif // MapNode_h__

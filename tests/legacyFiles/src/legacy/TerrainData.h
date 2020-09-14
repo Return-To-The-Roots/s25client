@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TerrainData_h__
-#define TerrainData_h__
+#pragma once
 
 #include "LandscapeType.h"
 #include "Rect.h"
@@ -75,5 +74,3 @@ public:
     /// Returns what kind of buildings can be build on that terrain
     static TerrainBQ GetBuildingQuality(TerrainType t);
 };
-
-#endif // TerrainData_h__

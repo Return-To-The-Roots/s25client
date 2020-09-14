@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameCommandFactory_h__
-#define GameCommandFactory_h__
+#pragma once
 
 #include "GameCommand.h"
 #include "gameTypes/BuildingType.h"
@@ -103,5 +102,3 @@ protected:
     /// Called for each created GC. Return true iff this is going to be executed
     virtual bool AddGC(gc::GameCommandPtr gc) = 0;
 };
-
-#endif // GameMessageFactory_h__

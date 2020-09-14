@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SIGNAL_H_INCLUDED
-#define SIGNAL_H_INCLUDED
-
 #pragma once
 
 #ifdef _WIN32
@@ -28,5 +25,3 @@ BOOL WINAPI ConsoleSignalHandler(DWORD dwCtrlType);
 extern bool killme;
 void ConsoleSignalHandler(int sig);
 #endif // _WIN32
-
-#endif // SIGNAL_H_INCLUDED

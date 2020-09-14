@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef VertexUtility_h__
-#define VertexUtility_h__
+#pragma once
 
 #include "gameTypes/MapCoordinates.h"
 #include <vector>
@@ -59,5 +58,3 @@ public:
      */
     static double Distance(const Position& p1, const Position& p2, const MapExtent& size);
 };
-
-#endif // VertexUtility_h__

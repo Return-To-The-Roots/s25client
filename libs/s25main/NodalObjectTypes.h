@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NODALOBJECTTYPES_H_INCLUDED
-#define NODALOBJECTTYPES_H_INCLUDED
+
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include <cstdint>
@@ -41,5 +41,3 @@ enum NodalObjectType : uint8_t
     NOP_CHARBURNERPILE   // Holz-/Kohle-Haufen vom Köhler
 };
 DEFINE_MAX_ENUM_VALUE(NodalObjectType, NodalObjectType::NOP_CHARBURNERPILE)
-
-#endif // NODALOBJECTTYPES_H_INCLUDED

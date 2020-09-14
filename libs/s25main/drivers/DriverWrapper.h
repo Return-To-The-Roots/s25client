@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef DRIVERWRAPPER_H_INCLUDED
-#define DRIVERWRAPPER_H_INCLUDED
+
+#pragma once
 
 #include <boost/dll/shared_library.hpp>
 #include <boost/filesystem/path.hpp>
@@ -72,5 +72,3 @@ private:
     static bool CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError);
 };
 } // namespace drivers
-
-#endif // DRIVERWRAPPER_H_INCLUDED

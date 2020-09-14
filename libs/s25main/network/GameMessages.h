@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMEMESSAGES_H_INCLUDED
-#define GAMEMESSAGES_H_INCLUDED
+
+#pragma once
 
 #include <utility>
 
@@ -1105,5 +1105,3 @@ public:
         return callback->OnGameMessage(*this);
     }
 };
-
-#endif //! GAMEMESSAGES_H_INCLUDED

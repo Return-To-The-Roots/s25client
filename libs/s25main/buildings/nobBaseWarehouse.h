@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOBBASEWAREHOUSE_H_INCLUDED
-#define NOBBASEWAREHOUSE_H_INCLUDED
 
 #pragma once
 
@@ -290,5 +288,3 @@ public:
     /// For debug only
     bool IsDependentFigure(noFigure* fig) const;
 };
-
-#endif

@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef VIDEODRIVER_H_INCLUDED
-#define VIDEODRIVER_H_INCLUDED
 
 #pragma once
 
@@ -64,4 +62,3 @@ private:
     VideoMode windowSize_;
     Extent renderSize_;
 };
-#endif // !VIDEODRIVER_H_INCLUDED

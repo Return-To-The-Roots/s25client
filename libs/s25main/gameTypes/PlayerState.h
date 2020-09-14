@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PlayerState_h__
-#define PlayerState_h__
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include <cstdint>
@@ -29,5 +28,3 @@ enum PlayerState : uint8_t
     PS_AI
 };
 DEFINE_MAX_ENUM_VALUE(PlayerState, PlayerState::PS_AI)
-
-#endif // PlayerState_h__

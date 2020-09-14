@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef PathConditionTrade_h__
-#define PathConditionTrade_h__
-
 #include "GamePlayer.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "world/GameWorldBase.h"
@@ -42,5 +39,3 @@ struct PathConditionTrade : public PathConditionHuman
         return (owner == 0 || player.IsAlly(owner - 1));
     }
 };
-
-#endif // PathConditionTrade_h__

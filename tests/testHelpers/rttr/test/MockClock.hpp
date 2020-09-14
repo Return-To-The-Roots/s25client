@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MockClock_h__
-#define MockClock_h__
+#pragma once
 
 #include "Clock.h"
 
@@ -35,5 +34,4 @@ namespace rttr { namespace test {
         MockClockFixture() : currentTime(0) { Clock::setClock(std::make_unique<MockClock>(currentTime)); }
         ~MockClockFixture() { Clock::setClock(std::make_unique<BaseClock>()); }
     };
-}}     // namespace rttr::test
-#endif // MockClock_h__
+}} // namespace rttr::test

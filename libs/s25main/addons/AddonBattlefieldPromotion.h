@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONBATTLEFIELDPROMOTION_H_INCLUDED
-#define ADDONBATTLEFIELDPROMOTION_H_INCLUDED
+
+#pragma once
 
 #include "AddonBool.h"
 
@@ -30,5 +30,3 @@ public:
                     _("Soldiers winning a fight increase in rank."))
     {}
 };
-
-#endif

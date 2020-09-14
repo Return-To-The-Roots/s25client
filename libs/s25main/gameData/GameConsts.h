@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GAMECONSTS_H_
-#define GAMECONSTS_H_
+#pragma once
 
 #include <array>
 #include <limits>
@@ -37,5 +36,3 @@ const unsigned NUM_OBJECTIVES = 3;
 /// tournament modes
 const unsigned NUM_TOURNAMENT_MODESS = 5;
 const std::array<unsigned, NUM_TOURNAMENT_MODESS> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = {30, 60, 90, 120, 240};
-
-#endif

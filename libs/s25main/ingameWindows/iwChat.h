@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwCHAT_H_INCLUDED
-#define iwCHAT_H_INCLUDED
 
 #pragma once
 
@@ -41,5 +39,3 @@ private:
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void Msg_EditEnter(unsigned ctrl_id) override;
 };
-
-#endif // !iwCHAT_H_INCLUDED

@@ -14,10 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#pragma once
 
-#ifndef AsyncChecksum_h__
-#define AsyncChecksum_h__
+#pragma once
 
 class Game;
 class Serializer;
@@ -51,5 +49,3 @@ inline bool AsyncChecksum::operator!=(const AsyncChecksum& rhs) const
 {
     return !(*this == rhs);
 }
-
-#endif // AsyncChecksum_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RAWSOUNDHANDLE_H_INCLUDED
-#define RAWSOUNDHANDLE_H_INCLUDED
+#pragma once
 
 namespace driver {
 enum class SoundType
@@ -51,5 +50,3 @@ private:
     void invalidate() { driverData = nullptr; }
 };
 } // namespace driver
-
-#endif // !RAWSOUNDHANDLE_H_INCLUDED

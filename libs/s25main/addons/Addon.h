@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ADDON_H_INCLUDED
-#define ADDON_H_INCLUDED
-
 #include "const_addons.h"
 #include <memory>
 #include <string>
@@ -63,5 +60,3 @@ private:
     std::string description_;
     unsigned defaultStatus_;
 };
-
-#endif // !ADDON_H_INCLUDED

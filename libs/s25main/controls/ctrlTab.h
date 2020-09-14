@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLTAB_H_INCLUDED
-#define CTRLTAB_H_INCLUDED
 
 #pragma once
 
@@ -74,5 +72,3 @@ private:
 
     std::array<unsigned, 20> tabs; //-V730_NOINIT
 };
-
-#endif // !CTRLTAB_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef WorldFixture_h__
-#define WorldFixture_h__
+#pragma once
 
 #include "Game.h"
 #include "GlobalGameSettings.h"
@@ -129,5 +128,3 @@ struct WorldFixture
         return result;
     }
 };
-
-#endif // WorldFixture_h__

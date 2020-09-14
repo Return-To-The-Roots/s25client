@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not,  see <http://www.gnu.org/licenses/>.
 
-#ifndef FindRoad_h__
-#define FindRoad_h__
+#pragma once
 
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
@@ -43,5 +42,3 @@ inline std::vector<Direction> FindPathForRoad(const GameWorldViewer& world, cons
 {
     return detail::FindPathForRoad(world, startPt, endPt, isBoatRoad, maxLen);
 }
-
-#endif // FindRoad_h__

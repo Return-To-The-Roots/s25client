@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RttrRange_h__
-#define RttrRange_h__
+#pragma once
 
 #include <boost/config.hpp>
 #include <type_traits>
@@ -45,5 +44,3 @@ struct Range
     const T endValue;
 };
 } // namespace helpers
-
-#endif // RttrRange_h__

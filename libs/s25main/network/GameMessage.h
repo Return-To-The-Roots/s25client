@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMEMESSAGE_H_INCLUDED
-#define GAMEMESSAGE_H_INCLUDED
 
 #pragma once
 
@@ -55,5 +53,3 @@ public:
     void Serialize(Serializer& ser) const override;
     void Deserialize(Serializer& ser) override;
 };
-
-#endif // GAMEMESSAGE_H_INCLUDED

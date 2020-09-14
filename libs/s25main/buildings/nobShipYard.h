@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOB_SHIPWRIGHT_H_
-#define NOB_SHIPWRIGHT_H_
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include "nobUsual.h"
@@ -55,5 +54,3 @@ public:
     void SetMode(Mode newMode);
 };
 DEFINE_MAX_ENUM_VALUE(nobShipYard::Mode, nobShipYard::Mode::SHIPS)
-
-#endif

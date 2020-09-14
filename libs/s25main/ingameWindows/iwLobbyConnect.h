@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwLOBBYCONNECT_H_INCLUDED
-#define iwLOBBYCONNECT_H_INCLUDED
 
 #pragma once
 
@@ -45,5 +43,3 @@ private:
     void SetText(const std::string& text, unsigned color, bool button);
     void ReadFromEditAndSaveLobbyData(std::string& user, std::string& pass);
 };
-
-#endif // WP_LOBBYCONNECT_H_INCLUDED

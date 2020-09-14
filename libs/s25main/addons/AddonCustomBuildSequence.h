@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONCUSTOMBUILDSEQUENCE_H_INCLUDED
-#define ADDONCUSTOMBUILDSEQUENCE_H_INCLUDED
 
 #pragma once
 
@@ -34,5 +32,3 @@ public:
                       "in sequence of given order or in a definable sequence based on the building type."))
     {}
 };
-
-#endif // !ADDONCUSTOMBUILDSEQUENCE_H_INCLUDED

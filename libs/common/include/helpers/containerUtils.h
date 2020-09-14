@@ -17,8 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef containerUtils_h__
-#define containerUtils_h__
+#pragma once
 
 #include <boost/type_traits/make_void.hpp>
 #include <algorithm>
@@ -184,5 +183,3 @@ int indexOf(const T_Container& container, const T_Element& element)
 }
 
 } // namespace helpers
-
-#endif // containerUtils_h__

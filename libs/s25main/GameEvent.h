@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameEvent_h__
-#define GameEvent_h__
+#pragma once
 
 class GameObject;
 class SerializedGameData;
@@ -42,5 +41,3 @@ public:
     unsigned GetTargetGF() const { return startGF + length; }
     unsigned GetInstanceId() const { return instanceId; }
 };
-
-#endif // GameEvent_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ToggleAnimation_h__
-#define ToggleAnimation_h__
+#pragma once
 
 #include "animation/Animation.h"
 #include "commonDefines.h"
@@ -53,5 +52,3 @@ void ToggleAnimation<T>::doUpdate(Window* element, double nextFramepartTime)
     T& actualElement = dynamic_cast<T&>(*element);
     CALL_MEMBER_FN(actualElement, animFunc_)(curValue);
 }
-
-#endif // ToggleAnimation_h__

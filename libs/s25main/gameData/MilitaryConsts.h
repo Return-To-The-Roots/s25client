@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MILITARY_CONSTS_H_
-#define MILITARY_CONSTS_H_
+#pragma once
 
 #include "DrawPoint.h"
 #include "helpers/MultiArray.h"
@@ -351,5 +350,3 @@ const helpers::MultiArray<unsigned short, NUM_NATIONS, NUM_SOLDIER_RANKS> HIT_SO
 
 /// Bestimmt den Aufblinkframe vom den Opfern der folgenden Angreifer (nach Rängen)
 const std::array<unsigned short, NUM_SOLDIER_RANKS> SUPPRESS_UNUSED HIT_MOMENT = {{4, 4, 4, 4, 6}};
-
-#endif

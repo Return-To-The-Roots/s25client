@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLALLOCATOR_H_INCLUDED
-#define GLALLOCATOR_H_INCLUDED
 
 #pragma once
 
@@ -27,5 +25,3 @@ public:
     std::unique_ptr<libsiedler2::ArchivItem> create(libsiedler2::BobType type,
                                                     libsiedler2::SoundType subtype = libsiedler2::SoundType::None) const override;
 };
-
-#endif // !GLALLOCATOR_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef JoinPlayerInfo_h__
-#define JoinPlayerInfo_h__
+#pragma once
 
 #include "PlayerInfo.h"
 
@@ -38,5 +37,3 @@ struct JoinPlayerInfo : public PlayerInfo
     // Recovers fixed data in savegames after player slots are swapped
     void FixSwappedSaveSlot(JoinPlayerInfo& other);
 };
-
-#endif // JoinPlayerInfo_h__

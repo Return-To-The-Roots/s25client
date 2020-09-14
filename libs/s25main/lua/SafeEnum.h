@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SafeEnum_h__
-#define SafeEnum_h__
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include "lua/LuaHelpers.h"
@@ -55,5 +54,3 @@ struct lua_type_traits<::lua::SafeEnum<T_Enum, maxValue>> : lua_type_traits<luaI
     static get_type get(lua_State* l, int index) { return parent::get(l, index); }
 };
 } // namespace kaguya
-
-#endif // SafeEnum_h__

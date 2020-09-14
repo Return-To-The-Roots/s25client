@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PostCategory_h__
-#define PostCategory_h__
+#pragma once
 
 enum class PostCategory
 {
@@ -26,5 +25,3 @@ enum class PostCategory
     Economy,
     Diplomacy
 };
-
-#endif // PostCategory_h__

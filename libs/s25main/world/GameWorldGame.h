@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameWorldGame_h__
-#define GameWorldGame_h__
+#pragma once
 
 #include "helpers/OptionalEnum.h"
 #include "world/GameWorldBase.h"
@@ -181,5 +180,3 @@ public:
 protected:
     void VisibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
 };
-
-#endif // GameWorldGame_h__

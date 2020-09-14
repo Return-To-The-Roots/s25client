@@ -1,6 +1,3 @@
-#ifndef NOALLIEDPUSH_H_INCLUDED
-#define NOALLIEDPUSH_H_INCLUDED
-
 #pragma once
 
 #include "AddonBool.h"
@@ -16,5 +13,3 @@ public:
                     _("Allied players can no longer push your borders back with new buildings."))
     {}
 };
-
-#endif // !NOALLIEDPUSH_H_INCLUDED

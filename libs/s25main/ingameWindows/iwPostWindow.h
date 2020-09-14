@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef WP_POSTOFFICE_H_
-#define WP_POSTOFFICE_H_
+#pragma once
 
 #include "IngameWindow.h"
 #include "postSystem/PostCategory.h"
@@ -55,5 +54,3 @@ private:
     const PostMsg* GetMsg(unsigned id) const;
     void SwitchCategory(PostCategory cat);
 };
-
-#endif

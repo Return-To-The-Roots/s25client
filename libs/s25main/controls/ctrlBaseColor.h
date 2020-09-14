@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ctrlBaseColor_h__
-#define ctrlBaseColor_h__
+#pragma once
 
 /// Base class for controls showing a color
 class ctrlBaseColor
@@ -30,5 +29,3 @@ public:
 protected:
     unsigned color_;
 };
-
-#endif // ctrlBaseColor_h__

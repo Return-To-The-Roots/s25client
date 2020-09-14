@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef SERIALIZED_GAME_DATA_H_
-#define SERIALIZED_GAME_DATA_H_
 
 #pragma once
 
@@ -317,5 +315,3 @@ std::enable_if_t<!helpers::is_enum<T>::value, T> SerializedGameData::Pop()
 {
     return Serializer::Pop<T>();
 }
-
-#endif // !SERIALIZED_GAME_DATA_H_

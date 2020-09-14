@@ -14,9 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+
 #pragma once
-#ifndef GAMEPROTOCOL_H_INCLUDED
-#define GAMEPROTOCOL_H_INCLUDED
 
 #include "s25util/Protocol.h"
 
@@ -168,5 +167,3 @@ const unsigned LOAD_TIMEOUT = 10 * 60;
 /// Größe eines Map-Paketes
 /// ACHTUNG: IPV4 garantiert nur maximal 576!!
 const unsigned MAP_PART_SIZE = 512;
-
-#endif // !GAMEPROTOCOL_H_INCLUDED

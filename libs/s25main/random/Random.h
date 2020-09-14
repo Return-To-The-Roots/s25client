@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef RANDOM_H_INCLUDED
-#define RANDOM_H_INCLUDED
-
 #include "RTTR_Assert.h"
 #include "random/XorShift.h"
 #include "s25util/Singleton.h"
@@ -140,5 +137,3 @@ public:
 
 /// Shortcut for creating an instance of RandomFunctor
 #define RANDOM_SHUFFLE(container) RandomFunctor::shuffleContainer(container, __FILE__, __LINE__)
-
-#endif // !RANDOM_H_INCLUDED

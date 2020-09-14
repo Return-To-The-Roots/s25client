@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TerrainType_h__
-#define TerrainType_h__
+#pragma once
 
 /// Terrainarten
 enum TerrainType
@@ -57,5 +56,3 @@ enum EdgeType
     ET_MEADOW,
     ET_WATER
 };
-
-#endif // TerrainType_h__

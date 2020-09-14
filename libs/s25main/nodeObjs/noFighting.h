@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_FIGHTING_H_
-#define NO_FIGHTING_H_
+#pragma once
 
 #include "noBase.h"
 
@@ -74,5 +73,3 @@ public:
     /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
     bool IsSoldierOfPlayer(unsigned char player) const;
 };
-
-#endif

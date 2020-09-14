@@ -13,8 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BuildingQuality_h__
-#define BuildingQuality_h__
+#pragma once
 
 #include "helpers/MaxEnumValue.h"
 #include <cstdint>
@@ -41,5 +40,3 @@ inline bool canUseBq(BuildingQuality bqIs, BuildingQuality bqRequired)
     // Not a special bq (mine/harbor) and we require less then we have -> OK
     return bqIs < BQ_MINE && bqRequired < bqIs;
 }
-
-#endif // BuildingQuality_h__

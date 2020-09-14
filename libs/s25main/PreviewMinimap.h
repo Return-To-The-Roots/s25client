@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PreviewMinimap_h__
-#define PreviewMinimap_h__
+#pragma once
 
 #include "Minimap.h"
 #include <map>
@@ -41,5 +40,3 @@ private:
     unsigned char CalcShading(MapPoint pt, const std::vector<unsigned char>& altitudes) const;
     void CalcShadows(const std::vector<unsigned char>& altitudes);
 };
-
-#endif // PreviewMinimap_h__

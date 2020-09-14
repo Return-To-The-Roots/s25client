@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaServerPlayer_h__
-#define LuaServerPlayer_h__
+#pragma once
 
 #include "LuaPlayerBase.h"
 #include "gameTypes/Nation.h"
@@ -44,5 +43,3 @@ public:
     void SetAI(unsigned level);
     void SetName(const std::string& name);
 };
-
-#endif // LuaServerPlayer_h__

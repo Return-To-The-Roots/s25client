@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwWARES_H_INCLUDED
-#define iwWARES_H_INCLUDED
 
 #pragma once
 
@@ -51,5 +49,3 @@ private:
     unsigned curPage_; /// aktuelle Seite des Inventurfensters.
     unsigned numPages; /// maximale Seite des Inventurfensters.
 };
-
-#endif // !iwINVENTORY_H_INCLUDED

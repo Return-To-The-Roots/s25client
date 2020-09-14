@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
-#ifndef VIDEODRIVERLOADERINTERFACE_H_INCLUDED
-#define VIDEODRIVERLOADERINTERFACE_H_INCLUDED
 
 #pragma once
 
@@ -40,5 +38,3 @@ public:
 
     virtual void WindowResized() = 0;
 };
-
-#endif // !DRIVERLOADERINTERFACE_H_INCLUDED

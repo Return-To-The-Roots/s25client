@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ITexture_h__
-#define ITexture_h__
+#pragma once
 
 #include "Point.h"
 
@@ -30,5 +29,3 @@ public:
     virtual Extent GetSize() const = 0;
     virtual void DrawFull(const Position& dstPos, unsigned color) = 0;
 };
-
-#endif // ITexture_h__

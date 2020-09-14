@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DiplomacyPostQuestion_h__
-#define DiplomacyPostQuestion_h__
+#pragma once
 
 #include "postSystem/PostMsg.h"
 #include "gameTypes/PactTypes.h"
@@ -47,5 +46,3 @@ private:
     /// Player ID who asked for the change
     unsigned char player;
 };
-
-#endif // DiplomacyPostQuestion_h__

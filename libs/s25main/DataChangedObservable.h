@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DataChangedObservable_h__
-#define DataChangedObservable_h__
+#pragma once
 
 #include <list>
 
@@ -36,5 +35,3 @@ protected:
     /// ID=0 means, this is removed and should no longer be referenced
     void NotifyListeners(unsigned changeId);
 };
-
-#endif // DataChangedObservable_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Map_h__
-#define Map_h__
+#pragma once
 
 #include "gameTypes/MapCoordinates.h"
 #include <string>
@@ -152,5 +151,3 @@ struct Map
      */
     libsiedler2::Archiv CreateArchiv();
 };
-
-#endif // Map_h__

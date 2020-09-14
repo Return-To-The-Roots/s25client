@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapStyle_h__
-#define MapStyle_h__
+#pragma once
 
 /**
  * Random map types for map generation. A map type describes the basic high-level look of a map.
@@ -41,5 +40,3 @@ enum class MapStyle
   /** full random map */
   Random
 };
-
-#endif // MapStyle_h__

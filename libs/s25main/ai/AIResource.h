@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AIResource_h__
-#define AIResource_h__
+#pragma once
 
 #include "s25util/warningSuppression.h"
 #include <array>
@@ -50,5 +49,3 @@ const std::array<unsigned, NUM_AIRESOURCES> SUPPRESS_UNUSED RES_RADIUS = {{
   5, // Borderland
   5  // Fish
 }};
-
-#endif // AIResource_h__

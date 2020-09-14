@@ -16,8 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#ifndef VideoMode_h__
-#define VideoMode_h__
 
 /// Window size or resolution
 struct VideoMode
@@ -30,5 +28,3 @@ struct VideoMode
     bool operator==(const VideoMode& o) const { return (width == o.width && height == o.height); }
     bool operator!=(const VideoMode& o) const { return !(*this == o); }
 };
-
-#endif // VideoMode_h__

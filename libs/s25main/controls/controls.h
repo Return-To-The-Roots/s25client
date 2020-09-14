@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CONTROLS_H_INCLUDED
-#define CONTROLS_H_INCLUDED
+
+#pragma once
 
 // IWYU pragma: begin_exports
 #include "ctrlBuildingIcon.h"
@@ -45,5 +45,3 @@
 #include "ctrlVarDeepening.h"
 #include "ctrlVarText.h"
 // IWYU pragma: end_exports
-
-#endif // !CONTROLS_H_INCLUDED

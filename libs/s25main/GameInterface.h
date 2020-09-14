@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMEINTERFACE_H_
-#define GAMEINTERFACE_H_
+
+#pragma once
 
 #include "gameTypes/MapCoordinates.h"
 
@@ -49,5 +49,3 @@ public:
     /// Executes the construction of a road
     virtual void GI_BuildRoad() = 0;
 };
-
-#endif

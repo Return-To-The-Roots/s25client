@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ObjectGenerator_h__
-#define ObjectGenerator_h__
+#pragma once
 
 #include "RandomConfig.h"
 #include "mapGenerator/Map.h"
@@ -164,5 +163,3 @@ inline bool ObjectGenerator::IsTexture(const Map& map, int index, T_Predicate pr
 {
     return predicate(config.GetTerrainByS2Id(map.textureRsu[index])) || predicate(config.GetTerrainByS2Id(map.textureLsd[index]));
 }
-
-#endif // ObjectGenerator_h__

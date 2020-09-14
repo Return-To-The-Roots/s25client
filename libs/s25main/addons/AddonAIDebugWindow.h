@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ADDONAIDEBUGWINDOW_H_INCLUDED
-#define ADDONAIDEBUGWINDOW_H_INCLUDED
-
 #pragma once
 
 #include "AddonBool.h"
@@ -35,5 +32,3 @@ public:
                       "(possible cheating)"))
     {}
 };
-
-#endif // !ADDONAIDEBUGWINDOW_H_INCLUDED

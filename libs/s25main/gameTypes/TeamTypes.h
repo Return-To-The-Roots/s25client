@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TeamTypes_h__
-#define TeamTypes_h__
+#pragma once
 
 enum Team
 {
@@ -33,5 +32,3 @@ enum Team
 
 /// Anzahl der Team-Optionen
 const unsigned NUM_TEAMS = 6; // teamrandom2,3,4 dont count
-
-#endif // TeamTypes_h__

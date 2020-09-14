@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Direction_h__
-#define Direction_h__
+#pragma once
 
 #include "RTTR_Assert.h"
 #include "helpers/EnumRange.h"
@@ -166,5 +165,3 @@ struct EnumRange<Direction>
     BOOST_FORCEINLINE iterator end() const { return iterator(Direction::COUNT); }
 };
 } // namespace helpers
-
-#endif // Direction_h__

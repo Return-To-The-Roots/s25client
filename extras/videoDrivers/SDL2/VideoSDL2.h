@@ -14,10 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#pragma once
 
-#ifndef SDL_H_INCLUDED
-#define SDL_H_INCLUDED
+#pragma once
 
 #include "driver/VideoDriver.h"
 #include <SDL.h>
@@ -75,5 +73,3 @@ private:
     SDL_Window* window;
     SDL_GLContext context;
 };
-
-#endif // !SDL_H_INCLUDED

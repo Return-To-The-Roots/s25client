@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaPlayer_h__
-#define LuaPlayer_h__
+#pragma once
 
 #include "LuaPlayerBase.h"
 #include "lua/LuaTraits.h"
@@ -71,5 +70,3 @@ public:
     void SuggestPact(unsigned char otherPlayerId, lua::SafeEnum<PactType> pt, unsigned duration);
     void CancelPact(lua::SafeEnum<PactType> pt, unsigned char otherPlayerId);
 };
-
-#endif // LuaPlayer_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DummyRenderer_h__
-#define DummyRenderer_h__
+#pragma once
 
 #include "IRenderer.h"
 
@@ -32,5 +31,3 @@ public:
     void DrawRect(const Rect&, unsigned) override {}
     void DrawLine(DrawPoint, DrawPoint, unsigned, unsigned) override {}
 };
-
-#endif // DummyRenderer_h__

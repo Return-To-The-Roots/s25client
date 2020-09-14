@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef ADDONASYNCDEBUG_H_INCLUDED
-#define ADDONASYNCDEBUG_H_INCLUDED
+
+#pragma once
 
 #include "AddonBool.h"
 
@@ -30,5 +30,3 @@ public:
                     _("Enables extra stuff to debug asyncs. Do not enable unless you know what you are doing!"))
     {}
 };
-
-#endif // !ADDONASYNCDEBUG_H_INCLUDED

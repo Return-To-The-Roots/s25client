@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef DESKTOP_H_INCLUDED
-#define DESKTOP_H_INCLUDED
 
 #pragma once
 
@@ -50,5 +48,3 @@ private:
 
     unsigned lastFPS_;
 };
-
-#endif // !DESKTOP_H_INCLUDED

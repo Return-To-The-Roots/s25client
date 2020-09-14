@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef COLLISIONDETECTION_H_INCLUDED
-#define COLLISIONDETECTION_H_INCLUDED
+#pragma once
 
 #include "Point.h"
 #include "Rect.h"
@@ -25,5 +24,3 @@ bool IsPointInRect(const Position& pt, const Rect& rect);
 bool IsPointInRect(int x, int y, const Rect& rect);
 bool IsPointInRect(int x, int y, int rx, int ry, int rwidth, int rheight);
 bool DoRectsIntersect(const Rect& rect1, const Rect& rect2);
-
-#endif // COLLISIONDETECTION_H_INCLUDED

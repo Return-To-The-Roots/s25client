@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AIPLAYER_H_INCLUDED
-#define AIPLAYER_H_INCLUDED
 
 #pragma once
 
@@ -72,5 +70,3 @@ protected:
     /// Abstrahiertes Interfaces, leitet Befehle weiter an
     AIInterface aii;
 };
-
-#endif //! AIPLAYER_H_INCLUDED

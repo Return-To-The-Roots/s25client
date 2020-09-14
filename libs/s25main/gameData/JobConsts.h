@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef JOB_CONSTS_H_
-#define JOB_CONSTS_H_
+#pragma once
 
 #include "DrawPoint.h"
 #include "helpers/EnumArray.h"
@@ -74,5 +73,3 @@ const helpers::EnumArray<std::array<DrawPoint, 8>, Direction> WARE_POS_DONKEY = 
 
 /// Positionen der Ware im Boat für jede Richtung
 const helpers::EnumArray<DrawPoint, Direction> WARE_POS_BOAT = {{{11, -4}, {11, 0}, {-7, -1}, {-8, -5}, {-7, -7}, {6, -7}}};
-
-#endif

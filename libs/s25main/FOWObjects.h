@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef FOWOBJECT_H_INCLUDED
-#define FOWOBJECT_H_INCLUDED
+
+#pragma once
 
 #include "DrawPoint.h"
 #include "gameTypes/BuildingType.h"
@@ -143,5 +143,3 @@ public:
     void Draw(DrawPoint drawPt) const override;
     FOW_Type GetType() const override { return FOW_GRANITE; }
 };
-
-#endif // !FOWOBJECT_H_INCLUDED

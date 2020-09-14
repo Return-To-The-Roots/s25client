@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_PIGBREEDER_H_
-#define NOF_PIGBREEDER_H_
+#pragma once
 
 #include "nofWorkman.h"
 
@@ -42,5 +41,3 @@ public:
     /// Ggf. Schweinesounds abspielen
     void MakePigSounds();
 };
-
-#endif

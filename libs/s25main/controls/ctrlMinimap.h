@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRL_MINIMAP_H_
-#define CTRL_MINIMAP_H_
+
+#pragma once
 
 #include "Window.h"
 #include "gameTypes/MapCoordinates.h"
@@ -57,5 +57,3 @@ protected:
     /// Requested size of the drawn map
     Extent mapSize;
 };
-
-#endif // !MapPreview_H_

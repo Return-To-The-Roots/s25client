@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwPLAYREPLAY_H_INCLUDED
-#define iwPLAYREPLAY_H_INCLUDED
 
 #pragma once
 
@@ -37,5 +35,3 @@ private:
     /// Startet das Replay (aktuell ausgewählter Eintrag)
     void StartReplay();
 };
-
-#endif // !iwPLAYREPLAY_H_INCLUDED

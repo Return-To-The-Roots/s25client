@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AIInfo_h__
-#define AIInfo_h__
+#pragma once
 
 class Serializer;
 
@@ -43,5 +42,3 @@ struct Info
     void serialize(Serializer& ser) const;
 };
 } // namespace AI
-
-#endif // AIInfo_h__

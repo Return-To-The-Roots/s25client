@@ -1,5 +1,4 @@
-#ifndef ADDONSTOPMETALWORKSONZERO_H_INCLUDED
-#define ADDONSTOPMETALWORKSONZERO_H_INCLUDED
+#pragma once
 
 #include "AddonList.h"
 
@@ -17,5 +16,3 @@ public:
                     })
     {}
 };
-
-#endif

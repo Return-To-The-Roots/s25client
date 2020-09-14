@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RoadBuildState_h__
-#define RoadBuildState_h__
+#pragma once
 
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
@@ -30,5 +29,3 @@ struct RoadBuildState
     MapPoint point, start;
     std::vector<Direction> route; /// Directions of the built road
 };
-
-#endif // RoadBuildState_h__

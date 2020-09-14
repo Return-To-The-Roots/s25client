@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef VIDEODRIVERWRAPPER_H_INCLUDED
-#define VIDEODRIVERWRAPPER_H_INCLUDED
+
+#pragma once
 
 #include "DriverWrapper.h"
 #include "Point.h"
@@ -131,5 +131,3 @@ private:
 };
 
 #define VIDEODRIVER VideoDriverWrapper::inst()
-
-#endif

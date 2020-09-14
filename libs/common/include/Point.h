@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Point_h__
-#define Point_h__
+#pragma once
 
 #include <algorithm>
 #include <cstdint>
@@ -273,5 +272,3 @@ constexpr auto operator/(const U rhs, const Point<T>& div)
 {
     return Point<U>::all(rhs) / div;
 }
-
-#endif // Point_h__

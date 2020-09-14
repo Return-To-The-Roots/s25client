@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TradePathCache_h__
-#define TradePathCache_h__
+#pragma once
 
 #include "world/TradePath.h"
 #include "s25util/Singleton.h"
@@ -45,5 +44,3 @@ public:
     bool PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, unsigned char player);
     void AddEntry(const GameWorldGame& gwg, const TradePath& path, unsigned char player);
 };
-
-#endif // TradePathCache_h__

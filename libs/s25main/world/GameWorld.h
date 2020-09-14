@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameWorld_h__
-#define GameWorld_h__
+#pragma once
 
 #include "world/GameWorldGame.h"
 #include <boost/filesystem/path.hpp>
@@ -40,5 +39,3 @@ public:
     void Serialize(SerializedGameData& sgd) const;
     void Deserialize(const std::shared_ptr<Game>& game, ILocalGameState& localgameState, SerializedGameData& sgd);
 };
-
-#endif // GameWorld_h__

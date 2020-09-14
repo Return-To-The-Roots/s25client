@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ctrlBaseVarText_h__
-#define ctrlBaseVarText_h__
-
 #include "controls/ctrlBaseText.h"
 #include <cstdarg>
 #include <string>
@@ -41,5 +38,3 @@ protected:
 private:
     std::vector<void*> vars;
 };
-
-#endif // ctrlBaseVarText_h__

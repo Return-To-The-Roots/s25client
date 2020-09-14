@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef InventorySetting_h__
-#define InventorySetting_h__
+#pragma once
 
 #include <array>
 
@@ -93,5 +92,3 @@ inline bool operator==(const InventorySetting& lhs, const InventorySetting& rhs)
 {
     return lhs.state == rhs.state;
 }
-
-#endif // InventorySetting_h__

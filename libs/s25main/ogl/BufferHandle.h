@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BufferHandle_h__
-#define BufferHandle_h__
+#pragma once
 
 #include <glad/glad.h>
 #include <utility>
@@ -54,5 +53,3 @@ public:
     }
 };
 } // namespace ogl
-
-#endif // BufferHandle_h__

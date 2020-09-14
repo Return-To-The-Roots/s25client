@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOB_USUAL_H_
-#define NOB_USUAL_H_
+#pragma once
 
 #include "noBuilding.h"
 #include "gameTypes/GoodTypes.h"
@@ -146,5 +145,3 @@ private:
     /// Calculates the productivity and resets the counter
     unsigned short CalcProductivity();
 };
-
-#endif

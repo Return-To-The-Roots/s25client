@@ -15,13 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef rttr_s25client_commands_h__
-#define rttr_s25client_commands_h__
+#pragma once
 
 #include <boost/filesystem/path.hpp>
 
 class RttrConfig;
 
 void convertAndSaveSounds(const RttrConfig& config, const boost::filesystem::path& targetFolder);
-
-#endif // rttr_s25client_commands_h__

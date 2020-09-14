@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RoadPathFinder_h__
-#define RoadPathFinder_h__
+#pragma once
 
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/RoadPathDirection.h"
@@ -63,5 +62,3 @@ private:
                       T_SegmentConstraints isSegmentAllowed, unsigned* length = nullptr, RoadPathDirection* firstDir = nullptr,
                       MapPoint* firstNodePos = nullptr);
 };
-
-#endif // RoadPathFinder_h__

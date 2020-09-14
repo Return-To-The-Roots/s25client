@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef FontStyle_h__
-#define FontStyle_h__
+#pragma once
 
 #include <type_traits>
 
@@ -107,5 +106,3 @@ constexpr FontStyle operator|(FontStyle::AlignV lhs, FontStyle::Additional rhs)
 unsigned operator|(FontStyle::AlignV, FontStyle::AlignH) = delete;
 unsigned operator|(FontStyle::Additional, FontStyle::AlignH) = delete;
 unsigned operator|(FontStyle::Additional, FontStyle::AlignV) = delete;
-
-#endif // FontStyle_h__

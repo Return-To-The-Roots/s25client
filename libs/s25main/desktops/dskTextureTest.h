@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef dskTextureTest_h__
-#define dskTextureTest_h__
-
 #include "desktops/dskMenuBase.h"
 #include "gameData/WorldDescription.h"
 #include <memory>
@@ -42,5 +39,3 @@ private:
     std::unique_ptr<glArchivItem_Bitmap> curTexture;
     DescIdx<TerrainDesc> curTerrainIdx;
 };
-
-#endif // dskTextureTest_h__

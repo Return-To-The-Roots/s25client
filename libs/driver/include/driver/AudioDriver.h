@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AUDIODRIVER_H_INCLUDED
-#define AUDIODRIVER_H_INCLUDED
+
+#pragma once
 
 #include "AudioInterface.h"
 #include <vector>
@@ -77,5 +77,3 @@ private:
     std::vector<EffectPlayId> channels_;
 };
 } // namespace driver
-
-#endif // !AUDIODRIVER_H_INCLUDED

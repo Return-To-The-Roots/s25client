@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OpenGLRenderer_h__
-#define OpenGLRenderer_h__
+#pragma once
 
 #include "IRenderer.h"
 
@@ -32,5 +31,3 @@ public:
     void DrawRect(const Rect& rect, unsigned color) override;
     void DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsigned color) override;
 };
-
-#endif // OpenGLRenderer_h__

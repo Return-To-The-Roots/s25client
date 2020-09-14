@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AreaDesc_h__
-#define AreaDesc_h__
+#pragma once
 
 #include "Point.h"
 #include "gameTypes/MapCoordinates.h"
@@ -105,5 +104,3 @@ struct AreaDesc
      */
     bool IsInArea(const Position& point, double playerDistance, const MapExtent& size);
 };
-
-#endif // AreaDesc_h__

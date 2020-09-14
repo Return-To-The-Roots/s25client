@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef BuildingProperties_h__
-#define BuildingProperties_h__
-
 #include "gameTypes/BuildingType.h"
 #include <boost/container/static_vector.hpp>
 
@@ -43,5 +40,3 @@ public:
     /// True iff wares can be stored in this building
     static bool IsWareHouse(BuildingType bld);
 };
-
-#endif // BuildingProperties_h__

@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef RTTR_FOREACH_PT_H_INCLUDED
-#define RTTR_FOREACH_PT_H_INCLUDED
-
 /// Iterate over all points of an area using a point of TYPE named "pt"
 /// WIDTH and HEIGHT is evaluated at most once
 /// Use like:
@@ -33,5 +30,3 @@
         if(auto rttrForeachPtHeight = static_cast<TYPE::ElementType>((SIZE).y)) \
             for(TYPE pt(0, 0); pt.y < rttrForeachPtHeight; ++pt.y)              \
                 for(pt.x = 0; pt.x < rttrForeachPtWidth; ++pt.x)
-
-#endif // !RTTR_FOREACH_PT_H_INCLUDED

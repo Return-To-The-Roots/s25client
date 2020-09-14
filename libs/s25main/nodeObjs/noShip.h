@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_SHIP_H_
-#define NO_SHIP_H_
+#pragma once
 
 #include "noMovable.h"
 #include "gameTypes/MapCoordinates.h"
@@ -230,5 +229,3 @@ public:
     /// Sagt dem Schiff, dass ein neuer Hafen erbaut wurde
     void NewHarborBuilt(nobHarborBuilding* hb);
 };
-
-#endif

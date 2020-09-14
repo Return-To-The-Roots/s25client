@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_ARMORER_H_
-#define NOF_ARMORER_H_
+#pragma once
 
 #include "nofWorkman.h"
 
@@ -53,5 +52,3 @@ public:
 
     GO_Type GetGOT() const override { return GOT_NOF_ARMORER; }
 };
-
-#endif

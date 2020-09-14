@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLEDIT_H_INCLUDED
-#define CTRLEDIT_H_INCLUDED
 
 #pragma once
 
@@ -76,5 +74,3 @@ private:
 
     bool numberOnly_ = false;
 };
-
-#endif // !CTRLEDIT_H_INCLUDED

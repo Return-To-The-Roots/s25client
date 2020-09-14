@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_BUILDER_H_
-#define NOF_BUILDER_H_
+#pragma once
 
 #include "figures/noFigure.h"
 
@@ -88,5 +87,3 @@ public:
     // Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
     void LostWork();
 };
-
-#endif

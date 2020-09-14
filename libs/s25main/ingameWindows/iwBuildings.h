@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwBUILDINGS_H_
-#define iwBUILDINGS_H_
+
+#pragma once
 
 #include "IngameWindow.h"
 #include "gameTypes/BuildingType.h"
@@ -41,5 +41,3 @@ private:
     template<class T_Window, class T_Building>
     void GoToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds);
 };
-
-#endif

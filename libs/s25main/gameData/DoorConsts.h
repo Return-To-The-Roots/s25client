@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DOOR_CONSTS_H_
-#define DOOR_CONSTS_H_
+#pragma once
 
 #include "helpers/MultiArray.h"
 #include "gameTypes/BuildingType.h"
@@ -39,5 +38,3 @@ const helpers::MultiArray<signed char, NUM_NATIONS, NUM_BUILDING_TYPES> DOOR_CON
    // Babylonians
    {9, 5,  5, 0,  12, 0,  0, 0, 0,  7,  8, 8,  8,  8, 5,  0,  10, 9,  5,  3,
     9, 10, 3, 12, 10, 13, 7, 0, -8, 14, 0, 11, 10, 9, 11, 11, 15, -7, -5, 16}}};
-
-#endif

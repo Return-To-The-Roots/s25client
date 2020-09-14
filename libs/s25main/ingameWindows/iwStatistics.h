@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwSTATISTICS_H_INCLUDED
-#define iwSTATISTICS_H_INCLUDED
 
 #pragma once
 
@@ -49,5 +47,3 @@ private:
     void DrawStatistic(StatisticType type);
     void DrawAxis();
 };
-
-#endif // !iwSTATISTICS_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RandomMapGenerator_h__
-#define RandomMapGenerator_h__
+#pragma once
 
 #include "mapGenerator/MapUtility.h"
 
@@ -100,5 +99,3 @@ private:
     /// Set the resources (water, fish, coal...) for the map
     void SetResources(const MapSettings& settings, Map& map);
 };
-
-#endif // RandomMapGenerator_h__

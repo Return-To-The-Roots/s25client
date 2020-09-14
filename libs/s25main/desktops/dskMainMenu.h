@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef dskMAINMENU_H_INCLUDED
-#define dskMAINMENU_H_INCLUDED
 
 #pragma once
 
@@ -32,5 +30,3 @@ public:
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
     bool Msg_LeftUp(const MouseCoords& mc) override;
 };
-
-#endif // !dskMAINMENU_H_INCLUDED

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Resource_h__
-#define Resource_h__
+#pragma once
 
 #include <cstdint>
 
@@ -79,5 +78,3 @@ inline void Resource::setAmount(uint8_t newAmount)
     if(getType() != Nothing)
         value_ = (value_ & 0xF0) | (newAmount & 0x0F);
 }
-
-#endif // Resource_h__

@@ -15,12 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not,  see <http://www.gnu.org/licenses/>.
 
-#ifndef FindPathReachable_h__
-#define FindPathReachable_h__
+#pragma once
 
 #include "gameTypes/MapCoordinates.h"
 
 class GameWorldBase;
 bool DoesReachablePathExist(const GameWorldBase& world, MapPoint startPt, MapPoint endPt, unsigned maxLen);
-
-#endif // FindPathReachable_h__

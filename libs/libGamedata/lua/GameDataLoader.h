@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameDataLoader_h__
-#define GameDataLoader_h__
+#pragma once
 
 #include "LuaInterfaceBase.h"
 #include <boost/filesystem/path.hpp>
@@ -51,5 +50,3 @@ private:
 };
 
 void loadGameData(WorldDescription& worldDesc);
-
-#endif // GameDataLoader_h__

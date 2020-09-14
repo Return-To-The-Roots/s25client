@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ExpeditionNote_h__
-#define ExpeditionNote_h__
+#pragma once
 
 #include "notifications/notifications.h"
 #include "gameTypes/MapCoordinates.h"
@@ -37,5 +36,3 @@ struct ExpeditionNote
     const unsigned player;
     const MapPoint pos;
 };
-
-#endif // ExpeditionNote_h__

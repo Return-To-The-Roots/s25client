@@ -16,8 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#ifndef BuildingRegister_h__
-#define BuildingRegister_h__
 
 #include "gameTypes/BuildingCount.h"
 #include <list>
@@ -68,5 +66,3 @@ private:
     std::list<nobHarborBuilding*> harbors;
     std::list<nobBaseWarehouse*> warehouses;
 };
-
-#endif // BuildingRegister_h__

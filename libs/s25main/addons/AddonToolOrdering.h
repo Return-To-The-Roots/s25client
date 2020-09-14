@@ -1,5 +1,4 @@
-#ifndef ADDONTOOLORDERING_H_INCLUDED
-#define ADDONTOOLORDERING_H_INCLUDED
+#pragma once
 
 #include "AddonBool.h"
 
@@ -11,5 +10,3 @@ public:
                     _("Allows to order a specific amount of tools for priority production."))
     {}
 };
-
-#endif

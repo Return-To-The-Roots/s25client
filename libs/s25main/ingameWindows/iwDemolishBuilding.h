@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwDEMOLISHBUILDING_H_INCLUDED
-#define iwDEMOLISHBUILDING_H_INCLUDED
 
 #pragma once
 
@@ -37,5 +35,3 @@ public:
 private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
 };
-
-#endif // !iwDEMOLISHBUILDING_H_INCLUDED

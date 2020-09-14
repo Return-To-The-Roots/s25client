@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NOF_SOLDIER_H_
-#define NOF_SOLDIER_H_
+#pragma once
 
 #include "figures/noFigure.h"
 #include <boost/container/flat_set.hpp>
@@ -87,5 +86,3 @@ struct ComparatorSoldiersByRank
 
 class nofPassiveSoldier;
 using SortedTroops = boost::container::flat_set<nofPassiveSoldier*, ComparatorSoldiersByRank<true>>;
-
-#endif

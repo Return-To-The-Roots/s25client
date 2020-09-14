@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MAPCONSTS_H_INCLUDED
-#define MAPCONSTS_H_INCLUDED
 
 #pragma once
 
@@ -28,5 +26,3 @@ constexpr int HEIGHT_FACTOR = 5;
 
 /// Maximum supported width or height of the map
 constexpr unsigned MAX_MAP_SIZE = 2048;
-
-#endif // !MAPCONSTS_H_INCLUDED

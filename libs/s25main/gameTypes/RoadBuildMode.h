@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RoadBuildMode_h__
-#define RoadBuildMode_h__
+#pragma once
 
 enum RoadBuildMode
 {
@@ -24,5 +23,3 @@ enum RoadBuildMode
     RM_NORMAL,   // Building regular road
     RM_BOAT      // Building water road
 };
-
-#endif // RoadBuildMode_h__

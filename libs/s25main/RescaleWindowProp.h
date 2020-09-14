@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RescaleWindowProp_h__
-#define RescaleWindowProp_h__
+#pragma once
 
 /// Functor or static method to scale a window propertie from the real coordinates
 /// (relative to 800x600 resolution) to new coordinates given a size
@@ -65,5 +64,3 @@ inline T_Pt RescaleWindowProp::operator()(const T_Pt& oldValue) const
         realValue.y++;
     return ScaleWindowPropUp::scale(realValue, newSize);
 }
-
-#endif // RescaleWindowProp_h__

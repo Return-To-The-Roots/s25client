@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GAMEMANAGER_H_INCLUDED
-#define GAMEMANAGER_H_INCLUDED
 
 #pragma once
 
@@ -68,5 +66,3 @@ GameManager& getGlobalGameManager();
 void setGlobalGameManager(GameManager* gameManager);
 
 #define GAMEMANAGER getGlobalGameManager()
-
-#endif // GAMEMANAGER_H_INCLUDED

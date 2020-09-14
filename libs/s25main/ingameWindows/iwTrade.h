@@ -1,5 +1,4 @@
-#ifndef IW_TRADE_H_
-#define IW_TRADE_H_
+#pragma once
 
 #include "IngameWindow.h"
 #include "gameTypes/GoodTypes.h"
@@ -31,5 +30,3 @@ private:
     unsigned GetPossibleTradeAmount(Job job) const;
     unsigned GetPossibleTradeAmount(GoodType good) const;
 };
-
-#endif // !IW_TRADE_H_

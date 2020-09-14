@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameCommand_h__
-#define GameCommand_h__
+#pragma once
 
 #include <boost/smart_ptr/intrusive_ptr.hpp>
 #include <RTTR_Assert.h>
@@ -125,5 +124,3 @@ inline void intrusive_ptr_release(GameCommand* x)
 #define GC_FRIEND_DECL        \
     friend class GameCommand; \
     friend class ::GameCommandFactory
-
-#endif // GameCommand_h__

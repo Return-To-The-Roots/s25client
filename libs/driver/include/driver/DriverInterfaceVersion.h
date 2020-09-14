@@ -14,11 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
-#ifndef DRIVERINTERFACEVERSION_H_INCLUDED
-#define DRIVERINTERFACEVERSION_H_INCLUDED
 
 #pragma once
 
 #define DRIVERAPIVERSION 7
-
-#endif // !DRIVERINTERFACEVERSION_H_INCLUDED

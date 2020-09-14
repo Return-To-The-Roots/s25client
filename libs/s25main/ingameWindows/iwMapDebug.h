@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef iwMapDebug_h__
-#define iwMapDebug_h__
+#pragma once
 
 #include "IngameWindow.h"
 #include <memory>
@@ -41,5 +40,3 @@ private:
     std::unique_ptr<DebugPrinter> printer;
     std::unique_ptr<EventChecker> eventChecker;
 };
-
-#endif // iwMapDebug_h__

@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLMULTISELECTGROUP_H_INCLUDED
-#define CTRLMULTISELECTGROUP_H_INCLUDED
 
 #pragma once
 
@@ -63,5 +61,3 @@ private:
     std::set<unsigned> selectedItems_; /// aktuell ausgewählte Buttons
     int select_type;                   /// Typ der Selektierung
 };
-
-#endif // !CTRLMULTISELECTGROUP_H_INCLUDED

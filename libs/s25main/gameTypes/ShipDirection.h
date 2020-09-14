@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ShipDirection_h__
-#define ShipDirection_h__
+#pragma once
 
 #include "RTTR_Assert.h"
 #include "helpers/EnumTraits.h"
@@ -68,5 +67,3 @@ template<>
 struct EnumRange<ShipDirection> : EnumRange<ShipDirection::Type>
 {};
 } // namespace helpers
-
-#endif // ShipDirection_h__

@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwBUILDINGSITE_H_INCLUDED
-#define iwBUILDINGSITE_H_INCLUDED
 
 #pragma once
 
@@ -37,5 +35,3 @@ private:
     GameWorldView& gwv;
     const noBuildingSite* buildingsite;
 };
-
-#endif // !iwBUILDINGSITE_H_INCLUDED

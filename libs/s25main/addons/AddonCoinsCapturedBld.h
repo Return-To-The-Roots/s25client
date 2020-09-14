@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef COINSCAPTUREDBLD_H_INCLUDED
-#define COINSCAPTUREDBLD_H_INCLUDED
-
 #pragma once
 
 #include "AddonList.h"
@@ -39,5 +36,3 @@ public:
                     })
     {}
 };
-
-#endif // !COINSCAPTUREDBLD_H_INCLUDED

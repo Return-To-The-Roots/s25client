@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaInterfaceGame_h__
-#define LuaInterfaceGame_h__
+#pragma once
 
 #include "LuaInterfaceGameBase.h"
 #include "gameTypes/MapCoordinates.h"
@@ -74,5 +73,3 @@ private:
     LuaPlayer GetPlayer(int playerIdx);
     LuaWorld GetWorld();
 };
-
-#endif // LuaInterfaceGame_h__

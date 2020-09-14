@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NO_BUILDING_H_
-#define NO_BUILDING_H_
+#pragma once
 
 #include "noBaseBuilding.h"
 class FOWObject;
@@ -58,5 +57,3 @@ public:
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
     FOWObject* CreateFOWObject() const override;
 };
-
-#endif

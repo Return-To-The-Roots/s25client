@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLBUILDINGICON_H_INCLUDED
-#define CTRLBUILDINGICON_H_INCLUDED
 
 #pragma once
 
@@ -39,5 +37,3 @@ protected:
     const BuildingType type; /// der GebäudeType des Icons.
     const Nation nation;     /// Volk
 };
-
-#endif // !CTRLBUILDINGICON_H_INCLUDED

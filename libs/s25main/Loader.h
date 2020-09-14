@@ -14,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef LOADER_H_INCLUDED
-#define LOADER_H_INCLUDED
 
 #pragma once
 
@@ -253,5 +251,3 @@ Loader& getGlobalLoader();
 #define SmallFont (LOADER.GetFont(FontSize::Small))
 #define NormalFont (LOADER.GetFont(FontSize::Normal))
 #define LargeFont (LOADER.GetFont(FontSize::Large))
-
-#endif // LOADER_H_INCLUDED

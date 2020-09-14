@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RTTR_AssertError_h__
-#define RTTR_AssertError_h__
+#pragma once
 
 #include <stdexcept>
 
@@ -25,5 +24,3 @@ class RTTR_AssertError : public std::runtime_error
 public:
     RTTR_AssertError(const std::string& msg) : std::runtime_error(msg) {}
 };
-
-#endif // RTTR_AssertError_h__

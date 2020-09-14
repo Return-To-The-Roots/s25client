@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef TerrainBQOutput_h__
-#define TerrainBQOutput_h__
+#pragma once
 
 #include "gameData/TerrainDesc.h"
 #include <array>
@@ -27,5 +26,3 @@ inline std::ostream& operator<<(std::ostream& stream, TerrainBQ bq)
     static const std::array<const char*, 6> bqNames = {{"Nothing", "Danger", "Flag", "Castle", "Mine"}};
     return stream << bqNames[static_cast<unsigned>(bq)];
 }
-
-#endif // TerrainBQOutput_h__

@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NO_DISAPPEARINGMAPENVOBJECT
-#define NO_DISAPPEARINGMAPENVOBJECT
+
+#pragma once
 
 #include "noDisappearingEnvObject.h"
 class SerializedGameData;
@@ -43,5 +43,3 @@ private:
     /// ID in der mapsx.lst
     const unsigned short map_id;
 };
-
-#endif

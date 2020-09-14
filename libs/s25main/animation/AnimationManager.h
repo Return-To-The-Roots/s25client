@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AnimationManager_h__
-#define AnimationManager_h__
+#pragma once
 
 #include <boost/noncopyable.hpp>
 #include <map>
@@ -68,5 +67,3 @@ private:
     unsigned nextId_;
     AnimationMap animations_;
 };
-
-#endif // AnimationManager_h__

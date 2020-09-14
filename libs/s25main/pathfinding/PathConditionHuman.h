@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef PathConditionHuman_h__
-#define PathConditionHuman_h__
-
 #include "RoadSegment.h"
 #include "pathfinding/PathConditionReachable.h"
 #include "world/World.h"
@@ -59,5 +56,3 @@ struct PathConditionHuman : PathConditionReachable
         return (tLeft.Is(ETerrain::Walkable) || tRight.Is(ETerrain::Walkable));
     }
 };
-
-#endif // PathConditionHuman_h__

@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AUDIOINTERFACE_H_INCLUDED
-#define AUDIOINTERFACE_H_INCLUDED
+
+#pragma once
 
 #include "EffectPlayId.h"
 #include "RawSoundHandle.h"
@@ -75,5 +75,3 @@ class IAudioDriverCallback;
 /// Instanzierungsfunktion der Treiber.
 RTTR_DECL driver::IAudioDriver* CreateAudioInstance(IAudioDriverCallback* callback, void* device_dependent);
 RTTR_DECL void FreeAudioInstance(driver::IAudioDriver* driver);
-
-#endif // !AUDIOINTERFACE_H_INCLUDED

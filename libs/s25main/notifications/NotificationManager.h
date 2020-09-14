@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef NotificationManager_h__
-#define NotificationManager_h__
+#pragma once
 
 #include "notifications/Subscription.h"
 #include <functional>
@@ -63,5 +62,3 @@ private:
 };
 
 #include "notifications/NotificationManager_impl.h"
-
-#endif // NotificationManager_h__

@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Rect_h__
-#define Rect_h__
+#pragma once
 
 #include "Point.h"
 #include "RTTR_Assert.h"
@@ -92,5 +91,3 @@ RectBase<T> RectBase<T>::move(RectBase<T> rect, const typename RectBase<T>::posi
     rect.move(offset);
     return rect;
 }
-
-#endif // Rect_h__

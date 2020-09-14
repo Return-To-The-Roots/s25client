@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OptionalEnum_h__
-#define OptionalEnum_h__
+#pragma once
 
 #include "EnumTraits.h"
 #include "MaxEnumValue.h"
@@ -97,5 +96,3 @@ private:
     underlying_type value_ = invalidValue;
 };
 } // namespace helpers
-
-#endif // OptionalEnum_h__

@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef NOF_SHIPWRIGHT_H_
-#define NOF_SHIPWRIGHT_H_
+
+#pragma once
 
 #include "nofWorkman.h"
 class SerializedGameData;
@@ -60,5 +60,3 @@ public:
     void HandleDerivedEvent(unsigned id) override;
     void Serialize(SerializedGameData& sgd) const override;
 };
-
-#endif

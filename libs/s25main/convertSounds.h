@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef convertSounds_h__
-#define convertSounds_h__
+#pragma once
 
 #include <boost/filesystem/path.hpp>
 
@@ -24,5 +23,3 @@ class Archiv;
 }
 
 void convertSounds(libsiedler2::Archiv& sounds, const boost::filesystem::path& scriptPath);
-
-#endif // convertSounds_h__

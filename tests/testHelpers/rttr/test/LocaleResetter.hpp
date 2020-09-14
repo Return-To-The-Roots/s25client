@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LocaleResetter_h__
-#define LocaleResetter_h__
+#pragma once
 
 #include <mygettext/mygettext.h>
 
@@ -28,5 +27,3 @@ namespace rttr { namespace test {
         ~LocaleResetter() { mygettext::setlocale(LC_ALL, oldLoc.c_str()); }
     };
 }} // namespace rttr::test
-
-#endif // LocaleResetter_h__

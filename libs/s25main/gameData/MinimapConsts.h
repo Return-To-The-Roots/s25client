@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef MINIMAP_CONSTS_H_
-#define MINIMAP_CONSTS_H_
+
+#pragma once
 
 /// Farbe für Bäume
 const unsigned TREE_COLOR = 0xFF003c14;
@@ -33,5 +33,3 @@ const unsigned ROAD_COLOR = 0xFFAAAAAA;
 /// Scaling in x for displaying the map
 /// ~2/sqrt(3) based on hexagons beeing regular
 const double MINIMAP_SCALE_X = 1.1547;
-
-#endif

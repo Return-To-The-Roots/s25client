@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef POSTMSG_H_
-#define POSTMSG_H_
+#pragma once
 
 #include "PostCategory.h"
 #include "SoundEffect.h"
@@ -57,5 +56,3 @@ private:
     MapPoint pt_;
     SoundEffect soundEffect_;
 };
-
-#endif

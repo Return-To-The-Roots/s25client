@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef iwOPTIONSWINDOW_H_INCLUDED
-#define iwOPTIONSWINDOW_H_INCLUDED
+#pragma once
 
 #include "IngameWindow.h"
 
@@ -29,5 +28,3 @@ private:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_ProgressChange(unsigned ctrl_id, unsigned short position) override;
 };
-
-#endif

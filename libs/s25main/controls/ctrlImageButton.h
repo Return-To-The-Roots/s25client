@@ -17,9 +17,6 @@
 
 #pragma once
 
-#ifndef ctrlImageButton_h__
-#define ctrlImageButton_h__
-
 #include "controls/ctrlButton.h"
 #include "ctrlBaseImage.h"
 
@@ -33,5 +30,3 @@ public:
 protected:
     void DrawContent() const override;
 };
-
-#endif // ctrlImageButton_h__

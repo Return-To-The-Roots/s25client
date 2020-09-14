@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LISTDIR_H_INCLUDED
-#define LISTDIR_H_INCLUDED
-
 #pragma once
 
 #include <boost/filesystem/path.hpp>
@@ -28,5 +25,3 @@
 /// @extension Extension that files/folders must have (dot is added automatically to front) or empty to list all
 /// @includeDirectories tells whether directories should be added too
 std::vector<boost::filesystem::path> ListDir(const boost::filesystem::path& path, std::string extension, bool includeDirectories = false);
-
-#endif // LISTDIR_H_INCLUDED

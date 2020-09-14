@@ -15,8 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CheckedLuaTable_h__
-#define CheckedLuaTable_h__
+#pragma once
 
 #include "Rect.h"
 #include "gameData/WorldDescription.h"
@@ -112,5 +111,3 @@ inline Rect CheckedLuaTable::getRectOrDefault(const std::string& fieldName, cons
     } else
         return defaultValue;
 }
-
-#endif // CheckedLuaTable_h__
