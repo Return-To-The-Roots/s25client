@@ -297,7 +297,7 @@ if(EXISTS ${rttrContribBoostDir} AND IS_DIRECTORY ${rttrContribBoostDir})
     set(BOOST_ROOT ${rttrContribBoostDir} CACHE PATH "Path to find boost at")
 endif()
 
-find_package(Boost 1.65.1 QUIET)
+find_package(Boost 1.65.1 COMPONENTS filesystem program_options)
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "You have to install boost (>=1.64) into contrib/boost or set (as CMake or environment variable) "
     "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "

@@ -1,13 +1,10 @@
-find_package(Boost 1.64.0 REQUIRED COMPONENTS filesystem)
-
-set(ALL_SOURCES
-    src/files.h
-    src/RTTR_Version.cpp
-    src/RTTR_Version.h
-    src/RttrConfig.cpp
-    src/RttrConfig.h)
-
-add_library(rttrConfig STATIC ${ALL_SOURCES})
+add_library(rttrConfig STATIC
+  src/files.h
+  src/RTTR_Version.cpp
+  src/RTTR_Version.h
+  src/RttrConfig.cpp
+  src/RttrConfig.h
+)  
 target_include_directories(rttrConfig INTERFACE src)
 target_link_libraries(rttrConfig
 	PUBLIC s25util::common Boost::filesystem

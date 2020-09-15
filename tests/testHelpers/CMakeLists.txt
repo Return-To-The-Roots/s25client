@@ -1,7 +1,3 @@
-if(NOT TARGET Boost::unit_test_framework)
-    find_package(Boost 1.64 REQUIRED COMPONENTS unit_test_framework)
-endif()
-
 add_library(testHelpers STATIC
     rttr/test/BaseFixture.cpp
     rttr/test/BaseFixture.hpp

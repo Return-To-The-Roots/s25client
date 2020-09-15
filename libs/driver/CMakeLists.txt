@@ -1,5 +1,3 @@
-find_package(Boost 1.64.0 REQUIRED)
-
 # Library interface to be consumed by users
 add_library(driver INTERFACE)
 target_include_directories(driver INTERFACE include)
