@@ -32,6 +32,9 @@ architecture="%architecture%"
 src_dir=/source
 result_dir=/result
 
+# Required by the tests
+export USER="${USER:-TestUser}'"
+
 TOOLCHAIN_FILE=
 if [ "$(uname -s | tr "[:upper:]" "[:lower:]").$(uname -m)" != "$architecture" ] ; then
     TOOLCHAIN_FILE=$src_dir/cmake/toolchains/c.$architecture.cmake
