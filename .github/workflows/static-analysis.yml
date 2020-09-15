@@ -45,7 +45,5 @@ jobs:
             clang-10 clang-tidy-10 \
             libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev gettext \
             libboost-filesystem-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev libboost-locale-dev libboost-iostreams-dev
-      - name: Clang-Tidy Main
-        run: tools/ci/runClangTidy.sh main
-      - name: Clang-Tidy External
-        run: tools/ci/runClangTidy.sh external
+      - name: Run Clang-Tidy
+        run: tools/ci/runClangTidy.sh
