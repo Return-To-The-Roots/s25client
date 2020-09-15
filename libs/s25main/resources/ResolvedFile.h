@@ -25,6 +25,8 @@ class ResolvedFile : private std::vector<boost::filesystem::path>
 {
 public:
     using Parent = std::vector<boost::filesystem::path>;
+    using Parent::const_iterator;
+    using Parent::value_type;
 
     ResolvedFile() = default;
     ResolvedFile(std::initializer_list<boost::filesystem::path> values) : Parent(values) {}
@@ -34,6 +36,7 @@ public:
     using Parent::begin;
     using Parent::end;
     using Parent::push_back;
+    using Parent::size;
     friend bool operator==(const ResolvedFile& lhs, const ResolvedFile& rhs)
     {
         return static_cast<const Parent&>(lhs) == static_cast<const Parent&>(rhs);
