@@ -1,5 +1,4 @@
 if(WIN32)
-  find_package(Boost 1.64.0 REQUIRED)
   find_package(OpenGL REQUIRED)
 
   add_library(videoWinAPI SHARED ${RTTR_DRIVER_INTERFACE} WinAPI.cpp WinAPI.h)
