@@ -28,7 +28,6 @@ BOOST_AUTO_TEST_SUITE(ResourceIdSuite)
 
 BOOST_AUTO_TEST_CASE(ConstructibleFromCStringAndArray)
 {
-    const char* name = "res_id";
     ResourceId resId1("res_id");
     // Implicitely convertible
     ResourceId resId2 = "res_id";
@@ -51,8 +50,8 @@ BOOST_AUTO_TEST_CASE(CopyableAndMovable)
     ResourceId resIdCpAssign = resId;
     BOOST_TEST(resId == resIdCpCtor);
     BOOST_TEST(resId == resIdCpAssign);
-    ResourceId resIdMvCtor(std::move(resIdCpCtor));
-    ResourceId resIdMVAssign = std::move(resIdCpAssign);
+    ResourceId resIdMvCtor(std::move(resIdCpCtor));      // NOLINT(performance-move-const-arg)
+    ResourceId resIdMVAssign = std::move(resIdCpAssign); // NOLINT(performance-move-const-arg)
     BOOST_TEST(resId == resIdMvCtor);
     BOOST_TEST(resId == resIdMVAssign);
 }

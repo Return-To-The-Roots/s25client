@@ -52,7 +52,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     // Exception: charburner
     if(building->GetBuildingType() != BLD_CHARBURNER)
     {
-        if(const Job* job = BLD_WORK_DESC[building->GetBuildingType()].job.get_ptr())
+        if(const auto job = BLD_WORK_DESC[building->GetBuildingType()].job)
             AddImage(13, DrawPoint(28, 39), LOADER.GetMapImageN(2300 + *job));
     } else
     {
