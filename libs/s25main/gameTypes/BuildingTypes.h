@@ -21,7 +21,7 @@
 #include "GoodTypes.h"
 #include "JobTypes.h"
 #include "Point.h"
-#include <boost/optional/optional.hpp>
+#include "helpers/OptionalEnum.h"
 #include <array>
 
 struct BuildingCost
@@ -62,14 +62,14 @@ struct WaresNeeded : std::array<GoodType, 3>
 /// Describes the work the building does
 struct BldWorkDescription
 {
-    BldWorkDescription(boost::optional<Job> job = boost::none, GoodType producedWare = GD_NOTHING,
+    BldWorkDescription(const helpers::OptionalEnum<Job> job = boost::none, GoodType producedWare = GD_NOTHING,
                        WaresNeeded waresNeeded = WaresNeeded(), uint8_t numSpacesPerWare = 6,
                        bool useOneWareEach = true)
-        : job(std::move(job)), producedWare(producedWare), waresNeeded(waresNeeded), numSpacesPerWare(numSpacesPerWare),
+        : job(job), producedWare(producedWare), waresNeeded(waresNeeded), numSpacesPerWare(numSpacesPerWare),
           useOneWareEach(useOneWareEach)
     {}
     /// Worker belonging to the building
-    boost::optional<Job> job;
+    helpers::OptionalEnum<Job> job;
     /// Ware produced (maybe nothing or invalid)
     GoodType producedWare;
     /// Wares the building needs (maybe nothing)
@@ -89,6 +89,6 @@ struct SmokeConst
     SmokeConst(uint8_t type, int8_t x, int8_t y) : type(type), offset(x, y) {}
     /// Smoke type (1-4), 0 = no smoke
     uint8_t type;
-    /// Position of the smoke relativ to the buildings origin
+    /// Position of the smoke relative to the buildings origin
     Point<int8_t> offset;
 };

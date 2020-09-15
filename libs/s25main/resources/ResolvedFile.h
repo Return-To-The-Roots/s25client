@@ -27,7 +27,7 @@ public:
     using Parent = std::vector<boost::filesystem::path>;
 
     ResolvedFile() = default;
-    ResolvedFile(std::initializer_list<boost::filesystem::path> values) : Parent(std::move(values)) {}
+    ResolvedFile(std::initializer_list<boost::filesystem::path> values) : Parent(values) {}
 
     explicit operator bool() const { return !empty(); }
 

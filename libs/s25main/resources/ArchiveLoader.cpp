@@ -34,7 +34,7 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace bfs = boost::filesystem;
+namespace fs = boost::filesystem;
 
 template<typename... T>
 LoadError::LoadError(T&&... args) : std::runtime_error(helpers::format(std::forward<T>(args)...))
@@ -48,17 +48,17 @@ public:
     RTTR_CLONEABLE(NestedArchive)
 };
 
-static bool isBobOverride(bfs::path filePath)
+bool isBobOverride(fs::path filePath)
 {
     // For files we ignore the first extension as that is the type of the file (e.g. foo.bob.lst is a bob override file
     // packed as lst) Note that the next call to `extension()` can return an empty path if only 1 extension was present
     // Folders can be named anything so they must be named foo.bob directly rather than foo.bob.lst
-    if(bfs::is_regular_file(filePath))
+    if(fs::is_regular_file(filePath))
         filePath.replace_extension();
     return s25util::toLower(filePath.extension().string()) == ".bob";
 }
 
-static std::map<uint16_t, uint16_t> extractBobMapping(libsiedler2::Archiv& archive, const bfs::path& filepath)
+std::map<uint16_t, uint16_t> extractBobMapping(libsiedler2::Archiv& archive, const fs::path& filepath)
 {
     std::unique_ptr<libsiedler2::ArchivItem_Text> txtItem;
     for(auto& entry : archive)
@@ -78,7 +78,7 @@ static std::map<uint16_t, uint16_t> extractBobMapping(libsiedler2::Archiv& archi
 } // namespace
 
 /// Load a single file into the archive
-libsiedler2::Archiv ArchiveLoader::loadFile(const boost::filesystem::path& filePath,
+libsiedler2::Archiv ArchiveLoader::loadFile(const fs::path& filePath,
                                             const libsiedler2::ArchivItem_Palette* palette) const
 {
     logger_.write(_("Loading \"%s\": ")) % filePath;
@@ -90,7 +90,7 @@ libsiedler2::Archiv ArchiveLoader::loadFile(const boost::filesystem::path& fileP
     return archive;
 }
 
-libsiedler2::Archiv ArchiveLoader::loadDirectory(const boost::filesystem::path& filePath,
+libsiedler2::Archiv ArchiveLoader::loadDirectory(const fs::path& filePath,
                                                  const libsiedler2::ArchivItem_Palette* palette) const
 {
     logger_.write(_("Loading directory %s\n")) % filePath;
@@ -105,7 +105,7 @@ libsiedler2::Archiv ArchiveLoader::loadDirectory(const boost::filesystem::path& 
     return archive;
 }
 
-libsiedler2::Archiv ArchiveLoader::loadFileOrDir(const bfs::path& filePath,
+libsiedler2::Archiv ArchiveLoader::loadFileOrDir(const fs::path& filePath,
                                                  const libsiedler2::ArchivItem_Palette* palette) const
 {
     const auto fileStatus = status(filePath);
@@ -167,7 +167,7 @@ void ArchiveLoader::mergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2
 libsiedler2::Archiv ArchiveLoader::load(const ResolvedFile& file, const libsiedler2::ArchivItem_Palette* palette) const
 {
     libsiedler2::Archiv archive;
-    for(const bfs::path& curFilepath : file)
+    for(const fs::path& curFilepath : file)
     {
         try
         {

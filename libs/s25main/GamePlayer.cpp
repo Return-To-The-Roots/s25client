@@ -444,7 +444,7 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
     const auto& description = BLD_WORK_DESC[bldType];
     if(description.job && description.job != JOB_PRIVATE)
     {
-        AddJobWanted(description.job.get(), bld);
+        AddJobWanted(*description.job, bld);
     }
 
     if(bldType == BLD_HARBORBUILDING)
