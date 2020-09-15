@@ -52,7 +52,7 @@ install:
     external/libutil/tools/ci/installCMake.sh "3.9.6" "${CMAKE_DIR}"
     export PATH="${CMAKE_DIR}/bin:${PATH}"
   - |
-    BOOST_VERSION=${BOOST_VERSION:-1.64.0}
+    BOOST_VERSION=${BOOST_VERSION:-1.65.1}
     export BOOST_ROOT="${DEPS_DIR}/boost${BOOST_VERSION}"
     export ADDITIONAL_CMAKE_FLAGS="${ADDITIONAL_CMAKE_FLAGS} -DBoost_NO_SYSTEM_PATHS=ON -DBoost_NO_BOOST_CMAKE=ON"
     external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_ROOT}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
