@@ -984,7 +984,9 @@ void addDefaultResourceFolders(const RttrConfig& config, ArchiveLocator& locator
         if(bfs::exists(overrideFolder))
             locator.addOverrideFolder(overrideFolder);
     }
-    locator.addOverrideFolder(config.ExpandPath(s25::folders::assetsUserOverrides));
+    const bfs::path userOverrides = config.ExpandPath(s25::folders::assetsUserOverrides);
+    if(exists(userOverrides))
+        locator.addOverrideFolder(userOverrides);
 }
 
 Loader& getGlobalLoader()
