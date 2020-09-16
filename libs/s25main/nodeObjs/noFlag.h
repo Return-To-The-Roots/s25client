@@ -51,11 +51,13 @@ public:
     void AddWare(Ware*& ware) override;
     /// Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
     unsigned GetNumWares() const;
-    /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.
+    /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie
+    /// zurück.
     Ware* SelectWare(Direction roadDir, bool swap_wares, const noFigure* carrier);
     /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
     unsigned GetNumWaresForRoad(Direction dir) const;
-    /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen.
+    /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden
+    /// müssen.
     unsigned GetPunishmentPoints(Direction dir) const override;
     /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
     void DestroyAttachedBuilding();

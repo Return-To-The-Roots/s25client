@@ -23,7 +23,9 @@ class AddonDemolishBldWORes : public AddonBool
 {
 public:
     AddonDemolishBldWORes()
-        : AddonBool(AddonId::DEMOLISH_BLD_WO_RES, AddonGroup::GamePlay | AddonGroup::Economy, _("Demolish building when out of resources"),
-                    _("Automatically demolish a resource gathering building, like a mine, if it runs permanently out of resources."))
+        : AddonBool(AddonId::DEMOLISH_BLD_WO_RES, AddonGroup::GamePlay | AddonGroup::Economy,
+                    _("Demolish building when out of resources"),
+                    _("Automatically demolish a resource gathering building, like a mine, if it runs permanently out "
+                      "of resources."))
     {}
 };

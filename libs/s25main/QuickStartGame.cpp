@@ -39,7 +39,10 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() override { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameLoading(const std::shared_ptr<Game>& game) override { WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game)); }
+    void CI_GameLoading(const std::shared_ptr<Game>& game) override
+    {
+        WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game));
+    }
 };
 
 bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singlePlayer)
@@ -58,7 +61,8 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singleP
     if(SETTINGS.sound.musik)
         MUSICPLAYER.Play();
 
-    const CreateServerInfo csi(singlePlayer ? ServerType::LOCAL : ServerType::DIRECT, SETTINGS.server.localPort, _("Unlimited Play"));
+    const CreateServerInfo csi(singlePlayer ? ServerType::LOCAL : ServerType::DIRECT, SETTINGS.server.localPort,
+                               _("Unlimited Play"));
 
     LOG.write(_("Loading game...\n"));
     const std::string extension = s25util::toLower(mapOrReplayPath.extension().string());

@@ -23,7 +23,8 @@
 #include <utility>
 
 namespace rttr { namespace test {
-    /// Adapter buffers the current text. If it isn't cleared till the end of the lifetime it will be written to the orig writer
+    /// Adapter buffers the current text. If it isn't cleared till the end of the lifetime it will be written to the
+    /// orig writer
     class BufferedWriter : public TextWriterInterface
     {
     public:

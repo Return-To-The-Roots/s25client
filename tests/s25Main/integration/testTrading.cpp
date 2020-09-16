@@ -131,7 +131,8 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
     numHelpers += (20 * distance) / 170;
     curWh = world.GetSpecObj<nobBaseWarehouse>(players[0]->GetHQPos());
     BOOST_REQUIRE(curWh);
-    // Expected amount is our amount + 2 times the stuff send (1 because we did not send anything, and 2 as we received them)
+    // Expected amount is our amount + 2 times the stuff send (1 because we did not send anything, and 2 as we received
+    // them)
     numBoards += 2 * 2;
     numDonkeys += 2 * 2;
     numHelpers += 2 * 1;
@@ -173,7 +174,8 @@ BOOST_FIXTURE_TEST_CASE(TradeFigures, TradeFixture)
     numHelpers += (20 * distance) / 170;
     curWh = world.GetSpecObj<nobBaseWarehouse>(players[0]->GetHQPos());
     BOOST_REQUIRE(curWh);
-    // Expected amount is our amount + 2 times the stuff send (1 because we did not send anything, and 2 as we received them)
+    // Expected amount is our amount + 2 times the stuff send (1 because we did not send anything, and 2 as we received
+    // them)
     numWoodcutters += 2 * 2;
     numHelpers += 2 * 1;
     // helpers can be produced in the meantime

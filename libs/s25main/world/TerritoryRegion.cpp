@@ -119,9 +119,9 @@ const TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt) cons
 
 bool TerritoryRegion::AdjustCoords(Position& pt) const
 {
-    // The region might wrap around world boundaries. So we have to adjust the point so it will still be inside this region even if it is on
-    // "the other side" of the world wrap Note: Only 1 time wrapping around is allowed which is ensured by the assertion, that this size is
-    // at most the world size
+    // The region might wrap around world boundaries. So we have to adjust the point so it will still be inside this
+    // region even if it is on "the other side" of the world wrap Note: Only 1 time wrapping around is allowed which is
+    // ensured by the assertion, that this size is at most the world size
 
     // Check if this point is inside this region
     // Apply wrap-around if on either side
@@ -169,9 +169,11 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 
     // Punkt, auf dem das Militärgebäude steht
     MapPoint bldPos = building.GetPos();
-    AdjustNode(bldPos, building.GetPlayer(), 0, nullptr); // no need to check barriers here. this point is on our territory.
+    AdjustNode(bldPos, building.GetPlayer(), 0,
+               nullptr); // no need to check barriers here. this point is on our territory.
 
-    std::vector<GetMapPointWithRadius::result_type> pts = world.GetPointsInRadius(bldPos, radius, GetMapPointWithRadius());
+    std::vector<GetMapPointWithRadius::result_type> pts =
+      world.GetPointsInRadius(bldPos, radius, GetMapPointWithRadius());
     for(const auto& ptWithRadius : pts)
         AdjustNode(ptWithRadius.first, building.GetPlayer(), ptWithRadius.second, allowedArea);
 }

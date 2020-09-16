@@ -55,13 +55,14 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
         {
             constexpr Extent btSize(20, 13);
-            auto* txt = static_cast<ctrlTextDeepening*>(
-              AddTextDeepening(200 + i, DrawPoint(151, 31 + i * 28), Extent(22, 18), TC_GREY, "", NormalFont, COLOR_YELLOW));
+            auto* txt = static_cast<ctrlTextDeepening*>(AddTextDeepening(
+              200 + i, DrawPoint(151, 31 + i * 28), Extent(22, 18), TC_GREY, "", NormalFont, COLOR_YELLOW));
             txt->ResizeForMaxChars(2);
             const auto txtSize = txt->GetSize();
-            ctrlButton* bt =
-              AddImageButton(100 + i * 2, txt->GetPos() + DrawPoint(txtSize.x + 1, -4), btSize, TC_GREY, LOADER.GetImageN("io", 33), "+1");
-            AddImageButton(101 + i * 2, bt->GetPos() + DrawPoint(0, btSize.y), btSize, TC_GREY, LOADER.GetImageN("io", 34), "-1");
+            ctrlButton* bt = AddImageButton(100 + i * 2, txt->GetPos() + DrawPoint(txtSize.x + 1, -4), btSize, TC_GREY,
+                                            LOADER.GetImageN("io", 33), "+1");
+            AddImageButton(101 + i * 2, bt->GetPos() + DrawPoint(0, btSize.y), btSize, TC_GREY,
+                           LOADER.GetImageN("io", 34), "-1");
         }
         pendingOrderChanges.fill(0);
         UpdateTexts();
@@ -70,10 +71,11 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     // Info
     AddImageButton(12, DrawPoint(18, 384), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
     if(settings.isEnabled(AddonId::TOOL_ORDERING))
-        AddImageButton(15, DrawPoint(130, 384), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 216), _("Zero all production"));
+        AddImageButton(15, DrawPoint(130, 384), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 216),
+                       _("Zero all production"));
     // Standard
-    AddImageButton(13, DrawPoint(118 + (settings.isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384), Extent(30, 32), TC_GREY,
-                   LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(13, DrawPoint(118 + (settings.isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384), Extent(30, 32),
+                   TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
     UpdateSettings();
@@ -81,13 +83,15 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     // Netzwerk-Übertragungs-Timer
     AddTimer(14, 2000);
 
-    toolSubscription = gwv.GetWorld().GetNotifications().subscribe<ToolNote>([this](auto) { this->shouldUpdateTexts = true; });
+    toolSubscription =
+      gwv.GetWorld().GetNotifications().subscribe<ToolNote>([this](auto) { this->shouldUpdateTexts = true; });
 }
 
 void iwTools::AddToolSettingSlider(unsigned id, GoodType ware)
 {
-    ctrlProgress* el = AddProgress(id, DrawPoint(17, 25 + id * 28), Extent(132, 26), TC_GREY, 140 + id * 2 + 1, 140 + id * 2, 10,
-                                   _(WARE_NAMES[ware]), Extent(4, 4), 0, _("Less often"), _("More often"));
+    ctrlProgress* el =
+      AddProgress(id, DrawPoint(17, 25 + id * 28), Extent(132, 26), TC_GREY, 140 + id * 2 + 1, 140 + id * 2, 10,
+                  _(WARE_NAMES[ware]), Extent(4, 4), 0, _("Less often"), _("More often"));
     if(isReplay)
         el->ActivateControls(false);
 }
@@ -145,7 +149,8 @@ void iwTools::UpdateTexts()
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
         {
             auto* field = GetCtrl<ctrlBaseText>(200 + i);
-            int curOrders = isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i) + pendingOrderChanges[i];
+            int curOrders =
+              isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i) + pendingOrderChanges[i];
             field->SetText(helpers::toString(curOrders));
         }
     }
@@ -202,7 +207,8 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
                 settings_changed = true;
                 break;
             case 15: // Zero all
-                std::fill(GAMECLIENT.visual_settings.tools_settings.begin(), GAMECLIENT.visual_settings.tools_settings.end(), 0);
+                std::fill(GAMECLIENT.visual_settings.tools_settings.begin(),
+                          GAMECLIENT.visual_settings.tools_settings.end(), 0);
                 UpdateSettings();
                 settings_changed = true;
                 break;

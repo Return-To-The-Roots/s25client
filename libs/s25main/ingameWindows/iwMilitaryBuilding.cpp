@@ -64,9 +64,11 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
     // Gebäudebild
-    AddImage(8, DrawPoint(117, 114), LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
+    AddImage(8, DrawPoint(117, 114),
+             LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
     // "Go to next" (building of same type)
-    AddImageButton(9, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
+    AddImageButton(9, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11),
+                   _("Go to next military building"));
     // addon military control active? -> show button
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
         AddImageButton(10, DrawPoint(124, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 12),
@@ -93,7 +95,8 @@ void iwMilitaryBuilding::Draw_()
     }
 
     // Sammeln aus der Rausgeh-Liste und denen, die wirklich noch drinne sind
-    std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>> soldiers(building->GetTroops().begin(), building->GetTroops().end());
+    std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true>> soldiers(building->GetTroops().begin(),
+                                                                              building->GetTroops().end());
     for(const noFigure* fig : building->GetLeavingFigures())
     {
         const GO_Type figType = fig->GetGOT();
@@ -152,7 +155,8 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+            WINDOWMANAGER.ReplaceWindow(
+              std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         }
         break;
         case 5: // Gebäude abbrennen
@@ -198,10 +202,12 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobMilitary*>& militaryBuildings =
               gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetMilitaryBuildings();
             // go through list once we get to current building -> open window for the next one and go to next location
-            auto it = helpers::find_if(militaryBuildings, [bldPos = building->GetPos()](const auto* it) { return it->GetPos() == bldPos; });
+            auto it = helpers::find_if(
+              militaryBuildings, [bldPos = building->GetPos()](const auto* it) { return it->GetPos() == bldPos; });
             if(it != militaryBuildings.end()) // got to current building in the list?
             {
-                // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                // close old window, open new window (todo: only open if it isnt already open), move to location of next
+                // building
                 Close();
                 ++it;
                 if(it == militaryBuildings.end()) // was last entry in list -> goto first
@@ -231,5 +237,6 @@ void iwMilitaryBuilding::DemolitionNotAllowed(const GlobalGameSettings& ggs)
         case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
     }
 
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Demolition not possible"), msg, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+    WINDOWMANAGER.Show(
+      std::make_unique<iwMsgbox>(_("Demolition not possible"), msg, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
 }

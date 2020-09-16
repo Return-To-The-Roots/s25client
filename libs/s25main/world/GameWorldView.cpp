@@ -46,8 +46,8 @@
 #include <cmath>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
-    : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
-      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
+    : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0),
+      gwv(gwv), origin_(pos), size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     MoveTo(0, 0);
 }
@@ -206,7 +206,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     // Umherfliegende Katapultsteine zeichnen
     for(auto catapult_stone : GetWorld().catapult_stones)
     {
-        if(gwv.GetVisibility(catapult_stone->dest_building) == VIS_VISIBLE || gwv.GetVisibility(catapult_stone->dest_map) == VIS_VISIBLE)
+        if(gwv.GetVisibility(catapult_stone->dest_building) == VIS_VISIBLE
+           || gwv.GetVisibility(catapult_stone->dest_map) == VIS_VISIBLE)
             catapult_stone->Draw(offset);
     }
 
@@ -221,7 +222,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     glScissor(0, 0, VIDEODRIVER.GetRenderSize().x, VIDEODRIVER.GetRenderSize().y);
 }
 
-void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse)
+void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer,
+                            const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
     helpers::EnumArray<MapPoint, Direction> road_points;
@@ -363,7 +365,8 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             if(show_names)
             {
                 unsigned color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
-                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]), FontStyle::CENTER | FontStyle::VCENTER, color);
+                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]),
+                                FontStyle::CENTER | FontStyle::VCENTER, color);
                 curPos.y += SmallFont->getHeight();
             }
 
@@ -419,11 +422,13 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         else
             sSoldiers = boost::str(boost::format(_("(%d soldiers)")) % soldiers_count);
 
-        SmallFont->Draw(curPos, sSoldiers, FontStyle::CENTER | FontStyle::VCENTER, (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
+        SmallFont->Draw(curPos, sSoldiers, FontStyle::CENTER | FontStyle::VCENTER,
+                        (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
     }
 }
 
-void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines)
+void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
+                                std::vector<ObjectBetweenLines>& between_lines)
 {
     const std::list<noBase*>& figures = GetWorld().GetFigures(pt);
     for(noBase* figure : figures)
@@ -507,7 +512,8 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
 
     const bool isFoW = vis == VIS_FOW;
 
-    const BoundaryStones& boundary_stones = isFoW ? gwv.GetYoungestFOWNode(pt).boundary_stones : GetWorld().GetNode(pt).boundary_stones;
+    const BoundaryStones& boundary_stones =
+      isFoW ? gwv.GetYoungestFOWNode(pt).boundary_stones : GetWorld().GetNode(pt).boundary_stones;
     const unsigned char owner = boundary_stones[BorderStonePos::OnPoint];
 
     if(!owner)
@@ -525,7 +531,9 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
         if(bPos == BorderStonePos::OnPoint)
             curPos = pos;
         else if(boundary_stones[bPos])
-            curPos = pos - DrawPoint((curVertexPos - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, toDirection(bPos))) / 2.0f);
+            curPos = pos
+                     - DrawPoint((curVertexPos - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, toDirection(bPos)))
+                                 / 2.0f);
         else
             continue;
         LOADER.boundary_stone_cache[nation].draw(curPos, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);

@@ -30,7 +30,8 @@
 #include "gameData/GameConsts.h"
 #include <limits>
 
-nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
+nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, const unsigned char player,
+                                 const Nation nation)
     : noBuilding(type, pos, player, nation), leaving_event(nullptr), go_out(false), defender_(nullptr)
 {}
 
@@ -78,8 +79,8 @@ void nobBaseMilitary::DestroyBuilding()
         gwg->AddFigure(pos, it);
 
         if(it->DoJobWorks() && dynamic_cast<nofActiveSoldier*>(it))
-            // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch Bescheid gesagt
-            // werden!
+            // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch
+            // Bescheid gesagt werden!
             static_cast<nofActiveSoldier*>(it)->HomeDestroyedAtBegin();
         else
         {
@@ -188,7 +189,8 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
-    bool capturing = (BuildingProperties::IsMilitary(bldType_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
+    bool capturing =
+      (BuildingProperties::IsMilitary(bldType_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
 
     if(!capturing && gwg->ValidPointForFighting(flagPos, false))
     {

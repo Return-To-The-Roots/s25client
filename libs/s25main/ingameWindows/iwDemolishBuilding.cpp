@@ -27,8 +27,8 @@
 #include "gameData/const_gui_ids.h"
 
 iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag)
-    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->GetPos()), IngameWindow::posAtMouse, Extent(200, 200), _("Demolish?"),
-                   LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->GetPos()), IngameWindow::posAtMouse, Extent(200, 200),
+                   _("Demolish?"), LOADER.GetImageN("resource", 41)),
       gwv(gwv), building(building), flag(flag)
 {
     // Ja
@@ -40,7 +40,8 @@ iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding*
     // Gebäudebild
     AddImage(3, DrawPoint(104, 109), building->GetBuildingImage());
     // Gebäudename
-    AddText(4, DrawPoint(100, 125), _(BUILDING_NAMES[building->GetBuildingType()]), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
+    AddText(4, DrawPoint(100, 125), _(BUILDING_NAMES[building->GetBuildingType()]), 0xFFFFFF00, FontStyle::CENTER,
+            NormalFont);
 }
 
 void iwDemolishBuilding::Msg_ButtonClick(const unsigned ctrl_id)

@@ -65,7 +65,8 @@ public:
     /// Test whether the player should resign or not
     bool TestDefeat();
     /// calculates the values the ai should pick for harbor flag & 1 bar buildings between 50% and 100%
-    /// return value is whatever has to be added to 4(=50%) for harbor and if anything is left that has to be added to 1 bar setting
+    /// return value is whatever has to be added to 4(=50%) for harbor and if anything is left that has to be added to 1
+    /// bar setting
     unsigned CalcMilSettings();
     /// military & tool production settings
     void AdjustSettings();
@@ -78,7 +79,10 @@ public:
     const AIResourceMap& GetResMap(AIResource res) const;
 
     const Node& GetAINode(const MapPoint pt) const { return aiMap[pt]; }
-    unsigned GetNumPlannedConnectedInlandMilitaryBlds() { return std::max<unsigned>(6u, aii.GetMilitaryBuildings().size() / 5u); }
+    unsigned GetNumPlannedConnectedInlandMilitaryBlds()
+    {
+        return std::max<unsigned>(6u, aii.GetMilitaryBuildings().size() / 5u);
+    }
     /// checks distance to all harborpositions
     bool HarborPosClose(MapPoint pt, unsigned range, bool onlyempty = false) const;
     /// returns the percentage*100 of possible normal building places
@@ -98,24 +102,27 @@ public:
     void ExecuteAIJob();
     /// Tries to build a bld of the given type at that point.
     /// If front is true, then the job is enqueued at the front, else the back
-    /// If searchPosition is true, then the point is searched for a good position (around that pt) otherwise the point is taken
+    /// If searchPosition is true, then the point is searched for a good position (around that pt) otherwise the point
+    /// is taken
     void AddBuildJob(BuildingType type, MapPoint pt, bool front = false, bool searchPosition = true);
     /// Build a new military building at that position
     void AddMilitaryBuildJob(MapPoint pt);
     /// adds buildjobs for a buildingtype around every warehouse or military building
     void AddBuildJobAroundEveryWarehouse(BuildingType bt);
     void AddBuildJobAroundEveryMilBld(BuildingType bt);
-    /// Checks the list of military buildingsites and puts the coordinates into the list of military buildings if building is finished
+    /// Checks the list of military buildingsites and puts the coordinates into the list of military buildings if
+    /// building is finished
     void CheckNewMilitaryBuildings();
-    /// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they unblock
+    /// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they
+    /// unblock
     void DistributeGoodsByBlocking(GoodType good, unsigned limit);
-    /// blocks max rank soldiers in warehouse 1 (hq most often), then balances soldiers among frontier warehouses - if there are no frontier
-    /// warehouses just pick anything but 1 if there is just 1 then dont block
+    /// blocks max rank soldiers in warehouse 1 (hq most often), then balances soldiers among frontier warehouses - if
+    /// there are no frontier warehouses just pick anything but 1 if there is just 1 then dont block
     void DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWarehouse* upwh);
     /// returns true if at least 1 military building has a flag > 0
     bool HasFrontierBuildings();
-    /// returns the warehouse closest to the upgradebuilding or if it cant find a way the first warehouse and if there is no warehouse left
-    /// null
+    /// returns the warehouse closest to the upgradebuilding or if it cant find a way the first warehouse and if there
+    /// is no warehouse left null
     nobBaseWarehouse* GetUpgradeBuildingWarehouse();
     /// activate gathering of swords,shields,beer,privates(if there is an upgrade building), helpers(if necessary)
     void SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse);
@@ -127,15 +134,15 @@ public:
     AIResource CalcResource(MapPoint pt);
     /// Initialize the resource maps
     void InitResourceMaps();
-    /// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know whether its a load game or
-    /// new game so this runs when the ai starts in both cases)
+    /// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know
+    /// whether its a load game or new game so this runs when the ai starts in both cases)
     // now used to init farm space around farms ... lazy legacy
     void InitStoreAndMilitarylists();
     // set default start values for the ai for distribution
     void InitDistribution();
     // returns true if we can get to the startflag in <maxlen without turning back
-    bool IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag, helpers::OptionalEnum<Direction> excludeDir,
-                            std::vector<const noFlag*> oldFlags);
+    bool IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag,
+                            helpers::OptionalEnum<Direction> excludeDir, std::vector<const noFlag*> oldFlags);
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found
     MapPoint FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius = -1,
@@ -144,13 +151,14 @@ public:
     /// satisfying the minimum value, returns false if no such position is found
     MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
                               bool inTerritory = true);
-    MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int radius = -1, bool inTerritory = true)
+    MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int radius = -1,
+                              bool inTerritory = true)
     {
         return FindBestPosition(pt, res, size, 1, radius, inTerritory);
     }
     /// finds the best position for a resource that cannot increase (fish,iron,coal,gold,granite,stones)
-    MapPoint FindBestPositionDiminishingResource(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
-                                                 bool inTerritory = true);
+    MapPoint FindBestPositionDiminishingResource(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum,
+                                                 int radius = -1, bool inTerritory = true);
     /// Finds a position for the desired building size
     MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, int radius = -1) const;
     /// Find a position for a specific building around a given point
@@ -198,10 +206,11 @@ public:
     void TryToAttack();
     /// sea attack
     void TrySeaAttack();
-    /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when onlyempty=true there has to be
-    /// at least 1 other free harborid
+    /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when
+    /// onlyempty=true there has to be at least 1 other free harborid
     bool HarborPosRelevant(unsigned harborid, bool onlyempty = false) const;
-    /// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no warehouse/military))
+    /// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no
+    /// warehouse/military))
     bool BuildingNearby(MapPoint pt, BuildingType bldType, unsigned min);
     /// Update BQ and farming ground around new building site + road
     void RecalcGround(MapPoint buildingPos, std::vector<Direction>& route_road);
@@ -212,12 +221,13 @@ public:
     void IterativeReachableNodeChecker(std::queue<MapPoint> toCheck);
     void UpdateReachableNodes(const std::vector<MapPoint>& pts);
 
-    /// disconnects 'inland' military buildings from road system(and sends out soldiers), sets stop gold, uses the upgrade building (order
-    /// new private, kick out general)
+    /// disconnects 'inland' military buildings from road system(and sends out soldiers), sets stop gold, uses the
+    /// upgrade building (order new private, kick out general)
     void MilUpgradeOptim();
 
     void SetFarmedNodes(MapPoint pt, bool set);
-    // removes a no longer used road(and its flags) returns true when there is a building at the flag that might need a new connection
+    // removes a no longer used road(and its flags) returns true when there is a building at the flag that might need a
+    // new connection
     bool RemoveUnusedRoad(const noFlag& startFlag, helpers::OptionalEnum<Direction> excludeDir, bool firstflag = true,
                           bool allowcircle = true, bool keepstartflag = false);
     // finds all unused flags and roads, removes flags or reconnects them as neccessary
@@ -238,7 +248,10 @@ public:
 
     bool NoEnemyHarbor();
 
-    void SetResourceMap(AIResource res, MapPoint pt, int newvalue) { resourceMaps[static_cast<unsigned>(res)][pt] = newvalue; }
+    void SetResourceMap(AIResource res, MapPoint pt, int newvalue)
+    {
+        resourceMaps[static_cast<unsigned>(res)][pt] = newvalue;
+    }
 
     MapPoint UpgradeBldPos;
 

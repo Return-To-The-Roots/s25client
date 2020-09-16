@@ -20,9 +20,10 @@
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 
-ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& tooltip)
-    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true), isChecked(false),
-      isIlluminated(false), isEnabled(true)
+ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                       const std::string& tooltip)
+    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true),
+      isChecked(false), isIlluminated(false), isEnabled(true)
 {}
 
 ctrlButton::~ctrlButton() = default;

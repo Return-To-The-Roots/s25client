@@ -33,7 +33,8 @@
 namespace bfs = boost::filesystem;
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const boost::filesystem::path& basePath)
-    : worldDesc_(worldDesc), basePath_(basePath.lexically_normal().make_preferred()), curIncludeDepth_(0), errorInIncludeFile_(false)
+    : worldDesc_(worldDesc), basePath_(basePath.lexically_normal().make_preferred()), curIncludeDepth_(0),
+      errorInIncludeFile_(false)
 {
     Register(lua);
 
@@ -87,7 +88,8 @@ void GameDataLoader::Include(const std::string& filepath)
         if(++curIncludeDepth_ >= maxIncludeDepth)
             throw LuaIncludeError(helpers::format("Maximum include depth of %1% is reached!", maxIncludeDepth));
         const auto isAllowedChar = [](const char c) {
-            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '/' || c == '.';
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '/'
+                   || c == '.';
         };
         if(helpers::contains_if(filepath, [isAllowedChar](const char c) { return !isAllowedChar(c); }))
             throw LuaIncludeError("It contains disallowed chars. Allowed: alpha-numeric, underscore, slash and dot.");

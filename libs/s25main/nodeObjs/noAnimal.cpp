@@ -32,8 +32,8 @@
 #include "s25util/colors.h"
 
 noAnimal::noAnimal(const Species species, const MapPoint pos)
-    : noMovable(NOP_ANIMAL, pos), species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)),
-      hunter(nullptr), sound_moment(0)
+    : noMovable(NOP_ANIMAL, pos), species(species), state(STATE_WALKING),
+      pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(nullptr), sound_moment(0)
 {}
 
 void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
@@ -47,8 +47,8 @@ void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
 }
 
 noAnimal::noAnimal(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), species(sgd.Pop<Species>()), state(State(sgd.PopUnsignedChar())), pause_way(sgd.PopUnsignedShort()),
-      hunter(sgd.PopObject<nofHunter>(GOT_NOF_HUNTER)), sound_moment(0)
+    : noMovable(sgd, obj_id), species(sgd.Pop<Species>()), state(State(sgd.PopUnsignedChar())),
+      pause_way(sgd.PopUnsignedShort()), hunter(sgd.PopObject<nofHunter>(GOT_NOF_HUNTER)), sound_moment(0)
 {}
 
 void noAnimal::StartLiving()
@@ -72,8 +72,8 @@ void noAnimal::Draw(DrawPoint drawPt)
             // Interpolieren zwischen beiden Knotenpunkten
             drawPt += CalcWalkingRelative();
 
-            unsigned ani_step =
-              GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % ANIMALCONSTS[species].animation_steps;
+            unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev)
+                                % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
             LOADER.getAnimalSprite(species, GetCurMoveDir(), ani_step).draw(drawPt);
@@ -264,17 +264,20 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
         if(species == SPEC_DUCK)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein
-            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::WATER && gwg->GetDescription().get(tRight).kind == TerrainKind::WATER)
+            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::WATER
+               && gwg->GetDescription().get(tRight).kind == TerrainKind::WATER)
                 return dir;
         } else if(species == SPEC_POLARBEAR)
         {
             // Polarbären laufen nur auf Schnee rum
-            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::SNOW && gwg->GetDescription().get(tRight).kind == TerrainKind::SNOW)
+            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::SNOW
+               && gwg->GetDescription().get(tRight).kind == TerrainKind::SNOW)
                 return dir;
         } else
         {
             // Die anderen Tiere dürfen nur auf Wiesen,Savannen usw. laufen, nicht auf Bergen oder in der Wüste!
-            if(!gwg->GetDescription().get(tLeft).IsUsableByAnimals() || !gwg->GetDescription().get(tRight).IsUsableByAnimals())
+            if(!gwg->GetDescription().get(tLeft).IsUsableByAnimals()
+               || !gwg->GetDescription().get(tRight).IsUsableByAnimals())
                 continue;
 
             // Außerdem dürfen keine Hindernisse im Weg sein

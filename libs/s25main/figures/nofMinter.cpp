@@ -24,7 +24,8 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 
-nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINTER, pos, player, workplace)
+nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_MINTER, pos, player, workplace)
 {}
 
 void nofMinter::Serialize_nofMinter(SerializedGameData& sgd) const
@@ -43,7 +44,8 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
     if(now_id < 91)
     {
         LOADER.GetPlayerImage("rom_bobs", 84 + (now_id) % 8)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
+                     gwg->GetPlayer(workplace->GetPlayer()).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)

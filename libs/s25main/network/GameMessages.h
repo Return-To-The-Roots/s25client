@@ -136,7 +136,8 @@ public:
     std::string password;
 
     GameMessage_Server_Password() : GameMessage(NMS_SERVER_PASSWORD) {}
-    GameMessage_Server_Password(std::string password) : GameMessage(NMS_SERVER_PASSWORD), password(std::move(password)) {}
+    GameMessage_Server_Password(std::string password) : GameMessage(NMS_SERVER_PASSWORD), password(std::move(password))
+    {}
 
     void Serialize(Serializer& ser) const override
     {
@@ -308,7 +309,8 @@ public:
     std::vector<unsigned> checksums;
 
     GameMessage_Server_Async() : GameMessage(NMS_SERVER_ASYNC) {}
-    GameMessage_Server_Async(const std::vector<unsigned>& checksums) : GameMessage(NMS_SERVER_ASYNC), checksums(checksums)
+    GameMessage_Server_Async(const std::vector<unsigned>& checksums)
+        : GameMessage(NMS_SERVER_ASYNC), checksums(checksums)
     {
         LOG.writeToFile(">>> NMS_SERVER_ASYNC(%d)\n") % checksums.size();
     }
@@ -447,7 +449,8 @@ public:
     Nation nation;
 
     GameMessage_Player_Nation() : GameMessageWithPlayer(NMS_PLAYER_NATION) {} //-V730
-    GameMessage_Player_Nation(uint8_t player, const Nation nation) : GameMessageWithPlayer(NMS_PLAYER_NATION, player), nation(nation)
+    GameMessage_Player_Nation(uint8_t player, const Nation nation)
+        : GameMessageWithPlayer(NMS_PLAYER_NATION, player), nation(nation)
     {
         LOG.writeToFile(">>> NMS_PLAYER_SET_NATION\n");
     }
@@ -478,7 +481,8 @@ public:
     Team team;
 
     GameMessage_Player_Team() : GameMessageWithPlayer(NMS_PLAYER_TEAM) {} //-V730
-    GameMessage_Player_Team(uint8_t player, const Team team) : GameMessageWithPlayer(NMS_PLAYER_TEAM, player), team(team)
+    GameMessage_Player_Team(uint8_t player, const Team team)
+        : GameMessageWithPlayer(NMS_PLAYER_TEAM, player), team(team)
     {
         LOG.writeToFile(">>> NMS_PLAYER_SET_TEAM\n");
     }
@@ -508,7 +512,8 @@ public:
     uint32_t color;
 
     GameMessage_Player_Color() : GameMessageWithPlayer(NMS_PLAYER_COLOR) {} //-V730
-    GameMessage_Player_Color(uint8_t player, const uint32_t color) : GameMessageWithPlayer(NMS_PLAYER_COLOR, player), color(color)
+    GameMessage_Player_Color(uint8_t player, const uint32_t color)
+        : GameMessageWithPlayer(NMS_PLAYER_COLOR, player), color(color)
     {
         LOG.writeToFile(">>> NMS_PLAYER_SET_COLOR\n");
     }
@@ -568,7 +573,8 @@ public:
     uint16_t ping;
 
     GameMessage_Player_Ping() : GameMessageWithPlayer(NMS_PLAYER_PING) {} //-V730
-    GameMessage_Player_Ping(uint8_t player, uint16_t ping) : GameMessageWithPlayer(NMS_PLAYER_PING, player), ping(ping) {}
+    GameMessage_Player_Ping(uint8_t player, uint16_t ping) : GameMessageWithPlayer(NMS_PLAYER_PING, player), ping(ping)
+    {}
 
     void Serialize(Serializer& ser) const override
     {
@@ -597,7 +603,8 @@ public:
     std::string name;
 
     GameMessage_Player_New() : GameMessageWithPlayer(NMS_PLAYER_NEW) {}
-    GameMessage_Player_New(uint8_t player, std::string name) : GameMessageWithPlayer(NMS_PLAYER_NEW, player), name(std::move(name))
+    GameMessage_Player_New(uint8_t player, std::string name)
+        : GameMessageWithPlayer(NMS_PLAYER_NEW, player), name(std::move(name))
     {
         LOG.writeToFile(">>> NMS_PLAYER_NEW\n");
     }
@@ -660,7 +667,8 @@ public:
     /// Die beiden Spieler-IDs, die miteinander vertauscht werden sollen
     uint8_t player2;
     GameMessage_Player_Swap() : GameMessageWithPlayer(NMS_PLAYER_SWAP) {} //-V730
-    GameMessage_Player_Swap(uint8_t player, uint8_t player2) : GameMessageWithPlayer(NMS_PLAYER_SWAP, player), player2(player2)
+    GameMessage_Player_Swap(uint8_t player, uint8_t player2)
+        : GameMessageWithPlayer(NMS_PLAYER_SWAP, player), player2(player2)
     {
         LOG.writeToFile(">>> NMS_PLAYER_SWAP\n");
     }
@@ -721,10 +729,10 @@ public:
     uint32_t luaLen, luaCompressedLen;
 
     GameMessage_Map_Info() : GameMessage(NMS_MAP_INFO) {} //-V730
-    GameMessage_Map_Info(std::string filename, const MapType mt, unsigned mapLen, unsigned mapCompressedLen, const unsigned luaLen,
-                         unsigned luaCompressedLen)
-        : GameMessage(NMS_MAP_INFO), filename(std::move(filename)), mt(mt), mapLen(mapLen), mapCompressedLen(mapCompressedLen),
-          luaLen(luaLen), luaCompressedLen(luaCompressedLen)
+    GameMessage_Map_Info(std::string filename, const MapType mt, unsigned mapLen, unsigned mapCompressedLen,
+                         const unsigned luaLen, unsigned luaCompressedLen)
+        : GameMessage(NMS_MAP_INFO), filename(std::move(filename)), mt(mt), mapLen(mapLen),
+          mapCompressedLen(mapCompressedLen), luaLen(luaLen), luaCompressedLen(luaCompressedLen)
     {
         LOG.writeToFile(">>> NMS_MAP_INFO\n");
     }

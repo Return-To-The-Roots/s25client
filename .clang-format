@@ -49,7 +49,7 @@ BreakConstructorInitializersBeforeComma: false
 BreakConstructorInitializers: BeforeColon
 BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: true
-ColumnLimit:     140
+ColumnLimit:     120
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -110,7 +110,7 @@ IncludeIsMainRegex: '(Impl|_Win32|_Other)?$'
 IncludeIsMainSourceRegex: ''
 IndentCaseLabels: true
 IndentGotoLabels: true
-IndentPPDirectives: None
+IndentPPDirectives: AfterHash
 IndentWidth:     4
 IndentWrappedFunctionNames: false
 JavaScriptQuotes: Leave

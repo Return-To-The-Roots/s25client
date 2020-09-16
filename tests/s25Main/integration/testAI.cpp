@@ -40,7 +40,8 @@ using BiggerWorldWithGCExecution = WorldWithGCExecution<1, 24, 22>;
 template<class T_Col>
 inline bool containsBldType(const T_Col& collection, BuildingType type)
 {
-    return std::find_if(collection.begin(), collection.end(), [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; })
+    return std::find_if(collection.begin(), collection.end(),
+                        [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; })
            != collection.end();
 }
 
@@ -162,7 +163,8 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     ai->RunGF(em.GetCurrentGF(), true);
     assertBqEqualAround(__LINE__, bldPos, 6);
 
-    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SOUTHEAST), false, std::vector<Direction>(5, Direction::WEST));
+    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SOUTHEAST), false,
+                    std::vector<Direction>(5, Direction::WEST));
     em.ExecuteNextGF();
     ai->RunGF(em.GetCurrentGF(), true);
     RTTR_EXEC_TILL(2000, world.GetSpecObj<noBuilding>(bldPos));
@@ -256,7 +258,8 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
         {
             gc->Execute(world, curPlayer);
         }
-        if(playerHasBld(player, BLD_SAWMILL) && playerHasBld(player, BLD_WOODCUTTER) && playerHasBld(player, BLD_FORESTER))
+        if(playerHasBld(player, BLD_SAWMILL) && playerHasBld(player, BLD_WOODCUTTER)
+           && playerHasBld(player, BLD_FORESTER))
             break;
     }
     BOOST_REQUIRE(playerHasBld(player, BLD_SAWMILL));

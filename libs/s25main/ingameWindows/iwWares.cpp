@@ -32,8 +32,9 @@ namespace {
 constexpr unsigned ID_pageOffset = 100;
 }
 
-static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPos, const Extent btSize, const unsigned idOffset,
-                       const std::string& name, glArchivItem_Bitmap* img, const bool allow_outhousing)
+static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPos, const Extent btSize,
+                       const unsigned idOffset, const std::string& name, glArchivItem_Bitmap* img,
+                       const bool allow_outhousing)
 {
     // Background image, only a button when outhousing is allowed
     if(allow_outhousing)
@@ -71,8 +72,8 @@ static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPo
 }
 
 // 167, 416
-iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing, const glFont* font,
-                 const Inventory& inventory, const GamePlayer& player)
+iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing,
+                 const glFont* font, const Inventory& inventory, const GamePlayer& player)
     : IngameWindow(id, pos, size, title, LOADER.GetImageN("io", 5)), inventory(inventory), player(player), numPages(0)
 {
     if(!font)
@@ -88,11 +89,14 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
       GD_BOAT};
 
     constexpr std::array<Job, 31> JOB_DISPLAY_ORDER{
-      JOB_HELPER,     JOB_BUILDER,   JOB_PLANER, JOB_WOODCUTTER,  JOB_FORESTER,      JOB_STONEMASON, JOB_FISHER,
-      JOB_HUNTER,     JOB_CARPENTER, JOB_FARMER, JOB_PIGBREEDER,  JOB_DONKEYBREEDER, JOB_MILLER,     JOB_BAKER,
-      JOB_BUTCHER,    JOB_BREWER,    JOB_MINER,  JOB_IRONFOUNDER, JOB_ARMORER,       JOB_MINTER,     JOB_METALWORKER,
-      JOB_SHIPWRIGHT, JOB_GEOLOGIST, JOB_SCOUT,  JOB_PACKDONKEY,  JOB_CHARBURNER,    JOB_PRIVATE,    JOB_PRIVATEFIRSTCLASS,
-      JOB_SERGEANT,   JOB_OFFICER,   JOB_GENERAL};
+      JOB_HELPER,      JOB_BUILDER,     JOB_PLANER,     JOB_WOODCUTTER,
+      JOB_FORESTER,    JOB_STONEMASON,  JOB_FISHER,     JOB_HUNTER,
+      JOB_CARPENTER,   JOB_FARMER,      JOB_PIGBREEDER, JOB_DONKEYBREEDER,
+      JOB_MILLER,      JOB_BAKER,       JOB_BUTCHER,    JOB_BREWER,
+      JOB_MINER,       JOB_IRONFOUNDER, JOB_ARMORER,    JOB_MINTER,
+      JOB_METALWORKER, JOB_SHIPWRIGHT,  JOB_GEOLOGIST,  JOB_SCOUT,
+      JOB_PACKDONKEY,  JOB_CHARBURNER,  JOB_PRIVATE,    JOB_PRIVATEFIRSTCLASS,
+      JOB_SERGEANT,    JOB_OFFICER,     JOB_GENERAL};
 
     // Warenseite hinzufügen
     ctrlGroup& waresPage = AddPage();
@@ -121,22 +125,25 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         {
             const GoodType rawWare = WARE_DISPLAY_ORDER[idx];
             const GoodType ware = convertShieldToNation(rawWare, player.nation);
-            addElement(waresPage, font, btPos, btSize, rawWare, _(WARE_NAMES[rawWare]), LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + ware),
-                       allow_outhousing);
+            addElement(waresPage, font, btPos, btSize, rawWare, _(WARE_NAMES[rawWare]),
+                       LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + ware), allow_outhousing);
         }
 
         if(idx < JOB_DISPLAY_ORDER.size())
         {
             const Job job = JOB_DISPLAY_ORDER[idx];
-            glArchivItem_Bitmap* figImage = (job == JOB_CHARBURNER) ? LOADER.GetImageN("io_new", 5) : LOADER.GetMapImageN(2300 + job);
+            glArchivItem_Bitmap* figImage =
+              (job == JOB_CHARBURNER) ? LOADER.GetImageN("io_new", 5) : LOADER.GetMapImageN(2300 + job);
             addElement(figuresPage, font, btPos, btSize, job, _(JOB_NAMES[job]), figImage, allow_outhousing);
         }
     }
 
     // "Blättern"
-    AddImageButton(0, DrawPoint(52, GetSize().y - 47), Extent(66, 32), TC_GREY, LOADER.GetImageN("io", 84), _("Next page"));
+    AddImageButton(0, DrawPoint(52, GetSize().y - 47), Extent(66, 32), TC_GREY, LOADER.GetImageN("io", 84),
+                   _("Next page"));
     // Hilfe
-    AddImageButton(12, DrawPoint(16, GetSize().y - 47), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(12, DrawPoint(16, GetSize().y - 47), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 225),
+                   _("Help"));
 
     waresPage.SetVisible(true);
     curPage_ = warePageID;
@@ -150,8 +157,9 @@ void iwWares::Msg_ButtonClick(const unsigned ctrl_id)
             SetPage(curPage_ + 1);
             break;
         case 12: // Hilfe
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_("Here you will find a list of your entire stores of "
-                                                                   "merchandise and all the inhabitants of your realm.")));
+            WINDOWMANAGER.ReplaceWindow(
+              std::make_unique<iwHelp>(_("Here you will find a list of your entire stores of "
+                                         "merchandise and all the inhabitants of your realm.")));
             break;
     }
 }
@@ -168,7 +176,8 @@ void iwWares::Msg_PaintBefore()
     auto* group = GetCtrl<ctrlGroup>(curPage_);
     if(group)
     {
-        const unsigned count = (curPage_ == warePageID) ? helpers::NumEnumValues_v<GoodType> : helpers::NumEnumValues_v<Job>;
+        const unsigned count =
+          (curPage_ == warePageID) ? helpers::NumEnumValues_v<GoodType> : helpers::NumEnumValues_v<Job>;
 
         for(unsigned i = 0; i < count; ++i)
         {

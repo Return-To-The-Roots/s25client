@@ -24,8 +24,9 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 
-nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
-                                             const unsigned char rank, nofAttacker* const attacker)
+nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
+                                             nobBaseMilitary* const home, const unsigned char rank,
+                                             nofAttacker* const attacker)
     : nofActiveSoldier(pos, player, home, rank, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
       attacked_goal(attacker->GetAttackedGoal())
 {
@@ -34,7 +35,8 @@ nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned 
 }
 
 nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker)
-    : nofActiveSoldier(*other, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker), attacked_goal(attacker->GetAttackedGoal())
+    : nofActiveSoldier(*other, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
+      attacked_goal(attacker->GetAttackedGoal())
 {
     // Angegriffenem Gebäude Bescheid sagen
     attacked_goal->LinkAggressiveDefender(this);
@@ -60,7 +62,8 @@ void nofAggressiveDefender::Serialize_nofAggressiveDefender(SerializedGameData& 
     }
 }
 
-nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
+nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id)
+    : nofActiveSoldier(sgd, obj_id)
 {
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {

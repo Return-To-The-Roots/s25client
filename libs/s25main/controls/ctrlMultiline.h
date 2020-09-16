@@ -34,8 +34,8 @@ public:
 
     /// Creates a multiline control with automatic/transparent wrapping of long lines and automatic scrollbar
     /// Note: Using non-default font-formats may cause issues when the scrollbar is shown
-    ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
-                  FontStyle format);
+    ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                  const glFont* font, FontStyle format);
 
     void Resize(const Extent& newSize) override;
     void AddString(const std::string& str, unsigned color, bool scroll = true);
@@ -52,8 +52,8 @@ public:
 
     /// Schaltet Box ein und aus
     void ShowBackground(bool showBackground) { showBackground_ = showBackground; }
-    /// (Dis-)allows a scrollbar. If scrollbar is disabled, text will be restricted by the current height and succeeding lines won't be
-    /// shown
+    /// (Dis-)allows a scrollbar. If scrollbar is disabled, text will be restricted by the current height and succeeding
+    /// lines won't be shown
     void SetScrollBarAllowed(bool allowed);
 
     bool Msg_LeftDown(const MouseCoords& mc) override;

@@ -18,10 +18,10 @@
 #include "SignalHandler.h"
 #include "GlobalVars.h"
 #ifndef _WIN32
-#include <boost/nowide/iostream.hpp>
-#include <csignal>
-#include <cstdio>
-#include <cstdlib>
+#    include <boost/nowide/iostream.hpp>
+#    include <csignal>
+#    include <cstdio>
+#    include <cstdlib>
 #endif // !_WIN32
 
 /**

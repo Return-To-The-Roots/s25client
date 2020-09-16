@@ -18,15 +18,15 @@
 #pragma once
 
 #ifdef __has_feature
-#define RTTR_HAS_ASAN __has_feature(address_sanitizer)
+#    define RTTR_HAS_ASAN __has_feature(address_sanitizer)
 #elif defined(__SANITIZE_ADDRESS__)
-#define RTTR_HAS_ASAN __SANITIZE_ADDRESS__
+#    define RTTR_HAS_ASAN __SANITIZE_ADDRESS__
 #else
-#define RTTR_HAS_ASAN 0
+#    define RTTR_HAS_ASAN 0
 #endif
 
 #if RTTR_HAS_ASAN
-#include <sanitizer/lsan_interface.h>
+#    include <sanitizer/lsan_interface.h>
 namespace rttr {
 /// Record all leaks in the current context as expected
 using ScopedLeakDisabler = __lsan::ScopedDisabler;

@@ -42,7 +42,8 @@ struct HasFigure
 
 struct HasWareAndFigure : protected HasMinWares, protected HasFigure
 {
-    HasWareAndFigure(const GoodType good, const Job job, bool recruitingAllowed) : HasMinWares(good, 1), HasFigure(job, recruitingAllowed)
+    HasWareAndFigure(const GoodType good, const Job job, bool recruitingAllowed)
+        : HasMinWares(good, 1), HasFigure(job, recruitingAllowed)
     {}
     bool operator()(const nobBaseWarehouse& wh) const;
 };
@@ -91,7 +92,9 @@ struct HasWareButNoCollect : protected HasMinWares, protected CollectsWare
 
 struct HasFigureButNoCollect : protected HasFigure, protected CollectsFigure
 {
-    HasFigureButNoCollect(const Job type, bool recruitingAllowed) : HasFigure(type, recruitingAllowed), CollectsFigure(type) {}
+    HasFigureButNoCollect(const Job type, bool recruitingAllowed)
+        : HasFigure(type, recruitingAllowed), CollectsFigure(type)
+    {}
     bool operator()(const nobBaseWarehouse& wh) const;
 };
 

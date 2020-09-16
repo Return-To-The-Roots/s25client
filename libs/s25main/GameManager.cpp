@@ -39,7 +39,8 @@
 
 GameManager::GameManager(Log& log, Settings& settings, VideoDriverWrapper& videoDriver, AudioDriverWrapper& audioDriver,
                          WindowManager& windowManager)
-    : log_(log), settings_(settings), videoDriver_(videoDriver), audioDriver_(audioDriver), windowManager_(windowManager)
+    : log_(log), settings_(settings), videoDriver_(videoDriver), audioDriver_(audioDriver),
+      windowManager_(windowManager)
 {
     ResetAverageGFPS();
 }
@@ -60,7 +61,8 @@ bool GameManager::Start()
     }
 
     // Fenster erstellen
-    const auto screenSize = settings_.video.fullscreen ? settings_.video.fullscreenSize : settings_.video.windowedSize; //-V807
+    const auto screenSize =
+      settings_.video.fullscreen ? settings_.video.fullscreenSize : settings_.video.windowedSize; //-V807
     if(!videoDriver_.CreateScreen(screenSize, settings_.video.fullscreen))
         return false;
     videoDriver_.setTargetFramerate(settings_.video.vsync);
@@ -129,8 +131,8 @@ bool GameManager::Run()
                     // Elapsed time in ms
                     const auto timeDiff = static_cast<double>(current_time - lastSkipReport->time);
                     const unsigned numGFPassed = curGF - lastSkipReport->gf;
-                    log_.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF
-                      % curGF % (timeDiff / 1000) % (timeDiff / numGFPassed);
+                    log_.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n"))
+                      % targetSkipGF % curGF % (timeDiff / 1000) % (timeDiff / numGFPassed);
                 } else
                     log_.write(_("jumping to gf %i, now at gf %i \n")) % targetSkipGF % curGF;
                 lastSkipReport = SkipReport{current_time, curGF};
@@ -144,8 +146,8 @@ bool GameManager::Run()
             {
                 const auto timeDiff = static_cast<double>(current_time - lastSkipReport->time);
                 const unsigned numGFPassed = curGF - lastSkipReport->gf;
-                log_.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % targetSkipGF % numGFPassed
-                  % (timeDiff / 1000) % (timeDiff / numGFPassed);
+                log_.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n"))
+                  % targetSkipGF % numGFPassed % (timeDiff / 1000) % (timeDiff / numGFPassed);
                 lastSkipReport.reset();
             } else
             {

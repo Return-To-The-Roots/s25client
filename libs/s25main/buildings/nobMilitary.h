@@ -46,7 +46,8 @@ public:
     };
 
 private:
-    /// wurde das Gebäude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet werden?)
+    /// wurde das Gebäude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet
+    /// werden?)
     bool new_built;
     /// Anzahl der Goldmünzen im Gebäude
     unsigned char numCoins;
@@ -125,8 +126,8 @@ public:
     /// auch von den feindlichen Gebäuden) und bestellt somit ggf. neue Soldaten, exception wird nicht mit einbezogen
     void LookForEnemyBuildings(const nobBaseMilitary* exception = nullptr);
 
-    /// Wird von gegnerischem Gebäude aufgerufen, wenn sie neu gebaut worden sind und es so ein neues Gebäude im Umkreis gibt
-    /// setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung
+    /// Wird von gegnerischem Gebäude aufgerufen, wenn sie neu gebaut worden sind und es so ein neues Gebäude im Umkreis
+    /// gibt setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung
     void NewEnemyMilitaryBuilding(unsigned short distance);
     bool IsUseless() const;
     bool IsAttackable(unsigned playerIdx) const override;

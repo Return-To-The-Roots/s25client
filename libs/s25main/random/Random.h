@@ -55,8 +55,10 @@ public:
         unsigned obj_id;
 
         RandomEntry() : counter(0), max(0), src_line(0), obj_id(0){};
-        RandomEntry(unsigned counter, int max, const PRNG& rngState, std::string src_name, unsigned src_line, unsigned obj_id)
-            : counter(counter), max(max), rngState(rngState), src_name(std::move(src_name)), src_line(src_line), obj_id(obj_id){};
+        RandomEntry(unsigned counter, int max, const PRNG& rngState, std::string src_name, unsigned src_line,
+                    unsigned obj_id)
+            : counter(counter), max(max), rngState(rngState), src_name(std::move(src_name)), src_line(src_line),
+              obj_id(obj_id){};
 
         friend std::ostream& operator<<(std::ostream& os, const RandomEntry& entry) { return entry.print(os); }
         std::ostream& print(std::ostream& os) const;

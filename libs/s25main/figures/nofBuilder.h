@@ -59,8 +59,8 @@ private:
 
     /// In neue Richtung laufen (Freewalk)
     void StartFreewalk();
-    /// "Frisst" eine passende Ware (falls vorhanden, gibt true in dem Fall zurück!) von der Baustelle, d.h nimmt sie in die Hand und erhöht
-    /// die building_steps_avaible
+    /// "Frisst" eine passende Ware (falls vorhanden, gibt true in dem Fall zurück!) von der Baustelle, d.h nimmt sie in
+    /// die Hand und erhöht die building_steps_avaible
     bool ChooseWare();
 
 public:

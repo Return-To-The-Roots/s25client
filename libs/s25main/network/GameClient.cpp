@@ -91,8 +91,8 @@ GameClient::~GameClient()
  *
  *  @return true, wenn Client erfolgreich verbunden und gestartet
  */
-bool GameClient::Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host,
-                         bool use_ipv6)
+bool GameClient::Connect(const std::string& server, const std::string& password, ServerType servertyp,
+                         unsigned short port, bool host, bool use_ipv6)
 {
     Stop();
 
@@ -127,7 +127,8 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
 bool GameClient::HostGame(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type)
 {
     std::string hostPw = createRandString(20);
-    return GAMESERVER.Start(csi, map_path, map_type, hostPw) && Connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
+    return GAMESERVER.Start(csi, map_path, map_type, hostPw)
+           && Connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
 }
 
 /**
@@ -273,8 +274,9 @@ void GameClient::StartGame(const unsigned random_init)
     // If we have a savegame, start at its first GF, else at 0
     unsigned startGF = (mapinfo.type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
     // Create the game
-    game = std::make_shared<Game>(gameLobby->getSettings(), startGF,
-                                  std::vector<PlayerInfo>(gameLobby->getPlayers().begin(), gameLobby->getPlayers().end()));
+    game =
+      std::make_shared<Game>(gameLobby->getSettings(), startGF,
+                             std::vector<PlayerInfo>(gameLobby->getPlayers().begin(), gameLobby->getPlayers().end()));
     if(!IsReplayModeOn())
     {
         for(unsigned id = 0; id < gameLobby->getNumPlayers(); id++)
@@ -827,7 +829,8 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     fileName += GetPlayer(GetPlayerId()).name;
 
     const bfs::path filePathSave = RTTRCONFIG.ExpandPath(s25::folders::save) / makePortableFileName(fileName + ".sav");
-    const bfs::path filePathLog = RTTRCONFIG.ExpandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
+    const bfs::path filePathLog =
+      RTTRCONFIG.ExpandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
     RANDOM.SaveLog(filePathLog);
     SaveToFile(filePathSave);
     LOG.write(_("Async log saved at \"%s\",\ngame saved at \"%s\"\n")) % filePathLog % filePathSave;
@@ -885,7 +888,8 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
     else
         mapinfo.luaFilepath.clear();
 
-    if(bfs::exists(mapinfo.filepath) && (mapinfo.luaFilepath.empty() || bfs::exists(mapinfo.luaFilepath)) && CreateLobby())
+    if(bfs::exists(mapinfo.filepath) && (mapinfo.luaFilepath.empty() || bfs::exists(mapinfo.luaFilepath))
+       && CreateLobby())
     {
         mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum);
         if(mapinfo.mapData.data.size() == msg.mapCompressedLen && mapinfo.mapData.length == msg.mapLen)
@@ -992,7 +996,8 @@ bool GameClient::CreateLobby()
                 return false;
             }
 
-            const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
+            const libsiedler2::ArchivItem_Map_Header& header =
+              checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
             numPlayers = header.getNumPlayers();
             mapinfo.title = s25util::ansiToUTF8(header.getName());
         }
@@ -1228,7 +1233,8 @@ void GameClient::ExecuteGameFrame()
                 // Is it time for a NWF, handle that first
                 if(isNWF)
                 {
-                    // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
+                    // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of
+                    // this function
                     // -> Don't execute GF, don't autosave etc.
                     if(!nwfInfo->isReady())
                     {
@@ -1248,8 +1254,8 @@ void GameClient::ExecuteGameFrame()
                     nwfInfo->execute(framesinfo);
                     if(oldGFLen != framesinfo.gf_length)
                     {
-                        LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF % oldGFLen % framesinfo.gf_length
-                          % framesinfo.nwf_length;
+                        LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF % oldGFLen
+                          % framesinfo.gf_length % framesinfo.nwf_length;
                     }
                 }
 
@@ -1270,7 +1276,8 @@ void GameClient::ExecuteGameFrame()
         {
             if(ci)
             {
-                SystemChat((boost::format(_("Error during execution of lua script: %1\nGame stopped!")) % e.what()).str());
+                SystemChat(
+                  (boost::format(_("Error during execution of lua script: %1\nGame stopped!")) % e.what()).str());
                 ci->CI_Error(CE_INVALID_MAP);
             }
             Stop();
@@ -1280,7 +1287,8 @@ void GameClient::ExecuteGameFrame()
     } else
     {
         // Next GF not yet reached, just update the time in the current one for drawing
-        framesinfo.frameTime = std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
+        framesinfo.frameTime =
+          std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
         RTTR_Assert(framesinfo.frameTime < framesinfo.gf_length);
     }
 }
@@ -1320,7 +1328,8 @@ void GameClient::ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs)
 
 void GameClient::SendNothingNC(uint8_t player)
 {
-    mainPlayer.sendMsgAsync(new GameMessage_GameCommand(player, AsyncChecksum::create(*game), std::vector<gc::GameCommandPtr>()));
+    mainPlayer.sendMsgAsync(
+      new GameMessage_GameCommand(player, AsyncChecksum::create(*game), std::vector<gc::GameCommandPtr>()));
 }
 
 void GameClient::WritePlayerInfo(SavedFile& file)
@@ -1472,8 +1481,9 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
     // Good approximation of current time in ms
     // (Accuracy of a possibly expensive VideoDriverWrapper::GetTicks() isn't needed here):
     using namespace std::chrono;
-    const unsigned currenttime =
-      std::chrono::duration_cast<FramesInfo::milliseconds32_t>((framesinfo.lastTime + framesinfo.frameTime).time_since_epoch()).count();
+    const unsigned currenttime = std::chrono::duration_cast<FramesInfo::milliseconds32_t>(
+                                   (framesinfo.lastTime + framesinfo.frameTime).time_since_epoch())
+                                   .count();
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
@@ -1550,7 +1560,8 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             // text oben noch hinschreiben
             boost::format nwfString(_("current GF: %u - still fast forwarding: %d GFs left (%d %%)"));
             nwfString % GetGFNumber() % (gf - i) % (i * 100 / gf);
-            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize() / 2u), nwfString.str(), FontStyle::CENTER, COLOR_YELLOW);
+            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize() / 2u), nwfString.str(), FontStyle::CENTER,
+                            COLOR_YELLOW);
 
             VIDEODRIVER.SwapBuffers();
         }
@@ -1736,7 +1747,8 @@ unsigned GameClient::GetTournamentModeDuration() const
 void GameClient::ToggleHumanAIPlayer()
 {
     RTTR_Assert(!IsReplayModeOn());
-    auto it = helpers::find_if(game->aiPlayers_, [id = this->GetPlayerId()](const auto& player) { return player.GetPlayerId() == id; });
+    auto it = helpers::find_if(game->aiPlayers_,
+                               [id = this->GetPlayerId()](const auto& player) { return player.GetPlayerId() == id; });
     if(it != game->aiPlayers_.end())
         game->aiPlayers_.erase(it);
     else

@@ -18,8 +18,8 @@
 #include "helpers/win32_nanosleep.h"
 
 #ifdef _WIN32
-#include <windows.h>
-#include <cstdint>
+#    include <windows.h>
+#    include <cstdint>
 
 /**
  *  nanosleep replacement for windows.
@@ -28,8 +28,8 @@ int nanosleep(const struct timespec* requested_delay, struct timespec* /*remaini
 {
     const int64_t usPerSecond = 1000 * 1000;
     const int64_t nsPerus = 1000;
-    int64_t micro_delay =
-      static_cast<int64_t>(requested_delay->tv_sec) * usPerSecond + (requested_delay->tv_nsec + nsPerus - 1) / nsPerus; // Round
+    int64_t micro_delay = static_cast<int64_t>(requested_delay->tv_sec) * usPerSecond
+                          + (requested_delay->tv_nsec + nsPerus - 1) / nsPerus; // Round
 
     HANDLE timer = CreateWaitableTimer(nullptr, TRUE, nullptr);
     if(timer == nullptr)

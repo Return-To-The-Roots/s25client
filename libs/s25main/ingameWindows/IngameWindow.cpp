@@ -38,10 +38,11 @@ const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementT
                                          std::numeric_limits<DrawPoint::ElementType>::max() - 1);
 
 const Extent IngameWindow::borderSize(1, 1);
-IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title, glArchivItem_Bitmap* background,
-                           bool modal, bool closeOnRightClick, Window* parent)
-    : Window(parent, id, pos, size), title_(std::move(title)), background(background), lastMousePos(0, 0), last_down(false),
-      last_down2(false), isModal_(modal), closeme(false), isMinimized_(false), isMoving(false), closeOnRightClick_(closeOnRightClick)
+IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, std::string title,
+                           glArchivItem_Bitmap* background, bool modal, bool closeOnRightClick, Window* parent)
+    : Window(parent, id, pos, size), title_(std::move(title)), background(background), lastMousePos(0, 0),
+      last_down(false), last_down2(false), isModal_(modal), closeme(false), isMinimized_(false), isMoving(false),
+      closeOnRightClick_(closeOnRightClick)
 {
     std::fill(button_state.begin(), button_state.end(), BUTTON_UP);
     contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border
@@ -172,7 +173,8 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
     {
         DrawPoint newPos = GetPos() + mc.GetPos() - lastMousePos;
         // Make sure we don't move outside window on either side
-        DrawPoint newPosBounded = elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetRenderSize() - GetSize()));
+        DrawPoint newPosBounded =
+          elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetRenderSize() - GetSize()));
         // Fix mouse position if moved too far
         if(newPosBounded != newPos)
             VIDEODRIVER.SetMousePos(newPosBounded - GetPos() + lastMousePos);
@@ -203,14 +205,14 @@ void IngameWindow::Draw_()
         SetActive(true);
 
     // Black border
-    // TODO: It would be better if this was included in the windows size. But the controls are added with absolute positions so adding the
-    // border to the size would move the border imgs inward into the content.
+    // TODO: It would be better if this was included in the windows size. But the controls are added with absolute
+    // positions so adding the border to the size would move the border imgs inward into the content.
     //
     // Solution 1: Use contentOffset for adding controls
     //
     // Solution 2: Define that all controls added to an ingame window have positions relative to the contentOffset.
-    //  This needs a change in GetDrawPos to add this offset and also change all control-add-calls but would be much cleaner (no more hard
-    //  coded offsets and we could restyle the ingame windows easily)
+    //  This needs a change in GetDrawPos to add this offset and also change all control-add-calls but would be much
+    //  cleaner (no more hard coded offsets and we could restyle the ingame windows easily)
     //
     Rect drawRect = GetDrawRect();
     Rect fullWndRect(drawRect.getOrigin() - borderSize, drawRect.getSize() + borderSize * 2u);
@@ -219,9 +221,11 @@ void IngameWindow::Draw_()
     // Left
     DrawRectangle(Rect(fullWndRect.getOrigin(), borderSize.x, fullWndRect.getSize().y), COLOR_BLACK);
     // Right
-    DrawRectangle(Rect(fullWndRect.right - borderSize.x, fullWndRect.top, borderSize.x, fullWndRect.getSize().y), COLOR_BLACK);
+    DrawRectangle(Rect(fullWndRect.right - borderSize.x, fullWndRect.top, borderSize.x, fullWndRect.getSize().y),
+                  COLOR_BLACK);
     // Bottom
-    DrawRectangle(Rect(fullWndRect.left, fullWndRect.bottom - borderSize.y, fullWndRect.getSize().x, borderSize.y), COLOR_BLACK);
+    DrawRectangle(Rect(fullWndRect.left, fullWndRect.bottom - borderSize.y, fullWndRect.getSize().x, borderSize.y),
+                  COLOR_BLACK);
 
     // Linkes oberes Teil
     glArchivItem_Bitmap* leftUpperImg = LOADER.GetImageN("resource", 36);
@@ -265,8 +269,8 @@ void IngameWindow::Draw_()
         titleImg.DrawPart(Rect(titleImgPos, rest, titleImg.getHeight()));
 
     // Text auf die Leiste
-    NormalFont->Draw(GetPos() + DrawPoint(GetSize().x, titleImg.getHeight()) / 2, title_, FontStyle::CENTER | FontStyle::VCENTER,
-                     COLOR_YELLOW);
+    NormalFont->Draw(GetPos() + DrawPoint(GetSize().x, titleImg.getHeight()) / 2, title_,
+                     FontStyle::CENTER | FontStyle::VCENTER, COLOR_YELLOW);
 
     glArchivItem_Bitmap* bottomBorderSideImg = LOADER.GetImageN("resource", 45);
     glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
@@ -325,7 +329,8 @@ void IngameWindow::Draw_()
     // Links und rechts unten die 2 kleinen Knäufe
     bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(0, GetSize().y - bottomBorderSideImg->getHeight()));
     bottomBorderSideImg->DrawFull(
-      GetPos() + DrawPoint(GetSize().x - bottomBorderSideImg->getWidth(), GetSize().y - bottomBorderSideImg->getHeight()));
+      GetPos()
+      + DrawPoint(GetSize().x - bottomBorderSideImg->getWidth(), GetSize().y - bottomBorderSideImg->getHeight()));
 }
 
 /// Verschiebt Fenster in die Bildschirmmitte

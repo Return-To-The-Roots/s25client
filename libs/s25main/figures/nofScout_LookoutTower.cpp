@@ -32,7 +32,9 @@ nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned 
     : nofBuildingWorker(JOB_SCOUT, pos, player, goalWh)
 {}
 
-nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id) {}
+nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id)
+    : nofBuildingWorker(sgd, obj_id)
+{}
 
 void nofScout_LookoutTower::Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const
 {
@@ -57,8 +59,9 @@ void nofScout_LookoutTower::WorkplaceReached()
     gwg->MakeVisibleAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
-    SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"),
-                                                                  PostCategory::Military, *workplace));
+    SendPostMessage(player,
+                    std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"),
+                                                          PostCategory::Military, *workplace));
 }
 
 bool nofScout_LookoutTower::AreWaresAvailable() const

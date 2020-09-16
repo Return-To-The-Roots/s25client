@@ -56,7 +56,8 @@ void GameServerPlayer::setActive()
 void GameServerPlayer::doPing()
 {
     ActiveState* state = boost::get<ActiveState>(&state_);
-    if(state && !state->isPinging && (!state->pingTimer.isRunning() || state->pingTimer.getElapsed() >= seconds(PING_RATE)))
+    if(state && !state->isPinging
+       && (!state->pingTimer.isRunning() || state->pingTimer.getElapsed() >= seconds(PING_RATE)))
     {
         state->isPinging = true;
         state->pingTimer.restart();
@@ -80,9 +81,10 @@ unsigned GameServerPlayer::calcPingTime()
 bool GameServerPlayer::hasTimedOut() const
 {
     return boost::apply_visitor(
-      composeVisitor([](const JustConnectedState& s) { return s.timer.getElapsed() > seconds(CONNECT_TIMEOUT); },
-                     [](const MapSendingState& s) { return s.timer.getElapsed() > seconds(CONNECT_TIMEOUT) + s.estimatedSendTime; },
-                     [](const ActiveState& s) { return s.isPinging && s.pingTimer.getElapsed() > seconds(PING_TIMEOUT); }),
+      composeVisitor(
+        [](const JustConnectedState& s) { return s.timer.getElapsed() > seconds(CONNECT_TIMEOUT); },
+        [](const MapSendingState& s) { return s.timer.getElapsed() > seconds(CONNECT_TIMEOUT) + s.estimatedSendTime; },
+        [](const ActiveState& s) { return s.isPinging && s.pingTimer.getElapsed() > seconds(PING_TIMEOUT); }),
       state_);
 }
 
@@ -91,7 +93,8 @@ unsigned GameServerPlayer::getLagTimeOut() const
     const ActiveState& state = boost::get<ActiveState>(state_);
     if(!state.lagTimer.isRunning())
         return LAG_TIMEOUT;
-    int timeout = durationToInt(std::chrono::duration_cast<seconds>(seconds(LAG_TIMEOUT) - state.lagTimer.getElapsed()));
+    int timeout =
+      durationToInt(std::chrono::duration_cast<seconds>(seconds(LAG_TIMEOUT) - state.lagTimer.getElapsed()));
     return static_cast<unsigned>(std::max(0, timeout));
 }
 

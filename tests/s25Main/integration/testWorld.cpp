@@ -128,8 +128,8 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
     {
         auto s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
         BuildingQuality bq = world.GetNode(pt).bq;
-        BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt
-                                                      << " original:" << worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y));
+        BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt << " original:"
+                                                      << worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y));
     }
 }
 
@@ -147,13 +147,15 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
-        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
+        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER
+           && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
             break;
     }
     DescIdx<TerrainDesc> tLand(0);
     for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
     {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND
+           && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
             break;
     }
 

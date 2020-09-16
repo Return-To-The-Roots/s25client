@@ -121,7 +121,8 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
         RTTR_Assert(current_ev->length > 0);
         if(current_ev->length == 0)
         {
-            LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: "
+            LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. "
+                      "noMovable::CalcRelative: "
                       "current_ev->gf_length = 0!\n")
               % GetEvMgr().GetCurrentGF();
             return Position(0, 0);

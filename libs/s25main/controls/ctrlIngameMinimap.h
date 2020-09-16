@@ -33,8 +33,8 @@ class ctrlIngameMinimap : public ctrlMinimap
     GameWorldView& gwv;
 
 public:
-    ctrlIngameMinimap(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding, IngameMinimap& minimap,
-                      GameWorldView& gwv);
+    ctrlIngameMinimap(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding,
+                      IngameMinimap& minimap, GameWorldView& gwv);
 
     /// Zeichnet die MapPreview
     void Draw_() override;

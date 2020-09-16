@@ -106,21 +106,26 @@ struct And : private T_Func1, private T_Func2
 
     And(const Func2& f2) : Func1(), Func2(f2) {}
 
-    bool operator()(const RoadSegment& segment) const { return Func1::operator()(segment) && Func2::operator()(segment); }
+    bool operator()(const RoadSegment& segment) const
+    {
+        return Func1::operator()(segment) && Func2::operator()(segment);
+    }
 };
 } // namespace SegmentConstraints
 
 /// Wegfinden ( A* ), O(v lg v) --> Wegfindung auf Stra�en
 template<class T_AdditionalCosts, class T_SegmentConstraints>
-bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max, const T_AdditionalCosts addCosts,
-                                  const T_SegmentConstraints isSegmentAllowed, unsigned* const length, RoadPathDirection* const firstDir,
+bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max,
+                                  const T_AdditionalCosts addCosts, const T_SegmentConstraints isSegmentAllowed,
+                                  unsigned* const length, RoadPathDirection* const firstDir,
                                   MapPoint* const firstNodePos)
 {
     if(&start == &goal)
     {
         // Path where start==goal should never happen
         RTTR_Assert(false);
-        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Goal in pathfinding %u,%u)\n")
+        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Goal in "
+                  "pathfinding %u,%u)\n")
           % gwb_.GetEvMgr().GetCurrentGF() % unsigned(start.GetX()) % unsigned(start.GetY());
         // But for now we assume it to be valid and return (kind of) correct values
         if(length)
@@ -171,7 +176,8 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(length)
                 *length = best.cost;
 
-            // Backtrace to get the last node that is not the start node (has a prev node) --> Next node from start on path
+            // Backtrace to get the last node that is not the start node (has a prev node) --> Next node from start on
+            // path
             const noRoadNode* firstNode = &best;
             while(firstNode->prev != &start)
             {
@@ -253,7 +259,8 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         // Stehen wir hier auf einem Hafenplatz
         if(best.GetGOT() == GOT_NOB_HARBORBUILDING)
         {
-            std::vector<nobHarborBuilding::ShipConnection> scs = static_cast<const nobHarborBuilding&>(best).GetShipConnections();
+            std::vector<nobHarborBuilding::ShipConnection> scs =
+              static_cast<const nobHarborBuilding&>(best).GetShipConnections();
 
             for(auto& sc : scs)
             {
@@ -299,33 +306,34 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
 }
 
 bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, const bool wareMode, const unsigned max,
-                              const RoadSegment* const forbidden, unsigned* const length, RoadPathDirection* const firstDir,
-                              MapPoint* const firstNodePos)
+                              const RoadSegment* const forbidden, unsigned* const length,
+                              RoadPathDirection* const firstDir, MapPoint* const firstNodePos)
 {
     RTTR_Assert(length || firstDir || firstNodePos); // If none of them is set use the \ref PathExist function!
 
     if(wareMode)
     {
         if(forbidden)
-            return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(), SegmentConstraints::AvoidSegment(forbidden), length, firstDir,
-                                firstNodePos);
+            return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(),
+                                SegmentConstraints::AvoidSegment(forbidden), length, firstDir, firstNodePos);
         else
-            return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(), SegmentConstraints::None(), length, firstDir, firstNodePos);
+            return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(), SegmentConstraints::None(), length,
+                                firstDir, firstNodePos);
     } else
     {
         if(forbidden)
-            return FindPathImpl(
-              start, goal, max, AdditonalCosts::None(),
-              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadType::Water>>(forbidden),
-              length, firstDir, firstNodePos);
+            return FindPathImpl(start, goal, max, AdditonalCosts::None(),
+                                SegmentConstraints::And<SegmentConstraints::AvoidSegment,
+                                                        SegmentConstraints::AvoidRoadType<RoadType::Water>>(forbidden),
+                                length, firstDir, firstNodePos);
         else
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadType::Water>(), length,
-                                firstDir, firstNodePos);
+            return FindPathImpl(start, goal, max, AdditonalCosts::None(),
+                                SegmentConstraints::AvoidRoadType<RoadType::Water>(), length, firstDir, firstNodePos);
     }
 }
 
-bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal, const bool allowWaterRoads, const unsigned max,
-                                const RoadSegment* const forbidden)
+bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal, const bool allowWaterRoads,
+                                const unsigned max, const RoadSegment* const forbidden)
 {
     if(allowWaterRoads)
     {
@@ -336,10 +344,11 @@ bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal,
     } else
     {
         if(forbidden)
-            return FindPathImpl(
-              start, goal, max, AdditonalCosts::None(),
-              SegmentConstraints::And<SegmentConstraints::AvoidSegment, SegmentConstraints::AvoidRoadType<RoadType::Water>>(forbidden));
+            return FindPathImpl(start, goal, max, AdditonalCosts::None(),
+                                SegmentConstraints::And<SegmentConstraints::AvoidSegment,
+                                                        SegmentConstraints::AvoidRoadType<RoadType::Water>>(forbidden));
         else
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidRoadType<RoadType::Water>());
+            return FindPathImpl(start, goal, max, AdditonalCosts::None(),
+                                SegmentConstraints::AvoidRoadType<RoadType::Water>());
     }
 }

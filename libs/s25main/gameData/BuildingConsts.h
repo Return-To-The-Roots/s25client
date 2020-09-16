@@ -94,8 +94,9 @@ const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WOR
   BldWorkDescription(JOB_HELPER, GD_WATER),
   BldWorkDescription(JOB_SHIPWRIGHT, GD_BOAT, WaresNeeded(GD_BOARDS)),
   BldWorkDescription(JOB_FARMER, GD_GRAIN),
-  BldWorkDescription(JOB_DONKEYBREEDER, GD_NOTHING, WaresNeeded(GD_GRAIN, GD_WATER)), // Produces a job. TODO: Better way
-  BldWorkDescription(),                                                               // Harbour
+  BldWorkDescription(JOB_DONKEYBREEDER, GD_NOTHING,
+                     WaresNeeded(GD_GRAIN, GD_WATER)), // Produces a job. TODO: Better way
+  BldWorkDescription(),                                // Harbour
 };
 
 /// Smoke consts for all buildings and nations

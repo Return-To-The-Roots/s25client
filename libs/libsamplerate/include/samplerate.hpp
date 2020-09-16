@@ -129,7 +129,9 @@ namespace detail {
 struct Data
 {
     SRC_DATA data;
-    Data(const float* in, size_t input_frames, float* out, size_t output_frames, double src_ratio, bool end_of_input = true) : data{}
+    Data(const float* in, size_t input_frames, float* out, size_t output_frames, double src_ratio,
+         bool end_of_input = true)
+        : data{}
     {
         data.data_in = in;
         data.data_out = out;
@@ -191,7 +193,10 @@ class StateCallback : public detail::StateBase
             detail::throwError(error);
         return state;
     }
-    static long callback(void* cb_data, float** data) { return static_cast<long>(static_cast<StateCallback*>(cb_data)->callback_(*data)); }
+    static long callback(void* cb_data, float** data)
+    {
+        return static_cast<long>(static_cast<StateCallback*>(cb_data)->callback_(*data));
+    }
     std::function<size_t(float*&)> callback_;
 
 public:
@@ -199,7 +204,8 @@ public:
         : StateBase(createOrThrow(converter, channels, func, data))
     {}
     StateCallback(Converter converter, int channels, std::function<size_t(float*&)> func)
-        : StateBase(createOrThrow(converter, channels, func ? StateCallback::callback : nullptr, this)), callback_(std::move(func))
+        : StateBase(createOrThrow(converter, channels, func ? StateCallback::callback : nullptr, this)),
+          callback_(std::move(func))
     {}
     unsigned long read(double src_ratio, size_t frames, float* data)
     {

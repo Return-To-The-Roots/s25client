@@ -124,7 +124,8 @@ GameServer::~GameServer()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spiel hosten
-bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type, const std::string& hostPw)
+bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type,
+                       const std::string& hostPw)
 {
     Stop();
 
@@ -153,7 +154,8 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
                 LOG.write("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n") % mapinfo.filepath;
                 return false;
             }
-            const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
+            const libsiedler2::ArchivItem_Map_Header& header =
+              checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
 
             playerInfos.resize(header.getNumPlayers());
             mapinfo.title = s25util::ansiToUTF8(header.getName());
@@ -352,15 +354,16 @@ void GameServer::RunStateLoading()
     }
     LOG.write("SERVER: Game loaded by all players after %1%\n")
       % std::chrono::duration_cast<std::chrono::seconds>(SteadyClock::now() - loadStartTime);
-    // The first NWF is ready. Server has to set up "missing" commands so every future command is for the correct NWF as specified with
-    // cmdDelay. We have commands for NWF 0. When clients execute this they will send the commands for NWF cmdDelay. So commands for
-    // NWF 1..cmdDelay-1 are missing. Do this here and before the NWFDone is sent, otherwise we might get them in a wrong order when
-    // messages are sent asynchronously
+    // The first NWF is ready. Server has to set up "missing" commands so every future command is for the correct NWF as
+    // specified with cmdDelay. We have commands for NWF 0. When clients execute this they will send the commands for
+    // NWF cmdDelay. So commands for NWF 1..cmdDelay-1 are missing. Do this here and before the NWFDone is sent,
+    // otherwise we might get them in a wrong order when messages are sent asynchronously
     for(unsigned i = 1; i < nwfInfo.getCmdDelay(); i++)
     {
         for(const NWFPlayerInfo& player : nwfInfo.getPlayerInfos())
         {
-            GameMessage_GameCommand msg(player.id, nwfInfo.getPlayerCmds(player.id).checksum, std::vector<gc::GameCommandPtr>());
+            GameMessage_GameCommand msg(player.id, nwfInfo.getPlayerCmds(player.id).checksum,
+                                        std::vector<gc::GameCommandPtr>());
             SendToAll(msg);
             nwfInfo.addPlayerCmds(player.id, msg.cmds);
         }
@@ -473,9 +476,10 @@ bool GameServer::StartGame()
             nwfInfo.addPlayer(id);
     }
 
-    // Add server info so nwfInfo can be ready but do NOT send it yet, as we wait for the player commands before sending the done msg
-    nwfInfo.addServerInfo(
-      NWFServerInfo(currentGF, framesinfo.gf_length / FramesInfo::milliseconds32_t(1), currentGF + framesinfo.nwf_length));
+    // Add server info so nwfInfo can be ready but do NOT send it yet, as we wait for the player commands before sending
+    // the done msg
+    nwfInfo.addServerInfo(NWFServerInfo(currentGF, framesinfo.gf_length / FramesInfo::milliseconds32_t(1),
+                                        currentGF + framesinfo.nwf_length));
 
     state = SS_LOADING;
     loadStartTime = SteadyClock::now();
@@ -537,7 +541,8 @@ void GameServer::KickPlayer(uint8_t playerId, KickReason cause, uint32_t param)
         CancelCountdown();
 
     AnnounceStatusChange();
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n") % unsigned(playerId) % unsigned(cause) % unsigned(param);
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n") % unsigned(playerId) % unsigned(cause)
+      % unsigned(param);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -580,7 +585,8 @@ void GameServer::ExecuteGameFrame()
     RTTR_Assert(state == SS_GAME);
 
     FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
-    FramesInfo::milliseconds32_t passedTime = std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
+    FramesInfo::milliseconds32_t passedTime =
+      std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
 
     // prüfen ob GF vergangen
     if(passedTime >= framesinfo.gf_length || skiptogf > currentGF)
@@ -605,9 +611,9 @@ void GameServer::ExecuteGameFrame()
         // Advance GF
         ++currentGF;
         // Normally we set lastTime = curTime (== lastTime + passedTime) where passedTime is ideally 1 GF
-        // But we might got called late, so we advance the time by 1 GF anyway so in that case we execute the next GF a bit earlier.
-        // Exception: We lag many GFs behind, then we advance by the full passedTime - 1 GF which means we are now only 1 GF behind and
-        // execute that on the next call
+        // But we might got called late, so we advance the time by 1 GF anyway so in that case we execute the next GF a
+        // bit earlier. Exception: We lag many GFs behind, then we advance by the full passedTime - 1 GF which means we
+        // are now only 1 GF behind and execute that on the next call
         if(passedTime <= 4 * framesinfo.gf_length)
             passedTime = framesinfo.gf_length;
         else
@@ -647,16 +653,18 @@ void GameServer::ExecuteNWF()
     nwfInfo.execute(framesinfo);
     if(oldGFLen != framesinfo.gf_length)
     {
-        LOG.write(_("SERVER: At GF %1%: Speed changed from %2% to %3%. NWF %4%\n")) % currentGF % oldGFLen % framesinfo.gf_length
-          % framesinfo.nwf_length;
+        LOG.write(_("SERVER: At GF %1%: Speed changed from %2% to %3%. NWF %4%\n")) % currentGF % oldGFLen
+          % framesinfo.gf_length % framesinfo.nwf_length;
     }
-    NWFServerInfo newInfo(lastNWF, framesinfo.gfLengthReq / FramesInfo::milliseconds32_t(1), lastNWF + framesinfo.nwf_length);
+    NWFServerInfo newInfo(lastNWF, framesinfo.gfLengthReq / FramesInfo::milliseconds32_t(1),
+                          lastNWF + framesinfo.nwf_length);
     if(framesinfo.gfLengthReq != framesinfo.gf_length)
     {
         // Speed will change, adjust nwf length so the time will stay constant
         using namespace std::chrono;
         using MsDouble = duration<double, std::milli>;
-        double newNWFLen = framesinfo.nwf_length * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
+        double newNWFLen =
+          framesinfo.nwf_length * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
         newInfo.nextNWF = lastNWF + std::max(1l, std::lround(newNWFLen));
     }
     SendNWFDone(newInfo);
@@ -691,7 +699,8 @@ void GameServer::CheckAndKickLaggingPlayers()
         if(timeOut == 0)
             KickPlayer(player.playerId, NP_PINGTIMEOUT, __LINE__);
         else if(timeOut <= 30
-                && (timeOut % 5 == 0 || timeOut < 5)) // Notify every 5s if max 30s are remaining, if less than 5s notify every second
+                && (timeOut % 5 == 0
+                    || timeOut < 5)) // Notify every 5s if max 30s are remaining, if less than 5s notify every second
             LOG.write(_("SERVER: Kicking player %1% in %2% seconds\n")) % player.playerId % timeOut;
     }
 }
@@ -1047,8 +1056,9 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
 
     if(msg.requestInfo)
     {
-        player->sendMsgAsync(new GameMessage_Map_Info(mapinfo.filepath.filename().string(), mapinfo.type, mapinfo.mapData.length,
-                                                      mapinfo.mapData.data.size(), mapinfo.luaData.length, mapinfo.luaData.data.size()));
+        player->sendMsgAsync(new GameMessage_Map_Info(mapinfo.filepath.filename().string(), mapinfo.type,
+                                                      mapinfo.mapData.length, mapinfo.mapData.data.size(),
+                                                      mapinfo.luaData.length, mapinfo.luaData.data.size()));
     } else if(player->isMapSending())
     {
         // Don't send again
@@ -1100,8 +1110,8 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 
     bool checksumok = (msg.mapChecksum == mapinfo.mapChecksum && msg.luaChecksum == mapinfo.luaChecksum);
 
-    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n") % unsigned(msg.senderPlayerID) % msg.mapChecksum
-      % mapinfo.mapChecksum % (checksumok ? "yes" : "no");
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n") % unsigned(msg.senderPlayerID)
+      % msg.mapChecksum % mapinfo.mapChecksum % (checksumok ? "yes" : "no");
 
     // Send response. If map data was not sent yet, the client may retry
     player->sendMsgAsync(new GameMessage_Map_ChecksumOK(checksumok, !player->isMapSending()));
@@ -1123,7 +1133,8 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
             // den anderen Spielern mitteilen das wir einen neuen haben
             SendToAll(GameMessage_Player_New(msg.senderPlayerID, playerInfo.name));
 
-            LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_NEW(%d, %s)\n") % unsigned(msg.senderPlayerID) % playerInfo.name;
+            LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_NEW(%d, %s)\n") % unsigned(msg.senderPlayerID)
+              % playerInfo.name;
 
             // belegt markieren
             playerInfo.ps = PS_OCCUPIED;
@@ -1161,7 +1172,8 @@ bool GameServer::OnGameMessage(const GameMessage_Speed& msg)
 bool GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
 {
     int targetPlayerId = GetTargetPlayer(msg);
-    if((state != SS_GAME && state != SS_LOADING) || targetPlayerId < 0 || (state == SS_LOADING && !msg.cmds.gcs.empty()))
+    if((state != SS_GAME && state != SS_LOADING) || targetPlayerId < 0
+       || (state == SS_LOADING && !msg.cmds.gcs.empty()))
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
@@ -1197,7 +1209,8 @@ bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
         log.randEntries.insert(log.randEntries.end(), msg.entries.begin(), msg.entries.end());
         if(msg.last)
         {
-            LOG.write(_("Received async logs from %1% (%2% entries).\n")) % unsigned(log.playerId) % log.randEntries.size();
+            LOG.write(_("Received async logs from %1% (%2% entries).\n")) % unsigned(log.playerId)
+              % log.randEntries.size();
             log.done = true;
         }
     }
@@ -1385,7 +1398,8 @@ bfs::path GameServer::SaveAsyncLog()
     unsigned numEntries = 0;
     for(AsyncLog& log : asyncLogs)
     {
-        auto it = std::find_if(log.randEntries.begin(), log.randEntries.end(), [maxCtr](const auto& e) { return e.counter == maxCtr; });
+        auto it = std::find_if(log.randEntries.begin(), log.randEntries.end(),
+                               [maxCtr](const auto& e) { return e.counter == maxCtr; });
         log.randEntries.erase(log.randEntries.begin(), it);
         if(numEntries < log.randEntries.size())
             numEntries = log.randEntries.size();
@@ -1410,7 +1424,8 @@ bfs::path GameServer::SaveAsyncLog()
                 break;
             }
             const RandomEntry& curEntry = log.randEntries[i];
-            if(curEntry.max != refEntry.max || curEntry.rngState != refEntry.rngState || curEntry.obj_id != refEntry.obj_id)
+            if(curEntry.max != refEntry.max || curEntry.rngState != refEntry.rngState
+               || curEntry.obj_id != refEntry.obj_id)
             {
                 isIdentical = false;
                 break;
@@ -1437,13 +1452,14 @@ bfs::path GameServer::SaveAsyncLog()
         for(const AsyncLog& log : asyncLogs)
         {
             const JoinPlayerInfo& plInfo = playerInfos.at(log.playerId);
-            file << "Player " << std::setw(2) << unsigned(log.playerId) << (plInfo.isHost ? '#' : ' ') << "\t\"" << plInfo.name << '"'
-                 << std::endl;
+            file << "Player " << std::setw(2) << unsigned(log.playerId) << (plInfo.isHost ? '#' : ' ') << "\t\""
+                 << plInfo.name << '"' << std::endl;
             file << "System info: " << log.addData << std::endl;
             file << "\tChecksum: " << std::setw(0) << log.checksum << std::endl;
         }
         for(const AsyncLog& log : asyncLogs)
-            file << "Checksum " << std::setw(2) << unsigned(log.playerId) << std::setw(0) << ": " << log.checksum << std::endl;
+            file << "Checksum " << std::setw(2) << unsigned(log.playerId) << std::setw(0) << ": " << log.checksum
+                 << std::endl;
 
         // print identical lines, they help in tracing the bug
         for(unsigned i = 0; i < numIdentical; i++)
@@ -1453,7 +1469,8 @@ bfs::path GameServer::SaveAsyncLog()
             for(const AsyncLog& log : asyncLogs)
             {
                 if(i < log.randEntries.size())
-                    file << "[C" << std::setw(2) << unsigned(log.playerId) << std::setw(0) << "]: " << log.randEntries[i] << '\n';
+                    file << "[C" << std::setw(2) << unsigned(log.playerId) << std::setw(0)
+                         << "]: " << log.randEntries[i] << '\n';
             }
         }
 
@@ -1471,11 +1488,12 @@ void GameServer::SendAsyncLog(const bfs::path& asyncLogFilePath)
     if(SETTINGS.global.submit_debug_data == 1
 #ifdef _WIN32
        || (MessageBoxW(nullptr,
-                       boost::nowide::widen(
-                         _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in "
-                           "the future? Thank you very much!"))
+                       boost::nowide::widen(_("The game clients are out of sync. Would you like to send debug "
+                                              "information to RttR to help us avoiding this in "
+                                              "the future? Thank you very much!"))
                          .c_str(),
-                       boost::nowide::widen(_("Error")).c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
+                       boost::nowide::widen(_("Error")).c_str(),
+                       MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
            == IDYES)
 #endif
     )
@@ -1555,10 +1573,10 @@ bool GameServer::OnGameMessage(const GameMessage_Player_SwapConfirm& msg)
 
 void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
 {
-    // TODO: Swapping the player messes up the ids because our IDs are indizes. Usually this works because we use the sender player ID for
-    // messages received by the server and set the right ID for messages sent by the server. However (currently only) the host may send
-    // messages for another player. Those will not get the adjusted ID till he gets the swap message. So there is a short time, where the
-    // messages may be executed for the wrong player.
+    // TODO: Swapping the player messes up the ids because our IDs are indizes. Usually this works because we use the
+    // sender player ID for messages received by the server and set the right ID for messages sent by the server.
+    // However (currently only) the host may send messages for another player. Those will not get the adjusted ID till
+    // he gets the swap message. So there is a short time, where the messages may be executed for the wrong player.
     // Idea: Use actual IDs for players in messages (unique)
     if(state == SS_CONFIG)
     {

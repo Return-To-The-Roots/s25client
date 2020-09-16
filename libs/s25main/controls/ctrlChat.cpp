@@ -39,14 +39,16 @@ static const unsigned short SCROLLBAR_WIDTH = 20;
  *  @param[in] tc     Hintergrundtextur
  *  @param[in] font   Schriftart
  */
-ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font)
+ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                   const glFont* font)
     : Window(parent, id, pos, size), tc(tc), font(font), time_color(0xFFFFFFFF)
 {
     // Zeilen pro Seite festlegen errechnen
     page_size = (size.y - 4) / (font->getHeight() + 2);
 
     // Scrollbalken hinzufügen
-    AddScrollBar(0, DrawPoint(size.x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, size.y), SCROLLBAR_WIDTH, tc, page_size);
+    AddScrollBar(0, DrawPoint(size.x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, size.y), SCROLLBAR_WIDTH, tc,
+                 page_size);
 
     // Breite der Klammern <> um die Spielernamen berechnen
     bracket1_size = font->getWidth("<");
@@ -165,8 +167,9 @@ void ctrlChat::WrapLine(unsigned short i)
     const RawChatLine& line = raw_chat_lines[i];
 
     // Breite von Zeitstring und Spielername berechnen (falls vorhanden)
-    unsigned short prefix_width = (line.time_string.length() ? font->getWidth(line.time_string) : 0)
-                                  + (line.player.length() ? (bracket1_size + bracket2_size + font->getWidth(line.player)) : 0);
+    unsigned short prefix_width =
+      (line.time_string.length() ? font->getWidth(line.time_string) : 0)
+      + (line.player.length() ? (bracket1_size + bracket2_size + font->getWidth(line.player)) : 0);
 
     // Reicht die Breite des Textfeldes noch nichtmal dafür aus?
     if(prefix_width > GetSize().x - 2 - SCROLLBAR_WIDTH)
@@ -176,7 +179,8 @@ void ctrlChat::WrapLine(unsigned short i)
     }
 
     // Zeilen ggf. wrappen, falls der Platz nich reicht und die Zeilenanfanänge in wi speichern
-    glFont::WrapInfo wi = font->GetWrapInfo(line.msg, GetSize().x - prefix_width - 2 - SCROLLBAR_WIDTH, GetSize().x - 2 - SCROLLBAR_WIDTH);
+    glFont::WrapInfo wi =
+      font->GetWrapInfo(line.msg, GetSize().x - prefix_width - 2 - SCROLLBAR_WIDTH, GetSize().x - 2 - SCROLLBAR_WIDTH);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(line.msg);
@@ -196,8 +200,8 @@ void ctrlChat::WrapLine(unsigned short i)
     }
 }
 
-void ctrlChat::AddMessage(const std::string& time_string, const std::string& player, const unsigned player_color, const std::string& msg,
-                          const unsigned msg_color)
+void ctrlChat::AddMessage(const std::string& time_string, const std::string& player, const unsigned player_color,
+                          const std::string& msg, const unsigned msg_color)
 {
     RawChatLine line;
     line.time_string = time_string;

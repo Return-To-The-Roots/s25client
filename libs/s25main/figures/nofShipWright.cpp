@@ -108,7 +108,8 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                 if(!available_points.empty())
                 {
                     // Einen Punkt zufällig auswählen und dorthin laufen
-                    curShipBuildPos = available_points[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_points.size())];
+                    curShipBuildPos =
+                      available_points[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), available_points.size())];
                     StartWalkingToShip();
                 } else
                 {
@@ -155,7 +156,8 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
     }
 }
 
-nofShipWright::nofShipWright(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), curShipBuildPos(sgd.PopMapPoint())
+nofShipWright::nofShipWright(SerializedGameData& sgd, const unsigned obj_id)
+    : nofWorkman(sgd, obj_id), curShipBuildPos(sgd.PopMapPoint())
 {}
 
 void nofShipWright::Serialize(SerializedGameData& sgd) const
@@ -182,8 +184,8 @@ void nofShipWright::StartWalkingToShip()
 }
 
 /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
-/// poc: differene to original game: points at a sea which cant have a harbor are invalid (original as long as there is 1 harborpoint at any
-/// sea on the map any sea is valid)
+/// poc: differene to original game: points at a sea which cant have a harbor are invalid (original as long as there is
+/// 1 harborpoint at any sea on the map any sea is valid)
 bool nofShipWright::IsPointGood(const MapPoint pt) const
 {
     // Auf Wegen nicht bauen

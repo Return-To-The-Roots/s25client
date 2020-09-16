@@ -31,7 +31,8 @@ struct GetInsertIterator
 };
 
 template<class T>
-struct GetInsertIterator<T, boost::void_t<decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))>>
+struct GetInsertIterator<T,
+                         boost::void_t<decltype(std::declval<T>().push_back(std::declval<typename T::value_type>()))>>
 {
     static auto get(T& collection) { return std::back_inserter(collection); }
 };

@@ -77,9 +77,10 @@ void LuaPlayer::EnableBuilding(lua::SafeEnum<BuildingType> bld, bool notify)
     player.EnableBuilding(bld);
     if(notify)
     {
-        player.SendPostMessage(std::make_unique<PostMsgWithBuilding>(player.GetGameWorld().GetEvMgr().GetCurrentGF(),
-                                                                     std::string(_("New building type:")) + "\n" + _(BUILDING_NAMES[bld]),
-                                                                     PostCategory::General, bld, player.nation));
+        player.SendPostMessage(
+          std::make_unique<PostMsgWithBuilding>(player.GetGameWorld().GetEvMgr().GetCurrentGF(),
+                                                std::string(_("New building type:")) + "\n" + _(BUILDING_NAMES[bld]),
+                                                PostCategory::General, bld, player.nation));
     }
 }
 
@@ -153,8 +154,8 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
             MapPoint pt(x, y);
             if(pt == MapPoint(0, 0))
             {
-                // This might be the (old) separator if: We have a previous 0,0-pair, a valid polygon (>= 3 points) and first pt after 0,0
-                // matches last pt
+                // This might be the (old) separator if: We have a previous 0,0-pair, a valid polygon (>= 3 points) and
+                // first pt after 0,0 matches last pt
                 if(lastNullPt >= 0 && pts.size() - lastNullPt >= 3 && pts[lastNullPt + 1] == pts.back())
                     isMultiPoly = true;
                 lastNullPt = pts.size();

@@ -113,7 +113,8 @@ void LuaInterfaceBase::setThrowOnError(bool doThrow)
         lua.setErrorHandler([this](int status, const char* msg) { errorHandlerNoThrow(status, msg); });
 }
 
-std::map<std::string, std::string> LuaInterfaceBase::getTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)
+std::map<std::string, std::string> LuaInterfaceBase::getTranslation(const kaguya::LuaRef& luaTranslations,
+                                                                    const std::string& code)
 {
     std::vector<std::string> folders = mygettext::getPossibleFoldersForLangCode(code);
     for(const std::string& folder : folders)
@@ -170,7 +171,8 @@ bool LuaInterfaceBase::validateUTF8(const std::string& scriptTxt)
         lineEnd = scriptTxt.size();
     else
         lineEnd--;
-    const std::string faultyLine = boost::nowide::detail::convert_string<char>(&scriptTxt[lineBegin], &scriptTxt[lineEnd]);
+    const std::string faultyLine =
+      boost::nowide::detail::convert_string<char>(&scriptTxt[lineBegin], &scriptTxt[lineEnd]);
     boost::format fmt("Found invalid UTF8 char at line %1%.\nContent: %2%\n");
     fmt % lineNum % faultyLine;
     log(fmt.str());

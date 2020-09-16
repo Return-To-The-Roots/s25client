@@ -39,8 +39,8 @@ struct AreaDesc
      * @param minPlayerDist minimum distance to each player in tiles
      * @param maxPlayerDist maximum distance to each player in tiles (default: -1 means unlimited)
      */
-    AreaDesc(const Point<double>& center, double minDist, double maxDist, double pHill, unsigned pTree, unsigned pStone, unsigned minZ,
-             unsigned maxZ, int minPlayerDist, int maxPlayerDist = -1);
+    AreaDesc(const Point<double>& center, double minDist, double maxDist, double pHill, unsigned pTree, unsigned pStone,
+             unsigned minZ, unsigned maxZ, int minPlayerDist, int maxPlayerDist = -1);
 
     /**
      * Center point of the area relative to map width and height.

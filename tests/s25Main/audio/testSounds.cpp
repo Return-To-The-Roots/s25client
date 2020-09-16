@@ -103,8 +103,14 @@ BOOST_FIXTURE_TEST_CASE(SoundHandleGetUnloadedWhenLastGoesOutOfScope, LoadMockup
         BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 2);
 
         // Handles go out of scope -> Close them
-        MOCK_EXPECT(audioDriverMock->doUnloadSound).once().with(handle.getRawHandle()).calls(makeUnloadHandle(handle.getType()));
-        MOCK_EXPECT(audioDriverMock->doUnloadSound).once().with(handle2.getRawHandle()).calls(makeUnloadHandle(handle2.getType()));
+        MOCK_EXPECT(audioDriverMock->doUnloadSound)
+          .once()
+          .with(handle.getRawHandle())
+          .calls(makeUnloadHandle(handle.getType()));
+        MOCK_EXPECT(audioDriverMock->doUnloadSound)
+          .once()
+          .with(handle2.getRawHandle())
+          .calls(makeUnloadHandle(handle2.getType()));
     }
     BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
     // Release driver. Nothing will be done as sounds already unloaded
@@ -122,7 +128,10 @@ BOOST_FIXTURE_TEST_CASE(SoundHandlesCanBeUnloadedByDriver, LoadMockupAudio)
         BOOST_TEST_REQUIRE(handle.getType() == SoundType::Effect);
 
         // Release driver
-        MOCK_EXPECT(audioDriverMock->doUnloadSound).once().with(handle.getRawHandle()).calls(makeUnloadHandle(handle.getType()));
+        MOCK_EXPECT(audioDriverMock->doUnloadSound)
+          .once()
+          .with(handle.getRawHandle())
+          .calls(makeUnloadHandle(handle.getType()));
         AUDIODRIVER.UnloadDriver();
         BOOST_TEST_REQUIRE(!handle);
         // Driver data was released
@@ -142,7 +151,11 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
 
         // First call to Play loads the sound
         mock::sequence s;
-        MOCK_EXPECT(audioDriverMock->LoadEffectFromData).in(s).once().with(mock::any, ".wav").calls(makeDoLoad(SoundType::Effect));
+        MOCK_EXPECT(audioDriverMock->LoadEffectFromData)
+          .in(s)
+          .once()
+          .with(mock::any, ".wav")
+          .calls(makeDoLoad(SoundType::Effect));
         const int channel = 0;
         MOCK_EXPECT(audioDriverMock->doPlayEffect).in(s).once().with(mock::affirm, 50, false).returns(channel);
         EffectPlayId id = effect->Play(50, false); //-V522
@@ -179,7 +192,11 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
 
         // First call to Play loads the sound
         BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 0);
-        MOCK_EXPECT(audioDriverMock->LoadMusicFromData).in(s).once().with(mock::any, extension).calls(makeDoLoad(SoundType::Music));
+        MOCK_EXPECT(audioDriverMock->LoadMusicFromData)
+          .in(s)
+          .once()
+          .with(mock::any, extension)
+          .calls(makeDoLoad(SoundType::Music));
         MOCK_EXPECT(audioDriverMock->PlayMusic).in(s).once().with(mock::any, 0);
         music->Play();
         BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 1);

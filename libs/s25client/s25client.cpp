@@ -50,15 +50,15 @@
 //#include <vld.h>
 
 #ifdef _WIN32
-#include <boost/nowide/convert.hpp>
-#include <windows.h>
-#include <s25clientResources.h>
-#if defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS
-#include <eh.h>
-#endif
+#    include <boost/nowide/convert.hpp>
+#    include <windows.h>
+#    include <s25clientResources.h>
+#    if defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS
+#        include <eh.h>
+#    endif
 #endif
 #ifndef _MSC_VER
-#include <csignal>
+#    include <csignal>
 #endif
 
 namespace bfs = boost::filesystem;
@@ -105,7 +105,8 @@ void WaitForEnter()
 std::string GetProgramDescription()
 {
     std::stringstream s;
-    s << RTTR_Version::GetTitle() << " v" << RTTR_Version::GetVersionDate() << "-" << RTTR_Version::GetRevision() << "\n"
+    s << RTTR_Version::GetTitle() << " v" << RTTR_Version::GetVersionDate() << "-" << RTTR_Version::GetRevision()
+      << "\n"
       << "Compiled with " << System::getCompilerName() << " for " << System::getOSName();
     return s.str();
 }
@@ -130,9 +131,10 @@ bool askForDebugData()
 {
 #ifdef _WIN32
     std::wstring title = boost::nowide::widen(_("Error"));
-    std::wstring text = boost::nowide::widen(_(
-      "RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"));
-    return (MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES);
+    std::wstring text = boost::nowide::widen(_("RttR crashed. Would you like to send debug information to RttR to help "
+                                               "us avoiding this crash in the future? Thank you very much!"));
+    return (MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
+            == IDYES);
 #else
     return false;
 #endif
@@ -222,15 +224,15 @@ void InstallSignalHandlers()
 
 #ifdef _MSC_VER
     SetUnhandledExceptionFilter(ExceptionHandler);
-#ifdef _DEBUG
-#ifdef RTTR_HWETRANS
+#    ifdef _DEBUG
+#        ifdef RTTR_HWETRANS
     _set_se_translator(CExceptionHandler);
-#endif // RTTR_HWETRANS
-#ifdef RTTR_CRTDBG
+#        endif // RTTR_HWETRANS
+#        ifdef RTTR_CRTDBG
     // Enable Memory-Leak-Detection
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_EVERY_1024_DF*/);
-#endif //  RTTR_CRTDBG
-#endif // _DEBUG
+#        endif //  RTTR_CRTDBG
+#    endif     // _DEBUG
 
 #else
     signal(SIGSEGV, ExceptionHandler);
@@ -276,8 +278,10 @@ void SetAppSymbol()
 {
 #ifdef _WIN32
     // set console window icon
-    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_SYMBOL)));
-    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_SYMBOL)));
+    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_BIG,
+                (LPARAM)LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_SYMBOL)));
+    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_SMALL,
+                (LPARAM)LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_SYMBOL)));
 #endif // _WIN32
 }
 
@@ -332,18 +336,18 @@ bool MigrateFilesAndDirectories()
                 const bfs::path newName = RTTRCONFIG.ExpandPath(entry.newName);
                 if(exists(newName))
                 {
-                    throw std::runtime_error(
-                      helpers::format("Old and new %1% found. Please delete the one you don't want to keep!\nOld: %2%\nNew: %3%",
-                                      is_directory(oldName) ? "directory" : "file", oldName, newName));
+                    throw std::runtime_error(helpers::format(
+                      "Old and new %1% found. Please delete the one you don't want to keep!\nOld: %2%\nNew: %3%",
+                      is_directory(oldName) ? "directory" : "file", oldName, newName));
                 }
                 LOG.write("Filepath of %1% has changed to %2%. Renaming...\n", LogTarget::Stdout) % oldName % newName;
                 boost::system::error_code ec;
                 rename(oldName, newName, ec);
                 if(ec)
                 {
-                    throw std::runtime_error(helpers::format(
-                      "Renaming %1% to %2% failed\nError: %3%\nRename it yourself and/or make sure the directory is writable!", oldName,
-                      newName, ec.message()));
+                    throw std::runtime_error(helpers::format("Renaming %1% to %2% failed\nError: %3%\nRename it "
+                                                             "yourself and/or make sure the directory is writable!",
+                                                             oldName, newName, ec.message()));
                 }
             }
         }
@@ -362,9 +366,10 @@ bool InitDirectories()
     LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
-    const std::array<std::string, 10> dirs = {{s25::folders::config, s25::folders::mapsOwn, s25::folders::logs, s25::folders::mapsPlayed,
-                                               s25::folders::replays, s25::folders::save, s25::folders::lstsUser,
-                                               s25::folders::gameLstsUser, s25::folders::screenshots, s25::folders::playlists}};
+    const std::array<std::string, 10> dirs = {{s25::folders::config, s25::folders::mapsOwn, s25::folders::logs,
+                                               s25::folders::mapsPlayed, s25::folders::replays, s25::folders::save,
+                                               s25::folders::lstsUser, s25::folders::gameLstsUser,
+                                               s25::folders::screenshots, s25::folders::playlists}};
 
     if(!MigrateFilesAndDirectories())
         return false;
@@ -398,7 +403,8 @@ bool InitDirectories()
         LOG.write("Starting in %s\n", LogTarget::File) % curPath;
     } catch(const std::exception& e)
     {
-        LOG.write("Error initializing log: %1%\nSystem reports: %2%\n", LogTarget::Stderr) % e.what() % LOG.getLastError();
+        LOG.write("Error initializing log: %1%\nSystem reports: %2%\n", LogTarget::Stderr) % e.what()
+          % LOG.getLastError();
         return false;
     }
     return true;
@@ -439,8 +445,8 @@ int RunProgram(po::variables_map& options)
     if(!InitDirectories())
         return 1;
 
-    // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere (spielentscheidende) wird unser
-    // Generator verwendet)
+    // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere
+    // (spielentscheidende) wird unser Generator verwendet)
     srand(static_cast<unsigned>(std::time(nullptr)));
 
     if(options.count("convert-sounds"))
@@ -456,7 +462,8 @@ int RunProgram(po::variables_map& options)
         }
     }
 
-    SetGlobalInstanceWrapper<GameManager> gameManager(setGlobalGameManager, LOG, SETTINGS, VIDEODRIVER, AUDIODRIVER, WINDOWMANAGER);
+    SetGlobalInstanceWrapper<GameManager> gameManager(setGlobalGameManager, LOG, SETTINGS, VIDEODRIVER, AUDIODRIVER,
+                                                      WINDOWMANAGER);
     try
     {
         if(!InitGame(gameManager))

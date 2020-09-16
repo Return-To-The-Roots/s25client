@@ -57,7 +57,8 @@ bool LuaInterfaceGameBase::CheckScriptVersion()
             return true;
         else
         {
-            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.\n")) % scriptVersion % GetVersion() % GetFeatureLevel();
+            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.\n")) % scriptVersion % GetVersion()
+              % GetFeatureLevel();
             return false;
         }
     } else
@@ -79,16 +80,18 @@ unsigned LuaInterfaceGameBase::GetLocalPlayerIdx() const
 
 void LuaInterfaceGameBase::MsgBox(const std::string& title, const std::string& msg, bool isError)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MSB_OK, isError ? MSB_EXCLAMATIONRED : MSB_EXCLAMATIONGREEN));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MSB_OK,
+                                                  isError ? MSB_EXCLAMATIONRED : MSB_EXCLAMATIONGREEN));
 }
 
-void LuaInterfaceGameBase::MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx)
+void LuaInterfaceGameBase::MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile,
+                                    unsigned iconIdx)
 {
     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MSB_OK, iconFile, iconIdx));
 }
 
-void LuaInterfaceGameBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx,
-                                     int iconX, int iconY)
+void LuaInterfaceGameBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile,
+                                     unsigned iconIdx, int iconX, int iconY)
 {
     auto msgBox = std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MSB_OK, iconFile, iconIdx);
     msgBox->MoveIcon(DrawPoint(iconX, iconY));

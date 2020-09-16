@@ -58,7 +58,8 @@ enum
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
     : iwWares(CGI_BUILDING + MapBase::CreateGUIID(wh->GetPos()), IngameWindow::posAtMouse, Extent(167, 416),
-              _(BUILDING_NAMES[wh->GetBuildingType()]), true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
+              _(BUILDING_NAMES[wh->GetBuildingType()]), true, NormalFont, wh->GetInventory(),
+              gwv.GetWorld().GetPlayer(wh->GetPlayer())),
       gwv(gwv), gcFactory(gcFactory), wh(wh)
 {
     wh->AddListener(this);
@@ -69,20 +70,26 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
     // Auswahl für Auslagern/Einlagern Verbieten-Knöpfe
     ctrlOptionGroup* group = AddOptionGroup(ID_STORE_SETTINGS_GROUP, ctrlOptionGroup::CHECK);
     // Einlagern
-    group->AddImageButton(ID_COLLECT, DrawPoint(16, 335), Extent(32, 32), TC_GREY, LOADER.GetImageN("io_new", 4), _("Collect"));
+    group->AddImageButton(ID_COLLECT, DrawPoint(16, 335), Extent(32, 32), TC_GREY, LOADER.GetImageN("io_new", 4),
+                          _("Collect"));
     // Auslagern
-    group->AddImageButton(ID_TAKEOUT, DrawPoint(52, 335), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 211), _("Take out of store"));
+    group->AddImageButton(ID_TAKEOUT, DrawPoint(52, 335), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 211),
+                          _("Take out of store"));
     // Einlagern verbieten
-    group->AddImageButton(ID_STOP, DrawPoint(86, 335), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 212), _("Stop storage"));
+    group->AddImageButton(ID_STOP, DrawPoint(86, 335), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 212),
+                          _("Stop storage"));
     // nix tun auswählen
     group->SetSelection(ID_COLLECT);
     // Alle auswählen bzw setzen!
-    AddImageButton(ID_SELECT_ALL, DrawPoint(122, 335), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 223), _("Select all"));
+    AddImageButton(ID_SELECT_ALL, DrawPoint(122, 335), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 223),
+                   _("Select all"));
 
     // "Gehe Zu Ort"
-    AddImageButton(ID_GOTO, DrawPoint(122, 369), Extent(15, 32), TC_GREY, LOADER.GetImageN("io_new", 10), _("Go to place"));
+    AddImageButton(ID_GOTO, DrawPoint(122, 369), Extent(15, 32), TC_GREY, LOADER.GetImageN("io_new", 10),
+                   _("Go to place"));
     // Go to next warehouse
-    AddImageButton(ID_GOTO_NEXT, DrawPoint(139, 369), Extent(15, 32), TC_GREY, LOADER.GetImageN("io_new", 13), _("Go to next warehouse"));
+    AddImageButton(ID_GOTO_NEXT, DrawPoint(139, 369), Extent(15, 32), TC_GREY, LOADER.GetImageN("io_new", 13),
+                   _("Go to next warehouse"));
 
     UpdateOverlays();
 
@@ -94,7 +101,8 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
         GetCtrl<ctrlButton>(ID_PAGINATE)->SetWidth(32);
         GetCtrl<ctrlButton>(ID_PAGINATE)->SetPos(DrawPoint(86, 369));
 
-        AddImageButton(ID_DEMOLISH, DrawPoint(52, 369), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 23), _("Demolish house"));
+        AddImageButton(ID_DEMOLISH, DrawPoint(52, 369), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 23),
+                       _("Demolish house"));
     }
 }
 
@@ -218,10 +226,12 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
             const std::list<nobBaseWarehouse*>& storehouses =
               gwv.GetWorld().GetPlayer(wh->GetPlayer()).GetBuildingRegister().GetStorehouses();
             // go through list once we get to current building -> open window for the next one and go to next location
-            auto it = helpers::find_if(storehouses, [whPos = wh->GetPos()](const auto* it) { return it->GetPos() == whPos; });
+            auto it =
+              helpers::find_if(storehouses, [whPos = wh->GetPos()](const auto* it) { return it->GetPos() == whPos; });
             if(it != storehouses.end()) // got to current building in the list?
             {
-                // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                // close old window, open new window (todo: only open if it isnt already open), move to location of next
+                // building
                 Close();
                 ++it;
                 if(it == storehouses.end()) // was last entry in list -> goto first
@@ -232,11 +242,15 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                     WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHQ>(gwv, gcFactory, *it)).SetPos(GetPos());
                 } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
                 {
-                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHarborBuilding>(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it)))
+                    WINDOWMANAGER
+                      .ReplaceWindow(
+                        std::make_unique<iwHarborBuilding>(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it)))
                       .SetPos(GetPos());
                 } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
                 {
-                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBaseWarehouse>(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it)))
+                    WINDOWMANAGER
+                      .ReplaceWindow(
+                        std::make_unique<iwBaseWarehouse>(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it)))
                       .SetPos(GetPos());
                 }
                 break;

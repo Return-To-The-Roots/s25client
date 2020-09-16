@@ -26,8 +26,9 @@ class glFont;
 class ctrlTextDeepening : public ctrlDeepening, public ctrlBaseText
 {
 public:
-    ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc, const std::string& text,
-                      const glFont* font, unsigned color, FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
+    ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc,
+                      const std::string& text, const glFont* font, unsigned color,
+                      FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
 
     Rect GetBoundaryRect() const override;
     /// Changes width so at most this many chars can be shown

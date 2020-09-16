@@ -19,8 +19,8 @@
 #include "Window.h"
 
 Animation::Animation(Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat)
-    : elementId_(element->GetID()), numFrames_(numFrames), frameRate_(frameRate), repeat_(repeat), lastTime_(0), curFrame_(0),
-      countUp_(true), skipType_(SKIP_FRAMES), hasStarted_(false)
+    : elementId_(element->GetID()), numFrames_(numFrames), frameRate_(frameRate), repeat_(repeat), lastTime_(0),
+      curFrame_(0), countUp_(true), skipType_(SKIP_FRAMES), hasStarted_(false)
 {
     // We need at least 2 frames: current state and next state
     RTTR_Assert(numFrames_ > 1);

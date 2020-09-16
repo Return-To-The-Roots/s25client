@@ -18,13 +18,13 @@
 #include "PostMsgWithBuilding.h"
 #include "buildings/noBaseBuilding.h"
 
-PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld,
-                                         SoundEffect soundEffect)
+PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat,
+                                         const noBaseBuilding& bld, SoundEffect soundEffect)
     : PostMsg(sendFrame, text, cat, bld.GetPos(), soundEffect), bldType(bld.GetBuildingType()), nation(bld.GetNation())
 {}
 
-PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation,
-                                         const MapPoint& pos /*= MapPoint::Invalid()*/)
+PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat,
+                                         BuildingType bld, Nation nation, const MapPoint& pos /*= MapPoint::Invalid()*/)
     : PostMsg(sendFrame, text, cat, pos), bldType(bld), nation(nation)
 {}
 

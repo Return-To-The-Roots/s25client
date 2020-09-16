@@ -66,7 +66,8 @@ bool CompressedData::CompressFromFile(const boost::filesystem::path& filePath, u
 {
     boost::nowide::ifstream file(filePath, std::ios::binary | std::ios::ate);
     length = static_cast<unsigned>(file.tellg());
-    data.resize(static_cast<int>(std::ceil(length * 1.1)) + 600); // Buffer should be at most 1% bigger + 600 Bytes according to docu
+    data.resize(static_cast<int>(std::ceil(length * 1.1))
+                + 600); // Buffer should be at most 1% bigger + 600 Bytes according to docu
     file.seekg(0);
 
     auto uncompressedData = std::unique_ptr<char[]>(new char[length]);

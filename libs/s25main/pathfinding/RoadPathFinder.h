@@ -37,16 +37,16 @@ public:
     /// Outputs are only valid if true is returned!
     /// Direction might additionally be boost::none or SHIP_DIR
     ///
-    /// @param wareMode True when path will be used by a ware (Allow boat roads and check for faster roads when road points have already
-    /// many wares)
+    /// @param wareMode True when path will be used by a ware (Allow boat roads and check for faster roads when road
+    /// points have already many wares)
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)
     /// @param forbidden RoadSegment that will be ignored
     /// @param length If != nullptr will receive the final costs
     /// @param firstDir If != nullptr will receive the first direction to travel
     /// @param firstNodePos If != nullptr will receive the position of the first node
-    bool FindPath(const noRoadNode& start, const noRoadNode& goal, bool wareMode, unsigned max = std::numeric_limits<unsigned>::max(),
-                  const RoadSegment* forbidden = nullptr, unsigned* length = nullptr, RoadPathDirection* firstDir = nullptr,
-                  MapPoint* firstNodePos = nullptr);
+    bool FindPath(const noRoadNode& start, const noRoadNode& goal, bool wareMode,
+                  unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* forbidden = nullptr,
+                  unsigned* length = nullptr, RoadPathDirection* firstDir = nullptr, MapPoint* firstNodePos = nullptr);
 
     /// Checks if there is ANY path from start to goal
     ///
@@ -59,6 +59,6 @@ public:
 private:
     template<class T_AdditionalCosts, class T_SegmentConstraints>
     bool FindPathImpl(const noRoadNode& start, const noRoadNode& goal, unsigned max, T_AdditionalCosts addCosts,
-                      T_SegmentConstraints isSegmentAllowed, unsigned* length = nullptr, RoadPathDirection* firstDir = nullptr,
-                      MapPoint* firstNodePos = nullptr);
+                      T_SegmentConstraints isSegmentAllowed, unsigned* length = nullptr,
+                      RoadPathDirection* firstDir = nullptr, MapPoint* firstNodePos = nullptr);
 };

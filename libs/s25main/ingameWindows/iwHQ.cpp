@@ -22,7 +22,8 @@
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 
-iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh) : iwBaseWarehouse(gwv, gcFactory, wh)
+iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
+    : iwBaseWarehouse(gwv, gcFactory, wh)
 {
     SetTitle(_("Headquarters"));
 
@@ -43,14 +44,14 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
         // Rang-Bild
         reserve.AddImage(6 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.GetMapImageN(2321 + i));
         // Minus-Button
-        reserve.AddImageButton(11 + i, DrawPoint(54, 112 + Y_DISTANCE * i), Extent(24, 24), TC_RED1, LOADER.GetImageN("io", 139),
-                               _("Less"));
+        reserve.AddImageButton(11 + i, DrawPoint(54, 112 + Y_DISTANCE * i), Extent(24, 24), TC_RED1,
+                               LOADER.GetImageN("io", 139), _("Less"));
         // Plus-Button
-        reserve.AddImageButton(16 + i, DrawPoint(118, 112 + Y_DISTANCE * i), Extent(24, 24), TC_GREEN2, LOADER.GetImageN("io", 138),
-                               _("More"));
+        reserve.AddImageButton(16 + i, DrawPoint(118, 112 + Y_DISTANCE * i), Extent(24, 24), TC_GREEN2,
+                               LOADER.GetImageN("io", 138), _("More"));
         // Anzahl-Text
-        reserve.AddVarText(21 + i, DrawPoint(100, 117 + Y_DISTANCE * i), _("%u/%u"), 0xFFFFFF00, FontStyle::CENTER, NormalFont, 2,
-                           wh->GetReserveAvailablePointer(i), wh->GetReserveClaimedVisualPointer(i));
+        reserve.AddVarText(21 + i, DrawPoint(100, 117 + Y_DISTANCE * i), _("%u/%u"), 0xFFFFFF00, FontStyle::CENTER,
+                           NormalFont, 2, wh->GetReserveAvailablePointer(i), wh->GetReserveClaimedVisualPointer(i));
     }
 }
 

@@ -72,7 +72,8 @@ void CheckPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned 
         BOOST_REQUIRE_EQUAL(playerFrom.GetRemainingPactTime(pact, playerIdTo), 0u);
 
     // Remaining times must match
-    BOOST_REQUIRE_EQUAL(playerFrom.GetRemainingPactTime(pact, playerIdTo), playerFrom.GetRemainingPactTime(pact, playerIdTo));
+    BOOST_REQUIRE_EQUAL(playerFrom.GetRemainingPactTime(pact, playerIdTo),
+                        playerFrom.GetRemainingPactTime(pact, playerIdTo));
 
     // Attackable must match
     BOOST_REQUIRE_EQUAL(playerFrom.IsAttackable(playerIdTo), playerTo.IsAttackable(playerIdFrom));
@@ -83,11 +84,13 @@ void CheckPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned 
     BOOST_REQUIRE_EQUAL(playerFrom.IsAttackable(playerIdTo),
                         (playerFrom.GetPactState(NON_AGGRESSION_PACT, playerIdTo) != GamePlayer::ACCEPTED));
     // Ally when treaty of alliance accepted
-    BOOST_REQUIRE_EQUAL(playerFrom.IsAlly(playerIdTo), (playerFrom.GetPactState(TREATY_OF_ALLIANCE, playerIdTo) == GamePlayer::ACCEPTED));
+    BOOST_REQUIRE_EQUAL(playerFrom.IsAlly(playerIdTo),
+                        (playerFrom.GetPactState(TREATY_OF_ALLIANCE, playerIdTo) == GamePlayer::ACCEPTED));
 }
 } // namespace
 
-BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P) //, *utf::depends_on("PactTestSuite/TestInitialPactStates"))
+BOOST_FIXTURE_TEST_CASE(MakePactTest,
+                        WorldWithGCExecution3P) //, *utf::depends_on("PactTestSuite/TestInitialPactStates"))
 {
     for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         world.GetPostMgr().AddPostBox(i);

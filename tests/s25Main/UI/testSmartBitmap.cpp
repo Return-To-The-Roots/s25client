@@ -72,8 +72,9 @@ std::unique_ptr<ArchivItem_Bitmap_Player> createRandPlayerBmp(unsigned percentTr
     {
         if(randomValue(1u, 100u) > percentTransparent)
         {
-            unsigned idx =
-              randomValue(1u, 100u) > 60 ? 128 + randomValue(0, ArchivItem_Bitmap_Player::numPlayerClrs - 1) : randomValue(0, 127);
+            unsigned idx = randomValue(1u, 100u) > 60 ?
+                             128 + randomValue(0, ArchivItem_Bitmap_Player::numPlayerClrs - 1) :
+                             randomValue(0, 127);
             buffer.set(pt.x, pt.y, pal->get(idx));
         }
     }

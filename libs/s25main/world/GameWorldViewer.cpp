@@ -46,7 +46,8 @@ void GameWorldViewer::InitVisualData()
         // Roads are only overlays. At first we don't have any -> PointRoad::None=use real road
         std::fill(vNode.roads.begin(), vNode.roads.end(), PointRoad::None);
     }
-    evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>([this](const RoadNote& note) { RoadConstructionEnded(note); });
+    evRoadConstruction =
+      gwb.GetNotifications().subscribe<RoadNote>([this](const RoadNote& note) { RoadConstructionEnded(note); });
     evBQChanged = gwb.GetNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
         if(note.type == NodeNote::BQ)
             RecalcBQ(note.pos);
@@ -246,7 +247,8 @@ void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
 
 void GameWorldViewer::RoadConstructionEnded(const RoadNote& note)
 {
-    if(note.player != playerId_ || (note.type != RoadNote::Constructed && note.type != RoadNote::ConstructionFailed)) //-V560
+    if(note.player != playerId_
+       || (note.type != RoadNote::Constructed && note.type != RoadNote::ConstructionFailed)) //-V560
         return;
     // Road construction command ended -> Remove visual overlay
     RemoveVisualRoad(note.pos, note.route);

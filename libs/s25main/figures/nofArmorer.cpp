@@ -41,7 +41,9 @@ void nofArmorer::Serialize_nofArmorer(SerializedGameData& sgd) const
     sgd.PushBool(sword_shield);
 }
 
-nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), sword_shield(sgd.PopBool()) {}
+nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id)
+    : nofWorkman(sgd, obj_id), sword_shield(sgd.PopBool())
+{}
 
 void nofArmorer::DrawWorking(DrawPoint drawPt)
 {
@@ -54,7 +56,8 @@ void nofArmorer::DrawWorking(DrawPoint drawPt)
         unsigned char wpNation = workplace->GetNation();
         unsigned plColor = gwg->GetPlayer(player).color;
 
-        LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+        LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
+          ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
         if((now_id % 8) == 5)
         {

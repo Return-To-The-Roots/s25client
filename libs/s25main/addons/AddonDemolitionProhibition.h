@@ -27,7 +27,8 @@ class AddonDemolitionProhibition : public AddonList
 {
 public:
     AddonDemolitionProhibition()
-        : AddonList(AddonId::DEMOLITION_PROHIBITION, AddonGroup::Military, _("Disable Demolition of military buildings"),
+        : AddonList(AddonId::DEMOLITION_PROHIBITION, AddonGroup::Military,
+                    _("Disable Demolition of military buildings"),
                     _("Disable the demolition of military buildings under attack or near frontiers."),
                     {
                       _("Off"),

@@ -80,9 +80,11 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
 
     const Extent btSize(32, 32);
     // Hilfe
-    AddImageButton(2, DrawPoint(15, GetSize().y - 15 - btSize.y), btSize, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(2, DrawPoint(15, GetSize().y - 15 - btSize.y), btSize, TC_GREY, LOADER.GetImageN("io", 225),
+                   _("Help"));
     // Standardbelegung
-    AddImageButton(10, GetSize() - DrawPoint::all(15) - btSize, btSize, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(10, GetSize() - DrawPoint::all(15) - btSize, btSize, TC_GREY, LOADER.GetImageN("io", 191),
+                   _("Default"));
 
     UpdateSettings();
 }
@@ -124,7 +126,8 @@ void iwDistribution::TransmitSettings()
     }
 }
 
-void iwDistribution::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const unsigned short /*position*/)
+void iwDistribution::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/,
+                                              const unsigned short /*position*/)
 {
     settings_changed = true;
 }
@@ -166,9 +169,10 @@ void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
 
         case 2:
         {
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_("The priority of goods for the individual buildings can be set here. "
-                                                                   "The higher the value, the quicker the required goods are delivered "
-                                                                   "to the building concerned.")));
+            WINDOWMANAGER.ReplaceWindow(
+              std::make_unique<iwHelp>(_("The priority of goods for the individual buildings can be set here. "
+                                         "The higher the value, the quicker the required goods are delivered "
+                                         "to the building concerned.")));
         }
         break;
         // Default button
@@ -213,7 +217,8 @@ void iwDistribution::CreateGroups()
             groups.push_back(DistributionGroup(_(name), img));
         }
         // HQ = Construction
-        std::string name = std::get<1>(mapping) == BLD_HEADQUARTERS ? gettext_noop("Construction") : BUILDING_NAMES[std::get<1>(mapping)];
+        std::string name = std::get<1>(mapping) == BLD_HEADQUARTERS ? gettext_noop("Construction") :
+                                                                      BUILDING_NAMES[std::get<1>(mapping)];
         groups.back().entries.push_back(_(name));
     }
 }

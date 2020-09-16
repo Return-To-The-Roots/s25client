@@ -26,7 +26,8 @@
 
 namespace {
 using WorldFixtureEmpty0P = WorldFixture<CreateEmptyWorld, 0>;
-boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, const std::vector<BoundaryStones>& expected)
+boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world,
+                                                        const std::vector<BoundaryStones>& expected)
 {
     world.RecalcBorderStones(Position(0, 0), Extent(world.GetSize()));
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
@@ -38,7 +39,8 @@ boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, co
             if(isValue[bPos] != expectedValue[bPos])
             {
                 boost::test_tools::predicate_result result(false);
-                result.message() << unsigned(isValue[bPos]) << "!=" << unsigned(expectedValue[bPos]) << " at " << pt << "[" << bPos << "]";
+                result.message() << unsigned(isValue[bPos]) << "!=" << unsigned(expectedValue[bPos]) << " at " << pt
+                                 << "[" << bPos << "]";
                 return result;
             }
         }
@@ -62,7 +64,8 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             world.SetOwner(pt, 0);
-            std::fill(expectedBoundaryStones[world.GetIdx(pt)].begin(), expectedBoundaryStones[world.GetIdx(pt)].end(), 0u);
+            std::fill(expectedBoundaryStones[world.GetIdx(pt)].begin(), expectedBoundaryStones[world.GetIdx(pt)].end(),
+                      0u);
         }
         // Get the minimum possible region where border stones would be placed
         const std::vector<MapPoint> radius1Pts = world.GetPointsInRadius(middlePt, 1);

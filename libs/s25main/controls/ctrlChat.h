@@ -27,14 +27,15 @@ class glFont;
 class ctrlChat : public Window
 {
 public:
-    ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
+    ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+             const glFont* font);
     ~ctrlChat() override;
 
     /// Größe ändern
     void Resize(const Extent& newSize) override;
     /// Fügt eine Chatnachricht hinzu.
-    void AddMessage(const std::string& time_string, const std::string& player, unsigned player_color, const std::string& msg,
-                    unsigned msg_color);
+    void AddMessage(const std::string& time_string, const std::string& player, unsigned player_color,
+                    const std::string& msg, unsigned msg_color);
     /// Setzt Farbe der Zeitangaben.
     void SetTimeColor(unsigned color) { time_color = color; }
 

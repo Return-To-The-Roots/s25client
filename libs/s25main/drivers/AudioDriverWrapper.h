@@ -36,7 +36,9 @@ struct RawSoundHandle;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
-class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicies::WithLongevity>, public IAudioDriverCallback
+class AudioDriverWrapper :
+    public Singleton<AudioDriverWrapper, SingletonPolicies::WithLongevity>,
+    public IAudioDriverCallback
 {
 public:
     static constexpr unsigned Longevity = 30;

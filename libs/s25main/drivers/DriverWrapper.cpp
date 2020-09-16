@@ -151,12 +151,12 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 #ifdef _WIN32
       "dll";
 #else
-#ifdef __APPLE__
+#    ifdef __APPLE__
       "dylib";
-#else
+#    else
       "so";
-#endif // !__APPLE__
-#endif // !_WIN32
+#    endif // !__APPLE__
+#endif     // !_WIN32
 
     LOG.write(_("Searching for drivers in %s\n")) % driverDir;
     const std::vector<boost::filesystem::path> driver_files = ListDir(driverDir, extension, false);
@@ -167,13 +167,14 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
         // check filename for "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
         const std::string filename = path.filename().string();
         const std::array<std::string, 2> blacklistedPrefixes =
-#ifdef _DEBUG
+#    ifdef _DEBUG
           {"rls_", "Release_"};
-#else
+#    else
           {"dbg_", "Debug_"};
-#endif
-        const bool isBlacklisted = helpers::contains_if(
-          blacklistedPrefixes, [&filename](const std::string& prefix) { return filename.substr(0, prefix.length()) == prefix; });
+#    endif
+        const bool isBlacklisted = helpers::contains_if(blacklistedPrefixes, [&filename](const std::string& prefix) {
+            return filename.substr(0, prefix.length()) == prefix;
+        });
         if(isBlacklisted)
             continue;
 #endif

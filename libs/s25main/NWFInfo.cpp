@@ -45,19 +45,22 @@ void NWFInfo::addPlayer(unsigned playerId)
 
 void NWFInfo::removePlayer(unsigned playerId)
 {
-    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(), [playerId](const auto& info) { return info.id == playerId; });
+    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(),
+                           [playerId](const auto& info) { return info.id == playerId; });
     if(it != playerInfos_.end())
         playerInfos_.erase(it);
 }
 
 bool NWFInfo::addPlayerCmds(unsigned playerId, const PlayerGameCommands& cmds)
 {
-    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(), [playerId](const auto& info) { return info.id == playerId; });
+    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(),
+                           [playerId](const auto& info) { return info.id == playerId; });
     if(it == playerInfos_.end())
         throw std::runtime_error("Player with given player id does not exist");
-    // Commands in NWF n are sent for NWF n + cmdDelay. Clients can only execute an NWF (and send their cmds) when all others are received.
-    // This means no one can execute NWF n + cmdDelay before we executed NWF n. So the last NWF one can have executed is n + cmDelay - 1
-    // with the commands for n + cmdDelay - 1 + cmdDelay. Counting those leads to cmdDelay*2 pending commands.
+    // Commands in NWF n are sent for NWF n + cmdDelay. Clients can only execute an NWF (and send their cmds) when all
+    // others are received. This means no one can execute NWF n + cmdDelay before we executed NWF n. So the last NWF one
+    // can have executed is n + cmDelay - 1 with the commands for n + cmdDelay - 1 + cmdDelay. Counting those leads to
+    // cmdDelay*2 pending commands.
     if(it->commands.size() >= 2 * cmdDelay_)
         return false;
     it->commands.push(cmds);
@@ -93,7 +96,8 @@ bool NWFInfo::isReady()
 
 const NWFPlayerInfo& NWFInfo::getPlayerInfo(unsigned playerId) const
 {
-    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(), [playerId](const auto& info) { return info.id == playerId; });
+    auto it = std::find_if(playerInfos_.begin(), playerInfos_.end(),
+                           [playerId](const auto& info) { return info.id == playerId; });
     if(it == playerInfos_.end())
         throw std::runtime_error("Player with given player id does not exist");
     else

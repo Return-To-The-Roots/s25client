@@ -29,8 +29,8 @@
 #include "gameData/const_gui_ids.h"
 
 iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
-    : IngameWindow(CGI_DIRECTIPCREATE, IngameWindow::posLastOrCenter, Extent(300, 285), _("Create Game"), LOADER.GetImageN("resource", 41),
-                   true, true),
+    : IngameWindow(CGI_DIRECTIPCREATE, IngameWindow::posLastOrCenter, Extent(300, 285), _("Create Game"),
+                   LOADER.GetImageN("resource", 41), true, true),
       server_type(server_type)
 {
     ctrlEdit *name, *port;

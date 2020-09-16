@@ -52,10 +52,11 @@ iwLobbyRanking::iwLobbyRanking()
                    LOADER.GetImageN("resource", 41), true)
 {
     using SRT = ctrlTable::SortType;
-    AddTable(
-      0, DrawPoint(20, 25), Extent(400, 340), TC_GREY, NormalFont,
-      ctrlTable::Columns{
-        {_("Name"), 360, SRT::String}, {_("Points"), 185, SRT::Number}, {_("Lost"), 215, SRT::Number}, {_("Won"), 240, SRT::Number}});
+    AddTable(0, DrawPoint(20, 25), Extent(400, 340), TC_GREY, NormalFont,
+             ctrlTable::Columns{{_("Name"), 360, SRT::String},
+                                {_("Points"), 185, SRT::Number},
+                                {_("Lost"), 215, SRT::Number},
+                                {_("Won"), 240, SRT::Number}});
     AddTimer(1, 60000);
 
     // "Zurück"

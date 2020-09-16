@@ -23,7 +23,9 @@
 #include "s25util/Log.h"
 #include <mygettext/mygettext.h>
 
-EventManager::EventManager(unsigned startGF) : numActiveEvents(0), eventInstanceCtr(1), currentGF(startGF), curActiveEvent(nullptr) {}
+EventManager::EventManager(unsigned startGF)
+    : numActiveEvents(0), eventInstanceCtr(1), currentGF(startGF), curActiveEvent(nullptr)
+{}
 
 EventManager::~EventManager()
 {

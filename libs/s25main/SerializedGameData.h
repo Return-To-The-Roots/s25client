@@ -100,7 +100,8 @@ public:
     void PushMapPoint(const MapPoint pt) { PushPoint(pt); }
 
     /// Serialize an enum as T_SavedType which must be the underlying type (as that is what is deserialized by Pop<T>)
-    /// Requires MaxEnumValue<T> to be specialized and T_SavedType to be able to hold all enumerators (checked only for max value)
+    /// Requires MaxEnumValue<T> to be specialized and T_SavedType to be able to hold all enumerators (checked only for
+    /// max value)
     template<typename T_SavedType, typename T>
     void PushEnum(const T val)
     {
@@ -247,8 +248,10 @@ template<typename T>
 void SerializedGameData::PushContainer(const T& container)
 {
     using Type = typename T::value_type;
-    static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value, "Only integral types and enums are possible");
-    using Integral = typename std::conditional_t<std::is_enum<Type>::value, std::underlying_type<Type>, std::common_type<Type>>::type;
+    static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value,
+                  "Only integral types and enums are possible");
+    using Integral =
+      typename std::conditional_t<std::is_enum<Type>::value, std::underlying_type<Type>, std::common_type<Type>>::type;
 
     PushVarSize(container.size());
     for(const auto el : container)
@@ -262,7 +265,8 @@ template<typename T>
 void SerializedGameData::PopContainer(T& result)
 {
     using Type = typename T::value_type;
-    static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value, "Only integral types and enums are possible");
+    static_assert(std::is_integral<Type>::value || std::is_enum<Type>::value,
+                  "Only integral types and enums are possible");
 
     unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     result.clear();

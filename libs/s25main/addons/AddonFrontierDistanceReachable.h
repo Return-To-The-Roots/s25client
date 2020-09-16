@@ -25,7 +25,8 @@ public:
     AddonFrontierDistanceReachable()
         : AddonBool(AddonId::FRONTIER_DISTANCE_REACHABLE, AddonGroup::GamePlay | AddonGroup::Military,
                     _("Frontier Distance checks reachability"),
-                    _("Military building counts as interior if an attack is permanently impossible. (Path blocked by terrain like sea, "
+                    _("Military building counts as interior if an attack is permanently impossible. (Path blocked by "
+                      "terrain like sea, "
                       "lava, etc.)"))
     {}
 };

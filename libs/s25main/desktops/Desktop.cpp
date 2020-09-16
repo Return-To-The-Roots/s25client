@@ -83,7 +83,8 @@ void Desktop::SetFpsDisplay(bool show)
         DeleteCtrl(fpsDisplayId);
     else if(!GetCtrl<ctrlText>(fpsDisplayId) && SmallFont)
     {
-        AddText(fpsDisplayId, DrawPoint(800, 0), helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT, SmallFont);
+        AddText(fpsDisplayId, DrawPoint(800, 0), helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT,
+                SmallFont);
     }
 }
 

@@ -23,14 +23,15 @@
 #include "s25util/warningSuppression.h"
 
 /// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
-const helpers::EnumArray<GoodType, Nation> SUPPRESS_UNUSED SHIELD_TYPES = {GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS,
-                                                                           GD_SHIELDVIKINGS, GD_SHIELDJAPANESE};
+const helpers::EnumArray<GoodType, Nation> SUPPRESS_UNUSED SHIELD_TYPES = {
+  GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS, GD_SHIELDVIKINGS, GD_SHIELDJAPANESE};
 
 /// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
 /// die Warensysteme usw
 inline constexpr GoodType ConvertShields(const GoodType& good)
 {
-    return (good == GD_SHIELDVIKINGS || good == GD_SHIELDAFRICANS || good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : good;
+    return (good == GD_SHIELDVIKINGS || good == GD_SHIELDAFRICANS || good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS :
+                                                                                                  good;
 }
 
 inline constexpr GoodType convertShieldToNation(const GoodType good, const Nation nation)

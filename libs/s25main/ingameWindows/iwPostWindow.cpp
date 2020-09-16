@@ -63,28 +63,44 @@ enum ButtonIds
 } // namespace
 
 iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
-    : IngameWindow(CGI_POSTOFFICE, IngameWindow::posLastOrCenter, Extent(254, 295), _("Post office"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(nullptr), lastHasMissionGoal(true)
+    : IngameWindow(CGI_POSTOFFICE, IngameWindow::posLastOrCenter, Extent(254, 295), _("Post office"),
+                   LOADER.GetImageN("resource", 41)),
+      gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(nullptr),
+      lastHasMissionGoal(true)
 {
-    AddImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 190));  // Viewer: 191 - Papier
-    AddImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 30));   // Viewer:  31 - Soldat
-    AddImageButton(ID_SHOW_GEO, DrawPoint(91, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 20));   // Viewer:  21 - Geologe
-    AddImageButton(ID_SHOW_ECO, DrawPoint(126, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 28));  // Viewer:  29 - Wage
-    AddImageButton(ID_SHOW_GEN, DrawPoint(161, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
-    AddImageButton(ID_SHOW_GOAL, DrawPoint(199, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 79)); // Viewer:  80 - Notiz
+    AddImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TC_GREY,
+                   LOADER.GetImageN("io", 190)); // Viewer: 191 - Papier
+    AddImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TC_GREY,
+                   LOADER.GetImageN("io", 30)); // Viewer:  31 - Soldat
+    AddImageButton(ID_SHOW_GEO, DrawPoint(91, 25), Extent(35, 35), TC_GREY,
+                   LOADER.GetImageN("io", 20)); // Viewer:  21 - Geologe
+    AddImageButton(ID_SHOW_ECO, DrawPoint(126, 25), Extent(35, 35), TC_GREY,
+                   LOADER.GetImageN("io", 28)); // Viewer:  29 - Wage
+    AddImageButton(ID_SHOW_GEN, DrawPoint(161, 25), Extent(35, 35), TC_GREY,
+                   LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
+    AddImageButton(ID_SHOW_GOAL, DrawPoint(199, 25), Extent(35, 35), TC_GREY,
+                   LOADER.GetImageN("io", 79)); // Viewer:  80 - Notiz
     AddImage(0, DrawPoint(126, 151), LOADER.GetImageN("io", 228));
-    AddImageButton(ID_HELP, DrawPoint(18, 242), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225));     // Viewer: 226 - Hilfe
-    AddImageButton(ID_GO_START, DrawPoint(51, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
-    AddImageButton(ID_GO_BACK, DrawPoint(81, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
-    AddImageButton(ID_GO_FWD, DrawPoint(111, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 104));  // Viewer: 105 - Vor
-    AddImageButton(ID_GO_END, DrawPoint(141, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 105));  // Viewer: 106 - Schnell vor
+    AddImageButton(ID_HELP, DrawPoint(18, 242), Extent(30, 35), TC_GREY,
+                   LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
+    AddImageButton(ID_GO_START, DrawPoint(51, 246), Extent(30, 26), TC_GREY,
+                   LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
+    AddImageButton(ID_GO_BACK, DrawPoint(81, 246), Extent(30, 26), TC_GREY,
+                   LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
+    AddImageButton(ID_GO_FWD, DrawPoint(111, 246), Extent(30, 26), TC_GREY,
+                   LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
+    AddImageButton(ID_GO_END, DrawPoint(141, 246), Extent(30, 26), TC_GREY,
+                   LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
 
     // Goto, nur sichtbar wenn Nachricht mit Koordinaten da
-    AddImageButton(ID_GOTO, DrawPoint(181, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107))->SetVisible(false);
+    AddImageButton(ID_GOTO, DrawPoint(181, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107))
+      ->SetVisible(false);
     // Mülleimer, nur sichtbar, wenn Nachricht da
-    AddImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 106))->SetVisible(false);
+    AddImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 106))
+      ->SetVisible(false);
 
-    AddText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), FontStyle::CENTER | FontStyle::BOTTOM, SmallFont)
+    AddText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), FontStyle::CENTER | FontStyle::BOTTOM,
+            SmallFont)
       ->SetVisible(false);
 
     AddImage(ID_IMG, DrawPoint(127, 155), LOADER.GetImageN("io", 225));
@@ -96,8 +112,10 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
     text->ShowBackground(false);
 
     // Button with OK and deny sign (tick and cross) for contracts
-    AddImageButton(ID_ACCEPT, DrawPoint(87, 185), Extent(30, 26), TC_GREEN1, LOADER.GetImageN("io", 32))->SetVisible(false);
-    AddImageButton(ID_DENY, DrawPoint(137, 185), Extent(30, 26), TC_RED1, LOADER.GetImageN("io", 40))->SetVisible(false);
+    AddImageButton(ID_ACCEPT, DrawPoint(87, 185), Extent(30, 26), TC_GREEN1, LOADER.GetImageN("io", 32))
+      ->SetVisible(false);
+    AddImageButton(ID_DENY, DrawPoint(137, 185), Extent(30, 26), TC_RED1, LOADER.GetImageN("io", 40))
+      ->SetVisible(false);
 
     FilterMessages();
     curMsgId = curMsgIdxs.size();
@@ -109,10 +127,10 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case ID_HELP:
-            WINDOWMANAGER.ReplaceWindow(
-              std::make_unique<iwHelp>(_("All important messages are collected in this window and "
-                                         "sorted into groups. If this window is not open, the dove "
-                                         "symbol at the bottom of the screen indicates the arrival of a new message.")));
+            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(
+              _("All important messages are collected in this window and "
+                "sorted into groups. If this window is not open, the dove "
+                "symbol at the bottom of the screen indicates the arrival of a new message.")));
             break;
         case ID_SHOW_ALL:
             showAll = true;
@@ -122,8 +140,8 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
             break;
         case ID_SHOW_GOAL:
             if(!postBox.GetCurrentMissionGoal().empty())
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwMissionStatement>(_("Diary"), postBox.GetCurrentMissionGoal(), false, iwMissionStatement::IM_AVATAR9));
+                WINDOWMANAGER.Show(std::make_unique<iwMissionStatement>(_("Diary"), postBox.GetCurrentMissionGoal(),
+                                                                        false, iwMissionStatement::IM_AVATAR9));
             break;
         case ID_SHOW_MIL: SwitchCategory(PostCategory::Military); break;
         case ID_SHOW_GEO: SwitchCategory(PostCategory::Geologist); break;
@@ -285,7 +303,8 @@ void iwPostWindow::DisplayPostMessage()
     {
         // We have an image, show it centered
         GetCtrl<ctrlImage>(ID_IMG)->SetImage(img);
-        GetCtrl<Window>(ID_IMG)->SetPos(imgBottomCenter + img->GetOrigin() - DrawPoint(img->GetSize().x / 2, img->GetSize().y));
+        GetCtrl<Window>(ID_IMG)->SetPos(imgBottomCenter + img->GetOrigin()
+                                        - DrawPoint(img->GetSize().x / 2, img->GetSize().y));
 
         GetCtrl<Window>(ID_IMG)->SetVisible(true);
     }

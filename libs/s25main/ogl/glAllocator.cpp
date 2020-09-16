@@ -33,7 +33,8 @@
  *  @param[in] type    Der Typ des Items
  *  @param[in] subtype Der Subtyp des Items
  */
-std::unique_ptr<libsiedler2::ArchivItem> GlAllocator::create(libsiedler2::BobType type, libsiedler2::SoundType subtype) const
+std::unique_ptr<libsiedler2::ArchivItem> GlAllocator::create(libsiedler2::BobType type,
+                                                             libsiedler2::SoundType subtype) const
 {
     switch(type)
     {

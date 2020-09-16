@@ -84,7 +84,8 @@ void remove_if(T& container, T_Predicate&& predicate)
 {
     using std::begin;
     using std::end;
-    container.erase(std::remove_if(begin(container), end(container), std::forward<T_Predicate>(predicate)), end(container));
+    container.erase(std::remove_if(begin(container), end(container), std::forward<T_Predicate>(predicate)),
+                    end(container));
 }
 
 /// Removes the first element in a container

@@ -52,8 +52,8 @@ dskSinglePlayer::dskSinglePlayer()
     AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TC_GREEN2, _("Resume last game"), NormalFont);
     AddTextButton(7, DrawPoint(115, 210), Extent(220, 22), TC_GREEN2, _("Load game"), NormalFont);
 
-    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TC_GREEN2, std::string(_("Campaign")) + " (" + _("Coming soon") + ")",
-                  NormalFont)
+    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TC_GREEN2,
+                  std::string(_("Campaign")) + " (" + _("Coming soon") + ")", NormalFont)
       ->SetEnabled(false);
     AddTextButton(6, DrawPoint(115, 280), Extent(220, 22), TC_GREEN2, _("Unlimited Play"), NormalFont);
 
@@ -105,12 +105,12 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                     WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPleaseWait>());
                 else
                 {
-                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK,
-                                                                  MSB_EXCLAMATIONRED));
+                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                      _("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
                 }
             } else
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"),
+                                                              nullptr, MSB_OK, MSB_EXCLAMATIONRED));
         }
         break;
         case 4: // "Replay abspielen"
@@ -122,7 +122,8 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
         {
             /// @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-              _("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this, MSB_OK, MSB_EXCLAMATIONGREEN));
+              _("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this, MSB_OK,
+              MSB_EXCLAMATIONGREEN));
         }
         break;
         case 6: // "Freies Spiel"

@@ -208,7 +208,8 @@ namespace {
 
 std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius)
 {
-    std::vector<const noFlag*> flags = aii.gwb.GetPointsInRadius<30>(pt, radius, Point2FlagAI(aii.gwb), IsValidFlag(aii.GetPlayerId()));
+    std::vector<const noFlag*> flags =
+      aii.gwb.GetPointsInRadius<30>(pt, radius, Point2FlagAI(aii.gwb), IsValidFlag(aii.GetPlayerId()));
     // When the radius is at least half the size of the map then we may have duplicates that need to be removed
     if(radius >= std::min(aii.gwb.GetSize().x, aii.gwb.GetSize().y))
     {
@@ -249,14 +250,17 @@ bool AIConstruction::MilitaryBuildingWantsRoad(const nobMilitary& milbld)
         return true;
     if(!aijh.UpgradeBldPos.isValid()) // no upgrade bld on last update -> connect all that want to connect
         return true;
-    if(aijh.UpgradeBldPos == milbld.GetPos()) // upgrade bld should have road already but just in case it doesnt -> get a road asap
+    if(aijh.UpgradeBldPos
+       == milbld.GetPos()) // upgrade bld should have road already but just in case it doesnt -> get a road asap
         return true;
     // TODO: This probably does not do what is wanted...
     int bldIdx = helpers::indexOf(aii.GetMilitaryBuildings(), &milbld);
-    return bldIdx > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds());
+    return bldIdx
+           > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds());
 }
 
-bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned maxSearchRadius /*= 14*/)
+bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route,
+                                            unsigned maxSearchRadius /*= 14*/)
 {
     // TODO: die methode kann  ganz schön böse Laufzeiten bekommen... Optimieren?
 
@@ -303,7 +307,8 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 
         // Wenn ja, dann gucken ob dieser Pfad möglichst kurz zum "höheren" Ziel (allgemeines Lager im Moment) ist
         unsigned maxNonFlagPts = 0;
-        // check for non-flag points on planned route: more than 2 nonflaggable spaces on the route -> not really valid path
+        // check for non-flag points on planned route: more than 2 nonflaggable spaces on the route -> not really valid
+        // path
         unsigned curNonFlagPts = 0;
         MapPoint tmpPos = flag->GetPos();
         for(auto j : tmpRoute)
@@ -322,7 +327,8 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         if(maxNonFlagPts > 2)
             continue;
 
-        // Find path from current flag to target. If the current flag IS the target then we have already a path with distance=0
+        // Find path from current flag to target. If the current flag IS the target then we have already a path with
+        // distance=0
         unsigned distance = 0;
         bool pathFound = curFlag == targetFlag || aii.FindPathOnRoads(*curFlag, *targetFlag, &distance);
 
@@ -358,7 +364,8 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     return false;
 }
 
-bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route)
+bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target,
+                                           std::vector<Direction>& route)
 {
     return BuildRoad(start, target, route);
     // TODO: Enable later after checking for performance and correctness
@@ -378,8 +385,8 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
                 // does the alternative road block a lower buildingquality point than the normal planned route?
                 if(aii.CalcBQSumDifference(pStart, t))
                 {
-                    // LOG.write(("AIConstruction::road improvements p%i from %i,%i moved node %i,%i to %i,%i i:%i, i+1:%i\n",playerID,
-                    // start->GetX(), start->GetY(), ptx, pt.y, t.x, t.y,route[i],route[i+1]);
+                    // LOG.write(("AIConstruction::road improvements p%i from %i,%i moved node %i,%i to %i,%i i:%i,
+                    // i+1:%i\n",playerID, start->GetX(), start->GetY(), ptx, pt.y, t.x, t.y,route[i],route[i+1]);
                     pStart = t; // we move the alternative path so move x&y and switch the route entries
                     std::swap(route[i], route[i + 1]);
                 }
@@ -409,7 +416,8 @@ bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target
     if(foundPath)
     {
         aii.BuildRoad(start->GetPos(), false, route);
-        // set flags along the road just after contruction - todo: handle failed road construction by removing the useless flags!
+        // set flags along the road just after contruction - todo: handle failed road construction by removing the
+        // useless flags!
         /*MapCoord tx=x,ty=y;
         for(unsigned i=0;i<route.size()-2;i++)
         {
@@ -461,8 +469,8 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     // harbor nearby that could be used to attack/get attacked -> tower
     // enemy nearby? -> tower or fortress
     // to do: important location or an area with a very low amount of buildspace? -> try large buildings
-    // buildings with requirement > small have a chance to be replaced with small buildings to avoid getting stuck if there are no places
-    // for medium/large buildings
+    // buildings with requirement > small have a chance to be replaced with small buildings to avoid getting stuck if
+    // there are no places for medium/large buildings
     auto bld = GetSmallestAllowedMilBuilding();
     // If we are not allowed to build a military building, return early
     if(!bld)
@@ -499,7 +507,8 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
         if(milBld->GetPlayer() != playerId && distance < 35)
         {
             int randmil = rand();
-            bool buildCatapult = randmil % 8 == 0 && aii.CanBuildCatapult() && bldPlanner.GetNumAdditionalBuildingsWanted(BLD_CATAPULT) > 0;
+            bool buildCatapult = randmil % 8 == 0 && aii.CanBuildCatapult()
+                                 && bldPlanner.GetNumAdditionalBuildingsWanted(BLD_CATAPULT) > 0;
             // another catapult within "min" radius? ->dont build here!
             const unsigned min = 16;
             if(buildCatapult && aii.gwb.CalcDistance(pt, aii.GetStorehouses().front()->GetPos()) < min)
@@ -535,8 +544,8 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
                 else
                     bld = biggestBld;
             }
-            // slim chance for a guardhouse instead of tower or fortress so we can expand towards an enemy even if there are no big building
-            // spots in that direction
+            // slim chance for a guardhouse instead of tower or fortress so we can expand towards an enemy even if there
+            // are no big building spots in that direction
             if(randmil % 10 == 0)
             {
                 if(aii.CanBuildBuildingtype(BLD_GUARDHOUSE))
@@ -590,8 +599,8 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
     for(auto& i : flags)
     {
         const noFlag& curFlag = *i;
-        // When the current flag is the end of the main route, we skip it as crossing the main route is dissallowed by crossmainpath check a
-        // bit below
+        // When the current flag is the end of the main route, we skip it as crossing the main route is dissallowed by
+        // crossmainpath check a bit below
         if(mainflag && &curFlag == mainflag)
             continue;
 
@@ -608,7 +617,8 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
         if(!aii.FindFreePathForNewRoad(flag->GetPos(), curFlag.GetPos(), &route, &newLength))
             continue;
 
-        // Wenn ja, dann gucken ob unser momentaner Weg zu dieser Flagge vielleicht voll weit ist und sich eine Straße lohnt
+        // Wenn ja, dann gucken ob unser momentaner Weg zu dieser Flagge vielleicht voll weit ist und sich eine Straße
+        // lohnt
         unsigned oldLength = 0;
 
         // Aktuelle Strecke zu der Flagge

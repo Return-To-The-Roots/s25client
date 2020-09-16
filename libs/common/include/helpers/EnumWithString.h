@@ -84,7 +84,8 @@ namespace detail {
 
 // NOLINTNEXTLINE(bugprone-macro-parentheses)
 #define IGNORE_ASSIGN_SINGLE(s, EnumName, expression) (detail::ignore_assign<EnumName>)EnumName::expression,
-#define IGNORE_ASSIGN(EnumName, ...) BOOST_PP_SEQ_FOR_EACH(IGNORE_ASSIGN_SINGLE, EnumName, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
+#define IGNORE_ASSIGN(EnumName, ...) \
+    BOOST_PP_SEQ_FOR_EACH(IGNORE_ASSIGN_SINGLE, EnumName, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
 #define STRINGIZE_2(x) #x
 #define STRINGIZE_SINGLE(s, data, expression) STRINGIZE_2(expression),
@@ -97,15 +98,18 @@ namespace detail {
 #define ENUM_WITH_STRING(EnumName, ...) \
     ENUM_WITH_STRING_IMPL(EnumName, BOOST_PP_SEQ_SIZE(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)), __VA_ARGS__)
 
-#define ENUM_WITH_STRING_IMPL(EnumName, size, ...)                                                                             \
-                                                                                                                               \
-    enum class EnumName                                                                                                        \
-    {                                                                                                                          \
-        __VA_ARGS__                                                                                                            \
-    };                                                                                                                         \
-                                                                                                                               \
-    namespace rttrEnum { namespace detail {                                                                                    \
-            constexpr std::array<EnumName, size> getValues(Tag<EnumName>) { return {{IGNORE_ASSIGN(EnumName, __VA_ARGS__)}}; } \
-            constexpr std::array<const char*, size> getRawNames(Tag<EnumName>) { return {{STRINGIZE(__VA_ARGS__)}}; }          \
-        }                                                                                                                      \
+#define ENUM_WITH_STRING_IMPL(EnumName, size, ...)                                                                    \
+                                                                                                                      \
+    enum class EnumName                                                                                               \
+    {                                                                                                                 \
+        __VA_ARGS__                                                                                                   \
+    };                                                                                                                \
+                                                                                                                      \
+    namespace rttrEnum { namespace detail {                                                                           \
+            constexpr std::array<EnumName, size> getValues(Tag<EnumName>)                                             \
+            {                                                                                                         \
+                return {{IGNORE_ASSIGN(EnumName, __VA_ARGS__)}};                                                      \
+            }                                                                                                         \
+            constexpr std::array<const char*, size> getRawNames(Tag<EnumName>) { return {{STRINGIZE(__VA_ARGS__)}}; } \
+        }                                                                                                             \
     }

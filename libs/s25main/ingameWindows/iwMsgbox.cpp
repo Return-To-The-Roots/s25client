@@ -38,17 +38,19 @@ const unsigned short minTextWidth = 150;
 const unsigned short maxTextHeight = 200;
 } // namespace
 
-iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon,
-                   unsigned msgboxid)
-    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41), true, false),
+iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
+                   MsgboxIcon icon, unsigned msgboxid)
+    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41),
+                   true, false),
       button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
     Init(text, "io", icon);
 }
 
-iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, const std::string& iconFile,
-                   unsigned iconIdx, unsigned msgboxid /* = 0 */)
-    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41), true, false),
+iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
+                   const std::string& iconFile, unsigned iconIdx, unsigned msgboxid /* = 0 */)
+    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41),
+                   true, false),
       button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
     Init(text, iconFile, iconIdx);
@@ -62,7 +64,8 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
     int textX = icon ? icon->getWidth() - icon->getNx() + GetCtrl<Window>(ID_ICON)->GetPos().x : contentOffset.x;
     textX += paddingX;
     Extent txtSize = Extent(std::max<int>(minTextWidth, GetRightBottomBoundary().x - textX - paddingX), maxTextHeight);
-    ctrlMultiline* multiline = AddMultiline(ID_TEXT, DrawPoint(textX, contentOffset.y + 5), txtSize, TC_GREEN2, NormalFont);
+    ctrlMultiline* multiline =
+      AddMultiline(ID_TEXT, DrawPoint(textX, contentOffset.y + 5), txtSize, TC_GREEN2, NormalFont);
     multiline->ShowBackground(false);
     multiline->AddString(text, COLOR_YELLOW);
     multiline->Resize(multiline->GetContentSize());
@@ -165,8 +168,10 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
     }
 }
 
-const helpers::MultiArray<MsgboxResult, MSB_YESNOCANCEL + 1, 3> RET_IDS = {
-  {{MSR_OK, MSR_NOTHING, MSR_NOTHING}, {MSR_OK, MSR_CANCEL, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_CANCEL}}};
+const helpers::MultiArray<MsgboxResult, MSB_YESNOCANCEL + 1, 3> RET_IDS = {{{MSR_OK, MSR_NOTHING, MSR_NOTHING},
+                                                                            {MSR_OK, MSR_CANCEL, MSR_NOTHING},
+                                                                            {MSR_YES, MSR_NO, MSR_NOTHING},
+                                                                            {MSR_YES, MSR_NO, MSR_CANCEL}}};
 
 void iwMsgbox::Msg_ButtonClick(const unsigned ctrl_id)
 {

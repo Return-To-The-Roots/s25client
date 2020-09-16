@@ -62,14 +62,16 @@ void noFire::Serialize_noFire(SerializedGameData& sgd) const
 }
 
 noFire::noFire(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), isBig(sgd.PopBool()), dead_event(sgd.PopEvent()), was_sounding(false), last_sound(0), next_interval(0)
+    : noCoordBase(sgd, obj_id), isBig(sgd.PopBool()), dead_event(sgd.PopEvent()), was_sounding(false), last_sound(0),
+      next_interval(0)
 {}
 
 void noFire::Draw(DrawPoint drawPt)
 {
     //// Die ersten 2 Drittel (zeitlich) brennen, das 3. Drittel Schutt daliegen lassen
     const std::array<unsigned, 7> FIREANIMATIONDURATION = {1000, 750, 500, 250, 100, 1500, 2000};
-    unsigned id = GAMECLIENT.Interpolate(FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
+    unsigned id =
+      GAMECLIENT.Interpolate(FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
 
     if(id < FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)] * 2 / 3)
     {

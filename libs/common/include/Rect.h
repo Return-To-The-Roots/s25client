@@ -22,9 +22,9 @@
 #include <type_traits>
 
 #ifdef RTTR_ENABLE_ASSERTS
-#define CONSTEXPR_IF_NOASSERT
+#    define CONSTEXPR_IF_NOASSERT
 #else
-#define CONSTEXPR_IF_NOASSERT constexpr
+#    define CONSTEXPR_IF_NOASSERT constexpr
 #endif
 
 /// Describe a rectangular shape with dimensions:
@@ -33,7 +33,8 @@ template<typename T>
 struct RectBase
 {
     using position_type = Point<T>;
-    using extent_elem_type = typename std::conditional_t<std::is_integral<T>::value, std::make_unsigned<T>, std::common_type<T>>::type;
+    using extent_elem_type =
+      typename std::conditional_t<std::is_integral<T>::value, std::make_unsigned<T>, std::common_type<T>>::type;
     using extent_type = Point<extent_elem_type>;
     T left, top, right, bottom;
     constexpr RectBase() : RectBase(position_type::all(0), extent_type::all(0)) {}

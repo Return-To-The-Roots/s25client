@@ -34,11 +34,12 @@
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : noFigure(job, pos, player, workplace), state(STATE_FIGUREWORK), workplace(workplace), was_sounding(false)
 {
-    RTTR_Assert(dynamic_cast<nobUsual*>(
-      static_cast<GameObject*>(workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
+    RTTR_Assert(dynamic_cast<nobUsual*>(static_cast<GameObject*>(
+      workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
 }
 
-nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
+nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player,
+                                     nobBaseWarehouse* goalWh)
     : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(nullptr), was_sounding(false)
 {}
 
@@ -189,8 +190,8 @@ void nofBuildingWorker::TryToWork()
     if(!workplace->IsProductionDisabled() && AreWaresAvailable())
     {
         state = STATE_WAITING1;
-        current_ev =
-          GetEvMgr().AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
+        current_ev = GetEvMgr().AddEvent(
+          this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
         workplace->StopNotWorking();
     } else
     {
@@ -289,8 +290,8 @@ void nofBuildingWorker::LostWork()
             WorkAborted();
 
             // Rumirren
-            // Bei diesen States läuft man schon, darf also nicht noch zusätzlich Wander aufrufen, da man dann ja im Laufen nochmal
-            // losläuft!
+            // Bei diesen States läuft man schon, darf also nicht noch zusätzlich Wander aufrufen, da man dann ja im
+            // Laufen nochmal losläuft!
             StartWandering();
 
             // Evtl. Sounds löschen

@@ -20,7 +20,7 @@
 #include <boost/config.hpp>
 
 #ifdef BUILD_DLL
-#define RTTR_DECL extern "C" BOOST_SYMBOL_EXPORT
+#    define RTTR_DECL extern "C" BOOST_SYMBOL_EXPORT
 #else
-#define RTTR_DECL extern "C" BOOST_SYMBOL_IMPORT
+#    define RTTR_DECL extern "C" BOOST_SYMBOL_IMPORT
 #endif

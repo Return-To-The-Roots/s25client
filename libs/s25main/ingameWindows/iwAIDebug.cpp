@@ -76,12 +76,14 @@ public:
         else if(overlay == 3)
             ticks[ai->GetAINode(pt).farmed]->DrawFull(curPos);
         else if(overlay < 13)
-            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIResource(overlay - 4))), FontStyle{}, COLOR_YELLOW);
+            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIResource(overlay - 4))), FontStyle{},
+                      COLOR_YELLOW);
     }
 };
 
 iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais)
-    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(280, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(280, 515), _("AI Debug"),
+                   LOADER.GetImageN("resource", 41)),
       gwv(gwv), text(nullptr), printer(nullptr)
 {
     for(const AIPlayer* ai : ais)
@@ -119,7 +121,8 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
     overlays->AddString("Fish");
 
     // Show 7 lines of text and 1 empty line
-    text = AddMultiline(ID_Text, DrawPoint(15, 120), Extent(250, 8 * NormalFont->getHeight()), TC_GREY, NormalFont, FontStyle::NO_OUTLINE);
+    text = AddMultiline(ID_Text, DrawPoint(15, 120), Extent(250, 8 * NormalFont->getHeight()), TC_GREY, NormalFont,
+                        FontStyle::NO_OUTLINE);
 
     SetIwSize(Extent(GetIwSize().x, text->GetPos().y + text->GetSize().y));
 

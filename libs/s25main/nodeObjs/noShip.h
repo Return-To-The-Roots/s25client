@@ -50,9 +50,10 @@ class noShip : public noMovable
         STATE_EXPLORATIONEXPEDITION_UNLOADING,
         STATE_EXPLORATIONEXPEDITION_WAITING,
         STATE_EXPLORATIONEXPEDITION_DRIVING,
-        STATE_TRANSPORT_LOADING,   // Schiff wird mit Waren/Figuren erst noch beladen, bleibt also für kurze Zeit am Hafen
+        STATE_TRANSPORT_LOADING, // Schiff wird mit Waren/Figuren erst noch beladen, bleibt also für kurze Zeit am Hafen
         STATE_TRANSPORT_DRIVING,   /// Schiff transportiert Waren/Figuren von einen Ort zum anderen
-        STATE_TRANSPORT_UNLOADING, /// Entlädt Schiff am Zielhafen, kurze Zeit ankern, bevor Waren im Hafengebäude ankommen..
+        STATE_TRANSPORT_UNLOADING, /// Entlädt Schiff am Zielhafen, kurze Zeit ankern, bevor Waren im Hafengebäude
+                                   /// ankommen..
         STATE_SEAATTACK_LOADING,
         STATE_SEAATTACK_UNLOADING,
         STATE_SEAATTACK_DRIVINGTODESTINATION, /// Fährt mit den Soldaten zum Zielhafenpunkt
@@ -165,7 +166,8 @@ public:
     /// Ist das Schiff gerade irgendwie am Expeditionieren und hat entsprechenden Kram an Bord?
     bool IsOnExpedition() const
     {
-        return (state == STATE_EXPEDITION_LOADING || state == STATE_EXPEDITION_WAITING || state == STATE_EXPEDITION_DRIVING);
+        return (state == STATE_EXPEDITION_LOADING || state == STATE_EXPEDITION_WAITING
+                || state == STATE_EXPEDITION_DRIVING);
     }
     /// Ist das Schiff gerade irgendwie am Explorations-Expeditionieren und hat entsprechenden Kram an Bord?
     bool IsOnExplorationExpedition() const
@@ -175,8 +177,9 @@ public:
     }
     bool IsOnAttackMission() const
     {
-        return (state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_UNLOADING || state == STATE_SEAATTACK_DRIVINGTODESTINATION
-                || state == STATE_SEAATTACK_WAITING || state == STATE_SEAATTACK_RETURN_DRIVING);
+        return (state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_UNLOADING
+                || state == STATE_SEAATTACK_DRIVINGTODESTINATION || state == STATE_SEAATTACK_WAITING
+                || state == STATE_SEAATTACK_RETURN_DRIVING);
     }
     bool IsLoading() const;
     bool IsUnloading() const;
@@ -215,7 +218,8 @@ public:
     bool IsGoingToHarbor(const nobHarborBuilding& hb) const;
 
     /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-    void PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares);
+    void PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures,
+                          const std::list<Ware*>& wares);
 
     /// Belädt das Schiff mit Schiffs-Angreifern
     void PrepareSeaAttack(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures);

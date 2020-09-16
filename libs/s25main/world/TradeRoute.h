@@ -44,8 +44,8 @@ public:
 
     /// Gets the next direction the caravane has to take, TradeDirection::ReachedGoal or boost::none
     helpers::OptionalEnum<TradeDirection> GetNextDir();
-    /// Returns the current position. This is assumed to be the position currently walking to and reached by the time GetNextDir should be
-    /// called
+    /// Returns the current position. This is assumed to be the position currently walking to and reached by the time
+    /// GetNextDir should be called
     MapPoint GetCurPos() const { return curPos; }
 
     /// Returns true, if this is a valid route

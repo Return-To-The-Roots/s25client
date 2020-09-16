@@ -70,10 +70,11 @@ struct dskBenchmark::GameView
     }
 };
 
-dskBenchmark::dskBenchmark() : curTest_(TEST_NONE), runAll_(false), numInstances_(1000), frameCtr_(FrameCounter::clock::duration::max())
+dskBenchmark::dskBenchmark()
+    : curTest_(TEST_NONE), runAll_(false), numInstances_(1000), frameCtr_(FrameCounter::clock::duration::max())
 {
-    AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F5 to start benchmark, F10 for all, NUM_n to set amount of instances", COLOR_YELLOW,
-            FontStyle::LEFT, LargeFont);
+    AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F5 to start benchmark, F10 for all, NUM_n to set amount of instances",
+            COLOR_YELLOW, FontStyle::LEFT, LargeFont);
     AddText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
     for(std::chrono::milliseconds& t : testDurations_)
         t = std::chrono::milliseconds::zero();
@@ -249,7 +250,8 @@ void dskBenchmark::startTest(Test test)
                 std::vector<MapPoint> pts = game_->world_.GetPointsInRadius(hqs[i], 15);
                 std::bernoulli_distribution dist(numInstances_ / 1000.f);
                 std::bernoulli_distribution distEqual;
-                std::array<BuildingType, 5> blds = {{BLD_BARRACKS, BLD_MILL, BLD_IRONMINE, BLD_SLAUGHTERHOUSE, BLD_BAKERY}};
+                std::array<BuildingType, 5> blds = {
+                  {BLD_BARRACKS, BLD_MILL, BLD_IRONMINE, BLD_SLAUGHTERHOUSE, BLD_BAKERY}};
                 std::uniform_int_distribution<unsigned> getBld(0, blds.size() - 1);
                 std::uniform_int_distribution<unsigned> getJob(0, NUM_JOB_TYPES - 1);
                 std::uniform_int_distribution<int> getDir(0, Direction::COUNT - 1);
@@ -259,8 +261,8 @@ void dskBenchmark::startTest(Test test)
                     if(game_->world_.GetNode(pt).obj || game_->world_.GetNode(flagPt).obj || !dist(rng))
                         continue;
                     BuildingType bldType = blds[getBld(rng)];
-                    noBuilding* bld =
-                      BuildingFactory::CreateBuilding(game_->world_, bldType, pt, i, distEqual(rng) ? NAT_AFRICANS : NAT_JAPANESE);
+                    noBuilding* bld = BuildingFactory::CreateBuilding(game_->world_, bldType, pt, i,
+                                                                      distEqual(rng) ? NAT_AFRICANS : NAT_JAPANESE);
                     if(bldType == BLD_BARRACKS)
                     {
                         auto* mil = static_cast<nobMilitary*>(bld);
@@ -287,12 +289,14 @@ void dskBenchmark::startTest(Test test)
 void dskBenchmark::finishTest()
 {
     using namespace std::chrono;
-    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % curTest_ % duration_cast<duration<float>>(frameCtr_.getCurIntervalLength())
+    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % curTest_
+      % duration_cast<duration<float>>(frameCtr_.getCurIntervalLength())
       % duration_cast<milliseconds>(frameCtr_.getCurIntervalLength() / frameCtr_.getCurNumFrames());
     if(testDurations_[curTest_] == milliseconds::zero())
         testDurations_[curTest_] = duration_cast<milliseconds>(frameCtr_.getCurIntervalLength());
     else
-        testDurations_[curTest_] = duration_cast<milliseconds>(testDurations_[curTest_] + frameCtr_.getCurIntervalLength()) / 2;
+        testDurations_[curTest_] =
+          duration_cast<milliseconds>(testDurations_[curTest_] + frameCtr_.getCurIntervalLength()) / 2;
 
     std::vector<Window*> ctrls = GetCtrls<Window>();
     for(Window* ctrl : ctrls)

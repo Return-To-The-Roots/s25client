@@ -31,24 +31,25 @@ public:
     /// Was der gerade so schönes macht
     enum State
     {
-        STATE_FIGUREWORK = 0,                       /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
-        STATE_ENTERBUILDING,                        /// Betreten des Gebäudes
-        STATE_WAITING1,                             /// Warten, bis man anfängt zu produzieren
-        STATE_WAITING2,                             /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
-        STATE_CARRYOUTWARE,                         /// Raustragen der Ware
-        STATE_WORK,                                 /// Arbeiten
+        STATE_FIGUREWORK = 0, /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
+        STATE_ENTERBUILDING,  /// Betreten des Gebäudes
+        STATE_WAITING1,       /// Warten, bis man anfängt zu produzieren
+        STATE_WAITING2,       /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
+        STATE_CARRYOUTWARE,   /// Raustragen der Ware
+        STATE_WORK,           /// Arbeiten
         STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED, /// Warten auf Waren oder weil Produktion eingetellt wurde
         STATE_WALKTOWORKPOINT,                      /// Zum "Arbeitspunkt" laufen (nur Landarbeiter)
         STATE_WALKINGHOME,                          /// vom Arbeitspunkt zurück nach Hause laufen (nur Landarbeiter)
         STATE_WAITFORWARESPACE,                     /// auf einen freien Platz an der Flagge vor dem Gebäude warten
         STATE_HUNTER_CHASING,                       /// Jäger: verfolgt das Tier bis auf eine gewisse Distanz
-        STATE_HUNTER_FINDINGSHOOTINGPOINT,          /// Jäger: sucht einen Punkt rund um das Tier, von dem er es abschießen kann
-        STATE_HUNTER_SHOOTING,                      /// Jäger: Tier erschießen
-        STATE_HUNTER_WALKINGTOCADAVER,              /// Jäger: Zum Kadaver laufen
-        STATE_HUNTER_EVISCERATING,                  /// Jäger: Tier ausnehmen
-        STATE_CATAPULT_TARGETBUILDING,              /// Katapult: Dreht den Katapult oben auf das Ziel zu und schießt
-        STATE_CATAPULT_BACKOFF,                     /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
-        STATE_HUNTER_WAITING_FOR_ANIMAL_READY,      /// Hunter: Arrived at shooting pos and waiting for animal to be ready to be shot
+        STATE_HUNTER_FINDINGSHOOTINGPOINT, /// Jäger: sucht einen Punkt rund um das Tier, von dem er es abschießen kann
+        STATE_HUNTER_SHOOTING,             /// Jäger: Tier erschießen
+        STATE_HUNTER_WALKINGTOCADAVER,     /// Jäger: Zum Kadaver laufen
+        STATE_HUNTER_EVISCERATING,         /// Jäger: Tier ausnehmen
+        STATE_CATAPULT_TARGETBUILDING,     /// Katapult: Dreht den Katapult oben auf das Ziel zu und schießt
+        STATE_CATAPULT_BACKOFF, /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
+        STATE_HUNTER_WAITING_FOR_ANIMAL_READY, /// Hunter: Arrived at shooting pos and waiting for animal to be ready to
+                                               /// be shot
     };
 
 protected:
@@ -64,8 +65,8 @@ protected:
     bool was_sounding;
 
 protected:
-    /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm Gebäude ablegen wollen (oder auch nicht)
-    /// also fertig mit Arbeiten sind
+    /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm Gebäude ablegen wollen (oder auch
+    /// nicht) also fertig mit Arbeiten sind
     void WorkingReady();
     /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
     void AbrogateWorkplace() override;

@@ -49,12 +49,14 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
         if(now_id < 8)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_PIGFARM + 4)->DrawFull(drawPt);
         // TODO: Use GlobalAnimation?
-        DrawPoint walkPos = drawPt + walkstart[wpNation] + (offsets[wpNation] - walkstart[wpNation]) * now_id / walksteps;
+        DrawPoint walkPos =
+          drawPt + walkstart[wpNation] + (offsets[wpNation] - walkstart[wpNation]) * now_id / walksteps;
 
         LOADER.bob_jobs_cache[wpNation][JOB_PIGBREEDER][4][now_id % 8].draw(walkPos, COLOR_WHITE, plColor);
     } else if(now_id < 40)
     {
-        LOADER.GetPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+        LOADER.GetPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)
+          ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
         // Evtl Sound abspielen
         if((now_id - 16) == 10)
@@ -67,7 +69,8 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
         if(now_id > 46)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_PIGFARM + 4)->DrawFull(drawPt);
         // TODO: Use GlobalAnimation?
-        DrawPoint walkPos = drawPt + walkstart[wpNation] + (walkstart[wpNation] - offsets[wpNation]) * (now_id - 40) / walksteps;
+        DrawPoint walkPos =
+          drawPt + walkstart[wpNation] + (walkstart[wpNation] - offsets[wpNation]) * (now_id - 40) / walksteps;
         LOADER.bob_jobs_cache[wpNation][JOB_PIGBREEDER][1][(now_id - 40) % 8].draw(walkPos, COLOR_WHITE, plColor);
     }
 }

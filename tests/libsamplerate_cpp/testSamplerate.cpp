@@ -42,8 +42,10 @@ static long callback(void* cb_data, float** data)
 BOOST_AUTO_TEST_CASE(InvalidCtorParamsThrow)
 {
     BOOST_CHECK_THROW(samplerate::State(samplerate::Converter::Linear, -1), std::runtime_error);
-    BOOST_CHECK_THROW(samplerate::StateCallback(samplerate::Converter::Linear, -1, callback, &test_data), std::runtime_error);
-    BOOST_CHECK_THROW(samplerate::StateCallback(samplerate::Converter::Linear, 1, nullptr, nullptr), std::runtime_error);
+    BOOST_CHECK_THROW(samplerate::StateCallback(samplerate::Converter::Linear, -1, callback, &test_data),
+                      std::runtime_error);
+    BOOST_CHECK_THROW(samplerate::StateCallback(samplerate::Converter::Linear, 1, nullptr, nullptr),
+                      std::runtime_error);
     BOOST_CHECK_THROW(samplerate::StateCallback(samplerate::Converter::Linear, 1, nullptr), std::runtime_error);
 }
 
@@ -107,7 +109,8 @@ BOOST_AUTO_TEST_CASE(ConversionWorks)
     std::vector<float> output(input.size() * 2), output2(output.size());
     {
         int i = 0;
-        std::generate(input.begin(), input.end(), [&i]() mutable { return static_cast<float>(std::sin(i++ * 0.01 * 2 * M_PI)); });
+        std::generate(input.begin(), input.end(),
+                      [&i]() mutable { return static_cast<float>(std::sin(i++ * 0.01 * 2 * M_PI)); });
     }
     SRC_DATA data{};
     data.data_in = input.data();
@@ -119,14 +122,16 @@ BOOST_AUTO_TEST_CASE(ConversionWorks)
     BOOST_TEST_REQUIRE(src_simple(&data, SRC_LINEAR, 1) == 0);
 
     const auto resultSimple =
-      samplerate::simple(samplerate::Data(input.data(), input.size(), output2.data(), output2.size(), 2), samplerate::Converter::Linear, 1);
+      samplerate::simple(samplerate::Data(input.data(), input.size(), output2.data(), output2.size(), 2),
+                         samplerate::Converter::Linear, 1);
     BOOST_TEST(output == output2, boost::test_tools::per_element());
     BOOST_TEST(resultSimple.input_frames_used == data.input_frames_used);
     BOOST_TEST(resultSimple.output_frames_gen == data.output_frames_gen);
 
     std::fill(output2.begin(), output2.end(), 0.f);
     samplerate::State state(samplerate::Converter::Linear, 1);
-    const auto resultState = state.process(samplerate::Data(input.data(), input.size(), output2.data(), output2.size(), 2));
+    const auto resultState =
+      state.process(samplerate::Data(input.data(), input.size(), output2.data(), output2.size(), 2));
     BOOST_TEST(output == output2, boost::test_tools::per_element());
     BOOST_TEST(resultState.input_frames_used == data.input_frames_used);
     BOOST_TEST(resultState.output_frames_gen == data.output_frames_gen);
@@ -142,8 +147,8 @@ BOOST_AUTO_TEST_CASE(ConversionWorks)
     unsigned long curPos = 0;
     while(true)
     {
-        const auto written =
-          cbState.read(2, std::min<size_t>(500, output2.size() - curPos), curPos == output2.size() ? nullptr : &output2[curPos]);
+        const auto written = cbState.read(2, std::min<size_t>(500, output2.size() - curPos),
+                                          curPos == output2.size() ? nullptr : &output2[curPos]);
         if(written == 0)
             break;
         curPos += written;

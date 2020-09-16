@@ -255,7 +255,8 @@ bool RoadSegment::AreWareJobs(const bool flag, CarrierType ct, const bool take_w
  */
 void RoadSegment::AddWareJob(const noRoadNode* rn)
 {
-    // Wenn das eine Straße zu einer Gebäudetür ist, muss dem entsprechenden Gebäude Bescheid gesagt werden (momentan nur Lagerhäuser!)
+    // Wenn das eine Straße zu einer Gebäudetür ist, muss dem entsprechenden Gebäude Bescheid gesagt werden (momentan
+    // nur Lagerhäuser!)
     if(route.size() == 1)
     {
         if(f2->GetType() == NOP_BUILDING)
@@ -263,11 +264,11 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
             if(BuildingProperties::IsWareHouse(static_cast<noBuilding*>(f2)->GetBuildingType()))
                 static_cast<nobBaseWarehouse*>(f2)->FetchWare();
             else
-                LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n") % f2->GetPos().x
-                  % f2->GetPos().y % GetEvMgr().GetCurrentGF();
+                LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n")
+                  % f2->GetPos().x % f2->GetPos().y % GetEvMgr().GetCurrentGF();
         } else
-            LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n") % f2->GetPos().x
-              % f2->GetPos().y % GetEvMgr().GetCurrentGF();
+            LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n")
+              % f2->GetPos().x % f2->GetPos().y % GetEvMgr().GetCurrentGF();
     }
 
     // Zufällig Esel oder Träger zuerst fragen, ob er Zeit hat

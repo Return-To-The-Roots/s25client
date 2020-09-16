@@ -38,7 +38,8 @@
  *  Startet das Spiel und lädt alles Notwendige.
  */
 dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
-    : Desktop(LOADER.GetImageN(LOAD_SCREENS[rand() % LOAD_SCREENS.size()], 0)), position(0), loader_(LOADER, std::move(game))
+    : Desktop(LOADER.GetImageN(LOAD_SCREENS[rand() % LOAD_SCREENS.size()], 0)), position(0),
+      loader_(LOADER, std::move(game))
 {
     WINDOWMANAGER.SetCursor(Cursor::None);
 
@@ -115,7 +116,8 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             try
             {
                 // Do this here as it will init OGL
-                gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.GetNWFInfo(), GAMECLIENT.GetPlayerId());
+                gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.GetNWFInfo(),
+                                                                   GAMECLIENT.GetPlayerId());
             } catch(std::runtime_error& e)
             {
                 ShowErrorMsg(std::string(_("Failed to init GUI: ")) + e.what());

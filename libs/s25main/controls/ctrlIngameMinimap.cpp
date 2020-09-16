@@ -24,8 +24,8 @@
 #include "world/MapGeometry.h"
 class Window;
 
-ctrlIngameMinimap::ctrlIngameMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding,
-                                     IngameMinimap& minimap, GameWorldView& gwv)
+ctrlIngameMinimap::ctrlIngameMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size,
+                                     const Extent& padding, IngameMinimap& minimap, GameWorldView& gwv)
     : ctrlMinimap(parent, id, pos, size, padding, Extent(minimap.GetMapSize())), minimap(minimap), gwv(gwv)
 {}
 
@@ -93,8 +93,8 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
         if(IsPointInRect(mc.GetPos(), GetMapDrawArea()))
         {
             // Koordinate feststellen
-            DrawPoint mapCoord =
-              (mc.GetPos() - DrawPoint(GetMapDrawArea().getOrigin())) * DrawPoint(minimap.GetMapSize()) / DrawPoint(GetCurMapSize());
+            DrawPoint mapCoord = (mc.GetPos() - DrawPoint(GetMapDrawArea().getOrigin()))
+                                 * DrawPoint(minimap.GetMapSize()) / DrawPoint(GetCurMapSize());
 
             gwv.MoveToMapPt(MapPoint(mapCoord));
 

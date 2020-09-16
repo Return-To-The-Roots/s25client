@@ -25,13 +25,16 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 
-nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINER, pos, player, workplace) {}
+nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_MINER, pos, player, workplace)
+{}
 
 nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
-    const helpers::MultiArray<DrawPoint, NUM_NATIONS, 4> offsets = // work animation offset per nation and (granite, coal, iron, gold)
+    const helpers::MultiArray<DrawPoint, NUM_NATIONS, 4>
+      offsets = // work animation offset per nation and (granite, coal, iron, gold)
       {{
         {{5, 3}, {5, 3}, {5, 3}, {5, 3}},     // africans
         {{4, 1}, {4, 1}, {4, 1}, {4, 1}},     // japanese
@@ -89,8 +92,9 @@ bool nofMiner::StartWorking()
     if(!resPt.isValid())
         return false;
     const GlobalGameSettings& settings = gwg->GetGGS();
-    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
-                            || (workplace->GetBuildingType() == BLD_GRANITEMINE && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
+    bool inexhaustibleRes =
+      settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
+      || (workplace->GetBuildingType() == BLD_GRANITEMINE && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
     if(!inexhaustibleRes)
         gwg->ReduceResource(resPt);
     return nofWorkman::StartWorking();

@@ -29,7 +29,8 @@ class AIPlayer
 {
 public:
     AIPlayer(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-        : playerId(playerId), player(gwb.GetPlayer(playerId)), gwb(gwb), ggs(gwb.GetGGS()), level(level), aii(gwb, gcs, playerId)
+        : playerId(playerId), player(gwb.GetPlayer(playerId)), gwb(gwb), ggs(gwb.GetGGS()), level(level),
+          aii(gwb, gcs, playerId)
     {}
 
     virtual ~AIPlayer() = default;

@@ -172,7 +172,8 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     int curCursorPos = curChars.size(); // Current cursor should be at end
     while(!curChars.empty())
     {
-        int moveOffset = rttr::test::randomValue<int>(-curCursorPos - 1, curChars.size() - curCursorPos + 1); //+-1 to check for "overrun"
+        int moveOffset = rttr::test::randomValue<int>(-curCursorPos - 1,
+                                                      curChars.size() - curCursorPos + 1); //+-1 to check for "overrun"
         for(; moveOffset < 0; ++moveOffset, --curCursorPos)
             edt.Msg_KeyDown(KeyEvent{KT_LEFT, 0, false, false, false});
         for(; moveOffset > 0; --moveOffset, ++curCursorPos)
@@ -224,8 +225,8 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
 {
     auto font = createMockFont({'?', 'a', 'z'});
     {
-        ctrlTextDeepening txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(), TC_GREEN1, "foo",
-                              font.get(), COLOR_BLACK);
+        ctrlTextDeepening txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(),
+                              TC_GREEN1, "foo", font.get(), COLOR_BLACK);
         const Extent sizeBefore = txt.GetSize();
         // Don't assume size, so get size for 0 chars
         txt.ResizeForMaxChars(0);
@@ -236,8 +237,8 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
         BOOST_TEST(txt.GetSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
     }
     {
-        ctrlTextButton txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(), TC_GREEN1, "foo",
-                           font.get(), "tooltip");
+        ctrlTextButton txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(),
+                           TC_GREEN1, "foo", font.get(), "tooltip");
         const Extent sizeBefore = txt.GetSize();
         // Don't assume size, so get size for 0 chars
         txt.ResizeForMaxChars(0);
@@ -281,7 +282,10 @@ BOOST_AUTO_TEST_CASE(TableSorting)
     auto testRowsEqual = [&table](std::array<const std::vector<std::string>*, 6> rows) {
         for(unsigned i = 0; i < rows.size(); i++)
         {
-            BOOST_TEST_CONTEXT("row " << i) { BOOST_TEST(getRow(table, i) == *rows[i], boost::test_tools::per_element()); }
+            BOOST_TEST_CONTEXT("row " << i)
+            {
+                BOOST_TEST(getRow(table, i) == *rows[i], boost::test_tools::per_element());
+            }
         }
     };
 

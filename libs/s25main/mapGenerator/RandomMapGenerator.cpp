@@ -45,7 +45,8 @@ unsigned RandomMapGenerator::GetMaxTerrainHeight(const DescIdx<TerrainDesc> terr
 
 unsigned RandomMapGenerator::GetMinTerrainHeight(const DescIdx<TerrainDesc> terrain)
 {
-    return static_cast<unsigned>(std::find(config.textures.begin(), config.textures.end(), terrain) - config.textures.begin());
+    return static_cast<unsigned>(std::find(config.textures.begin(), config.textures.end(), terrain)
+                                 - config.textures.begin());
 }
 
 void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
@@ -99,7 +100,8 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
 
             for(int i = 0; i < players; i++)
             {
-                distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(tile, Position(map.hqPositions[i]), map.size));
+                distanceToPlayer =
+                  std::min(distanceToPlayer, VertexUtility::Distance(tile, Position(map.hqPositions[i]), map.size));
             }
 
             for(auto& area : areas)
@@ -137,7 +139,8 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
         auto distanceToPlayer = (double)(map.size.x + map.size.y);
 
         for(int i = 0; i < players; i++)
-            distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(pt, Position(map.hqPositions[i]), map.size));
+            distanceToPlayer =
+              std::min(distanceToPlayer, VertexUtility::Distance(pt, Position(map.hqPositions[i]), map.size));
 
         for(auto& area : areas)
         {
@@ -172,7 +175,8 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
                     break;
                 }
             }
-            map.animal[index] = static_cast<uint8_t>(treeFound ? helper.objGen.CreateRandomForestAnimal(4) : helper.objGen.CreateSheep(4));
+            map.animal[index] = static_cast<uint8_t>(treeFound ? helper.objGen.CreateRandomForestAnimal(4) :
+                                                                 helper.objGen.CreateSheep(4));
         }
     }
 
@@ -257,8 +261,8 @@ void RandomMapGenerator::SetResources(const MapSettings& settings, Map& map)
             nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::EAST), map.size);
             const TerrainDesc& t4 = config.GetTerrainByS2Id(map.textureRsu[nb]);
             // Less strict check: Include all terrain that can also be used by animals
-            if(tRsu.humidity > 0 && tLsd.humidity > 0 && t1.IsUsableByAnimals() && t2.IsUsableByAnimals() && t3.IsUsableByAnimals()
-               && t4.IsUsableByAnimals())
+            if(tRsu.humidity > 0 && tLsd.humidity > 0 && t1.IsUsableByAnimals() && t2.IsUsableByAnimals()
+               && t3.IsUsableByAnimals() && t4.IsUsableByAnimals())
                 res = libsiedler2::R_Water;
         } else if(tRsu.Is(ETerrain::Mineable) && tLsd.Is(ETerrain::Mineable))
         {
@@ -269,8 +273,10 @@ void RandomMapGenerator::SetResources(const MapSettings& settings, Map& map)
             const TerrainDesc& t3 = config.GetTerrainByS2Id(map.textureLsd[nb]);
             nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::EAST), map.size);
             const TerrainDesc& t4 = config.GetTerrainByS2Id(map.textureRsu[nb]);
-            if(t1.Is(ETerrain::Mineable) && t2.Is(ETerrain::Mineable) && t3.Is(ETerrain::Mineable) && t4.Is(ETerrain::Mineable))
-                res = helper.objGen.CreateRandomResource(settings.ratioGold, settings.ratioIron, settings.ratioCoal, settings.ratioGranite);
+            if(t1.Is(ETerrain::Mineable) && t2.Is(ETerrain::Mineable) && t3.Is(ETerrain::Mineable)
+               && t4.Is(ETerrain::Mineable))
+                res = helper.objGen.CreateRandomResource(settings.ratioGold, settings.ratioIron, settings.ratioCoal,
+                                                         settings.ratioGranite);
         }
 
         map.resource[index] = res;

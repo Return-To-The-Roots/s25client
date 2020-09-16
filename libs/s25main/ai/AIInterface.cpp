@@ -100,14 +100,17 @@ AIResource AIInterface::GetSurfaceResource(const MapPoint pt) const
 int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
 {
     // surface resource?
-    if(res == AIResource::PLANTSPACE || res == AIResource::BORDERLAND || res == AIResource::WOOD || res == AIResource::STONES)
+    if(res == AIResource::PLANTSPACE || res == AIResource::BORDERLAND || res == AIResource::WOOD
+       || res == AIResource::STONES)
     {
         AIResource surfaceRes = GetSurfaceResource(pt);
         DescIdx<TerrainDesc> t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
         if(surfaceRes == res
-           || (res == AIResource::PLANTSPACE && surfaceRes == AIResource::NOTHING && gwb.GetDescription().get(t1).IsVital())
+           || (res == AIResource::PLANTSPACE && surfaceRes == AIResource::NOTHING
+               && gwb.GetDescription().get(t1).IsVital())
            || (res == AIResource::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt))
-               && (gwb.GetDescription().get(t1).Is(ETerrain::Walkable) || gwb.GetDescription().get(t2).Is(ETerrain::Walkable))))
+               && (gwb.GetDescription().get(t1).Is(ETerrain::Walkable)
+                   || gwb.GetDescription().get(t2).Is(ETerrain::Walkable))))
         {
             return RES_RADIUS[static_cast<unsigned>(res)];
         }
@@ -140,8 +143,9 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
     if(direction == -1) // calculate complete value from scratch (3n^2+3n+1)
     {
         std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, RES_RADIUS[static_cast<unsigned>(res)]);
-        return std::accumulate(pts.begin(), pts.end(), 0,
-                               [this, res](int lhs, const auto& curPt) { return lhs + this->GetResourceRating(curPt, res); });
+        return std::accumulate(pts.begin(), pts.end(), 0, [this, res](int lhs, const auto& curPt) {
+            return lhs + this->GetResourceRating(curPt, res);
+        });
     } else // calculate different nodes only (4n+2 ?anyways much faster)
     {
         int returnVal = lastval;
@@ -185,15 +189,17 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
         return returnVal;
     }
     // if(returnval<0&&lastval>=0&&res==AIResource::BORDERLAND)
-    // LOG.write(("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction, lastval);
+    // LOG.write(("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction,
+    // lastval);
 }
 
 bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route /*= nullptr*/,
                                          unsigned* length /*= nullptr*/) const
 {
     bool boat = false;
-    return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, nullptr, IsPointOK_RoadPath,
-                                                                 IsPointOK_RoadPathEvenStep, nullptr, (void*)&boat);
+    return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, nullptr,
+                                                                 IsPointOK_RoadPath, IsPointOK_RoadPathEvenStep,
+                                                                 nullptr, (void*)&boat);
 }
 
 bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)
@@ -214,7 +220,8 @@ BuildingQuality AIInterface::GetBuildingQualityAnyOwner(const MapPoint pt) const
 bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
 {
     if(length)
-        return gwb.GetRoadPathFinder().FindPath(start, target, false, std::numeric_limits<unsigned>::max(), nullptr, length);
+        return gwb.GetRoadPathFinder().FindPath(start, target, false, std::numeric_limits<unsigned>::max(), nullptr,
+                                                length);
     else
         return gwb.GetRoadPathFinder().PathExists(start, target, false);
 }
@@ -224,12 +231,14 @@ const nobHQ* AIInterface::GetHeadquarter() const
     return gwb.GetSpecObj<nobHQ>(player_.GetHQPos());
 }
 
-bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const
+bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor,
+                                                 ShipDirection direction) const
 {
     return IsExplorationDirectionPossible(pt, originHarbor->GetHarborPosID(), direction);
 }
 
-bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned originHarborID, ShipDirection direction) const
+bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned originHarborID,
+                                                 ShipDirection direction) const
 {
     return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction, playerID_) > 0;
 }

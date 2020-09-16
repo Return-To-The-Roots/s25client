@@ -22,7 +22,8 @@
 
 bool ObjectGenerator::IsHarborAllowed(DescIdx<TerrainDesc> terrain)
 {
-    return config.worldDesc.get(terrain).Is(ETerrain::Buildable) && config.worldDesc.get(terrain).kind == TerrainKind::LAND;
+    return config.worldDesc.get(terrain).Is(ETerrain::Buildable)
+           && config.worldDesc.get(terrain).kind == TerrainKind::LAND;
 }
 
 void ObjectGenerator::CreateTexture(Map& map, int index, DescIdx<TerrainDesc> terrain, bool harbor)
@@ -36,7 +37,8 @@ void ObjectGenerator::CreateTexture(Map& map, int index, DescIdx<TerrainDesc> te
 
 bool ObjectGenerator::IsTexture(const Map& map, int index, DescIdx<TerrainDesc> terrain)
 {
-    return map.textureRsu[index] == config.worldDesc.get(terrain).s2Id || map.textureLsd[index] == config.worldDesc.get(terrain).s2Id;
+    return map.textureRsu[index] == config.worldDesc.get(terrain).s2Id
+           || map.textureLsd[index] == config.worldDesc.get(terrain).s2Id;
 }
 
 void ObjectGenerator::CreateEmpty(Map& map, int index)
@@ -102,7 +104,8 @@ libsiedler2::Animal ObjectGenerator::CreateRandomAnimal(int likelihood)
     }
 }
 
-uint8_t ObjectGenerator::CreateRandomResource(unsigned ratioGold, unsigned ratioIron, unsigned ratioCoal, unsigned ratioGranite)
+uint8_t ObjectGenerator::CreateRandomResource(unsigned ratioGold, unsigned ratioIron, unsigned ratioCoal,
+                                              unsigned ratioGranite)
 {
     auto rnd = (unsigned)config.Rand(ratioGold + ratioIron + ratioCoal + ratioGranite);
 
@@ -127,7 +130,9 @@ void ObjectGenerator::CreateRandomTree(Map& map, int index)
     {
         case 0: map.objectType[index] = config.Rand(libsiedler2::OT_Tree1_Begin, libsiedler2::OT_Tree1_End + 1); break;
         case 1: map.objectType[index] = config.Rand(libsiedler2::OT_Tree2_Begin, libsiedler2::OT_Tree2_End + 1); break;
-        case 2: map.objectType[index] = config.Rand(libsiedler2::OT_TreeOrPalm_Begin, libsiedler2::OT_TreeOrPalm_End + 1); break;
+        case 2:
+            map.objectType[index] = config.Rand(libsiedler2::OT_TreeOrPalm_Begin, libsiedler2::OT_TreeOrPalm_End + 1);
+            break;
     }
     map.objectInfo[index] = libsiedler2::OI_TreeOrPalm;
 }

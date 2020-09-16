@@ -31,7 +31,7 @@
 #include <glad/glad.h>
 #include <ctime>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
-#include <valgrind/memcheck.h>
+#    include <valgrind/memcheck.h>
 #endif
 
 #ifdef _WIN32
@@ -42,7 +42,8 @@ using SwapIntervalExt_t = int(int);
 
 SwapIntervalExt_t* wglSwapIntervalEXT = nullptr;
 
-VideoDriverWrapper::VideoDriverWrapper() : videodriver(nullptr, nullptr), renderer_(nullptr), enableMouseWarping(true), texture_current(0)
+VideoDriverWrapper::VideoDriverWrapper()
+    : videodriver(nullptr, nullptr), renderer_(nullptr), enableMouseWarping(true), texture_current(0)
 {}
 
 VideoDriverWrapper::~VideoDriverWrapper()
@@ -379,8 +380,8 @@ bool VideoDriverWrapper::LoadAllExtensions()
     LOG.write(_("OpenGL %1%.%2% supported\n")) % GLVersion.major % GLVersion.minor;
     if(GLVersion.major < RTTR_OGL_MAJOR || (GLVersion.major == RTTR_OGL_MAJOR && GLVersion.minor < RTTR_OGL_MINOR))
     {
-        LOG.write(_("OpenGL %1% %2%.%3% is not supported. Try updating your GPU drivers or hardware!")) % ((RTTR_OGL_ES) ? "ES" : "")
-          % RTTR_OGL_MAJOR % RTTR_OGL_MINOR;
+        LOG.write(_("OpenGL %1% %2%.%3% is not supported. Try updating your GPU drivers or hardware!"))
+          % ((RTTR_OGL_ES) ? "ES" : "") % RTTR_OGL_MAJOR % RTTR_OGL_MINOR;
         return false;
     }
 

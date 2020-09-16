@@ -28,7 +28,8 @@ const BasePlayerInfo& LuaServerPlayer::GetPlayer() const
 }
 
 LuaServerPlayer::LuaServerPlayer(IGameLobbyController& lobbyServerController, unsigned playerId)
-    : lobbyServerController_(lobbyServerController), playerId(playerId), player(lobbyServerController_.GetJoinPlayer(playerId))
+    : lobbyServerController_(lobbyServerController), playerId(playerId),
+      player(lobbyServerController_.GetJoinPlayer(playerId))
 {}
 
 void LuaServerPlayer::Register(kaguya::State& state)

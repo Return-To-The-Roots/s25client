@@ -28,9 +28,10 @@
 #include <boost/nowide/detail/utf.hpp>
 #include <numeric>
 
-ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
-                   unsigned short maxlength, bool password, bool disabled, bool notify)
-    : Window(parent, id, pos, size), maxLength_(maxlength), isPassword_(password), isDisabled_(disabled), notify_(notify)
+ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                   const glFont* font, unsigned short maxlength, bool password, bool disabled, bool notify)
+    : Window(parent, id, pos, size), maxLength_(maxlength), isPassword_(password), isDisabled_(disabled),
+      notify_(notify)
 {
     txtCtrl = static_cast<ctrlTextDeepening*>(
       AddTextDeepening(0, DrawPoint(0, 0), size, tc, "", font, COLOR_YELLOW, FontStyle::LEFT | FontStyle::VCENTER));

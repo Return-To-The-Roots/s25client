@@ -99,11 +99,12 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx,
-                                   bool initOGL)
+dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo,
+                                   unsigned playerIdx, bool initOGL)
     : Desktop(nullptr), game_(game), nwfInfo_(std::move(nwfInfo)), worldViewer(playerIdx, game->world_),
-      gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(nullptr),
-      roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
+      gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
+      actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
+      isCheatModeOn(false)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -117,12 +118,15 @@ dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::share
     Extent btSize = Extent(37, 32);
     AddImageButton(ID_btMap, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 50), _("Map"))->SetBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btOptions, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 192), _("Main selection"))->SetBorder(false);
-    barPos.x += btSize.x;
-    AddImageButton(ID_btConstructionAid, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 83), _("Construction aid mode"))
+    AddImageButton(ID_btOptions, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 192), _("Main selection"))
       ->SetBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btPost, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 62), _("Post office"))->SetBorder(false);
+    AddImageButton(ID_btConstructionAid, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 83),
+                   _("Construction aid mode"))
+      ->SetBorder(false);
+    barPos.x += btSize.x;
+    AddImageButton(ID_btPost, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 62), _("Post office"))
+      ->SetBorder(false);
     barPos += DrawPoint(18, 24);
 
     AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, SmallFont);
@@ -291,7 +295,8 @@ void dskGameInterface::Msg_PaintBefore()
     imgFigRightBot.DrawFull(screenSize - figPadding - imgFigRightBot.GetSize());
 
     glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
-    imgButtonBar.DrawFull(DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
+    imgButtonBar.DrawFull(
+      DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
 }
 
 void dskGameInterface::Msg_PaintAfter()
@@ -306,12 +311,16 @@ void dskGameInterface::Msg_PaintAfter()
     {
         snprintf(nwf_string.data(), nwf_string.size(),
                  _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
-                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
-                 GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
+                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(),
+                 GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
+                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
     } else
-        snprintf(nwf_string.data(), nwf_string.size(), _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
-                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
-                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), worldViewer.GetPlayer().ping);
+        snprintf(nwf_string.data(), nwf_string.size(),
+                 _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
+                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                 GAMECLIENT.GetNWFLength(),
+                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                 worldViewer.GetPlayer().ping);
 
     // tournament mode?
     unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
@@ -330,8 +339,8 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFilename().string(), FontStyle::BOTTOM,
-                         COLOR_YELLOW);
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFilename().string(),
+                         FontStyle::BOTTOM, COLOR_YELLOW);
     else
     {
         // Laggende Spieler anzeigen in Form von Schnecken
@@ -340,7 +349,8 @@ void dskGameInterface::Msg_PaintAfter()
         {
             if(player.isLagging)
             {
-                LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, game_->world_.GetPlayer(player.id).color);
+                LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE,
+                                                           game_->world_.GetPlayer(player.id).color);
                 snailPos.x -= 40;
             }
         }
@@ -384,7 +394,8 @@ void dskGameInterface::Msg_PaintAfter()
         magnifierImg->DrawFull(iconPos);
 
         std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
-        NormalFont->Draw(iconPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER, COLOR_YELLOW);
+        NormalFont->Draw(iconPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER,
+                         COLOR_YELLOW);
         iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
     }
 }
@@ -491,29 +502,31 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
             // HQ
             if(bt == BLD_HEADQUARTERS)
-                WINDOWMANAGER.Show(std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwBaseWarehouse>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
+                WINDOWMANAGER.Show(std::make_unique<iwBaseWarehouse>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwHarborBuilding>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
+                WINDOWMANAGER.Show(std::make_unique<iwHarborBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
             else if(BuildingProperties::IsMilitary(bt))
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwMilitaryBuilding>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
+                WINDOWMANAGER.Show(std::make_unique<iwMilitaryBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
             else
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwBuilding>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
+                WINDOWMANAGER.Show(std::make_unique<iwBuilding>(
+                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
             return true;
         }
         // oder vielleicht eine Baustelle?
         else if(selObj.GetType() == NOP_BUILDINGSITE && worldViewer.IsOwner(cSel))
         {
             if(!WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
-                WINDOWMANAGER.Show(std::make_unique<iwBuildingSite>(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwBuildingSite>(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
             return true;
         }
 
@@ -543,7 +556,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
                 // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
                 // Militärgebäude gebaut werden
-                enable_military_buildings = !worldViewer.GetWorld().IsMilitaryBuildingNearNode(cSel, worldViewer.GetPlayerId());
+                enable_military_buildings =
+                  !worldViewer.GetWorld().IsMilitaryBuildingNearNode(cSel, worldViewer.GetPlayerId());
             } else if(bq == BQ_FLAG)
                 action_tabs.setflag = true;
             else if(selObj.GetType() == NOP_FLAG)
@@ -577,8 +591,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     // Allied warehouse? -> Show trade window
                     if(BuildingProperties::IsWareHouse(bt) && worldViewer.GetPlayer().IsAlly(building->GetPlayer()))
                     {
-                        WINDOWMANAGER.Show(
-                          std::make_unique<iwTrade>(*static_cast<const nobBaseWarehouse*>(building), worldViewer, GAMECLIENT));
+                        WINDOWMANAGER.Show(std::make_unique<iwTrade>(*static_cast<const nobBaseWarehouse*>(building),
+                                                                     worldViewer, GAMECLIENT));
                         return true;
                     }
                 }
@@ -593,7 +607,8 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 // oder ein HQ oder Hafen?
                 else if(bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING)
                     action_tabs.attack = true;
-                action_tabs.sea_attack = action_tabs.attack && worldViewer.GetWorld().GetGGS().isEnabled(AddonId::SEA_ATTACK);
+                action_tabs.sea_attack =
+                  action_tabs.attack && worldViewer.GetWorld().GetGGS().isEnabled(AddonId::SEA_ATTACK);
             }
         }
 
@@ -682,7 +697,8 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
             return true;
         case KT_F3: // Map debug window/ Multiplayer coordinates
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
+            WINDOWMANAGER.ToggleWindow(
+              std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
             return true;
         case KT_F8: // Tastaturbelegung
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
@@ -894,7 +910,8 @@ void dskGameInterface::Run()
     unsigned water_percent;
     // Draw mouse only if not on window
     bool drawMouse = WINDOWMANAGER.FindWindowAtPos(VIDEODRIVER.GetMousePos()) == nullptr;
-    gwv.Draw(road, actionwindow != nullptr ? actionwindow->GetSelectedPt() : MapPoint::Invalid(), drawMouse, &water_percent);
+    gwv.Draw(road, actionwindow != nullptr ? actionwindow->GetSelectedPt() : MapPoint::Invalid(), drawMouse,
+             &water_percent);
 
     // Evtl Meeresrauschen-Sounds abspieln
     SOUNDMANAGER.PlayOceanBrawling(water_percent);
@@ -991,7 +1008,8 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
 
 void dskGameInterface::ShowRoadWindow(const Position& mousePos)
 {
-    roadwindow = &WINDOWMANAGER.Show(std::make_unique<iwRoadWindow>(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos), true);
+    roadwindow = &WINDOWMANAGER.Show(
+      std::make_unique<iwRoadWindow>(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos), true);
 }
 
 void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
@@ -1027,8 +1045,8 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
         params = worldViewer.GetNumSoldiersForAttack(cSel);
     }
 
-    actionwindow =
-      &WINDOWMANAGER.Show(std::make_unique<iwAction>(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings), true);
+    actionwindow = &WINDOWMANAGER.Show(
+      std::make_unique<iwAction>(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings), true);
 }
 
 void dskGameInterface::OnChatCommand(const std::string& cmd)
@@ -1089,7 +1107,8 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
 void dskGameInterface::CI_PlayerLeft(const unsigned playerId)
 {
     // Info-Meldung ausgeben
-    std::string text = helpers::format(_("Player '%s' left the game!"), worldViewer.GetWorld().GetPlayer(playerId).name);
+    std::string text =
+      helpers::format(_("Player '%s' left the game!"), worldViewer.GetWorld().GetPlayer(playerId).name);
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
     // Im Spiel anzeigen, dass die KI das Spiel betreten hat
     text = helpers::format(_("Player '%s' joined the game!"), "KI");
@@ -1105,12 +1124,14 @@ void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
 
 void dskGameInterface::CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg)
 {
-    messenger.AddMessage(worldViewer.GetWorld().GetPlayer(playerId).name, worldViewer.GetWorld().GetPlayer(playerId).color, cd, msg);
+    messenger.AddMessage(worldViewer.GetWorld().GetPlayer(playerId).name,
+                         worldViewer.GetWorld().GetPlayer(playerId).color, cd, msg);
 }
 
 void dskGameInterface::CI_Async(const std::string& checksums_list)
 {
-    messenger.AddMessage("", 0, CD_SYSTEM, _("The Game is not in sync. Checksums of some players don't match."), COLOR_RED);
+    messenger.AddMessage("", 0, CD_SYSTEM, _("The Game is not in sync. Checksums of some players don't match."),
+                         COLOR_RED);
     messenger.AddMessage("", 0, CD_SYSTEM, checksums_list, COLOR_YELLOW);
     messenger.AddMessage("", 0, CD_SYSTEM, _("A auto-savegame is created..."), COLOR_RED);
 }
@@ -1193,7 +1214,8 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
  */
 void dskGameInterface::GI_PlayerDefeated(const unsigned playerId)
 {
-    const std::string text = helpers::format(_("Player '%s' was defeated!"), worldViewer.GetWorld().GetPlayer(playerId).name);
+    const std::string text =
+      helpers::format(_("Player '%s' was defeated!"), worldViewer.GetWorld().GetPlayer(playerId).name);
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?
@@ -1308,7 +1330,8 @@ void dskGameInterface::GI_TeamWinner(const unsigned playerMask)
         if(playerMask & (1 << i))
             winners.push_back(world.GetPlayer(i).name);
     }
-    const std::string text = (boost::format(_("%1% are the winners!")) % helpers::join(winners, ", ", _(" and "))).str();
+    const std::string text =
+      (boost::format(_("%1% are the winners!")) % helpers::join(winners, ", ", _(" and "))).str();
     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
     WINDOWMANAGER.Show(std::make_unique<iwVictory>(winners));
 }

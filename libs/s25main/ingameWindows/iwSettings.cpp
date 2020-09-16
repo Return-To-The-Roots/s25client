@@ -29,7 +29,8 @@
 #include "s25util/colors.h"
 
 iwSettings::iwSettings()
-    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"),
+                   LOADER.GetImageN("resource", 41))
 {
     AddText(46, DrawPoint(15, 40), _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddText(47, DrawPoint(15, 85), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -78,11 +79,13 @@ iwSettings::~iwSettings()
         if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize())
            || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
         {
-            const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+            const auto screenSize =
+              SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
             if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
             {
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-                  _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                  _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK,
+                  MSB_EXCLAMATIONGREEN, 1));
             }
         }
     } catch(...)

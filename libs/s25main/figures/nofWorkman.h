@@ -45,7 +45,8 @@ protected:
     void HandleStateWaiting2();
     void HandleStateWork();
     /// Called when the work actually starts. The base implementation changes the state and reduces ware count.
-    /// Subclasses can return false, if work has to be aborted for any reason in which case we enter the wait-for-wares state
+    /// Subclasses can return false, if work has to be aborted for any reason in which case we enter the wait-for-wares
+    /// state
     virtual bool StartWorking();
 
     /// Looks for a point with a given resource on the node

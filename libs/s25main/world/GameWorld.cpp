@@ -27,13 +27,14 @@
 #include <boost/filesystem.hpp>
 #include <mygettext/mygettext.h>
 
-GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em)
+GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings,
+                     EventManager& em)
     : GameWorldGame(playerInfos, gameSettings, em)
 {}
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, ILocalGameState& localgameState, const boost::filesystem::path& mapFilePath,
-                        const boost::filesystem::path& luaFilePath)
+bool GameWorld::LoadMap(const std::shared_ptr<Game>& game, ILocalGameState& localgameState,
+                        const boost::filesystem::path& mapFilePath, const boost::filesystem::path& luaFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;

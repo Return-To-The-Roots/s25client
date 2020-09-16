@@ -112,14 +112,18 @@ public:
     /// Returns true if the given wh does still exist and hence the ptr is valid
     bool IsWarehouseValid(nobBaseWarehouse* wh) const;
     /// Gibt erstes Lagerhaus zurück
-    nobBaseWarehouse* GetFirstWH() { return buildings.GetStorehouses().empty() ? nullptr : buildings.GetStorehouses().front(); }
+    nobBaseWarehouse* GetFirstWH()
+    {
+        return buildings.GetStorehouses().empty() ? nullptr : buildings.GetStorehouses().front();
+    }
     /// Looks for the closest warehouse for the point 'start' (including it) that matches the conditions by the functor
-    /// - isWarehouseGood must be a functor taking a "const nobBaseWarhouse&", that returns a bool whether this warehouse should be
-    /// considered - to_wh true if path to wh is searched, false for path from wh - length is optional for the path length - forbidden
-    /// optional roadSegment that must not be used
+    /// - isWarehouseGood must be a functor taking a "const nobBaseWarhouse&", that returns a bool whether this
+    /// warehouse should be considered - to_wh true if path to wh is searched, false for path from wh - length is
+    /// optional for the path length - forbidden optional roadSegment that must not be used
     template<class T_IsWarehouseGood>
-    nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh, bool use_boat_roads,
-                                    unsigned* length = nullptr, const RoadSegment* forbidden = nullptr) const;
+    nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh,
+                                    bool use_boat_roads, unsigned* length = nullptr,
+                                    const RoadSegment* forbidden = nullptr) const;
     /// Für alle unbesetzen Straßen Weg neu berechnen
     void FindCarrierForAllRoads();
     /// Versucht für alle Arbeitsplätze eine Arbeitskraft zu suchen
@@ -197,7 +201,8 @@ public:
     bool IsAlly(unsigned char playerId) const;
     /// Truppen bestellen
     void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false);
-    /// Prüft die Besatzung von allen Militärgebäuden und reguliert entsprechend (bei Veränderung der Militäreinstellungen)
+    /// Prüft die Besatzung von allen Militärgebäuden und reguliert entsprechend (bei Veränderung der
+    /// Militäreinstellungen)
     void RegulateAllTroops();
     /// Prüft von allen Militärgebäuden die Fahnen neu
     void RecalcMilitaryFlags();
@@ -302,7 +307,8 @@ public:
     /// Returns number of tools ordered for the given tool including visual orders (not yet committed)
     unsigned GetToolsOrderedVisual(unsigned toolIdx) const;
     unsigned GetToolsOrdered(unsigned toolIdx) const;
-    /// Changes the current visual tool order by the given amount. Return true if anything was changed (tool order is clamped to [0,100])
+    /// Changes the current visual tool order by the given amount. Return true if anything was changed (tool order is
+    /// clamped to [0,100])
     bool ChangeToolOrderVisual(unsigned toolIdx, int changeAmount) const;
     unsigned GetToolPriority(unsigned toolIdx) const;
     /// Called when a ordered tool was finished

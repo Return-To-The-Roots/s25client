@@ -40,7 +40,9 @@ namespace {
 
 struct dskGameInterfaceMock : public dskGameInterface
 {
-    dskGameInterfaceMock(const std::shared_ptr<Game>& game) : dskGameInterface(game, std::shared_ptr<NWFInfo>(), 0, false) {}
+    dskGameInterfaceMock(const std::shared_ptr<Game>& game)
+        : dskGameInterface(game, std::shared_ptr<NWFInfo>(), 0, false)
+    {}
     void Msg_PaintBefore() override {}
     void Msg_PaintAfter() override {}
 };
@@ -51,7 +53,8 @@ struct GameInterfaceFixture : uiHelper::Fixture
     const GameWorldView* view;
     GameInterfaceFixture()
     {
-        gameDesktop = static_cast<dskGameInterface*>(WINDOWMANAGER.Switch(std::make_unique<dskGameInterfaceMock>(worldFixture.game)));
+        gameDesktop = static_cast<dskGameInterface*>(
+          WINDOWMANAGER.Switch(std::make_unique<dskGameInterfaceMock>(worldFixture.game)));
         WINDOWMANAGER.Draw();
         view = &gameDesktop->GetView();
     }

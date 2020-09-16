@@ -44,7 +44,8 @@ class Ware : public GameObject
         STATE_WAITFORSHIP,         // Ware wartet im Hafengebäude auf das Schiff, das sie abholt
         STATE_ONSHIP               // Ware befindet sich auf einem Schiff
     } state;
-    /// Auf welcher Flagge, in welchem Gebäude die Ware gerade ist (bei STATE_CARRIED ist es die Flagge, zu der die Ware getragen wird!)
+    /// Auf welcher Flagge, in welchem Gebäude die Ware gerade ist (bei STATE_CARRIED ist es die Flagge, zu der die Ware
+    /// getragen wird!)
     noRoadNode* location;
 
 public:

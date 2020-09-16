@@ -40,14 +40,16 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     const MapExtent worldSize(24, 22);
 
     // Hole
-    const std::vector<MapPoint> hole{MapPoint(14, 14), MapPoint(16, 14), MapPoint(16, 16), MapPoint(14, 16), MapPoint(14, 14)};
+    const std::vector<MapPoint> hole{MapPoint(14, 14), MapPoint(16, 14), MapPoint(16, 16), MapPoint(14, 16),
+                                     MapPoint(14, 14)};
 
     // Reverse it...
     std::vector<MapPoint> hole_reversed = hole;
     std::reverse(hole_reversed.begin(), hole_reversed.end());
 
     // Outer polygon
-    const std::vector<MapPoint> outer{MapPoint(10, 10), MapPoint(20, 10), MapPoint(20, 20), MapPoint(10, 20), MapPoint(10, 10)};
+    const std::vector<MapPoint> outer{MapPoint(10, 10), MapPoint(20, 10), MapPoint(20, 20), MapPoint(10, 20),
+                                      MapPoint(10, 10)};
 
     // Reverse it...
     std::vector<MapPoint> outer_reversed = outer;
@@ -56,20 +58,22 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     // Set of MapPoints that should return true
     // Auto-generated data (from different implementation with tests)
     std::set<MapPoint, MapPointLess> results{
-      MapPoint(10, 10), MapPoint(10, 11), MapPoint(10, 12), MapPoint(10, 13), MapPoint(10, 14), MapPoint(10, 15), MapPoint(10, 16),
-      MapPoint(10, 17), MapPoint(10, 18), MapPoint(10, 19), MapPoint(11, 10), MapPoint(11, 11), MapPoint(11, 12), MapPoint(11, 13),
-      MapPoint(11, 14), MapPoint(11, 15), MapPoint(11, 16), MapPoint(11, 17), MapPoint(11, 18), MapPoint(11, 19), MapPoint(12, 10),
-      MapPoint(12, 11), MapPoint(12, 12), MapPoint(12, 13), MapPoint(12, 14), MapPoint(12, 15), MapPoint(12, 16), MapPoint(12, 17),
-      MapPoint(12, 18), MapPoint(12, 19), MapPoint(13, 10), MapPoint(13, 11), MapPoint(13, 12), MapPoint(13, 13), MapPoint(13, 14),
-      MapPoint(13, 15), MapPoint(13, 16), MapPoint(13, 17), MapPoint(13, 18), MapPoint(13, 19), MapPoint(14, 10), MapPoint(14, 11),
-      MapPoint(14, 12), MapPoint(14, 13), MapPoint(14, 16), MapPoint(14, 17), MapPoint(14, 18), MapPoint(14, 19), MapPoint(15, 10),
-      MapPoint(15, 11), MapPoint(15, 12), MapPoint(15, 13), MapPoint(15, 16), MapPoint(15, 17), MapPoint(15, 18), MapPoint(15, 19),
-      MapPoint(16, 10), MapPoint(16, 11), MapPoint(16, 12), MapPoint(16, 13), MapPoint(16, 14), MapPoint(16, 15), MapPoint(16, 16),
-      MapPoint(16, 17), MapPoint(16, 18), MapPoint(16, 19), MapPoint(17, 10), MapPoint(17, 11), MapPoint(17, 12), MapPoint(17, 13),
-      MapPoint(17, 14), MapPoint(17, 15), MapPoint(17, 16), MapPoint(17, 17), MapPoint(17, 18), MapPoint(17, 19), MapPoint(18, 10),
-      MapPoint(18, 11), MapPoint(18, 12), MapPoint(18, 13), MapPoint(18, 14), MapPoint(18, 15), MapPoint(18, 16), MapPoint(18, 17),
-      MapPoint(18, 18), MapPoint(18, 19), MapPoint(19, 10), MapPoint(19, 11), MapPoint(19, 12), MapPoint(19, 13), MapPoint(19, 14),
-      MapPoint(19, 15), MapPoint(19, 16), MapPoint(19, 17), MapPoint(19, 18), MapPoint(19, 19)};
+      MapPoint(10, 10), MapPoint(10, 11), MapPoint(10, 12), MapPoint(10, 13), MapPoint(10, 14), MapPoint(10, 15),
+      MapPoint(10, 16), MapPoint(10, 17), MapPoint(10, 18), MapPoint(10, 19), MapPoint(11, 10), MapPoint(11, 11),
+      MapPoint(11, 12), MapPoint(11, 13), MapPoint(11, 14), MapPoint(11, 15), MapPoint(11, 16), MapPoint(11, 17),
+      MapPoint(11, 18), MapPoint(11, 19), MapPoint(12, 10), MapPoint(12, 11), MapPoint(12, 12), MapPoint(12, 13),
+      MapPoint(12, 14), MapPoint(12, 15), MapPoint(12, 16), MapPoint(12, 17), MapPoint(12, 18), MapPoint(12, 19),
+      MapPoint(13, 10), MapPoint(13, 11), MapPoint(13, 12), MapPoint(13, 13), MapPoint(13, 14), MapPoint(13, 15),
+      MapPoint(13, 16), MapPoint(13, 17), MapPoint(13, 18), MapPoint(13, 19), MapPoint(14, 10), MapPoint(14, 11),
+      MapPoint(14, 12), MapPoint(14, 13), MapPoint(14, 16), MapPoint(14, 17), MapPoint(14, 18), MapPoint(14, 19),
+      MapPoint(15, 10), MapPoint(15, 11), MapPoint(15, 12), MapPoint(15, 13), MapPoint(15, 16), MapPoint(15, 17),
+      MapPoint(15, 18), MapPoint(15, 19), MapPoint(16, 10), MapPoint(16, 11), MapPoint(16, 12), MapPoint(16, 13),
+      MapPoint(16, 14), MapPoint(16, 15), MapPoint(16, 16), MapPoint(16, 17), MapPoint(16, 18), MapPoint(16, 19),
+      MapPoint(17, 10), MapPoint(17, 11), MapPoint(17, 12), MapPoint(17, 13), MapPoint(17, 14), MapPoint(17, 15),
+      MapPoint(17, 16), MapPoint(17, 17), MapPoint(17, 18), MapPoint(17, 19), MapPoint(18, 10), MapPoint(18, 11),
+      MapPoint(18, 12), MapPoint(18, 13), MapPoint(18, 14), MapPoint(18, 15), MapPoint(18, 16), MapPoint(18, 17),
+      MapPoint(18, 18), MapPoint(18, 19), MapPoint(19, 10), MapPoint(19, 11), MapPoint(19, 12), MapPoint(19, 13),
+      MapPoint(19, 14), MapPoint(19, 15), MapPoint(19, 16), MapPoint(19, 17), MapPoint(19, 18), MapPoint(19, 19)};
 
     // check the whole area
     std::array<std::vector<MapPoint>, 8> polygon;
@@ -82,9 +86,11 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         // i = 4, 5, 6, 7 -> outer reversed
 
         polygon[i].emplace_back(0, 0);
-        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 1)) ? hole : hole_reversed) : ((i & (1 << 2)) ? outer : outer_reversed));
+        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 1)) ? hole : hole_reversed) :
+                                                      ((i & (1 << 2)) ? outer : outer_reversed));
         polygon[i].emplace_back(0, 0);
-        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 2)) ? outer : outer_reversed) : ((i & (1 << 1)) ? hole : hole_reversed));
+        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 2)) ? outer : outer_reversed) :
+                                                      ((i & (1 << 1)) ? hole : hole_reversed));
         polygon[i].emplace_back(0, 0);
     }
 
@@ -177,8 +183,8 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
     }
 
     // Note the usage of width and height to include the border points
-    std::vector<MapPoint> fullMapArea{MapPoint(0, 0), MapPoint(0, worldSize.y), MapPoint(worldSize), MapPoint(worldSize.x, 0),
-                                      MapPoint(0, 0)};
+    std::vector<MapPoint> fullMapArea{MapPoint(0, 0), MapPoint(0, worldSize.y), MapPoint(worldSize),
+                                      MapPoint(worldSize.x, 0), MapPoint(0, 0)};
     std::vector<MapPoint> fullMapAreaReversed(fullMapArea.size());
     std::reverse_copy(fullMapArea.begin(), fullMapArea.end(), fullMapAreaReversed.begin());
 
@@ -202,7 +208,8 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
             // If the point is in the set, it is in the small rect and should not be in the big rect with this as a hole
             const bool result = !helpers::contains(results, pt);
             const bool isValid = TerritoryRegion::IsPointValid(worldSize, fullArea, pt);
-            BOOST_REQUIRE_MESSAGE(isValid == result, isValid << "!=" << result << " at " << pt << " (iteration " << i << ")");
+            BOOST_REQUIRE_MESSAGE(isValid == result,
+                                  isValid << "!=" << result << " at " << pt << " (iteration " << i << ")");
         }
     }
 }
@@ -217,8 +224,10 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
     milBldPos[1] = world.MakeMapPoint(milBldPos[0] + Position(5, 4));
     milBldPos[2] = world.MakeMapPoint(milBldPos[0] + Position(5, -4));
     // Distance to HQ must be less than distance to other blds or they will be destroyed on capture
-    BOOST_REQUIRE_LT(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1, world.CalcDistance(milBldPos[0], milBldPos[1]));
-    BOOST_REQUIRE_LT(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1, world.CalcDistance(milBldPos[0], milBldPos[2]));
+    BOOST_REQUIRE_LT(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1,
+                     world.CalcDistance(milBldPos[0], milBldPos[1]));
+    BOOST_REQUIRE_LT(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1,
+                     world.CalcDistance(milBldPos[0], milBldPos[2]));
     // Create them in different orders. 3 blds -> 6 orders
     for(unsigned i = 0; i < 6; i++)
     {
@@ -250,8 +259,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
         {
             milBlds[j] = world.GetSpecObj<nobBaseMilitary>(milBldPos[j]);
             MapPoint flagPt = milBlds[j]->GetFlagPos();
-            auto* sld = new nofPassiveSoldier(flagPt, milBlds[j]->GetPlayer(), static_cast<nobBaseMilitary*>(milBlds[j]),
-                                              static_cast<nobBaseMilitary*>(milBlds[j]), 0);
+            auto* sld =
+              new nofPassiveSoldier(flagPt, milBlds[j]->GetPlayer(), static_cast<nobBaseMilitary*>(milBlds[j]),
+                                    static_cast<nobBaseMilitary*>(milBlds[j]), 0);
             world.AddFigure(flagPt, sld);
             sld->ActAtFirst();
         }

@@ -22,8 +22,9 @@
 #include "gameTypes/BuildingType.h"
 #include <string>
 
-ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, const DrawPoint& pos, const BuildingType type,
-                                   const Nation nation, const unsigned short size, const std::string& tooltip)
+ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, const DrawPoint& pos,
+                                   const BuildingType type, const Nation nation, const unsigned short size,
+                                   const std::string& tooltip)
     : ctrlButton(parent, id, pos, Extent(size, size), TC_GREY, tooltip), type(type), nation(nation)
 {}
 

@@ -32,7 +32,8 @@
 
 inline bool operator==(const MouseCoords& lhs, const MouseCoords& rhs)
 {
-    return lhs.GetPos() == rhs.GetPos() && lhs.ldown == rhs.ldown && lhs.rdown == rhs.rdown && lhs.dbl_click == rhs.dbl_click;
+    return lhs.GetPos() == rhs.GetPos() && lhs.ldown == rhs.ldown && lhs.rdown == rhs.rdown
+           && lhs.dbl_click == rhs.dbl_click;
 }
 
 inline std::ostream& operator<<(std::ostream& s, const MouseCoords& mc)
@@ -357,7 +358,8 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     REQUIRE_WINDOW_ACTIVE(&wnd);
     // Now we have the following order
     std::vector<TestIngameWnd*> expectedOrder = {&wnd, &wnd2, &wnd3, &wnd5, &wnd6, &wnd4};
-    // Only way to check the order is to simulate a key event, expect the top most one to handle it and close it, then proceed
+    // Only way to check the order is to simulate a key event, expect the top most one to handle it and close it, then
+    // proceed
     mock::sequence s;
     for(TestIngameWnd* curWnd : expectedOrder)
         MOCK_EXPECT(curWnd->Msg_KeyDown).once().in(s).returns(true);

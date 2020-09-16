@@ -88,8 +88,9 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
         seaIds[dir] = gwg->GetSeaFromCoastalPoint(gwg->GetNeighbour(pos, dir));
 
     // Post versenden
-    SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("New harbor building finished"),
-                                                                  PostCategory::Economy, *this));
+    SendPostMessage(player,
+                    std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("New harbor building finished"),
+                                                          PostCategory::Economy, *this));
 }
 
 void nobHarborBuilding::DestroyBuilding()
@@ -225,7 +226,8 @@ const std::array<Position, NUM_NATIONS> BOARDS_POS = {
 const std::array<Position, NUM_NATIONS> STONES_POS = {
   {Position(-65, 10), Position(-52, 10), Position(-42, 10), Position(-52, 10), Position(-52, 10)}};
 /// Relative Postion der inneren Hafenfeuer
-const std::array<Position, NUM_NATIONS> FIRE_POS = {{Position(36, -51), Position(0, 0), Position(0, 0), Position(5, -80), Position(0, 0)}};
+const std::array<Position, NUM_NATIONS> FIRE_POS = {
+  {Position(36, -51), Position(0, 0), Position(0, 0), Position(5, -80), Position(0, 0)}};
 /// Relative Postion der äußeren Hafenfeuer
 const std::array<Position, NUM_NATIONS> EXTRAFIRE_POS = {
   {Position(0, 0), Position(0, 0), Position(8, -115), Position(0, 0), Position(0, 0)}};
@@ -281,11 +283,12 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
 
             DrawPoint builderPos = drawPt + BUILDER_POS[nation];
             if(id < 500)
-                LOADER.bob_jobs_cache[nation][JOB_BUILDER][0][walking_id].draw(builderPos - DrawPoint(walking_distance, 0), COLOR_WHITE,
-                                                                               gwg->GetPlayer(player).color);
+                LOADER.bob_jobs_cache[nation][JOB_BUILDER][0][walking_id].draw(
+                  builderPos - DrawPoint(walking_distance, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
             else
                 LOADER.bob_jobs_cache[nation][JOB_BUILDER][3][walking_id].draw(
-                  builderPos + DrawPoint(walking_distance - WALKING_DISTANCE, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
+                  builderPos + DrawPoint(walking_distance - WALKING_DISTANCE, 0), COLOR_WHITE,
+                  gwg->GetPlayer(player).color);
         }
     }
 }
@@ -339,7 +342,8 @@ void nobHarborBuilding::StartExpedition()
                 break;
             }
         }
-        if(convert && inventory[GD_HAMMER] && inventory[JOB_HELPER] > 1) // maybe have a hammer & helper to create our own builder?
+        if(convert && inventory[GD_HAMMER]
+           && inventory[JOB_HELPER] > 1) // maybe have a hammer & helper to create our own builder?
         {
             inventory.Remove(GD_HAMMER);
             owner.DecreaseInventoryWare(GD_HAMMER, 1);
@@ -379,8 +383,8 @@ void nobHarborBuilding::StopExpedition()
         inventory.Add(JOB_BUILDER);
         // Evtl. Abnehmer für die Figur wieder finden
         gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_BUILDER);
-    } else // todo falls noch nicht da - unterscheiden ob unterwegs oder nur bestellt - falls bestellt stornieren sonst informieren damit
-           // kein ersatz geschickt wird falls was nicht klappt aufm weg
+    } else // todo falls noch nicht da - unterscheiden ob unterwegs oder nur bestellt - falls bestellt stornieren sonst
+           // informieren damit kein ersatz geschickt wird falls was nicht klappt aufm weg
     {
         gwg->GetPlayer(player).OneJobNotWanted(JOB_BUILDER, this);
     }
@@ -569,15 +573,16 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
     if(!wares_for_ships.empty() || !figures_for_ships.empty())
     {
         // Das Ziel wird nach der ersten Figur bzw. ersten Ware gewählt
-        // actually since the wares might not yet have informed the harbor that their target harbor was destroyed we pick the first
-        // figure/ware with a valid target instead
+        // actually since the wares might not yet have informed the harbor that their target harbor was destroyed we
+        // pick the first figure/ware with a valid target instead
         MapPoint dest;
         bool gotdest = false;
         for(const auto& figureForShip : figures_for_ships)
         {
             noBase* nb = gwg->GetNO(figureForShip.dest);
             if(nb->GetGOT() == GOT_NOB_HARBORBUILDING
-               && gwg->GetNode(figureForShip.dest).owner == player + 1) // target is a harbor and owned by the same player
+               && gwg->GetNode(figureForShip.dest).owner
+                    == player + 1) // target is a harbor and owned by the same player
             {
                 dest = figureForShip.dest;
                 gotdest = true;
@@ -619,7 +624,8 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
 
             // Und noch die Waren auswählen
             std::list<Ware*> wares;
-            for(auto it = wares_for_ships.begin(); it != wares_for_ships.end() && figures.size() + wares.size() < SHIP_CAPACITY;)
+            for(auto it = wares_for_ships.begin();
+                it != wares_for_ships.end() && figures.size() + wares.size() < SHIP_CAPACITY;)
             {
                 if((*it)->GetNextHarbor() == dest)
                 {
@@ -821,7 +827,8 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
 {
     std::vector<ShipConnection> connections;
 
-    // Is the harbor being destroyed right now? Could happen due to pathfinding for wares that get notified about this buildings destruction
+    // Is the harbor being destroyed right now? Could happen due to pathfinding for wares that get notified about this
+    // buildings destruction
     if(IsBeingDestroyedNow())
         return connections;
 
@@ -854,7 +861,8 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
 /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
 void nobHarborBuilding::AddFigureForShip(noFigure* fig, MapPoint dest)
 {
-    RTTR_Assert(!helpers::contains(gwg->GetFigures(fig->GetPos()), fig)); // Figure is in the harbor, so it cannot be outside
+    RTTR_Assert(
+      !helpers::contains(gwg->GetFigures(fig->GetPos()), fig)); // Figure is in the harbor, so it cannot be outside
     FigureForShip ffs = {fig, dest};
     figures_for_ships.push_back(ffs);
     // Anzahl visuell erhöhen
@@ -1110,7 +1118,8 @@ void nobHarborBuilding::CancelWareForShip(Ware* ware)
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
 void nobHarborBuilding::CancelFigure(noFigure* figure)
 {
-    const auto it = std::find_if(figures_for_ships.begin(), figures_for_ships.end(), [figure](const auto& it) { return it.fig == figure; });
+    const auto it = std::find_if(figures_for_ships.begin(), figures_for_ships.end(),
+                                 [figure](const auto& it) { return it.fig == figure; });
 
     // Figur ggf. aus der List entfernen
     if(it != figures_for_ships.end())
@@ -1136,7 +1145,8 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
-        if(all_building->GetPlayer() != player || gwg->CalcDistance(all_building->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
+        if(all_building->GetPlayer() != player
+           || gwg->CalcDistance(all_building->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
         // Gebäude suchen, vielleicht schon vorhanden? Dann können wir uns den pathfinding Aufwand sparen!
         if(helpers::contains(buildings, static_cast<nobMilitary*>(all_building)))
@@ -1166,7 +1176,8 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<unsigned>&
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
-        if(all_building->GetPlayer() != player || gwg->CalcDistance(all_building->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
+        if(all_building->GetPlayer() != player
+           || gwg->CalcDistance(all_building->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
 
         // Weg vom Hafen zum Militärgebäude berechnen
@@ -1206,7 +1217,8 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
     unsigned best_distance = 0xffffffff;
     unsigned best_harbor_point = 0xffffffff;
     RTTR_Assert(attacker->GetAttackedGoal());
-    std::vector<unsigned> harbor_points = gwg->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos());
+    std::vector<unsigned> harbor_points =
+      gwg->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos());
     for(unsigned int harbor_point : harbor_points)
     {
         unsigned tmp_distance = gwg->CalcHarborDistance(this->GetHarborPosID(), harbor_point);
@@ -1238,8 +1250,8 @@ void nobHarborBuilding::AddSeaAttacker(nofAttacker* attacker)
 
 void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
 {
-    const auto it =
-      std::find_if(soldiers_for_ships.begin(), soldiers_for_ships.end(), [attacker](const auto& it) { return it.attacker == attacker; });
+    const auto it = std::find_if(soldiers_for_ships.begin(), soldiers_for_ships.end(),
+                                 [attacker](const auto& it) { return it.attacker == attacker; });
 
     RTTR_Assert(it != soldiers_for_ships.end());
     soldiers_for_ships.erase(it);

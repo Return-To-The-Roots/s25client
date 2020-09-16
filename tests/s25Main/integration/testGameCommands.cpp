@@ -41,10 +41,10 @@
 #include <iostream>
 
 #if defined(PVS_STUDIO) || defined(__clang_analyzer__)
-#undef BOOST_REQUIRE
-#define BOOST_REQUIRE(expr) \
-    if(!(expr))             \
-    throw "Silence static analyzer"
+#    undef BOOST_REQUIRE
+#    define BOOST_REQUIRE(expr) \
+        if(!(expr))             \
+        throw "Silence static analyzer"
 #endif
 
 // LCOV_EXCL_START
@@ -140,8 +140,10 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(3, 0)).bq, BQ_NOTHING);
     BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(4, 0)).bq, BQ_NOTHING);
     // BQ above road
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq, BQ_CASTLE); // Flag could be build
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq, BQ_FLAG);   // only flag possible
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq,
+                        BQ_CASTLE); // Flag could be build
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq,
+                        BQ_FLAG); // only flag possible
     // BQ below road (Castle blocked by road)
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SOUTHEAST).bq, BQ_HOUSE);
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SOUTHWEST).bq, BQ_HOUSE);
@@ -152,9 +154,11 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(1, 0))->GetType(), NOP_NOTHING);
     // d) middle -> ok
     this->SetFlag(flagPt + MapPoint(2, 0));
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);                            //-V807
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq, BQ_CASTLE);  // Flag could be build
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq, BQ_NOTHING); // no more flag possible
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG); //-V807
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq,
+                        BQ_CASTLE); // Flag could be build
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq,
+                        BQ_NOTHING); // no more flag possible
     // f) destroy middle flag -> Road destroyed
     this->DestroyFlag(flagPt + MapPoint(2, 0));
     for(unsigned i = 0; i < 4; i++)
@@ -348,7 +352,8 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
         for(unsigned i = 0; i < inTransportOrder.size(); i++)
             BOOST_REQUIRE_EQUAL(outSettings.transport_order[i], inTransportOrder[i]);
         for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
-            BOOST_REQUIRE_EQUAL(player.GetTransportPriority(GoodType(i)), GetTransportPrioFromOrdering(inTransportOrder, GoodType(i)));
+            BOOST_REQUIRE_EQUAL(player.GetTransportPriority(GoodType(i)),
+                                GetTransportPrioFromOrdering(inTransportOrder, GoodType(i)));
         for(unsigned i = 0; i < militarySettings.size(); i++)
             BOOST_REQUIRE_EQUAL(player.GetMilitarySetting(i), militarySettings[i]);
         for(unsigned i = 0; i < toolPrios.size(); i++)
@@ -435,11 +440,13 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     // Set all military stuff to max
     this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
     // Build a watchtower and connect it
-    auto* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
+    auto* bld = dynamic_cast<nobMilitary*>(
+      BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
     BOOST_REQUIRE(bld);
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
-    // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked (distance + to and from flag),
-    // 30GFs for leaving carrier)
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false,
+                    std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
+    // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked (distance + to
+    // and from flag), 30GFs for leaving carrier)
     unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x + 2) + 30;
     RTTR_SKIP_GFS(numGFtillAllArrive);
     // Now we should have 1 each of ranks 0-3 and 2 rank 4s
@@ -518,8 +525,10 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
     ggs.setSelection(AddonId::MAX_RANK, MAX_MILITARY_RANK);
     // Build a watchtower and connect it
-    auto* bld = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
+    auto* bld =
+      static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false,
+                    std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     nofPassiveSoldier* soldier = nullptr;
     for(noFigure* fig : hq->GetLeavingFigures())
@@ -618,7 +627,8 @@ BOOST_FIXTURE_TEST_CASE(CallScout, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
-    auto* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
+    auto* bld =
+      dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsGoldDisabled()); //-V522
 
@@ -644,7 +654,8 @@ BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
-    auto* bld = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
+    auto* bld =
+      dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsProductionDisabled()); //-V522
 
@@ -893,7 +904,8 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
         this->ChangeReserve(hqPos, i, newVal);
         BOOST_REQUIRE_EQUAL(wh->GetReserveClaimed(i), newVal);
         BOOST_REQUIRE_EQUAL(*wh->GetReserveAvailablePointer(i), newVal);
-        // Current figure ct should be old figure count minus the new reserve soldiers (currentVal - 1 for old reserve val)
+        // Current figure ct should be old figure count minus the new reserve soldiers (currentVal - 1 for old reserve
+        // val)
         BOOST_REQUIRE_EQUAL(wh->GetNumVisualFigures(SOLDIER_JOBS[i]), numSoldiersAv - (newVal - 1));
         BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(SOLDIER_JOBS[i]), numSoldiersAv - (newVal - 1));
     }

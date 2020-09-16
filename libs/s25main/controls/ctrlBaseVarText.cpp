@@ -19,7 +19,8 @@
 #include "RTTR_Assert.h"
 #include <sstream>
 
-ctrlBaseVarText::ctrlBaseVarText(const std::string& fmtString, const unsigned color, const glFont* font, unsigned count, va_list fmtArgs)
+ctrlBaseVarText::ctrlBaseVarText(const std::string& fmtString, const unsigned color, const glFont* font, unsigned count,
+                                 va_list fmtArgs)
     : ctrlBaseText(fmtString, color, font)
 {
     for(unsigned i = 0; i < count; ++i)

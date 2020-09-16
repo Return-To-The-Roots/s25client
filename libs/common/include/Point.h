@@ -150,12 +150,14 @@ struct MixedType<T, U, true>
 {
     static constexpr bool isTBigger = sizeof(T) > sizeof(U);
     // If both are floating point or both are not
-    using Common = std::conditional_t<std::is_floating_point<T>::value == std::is_floating_point<U>::value,
-                                      std::conditional_t<isTBigger, T, U>,                       // Take the larger type
-                                      std::conditional_t<std::is_floating_point<T>::value, T, U> // Take the floating point type
-                                      >;
+    using Common =
+      std::conditional_t<std::is_floating_point<T>::value == std::is_floating_point<U>::value,
+                         std::conditional_t<isTBigger, T, U>,                       // Take the larger type
+                         std::conditional_t<std::is_floating_point<T>::value, T, U> // Take the floating point type
+                         >;
     // Convert to signed iff at least one value is signed
-    using type = std::conditional_t<std::is_signed<T>::value || std::is_signed<U>::value, TryMakeSigned_t<Common>, Common>;
+    using type =
+      std::conditional_t<std::is_signed<T>::value || std::is_signed<U>::value, TryMakeSigned_t<Common>, Common>;
 };
 template<typename T, typename U>
 using MixedType_t = typename MixedType<T, U>::type;
@@ -164,7 +166,8 @@ template<typename T, typename U>
 struct IsNonLossyOp
 {
     // We can do T <op> U (except overflow) if:
-    static constexpr bool value = std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value;
+    static constexpr bool value =
+      std::is_floating_point<T>::value || std::is_signed<T>::value || std::is_unsigned<U>::value;
 };
 template<typename T, typename U>
 using require_nonLossyOp = std::enable_if_t<IsNonLossyOp<T, U>::value>;

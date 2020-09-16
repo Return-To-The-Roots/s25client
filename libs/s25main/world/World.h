@@ -98,9 +98,11 @@ public:
     noBase* GetNO(MapPoint pt);
     /// Return the NO from that point or a "nothing"-object if there is none
     const noBase* GetNO(MapPoint pt) const;
-    /// Places a NO at a given position. If replace is true, the old object is replaced, else it is assumed as non-existent
+    /// Places a NO at a given position. If replace is true, the old object is replaced, else it is assumed as
+    /// non-existent
     void SetNO(MapPoint pt, noBase* obj, bool replace = false);
-    /// Destroys the object at the given node and removes it from the map. If checkExists is false than it is ok, if there is no obj
+    /// Destroys the object at the given node and removes it from the map. If checkExists is false than it is ok, if
+    /// there is no obj
     void DestroyNO(MapPoint pt, bool checkExists = true);
     /// Return the game object type of the object at that point or GOT_NONE of there is none
     GO_Type GetGOT(MapPoint pt) const;
@@ -114,8 +116,8 @@ public:
 
     void ChangeAltitude(MapPoint pt, unsigned char altitude);
 
-    /// Checks if the point completely belongs to a player (if false but point itself belongs to player then it is a border)
-    /// if owner is != 0 it checks if the points specific ownership
+    /// Checks if the point completely belongs to a player (if false but point itself belongs to player then it is a
+    /// border) if owner is != 0 it checks if the points specific ownership
     bool IsPlayerTerritory(MapPoint pt, unsigned char owner = 0) const;
 
     /// Return the BQ for the given player at the point (including ownership constraints)

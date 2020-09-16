@@ -32,7 +32,8 @@
 #include "s25util/Log.h"
 #include "s25util/error.h"
 
-dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg) : Desktop(splashImg.release()), isLoading(false), isLoaded(false)
+dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg)
+    : Desktop(splashImg.release()), isLoading(false), isLoaded(false)
 {
     background->setInterpolateTexture(false);
     WINDOWMANAGER.SetCursor(Cursor::None);

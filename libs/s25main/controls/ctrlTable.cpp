@@ -109,10 +109,10 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
     return 0;
 }
 
-ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
-                     Columns columns)
-    : Window(parent, id, pos, elMax(size, Extent(20, 30))), tc(tc), font(font), columns_(std::move(columns)), selection_(-1),
-      sortColumn_(-1), sortDir_(TableSortDir::Ascending)
+ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                     const glFont* font, Columns columns)
+    : Window(parent, id, pos, elMax(size, Extent(20, 30))), tc(tc), font(font), columns_(std::move(columns)),
+      selection_(-1), sortColumn_(-1), sortDir_(TableSortDir::Ascending)
 {
     // We use unsigned short when handling the column count
     if(columns_.size() > std::numeric_limits<unsigned short>::max())
@@ -303,7 +303,8 @@ void ctrlTable::Draw_()
         if(isSelected)
         {
             // durchsichtig schwarze Markierung malen
-            DrawRectangle(Rect(curPos, GetSize().x - 4 - (scroll->IsVisible() ? 24 : 0), font->getHeight()), 0x80000000);
+            DrawRectangle(Rect(curPos, GetSize().x - 4 - (scroll->IsVisible() ? 24 : 0), font->getHeight()),
+                          0x80000000);
         }
 
         DrawPoint colPos = curPos;
@@ -313,7 +314,8 @@ void ctrlTable::Draw_()
                 continue;
 
             const auto* bt = GetCtrl<ctrlButton>(c + 1);
-            font->Draw(colPos, rows_[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW), bt->GetSize().x, "");
+            font->Draw(colPos, rows_[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW),
+                       bt->GetSize().x, "");
             colPos.x += bt->GetSize().x;
         }
         curPos.y += font->getHeight();
@@ -324,8 +326,9 @@ void ctrlTable::Msg_ButtonClick(const unsigned ctrl_id)
 {
     RTTR_Assert(ctrl_id > 0);
     const int column = ctrl_id - 1;
-    SortRows(column, column == GetSortColumn() && GetSortDirection() == TableSortDir::Ascending ? TableSortDir::Descending :
-                                                                                                  TableSortDir::Ascending);
+    SortRows(column, column == GetSortColumn() && GetSortDirection() == TableSortDir::Ascending ?
+                       TableSortDir::Descending :
+                       TableSortDir::Ascending);
     SetSelection(selection_);
 }
 
@@ -438,7 +441,8 @@ void ctrlTable::ResetButtonWidths()
     auto addColumnWidth = [](unsigned cur, const Column& c) { return cur + c.width; };
     const unsigned sumWidth = std::max(1u, std::accumulate(columns_.begin(), columns_.end(), 0u, addColumnWidth));
     const auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
-    const unsigned availableSize = std::max<int>(0, GetSize().x - (scrollbar->IsVisible() ? scrollbar->GetSize().x : 0));
+    const unsigned availableSize =
+      std::max<int>(0, GetSize().x - (scrollbar->IsVisible() ? scrollbar->GetSize().x : 0));
     const double sizeFactor = static_cast<double>(availableSize) / static_cast<double>(sumWidth);
     DrawPoint btPos(0, 0);
     for(unsigned i = 0; i < columns_.size(); ++i)

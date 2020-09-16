@@ -165,8 +165,8 @@ std::ostream& Random<T_PRNG>::RandomEntry::print(std::ostream& os) const
     std::string strippedSrcFile = boost::filesystem::path(src_name).generic_string();
     if(strippedSrcFile.find(rttrSrcBaseName) == 0)
         strippedSrcFile = strippedSrcFile.substr(rttrSrcBaseName.size());
-    return os << counter << ":R(" << max << ")=" << GetValue() << ",z=" << std::hex << std::setw(8) << rngState << std::dec << std::setw(0)
-              << "\t| " << strippedSrcFile << "#" << src_line << "\t| id=" << obj_id;
+    return os << counter << ":R(" << max << ")=" << GetValue() << ",z=" << std::hex << std::setw(8) << rngState
+              << std::dec << std::setw(0) << "\t| " << strippedSrcFile << "#" << src_line << "\t| id=" << obj_id;
 }
 
 // Instantiate the Random class with the used PRNG

@@ -75,7 +75,8 @@ helpers::OptionalEnum<TradeDirection> TradeRoute::RecalcRoute()
 
     path.start = curPos;
     path.route.clear();
-    const auto nextDir = gwg.FindTradePath(path.start, path.goal, player, std::numeric_limits<unsigned>::max(), false, &path.route);
+    const auto nextDir =
+      gwg.FindTradePath(path.start, path.goal, player, std::numeric_limits<unsigned>::max(), false, &path.route);
     curRouteIdx = 0;
     if(nextDir)
         return TradeDirection(rttr::enum_cast(*nextDir));

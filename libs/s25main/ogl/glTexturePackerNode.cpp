@@ -19,7 +19,8 @@
 #include "ogl/glSmartBitmap.h"
 #include "libsiedler2/PixelBufferBGRA.h"
 
-bool glTexturePackerNode::insert(glSmartBitmap* b, libsiedler2::PixelBufferBGRA& buffer, std::vector<glTexturePackerNode*>& todo)
+bool glTexturePackerNode::insert(glSmartBitmap* b, libsiedler2::PixelBufferBGRA& buffer,
+                                 std::vector<glTexturePackerNode*>& todo)
 {
     todo.clear();
 

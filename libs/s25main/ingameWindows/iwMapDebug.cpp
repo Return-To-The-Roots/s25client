@@ -50,7 +50,8 @@ enum
 class iwMapDebug::DebugPrinter : public IDrawNodeCallback
 {
 public:
-    DebugPrinter(const GameWorldBase& gwb) : showCoords(true), showDataIdx(0), playerIdx(0), gw(gwb), font(NormalFont) {}
+    DebugPrinter(const GameWorldBase& gwb) : showCoords(true), showDataIdx(0), playerIdx(0), gw(gwb), font(NormalFont)
+    {}
 
     void onDraw(const MapPoint& pt, const DrawPoint& displayPt) override
     {
@@ -75,7 +76,8 @@ public:
             case 5: data = helpers::toString(node.owner); break;
             case 6:
             {
-                bool isAllowed = TerritoryRegion::IsPointValid(gw.GetSize(), gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
+                bool isAllowed =
+                  TerritoryRegion::IsPointValid(gw.GetSize(), gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
                 coordsColor = dataColor = isAllowed ? 0xFF00FF00 : 0xFFFF0000;
                 if(!showCoords)
                     data = isAllowed ? "y" : "n";
@@ -128,8 +130,8 @@ public:
             {
                 if(bqMap[pt][playerIdx] != gw.GetBQ(pt, playerIdx))
                 {
-                    boost::nowide::cerr << "BQs mismatch at " << pt << " for player " << playerIdx << ": " << bqMap[pt][playerIdx]
-                                        << "!=" << gw.GetBQ(pt, playerIdx) << "\n";
+                    boost::nowide::cerr << "BQs mismatch at " << pt << " for player " << playerIdx << ": "
+                                        << bqMap[pt][playerIdx] << "!=" << gw.GetBQ(pt, playerIdx) << "\n";
                 }
             }
         }
@@ -152,7 +154,8 @@ private:
 static const std::array<unsigned, 6> BQ_CHECK_INTERVALS = {10000, 1000, 500, 250, 100, 50};
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
-    : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 135), _("Map Debug"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 135), _("Map Debug"),
+                   LOADER.GetImageN("resource", 41)),
       gwv(gwv), printer(std::make_unique<DebugPrinter>(gwv.GetWorld()))
 {
     gwv.AddDrawNodeCallback(printer.get());
@@ -160,7 +163,8 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
     ctrlCheck* cbShowCoords =
       AddCheckBox(ID_cbShowCoordinates, DrawPoint(15, 25), Extent(200, 20), TC_GREY, _("Show coordinates"), NormalFont);
     cbShowCoords->SetCheck(true);
-    ctrlComboBox* cbCheckEvents = AddComboBox(ID_cbCheckEventForPlayer, DrawPoint(15, 50), Extent(200, 20), TC_GREY, NormalFont, 100);
+    ctrlComboBox* cbCheckEvents =
+      AddComboBox(ID_cbCheckEventForPlayer, DrawPoint(15, 50), Extent(200, 20), TC_GREY, NormalFont, 100);
     cbCheckEvents->AddString(_("BQ check disabled"));
     for(unsigned ms : BQ_CHECK_INTERVALS)
     {
@@ -180,7 +184,8 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
         data->AddString(_("Owner"));
         data->AddString(_("Restricted area"));
         data->SetSelection(1);
-        ctrlComboBox* players = AddComboBox(ID_cbShowForPlayer, DrawPoint(15, 100), Extent(200, 20), TC_GREY, NormalFont, 100);
+        ctrlComboBox* players =
+          AddComboBox(ID_cbShowForPlayer, DrawPoint(15, 100), Extent(200, 20), TC_GREY, NormalFont, 100);
         for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetNumPlayers(); pIdx++)
         {
             const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);

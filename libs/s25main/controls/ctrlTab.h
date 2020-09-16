@@ -53,9 +53,12 @@ public:
     void Msg_Group_ScrollShow(unsigned group_id, unsigned ctrl_id, bool visible) override;
     void Msg_Group_OptionGroupChange(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void Msg_Group_Timer(unsigned group_id, unsigned ctrl_id) override;
-    void Msg_Group_TableSelectItem(unsigned group_id, unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
-    void Msg_Group_TableRightButton(unsigned group_id, unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
-    void Msg_Group_TableLeftButton(unsigned group_id, unsigned ctrl_id, const boost::optional<unsigned>& selection) override;
+    void Msg_Group_TableSelectItem(unsigned group_id, unsigned ctrl_id,
+                                   const boost::optional<unsigned>& selection) override;
+    void Msg_Group_TableRightButton(unsigned group_id, unsigned ctrl_id,
+                                    const boost::optional<unsigned>& selection) override;
+    void Msg_Group_TableLeftButton(unsigned group_id, unsigned ctrl_id,
+                                   const boost::optional<unsigned>& selection) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
     bool Msg_LeftUp(const MouseCoords& mc) override;

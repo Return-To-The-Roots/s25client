@@ -60,19 +60,26 @@ public:
     /// Calculate the resource value for a given point
     int GetResourceRating(MapPoint pt, AIResource res) const;
     /// Test whether a given point is part of the border or not
-    bool IsBorder(const MapPoint pt) const { return gwb.GetNode(pt).boundary_stones[BorderStonePos::OnPoint] == (playerID_ + 1); }
+    bool IsBorder(const MapPoint pt) const
+    {
+        return gwb.GetNode(pt).boundary_stones[BorderStonePos::OnPoint] == (playerID_ + 1);
+    }
     /// Test whether a given point is part of own territory
     bool IsOwnTerritory(const MapPoint pt) const { return gwb.GetNode(pt).owner == (playerID_ + 1); }
 
     bool IsRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir) != PointRoad::None; }
     /// Test whether there is a object of a certain type on a spot
-    bool IsObjectTypeOnNode(const MapPoint pt, NodalObjectType objectType) const { return gwb.GetNO(pt)->GetType() == objectType; }
+    bool IsObjectTypeOnNode(const MapPoint pt, NodalObjectType objectType) const
+    {
+        return gwb.GetNO(pt)->GetType() == objectType;
+    }
     /// Test whether there is specific building on a spot
     bool IsBuildingOnNode(const MapPoint pt, BuildingType bld) const
     {
         const noBase* no = gwb.GetNO(pt);
         const NodalObjectType noType = no->GetType();
-        return (noType == NOP_BUILDING || noType == NOP_BUILDINGSITE) && (static_cast<const noBaseBuilding*>(no)->GetBuildingType() == bld);
+        return (noType == NOP_BUILDING || noType == NOP_BUILDINGSITE)
+               && (static_cast<const noBaseBuilding*>(no)->GetBuildingType() == bld);
     }
     /// Test whether the ai player can see a point
     bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == VIS_VISIBLE; }
@@ -82,7 +89,8 @@ public:
     BuildingQuality GetBuildingQuality(MapPoint pt) const;
     BuildingQuality GetBuildingQualityAnyOwner(MapPoint pt) const;
     /// Tries to find a free path for a road and return length and the route
-    bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route = nullptr, unsigned* length = nullptr) const;
+    bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route = nullptr,
+                                unsigned* length = nullptr) const;
     /// Tries to find a route from start to target, returning length of that route if it exists
     bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length = nullptr) const;
     /// Checks if it is allowed to build catapults
@@ -93,31 +101,44 @@ public:
     bool IsPlayerAttackable(unsigned char playerID) const { return player_.IsAttackable(playerID); }
     /// player.FindWarehouse
     template<class T_IsWarehouseGood>
-    nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh, bool use_boat_roads,
-                                    unsigned* length = nullptr, const RoadSegment* forbidden = nullptr) const
+    nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh,
+                                    bool use_boat_roads, unsigned* length = nullptr,
+                                    const RoadSegment* forbidden = nullptr) const
     {
         return player_.FindWarehouse(start, isWarehouseGood, to_wh, use_boat_roads, length, forbidden);
     }
     /// Return the headquarter of the player (or null if destroyed)
     const nobHQ* GetHeadquarter() const;
     /// Return reference to the list of building sites
-    const std::list<noBuildingSite*>& GetBuildingSites() const { return player_.GetBuildingRegister().GetBuildingSites(); }
+    const std::list<noBuildingSite*>& GetBuildingSites() const
+    {
+        return player_.GetBuildingRegister().GetBuildingSites();
+    }
     const std::list<noBuildingSite*>& GetPlayerBuildingSites(unsigned playerId) const
     {
         return gwb.GetPlayer(playerId).GetBuildingRegister().GetBuildingSites();
     }
     /// Return a list to buildings of a given type
-    const std::list<nobUsual*>& GetBuildings(const BuildingType type) const { return player_.GetBuildingRegister().GetBuildings(type); }
+    const std::list<nobUsual*>& GetBuildings(const BuildingType type) const
+    {
+        return player_.GetBuildingRegister().GetBuildings(type);
+    }
     const std::list<nobUsual*>& GetPlayerBuildings(const BuildingType type, unsigned playerId) const
     {
         return gwb.GetPlayer(playerId).GetBuildingRegister().GetBuildings(type);
     }
     // Return a list containing all military buildings
-    const std::list<nobMilitary*>& GetMilitaryBuildings() const { return player_.GetBuildingRegister().GetMilitaryBuildings(); }
+    const std::list<nobMilitary*>& GetMilitaryBuildings() const
+    {
+        return player_.GetBuildingRegister().GetMilitaryBuildings();
+    }
     /// Return a list containing all harbors
     const std::list<nobHarborBuilding*>& GetHarbors() const { return player_.GetBuildingRegister().GetHarbors(); }
     /// Return a list containing all storehouses and harbors and the hq
-    const std::list<nobBaseWarehouse*>& GetStorehouses() const { return player_.GetBuildingRegister().GetStorehouses(); }
+    const std::list<nobBaseWarehouse*>& GetStorehouses() const
+    {
+        return player_.GetBuildingRegister().GetStorehouses();
+    }
     /// Return the inventory of the AI player
     const Inventory& GetInventory() const { return player_.GetInventory(); }
     /// Return the number of ships
@@ -126,11 +147,12 @@ public:
     const std::vector<noShip*>& GetShips() const { return player_.GetShips(); }
     /// Return the ID of a given ship
     unsigned GetShipID(const noShip* ship) const { return player_.GetShipID(ship); }
-    /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a given starting
-    /// harbor
-    bool IsExplorationDirectionPossible(MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const;
-    /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a given starting
-    /// harbor
+    /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a
+    /// given starting harbor
+    bool IsExplorationDirectionPossible(MapPoint pt, const nobHarborBuilding* originHarbor,
+                                        ShipDirection direction) const;
+    /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a
+    /// given starting harbor
     bool IsExplorationDirectionPossible(MapPoint pt, unsigned originHarborID, ShipDirection direction) const;
     unsigned GetNation() { return player_.nation; }
 
@@ -143,7 +165,10 @@ public:
     bool FoundColony(const noShip* ship) { return FoundColony(GetShipID(ship)); }
     using GameCommandFactory::FoundColony;
 
-    bool TravelToNextSpot(ShipDirection direction, const noShip* ship) { return TravelToNextSpot(direction, GetShipID(ship)); }
+    bool TravelToNextSpot(ShipDirection direction, const noShip* ship)
+    {
+        return TravelToNextSpot(direction, GetShipID(ship));
+    }
     using GameCommandFactory::TravelToNextSpot;
 
     bool CancelExpedition(const noShip* ship) { return CancelExpedition(GetShipID(ship)); }

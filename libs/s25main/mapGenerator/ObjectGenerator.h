@@ -161,5 +161,6 @@ public:
 template<class T_Predicate>
 inline bool ObjectGenerator::IsTexture(const Map& map, int index, T_Predicate predicate)
 {
-    return predicate(config.GetTerrainByS2Id(map.textureRsu[index])) || predicate(config.GetTerrainByS2Id(map.textureLsd[index]));
+    return predicate(config.GetTerrainByS2Id(map.textureRsu[index]))
+           || predicate(config.GetTerrainByS2Id(map.textureLsd[index]));
 }

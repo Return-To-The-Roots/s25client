@@ -33,7 +33,9 @@
 
 const std::array<DrawPoint, 6> STONE_STARTS = {{{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}}};
 
-nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt()) {}
+nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd)
+    : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt())
+{}
 
 void nofCatapultMan::PossibleTarget::Serialize_PossibleTarget(SerializedGameData& sgd) const
 {

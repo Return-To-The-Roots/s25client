@@ -22,8 +22,10 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
 
-iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame, HelpImage image)
-    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.GetImageN("io", 5), true, false),
+iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame,
+                                       HelpImage image)
+    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, Extent(640, 480), title,
+                   LOADER.GetImageN("io", 5), true, false),
       pauseGame_(pauseGame)
 {
     glArchivItem_Bitmap* img = (image == IM_NONE) ? nullptr : LOADER.GetImageN("io", image);
@@ -37,8 +39,8 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     const Extent buttonSize(100, 22);
 
     const unsigned short maxTextWidth = GetIwSize().x - imgSize.x - textSpace - imgSpace;
-    ctrlMultiline* text =
-      AddMultiline(0, contentOffset + DrawPoint::all(textSpace), Extent(maxTextWidth, GetIwSize().y), TC_GREEN2, NormalFont);
+    ctrlMultiline* text = AddMultiline(0, contentOffset + DrawPoint::all(textSpace),
+                                       Extent(maxTextWidth, GetIwSize().y), TC_GREEN2, NormalFont);
     text->ShowBackground(false);
     text->AddString(content, COLOR_YELLOW, false);
     text->Resize(text->GetContentSize());
@@ -49,11 +51,13 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     newIwSize.y = std::max(newIwSize.y, imgSize.y + minImgSpaceTop) + buttonSpace;
     SetIwSize(newIwSize);
 
-    AddTextButton(1, DrawPoint((GetSize().x - buttonSize.x) / 2, GetRightBottomBoundary().y - buttonSpace - buttonSize.y), buttonSize,
-                  TC_GREY, _("Continue"), NormalFont);
+    AddTextButton(1,
+                  DrawPoint((GetSize().x - buttonSize.x) / 2, GetRightBottomBoundary().y - buttonSpace - buttonSize.y),
+                  buttonSize, TC_GREY, _("Continue"), NormalFont);
     if(img)
     {
-        DrawPoint imgPos = GetRightBottomBoundary() + img->GetOrigin() - DrawPoint(imgSize) - DrawPoint(imgSpaceRight, buttonSpace);
+        DrawPoint imgPos =
+          GetRightBottomBoundary() + img->GetOrigin() - DrawPoint(imgSize) - DrawPoint(imgSpaceRight, buttonSpace);
         AddImage(2, imgPos, img);
     }
 }

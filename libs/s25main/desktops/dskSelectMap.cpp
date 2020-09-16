@@ -163,8 +163,9 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
 
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
     static const std::array<std::string, 9> ids = {{s25::folders::mapsOld, s25::folders::mapsNew, s25::folders::mapsOwn,
-                                                    s25::folders::mapsContinents, s25::folders::mapsCampaign, s25::folders::mapsRttr,
-                                                    s25::folders::mapsOther, s25::folders::mapsSea, s25::folders::mapsPlayed}};
+                                                    s25::folders::mapsContinents, s25::folders::mapsCampaign,
+                                                    s25::folders::mapsRttr, s25::folders::mapsOther,
+                                                    s25::folders::mapsSea, s25::folders::mapsPlayed}};
 
     const size_t numFaultyMapsPrior = brokenMapPaths.size();
     const bfs::path mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
@@ -180,8 +181,8 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
 
     if(brokenMapPaths.size() > numFaultyMapsPrior)
     {
-        std::string errorTxt =
-          helpers::format(_("%1% map(s) could not be loaded. Check the log for details"), brokenMapPaths.size() - numFaultyMapsPrior);
+        std::string errorTxt = helpers::format(_("%1% map(s) could not be loaded. Check the log for details"),
+                                               brokenMapPaths.size() - numFaultyMapsPrior);
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
     }
 
@@ -244,7 +245,8 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::opti
             {
                 const std::string errorTxt = helpers::format(_("Could not load map:\n%1%\n%2%"), path, e.what());
                 LOG.write("%1%\n") % errorTxt;
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+                WINDOWMANAGER.Show(
+                  std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
                 brokenMapPaths.insert(path);
                 table.RemoveRow(*selection);
             }
@@ -402,8 +404,8 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
             std::unique_ptr<ILobbyClient> lobbyClient;
             if(csi.type == ServerType::LOBBY)
                 lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-            WINDOWMANAGER.Switch(
-              std::make_unique<dskHostGame>(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
+            WINDOWMANAGER.Switch(std::make_unique<dskHostGame>(csi.type, GAMECLIENT.GetGameLobby(),
+                                                               GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
             break;
         }
         default: break;
@@ -412,7 +414,8 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 
 void dskSelectMap::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(
+      std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 /**

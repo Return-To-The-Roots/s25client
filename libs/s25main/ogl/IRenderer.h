@@ -43,7 +43,8 @@ public:
     /// @param texture Texture to use
     /// @param illuminated Draw illuminated
     /// @param color Color for the content
-    virtual void Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated, unsigned color) = 0;
+    virtual void Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated,
+                               unsigned color) = 0;
     virtual void DrawRect(const Rect& rect, unsigned color) = 0;
     virtual void DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsigned color) = 0;
 };

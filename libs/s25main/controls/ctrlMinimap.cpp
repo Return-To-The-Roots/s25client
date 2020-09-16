@@ -19,8 +19,8 @@
 #include "Minimap.h"
 #include "gameData/MinimapConsts.h"
 
-ctrlMinimap::ctrlMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding,
-                         const Extent& mapSize)
+ctrlMinimap::ctrlMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size,
+                         const Extent& padding, const Extent& mapSize)
     : Window(parent, id, pos, size), padding(padding), mapSize(mapSize)
 {
     SetMapSize(mapSize);

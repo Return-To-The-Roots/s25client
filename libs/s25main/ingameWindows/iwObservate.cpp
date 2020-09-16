@@ -37,9 +37,12 @@ const Extent MediumWndSize(300, 250);
 const Extent BigWndSize(340, 310);
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
-    : IngameWindow(CGI_OBSERVATION, IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), nullptr, false, false),
-      parentView(gwv), view(new GameWorldView(gwv.GetViewer(), Position(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
-      selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0), followMovableId(0)
+    : IngameWindow(CGI_OBSERVATION, IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), nullptr, false,
+                   false),
+      parentView(gwv),
+      view(new GameWorldView(gwv.GetViewer(), Position(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
+      selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),
+      followMovableId(0)
 {
     view->MoveToMapPt(selectedPt);
     view->SetZoomFactor(1.9f, false);
@@ -93,7 +96,8 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
                     for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
                     {
                         Position curOffset;
-                        const MapPoint curPt = view->GetViewer().GetTerrainRenderer().ConvertCoords(Position(x, y), &curOffset);
+                        const MapPoint curPt =
+                          view->GetViewer().GetTerrainRenderer().ConvertCoords(Position(x, y), &curOffset);
                         DrawPoint curDrawPt = view->GetWorld().GetNodePos(curPt) - view->GetOffset() + curOffset;
 
                         if(view->GetViewer().GetVisibility(curPt) != VIS_VISIBLE)
@@ -127,7 +131,9 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
 
             break;
         }
-        case 3: parentView.MoveToMapPt(MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2)); break;
+        case 3:
+            parentView.MoveToMapPt(MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2));
+            break;
         case 4:
             int diff = GetSize().x;
 
@@ -150,7 +156,8 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
             view->Resize(GetSize() - Extent::all(20));
 
             for(unsigned i = 1; i <= 4; ++i)
-                GetCtrl<ctrlImageButton>(i)->SetPos(DrawPoint(GetCtrl<ctrlImageButton>(i)->GetPos().x - diff, GetSize().y - 50));
+                GetCtrl<ctrlImageButton>(i)->SetPos(
+                  DrawPoint(GetCtrl<ctrlImageButton>(i)->GetPos().x - diff, GetSize().y - 50));
 
             DrawPoint maxPos(VIDEODRIVER.GetRenderSize() - GetSize() - Extent::all(1));
             DrawPoint newPos = elMin(maxPos, GetPos());

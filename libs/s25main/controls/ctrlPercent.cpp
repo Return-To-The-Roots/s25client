@@ -20,8 +20,8 @@
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
 
-ctrlPercent::ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
-                         const glFont* font, const unsigned short* percentage)
+ctrlPercent::ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                         unsigned text_color, const glFont* font, const unsigned short* percentage)
     : Window(parent, id, pos, size), tc(tc), text_color(text_color), font(font), percentage_(percentage)
 {}
 

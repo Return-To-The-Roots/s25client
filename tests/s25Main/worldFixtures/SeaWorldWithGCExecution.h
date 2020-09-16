@@ -21,7 +21,8 @@
 #include "GCExecutor.h"
 #include "worldFixtures/WorldFixture.h"
 
-template<unsigned T_numPlayers = 3, unsigned T_width = SeaWorldDefault::width, unsigned T_height = SeaWorldDefault::height>
+template<unsigned T_numPlayers = 3, unsigned T_width = SeaWorldDefault::width,
+         unsigned T_height = SeaWorldDefault::height>
 class SeaWorldWithGCExecution : public WorldFixture<CreateSeaWorld, T_numPlayers, T_width, T_height>, public GCExecutor
 {
 public:

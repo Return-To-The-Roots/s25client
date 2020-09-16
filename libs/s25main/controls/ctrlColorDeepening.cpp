@@ -17,7 +17,8 @@
 
 #include "ctrlColorDeepening.h"
 
-ctrlColorDeepening::ctrlColorDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc, unsigned fillColor)
+ctrlColorDeepening::ctrlColorDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc,
+                                       unsigned fillColor)
     : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseColor(fillColor)
 {}
 

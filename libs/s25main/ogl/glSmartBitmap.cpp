@@ -148,8 +148,8 @@ void glSmartBitmap::drawTo(libsiedler2::PixelBufferBGRA& buffer, const Extent& b
             // No player bitmap -> Just (over)write the data
             RTTR_Assert(bmpItem.type == TYPE_ARCHIVITEM_BITMAP);
             dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(bmpItem.bmp)
-              ->print(buffer, p_5, offset.x + bufOffset.x, offset.y + bufOffset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x,
-                      bmpItem.size.y);
+              ->print(buffer, p_5, offset.x + bufOffset.x, offset.y + bufOffset.y, bmpItem.pos.x, bmpItem.pos.y,
+                      bmpItem.size.x, bmpItem.size.y);
         } else
         {
             // There is a player bitmap -> First write to temp buffer
@@ -161,7 +161,8 @@ void glSmartBitmap::drawTo(libsiedler2::PixelBufferBGRA& buffer, const Extent& b
             } else
             {
                 dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(bmpItem.bmp)
-                  ->print(tmp, p_colors, 128, offset.x, offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y, false);
+                  ->print(tmp, p_colors, 128, offset.x, offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x,
+                          bmpItem.size.y, false);
             }
             // Now copy temp buffer to real buffer, but we need to reset all player colors that would be overwritten
             // so it looks like, the first bitmap is fully drawn (including player colors) and then the next
@@ -189,8 +190,8 @@ void glSmartBitmap::drawTo(libsiedler2::PixelBufferBGRA& buffer, const Extent& b
             if(bmpItem.type == TYPE_ARCHIVITEM_BITMAP_PLAYER)
             {
                 dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(bmpItem.bmp)
-                  ->print(buffer, p_colors, 128, offset.x + size_.x + bufOffset.x, offset.y + bufOffset.y, bmpItem.pos.x, bmpItem.pos.y,
-                          bmpItem.size.x, bmpItem.size.y, true);
+                  ->print(buffer, p_colors, 128, offset.x + size_.x + bufOffset.x, offset.y + bufOffset.y,
+                          bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y, true);
             }
         }
     }

@@ -27,7 +27,8 @@
 #include "gameData/const_gui_ids.h"
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
-    : IngameWindow(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300), _("Building sequence"), LOADER.GetImageN("io", 5)),
+    : IngameWindow(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300), _("Building sequence"),
+                   LOADER.GetImageN("io", 5)),
       gwv(gwv), settings_changed(false)
 {
     ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TC_GREY, NormalFont);
@@ -86,7 +87,8 @@ void iwBuildOrder::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        GAMECLIENT.ChangeBuildOrder(GetCtrl<ctrlComboBox>(6)->GetSelection() != 0u, GAMECLIENT.visual_settings.build_order);
+        GAMECLIENT.ChangeBuildOrder(GetCtrl<ctrlComboBox>(6)->GetSelection() != 0u,
+                                    GAMECLIENT.visual_settings.build_order);
         settings_changed = false;
     }
 }
@@ -140,7 +142,8 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         {
             while(selection > 0)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[selection - 1], GAMECLIENT.visual_settings.build_order[selection]);
+                std::swap(GAMECLIENT.visual_settings.build_order[selection - 1],
+                          GAMECLIENT.visual_settings.build_order[selection]);
                 list->Swap(selection - 1, selection);
                 --selection;
             }
@@ -151,7 +154,8 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(selection > 0)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[selection - 1], GAMECLIENT.visual_settings.build_order[selection]);
+                std::swap(GAMECLIENT.visual_settings.build_order[selection - 1],
+                          GAMECLIENT.visual_settings.build_order[selection]);
                 list->Swap(selection - 1, selection);
             }
             settings_changed = true;
@@ -161,7 +165,8 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(selection < numOptions - 1u)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[selection + 1], GAMECLIENT.visual_settings.build_order[selection]);
+                std::swap(GAMECLIENT.visual_settings.build_order[selection + 1],
+                          GAMECLIENT.visual_settings.build_order[selection]);
                 list->Swap(selection + 1, selection);
             }
             settings_changed = true;
@@ -171,7 +176,8 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
         {
             while(selection < numOptions - 1u)
             {
-                std::swap(GAMECLIENT.visual_settings.build_order[selection + 1], GAMECLIENT.visual_settings.build_order[selection]);
+                std::swap(GAMECLIENT.visual_settings.build_order[selection + 1],
+                          GAMECLIENT.visual_settings.build_order[selection]);
                 list->Swap(selection + 1, selection);
                 ++selection;
             }

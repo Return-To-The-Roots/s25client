@@ -395,7 +395,9 @@ protected:
     BaseAttack(const Type gst, const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers)
         : Coords(gst, pt), soldiers_count(soldiers_count), strong_soldiers(strong_soldiers)
     {}
-    BaseAttack(const Type gst, Serializer& ser) : Coords(gst, ser), soldiers_count(ser.PopUnsignedInt()), strong_soldiers(ser.PopBool()) {}
+    BaseAttack(const Type gst, Serializer& ser)
+        : Coords(gst, ser), soldiers_count(ser.PopUnsignedInt()), strong_soldiers(ser.PopBool())
+    {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -413,7 +415,8 @@ class Attack : public BaseAttack
     GC_FRIEND_DECL;
 
 protected:
-    Attack(const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers) : BaseAttack(ATTACK, pt, soldiers_count, strong_soldiers)
+    Attack(const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers)
+        : BaseAttack(ATTACK, pt, soldiers_count, strong_soldiers)
     {}
     Attack(Serializer& ser) : BaseAttack(ATTACK, ser) {}
 
@@ -562,8 +565,12 @@ class ChangeReserve : public Coords
     const uint32_t count;
 
 protected:
-    ChangeReserve(const MapPoint pt, const uint8_t rank, const uint32_t count) : Coords(CHANGE_RESERVE, pt), rank(rank), count(count) {}
-    ChangeReserve(Serializer& ser) : Coords(CHANGE_RESERVE, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt()) {}
+    ChangeReserve(const MapPoint pt, const uint8_t rank, const uint32_t count)
+        : Coords(CHANGE_RESERVE, pt), rank(rank), count(count)
+    {}
+    ChangeReserve(Serializer& ser)
+        : Coords(CHANGE_RESERVE, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
+    {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -664,7 +671,8 @@ protected:
         : GameCommand(ACCEPT_PACT), id(id), pt(pt), fromPlayer(fromPlayer)
     {}
     AcceptPact(Serializer& ser)
-        : GameCommand(ACCEPT_PACT), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), fromPlayer(ser.PopUnsignedChar())
+        : GameCommand(ACCEPT_PACT), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())),
+          fromPlayer(ser.PopUnsignedChar())
     {}
 
 public:
@@ -689,8 +697,12 @@ class CancelPact : public GameCommand
     const uint8_t otherPlayer;
 
 protected:
-    CancelPact(const PactType pt, const uint8_t otherPlayer) : GameCommand(CANCEL_PACT), pt(pt), otherPlayer(otherPlayer) {}
-    CancelPact(Serializer& ser) : GameCommand(CANCEL_PACT), pt(PactType(ser.PopUnsignedChar())), otherPlayer(ser.PopUnsignedChar()) {}
+    CancelPact(const PactType pt, const uint8_t otherPlayer)
+        : GameCommand(CANCEL_PACT), pt(pt), otherPlayer(otherPlayer)
+    {}
+    CancelPact(Serializer& ser)
+        : GameCommand(CANCEL_PACT), pt(PactType(ser.PopUnsignedChar())), otherPlayer(ser.PopUnsignedChar())
+    {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -748,8 +760,12 @@ class StartStopExplorationExpedition : public Coords
     const bool start;
 
 protected:
-    StartStopExplorationExpedition(const MapPoint pt, bool start) : Coords(START_STOP_EXPLORATION_EXPEDITION, pt), start(start) {}
-    StartStopExplorationExpedition(Serializer& ser) : Coords(START_STOP_EXPLORATION_EXPEDITION, ser), start(ser.PopBool()) {}
+    StartStopExplorationExpedition(const MapPoint pt, bool start)
+        : Coords(START_STOP_EXPLORATION_EXPEDITION, pt), start(start)
+    {}
+    StartStopExplorationExpedition(Serializer& ser)
+        : Coords(START_STOP_EXPLORATION_EXPEDITION, ser), start(ser.PopBool())
+    {}
 
 public:
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -779,7 +795,9 @@ protected:
         NORTHWEST
     };
 
-    ExpeditionCommand(const Action action, const uint32_t ship_id) : GameCommand(EXPEDITION_COMMAND), action(action), ship_id(ship_id) {}
+    ExpeditionCommand(const Action action, const uint32_t ship_id)
+        : GameCommand(EXPEDITION_COMMAND), action(action), ship_id(ship_id)
+    {}
 
     ExpeditionCommand(Serializer& ser)
         : GameCommand(EXPEDITION_COMMAND), action(Action(ser.PopUnsignedChar())), ship_id(ser.PopUnsignedInt())

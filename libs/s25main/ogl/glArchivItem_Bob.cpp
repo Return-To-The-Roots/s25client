@@ -22,8 +22,8 @@
 /**
  *  Zeichnet einen Animationsstep.
  */
-void glArchivItem_Bob::Draw(unsigned item, libsiedler2::ImgDir direction, bool fat, unsigned animationstep, DrawPoint drawPt,
-                            unsigned color)
+void glArchivItem_Bob::Draw(unsigned item, libsiedler2::ImgDir direction, bool fat, unsigned animationstep,
+                            DrawPoint drawPt, unsigned color)
 {
     auto* body = dynamic_cast<glArchivItem_Bitmap_Player*>(getBody(fat, direction, animationstep));
     if(body)

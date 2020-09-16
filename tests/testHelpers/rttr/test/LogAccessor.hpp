@@ -38,7 +38,8 @@ namespace rttr { namespace test {
             flush();
         }
 
-        /// Clear the last line so it won't be written and reset duplicates avoidance as we may want the same entry again
+        /// Clear the last line so it won't be written and reset duplicates avoidance as we may want the same entry
+        /// again
         void clearLog()
         {
             logWriter->reset();
@@ -61,14 +62,15 @@ namespace rttr { namespace test {
 }} // namespace rttr::test
 
 /// Require that the log contains "content" in the first line. If allowEmpty is true, then an empty log is acceptable
-#define RTTR_REQUIRE_LOG_CONTAINS(content, allowEmpty)                                                                             \
-    do                                                                                                                             \
-    {                                                                                                                              \
-        const std::string log = logAcc.getLog();                                                                                   \
-        BOOST_REQUIRE_MESSAGE((allowEmpty) || !log.empty(), "Log does not contain: " << (content));                                \
-        BOOST_REQUIRE_MESSAGE(log.empty() || log.find(content) < log.find('\n'), "Unexpected log: " << log << "\n"                 \
-                                                                                                    << "Expected: " << (content)); \
-                                                                                                                                   \
+#define RTTR_REQUIRE_LOG_CONTAINS(content, allowEmpty)                                              \
+    do                                                                                              \
+    {                                                                                               \
+        const std::string log = logAcc.getLog();                                                    \
+        BOOST_REQUIRE_MESSAGE((allowEmpty) || !log.empty(), "Log does not contain: " << (content)); \
+        BOOST_REQUIRE_MESSAGE(log.empty() || log.find(content) < log.find('\n'),                    \
+                              "Unexpected log: " << log << "\n"                                     \
+                                                 << "Expected: " << (content));                     \
+                                                                                                    \
     } while(false)
 
 #define RTTR_REQUIRE_ASSERT(stmt)                              \

@@ -25,7 +25,9 @@ struct Connection
 {
     Socket so;
     MessageQueue sendQueue, recvQueue;
-    Connection(CreateMsgFunction createMsg, Socket socket = Socket()) : so(std::move(socket)), sendQueue(createMsg), recvQueue(createMsg) {}
+    Connection(CreateMsgFunction createMsg, Socket socket = Socket())
+        : so(std::move(socket)), sendQueue(createMsg), recvQueue(createMsg)
+    {}
 };
 
 class TestServer

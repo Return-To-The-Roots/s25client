@@ -75,16 +75,17 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     // Abreißen
     AddImageButton(5, DrawPoint(50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", 23), _("Demolish house"));
     // Produktivität einstellen (196,197) (bei Spähturm ausblenden)
-    Window* enable_productivity =
-      AddImageButton(6, DrawPoint(90, 147), Extent(34, 32), TC_GREY,
-                     LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)), _("Production on/off"));
+    Window* enable_productivity = AddImageButton(
+      6, DrawPoint(90, 147), Extent(34, 32), TC_GREY,
+      LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)), _("Production on/off"));
     if(building->GetBuildingType() == BLD_LOOKOUTTOWER)
         enable_productivity->SetVisible(false);
     // Bei Bootsbauer Button zum Umwählen von Booten und Schiffen
     if(building->GetBuildingType() == BLD_SHIPYARD)
     {
         // Jenachdem Boot oder Schiff anzeigen
-        unsigned io_dat_id = (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::BOATS) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
+        unsigned io_dat_id =
+          (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::BOATS) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
         AddImageButton(11, DrawPoint(130, 147), Extent(43, 32), TC_GREY, LOADER.GetImageN("io", io_dat_id));
     }
 
@@ -92,18 +93,20 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
     // Gebäudebild und dessen Schatten
-    AddImage(8, DrawPoint(117, 114), LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
+    AddImage(8, DrawPoint(117, 114),
+             LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 
     // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
-    Window* productivity =
-      AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TC_GREY, 0xFFFFFF00, SmallFont, building->GetProductivityPointer());
+    Window* productivity = AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TC_GREY, 0xFFFFFF00, SmallFont,
+                                      building->GetProductivityPointer());
     if(building->GetBuildingType() == BLD_CATAPULT || building->GetBuildingType() == BLD_LOOKOUTTOWER)
         productivity->SetVisible(false);
 
     AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, FontStyle::CENTER, NormalFont);
 
     // "Go to next" (building of same type)
-    AddImageButton(12, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));
+    AddImageButton(12, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11),
+                   _("Go to next building of same type"));
 }
 
 void iwBuilding::Msg_PaintBefore()
@@ -172,7 +175,8 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
+            WINDOWMANAGER.ReplaceWindow(
+              std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
         }
         break;
         case 5: // Gebäude abbrennen
@@ -212,7 +216,8 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer
         {
-            if(gcFactory.SetShipYardMode(building->GetPos(), static_cast<const nobShipYard*>(building)->GetMode() == nobShipYard::BOATS))
+            if(gcFactory.SetShipYardMode(building->GetPos(),
+                                         static_cast<const nobShipYard*>(building)->GetMode() == nobShipYard::BOATS))
             {
                 // Auch optisch den Button umstellen
                 auto* button = GetCtrl<ctrlImageButton>(11);
@@ -225,13 +230,17 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 12: // go to next of same type
         {
-            const std::list<nobUsual*>& buildings =
-              gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetBuildings(building->GetBuildingType());
+            const std::list<nobUsual*>& buildings = gwv.GetWorld()
+                                                      .GetPlayer(building->GetPlayer())
+                                                      .GetBuildingRegister()
+                                                      .GetBuildings(building->GetBuildingType());
             // go through list once we get to current building -> open window for the next one and go to next location
-            auto it = helpers::find_if(buildings, [bldPos = building->GetPos()](const auto* it) { return it->GetPos() == bldPos; });
+            auto it = helpers::find_if(
+              buildings, [bldPos = building->GetPos()](const auto* it) { return it->GetPos() == bldPos; });
             if(it != buildings.end()) // got to current building in the list?
             {
-                // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                // close old window, open new window (todo: only open if it isnt already open), move to location of next
+                // building
                 Close();
                 ++it;
                 if(it == buildings.end()) // was last entry in list -> goto first

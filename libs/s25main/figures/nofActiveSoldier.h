@@ -40,7 +40,8 @@ public:
         STATE_FIGHTING,        // Fighting
 
         STATE_ATTACKING_WALKINGTOGOAL,         // Attacker is walking to his attacked destination
-        STATE_ATTACKING_WAITINGAROUNDBUILDING, // Attacker is waiting around the building for his fight at the flag against the defender(s)
+        STATE_ATTACKING_WAITINGAROUNDBUILDING, // Attacker is waiting around the building for his fight at the flag
+                                               // against the defender(s)
         STATE_ATTACKING_WAITINGFORDEFENDER,    // Waiting at the flag until the defender emerges from the building
         STATE_ATTACKING_CAPTURINGFIRST,        // Captures the hostile building as first person
         STATE_ATTACKING_CAPTURINGNEXT,         // The next soldiers capture the building in this state
@@ -104,7 +105,8 @@ private:
     unsigned GetVisualRange() const override;
 
 public:
-    nofActiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank, SoldierState init_state);
+    nofActiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank,
+                     SoldierState init_state);
     nofActiveSoldier(const nofSoldier& other, SoldierState init_state);
     nofActiveSoldier(SerializedGameData& sgd, unsigned obj_id);
 
@@ -149,7 +151,8 @@ public:
 
     /// Gets the current state
     SoldierState GetState() const { return state; }
-    /// Sets the home (building) to nullptr e.g. after the soldier was removed from the homes list but it was not destroyed
+    /// Sets the home (building) to nullptr e.g. after the soldier was removed from the homes list but it was not
+    /// destroyed
     void ResetHome() { building = nullptr; }
     void FightVsDefenderStarted() { state = STATE_ATTACKING_FIGHTINGVSDEFENDER; }
 

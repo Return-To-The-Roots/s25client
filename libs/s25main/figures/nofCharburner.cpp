@@ -167,7 +167,8 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
     }
 
     // Terrain untersuchen (need walkable land)
-    if(gwg->IsOfTerrain(pt, [](const auto& desc) { return desc.Is(ETerrain::Walkable) && desc.kind == TerrainKind::LAND; }))
+    if(gwg->IsOfTerrain(pt,
+                        [](const auto& desc) { return desc.Is(ETerrain::Walkable) && desc.kind == TerrainKind::LAND; }))
         return PQ_CLASS3;
     else
         return PQ_NOTPOSSIBLE;

@@ -71,11 +71,13 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
             auto t = TerrainType(i);
             const TerrainDesc& desc = worldDesc.terrain.get(worldDesc.terrain.getIndex(tNames[i]));
             BOOST_REQUIRE_EQUAL(desc.s2Id, TerrainData::GetTextureIdentifier(t));
-            EdgeType newEdge = !desc.edgeType ? ET_NONE : EdgeType((helpers::indexOf(eNames, worldDesc.get(desc.edgeType).name) + 1));
+            EdgeType newEdge =
+              !desc.edgeType ? ET_NONE : EdgeType((helpers::indexOf(eNames, worldDesc.get(desc.edgeType).name) + 1));
             BOOST_REQUIRE_EQUAL(newEdge, TerrainData::GetEdgeType(lt, t));
             BOOST_REQUIRE_EQUAL(desc.GetBQ(), TerrainData::GetBuildingQuality(t));
-            BOOST_REQUIRE_EQUAL(!desc.Is(ETerrain::Walkable), TerrainData::GetBuildingQuality(t) == TerrainBQ::NOTHING
-                                                                || TerrainData::GetBuildingQuality(t) == TerrainBQ::DANGER);
+            BOOST_REQUIRE_EQUAL(!desc.Is(ETerrain::Walkable),
+                                TerrainData::GetBuildingQuality(t) == TerrainBQ::NOTHING
+                                  || TerrainData::GetBuildingQuality(t) == TerrainBQ::DANGER);
             BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Mineable), TerrainData::GetBuildingQuality(t) == TerrainBQ::MINE);
             BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Buildable), TerrainData::GetBuildingQuality(t) == TerrainBQ::CASTLE);
             BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Shippable), TerrainData::IsUsableByShip(t));

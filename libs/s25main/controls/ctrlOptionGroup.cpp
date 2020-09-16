@@ -17,7 +17,9 @@
 
 #include "ctrlOptionGroup.h"
 
-ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, int select_type) : ctrlGroup(parent, id), select_type(select_type) {}
+ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, int select_type)
+    : ctrlGroup(parent, id), select_type(select_type)
+{}
 
 /**
  *  wählt einen Button aus der Gruppe aus.

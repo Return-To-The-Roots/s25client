@@ -48,7 +48,8 @@ void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const
     sgd.PushSignedChar(opendoor);
 }
 
-noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id), opendoor(sgd.PopSignedChar())
+noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id)
+    : noBaseBuilding(sgd, obj_id), opendoor(sgd.PopSignedChar())
 {
     if(opendoor < 0)
     {

@@ -27,7 +27,8 @@ class DiplomacyPostQuestion : public PostMsg
 {
 public:
     /// Create contract
-    DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer, int duration);
+    DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer,
+                          int duration);
     /// Cancel contract
     DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer);
 

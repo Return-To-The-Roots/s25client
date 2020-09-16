@@ -42,7 +42,8 @@
 #include "s25util/Log.h"
 #include "s25util/colors.h"
 
-const RoadSegment noFigure::emulated_wanderroad(RoadType::Normal, nullptr, nullptr, std::vector<Direction>(0, Direction::EAST));
+const RoadSegment noFigure::emulated_wanderroad(RoadType::Normal, nullptr, nullptr,
+                                                std::vector<Direction>(0, Direction::EAST));
 /// Welche Strecke soll minimal und maximal zurückgelegt werden beim Rumirren, bevor eine Flagge gesucht wird
 const unsigned short WANDER_WAY_MIN = 20;
 const unsigned short WANDER_WAY_MAX = 40;
@@ -55,21 +56,23 @@ const unsigned short WANDER_TRYINGS_SOLDIERS = 6;
 const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
-    : noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false), on_ship(false),
-      goal_(goal), waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
-      burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
+    : noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false),
+      on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0), wander_tryings(0),
+      flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {
     // Haben wir ein Ziel?
     // Gehen wir in ein Lagerhaus? Dann dürfen wir da nicht unsere Arbeit ausführen, sondern
     // gehen quasi nach Hause von Anfang an aus
-    if(goal && (goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_STOREHOUSE || goal->GetGOT() == GOT_NOB_HQ))
+    if(goal
+       && (goal->GetGOT() == GOT_NOB_HARBORBUILDING || goal->GetGOT() == GOT_NOB_STOREHOUSE
+           || goal->GetGOT() == GOT_NOB_HQ))
         fs = FS_GOHOME;
 }
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
-    : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false), on_ship(false),
-      goal_(nullptr), waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
-      burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
+    : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false),
+      on_ship(false), goal_(nullptr), waiting_for_free_node(false), wander_way(0), wander_tryings(0),
+      flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {}
 
 void noFigure::Destroy_noFigure()
@@ -110,8 +113,8 @@ void noFigure::Serialize_noFigure(SerializedGameData& sgd) const
 
 noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), fs(sgd.Pop<FigureState>()), job_(sgd.Pop<Job>()), player(sgd.PopUnsignedChar()),
-      cur_rs(sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()), on_ship(sgd.PopBool()),
-      last_id(0xFFFFFFFF)
+      cur_rs(sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()),
+      on_ship(sgd.PopBool()), last_id(0xFFFFFFFF)
 {
     if(fs == FS_GOTOGOAL || fs == FS_GOHOME)
         goal_ = sgd.PopObject<noRoadNode>(GOT_UNKNOWN);
@@ -151,10 +154,13 @@ void noFigure::ActAtFirst()
     {
         default: break;
         case FS_GOTOGOAL: WalkToGoal(); break;
-        case FS_JOB: StartWalking(Direction::SOUTHEAST); break; // erstmal rauslaufen, darum kümmern sich dann die abgeleiteten Klassen
+        case FS_JOB:
+            StartWalking(Direction::SOUTHEAST);
+            break; // erstmal rauslaufen, darum kümmern sich dann die abgeleiteten Klassen
         case FS_GOHOME:
         {
-            // Wenn ich gleich wieder nach Hause geschickt wurde und aus einem Lagerhaus rauskomme, gar nicht erst rausgehen!
+            // Wenn ich gleich wieder nach Hause geschickt wurde und aus einem Lagerhaus rauskomme, gar nicht erst
+            // rausgehen!
             if(goal_->GetPos() == pos)
             {
                 gwg->RemoveFigure(pos, this);
@@ -169,7 +175,9 @@ void noFigure::ActAtFirst()
                 WalkToGoal();
         }
         break;
-        case FS_WANDER: StartWalking(Direction::SOUTHEAST); break; // erstmal rauslaufen, darum kümmern sich dann die Wander-Funktionen
+        case FS_WANDER:
+            StartWalking(Direction::SOUTHEAST);
+            break; // erstmal rauslaufen, darum kümmern sich dann die Wander-Funktionen
     }
 }
 
@@ -216,7 +224,8 @@ void noFigure::StartWalking(const Direction dir)
     RTTR_Assert(!(GetGOT() == GOT_NOF_PASSIVESOLDIER && fs == FS_JOB));
 
     // Gehen wir in ein Gebäude?
-    if(dir == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
+    if(dir == Direction::NORTHWEST
+       && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->OpenDoor(); // Dann die Tür aufmachen
     // oder aus einem raus?
     else if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
@@ -318,8 +327,9 @@ void noFigure::WalkToGoal()
             MapPoint next_harbor;
             // Neuen Weg berechnen
             auto* const curRoadNode = gwg->GetSpecObj<noRoadNode>(pos);
-            RoadPathDirection route =
-              curRoadNode ? gwg->FindHumanPathOnRoads(*curRoadNode, *goal_, nullptr, &next_harbor) : RoadPathDirection::None;
+            RoadPathDirection route = curRoadNode ?
+                                        gwg->FindHumanPathOnRoads(*curRoadNode, *goal_, nullptr, &next_harbor) :
+                                        RoadPathDirection::None;
             // Kein Weg zum Ziel... nächstes Lagerhaus suchen
             if(route == RoadPathDirection::None)
             {
@@ -442,14 +452,15 @@ void noFigure::GoHome(noRoadNode* goal)
         if(cur_rs == nullptr)
         {
             RTTR_Assert(gwg->GetNO(pos)->GetGOT() == GOT_NOB_HQ || //-V807
-                        gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE || gwg->GetNO(pos)->GetGOT() == GOT_NOB_HARBORBUILDING);
+                        gwg->GetNO(pos)->GetGOT() == GOT_NOB_STOREHOUSE
+                        || gwg->GetNO(pos)->GetGOT() == GOT_NOB_HARBORBUILDING);
 
             goal_ = nullptr;
             gwg->GetSpecObj<nobBaseWarehouse>(pos)->CancelFigure(this);
             return;
         } else
-            this->goal_ =
-              gwg->GetPlayer(player).FindWarehouse((rs_dir) ? *cur_rs->GetF1() : *cur_rs->GetF2(), FW::AcceptsFigure(job_), true, false);
+            this->goal_ = gwg->GetPlayer(player).FindWarehouse((rs_dir) ? *cur_rs->GetF1() : *cur_rs->GetF2(),
+                                                               FW::AcceptsFigure(job_), true, false);
     } else
         this->goal_ = goal;
 
@@ -538,7 +549,8 @@ void noFigure::Wander()
         const unsigned short wander_radius = IsSoldier() ? WANDER_RADIUS_SOLDIERS : WANDER_RADIUS;
 
         // Flaggen sammeln und dann zufällig eine auswählen
-        const std::vector<noFlag*> flags = gwg->GetPointsInRadius<-1>(pos, wander_radius, Point2Flag(*gwg), IsValidFlag(player));
+        const std::vector<noFlag*> flags =
+          gwg->GetPointsInRadius<-1>(pos, wander_radius, Point2Flag(*gwg), IsValidFlag(player));
 
         unsigned best_way = 0xFFFFFFFF;
         noFlag const* best_flag = nullptr;
@@ -578,8 +590,8 @@ void noFigure::Wander()
                     // --> der ganzen Gruppe Bescheid sagen, damit die nicht auch alle sinnlos einen Weg zu
                     // dieser Flagge suchen
 
-                    // TODO: Actually it is possible! E.g. between us and the flag is a river, so we won't find a path within the radius
-                    // but others (on the other side) could --> Remove ImpossibleForBWU?
+                    // TODO: Actually it is possible! E.g. between us and the flag is a river, so we won't find a path
+                    // within the radius but others (on the other side) could --> Remove ImpossibleForBWU?
                     flag->ImpossibleForBWU(burned_wh_id);
                 }
             }
@@ -662,8 +674,8 @@ void noFigure::WanderToFlag()
     {
         // Gibts noch nen Weg zu einem Lagerhaus?
         RTTR_Assert(gwg->GetSpecObj<noRoadNode>(pos));
-        if(nobBaseWarehouse* wh =
-             gwg->GetPlayer(player).FindWarehouse(*gwg->GetSpecObj<noRoadNode>(pos), FW::AcceptsFigure(job_), true, false))
+        if(nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*gwg->GetSpecObj<noRoadNode>(pos),
+                                                                       FW::AcceptsFigure(job_), true, false))
         {
             // ja, dann können wir ja hingehen
             goal_ = wh;
@@ -778,7 +790,8 @@ void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, Job job)
 {
     const unsigned ani_step = CalcWalkAnimationFrame();
     const GamePlayer& owner = gwg->GetPlayer(player);
-    LOADER.getBobSprite(owner.nation, job, GetCurMoveDir(), ani_step).drawForPlayer(InterpolateWalkDrawPos(drawPt), owner.color);
+    LOADER.getBobSprite(owner.nation, job, GetCurMoveDir(), ani_step)
+      .drawForPlayer(InterpolateWalkDrawPos(drawPt), owner.color);
 }
 
 void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat)
@@ -866,7 +879,8 @@ void noFigure::NodeFreed(const MapPoint pt)
         return;
 
     // Gehen wir in ein Gebäude? Dann wieder ausgleichen, weil wir die Türen sonst doppelt aufmachen!
-    if(GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == Direction::NORTHWEST
+       && gwg->GetNO(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->CloseDoor();
     // oder aus einem raus?
     if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
@@ -897,8 +911,9 @@ void noFigure::Abrogate()
         {
             if(!on_ship) // no goal but going home - should not happen
             {
-                LOG.write("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i pos %u,%u \n") % player
-                  % fs % pos.x % pos.y;
+                LOG.write("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i "
+                          "pos %u,%u \n")
+                  % player % fs % pos.x % pos.y;
                 // RTTR_Assert(false);
             }
         }

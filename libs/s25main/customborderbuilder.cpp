@@ -31,11 +31,12 @@ Die Methode buildBorder() erstellt einen Rahmen zu gegebener Größe.
 width, height:  die gewünschte Größe
 borderInfo:     Zeiger auf ein initialisiertes, leeres Archiv
 
-In borderInfo werden vier Bilder als glArchivItem_Bitmap_RLE an Index 0 bis 3 geschrieben, das sind die Rahmen oben, unten, links und
-rechts, wobei die Ecken zu oben/unten gehören. Sie müssen also an den Stellen oben:   0        0 unten:  0        height-12 links:  0
-12 rechts: widht-12 12 zu sehen sein.
+In borderInfo werden vier Bilder als glArchivItem_Bitmap_RLE an Index 0 bis 3 geschrieben, das sind die Rahmen oben,
+unten, links und rechts, wobei die Ecken zu oben/unten gehören. Sie müssen also an den Stellen oben:   0        0 unten:
+0        height-12 links:  0 12 rechts: widht-12 12 zu sehen sein.
 
-Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette auf ein ArchivItem_Palette* gesetzt werden.
+Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette auf ein ArchivItem_Palette* gesetzt
+werden.
  */
 
 #include "customborderbuilder.h"
@@ -64,9 +65,9 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::Archiv& archiveInfo)
         return 1; // nicht RESOURCE.DAT übergeben
 
     // Musterstücke einladen
-    /* Evtl. könnte man hier nur den größten Rahmen laden und alle Teile aus diesem rauskopieren, um das Ganze etwas schneller zu machen.
-       Allerdings sind die einander entsprechenden Stücke teilweise nicht in jeder Auflösung tatsächlich gleich, sodass man das für jedes
-       vorher prüfen müsste.*/
+    /* Evtl. könnte man hier nur den größten Rahmen laden und alle Teile aus diesem rauskopieren, um das Ganze etwas
+       schneller zu machen. Allerdings sind die einander entsprechenden Stücke teilweise nicht in jeder Auflösung
+       tatsächlich gleich, sodass man das für jedes vorher prüfen müsste.*/
     BdrBitmap tempBMP(Extent(1280, 1024));
     // palette = dynamic_cast<glArchivItem_Bitmap_RLE*>(archiveInfo[4])->getPalette();
     // 640x480
@@ -182,42 +183,49 @@ int CustomBorderBuilder::buildBorder(const Extent& size, std::array<glArchivItem
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesTop[i].size.x;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersTop, customEdges[0]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersTop,
+                              customEdges[0]);
         // untere Kante links
         emptyFromPixel.x = 202;
         toFillPixel = size.x / 2 - 320;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesBottom[i].size.x;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdges[1]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom,
+                              customEdges[1]);
         // untere Kante rechts
         emptyFromPixel.x = size.x / 2 + 188;
-        toFillPixel = size.x - size.x / 2 - 320; // hier steht w - w/2 statt w/2, um den Rundungsfehler bei ungeraden w zu kompensieren
+        toFillPixel = size.x - size.x / 2
+                      - 320; // hier steht w - w/2 statt w/2, um den Rundungsfehler bei ungeraden w zu kompensieren
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesBottom[i].size.x;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdges[1]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom,
+                              customEdges[1]);
         // linke Kante
         emptyFromPixel = ImgPos(0, 352);
         toFillPixel = size.y - 480;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesLeft[i].size.y;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesLeft, fillersLeft, customEdges[2]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesLeft, fillersLeft,
+                              customEdges[2]);
         // rechte Kante
         emptyFromPixel.y = 268;
         toFillPixel = size.y - 480;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesRight[i].size.y;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesRight, fillersRight, customEdges[3]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesRight, fillersRight,
+                              customEdges[3]);
     }
 
     // Bildspeicher für Ausgaberahmen vorbereiten; in glArchivItem_Bitmap kovertieren
     for(unsigned i = 0; i < 4; i++)
     {
         glArchivItem_Bitmap* customEdgeBmp = new glArchivItem_Bitmap_Direct;
-        customEdgeBmp->init(customEdges[i].size.x, customEdges[i].size.y, libsiedler2::TextureFormat::Paletted, &palette);
+        customEdgeBmp->init(customEdges[i].size.x, customEdges[i].size.y, libsiedler2::TextureFormat::Paletted,
+                            &palette);
         BdrBitmap2Bitmap(customEdges[i], *customEdgeBmp);
         borderInfo[i] = customEdgeBmp;
     }
@@ -240,7 +248,8 @@ void CustomBorderBuilder::BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bi
 void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths,
                                                std::array<unsigned char, 3>& shouldCounts)
 {
-    // Die should-Variablen speichern die bisher als am besten befundene Kombination; die would-Variablen die gerade zu prüfende
+    // Die should-Variablen speichern die bisher als am besten befundene Kombination; die would-Variablen die gerade zu
+    // prüfende
     shouldCounts[0] = 0;
     shouldCounts[1] = 0;
     shouldCounts[2] = 0;
@@ -284,9 +293,11 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, std::array<unsig
 template<size_t T_numEdges, size_t T_numFillers>
 void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigned toFill,
                                                 const bool direction, // false = waagerecht, true = senkrecht
-                                                const std::array<unsigned short, 3>& edgeLengths, std::array<unsigned char, 3>& edgeCounts,
+                                                const std::array<unsigned short, 3>& edgeLengths,
+                                                std::array<unsigned char, 3>& edgeCounts,
                                                 const std::array<BdrBitmap, T_numEdges>& edges,
-                                                const std::array<BdrBitmap, T_numFillers>& fillers, BdrBitmap& outBorder)
+                                                const std::array<BdrBitmap, T_numFillers>& fillers,
+                                                BdrBitmap& outBorder)
 // Schreibt die übergebene Verteilung ins Bild und füllt die restliche Fläche auf.
 {
     unsigned emptyFromPixel = direction ? pos.y : pos.x;
@@ -318,7 +329,8 @@ void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigne
     // Fülle den Rest auf
     std::array<unsigned char, T_numFillers> numFillersToUse;
     std::fill(numFillersToUse.begin(), numFillersToUse.end(), 0);
-    // Finde, wie oft jedes Füllerstück gebraucht wird. Einfach von groß nach klein einfügen, wenn der Platz jeweils noch reicht.
+    // Finde, wie oft jedes Füllerstück gebraucht wird. Einfach von groß nach klein einfügen, wenn der Platz jeweils
+    // noch reicht.
     unsigned char curFiller = T_numFillers - 1;
     while(toFillPixel > 0)
     {
@@ -331,8 +343,8 @@ void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigne
         {
             if(curFiller > 0) // Das nächstkleinere Füllerstück testen
                 curFiller--;
-            else // Wenn am Ende weniger Platz freibleibt als das kleinste Füllerstück groß ist (2 Pixel), wird sofort ein passendes
-                 // Teilstück eingefügt.
+            else // Wenn am Ende weniger Platz freibleibt als das kleinste Füllerstück groß ist (2 Pixel), wird sofort
+                 // ein passendes Teilstück eingefügt.
             {
                 ImgPos origin(0, 0);
                 ImgPos dstOffset;
@@ -360,7 +372,8 @@ void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigne
     {
         for(unsigned char j = 0; j < numFillersToUse[i]; j++)
         {
-            // Vor jedem großen zuerst ein paar der kleinsten Füller, damit die großen nicht so aneinander gequetscht sind.
+            // Vor jedem großen zuerst ein paar der kleinsten Füller, damit die großen nicht so aneinander gequetscht
+            // sind.
             for(unsigned char k = 0; k < numFillersToUse[0] / (numUsedFillers + 1); k++)
             {
                 if(direction)
@@ -377,7 +390,8 @@ void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigne
         }
     }
     // Die restlichen kleinen Füller
-    const unsigned char numSmallFillers = numFillersToUse[0] - (numFillersToUse[0] / (numUsedFillers + 1)) * numUsedFillers;
+    const unsigned char numSmallFillers =
+      numFillersToUse[0] - (numFillersToUse[0] / (numUsedFillers + 1)) * numUsedFillers;
     for(unsigned char j = 0; j < numSmallFillers; j++)
     {
         if(direction)
@@ -397,7 +411,8 @@ CustomBorderBuilder::BdrBitmap::BdrBitmap(const Extent& size) : size(size)
     values.resize(prodOfComponents(size));
 }
 
-CustomBorderBuilder::BdrBitmap CustomBorderBuilder::BdrBitmap::get(const ImgPos& srcOffset, const Extent& targetSize) const
+CustomBorderBuilder::BdrBitmap CustomBorderBuilder::BdrBitmap::get(const ImgPos& srcOffset,
+                                                                   const Extent& targetSize) const
 {
     BdrBitmap pic(targetSize);
     RTTR_FOREACH_PT(ImgPos, targetSize)

@@ -114,7 +114,8 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         {
             SetCurPlayer(i);
             BOOST_REQUIRE_EQUAL(gwv.GetBQ(harborPos[i]), BQ_HARBOR);
-            const noBuilding* hb = BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, harborPos[i], i, Nation(i));
+            const noBuilding* hb =
+              BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, harborPos[i], i, Nation(i));
             BOOST_REQUIRE(hb);
             BuildRoadForBlds(harborPos[i], hqPos[i]);
             MapPoint shipPos = world.GetCoastalPoint(world.GetHarborPointID(harborPos[i]), 1);
@@ -130,19 +131,22 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         milBld1NearPos = FindBldPos(world.GetHarborPoint(3) + MapPoint(3, 2), BQ_HOUSE, 1);
         BOOST_REQUIRE(milBld1NearPos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld1NearPos, 1), BQ_HOUSE);
-        milBld1Near = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1NearPos, 1, NAT_ROMANS));
+        milBld1Near = dynamic_cast<nobMilitary*>(
+          BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1NearPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Near);
 
         milBld1FarPos = FindBldPos(world.GetHarborPoint(4) - MapPoint(1, 4), BQ_HOUSE, 1);
         BOOST_REQUIRE(milBld1FarPos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld1FarPos, 1), BQ_HOUSE);
-        milBld1Far = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1FarPos, 1, NAT_ROMANS));
+        milBld1Far = dynamic_cast<nobMilitary*>(
+          BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1FarPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Far);
 
         milBld2Pos = FindBldPos(world.GetHarborPoint(6) - MapPoint(2, 2), BQ_HOUSE, 2);
         BOOST_REQUIRE(milBld2Pos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld2Pos, 2), BQ_HOUSE);
-        milBld2 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld2Pos, 2, NAT_BABYLONIANS));
+        milBld2 = dynamic_cast<nobMilitary*>(
+          BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld2Pos, 2, NAT_BABYLONIANS));
         BOOST_REQUIRE(milBld2);
 
         // Add some soldiers (assumed by test cases!)
@@ -167,7 +171,8 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
 
     MapPoint FindBldPos(const MapPoint& preferedPos, BuildingQuality reqBQ, unsigned player)
     {
-        std::vector<MapPoint> pts = world.GetPointsInRadius<1>(preferedPos, 2, Identity<MapPoint>(), HasBQ(world, player, reqBQ), true);
+        std::vector<MapPoint> pts =
+          world.GetPointsInRadius<1>(preferedPos, 2, Identity<MapPoint>(), HasBQ(world, player, reqBQ), true);
         return pts.at(0);
     }
 
@@ -581,19 +586,22 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
-        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
+        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER
+           && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
             break;
     }
     DescIdx<TerrainDesc> tLand(0);
     for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
     {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND
+           && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
             break;
     }
 
     // Issue: A harbor is a castle-sized building and blocks the nodes W, NW, NE
-    // If the NW node is selected as the corresponding seas coastal position, we cannot attack that harbor as the walking path would go over
-    // the harbor or a blocked point if we can't walk around it Harbors is attackable by default
+    // If the NW node is selected as the corresponding seas coastal position, we cannot attack that harbor as the
+    // walking path would go over the harbor or a blocked point if we can't walk around it Harbors is attackable by
+    // default
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 5u);
     // build such a situation for player 1 (left)
     // Make everything west of harbor water

@@ -176,8 +176,14 @@ public:
     {
         return GetInventorySettingVisual(ware).IsSet(setting);
     }
-    bool IsInventorySetting(const Job job, const EInventorySetting setting) const { return GetInventorySetting(job).IsSet(setting); }
-    bool IsInventorySetting(const GoodType ware, const EInventorySetting setting) const { return GetInventorySetting(ware).IsSet(setting); }
+    bool IsInventorySetting(const Job job, const EInventorySetting setting) const
+    {
+        return GetInventorySetting(job).IsSet(setting);
+    }
+    bool IsInventorySetting(const GoodType ware, const EInventorySetting setting) const
+    {
+        return GetInventorySetting(ware).IsSet(setting);
+    }
 
     void SetInventorySettingVisual(bool isJob, unsigned char type, InventorySetting state);
 
@@ -192,11 +198,13 @@ public:
     /// Returns true, if the given job can be recruited. Excludes soldiers and carriers!
     bool CanRecruit(Job job) const;
 
-    /// Wird von den Lagerhaus-Arbeitern aufgerufen, wenn sie ein Ware wieder zurückbringen, die sie vorne nicht ablegen konnten
+    /// Wird von den Lagerhaus-Arbeitern aufgerufen, wenn sie ein Ware wieder zurückbringen, die sie vorne nicht ablegen
+    /// konnten
     void AddWaitingWare(Ware*& ware);
     /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
     bool FreePlaceAtFlag() override;
-    // Eine Ware liegt vor der Flagge des Warenhauses und will rein --> ein Warenhausmitarbeiter muss kommen und sie holen
+    // Eine Ware liegt vor der Flagge des Warenhauses und will rein --> ein Warenhausmitarbeiter muss kommen und sie
+    // holen
     void FetchWare();
     // Soll die nächste Ware nicht holen
     void DontFetchNextWare() { fetch_double_protection = true; }
@@ -251,8 +259,8 @@ public:
     /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück
     unsigned GetNumSoldiers() const
     {
-        return GetNumRealFigures(JOB_PRIVATE) + GetNumRealFigures(JOB_PRIVATEFIRSTCLASS) + GetNumRealFigures(JOB_SERGEANT)
-               + GetNumRealFigures(JOB_OFFICER) + GetNumRealFigures(JOB_GENERAL);
+        return GetNumRealFigures(JOB_PRIVATE) + GetNumRealFigures(JOB_PRIVATEFIRSTCLASS)
+               + GetNumRealFigures(JOB_SERGEANT) + GetNumRealFigures(JOB_OFFICER) + GetNumRealFigures(JOB_GENERAL);
     }
     /// Bestellt Soldaten
     void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false);
@@ -275,7 +283,10 @@ public:
 
     /// Gibt Zeiger auf dir Reserve zurück für das GUI
     const unsigned* GetReserveAvailablePointer(unsigned rank) const { return &reserve_soldiers_available[rank]; }
-    const unsigned* GetReserveClaimedVisualPointer(unsigned rank) const { return &reserve_soldiers_claimed_visual[rank]; }
+    const unsigned* GetReserveClaimedVisualPointer(unsigned rank) const
+    {
+        return &reserve_soldiers_claimed_visual[rank];
+    }
     unsigned GetReserveClaimed(unsigned rank) const { return reserve_soldiers_claimed_real[rank]; }
 
     /// Available goods of a specific type that can be used for trading
@@ -283,7 +294,8 @@ public:
     /// Available figures of a specific type that can be used for trading
     unsigned GetAvailableFiguresForTrading(Job job) const;
     /// Starts a trade caravane from this warehouse
-    void StartTradeCaravane(const boost::variant<GoodType, Job>& what, unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal);
+    void StartTradeCaravane(const boost::variant<GoodType, Job>& what, unsigned count, const TradeRoute& tr,
+                            nobBaseWarehouse* goal);
 
     /// For debug only
     bool IsDependentFigure(noFigure* fig) const;

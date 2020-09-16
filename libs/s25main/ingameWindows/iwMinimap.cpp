@@ -36,11 +36,12 @@ const unsigned short BUTTON_MAP_SPACE = 3;
 const unsigned short BUTTON_WINDOW_SPACE = 5;
 
 iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
-    : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, _("Outline map"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, _("Outline map"),
+                   LOADER.GetImageN("resource", 41)),
       extended(false)
 {
-    AddCtrl(
-      new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE), Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
+    AddCtrl(new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE),
+                                  Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
 
     // Land, Häuser, Straßen an/aus
     DrawPoint curPos(contentOffset.x + WINDOW_MAP_SPACE, 0);
@@ -80,7 +81,8 @@ void iwMinimap::Resize(const Extent& newSize)
     }
 
     // Vergrößern/Verkleinern-Button nach unten rechts verschieben
-    GetCtrl<Window>(4)->SetPos(GetRightBottomBoundary() - BUTTON_SIZE - DrawPoint(WINDOW_MAP_SPACE, BUTTON_WINDOW_SPACE));
+    GetCtrl<Window>(4)->SetPos(GetRightBottomBoundary() - BUTTON_SIZE
+                               - DrawPoint(WINDOW_MAP_SPACE, BUTTON_WINDOW_SPACE));
 
     // Bild vom Vergrößern/Verkleinern-Button anpassen
     GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetTextureN("io", extended ? 108 : 109));

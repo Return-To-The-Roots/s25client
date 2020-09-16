@@ -20,7 +20,9 @@
 #include "ogl/glFont.h"
 #include <utility>
 
-ctrlBaseText::ctrlBaseText(std::string text, const unsigned color, const glFont* font) : text(std::move(text)), color_(color), font(font) {}
+ctrlBaseText::ctrlBaseText(std::string text, const unsigned color, const glFont* font)
+    : text(std::move(text)), color_(color), font(font)
+{}
 
 void ctrlBaseText::SetText(const std::string& text)
 {
@@ -32,8 +34,8 @@ void ctrlBaseText::SetFont(glFont* font)
     this->font = font;
 }
 
-ctrlText::ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
-                   const glFont* font)
+ctrlText::ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
+                   FontStyle format, const glFont* font)
     : Window(parent, id, pos), ctrlBaseText(text, color, font), format(format)
 {}
 

@@ -34,8 +34,8 @@
 #include <stdexcept>
 
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(BuildingSiteState::Building), planer(nullptr), builder(nullptr), boards(0),
-      stones(0), used_boards(0), used_stones(0), build_progress(0)
+    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(BuildingSiteState::Building), planer(nullptr),
+      builder(nullptr), boards(0), stones(0), used_boards(0), used_stones(0), build_progress(0)
 {
     // Überprüfen, ob die Baustelle erst noch planiert werden muss (nur bei mittleren/großen Gebäuden)
     if(GetSize() == BQ_HOUSE || GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
@@ -67,9 +67,9 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
 
 /// Konstruktor für Hafenbaustellen vom Schiff aus
 noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player), state(BuildingSiteState::Building), planer(nullptr),
-      boards(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards), stones(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), used_boards(0),
-      used_stones(0), build_progress(0)
+    : noBaseBuilding(NOP_BUILDINGSITE, BLD_HARBORBUILDING, pos, player), state(BuildingSiteState::Building),
+      planer(nullptr), boards(BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards),
+      stones(BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones), used_boards(0), used_stones(0), build_progress(0)
 {
     builder = new nofBuilder(pos, player, this);
     GamePlayer& owner = gwg->GetPlayer(player);
@@ -146,9 +146,10 @@ void noBuildingSite::Serialize_noBuildingSite(SerializedGameData& sgd) const
 }
 
 noBuildingSite::noBuildingSite(SerializedGameData& sgd, const unsigned obj_id)
-    : noBaseBuilding(sgd, obj_id), state(sgd.Pop<BuildingSiteState>()), planer(sgd.PopObject<nofPlaner>(GOT_NOF_PLANER)),
-      builder(sgd.PopObject<nofBuilder>(GOT_NOF_BUILDER)), boards(sgd.PopUnsignedChar()), stones(sgd.PopUnsignedChar()),
-      used_boards(sgd.PopUnsignedChar()), used_stones(sgd.PopUnsignedChar()), build_progress(sgd.PopUnsignedChar())
+    : noBaseBuilding(sgd, obj_id), state(sgd.Pop<BuildingSiteState>()),
+      planer(sgd.PopObject<nofPlaner>(GOT_NOF_PLANER)), builder(sgd.PopObject<nofBuilder>(GOT_NOF_BUILDER)),
+      boards(sgd.PopUnsignedChar()), stones(sgd.PopUnsignedChar()), used_boards(sgd.PopUnsignedChar()),
+      used_stones(sgd.PopUnsignedChar()), build_progress(sgd.PopUnsignedChar())
 {
     sgd.PopObjectContainer(ordered_boards, GOT_WARE);
     sgd.PopObjectContainer(ordered_stones, GOT_WARE);
@@ -181,8 +182,8 @@ void noBuildingSite::OrderConstructionMaterial()
 
 unsigned noBuildingSite::GetMilitaryRadius() const
 {
-    /// Note: This actually only applies to harbor buildings made from expeditions. We rely on the calling functions to only take those into
-    /// account
+    /// Note: This actually only applies to harbor buildings made from expeditions. We rely on the calling functions to
+    /// only take those into account
     return bldType_ == BLD_HARBORBUILDING ? HARBOR_RADIUS : 0;
 }
 
@@ -367,7 +368,8 @@ void noBuildingSite::TakeWare(Ware* ware)
 
 bool noBuildingSite::IsBuildingComplete()
 {
-    return (build_progress == BUILDING_COSTS[nation][bldType_].boards * 8 + BUILDING_COSTS[nation][bldType_].stones * 8);
+    return (build_progress
+            == BUILDING_COSTS[nation][bldType_].boards * 8 + BUILDING_COSTS[nation][bldType_].stones * 8);
 }
 
 unsigned char noBuildingSite::GetBuildProgress(bool percent) const

@@ -29,16 +29,17 @@ PostMsg::PostMsg(unsigned sendFrame, std::string text, PostCategory cat, SoundEf
     : sendFrame_(sendFrame), text_(std::move(text)), cat_(cat), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
 {}
 
-PostMsg::PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled, SoundEffect soundEffect)
+PostMsg::PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled,
+                 SoundEffect soundEffect)
     : sendFrame_(sendFrame), cat_(PostCategory::Diplomacy), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
 {
     if(acceptedOrCanceled)
     {
-        text_ =
-          boost::str(boost::format(_("The %s between player '%s' and you has been concluded.")) % _(PACT_NAMES[pt]) % otherPlayer.name);
+        text_ = boost::str(boost::format(_("The %s between player '%s' and you has been concluded."))
+                           % _(PACT_NAMES[pt]) % otherPlayer.name);
     } else
     {
-        text_ =
-          boost::str(boost::format(_("The %s between player '%s' and you has been cancelled.")) % _(PACT_NAMES[pt]) % otherPlayer.name);
+        text_ = boost::str(boost::format(_("The %s between player '%s' and you has been cancelled."))
+                           % _(PACT_NAMES[pt]) % otherPlayer.name);
     }
 }

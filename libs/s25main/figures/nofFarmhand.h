@@ -50,7 +50,8 @@ protected:
     /// Läuft wieder zu seiner Hütte zurück
     void WalkHome();
 
-    /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
+    /// Inform derived class about the start of the whole working process (at the beginning when walking out of the
+    /// house)
     virtual void WalkingStarted();
     /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
     virtual void WorkStarted() = 0;

@@ -42,30 +42,37 @@
 #include "gameData/const_gui_ids.h"
 
 iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* const ship, const DrawPoint& pos)
-    : IngameWindow(CGI_SHIP, pos, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)), gwv(gwv), gcFactory(gcFactory),
-      player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
+    : IngameWindow(CGI_SHIP, pos, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)), gwv(gwv),
+      gcFactory(gcFactory), player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
       ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
 {
     AddImage(0, DrawPoint(126, 101), LOADER.GetImageN("io", 228));
-    AddImageButton(2, DrawPoint(18, 192), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
-    AddImageButton(3, DrawPoint(51, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zurück
-    AddImageButton(4, DrawPoint(81, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
+    AddImageButton(2, DrawPoint(18, 192), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
+    AddImageButton(3, DrawPoint(51, 196), Extent(30, 26), TC_GREY,
+                   LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
+    AddImageButton(4, DrawPoint(81, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
     AddImageButton(5, DrawPoint(111, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton(6, DrawPoint(141, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
-    AddImageButton(7, DrawPoint(181, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place")); // "Gehe Zu Ort"
+    AddImageButton(6, DrawPoint(141, 196), Extent(30, 26), TC_GREY,
+                   LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
+    AddImageButton(7, DrawPoint(181, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107),
+                   _("Go to place")); // "Gehe Zu Ort"
 
     // Die Expeditionsweiterfahrbuttons
-    AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))->SetVisible(false);
+    AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))
+      ->SetVisible(false);
 
-    constexpr helpers::EnumArray<DrawPoint, ShipDirection> BUTTON_POS = {{{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}}};
+    constexpr helpers::EnumArray<DrawPoint, ShipDirection> BUTTON_POS = {
+      {{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}}};
     constexpr helpers::EnumArray<unsigned, ShipDirection> BUTTON_IDs = {{185, 186, 181, 182, 183, 184}};
 
     // Expedition abbrechen
-    AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))->SetVisible(false);
+    AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))
+      ->SetVisible(false);
 
     // Die 6 Richtungen
     for(const auto dir : helpers::EnumRange<ShipDirection>{})
-        AddImageButton(12 + rttr::enum_cast(dir), BUTTON_POS[dir], Extent(18, 18), TC_GREY, LOADER.GetImageN("io", BUTTON_IDs[dir]))
+        AddImageButton(12 + rttr::enum_cast(dir), BUTTON_POS[dir], Extent(18, 18), TC_GREY,
+                       LOADER.GetImageN("io", BUTTON_IDs[dir]))
           ->SetVisible(false);
 }
 
@@ -97,7 +104,8 @@ void iwShip::Draw_()
     NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
     valByValFmt % (ship_id + 1) % owner.GetNumShips();
-    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), valByValFmt.str(), FontStyle::RIGHT | FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
+    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), valByValFmt.str(), FontStyle::RIGHT | FontStyle::NO_OUTLINE,
+                     COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
     LOADER.GetImageN("boot_z", 12)->DrawFull(GetDrawPos() + DrawPoint(138, 117));
 
@@ -109,7 +117,9 @@ void iwShip::Draw_()
 
         for(const auto dir : helpers::EnumRange<ShipDirection>{})
             GetCtrl<Window>(12 + rttr::enum_cast(dir))
-              ->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), dir, ship->GetPlayerId()) > 0);
+              ->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), dir,
+                                                                 ship->GetPlayerId())
+                           > 0);
     } else
     {
         // Alle Buttons inklusive Anker in der Mitte ausblenden
@@ -251,8 +261,8 @@ void iwShip::DrawCargo()
             else
             {
                 const auto& spriteData = JOB_SPRITE_CONSTS[job];
-                LOADER.GetBob("jobs")->Draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW, spriteData.isFat(), 0, drawPt,
-                                            owner.color);
+                LOADER.GetBob("jobs")->Draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW,
+                                            spriteData.isFat(), 0, drawPt, owner.color);
             }
 
             drawPt.x += xStep;

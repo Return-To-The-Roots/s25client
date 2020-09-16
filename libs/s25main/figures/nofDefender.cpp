@@ -28,8 +28,8 @@
 #include "nodeObjs/noFighting.h"
 #include "gameData/BuildingProperties.h"
 
-nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
-                         nofAttacker* const attacker)
+nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
+                         const unsigned char rank, nofAttacker* const attacker)
     : nofActiveSoldier(pos, player, home, rank, STATE_DEFENDING_WALKINGTO), attacker(attacker)
 {}
 

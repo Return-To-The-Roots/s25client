@@ -25,8 +25,8 @@
 #include "buildings/nobUsual.h"
 #include "world/GameWorldBase.h"
 
-noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& gwg, const BuildingType type, const MapPoint pt, const unsigned char player,
-                                            const Nation nation)
+noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& gwg, const BuildingType type, const MapPoint pt,
+                                            const unsigned char player, const Nation nation)
 {
     noBuilding* bld;
     switch(type)

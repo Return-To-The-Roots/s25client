@@ -73,7 +73,8 @@ unsigned char InventorySetting::MakeBitField(const EInventorySetting setting)
 void InventorySetting::MakeValid()
 {
     static const std::array<unsigned char, 4> validStates = {
-      {MakeBitField(EInventorySetting::STOP), MakeBitField(EInventorySetting::SEND), MakeBitField(EInventorySetting::COLLECT),
+      {MakeBitField(EInventorySetting::STOP), MakeBitField(EInventorySetting::SEND),
+       MakeBitField(EInventorySetting::COLLECT),
        static_cast<unsigned char>(MakeBitField(EInventorySetting::STOP) | MakeBitField(EInventorySetting::SEND))}};
     for(unsigned char validState : validStates)
     {

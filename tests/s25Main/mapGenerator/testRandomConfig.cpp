@@ -27,8 +27,9 @@ BOOST_AUTO_TEST_SUITE(RandomConfigTest)
  */
 BOOST_AUTO_TEST_CASE(MaxHeightBelowTextureCount)
 {
-    std::array<MapStyle, 7> mapStyles = {{MapStyle::Greenland, MapStyle::Riverland, MapStyle::Ringland, MapStyle::Migration,
-                                          MapStyle::Islands, MapStyle::Continent, MapStyle::Random}};
+    std::array<MapStyle, 7> mapStyles = {{MapStyle::Greenland, MapStyle::Riverland, MapStyle::Ringland,
+                                          MapStyle::Migration, MapStyle::Islands, MapStyle::Continent,
+                                          MapStyle::Random}};
     for(MapStyle mapStyle : mapStyles)
     {
         RandomConfig config;

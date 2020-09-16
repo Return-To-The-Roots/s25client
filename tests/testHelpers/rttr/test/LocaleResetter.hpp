@@ -23,7 +23,10 @@ namespace rttr { namespace test {
     struct LocaleResetter
     {
         const std::string oldLoc;
-        LocaleResetter(const char* newLoc) : oldLoc(mygettext::setlocale(LC_ALL, nullptr)) { mygettext::setlocale(LC_ALL, newLoc); }
+        LocaleResetter(const char* newLoc) : oldLoc(mygettext::setlocale(LC_ALL, nullptr))
+        {
+            mygettext::setlocale(LC_ALL, newLoc);
+        }
         ~LocaleResetter() { mygettext::setlocale(LC_ALL, oldLoc.c_str()); }
     };
 }} // namespace rttr::test

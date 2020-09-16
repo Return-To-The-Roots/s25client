@@ -83,7 +83,8 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
                     if(hitpoints < HITPOINTS[gwg->GetPlayer(player).nation][job_ - JOB_PRIVATE])
                         healing_event = GetEvMgr().AddEvent(
-                          this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
+                          this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM),
+                          1);
                 }
             }
         }
@@ -104,7 +105,8 @@ void nofPassiveSoldier::Heal()
     // Ist er verletzt?
     // Dann muss er geheilt werden
     if(hitpoints < HITPOINTS[gwg->GetPlayer(player).nation][job_ - JOB_PRIVATE])
-        healing_event = GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
+        healing_event = GetEvMgr().AddEvent(
+          this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
 }
 
 void nofPassiveSoldier::GoalReached()
@@ -139,8 +141,9 @@ void nofPassiveSoldier::LeaveBuilding()
 void nofPassiveSoldier::Upgrade()
 {
     RTTR_Assert(!building
-                || !helpers::contains(static_cast<nobMilitary*>(building)->GetTroops(),
-                                      this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
+                || !helpers::contains(
+                  static_cast<nobMilitary*>(building)->GetTroops(),
+                  this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
     // Einen Rang höher
     job_ = Job(unsigned(job_) + 1);
 

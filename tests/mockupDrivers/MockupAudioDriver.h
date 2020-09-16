@@ -46,9 +46,11 @@ MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)
         return true;
     }
     MOCK_NON_CONST_METHOD(LoadEffect, 1, driver::RawSoundHandle(const std::string&));
-    MOCK_NON_CONST_METHOD(LoadEffect, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&), LoadEffectFromData);
+    MOCK_NON_CONST_METHOD(LoadEffect, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&),
+                          LoadEffectFromData);
     MOCK_NON_CONST_METHOD(LoadMusic, 1, driver::RawSoundHandle(const std::string&));
-    MOCK_NON_CONST_METHOD(LoadMusic, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&), LoadMusicFromData);
+    MOCK_NON_CONST_METHOD(LoadMusic, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&),
+                          LoadMusicFromData);
     MOCK_NON_CONST_METHOD(doPlayEffect, 3, int(driver::RawSoundHandle::DriverData, uint8_t, bool));
     MOCK_NON_CONST_METHOD(PlayMusic, 2);
     MOCK_NON_CONST_METHOD(StopMusic, 0);
@@ -59,6 +61,9 @@ MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)
     MOCK_NON_CONST_METHOD(SetMusicVolume, 1);
     MOCK_NON_CONST_METHOD(doUnloadSound, 1, void(driver::RawSoundHandle sound));
 
-    driver::RawSoundHandle doLoad(driver::SoundType type) { return createRawSoundHandle(new MockupSoundData(type), type); }
+    driver::RawSoundHandle doLoad(driver::SoundType type)
+    {
+        return createRawSoundHandle(new MockupSoundData(type), type);
+    }
     using driver::AudioDriver::GetEffectChannel;
 };

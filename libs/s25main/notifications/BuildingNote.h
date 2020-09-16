@@ -36,7 +36,9 @@ struct BuildingNote
         LostLand      /// Lost land to another player's military building
     };
 
-    BuildingNote(Type type, unsigned player, const MapPoint& pos, BuildingType bld) : type(type), player(player), pos(pos), bld(bld) {}
+    BuildingNote(Type type, unsigned player, const MapPoint& pos, BuildingType bld)
+        : type(type), player(player), pos(pos), bld(bld)
+    {}
 
     const Type type;
     const unsigned player;

@@ -101,7 +101,8 @@ void MapUtility::Smooth(Map& map)
             int texBottom = map.textureLsd[indexBottom];
             int tex = map.textureRsu[index];
 
-            if(tex != texLeft && tex != texBottom && texLeft == texBottom && cfg.GetTerrainByS2Id(texBottom).kind != TerrainKind::WATER)
+            if(tex != texLeft && tex != texBottom && texLeft == texBottom
+               && cfg.GetTerrainByS2Id(texBottom).kind != TerrainKind::WATER)
             {
                 map.textureRsu[index] = texBottom;
             }
@@ -120,7 +121,8 @@ void MapUtility::Smooth(Map& map)
             int texTop = map.textureRsu[indexTop];
             int tex = map.textureLsd[index];
 
-            if(tex != texTop && tex != texRight && texTop == texRight && cfg.GetTerrainByS2Id(texTop).kind != TerrainKind::WATER)
+            if(tex != texTop && tex != texRight && texTop == texRight
+               && cfg.GetTerrainByS2Id(texTop).kind != TerrainKind::WATER)
             {
                 map.textureLsd[index] = texTop;
             }
@@ -177,8 +179,9 @@ void MapUtility::Smooth(Map& map)
 void MapUtility::SetHarbour(Map& map, const Position& center, int waterLevel)
 {
     DescIdx<TerrainDesc> buildable = cfg.FindTerrain([](const auto& desc) { return desc.Is(ETerrain::Buildable); });
-    DescIdx<TerrainDesc> buildable2 = cfg.FindTerrain(
-      [this, buildable](const auto& desc) { return desc.Is(ETerrain::Buildable) && desc.name != cfg.worldDesc.get(buildable).name; });
+    DescIdx<TerrainDesc> buildable2 = cfg.FindTerrain([this, buildable](const auto& desc) {
+        return desc.Is(ETerrain::Buildable) && desc.name != cfg.worldDesc.get(buildable).name;
+    });
     if(!buildable2)
         buildable2 = buildable;
 

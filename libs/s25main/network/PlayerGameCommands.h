@@ -31,7 +31,9 @@ struct PlayerGameCommands
     std::vector<gc::GameCommandPtr> gcs;
 
     PlayerGameCommands() = default;
-    PlayerGameCommands(const AsyncChecksum& checksum, std::vector<gc::GameCommandPtr> gcs) : checksum(checksum), gcs(std::move(gcs)) {}
+    PlayerGameCommands(const AsyncChecksum& checksum, std::vector<gc::GameCommandPtr> gcs)
+        : checksum(checksum), gcs(std::move(gcs))
+    {}
     void Serialize(Serializer& ser) const;
     void Deserialize(Serializer& ser);
 };

@@ -67,14 +67,16 @@ protected:
     // nur bei FS_WANDER von Bedeutung:
     /// Restlicher Weg für das Rumirren (0xFFFF wenn schon auf dem Weg zu einer Flagge!)
     unsigned short wander_way;
-    /// Wieviel (erfolglose) Rumirr-Flaggensuch-Versuche hat es schon gegeben (nach bestimmter Zahl Figur sterben lassen)
+    /// Wieviel (erfolglose) Rumirr-Flaggensuch-Versuche hat es schon gegeben (nach bestimmter Zahl Figur sterben
+    /// lassen)
     unsigned short wander_tryings;
     /// Falls eine Flagge gefunden wurde, Zielpunkt, der Flagge
     MapPoint flagPos_;
     /// Obj-ID der (damaligen) Flagge, (evtl wurde sie zwischendurch abgerissen)
     unsigned flag_obj_id;
     /// Wenn der Typ aus einem Lagerhaus geflohen ist, Obj-ID des abbrennenden Lagerhauses zur
-    /// Kommunikation mit anderen Kollegen, die ebenfalls flüchten --> "Kollektivwegfindung", ansonsten ist das 0xFFFFFFFF
+    /// Kommunikation mit anderen Kollegen, die ebenfalls flüchten --> "Kollektivwegfindung", ansonsten ist das
+    /// 0xFFFFFFFF
     unsigned burned_wh_id;
 
     static const RoadSegment emulated_wanderroad;
@@ -186,7 +188,8 @@ public:
     void WalkToGoal();
     /// Gibt die Straße zurück, auf der man gerade läuft
     const RoadSegment* GetCurrentRoad() { return cur_rs; }
-    /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde, setzt vorraus, dass die Figur auf der geteilten Straße läuft!
+    /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde, setzt vorraus, dass die Figur auf der geteilten
+    /// Straße läuft!
     void CorrectSplitData(const RoadSegment* rs2);
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
     virtual void CorrectSplitData_Derived();
@@ -195,8 +198,8 @@ public:
     /// Removes the figure from the players inventory (e.g. when it does not exist anymore)
     void RemoveFromInventory();
 
-    /// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche) - does not reduce good counts because for trade routes they have
-    /// been reduced already.
+    /// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche) - does not reduce good counts because for
+    /// trade routes they have been reduced already.
     void DieFailedTrade();
     /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Träger-Bestände nicht beeinflussen?)
     /// Kann außer bei WarehouseWorker die Default-Definition gelassen werden
@@ -238,6 +241,7 @@ public:
 
     /// Examines the route (maybe harbor, road destroyed?) before start shipping
     /// Returns (maybe new) destination harbor ((0,0) if he doesn't go by ship)
-    /// and also the new direction it wants to travel which can be the (otherwise invalid) SHIP_DIR if the figure stays on board
+    /// and also the new direction it wants to travel which can be the (otherwise invalid) SHIP_DIR if the figure stays
+    /// on board
     MapPoint ExamineRouteBeforeShipping(RoadPathDirection& newDir);
 };

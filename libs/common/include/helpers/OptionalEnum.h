@@ -25,7 +25,8 @@
 #include <type_traits>
 
 namespace helpers {
-/// Similar to std::optional but optimized for enums to allow for more speed and less storage by storing the underlying value directly
+/// Similar to std::optional but optimized for enums to allow for more speed and less storage by storing the underlying
+/// value directly
 template<class T>
 class OptionalEnum
 {
@@ -70,7 +71,8 @@ public:
     // Those comparisons can be simplified to comparing value_ due to the invalid value being a distinct value
     friend constexpr bool operator==(OptionalEnum lhs, OptionalEnum rhs) { return lhs.value_ == rhs.value_; }
     friend constexpr bool operator!=(OptionalEnum lhs, OptionalEnum rhs) { return lhs.value_ != rhs.value_; }
-    // Technically not required as above operators would be used, but included for better debug performance and mirroring the standard
+    // Technically not required as above operators would be used, but included for better debug performance and
+    // mirroring the standard
     template<typename U, class = RequiresIsTOrWrapped<U>>
     friend constexpr bool operator==(OptionalEnum lhs, const U& rhs)
     {

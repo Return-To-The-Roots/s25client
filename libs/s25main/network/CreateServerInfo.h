@@ -32,6 +32,7 @@ struct CreateServerInfo
     const bool use_upnp;
     CreateServerInfo(ServerType type, uint16_t port, std::string gameName, std::string password = "", bool ipv6 = false,
                      bool useUpnp = false)
-        : type(type), port(port), gameName(std::move(gameName)), password(std::move(password)), ipv6(ipv6), use_upnp(useUpnp)
+        : type(type), port(port), gameName(std::move(gameName)), password(std::move(password)), ipv6(ipv6),
+          use_upnp(useUpnp)
     {}
 };

@@ -40,15 +40,16 @@ public:
     void Init(const MapExtent& mapSize);
 
     /// Wegfindung in freiem Terrain - Template version. Users need to include FreePathFinderImpl.h
-    /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool IsNodeToDestOk(MapPoint pt, unsigned
-    /// char dirFromPrevPt)
+    /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool
+    /// IsNodeToDestOk(MapPoint pt, unsigned char dirFromPrevPt)
     template<class TNodeChecker>
-    bool FindPath(MapPoint start, MapPoint dest, bool randomRoute, unsigned maxLength, std::vector<Direction>* route, unsigned* length,
-                  Direction* firstDir, const TNodeChecker& nodeChecker);
+    bool FindPath(MapPoint start, MapPoint dest, bool randomRoute, unsigned maxLength, std::vector<Direction>* route,
+                  unsigned* length, Direction* firstDir, const TNodeChecker& nodeChecker);
 
-    bool FindPathAlternatingConditions(MapPoint start, MapPoint dest, bool randomRoute, unsigned maxLength, std::vector<Direction>* route,
-                                       unsigned* length, Direction* firstDir, FP_Node_OK_Callback IsNodeOK,
-                                       FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param);
+    bool FindPathAlternatingConditions(MapPoint start, MapPoint dest, bool randomRoute, unsigned maxLength,
+                                       std::vector<Direction>* route, unsigned* length, Direction* firstDir,
+                                       FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate,
+                                       FP_Node_OK_Callback IsNodeToDestOk, const void* param);
 
     /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
     template<class TNodeChecker>

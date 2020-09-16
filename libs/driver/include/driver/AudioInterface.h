@@ -63,7 +63,8 @@ public:
     virtual bool IsEffectPlaying(EffectPlayId play_id) = 0;
     /// Changes volume [0..256) of a played sound (if it is still playing) relative to the master effect volume
     virtual void ChangeVolume(EffectPlayId play_id, uint8_t volume) = 0;
-    /// Set the master effect volume [0..256) at which all effects will be played. Changing the volume of an effect will be relative to this
+    /// Set the master effect volume [0..256) at which all effects will be played. Changing the volume of an effect will
+    /// be relative to this
     virtual void SetMasterEffectVolume(uint8_t volume) = 0;
     /// Sets the music volume [0..256)
     virtual void SetMusicVolume(uint8_t volume) = 0;

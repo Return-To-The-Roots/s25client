@@ -29,7 +29,8 @@ class GameWorldBase;
 /// TerritoryRegion describes a rectangular region used for the calculation of the territory of military buildings
 /// e.g. after build, capture or destruction
 /// Important: Positions are relative to the startPt -> (0,0) == startPt.
-/// Those can NOT be used for GetNeighbour etc. as startPt might be odd which would lead to wrong results in the GetNeighbour calculations
+/// Those can NOT be used for GetNeighbour etc. as startPt might be odd which would lead to wrong results in the
+/// GetNeighbour calculations
 class TerritoryRegion
 {
 public:

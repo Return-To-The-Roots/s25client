@@ -28,8 +28,8 @@
 #include "s25util/Log.h"
 #include <stdexcept>
 
-nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
-                                   const SoldierState init_state)
+nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
+                                   const unsigned char rank, const SoldierState init_state)
     : nofSoldier(pos, player, home, rank), state(init_state), enemy(nullptr)
 
 {}
@@ -62,11 +62,13 @@ void nofActiveSoldier::GoalReached()
         RTTR_Assert(false);
         building = gwg->GetSpecObj<nobMilitary>(this->GetPos());
         if(building)
-            LOG.write("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position (%i,%i) (gf: %u)\n")
+            LOG.write("nofActiveSoldier::GoalRoached() - no valid 'building' but found one at soldier's position "
+                      "(%i,%i) (gf: %u)\n")
               % pos.x % pos.y % GetEvMgr().GetCurrentGF();
         else
         {
-            LOG.write("nofActiveSoldier::GoalRoached() - no valid 'building' also didn't find one at soldier's position (%i,%i) (gf: %u)\n")
+            LOG.write("nofActiveSoldier::GoalRoached() - no valid 'building' also didn't find one at soldier's "
+                      "position (%i,%i) (gf: %u)\n")
               % pos.x % pos.y % GetEvMgr().GetCurrentGF();
             throw std::runtime_error("No building found for soldier");
         }
@@ -284,8 +286,8 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
             enemy = nullptr;
             return false;
         }
-    } else // we have an excluded owner for our new enemy and that only happens in ffa situations when we won against the last defender so
-           // our fightspot is the exact location we have right now
+    } else // we have an excluded owner for our new enemy and that only happens in ffa situations when we won against
+           // the last defender so our fightspot is the exact location we have right now
     {
         fightSpot_ = pos;
     }
@@ -466,7 +468,8 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
         // Did we find a good spot?
         return gwg->ValidPointForFighting(pt, true, nullptr)
                && (pos == pt || gwg->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr))
-               && (other->GetPos() == pt || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr));
+               && (other->GetPos() == pt
+                   || gwg->FindHumanPath(other->GetPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false, nullptr));
     };
     const std::vector<MapPoint> pts =
       gwg->GetPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, Identity<MapPoint>(), isGoodFightingSpot, true);

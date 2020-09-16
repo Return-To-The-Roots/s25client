@@ -33,7 +33,8 @@
 #include "gameData/MapConsts.h"
 #include "s25util/Log.h"
 
-noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
+noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos,
+                               const unsigned char player)
     : noRoadNode(nop, pos, player), bldType_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000),
       door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
 {
@@ -161,8 +162,8 @@ void noBaseBuilding::Serialize_noBaseBuilding(SerializedGameData& sgd) const
 }
 
 noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id)
-    : noRoadNode(sgd, obj_id), bldType_(sgd.Pop<BuildingType>()), nation(sgd.Pop<Nation>()), door_point_x(sgd.PopSignedInt()),
-      door_point_y(sgd.PopSignedInt())
+    : noRoadNode(sgd, obj_id), bldType_(sgd.Pop<BuildingType>()), nation(sgd.Pop<Nation>()),
+      door_point_x(sgd.PopSignedInt()), door_point_y(sgd.PopSignedInt())
 {}
 
 int noBaseBuilding::GetDoorPointX()

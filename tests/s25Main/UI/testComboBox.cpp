@@ -48,8 +48,8 @@ BOOST_FIXTURE_TEST_SUITE(ComboBox, uiHelper::Fixture)
 BOOST_AUTO_TEST_CASE(ItemHandling)
 {
     TestWindow wnd;
-    auto cb = std::make_unique<ctrlComboBox>(&wnd, randomValue<unsigned>(), DrawPoint(0, 0), Extent(40, 20), TextureColor::TC_GREEN1,
-                                             NormalFont, 20, false);
+    auto cb = std::make_unique<ctrlComboBox>(&wnd, randomValue<unsigned>(), DrawPoint(0, 0), Extent(40, 20),
+                                             TextureColor::TC_GREEN1, NormalFont, 20, false);
     REQUIRE(cb->GetNumItems() == 0);
     REQUIRE(!cb->GetSelection());
 
@@ -90,8 +90,9 @@ BOOST_AUTO_TEST_CASE(ItemHandling)
 BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
 {
     TestWindow wnd;
-    auto cb = std::make_unique<ctrlComboBox>(&wnd, randomValue<unsigned>(), randomPoint<DrawPoint>(0, 100), randomPoint<Extent>(20, 200),
-                                             TextureColor::TC_GREEN1, NormalFont, randomValue(20, 200), false);
+    auto cb = std::make_unique<ctrlComboBox>(&wnd, randomValue<unsigned>(), randomPoint<DrawPoint>(0, 100),
+                                             randomPoint<Extent>(20, 200), TextureColor::TC_GREEN1, NormalFont,
+                                             randomValue(20, 200), false);
 
     for(int i = 0; i < 3; i++)
     {
@@ -100,7 +101,8 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
     REQUIRE(!cb->GetSelection());
     mock::sequence s;
     // Scroll down 3 times (each selected)
-    MouseCoords mc{cb->GetPos() + Position(randomValue(0u, cb->GetSize().x - 1u), randomValue(0u, cb->GetSize().y - 1u))};
+    MouseCoords mc{cb->GetPos()
+                   + Position(randomValue(0u, cb->GetSize().x - 1u), randomValue(0u, cb->GetSize().y - 1u))};
     for(unsigned i = 0; i < 3u; i++)
     {
         MOCK_EXPECT(wnd.Msg_ComboSelectItem).once().with(cb->GetID(), static_cast<unsigned>(i)).in(s);
@@ -125,8 +127,8 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
 BOOST_AUTO_TEST_CASE(ListRemove)
 {
     TestWindow wnd;
-    auto list = std::make_unique<ctrlList>(&wnd, randomValue<unsigned>(), randomPoint<DrawPoint>(0, 100), randomPoint<Extent>(20, 200),
-                                           TextureColor::TC_GREEN1, NormalFont);
+    auto list = std::make_unique<ctrlList>(&wnd, randomValue<unsigned>(), randomPoint<DrawPoint>(0, 100),
+                                           randomPoint<Extent>(20, 200), TextureColor::TC_GREEN1, NormalFont);
     std::vector<std::string> lines;
     for(int i = 0; i < 10; i++)
     {

@@ -31,16 +31,16 @@
 
 #include <cmath>
 
-CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map, const DrawPoint start, const DrawPoint dest,
-                             const unsigned fly_duration)
+CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_map, const DrawPoint start,
+                             const DrawPoint dest, const unsigned fly_duration)
     : dest_building(dest_building), dest_map(dest_map), startPos(start), destPos(dest), explode(false)
 {
     event = GetEvMgr().AddEvent(this, fly_duration);
 }
 
 CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id), dest_building(sgd.PopMapPoint()), dest_map(sgd.PopMapPoint()), startPos(sgd.PopPoint<int>()),
-      destPos(sgd.PopPoint<int>()), explode(sgd.PopBool()), event(sgd.PopEvent())
+    : GameObject(sgd, obj_id), dest_building(sgd.PopMapPoint()), dest_map(sgd.PopMapPoint()),
+      startPos(sgd.PopPoint<int>()), destPos(sgd.PopPoint<int>()), explode(sgd.PopBool()), event(sgd.PopEvent())
 {}
 
 /// Serialisierungsfunktionen
@@ -70,7 +70,8 @@ void CatapultStone::Draw(DrawPoint drawOffset)
     } else
     {
         // Linear interpolieren zwischen Ausgangs- und Zielpunkt
-        Position curPos(GAMECLIENT.Interpolate(startPos.x, destPos.x, event), GAMECLIENT.Interpolate(startPos.y, destPos.y, event));
+        Position curPos(GAMECLIENT.Interpolate(startPos.x, destPos.x, event),
+                        GAMECLIENT.Interpolate(startPos.y, destPos.y, event));
         DrawPoint drawPos = curPos - drawOffset + worldSize;
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;

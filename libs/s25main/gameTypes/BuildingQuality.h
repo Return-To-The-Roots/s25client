@@ -31,7 +31,8 @@ enum BuildingQuality : uint8_t
 };
 DEFINE_MAX_ENUM_VALUE(BuildingQuality, BuildingQuality::BQ_HARBOR)
 
-/// Return true iff the BQ found matches a required BQ. E.g. A building with a given size can be constructed on a given node
+/// Return true iff the BQ found matches a required BQ. E.g. A building with a given size can be constructed on a given
+/// node
 inline bool canUseBq(BuildingQuality bqIs, BuildingQuality bqRequired)
 {
     // Exact match -> OK

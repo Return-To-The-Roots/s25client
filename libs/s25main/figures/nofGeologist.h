@@ -53,7 +53,8 @@ private:
     void LookForNewNodes();
     /// Checks if the node is valid as a new target
     inline bool IsValidTargetNode(MapPoint pt) const;
-    /// Searches for a new point to go to. Returns the direction to walk in if any point was found, else sets node_goal to invalid
+    /// Searches for a new point to go to. Returns the direction to walk in if any point was found, else sets node_goal
+    /// to invalid
     helpers::OptionalEnum<Direction> GetNextNode();
     /// Sucht sich einen neuen Punkt und geht dorthin oder geht wieder nach Hause wenn alle Schilder aufgestellt wurden
     /// oder es keinen Punkt mehr gibt

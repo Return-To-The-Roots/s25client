@@ -30,7 +30,8 @@ public:
     SoundHandle() = default;
     /// Initialize with a loaded sound.
     /// Will call unloadHandle(ptrHandle) when the last reference goes out of scope and registers the new pointer with
-    /// registerForUnload(ptrHandle) which is supposed to make sure the driverData is reset when the driver chooses to unload the sound
+    /// registerForUnload(ptrHandle) which is supposed to make sure the driverData is reset when the driver chooses to
+    /// unload the sound
     template<typename T, typename U>
     SoundHandle(const driver::RawSoundHandle& rawHandle, T&& unloadHandle, U&& registerForUnload)
         : rawHandle_(new driver::RawSoundHandle(rawHandle), std::forward<T>(unloadHandle))

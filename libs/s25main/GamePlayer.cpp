@@ -375,8 +375,9 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 }
 
 template<class T_IsWarehouseGood>
-nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh,
-                                            bool use_boat_roads, unsigned* length, const RoadSegment* forbidden) const
+nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood,
+                                            bool to_wh, bool use_boat_roads, unsigned* length,
+                                            const RoadSegment* forbidden) const
 {
     nobBaseWarehouse* best = nullptr;
 
@@ -397,13 +398,15 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
             return wh;
         }
 
-        // now check if there is at least a chance that the next wh is closer than current best because pathfinding takes time
+        // now check if there is at least a chance that the next wh is closer than current best because pathfinding
+        // takes time
         if(gwg.CalcDistance(start.GetPos(), wh->GetPos()) > best_length)
             continue;
-        // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen
-        // bei der wegfindung
+        // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll
+        // start <-> ziel tauschen bei der wegfindung
         unsigned tlength;
-        if(gwg.GetRoadPathFinder().FindPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, best_length, forbidden, &tlength))
+        if(gwg.GetRoadPathFinder().FindPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, best_length,
+                                            forbidden, &tlength))
         {
             if(tlength < best_length || !best)
             {
@@ -500,7 +503,8 @@ void GamePlayer::NewRoadConnection(RoadSegment* rs)
     // Alle Arbeitsplätze müssen nun gucken, ob sie einen Weg zu einem Lagerhaus mit entsprechender Arbeitskraft finden
     FindWarehouseForAllJobs();
 
-    // Alle Baustellen müssen nun gucken, ob sie ihr benötigtes Baumaterial bekommen (evtl war vorher die Straße zum Lagerhaus unterbrochen
+    // Alle Baustellen müssen nun gucken, ob sie ihr benötigtes Baumaterial bekommen (evtl war vorher die Straße zum
+    // Lagerhaus unterbrochen
     FindMaterialForBuildingSites();
 
     // Alle Lost-Wares müssen gucken, ob sie ein Lagerhaus finden
@@ -541,8 +545,8 @@ void GamePlayer::FindClientForLostWares()
 
 void GamePlayer::RoadDestroyed()
 {
-    // Alle Waren, die an Flagge liegen und in Lagerhäusern, müssen gucken, ob sie ihr Ziel noch erreichen können, jetzt wo eine Straße
-    // fehlt
+    // Alle Waren, die an Flagge liegen und in Lagerhäusern, müssen gucken, ob sie ihr Ziel noch erreichen können, jetzt
+    // wo eine Straße fehlt
     for(auto it = ware_list.begin(); it != ware_list.end();)
     {
         Ware* ware = *it;
@@ -550,12 +554,14 @@ void GamePlayer::RoadDestroyed()
         {
             RoadPathDirection last_next_dir = ware->GetNextDir();
             ware->RecalcRoute();
-            // special case: ware was lost some time ago and the new goal is at this flag and not a warehouse,hq,harbor and the "flip-route"
-            // picked so a carrier would pick up the ware carry it away from goal then back and drop  it off at the goal was just destroyed?
+            // special case: ware was lost some time ago and the new goal is at this flag and not a warehouse,hq,harbor
+            // and the "flip-route" picked so a carrier would pick up the ware carry it away from goal then back and
+            // drop  it off at the goal was just destroyed?
             // -> try to pick another flip route or tell the goal about failure.
             noRoadNode& wareLocation = *ware->GetLocation();
             noBaseBuilding* wareGoal = ware->GetGoal();
-            if(wareGoal && ware->GetNextDir() == RoadPathDirection::NorthWest && wareLocation.GetPos() == wareGoal->GetFlag()->GetPos()
+            if(wareGoal && ware->GetNextDir() == RoadPathDirection::NorthWest
+               && wareLocation.GetPos() == wareGoal->GetFlag()->GetPos()
                && ((wareGoal->GetBuildingType() != BLD_STOREHOUSE && wareGoal->GetBuildingType() != BLD_HEADQUARTERS
                     && wareGoal->GetBuildingType() != BLD_HARBORBUILDING)
                    || wareGoal->GetType() == NOP_BUILDINGSITE))
@@ -563,8 +569,8 @@ void GamePlayer::RoadDestroyed()
                 Direction newWareDir = Direction::NORTHWEST;
                 for(auto dir : helpers::EnumRange<Direction>{})
                 {
-                    dir += 2u; // Need to skip Direction::NORTHWEST and we used to start with an offset of 2. TODO: Increase gameDataVersion
-                               // and just skip NW
+                    dir += 2u; // Need to skip Direction::NORTHWEST and we used to start with an offset of 2. TODO:
+                               // Increase gameDataVersion and just skip NW
                     if(wareLocation.GetRoute(dir))
                     {
                         newWareDir = dir;
@@ -632,9 +638,11 @@ bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
     if(rs->GetRoadType() == RoadType::Water)
     {
         // dann braucht man Träger UND Boot
-        best[0] = FindWarehouse(*rs->GetF1(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER, false), false, false, &length[0], rs);
+        best[0] =
+          FindWarehouse(*rs->GetF1(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER, false), false, false, &length[0], rs);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(*rs->GetF2(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER, false), false, false, &length[1], rs);
+        best[1] =
+          FindWarehouse(*rs->GetF2(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER, false), false, false, &length[1], rs);
     } else
     {
         // 1. Flagge des Weges
@@ -703,8 +711,8 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
     wareGoals.clear();
     wareGoals.reserve(goal_count);
 
-    // just drop them in the list, the distribution will be handled by going through this list using a prime as step (see
-    // GameClientPlayer::FindClientForWare)
+    // just drop them in the list, the distribution will be handled by going through this list using a prime as step
+    // (see GameClientPlayer::FindClientForWare)
     for(const BldEntry& bldEntry : bldPercentageMap)
     {
         for(unsigned char i = 0; i < bldEntry.second; ++i)
@@ -757,7 +765,8 @@ void GamePlayer::JobNotWanted(noRoadNode* workplace, bool all)
 
 void GamePlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 {
-    const auto it = helpers::find_if(jobs_wanted, [workplace, job](const auto& it) { return it.workplace == workplace && it.job == job; });
+    const auto it = helpers::find_if(
+      jobs_wanted, [workplace, job](const auto& it) { return it.workplace == workplace && it.job == job; });
     if(it != jobs_wanted.end())
         jobs_wanted.erase(it);
 }
@@ -928,8 +937,10 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
             noRoadNode* current_best_goal = nullptr;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
-            bool isF1Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, nullptr, roadSeg) != RoadPathDirection::None;
-            bool isF2Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, nullptr, roadSeg) != RoadPathDirection::None;
+            bool isF1Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, nullptr, roadSeg)
+                                 != RoadPathDirection::None;
+            bool isF2Reachable = gwg.FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, nullptr, roadSeg)
+                                 != RoadPathDirection::None;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
             if(!isF1Reachable)
@@ -973,7 +984,9 @@ struct ClientForWare
     unsigned estimate; // points minus half the optimal distance
     unsigned points;
 
-    ClientForWare(noBaseBuilding* bld, unsigned estimate, unsigned points) : bld(bld), estimate(estimate), points(points) {}
+    ClientForWare(noBaseBuilding* bld, unsigned estimate, unsigned points)
+        : bld(bld), estimate(estimate), points(points)
+    {}
 
     bool operator<(const ClientForWare& b) const
     {
@@ -1044,7 +1057,8 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
 
                 if(!wareDistribution.goals.empty())
                 {
-                    if(bld->GetBuildingType() == static_cast<BuildingType>(wareDistribution.goals[wareDistribution.selected_goal]))
+                    if(bld->GetBuildingType()
+                       == static_cast<BuildingType>(wareDistribution.goals[wareDistribution.selected_goal]))
                         points += 300;
                     else if(points >= 300) // avoid overflows (async!)
                         points -= 300;
@@ -1083,16 +1097,18 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         if(possibleClient.points < best_points + 1)
             continue;
 
-        // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a better score.
-        // This eliminates the worst case scenario where all nodes in a split road network would be hit by the pathfinding only
-        // to conclude that there is no possible path.
-        if(gwg.FindPathForWareOnRoads(*start, *possibleClient.bld, &path_length, nullptr, (possibleClient.points - best_points) * 2 - 1)
+        // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a
+        // better score. This eliminates the worst case scenario where all nodes in a split road network would be hit by
+        // the pathfinding only to conclude that there is no possible path.
+        if(gwg.FindPathForWareOnRoads(*start, *possibleClient.bld, &path_length, nullptr,
+                                      (possibleClient.points - best_points) * 2 - 1)
            != RoadPathDirection::None)
         {
             unsigned score = possibleClient.points - (path_length / 2);
 
             // As we have limited our pathfinding to take a maximum of (points - best_points) * 2 - 1 steps,
-            // path_length / 2 can at most be points - best_points - 1, so the score will be greater than best_points. :)
+            // path_length / 2 can at most be points - best_points - 1, so the score will be greater than best_points.
+            // :)
             RTTR_Assert(score > best_points);
 
             best_points = score;
@@ -1101,7 +1117,8 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
     }
 
     if(bestBld && !wareDistribution.goals.empty())
-        wareDistribution.selected_goal = (wareDistribution.selected_goal + 907) % unsigned(wareDistribution.goals.size());
+        wareDistribution.selected_goal =
+          (wareDistribution.selected_goal + 907) % unsigned(wareDistribution.goals.size());
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
     if(!bestBld)
@@ -1117,8 +1134,8 @@ nobBaseWarehouse* GamePlayer::FindWarehouseForWare(const Ware& ware) const
     // If there is none, check those that accept it
     if(!wh)
     {
-        // First find the ones, that do not send it right away (IMPORTANT: This avoids sending a ware to the wh that is sending the ware
-        // out)
+        // First find the ones, that do not send it right away (IMPORTANT: This avoids sending a ware to the wh that is
+        // sending the ware out)
         wh = FindWarehouse(*ware.GetLocation(), FW::AcceptsWareButNoSend(ware.type), true, true);
         // The others only if this fails
         if(!wh)
@@ -1346,7 +1363,8 @@ void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_setting
 }
 
 /// Setzt neue Werkzeugeinstellungen
-void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const std::array<int8_t, NUM_TOOLS>& orderChanges)
+void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings,
+                                     const std::array<int8_t, NUM_TOOLS>& orderChanges)
 {
     const bool settingsChanged = toolsSettings_ != tools_settings;
     toolsSettings_ = tools_settings;
@@ -1482,15 +1500,17 @@ void GamePlayer::CalcStatistics()
         statisticCurrentData[STAT_INHABITANTS] += global_inventory.people[i];
 
     // Militär aus der Inventur zählen
-    statisticCurrentData[STAT_MILITARY] = global_inventory.people[JOB_PRIVATE] + global_inventory.people[JOB_PRIVATEFIRSTCLASS] * 2
-                                          + global_inventory.people[JOB_SERGEANT] * 3 + global_inventory.people[JOB_OFFICER] * 4
-                                          + global_inventory.people[JOB_GENERAL] * 5;
+    statisticCurrentData[STAT_MILITARY] =
+      global_inventory.people[JOB_PRIVATE] + global_inventory.people[JOB_PRIVATEFIRSTCLASS] * 2
+      + global_inventory.people[JOB_SERGEANT] * 3 + global_inventory.people[JOB_OFFICER] * 4
+      + global_inventory.people[JOB_GENERAL] * 5;
 
     // Produktivität berechnen
     statisticCurrentData[STAT_PRODUCTIVITY] = buildings.CalcAverageProductivity();
 
     // Total points for tournament games
-    statisticCurrentData[STAT_TOURNAMENT] = statisticCurrentData[STAT_MILITARY] + 3 * statisticCurrentData[STAT_VANQUISHED];
+    statisticCurrentData[STAT_TOURNAMENT] =
+      statisticCurrentData[STAT_MILITARY] + 3 * statisticCurrentData[STAT_VANQUISHED];
 }
 
 void GamePlayer::StatisticStep()
@@ -1504,7 +1524,8 @@ void GamePlayer::StatisticStep()
     }
     for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
     {
-        statistic[STAT_15M].merchandiseData[i][incrStatIndex(statistic[STAT_15M].currentIndex)] = statisticCurrentMerchandiseData[i];
+        statistic[STAT_15M].merchandiseData[i][incrStatIndex(statistic[STAT_15M].currentIndex)] =
+          statisticCurrentMerchandiseData[i];
     }
     statistic[STAT_15M].currentIndex = incrStatIndex(statistic[STAT_15M].currentIndex);
 
@@ -1527,7 +1548,8 @@ void GamePlayer::StatisticStep()
             for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
             {
                 statistic[t + 1].merchandiseData[i][incrStatIndex(statistic[t + 1].currentIndex)] =
-                  statisticCurrentMerchandiseData[i] + statistic[t].merchandiseData[i][decrStatIndex(statistic[t].currentIndex, 1)]
+                  statisticCurrentMerchandiseData[i]
+                  + statistic[t].merchandiseData[i][decrStatIndex(statistic[t].currentIndex, 1)]
                   + statistic[t].merchandiseData[i][decrStatIndex(statistic[t].currentIndex, 2)]
                   + statistic[t].merchandiseData[i][decrStatIndex(statistic[t].currentIndex, 3)];
             }
@@ -1582,8 +1604,8 @@ void GamePlayer::SuggestPact(const unsigned char targetPlayerId, const PactType 
         pacts[targetPlayerId][pt].start = gwg.GetEvMgr().GetCurrentGF();
         GamePlayer targetPlayer = gwg.GetPlayer(targetPlayerId);
         if(targetPlayer.isHuman())
-            targetPlayer.SendPostMessage(
-              std::make_unique<DiplomacyPostQuestion>(gwg.GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayerId][pt].start, *this, duration));
+            targetPlayer.SendPostMessage(std::make_unique<DiplomacyPostQuestion>(
+              gwg.GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayerId][pt].start, *this, duration));
         else if(gwg.HasLua())
             gwg.GetLua().EventSuggestPact(pt, GetPlayerId(), targetPlayerId, duration);
     }
@@ -1637,7 +1659,8 @@ void GamePlayer::NotifyAlliesOfLocation(const MapPoint pt)
     {
         if(i != GetPlayerId() && IsAlly(i))
             gwg.GetPlayer(i).SendPostMessage(std::make_unique<PostMsg>(
-              gwg.GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"), PostCategory::Diplomacy, pt));
+              gwg.GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"),
+              PostCategory::Diplomacy, pt));
     }
 }
 
@@ -1651,7 +1674,8 @@ unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char
             if(pacts[other_player][pt].duration == DURATION_INFINITE)
                 return DURATION_INFINITE;
             else if(gwg.GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
-                return ((pacts[other_player][pt].start + pacts[other_player][pt].duration) - gwg.GetEvMgr().GetCurrentGF());
+                return ((pacts[other_player][pt].start + pacts[other_player][pt].duration)
+                        - gwg.GetEvMgr().GetCurrentGF());
         }
     }
 
@@ -1686,8 +1710,10 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
             otherPlayer.pacts[GetPlayerId()][pt].want_cancel = false;
 
             // Den Spielern eine Informationsnachricht schicken
-            gwg.GetPlayer(otherPlayerIdx).SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, *this, false));
-            SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(otherPlayerIdx), false));
+            gwg.GetPlayer(otherPlayerIdx)
+              .SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, *this, false));
+            SendPostMessage(
+              std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), pt, gwg.GetPlayer(otherPlayerIdx), false));
             PactChanged(pt);
             otherPlayer.PactChanged(pt);
             if(gwg.HasLua())
@@ -1696,8 +1722,8 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
         {
             // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
             if(otherPlayer.isHuman())
-                otherPlayer.SendPostMessage(
-                  std::make_unique<DiplomacyPostQuestion>(gwg.GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
+                otherPlayer.SendPostMessage(std::make_unique<DiplomacyPostQuestion>(
+                  gwg.GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
             else if(!gwg.HasLua() || gwg.GetLua().EventCancelPactRequest(pt, GetPlayerId(), otherPlayerIdx))
             {
                 // AI accepts cancels, if there is no lua-interace
@@ -1824,7 +1850,8 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     {
         for(noShip* ship : ships)
         {
-            if((ship->IsIdling() && gwg.IsHarborAtSea(gwg.GetHarborPointID(hb.GetPos()), ship->GetSeaID())) || ship->IsGoingToHarbor(hb))
+            if((ship->IsIdling() && gwg.IsHarborAtSea(gwg.GetHarborPointID(hb.GetPos()), ship->GetSeaID()))
+               || ship->IsGoingToHarbor(hb))
             {
                 sfh.push_back(ShipForHarbor(ship, gwg.CalcDistance(hb.GetPos(), ship->GetPos())));
             }
@@ -1842,7 +1869,8 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
         uint32_t distance;
         std::vector<Direction> route;
 
-        // the estimate (air-line distance) for this and all other ships in the list is already worse than what we found? disregard the rest
+        // the estimate (air-line distance) for this and all other ships in the list is already worse than what we
+        // found? disregard the rest
         if(it.estimate >= best_distance)
             break;
 
@@ -1996,8 +2024,8 @@ unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
 
 /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
 /// gibt true zurück, falls erfolgreich
-bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId, std::vector<Direction>* route,
-                                        nobHarborBuilding* exception)
+bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId,
+                                        std::vector<Direction>* route, nobHarborBuilding* exception)
 {
     nobHarborBuilding* best = nullptr;
     unsigned best_distance = 0xffffffff;
@@ -2030,7 +2058,8 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
         route->clear();
         *goal_harborId = best->GetHarborPosID();
         const MapPoint coastPt = gwg.GetCoastalPoint(best->GetHarborPosID(), ship->GetSeaID());
-        if(start == coastPt || gwg.FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, nullptr))
+        if(start == coastPt
+           || gwg.FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, nullptr))
             return true;
     }
 
@@ -2063,8 +2092,8 @@ void GamePlayer::TestForEmergencyProgramm()
         if(!emergency)
         {
             emergency = true;
-            SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."),
-                                                      PostCategory::Economy));
+            SendPostMessage(std::make_unique<PostMsg>(
+              gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
         }
     } else
     {
@@ -2072,8 +2101,8 @@ void GamePlayer::TestForEmergencyProgramm()
         if(emergency)
         {
             emergency = false;
-            SendPostMessage(std::make_unique<PostMsg>(gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."),
-                                                      PostCategory::Economy));
+            SendPostMessage(std::make_unique<PostMsg>(
+              gwg.GetEvMgr().GetCurrentGF(), _("The emergency program has been deactivated."), PostCategory::Economy));
             FindMaterialForBuildingSites();
         }
     }
@@ -2119,8 +2148,9 @@ bool GamePlayer::CanBuildCatapult() const
     // proportional?
     if(gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
     {
-        max = int(bc.buildings[BLD_BARRACKS] * 0.125 + bc.buildings[BLD_GUARDHOUSE] * 0.25 + bc.buildings[BLD_WATCHTOWER] * 0.5
-                  + bc.buildings[BLD_FORTRESS] + 0.111); // to avoid rounding errors
+        max =
+          int(bc.buildings[BLD_BARRACKS] * 0.125 + bc.buildings[BLD_GUARDHOUSE] * 0.25
+              + bc.buildings[BLD_WATCHTOWER] * 0.5 + bc.buildings[BLD_FORTRESS] + 0.111); // to avoid rounding errors
     } else if(gwg.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
     {
         const std::array<unsigned, 6> limits = {{0, 3, 5, 10, 20, 30}};
@@ -2222,9 +2252,10 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost::variant<GoodType, 
     for(nobBaseWarehouse* wh : whs)
     {
         // Get available wares
-        const unsigned available = boost::apply_visitor(composeVisitor([wh](GoodType gt) { return wh->GetAvailableWaresForTrading(gt); },
-                                                                       [wh](Job job) { return wh->GetAvailableFiguresForTrading(job); }),
-                                                        what);
+        const unsigned available =
+          boost::apply_visitor(composeVisitor([wh](GoodType gt) { return wh->GetAvailableWaresForTrading(gt); },
+                                              [wh](Job job) { return wh->GetAvailableFiguresForTrading(job); }),
+                               what);
         if(available == 0)
             continue;
 
@@ -2265,8 +2296,9 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
     visualSettings.tools_settings = toolsSettings_;
 }
 
-#define INSTANTIATE_FINDWH(Cond) \
-    template nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode&, const Cond&, bool, bool, unsigned*, const RoadSegment*) const
+#define INSTANTIATE_FINDWH(Cond)                                                                                \
+    template nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode&, const Cond&, bool, bool, unsigned*, \
+                                                         const RoadSegment*) const
 
 INSTANTIATE_FINDWH(FW::HasMinWares);
 INSTANTIATE_FINDWH(FW::HasFigure);

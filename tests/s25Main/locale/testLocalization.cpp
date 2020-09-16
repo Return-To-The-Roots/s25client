@@ -67,32 +67,33 @@ BOOST_AUTO_TEST_CASE(ConvertToString)
 
 BOOST_AUTO_TEST_CASE(ConvertFromString)
 {
-    const std::vector<std::string> invalidInts{"",
-                                               "-",
-                                               "+",
-                                               "abc",
-                                               ".1",
-                                               ",1",
-                                               "1.",
-                                               "1,",
-                                               "a1",
-                                               "1a",
-                                               "1-",
-                                               "1 2",
-                                               "--1",
-                                               "++1",
-                                               s25util::toStringClassic(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1),
-                                               s25util::toStringClassic(static_cast<int64_t>(std::numeric_limits<int32_t>::min()) - 1)};
+    const std::vector<std::string> invalidInts{
+      "",
+      "-",
+      "+",
+      "abc",
+      ".1",
+      ",1",
+      "1.",
+      "1,",
+      "a1",
+      "1a",
+      "1-",
+      "1 2",
+      "--1",
+      "++1",
+      s25util::toStringClassic(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1),
+      s25util::toStringClassic(static_cast<int64_t>(std::numeric_limits<int32_t>::min()) - 1)};
 
-    const std::vector<std::string> invalidUints{"-", "+", "-1", "1-",
-                                                s25util::toStringClassic(static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) + 1)};
+    const std::vector<std::string> invalidUints{
+      "-", "+", "-1", "1-", s25util::toStringClassic(static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) + 1)};
 
-    const std::vector<std::string> invalidFloats{"", "-", "+", "abc", ",1", "1,", "a1", "1a", "1-", "1,1", "1 2", "--1", "++1"};
+    const std::vector<std::string> invalidFloats{"",   "-",  "+",   "abc", ",1",  "1,", "a1",
+                                                 "1a", "1-", "1,1", "1 2", "--1", "++1"};
 
     // Partial values. At least all from above. All equal 1
-    // Those would work, if eof of the stream is not checked. However clang on OSX fails this in C++98 and we don't need it.
-    // std::vector<std::string> partials;
-    // partials += "1.", "1,", "1a", "1-", "1 2", "1,1";
+    // Those would work, if eof of the stream is not checked. However clang on OSX fails this in C++98 and we don't need
+    // it. std::vector<std::string> partials; partials += "1.", "1,", "1a", "1-", "1 2", "1,1";
 
     for(const std::string& curLang : getLanguageCodes())
     {

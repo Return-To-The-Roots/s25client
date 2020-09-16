@@ -140,5 +140,6 @@ private:
 
     void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
-    void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse);
+    void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
+                 bool drawMouse);
 };
