@@ -11,7 +11,7 @@ Check that it is generated (-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)" >&2
 fi
 
 
-NAMES=(run-clang-tidy-9.py run-clang-tidy-8.py run-clang-tidy.py)
+NAMES=(run-clang-tidy-10.py run-clang-tidy-9.py run-clang-tidy-8.py run-clang-tidy.py)
 for fn in "${NAMES[@]}"; do
     if which "${fn}" &> /dev/null; then
         CLANG_TIDY_CMD="${fn}"
@@ -25,12 +25,9 @@ if [ "${CLANG_TIDY_CMD:-}" == "" ] || ! which "${CLANG_TIDY_CMD}" &> /dev/null; 
 fi
 
 FILTER="$(pwd)/(extras|libs|tests|\
-external/(libendian|liblobby|libsiedler2|\
-libutil/(tests|lib)|\
-mygettext|s25edit|s25update))"
+external/(libendian|liblobby|libsiedler2|libutil|mygettext|s25edit|s25update))"
 
 ${CLANG_TIDY_CMD} -p build \
-    -j $(nproc) \
     -header-filter "${FILTER}" \
     -quiet \
     "$@" \
