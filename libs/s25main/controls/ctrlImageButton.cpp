@@ -17,8 +17,8 @@
 
 #include "ctrlImageButton.h"
 
-ctrlImageButton::ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
-                                 ITexture* const image, const std::string& tooltip)
+ctrlImageButton::ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size,
+                                 const TextureColor tc, ITexture* const image, const std::string& tooltip)
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseImage(image)
 {}
 

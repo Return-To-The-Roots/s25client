@@ -33,7 +33,8 @@
 glArchivItem_BitmapBase::glArchivItem_BitmapBase() : texture(0), textureSize_(0, 0), interpolateTexture_(true) {}
 
 glArchivItem_BitmapBase::glArchivItem_BitmapBase(const glArchivItem_BitmapBase& item)
-    : ArchivItem_BitmapBase(item), texture(0), textureSize_(item.textureSize_), interpolateTexture_(item.interpolateTexture_)
+    : ArchivItem_BitmapBase(item), texture(0), textureSize_(item.textureSize_),
+      interpolateTexture_(item.interpolateTexture_)
 {}
 
 glArchivItem_BitmapBase::~glArchivItem_BitmapBase()

@@ -26,11 +26,13 @@ class GameWorldBase;
 
 /// Static Factory class used to create buildings
 /// Use ONLY this class to add new buildings to the map.
-/// Only exception is during deserialization (switch on GOT instead of building type), this case is handled in SerializedGameData
+/// Only exception is during deserialization (switch on GOT instead of building type), this case is handled in
+/// SerializedGameData
 class BuildingFactory
 {
 public:
     BuildingFactory() = delete;
 
-    static noBuilding* CreateBuilding(GameWorldBase& gwg, BuildingType type, MapPoint pt, unsigned char player, Nation nation);
+    static noBuilding* CreateBuilding(GameWorldBase& gwg, BuildingType type, MapPoint pt, unsigned char player,
+                                      Nation nation);
 };

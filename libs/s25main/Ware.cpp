@@ -91,8 +91,8 @@ static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
 
 Ware::Ware(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id), next_dir(PopRoadPathDirection(sgd)), state(State(sgd.PopUnsignedChar())),
-      location(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)), type(sgd.Pop<GoodType>()), goal(sgd.PopObject<noBaseBuilding>(GOT_UNKNOWN)),
-      next_harbor(sgd.PopMapPoint())
+      location(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)), type(sgd.Pop<GoodType>()),
+      goal(sgd.PopObject<noBaseBuilding>(GOT_UNKNOWN)), next_harbor(sgd.PopMapPoint())
 {}
 
 void Ware::SetGoal(noBaseBuilding* newGoal)
@@ -148,7 +148,8 @@ void Ware::GoalDestroyed()
     {
         // Ware ist noch im Lagerhaus auf der Warteliste
         RTTR_Assert(false); // Should not happen. noBaseBuilding::WareNotNeeded handles this case!
-        goal = nullptr;     // just in case: avoid corruption although the ware itself might be lost (won't ever be carried again)
+        goal = nullptr; // just in case: avoid corruption although the ware itself might be lost (won't ever be carried
+                        // again)
     }
     // Ist sie evtl. gerade mit dem Schiff unterwegs?
     else if(state == STATE_ONSHIP)
@@ -177,12 +178,14 @@ void Ware::GoalDestroyed()
         RTTR_Assert(location->GetPlayer() < MAX_PLAYERS);
 
         // Wird sie gerade aus einem Lagerhaus rausgetragen?
-        if(location->GetGOT() == GOT_NOB_STOREHOUSE || location->GetGOT() == GOT_NOB_HARBORBUILDING || location->GetGOT() == GOT_NOB_HQ)
+        if(location->GetGOT() == GOT_NOB_STOREHOUSE || location->GetGOT() == GOT_NOB_HARBORBUILDING
+           || location->GetGOT() == GOT_NOB_HQ)
         {
             if(location != goal)
             {
                 SetGoal(static_cast<noBaseBuilding*>(location));
-            } else // at the goal (which was just destroyed) and get carried out right now? -> we are about to get destroyed...
+            } else // at the goal (which was just destroyed) and get carried out right now? -> we are about to get
+                   // destroyed...
             {
                 goal = nullptr;
                 next_dir = RoadPathDirection::None;
@@ -208,17 +211,18 @@ void Ware::GoalDestroyed()
         {
             if(goal != location)
             {
-                // find a warehouse for us (if we are entering a warehouse already set this as new goal (should only happen if its a harbor
-                // for shipping as the building wasnt our goal))
+                // find a warehouse for us (if we are entering a warehouse already set this as new goal (should only
+                // happen if its a harbor for shipping as the building wasnt our goal))
                 if(location->GetGOT() == GOT_NOB_STOREHOUSE || location->GetGOT() == GOT_NOB_HARBORBUILDING
-                   || location->GetGOT() == GOT_NOB_HQ) // currently carried into a warehouse? -> add ware (pathfinding will not return this
-                                                        // wh because of path lengths 0)
+                   || location->GetGOT() == GOT_NOB_HQ) // currently carried into a warehouse? -> add ware (pathfinding
+                                                        // will not return this wh because of path lengths 0)
                 {
                     if(location->GetGOT() != GOT_NOB_HARBORBUILDING)
-                        LOG.write("WARNING: Ware::GoalDestroyed() -- ware is currently being carried into warehouse or hq that was not "
+                        LOG.write("WARNING: Ware::GoalDestroyed() -- ware is currently being carried into warehouse or "
+                                  "hq that was not "
                                   "it's goal! ware id %i, type %i, player %i, wareloc %i,%i, goal loc %i,%i \n")
-                          % GetObjId() % type % location->GetPlayer() % GetLocation()->GetX() % GetLocation()->GetY() % goal->GetX()
-                          % goal->GetY();
+                          % GetObjId() % type % location->GetPlayer() % GetLocation()->GetX() % GetLocation()->GetY()
+                          % goal->GetX() % goal->GetY();
                     SetGoal(static_cast<noBaseBuilding*>(location));
                 } else
                 {
@@ -227,7 +231,8 @@ void Ware::GoalDestroyed()
                 }
             } else
             {
-                // too late to do anything our road will be removed and ware destroyed when the carrier starts walking about
+                // too late to do anything our road will be removed and ware destroyed when the carrier starts walking
+                // about
                 goal = nullptr;
             }
         }
@@ -337,7 +342,8 @@ bool Ware::FindRouteToWarehouse()
 /// a lost ware got ordered
 unsigned Ware::CheckNewGoalForLostWare(const noBaseBuilding& newgoal) const
 {
-    if(!IsWaitingAtFlag()) // todo: check all special cases for wares being carried right now and where possible allow them to be ordered
+    if(!IsWaitingAtFlag()) // todo: check all special cases for wares being carried right now and where possible allow
+                           // them to be ordered
         return 0xFFFFFFFF;
     return CalcPathToGoal(newgoal).length;
 }
@@ -349,8 +355,8 @@ Ware::RouteParams Ware::CalcPathToGoal(const noBaseBuilding& newgoal) const
     RoadPathDirection possibledir = gwg->FindPathForWareOnRoads(*location, newgoal, &length);
     if(possibledir != RoadPathDirection::None) // there is a valid path to the goal? -> ordered!
     {
-        // in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses
-        // cannot just carry in new wares they need a helper to do this
+        // in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back
+        // because non-warehouses cannot just carry in new wares they need a helper to do this
         if(possibledir == RoadPathDirection::NorthWest && newgoal.GetFlag()->GetPos() == location->GetPos())
         {
             for(const auto dir : helpers::EnumRange<Direction>{})
@@ -420,6 +426,7 @@ void Ware::WaitForShip(nobHarborBuilding* hb)
 std::string Ware::ToString() const
 {
     std::stringstream s;
-    s << "Ware(" << GetObjId() << "): type=" << GoodType2String(type) << ", location=" << location->GetX() << "," << location->GetY();
+    s << "Ware(" << GetObjId() << "): type=" << GoodType2String(type) << ", location=" << location->GetX() << ","
+      << location->GetY();
     return s.str();
 }

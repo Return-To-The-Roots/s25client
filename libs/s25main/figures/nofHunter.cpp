@@ -97,7 +97,8 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             } else
             {
                 unsigned short id = GAMECLIENT.Interpolate(8, current_ev);
-                LOADER.GetPlayerImage("rom_bobs", 1686 + rttr::enum_cast(shooting_dir + 2u) * 8 + id)->drawForPlayer(drawPt, owner.color);
+                LOADER.GetPlayerImage("rom_bobs", 1686 + rttr::enum_cast(shooting_dir + 2u) * 8 + id)
+                  ->drawForPlayer(drawPt, owner.color);
 
                 if(id == 7)
                 {

@@ -25,9 +25,10 @@
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glFont.h"
 
-ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
-                           unsigned short max_list_height, bool readonly)
-    : Window(parent, id, pos, size), tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), suppressSelectEvent(false)
+ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                           const glFont* font, unsigned short max_list_height, bool readonly)
+    : Window(parent, id, pos, size), tc(tc), font(font), max_list_height(max_list_height), readonly(readonly),
+      suppressSelectEvent(false)
 {
     ctrlList* liste = AddList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font);
 
@@ -244,8 +245,8 @@ void ctrlComboBox::Draw_()
 
     // Namen des selektierten Strings in der Box anzeigen
     if(liste->GetNumLines() > 0)
-        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), FontStyle::VCENTER, COLOR_YELLOW,
-                   GetSize().x - 2 - GetSize().y, "");
+        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), FontStyle::VCENTER,
+                   COLOR_YELLOW, GetSize().x - 2 - GetSize().y, "");
 
     // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde
     // auch die Liste malen, die bei Msg_PaintAfter() sowieso gemalt wird.

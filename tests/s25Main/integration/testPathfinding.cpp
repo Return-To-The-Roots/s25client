@@ -47,7 +47,8 @@ void clearWorld(GameWorldGame& world, DescIdx<TerrainDesc> terrain)
     }
 }
 
-void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, DescIdx<TerrainDesc> tBlue, DescIdx<TerrainDesc> tWhite)
+void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, DescIdx<TerrainDesc> tBlue,
+                    DescIdx<TerrainDesc> tWhite)
 {
     // test case 1: Everything is covered in blue terrain (e.g. water) which is walkable on the shore
     // so the white terrain creates all possible shore orientations
@@ -67,13 +68,13 @@ void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, DescIdx<Terra
     world.GetNodeWriteable(curPt).t2 = tWhite;
 }
 
-void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, DescIdx<TerrainDesc> tWalkable, DescIdx<TerrainDesc> tOther,
-                       bool bothTerrain, Direction dir)
+void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, DescIdx<TerrainDesc> tWalkable,
+                       DescIdx<TerrainDesc> tOther, bool bothTerrain, Direction dir)
 {
-    // test cases 2-4: Everything covered in walkable terrain (white) and we want to walk 3 steps into a specified direction
-    // after 1 step we encounter other terrain at both(2) or the left(3/4) side of the path
-    // Note that due to the design of the test cases we have the terrain always on the left side
-    // as we go right for test case 3 and left for test case 4
+    // test cases 2-4: Everything covered in walkable terrain (white) and we want to walk 3 steps into a specified
+    // direction after 1 step we encounter other terrain at both(2) or the left(3/4) side of the path Note that due to
+    // the design of the test cases we have the terrain always on the left side as we go right for test case 3 and left
+    // for test case 4
     clearWorld(world, tWalkable);
     // pt where we encounter the other terrain
     MapPoint terrainPt = world.GetNeighbour(startPt, dir);
@@ -120,13 +121,15 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
-        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
+        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER
+           && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
             break;
     }
     DescIdx<TerrainDesc> tLand(0);
     for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
     {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND
+           && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
             break;
     }
     setupTestcase1(world, startPt, tWater, tLand);
@@ -168,13 +171,15 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
     std::vector<DescIdx<TerrainDesc>> deepWaterTerrains;
     for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
     {
-        if(!world.GetDescription().get(t).Is(ETerrain::Walkable) && !world.GetDescription().get(t).Is(ETerrain::Unreachable))
+        if(!world.GetDescription().get(t).Is(ETerrain::Walkable)
+           && !world.GetDescription().get(t).Is(ETerrain::Unreachable))
             deepWaterTerrains.push_back(t);
     }
     DescIdx<TerrainDesc> tLand(0);
     for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
     {
-        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND
+           && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
             break;
     }
     for(DescIdx<TerrainDesc> deepWater : deepWaterTerrains)

@@ -37,7 +37,8 @@ enum class AddonChangeAllowed
 class iwAddons : public IngameWindow
 {
 public:
-    iwAddons(GlobalGameSettings& ggs, Window* parent = nullptr, AddonChangeAllowed policy = AddonChangeAllowed::AllAndSaveToConfig,
+    iwAddons(GlobalGameSettings& ggs, Window* parent = nullptr,
+             AddonChangeAllowed policy = AddonChangeAllowed::AllAndSaveToConfig,
              std::vector<AddonId> whitelistedAddons = {});
     ~iwAddons() override;
 

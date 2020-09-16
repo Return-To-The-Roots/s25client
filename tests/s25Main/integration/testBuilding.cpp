@@ -42,7 +42,8 @@ using EmptyWorldFixture1PBiggest = WorldFixture<CreateEmptyWorld, 1, 22, 20>;
 using ReducedBQMap = std::map<MapPoint, BuildingQuality, MapPointLess>;
 
 /// Check that the BQ at all points is BQ_CASTLE except the points in the reducedBQs map which have given BQs
-boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const std::vector<MapPoint>& pts, const ReducedBQMap& reducedBQs)
+boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const std::vector<MapPoint>& pts,
+                                             const ReducedBQMap& reducedBQs)
 {
     for(MapPoint pt : pts)
     {
@@ -365,8 +366,10 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1PBiggest)
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHEAST), 0), BQ_FLAG);
     world.SetFlag(flagPt, 0);
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetGOT(), GOT_FLAG);
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::WEST), 0), BQ_NOTHING); // Buildings flag or flag to close to this
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHWEST), 0), BQ_CASTLE); // Building to this flag
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::WEST), 0),
+                        BQ_NOTHING); // Buildings flag or flag to close to this
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHWEST), 0),
+                        BQ_CASTLE); // Building to this flag
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHEAST), 0),
                         BQ_NOTHING); // Buildings flag or flag to close to this
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::EAST), 0),

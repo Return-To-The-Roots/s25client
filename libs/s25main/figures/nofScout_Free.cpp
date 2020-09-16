@@ -162,7 +162,8 @@ void nofScout_Free::GoToNewNode()
     {
         // Is there a path to this point and is the point also not to far away from the flag?
         // (Second check avoids running around mountains with a very far way back)
-        if(gwg->FindHumanPath(pos, pt, SCOUT_RANGE * 2) && gwg->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4))
+        if(gwg->FindHumanPath(pos, pt, SCOUT_RANGE * 2)
+           && gwg->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4))
         {
             // Take it
             nextPos = pt;

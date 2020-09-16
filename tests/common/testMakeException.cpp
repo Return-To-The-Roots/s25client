@@ -20,11 +20,11 @@
 #include <boost/system/config.hpp>
 #include <boost/test/unit_test.hpp>
 #ifdef BOOST_WINDOWS_API
-#include <windows.h>
-#define RTTR_SET_LAST_ERROR(errNum) SetLastError(errNum)
+#    include <windows.h>
+#    define RTTR_SET_LAST_ERROR(errNum) SetLastError(errNum)
 #elif defined(BOOST_POSIX_API)
-#include <cerrno>
-#define RTTR_SET_LAST_ERROR(errNum) errno = errNum
+#    include <cerrno>
+#    define RTTR_SET_LAST_ERROR(errNum) errno = errNum
 #endif
 
 BOOST_AUTO_TEST_SUITE(Helpers)

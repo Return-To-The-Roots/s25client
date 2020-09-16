@@ -30,7 +30,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
 {
     MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
     MapPoint whPos(flagPos.x + 5, flagPos.y);
-    auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_ROMANS));
+    auto* wh = static_cast<nobBaseWarehouse*>(
+      BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_ROMANS));
     Inventory inv;
     inv.Add(JOB_HELPER, 1);
     wh->AddGoods(inv, true);

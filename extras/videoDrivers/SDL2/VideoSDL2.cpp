@@ -29,8 +29,8 @@
 #include <algorithm>
 
 #ifdef _WIN32
-#include <boost/nowide/convert.hpp>
-#include <SDL_syswm.h>
+#    include <boost/nowide/convert.hpp>
+#    include <SDL_syswm.h>
 #endif // _WIN32
 
 #define CHECK_SDL(call)                 \
@@ -151,7 +151,8 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode& size, bo
     if(!isFullscreen_)
         MoveWindowToCenter();
 
-    SDL_Surface* iconSurf = SDL_CreateRGBSurfaceFrom(image.data(), 48, 48, 32, 48 * 4, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+    SDL_Surface* iconSurf =
+      SDL_CreateRGBSurfaceFrom(image.data(), 48, 48, 32, 48 * 4, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
     if(iconSurf)
     {
         SDL_SetWindowIcon(window, iconSurf);
@@ -451,7 +452,8 @@ void VideoSDL2::SetMousePos(Position pos)
 KeyEvent VideoSDL2::GetModKeyState() const
 {
     const SDL_Keymod modifiers = SDL_GetModState();
-    const KeyEvent ke = {KT_INVALID, 0, ((modifiers & KMOD_CTRL) != 0), ((modifiers & KMOD_SHIFT) != 0), ((modifiers & KMOD_ALT) != 0)};
+    const KeyEvent ke = {KT_INVALID, 0, ((modifiers & KMOD_CTRL) != 0), ((modifiers & KMOD_SHIFT) != 0),
+                         ((modifiers & KMOD_ALT) != 0)};
     return ke;
 }
 

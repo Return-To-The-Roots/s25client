@@ -104,7 +104,8 @@ public:
     /// If attackBldsOnly is true, then only troop buildings are returned
     /// Otherwise it includes e.g. HQ and harbour which cannot attack itself but hold land
     bool IsMilitaryBuildingOnNode(MapPoint pt, bool attackBldsOnly) const;
-    /// Erstellt eine Liste mit allen Milit�rgeb�uden in der Umgebung, radius bestimmt wie viele K�stchen nach einer Richtung im Umkreis
+    /// Erstellt eine Liste mit allen Milit�rgeb�uden in der Umgebung, radius bestimmt wie viele K�stchen nach einer
+    /// Richtung im Umkreis
     sortedMilitaryBlds LookForMilitaryBuildings(MapPoint pt, unsigned short radius) const;
 
     /// Finds a path for figures. Returns first direction to walk in if found
@@ -112,16 +113,19 @@ public:
                                                    bool random_route = false, unsigned* length = nullptr,
                                                    std::vector<Direction>* route = nullptr) const;
     /// Find path for ships to a specific harbor and see. Return true on success
-    bool FindShipPathToHarbor(MapPoint start, unsigned harborId, unsigned seaId, std::vector<Direction>* route, unsigned* length);
+    bool FindShipPathToHarbor(MapPoint start, unsigned harborId, unsigned seaId, std::vector<Direction>* route,
+                              unsigned* length);
     /// Find path for ships with a limited distance. Return true on success
-    bool FindShipPath(MapPoint start, MapPoint dest, unsigned maxDistance, std::vector<Direction>* route, unsigned* length);
+    bool FindShipPath(MapPoint start, MapPoint dest, unsigned maxDistance, std::vector<Direction>* route,
+                      unsigned* length);
     RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
     FreePathFinder& GetFreePathFinder() const { return *freePathFinder; }
 
     /// Return flag that is on road at given point. dir will be set to the direction of the road from the returned flag
     /// prevDir (if set) will be skipped when searching for the road points
     noFlag* GetRoadFlag(MapPoint pt, Direction& dir, helpers::OptionalEnum<Direction> prevDir = boost::none);
-    const noFlag* GetRoadFlag(MapPoint pt, Direction& dir, helpers::OptionalEnum<Direction> prevDir = boost::none) const;
+    const noFlag* GetRoadFlag(MapPoint pt, Direction& dir,
+                              helpers::OptionalEnum<Direction> prevDir = boost::none) const;
 
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
     Position GetNodePos(MapPoint pt) const;
@@ -136,11 +140,12 @@ public:
 
     /// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
     bool IsHarborPointFree(unsigned harborId, unsigned char player) const;
-    /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer, an dem auch mindestens 1 Hafenplatz liegt, hat
-    /// und gibt ggf. die Meeres-ID zurück, ansonsten 0
+    /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer, an dem auch mindestens 1
+    /// Hafenplatz liegt, hat und gibt ggf. die Meeres-ID zurück, ansonsten 0
     bool IsCoastalPointToSeaWithHarbor(MapPoint pt) const;
     /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
-    unsigned GetNextFreeHarborPoint(MapPoint pt, unsigned origin_harborId, const ShipDirection& dir, unsigned char player) const;
+    unsigned GetNextFreeHarborPoint(MapPoint pt, unsigned origin_harborId, const ShipDirection& dir,
+                                    unsigned char player) const;
     /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
     unsigned CalcDistanceToNearestHarbor(MapPoint pos) const;
     /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
@@ -188,18 +193,20 @@ public:
     /// Liefert Hafenpunkte im Umkreis von einem bestimmten Milit�rgeb�ude
     std::vector<unsigned> GetHarborPointsAroundMilitaryBuilding(MapPoint pt) const;
     /// Return all harbor Ids that can be used as a landing site for attacking the given point
-    /// Sets all entries in @param use_seas to true, if the given sea can be used for attacking (seaId=1 -> Index 0 as seaId=0 is invalid
-    /// sea)
+    /// Sets all entries in @param use_seas to true, if the given sea can be used for attacking (seaId=1 -> Index 0 as
+    /// seaId=0 is invalid sea)
     std::vector<unsigned> GetUsableTargetHarborsForAttack(MapPoint targetPt, std::vector<bool>& use_seas,
                                                           unsigned char player_attacker) const;
     /// Return all sea Ids from @param usableSeas that can be used for attacking the given point
-    std::vector<unsigned short> GetFilteredSeaIDsForAttack(MapPoint targetPt, const std::vector<unsigned short>& usableSeas,
+    std::vector<unsigned short> GetFilteredSeaIDsForAttack(MapPoint targetPt,
+                                                           const std::vector<unsigned short>& usableSeas,
                                                            unsigned char player_attacker) const;
     /// Return all soldiers (in no specific order) that can be used to attack the given point via a sea.
     /// Checks all preconditions for a sea attack (addon, attackable...)
     std::vector<PotentialSeaAttacker> GetSoldiersForSeaAttack(unsigned char player_attacker, MapPoint pt) const;
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
-    unsigned GetNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, unsigned short seaid, bool returnCount = true) const;
+    unsigned GetNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, unsigned short seaid,
+                                             bool returnCount = true) const;
 
     /// Recalculates the BQ for the given point
     void RecalcBQ(MapPoint pt);
@@ -218,5 +225,6 @@ private:
     /// Returns the harbor ID of the next matching harbor in the given direction (0 = None)
     /// T_IsHarborOk must be a predicate taking a harbor Id and returning a bool if the harbor is valid to return
     template<typename T_IsHarborOk>
-    unsigned GetHarborInDir(MapPoint pt, unsigned origin_harborId, const ShipDirection& dir, T_IsHarborOk isHarborOk) const;
+    unsigned GetHarborInDir(MapPoint pt, unsigned origin_harborId, const ShipDirection& dir,
+                            T_IsHarborOk isHarborOk) const;
 };

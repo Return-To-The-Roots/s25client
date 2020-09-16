@@ -178,8 +178,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     groupAllgemein->AddText(10100, DrawPoint(80, 420), _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK);
-    smartCursor->AddTextButton(10103, DrawPoint(280, 415), Extent(190, 22), TC_GREY, _("Off"), NormalFont,
-                               _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
+    smartCursor->AddTextButton(
+      10103, DrawPoint(280, 415), Extent(190, 22), TC_GREY, _("Off"), NormalFont,
+      _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
     smartCursor->AddTextButton(10102, DrawPoint(480, 415), Extent(190, 22), TC_GREY, _("On"), NormalFont,
                                _("Place cursor on default button for new dialogs / action windows (default)"));
     smartCursor->SetSelection(SETTINGS.global.smartCursor ? 10102 : 10103);
@@ -338,7 +339,8 @@ dskOptions::~dskOptions()
     ggs.SaveSettings();
 }
 
-void dskOptions::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short position)
+void dskOptions::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                          const unsigned short position)
 {
     switch(ctrl_id)
     {
@@ -416,7 +418,8 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
     }
 }
 
-void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned selection)
+void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                             const unsigned selection)
 {
     switch(ctrl_id)
     {
@@ -531,8 +534,8 @@ static bool validatePort(const std::string& sPort, uint16_t& outPort)
         outPort = *port;
     else
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Invalid port. The valid port-range is 1 to 65535!"), nullptr, MSB_OK,
-                                                      MSB_EXCLAMATIONRED, 1));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+          _("Error"), _("Invalid port. The valid port-range is 1 to 65535!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED, 1));
     }
     return static_cast<bool>(port);
 }
@@ -559,20 +562,21 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
             if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize()) //-V807
                || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
-                const auto screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+                const auto screenSize =
+                  SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
                 if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
                 {
-                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"),
-                                                                  _("You need to restart your game to change the screen resolution!"), this,
-                                                                  MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                      _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK,
+                      MSB_EXCLAMATIONGREEN, 1));
                     return;
                 }
             }
             if(SETTINGS.driver.video != VIDEODRIVER.GetName() || SETTINGS.driver.audio != AUDIODRIVER.GetName())
             {
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"),
-                                                              _("You need to restart your game to change the video or audio driver!"), this,
-                                                              MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                  _("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this, MSB_OK,
+                  MSB_EXCLAMATIONGREEN, 1));
                 return;
             }
 

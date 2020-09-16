@@ -28,7 +28,8 @@
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 
-nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const boost::variant<GoodType, Job>& what)
+nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
+                               const boost::variant<GoodType, Job>& what)
     : noFigure(holds_alternative<Job>(what) ? boost::get<Job>(what) : JOB_PACKDONKEY, pos, player), successor(nullptr)
 {
     if(holds_alternative<GoodType>(what))
@@ -36,7 +37,8 @@ nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, c
 }
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)), gt(sgd.PopOptionalEnum<GoodType>())
+    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
+      gt(sgd.PopOptionalEnum<GoodType>())
 {
     sgd.PopContainer(next_dirs);
 }
@@ -85,7 +87,8 @@ void nofTradeDonkey::Walked()
     {
         // Does target still exist?
         noBase* nob = gwg->GetNO(pos);
-        if(nob->GetType() == NOP_BUILDING && BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
+        if(nob->GetType() == NOP_BUILDING
+           && BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
             GoalReached();
         else
         {

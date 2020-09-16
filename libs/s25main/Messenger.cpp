@@ -64,8 +64,8 @@ void Messenger::Draw()
     }
 }
 
-void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg,
-                           const unsigned color_msg)
+void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd,
+                           const std::string& msg, const unsigned color_msg)
 {
     if(!author.empty())
         LOG.writeColored("%1% ", color_author) % author;

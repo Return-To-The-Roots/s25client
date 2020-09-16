@@ -33,7 +33,8 @@ public:
     {
         AWFT_NORMAL = 0,
         AWFT_HQ,         /// von der HQ-Flagge kann nur eine Straße gebaut werden
-        AWFT_STOREHOUSE, /// von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen werden
+        AWFT_STOREHOUSE, /// von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen
+                         /// werden
         AWFT_WATERFLAG   /// Flagge mit Anker drauf (Wasserstraße kann gebaut werden)
     };
 
@@ -54,8 +55,8 @@ public:
         } build_tabs;
 
         Tabs()
-            : build(false), setflag(false), watch(false), flag(false), cutroad(false), upgradeRoad(false), attack(false), sea_attack(false),
-              build_tabs(BT_HUT)
+            : build(false), setflag(false), watch(false), flag(false), cutroad(false), upgradeRoad(false),
+              attack(false), sea_attack(false), build_tabs(BT_HUT)
         {}
     };
 
@@ -76,8 +77,8 @@ private:
     std::array<unsigned short, 4> building_tab_heights;
 
 public:
-    iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos, unsigned params,
-             bool military_buildings);
+    iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos,
+             unsigned params, bool military_buildings);
     ~iwAction() override;
 
     /// Gibt zurück, auf welchen Punkt es sich bezieht

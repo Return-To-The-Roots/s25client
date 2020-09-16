@@ -105,11 +105,13 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     executeLua("function getRequiredLuaVersion()\n return 0\n end");
     BOOST_REQUIRE(!lua.CheckScriptVersion());
     BOOST_REQUIRE_NE(getLog(), "");
-    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % (LuaInterfaceGameBase::GetVersion() + 1));
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end")
+               % (LuaInterfaceGameBase::GetVersion() + 1));
     BOOST_REQUIRE(!lua.CheckScriptVersion());
     BOOST_REQUIRE_NE(getLog(), "");
     // Correct version
-    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % LuaInterfaceGameBase::GetVersion());
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end")
+               % LuaInterfaceGameBase::GetVersion());
     BOOST_REQUIRE(lua.CheckScriptVersion());
 
     BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));
@@ -134,9 +136,9 @@ BOOST_AUTO_TEST_CASE(Translations)
     executeLua("rttr:Log(_('Foo'))");
     BOOST_REQUIRE_EQUAL(getLog(), "Eng\n");
     // Return translation for language or default
-    std::string localSetting =
-      "rttr:RegisterTranslations({ en_GB = { Foo = 'Eng', Bar = 'Eng2' }, pt = { Foo = 'Port', Bar = 'Port2' }, pt_BR = { Foo = 'PortBR', "
-      "Bar = 'PortBR2' } })";
+    std::string localSetting = "rttr:RegisterTranslations({ en_GB = { Foo = 'Eng', Bar = 'Eng2' }, pt = { Foo = "
+                               "'Port', Bar = 'Port2' }, pt_BR = { Foo = 'PortBR', "
+                               "Bar = 'PortBR2' } })";
     // With region
     {
         rttr::test::LocaleResetter loc("pt_BR");
@@ -156,7 +158,8 @@ BOOST_AUTO_TEST_CASE(Translations)
         rttr::test::LocaleResetter loc("de");
         executeLua(localSetting);
         const auto logStr = getLog();
-        BOOST_TEST(logStr.find("Did not found translation for language 'de' in LUA file. Available translations:") != std::string::npos);
+        BOOST_TEST(logStr.find("Did not found translation for language 'de' in LUA file. Available translations:")
+                   != std::string::npos);
         // All 3 mentioned
         BOOST_TEST(logStr.find("pt") != std::string::npos);
         BOOST_TEST(logStr.find("en_GB") != std::string::npos);
@@ -315,7 +318,8 @@ struct CatchConstructionNote
     std::unique_ptr<BuildingNote> note_;
     Subscription sub;
 
-    CatchConstructionNote(GameWorldGame& world) : sub(world.GetNotifications().subscribe<BuildingNote>(std::ref(*this))) {}
+    CatchConstructionNote(GameWorldGame& world) : sub(world.GetNotifications().subscribe<BuildingNote>(std::ref(*this)))
+    {}
 
     void operator()(const BuildingNote& note) { note_ = std::make_unique<BuildingNote>(note); }
 };
@@ -511,8 +515,9 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
 
     // Polygon with hole
     executeLua("player:SetRestrictedArea(0,0, 1,1, 10,1, 10,10, 1,10, 1,1, 0,0, 5,5, 7,5, 7,7, 5,5, 0,0)");
-    expectedRestrictedArea = {MapPoint(0, 0), MapPoint(1, 1), MapPoint(10, 1), MapPoint(10, 10), MapPoint(1, 10), MapPoint(1, 1),
-                              MapPoint(0, 0), MapPoint(5, 5), MapPoint(7, 5),  MapPoint(7, 7),   MapPoint(5, 5),  MapPoint(0, 0)};
+    expectedRestrictedArea = {MapPoint(0, 0),  MapPoint(1, 1), MapPoint(10, 1), MapPoint(10, 10),
+                              MapPoint(1, 10), MapPoint(1, 1), MapPoint(0, 0),  MapPoint(5, 5),
+                              MapPoint(7, 5),  MapPoint(7, 7), MapPoint(5, 5),  MapPoint(0, 0)};
     BOOST_TEST_REQUIRE(player.GetRestrictedArea() == expectedRestrictedArea, boost::test_tools::per_element());
     BOOST_REQUIRE_EQUAL(getLog(), "");
     // Some prefer using nils
@@ -597,7 +602,8 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(obj2->GetItemFile(), 3u);
     BOOST_REQUIRE_EQUAL(obj2->GetSize(), 2u);
     // Invalid Size
-    BOOST_REQUIRE_THROW(executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 3)") % envPt2.x % envPt2.y), std::runtime_error);
+    BOOST_REQUIRE_THROW(executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 3)") % envPt2.x % envPt2.y),
+                        std::runtime_error);
     RTTR_REQUIRE_LOG_CONTAINS("Invalid size", false);
 
     // Can't replace buildings
@@ -705,8 +711,8 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     // Re-enable
     lua.setThrowOnError(true);
 
-    executeLua(
-      "function onExplored(player_id, x, y, owner)\n  rttr:Log('explored: '..player_id..'('..x..', '..y..')'..tostring(owner))\nend");
+    executeLua("function onExplored(player_id, x, y, owner)\n  rttr:Log('explored: '..player_id..'('..x..', "
+               "'..y..')'..tostring(owner))\nend");
     // Owner == 0 -> No owner (nil in lua)
     lua.EventExplored(0, pt2, 0);
     BOOST_REQUIRE_EQUAL(getLog(), (boost::format("explored: %1%%2%%3%\n") % 0 % pt2 % "nil").str());
@@ -720,8 +726,9 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     lua.EventGameFrame(42);
     BOOST_REQUIRE_EQUAL(getLog(), "gf: 42\n");
 
-    executeLua("function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', "
-               "'..y..')'..getResName(type)..':'..quantity)\nend");
+    executeLua(
+      "function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', "
+      "'..y..')'..getResName(type)..':'..quantity)\nend");
     boost::format resFmt("resFound: %1%%2%%3%:%4%\n");
     lua.EventResourceFound(2, pt3, Resource::Iron, 1);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Iron" % 1).str());
@@ -805,7 +812,8 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     // accept every pact from player
     executeLua("function onSuggestPact(pactType, suggestedBy, target, duration) return suggestedBy == 0 end");
     // log created pacts to test callback
-    executeLua("function onPactCreated(pt, suggestedByPlayerId, targetPlayerId, duration) rttr:Log('Pact created') end");
+    executeLua(
+      "function onPactCreated(pt, suggestedByPlayerId, targetPlayerId, duration) rttr:Log('Pact created') end");
     // log canceled pacts to test callback
     executeLua("function onPactCanceled(pt, canceledByPlayerId, targetPlayerId) rttr:Log('Pact canceled') end");
 

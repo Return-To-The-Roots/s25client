@@ -43,7 +43,10 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() override { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameLoading(const std::shared_ptr<Game>& game) override { WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game)); }
+    void CI_GameLoading(const std::shared_ptr<Game>& game) override
+    {
+        WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(game));
+    }
 };
 
 std::vector<bfs::path> GetReplays()
@@ -53,7 +56,8 @@ std::vector<bfs::path> GetReplays()
 } // namespace
 
 iwPlayReplay::iwPlayReplay()
-    : IngameWindow(CGI_PLAYREPLAY, IngameWindow::posLastOrCenter, Extent(600, 330), _("Play Replay"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_PLAYREPLAY, IngameWindow::posLastOrCenter, Extent(600, 330), _("Play Replay"),
+                   LOADER.GetImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
     AddTable(0, DrawPoint(20, 30), Extent(560, 220), TC_GREEN2, NormalFont,
@@ -151,21 +155,22 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
         default: break;
         case 1: StartReplay(); break;
         case 2:
-            WINDOWMANAGER.Show(
-              std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all replays?"), this, MSB_YESNO, MSB_QUESTIONRED, 1));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all replays?"), this,
+                                                          MSB_YESNO, MSB_QUESTIONRED, 1));
             break;
         case 3:
         {
             auto* table = GetCtrl<ctrlTable>(0);
             if(table->GetSelection())
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-                  _("Delete selected"), _("Are you sure you want to remove the selected replay?"), this, MSB_YESNO, MSB_QUESTIONRED, 2));
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Delete selected"),
+                                                              _("Are you sure you want to remove the selected replay?"),
+                                                              this, MSB_YESNO, MSB_QUESTIONRED, 2));
             break;
         }
         case 4: Close(); break;
         case 5:
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all invalid replays?"), this, MSB_YESNO,
-                                                          MSB_QUESTIONRED, 3));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all invalid replays?"),
+                                                          this, MSB_YESNO, MSB_QUESTIONRED, 3));
             break;
     }
 }
@@ -187,8 +192,8 @@ void iwPlayReplay::StartReplay()
     {
         SwitchOnStart switchOnStart;
         if(!GAMECLIENT.StartReplay(table->GetItemText(*table->GetSelection(), 4)))
-            WINDOWMANAGER.Show(
-              std::make_unique<iwMsgbox>(_("Error while playing replay!"), _("Invalid Replay!"), this, MSB_OK, MSB_EXCLAMATIONRED));
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error while playing replay!"), _("Invalid Replay!"), this,
+                                                          MSB_OK, MSB_EXCLAMATIONRED));
     }
 }
 

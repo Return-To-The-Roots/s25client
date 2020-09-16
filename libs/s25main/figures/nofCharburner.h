@@ -22,7 +22,7 @@ class SerializedGameData;
 class nobUsual;
 
 #ifdef _MSC_VER
-#pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
+#    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
 #endif
 
 class nofCharburner : public nofFarmhand
@@ -50,7 +50,8 @@ private:
     /// Returns the quality of this working point or determines if the worker can work here at all
     PointQuality GetPointQuality(MapPoint pt) const override;
 
-    /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
+    /// Inform derived class about the start of the whole working process (at the beginning when walking out of the
+    /// house)
     void WalkingStarted() override;
 
     /// Draws the figure while returning home / entering the building (often carrying wares)

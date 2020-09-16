@@ -23,7 +23,8 @@
 
 GameMessage_GameCommand::GameMessage_GameCommand() : GameMessageWithPlayer(NMS_GAMECOMMANDS) {}
 
-GameMessage_GameCommand::GameMessage_GameCommand(uint8_t player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs)
+GameMessage_GameCommand::GameMessage_GameCommand(uint8_t player, const AsyncChecksum& checksum,
+                                                 const std::vector<gc::GameCommandPtr>& gcs)
     : GameMessageWithPlayer(NMS_GAMECOMMANDS, player), cmds(checksum, gcs)
 {}
 

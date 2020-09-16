@@ -32,7 +32,8 @@ const unsigned GROWING_WAITING_LENGTH = 1100;
 const unsigned GROWING_LENGTH = 16;
 
 noGrainfield::noGrainfield(const MapPoint pos)
-    : noCoordBase(NOP_GRAINFIELD, pos), type(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)), state(STATE_GROWING_WAITING), size(0)
+    : noCoordBase(NOP_GRAINFIELD, pos), type(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)),
+      state(STATE_GROWING_WAITING), size(0)
 {
     event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
 }
@@ -60,8 +61,8 @@ void noGrainfield::Serialize_noGrainfield(SerializedGameData& sgd) const
 }
 
 noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())), size(sgd.PopUnsignedChar()),
-      event(sgd.PopEvent())
+    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())),
+      size(sgd.PopUnsignedChar()), event(sgd.PopEvent())
 {}
 
 void noGrainfield::Draw(DrawPoint drawPt)
@@ -109,7 +110,8 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
         break;
         case STATE_GROWING:
         {
-            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter wächst
+            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter
+            // wächst
             if(++size != 3)
             {
                 event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);

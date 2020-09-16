@@ -36,8 +36,8 @@
 #include <boost/variant/variant.hpp>
 
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(wh.GetPos()), IngameWindow::posAtMouse, Extent(400, 194), _("Trade"),
-                   LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(wh.GetPos()), IngameWindow::posAtMouse, Extent(400, 194),
+                   _("Trade"), LOADER.GetImageN("resource", 41)),
       wh(wh), gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.GetPlayer().GetWarehousesForTrading(wh))
 {
     // Get title of the player
@@ -49,7 +49,8 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
 
     AddComboBox(4, DrawPoint(left_column, 84), Extent(160, 18), TC_GREY, NormalFont, 90); // Ware/Figure names
     AddText(1, DrawPoint(left_column, 30), "Deal in:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
-    ctrlComboBox* box = this->AddComboBox(2, DrawPoint(left_column, 44), Extent(160, 18), TC_GREY, NormalFont, 200); // Ware or figure?
+    ctrlComboBox* box =
+      this->AddComboBox(2, DrawPoint(left_column, 44), Extent(160, 18), TC_GREY, NormalFont, 200); // Ware or figure?
     box->AddString(_("Wares"));
     box->AddString(_("Settlers"));
     AddText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);

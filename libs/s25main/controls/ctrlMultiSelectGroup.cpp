@@ -18,7 +18,8 @@
 #include "ctrlMultiSelectGroup.h"
 class MouseCoords;
 
-ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type) : ctrlGroup(parent, id), select_type(select_type)
+ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type)
+    : ctrlGroup(parent, id), select_type(select_type)
 {}
 
 /**

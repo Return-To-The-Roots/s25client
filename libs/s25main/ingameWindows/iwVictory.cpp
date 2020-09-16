@@ -34,10 +34,11 @@ enum
 }
 
 iwVictory::iwVictory(const std::vector<std::string>& winnerNames)
-    : IngameWindow(CGI_VICTORY, IngameWindow::posLastOrCenter, Extent(240, 240), _("End of game"), LOADER.GetImageN("io", 5))
+    : IngameWindow(CGI_VICTORY, IngameWindow::posLastOrCenter, Extent(240, 240), _("End of game"),
+                   LOADER.GetImageN("io", 5))
 {
-    AddText(ID_TITLE, DrawPoint(120, 40), winnerNames.size() > 1u ? _("The winners:") : _("The winner:"), COLOR_YELLOW, FontStyle::CENTER,
-            NormalFont);
+    AddText(ID_TITLE, DrawPoint(120, 40), winnerNames.size() > 1u ? _("The winners:") : _("The winner:"), COLOR_YELLOW,
+            FontStyle::CENTER, NormalFont);
     auto* names = AddMultiline(ID_NAMES, DrawPoint(0, 70), Extent(800, 600), TC_INVISIBLE, NormalFont);
     names->SetNumVisibleLines(winnerNames.size());
     names->ShowBackground(false);

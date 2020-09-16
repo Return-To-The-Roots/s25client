@@ -31,42 +31,43 @@
 #include <vector>
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#define RTTR_USE_WIN_API
+#    define RTTR_USE_WIN_API
 #endif
 
 #ifdef RTTR_USE_WIN_API
-#ifdef HAVE_DBGHELP_H
-#include <windows.h>
+#    ifdef HAVE_DBGHELP_H
+#        include <windows.h>
 // Disable warning for faulty nameless enum typedef (check sfImage.../hdBase...)
-#pragma warning(push)
-#pragma warning(disable : 4091)
-#include <dbghelp.h>
-#pragma warning(pop)
+#        pragma warning(push)
+#        pragma warning(disable : 4091)
+#        include <dbghelp.h>
+#        pragma warning(pop)
 
-#ifdef _MSC_VER
-#pragma comment(lib, "dbgHelp.lib")
-#else
+#        ifdef _MSC_VER
+#            pragma comment(lib, "dbgHelp.lib")
+#        else
 typedef WINBOOL(WINAPI* SymInitializeType)(HANDLE hProcess, PSTR UserSearchPath, WINBOOL fInvadeProcess);
 typedef WINBOOL(WINAPI* SymCleanupType)(HANDLE hProcess);
 typedef VOID(WINAPI* RtlCaptureContextType)(PCONTEXT ContextRecord);
-typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDLE hThread, LPSTACKFRAME64 StackFrame, PVOID ContextRecord,
-                                       PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
+typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDLE hThread, LPSTACKFRAME64 StackFrame,
+                                       PVOID ContextRecord, PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
                                        PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
-                                       PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine, PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
-#endif // _MSC_VER
-#endif // HAVE_DBGHELP_H
+                                       PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,
+                                       PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
+#        endif // _MSC_VER
+#    endif     // HAVE_DBGHELP_H
 
 #else
-#include <execinfo.h>
+#    include <execinfo.h>
 #endif
 
 namespace {
 #ifdef RTTR_USE_WIN_API
-#ifdef HAVE_DBGHELP_H
+#    ifdef HAVE_DBGHELP_H
 bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr)
 {
     CONTEXT context;
-#ifndef _MSC_VER
+#        ifndef _MSC_VER
 
     HMODULE kernel32 = LoadLibraryA("kernel32.dll");
     HMODULE dbghelp = LoadLibraryA("dbghelp.dll");
@@ -81,11 +82,12 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr)
     StackWalkType StackWalk64 = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
     PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 =
       (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
-    PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
+    PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 =
+      (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
 
     if(!SymInitialize || !StackWalk64 || !SymFunctionTableAccess64 || !SymGetModuleBase64 || !RtlCaptureContext)
         return false;
-#endif
+#        endif
 
     const HANDLE process = GetCurrentProcess();
     if(!SymInitialize(process, nullptr, true))
@@ -101,30 +103,31 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr)
     STACKFRAME64 frame;
     memset(&frame, 0, sizeof(frame));
 
-#ifdef _WIN64
+#        ifdef _WIN64
     frame.AddrPC.Offset = ctx->Rip;
     frame.AddrStack.Offset = ctx->Rsp;
     frame.AddrFrame.Offset = ctx->Rbp;
-#else
+#        else
     frame.AddrPC.Offset = ctx->Eip;
     frame.AddrStack.Offset = ctx->Esp;
     frame.AddrFrame.Offset = ctx->Ebp;
-#endif
+#        endif
 
     frame.AddrPC.Mode = AddrModeFlat;
     frame.AddrStack.Mode = AddrModeFlat;
     frame.AddrFrame.Mode = AddrModeFlat;
 
     HANDLE thread = GetCurrentThread();
-#ifdef _WIN64
+#        ifdef _WIN64
     DWORD machineType = IMAGE_FILE_MACHINE_AMD64;
-#else
+#        else
     DWORD machineType = IMAGE_FILE_MACHINE_I386;
-#endif
+#        endif
 
     for(unsigned i = 0; i < stacktrace.size(); i++)
     {
-        if(!StackWalk64(machineType, process, thread, &frame, ctx, nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
+        if(!StackWalk64(machineType, process, thread, &frame, ctx, nullptr, SymFunctionTableAccess64,
+                        SymGetModuleBase64, nullptr))
         {
             stacktrace.resize(i);
             break;
@@ -136,12 +139,12 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = nullptr)
     SymCleanup(process);
     return true;
 }
-#else  // HAVE_DBGHELP_H
+#    else  // HAVE_DBGHELP_H
 bool captureBacktrace(std::vector<void*>&, void* = nullptr)
 {
     return false;
 }
-#endif // HAVE_DBGHELP_H
+#    endif // HAVE_DBGHELP_H
 
 #else
 void captureBacktrace(std::vector<void*>& stacktrace)
@@ -266,7 +269,8 @@ bool DebugInfo::SendStackTrace(const std::vector<void*>& stacktrace)
     if(!SendString("StackTrace"))
         return false;
 
-    using littleVoid_t = std::conditional_t<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>;
+    using littleVoid_t =
+      std::conditional_t<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>;
     static_assert(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
     std::vector<littleVoid_t> endStacktrace;
     endStacktrace.reserve(stacktrace.size());

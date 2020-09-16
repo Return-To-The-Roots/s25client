@@ -37,7 +37,8 @@ bool ApplicationLoader::load()
     if(!playlistPath_.empty())
     {
         playlist_ = std::make_unique<Playlist>();
-        if(!playlist_->Load(logger_, playlistPath_) && !playlist_->Load(logger_, rttrConfig_.ExpandPath(s25::files::defaultPlaylist)))
+        if(!playlist_->Load(logger_, playlistPath_)
+           && !playlist_->Load(logger_, rttrConfig_.ExpandPath(s25::files::defaultPlaylist)))
             return false;
     }
     return true;

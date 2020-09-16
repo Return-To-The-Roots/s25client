@@ -39,8 +39,8 @@ public:
     void sendMsgAsync(Message* msg);
     /// Send a message synchronously
     void sendMsg(const Message& msg);
-    /// Execute the handler function for all received messages. If usePlayerId is true, the player in the message will be replaced by this
-    /// players id
+    /// Execute the handler function for all received messages. If usePlayerId is true, the player in the message will
+    /// be replaced by this players id
     void executeMsgs(MessageInterface& msgHandler);
 
     unsigned playerId;

@@ -23,7 +23,8 @@
 #include "world/GameWorldGame.h"
 #include "s25util/warningSuppression.h"
 
-noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player) : noCoordBase(nop, pos), player(player)
+noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player)
+    : noCoordBase(nop, pos), player(player)
 {
     for(const auto dir : helpers::EnumRange<Direction>{})
         routes[dir] = nullptr;
@@ -64,7 +65,8 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
     }
 }
 
-noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar())
+noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar())
 {
     for(const auto dir : helpers::EnumRange<Direction>{})
     {

@@ -85,11 +85,11 @@ private:
 
     void HandleDerivedEvent(unsigned id) override;
 
-    /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht ansonsten wieder in
-    /// die Mitte
+    /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht
+    /// ansonsten wieder in die Mitte
     void LookForWares();
-    /// Nimmt eine Ware auf an der aktuellen Flagge und dreht sich um, um sie zu tragen (fetch_dir ist die Richtung der Waren, die der
-    /// Träger aufnehmen will)
+    /// Nimmt eine Ware auf an der aktuellen Flagge und dreht sich um, um sie zu tragen (fetch_dir ist die Richtung der
+    /// Waren, die der Träger aufnehmen will)
     void FetchWare(bool swap_wares);
 
     /// Prüft, ob die getragene Ware dann von dem Weg zum Gebäude will

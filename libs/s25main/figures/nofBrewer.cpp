@@ -24,7 +24,8 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 
-nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_BREWER, pos, player, workplace)
+nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_BREWER, pos, player, workplace)
 {}
 
 nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
@@ -37,7 +38,8 @@ void nofBrewer::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 16)
         LOADER.GetPlayerImage("rom_bobs", now_id)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
+                     gwg->GetPlayer(workplace->GetPlayer()).color);
 
     if(now_id == 5)
     {

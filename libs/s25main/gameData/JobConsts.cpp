@@ -78,9 +78,11 @@ constexpr auto makeJobArray(T&& getter)
 }
 } // namespace
 
-const helpers::EnumArray<std::string, Job> JOB_NAMES = makeJobArray([](const FullJobData& data) { return std::string(data.name); });
+const helpers::EnumArray<std::string, Job> JOB_NAMES =
+  makeJobArray([](const FullJobData& data) { return std::string(data.name); });
 const helpers::EnumArray<JobConst, Job> JOB_CONSTS = makeJobArray([](const FullJobData& data) { return data.data; });
-const helpers::EnumArray<JobSpriteData, Job> JOB_SPRITE_CONSTS = makeJobArray([](const FullJobData& data) { return data.spriteData; });
+const helpers::EnumArray<JobSpriteData, Job> JOB_SPRITE_CONSTS =
+  makeJobArray([](const FullJobData& data) { return data.spriteData; });
 
 unsigned short JobSpriteData::getBobId(Nation nation) const
 {

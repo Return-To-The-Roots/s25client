@@ -25,8 +25,8 @@
 unsigned char iwChat::chat_dest = CD_ALL;
 
 iwChat::iwChat(Window* parent)
-    : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"), LOADER.GetImageN("resource", 41), false,
-                   true, parent)
+    : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"),
+                   LOADER.GetImageN("resource", 41), false, true, parent)
 {
     // Eingabefeld für Chattext
     AddEdit(0, DrawPoint(20, 30), Extent(260, 22), TC_GREY, NormalFont);

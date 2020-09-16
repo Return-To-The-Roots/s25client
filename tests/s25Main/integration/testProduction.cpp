@@ -46,10 +46,12 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddGoods(goods, true);
     MapPoint bldPos = hqPos + MapPoint(2, 0);
     BuildingFactory::CreateBuilding(world, BLD_METALWORKS, bldPos, curPlayer, NAT_AFRICANS);
-    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SOUTHEAST), false, std::vector<Direction>(2, Direction::WEST));
+    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SOUTHEAST), false,
+                    std::vector<Direction>(2, Direction::WEST));
     MapPoint bldPos2 = hqPos - MapPoint(2, 0);
     BuildingFactory::CreateBuilding(world, BLD_METALWORKS, bldPos2, curPlayer, NAT_AFRICANS);
-    this->BuildRoad(world.GetNeighbour(bldPos2, Direction::SOUTHEAST), false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(world.GetNeighbour(bldPos2, Direction::SOUTHEAST), false,
+                    std::vector<Direction>(2, Direction::EAST));
 
     std::array<signed char, NUM_TOOLS> toolOrder;
     ToolSettings toolSettings;
@@ -78,7 +80,8 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     // Stop it and wait till goods are produced
     this->SetProductionEnabled(bldPos, false);
     this->SetProductionEnabled(bldPos2, false);
-    RTTR_EXEC_TILL(2000, curInventory[TOOLS[0]] == expectedInventory[TOOLS[0]] && curInventory[TOOLS[1]] == expectedInventory[TOOLS[1]]
+    RTTR_EXEC_TILL(2000, curInventory[TOOLS[0]] == expectedInventory[TOOLS[0]]
+                           && curInventory[TOOLS[1]] == expectedInventory[TOOLS[1]]
                            && curInventory[TOOLS[2]] == expectedInventory[TOOLS[2]]);
 }
 
@@ -94,7 +97,8 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
     std::fill(settings.begin(), settings.end(), 0);
     this->ChangeTools(settings);
     MapPoint housePos(hqPos.x + 3, hqPos.y);
-    const nobUsual* mw = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_METALWORKS, housePos, curPlayer, NAT_ROMANS));
+    const nobUsual* mw =
+      static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_METALWORKS, housePos, curPlayer, NAT_ROMANS));
     MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
     this->BuildRoad(flagPos, false, std::vector<Direction>(3, Direction::EAST));
     RTTR_EXEC_TILL(200, mw->HasWorker());

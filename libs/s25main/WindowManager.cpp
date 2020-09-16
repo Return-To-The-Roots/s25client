@@ -40,8 +40,8 @@
 #include <algorithm>
 
 WindowManager::WindowManager()
-    : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0), lastLeftClickTime(0),
-      lastLeftClickPos(0, 0)
+    : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0),
+      lastLeftClickTime(0), lastLeftClickPos(0, 0)
 {}
 
 WindowManager::~WindowManager() = default;
@@ -252,8 +252,8 @@ IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
 
 IngameWindow* WindowManager::FindNonModalWindow(unsigned id) const
 {
-    auto itWnd =
-      helpers::find_if(windows, [id](const auto& wnd) { return !wnd->ShouldBeClosed() && !wnd->IsModal() && wnd->GetID() == id; });
+    auto itWnd = helpers::find_if(
+      windows, [id](const auto& wnd) { return !wnd->ShouldBeClosed() && !wnd->IsModal() && wnd->GetID() == id; });
     return itWnd == windows.end() ? nullptr : itWnd->get();
 }
 
@@ -612,7 +612,8 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
     if(ke.alt && (ke.kt == KT_RETURN))
     {
         // Switch Fullscreen/Windowed
-        const auto newScreenSize = !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
+        const auto newScreenSize =
+          !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
         VIDEODRIVER.ResizeScreen(newScreenSize, !SETTINGS.video.fullscreen);
         SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
     } else if(ke.kt == KT_PRINT)
@@ -675,7 +676,8 @@ void WindowManager::Close(const IngameWindow* window)
     if(!window)
         return;
 
-    const auto it = std::find_if(windows.begin(), windows.end(), [window](const auto& it) { return it.get() == window; });
+    const auto it =
+      std::find_if(windows.begin(), windows.end(), [window](const auto& it) { return it.get() == window; });
     if(it == windows.end())
         return; // Window already closed -> Out
 
@@ -813,7 +815,8 @@ class WindowManager::Tooltip
 
 public:
     Tooltip(const ctrlBaseTooltip* showingCtrl, const std::string& text, unsigned short maxWidth)
-        : showingCtrl(showingCtrl), font(NormalFont), lines(font->GetWrapInfo(text, maxWidth, maxWidth).CreateSingleStrings(text))
+        : showingCtrl(showingCtrl), font(NormalFont),
+          lines(font->GetWrapInfo(text, maxWidth, maxWidth).CreateSingleStrings(text))
     {
         if(lines.empty())
             return;

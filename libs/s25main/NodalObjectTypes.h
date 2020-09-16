@@ -22,20 +22,20 @@
 
 enum NodalObjectType : uint8_t
 {
-    NOP_NOTHING = 0,     // nichts
-    NOP_GRANITE,         // Granit
-    NOP_TREE,            // Baum
-    NOP_GRAINFIELD,      // Getreidefeld
-    NOP_ENVIRONMENT,     // sonstige "Umweltobjekte", die keine besondere Funktion haben ( tote Bäume, Pilze, Sträucher )
-    NOP_OBJECT,          // sonstige "feste" Objekte, die keine besondere Funktion haben (Stalagmiten, Ruinen, usw)
-    NOP_BUILDING,        // Gebäcde
-    NOP_FLAG,            // Fahne
-    NOP_BUILDINGSITE,    // Baustelle
-    NOP_FIGURE,          // Siedler-Leute
-    NOP_EXTENSION,       // Anbau von großen Gebäuden
-    NOP_FIRE,            // Ein Feuer von einem brennende (zerstörten) Gebäude
-    NOP_FIGHTING,        // Kampf,
-    NOP_ANIMAL,          // Tier
+    NOP_NOTHING = 0,  // nichts
+    NOP_GRANITE,      // Granit
+    NOP_TREE,         // Baum
+    NOP_GRAINFIELD,   // Getreidefeld
+    NOP_ENVIRONMENT,  // sonstige "Umweltobjekte", die keine besondere Funktion haben ( tote Bäume, Pilze, Sträucher )
+    NOP_OBJECT,       // sonstige "feste" Objekte, die keine besondere Funktion haben (Stalagmiten, Ruinen, usw)
+    NOP_BUILDING,     // Gebäcde
+    NOP_FLAG,         // Fahne
+    NOP_BUILDINGSITE, // Baustelle
+    NOP_FIGURE,       // Siedler-Leute
+    NOP_EXTENSION,    // Anbau von großen Gebäuden
+    NOP_FIRE,         // Ein Feuer von einem brennende (zerstörten) Gebäude
+    NOP_FIGHTING,     // Kampf,
+    NOP_ANIMAL,       // Tier
     NOP_BURNEDWAREHOUSE, // abgebranntes Lagerhaus, aus dem die Menschen jetzt strömen
     NOP_SHIP,            // Schiff
     NOP_CHARBURNERPILE   // Holz-/Kohle-Haufen vom Köhler

@@ -29,7 +29,8 @@ class glFont;
 class ctrlList : public Window
 {
 public:
-    ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
+    ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+             const glFont* font);
     ~ctrlList() override;
 
     /// Größe verändern

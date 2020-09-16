@@ -22,6 +22,6 @@
 class GlAllocator : public libsiedler2::StandardAllocator
 {
 public:
-    std::unique_ptr<libsiedler2::ArchivItem> create(libsiedler2::BobType type,
-                                                    libsiedler2::SoundType subtype = libsiedler2::SoundType::None) const override;
+    std::unique_ptr<libsiedler2::ArchivItem>
+    create(libsiedler2::BobType type, libsiedler2::SoundType subtype = libsiedler2::SoundType::None) const override;
 };

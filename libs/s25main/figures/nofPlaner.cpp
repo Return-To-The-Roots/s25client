@@ -29,7 +29,8 @@
 #include "gameData/JobConsts.h"
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
-    : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), pd(PD_NOTWORKING)
+    : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site),
+      pd(PD_NOTWORKING)
 {}
 
 void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
@@ -42,8 +43,8 @@ void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
 }
 
 nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), state(PlanerState(sgd.PopUnsignedChar())), building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
-      pd(PlaningDir(sgd.PopUnsignedChar()))
+    : noFigure(sgd, obj_id), state(PlanerState(sgd.PopUnsignedChar())),
+      building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)), pd(PlaningDir(sgd.PopUnsignedChar()))
 {}
 
 void nofPlaner::GoalReached()
@@ -148,7 +149,8 @@ void nofPlaner::Draw(DrawPoint drawPt)
                 bobId = 253 + now_id - 41;
             else
                 bobId = 253 + now_id - 55;
-            LOADER.GetPlayerImage("rom_bobs", bobId)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+            LOADER.GetPlayerImage("rom_bobs", bobId)
+              ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)
@@ -177,7 +179,8 @@ void nofPlaner::HandleDerivedEvent(const unsigned id)
         Direction curDir = GetCurMoveDir();
 
         // Das erste Mal gelaufen?
-        if((pd == PD_CLOCKWISE && curDir == Direction::SOUTHWEST) || (pd == PD_COUNTERCLOCKWISE && curDir == Direction::EAST))
+        if((pd == PD_CLOCKWISE && curDir == Direction::SOUTHWEST)
+           || (pd == PD_COUNTERCLOCKWISE && curDir == Direction::EAST))
             StartWalking(Direction::NORTHWEST);
         // Fertig -> zur Baustelle zurücklaufen
         else if(pd == PD_CLOCKWISE && curDir == Direction::SOUTHEAST)

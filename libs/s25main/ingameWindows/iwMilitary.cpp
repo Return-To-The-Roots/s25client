@@ -30,28 +30,29 @@
 #include "gameData/const_gui_ids.h"
 
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"), LOADER.GetImageN("io", 5)), gwv(gwv),
-      gcFactory(gcFactory), settings_changed(false)
+    : IngameWindow(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"),
+                   LOADER.GetImageN("io", 5)),
+      gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
     // Einzelne Balken
     const Extent progSize(132, 26);
     const Extent progPadding(4, 4);
-    AddProgress(0, DrawPoint(17, 25), progSize, TC_GREY, 119, 120, MILITARY_SETTINGS_SCALE[0], "", progPadding, 0, _("Fewer recruits"),
-                _("More recruits")); /* pitch: progPadding */
-    AddProgress(1, DrawPoint(17, 57), progSize, TC_GREY, 121, 122, MILITARY_SETTINGS_SCALE[1], "", progPadding, 0, _("Weak defense"),
-                _("Strong defense"));
-    AddProgress(2, DrawPoint(17, 89), progSize, TC_GREY, 123, 124, MILITARY_SETTINGS_SCALE[2], "", progPadding, 0, _("Fewer defenders"),
-                _("More defenders"));
-    AddProgress(3, DrawPoint(17, 121), progSize, TC_GREY, 209, 210, MILITARY_SETTINGS_SCALE[3], "", progPadding, 0, _("Less attackers"),
-                _("More attackers"));
-    AddProgress(4, DrawPoint(17, 153), progSize, TC_GREY, 129, 130, MILITARY_SETTINGS_SCALE[4], "", progPadding, 0, _("Interior"),
-                _("Interior"));
-    AddProgress(5, DrawPoint(17, 185), progSize, TC_GREY, 127, 128, MILITARY_SETTINGS_SCALE[5], "", progPadding, 0, _("Center of country"),
-                _("Center of country"));
+    AddProgress(0, DrawPoint(17, 25), progSize, TC_GREY, 119, 120, MILITARY_SETTINGS_SCALE[0], "", progPadding, 0,
+                _("Fewer recruits"), _("More recruits")); /* pitch: progPadding */
+    AddProgress(1, DrawPoint(17, 57), progSize, TC_GREY, 121, 122, MILITARY_SETTINGS_SCALE[1], "", progPadding, 0,
+                _("Weak defense"), _("Strong defense"));
+    AddProgress(2, DrawPoint(17, 89), progSize, TC_GREY, 123, 124, MILITARY_SETTINGS_SCALE[2], "", progPadding, 0,
+                _("Fewer defenders"), _("More defenders"));
+    AddProgress(3, DrawPoint(17, 121), progSize, TC_GREY, 209, 210, MILITARY_SETTINGS_SCALE[3], "", progPadding, 0,
+                _("Less attackers"), _("More attackers"));
+    AddProgress(4, DrawPoint(17, 153), progSize, TC_GREY, 129, 130, MILITARY_SETTINGS_SCALE[4], "", progPadding, 0,
+                _("Interior"), _("Interior"));
+    AddProgress(5, DrawPoint(17, 185), progSize, TC_GREY, 127, 128, MILITARY_SETTINGS_SCALE[5], "", progPadding, 0,
+                _("Center of country"), _("Center of country"));
     AddProgress(6, DrawPoint(17, 217), progSize, TC_GREY, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "", progPadding, 0,
                 _("Near harbor points"), _("Near harbor points"));
-    AddProgress(7, DrawPoint(17, 249), progSize, TC_GREY, 125, 126, MILITARY_SETTINGS_SCALE[7], "", progPadding, 0, _("Border areas"),
-                _("Border areas"));
+    AddProgress(7, DrawPoint(17, 249), progSize, TC_GREY, 125, 126, MILITARY_SETTINGS_SCALE[7], "", progPadding, 0,
+                _("Border areas"), _("Border areas"));
 
     // unteren 2 Buttons
     AddImageButton(20, DrawPoint(18, 282), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
@@ -130,16 +131,17 @@ void iwMilitary::Msg_ButtonClick(const unsigned ctrl_id)
         // Default button
         case 20:
         {
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_("This is where you can make adjustments to all military matters. "
-                                                                   "The upper value corresponds to the recruiting rate of your army. "
-                                                                   "The higher it is, the more inhabitants are recruited as soldiers. "
-                                                                   "Below this is the setting to protect your huts. If this value is "
-                                                                   "set at maximum, your huts are defended by the strongest unit. To "
-                                                                   "raise the number of attackers leaving your huts per attack, choose "
-                                                                   "the next setting. The number of defenders who counter the enemy in "
-                                                                   "the event of an attack is shown by the fourth display. The final "
-                                                                   "three values correspond to the occupation of your huts in the "
-                                                                   "interior, in the center of the country and on its borders.")));
+            WINDOWMANAGER.ReplaceWindow(
+              std::make_unique<iwHelp>(_("This is where you can make adjustments to all military matters. "
+                                         "The upper value corresponds to the recruiting rate of your army. "
+                                         "The higher it is, the more inhabitants are recruited as soldiers. "
+                                         "Below this is the setting to protect your huts. If this value is "
+                                         "set at maximum, your huts are defended by the strongest unit. To "
+                                         "raise the number of attackers leaving your huts per attack, choose "
+                                         "the next setting. The number of defenders who counter the enemy in "
+                                         "the event of an attack is shown by the fourth display. The final "
+                                         "three values correspond to the occupation of your huts in the "
+                                         "interior, in the center of the country and on its borders.")));
         }
         break;
         case 21:

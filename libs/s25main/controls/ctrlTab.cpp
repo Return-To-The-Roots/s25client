@@ -140,7 +140,8 @@ void ctrlTab::Draw_()
 
     // TODO: What is this really?
     int headerSize = tab_count * 36;
-    LOADER.GetImageN("io", 3)->DrawPart(Rect(GetDrawPos() + DrawPoint(headerSize, 0), Extent(GetSize().x - headerSize, 45)));
+    LOADER.GetImageN("io", 3)->DrawPart(
+      Rect(GetDrawPos() + DrawPoint(headerSize, 0), Extent(GetSize().x - headerSize, 45)));
 
     Draw3D(Rect(GetDrawPos() + DrawPoint(0, 32), Extent(GetSize().x, 13)), TC_GREEN1, true);
 
@@ -184,7 +185,8 @@ void ctrlTab::Msg_Group_CheckboxChange(const unsigned /*group_id*/, const unsign
     GetParent()->Msg_Group_CheckboxChange(this->GetID(), ctrl_id, checked);
 }
 
-void ctrlTab::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short position)
+void ctrlTab::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                       const unsigned short position)
 {
     GetParent()->Msg_Group_ProgressChange(this->GetID(), ctrl_id, position);
 }
@@ -204,17 +206,20 @@ void ctrlTab::Msg_Group_Timer(const unsigned /*group_id*/, const unsigned ctrl_i
     GetParent()->Msg_Group_Timer(this->GetID(), ctrl_id);
 }
 
-void ctrlTab::Msg_Group_TableSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const boost::optional<unsigned>& selection)
+void ctrlTab::Msg_Group_TableSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                        const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableSelectItem(this->GetID(), ctrl_id, selection);
 }
 
-void ctrlTab::Msg_Group_TableRightButton(const unsigned /*group_id*/, const unsigned ctrl_id, const boost::optional<unsigned>& selection)
+void ctrlTab::Msg_Group_TableRightButton(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                         const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableRightButton(this->GetID(), ctrl_id, selection);
 }
 
-void ctrlTab::Msg_Group_TableLeftButton(const unsigned /*group_id*/, const unsigned ctrl_id, const boost::optional<unsigned>& selection)
+void ctrlTab::Msg_Group_TableLeftButton(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                        const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableLeftButton(this->GetID(), ctrl_id, selection);
 }

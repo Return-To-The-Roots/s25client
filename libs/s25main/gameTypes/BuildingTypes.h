@@ -62,8 +62,9 @@ struct WaresNeeded : std::array<GoodType, 3>
 /// Describes the work the building does
 struct BldWorkDescription
 {
-    BldWorkDescription(boost::optional<Job> job = boost::none, GoodType producedWare = GD_NOTHING, WaresNeeded waresNeeded = WaresNeeded(),
-                       uint8_t numSpacesPerWare = 6, bool useOneWareEach = true)
+    BldWorkDescription(boost::optional<Job> job = boost::none, GoodType producedWare = GD_NOTHING,
+                       WaresNeeded waresNeeded = WaresNeeded(), uint8_t numSpacesPerWare = 6,
+                       bool useOneWareEach = true)
         : job(std::move(job)), producedWare(producedWare), waresNeeded(waresNeeded), numSpacesPerWare(numSpacesPerWare),
           useOneWareEach(useOneWareEach)
     {}

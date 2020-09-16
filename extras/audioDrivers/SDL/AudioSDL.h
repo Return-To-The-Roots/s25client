@@ -58,7 +58,8 @@ public:
     bool IsEffectPlaying(EffectPlayId play_id) override;
     /// Changes volume [0..256) of a played sound (if it is still playing) relative to the master effect volume
     void ChangeVolume(EffectPlayId play_id, uint8_t volume) override;
-    /// Set the master effect volume [0..256) at which all effects will be played. Changing the volume of an effect will be relative to this
+    /// Set the master effect volume [0..256) at which all effects will be played. Changing the volume of an effect will
+    /// be relative to this
     void SetMasterEffectVolume(uint8_t volume) override;
     /// Sets the music volume [0..256)
     void SetMusicVolume(uint8_t volume) override;

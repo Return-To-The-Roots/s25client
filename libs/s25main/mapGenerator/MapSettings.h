@@ -30,8 +30,8 @@ struct LandscapeDesc;
 struct MapSettings
 {
     MapSettings()
-        : numPlayers(2), size(MapExtent::all(256)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15), minPlayerRadius(0.31),
-          maxPlayerRadius(0.51), type(0), style(MapStyle::Random)
+        : numPlayers(2), size(MapExtent::all(256)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15),
+          minPlayerRadius(0.31), maxPlayerRadius(0.51), type(0), style(MapStyle::Random)
     {}
 
     void Validate();

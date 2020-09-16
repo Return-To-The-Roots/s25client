@@ -52,6 +52,7 @@ public:
     bool Msg_MouseMove(const MouseCoords& mc) override;
 
 private:
-    boost::optional<unsigned> selection_; /// Currently selected button ID, must be set via SetSelection after initialization
-    int select_type;                      /// Typ der Selektierung
+    boost::optional<unsigned>
+      selection_;    /// Currently selected button ID, must be set via SetSelection after initialization
+    int select_type; /// Typ der Selektierung
 };

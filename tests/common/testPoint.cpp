@@ -29,7 +29,8 @@ using rttr::test::randomValue;
 using SignedTypes = boost::mpl::list<int8_t, int16_t, int32_t, int64_t, float, double>;
 // Custom trait to support float/double
 template<typename T>
-using make_unsigned_t = typename std::conditional_t<std::is_floating_point<T>::value, std::common_type<T>, std::make_unsigned<T>>::type;
+using make_unsigned_t =
+  typename std::conditional_t<std::is_floating_point<T>::value, std::common_type<T>, std::make_unsigned<T>>::type;
 
 template<typename T>
 constexpr T abs(T val)

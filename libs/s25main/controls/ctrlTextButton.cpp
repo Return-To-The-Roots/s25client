@@ -22,8 +22,9 @@
 /// Offset of text to origin of the button
 static constexpr unsigned contentOffset = 2;
 
-ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
-                               const std::string& text, const glFont* font, const std::string& tooltip)
+ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size,
+                               const TextureColor tc, const std::string& text, const glFont* font,
+                               const std::string& tooltip)
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
 {}
 
@@ -55,6 +56,6 @@ void ctrlTextButton::DrawContent() const
     }
 
     const unsigned short offset = isPressed ? contentOffset : 0;
-    font->Draw(GetDrawPos() + GetSize() / 2u + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER, color,
-               maxTextWidth);
+    font->Draw(GetDrawPos() + GetSize() / 2u + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER,
+               color, maxTextWidth);
 }

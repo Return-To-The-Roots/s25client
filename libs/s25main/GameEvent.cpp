@@ -27,8 +27,8 @@ GameEvent::GameEvent(unsigned instanceId, GameObject* obj, unsigned startGF, uns
 }
 
 GameEvent::GameEvent(SerializedGameData& sgd, const unsigned instanceId)
-    : instanceId(sgd.AddEvent(instanceId, this)), obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)), startGF(sgd.PopUnsignedInt()),
-      length(sgd.PopUnsignedInt()), id(sgd.PopUnsignedInt())
+    : instanceId(sgd.AddEvent(instanceId, this)), obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)),
+      startGF(sgd.PopUnsignedInt()), length(sgd.PopUnsignedInt()), id(sgd.PopUnsignedInt())
 {
     RTTR_Assert(obj);
 }

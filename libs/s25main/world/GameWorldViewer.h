@@ -104,7 +104,8 @@ private:
     /// Visual node status (might be different than world if GameCommand is just sent) to hide network latency
     struct VisualMapNode
     {
-        helpers::EnumArray<PointRoad, RoadDir> roads; // If != 0 then this road value is used (road construction) else real road is used
+        helpers::EnumArray<PointRoad, RoadDir>
+          roads; // If != 0 then this road value is used (road construction) else real road is used
         BuildingQuality bq;
     };
     unsigned playerId_;

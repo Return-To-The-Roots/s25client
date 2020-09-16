@@ -85,7 +85,8 @@ public:
     Extent GetSize() const;
     /// gets the extent of the window in absolute coordinates
     Rect GetDrawRect() const;
-    /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to content)
+    /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to
+    /// content)
     virtual Rect GetBoundaryRect() const;
     /// setzt die Größe des Fensters
     virtual void Resize(const Extent& newSize) { size_ = newSize; }
@@ -141,65 +142,70 @@ public:
     template<typename T>
     T* AddCtrl(T* ctrl);
 
-    ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation, unsigned short size = 36,
-                                      const std::string& tooltip = "");
-    ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
-                              const glFont* font, const std::string& tooltip = "");
-    ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor,
-                               const std::string& tooltip = "");
+    ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation,
+                                      unsigned short size = 36, const std::string& tooltip = "");
+    ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                              const std::string& text, const glFont* font, const std::string& tooltip = "");
+    ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                               unsigned fillColor, const std::string& tooltip = "");
     ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
                                const std::string& tooltip = "");
-    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Bitmap* image,
-                               const std::string& tooltip = "");
+    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                               glArchivItem_Bitmap* image, const std::string& tooltip = "");
     ctrlChat* AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
-    ctrlCheck* AddCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
-                           const glFont* font, bool readonly = false);
-    ctrlComboBox* AddComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
-                              unsigned short max_list_height, bool readonly = false);
-    ctrlDeepening* AddTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
-                                    const glFont* font, unsigned color, FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
-    ctrlDeepening* AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor);
+    ctrlCheck* AddCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                           const std::string& text, const glFont* font, bool readonly = false);
+    ctrlComboBox* AddComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                              const glFont* font, unsigned short max_list_height, bool readonly = false);
+    ctrlDeepening* AddTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                    const std::string& text, const glFont* font, unsigned color,
+                                    FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
+    ctrlDeepening* AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                     unsigned fillColor);
     ctrlEdit* AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                       unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
     ctrlGroup* AddGroup(unsigned id);
     ctrlImage* AddImage(unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip = "");
     ctrlImage* AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip = "");
     ctrlList* AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
-    ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
-                                FontStyle format = {});
+    ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                const glFont* font, FontStyle format = {});
     ctrlOptionGroup* AddOptionGroup(unsigned id, int select_type);
     ctrlMultiSelectGroup* AddMultiSelectGroup(unsigned id, int select_type);
-    ctrlPercent* AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color, const glFont* font,
-                            const unsigned short* percentage);
-    ctrlProgress* AddProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned short button_minus,
-                              unsigned short button_plus, unsigned short maximum, const std::string& tooltip = "",
-                              const Extent& padding = Extent(0, 0), unsigned force_color = 0, const std::string& button_minus_tooltip = "",
+    ctrlPercent* AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
+                            const glFont* font, const unsigned short* percentage);
+    ctrlProgress* AddProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                              unsigned short button_minus, unsigned short button_plus, unsigned short maximum,
+                              const std::string& tooltip = "", const Extent& padding = Extent(0, 0),
+                              unsigned force_color = 0, const std::string& button_minus_tooltip = "",
                               const std::string& button_plus_tooltip = "");
-    ctrlScrollBar* AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height, TextureColor tc,
-                                unsigned short page_size);
+    ctrlScrollBar* AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
+                                TextureColor tc, unsigned short page_size);
     ctrlTab* AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
     ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                         std::vector<TableColumn> columns);
-    ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format, const glFont* font);
-    TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
-                                      const glFont* font);
+    ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
+                      const glFont* font);
+    TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
+                                      FontStyle format, const glFont* font);
     ctrlTimer* AddTimer(unsigned id, unsigned timeout);
     /// fügt ein vertieftes variables TextCtrl hinzu.
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-    ctrlVarDeepening* AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& formatstr,
-                                      const glFont* font, unsigned color, unsigned parameters, ...);
+    ctrlVarDeepening* AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                                      const std::string& formatstr, const glFont* font, unsigned color,
+                                      unsigned parameters, ...);
     /// fügt ein variables TextCtrl hinzu.
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-    ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, FontStyle format,
-                            const glFont* font, unsigned parameters, ...);
+    ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color,
+                            FontStyle format, const glFont* font, unsigned parameters, ...);
     ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* map);
 
     /// Draw a 3D rectangle (e.g. button)
-    static void Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false, bool illuminated = false,
-                       unsigned contentColor = COLOR_WHITE);
+    static void Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
+                       bool illuminated = false, unsigned contentColor = COLOR_WHITE);
     static void Draw3DBorder(const Rect& rect, TextureColor tc, bool elevated);
-    static void Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false, bool illuminated = false,
-                              unsigned contentColor = COLOR_WHITE);
+    static void Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
+                              bool illuminated = false, unsigned contentColor = COLOR_WHITE);
     /// Zeichnet ein Rechteck
     static void DrawRectangle(const Rect& rect, unsigned color);
     /// Zeichnet eine Linie
@@ -254,9 +260,15 @@ public:
     virtual void Msg_Group_ScrollShow(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*visible*/) {}
     virtual void Msg_Group_OptionGroupChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
     virtual void Msg_Group_Timer(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_TableSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
-    virtual void Msg_Group_TableRightButton(unsigned /*group_id*/, unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
-    virtual void Msg_Group_TableLeftButton(unsigned /*group_id*/, unsigned /*ctrl_id*/, const boost::optional<unsigned>& /*selection*/) {}
+    virtual void Msg_Group_TableSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/,
+                                           const boost::optional<unsigned>& /*selection*/)
+    {}
+    virtual void Msg_Group_TableRightButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
+                                            const boost::optional<unsigned>& /*selection*/)
+    {}
+    virtual void Msg_Group_TableLeftButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
+                                           const boost::optional<unsigned>& /*selection*/)
+    {}
 
 protected:
     enum ButtonState

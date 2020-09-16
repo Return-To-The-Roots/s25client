@@ -18,7 +18,7 @@
 #pragma once
 
 #ifdef _WIN32
-#include <windows.h>
+#    include <windows.h>
 BOOL WINAPI ConsoleSignalHandler(DWORD dwCtrlType);
 #else
 /// Kill instantly on CTRL-C or just terminate

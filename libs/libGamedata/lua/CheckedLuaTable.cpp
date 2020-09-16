@@ -37,7 +37,8 @@ void CheckedLuaTable::checkUnused()
     std::vector<std::string> tableKeys = table.keys<std::string>();
     std::sort(tableKeys.begin(), tableKeys.end());
     std::vector<std::string> unusedKeys;
-    std::set_difference(tableKeys.begin(), tableKeys.end(), accessedKeys_.begin(), accessedKeys_.end(), std::back_inserter(unusedKeys));
+    std::set_difference(tableKeys.begin(), tableKeys.end(), accessedKeys_.begin(), accessedKeys_.end(),
+                        std::back_inserter(unusedKeys));
     for(const std::string& unusedKey : unusedKeys)
         LOG.write("\nERROR: Did not use key '%1%' in a lua table. This is most likely a bug!\n") % unusedKey;
     RTTR_Assert(unusedKeys.empty());

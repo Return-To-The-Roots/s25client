@@ -48,7 +48,8 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
     // Every nth tree produces animals, but no palm and pineapple trees
     const std::array<unsigned, 6> TREESPERANIMALSPAWN = {20, 13, 10, 6, 4, 2};
     produce_animals =
-      (type < 3 || type > 5) && (RANDOM_RAND(GetObjId(), TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)]) == 0);
+      (type < 3 || type > 5)
+      && (RANDOM_RAND(GetObjId(), TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)]) == 0);
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
@@ -76,8 +77,9 @@ void noTree::Serialize_noTree(SerializedGameData& sgd) const
 }
 
 noTree::noTree(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())),
-      event(sgd.PopEvent()), produce_animal_event(sgd.PopEvent()), produce_animals(sgd.PopBool())
+    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()),
+      state(State(sgd.PopUnsignedChar())), event(sgd.PopEvent()), produce_animal_event(sgd.PopEvent()),
+      produce_animals(sgd.PopBool())
 {}
 
 void noTree::Draw(DrawPoint drawPt)
@@ -88,8 +90,10 @@ void noTree::Draw(DrawPoint drawPt)
         case STATE_FALLING_WAIT:
         {
             // Wenn er ausgewachsen ist, dann animiert zeichnen
-            LOADER.tree_cache[type][GAMECLIENT.GetGlobalAnimation(8, 7 - GetX() % 2, 3 + GetY() % 3, GetX() * GetY() * 10 * type)].draw(
-              drawPt);
+            LOADER
+              .tree_cache[type]
+                         [GAMECLIENT.GetGlobalAnimation(8, 7 - GetX() % 2, 3 + GetY() % 3, GetX() * GetY() * 10 * type)]
+              .draw(drawPt);
 
             // je mehr Bäume gezeichnet, desto mehr Vogelgezwitscher
             ++DRAW_COUNTER;
@@ -164,7 +168,8 @@ void noTree::HandleEvent(const unsigned id)
         break;
         case STATE_GROWING_GROW:
         {
-            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter wächst
+            // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter
+            // wächst
             if(++size != 3)
             {
                 event = GetEvMgr().AddEvent(this, WAIT_LENGTH);
@@ -231,8 +236,10 @@ void noTree::DontFall()
 void noTree::ProduceAnimal()
 {
     // neues Tier erzeugen, zufälliger Typ
-    static const std::array<Species, 6> possibleSpecies = {{SPEC_RABBITWHITE, SPEC_RABBITGREY, SPEC_FOX, SPEC_STAG, SPEC_DEER, SPEC_SHEEP}};
-    auto* animal = new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
+    static const std::array<Species, 6> possibleSpecies = {
+      {SPEC_RABBITWHITE, SPEC_RABBITGREY, SPEC_FOX, SPEC_STAG, SPEC_DEER, SPEC_SHEEP}};
+    auto* animal =
+      new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
     // In die Landschaft setzen
     gwg->AddFigure(pos, animal);
     // Und ihm die Pforten geben..

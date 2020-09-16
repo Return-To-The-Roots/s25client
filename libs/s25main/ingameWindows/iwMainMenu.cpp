@@ -43,11 +43,13 @@
 #include "gameData/const_gui_ids.h"
 
 iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_MAINSELECTION, IngameWindow::posLastOrCenter, Extent(190, 286), _("Main selection"), LOADER.GetImageN("io", 5)),
+    : IngameWindow(CGI_MAINSELECTION, IngameWindow::posLastOrCenter, Extent(190, 286), _("Main selection"),
+                   LOADER.GetImageN("io", 5)),
       gwv(gwv), gcFactory(gcFactory)
 {
     // Verteilung
-    AddImageButton(0, DrawPoint(12, 22), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 134), _("Distribution of goods"));
+    AddImageButton(0, DrawPoint(12, 22), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 134),
+                   _("Distribution of goods"));
     // Transport
     AddImageButton(1, DrawPoint(68, 22), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 198), _("Transport"));
     // Werkzeugproduktion
@@ -55,7 +57,8 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
     // Statistiken
     AddImageButton(3, DrawPoint(12, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 166), _("General statistics"));
-    AddImageButton(4, DrawPoint(54, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 135), _("Merchandise statistics"));
+    AddImageButton(4, DrawPoint(54, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 135),
+                   _("Merchandise statistics"));
     AddImageButton(5, DrawPoint(96, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 132), _("Buildings"));
 
     // Inventur
@@ -70,7 +73,8 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
     // Baureihenfolge
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
-        AddImageButton(10, DrawPoint(12, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
+        AddImageButton(10, DrawPoint(12, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 24),
+                       _("Building sequence"));
 
     // Diplomatie (todo: besseres Bild suchen)
     AddImageButton(11, DrawPoint(68, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
@@ -146,8 +150,8 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 9: // Schiffe
         {
-            WINDOWMANAGER.ToggleWindow(
-              std::make_unique<iwShip>(gwv, gcFactory, gwv.GetViewer().GetPlayer().GetShipByID(0), IngameWindow::posCenter));
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwShip>(
+              gwv, gcFactory, gwv.GetViewer().GetPlayer().GetShipByID(0), IngameWindow::posCenter));
         }
         break;
         case 10: // Baureihenfolge

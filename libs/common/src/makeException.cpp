@@ -18,11 +18,11 @@
 #include "makeException.h"
 #include <boost/system/config.hpp>
 #ifdef BOOST_WINDOWS_API
-#include <windows.h>
+#    include <windows.h>
 #elif defined(BOOST_POSIX_API)
-#include <cerrno>
+#    include <cerrno>
 #else
-#error "Must define windows or posix API"
+#    error "Must define windows or posix API"
 #endif
 
 std::error_code GetLastErrorCode()

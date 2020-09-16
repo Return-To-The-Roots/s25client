@@ -271,8 +271,8 @@ void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsi
 }
 
 template<bool T_limitWidth>
-unsigned glFont::getWidthInternal(const std::string::const_iterator& begin, const std::string::const_iterator& end, unsigned maxWidth,
-                                  unsigned* maxNumChars) const
+unsigned glFont::getWidthInternal(const std::string::const_iterator& begin, const std::string::const_iterator& end,
+                                  unsigned maxWidth, unsigned* maxNumChars) const
 {
     unsigned curLen = 0;
     for(auto it = begin; it != end;)
@@ -362,7 +362,8 @@ glFont::WrapInfo glFont::GetWrapInfo(const std::string& text, const unsigned sho
     const unsigned spaceWidth = CharWidth(' ');
 
     const auto makeLineRange = [&text, &itLineStart](const auto& itLineEnd) {
-        return WrapInfo::LineRange{static_cast<unsigned>(itLineStart - text.begin()), static_cast<unsigned>(itLineEnd - itLineStart)};
+        return WrapInfo::LineRange{static_cast<unsigned>(itLineStart - text.begin()),
+                                   static_cast<unsigned>(itLineEnd - itLineStart)};
     };
 
     while(true)

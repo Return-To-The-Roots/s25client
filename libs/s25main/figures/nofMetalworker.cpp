@@ -39,7 +39,8 @@ nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, n
     : nofWorkman(JOB_METALWORKER, pos, player, workplace)
 {
     toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
-        if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged) && note.player == this->player)
+        if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged)
+           && note.player == this->player)
             CheckForOrders();
     });
 }
@@ -57,14 +58,16 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
         nextProducedTool = sgd.PopOptionalEnum<GoodType>();
     if(state == STATE_ENTERBUILDING && current_ev == nullptr && !ware && !nextProducedTool)
     {
-        LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, "
+        LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this "
+                  "with a new game, "
                   "report this!");
         RTTR_Assert(false);
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         current_ev = GetEvMgr().AddEvent(this, 1000, 2);
     }
     toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
-        if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged) && note.player == this->player)
+        if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged)
+           && note.player == this->player)
             CheckForOrders();
     });
 }
@@ -179,8 +182,9 @@ helpers::OptionalEnum<GoodType> nofMetalworker::GetOrderedTool()
     owner.ToolOrderProcessed(toolIdx);
 
     if(!HasToolOrder())
-        SendPostMessage(
-          player, std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PostCategory::Economy));
+        SendPostMessage(player,
+                        std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(),
+                                                  _("Completed the ordered amount of tools."), PostCategory::Economy));
 
     return TOOLS[toolIdx];
 }

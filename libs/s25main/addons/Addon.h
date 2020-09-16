@@ -40,7 +40,8 @@ class Addon
 {
 public:
     Addon(const AddonId id, AddonGroup groups, std::string name, std::string description, unsigned default_status)
-        : id_(id), groups_(groups), name_(std::move(name)), description_(std::move(description)), defaultStatus_(default_status)
+        : id_(id), groups_(groups), name_(std::move(name)), description_(std::move(description)),
+          defaultStatus_(default_status)
     {}
     virtual ~Addon() = default;
 

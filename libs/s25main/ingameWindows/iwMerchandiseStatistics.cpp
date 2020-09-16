@@ -55,29 +55,34 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
     // Waren-Buttons
     // obere Reihe
     ctrlMultiSelectGroup* types = AddMultiSelectGroup(22, ctrlOptionGroup::ILLUMINATE);
-    types->AddImageButton(1, DrawPoint(17, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_WOOD), _("Wood"));
-    types->AddImageButton(2, DrawPoint(48, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_BOARDS),
-                          _("Boards"));
-    types->AddImageButton(3, DrawPoint(79, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_STONES),
-                          _("Stones"));
+    types->AddImageButton(1, DrawPoint(17, 192), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_WOOD), _("Wood"));
+    types->AddImageButton(2, DrawPoint(48, 192), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_BOARDS), _("Boards"));
+    types->AddImageButton(3, DrawPoint(79, 192), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_STONES), _("Stones"));
     types->AddImageButton(4, DrawPoint(110, 192), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 80), _("Food"));
-    types->AddImageButton(5, DrawPoint(141, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_WATER),
-                          _("Water"));
-    types->AddImageButton(6, DrawPoint(172, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_BEER), _("Beer"));
-    types->AddImageButton(7, DrawPoint(203, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_COAL), _("Coal"));
+    types->AddImageButton(5, DrawPoint(141, 192), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_WATER), _("Water"));
+    types->AddImageButton(6, DrawPoint(172, 192), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_BEER), _("Beer"));
+    types->AddImageButton(7, DrawPoint(203, 192), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_COAL), _("Coal"));
 
     // untere Reihe
-    types->AddImageButton(8, DrawPoint(17, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_IRONORE),
-                          _("Ironore"));
-    types->AddImageButton(9, DrawPoint(48, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_GOLD), _("Gold"));
-    types->AddImageButton(10, DrawPoint(79, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_IRON), _("Iron"));
-    types->AddImageButton(11, DrawPoint(110, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_COINS),
-                          _("Coins"));
-    types->AddImageButton(12, DrawPoint(141, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_HAMMER),
-                          _("Tools"));
+    types->AddImageButton(8, DrawPoint(17, 227), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_IRONORE), _("Ironore"));
+    types->AddImageButton(9, DrawPoint(48, 227), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_GOLD), _("Gold"));
+    types->AddImageButton(10, DrawPoint(79, 227), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_IRON), _("Iron"));
+    types->AddImageButton(11, DrawPoint(110, 227), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_COINS), _("Coins"));
+    types->AddImageButton(12, DrawPoint(141, 227), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_HAMMER), _("Tools"));
     types->AddImageButton(13, DrawPoint(172, 227), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 111), _("Weapons"));
-    types->AddImageButton(14, DrawPoint(203, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_BOAT),
-                          _("Boats"));
+    types->AddImageButton(14, DrawPoint(203, 227), Extent(30, 30), TC_GREY,
+                          LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_BOAT), _("Boats"));
 
     // Hilfe
     AddImageButton(16, DrawPoint(17, 261), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
@@ -114,11 +119,11 @@ void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 16: // Hilfe
         {
-            WINDOWMANAGER.ReplaceWindow(
-              std::make_unique<iwHelp>(_("The merchandise statistics window allows you to check the quantities "
-                                         "of your merchandise. By clicking the left mouse button you can switch "
-                                         "the display of individual goods on and off. These can displayed over "
-                                         "four different time periods. To delete all displays, click on the wastebasket button.")));
+            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(
+              _("The merchandise statistics window allows you to check the quantities "
+                "of your merchandise. By clicking the left mouse button you can switch "
+                "the display of individual goods on and off. These can displayed over "
+                "four different time periods. To delete all displays, click on the wastebasket button.")));
         }
         break;
         case 17: // Alle abwählen
@@ -198,10 +203,11 @@ void iwMerchandiseStatistics::DrawStatistic()
         {
             DrawPoint drawPos = topLeft;
             drawPos.x += (NUM_STAT_STEPS - i) * stepX;
-            drawPos.y +=
-              sizeY
-              - ((stat.merchandiseData[it - 1][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)]) * sizeY)
-                  / max;
+            drawPos.y += sizeY
+                         - ((stat.merchandiseData[it - 1][(currentIndex >= i) ? (currentIndex - i) :
+                                                                                (NUM_STAT_STEPS - i + currentIndex)])
+                            * sizeY)
+                             / max;
             if(i != 0)
             {
                 DrawLine(drawPos, previous, 2, BarColors[it - 1]);
@@ -249,7 +255,8 @@ void iwMerchandiseStatistics::DrawAxis()
 
     // Striche an der Y-Achse
     DrawLine(topLeft + DrawPoint(sizeX - 3, 0), topLeft + DrawPoint(sizeX + 4, 0), 1, MakeColor(255, 88, 44, 16));
-    DrawLine(topLeft + DrawPoint(sizeX - 3, sizeY / 2), topLeft + DrawPoint(sizeX + 4, sizeY / 2), 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(sizeX - 3, sizeY / 2), topLeft + DrawPoint(sizeX + 4, sizeY / 2), 1,
+             MakeColor(255, 88, 44, 16));
 
     // Striche an der X-Achse + Beschriftung
     // Zunächst die 0, die haben alle
@@ -261,31 +268,36 @@ void iwMerchandiseStatistics::DrawAxis()
     {
         case STAT_15M:
             // -15
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-15");
             timeAnnotations[0]->SetVisible(true);
 
             // -12
-            DrawLine(topLeft + DrawPoint(40, sizeY + 2), topLeft + DrawPoint(40, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(40, sizeY + 2), topLeft + DrawPoint(40, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(40, sizeY + 6));
             timeAnnotations[1]->SetText("-12");
             timeAnnotations[1]->SetVisible(true);
 
             // -9
-            DrawLine(topLeft + DrawPoint(75, sizeY + 2), topLeft + DrawPoint(75, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(75, sizeY + 2), topLeft + DrawPoint(75, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(75, sizeY + 6));
             timeAnnotations[2]->SetText("-9");
             timeAnnotations[2]->SetVisible(true);
 
             // -6
-            DrawLine(topLeft + DrawPoint(110, sizeY + 2), topLeft + DrawPoint(110, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(110, sizeY + 2), topLeft + DrawPoint(110, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(110, sizeY + 6));
             timeAnnotations[3]->SetText("-6");
             timeAnnotations[3]->SetVisible(true);
 
             // -3
-            DrawLine(topLeft + DrawPoint(145, sizeY + 2), topLeft + DrawPoint(145, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(145, sizeY + 2), topLeft + DrawPoint(145, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(145, sizeY + 6));
             timeAnnotations[4]->SetText("-3");
             timeAnnotations[4]->SetVisible(true);
@@ -294,62 +306,72 @@ void iwMerchandiseStatistics::DrawAxis()
             break;
         case STAT_1H:
             // -60
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-60");
             timeAnnotations[0]->SetVisible(true);
 
             // -50
-            DrawLine(topLeft + DrawPoint(35, sizeY + 2), topLeft + DrawPoint(35, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(35, sizeY + 2), topLeft + DrawPoint(35, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(35, sizeY + 6));
             timeAnnotations[1]->SetText("-50");
             timeAnnotations[1]->SetVisible(true);
 
             // -40
-            DrawLine(topLeft + DrawPoint(64, sizeY + 2), topLeft + DrawPoint(64, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(64, sizeY + 2), topLeft + DrawPoint(64, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(64, sizeY + 6));
             timeAnnotations[2]->SetText("-40");
             timeAnnotations[2]->SetVisible(true);
 
             // -30
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[3]->SetText("-30");
             timeAnnotations[3]->SetVisible(true);
 
             // -20
-            DrawLine(topLeft + DrawPoint(122, sizeY + 2), topLeft + DrawPoint(122, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(122, sizeY + 2), topLeft + DrawPoint(122, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(122, sizeY + 6));
             timeAnnotations[4]->SetText("-20");
             timeAnnotations[4]->SetVisible(true);
 
             // -10
-            DrawLine(topLeft + DrawPoint(151, sizeY + 2), topLeft + DrawPoint(151, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(151, sizeY + 2), topLeft + DrawPoint(151, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[5]->SetPos(topLeftRel + DrawPoint(151, sizeY + 6));
             timeAnnotations[5]->SetText("-10");
             timeAnnotations[5]->SetVisible(true);
             break;
         case STAT_4H:
             // -240
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-240");
             timeAnnotations[0]->SetVisible(true);
 
             // -180
-            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->SetText("-180");
             timeAnnotations[1]->SetVisible(true);
 
             // -120
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->SetText("-120");
             timeAnnotations[2]->SetVisible(true);
 
             // -60
-            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->SetText("-60");
             timeAnnotations[3]->SetVisible(true);
@@ -359,25 +381,29 @@ void iwMerchandiseStatistics::DrawAxis()
             break;
         case STAT_16H:
             // -960
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-960");
             timeAnnotations[0]->SetVisible(true);
 
             // -720
-            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->SetText("-720");
             timeAnnotations[1]->SetVisible(true);
 
             // -480
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->SetText("-480");
             timeAnnotations[2]->SetVisible(true);
 
             // -240
-            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1,
+                     MakeColor(255, 88, 44, 16));
             timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->SetText("-240");
             timeAnnotations[3]->SetVisible(true);

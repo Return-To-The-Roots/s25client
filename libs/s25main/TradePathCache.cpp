@@ -21,7 +21,8 @@
 #include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 
-bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player)
+bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal,
+                                const unsigned char player)
 {
     RTTR_Assert(start != goal);
 
@@ -55,7 +56,8 @@ bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start,
     return true;
 }
 
-unsigned TradePathCache::FindEntry(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player) const
+unsigned TradePathCache::FindEntry(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal,
+                                   const unsigned char player) const
 {
     const GamePlayer& thisPlayer = gwg.GetPlayer(player);
 

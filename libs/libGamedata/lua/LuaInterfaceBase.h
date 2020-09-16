@@ -75,5 +75,6 @@ private:
     bool errorOccured_;
     std::map<std::string, std::string> translations_;
 
-    static std::map<std::string, std::string> getTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code);
+    static std::map<std::string, std::string> getTranslation(const kaguya::LuaRef& luaTranslations,
+                                                             const std::string& code);
 };

@@ -55,7 +55,8 @@ class NWFInfo
 
 public:
     NWFInfo() : nextNWF_(0), cmdDelay_(1) {}
-    /// Has to be called on game start with the first server info. Command delay is the number of NWS a command is sent in advance (>=1)
+    /// Has to be called on game start with the first server info. Command delay is the number of NWS a command is sent
+    /// in advance (>=1)
     void init(unsigned nextNWF, unsigned cmdDelay);
 
     /// Add an active player with the given id

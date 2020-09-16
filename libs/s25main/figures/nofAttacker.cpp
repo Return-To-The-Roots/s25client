@@ -42,8 +42,8 @@ const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal), mayBeHunted(true),
-      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(nullptr), blocking_event(nullptr), harborPos(MapPoint::Invalid()),
-      shipPos(MapPoint::Invalid()), ship_obj_id(0)
+      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(nullptr), blocking_event(nullptr),
+      harborPos(MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
@@ -51,10 +51,11 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
     attacked_goal->LinkAggressor(this);
 }
 
-nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
+nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal,
+                         const nobHarborBuilding* const harbor)
     : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal), mayBeHunted(true),
-      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(nullptr), blocking_event(nullptr), harborPos(harbor->GetPos()),
-      shipPos(MapPoint::Invalid()), ship_obj_id(0)
+      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(nullptr), blocking_event(nullptr),
+      harborPos(harbor->GetPos()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
@@ -259,10 +260,12 @@ void nofAttacker::Walked()
                 else
                 {
                     // Inform the owner of the building
-                    const std::string msg = (attacked_goal->GetGOT() == GOT_NOB_HQ) ? _("Our headquarters was destroyed!") :
-                                                                                      _("This harbor building was destroyed");
-                    SendPostMessage(attacked_goal->GetPlayer(), std::make_unique<PostMsgWithBuilding>(
-                                                                  GetEvMgr().GetCurrentGF(), msg, PostCategory::Military, *attacked_goal));
+                    const std::string msg = (attacked_goal->GetGOT() == GOT_NOB_HQ) ?
+                                              _("Our headquarters was destroyed!") :
+                                              _("This harbor building was destroyed");
+                    SendPostMessage(attacked_goal->GetPlayer(),
+                                    std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), msg,
+                                                                          PostCategory::Military, *attacked_goal));
 
                     // abreißen
                     nobBaseMilitary* tmp_goal = attacked_goal; // attacked_goal wird evtl auf 0 gesetzt!
@@ -284,7 +287,8 @@ void nofAttacker::Walked()
         {
             // Gucken, ob der Abflughafen auch noch steht und sich in unserer Hand befindet
             noBase* hb = gwg->GetNO(harborPos);
-            const bool valid_harbor = hb->GetGOT() == GOT_NOB_HARBORBUILDING && static_cast<nobHarborBuilding*>(hb)->GetPlayer() == player;
+            const bool valid_harbor =
+              hb->GetGOT() == GOT_NOB_HARBORBUILDING && static_cast<nobHarborBuilding*>(hb)->GetPlayer() == player;
 
             // Nicht mehr oder das angegriffene Gebäude kaputt? Dann müssen wir die ganze Aktion abbrechen
             if(!valid_harbor || !attacked_goal)
@@ -438,7 +442,8 @@ void nofAttacker::ContinueAtFlag()
 {
     RTTR_Assert(attacked_goal);
     // Greifen wir grad ein Gebäude an?
-    if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || (state == STATE_FIGHTING && attacked_goal->GetFlag()->GetPos() == pos))
+    if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER
+       || (state == STATE_FIGHTING && attacked_goal->GetFlag()->GetPos() == pos))
     {
         // Dann neuen Verteidiger rufen
         if(attacked_goal->CallDefender(this)) //-V522
@@ -593,8 +598,8 @@ void nofAttacker::ReachedDestination()
 
         // Post schicken "Wir werden angegriffen" TODO evtl. unschön, da jeder Attacker das dann aufruft
         SendPostMessage(attacked_goal->GetPlayer(),
-                        std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("We are under attack!"), PostCategory::Military,
-                                                              *attacked_goal));
+                        std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("We are under attack!"),
+                                                              PostCategory::Military, *attacked_goal));
 
         // Dann Verteidiger rufen
         if(attacked_goal->CallDefender(this))
@@ -699,7 +704,8 @@ void nofAttacker::OrderAggressiveDefender()
         if(bldOwner.IsAlly(attacked_goal->GetPlayer()) && bldOwner.IsAttackable(player))
         {
             // If player did not decide on sending do it now.
-            // Doing this as late as here reduces chance, that the player changed the setting when the defender is asked for
+            // Doing this as late as here reduces chance, that the player changed the setting when the defender is asked
+            // for
             if(canPlayerSendAggDefender[bldOwnerId] == 2)
             {
                 bool sendDefender = bldOwner.ShouldSendDefender();
@@ -730,7 +736,8 @@ void nofAttacker::AttackedGoalDestroyed()
     bool was_waiting_for_defender = (state == STATE_ATTACKING_WAITINGFORDEFENDER);
 
     // Wenn man gerade rumsteht, muss man sich bewegen
-    if(state == STATE_ATTACKING_WAITINGFORDEFENDER || state == STATE_ATTACKING_WAITINGAROUNDBUILDING || state == STATE_WAITINGFORFIGHT)
+    if(state == STATE_ATTACKING_WAITINGFORDEFENDER || state == STATE_ATTACKING_WAITINGAROUNDBUILDING
+       || state == STATE_WAITINGFORFIGHT)
         ReturnHomeMissionAttacking();
     else if(state == STATE_SEAATTACKING_WAITINHARBOR)
     {
@@ -831,7 +838,8 @@ void nofAttacker::CapturingWalking()
         {
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
             auto* goal = static_cast<nobMilitary*>(attacked_goal);
-            // If we are still a far-away-capturer at this point, then the building belongs to us and capturing was already finished
+            // If we are still a far-away-capturer at this point, then the building belongs to us and capturing was
+            // already finished
             if(!goal->IsFarAwayCapturer(this))
             {
                 RemoveFromAttackedGoal();
@@ -999,10 +1007,11 @@ void nofAttacker::InformTargetsAboutCancelling()
 
 void nofAttacker::RemoveFromAttackedGoal()
 {
-    // If state == STATE_ATTACKING_FIGHTINGVSDEFENDER then we probably just lost the fight against the defender, otherwise there must either
-    // be no defender or he is not waiting for us
-    RTTR_Assert(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || !attacked_goal->GetDefender()
-                || (attacked_goal->GetDefender()->GetAttacker() != this && attacked_goal->GetDefender()->GetEnemy() != this));
+    // If state == STATE_ATTACKING_FIGHTINGVSDEFENDER then we probably just lost the fight against the defender,
+    // otherwise there must either be no defender or he is not waiting for us
+    RTTR_Assert(
+      state == STATE_ATTACKING_FIGHTINGVSDEFENDER || !attacked_goal->GetDefender()
+      || (attacked_goal->GetDefender()->GetAttacker() != this && attacked_goal->GetDefender()->GetEnemy() != this));
     // No defender should be chasing us at this point
     for(auto it : attacked_goal->GetAggresiveDefenders())
         RTTR_Assert(it->GetAttacker() != this);
@@ -1022,8 +1031,8 @@ void nofAttacker::StartAttackOnOtherIsland(const MapPoint shipPos, const unsigne
     MissAttackingWalk();
 }
 
-/// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: set state,target,goal,building to 0 to avoid
-/// future problems (and add to harbor inventory)
+/// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: set
+/// state,target,goal,building to 0 to avoid future problems (and add to harbor inventory)
 void nofAttacker::SeaAttackFailedBeforeLaunch()
 {
     InformTargetsAboutCancelling();
@@ -1062,7 +1071,8 @@ void nofAttacker::StartReturnViaShip(noShip& ship)
 /// notify sea attackers that they wont return home
 void nofAttacker::HomeHarborLost()
 {
-    goal_ = nullptr; // this in combination with telling the home building that the soldier is lost should work just fine
+    goal_ =
+      nullptr; // this in combination with telling the home building that the soldier is lost should work just fine
 }
 
 /// Für Schiffsangreifer: Sagt dem Schiff Bescheid, dass wir nicht mehr kommen
@@ -1167,7 +1177,8 @@ void nofAttacker::FreeFightEnded()
 bool nofAttacker::TryToStartFarAwayCapturing(nobMilitary* dest)
 {
     // Are we already walking to the destination?
-    if(state == STATE_ATTACKING_WALKINGTOGOAL || state == STATE_MEETENEMY || state == STATE_WAITINGFORFIGHT || state == STATE_FIGHTING)
+    if(state == STATE_ATTACKING_WALKINGTOGOAL || state == STATE_MEETENEMY || state == STATE_WAITINGFORFIGHT
+       || state == STATE_FIGHTING)
     {
         // Not too far away?
         if(gwg->CalcDistance(pos, dest->GetPos()) < MAX_FAR_AWAY_CAPTURING_DISTANCE)

@@ -60,7 +60,8 @@ struct SDLMusicData
  *  Klasse für den SDL-Audiotreiber.
  */
 
-AudioSDL::AudioSDL(IAudioDriverCallback* adli) : AudioDriver(adli), master_effects_volume(255), master_music_volume(255) {}
+AudioSDL::AudioSDL(IAudioDriverCallback* adli) : AudioDriver(adli), master_effects_volume(255), master_music_volume(255)
+{}
 
 AudioSDL::~AudioSDL()
 {
@@ -215,7 +216,8 @@ void AudioSDL::PlayMusic(const driver::RawSoundHandle& sound, int repeats)
     if(sound.getType() != driver::SoundType::Music)
         return;
 
-    int channel = Mix_PlayMusic(static_cast<SDLMusicData*>(sound.getDriverData())->music, repeats < 0 ? -1 : repeats + 1);
+    int channel =
+      Mix_PlayMusic(static_cast<SDLMusicData*>(sound.getDriverData())->music, repeats < 0 ? -1 : repeats + 1);
     if(channel < 0)
         return;
     Mix_VolumeMusic(master_music_volume / 2);

@@ -114,12 +114,14 @@ public:
     bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr,
               bool isFromOverrideDir = false);
     /// Load a file or directory and its overrides into the archiv
-    bool Load(libsiedler2::Archiv& archiv, const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool Load(libsiedler2::Archiv& archiv, const boost::filesystem::path& path,
+              const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
     static std::unique_ptr<glArchivItem_Bitmap> ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
-    static std::unique_ptr<libsiedler2::Archiv> ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
-                                                                       uint8_t start_index, uint8_t color_count);
+    static std::unique_ptr<libsiedler2::Archiv> ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg,
+                                                                       const Rect& rect, uint8_t start_index,
+                                                                       uint8_t color_count);
 
     glArchivItem_Bitmap* GetImageN(const ResourceId& file, unsigned nr);
     /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
@@ -160,10 +162,17 @@ public:
     };
 
     /// Animals: Species, Direction, AnimationFrame(Last = Dead)
-    using AnimalAnimationSprites = helpers::EnumArray<std::array<glSmartBitmap, ANIMAL_MAX_ANIMATION_STEPS + 1>, Direction>;
+    using AnimalAnimationSprites =
+      helpers::EnumArray<std::array<glSmartBitmap, ANIMAL_MAX_ANIMATION_STEPS + 1>, Direction>;
     helpers::EnumArray<AnimalAnimationSprites, Species> animal_cache;
-    glSmartBitmap& getAnimalSprite(Species species, Direction dir, unsigned aniFrame) { return animal_cache[species][dir][aniFrame]; }
-    glSmartBitmap& getDeadAnimalSprite(Species species) { return animal_cache[species][Direction::WEST][ANIMAL_MAX_ANIMATION_STEPS]; }
+    glSmartBitmap& getAnimalSprite(Species species, Direction dir, unsigned aniFrame)
+    {
+        return animal_cache[species][dir][aniFrame];
+    }
+    glSmartBitmap& getDeadAnimalSprite(Species species)
+    {
+        return animal_cache[species][Direction::WEST][ANIMAL_MAX_ANIMATION_STEPS];
+    }
 
     /// Buildings: Nation, Type, Building/Skeleton
     helpers::MultiArray<glSmartBitmap, NUM_NATIONS, NUM_BUILDING_TYPES, 2> building_cache;
@@ -197,10 +206,16 @@ public:
     std::array<glSmartBitmap, NUM_NATIONS> boundary_stone_cache;
     /// BoatCarrier: Direction, AnimationFrame
     std::array<FigAnimationSprites, 6> boat_cache;
-    glSmartBitmap& getBoatCarrierSprite(Direction dir, unsigned aniFrame) { return boat_cache[rttr::enum_cast(dir)][aniFrame]; }
+    glSmartBitmap& getBoatCarrierSprite(Direction dir, unsigned aniFrame)
+    {
+        return boat_cache[rttr::enum_cast(dir)][aniFrame];
+    }
     /// Donkey: Direction, AnimationFrame
     std::array<FigAnimationSprites, 6> donkey_cache;
-    glSmartBitmap& getDonkeySprite(Direction dir, unsigned aniFrame) { return donkey_cache[rttr::enum_cast(dir)][aniFrame]; }
+    glSmartBitmap& getDonkeySprite(Direction dir, unsigned aniFrame)
+    {
+        return donkey_cache[rttr::enum_cast(dir)][aniFrame];
+    }
     /// Gateway: AnimationFrame
     std::array<glSmartBitmap, 5> gateway_cache;
     /// Fight animations for each nation, soldier type and left/right
@@ -220,7 +235,8 @@ private:
     libsiedler2::Archiv DoLoadFileOrDirectory(const boost::filesystem::path& filePath,
                                               const libsiedler2::ArchivItem_Palette* palette = nullptr);
     /// Load the file into the archive
-    libsiedler2::Archiv DoLoadFile(const boost::filesystem::path& filePath, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    libsiedler2::Archiv DoLoadFile(const boost::filesystem::path& filePath,
+                                   const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool LoadOverrideDirectory(const boost::filesystem::path& path);
 
     template<typename T>

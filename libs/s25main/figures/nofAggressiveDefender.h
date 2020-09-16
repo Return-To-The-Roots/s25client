@@ -49,7 +49,8 @@ class nofAggressiveDefender : public nofActiveSoldier
     void FreeFightEnded() override;
 
 public:
-    nofAggressiveDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank, nofAttacker* attacker);
+    nofAggressiveDefender(MapPoint pos, unsigned char player, nobBaseMilitary* home, unsigned char rank,
+                          nofAttacker* attacker);
     nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* attacker);
     nofAggressiveDefender(SerializedGameData& sgd, unsigned obj_id);
 

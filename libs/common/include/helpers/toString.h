@@ -33,7 +33,8 @@ template<typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
 std::string toString(const T value)
 {
     constexpr bool typeAtLeastInt = sizeof(T) >= sizeof(int);
-    using TargetType = std::conditional_t<typeAtLeastInt, T, std::conditional_t<std::is_signed<T>::value, int, unsigned>>;
+    using TargetType =
+      std::conditional_t<typeAtLeastInt, T, std::conditional_t<std::is_signed<T>::value, int, unsigned>>;
     return std::to_string(static_cast<TargetType>(value));
 }
 

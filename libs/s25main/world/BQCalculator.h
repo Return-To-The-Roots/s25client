@@ -148,7 +148,8 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
 
     // Build nothing if we have a flag EAST or SW
-    if(neighbourBlocks[Direction::EAST] == BlockingManner::Flag || neighbourBlocks[Direction::SOUTHWEST] == BlockingManner::Flag)
+    if(neighbourBlocks[Direction::EAST] == BlockingManner::Flag
+       || neighbourBlocks[Direction::SOUTHWEST] == BlockingManner::Flag)
         return BQ_NOTHING;
 
     //////////////////////////////////////////////////////////////////////////
@@ -178,7 +179,8 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
 
     // Castle-sized buildings have extensions -> Need non-blocking object there so it can be removed
-    // Note: S2 allowed blocking environment objects here which leads to visual bugs and problems as we can't place the extensions
+    // Note: S2 allowed blocking environment objects here which leads to visual bugs and problems as we can't place the
+    // extensions
     if(curBQ == BQ_CASTLE)
     {
         for(const Direction i : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
@@ -189,7 +191,8 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
 
     // Check for buildings in a range of 2 -> House only
-    // Note: This is inconsistent (as in the original) as it allows building a castle then a house, but not the other way round
+    // Note: This is inconsistent (as in the original) as it allows building a castle then a house, but not the other
+    // way round
     // --> Remove this check? Only possible reason why castles could not be build should be the extensions
     if(curBQ == BQ_CASTLE)
     {

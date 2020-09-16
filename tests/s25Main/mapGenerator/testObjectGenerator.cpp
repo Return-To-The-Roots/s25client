@@ -28,7 +28,10 @@ protected:
     ObjectGenerator objGen;
 
 public:
-    ObjGenFixture() : objGen(config) { BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337)); }
+    ObjGenFixture() : objGen(config)
+    {
+        BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337));
+    }
 };
 } // namespace
 
@@ -89,8 +92,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjGenFixture)
 {
     Map map(MapExtent(16, 8), "name", "author");
 
-    DescIdx<TerrainDesc> t =
-      config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::WATER && desc.Is(ETerrain::Shippable); });
+    DescIdx<TerrainDesc> t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::WATER && desc.Is(ETerrain::Shippable); });
     uint8_t water = config.worldDesc.get(t).s2Id;
 
     /**
@@ -111,7 +114,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjGenFixture)
     BOOST_REQUIRE_EQUAL(map.textureRsu[0], water);
     BOOST_REQUIRE_EQUAL(map.textureLsd[0], water);
 
-    t = config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
+    t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
     uint8_t meadow = config.worldDesc.get(t).s2Id;
     /**
      * Tests the ObjectGenerator::CreateTexture method with harbor.

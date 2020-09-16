@@ -43,10 +43,16 @@ struct BuildingNote;
 struct KeyEvent;
 class NWFInfo;
 
-class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface, public IChatCmdListener
+class dskGameInterface :
+    public Desktop,
+    public ClientInterface,
+    public GameInterface,
+    public LobbyInterface,
+    public IChatCmdListener
 {
 public:
-    dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx, bool initOGL = true);
+    dskGameInterface(const std::shared_ptr<Game>& game, std::shared_ptr<const NWFInfo> nwfInfo, unsigned playerIdx,
+                     bool initOGL = true);
     ~dskGameInterface() override;
 
     void Resize(const Extent& newSize) override;
@@ -103,7 +109,8 @@ public:
     // ansonsten gibt's nur nen Button zum Abbrechen
     void ShowRoadWindow(const Position& mousePos);
     /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
-    void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos, bool enable_military_buildings);
+    void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
+                          bool enable_military_buildings);
 
     const GameWorldView& GetView() const { return gwv; }
 

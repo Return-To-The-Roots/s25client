@@ -167,7 +167,8 @@ void ctrlGroup::Msg_Group_CheckboxChange(const unsigned /*group_id*/, const unsi
     GetParent()->Msg_Group_CheckboxChange(this->GetID(), ctrl_id, checked);
 }
 
-void ctrlGroup::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short position)
+void ctrlGroup::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                         const unsigned short position)
 {
     GetParent()->Msg_Group_ProgressChange(this->GetID(), ctrl_id, position);
 }
@@ -187,17 +188,20 @@ void ctrlGroup::Msg_Group_Timer(const unsigned /*group_id*/, const unsigned ctrl
     GetParent()->Msg_Group_Timer(this->GetID(), ctrl_id);
 }
 
-void ctrlGroup::Msg_Group_TableSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const boost::optional<unsigned>& selection)
+void ctrlGroup::Msg_Group_TableSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                          const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableSelectItem(this->GetID(), ctrl_id, selection);
 }
 
-void ctrlGroup::Msg_Group_TableRightButton(const unsigned /*group_id*/, const unsigned ctrl_id, const boost::optional<unsigned>& selection)
+void ctrlGroup::Msg_Group_TableRightButton(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                           const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableRightButton(this->GetID(), ctrl_id, selection);
 }
 
-void ctrlGroup::Msg_Group_TableLeftButton(const unsigned /*group_id*/, const unsigned ctrl_id, const boost::optional<unsigned>& selection)
+void ctrlGroup::Msg_Group_TableLeftButton(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                          const boost::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableLeftButton(this->GetID(), ctrl_id, selection);
 }

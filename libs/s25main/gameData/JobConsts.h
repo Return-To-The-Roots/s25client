@@ -72,4 +72,5 @@ const helpers::EnumArray<std::array<DrawPoint, 8>, Direction> WARE_POS_DONKEY = 
 }};
 
 /// Positionen der Ware im Boat für jede Richtung
-const helpers::EnumArray<DrawPoint, Direction> WARE_POS_BOAT = {{{11, -4}, {11, 0}, {-7, -1}, {-8, -5}, {-7, -7}, {6, -7}}};
+const helpers::EnumArray<DrawPoint, Direction> WARE_POS_BOAT = {
+  {{11, -4}, {11, 0}, {-7, -1}, {-8, -5}, {-7, -7}, {6, -7}}};

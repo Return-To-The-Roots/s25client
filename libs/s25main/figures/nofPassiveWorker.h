@@ -31,7 +31,8 @@ private:
     void Walked() override;      // wenn man gelaufen ist
     void GoalReached() override; // wenn das Ziel erreicht wurde
     void AbrogateWorkplace() override;
-    void HandleDerivedEvent(unsigned id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
+    void
+    HandleDerivedEvent(unsigned id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 
 public:
     nofPassiveWorker(Job job, MapPoint pos, unsigned char player, noRoadNode* goal);

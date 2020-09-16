@@ -25,7 +25,9 @@ struct PathConditionRoad
     const T_WorldOrViewer& worldOrViewer;
     const bool isBoatRoad;
 
-    PathConditionRoad(const T_WorldOrViewer& worldOrViewer, bool isBoatRoad) : worldOrViewer(worldOrViewer), isBoatRoad(isBoatRoad) {}
+    PathConditionRoad(const T_WorldOrViewer& worldOrViewer, bool isBoatRoad)
+        : worldOrViewer(worldOrViewer), isBoatRoad(isBoatRoad)
+    {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
     BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const

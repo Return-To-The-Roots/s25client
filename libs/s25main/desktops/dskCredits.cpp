@@ -60,7 +60,8 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     GameDataLoader gdLoader(worldDesc);
     if(!gdLoader.Load())
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game data"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+        WINDOWMANAGER.Show(
+          std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game data"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
         return;
     }
 
@@ -70,7 +71,8 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
 
     if(!LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations))
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game resources"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game resources"), this, MSB_OK,
+                                                      MSB_EXCLAMATIONRED, 0));
         return;
     }
     CreditsEntry entry = CreditsEntry("Florian Doersch (FloSoft):", GetCreditsImgOrDefault("flosoft"));
@@ -224,10 +226,12 @@ void dskCredits::DrawCredit()
         columnToY[line.column] += LargeFont->getHeight() + 5;
     }
 
-    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, FontStyle{}, SetAlpha(COLOR_RED, transparency));
+    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, FontStyle{},
+                    SetAlpha(COLOR_RED, transparency));
 
     if(itCurEntry->pic)
-        itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetRenderSize().x - 300, 70), SetAlpha(COLOR_WHITE, transparency));
+        itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetRenderSize().x - 300, 70),
+                                  SetAlpha(COLOR_WHITE, transparency));
 }
 
 template<typename T>

@@ -41,8 +41,8 @@ protected:
     const GameEvent* leaving_event;
     /// Geht gerade jemand raus? (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser
     bool go_out;
-    /// Truppen, die zwar gerade nicht im Haus sind, aber eigentlich dazu gehören und grade auf Mission sind, wo sie evtl
-    /// wieder zurückkkehren könnten (Angriff, Verteidigung etc.)
+    /// Truppen, die zwar gerade nicht im Haus sind, aber eigentlich dazu gehören und grade auf Mission sind, wo sie
+    /// evtl wieder zurückkkehren könnten (Angriff, Verteidigung etc.)
     std::list<nofActiveSoldier*> troops_on_mission;
     /// Liste von Soldaten, die dieses Gebäude angreifen
     std::list<nofAttacker*> aggressors;
@@ -140,7 +140,10 @@ public:
     // Vergleicht Gebäude anhand ihrer Bauzeit, um eine geordnete Reihenfolge hinzubekommen
     struct Comparer
     {
-        bool operator()(const nobBaseMilitary* const one, const nobBaseMilitary* const two) const { return (*one) < (*two); }
+        bool operator()(const nobBaseMilitary* const one, const nobBaseMilitary* const two) const
+        {
+            return (*one) < (*two);
+        }
     };
 
 protected:

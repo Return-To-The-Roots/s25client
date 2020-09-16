@@ -59,7 +59,8 @@ void nofGeologist::Serialize_nofGeologist(SerializedGameData& sgd) const
         sgd.PushBool(resAlreadyFound[i]);
 }
 
-nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id) : nofFlagWorker(sgd, obj_id), signs(sgd.PopUnsignedShort())
+nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id)
+    : nofFlagWorker(sgd, obj_id), signs(sgd.PopUnsignedShort())
 {
     unsigned available_nodes_count = sgd.PopUnsignedInt();
     for(unsigned i = 0; i < available_nodes_count; ++i)
@@ -103,7 +104,8 @@ void nofGeologist::Draw(DrawPoint drawPt)
                 }
             } else if(i < 16)
             {
-                LOADER.GetPlayerImage("rom_bobs", 314 + i - 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 314 + i - 6)
+                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                 if(i == 14)
                 {
                     sound = 2;
@@ -111,7 +113,8 @@ void nofGeologist::Draw(DrawPoint drawPt)
                 }
             } else if(i < 28)
             {
-                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 16) % 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 16) % 6)
+                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                 if(i == 20)
                 {
                     sound = 1;
@@ -123,7 +126,8 @@ void nofGeologist::Draw(DrawPoint drawPt)
                 }
             } else if(i < 38)
             {
-                LOADER.GetPlayerImage("rom_bobs", 314 + i - 28)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 314 + i - 28)
+                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                 if(i == 36)
                 {
                     sound = 2;
@@ -131,7 +135,8 @@ void nofGeologist::Draw(DrawPoint drawPt)
                 }
             } else if(i < 50)
             {
-                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 38) % 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 38) % 6)
+                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                 if(i == 42)
                 {
                     sound = 1;
@@ -143,7 +148,8 @@ void nofGeologist::Draw(DrawPoint drawPt)
                 }
             } else if(i < 60)
             {
-                LOADER.GetPlayerImage("rom_bobs", 314 + i - 50)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 314 + i - 50)
+                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                 if(i == 58)
                 {
                     sound = 2;
@@ -151,7 +157,8 @@ void nofGeologist::Draw(DrawPoint drawPt)
                 }
             } else
             {
-                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 60) % 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 324 + (i - 60) % 6)
+                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                 if(i == 64)
                 {
                     sound = 1;
@@ -185,7 +192,8 @@ void nofGeologist::Draw(DrawPoint drawPt)
             } else
             {
                 std::array<unsigned char, 9> ids = {1, 0, 1, 2, 1, 0, 1, 2, 1};
-                LOADER.GetPlayerImage("rom_bobs", 361 + ids[i - 7])->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 361 + ids[i - 7])
+                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
             }
 
             if(i == 4)
@@ -221,7 +229,8 @@ void nofGeologist::Walked()
 {
     if(state == STATE_GEOLOGIST_GOTONEXTNODE)
     {
-        // Check if the flag still exists (not destroyed) and the goal node is still available (something could be build there)
+        // Check if the flag still exists (not destroyed) and the goal node is still available (something could be build
+        // there)
         if(!flag || !IsNodeGood(node_goal))
         {
             // alten Punkt wieder freigeben
@@ -301,7 +310,8 @@ bool nofGeologist::IsNodeGood(const MapPoint pt) const
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
     const noBase& obj = *gwg->GetNO(pt);
-    return PathConditionHuman(*gwg).IsNodeOk(pt) && obj.GetGOT() != GOT_SIGN && obj.GetType() != NOP_FLAG && obj.GetType() != NOP_TREE;
+    return PathConditionHuman(*gwg).IsNodeOk(pt) && obj.GetGOT() != GOT_SIGN && obj.GetType() != NOP_FLAG
+           && obj.GetType() != NOP_TREE;
 }
 
 namespace {
@@ -315,7 +325,8 @@ struct GetMapPointWithRadius
 
 void nofGeologist::LookForNewNodes()
 {
-    std::vector<GetMapPointWithRadius::result_type> pts = gwg->GetPointsInRadius(flag->GetPos(), 15, GetMapPointWithRadius());
+    std::vector<GetMapPointWithRadius::result_type> pts =
+      gwg->GetPointsInRadius(flag->GetPos(), 15, GetMapPointWithRadius());
     unsigned curMaxRadius = 15;
     bool found = false;
     for(const auto& it : pts)
@@ -449,7 +460,8 @@ void nofGeologist::SetSign(Resource resources)
 
         if(resources.getType() != Resource::Water || gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) != 1)
         {
-            SendPostMessage(player, std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
+            SendPostMessage(player,
+                            std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
         }
 
         gwg->GetNotifications().publish(ResourceNote(player, pos, resources));

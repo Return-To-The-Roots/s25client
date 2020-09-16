@@ -21,23 +21,23 @@
 
 /// Define this to 1 if you want assertions enabled
 #ifndef RTTR_ENABLE_ASSERTS
-#ifdef NDEBUG
-#define RTTR_ENABLE_ASSERTS 0
-#else
-#define RTTR_ENABLE_ASSERTS 1
-#endif
+#    ifdef NDEBUG
+#        define RTTR_ENABLE_ASSERTS 0
+#    else
+#        define RTTR_ENABLE_ASSERTS 1
+#    endif
 #endif // !RTTR_ENABLE_ASSERTS
 
 #ifdef _MSC_VER
 extern void __cdecl __debugbreak();
-#define RTTR_BREAKPOINT __debugbreak()
+#    define RTTR_BREAKPOINT __debugbreak()
 #elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
-#define RTTR_BREAKPOINT __asm__ __volatile__("int $3\n\t")
+#    define RTTR_BREAKPOINT __asm__ __volatile__("int $3\n\t")
 #elif !defined(WIN32)
-#include <csignal>
-#define RTTR_BREAKPOINT raise(SIGTRAP)
+#    include <csignal>
+#    define RTTR_BREAKPOINT raise(SIGTRAP)
 #else
-#define RTTR_BREAKPOINT
+#    define RTTR_BREAKPOINT
 #endif
 
 [[noreturn]] void RTTR_AssertFailure(const char* condition, const char* file, int line, const char* function);
@@ -54,26 +54,26 @@ bool RTTR_SetBreakOnAssertFailure(bool enabled);
     - RTTR_AssertNoThrow which does just logging and triggers a breakpoint but does not throw (e.g. for dtors)
  */
 #if RTTR_ENABLE_ASSERTS
-#define RTTR_Assert(cond)                                            \
-    do                                                               \
-    {                                                                \
-        RTTR_IGNORE_UNREACHABLE_CODE                                 \
-        if(!(cond))                                                  \
-        {                                                            \
-            if(RTTR_IsBreakOnAssertFailureEnabled())                 \
-            {                                                        \
-                RTTR_BREAKPOINT;                                     \
-            }                                                        \
-            RTTR_AssertFailure(#cond, __FILE__, __LINE__, __func__); \
-        }                                                            \
-        RTTR_POP_DIAGNOSTIC                                          \
-    } while(false)
+#    define RTTR_Assert(cond)                                            \
+        do                                                               \
+        {                                                                \
+            RTTR_IGNORE_UNREACHABLE_CODE                                 \
+            if(!(cond))                                                  \
+            {                                                            \
+                if(RTTR_IsBreakOnAssertFailureEnabled())                 \
+                {                                                        \
+                    RTTR_BREAKPOINT;                                     \
+                }                                                        \
+                RTTR_AssertFailure(#cond, __FILE__, __LINE__, __func__); \
+            }                                                            \
+            RTTR_POP_DIAGNOSTIC                                          \
+        } while(false)
 #else
-#define RTTR_Assert(cond)   \
-    do                      \
-    {                       \
-        (void)sizeof(cond); \
-    } while(false)
+#    define RTTR_Assert(cond)   \
+        do                      \
+        {                       \
+            (void)sizeof(cond); \
+        } while(false)
 #endif
 
 #define RTTR_Assert_Msg(cond, msg) RTTR_Assert((cond) && (msg))

@@ -138,7 +138,8 @@ SoundHandle AudioDriverWrapper::LoadMusic(const std::string& filepath)
     return createSoundHandle(audiodriver_->LoadMusic(filepath));
 }
 
-SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
+SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv,
+                                          const std::string& extension)
 {
     if(!audiodriver_)
         return SoundHandle();
@@ -156,7 +157,8 @@ SoundHandle AudioDriverWrapper::LoadEffect(const std::string& filepath)
     return createSoundHandle(audiodriver_->LoadEffect(filepath));
 }
 
-SoundHandle AudioDriverWrapper::LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
+SoundHandle AudioDriverWrapper::LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv,
+                                           const std::string& extension)
 {
     if(!audiodriver_)
         return SoundHandle();

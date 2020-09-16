@@ -35,8 +35,8 @@ static std::ostream& operator<<(std::ostream& os, AddonId id)
 namespace {
 
 /// Fixture for the settings tests, implements IGameLobbyController
-/// Note: Here all settings are applied immediately, in the real thing they are transmitted to the server and then applied, hence with a
-/// delay
+/// Note: Here all settings are applied immediately, in the real thing they are transmitted to the server and then
+/// applied, hence with a delay
 struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyController, public rttr::test::LogAccessor
 {
     std::vector<JoinPlayerInfo> players;

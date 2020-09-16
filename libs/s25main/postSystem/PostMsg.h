@@ -30,7 +30,8 @@ class PostMsg
 {
 public:
     /// Create a simple message
-    PostMsg(unsigned sendFrame, std::string text, PostCategory cat, const MapPoint& pt, SoundEffect soundEffect = SoundEffect::Pidgeon);
+    PostMsg(unsigned sendFrame, std::string text, PostCategory cat, const MapPoint& pt,
+            SoundEffect soundEffect = SoundEffect::Pidgeon);
     PostMsg(unsigned sendFrame, std::string text, PostCategory cat, SoundEffect soundEffect = SoundEffect::Pidgeon);
     /// Response to a diplomacy question. Last parameter states if the pact was accepted(true) or canceled(false)
     PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled,

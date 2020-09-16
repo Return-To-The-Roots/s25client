@@ -25,8 +25,8 @@
 #include "ogl/glFont.h"
 #include <utility>
 
-ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, std::string text,
-                     const glFont* font, bool readonly)
+ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                     std::string text, const glFont* font, bool readonly)
     : Window(parent, id, pos, size), tc(tc), text(std::move(text)), font(font), check(false), readonly(readonly)
 {}
 
@@ -78,8 +78,8 @@ void ctrlCheck::Draw_()
         int availableWidth = boxStartOffsetX - 4;
         if(availableWidth < 0)
             availableWidth = 0;
-        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, FontStyle::VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB),
-                   availableWidth);
+        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, FontStyle::VCENTER,
+                   (check ? COLOR_YELLOW : 0xFFBBBBBB), availableWidth);
     }
 
     DrawPoint boxPos = drawRect.getOrigin() + DrawPoint(boxStartOffsetX, spacing);

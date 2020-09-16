@@ -20,8 +20,8 @@
 #include "gameTypes/Inventory.h"
 
 /// Inventory which is divided into a real and a visual part
-/// Mainly for warehouses, where the visual part is the amount currently in the warehouse (including those, that are to be moved out)
-/// and the real part is the amount that is available for use
+/// Mainly for warehouses, where the visual part is the amount currently in the warehouse (including those, that are to
+/// be moved out) and the real part is the amount that is available for use
 struct VirtualInventory
 {
     Inventory visual, real;

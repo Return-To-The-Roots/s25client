@@ -78,7 +78,8 @@ void OpenGLRenderer::Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_
     glEnable(GL_TEXTURE_2D);
 }
 
-void OpenGLRenderer::Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated, unsigned color)
+void OpenGLRenderer::Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated,
+                                   unsigned color)
 {
     if(illuminated)
     {

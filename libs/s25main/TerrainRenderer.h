@@ -59,7 +59,8 @@ public:
     MapPoint ConvertCoords(Position pt, Position* offset = nullptr) const;
     /// Get position of node in pixels (VertexPos)
     PointF GetVertexPos(const MapPoint pt) const { return GetVertex(pt).pos; }
-    /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to GetNodePos(pt)
+    /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to
+    /// GetNodePos(pt)
     PointF GetNeighbourVertexPos(MapPoint pt, Direction dir) const;
 
     /// Callback function for altitude changes
@@ -195,13 +196,18 @@ private:
     float GetColor(const MapPoint pt) const { return GetVertex(pt).color; }
     /// liefert den Rand-Vertex an der Stelle X,Y
     PointF GetBorderPos(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderPos[triangle]; }
-    /// Get neighbour border position of a node (VertexPos) potentially shifted so that the returned value is next to GetBorderPos(pt)
+    /// Get neighbour border position of a node (VertexPos) potentially shifted so that the returned value is next to
+    /// GetBorderPos(pt)
     PointF GetNeighbourBorderPos(MapPoint pt, unsigned char triangle, Direction dir) const;
     /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
-    float GetBorderColor(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderColor[triangle]; }
+    float GetBorderColor(const MapPoint pt, unsigned char triangle) const
+    {
+        return GetVertex(pt).borderColor[triangle];
+    }
 
     /// Adds possible roads from the given point to the prepared data struct
-    void PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt, const Position& offset) const;
+    void PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt,
+                          const Position& offset) const;
     /// Draw the prepared roads
     void DrawWays(const PreparedRoads& sorted_roads) const;
 };

@@ -79,8 +79,8 @@ BOOST_AUTO_TEST_CASE(AllFilesHaveValidFormat)
             BOOST_TEST_CONTEXT("Entry '" << replaceLF(it->first) << "' => '" << replaceLF(it->second) << "'")
             {
                 BOOST_TEST(s25util::isValidUTF8(it->second));
-                // Note: "Check 50%" is invalid (ends in %) but "50% checked" is not and translations might move the % around
-                // Hence rely on the number of format args which should be consistent
+                // Note: "Check 50%" is invalid (ends in %) but "50% checked" is not and translations might move the %
+                // around Hence rely on the number of format args which should be consistent
                 try
                 {
                     const boost::format fmt(it->second);

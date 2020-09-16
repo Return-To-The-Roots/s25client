@@ -32,8 +32,8 @@ public:
     GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
 
     /// Lädt eine Karte
-    bool LoadMap(const std::shared_ptr<Game>& game, ILocalGameState& localgameState, const boost::filesystem::path& mapFilePath,
-                 const boost::filesystem::path& luaFilePath);
+    bool LoadMap(const std::shared_ptr<Game>& game, ILocalGameState& localgameState,
+                 const boost::filesystem::path& mapFilePath, const boost::filesystem::path& luaFilePath);
 
     /// Serialisiert den gesamten GameWorld
     void Serialize(SerializedGameData& sgd) const;

@@ -303,9 +303,9 @@ bool Loader::LoadSounds()
 
     if(sng_lst.empty())
     {
-        logger_.write(
-          _("WARNING: Did not find the music files.\n\tYou have to run the updater once or copy the .ogg files manually to \"%1%\" or you "
-            "won't be able to hear the music.\n"))
+        logger_.write(_("WARNING: Did not find the music files.\n\tYou have to run the updater once or copy the .ogg "
+                        "files manually to \"%1%\" or you "
+                        "won't be able to hear the music.\n"))
           % oggPath;
     }
 
@@ -402,8 +402,9 @@ void Loader::LoadDummyGUIFiles()
 bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations)
 {
     namespace res = s25::resources;
-    std::vector<std::string> files = {res::rom_bobs, res::carrier,  res::jobs,     res::boat,     res::boot_z,  res::mis0bobs,
-                                      res::mis1bobs, res::mis2bobs, res::mis3bobs, res::mis4bobs, res::mis5bobs};
+    std::vector<std::string> files = {res::rom_bobs, res::carrier,  res::jobs,     res::boat,
+                                      res::boot_z,   res::mis0bobs, res::mis1bobs, res::mis2bobs,
+                                      res::mis3bobs, res::mis4bobs, res::mis5bobs};
 
     // Add nation building graphics
     const std::string natPrefix = isWinterGFX ? "W" : "";
@@ -414,7 +415,8 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
         {
             const auto shortName = s25util::toUpper(std::string(NationNames[nation], 0, 3));
             files.push_back(std::string(s25::folders::mbob).append("/").append(shortName).append("_ICON.LST"));
-            files.push_back(std::string(s25::folders::mbob).append("/").append(natPrefix).append(shortName).append("_Z.LST"));
+            files.push_back(
+              std::string(s25::folders::mbob).append("/").append(natPrefix).append(shortName).append("_Z.LST"));
         } else
         {
             for(const std::string folder : {s25::folders::gameLstsGlobal, s25::folders::gameLstsUser})
@@ -493,8 +495,8 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                bmp.add(GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * rttr::enum_cast(dir + 3u)
-                                     + ani_step));
+                bmp.add(GetMapImageN(ANIMALCONSTS[species].walking_id
+                                     + ANIMALCONSTS[species].animation_steps * rttr::enum_cast(dir + 3u) + ani_step));
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
@@ -667,7 +669,8 @@ void Loader::fillCaches()
                     {
                         glSmartBitmap& bmp = sprites.defending[i][ani_step];
                         bmp.reset();
-                        bmp.add(getAlternative(fightAnimIds.defending[i][ani_step], altFightAnimIds.defending[i][ani_step]));
+                        bmp.add(
+                          getAlternative(fightAnimIds.defending[i][ani_step], altFightAnimIds.defending[i][ani_step]));
                         stp->add(bmp);
                     }
                 }
@@ -800,7 +803,8 @@ void Loader::fillCaches()
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
+                    bmp.add(
+                      dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
                     bmp.addShadow(GetMapImageN(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
@@ -825,7 +829,8 @@ void Loader::fillCaches()
 
             std::vector<unsigned char> buffer(width * height, 254);
 
-            image->print(&buffer.front(), width, height, libsiedler2::TextureFormat::Paletted, palette, 0, 0, 0, 0, width, height);
+            image->print(&buffer.front(), width, height, libsiedler2::TextureFormat::Paletted, palette, 0, 0, 0, 0,
+                         width, height);
 
             for(unsigned char i = 0; i < color_count; ++i)
             {
@@ -846,7 +851,8 @@ void Loader::fillCaches()
                 }
 
                 auto bitmap = std::make_unique<glArchivItem_Bitmap_Raw>();
-                bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::TextureFormat::Paletted, palette);
+                bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::TextureFormat::Paletted,
+                               palette);
                 bitmap->setNx(image->getNx());
                 bitmap->setNy(image->getNy());
 
@@ -951,12 +957,14 @@ std::vector<bfs::path> Loader::GetFilesToLoad(const bfs::path& filepath)
     const ResourceId resId = MakeResourceId(filepath);
     for(const OverrideFolder& overrideFolder : overrideFolders_)
     {
-        auto itFile = helpers::find_if(overrideFolder.files, [&resId](const bfs::path& file) { return MakeResourceId(file) == resId; });
+        auto itFile = helpers::find_if(overrideFolder.files,
+                                       [&resId](const bfs::path& file) { return MakeResourceId(file) == resId; });
         if(itFile != overrideFolder.files.end())
         {
             const auto fullFilePath = overrideFolder.path / *itFile;
             if(!bfs::exists(fullFilePath))
-                logger_.write(_("Skipping removed file %1% when checking for files to load for %2%\n")) % fullFilePath % resId;
+                logger_.write(_("Skipping removed file %1% when checking for files to load for %2%\n")) % fullFilePath
+                  % resId;
             else if(helpers::contains(result, fullFilePath))
                 logger_.write(_("Skipping duplicate override file %1% for %2%\n")) % fullFilePath % resId;
             else
@@ -1001,8 +1009,8 @@ bool Loader::MergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archi
 
 static bool isBobOverride(bfs::path filePath)
 {
-    // For files we ignore the first extension as that is the type of the file (e.g. foo.bob.lst is a bob override file packed as lst)
-    // Note that the next call to `extension()` can return an empty path if only 1 extension was present
+    // For files we ignore the first extension as that is the type of the file (e.g. foo.bob.lst is a bob override file
+    // packed as lst) Note that the next call to `extension()` can return an empty path if only 1 extension was present
     // Folders can be named anything so they must be named foo.bob directly rather than foo.bob.lst
     if(bfs::is_regular_file(filePath))
         filePath.replace_extension();
@@ -1078,9 +1086,10 @@ bool Loader::Load(const bfs::path& path, const libsiedler2::ArchivItem_Palette* 
 {
     FileEntry& entry = files_[MakeResourceId(path)];
     // Load if: 1. Not loaded
-    //          2. archive content changed BUT we are not loading an override file or the file wasn't loaded since the last override
-    //          change
-    if(entry.archiv.empty() || (entry.filesUsed != GetFilesToLoad(path) && (!isFromOverrideDir || !entry.loadedAfterOverrideChange)))
+    //          2. archive content changed BUT we are not loading an override file or the file wasn't loaded since the
+    //          last override change
+    if(entry.archiv.empty()
+       || (entry.filesUsed != GetFilesToLoad(path) && (!isFromOverrideDir || !entry.loadedAfterOverrideChange)))
     {
         if(!Load(entry.archiv, path, palette))
             return false;
@@ -1095,7 +1104,8 @@ bool Loader::Load(const bfs::path& path, const libsiedler2::ArchivItem_Palette* 
  *  @param filePath Path to file or directory
  *  @param palette Palette to use for possible graphic files
  */
-libsiedler2::Archiv Loader::DoLoadFileOrDirectory(const boost::filesystem::path& filePath, const libsiedler2::ArchivItem_Palette* palette)
+libsiedler2::Archiv Loader::DoLoadFileOrDirectory(const boost::filesystem::path& filePath,
+                                                  const libsiedler2::ArchivItem_Palette* palette)
 {
     if(!exists(filePath))
         throw LoadError(_("File or directory does not exist: %s\n"), filePath);
@@ -1129,7 +1139,8 @@ libsiedler2::Archiv Loader::DoLoadFileOrDirectory(const boost::filesystem::path&
  *  @param[in] filePath Path to file
  *  @param[in] palette palette to use if required
  */
-libsiedler2::Archiv Loader::DoLoadFile(const boost::filesystem::path& filePath, const libsiedler2::ArchivItem_Palette* palette)
+libsiedler2::Archiv Loader::DoLoadFile(const boost::filesystem::path& filePath,
+                                       const libsiedler2::ArchivItem_Palette* palette)
 {
     const Timer timer(true);
 

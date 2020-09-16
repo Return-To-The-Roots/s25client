@@ -22,7 +22,9 @@
 
 //-V:clock::time_point:813
 
-FrameCounter::FrameCounter(clock::duration updateInverval) : updateInverval_(updateInverval), framerate_(0), curNumFrames_(0) {}
+FrameCounter::FrameCounter(clock::duration updateInverval)
+    : updateInverval_(updateInverval), framerate_(0), curNumFrames_(0)
+{}
 
 void FrameCounter::update(clock::time_point curTime)
 {
@@ -82,9 +84,9 @@ FrameTimer::duration_t FrameTimer::calcTimeToNextFrame(clock::time_point curTime
 void FrameTimer::update(clock::time_point curTime)
 {
     // Ideal: nextFrameTime == curTime -> Current frame is punctual
-    // Normal: nextFrameTime + x == curTime; -targetFrameDuration < x < targetFrameDuration (1 frame early to 1 frame late)
-    // Problem: The calculations can take long so every frame is late making nextFrameTime_ be further and further behind current time
-    // So even when changing the target we will never catch up -> Limit the time difference
+    // Normal: nextFrameTime + x == curTime; -targetFrameDuration < x < targetFrameDuration (1 frame early to 1 frame
+    // late) Problem: The calculations can take long so every frame is late making nextFrameTime_ be further and further
+    // behind current time So even when changing the target we will never catch up -> Limit the time difference
     if(nextFrameTime_ + maxLagFrames_ * targetFrameDuration_ < curTime)
         nextFrameTime_ = curTime;
     else

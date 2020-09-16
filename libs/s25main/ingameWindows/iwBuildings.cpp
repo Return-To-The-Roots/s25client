@@ -57,7 +57,8 @@ const DrawPoint iconSpacing(40, 48);
 const unsigned short font_distance_y = 20;
 
 iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 480), _("Buildings"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 480), _("Buildings"),
+                   LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
     const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
@@ -113,11 +114,12 @@ void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == 32) // Help button
     {
-        WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_("The building statistics window gives you an insight into "
-                                                               "the number of buildings you have, by type. The number on "
-                                                               "the left is the total number of this type of building "
-                                                               "completed, the number on the right shows how many are "
-                                                               "currently under construction.")));
+        WINDOWMANAGER.ReplaceWindow(
+          std::make_unique<iwHelp>(_("The building statistics window gives you an insight into "
+                                     "the number of buildings you have, by type. The number on "
+                                     "the left is the total number of this type of building "
+                                     "completed, the number on the right shows how many are "
+                                     "currently under construction.")));
         return;
     }
 

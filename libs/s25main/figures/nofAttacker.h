@@ -163,7 +163,8 @@ public:
     void StartAttackOnOtherIsland(MapPoint shipPos, unsigned ship_id);
     /// Sagt Schiffsangreifern, dass sie mit dem Schiff zurück fahren
     void StartReturnViaShip(noShip& ship);
-    /// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: return home soon on a road
+    /// Sea attacker enters harbor and finds no shipping route or no longer has a valid target: return home soon on a
+    /// road
     void SeaAttackFailedBeforeLaunch();
     /// notify sea attackers that they wont return home
     void HomeHarborLost();

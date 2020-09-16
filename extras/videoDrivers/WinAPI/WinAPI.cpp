@@ -87,8 +87,8 @@ const char* GetDriverName()
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack)
-    : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), screen(nullptr), screen_dc(nullptr), screen_rc(nullptr),
-      isWindowResizable(false), isMinimized(true)
+    : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), screen(nullptr), screen_dc(nullptr),
+      screen_rc(nullptr), isWindowResizable(false), isMinimized(true)
 {
     pVideoWinAPI = this;
 }
@@ -232,7 +232,8 @@ std::pair<DWORD, DWORD> VideoWinAPI::GetStyleFlags(bool fullscreen) const
     if(fullscreen)
         return std::make_pair(WS_POPUP, WS_EX_APPWINDOW);
     else
-        return std::make_pair(WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION,
+        return std::make_pair(WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX
+                                | WS_CAPTION,
                               WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
 }
 
@@ -291,7 +292,8 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
 
     std::pair<DWORD, DWORD> style = GetStyleFlags(fullscreen);
     screen = CreateWindowExW(style.second, windowClassName.c_str(), wTitle.c_str(), style.first, wRect.left, wRect.top,
-                             wRect.right - wRect.left, wRect.bottom - wRect.top, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
+                             wRect.right - wRect.left, wRect.bottom - wRect.top, nullptr, nullptr,
+                             GetModuleHandle(nullptr), nullptr);
 
     if(screen == nullptr)
         return false;
@@ -523,7 +525,8 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
     if(c == ' ')
         return;
 
-    KeyEvent ke = {KT_CHAR, c, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0, (lParam & KF_ALTDOWN) != 0};
+    KeyEvent ke = {KT_CHAR, c, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
+                   (lParam & KF_ALTDOWN) != 0};
 
     if(c == 'V' || c == 'v' || c == 0x16)
         if(!disablepaste && ke.ctrl != 0)
@@ -677,9 +680,9 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             pVideoWinAPI->CallBack->Msg_RightUp(pVideoWinAPI->mouse_xy);
             break;
         case WM_MOUSEWHEEL:
-            // Obtain scrolling distance. For every multiple of WHEEL_DELTA, we have to fire an event, because we treat the wheel like two
-            // buttons. One wheel "step" usually produces a mouse_z  of +/- WHEEL_DELTA. But there may exist wheels without "steps" that
-            // result in lower values we have to cumulate.
+            // Obtain scrolling distance. For every multiple of WHEEL_DELTA, we have to fire an event, because we treat
+            // the wheel like two buttons. One wheel "step" usually produces a mouse_z  of +/- WHEEL_DELTA. But there
+            // may exist wheels without "steps" that result in lower values we have to cumulate.
             pVideoWinAPI->mouse_z += GET_WHEEL_DELTA_WPARAM(wParam);
 
             // We don't want to crash if there were even wheels that produce higher values...

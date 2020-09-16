@@ -48,11 +48,13 @@ public:
     // Called if player wants to cancel a pact
     bool EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
     // Called if player suggests a pact
-    void EventSuggestPact(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, unsigned duration);
+    void EventSuggestPact(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
+                          unsigned duration);
     // called if pact was canceled
     void EventPactCanceled(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
     // called if pact was created
-    void EventPactCreated(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, unsigned duration);
+    void EventPactCreated(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
+                          unsigned duration);
     // Callable from Lua
     void ClearResources();
     unsigned GetGF() const;
@@ -61,7 +63,8 @@ public:
     void Chat(int playerIdx, const std::string& msg);
     void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);
     void MissionStatement2(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
-    void MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx, bool pause);
+    void MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx,
+                           bool pause);
     void SetMissionGoal(int playerIdx, const std::string& newGoal = "");
     void PostMessageLua(int playerIdx, const std::string& msg);
     void PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y);

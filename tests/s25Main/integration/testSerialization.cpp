@@ -208,7 +208,8 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     auto* hqFlag = hq->GetFlag();
     const MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
-    auto* usualBld = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_BAKERY, usualBldPos, 0, NAT_VIKINGS));
+    auto* usualBld =
+      static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_BAKERY, usualBldPos, 0, NAT_VIKINGS));
     world.BuildRoad(0, false, hqFlag->GetPos(), std::vector<Direction>(3, Direction::EAST));
     usualBld->is_working = true;
 
@@ -344,8 +345,8 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
             SerializedGameData loadedSgd;
             loadedSgd.MakeSnapshot(sharedGame);
-            BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.GetData(), loadedSgd.GetData() + loadedSgd.GetLength(), save.sgd.GetData(),
-                                            save.sgd.GetData() + save.sgd.GetLength());
+            BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.GetData(), loadedSgd.GetData() + loadedSgd.GetLength(),
+                                            save.sgd.GetData(), save.sgd.GetData() + save.sgd.GetLength());
         }
     }
 }
@@ -547,7 +548,8 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
 
         BOOST_REQUIRE_EQUAL_COLLECTIONS(newMap.savegame->sgd.GetData(),                                    //-V807
                                         newMap.savegame->sgd.GetData() + newMap.savegame->sgd.GetLength(), //-V807
-                                        map.savegame->sgd.GetData(), map.savegame->sgd.GetData() + map.savegame->sgd.GetLength());
+                                        map.savegame->sgd.GetData(),
+                                        map.savegame->sgd.GetData() + map.savegame->sgd.GetLength());
 
         CheckReplayCmds(loadReplay, cmds);
     }

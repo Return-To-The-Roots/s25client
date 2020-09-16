@@ -88,8 +88,8 @@ public:
 
     unsigned GetPlayerId() const override { return mainPlayer.playerId; }
 
-    bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host,
-                 bool use_ipv6);
+    bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port,
+                 bool host, bool use_ipv6);
     /// Start the server and connect to it
     bool HostGame(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type);
     void Run();
@@ -121,7 +121,8 @@ public:
     FramesInfo::milliseconds32_t GetGFLength() const { return framesinfo.gf_length; }
     unsigned GetNWFLength() const { return framesinfo.nwf_length; }
     FramesInfo::milliseconds32_t GetFrameTime() const { return framesinfo.frameTime; }
-    unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator, unsigned offset);
+    unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
+                                unsigned offset);
     unsigned Interpolate(unsigned max_val, const GameEvent* ev);
     int Interpolate(int x1, int x2, const GameEvent* ev);
 
@@ -260,7 +261,8 @@ private:
     void WritePlayerInfo(SavedFile& file);
 
 public:
-    /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu verstecken
+    /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu
+    /// verstecken
     // TODO: Move to viewer
     VisualSettings visual_settings, default_settings; //-V730_NOINIT
     /// skip ahead how many gf?

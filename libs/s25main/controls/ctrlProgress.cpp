@@ -23,9 +23,10 @@
 #include "ogl/glFont.h"
 #include <cmath>
 
-ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
-                           unsigned short button_minus, unsigned short button_plus, const unsigned short maximum, const Extent& padding,
-                           const unsigned force_color, const std::string& tooltip, const std::string& button_minus_tooltip,
+ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size,
+                           const TextureColor tc, unsigned short button_minus, unsigned short button_plus,
+                           const unsigned short maximum, const Extent& padding, const unsigned force_color,
+                           const std::string& tooltip, const std::string& button_minus_tooltip,
                            const std::string& button_plus_tooltip, unsigned short* const /*write_val*/)
     : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), position(0), maximum(maximum), padding_(padding),
       force_color(force_color)
@@ -101,8 +102,8 @@ void ctrlProgress::Draw_()
     DrawRectangle(Rect(barPos + innerPadding, progress, GetSize().y - 2 * (innerPadding.y + padding_.y)), color);
 
     // Prozentzahlen zeichnen
-    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, std::to_string(percentage) + "%", FontStyle::CENTER | FontStyle::VCENTER,
-                    COLOR_YELLOW);
+    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, std::to_string(percentage) + "%",
+                    FontStyle::CENTER | FontStyle::VCENTER, COLOR_YELLOW);
 }
 
 void ctrlProgress::Resize(const Extent& newSize)
@@ -152,7 +153,8 @@ bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
     Extent progressSize = GetSize() - Extent((GetSize().y + 1) * 2, 8) - padding_ * 2u;
     if(IsPointInRect(mc.GetPos(), Rect(progressOrigin, progressSize)))
     {
-        position = static_cast<uint16_t>(std::lround(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x));
+        position = static_cast<uint16_t>(
+          std::lround(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x));
 
         if(GetParent())
             GetParent()->Msg_ProgressChange(GetID(), position);

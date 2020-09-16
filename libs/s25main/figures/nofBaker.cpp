@@ -26,7 +26,9 @@
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
 
-nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_BAKER, pos, player, workplace) {}
+nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_BAKER, pos, player, workplace)
+{}
 
 nofBaker::nofBaker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
@@ -55,20 +57,24 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     if(now_id < 2) // hinauslaufen teil 1
     {
         LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][0]][now_id].draw(walkOutPos, COLOR_WHITE, plColor);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][0]][now_id].draw(walkOutPos, COLOR_WHITE,
+                                                                                            plColor);
     }
     if((now_id >= 2) && (now_id < 4)) // hinauslaufen teil 2
     {
         LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][1]][now_id].draw(walkOutPos, COLOR_WHITE, plColor);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][1]][now_id].draw(walkOutPos, COLOR_WHITE,
+                                                                                            plColor);
     }
     if((now_id >= 4) && (now_id < 8)) // hinauslaufen teil 3
     {
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][2]][now_id].draw(walkOutPos, COLOR_WHITE, plColor);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][2]][now_id].draw(walkOutPos, COLOR_WHITE,
+                                                                                            plColor);
     }
     if((now_id >= 8) && (now_id < 16)) // brot in den ofen schieben
     {
-        LOADER.GetPlayerImage("rom_bobs", 182 + (now_id - 8))->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
+        LOADER.GetPlayerImage("rom_bobs", 182 + (now_id - 8))
+          ->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
 
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
@@ -83,7 +89,8 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     }
     if((now_id >= max_id - 16) && (now_id < max_id - 8)) // brot aus dem ofen holen
     {
-        LOADER.GetPlayerImage("rom_bobs", 182 + 7 - (now_id % 8))->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
+        LOADER.GetPlayerImage("rom_bobs", 182 + 7 - (now_id % 8))
+          ->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
 
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
@@ -94,17 +101,20 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     }
     if((now_id >= max_id - 8) && (now_id < max_id - 4)) // reingehn teil 1
     {
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][3]][now_id % 8].draw(walkInPos, COLOR_WHITE, plColor);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][3]][now_id % 8].draw(walkInPos, COLOR_WHITE,
+                                                                                                plColor);
     }
     if((now_id >= max_id - 4) && (now_id < max_id - 2)) // reingehn teil 1
     {
         LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][4]][now_id % 8].draw(walkInPos, COLOR_WHITE, plColor);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][4]][now_id % 8].draw(walkInPos, COLOR_WHITE,
+                                                                                                plColor);
     }
     if((now_id >= max_id - 2) && (now_id < max_id)) // reingehn teil 2
     {
         LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][5]][now_id % 8].draw(walkInPos, COLOR_WHITE, plColor);
+        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][5]][now_id % 8].draw(walkInPos, COLOR_WHITE,
+                                                                                                plColor);
     }
 }
 

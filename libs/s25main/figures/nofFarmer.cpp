@@ -38,7 +38,8 @@ void nofFarmer::Serialize_nofFarmer(SerializedGameData& sgd) const
     sgd.PushBool(harvest);
 }
 
-nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool()) {}
+nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool())
+{}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofFarmer::DrawWorking(DrawPoint drawPt)

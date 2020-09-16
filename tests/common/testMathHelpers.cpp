@@ -68,11 +68,12 @@ BOOST_AUTO_TEST_CASE(clamp)
     BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::max(), -15, -2), -2);
     BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::min(), std::numeric_limits<int>::min(), 10), 0);
     BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::max(), std::numeric_limits<int>::min(), 10), 10);
-    BOOST_REQUIRE_EQUAL(
-      helpers::clamp(std::numeric_limits<unsigned>::min(), std::numeric_limits<int>::min(), std::numeric_limits<int>::max()), 0);
-    BOOST_REQUIRE_EQUAL(
-      helpers::clamp(std::numeric_limits<unsigned>::max(), std::numeric_limits<int>::min(), std::numeric_limits<int>::max()),
-      std::numeric_limits<int>::max());
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::min(), std::numeric_limits<int>::min(),
+                                       std::numeric_limits<int>::max()),
+                        0);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<unsigned>::max(), std::numeric_limits<int>::min(),
+                                       std::numeric_limits<int>::max()),
+                        std::numeric_limits<int>::max());
     // short value, long min/max
     BOOST_REQUIRE_EQUAL(helpers::clamp(static_cast<short>(-3), -5, 6), -3);
     BOOST_REQUIRE_EQUAL(helpers::clamp(static_cast<short>(5), -5, 6), 5);
@@ -81,8 +82,10 @@ BOOST_AUTO_TEST_CASE(clamp)
     // long value, short min/max
     BOOST_REQUIRE_EQUAL(helpers::clamp(-1, static_cast<short>(-3), static_cast<short>(6)), -1);
     BOOST_REQUIRE_EQUAL(helpers::clamp(4, static_cast<short>(-3), static_cast<short>(6)), 4);
-    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<int>::min(), static_cast<short>(-3), static_cast<short>(6)), -3);
-    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<int>::max(), static_cast<short>(-3), static_cast<short>(6)), 6);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<int>::min(), static_cast<short>(-3), static_cast<short>(6)),
+                        -3);
+    BOOST_REQUIRE_EQUAL(helpers::clamp(std::numeric_limits<int>::max(), static_cast<short>(-3), static_cast<short>(6)),
+                        6);
 }
 
 BOOST_AUTO_TEST_CASE(SmoothedValue)

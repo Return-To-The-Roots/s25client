@@ -21,7 +21,8 @@
 #include "driver/MouseCoords.h"
 #include "ogl/glFont.h"
 
-ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font)
+ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                   const glFont* font)
     : Window(parent, id, pos, elMax(size, Extent(22, 4))), tc(tc), font(font)
 {
     pagesize = (GetSize().y - 4) / font->getHeight();
@@ -168,8 +169,8 @@ void ctrlList::Draw_()
             DrawRectangle(Rect(curPos, Extent(GetSize().x - 22, font->getHeight())), 0x80000000);
 
         // Text an sich
-        font->Draw(curPos, lines[i + scrollbarPos], FontStyle{}, (selection_ == i + scrollbarPos ? 0xFFFFAA00 : COLOR_YELLOW),
-                   GetSize().x - 22);
+        font->Draw(curPos, lines[i + scrollbarPos], FontStyle{},
+                   (selection_ == i + scrollbarPos ? 0xFFFFAA00 : COLOR_YELLOW), GetSize().x - 22);
         curPos.y += font->getHeight();
     }
 }
@@ -305,7 +306,8 @@ boost::optional<unsigned> ctrlList::GetItemFromPos(const Position& pos) const
     const Rect listDrawArea = GetListDrawArea();
     if(!IsPointInRect(pos, listDrawArea))
         return boost::none;
-    const unsigned itemIdx = (pos.y - listDrawArea.getOrigin().y) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
+    const unsigned itemIdx =
+      (pos.y - listDrawArea.getOrigin().y) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
     if(itemIdx >= GetNumLines())
         return boost::none;
     return itemIdx;

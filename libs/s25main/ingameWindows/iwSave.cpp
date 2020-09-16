@@ -37,10 +37,12 @@
 
 const unsigned NUM_AUTO_SAVE_INTERVALS = 7;
 
-const std::array<unsigned, NUM_AUTO_SAVE_INTERVALS> AUTO_SAVE_INTERVALS = {500, 1000, 5000, 10000, 50000, 100000, 1 /*  */};
+const std::array<unsigned, NUM_AUTO_SAVE_INTERVALS> AUTO_SAVE_INTERVALS = {500,   1000,   5000, 10000,
+                                                                           50000, 100000, 1 /*  */};
 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
-    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title, LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title,
+                   LOADER.GetImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
     AddTable(0, DrawPoint(20, 30), Extent(560, 300), TC_GREEN2, NormalFont,
@@ -115,7 +117,8 @@ void iwSaveLoad::FillSaveTable(const boost::filesystem::path&, void*) {}
 void iwSave::SaveLoad()
 {
     // Speichern
-    const boost::filesystem::path savePath = RTTRCONFIG.ExpandPath(s25::folders::save) / (GetCtrl<ctrlEdit>(1)->GetText() + ".sav");
+    const boost::filesystem::path savePath =
+      RTTRCONFIG.ExpandPath(s25::folders::save) / (GetCtrl<ctrlEdit>(1)->GetText() + ".sav");
 
     // Speichern
     GAMECLIENT.SaveToFile(savePath);

@@ -42,7 +42,10 @@ public:
     MapExtent GetMapSize() const { return mapSize; }
 
 protected:
-    unsigned GetMMIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * mapSize.x + static_cast<unsigned>(pt.x); }
+    unsigned GetMMIdx(const MapPoint pt) const
+    {
+        return static_cast<unsigned>(pt.y) * mapSize.x + static_cast<unsigned>(pt.x);
+    }
     /// Variiert die übergebene Farbe zufällig in der Helligkeit
     static unsigned VaryBrightness(unsigned color, int range);
     /// Erstellt die Textur

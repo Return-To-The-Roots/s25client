@@ -25,7 +25,10 @@
 #include "s25util/colors.h"
 
 /// Basisklasse für GL-Bitmapitems.
-class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, public glArchivItem_BitmapBase, public ITexture
+class glArchivItem_Bitmap :
+    public virtual libsiedler2::baseArchivItem_Bitmap,
+    public glArchivItem_BitmapBase,
+    public ITexture
 {
 public:
     glArchivItem_Bitmap();

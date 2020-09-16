@@ -38,7 +38,8 @@ enum PositionSearchState
 class PositionSearch
 {
 public:
-    PositionSearch(const AIPlayerJH& player, MapPoint pt, AIResource res, int minimum, BuildingType bld, bool searchGlobalOptimum = false);
+    PositionSearch(const AIPlayerJH& player, MapPoint pt, AIResource res, int minimum, BuildingType bld,
+                   bool searchGlobalOptimum = false);
 
     PositionSearchState execute(const AIPlayerJH& player);
     BuildingType GetBld() const { return bld; }
@@ -55,7 +56,8 @@ private:
     BuildingQuality size;
     /// what to we want to build there?
     BuildingType bld;
-    /// If false, the first point matching the conditions will be returned. Otherwise it looks further for even better points
+    /// If false, the first point matching the conditions will be returned. Otherwise it looks further for even better
+    /// points
     bool searchGlobalOptimum;
     /// how many nodes should we test each cycle?
     int nodesPerStep;

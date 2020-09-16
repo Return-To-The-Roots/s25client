@@ -29,9 +29,10 @@
 /// Length of the smoldering
 const unsigned SMOLDERING_LENGTH = 3000;
 /// if nothing happens in this amount of GF the pile will catch fire and burn down (removes inactive piles)
-/// it takes about ~4000 gf to remove the cover & harvest the coal from a priority pile - so after this delay there are ~8k gf remaining for
-/// the charburner to start working on the started pile again
-/// -> this should only run out if there is either a very long time without resources or the building was destroyed/stopped
+/// it takes about ~4000 gf to remove the cover & harvest the coal from a priority pile - so after this delay there are
+/// ~8k gf remaining for the charburner to start working on the started pile again
+/// -> this should only run out if there is either a very long time without resources or the building was
+/// destroyed/stopped
 const unsigned SELFDESTRUCT_DELAY = 12000;
 
 /// Work steps for the construction of the wood pile and the cover
@@ -68,8 +69,8 @@ void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData& sgd) const
 }
 
 noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), state(State(sgd.PopUnsignedChar())), step(sgd.PopUnsignedShort()), sub_step(sgd.PopUnsignedShort()),
-      event(sgd.PopEvent())
+    : noCoordBase(sgd, obj_id), state(State(sgd.PopUnsignedChar())), step(sgd.PopUnsignedShort()),
+      sub_step(sgd.PopUnsignedShort()), event(sgd.PopEvent())
 {}
 
 void noCharburnerPile::Draw(DrawPoint drawPt)
@@ -100,12 +101,14 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
         case STATE_SMOLDERING:
         {
             LOADER
-              .GetImageN("charburner_bobs", 27 + GAMECLIENT.GetGlobalAnimation(2, 10, 1, GetObjId() + this->pos.x * 10 + this->pos.y * 10))
+              .GetImageN("charburner_bobs",
+                         27 + GAMECLIENT.GetGlobalAnimation(2, 10, 1, GetObjId() + this->pos.x * 10 + this->pos.y * 10))
               ->DrawFull(drawPt);
 
             // Dann Qualm zeichnen
             unsigned globalAnimation = GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
-            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt + DrawPoint(21, -11), 0x99EEEEEE); //-V525
+            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)
+              ->DrawFull(drawPt + DrawPoint(21, -11), 0x99EEEEEE); //-V525
             LOADER.GetMapImageN(692 + 2 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 06), 0x99EEEEEE);
             LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(25, 11), 0x99EEEEEE);
             LOADER.GetMapImageN(692 + 3 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 35), 0x99EEEEEE);

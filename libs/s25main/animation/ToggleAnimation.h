@@ -27,7 +27,8 @@ class ToggleAnimation : public Animation
 public:
     using BoolFunc = void (T::*)(bool);
 
-    ToggleAnimation(T* element, BoolFunc animFunc, bool startValue, unsigned frameRate, RepeatType repeat = Animation::RPT_Repeat);
+    ToggleAnimation(T* element, BoolFunc animFunc, bool startValue, unsigned frameRate,
+                    RepeatType repeat = Animation::RPT_Repeat);
 
 protected:
     void doUpdate(Window* element, double nextFramepartTime) override;
@@ -38,7 +39,8 @@ private:
 };
 
 template<class T>
-ToggleAnimation<T>::ToggleAnimation(T* element, BoolFunc animFunc, bool startValue, unsigned frameRate, RepeatType repeat)
+ToggleAnimation<T>::ToggleAnimation(T* element, BoolFunc animFunc, bool startValue, unsigned frameRate,
+                                    RepeatType repeat)
     : Animation(element, 2, frameRate, repeat), animFunc_(animFunc), startValue_(startValue)
 {
     setSkipType(Animation::SKIP_TIME);

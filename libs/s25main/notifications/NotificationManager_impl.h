@@ -19,7 +19,7 @@
 
 // Fix syntax highlighting
 #ifdef __INTELLISENSE__
-#include "notifications/NotificationManager.h"
+#    include "notifications/NotificationManager.h"
 #endif
 #include "RTTR_Assert.h"
 #include <algorithm>

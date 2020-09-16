@@ -23,5 +23,8 @@
 class AddonTrade : public AddonBool
 {
 public:
-    AddonTrade() : AddonBool(AddonId::TRADE, AddonGroup::Economy, _("Trade"), _("Allows to send wares/figures to allied warehouses")) {}
+    AddonTrade()
+        : AddonBool(AddonId::TRADE, AddonGroup::Economy, _("Trade"),
+                    _("Allows to send wares/figures to allied warehouses"))
+    {}
 };

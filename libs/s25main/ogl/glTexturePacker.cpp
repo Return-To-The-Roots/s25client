@@ -91,8 +91,8 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
             }
             if((false))
             {
-                bfs::path outFilepath =
-                  std::to_string(texture.get()) + "-" + std::to_string(curSize.x) + "x" + std::to_string(curSize.y) + ".bmp";
+                bfs::path outFilepath = std::to_string(texture.get()) + "-" + std::to_string(curSize.x) + "x"
+                                        + std::to_string(curSize.y) + ".bmp";
                 saveBitmap(buffer, outFilepath);
             }
             // free texture packer, as it is not needed any more
@@ -119,7 +119,8 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
         }
 
         // increase width or height, try whether opengl is able to handle textures that big
-        const auto newSize = (curSize.x <= curSize.y) ? Extent(curSize.x * 2, curSize.y) : Extent(curSize.x, curSize.y * 2);
+        const auto newSize =
+          (curSize.x <= curSize.y) ? Extent(curSize.x * 2, curSize.y) : Extent(curSize.x, curSize.y * 2);
         if(!texture.checkSize(newSize))
             maxTex = true;
         else
@@ -191,7 +192,8 @@ bool glTexture::uploadData(const libsiedler2::PixelBufferBGRA& buffer)
     if(!handle)
         return false;
     VIDEODRIVER.BindTexture(handle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, buffer.getWidth(), buffer.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, buffer.getWidth(), buffer.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE,
+                 buffer.getPixelPtr());
     size = Extent(buffer.getWidth(), buffer.getHeight());
     int resultWidth;
     glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &resultWidth);

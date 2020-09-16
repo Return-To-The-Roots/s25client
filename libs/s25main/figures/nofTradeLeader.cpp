@@ -71,10 +71,11 @@ void nofTradeLeader::GoalReached()
         }
         GamePlayer& owner = gwg->GetPlayer(player);
         std::string waresName = _(!goodType ? JOB_NAMES[jobType] : WARE_NAMES[*goodType]);
-        std::string text =
-          str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares % waresName % owner.name);
+        std::string text = str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares
+                               % waresName % owner.name);
         SendPostMessage(targetWarehouse->GetPlayer(),
-                        std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), text, PostCategory::Economy, *targetWarehouse));
+                        std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), text, PostCategory::Economy,
+                                                              *targetWarehouse));
         successor->AddNextDir(TradeDirection::ReachedGoal);
         successor = nullptr;
     }
@@ -89,7 +90,8 @@ void nofTradeLeader::Walked()
     noBase* nob = gwg->GetNO(goalPos);
 
     // Does target still exist?
-    if(nob->GetType() != NOP_BUILDING || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
+    if(nob->GetType() != NOP_BUILDING
+       || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
     {
         if(TryToGoHome())
             Walked();
@@ -143,7 +145,8 @@ bool nofTradeLeader::TryToGoHome()
 
     noBase* homeWh = gwg->GetNO(goalPos);
     // Does target still exist?
-    if(homeWh->GetType() != NOP_BUILDING || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(homeWh)->GetBuildingType()))
+    if(homeWh->GetType() != NOP_BUILDING
+       || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(homeWh)->GetBuildingType()))
         return false;
 
     // Find a way back home

@@ -30,7 +30,8 @@ struct SeedFixture
 {
     // For every seed the rng must return good random values
     // so try a regular one and some corner cases
-    std::vector<unsigned> seeds = {0, 0x1337, std::numeric_limits<unsigned>::max(), std::numeric_limits<unsigned short>::max()};
+    std::vector<unsigned> seeds = {0, 0x1337, std::numeric_limits<unsigned>::max(),
+                                   std::numeric_limits<unsigned short>::max()};
 };
 using TestedRNGS = boost::mpl::list<DefaultLCG, XorShift>;
 

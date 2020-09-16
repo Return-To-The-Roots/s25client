@@ -34,7 +34,8 @@
  *  @param[in] size Größe des Objekts
  *  @param[in] type Typ des Objekts
  */
-noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned short file, unsigned char size, NodalObjectType type)
+noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned short file, unsigned char size,
+                               NodalObjectType type)
     : noCoordBase(type, pos), id(id), file(file), size(size)
 {
     // sind wir ein "Schloss" Objekt?

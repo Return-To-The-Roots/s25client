@@ -20,13 +20,13 @@
 #include <ctime> // IWYU pragma: exports
 #ifdef _WIN32
 
-#ifndef HAVE_STRUCT_TIMESPEC
+#    ifndef HAVE_STRUCT_TIMESPEC
 struct timespec
 {
     time_t tv_sec; // Seconds.
     long tv_nsec;  // Nanoseconds.
 };
-#endif
+#    endif
 
 /// nanosleep replacement for windows.
 int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay);

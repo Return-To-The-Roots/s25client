@@ -34,8 +34,8 @@ class AddonList : public Addon
     };
 
 public:
-    AddonList(AddonId id, AddonGroup groups, const std::string& name, const std::string& description, std::vector<std::string> options,
-              unsigned defaultStatus = 0);
+    AddonList(AddonId id, AddonGroup groups, const std::string& name, const std::string& description,
+              std::vector<std::string> options, unsigned defaultStatus = 0);
 
     unsigned getNumOptions() const override;
 

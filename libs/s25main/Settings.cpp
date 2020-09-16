@@ -35,7 +35,8 @@ const int Settings::VERSION = 13;
 const std::array<std::string, 11> Settings::SECTION_NAMES = {
   {"global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "ingame", "addons"}};
 
-const std::array<short, 13> Settings::SCREEN_REFRESH_RATES = {{-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
+const std::array<short, 13> Settings::SCREEN_REFRESH_RATES = {
+  {-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
 
 namespace validate {
 boost::optional<uint16_t> checkPort(const std::string& port)
@@ -154,21 +155,28 @@ void Settings::Load()
         if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SECTION_NAMES.size())
             throw std::runtime_error("File missing or invalid");
 
-        const libsiedler2::ArchivItem_Ini* iniGlobal = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("global"));
+        const libsiedler2::ArchivItem_Ini* iniGlobal =
+          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("global"));
         const libsiedler2::ArchivItem_Ini* iniVideo = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("video"));
-        const libsiedler2::ArchivItem_Ini* iniLanguage = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("language"));
-        const libsiedler2::ArchivItem_Ini* iniDriver = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("driver"));
+        const libsiedler2::ArchivItem_Ini* iniLanguage =
+          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("language"));
+        const libsiedler2::ArchivItem_Ini* iniDriver =
+          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("driver"));
         const libsiedler2::ArchivItem_Ini* iniSound = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("sound"));
         const libsiedler2::ArchivItem_Ini* iniLobby = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("lobby"));
-        const libsiedler2::ArchivItem_Ini* iniServer = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("server"));
+        const libsiedler2::ArchivItem_Ini* iniServer =
+          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("server"));
         const libsiedler2::ArchivItem_Ini* iniProxy = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("proxy"));
-        const libsiedler2::ArchivItem_Ini* iniInterface = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("interface"));
-        const libsiedler2::ArchivItem_Ini* iniIngame = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("ingame"));
-        const libsiedler2::ArchivItem_Ini* iniAddons = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
+        const libsiedler2::ArchivItem_Ini* iniInterface =
+          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("interface"));
+        const libsiedler2::ArchivItem_Ini* iniIngame =
+          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("ingame"));
+        const libsiedler2::ArchivItem_Ini* iniAddons =
+          static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
 
         // ist eine der Kategorien nicht vorhanden?
-        if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface
-           || !iniIngame || !iniAddons)
+        if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy
+           || !iniInterface || !iniIngame || !iniAddons)
         {
             throw std::runtime_error("Missing section");
         }
@@ -320,8 +328,8 @@ void Settings::Save()
     libsiedler2::ArchivItem_Ini* iniAddons = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
 
     // ist eine der Kategorien nicht vorhanden?
-    RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy && iniInterface
-                && iniIngame && iniAddons);
+    RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy
+                && iniInterface && iniIngame && iniAddons);
 
     // global
     // {

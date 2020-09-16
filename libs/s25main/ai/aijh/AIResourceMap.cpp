@@ -44,7 +44,8 @@ void AIResourceMap::Init()
         else if(aii.gwb.GetDescription().get(aii.gwb.GetNode(pt).t1).Is(ETerrain::Walkable))
         {
             if((res != AIResource::BORDERLAND && node.res == res) || (res == AIResource::BORDERLAND && aii.IsBorder(pt))
-               || (node.res == AIResource::MULTIPLE && (aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)))
+               || (node.res == AIResource::MULTIPLE
+                   && (aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)))
                 Change(pt, 1);
         }
     }
@@ -100,7 +101,8 @@ void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
     aii.gwb.CheckPointsInRadius(pt, radius, ValueAdjuster(map, radius, value), true);
 }
 
-MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory) const
+MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, BuildingQuality size, int radius,
+                                         bool inTerritory) const
 {
     RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
 
@@ -124,7 +126,8 @@ MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, Buil
     return MapPoint::Invalid();
 }
 
-MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory) const
+MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius,
+                                         bool inTerritory) const
 {
     RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
 

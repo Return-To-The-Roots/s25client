@@ -85,9 +85,10 @@ void nofForester::WorkFinished()
         uint8_t landscapeType = std::min<uint8_t>(gwg->GetLandscapeType().value, 2);
 
         // jungen Baum einsetzen
-        gwg->SetNO(
-          pos, new noTree(
-                 pos, AVAILABLE_TREES[landscapeType][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), NUM_AVAILABLE_TREES[landscapeType])], 0));
+        gwg->SetNO(pos, new noTree(pos,
+                                   AVAILABLE_TREES[landscapeType][RANDOM.Rand(__FILE__, __LINE__, GetObjId(),
+                                                                              NUM_AVAILABLE_TREES[landscapeType])],
+                                   0));
 
         // BQ drumherum neu berechnen
         gwg->RecalcBQAroundPoint(pos);

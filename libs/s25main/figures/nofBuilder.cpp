@@ -35,7 +35,8 @@
 #include "gameData/BuildingProperties.h"
 
 nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
-    : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), building_steps_available(0)
+    : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site),
+      building_steps_available(0)
 {
     // Sind wir schon an unsere Baustelle gleich hingesetzt worden (bei Häfen)?
     if(building_site)
@@ -61,8 +62,9 @@ void nofBuilder::Serialize_nofBuilder(SerializedGameData& sgd) const
 }
 
 nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), state(BuilderState(sgd.PopUnsignedChar())), building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
-      offsetSite(sgd.PopPoint<short>()), nextOffsetSite(sgd.PopPoint<short>()), building_steps_available(sgd.PopUnsignedChar())
+    : noFigure(sgd, obj_id), state(BuilderState(sgd.PopUnsignedChar())),
+      building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)), offsetSite(sgd.PopPoint<short>()),
+      nextOffsetSite(sgd.PopPoint<short>()), building_steps_available(sgd.PopUnsignedChar())
 {}
 
 void nofBuilder::GoalReached()
@@ -301,7 +303,9 @@ void nofBuilder::Draw(DrawPoint drawPt)
             drawPt.y += GAMECLIENT.Interpolate(offsetSite.y, nextOffsetSite.y, current_ev);
             drawPt += building_site->GetDoorPoint();
 
-            LOADER.getBobSprite(building_site->GetNation(), JOB_BUILDER, GetCurMoveDir(), GAMECLIENT.Interpolate(12, current_ev) % 8u)
+            LOADER
+              .getBobSprite(building_site->GetNation(), JOB_BUILDER, GetCurMoveDir(),
+                            GAMECLIENT.Interpolate(12, current_ev) % 8u)
               .draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
         }
         break;
@@ -311,7 +315,8 @@ void nofBuilder::Draw(DrawPoint drawPt)
             unsigned texture;
             unsigned soundId = 0;
 
-            // Je nachdem, wie weit der Bauarbeiter links bzw rechts oder in der Mitte steht, so wird auch die Animation angezeigt
+            // Je nachdem, wie weit der Bauarbeiter links bzw rechts oder in der Mitte steht, so wird auch die Animation
+            // angezeigt
             if(std::abs(offsetSite.x) > 5)
             {
                 // With hammer
@@ -336,7 +341,8 @@ void nofBuilder::Draw(DrawPoint drawPt)
                 texture = 287 + (index / 2) % 4;
             }
             drawPt += building_site->GetDoorPoint() + DrawPoint(offsetSite);
-            LOADER.GetPlayerImage("rom_bobs", texture)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+            LOADER.GetPlayerImage("rom_bobs", texture)
+              ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
             if(soundId && index % 4 == 2)
                 SOUNDMANAGER.PlayNOSound(soundId, this, index, 160 - rand() % 60);
         }

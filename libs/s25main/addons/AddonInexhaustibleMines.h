@@ -27,6 +27,7 @@ class AddonInexhaustibleMines : public AddonBool
 {
 public:
     AddonInexhaustibleMines()
-        : AddonBool(AddonId::INEXHAUSTIBLE_MINES, AddonGroup::Economy, _("Inexhaustible Mines"), _("Mines will never be depleted."))
+        : AddonBool(AddonId::INEXHAUSTIBLE_MINES, AddonGroup::Economy, _("Inexhaustible Mines"),
+                    _("Mines will never be depleted."))
     {}
 };

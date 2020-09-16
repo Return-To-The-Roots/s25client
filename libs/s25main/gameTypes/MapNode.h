@@ -42,8 +42,8 @@ struct MapNode
     unsigned char altitude;
     /// Schattierung
     unsigned char shadow;
-    /// Terrain (t1 is the triangle with the edge at the top exactly below this pt, t2 with the edge at the bottom on the right lower side
-    /// of the pt)
+    /// Terrain (t1 is the triangle with the edge at the top exactly below this pt, t2 with the edge at the bottom on
+    /// the right lower side of the pt)
     DescIdx<TerrainDesc> t1, t2;
     /// Ressourcen
     Resource resources;

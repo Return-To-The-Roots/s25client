@@ -25,18 +25,19 @@
 namespace bfs = boost::filesystem;
 
 // Expected: RTTR_BINDIR, RTTR_DATADIR, RTTR_GAMEDIR, RTTR_LIBDIR, RTTR_DRIVERDIR
-#if !(defined(RTTR_BINDIR) && defined(RTTR_DATADIR) && defined(RTTR_GAMEDIR) && defined(RTTR_LIBDIR) && defined(RTTR_DRIVERDIR))
-#error "At least one of the RTTR_*DIR is undefined!"
+#if !(defined(RTTR_BINDIR) && defined(RTTR_DATADIR) && defined(RTTR_GAMEDIR) && defined(RTTR_LIBDIR) \
+      && defined(RTTR_DRIVERDIR))
+#    error "At least one of the RTTR_*DIR is undefined!"
 #endif
 
 #ifndef RTTR_SETTINGSDIR
-#if defined(_WIN32)
-#define RTTR_SETTINGSDIR "~/Return To The Roots"
-#elif defined(__APPLE__)
-#define RTTR_SETTINGSDIR "~/Library/Application Support/Return To The Roots"
-#else
-#define RTTR_SETTINGSDIR "~/.s25rttr"
-#endif
+#    if defined(_WIN32)
+#        define RTTR_SETTINGSDIR "~/Return To The Roots"
+#    elif defined(__APPLE__)
+#        define RTTR_SETTINGSDIR "~/Library/Application Support/Return To The Roots"
+#    else
+#        define RTTR_SETTINGSDIR "~/.s25rttr"
+#    endif
 #endif // !RTTR_SETTINGSDIR
 
 bfs::path RttrConfig::GetPrefixPath()
@@ -79,7 +80,8 @@ bfs::path RttrConfig::GetPrefixPath()
 
     if(!prefixPath.empty())
     {
-        bfs::path exePath = (rttrBinDir.is_absolute() ? rttrBinDir : prefixPath / rttrBinDir) / fullExeFilepath.filename();
+        bfs::path exePath =
+          (rttrBinDir.is_absolute() ? rttrBinDir : prefixPath / rttrBinDir) / fullExeFilepath.filename();
         if(!bfs::is_regular_file(exePath))
             LOG.write("Warning: Executable not found with prefix path %1%. Expected: %2%\n"
                       "This may lead to file-not-found errors. Please report this!",

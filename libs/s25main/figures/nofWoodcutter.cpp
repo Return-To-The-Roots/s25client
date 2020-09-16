@@ -40,8 +40,8 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     if(nowId < 10)
     {
         // 1. Ein Stück vom Baum nach links laufen
-        LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][0][nowId % 8].draw(drawPt - DrawPoint(nowId, 0), COLOR_WHITE,
-                                                                                                gwg->GetPlayer(player).color);
+        LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][0][nowId % 8].draw(
+          drawPt - DrawPoint(nowId, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
     } else if(nowId < 82)
     {
         // 2. Hacken
@@ -57,7 +57,8 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     } else if(nowId < 105)
     {
         // 3. Warten bis Baum umfällt
-        LOADER.GetPlayerImage("rom_bobs", 24)->DrawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.GetPlayerImage("rom_bobs", 24)
+          ->DrawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
 
         if(nowId == 90)
         {
@@ -72,7 +73,8 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     } else
     {
         // 5. kurz am Baum warten (quasi Baumstamm in die Hand nehmen)
-        LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][3][1].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][3][1].draw(drawPt, COLOR_WHITE,
+                                                                                        gwg->GetPlayer(player).color);
     }
 }
 

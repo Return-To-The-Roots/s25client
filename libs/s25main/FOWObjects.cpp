@@ -69,12 +69,14 @@ void fowBuilding::Draw(DrawPoint drawPt) const
 ////////////////////////////////////////////////////////////////////////////////////
 // fowBuildingSite
 
-fowBuildingSite::fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress)
+fowBuildingSite::fowBuildingSite(const bool planing, const BuildingType type, const Nation nation,
+                                 const unsigned char build_progress)
     : planing(planing), type(type), nation(nation), build_progress(build_progress)
 {}
 
 fowBuildingSite::fowBuildingSite(SerializedGameData& sgd)
-    : planing(sgd.PopBool()), type(sgd.Pop<BuildingType>()), nation(sgd.Pop<Nation>()), build_progress(sgd.PopUnsignedChar())
+    : planing(sgd.PopBool()), type(sgd.Pop<BuildingType>()), nation(sgd.Pop<Nation>()),
+      build_progress(sgd.PopUnsignedChar())
 {}
 
 void fowBuildingSite::Serialize(SerializedGameData& sgd) const
@@ -131,7 +133,9 @@ fowFlag::fowFlag(const unsigned playerColor, const Nation nation, const FlagType
     : color(CalcPlayerFOWDrawColor(playerColor)), nation(nation), flag_type(flag_type)
 {}
 
-fowFlag::fowFlag(SerializedGameData& sgd) : color(sgd.PopUnsignedInt()), nation(sgd.Pop<Nation>()), flag_type(sgd.Pop<FlagType>()) {}
+fowFlag::fowFlag(SerializedGameData& sgd)
+    : color(sgd.PopUnsignedInt()), nation(sgd.Pop<Nation>()), flag_type(sgd.Pop<FlagType>())
+{}
 
 void fowFlag::Serialize(SerializedGameData& sgd) const
 {

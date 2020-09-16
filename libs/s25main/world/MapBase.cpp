@@ -38,7 +38,8 @@ void MapBase::Resize(const MapExtent& newSize)
     if(newSize.y & 1)
         throw std::invalid_argument("The map height must be even!");
     if(newSize.x > MAX_MAP_SIZE || newSize.y > MAX_MAP_SIZE)
-        throw std::invalid_argument("Can't load a map bigger than " + std::to_string(MAX_MAP_SIZE) + " nodes per direction");
+        throw std::invalid_argument("Can't load a map bigger than " + std::to_string(MAX_MAP_SIZE)
+                                    + " nodes per direction");
     size_ = newSize;
 }
 

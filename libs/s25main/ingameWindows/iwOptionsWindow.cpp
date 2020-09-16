@@ -59,13 +59,15 @@ enum
 }
 
 iwOptionsWindow::iwOptionsWindow()
-    : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 515), _("Game menu"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 515), _("Game menu"),
+                   LOADER.GetImageN("resource", 41))
 {
     // Der Soldat oben
     AddImage(ID_imgSoldier, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
     AddText(ID_txtRttr, DrawPoint(150, 60), "Return To The Roots", COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    AddText(ID_txtVersion, DrawPoint(150, 77), RTTR_Version::GetReadableVersion(), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    AddText(ID_txtVersion, DrawPoint(150, 77), RTTR_Version::GetReadableVersion(), COLOR_YELLOW, FontStyle::CENTER,
+            NormalFont);
     AddFormattedText(ID_txtCopyright, DrawPoint(150, 94),
                      "\xC2\xA9"
                      "2005 - %s Settlers Freaks",
@@ -73,7 +75,8 @@ iwOptionsWindow::iwOptionsWindow()
       % RTTR_Version::GetYear();
 
     AddImageButton(ID_btKeyboardLayout, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
-    AddText(ID_txtKeyboardLayout, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    AddText(ID_txtKeyboardLayout, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM,
+            NormalFont);
     AddImageButton(ID_btReadme, DrawPoint(35, 160), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
     AddText(ID_txtReadme, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
 
@@ -92,7 +95,8 @@ iwOptionsWindow::iwOptionsWindow()
                    LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807
 
     // Musik an/aus
-    AddImageButton(ID_btMusic, DrawPoint(35, 340), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
+    AddImageButton(ID_btMusic, DrawPoint(35, 340), Extent(35, 35), TC_GREEN2,
+                   LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
 
     // Geräuschlautstärke
     AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 10)
@@ -124,7 +128,8 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
 
         case ID_btSoundEffects:
             SETTINGS.sound.effekte = !SETTINGS.sound.effekte; //-V807
-            GetCtrl<ctrlImageButton>(ID_btSoundEffects)->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effekte));
+            GetCtrl<ctrlImageButton>(ID_btSoundEffects)
+              ->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effekte));
 
             if(!SETTINGS.sound.effekte)
                 SOUNDMANAGER.StopAll();

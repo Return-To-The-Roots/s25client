@@ -61,12 +61,13 @@ public:
     std::vector<const noFlag*> FindFlags(MapPoint pt, unsigned short radius);
     /// returns true if the military building should be connected to the roadsystem
     bool MilitaryBuildingWantsRoad(const nobMilitary& milbld);
-    /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the future road.
+    /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the
+    /// future road.
     bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned maxSearchRadius = 14);
     /// Builds a street between two roadnodes and sets flags on it, if route is empty, it will be calculated
     bool BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route);
-    /// whenever a given route contains 2 segment alternatives these get tested for their buildquality and the one with the lower bq is
-    /// picked for the final path
+    /// whenever a given route contains 2 segment alternatives these get tested for their buildquality and the one with
+    /// the lower bq is picked for the final path
     bool MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route);
     /// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
     bool IsConnectedToRoadSystem(const noFlag* flag) const;
@@ -104,7 +105,8 @@ private:
     std::deque<std::unique_ptr<BuildJob>> buildJobs;
     std::deque<std::unique_ptr<ConnectJob>> connectJobs;
     /// contains the locations pt at which the ai has done some kind of construction since the last nwf
-    // -> so the commands are not yet executed and for now the ai will just not build again in the area until the next nwf
+    // -> so the commands are not yet executed and for now the ai will just not build again in the area until the next
+    // nwf
     std::deque<MapPoint> constructionlocations;
     // contains the type and amount of buildings ordered since the last nwf
     std::vector<uint8_t> constructionorders;

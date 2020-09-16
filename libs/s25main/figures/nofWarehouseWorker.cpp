@@ -27,8 +27,8 @@
 #include "nodeObjs/noRoadNode.h"
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
-    : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))), carried_ware(ware),
-      shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) != 0)
+    : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))),
+      carried_ware(ware), shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) != 0)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
     gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
@@ -62,7 +62,8 @@ void nofWarehouseWorker::Serialize_nofWarehouseWorker(SerializedGameData& sgd) c
 }
 
 nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), carried_ware(sgd.PopObject<Ware>(GOT_WARE)), shouldBringWareIn(sgd.PopBool()), fat(sgd.PopBool())
+    : noFigure(sgd, obj_id), carried_ware(sgd.PopObject<Ware>(GOT_WARE)), shouldBringWareIn(sgd.PopBool()),
+      fat(sgd.PopBool())
 {}
 
 void nofWarehouseWorker::Draw(DrawPoint drawPt)
@@ -117,8 +118,8 @@ void nofWarehouseWorker::Walked()
     // Wieder im Schloss angekommen
     if(!shouldBringWareIn)
     {
-        // If I still cary a ware than either the flag was full or I should not bring it there (goal=warehouse or goal destroyed ->
-        // goal=location) So re-add it to waiting wares or to inventory
+        // If I still cary a ware than either the flag was full or I should not bring it there (goal=warehouse or goal
+        // destroyed -> goal=location) So re-add it to waiting wares or to inventory
         if(carried_ware)
         {
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)

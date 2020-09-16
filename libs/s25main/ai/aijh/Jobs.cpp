@@ -62,12 +62,13 @@ void BuildJob::ExecuteJob()
     if(state == JOB_FAILED || state == JOB_FINISHED)
         return;
 
-    if(BuildingProperties::IsMilitary(type) && target.isValid() && aijh.GetWorld().IsMilitaryBuildingNearNode(target, aijh.GetPlayerId()))
+    if(BuildingProperties::IsMilitary(type) && target.isValid()
+       && aijh.GetWorld().IsMilitaryBuildingNearNode(target, aijh.GetPlayerId()))
     {
         state = JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Military building too near for " << BUILDING_NAMES[type]
-                  << " at " << target.x << "/" << target.y << "." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Military building too near for "
+                  << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
 #endif
         return;
     }
@@ -112,12 +113,13 @@ void BuildJob::TryToBuild()
         {
             if(foundPos.isValid())
             {
-                // could we build a bigger military building? check if the location is surrounded by terrain that does not allow normal
-                // buildings (probably important map part)
+                // could we build a bigger military building? check if the location is surrounded by terrain that does
+                // not allow normal buildings (probably important map part)
                 AIInterface& aiInterface = aijh.GetInterface();
                 RTTR_Assert(aiInterface.GetBuildingQuality(foundPos) == aijh.GetAINode(foundPos).bq);
                 if(type != BLD_FORTRESS && aiInterface.GetBuildingQuality(foundPos) != BQ_MINE
-                   && aiInterface.GetBuildingQuality(foundPos) > BUILDING_SIZE[type] && aijh.BQsurroundcheck(foundPos, 6, true, 10) < 10)
+                   && aiInterface.GetBuildingQuality(foundPos) > BUILDING_SIZE[type]
+                   && aijh.BQsurroundcheck(foundPos, 6, true, 10) < 10)
                 {
                     // more than 80% is unbuildable in range 7 -> upgrade
                     for(BuildingType bld : BuildingProperties::militaryBldTypes)
@@ -149,8 +151,8 @@ void BuildJob::TryToBuild()
     {
         state = JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: No Position found for " << BUILDING_NAMES[type]
-                  << " around " << foundPos << "." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: No Position found for "
+                  << BUILDING_NAMES[type] << " around " << foundPos << "." << std::endl;
 #endif
         return;
     }
@@ -185,8 +187,8 @@ void BuildJob::BuildMainRoad()
         {
             state = JOB_FAILED;
 #ifdef DEBUG_AI
-            std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: BQ changed for " << BUILDING_NAMES[type] << " at "
-                      << target.x << "/" << target.y << ". Retrying..." << std::endl;
+            std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: BQ changed for "
+                      << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
             aijh.GetAINode(target).bq = bq;
             aijh.AddBuildJob(type, around);
@@ -197,8 +199,8 @@ void BuildJob::BuildMainRoad()
     if(bld->GetBuildingType() != type)
     {
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Wrong Builingsite found for " << BUILDING_NAMES[type]
-                  << " at " << target.x << "/" << target.y << "." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Wrong Builingsite found for "
+                  << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << "." << std::endl;
 #endif
         state = JOB_FAILED;
         return;
@@ -213,8 +215,8 @@ void BuildJob::BuildMainRoad()
         {
             state = JOB_FAILED;
 #ifdef DEBUG_AI
-            std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at "
-                      << target.x << "/" << target.y << ". Retrying..." << std::endl;
+            std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Cannot connect "
+                      << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
             aijh.GetAINode(target).reachable = false;
             // We thought this had be reachable, but it is not (might be blocked by building site itself):
@@ -261,15 +263,16 @@ void BuildJob::BuildMainRoad()
 
 void BuildJob::TryToBuildSecondaryRoad()
 {
-    const auto* houseFlag = aijh.GetWorld().GetSpecObj<noFlag>(aijh.GetWorld().GetNeighbour(target, Direction::SOUTHEAST));
+    const auto* houseFlag =
+      aijh.GetWorld().GetSpecObj<noFlag>(aijh.GetWorld().GetNeighbour(target, Direction::SOUTHEAST));
 
     if(!houseFlag)
     {
         // Baustelle wurde wohl zerstört, oh schreck!
         state = JOB_FAILED;
 #ifdef DEBUG_AI
-        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: House flag is gone, " << BUILDING_NAMES[type] << " at "
-                  << target.x << "/" << target.y << ". Retrying..." << std::endl;
+        std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: House flag is gone, "
+                  << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
         aijh.AddBuildJob(type, around);
         return;
@@ -286,7 +289,8 @@ EventJob::EventJob(AIPlayerJH& aijh, std::unique_ptr<AIEvent::Base> ev) : Job(ai
 
 EventJob::~EventJob() = default;
 
-void EventJob::ExecuteJob() // for now it is assumed that all these will be finished or failed after execution (no wait or progress)
+void EventJob::ExecuteJob() // for now it is assumed that all these will be finished or failed after execution (no wait
+                            // or progress)
 {
     switch(ev->GetType())
     {
@@ -421,8 +425,8 @@ void ConnectJob::ExecuteJob()
         return;
     }
 
-    // is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is required to avoid
-    // multiple connections on mil buildings)
+    // is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is
+    // required to avoid multiple connections on mil buildings)
     if(world.IsMilitaryBuildingOnNode(world.GetNeighbour(flag->GetPos(), Direction::NORTHWEST), true))
     {
         for(unsigned dir = 2; dir < 7; dir++)

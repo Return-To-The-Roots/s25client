@@ -28,7 +28,8 @@
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
 
-nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_HELPER, pos, player, workplace)
+nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofWorkman(JOB_HELPER, pos, player, workplace)
 {}
 
 nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
@@ -64,40 +65,49 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
-        LOADER.carrier_cache[GD_WATEREMPTY][false][walkdirection[wpNation][0]][now_id % 8].draw(walkOutPos, COLOR_WHITE, plColor);
+        LOADER.carrier_cache[GD_WATEREMPTY][false][walkdirection[wpNation][0]][now_id % 8].draw(walkOutPos, COLOR_WHITE,
+                                                                                                plColor);
     } else if(now_id < 4) // laufen 2
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
-        LOADER.carrier_cache[GD_WATEREMPTY][false][walkdirection[wpNation][1]][now_id % 8].draw(walkOutPos, COLOR_WHITE, plColor);
+        LOADER.carrier_cache[GD_WATEREMPTY][false][walkdirection[wpNation][1]][now_id % 8].draw(walkOutPos, COLOR_WHITE,
+                                                                                                plColor);
     } else if(now_id < 8) // laufen 3
     {
-        LOADER.carrier_cache[GD_WATEREMPTY][false][walkdirection[wpNation][2]][now_id % 8].draw(walkOutPos, COLOR_WHITE, plColor);
+        LOADER.carrier_cache[GD_WATEREMPTY][false][walkdirection[wpNation][2]][now_id % 8].draw(walkOutPos, COLOR_WHITE,
+                                                                                                plColor);
     } else if(now_id < 16) // eimer runter lassen
     {
         if(now_id == 8)
             LOADER.GetPlayerImage("rom_bobs", 346)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
         else
-            LOADER.GetPlayerImage("rom_bobs", 346 + (now_id % 8) - 1)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+            LOADER.GetPlayerImage("rom_bobs", 346 + (now_id % 8) - 1)
+              ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
     } else if(now_id < max_id - 16) // kurbeln
     {
-        LOADER.GetPlayerImage("rom_bobs", 330 + (now_id % 8))->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+        LOADER.GetPlayerImage("rom_bobs", 330 + (now_id % 8))
+          ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
     } else if(now_id < max_id - 8) // eimer rauf kurbeln
     {
-        LOADER.GetPlayerImage("rom_bobs", 338 + (now_id % 8))->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+        LOADER.GetPlayerImage("rom_bobs", 338 + (now_id % 8))
+          ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
     } else if(now_id < max_id - 4) // laufen 3
     {
-        LOADER.carrier_cache[GD_WATER][false][walkdirection[wpNation][3]][now_id % 8].draw(walkInPos, COLOR_WHITE, plColor);
+        LOADER.carrier_cache[GD_WATER][false][walkdirection[wpNation][3]][now_id % 8].draw(walkInPos, COLOR_WHITE,
+                                                                                           plColor);
     } else if(now_id < max_id - 2) // laufen 2
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
-        LOADER.carrier_cache[GD_WATER][false][walkdirection[wpNation][4]][now_id % 8].draw(walkInPos, COLOR_WHITE, plColor);
+        LOADER.carrier_cache[GD_WATER][false][walkdirection[wpNation][4]][now_id % 8].draw(walkInPos, COLOR_WHITE,
+                                                                                           plColor);
     } else // laufen 1
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
-        LOADER.carrier_cache[GD_WATER][false][walkdirection[wpNation][5]][now_id % 8].draw(walkInPos, COLOR_WHITE, plColor);
+        LOADER.carrier_cache[GD_WATER][false][walkdirection[wpNation][5]][now_id % 8].draw(walkInPos, COLOR_WHITE,
+                                                                                           plColor);
     }
 
     if((now_id >= 8) && (now_id < max_id - 8) && now_id % 8 == 4)

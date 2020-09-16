@@ -40,13 +40,13 @@ public:
 
     /// Draw the the text at the given position with format (alignment) and color.
     /// If length is given, only that many chars (not glyphs!) will be used
-    /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is appended (included in
-    /// maxWidth)
-    void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE, unsigned short maxWidth = 0xFFFF,
-              const std::string& end = "...") const;
+    /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is
+    /// appended (included in maxWidth)
+    void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE,
+              unsigned short maxWidth = 0xFFFF, const std::string& end = "...") const;
 
-    /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will be set to the
-    /// maximum number of chars (not glyphs!) that fit into the width
+    /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will
+    /// be set to the maximum number of chars (not glyphs!) that fit into the width
     unsigned getWidth(const std::string& text) const;
     unsigned getWidth(const std::string& text, unsigned maxWidth, unsigned* maxNumChars) const;
     /// Return height of each line of text
@@ -113,6 +113,6 @@ private:
 
     /// Get width of the sequence defined by the begin/end pair of iterators
     template<bool T_unlimitedWidth>
-    unsigned getWidthInternal(const std::string::const_iterator& begin, const std::string::const_iterator& end, unsigned maxWidth,
-                              unsigned* maxNumChars) const;
+    unsigned getWidthInternal(const std::string::const_iterator& begin, const std::string::const_iterator& end,
+                              unsigned maxWidth, unsigned* maxNumChars) const;
 };

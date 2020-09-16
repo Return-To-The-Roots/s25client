@@ -24,8 +24,8 @@
 class ctrlImageButton : public ctrlButton, public ctrlBaseImage
 {
 public:
-    ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
-                    const std::string& tooltip);
+    ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                    ITexture* image, const std::string& tooltip);
 
 protected:
     void DrawContent() const override;

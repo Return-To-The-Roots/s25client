@@ -41,7 +41,8 @@ public:
 
 BOOST_AUTO_TEST_SUITE(LoaderTests)
 
-static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv& archive, const std::string& expectedContents)
+static boost::test_tools::predicate_result compareTxts(const libsiedler2::Archiv& archive,
+                                                       const std::string& expectedContents)
 {
     std::vector<std::string> txts = Tokenizer(expectedContents, "|").explode();
     if(txts.size() != archive.size())
@@ -166,8 +167,8 @@ BOOST_FIXTURE_TEST_CASE(BobOverrides, LoaderFixture)
 
     BOOST_REQUIRE(loader->Load(bobFile));
     const auto& bob = loader->GetArchive("foo");
-    // Bob override folders have special handling: They are converted into an archive containing the elements of the folder
-    // as this is how bob files are after loading
+    // Bob override folders have special handling: They are converted into an archive containing the elements of the
+    // folder as this is how bob files are after loading
     BOOST_TEST_REQUIRE(bob.size() == 1u);
     const auto* nested = dynamic_cast<const libsiedler2::Archiv*>(bob[0]);
     BOOST_TEST_REQUIRE(nested);

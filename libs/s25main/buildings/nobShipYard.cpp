@@ -22,7 +22,9 @@ nobShipYard::nobShipYard(const MapPoint pos, const unsigned char player, const N
     : nobUsual(BLD_SHIPYARD, pos, player, nation), mode(nobShipYard::BOATS)
 {}
 
-nobShipYard::nobShipYard(SerializedGameData& sgd, const unsigned obj_id) : nobUsual(sgd, obj_id), mode(sgd.Pop<nobShipYard::Mode>()) {}
+nobShipYard::nobShipYard(SerializedGameData& sgd, const unsigned obj_id)
+    : nobUsual(sgd, obj_id), mode(sgd.Pop<nobShipYard::Mode>())
+{}
 
 /// Serialisierungsfunktionen
 void nobShipYard::Serialize(SerializedGameData& sgd) const

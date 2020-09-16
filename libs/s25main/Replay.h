@@ -35,7 +35,8 @@ enum class ReplayCommand
 
 /// Holds a replay that is being recorded or was recorded and loaded
 /// It has a header that holds minimal information:
-///     File header (version etc.), record time, map name, player names, length (last GF), savegame header (if applicable)
+///     File header (version etc.), record time, map name, player names, length (last GF), savegame header (if
+///     applicable)
 /// All game relevant data is stored afterwards
 class Replay : public SavedFile
 {

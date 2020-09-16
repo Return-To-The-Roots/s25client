@@ -27,7 +27,8 @@ const unsigned short HELP_WINDOW_WIDTH = 280;
 const unsigned MAX_LINES = 15;
 
 iwHelp::iwHelp(const std::string& content)
-    : IngameWindow(CGI_HELP, IngameWindow::posAtMouse, Extent(HELP_WINDOW_WIDTH, 480), _("What is this?"), LOADER.GetImageN("io", 1))
+    : IngameWindow(CGI_HELP, IngameWindow::posAtMouse, Extent(HELP_WINDOW_WIDTH, 480), _("What is this?"),
+                   LOADER.GetImageN("io", 1))
 {
     // Größe des Fensters und des Controls nach der Anzahl der Zeilen
     ctrlMultiline* text = AddMultiline(2, DrawPoint(contentOffset), GetIwSize(), TC_GREEN1, NormalFont);

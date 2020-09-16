@@ -25,7 +25,8 @@
 
 AsyncChecksum::AsyncChecksum() : randChecksum(0), objCt(0), objIdCt(0), eventCt(0), evInstanceCt(0) {}
 
-AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt, unsigned eventCt, unsigned evInstanceCt)
+AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt, unsigned eventCt,
+                             unsigned evInstanceCt)
     : randChecksum(randChecksum), objCt(objCt), objIdCt(objIdCt), eventCt(eventCt), evInstanceCt(evInstanceCt)
 {}
 
@@ -56,6 +57,6 @@ unsigned AsyncChecksum::getHash() const
 
 AsyncChecksum AsyncChecksum::create(const Game& game)
 {
-    return AsyncChecksum(RANDOM.GetChecksum(), GameObject::GetNumObjs(), GameObject::GetObjIDCounter(), game.em_->GetNumActiveEvents(),
-                         game.em_->GetEventInstanceCtr());
+    return AsyncChecksum(RANDOM.GetChecksum(), GameObject::GetNumObjs(), GameObject::GetObjIDCounter(),
+                         game.em_->GetNumActiveEvents(), game.em_->GetEventInstanceCtr());
 }

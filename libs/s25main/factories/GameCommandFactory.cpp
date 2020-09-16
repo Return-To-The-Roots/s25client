@@ -135,7 +135,8 @@ bool GameCommandFactory::SetInventorySetting(const MapPoint pt, Job job, Invento
     return SetInventorySetting(pt, true, job, state);
 }
 
-bool GameCommandFactory::SetAllInventorySettings(const MapPoint pt, bool isJob, const std::vector<InventorySetting>& states)
+bool GameCommandFactory::SetAllInventorySettings(const MapPoint pt, bool isJob,
+                                                 const std::vector<InventorySetting>& states)
 {
     return AddGC(new gc::SetAllInventorySettings(pt, isJob, states));
 }

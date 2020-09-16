@@ -23,6 +23,8 @@
  *  @param[in] id Nr der Grafik
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
  */
-noEnvObject::noEnvObject(const MapPoint pos, unsigned short id, unsigned short file) : noStaticObject(pos, id, file, 0, NOP_ENVIRONMENT) {}
+noEnvObject::noEnvObject(const MapPoint pos, unsigned short id, unsigned short file)
+    : noStaticObject(pos, id, file, 0, NOP_ENVIRONMENT)
+{}
 
 noEnvObject::noEnvObject(SerializedGameData& sgd, const unsigned obj_id) : noStaticObject(sgd, obj_id) {}

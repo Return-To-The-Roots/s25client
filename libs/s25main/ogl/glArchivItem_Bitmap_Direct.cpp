@@ -49,8 +49,8 @@ void glArchivItem_Bitmap_Direct::endUpdate()
     int ec = print(buffer, nullptr, 0, 0, origin.x, origin.y);
     RTTR_Assert(ec == 0);
     VIDEODRIVER.BindTexture(GetTexNoCreate());
-    glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_BGRA, GL_UNSIGNED_BYTE,
-                    buffer.getPixelPtr());
+    glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_BGRA,
+                    GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 }
 
 void glArchivItem_Bitmap_Direct::updatePixel(const DrawPoint& pos, const libsiedler2::ColorBGRA& clr)

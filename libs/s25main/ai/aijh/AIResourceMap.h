@@ -40,10 +40,12 @@ public:
     void Change(const MapPoint pt, int value) { Change(pt, resRadius, value); }
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found
-    MapPoint FindGoodPosition(const MapPoint& pt, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true) const;
+    MapPoint FindGoodPosition(const MapPoint& pt, int threshold, BuildingQuality size, int radius = -1,
+                              bool inTerritory = true) const;
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
-    MapPoint FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true) const;
+    MapPoint FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius = -1,
+                              bool inTerritory = true) const;
     MapPoint FindBestPosition(const MapPoint& pt, BuildingQuality size, int radius = -1, bool inTerritory = true) const
     {
         return FindBestPosition(pt, size, 1, radius, inTerritory);

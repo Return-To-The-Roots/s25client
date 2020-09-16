@@ -70,7 +70,8 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
 {
     RTTR_Assert(state == CS_GAME); // Must be ingame
 
-    LOG.write("GameClient::ChangePlayer %i - %i \n") % static_cast<unsigned>(playerId1) % static_cast<unsigned>(playerId2);
+    LOG.write("GameClient::ChangePlayer %i - %i \n") % static_cast<unsigned>(playerId1)
+      % static_cast<unsigned>(playerId2);
     // Gleiche ID - wäre unsinnig zu wechseln
     if(playerId1 == playerId2)
         return;

@@ -37,9 +37,9 @@
 #include <numeric>
 
 nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation)
-    : noBuilding(type, pos, player, nation), worker(nullptr), disable_production(false), disable_production_virtual(false),
-      last_ordered_ware(0), orderware_ev(nullptr), productivity_ev(nullptr), numGfNotWorking(0), since_not_working(0xFFFFFFFF),
-      outOfRessourcesMsgSent(false), is_working(false)
+    : noBuilding(type, pos, player, nation), worker(nullptr), disable_production(false),
+      disable_production_virtual(false), last_ordered_ware(0), orderware_ev(nullptr), productivity_ev(nullptr),
+      numGfNotWorking(0), since_not_working(0xFFFFFFFF), outOfRessourcesMsgSent(false), is_working(false)
 {
     std::fill(numWares.begin(), numWares.end(), 0);
 
@@ -56,8 +56,9 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
 }
 
 nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
-    : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)), productivity(sgd.PopUnsignedShort()),
-      disable_production(sgd.PopBool()), disable_production_virtual(disable_production), last_ordered_ware(sgd.PopUnsignedChar()),
+    : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
+      productivity(sgd.PopUnsignedShort()), disable_production(sgd.PopBool()),
+      disable_production_virtual(disable_production), last_ordered_ware(sgd.PopUnsignedChar()),
       orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()), numGfNotWorking(sgd.PopUnsignedShort()),
       since_not_working(sgd.PopUnsignedInt()), outOfRessourcesMsgSent(sgd.PopBool()), is_working(sgd.PopBool())
 {
@@ -182,15 +183,20 @@ void nobUsual::Draw(DrawPoint drawPt)
         // 90-100 - 3 Esel
         if(productivity >= 30)
             LOADER
-              .GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() * (player + 2))])
+              .GetMapImageN(
+                2180
+                + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() * (player + 2))])
               ->DrawFull(drawPt + DONKEY_OFFSETS[nation][0]);
         if(productivity >= 60)
-            LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetY())])
+            LOADER
+              .GetMapImageN(2180
+                            + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetY())])
               ->DrawFull(drawPt + DONKEY_OFFSETS[nation][1]);
         if(productivity >= 90)
             LOADER
-              .GetMapImageN(
-                2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() + GetY() * (nation + 1))])
+              .GetMapImageN(2180
+                            + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2,
+                                                                             GetX() + GetY() * (nation + 1))])
               ->DrawFull(drawPt + DONKEY_OFFSETS[nation][2]);
     }
     // Bei Katapulthaus Katapult oben auf dem Dach zeichnen, falls er nicht "arbeitet"
@@ -220,15 +226,16 @@ void nobUsual::Draw(DrawPoint drawPt)
         // Die 4 kleinen Schweinchen, je nach Produktivität
         for(unsigned i = 1; i < std::min(unsigned(productivity) / 20u + 1u, 5u); ++i)
         {
-            // A random (really, dice-rolled by hand:) ) order of the four possible pig animations, with eating three times as much as the
-            // others ones  To get random-looking, non synchronous, sweet little pigs
-            const std::array<unsigned char, 63> smallpig_animations = {0, 0, 3, 2, 0, 0, 1, 3, 0, 3, 1, 3, 2, 0, 0, 1, 0, 0, 1, 3, 2,
-                                                                       0, 1, 1, 0, 0, 2, 1, 0, 1, 0, 2, 2, 0, 0, 2, 2, 0, 1, 0, 3, 1,
-                                                                       2, 0, 1, 2, 2, 0, 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0};
+            // A random (really, dice-rolled by hand:) ) order of the four possible pig animations, with eating three
+            // times as much as the others ones  To get random-looking, non synchronous, sweet little pigs
+            const std::array<unsigned char, 63> smallpig_animations = {
+              0, 0, 3, 2, 0, 0, 1, 3, 0, 3, 1, 3, 2, 0, 0, 1, 0, 0, 1, 3, 2, 0, 1, 1, 0, 0, 2, 1, 0, 1, 0, 2,
+              2, 0, 0, 2, 2, 0, 1, 0, 3, 1, 2, 0, 1, 2, 2, 0, 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0};
             const unsigned short animpos =
               GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * GetObjId() + GetY() * i);
             LOADER.GetMapImageN(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][i], COLOR_SHADOW);
-            LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)->DrawFull(drawPt + PIG_POSITIONS[nation][i]);
+            LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)
+              ->DrawFull(drawPt + PIG_POSITIONS[nation][i]);
         }
 
         // Ggf. Sounds abspielen (oink oink), da soll sich der Schweinezüchter drum kümmen
@@ -275,7 +282,8 @@ void nobUsual::HandleEvent(const unsigned id)
             }
 
             ++last_ordered_ware;
-            if(last_ordered_ware >= workDesc.waresNeeded.size() || workDesc.waresNeeded[last_ordered_ware] == GD_NOTHING)
+            if(last_ordered_ware >= workDesc.waresNeeded.size()
+               || workDesc.waresNeeded[last_ordered_ware] == GD_NOTHING)
                 last_ordered_ware = 0;
         }
 
@@ -543,7 +551,8 @@ void nobUsual::OnOutOfResources()
     else
         return;
 
-    SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), error, PostCategory::Economy, *this));
+    SendPostMessage(
+      player, std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), error, PostCategory::Economy, *this));
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, GetPos(), GetBuildingType()));
 
     if(GAMECLIENT.GetPlayerId() == player && gwg->GetGGS().isEnabled(AddonId::DEMOLISH_BLD_WO_RES))

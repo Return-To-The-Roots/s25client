@@ -80,8 +80,8 @@ public:
     /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
     virtual void AddWare(Ware*& ware) = 0;
 
-    /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch
-    /// transportiert werden müssen
+    /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine
+    /// bestimmte Richtung noch transportiert werden müssen
     virtual unsigned GetPunishmentPoints(Direction) const { return 0; }
 };
 

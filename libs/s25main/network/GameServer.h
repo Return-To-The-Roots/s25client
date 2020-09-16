@@ -38,7 +38,10 @@ class GameMessage_GameCommand;
 class GameServerPlayer;
 struct AIServerPlayer;
 
-class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface, public LobbyInterface
+class GameServer :
+    public Singleton<GameServer, SingletonPolicies::WithLongevity>,
+    public GameMessageInterface,
+    public LobbyInterface
 {
 public:
     static constexpr unsigned Longevity = 6;
@@ -48,7 +51,8 @@ public:
     ~GameServer();
 
     /// Starts the server
-    bool Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type, const std::string& hostPw);
+    bool Start(const CreateServerInfo& csi, const boost::filesystem::path& map_path, MapType map_type,
+               const std::string& hostPw);
 
     void Run();
 

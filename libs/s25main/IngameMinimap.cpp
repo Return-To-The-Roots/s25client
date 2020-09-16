@@ -144,7 +144,8 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
  */
 unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 {
-    unsigned color = gwv.GetWorld().GetDescription().get((t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2).minimapColor; //-V807
+    unsigned color =
+      gwv.GetWorld().GetDescription().get((t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2).minimapColor; //-V807
 
     // Schattierung
     int shadow = gwv.GetNode(pt).shadow;
@@ -262,8 +263,8 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
         for(unsigned t = 0; t < 2; ++t)
         {
             if(dos[GetMMIdx(pt)] == drawn_object
-               || (drawn_object == DO_PLAYER
-                   && // for DO_PLAYER check for not drawn buildings or roads as there is only the player territory visible
+               || (drawn_object == DO_PLAYER && // for DO_PLAYER check for not drawn buildings or roads as there is only
+                                                // the player territory visible
                    ((dos[GetMMIdx(pt)] == DO_BUILDING && !houses) || (dos[GetMMIdx(pt)] == DO_ROAD && !roads))))
             {
                 unsigned color = CalcPixelColor(pt, t);

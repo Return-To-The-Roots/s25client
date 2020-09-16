@@ -81,7 +81,8 @@ public:
     template<class T_Predicate>
     std::vector<DescIdx<TerrainDesc>> FindAllTerrains(T_Predicate predicate) const;
     template<class T_Predicate>
-    std::vector<DescIdx<TerrainDesc>> FilterTerrains(const std::vector<DescIdx<TerrainDesc>>& inTerrains, T_Predicate predicate) const;
+    std::vector<DescIdx<TerrainDesc>> FilterTerrains(const std::vector<DescIdx<TerrainDesc>>& inTerrains,
+                                                     T_Predicate predicate) const;
 
 private:
     void CreateGreenland();
@@ -120,8 +121,8 @@ inline std::vector<DescIdx<TerrainDesc>> RandomConfig::FindAllTerrains(T_Predica
 }
 
 template<class T_Predicate>
-inline std::vector<DescIdx<TerrainDesc>> RandomConfig::FilterTerrains(const std::vector<DescIdx<TerrainDesc>>& inTerrains,
-                                                                      T_Predicate predicate) const
+inline std::vector<DescIdx<TerrainDesc>>
+RandomConfig::FilterTerrains(const std::vector<DescIdx<TerrainDesc>>& inTerrains, T_Predicate predicate) const
 {
     std::vector<DescIdx<TerrainDesc>> result;
     for(DescIdx<TerrainDesc> t : inTerrains)

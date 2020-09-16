@@ -87,7 +87,9 @@ namespace rttr { namespace test {
         const std::string charset;
         std::mt19937& rng;
         std::uniform_int_distribution<std::string::size_type> distr;
-        RandCharCreator(const std::string& charset, std::mt19937& rng) : charset(charset), rng(rng), distr(0, charset.length()) {}
+        RandCharCreator(const std::string& charset, std::mt19937& rng)
+            : charset(charset), rng(rng), distr(0, charset.length())
+        {}
         char operator()() { return charset[distr(rng)]; }
     };
 

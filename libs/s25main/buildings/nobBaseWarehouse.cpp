@@ -59,12 +59,13 @@ const unsigned RECRUITE_RANDOM_GF = 200;
 const unsigned LEAVE_INTERVAL = 20;
 const unsigned LEAVE_INTERVAL_RAND = 10;
 
-nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(nullptr), empty_event(nullptr),
-      store_event(nullptr)
+nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, const unsigned char player,
+                                   const Nation nation)
+    : nobBaseMilitary(type, pos, player, nation), fetch_double_protection(false), recruiting_event(nullptr),
+      empty_event(nullptr), store_event(nullptr)
 {
-    producinghelpers_event =
-      GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
+    producinghelpers_event = GetEvMgr().AddEvent(
+      this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
     // Reserve nullen
     reserve_soldiers_available.fill(0);
     reserve_soldiers_claimed_visual.fill(0);
@@ -175,13 +176,15 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     {
         inventory.visual.goods[i] = sgd.PopUnsignedInt();
         inventory.real.goods[i] = sgd.PopUnsignedInt();
-        inventorySettings.wares[i] = inventorySettingsVisual.wares[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
+        inventorySettings.wares[i] = inventorySettingsVisual.wares[i] =
+          static_cast<InventorySetting>(sgd.PopUnsignedChar());
     }
     for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
     {
         inventory.visual.people[i] = sgd.PopUnsignedInt();
         inventory.real.people[i] = sgd.PopUnsignedInt();
-        inventorySettings.figures[i] = inventorySettingsVisual.figures[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
+        inventorySettings.figures[i] = inventorySettingsVisual.figures[i] =
+          static_cast<InventorySetting>(sgd.PopUnsignedChar());
     }
 }
 
@@ -221,7 +224,8 @@ void nobBaseWarehouse::OrderCarrier(noRoadNode& goal, RoadSegment& workplace)
     if(isBoatRequired)
         RTTR_Assert(inventory[GD_BOAT]);
 
-    auto* carrier = new nofCarrier(isBoatRequired ? CarrierType::Boat : CarrierType::Normal, pos, player, &workplace, &goal);
+    auto* carrier =
+      new nofCarrier(isBoatRequired ? CarrierType::Boat : CarrierType::Normal, pos, player, &workplace, &goal);
     workplace.setCarrier(0, carrier);
 
     if(!UseFigureAtOnce(carrier, goal))
@@ -322,7 +326,8 @@ void nobBaseWarehouse::HandleCollectEvent()
         storing_wanted = true;
 
         // Lagerhaus suchen, das diese Ware enthält
-        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::HasWareButNoCollect(GoodType(i)), false, false);
+        nobBaseWarehouse* wh =
+          gwg->GetPlayer(player).FindWarehouse(*this, FW::HasWareButNoCollect(GoodType(i)), false, false);
         // Gefunden?
         if(wh)
         {
@@ -349,7 +354,8 @@ void nobBaseWarehouse::HandleCollectEvent()
             storing_wanted = true;
 
             // Lagerhaus suchen, das diesen Job enthält
-            nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::HasFigureButNoCollect(Job(i), false), false, false);
+            nobBaseWarehouse* wh =
+              gwg->GetPlayer(player).FindWarehouse(*this, FW::HasFigureButNoCollect(Job(i), false), false, false);
             // Gefunden?
             if(wh)
             {
@@ -431,7 +437,8 @@ void nobBaseWarehouse::HandleSendoutEvent()
         // Figur
         selectedId -= NUM_WARE_TYPES;
 
-        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(Job(selectedId)), true, false);
+        nobBaseWarehouse* wh =
+          gwg->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(Job(selectedId)), true, false);
         if(wh != this)
         {
             auto* fig = new nofPassiveWorker(Job(selectedId), pos, player, nullptr);
@@ -473,7 +480,8 @@ void nobBaseWarehouse::HandleRecrutingEvent()
     unsigned real_recruits = max_recruits * recruiting_ratio / MILITARY_SETTINGS_SCALE[0];
     // Wurde abgerundet?
     unsigned remainingRecruits = real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0];
-    if(remainingRecruits != 0 && unsigned(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), MILITARY_SETTINGS_SCALE[0] - 1)) < remainingRecruits)
+    if(remainingRecruits != 0
+       && unsigned(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), MILITARY_SETTINGS_SCALE[0] - 1)) < remainingRecruits)
         ++real_recruits;
     else if(real_recruits == 0)
         return; // Nothing to do
@@ -519,8 +527,8 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
 
         if(inventory[JOB_HELPER] == 1)
         {
-            // Wenn vorher keine Träger da waren, müssen alle unbesetzen Wege gucken, ob sie nen Weg hierher finden, könnte ja sein, dass
-            // vorher nich genug Träger da waren
+            // Wenn vorher keine Träger da waren, müssen alle unbesetzen Wege gucken, ob sie nen Weg hierher finden,
+            // könnte ja sein, dass vorher nich genug Träger da waren
             owner.FindCarrierForAllRoads();
             // evtl Träger mit Werkzeug kombiniert -> neuer Beruf
             owner.FindWarehouseForAllJobs();
@@ -533,8 +541,8 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
         gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, 1);
     }
 
-    producinghelpers_event =
-      GetEvMgr().AddEvent(this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
+    producinghelpers_event = GetEvMgr().AddEvent(
+      this, PRODUCE_HELPERS_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), PRODUCE_HELPERS_RANDOM_GF), 1);
 
     // Evtl. genau der Gehilfe, der zum Rekrutieren notwendig ist
     TryRecruiting();
@@ -648,12 +656,14 @@ void nobBaseWarehouse::HandleLeaveEvent()
         }
     }
 
-    // Wenn keine Figuren und Waren mehr da sind (bzw die Flagge vorm Haus voll ist), brauch auch keiner mehr rauszukommen
+    // Wenn keine Figuren und Waren mehr da sind (bzw die Flagge vorm Haus voll ist), brauch auch keiner mehr
+    // rauszukommen
     if(leave_house.empty() && waiting_wares.empty())
         go_out = false;
 
     if(go_out)
-        leaving_event = GetEvMgr().AddEvent(this, LEAVE_INTERVAL + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), LEAVE_INTERVAL_RAND));
+        leaving_event =
+          GetEvMgr().AddEvent(this, LEAVE_INTERVAL + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), LEAVE_INTERVAL_RAND));
 }
 
 /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
@@ -675,7 +685,8 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding* const goa
     // Ware überhaupt hier vorhanden (Abfrage eigentlich nicht nötig, aber erstmal zur Sicherheit)
     if(!inventory[good])
     {
-        LOG.write("nobBaseWarehouse::OrderWare: WARNING: No ware type %u in warehouse!\n") % static_cast<unsigned>(good);
+        LOG.write("nobBaseWarehouse::OrderWare: WARNING: No ware type %u in warehouse!\n")
+          % static_cast<unsigned>(good);
         return nullptr;
     }
 
@@ -840,8 +851,8 @@ void nobBaseWarehouse::AddFigure(noFigure* figure, const bool increase_visual_co
         }
     }
 
-    // Check if we were actually waiting for this figure or if it was just added (e.g. builder that constructed it) to not confuse
-    // implementations of Remove...
+    // Check if we were actually waiting for this figure or if it was just added (e.g. builder that constructed it) to
+    // not confuse implementations of Remove...
     if(IsDependentFigure(figure))
         RemoveDependentFigure(figure);
     GetEvMgr().AddToKillList(figure);
@@ -1031,8 +1042,8 @@ nofDefender* nobBaseWarehouse::ProvideDefender(nofAttacker* const attacker)
                 {
                     // diesen Soldaten wollen wir
                     --reserve_soldiers_available[i];
-                    // bei der visuellen Warenanzahl wieder hinzufügen, da er dann wiederrum von der abgezogen wird, wenn
-                    // er rausgeht und es so ins minus rutschen würde
+                    // bei der visuellen Warenanzahl wieder hinzufügen, da er dann wiederrum von der abgezogen wird,
+                    // wenn er rausgeht und es so ins minus rutschen würde
                     inventory.visual.Add(SOLDIER_JOBS[i]);
                     auto* soldier = new nofDefender(pos, player, this, i, attacker);
                     return soldier;
@@ -1079,7 +1090,8 @@ bool nobBaseWarehouse::AreRecruitingConditionsComply()
         needed_helpers = 1;
 
     // Wenn alle Bedingungen erfüllt sind, Event anmelden
-    return (inventory[JOB_HELPER] >= needed_helpers && inventory[GD_SWORD] && inventory[GD_SHIELDROMANS] && inventory[GD_BEER]);
+    return (inventory[JOB_HELPER] >= needed_helpers && inventory[GD_SWORD] && inventory[GD_SHIELDROMANS]
+            && inventory[GD_BEER]);
 }
 
 void nobBaseWarehouse::TryRecruiting()
@@ -1088,7 +1100,8 @@ void nobBaseWarehouse::TryRecruiting()
     if(!recruiting_event)
     {
         if(AreRecruitingConditionsComply())
-            recruiting_event = GetEvMgr().AddEvent(this, RECRUITE_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RECRUITE_RANDOM_GF), 2);
+            recruiting_event = GetEvMgr().AddEvent(
+              this, RECRUITE_GF + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), RECRUITE_RANDOM_GF), 2);
     }
 }
 
@@ -1242,7 +1255,8 @@ void nobBaseWarehouse::SetInventorySetting(const bool isJob, const unsigned char
     } // No else here!
     if(!oldState.IsSet(EInventorySetting::SEND) && state.IsSet(EInventorySetting::SEND))
     {
-        // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
+        // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues
+        // anmelden
         if(!empty_event && (isJob ? inventory[Job(type)] : inventory[GoodType(type)]))
             empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
     } else if(!oldState.IsSet(EInventorySetting::COLLECT) && state.IsSet(EInventorySetting::COLLECT))
@@ -1279,7 +1293,8 @@ void nobBaseWarehouse::SetAllInventorySettings(const bool isJob, const std::vect
     if(isUnstopped)
         gwg->GetPlayer(player).FindClientForLostWares();
     // no else!
-    // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues anmelden
+    // Sind Waren vorhanden, die ausgelagert werden müssen und ist noch kein Auslagerungsevent vorhanden --> neues
+    // anmelden
     if(AreWaresToEmpty() && !empty_event)
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
     // Sollen Waren eingelagert werden? Dann müssen wir neue bestellen
@@ -1396,7 +1411,8 @@ void nobBaseWarehouse::CheckOuthousing(const bool isJob, unsigned job_ware_id)
     if(isJob && job_ware_id == JOB_BOATCARRIER)
         job_ware_id = JOB_HELPER;
 
-    const InventorySetting setting = isJob ? GetInventorySetting(Job(job_ware_id)) : GetInventorySetting(GoodType(job_ware_id));
+    const InventorySetting setting =
+      isJob ? GetInventorySetting(Job(job_ware_id)) : GetInventorySetting(GoodType(job_ware_id));
     if(setting.IsSet(EInventorySetting::SEND))
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
 }
@@ -1431,8 +1447,8 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
 }
 
 /// Starts a trade caravane from this warehouse
-void nobBaseWarehouse::StartTradeCaravane(const boost::variant<GoodType, Job>& what, const unsigned count, const TradeRoute& tr,
-                                          nobBaseWarehouse* goal)
+void nobBaseWarehouse::StartTradeCaravane(const boost::variant<GoodType, Job>& what, const unsigned count,
+                                          const TradeRoute& tr, nobBaseWarehouse* goal)
 {
     auto* tl = new nofTradeLeader(pos, player, tr, this->GetPos(), goal->GetPos());
     AddLeavingFigure(tl);

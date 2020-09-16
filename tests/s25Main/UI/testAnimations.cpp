@@ -37,7 +37,9 @@ struct TestAnimation;
 
 struct TestWindow : public Window
 {
-    TestWindow(const DrawPoint& position, unsigned id, Window* parent, const Extent& size) : Window(parent, id, position, size) {}
+    TestWindow(const DrawPoint& position, unsigned id, Window* parent, const Extent& size)
+        : Window(parent, id, position, size)
+    {}
 
 protected:
     void Draw_() override {}
@@ -51,20 +53,23 @@ struct WindowFixture
     bool animFinished;
     double lastNextFramepartTime;
     unsigned lastFrame;
-    WindowFixture() : wnd(DrawPoint(0, 0), 0, nullptr, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
+    WindowFixture()
+        : wnd(DrawPoint(0, 0), 0, nullptr, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
     {
         bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TC_RED1, "Test", NormalFont);
         bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TC_RED1, "Test", NormalFont);
         wnd.Draw();
     }
 
-    PredRes testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame, double reqFramepartTime);
+    PredRes testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame,
+                            double reqFramepartTime);
 };
 
 struct TestAnimation : public Animation
 {
     TestAnimation(WindowFixture& parent, Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat)
-        : Animation(element, numFrames, frameRate, repeat), parent(parent), updateCalled(false), lastNextFramepartTime(0)
+        : Animation(element, numFrames, frameRate, repeat), parent(parent), updateCalled(false),
+          lastNextFramepartTime(0)
     {}
     WindowFixture& parent;
     bool updateCalled;
@@ -83,7 +88,8 @@ protected:
     }
 };
 
-PredRes WindowFixture::testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame, double reqFramepartTime)
+PredRes WindowFixture::testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame,
+                                       double reqFramepartTime)
 {
     unsigned animId = animMgr.getAnimationId(anim);
     animMgr.update(time);
@@ -122,7 +128,8 @@ BOOST_AUTO_TEST_CASE(TestPred)
     BOOST_TEST(testAdvanceTime(anim, time, true, 0, 0.));
     BOOST_TEST(testAdvanceTime(anim, time += 2, false, 1, 0.).message().str().find("Update: ") != std::string::npos);
     BOOST_TEST(testAdvanceTime(anim, time, false, 0, 0.).message().str() == "CurFrame: 1 != 0");
-    BOOST_TEST(testAdvanceTime(anim, time += 3, true, 2, 0.).message().str().find("lastNextFramepartTime: ") != std::string::npos);
+    BOOST_TEST(testAdvanceTime(anim, time += 3, true, 2, 0.).message().str().find("lastNextFramepartTime: ")
+               != std::string::npos);
 }
 
 BOOST_AUTO_TEST_CASE(AddRemoveAnimations)
@@ -655,7 +662,8 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     auto* dsk = WINDOWMANAGER.Switch(std::make_unique<Desktop>(nullptr));
     WINDOWMANAGER.Draw();
     bt = dsk->AddTextButton(0, DrawPoint(10, 20), Extent(100, 150), TC_RED1, "", NormalFont);
-    ctrlButton* btReference = dsk->AddTextButton(1, DrawPoint(130, bt->GetPos().y), bt->GetSize(), TC_RED1, "", NormalFont);
+    ctrlButton* btReference =
+      dsk->AddTextButton(1, DrawPoint(130, bt->GetPos().y), bt->GetSize(), TC_RED1, "", NormalFont);
     dsk->GetAnimationManager().addAnimation(new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RPT_None));
     dsk->Msg_PaintBefore();
     // Pass the animation

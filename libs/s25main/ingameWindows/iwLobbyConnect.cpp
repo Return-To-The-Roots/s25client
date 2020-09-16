@@ -69,7 +69,8 @@ iwLobbyConnect::iwLobbyConnect()
 
     AddText(ID_txtPw, DrawPoint(20, 70), _("Password:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* pass = AddEdit(ID_edtPw, DrawPoint(260, 70), Extent(220, 22), TC_GREEN2, NormalFont, 0, true);
-    pass->SetText(isStoredPasswordHash(SETTINGS.lobby.password) ? SETTINGS.lobby.password.substr(4) : SETTINGS.lobby.password);
+    pass->SetText(isStoredPasswordHash(SETTINGS.lobby.password) ? SETTINGS.lobby.password.substr(4) :
+                                                                  SETTINGS.lobby.password);
 
     AddText(ID_txtSavePw, DrawPoint(20, 100), _("Save Password?"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
@@ -118,7 +119,8 @@ void iwLobbyConnect::ReadFromEditAndSaveLobbyData(std::string& user, std::string
     user = GetCtrl<ctrlEdit>(ID_edtUser)->GetText();
     pass = GetCtrl<ctrlEdit>(ID_edtPw)->GetText();
 
-    // Potential false positive: User uses new password which is equal to the hash of the old one. HIGHLY unlikely, so ignore
+    // Potential false positive: User uses new password which is equal to the hash of the old one. HIGHLY unlikely, so
+    // ignore
     if(!isStoredPasswordHash(SETTINGS.lobby.password, pass))
         pass = s25util::md5(pass).toString();
 
@@ -166,8 +168,9 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
             ReadFromEditAndSaveLobbyData(user, pass);
 
             // Einloggen
-            if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), s25util::fromStringClassic<unsigned>(LOADER.GetTextN("client", 1)), user,
-                                  pass, SETTINGS.server.ipv6))
+            if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0),
+                                  s25util::fromStringClassic<unsigned>(LOADER.GetTextN("client", 1)), user, pass,
+                                  SETTINGS.server.ipv6))
             {
                 SetText(_("Connection failed!"), COLOR_RED, true);
                 break;
@@ -177,8 +180,9 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btRegister: // Registrieren
         {
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-              _("Error"), _("To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"), this,
-              MSB_OK, MSB_EXCLAMATIONRED, 0));
+              _("Error"),
+              _("To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"),
+              this, MSB_OK, MSB_EXCLAMATIONRED, 0));
         }
         break;
     }

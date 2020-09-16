@@ -86,7 +86,8 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
             textures.push_back(terrains[Rand(terrains.size())]);
     }
     // Walkable land
-    terrains = FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Walkable); });
+    terrains =
+      FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Walkable); });
     // Desert or similar
     terrains = FilterTerrains(terrains, [](const auto& desc) { return desc.GetBQ() == TerrainBQ::FLAG; });
     if(!terrains.empty())
@@ -99,7 +100,8 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
         textures.push_back(terrains.front());
     }
     // Buildable land ordered by humidity
-    terrains = FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
+    terrains =
+      FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
     if(terrains.empty())
         throw std::runtime_error("No buildable land found");
     bool swapped;
@@ -120,7 +122,8 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
         textures.push_back(terrains[i]);
 
     // Buildable, humid mountain
-    terrains = FindAllTerrains([](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Buildable); });
+    terrains = FindAllTerrains(
+      [](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Buildable); });
     if(!terrains.empty())
     {
         for(unsigned i = 1; i < terrains.size(); i++)

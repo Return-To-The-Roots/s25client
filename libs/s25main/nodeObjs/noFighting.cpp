@@ -77,8 +77,8 @@ void noFighting::Serialize_noFighting(SerializedGameData& sgd) const
 }
 
 noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
-    : noBase(sgd, obj_id), turn(sgd.PopUnsignedChar()), defending_animation(sgd.PopUnsignedChar()), current_ev(sgd.PopEvent()),
-      player_won(sgd.PopUnsignedChar())
+    : noBase(sgd, obj_id), turn(sgd.PopUnsignedChar()), defending_animation(sgd.PopUnsignedChar()),
+      current_ev(sgd.PopEvent()), player_won(sgd.PopUnsignedChar())
 
 {
     for(auto& soldier : soldiers)
@@ -108,7 +108,8 @@ void noFighting::Draw(DrawPoint drawPt)
             if(curAnimFrame < 4)
             {
                 // Noch kurz dastehen und warten, bis man stirbt
-                LOADER.fight_cache[owner.nation][soldier.GetRank()][turn - 3].defending[0][0].drawForPlayer(drawPt, owner.color);
+                LOADER.fight_cache[owner.nation][soldier.GetRank()][turn - 3].defending[0][0].drawForPlayer(
+                  drawPt, owner.color);
             } else
             {
                 // Sich in Luft auflösen
@@ -132,8 +133,8 @@ void noFighting::Draw(DrawPoint drawPt)
             for(unsigned i : {0, 1})
             {
                 const GamePlayer& owner = gwg->GetPlayer(soldiers[i]->GetPlayer());
-                glSmartBitmap& bmp =
-                  LOADER.bob_jobs_cache[owner.nation][soldiers[i]->GetJobType()][(i == 0) ? 0 : 3][GAMECLIENT.Interpolate(8, current_ev)];
+                glSmartBitmap& bmp = LOADER.bob_jobs_cache[owner.nation][soldiers[i]->GetJobType()][(i == 0) ? 0 : 3]
+                                                          [GAMECLIENT.Interpolate(8, current_ev)];
                 bmp.draw(drawPt, COLOR_WHITE, owner.color);
                 drawPt.x += 2 * x_diff;
             }
@@ -164,10 +165,11 @@ void noFighting::Draw(DrawPoint drawPt)
                         // Verteidigungsanimation
                         fightAnim.defending[defending_animation][curAnimFrame].drawForPlayer(drawPt, owner.color);
 
-                        // Wenn schwache Soldaten Schild hinhalten (Ani 0 und 1) oder stärkere sich mit den Schwertern schützen (Ani 0)
-                        // dann Schwert-aneinanderklirr-Sound abspielen
+                        // Wenn schwache Soldaten Schild hinhalten (Ani 0 und 1) oder stärkere sich mit den Schwertern
+                        // schützen (Ani 0) dann Schwert-aneinanderklirr-Sound abspielen
                         if(curAnimFrame == 5
-                           && ((soldier.GetRank() < 2 && defending_animation < 2) || (soldier.GetRank() > 1 && defending_animation == 0)))
+                           && ((soldier.GetRank() < 2 && defending_animation < 2)
+                               || (soldier.GetRank() > 1 && defending_animation == 0)))
                             SOUNDMANAGER.PlayNOSound(101, this, 1);
 
                     } else
@@ -270,12 +272,15 @@ void noFighting::HandleEvent(const unsigned id)
                     gwg->SetNO(pt, new noSkeleton(pt));
                 }
 
-                // Sichtradius ausblenden am Ende des Kampfes, an jeweiligen Soldaten dann übergeben, welcher überlebt hat
-                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->GetPlayer(), nullptr);
+                // Sichtradius ausblenden am Ende des Kampfes, an jeweiligen Soldaten dann übergeben, welcher überlebt
+                // hat
+                gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->GetPlayer(),
+                                                   nullptr);
                 gwg->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, nullptr);
 
                 // Soldaten endgültig umbringen
-                gwg->GetPlayer(soldiers[player_lost]->GetPlayer()).DecreaseInventoryJob(soldiers[player_lost]->GetJobType(), 1);
+                gwg->GetPlayer(soldiers[player_lost]->GetPlayer())
+                  .DecreaseInventoryJob(soldiers[player_lost]->GetJobType(), 1);
                 soldiers[player_lost]->Destroy();
                 deletePtr(soldiers[player_lost]);
             }

@@ -29,8 +29,9 @@
 #include "gameData/const_gui_ids.h"
 
 iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"), LOADER.GetImageN("io", 5)), gwv(gwv),
-      gcFactory(gcFactory), settings_changed(false)
+    : IngameWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"),
+                   LOADER.GetImageN("io", 5)),
+      gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
     AddImageButton(0, DrawPoint(18, 285), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 
@@ -81,7 +82,8 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     // Einstellungen festlegen
     for(unsigned char i = 0; i < buttonData.size(); ++i)
     {
-        group->AddImageButton(i, BUTTON_POS[i], Extent(30, 30), TC_GREY, buttonData[GAMECLIENT.visual_settings.transport_order[i]].sprite,
+        group->AddImageButton(i, BUTTON_POS[i], Extent(30, 30), TC_GREY,
+                              buttonData[GAMECLIENT.visual_settings.transport_order[i]].sprite,
                               _(buttonData[GAMECLIENT.visual_settings.transport_order[i]].tooltip));
     }
     group->SetSelection(0);
@@ -116,9 +118,10 @@ void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 0:
         {
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(_("The transport priority of a type of merchandise can "
-                                                                   "be determined here.The higher the priority of an item "
-                                                                   "in the list, the quicker it is transported by helpers.")));
+            WINDOWMANAGER.ReplaceWindow(
+              std::make_unique<iwHelp>(_("The transport priority of a type of merchandise can "
+                                         "be determined here.The higher the priority of an item "
+                                         "in the list, the quicker it is transported by helpers.")));
         }
         break;
         case 1: // Standardbelegung

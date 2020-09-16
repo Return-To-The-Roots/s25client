@@ -27,7 +27,8 @@ rttr::test::Fixture::Fixture()
     if(!RTTRCONFIG.Init())
         throw std::runtime_error("Could not init working directory. Misplaced binary?");
     if(!bfs::is_directory(RTTRCONFIG.ExpandPath("<RTTR_RTTR>")))
-        throw std::runtime_error(RTTRCONFIG.ExpandPath("<RTTR_RTTR>").string() + " not found. Binary misplaced or RTTR folder not copied?");
+        throw std::runtime_error(RTTRCONFIG.ExpandPath("<RTTR_RTTR>").string()
+                                 + " not found. Binary misplaced or RTTR folder not copied?");
 }
 
 rttr::test::Fixture::~Fixture() = default;

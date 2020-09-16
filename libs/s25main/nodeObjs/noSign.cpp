@@ -43,7 +43,9 @@ void noSign::Serialize_noSign(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(resource.getValue());
 }
 
-noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingEnvObject(sgd, obj_id), resource(sgd.PopUnsignedChar()) {}
+noSign::noSign(SerializedGameData& sgd, const unsigned obj_id)
+    : noDisappearingEnvObject(sgd, obj_id), resource(sgd.PopUnsignedChar())
+{}
 
 /**
  *  An x,y zeichnen.

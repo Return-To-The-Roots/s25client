@@ -91,9 +91,10 @@ namespace resources {
 } // namespace resources
 } // namespace s25
 
-const std::array<const std::string, 21> LOAD_SCREENS = {{"setup666", "setup667", "setup801", "setup802", "setup803", "setup804", "setup805",
-                                                         "setup806", "setup810", "setup811", "setup895", "setup896", "africa",   "austra",
-                                                         "europe",   "green",    "japan",    "namerica", "nasia",    "samerica", "sasia"}};
+const std::array<const std::string, 21> LOAD_SCREENS = {
+  {"setup666", "setup667", "setup801", "setup802", "setup803", "setup804", "setup805",
+   "setup806", "setup810", "setup811", "setup895", "setup896", "africa",   "austra",
+   "europe",   "green",    "japan",    "namerica", "nasia",    "samerica", "sasia"}};
 
 constexpr unsigned NUM_GFXSETS = 3;
 

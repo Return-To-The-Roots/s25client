@@ -42,8 +42,8 @@ enum
 };
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
-    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(250, 400), _("Map Generator"), LOADER.GetImageN("resource", 41),
-                   true),
+    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(250, 400), _("Map Generator"),
+                   LOADER.GetImageN("resource", 41), true),
       mapSettings(settings)
 {
     WorldDescription desc;

@@ -64,7 +64,8 @@ class noTree : public noCoordBase
 
     /// Produziert dieser Baum Tiere?
     bool produce_animals;
-    /// Zählt gezeichnete Bäume innerhalb eines Zeichenvorgangs (so und soviel Vogelgezwitscher muss dann abgespielt werden)
+    /// Zählt gezeichnete Bäume innerhalb eines Zeichenvorgangs (so und soviel Vogelgezwitscher muss dann abgespielt
+    /// werden)
     static unsigned short DRAW_COUNTER;
 
     /// Gibt Warte- und Wachsdauer der Bäume an

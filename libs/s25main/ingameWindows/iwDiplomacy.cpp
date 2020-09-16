@@ -55,13 +55,15 @@ const unsigned short TREATIE_BUTTON_SPACE = 20;
 
 iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_DIPLOMACY, IngameWindow::posLastOrCenter,
-                   Extent(500, FIRST_LINE_Y + gwv.GetWorld().GetNumPlayers() * (CELL_HEIGHT + SPACE_HEIGHT) + 20), _("Diplomacy"),
-                   LOADER.GetImageN("resource", 41)),
+                   Extent(500, FIRST_LINE_Y + gwv.GetWorld().GetNumPlayers() * (CELL_HEIGHT + SPACE_HEIGHT) + 20),
+                   _("Diplomacy"), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
     // "Header" der Tabelle
-    AddText(0, DrawPoint(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS, HEADER_Y), _("Ping"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    AddText(1, DrawPoint(LINE_DISTANCE_TO_MARGINS + TREATIES_POS, HEADER_Y), _("Treaties"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    AddText(0, DrawPoint(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS, HEADER_Y), _("Ping"), COLOR_YELLOW,
+            FontStyle::CENTER, NormalFont);
+    AddText(1, DrawPoint(LINE_DISTANCE_TO_MARGINS + TREATIES_POS, HEADER_Y), _("Treaties"), COLOR_YELLOW,
+            FontStyle::CENTER, NormalFont);
 
     DrawPoint curTxtPos(LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + CELL_HEIGHT / 2 - CELL_HEIGHT - SPACE_HEIGHT);
     for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
@@ -162,9 +164,9 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(gwv.GetWorld().GetGGS().lockedTeams)
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Teams locked"),
-                                                      _("As the teams are locked, you cannot make treaties of any kind."), nullptr, MSB_OK,
-                                                      MSB_EXCLAMATIONGREEN, 1));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+          _("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), nullptr, MSB_OK,
+          MSB_EXCLAMATIONGREEN, 1));
         return;
     }
 
@@ -175,7 +177,8 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
         // Noch kein Bündnis abgeschlossen?
         if(gwv.GetPlayer().GetPactState(TREATY_OF_ALLIANCE, playerId) == GamePlayer::NO_PACT)
             // Dann neues Bündnis vorschlagen
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSuggestPact>(TREATY_OF_ALLIANCE, gwv.GetWorld().GetPlayer(playerId), gcFactory));
+            WINDOWMANAGER.ReplaceWindow(
+              std::make_unique<iwSuggestPact>(TREATY_OF_ALLIANCE, gwv.GetWorld().GetPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
             gcFactory.CancelPact(TREATY_OF_ALLIANCE, playerId);
@@ -213,7 +216,8 @@ const std::array<const char*, NUM_DURATIONS> DURATION_NAMES = {gettext_noop("Sho
                                                                gettext_noop("Long-run")};
 
 iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter, Extent(320, 215), _(PACT_TITLES[pt]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter, Extent(320, 215), _(PACT_TITLES[pt]),
+                   LOADER.GetImageN("resource", 41)),
       pt(pt), player(player), gcFactory(gcFactory)
 {
     glArchivItem_Bitmap* image;

@@ -88,7 +88,8 @@ bool GameLoader::loadTextures()
         loader.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
 
     const LandscapeDesc& lt = game->world_.GetDescription().get(game->world_.GetLandscapeType());
-    if(!loader.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, usedNations) || !loader.LoadFiles(textures) || !loader.LoadOverrideFiles())
+    if(!loader.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, usedNations) || !loader.LoadFiles(textures)
+       || !loader.LoadOverrideFiles())
     {
         return false;
     }

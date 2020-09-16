@@ -23,7 +23,8 @@
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 
-iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb) : iwHQ(gwv, gcFactory, hb)
+iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb)
+    : iwHQ(gwv, gcFactory, hb)
 {
     SetTitle(_("Harbor building"));
 
@@ -35,7 +36,8 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
     harbor_page.AddText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(1, DrawPoint(65, 100), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176), _("Start expedition"));
+    harbor_page.AddImageButton(1, DrawPoint(65, 100), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176),
+                               _("Start expedition"));
     AdjustExpeditionButton(false);
 
     // "Expedition"-Überschrift
@@ -109,13 +111,14 @@ void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned group_id, const unsi
         {
             case 1: // Expedition starten
                 // Entsprechenden GC senden
-                if(GAMECLIENT.StartStopExpedition(wh->GetPos(), !static_cast<const nobHarborBuilding*>(wh)->IsExpeditionActive()))
+                if(GAMECLIENT.StartStopExpedition(wh->GetPos(),
+                                                  !static_cast<const nobHarborBuilding*>(wh)->IsExpeditionActive()))
                     AdjustExpeditionButton(true);
                 break;
             case 3: // Expedition starten
                 // Entsprechenden GC senden
-                if(GAMECLIENT.StartStopExplorationExpedition(wh->GetPos(),
-                                                             !static_cast<const nobHarborBuilding*>(wh)->IsExplorationExpeditionActive()))
+                if(GAMECLIENT.StartStopExplorationExpedition(
+                     wh->GetPos(), !static_cast<const nobHarborBuilding*>(wh)->IsExplorationExpeditionActive()))
                     AdjustExplorationExpeditionButton(true);
                 break;
         }

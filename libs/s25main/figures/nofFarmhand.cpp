@@ -36,7 +36,9 @@ void nofFarmhand::Serialize_nofFarmhand(SerializedGameData& sgd) const
     sgd.PushMapPoint(dest);
 }
 
-nofFarmhand::nofFarmhand(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id), dest(sgd.PopMapPoint()) {}
+nofFarmhand::nofFarmhand(SerializedGameData& sgd, const unsigned obj_id)
+    : nofBuildingWorker(sgd, obj_id), dest(sgd.PopMapPoint())
+{}
 
 void nofFarmhand::WalkedDerived()
 {
@@ -86,7 +88,8 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             std::array<std::vector<MapPoint>, 3> available_points;
 
             unsigned max_radius = (job_ == JOB_CHARBURNER) ? 3 : RADIUS[job_ - JOB_WOODCUTTER];
-            unsigned add_radius_when_found = (job_ == JOB_CHARBURNER) ? 1 : ADD_RADIUS_WHEN_FOUND[job_ - JOB_WOODCUTTER];
+            unsigned add_radius_when_found =
+              (job_ == JOB_CHARBURNER) ? 1 : ADD_RADIUS_WHEN_FOUND[job_ - JOB_WOODCUTTER];
 
             bool points_found = false;
             bool wait = false;
@@ -153,7 +156,8 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 WalkingStarted();
             } else if(wait)
             {
-                // We have to wait, since we do not know whether there are any unreachable or reserved points where there's more to get
+                // We have to wait, since we do not know whether there are any unreachable or reserved points where
+                // there's more to get
                 current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
 
                 workplace->StartNotWorking();
@@ -164,8 +168,8 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                     case JOB_STONEMASON:
                     case JOB_FISHER: workplace->OnOutOfResources(); break;
                     case JOB_WOODCUTTER:
-                        gwg->GetNotifications().publish(
-                          BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
+                        gwg->GetNotifications().publish(BuildingNote(
+                          BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
                         break;
                     default: break;
                 }

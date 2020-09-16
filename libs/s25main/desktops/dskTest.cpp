@@ -55,7 +55,8 @@ enum
 
 dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
 {
-    AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER, LargeFont);
+    AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER,
+            LargeFont);
     std::array<TextureColor, 4> textures = {{TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY}};
     std::array<std::string, 4> labels = {{"Green1", "Green2", "Red1", "Grey"}};
     unsigned yPos = 50;
@@ -105,7 +106,8 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
     AddTextButton(ID_btDisable, DrawPoint(10, 540), Extent(150, 22), TC_GREEN1, "Enable/Disable buttons", NormalFont);
     AddTextButton(ID_btAnimate, DrawPoint(165, 540), Extent(80, 22), TC_GREEN1, "Animate", NormalFont);
     AddTextButton(ID_btAnimateRepeat, DrawPoint(250, 540), Extent(110, 22), TC_GREEN1, "Animate-Repeat", NormalFont);
-    AddTextButton(ID_btAnimateOscillate, DrawPoint(365, 540), Extent(110, 22), TC_GREEN1, "Animate-Oscillate", NormalFont);
+    AddTextButton(ID_btAnimateOscillate, DrawPoint(365, 540), Extent(110, 22), TC_GREEN1, "Animate-Oscillate",
+                  NormalFont);
     AddTextButton(ID_btHideCtrls, DrawPoint(480, 540), Extent(140, 22), TC_GREEN1, "Hide all elements (H)", NormalFont);
     AddTextButton(ID_btTextureTest, DrawPoint(625, 540), Extent(90, 22), TC_GREEN1, "Texture test", NormalFont);
     AddTextButton(ID_btShowBenchmark, DrawPoint(720, 540), Extent(80, 22), TC_GREEN1, "Benchmark", NormalFont);

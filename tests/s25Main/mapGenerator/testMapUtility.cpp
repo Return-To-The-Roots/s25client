@@ -39,7 +39,10 @@ protected:
     MapUtility helper;
 
 public:
-    ObjGenFixture() : helper(config) { BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337)); }
+    ObjGenFixture() : helper(config)
+    {
+        BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337));
+    }
 };
 } // namespace
 
@@ -114,8 +117,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, ObjGenFixture)
     const MapExtent size(16, 8);
 
     Map map(size, "map", "author");
-    DescIdx<TerrainDesc> t =
-      config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Buildable); });
+    DescIdx<TerrainDesc> t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Buildable); });
     uint8_t mountainMeadow = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
@@ -146,10 +149,11 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, ObjGenFixture)
     const MapExtent size(16, 8);
 
     Map map(size, "map", "author");
-    DescIdx<TerrainDesc> t =
-      config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Buildable); });
+    DescIdx<TerrainDesc> t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Buildable); });
     uint8_t mountainMeadow = config.worldDesc.get(t).s2Id;
-    t = config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Mineable); });
+    t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Mineable); });
     uint8_t mountain = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
@@ -190,8 +194,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, ObjGenFixture)
     const unsigned z = 11u; // size.y of the mountain
 
     Map map(size, "map", "author");
-    DescIdx<TerrainDesc> t =
-      config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Mineable); });
+    DescIdx<TerrainDesc> t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::MOUNTAIN && desc.Is(ETerrain::Mineable); });
     uint8_t mountain = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
@@ -250,8 +254,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, ObjGenFixture)
     const unsigned z = 11u; // size.y of the meadow area
 
     Map map(size, "map", "author");
-    DescIdx<TerrainDesc> t =
-      config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
+    DescIdx<TerrainDesc> t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
     uint8_t meadow = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
@@ -281,8 +285,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, ObjGenFixture)
 
     Map map(size, "map", "author");
 
-    DescIdx<TerrainDesc> t =
-      config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
+    DescIdx<TerrainDesc> t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
     uint8_t meadow = config.worldDesc.get(t).s2Id;
     t = config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::SNOW; });
     uint8_t snow = config.worldDesc.get(t).s2Id;
@@ -308,10 +312,11 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, ObjGenFixture)
     const MapExtent size(16, 8);
 
     Map map(size, "map", "author");
-    DescIdx<TerrainDesc> t =
-      config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
+    DescIdx<TerrainDesc> t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.Is(ETerrain::Buildable); });
     uint8_t meadow = config.worldDesc.get(t).s2Id;
-    t = config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::WATER && desc.Is(ETerrain::Shippable); });
+    t = config.FindTerrain(
+      [](const auto& desc) { return desc.kind == TerrainKind::WATER && desc.Is(ETerrain::Shippable); });
     uint8_t water = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
@@ -371,7 +376,8 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, ObjGenFixture)
     const MapExtent size(16, 8);
 
     Map map(size, "map", "author");
-    DescIdx<TerrainDesc> t = config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.humidity == 0; });
+    DescIdx<TerrainDesc> t =
+      config.FindTerrain([](const auto& desc) { return desc.kind == TerrainKind::LAND && desc.humidity == 0; });
     uint8_t dessert = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)

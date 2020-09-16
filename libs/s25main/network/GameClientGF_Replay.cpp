@@ -65,12 +65,13 @@ void GameClient::ExecuteGameFrame_Replay()
                 {
                     if(ci)
                     {
-                        ci->CI_ReplayAsync(
-                          helpers::format(_("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF));
+                        ci->CI_ReplayAsync(helpers::format(
+                          _("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF));
                     }
 
-                    LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF % msgChecksum.randChecksum
-                      % checksum.randChecksum % msgChecksum.objCt % checksum.objCt % msgChecksum.objIdCt % checksum.objIdCt;
+                    LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF
+                      % msgChecksum.randChecksum % checksum.randChecksum % msgChecksum.objCt % checksum.objCt
+                      % msgChecksum.objIdCt % checksum.objIdCt;
 
                     // and pause the game for further investigation
                     framesinfo.isPaused = true;
@@ -99,8 +100,9 @@ void GameClient::ExecuteGameFrame_Replay()
             std::chrono::minutes mins = duration_cast<std::chrono::minutes>(runtime - hours);
             std::chrono::seconds secs = duration_cast<std::chrono::seconds>(runtime - hours - mins);
             const std::string text =
-              (boost::format(_("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)")) % curGF % hours.count()
-               % mins.count() % secs.count() % GAMEMANAGER.GetNumFrames() % GAMEMANAGER.GetAverageGFPS())
+              (boost::format(_("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"))
+               % curGF % hours.count() % mins.count() % secs.count() % GAMEMANAGER.GetNumFrames()
+               % GAMEMANAGER.GetAverageGFPS())
                 .str();
 
             ci->CI_ReplayEndReached(text);
@@ -111,7 +113,8 @@ void GameClient::ExecuteGameFrame_Replay()
             // Messenger im Game
             if(ci)
             {
-                ci->CI_ReplayEndReached(helpers::format(_("Notice: Overall asynchronous frame count: %u"), replayinfo->async));
+                ci->CI_ReplayEndReached(
+                  helpers::format(_("Notice: Overall asynchronous frame count: %u"), replayinfo->async));
             }
         }
 

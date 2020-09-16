@@ -91,8 +91,9 @@ void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btAddServer:
             if(SETTINGS.proxy.type != ProxyType::None)
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-                  _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
-                  MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                  _("Sorry!"),
+                  _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"),
+                  this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
                 WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::LAN));
@@ -138,7 +139,8 @@ void dskLAN::UpdateServerList()
     {
         std::string id = helpers::toString(curId++);
         std::string name = (gameInfo.info.hasPwd ? "(pwd) " : "") + gameInfo.info.name; //-V807
-        std::string player = helpers::toString(gameInfo.info.curNumPlayers) + "/" + helpers::toString(gameInfo.info.maxNumPlayers);
+        std::string player =
+          helpers::toString(gameInfo.info.curNumPlayers) + "/" + helpers::toString(gameInfo.info.maxNumPlayers);
         servertable->AddRow({id, name, gameInfo.info.map, player, gameInfo.info.version});
     }
 
@@ -170,8 +172,8 @@ bool dskLAN::ConnectToSelectedGame()
         return true;
     } else
     {
-        WINDOWMANAGER.Show(
-          std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"),
+                                                      this, MSB_OK, MSB_EXCLAMATIONRED, 1));
         return false;
     }
 }

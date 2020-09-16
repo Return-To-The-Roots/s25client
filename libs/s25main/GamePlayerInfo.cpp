@@ -17,4 +17,6 @@
 
 #include "GamePlayerInfo.h"
 
-GamePlayerInfo::GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo) : PlayerInfo(playerInfo), id(playerId), isDefeated(false) {}
+GamePlayerInfo::GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo)
+    : PlayerInfo(playerInfo), id(playerId), isDefeated(false)
+{}

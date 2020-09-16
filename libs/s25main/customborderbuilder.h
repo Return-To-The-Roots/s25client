@@ -59,23 +59,26 @@ private:
     void Bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmapRLE, BdrBitmap& bdrBitmap);
     static void BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmapRLE);
 
-    static void FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths, std::array<unsigned char, 3>& shouldCounts);
+    static void FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths,
+                                     std::array<unsigned char, 3>& shouldCounts);
     template<size_t T_numEdges, size_t T_numFillers>
     void WriteEdgeDistribution(const ImgPos& pos, unsigned toFill,
                                bool direction, // false = waagerecht, true = senkrecht
                                const std::array<unsigned short, 3>& edgeLengths,
                                std::array<unsigned char, 3>& edgeCounts, // wird verändert, nicht weiterbenutzen
-                               const std::array<BdrBitmap, T_numEdges>& edges, const std::array<BdrBitmap, T_numFillers>& fillers,
-                               BdrBitmap& outBorder);
+                               const std::array<BdrBitmap, T_numEdges>& edges,
+                               const std::array<BdrBitmap, T_numFillers>& fillers, BdrBitmap& outBorder);
 
     bool edgesLoaded;
     static constexpr unsigned numCorners = 9;
     std::array<BdrBitmap, numCorners> corners;
-    std::array<BdrBitmap, 3> edgesTop; // edges sind die "großen" Stücke, die jeweils zwischen zwei Auflösungen dazukommen.
+    std::array<BdrBitmap, 3>
+      edgesTop; // edges sind die "großen" Stücke, die jeweils zwischen zwei Auflösungen dazukommen.
     std::array<BdrBitmap, 3> edgesBottom;
     std::array<BdrBitmap, 3> edgesLeft;
     std::array<BdrBitmap, 3> edgesRight;
-    static constexpr unsigned numFillersTop = 4; // fillers sind zusammengesuchte "kleine" Stücke, die aneinandergereiht werden können
+    static constexpr unsigned numFillersTop =
+      4; // fillers sind zusammengesuchte "kleine" Stücke, die aneinandergereiht werden können
     std::array<BdrBitmap, numFillersTop> fillersTop;
     static constexpr unsigned numFillersBottom = 5;
     std::array<BdrBitmap, numFillersBottom> fillersBottom;

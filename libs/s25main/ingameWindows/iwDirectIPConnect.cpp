@@ -34,19 +34,21 @@
 #include "s25util/colors.h"
 
 iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
-    : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, Extent(300, 285), _("Join Game"), LOADER.GetImageN("resource", 41),
-                   true),
+    : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, Extent(300, 285), _("Join Game"),
+                   LOADER.GetImageN("resource", 41), true),
       server_type(server_type)
 {
     ctrlEdit *host, *port;
 
     // "IP - Adresse vom Host"
     AddText(0, DrawPoint(20, 30), _("IP Address of Host:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    host = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT), true);
+    host = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TC_GREEN2, NormalFont, 0, false,
+                   (server_type != ServerType::DIRECT), true);
 
     // "Server-Port"
     AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT), true);
+    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false,
+                   (server_type != ServerType::DIRECT), true);
 
     // "Passwort (falls vorhanden)"
     AddText(4, DrawPoint(20, 130), _("Password (if needed):"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -141,7 +143,8 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
             SetStatus(_("Connecting with Host..."), COLOR_RED);
 
             GAMECLIENT.Stop();
-            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), server_type, *port, false, SETTINGS.server.ipv6))
+            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), server_type, *port, false,
+                                   SETTINGS.server.ipv6))
             {
                 // Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
                 SetStatus(_("Connection failed!"), COLOR_RED);
@@ -189,7 +192,8 @@ void iwDirectIPConnect::SetHost(const std::string& hostIp)
     host->SetText(hostIp);
 }
 
-void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6, const bool hasPwd)
+void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6,
+                                const bool hasPwd)
 {
     SetHost(hostOrIp);
     SetPort(port);
@@ -228,8 +232,8 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
             std::unique_ptr<ILobbyClient> lobbyClient;
             if(server_type == ServerType::LOBBY)
                 lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-            WINDOWMANAGER.Switch(
-              std::make_unique<dskHostGame>(server_type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
+            WINDOWMANAGER.Switch(std::make_unique<dskHostGame>(server_type, GAMECLIENT.GetGameLobby(),
+                                                               GAMECLIENT.GetPlayerId(), std::move(lobbyClient)));
         }
         break;
         default: break;

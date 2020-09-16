@@ -23,16 +23,18 @@
 #include "gameTypes/JobTypes.h"
 #include "gameData/MilitaryConsts.h"
 
-nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
-                       const unsigned char rank)
+nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
+                       nobBaseMilitary* const home, const unsigned char rank)
     : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player, goal), building(home),
       hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
 {
     RTTR_Assert(IsSoldier());
 }
 
-nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank)
-    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player), building(home), hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
+nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
+                       const unsigned char rank)
+    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player), building(home),
+      hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
 {
     RTTR_Assert(IsSoldier());
 }

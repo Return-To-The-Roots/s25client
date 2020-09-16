@@ -359,7 +359,9 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
         switch(map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y))
         {
             // TODO: Welche ID ist Polarb�r?
-            case 1: species = Species(SPEC_RABBITWHITE + RANDOM.Rand(__FILE__, __LINE__, 0, 2)); break; // zuf�llige Hasenart nehmen
+            case 1:
+                species = Species(SPEC_RABBITWHITE + RANDOM.Rand(__FILE__, __LINE__, 0, 2));
+                break; // zuf�llige Hasenart nehmen
             case 2: species = SPEC_FOX; break;
             case 3: species = SPEC_STAG; break;
             case 4: species = SPEC_DEER; break;
@@ -441,7 +443,8 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
             // Skip point at NW as often there is no path from it if the harbor is north of an island
-            unsigned short seaId = (dir == Direction::NORTHWEST) ? 0 : world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, dir));
+            unsigned short seaId =
+              (dir == Direction::NORTHWEST) ? 0 : world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, dir));
             // Only 1 coastal point per sea
             if(hasCoastAtSea[seaId])
                 seaId = 0;
@@ -476,8 +479,8 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
             {
                 if(world.CalcHarborDistance(neighbor.id, startHbId) != neighbor.distance)
                 {
-                    LOG.write("Bug: Harbor distance mismatch for harbors %1%->%2%: %3% != %4%\n") % startHbId % neighbor.id
-                      % world.CalcHarborDistance(neighbor.id, startHbId) % neighbor.distance;
+                    LOG.write("Bug: Harbor distance mismatch for harbors %1%->%2%: %3% != %4%\n") % startHbId
+                      % neighbor.id % world.CalcHarborDistance(neighbor.id, startHbId) % neighbor.distance;
                     return false;
                 }
             }
@@ -602,7 +605,8 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                             continue;
 
                         hbFound[otherHbId] = true;
-                        world.harbor_pos[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(otherHbId, curNode.distance + 1));
+                        world.harbor_pos[startHbId].neighbors[shipDir].push_back(
+                          HarborPos::Neighbor(otherHbId, curNode.distance + 1));
 
                         // Make this the only coastal point of this harbor for this sea
                         HarborPos& otherHb = world.harbor_pos[otherHbId];

@@ -43,8 +43,10 @@ struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
         // Destroy HQs so only blds are checked
         world.DestroyNO(p0.GetHQPos());
         world.DestroyNO(p1.GetHQPos());
-        milBld0 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milBld0Pos, 0, NAT_ROMANS));
-        milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
+        milBld0 =
+          dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milBld0Pos, 0, NAT_ROMANS));
+        milBld1 = dynamic_cast<nobMilitary*>(
+          BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
     }
 };
 using FrontierWorldSmall = FrontierWorld<34u, 20u>;
@@ -226,8 +228,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
         {
             MapPoint curPoint(x, y);
 
-            if(curPoint.x < 5 || curPoint.x > world.GetWidth() - 5 || curPoint.y < 5 || curPoint.y > world.GetHeight() - 5
-               || (curPoint.x >= middle - 1 && curPoint.x <= middle))
+            if(curPoint.x < 5 || curPoint.x > world.GetWidth() - 5 || curPoint.y < 5
+               || curPoint.y > world.GetHeight() - 5 || (curPoint.x >= middle - 1 && curPoint.x <= middle))
             {
                 MapNode& mapPoint = world.GetNodeWriteable(curPoint);
                 mapPoint.t1 = tWater;
@@ -293,7 +295,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
             MapPoint curPoint(x, y);
 
             // get an island
-            if(curPoint.x < 10 || curPoint.x > world.GetWidth() - 10 || curPoint.y < 10 || curPoint.y > world.GetHeight() - 10)
+            if(curPoint.x < 10 || curPoint.x > world.GetWidth() - 10 || curPoint.y < 10
+               || curPoint.y > world.GetHeight() - 10)
             {
                 MapNode& mapPoint = world.GetNodeWriteable(curPoint);
                 mapPoint.t1 = tWater;
@@ -327,14 +330,14 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 
     // p1 s building, which should cause a frontier distance "near"
     MapPoint p1Near(middle + 5, 15);
-    auto* milBld1 =
-      dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Near, p1.GetPlayerId(), NAT_ROMANS));
+    auto* milBld1 = dynamic_cast<nobMilitary*>(
+      BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Near, p1.GetPlayerId(), NAT_ROMANS));
 
-    // p0 s building, should be near, like p1 s but, will be far cause p1Far cant be reached (patch is longer then 40 units).
-    // It will override the NEAR-Distance from P1Near, when evaluating P1Far
+    // p0 s building, should be near, like p1 s but, will be far cause p1Far cant be reached (patch is longer then 40
+    // units). It will override the NEAR-Distance from P1Near, when evaluating P1Far
     MapPoint p0Near(middle - 5, 15);
-    auto* milBld0 =
-      dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p0Near, p0.GetPlayerId(), NAT_ROMANS));
+    auto* milBld0 = dynamic_cast<nobMilitary*>(
+      BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p0Near, p0.GetPlayerId(), NAT_ROMANS));
 
     nobMilitary::FrontierDistance distance0 = milBld0->GetFrontierDistance();
     nobMilitary::FrontierDistance distance1 = milBld1->GetFrontierDistance();

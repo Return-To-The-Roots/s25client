@@ -63,8 +63,8 @@ constexpr std::array<helpers::EnumArray<DrawPoint, Direction>, 2> SHIPS_FLAG_POS
 
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos), ownerId_(player), state(STATE_IDLE), seaId_(0), goal_harborId(0), goal_dir(0),
-      name(ship_names[gwg->GetPlayer(player).nation][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), NUM_SHIP_NAMESS)]), curRouteIdx(0),
-      lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
+      name(ship_names[gwg->GetPlayer(player).nation][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), NUM_SHIP_NAMESS)]),
+      curRouteIdx(0), lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
     for(const auto dir : helpers::EnumRange<Direction>{})
@@ -110,11 +110,11 @@ void noShip::Serialize(SerializedGameData& sgd) const
 }
 
 noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), ownerId_(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())), seaId_(sgd.PopUnsignedShort()),
-      goal_harborId(sgd.PopUnsignedInt()), goal_dir(sgd.PopUnsignedChar()),
+    : noMovable(sgd, obj_id), ownerId_(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())),
+      seaId_(sgd.PopUnsignedShort()), goal_harborId(sgd.PopUnsignedInt()), goal_dir(sgd.PopUnsignedChar()),
       name(sgd.GetGameDataVersion() < 2 ? sgd.PopLongString() : sgd.PopString()), curRouteIdx(sgd.PopUnsignedInt()),
-      route_(sgd.PopUnsignedInt()), lost(sgd.PopBool()), remaining_sea_attackers(sgd.PopUnsignedInt()), home_harbor(sgd.PopUnsignedInt()),
-      covered_distance(sgd.PopUnsignedInt())
+      route_(sgd.PopUnsignedInt()), lost(sgd.PopBool()), remaining_sea_attackers(sgd.PopUnsignedInt()),
+      home_harbor(sgd.PopUnsignedInt()), covered_distance(sgd.PopUnsignedInt())
 {
     for(auto& dir : route_)
         dir = sgd.Pop<Direction>();
@@ -197,7 +197,8 @@ void noShip::Draw(DrawPoint drawPt)
     }
 
     LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId()))
-      ->DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir()], COLOR_WHITE, gwg->GetPlayer(ownerId_).color);
+      ->DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir()], COLOR_WHITE,
+                 gwg->GetPlayer(ownerId_).color);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= STATE_EXPEDITION_LOADING && state <= STATE_EXPEDITION_DRIVING)
         LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId() + 4))
@@ -259,7 +260,8 @@ void noShip::HandleEvent(const unsigned id)
                 state = STATE_EXPEDITION_WAITING;
 
                 // Spieler benachrichtigen
-                SendPostMessage(ownerId_, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(), _("A ship is ready for an expedition."),
+                SendPostMessage(ownerId_, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(),
+                                                                        _("A ship is ready for an expedition."),
                                                                         PostCategory::Economy, *this));
                 gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, ownerId_, pos));
                 break;
@@ -396,7 +398,8 @@ void noShip::Driven()
     {
         // Send message if necessary
         if(gwg->GetPlayer(ownerId_).ShipDiscoveredHostileTerritory(enemy_territory_discovered))
-            SendPostMessage(ownerId_, std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(), _("A ship disovered an enemy territory"),
+            SendPostMessage(ownerId_, std::make_unique<PostMsg>(GetEvMgr().GetCurrentGF(),
+                                                                _("A ship disovered an enemy territory"),
                                                                 PostCategory::Military, enemy_territory_discovered));
     }
 
@@ -414,14 +417,14 @@ void noShip::Driven()
 
 bool noShip::IsLoading() const
 {
-    return state == STATE_EXPEDITION_LOADING || state == STATE_EXPLORATIONEXPEDITION_LOADING || state == STATE_TRANSPORT_LOADING
-           || state == STATE_SEAATTACK_LOADING;
+    return state == STATE_EXPEDITION_LOADING || state == STATE_EXPLORATIONEXPEDITION_LOADING
+           || state == STATE_TRANSPORT_LOADING || state == STATE_SEAATTACK_LOADING;
 }
 
 bool noShip::IsUnloading() const
 {
-    return state == STATE_EXPEDITION_UNLOADING || state == STATE_EXPLORATIONEXPEDITION_UNLOADING || state == STATE_TRANSPORT_UNLOADING
-           || state == STATE_SEAATTACK_UNLOADING;
+    return state == STATE_EXPEDITION_UNLOADING || state == STATE_EXPLORATIONEXPEDITION_UNLOADING
+           || state == STATE_TRANSPORT_UNLOADING || state == STATE_SEAATTACK_UNLOADING;
 }
 
 /// Gibt Sichtradius dieses Schiffes zurück
@@ -693,15 +696,17 @@ void noShip::HandleState_ExpeditionDriving()
                 state = STATE_EXPEDITION_WAITING;
 
                 // Spieler benachrichtigen
-                SendPostMessage(ownerId_, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(),
-                                                                        _("A ship has reached the destination of its expedition."),
-                                                                        PostCategory::Economy, *this));
+                SendPostMessage(
+                  ownerId_, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(),
+                                                          _("A ship has reached the destination of its expedition."),
+                                                          PostCategory::Economy, *this));
                 gwg->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, ownerId_, pos));
             }
         }
         break;
         case NO_ROUTE_FOUND:
-        case HARBOR_DOESNT_EXIST: // should only happen when an expedition is cancelled and the home harbor no longer exists
+        case HARBOR_DOESNT_EXIST: // should only happen when an expedition is cancelled and the home harbor no longer
+                                  // exists
         {
             if(home_harbor != goal_harborId && home_harbor != 0)
             {
@@ -883,7 +888,8 @@ bool noShip::IsGoingToHarbor(const nobHarborBuilding& hb) const
 }
 
 /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures, const std::list<Ware*>& wares)
+void noShip::PrepareTransport(unsigned homeHarborId, MapPoint goal, const std::list<noFigure*>& figures,
+                              const std::list<Ware*>& wares)
 {
     RTTR_Assert(homeHarborId);
     RTTR_Assert(pos == gwg->GetCoastalPoint(homeHarborId, seaId_));
@@ -932,8 +938,8 @@ void noShip::AbortSeaAttack()
     RTTR_Assert(state != STATE_SEAATTACK_WAITING); // figures are not aboard if this fails!
     RTTR_Assert(remaining_sea_attackers == 0);     // Some soldiers are still not aboard
 
-    if((state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_DRIVINGTODESTINATION) && goal_harborId != home_harbor
-       && home_harbor != 0)
+    if((state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_DRIVINGTODESTINATION)
+       && goal_harborId != home_harbor && home_harbor != 0)
     {
         // We did not start the attack yet and we can (possibly) go back to our home harbor
         // -> tell the soldiers we go back (like after an attack)
@@ -993,7 +999,8 @@ void noShip::StartDrivingToHarborPlace()
     else
     {
         bool routeFound;
-        // Use upper bound to distance by checking the distance between the harbors if we still have and are at the home harbor
+        // Use upper bound to distance by checking the distance between the harbors if we still have and are at the home
+        // harbor
         if(home_harbor && pos == gwg->GetCoastalPoint(home_harbor, seaId_))
         {
             // Use the maximum distance between the harbors plus 6 fields
@@ -1006,10 +1013,11 @@ void noShip::StartDrivingToHarborPlace()
             // todo
             RTTR_Assert(false);
             LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and "
-                      "replay.\nnoShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden!\nplayer %i state %i pos %u,%u goal "
+                      "replay.\nnoShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden!\nplayer %i state %i "
+                      "pos %u,%u goal "
                       "coastal %u,%u goal-id %i goalpos %u,%u \n")
-              % GetEvMgr().GetCurrentGF() % unsigned(ownerId_) % state % pos.x % pos.y % coastalPos.x % coastalPos.y % goal_harborId
-              % gwg->GetHarborPoint(goal_harborId).x % gwg->GetHarborPoint(goal_harborId).y;
+              % GetEvMgr().GetCurrentGF() % unsigned(ownerId_) % state % pos.x % pos.y % coastalPos.x % coastalPos.y
+              % goal_harborId % gwg->GetHarborPoint(goal_harborId).x % gwg->GetHarborPoint(goal_harborId).y;
             goal_harborId = 0;
             return;
         }
@@ -1063,8 +1071,8 @@ void noShip::FindUnloadGoal(State newState)
 void noShip::HarborDestroyed(nobHarborBuilding* hb)
 {
     const unsigned destroyedHarborId = hb->GetHarborPosID();
-    // Almost every case of a destroyed harbor is handled when the ships event fires (the handler detects the destroyed harbor)
-    // So mostly we just reset the corresponding id
+    // Almost every case of a destroyed harbor is handled when the ships event fires (the handler detects the destroyed
+    // harbor) So mostly we just reset the corresponding id
 
     if(destroyedHarborId == home_harbor)
         home_harbor = 0;
@@ -1167,7 +1175,8 @@ void noShip::SeaAttackerWishesNoReturn()
         GetEvMgr().RemoveEvent(current_ev);
         if(!figures.empty())
         {
-            // Go back home. Note: home_harbor can be 0 if it was destroyed, allow this and let the state handlers handle that case later
+            // Go back home. Note: home_harbor can be 0 if it was destroyed, allow this and let the state handlers
+            // handle that case later
             goal_harborId = home_harbor;
             state = STATE_SEAATTACK_RETURN_DRIVING;
             StartDrivingToHarborPlace();

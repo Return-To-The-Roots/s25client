@@ -28,15 +28,15 @@
 #include <stdexcept>
 
 GlobalGameSettings::GlobalGameSettings()
-    : speed(GS_NORMAL), objective(GO_NONE), startWares(SWR_NORMAL), lockedTeams(false), exploration(EXP_FOGOFWAR), teamView(true),
-      randomStartPosition(false)
+    : speed(GS_NORMAL), objective(GO_NONE), startWares(SWR_NORMAL), lockedTeams(false), exploration(EXP_FOGOFWAR),
+      teamView(true), randomStartPosition(false)
 {
     registerAllAddons();
 }
 
 GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
-    : speed(ggs.speed), objective(ggs.objective), startWares(ggs.startWares), lockedTeams(ggs.lockedTeams), exploration(ggs.exploration),
-      teamView(ggs.teamView), randomStartPosition(ggs.randomStartPosition)
+    : speed(ggs.speed), objective(ggs.objective), startWares(ggs.startWares), lockedTeams(ggs.lockedTeams),
+      exploration(ggs.exploration), teamView(ggs.teamView), randomStartPosition(ggs.randomStartPosition)
 {
     registerAllAddons();
     for(const AddonWithState& addon : ggs.addons)

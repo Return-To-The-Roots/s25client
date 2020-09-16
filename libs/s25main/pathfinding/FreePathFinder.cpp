@@ -74,15 +74,17 @@ void FreePathFinder::IncreaseCurrentVisit()
 
 /// Pathfinder ( A* ), O(v lg v) --> Normal terrain (ignoring roads) for road building and free walking jobs
 bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const MapPoint dest, const bool randomRoute,
-                                                   const unsigned maxLength, std::vector<Direction>* route, unsigned* length,
-                                                   Direction* firstDir, FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate,
+                                                   const unsigned maxLength, std::vector<Direction>* route,
+                                                   unsigned* length, Direction* firstDir, FP_Node_OK_Callback IsNodeOK,
+                                                   FP_Node_OK_Callback IsNodeOKAlternate,
                                                    FP_Node_OK_Callback IsNodeToDestOk, const void* param)
 {
     if(start == dest)
     {
         // Path where start==goal should never happen
         RTTR_Assert(false);
-        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in pathfinding %u,%u)\n")
+        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in "
+                  "pathfinding %u,%u)\n")
           % gwb_.GetEvMgr().GetCurrentGF() % unsigned(start.x) % unsigned(start.y);
         // But for now we assume it to be valid and return (kind of) correct values
         if(route)
@@ -121,12 +123,12 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         {
             prevStepEven = !prevStepEven;
             stepsTilSwitch = todo.size();
-            // prevstepEven ? LOG.write(("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) : LOG.write(("pf: odd, to
-            // switch %i listsize %i ", stepsTilSwitch, todo.size());
+            // prevstepEven ? LOG.write(("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) :
+            // LOG.write(("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
         }
         // else
-        // prevstepEven ? LOG.write(("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) : LOG.write(("pf: odd, to switch %i
-        // listsize %i ", stepsTilSwitch, todo.size());
+        // prevstepEven ? LOG.write(("pf: even, to switch %i listsize %i ", stepsTilSwitch, todo.size()) :
+        // LOG.write(("pf: odd, to switch %i listsize %i ", stepsTilSwitch, todo.size());
         stepsTilSwitch--;
 
         // Get node with lowest cost
@@ -189,7 +191,8 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
             unsigned nbId = gwb_.GetIdx(neighbourPos);
 
             // Knoten schon auf dem Feld gebildet ?
-            if((prevStepEven && nodes[nbId].lastVisited == currentVisit) || (!prevStepEven && nodes[nbId].lastVisitedEven == currentVisit))
+            if((prevStepEven && nodes[nbId].lastVisited == currentVisit)
+               || (!prevStepEven && nodes[nbId].lastVisitedEven == currentVisit))
             {
                 continue;
             }
@@ -222,8 +225,10 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                         back_id = alternate ? nodes[back_id].prevEven : nodes[back_id].prev;
                         alternate = !alternate;
                     }
-                    bool tooClose = helpers::contains_if(
-                      evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) { return gwb_.CalcDistance(neighbourPos, it) < 2; });
+                    bool tooClose =
+                      helpers::contains_if(evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) {
+                          return gwb_.CalcDistance(neighbourPos, it) < 2;
+                      });
                     if(tooClose)
                         continue;
                     if(gwb_.CalcDistance(neighbourPos, start) < 2)

@@ -33,7 +33,8 @@
 #include "gameData/TerrainDesc.h"
 #include <algorithm>
 
-noFlag::noFlag(const MapPoint pos, const unsigned char player) : noRoadNode(NOP_FLAG, pos, player), ani_offset(rand() % 20000)
+noFlag::noFlag(const MapPoint pos, const unsigned char player)
+    : noRoadNode(NOP_FLAG, pos, player), ani_offset(rand() % 20000)
 {
     wares = {};
 
@@ -121,11 +122,13 @@ void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
 void noFlag::Draw(DrawPoint drawPt)
 {
     // Positionen der Waren an der Flagge relativ zur Flagge
-    static const std::array<DrawPoint, 8> WARES_POS = {{{0, 0}, {-4, 0}, {3, -1}, {-7, -1}, {6, -2}, {-10, -2}, {9, -5}, {-13, -5}}};
+    static const std::array<DrawPoint, 8> WARES_POS = {
+      {{0, 0}, {-4, 0}, {3, -1}, {-7, -1}, {6, -2}, {-10, -2}, {9, -5}, {-13, -5}}};
 
     unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
 
-    LOADER.flag_cache[gwg->GetPlayer(player).nation][flagtype][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+    LOADER.flag_cache[gwg->GetPlayer(player).nation][flagtype][ani_step].draw(drawPt, 0xFFFFFFFF,
+                                                                              gwg->GetPlayer(player).color);
 
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = wares.size(); i; --i)
@@ -257,8 +260,8 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
 unsigned noFlag::GetNumWaresForRoad(const Direction dir) const
 {
     const auto roadDir = toRoadPathDirection(dir);
-    return static_cast<unsigned>(
-      std::count_if(wares.cbegin(), wares.cend(), [roadDir](const Ware* ware) { return ware && (ware->GetNextDir() == roadDir); }));
+    return static_cast<unsigned>(std::count_if(
+      wares.cbegin(), wares.cend(), [roadDir](const Ware* ware) { return ware && (ware->GetNextDir() == roadDir); }));
 }
 
 /**
@@ -275,7 +278,8 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
     if(!routeInDir->isOccupied())
         points += 500;
     else if(routeInDir->hasCarrier(0) && routeInDir->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK
-            && !routeInDir->hasCarrier(1)) // no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
+            && !routeInDir->hasCarrier(
+              1)) // no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
         points += 50;
 
     return points;

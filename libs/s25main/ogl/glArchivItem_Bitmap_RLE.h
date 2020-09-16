@@ -27,7 +27,8 @@ public:
     glArchivItem_Bitmap_RLE() = default;
 
     glArchivItem_Bitmap_RLE(const glArchivItem_Bitmap_RLE& item)
-        : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_RLE(item), glArchivItem_Bitmap(item)
+        : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_RLE(item),
+          glArchivItem_Bitmap(item)
     {}
     RTTR_CLONEABLE(glArchivItem_Bitmap_RLE)
 };
