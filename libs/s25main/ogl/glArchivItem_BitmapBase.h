@@ -56,5 +56,5 @@ protected:
     /// Calculate the actual texture size
     virtual Extent CalcTextureSize() const = 0;
     /// Returns the currently set texture or 0 if none created
-    unsigned GetTexNoCreate() { return texture; }
+    unsigned GetTexNoCreate() const { return texture; }
 };

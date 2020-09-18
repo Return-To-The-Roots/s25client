@@ -428,7 +428,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
 }
 
 void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
-                                std::vector<ObjectBetweenLines>& between_lines)
+                                std::vector<ObjectBetweenLines>& between_lines) const
 {
     const std::list<noBase*>& figures = GetWorld().GetFigures(pt);
     for(noBase* figure : figures)

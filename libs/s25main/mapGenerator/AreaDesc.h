@@ -102,5 +102,5 @@ struct AreaDesc
      * @param size of the map
      * @return true of the point is within the of the area, false otherwise
      */
-    bool IsInArea(const Position& point, double playerDistance, const MapExtent& size);
+    bool IsInArea(const Position& point, double playerDistance, const MapExtent& size) const;
 };

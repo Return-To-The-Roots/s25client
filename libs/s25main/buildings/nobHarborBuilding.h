@@ -196,7 +196,7 @@ public:
         {
             const nobMilitary* const search;
             CmpBuilding(const nobMilitary* const search) : search(search) {}
-            bool operator()(const SeaAttackerBuilding& other) { return other.building == search; }
+            bool operator()(const SeaAttackerBuilding& other) const { return other.building == search; }
         };
         /// Das Gebäude selbst
         nobMilitary* building;

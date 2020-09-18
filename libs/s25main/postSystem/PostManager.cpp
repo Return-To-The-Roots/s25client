@@ -44,14 +44,14 @@ void PostManager::RemovePostBox(unsigned player)
     postBoxes[player].reset();
 }
 
-void PostManager::SendMsg(unsigned player, std::unique_ptr<PostMsg> msg)
+void PostManager::SendMsg(unsigned player, std::unique_ptr<PostMsg> msg) const
 {
     PostBox* box = GetPostBox(player);
     if(box)
         box->AddMsg(std::move(msg));
 }
 
-void PostManager::SetMissionGoal(unsigned player, const std::string& newGoal)
+void PostManager::SetMissionGoal(unsigned player, const std::string& newGoal) const
 {
     PostBox* box = GetPostBox(player);
     if(box)

@@ -788,7 +788,7 @@ void WindowManager::SetActiveWindow(Window& wnd)
         SetActiveWindowImpl(wnd, *nextdesktop, nextWnds);
 }
 
-void WindowManager::TakeScreenshot()
+void WindowManager::TakeScreenshot() const
 {
     libsiedler2::PixelBufferBGRA buffer(curRenderSize.x, curRenderSize.y);
     glReadPixels(0, 0, curRenderSize.x, curRenderSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());

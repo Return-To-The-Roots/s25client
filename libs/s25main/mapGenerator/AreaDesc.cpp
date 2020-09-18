@@ -25,7 +25,7 @@ AreaDesc::AreaDesc(const Point<double>& center, double minDist, double maxDist, 
       maxPlayerDistance(maxPlayerDist)
 {}
 
-bool AreaDesc::IsInArea(const Position& point, double playerDistance, const MapExtent& size)
+bool AreaDesc::IsInArea(const Position& point, double playerDistance, const MapExtent& size) const
 {
     Position tile(size * center);
     double distance = VertexUtility::Distance(point, tile, size) / std::min(size.x / 2, size.y / 2);

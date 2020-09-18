@@ -43,8 +43,8 @@ public:
     const Extent& getSize() const { return size; }
     auto get() const { return handle; }
 
-    void bind();
-    bool checkSize(const Extent&);
+    void bind() const;
+    bool checkSize(const Extent&) const;
     bool uploadData(const libsiedler2::PixelBufferBGRA&);
 };
 

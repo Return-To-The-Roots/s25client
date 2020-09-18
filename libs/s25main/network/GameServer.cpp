@@ -487,7 +487,7 @@ bool GameServer::StartGame()
     return true;
 }
 
-unsigned GameServer::CalcNWFLenght(FramesInfo::milliseconds32_t minDuration)
+unsigned GameServer::CalcNWFLenght(FramesInfo::milliseconds32_t minDuration) const
 {
     constexpr unsigned maxNumGF = 20;
     for(unsigned i = 1; i < maxNumGF; ++i)

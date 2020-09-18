@@ -257,7 +257,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::opti
     txtMapPath.SetPos(DrawPoint(txtXPos, txtMapPath.GetPos().y));
 }
 
-void dskSelectMap::GoBack()
+void dskSelectMap::GoBack() const
 {
     if(csi.type == ServerType::LOCAL)
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());

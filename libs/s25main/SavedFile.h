@@ -39,7 +39,7 @@ public:
     virtual uint16_t GetVersion() const = 0;
 
     /// Schreibt Signatur und Version der Datei
-    void WriteFileHeader(BinaryFile& file);
+    void WriteFileHeader(BinaryFile& file) const;
     /// Reads and validates the file header. On error false is returned and lastErrorMsg is set
     bool ReadFileHeader(BinaryFile& file);
 
@@ -56,7 +56,7 @@ public:
     void ReadPlayerData(BinaryFile& file);
 
     /// schreibt die GlobalGameSettings in die Datei.
-    void WriteGGS(BinaryFile& file);
+    void WriteGGS(BinaryFile& file) const;
     /// liest die GlobalGameSettings aus der Datei.
     void ReadGGS(BinaryFile& file);
 

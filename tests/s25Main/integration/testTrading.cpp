@@ -65,7 +65,7 @@ struct TradeFixture : public WorldWithGCExecution3P
         this->ggs.setSelection(AddonId::TRADE, 1);
     }
 
-    void testExpectedWares()
+    void testExpectedWares() const
     {
         BOOST_REQUIRE_EQUAL(curWh->GetNumRealFigures(JOB_HELPER), numHelpers);
         BOOST_REQUIRE_EQUAL(curWh->GetNumRealFigures(JOB_WOODCUTTER), numWoodcutters);

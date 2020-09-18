@@ -229,7 +229,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
     }
 
     /// Asserts that the milBld2 contains the given amount of strong/weak soldiers
-    void TestTroopCt(unsigned numStrong, unsigned numWeak)
+    void TestTroopCt(unsigned numStrong, unsigned numWeak) const
     {
         std::vector<nofPassiveSoldier*> soldiers(milBld2->GetTroops().begin(), milBld2->GetTroops().end());
         BOOST_REQUIRE_EQUAL(soldiers.size(), numStrong + numWeak);
