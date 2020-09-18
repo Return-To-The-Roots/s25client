@@ -47,7 +47,7 @@ public:
     mutable const noRoadNode* prev; //-V730_NOINIT
     /// Direction to previous node, includes SHIP_DIR
     mutable RoadPathDirection dir_; //-V730_NOINIT
-public:
+
     noRoadNode(NodalObjectType nop, MapPoint pos, unsigned char player);
     noRoadNode(SerializedGameData& sgd, unsigned obj_id);
 

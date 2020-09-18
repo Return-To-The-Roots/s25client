@@ -36,7 +36,6 @@ protected:
         PQ_CLASS3       /// Work is possible, points are only chosen if there are no other class 1/2's
     };
 
-protected:
     /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn...
     void WalkedDerived() override;
 

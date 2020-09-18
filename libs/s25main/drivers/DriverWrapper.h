@@ -49,7 +49,6 @@ public:
         std::string name;
     };
 
-public:
     DriverWrapper();
     ~DriverWrapper();
     /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen

@@ -182,7 +182,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
           max_available_woodcutter, buildingsWanted[BLD_FORESTER] * 2 + 1); // two per forester + 1 for 'natural' forest
 
         ////on maps with many trees the ai will build woodcutters all over the place which means the foresters are not
-        ///really required
+        /// really required
         // TODO: get number of trees in own territory. use it relatively to total size of own territory to adapt number
         // of foresters (less) and woodcutters (more)
 

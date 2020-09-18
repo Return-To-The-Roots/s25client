@@ -76,7 +76,6 @@ private:
     /// For boat carriers: path to the shore
     std::vector<Direction> shore_path;
 
-private:
     void GoalReached() override;
     void Walked() override;
     void AbrogateWorkplace() override;

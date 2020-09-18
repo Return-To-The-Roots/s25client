@@ -116,7 +116,6 @@ private:
     // Alle (im Programm benutzen) Extensions laden
     bool LoadAllExtensions();
 
-private:
     using Handle = std::unique_ptr<IVideoDriver, void (*)(IVideoDriver*)>;
 
     drivers::DriverWrapper driver_wrapper;

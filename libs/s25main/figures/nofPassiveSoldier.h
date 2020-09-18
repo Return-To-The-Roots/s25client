@@ -30,7 +30,6 @@ private:
     /// "Heilungs-Event"
     const GameEvent* healing_event;
 
-private:
     /// Eventhandling
     void HandleDerivedEvent(unsigned id) override;
 

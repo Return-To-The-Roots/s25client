@@ -63,6 +63,5 @@ protected:
     /// serialisiert das Basisobjekt.
     void Serialize_noBase(SerializedGameData& sgd) const;
 
-protected:
     NodalObjectType nop; /// Typ des NodeObjekt ( @see NodalObjectTypes.h )
 };

@@ -38,7 +38,6 @@ private:
     // Bin ich fett? (werde immer mal dünn oder fett, damits nicht immer gleich aussieht, wenn jemand rauskommt)
     bool fat;
 
-private:
     void GoalReached() override;
     void Walked() override;
     /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)

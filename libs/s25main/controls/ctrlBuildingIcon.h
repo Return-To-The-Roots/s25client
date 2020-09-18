@@ -33,7 +33,6 @@ protected:
     void Draw_() override;
     void DrawContent() const override;
 
-protected:
     const BuildingType type; /// der GebäudeType des Icons.
     const Nation nation;     /// Volk
 };

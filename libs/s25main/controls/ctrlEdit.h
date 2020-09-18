@@ -57,7 +57,6 @@ private:
     void CursorLeft();
     void CursorRight();
 
-private:
     unsigned short maxLength_;
     ctrlTextDeepening* txtCtrl;
     bool isPassword_;

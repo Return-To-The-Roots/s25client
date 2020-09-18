@@ -391,7 +391,6 @@ protected:
     /// Starke Soldaten oder schwache Soldaten?
     const bool strong_soldiers;
 
-protected:
     BaseAttack(const Type gst, const MapPoint pt, const uint32_t soldiers_count, bool strong_soldiers)
         : Coords(gst, pt), soldiers_count(soldiers_count), strong_soldiers(strong_soldiers)
     {}

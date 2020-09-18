@@ -27,7 +27,6 @@ private:
     /// Was soll gemacht werden: Ernten oder Sähen?
     bool harvest;
 
-private:
     /// Malt den Arbeiter beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware

@@ -34,6 +34,5 @@ public:
 protected:
     void Draw_() override;
 
-protected:
     FontStyle format;
 };

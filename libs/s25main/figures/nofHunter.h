@@ -35,7 +35,6 @@ private:
     /// Richtung, in die geschossen wird
     Direction shooting_dir;
 
-private:
     /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
     void WalkedDerived() override;
     /// Malt den Arbeiter beim Arbeiten

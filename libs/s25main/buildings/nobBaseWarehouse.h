@@ -77,7 +77,6 @@ protected:
     /// Einlagerevent für Waren und Figuren
     const GameEvent* store_event;
 
-protected:
     /// Soldaten-Reserve-Einstellung
     std::array<unsigned, 5> reserve_soldiers_available;      /// einkassierte Soldaten zur Reserve
     std::array<unsigned, 5> reserve_soldiers_claimed_visual; /// geforderte Soldaten zur Reserve - visuell

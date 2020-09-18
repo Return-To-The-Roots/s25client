@@ -38,7 +38,6 @@ private:
     void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void Msg_Group_OptionGroupChange(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
 
-private:
     GlobalGameSettings ggs;
     std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
 

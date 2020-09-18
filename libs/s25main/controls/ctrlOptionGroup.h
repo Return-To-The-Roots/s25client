@@ -34,7 +34,6 @@ public:
         SHOW
     };
 
-public:
     ctrlOptionGroup(Window* parent, unsigned id, int select_type);
 
     /// Selektiert einen neuen Button
