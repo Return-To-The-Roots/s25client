@@ -204,7 +204,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
     // Umherfliegende Katapultsteine zeichnen
-    for(auto catapult_stone : GetWorld().catapult_stones)
+    for(auto* catapult_stone : GetWorld().catapult_stones)
     {
         if(gwv.GetVisibility(catapult_stone->dest_building) == VIS_VISIBLE
            || gwv.GetVisibility(catapult_stone->dest_map) == VIS_VISIBLE)

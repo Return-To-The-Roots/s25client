@@ -2013,7 +2013,7 @@ void GamePlayer::GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildin
 unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
 {
     unsigned count = 0;
-    for(auto ship : ships)
+    for(const auto* ship : ships)
     {
         if(ship->IsGoingToHarbor(hb))
             ++count;

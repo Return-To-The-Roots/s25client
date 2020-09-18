@@ -70,7 +70,7 @@ void World::Unload()
         }
     }
 
-    for(auto roadsegment : roadsegments)
+    for(auto* roadsegment : roadsegments)
         delete roadsegment;
 
     // Objekte vernichten

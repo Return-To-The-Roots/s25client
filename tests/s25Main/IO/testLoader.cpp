@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(BobOverrides, LoaderFixture)
     BOOST_TEST(!nested->get(2)); // Text item removed
     for(size_t i = 0; i < 2; ++i)
     {
-        auto* curBmp = dynamic_cast<const libsiedler2::ArchivItem_Bitmap*>(nested->get(i));
+        const auto* curBmp = dynamic_cast<const libsiedler2::ArchivItem_Bitmap*>(nested->get(i));
         BOOST_TEST_REQUIRE(curBmp);
         BOOST_TEST(curBmp->getWidth() == 3);
         BOOST_TEST(curBmp->getHeight() == 7);

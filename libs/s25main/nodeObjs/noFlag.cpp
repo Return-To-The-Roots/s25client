@@ -108,7 +108,7 @@ void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
     Serialize_noRoadNode(sgd);
 
     sgd.PushEnum<uint8_t>(flagtype);
-    for(auto ware : wares)
+    for(auto* ware : wares)
         sgd.PushObject(ware, true);
 
     // BWUs speichern

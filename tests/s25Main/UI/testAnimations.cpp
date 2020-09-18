@@ -122,7 +122,7 @@ BOOST_FIXTURE_TEST_SUITE(Animations, WindowFixture)
 
 BOOST_AUTO_TEST_CASE(TestPred)
 {
-    auto anim = new TestAnimation(*this, bt, 10u, 2u, Animation::RPT_None);
+    auto* anim = new TestAnimation(*this, bt, 10u, 2u, Animation::RPT_None);
     animMgr.addAnimation(anim);
     unsigned time = 0;
     BOOST_TEST(testAdvanceTime(anim, time, true, 0, 0.));

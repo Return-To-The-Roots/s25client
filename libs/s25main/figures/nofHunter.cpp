@@ -158,7 +158,7 @@ void nofHunter::TryStartHunting()
             const std::list<noBase*>& figures = gwg->GetFigures(curMapPos);
 
             // nach Tieren suchen
-            for(auto figure : figures)
+            for(auto* figure : figures)
             {
                 if(figure->GetType() != NOP_ANIMAL)
                     continue;

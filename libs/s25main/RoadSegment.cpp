@@ -171,7 +171,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
     {
         const std::list<noBase*>& figures = gwg->GetFigures(t);
-        for(auto figure : figures)
+        for(auto* figure : figures)
         {
             if(figure->GetType() == NOP_FIGURE)
             {

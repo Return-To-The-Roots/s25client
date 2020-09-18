@@ -1172,7 +1172,7 @@ bool Loader::LoadOverrideDirectory(const bfs::path& path)
     logger_.write(_("Loading LST,LBM,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % path;
 
     std::vector<bfs::path> filesAndFolders;
-    for(const auto ext : {"lst", "lbm", "bob", "idx", "bmp", "txt", "ger", "eng", "ini"})
+    for(const auto* const ext : {"lst", "lbm", "bob", "idx", "bmp", "txt", "ger", "eng", "ini"})
     {
         const std::vector<bfs::path> curFiles = ListDir(path, ext, true);
         filesAndFolders.insert(filesAndFolders.end(), curFiles.begin(), curFiles.end());

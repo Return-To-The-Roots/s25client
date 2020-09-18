@@ -87,7 +87,7 @@ sortedMilitaryBlds MilitarySquares::GetBuildingsInRange(const MapPoint pt, unsig
                 realX -= size_.x;
             RTTR_Assert(realX >= 0 && realX < static_cast<int>(size_.x));
             const std::list<nobBaseMilitary*>& milBuildings = squares[realY * size_.x + realX];
-            for(auto milBuilding : milBuildings)
+            for(auto* milBuilding : milBuildings)
                 buildings.insert(milBuilding);
         }
     }
