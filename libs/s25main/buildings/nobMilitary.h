@@ -77,7 +77,6 @@ private:
     /// Soldatenbesatzung
     SortedTroops troops;
 
-private:
     /// Bestellungen (sowohl Truppen als auch Goldmünzen) zurücknehmen
     void CancelOrders();
     /// Wählt je nach Militäreinstellungen (Verteidigerstärke) einen passenden Soldaten aus

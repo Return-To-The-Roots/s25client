@@ -51,7 +51,6 @@ private:
     /// Wie viele Bauschritte noch verfügbar sind, bis der nächste Rohstoff geholt werden muss
     unsigned char building_steps_available;
 
-private:
     void GoalReached() override;
     void Walked() override;
     void AbrogateWorkplace() override;

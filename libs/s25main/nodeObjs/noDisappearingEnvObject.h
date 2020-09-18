@@ -28,10 +28,8 @@ public:
     noDisappearingEnvObject(MapPoint pos, unsigned living_time, unsigned add_var_living_time);
     noDisappearingEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
-public:
     void Destroy() override;
 
-public:
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Benachrichtigen, wenn neuer GF erreicht wurde.

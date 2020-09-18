@@ -53,7 +53,6 @@ public:
 protected:
     void Destroy_noStaticObject();
 
-protected:
     unsigned short id;
     unsigned short file;
     unsigned char size;

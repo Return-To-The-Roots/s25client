@@ -56,7 +56,6 @@ protected:
     virtual void DrawContent() const = 0;
     bool IsMouseOver(const Position& mousePos) const;
 
-protected:
     /// Texturfarbe des Buttons
     TextureColor tc;
     /// Status des Buttons (gedrückt, erhellt usw. durch Maus ausgelöst)

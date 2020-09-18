@@ -79,7 +79,6 @@ private:
     };
     using ChatLine = boost::variant<PrimaryChatLine, SecondaryChatLine>;
 
-private:
     TextureColor tc;    /// Hintergrundtextur.
     const glFont* font; /// Schriftart.
 

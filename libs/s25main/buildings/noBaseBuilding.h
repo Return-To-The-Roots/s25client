@@ -42,7 +42,6 @@ protected:
     int door_point_x;
     int door_point_y;
 
-protected:
     /// Ware Bescheid sagen, dass sie nicht mehr hierher kommen brauch
     void WareNotNeeded(Ware* ware);
     /// Zerstört Anbauten, falls es sich um ein großes Gebäude handelt (wo es diese auch gibt)

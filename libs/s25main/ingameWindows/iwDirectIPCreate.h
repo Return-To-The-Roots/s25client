@@ -36,6 +36,5 @@ protected:
 private:
     void SetText(const std::string& text, unsigned color, bool button);
 
-private:
     ServerType server_type;
 };

@@ -32,7 +32,6 @@ protected:
     /// Hitpoints
     unsigned char hitpoints;
 
-protected:
     /// Zeichnet den Soldaten beim ganz normalen Laufen
     void DrawSoldierWaiting(DrawPoint drawPt);
 

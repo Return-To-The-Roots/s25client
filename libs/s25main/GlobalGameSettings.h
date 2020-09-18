@@ -38,7 +38,6 @@ public:
     void Serialize(Serializer& ser) const;
     void Deserialize(Serializer& ser);
 
-public:
     GameSpeed speed;
     GameObjective objective;
     StartWares startWares;

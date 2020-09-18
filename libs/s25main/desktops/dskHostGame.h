@@ -92,7 +92,6 @@ private:
     void GoBack();
     bool IsSinglePlayer() { return serverType == ServerType::LOCAL; }
 
-private:
     const ServerType serverType;
     std::shared_ptr<GameLobby> gameLobby;
     unsigned localPlayerId_;

@@ -96,7 +96,6 @@ protected:
     /// Weiterleitung von Nachrichten erlaubt oder nicht?
     bool IsMessageRelayAllowed() const override;
 
-protected:
     unsigned short iwHeight;
     std::string title_;
     glArchivItem_Bitmap* background;

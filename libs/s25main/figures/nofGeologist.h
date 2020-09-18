@@ -42,7 +42,6 @@ private:
 
     std::array<bool, Resource::TypeCount> resAlreadyFound;
 
-private:
     void GoalReached() override;
     void Walked() override;
     void HandleDerivedEvent(unsigned id) override;

@@ -64,7 +64,6 @@ protected:
     /// Hat der Bauarbeiter bei seiner Arbeit Sounds von sich gegeben (zu Optimeriungszwecken)
     bool was_sounding;
 
-protected:
     /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm Gebäude ablegen wollen (oder auch
     /// nicht) also fertig mit Arbeiten sind
     void WorkingReady();

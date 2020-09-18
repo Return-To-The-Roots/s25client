@@ -42,7 +42,6 @@ protected:
         STATE_SCOUT_SCOUTING // läuft umher und erkundet
     } state;
 
-protected:
     /// Kündigt bei der Flagge
     void AbrogateWorkplace() override;
     /// Geht wieder zurück zur Flagge und dann nach Hause
