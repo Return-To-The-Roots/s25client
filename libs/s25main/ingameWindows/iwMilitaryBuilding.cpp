@@ -114,7 +114,7 @@ void iwMilitaryBuilding::Draw_()
 
     // Soldaten zeichnen
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
-    for(auto soldier : soldiers)
+    for(const auto* soldier : soldiers)
     {
         LOADER.GetMapImageN(2321 + soldier->GetRank())->DrawFull(curTroopsPos);
         curTroopsPos.x += 22;
@@ -129,7 +129,7 @@ void iwMilitaryBuilding::Draw_()
         DrawRectangle(Rect(healthPos, Extent(22 * maxSoldierCt, 14)), 0x96000000);
 
         healthPos += DrawPoint(12, 2);
-        for(auto soldier : soldiers)
+        for(const auto* soldier : soldiers)
         {
             auto hitpoints = static_cast<int>(soldier->GetHitpoints());
             auto maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][soldier->GetRank()]);

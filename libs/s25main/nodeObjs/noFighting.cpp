@@ -72,7 +72,7 @@ void noFighting::Serialize_noFighting(SerializedGameData& sgd) const
     sgd.PushEvent(current_ev);
     sgd.PushUnsignedChar(player_won);
 
-    for(auto soldier : soldiers)
+    for(auto* soldier : soldiers)
         sgd.PushObject(soldier, false);
 }
 

@@ -134,7 +134,7 @@ bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
             processed = true;
     }
 
-    for(auto tofreeArea : tofreeAreas_)
+    for(auto* tofreeArea : tofreeAreas_)
         lockedAreas_.erase(tofreeArea);
     tofreeAreas_.clear();
     isInMouseRelay = false;

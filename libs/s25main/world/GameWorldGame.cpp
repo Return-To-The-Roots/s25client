@@ -906,7 +906,7 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<D
 
     // Auch vom Ausgangspunkt aus, da sie im GameWorldGame wegem Zeichnen auch hier hängen können!
     const std::list<noBase*>& fieldFigures = GetFigures(pt);
-    for(auto fieldFigure : fieldFigures)
+    for(auto* fieldFigure : fieldFigures)
         if(fieldFigure->GetType() == NOP_FIGURE)
             figures.push_back(static_cast<noFigure*>(fieldFigure));
 
@@ -914,7 +914,7 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<D
     for(Direction dir : helpers::EnumRange<Direction>{})
     {
         const std::list<noBase*>& fieldFigures = GetFigures(GetNeighbour(pt, dir));
-        for(auto fieldFigure : fieldFigures)
+        for(auto* fieldFigure : fieldFigures)
             if(fieldFigure->GetType() == NOP_FIGURE)
                 figures.push_back(static_cast<noFigure*>(fieldFigure));
     }
@@ -966,7 +966,7 @@ bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttack
 
     // Objekte, die sich hier befinden durchgehen
     const std::list<noBase*>& figures = GetFigures(pt);
-    for(auto figure : figures)
+    for(auto* figure : figures)
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
         if(figure->GetGOT() == GOT_NOF_ATTACKER || figure->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER
@@ -999,7 +999,7 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
 
     // Objekte, die sich hier befinden durchgehen
     const std::list<noBase*>& figures = GetFigures(pt);
-    for(auto figure : figures)
+    for(auto* figure : figures)
     {
         // Ist hier ein anderer Soldat, der hier ebenfalls wartet?
         if(figure->GetGOT() == GOT_NOF_ATTACKER || figure->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER

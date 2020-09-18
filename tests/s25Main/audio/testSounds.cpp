@@ -184,7 +184,7 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
     {
         mock::sequence s;
         // All midi types are treated as .midi
-        const auto extension = (musicFile.extension() == ".ogg") ? ".ogg" : ".midi";
+        const auto* const extension = (musicFile.extension() == ".ogg") ? ".ogg" : ".midi";
         libsiedler2::Archiv musicArchiv;
         BOOST_TEST_REQUIRE(libsiedler2::Load(rttr::test::libsiedler2TestFilesDir / musicFile, musicArchiv) == 0);
         auto* music = dynamic_cast<MusicItem*>(musicArchiv[0]);

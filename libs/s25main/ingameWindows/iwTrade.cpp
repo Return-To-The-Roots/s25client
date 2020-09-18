@@ -179,7 +179,7 @@ unsigned iwTrade::GetPossibleTradeAmount(const Job job) const
 {
     const GamePlayer& player = gwv.GetPlayer();
     unsigned amount = 0;
-    for(auto possibleSrcWarehouse : possibleSrcWarehouses)
+    for(auto* possibleSrcWarehouse : possibleSrcWarehouses)
     {
         if(player.IsWarehouseValid(possibleSrcWarehouse))
             amount += possibleSrcWarehouse->GetAvailableFiguresForTrading(job);
@@ -191,7 +191,7 @@ unsigned iwTrade::GetPossibleTradeAmount(const GoodType good) const
 {
     const GamePlayer& player = gwv.GetPlayer();
     unsigned amount = 0;
-    for(auto possibleSrcWarehouse : possibleSrcWarehouses)
+    for(auto* possibleSrcWarehouse : possibleSrcWarehouses)
     {
         if(player.IsWarehouseValid(possibleSrcWarehouse))
             amount += possibleSrcWarehouse->GetAvailableWaresForTrading(good);

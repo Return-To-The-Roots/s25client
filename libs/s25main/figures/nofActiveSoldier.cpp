@@ -187,7 +187,7 @@ void nofActiveSoldier::ExpelEnemies()
 
     // At the position of the soldier
     const std::list<noBase*>& fieldFigures = gwg->GetFigures(pos);
-    for(auto fieldFigure : fieldFigures)
+    for(auto* fieldFigure : fieldFigures)
     {
         if(fieldFigure->GetType() == NOP_FIGURE)
             figures.push_back(static_cast<noFigure*>(fieldFigure));
@@ -197,7 +197,7 @@ void nofActiveSoldier::ExpelEnemies()
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
         const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetNeighbour(pos, dir));
-        for(auto fieldFigure : fieldFigures)
+        for(auto* fieldFigure : fieldFigures)
         {
             // Normal settler?
             // Don't disturb hedgehogs and rabbits!
@@ -213,7 +213,7 @@ void nofActiveSoldier::ExpelEnemies()
 
     // Let's see which things are netted and sort the wrong things out
     // ( Don't annoy Erika Steinbach! )
-    for(auto fig : figures)
+    for(auto* fig : figures)
     {
         // Enemy of us and no soldier?
         // And he has to walking on the road (don't disturb free workers like woodcutters etc.)

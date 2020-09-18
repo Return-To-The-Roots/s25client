@@ -966,7 +966,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     for(const auto& coord : coords)
     {
         const std::list<noBase*>& figures = gwg->GetFigures(coord);
-        for(auto figure : figures)
+        for(auto* figure : figures)
         {
             if(figure->GetType() == NOP_FIGURE)
             {

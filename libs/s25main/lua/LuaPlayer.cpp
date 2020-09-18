@@ -187,7 +187,7 @@ bool LuaPlayer::IsInRestrictedArea(unsigned x, unsigned y) const
 void LuaPlayer::ClearResources()
 {
     const std::list<nobBaseWarehouse*> warehouses = player.GetBuildingRegister().GetStorehouses();
-    for(auto warehouse : warehouses)
+    for(auto* warehouse : warehouses)
         warehouse->Clear();
 }
 

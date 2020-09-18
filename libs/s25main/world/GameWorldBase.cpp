@@ -587,7 +587,7 @@ unsigned GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char play
     unsigned attackercount = 0;
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
     const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetBuildingRegister().GetHarbors();
-    for(auto harbor : harbors)
+    for(auto* harbor : harbors)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen
@@ -643,7 +643,7 @@ GameWorldBase::GetSoldiersForSeaAttack(const unsigned char player_attacker, cons
 
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
     const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetBuildingRegister().GetHarbors();
-    for(auto harbor : harbors)
+    for(auto* harbor : harbors)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen

@@ -166,7 +166,7 @@ void nofAttacker::Walked()
             nofDefender* defender = nullptr;
             // Look for defenders at this position
             const std::list<noBase*>& figures = gwg->GetFigures(goalFlagPos);
-            for(auto figure : figures)
+            for(auto* figure : figures)
             {
                 if(figure->GetGOT() == GOT_NOF_DEFENDER)
                 {
@@ -1013,7 +1013,7 @@ void nofAttacker::RemoveFromAttackedGoal()
       state == STATE_ATTACKING_FIGHTINGVSDEFENDER || !attacked_goal->GetDefender()
       || (attacked_goal->GetDefender()->GetAttacker() != this && attacked_goal->GetDefender()->GetEnemy() != this));
     // No defender should be chasing us at this point
-    for(auto it : attacked_goal->GetAggresiveDefenders())
+    for(auto* it : attacked_goal->GetAggresiveDefenders())
         RTTR_Assert(it->GetAttacker() != this);
     attacked_goal->UnlinkAggressor(this);
     attacked_goal = nullptr;

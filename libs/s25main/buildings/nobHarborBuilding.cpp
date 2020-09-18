@@ -914,7 +914,7 @@ unsigned nobHarborBuilding::GetNumNeededShips() const
             }
         }
 
-        for(auto wares_for_ship : wares_for_ships)
+        for(auto* wares_for_ship : wares_for_ships)
         {
             if(!helpers::contains(destinations, wares_for_ship->GetNextHarbor()))
             {
@@ -1272,7 +1272,7 @@ unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type) const
 
     unsigned ordered_boards = 0, ordered_stones = 0;
     // Ermitteln, wiviele Bretter und Steine auf dem Weg zum Lagerhaus sind
-    for(auto dependent_ware : dependent_wares)
+    for(auto* dependent_ware : dependent_wares)
     {
         if(dependent_ware->type == GD_BOARDS)
             ++ordered_boards;

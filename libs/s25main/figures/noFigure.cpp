@@ -555,7 +555,7 @@ void noFigure::Wander()
         unsigned best_way = 0xFFFFFFFF;
         noFlag const* best_flag = nullptr;
 
-        for(auto flag : flags)
+        for(auto* flag : flags)
         {
             // Ist das ein Flüchtling aus einem abgebrannten Lagerhaus?
             if(burned_wh_id != 0xFFFFFFFF)

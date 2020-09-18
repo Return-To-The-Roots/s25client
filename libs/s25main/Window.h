@@ -344,7 +344,7 @@ template<typename T>
 inline std::vector<T*> Window::GetCtrls()
 {
     std::vector<T*> result;
-    for(auto wnd : childIdToWnd_ | boost::adaptors::map_values)
+    for(auto* wnd : childIdToWnd_ | boost::adaptors::map_values)
     {
         T* ctrl = dynamic_cast<T*>(wnd);
         if(ctrl)
@@ -357,7 +357,7 @@ template<typename T>
 inline std::vector<const T*> Window::GetCtrls() const
 {
     std::vector<const T*> result;
-    for(const auto wnd : childIdToWnd_ | boost::adaptors::map_values)
+    for(auto* const wnd : childIdToWnd_ | boost::adaptors::map_values)
     {
         const T* ctrl = dynamic_cast<const T*>(wnd);
         if(ctrl)
