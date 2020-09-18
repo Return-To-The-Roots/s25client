@@ -34,7 +34,7 @@ SavedFile::SavedFile() : saveTime_(0)
 
 SavedFile::~SavedFile() = default;
 
-void SavedFile::WriteFileHeader(BinaryFile& file)
+void SavedFile::WriteFileHeader(BinaryFile& file) const
 {
     // Signature
     const std::string signature = GetSignature();
@@ -150,7 +150,7 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
 /**
  *  schreibt die GlobalGameSettings in die Datei.
  */
-void SavedFile::WriteGGS(BinaryFile& file)
+void SavedFile::WriteGGS(BinaryFile& file) const
 {
     Serializer ser;
     ggs.Serialize(ser);

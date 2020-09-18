@@ -176,7 +176,7 @@ public:
         {
             nofPassiveSoldier* const search;
             CmpSoldier(nofPassiveSoldier* const search) : search(search) {}
-            bool operator()(const PotentialSeaAttacker& other) { return other.soldier == search; }
+            bool operator()(const PotentialSeaAttacker& other) const { return other.soldier == search; }
         };
         /// Soldat, der als Angreifer in Frage kommt
         nofPassiveSoldier* soldier;

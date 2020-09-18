@@ -164,7 +164,7 @@ glTexture& glTexture::operator=(glTexture&& rhs) noexcept
     return *this;
 }
 
-void glTexture::bind()
+void glTexture::bind() const
 {
     VIDEODRIVER.BindTexture(handle);
 }
@@ -175,7 +175,7 @@ glTexture::~glTexture()
         VIDEODRIVER.DeleteTexture(handle);
 }
 
-bool glTexture::checkSize(const Extent& size)
+bool glTexture::checkSize(const Extent& size) const
 {
     if(!handle)
         return false;

@@ -50,7 +50,7 @@ public:
      * @param terrain terrain to compare the input texture to
      * @return true if at least one of the texture-triangles matches the terrain, false otherwise
      */
-    bool IsTexture(const Map& map, int index, DescIdx<TerrainDesc> terrain);
+    bool IsTexture(const Map& map, int index, DescIdx<TerrainDesc> terrain) const;
     template<class T_Predicate>
     bool IsTexture(const Map& map, int index, T_Predicate predicate);
 
@@ -59,7 +59,7 @@ public:
      * @param terrain terrain to check
      * @return true of it is allowed to build a harbor on the terrain
      */
-    bool IsHarborAllowed(DescIdx<TerrainDesc> terrain);
+    bool IsHarborAllowed(DescIdx<TerrainDesc> terrain) const;
 
     /**
      * Creates a new, empty object.

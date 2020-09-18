@@ -134,7 +134,7 @@ private:
     void DrawBoundaryStone(const MapPoint& pt, DrawPoint pos, Visibility vis);
     void DrawObject(const MapPoint& pt, const DrawPoint& curPos);
     void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
-    void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines);
+    void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines) const;
     void DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
                                     std::vector<ObjectBetweenLines>& between_lines);
 

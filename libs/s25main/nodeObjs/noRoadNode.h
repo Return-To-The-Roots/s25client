@@ -71,7 +71,7 @@ public:
     noRoadNode* GetNeighbour(Direction dir) const;
 
     void DestroyRoad(Direction dir);
-    void UpgradeRoad(Direction dir);
+    void UpgradeRoad(Direction dir) const;
     /// Vernichtet Alle Straße um diesen Knoten
     void DestroyAllRoads();
 

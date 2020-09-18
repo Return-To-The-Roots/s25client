@@ -35,7 +35,7 @@ public:
     void ShowTooltip() const;
     /// Show a temporary tooltip
     void ShowTooltip(const std::string& tooltip) const;
-    void HideTooltip();
+    void HideTooltip() const;
 
 protected:
     std::string tooltip_;

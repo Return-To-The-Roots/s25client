@@ -38,7 +38,7 @@ void ctrlBaseTooltip::ShowTooltip(const std::string& tooltip) const
     WINDOWMANAGER.SetToolTip(this, tooltip);
 }
 
-void ctrlBaseTooltip::HideTooltip()
+void ctrlBaseTooltip::HideTooltip() const
 {
     WINDOWMANAGER.SetToolTip(this, "");
 }

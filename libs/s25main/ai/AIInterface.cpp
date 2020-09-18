@@ -202,7 +202,7 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
                                                                  nullptr, (void*)&boat);
 }
 
-bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)
+bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2) const
 {
     return GetBuildingQuality(pt2) < GetBuildingQuality(pt1);
 }

@@ -61,7 +61,7 @@ private:
     /**
      * Go back to the previous menu.
      */
-    void GoBack();
+    void GoBack() const;
 
     /**
      * Generates a new random map and selects the new map in the table (UI).

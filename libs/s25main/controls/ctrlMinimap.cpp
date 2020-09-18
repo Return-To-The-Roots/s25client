@@ -91,7 +91,7 @@ DrawPoint ctrlMinimap::CalcMapCoord(MapPoint pt) const
     return result;
 }
 
-void ctrlMinimap::DrawMap(Minimap& map)
+void ctrlMinimap::DrawMap(Minimap& map) const
 {
     // Map an sich zeichnen
     map.Draw(GetMapDrawArea());

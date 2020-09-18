@@ -141,7 +141,7 @@ private:
     void DrawCursor();
     void DrawToolTip();
 
-    void TakeScreenshot();
+    void TakeScreenshot() const;
     /// wechselt einen Desktop
     void DoDesktopSwitch();
     /// Actually close all ingame windows marked for closing

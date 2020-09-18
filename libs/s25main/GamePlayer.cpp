@@ -628,7 +628,7 @@ void GamePlayer::RoadDestroyed()
     }
 }
 
-bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
+bool GamePlayer::FindCarrierForRoad(RoadSegment* rs) const
 {
     RTTR_Assert(rs->GetF1() != nullptr && rs->GetF2() != nullptr);
     std::array<unsigned, 2> length;
@@ -815,7 +815,7 @@ void GamePlayer::ToolOrderProcessed(unsigned toolIdx)
     }
 }
 
-bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode* goal)
+bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode* goal) const
 {
     nobBaseWarehouse* wh = FindWarehouse(*goal, FW::HasFigure(job, true), false, false);
 
@@ -900,7 +900,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
     return nullptr;
 }
 
-nofCarrier* GamePlayer::OrderDonkey(RoadSegment* road)
+nofCarrier* GamePlayer::OrderDonkey(RoadSegment* road) const
 {
     std::array<unsigned, 2> length;
     std::array<nobBaseWarehouse*, 2> best;
@@ -1235,7 +1235,7 @@ bool GamePlayer::IsAttackable(const unsigned char playerId) const
         return (GetPactState(NON_AGGRESSION_PACT, playerId) != GamePlayer::ACCEPTED);
 }
 
-void GamePlayer::OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst)
+void GamePlayer::OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst) const
 {
     // Solange Lagerhäuser nach Soldaten absuchen, bis entweder keins mehr übrig ist oder alle Soldaten bestellt sind
     nobBaseWarehouse* wh;

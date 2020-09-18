@@ -81,7 +81,7 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
         players[2].ps = PS_FREE;
     }
 
-    void checkSettings(const GlobalGameSettings& shouldVal)
+    void checkSettings(const GlobalGameSettings& shouldVal) const
     {
         BOOST_REQUIRE_EQUAL(ggs.speed, shouldVal.speed);
         BOOST_REQUIRE_EQUAL(ggs.objective, shouldVal.objective);

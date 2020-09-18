@@ -108,7 +108,7 @@ public:
     /// (Unbesetzte) Straße aus der Liste entfernen
     void DeleteRoad(RoadSegment* rs);
     /// Sucht einen Träger für die Straße und ruft ggf den Träger aus dem jeweiligen nächsten Lagerhaus
-    bool FindCarrierForRoad(RoadSegment* rs);
+    bool FindCarrierForRoad(RoadSegment* rs) const;
     /// Returns true if the given wh does still exist and hence the ptr is valid
     bool IsWarehouseValid(nobBaseWarehouse* wh) const;
     /// Gibt erstes Lagerhaus zurück
@@ -143,7 +143,7 @@ public:
     /// Bestellt eine Ware und gibt sie zurück, falls es eine gibt, ansonsten 0
     Ware* OrderWare(GoodType ware, noBaseBuilding* goal);
     /// Versucht einen Esel zu bestellen, gibt 0 zurück, falls keinen gefunden
-    nofCarrier* OrderDonkey(RoadSegment* road);
+    nofCarrier* OrderDonkey(RoadSegment* road) const;
     /// Versucht für einen Esel eine Straße zu finden, in goal wird die Zielflagge zurückgegeben,
     /// sofern eine Straße gefunden wurde, ansonsten ist das ein Lagerhaus oder 0, falls auch das nich gefunden wurde
     RoadSegment* FindRoadForDonkey(noRoadNode* start, noRoadNode** goal);
@@ -200,7 +200,7 @@ public:
     /// Are these players allied? (-> Teamview, attack support, ...)
     bool IsAlly(unsigned char playerId) const;
     /// Truppen bestellen
-    void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false);
+    void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false) const;
     /// Prüft die Besatzung von allen Militärgebäuden und reguliert entsprechend (bei Veränderung der
     /// Militäreinstellungen)
     void RegulateAllTroops();
@@ -438,7 +438,7 @@ private:
     /// Called after a pact was changed(added/removed) in both players
     void PactChanged(PactType pt);
     // Sucht Weg für Job zu entsprechenden noRoadNode
-    bool FindWarehouseForJob(Job job, noRoadNode* goal);
+    bool FindWarehouseForJob(Job job, noRoadNode* goal) const;
     /// Prüft, ob der Spieler besiegt wurde
     void TestDefeat();
 

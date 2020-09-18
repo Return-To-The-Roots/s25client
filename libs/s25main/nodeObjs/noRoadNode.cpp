@@ -76,7 +76,7 @@ noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id)
     last_visit = 0;
 }
 
-void noRoadNode::UpgradeRoad(const Direction dir)
+void noRoadNode::UpgradeRoad(const Direction dir) const
 {
     if(GetRoute(dir))
         GetRoute(dir)->UpgradeDonkeyRoad();

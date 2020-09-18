@@ -20,7 +20,7 @@
 #include "gameData/TerrainDesc.h"
 #include "libsiedler2/enumTypes.h"
 
-bool ObjectGenerator::IsHarborAllowed(DescIdx<TerrainDesc> terrain)
+bool ObjectGenerator::IsHarborAllowed(DescIdx<TerrainDesc> terrain) const
 {
     return config.worldDesc.get(terrain).Is(ETerrain::Buildable)
            && config.worldDesc.get(terrain).kind == TerrainKind::LAND;
@@ -35,7 +35,7 @@ void ObjectGenerator::CreateTexture(Map& map, int index, DescIdx<TerrainDesc> te
     map.textureLsd[index] = textureId;
 }
 
-bool ObjectGenerator::IsTexture(const Map& map, int index, DescIdx<TerrainDesc> terrain)
+bool ObjectGenerator::IsTexture(const Map& map, int index, DescIdx<TerrainDesc> terrain) const
 {
     return map.textureRsu[index] == config.worldDesc.get(terrain).s2Id
            || map.textureLsd[index] == config.worldDesc.get(terrain).s2Id;

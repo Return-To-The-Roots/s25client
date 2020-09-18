@@ -49,7 +49,7 @@ public:
 
 protected:
     /// Zeichnet die Minimap an sich
-    void DrawMap(Minimap& map);
+    void DrawMap(Minimap& map) const;
 
     /// Real size of the minimap (gets scaled with retained aspect ratio)
     Extent drawnMapSize;

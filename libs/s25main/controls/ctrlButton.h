@@ -40,9 +40,9 @@ public:
     void SetActive(bool activate = true) override;
 
     void SetChecked(bool checked) { this->isChecked = checked; }
-    bool GetCheck() { return isChecked; }
+    bool GetCheck() const { return isChecked; }
     void SetIlluminated(bool illuminated) { this->isIlluminated = illuminated; }
-    bool GetIlluminated() { return isIlluminated; }
+    bool GetIlluminated() const { return isIlluminated; }
     void SetBorder(bool hasBorder) { this->hasBorder = hasBorder; }
 
     bool Msg_MouseMove(const MouseCoords& mc) override;
