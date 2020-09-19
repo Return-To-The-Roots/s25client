@@ -18,6 +18,7 @@
 #pragma once
 
 #include "RTTR_Assert.h"
+#include "helpers/MaxEnumValue.h"
 #include "gameTypes/Direction.h"
 #include <cstdint>
 
@@ -30,7 +31,7 @@ enum class TradeDirection : uint8_t
     East = Direction::EAST,
     SouthEast = Direction::SOUTHEAST,
     SouthWest = Direction::SOUTHWEST,
-    ReachedGoal = 0xDD
+    ReachedGoal = helpers::NumEnumValues_v<Direction>
 };
 
 constexpr auto maxEnumValue(TradeDirection)
