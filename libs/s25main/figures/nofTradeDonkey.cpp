@@ -40,7 +40,14 @@ nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
       gt(sgd.PopOptionalEnum<GoodType>())
 {
-    sgd.PopContainer(next_dirs);
+    if(sgd.GetGameDataVersion() < 6)
+    {
+        std::vector<uint8_t> next_dirs_raw;
+        sgd.PopContainer(next_dirs_raw);
+        for(const auto dir : next_dirs_raw)
+            next_dirs.push_back(dir == 0xDD ? TradeDirection::ReachedGoal : TradeDirection(dir));
+    } else
+        sgd.PopContainer(next_dirs);
 }
 
 void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
