@@ -34,7 +34,6 @@ public:
     static unsigned CreateGUIID(MapPoint pt);
 
     MapBase();
-    ~MapBase();
 
     virtual void Resize(const MapExtent& newSize);
 

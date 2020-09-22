@@ -41,7 +41,7 @@ public:
      *      place a harbor at the position of the texture, it need to be close to water. Also keep
      *      in mind, only terrain types which allow buildings also support harbor placement.
      */
-    void CreateTexture(Map& map, int index, DescIdx<TerrainDesc> terrain, bool harbor = false);
+    void CreateTexture(Map& map, int index, DescIdx<TerrainDesc> terrain, bool harbor = false) const;
 
     /**
      * Checks whether or not the specified texture is representing the specified terrain.
@@ -52,7 +52,7 @@ public:
      */
     bool IsTexture(const Map& map, int index, DescIdx<TerrainDesc> terrain) const;
     template<class T_Predicate>
-    bool IsTexture(const Map& map, int index, T_Predicate predicate);
+    bool IsTexture(const Map& map, int index, T_Predicate predicate) const;
 
     /**
      * Checks whether or not it is allowed to build a harbor on the specified terrain.
@@ -159,7 +159,7 @@ public:
 };
 
 template<class T_Predicate>
-inline bool ObjectGenerator::IsTexture(const Map& map, int index, T_Predicate predicate)
+inline bool ObjectGenerator::IsTexture(const Map& map, int index, T_Predicate predicate) const
 {
     return predicate(config.GetTerrainByS2Id(map.textureRsu[index]))
            || predicate(config.GetTerrainByS2Id(map.textureLsd[index]));

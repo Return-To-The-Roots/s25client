@@ -29,8 +29,6 @@ unsigned MapBase::CreateGUIID(MapPoint pt)
 
 MapBase::MapBase() : size_(MapExtent::all(0)) {}
 
-MapBase::~MapBase() = default;
-
 void MapBase::Resize(const MapExtent& newSize)
 {
     // Odd heights make the map impossible (map wraps around so start and end must match)

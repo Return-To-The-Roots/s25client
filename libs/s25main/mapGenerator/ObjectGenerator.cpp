@@ -26,7 +26,7 @@ bool ObjectGenerator::IsHarborAllowed(DescIdx<TerrainDesc> terrain) const
            && config.worldDesc.get(terrain).kind == TerrainKind::LAND;
 }
 
-void ObjectGenerator::CreateTexture(Map& map, int index, DescIdx<TerrainDesc> terrain, bool harbor)
+void ObjectGenerator::CreateTexture(Map& map, int index, DescIdx<TerrainDesc> terrain, bool harbor) const
 {
     uint8_t textureId = config.worldDesc.get(terrain).s2Id;
     if(harbor && IsHarborAllowed(terrain))

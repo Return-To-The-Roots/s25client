@@ -1439,7 +1439,7 @@ bfs::path GameServer::SaveAsyncLog()
 
     LOG.write(_("There are %1% identical async log entries.\n")) % numIdentical;
 
-    const bfs::path filePath =
+    bfs::path filePath =
       RTTRCONFIG.ExpandPath(s25::folders::logs) / (s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log");
 
     // open async log
