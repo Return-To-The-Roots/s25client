@@ -40,29 +40,28 @@ BOOST_FIXTURE_TEST_CASE(PrefixPath, rttr::test::BaseFixture)
 {
     rttr::test::LogAccessor logAcc;
     fs::path prefixPath = RTTRCONFIG.GetPrefixPath();
-    BOOST_REQUIRE(!prefixPath.empty());
-    BOOST_REQUIRE(fs::exists(prefixPath));
-    BOOST_REQUIRE(fs::is_directory(prefixPath));
-    std::string strPrefixPath = prefixPath.string();
+    BOOST_TEST_REQUIRE(!prefixPath.empty());
+    BOOST_TEST(fs::exists(prefixPath));
+    BOOST_TEST(fs::is_directory(prefixPath));
     // No entry of the path should be the NULL terminator
-    for(unsigned i = 0; i < strPrefixPath.size(); i++)
+    for(const char c : prefixPath.string())
     {
-        BOOST_REQUIRE_NE(strPrefixPath[i], 0);
+        BOOST_TEST(c != '\0');
     }
     // If the env var is not set (usually should not be) then set it to check if that is used as the prefix path
     if(!System::envVarExists("RTTR_PREFIX_DIR"))
     {
         fs::path fakePrefixPath = fs::current_path() / "testPrefixPath";
-        BOOST_REQUIRE(System::setEnvVar("RTTR_PREFIX_DIR", fakePrefixPath.string()));
-        BOOST_REQUIRE_EQUAL(RTTRCONFIG.GetPrefixPath(), fakePrefixPath);
+        BOOST_TEST_REQUIRE(System::setEnvVar("RTTR_PREFIX_DIR", fakePrefixPath.string()));
+        BOOST_TEST(RTTRCONFIG.GetPrefixPath() == fakePrefixPath);
         RTTR_REQUIRE_LOG_CONTAINS("manually set", false);
-        BOOST_REQUIRE(System::removeEnvVar("RTTR_PREFIX_DIR"));
+        BOOST_TEST_REQUIRE(System::removeEnvVar("RTTR_PREFIX_DIR"));
     }
     {
         ResetWorkDir resetWorkDir;
         // Just change it in case we would not change it back
         fs::current_path(fs::current_path().parent_path());
-        BOOST_REQUIRE(RTTRCONFIG.Init());
-        BOOST_REQUIRE_EQUAL(prefixPath, fs::current_path());
+        BOOST_TEST_REQUIRE(RTTRCONFIG.Init());
+        BOOST_TEST(prefixPath == fs::current_path());
     }
 }
