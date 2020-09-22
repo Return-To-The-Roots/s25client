@@ -585,7 +585,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                 MapPoint curPt = world.GetNeighbour(curNode.pos, dir);
                 unsigned idx = world.GetIdx(curPt);
 
-                int ptValue = ptToVisitOrHb[idx];
+                const int8_t ptValue = ptToVisitOrHb[idx];
                 // Already visited
                 if(ptValue == 0)
                     continue;

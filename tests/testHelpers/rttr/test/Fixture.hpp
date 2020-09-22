@@ -24,6 +24,5 @@ namespace rttr { namespace test {
     struct Fixture : BaseFixture
     {
         Fixture();
-        ~Fixture();
     };
 }} // namespace rttr::test

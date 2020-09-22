@@ -539,7 +539,7 @@ BOOST_AUTO_TEST_CASE(OscillateOnce)
     anim->setNumFrames(3);
     // We should still be able to get to end
     lastFrame = 1111;
-    animMgr.update(time += 1000);
+    animMgr.update(time + 1000);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
     BOOST_REQUIRE_EQUAL(lastFrame, 0u);
 }
@@ -651,7 +651,7 @@ BOOST_AUTO_TEST_CASE(MoveAni)
 
     animMgr.getAnimation(animId)->setRepeat(Animation::RPT_Oscillate);
     // Move over target. Here we don't need the additional frame as we move directly to the 2nd last frame
-    animMgr.update(time += 500);
+    animMgr.update(time + 500);
     BOOST_REQUIRE_EQUAL(bt->GetPos(), DrawPoint(109, 290));
     BOOST_REQUIRE(animMgr.isAnimationActive(animId));
 }
@@ -697,7 +697,7 @@ BOOST_AUTO_TEST_CASE(ToogleAnim)
     animMgr.update(time += 1000);
     BOOST_REQUIRE(!bt->IsVisible());
     BOOST_REQUIRE(!bt2->GetIlluminated());
-    animMgr.update(time += 1000);
+    animMgr.update(time + 1000);
     BOOST_REQUIRE(bt->IsVisible());
     BOOST_REQUIRE(bt2->GetIlluminated());
 }
