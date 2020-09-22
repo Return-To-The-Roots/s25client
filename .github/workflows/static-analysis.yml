@@ -5,8 +5,8 @@ on:
   pull_request:
 
 env:
-  CC: clang-9
-  CXX: clang++-9
+  CC: clang-10
+  CXX: clang++-10
   ADDITIONAL_CMAKE_FLAGS: ""
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y \
-            clang-9 clang-tidy-9 \
+            clang-10 clang-tidy-10 \
             libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev gettext \
             libboost-filesystem-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev libboost-locale-dev libboost-iostreams-dev
       - name: Clang-Tidy Main
