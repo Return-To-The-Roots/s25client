@@ -25,14 +25,14 @@ else
     exit 1
 fi
 
-script -q -c "run-clang-tidy-9 -p . \
+script -q -c "run-clang-tidy-10 -p . \
     -j2 \
     -quiet \
     -header-filter \"${SRC_DIR}/(${HEADER_FILTER})\" \
     \"${SRC_DIR}/(${SRC_FILTER})\"" /dev/null \
      2>&1 | tee tidy-output.log | grep -v ' warnings generated.'
 
-ERRORS="$((grep -E 'warning: |error: ' tidy-output.log || [ $? -eq 1 ]) | sort -u)"
+ERRORS="$( (grep -E 'warning: |error: ' tidy-output.log || [ $? -eq 1 ]) | sort -u)"
 if [[ -n ${ERRORS} ]]; then
     echo "Clang-Tidy found issues. Fix those first"
     echo "${ERRORS}"
