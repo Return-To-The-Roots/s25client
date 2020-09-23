@@ -10,7 +10,6 @@ while read -r line; do
     elif [[ "$line" =~ ^/\* ]] || [[ "$line" =~ ^\* ]]; then
         continue
     elif [[ "$line" != "#pragma once" ]]; then
-            echo "$header_file has misplaced #pragma once. First line: '$line'"
         if grep -q "#pragma once" "$header_file"; then
             echo "$header_file has misplaced #pragma once. First line: '$line'"
         else

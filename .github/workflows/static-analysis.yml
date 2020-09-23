@@ -27,7 +27,7 @@ jobs:
           find . \( -path ./build -o -path ./external/glad -o -path ./external/dev-tools -o \
                     -path ./external/turtle -o -path ./external/kaguya \) \
                  -prune -false -o \( -name '*.hpp' -or -name '*.h' \) \
-                 -exec tools/ci/checkIncludeGuards.sh {} \;
+                 -print0 | xargs -0 -n1 tools/ci/checkIncludeGuards.sh
       - name: Lint markdown files
         uses: avto-dev/markdown-lint@v1.3.0
         with:
