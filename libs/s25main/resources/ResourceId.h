@@ -138,4 +138,3 @@ constexpr bool ResourceId::operator<(const ResourceId& other) const noexcept
 // known However UDLs could be made to compile-time check values with N3599 (available in GCC/Clang as an extension)
 
 #undef RTTR_SAFEBUF
-

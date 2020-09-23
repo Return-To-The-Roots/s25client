@@ -43,7 +43,7 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
 {
     std::fill(numWares.begin(), numWares.end(), 0);
 
-    ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.getNum());
+    ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
 
     // Tür aufmachen,bis Gebäude besetzt ist
     OpenDoor();
@@ -65,7 +65,7 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
     for(unsigned i = 0; i < 3; ++i)
         numWares[i] = sgd.PopUnsignedChar();
 
-    ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.getNum());
+    ordered_wares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
 
     for(std::list<Ware*>& orderedWare : ordered_wares)
         sgd.PopObjectContainer(orderedWare, GOT_WARE);
@@ -270,7 +270,7 @@ void nobUsual::HandleEvent(const unsigned id)
         if(!disable_production)
         {
             const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
-            RTTR_Assert(workDesc.waresNeeded[last_ordered_ware] != GD_NOTHING);
+            RTTR_Assert(last_ordered_ware < workDesc.waresNeeded.size());
             // How many wares can we have of each type?
             unsigned wareSpaces = workDesc.numSpacesPerWare;
 
@@ -282,8 +282,7 @@ void nobUsual::HandleEvent(const unsigned id)
             }
 
             ++last_ordered_ware;
-            if(last_ordered_ware >= workDesc.waresNeeded.size()
-               || workDesc.waresNeeded[last_ordered_ware] == GD_NOTHING)
+            if(last_ordered_ware >= workDesc.waresNeeded.size())
                 last_ordered_ware = 0;
         }
 
@@ -344,7 +343,7 @@ void nobUsual::GotWorker(Job /*job*/, noFigure* worker)
 {
     this->worker = static_cast<nofBuildingWorker*>(worker);
 
-    if(BLD_WORK_DESC[bldType_].waresNeeded[0] != GD_NOTHING)
+    if(!BLD_WORK_DESC[bldType_].waresNeeded.empty())
         // erste Ware bestellen
         HandleEvent(0);
 }
@@ -401,7 +400,7 @@ bool nobUsual::WaresAvailable()
 void nobUsual::ConsumeWares()
 {
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
-    unsigned numWaresNeeded = workDesc.waresNeeded.getNum();
+    unsigned numWaresNeeded = workDesc.waresNeeded.size();
     if(numWaresNeeded == 0)
         return;
 
