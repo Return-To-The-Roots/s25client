@@ -55,266 +55,265 @@ const std::array<BuildingQuality, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_S
    BQ_HUT,     BQ_HOUSE, BQ_HUT,   BQ_HOUSE,   BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HOUSE,
    BQ_NOTHING, BQ_HOUSE, BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE, BQ_HUT,     BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HARBOR}};
 
-const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WORK_DESC = {
-  BldWorkDescription(), // HQ
-  BldWorkDescription(JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 1),
-  BldWorkDescription(JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 2),
-  BldWorkDescription(),
-  BldWorkDescription(JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 4),
-  BldWorkDescription(),
-  BldWorkDescription(),
-  BldWorkDescription(),
-  BldWorkDescription(),
-  BldWorkDescription(JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 6),
-  BldWorkDescription(JOB_MINER, GD_STONES, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false),
-  BldWorkDescription(JOB_MINER, GD_COAL, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false),
-  BldWorkDescription(JOB_MINER, GD_IRON, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false),
-  BldWorkDescription(JOB_MINER, GD_GOLD, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false),
-  BldWorkDescription(JOB_SCOUT), // No production, just existence
-  BldWorkDescription(),
-  BldWorkDescription(JOB_HELPER, GD_NOTHING, WaresNeeded(GD_STONES), 4),
-  BldWorkDescription(JOB_WOODCUTTER, GD_WOOD),
-  BldWorkDescription(JOB_FISHER, GD_FISH),
-  BldWorkDescription(JOB_STONEMASON, GD_STONES),
-  BldWorkDescription(JOB_FORESTER), // Produces trees
-  BldWorkDescription(JOB_BUTCHER, GD_MEAT, WaresNeeded(GD_HAM)),
-  BldWorkDescription(JOB_HUNTER, GD_MEAT),
-  BldWorkDescription(JOB_BREWER, GD_BEER, WaresNeeded(GD_GRAIN, GD_WATER)),
-  BldWorkDescription(JOB_ARMORER, GD_SWORD, WaresNeeded(GD_IRON, GD_COAL)),
-  BldWorkDescription(JOB_METALWORKER, GD_TONGS, WaresNeeded(GD_IRON, GD_BOARDS)),
-  BldWorkDescription(JOB_IRONFOUNDER, GD_IRON, WaresNeeded(GD_IRONORE, GD_COAL)),
-  BldWorkDescription(JOB_CHARBURNER, GD_COAL, WaresNeeded(GD_WOOD, GD_GRAIN)),
-  BldWorkDescription(JOB_PIGBREEDER, GD_HAM, WaresNeeded(GD_GRAIN, GD_WATER)),
-  BldWorkDescription(), // Storehouse
-  BldWorkDescription(),
-  BldWorkDescription(JOB_MILLER, GD_FLOUR, WaresNeeded(GD_GRAIN)),
-  BldWorkDescription(JOB_BAKER, GD_BREAD, WaresNeeded(GD_FLOUR, GD_WATER)),
-  BldWorkDescription(JOB_CARPENTER, GD_BOARDS, WaresNeeded(GD_WOOD)),
-  BldWorkDescription(JOB_MINTER, GD_COINS, WaresNeeded(GD_GOLD, GD_COAL)),
-  BldWorkDescription(JOB_HELPER, GD_WATER),
-  BldWorkDescription(JOB_SHIPWRIGHT, GD_BOAT, WaresNeeded(GD_BOARDS)),
-  BldWorkDescription(JOB_FARMER, GD_GRAIN),
-  BldWorkDescription(JOB_DONKEYBREEDER, GD_NOTHING,
-                     WaresNeeded(GD_GRAIN, GD_WATER)), // Produces a job. TODO: Better way
-  BldWorkDescription(),                                // Harbour
-};
+const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WORK_DESC = {{
+  {}, // HQ
+  {JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 1},
+  {JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 2},
+  {},
+  {JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 4},
+  {},
+  {},
+  {},
+  {},
+  {JOB_PRIVATE, GD_NOTHING, WaresNeeded(GD_COINS), 6},
+  {JOB_MINER, GD_STONES, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false},
+  {JOB_MINER, GD_COAL, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false},
+  {JOB_MINER, GD_IRON, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false},
+  {JOB_MINER, GD_GOLD, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false},
+  {JOB_SCOUT}, // No production, just existence
+  {},
+  {JOB_HELPER, GD_NOTHING, WaresNeeded(GD_STONES), 4},
+  {JOB_WOODCUTTER, GD_WOOD},
+  {JOB_FISHER, GD_FISH},
+  {JOB_STONEMASON, GD_STONES},
+  {JOB_FORESTER}, // Produces trees
+  {JOB_BUTCHER, GD_MEAT, WaresNeeded(GD_HAM)},
+  {JOB_HUNTER, GD_MEAT},
+  {JOB_BREWER, GD_BEER, WaresNeeded(GD_GRAIN, GD_WATER)},
+  {JOB_ARMORER, GD_SWORD, WaresNeeded(GD_IRON, GD_COAL)},
+  {JOB_METALWORKER, GD_TONGS, WaresNeeded(GD_IRON, GD_BOARDS)},
+  {JOB_IRONFOUNDER, GD_IRON, WaresNeeded(GD_IRONORE, GD_COAL)},
+  {JOB_CHARBURNER, GD_COAL, WaresNeeded(GD_WOOD, GD_GRAIN)},
+  {JOB_PIGBREEDER, GD_HAM, WaresNeeded(GD_GRAIN, GD_WATER)},
+  {}, // Storehouse
+  {},
+  {JOB_MILLER, GD_FLOUR, WaresNeeded(GD_GRAIN)},
+  {JOB_BAKER, GD_BREAD, WaresNeeded(GD_FLOUR, GD_WATER)},
+  {JOB_CARPENTER, GD_BOARDS, WaresNeeded(GD_WOOD)},
+  {JOB_MINTER, GD_COINS, WaresNeeded(GD_GOLD, GD_COAL)},
+  {JOB_HELPER, GD_WATER},
+  {JOB_SHIPWRIGHT, GD_BOAT, WaresNeeded(GD_BOARDS)},
+  {JOB_FARMER, GD_GRAIN},
+  {JOB_DONKEYBREEDER, GD_NOTHING, WaresNeeded(GD_GRAIN, GD_WATER)}, // Produces a job. TODO: Better way
+  {},                                                               // Harbour
+}};
 
 /// Smoke consts for all buildings and nations
 const helpers::MultiArray<SmokeConst, NUM_NATIONS, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_SMOKE_CONSTS = {
   {// Nubier
    {
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(1, 3, -32), // BLD_QUARRY
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(1, -32, -23), // BLD_ARMORY
-     SmokeConst(4, -26, -47), // BLD_METALWORKS
-     SmokeConst(2, -20, -37), // BLD_IRONSMELTER
-     SmokeConst(2, -18, -52), // BLD_CHARBURNER
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(4, 27, -39), // BLD_BAKERY
-     SmokeConst(),
-     SmokeConst(1, 17, -52), // BLD_MINT
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(1, {3, -32}), // BLD_QUARRY
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(1, {-32, -23}), // BLD_ARMORY
+     SmokeConst(4, {-26, -47}), // BLD_METALWORKS
+     SmokeConst(2, {-20, -37}), // BLD_IRONSMELTER
+     SmokeConst(2, {-18, -52}), // BLD_CHARBURNER
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(4, {27, -39}), // BLD_BAKERY
+     {},
+     SmokeConst(1, {17, -52}), // BLD_MINT
+     {},
+     {},
+     {},
+     {},
+     {},
    },
    // Japaner
    {
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(1, -22, -43), // BLD_ARMORY
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(2, -32, -55), // BLD_CHARBURNER
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(4, -30, -39), // BLD_BAKERY
-     SmokeConst(),
-     SmokeConst(3, 18, -58), // BLD_MINT
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(1, {-22, -43}), // BLD_ARMORY
+     {},
+     {},
+     SmokeConst(2, {-32, -55}), // BLD_CHARBURNER
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(4, {-30, -39}), // BLD_BAKERY
+     {},
+     SmokeConst(3, {18, -58}), // BLD_MINT
+     {},
+     {},
+     {},
+     {},
+     {},
    },
    // Römer
    {
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(1, -26, -45), // BLD_BREWERY
-     SmokeConst(2, -36, -34), // BLD_ARMORY
-     SmokeConst(),
-     SmokeConst(1, -16, -34), // BLD_IRONSMELTER
-     SmokeConst(2, -36, -38), // BLD_CHARBURNER
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(4, -15, -26), // BLD_BAKERY
-     SmokeConst(),
-     SmokeConst(4, 20, -50), // BLD_MINT
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(1, {-26, -45}), // BLD_BREWERY
+     SmokeConst(2, {-36, -34}), // BLD_ARMORY
+     {},
+     SmokeConst(1, {-16, -34}), // BLD_IRONSMELTER
+     SmokeConst(2, {-36, -38}), // BLD_CHARBURNER
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(4, {-15, -26}), // BLD_BAKERY
+     {},
+     SmokeConst(4, {20, -50}), // BLD_MINT
+     {},
+     {},
+     {},
+     {},
+     {},
    },
    // Wikinger
    {
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(1, 2, -36),   // BLD_WOODCUTTER
-     SmokeConst(1, 4, -36),   // BLD_FISHERY
-     SmokeConst(1, 0, -34),   // BLD_QUARRY
-     SmokeConst(1, -5, -29),  // BLD_FORESTER
-     SmokeConst(1, 7, -41),   // BLD_SLAUGHTERHOUSE
-     SmokeConst(1, -6, -38),  // BLD_HUNTER
-     SmokeConst(3, 5, -39),   // BLD_BREWERY
-     SmokeConst(3, -23, -36), // BLD_ARMORY
-     SmokeConst(1, -9, -35),  // BLD_METALWORKS
-     SmokeConst(2, -2, -38),  // BLD_IRONSMELTER
-     SmokeConst(2, -22, -55), // BLD_CHARBURNER
-     SmokeConst(2, -30, -37), // BLD_PIGFARM
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(4, -21, -26), // BLD_BAKERY
-     SmokeConst(1, -11, -45), // BLD_SAWMILL
-     SmokeConst(1, 16, -38),  // BLD_MINT
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(1, -17, -48), // BLD_FARM
-     SmokeConst(4, -27, -40), // BLD_DONKEYBREEDER
-     SmokeConst(),
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(1, {2, -36}),   // BLD_WOODCUTTER
+     SmokeConst(1, {4, -36}),   // BLD_FISHERY
+     SmokeConst(1, {0, -34}),   // BLD_QUARRY
+     SmokeConst(1, {-5, -29}),  // BLD_FORESTER
+     SmokeConst(1, {7, -41}),   // BLD_SLAUGHTERHOUSE
+     SmokeConst(1, {-6, -38}),  // BLD_HUNTER
+     SmokeConst(3, {5, -39}),   // BLD_BREWERY
+     SmokeConst(3, {-23, -36}), // BLD_ARMORY
+     SmokeConst(1, {-9, -35}),  // BLD_METALWORKS
+     SmokeConst(2, {-2, -38}),  // BLD_IRONSMELTER
+     SmokeConst(2, {-22, -55}), // BLD_CHARBURNER
+     SmokeConst(2, {-30, -37}), // BLD_PIGFARM
+     {},
+     {},
+     {},
+     SmokeConst(4, {-21, -26}), // BLD_BAKERY
+     SmokeConst(1, {-11, -45}), // BLD_SAWMILL
+     SmokeConst(1, {16, -38}),  // BLD_MINT
+     {},
+     {},
+     SmokeConst(1, {-17, -48}), // BLD_FARM
+     SmokeConst(4, {-27, -40}), // BLD_DONKEYBREEDER
+     {},
    },
    // Babylonier
    {
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(2, -18, -43), // BLD_BREWERY
-     SmokeConst(1, -22, -47), // BLD_ARMORY
-     SmokeConst(),
-     SmokeConst(2, -23, -36), // BLD_IRONSMELTER
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(4, -27, -32), // BLD_BAKERY
-     SmokeConst(),
-     SmokeConst(3, 11, -58), // BLD_MINT
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
-     SmokeConst(),
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(2, {-18, -43}), // BLD_BREWERY
+     SmokeConst(1, {-22, -47}), // BLD_ARMORY
+     {},
+     SmokeConst(2, {-23, -36}), // BLD_IRONSMELTER
+     {},
+     {},
+     {},
+     {},
+     {},
+     SmokeConst(4, {-27, -32}), // BLD_BAKERY
+     {},
+     SmokeConst(3, {11, -58}), // BLD_MINT
+     {},
+     {},
+     {},
+     {},
+     {},
    }}};
 
 /// Offset of the production-/gold- stop signs per building

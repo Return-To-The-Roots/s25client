@@ -63,11 +63,11 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     AddImage(1, DrawPoint(117, 114), building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
-    const GoodType producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
-    if(producedWare != GD_NOTHING)
+    const auto producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
+    if(producedWare)
     {
         AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
-        AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + producedWare));
+        AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + *producedWare));
     }
 
     // Info
@@ -120,6 +120,7 @@ void iwBuilding::Msg_PaintBefore()
 void iwBuilding::Msg_PaintAfter()
 {
     IngameWindow::Msg_PaintAfter();
+    const auto& bldWorkDesk = BLD_WORK_DESC[building->GetBuildingType()];
     if(BuildingProperties::IsMine(building->GetBuildingType()))
     {
         // Bei Bergwerken sieht die Nahrungsanzeige ein wenig anders aus (3x 2)
@@ -127,12 +128,11 @@ void iwBuilding::Msg_PaintAfter()
         // "Schwarzer Rahmen"
         DrawRectangle(Rect(GetDrawPos() + DrawPoint(40, 60), Extent(144, 24)), 0x80000000);
         DrawPoint curPos = GetDrawPos() + DrawPoint(52, 72);
-        for(unsigned char i = 0; i < 3; ++i)
+        for(unsigned char i = 0; i < bldWorkDesk.waresNeeded.size(); ++i)
         {
-            for(unsigned char z = 0; z < 2; ++z)
+            for(unsigned char z = 0; z < bldWorkDesk.numSpacesPerWare; ++z)
             {
-                glArchivItem_Bitmap* bitmap =
-                  LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i]);
+                glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + bldWorkDesk.waresNeeded[i]);
                 bitmap->DrawFull(curPos, (z < building->GetNumWares(i) ? 0xFFFFFFFF : 0xFF404040));
                 curPos.x += 24;
             }
@@ -140,13 +140,9 @@ void iwBuilding::Msg_PaintAfter()
     } else
     {
         DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
-        for(unsigned char i = 0; i < 2; ++i)
+        for(unsigned char i = 0; i < bldWorkDesk.waresNeeded.size(); ++i)
         {
-            if(BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i] == GD_NOTHING)
-                break;
-
-            // 6x Waren, je nachdem ob sie da sind, bei Katapult 4!
-            unsigned wares_count = (building->GetBuildingType() == BLD_CATAPULT) ? 4 : 6;
+            const unsigned wares_count = bldWorkDesk.numSpacesPerWare;
 
             // "Schwarzer Rahmen"
             DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
@@ -155,8 +151,7 @@ void iwBuilding::Msg_PaintAfter()
 
             for(unsigned char z = 0; z < wares_count; ++z)
             {
-                glArchivItem_Bitmap* bitmap =
-                  LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i]);
+                glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + bldWorkDesk.waresNeeded[i]);
                 bitmap->DrawFull(waresPos, (z < building->GetNumWares(i) ? COLOR_WHITE : 0xFF404040));
                 waresPos.x += 24;
             }

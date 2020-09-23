@@ -156,7 +156,7 @@ void BuildingRegister::CalcProductivities(std::vector<unsigned short>& productiv
 
 unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
 {
-    if(BLD_WORK_DESC[bldType].producedWare == GD_NOTHING)
+    if(!BLD_WORK_DESC[bldType].producedWare)
         return 0;
     unsigned productivity = 0;
     unsigned numBlds = GetBuildings(bldType).size();
@@ -176,7 +176,7 @@ unsigned short BuildingRegister::CalcAverageProductivity() const
     for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
     {
         auto bldType = BuildingType(i);
-        if(BLD_WORK_DESC[bldType].producedWare == GD_NOTHING)
+        if(!BLD_WORK_DESC[bldType].producedWare)
             continue;
 
         for(const nobUsual* bld : GetBuildings(bldType))

@@ -22,7 +22,7 @@
 #include "JobTypes.h"
 #include "Point.h"
 #include "helpers/OptionalEnum.h"
-#include <array>
+#include <cassert>
 
 struct BuildingCost
 {
@@ -30,65 +30,50 @@ struct BuildingCost
     uint8_t stones;
 };
 
-// Größe der Gebäude
-enum BuildingSize
+class WaresNeeded
 {
-    BZ_HUT = 0,
-    BZ_HOUSE,
-    BZ_CASTLE,
-    BZ_MINE
-};
+    GoodType elems_[3];
+    unsigned size_;
 
-struct WaresNeeded : std::array<GoodType, 3>
-{
-    WaresNeeded(GoodType good1 = GD_NOTHING, GoodType good2 = GD_NOTHING, GoodType good3 = GD_NOTHING)
+public:
+    constexpr WaresNeeded() : elems_{}, size_(0) {}
+    constexpr explicit WaresNeeded(GoodType good1) : elems_{good1}, size_(1) {}
+    constexpr WaresNeeded(GoodType good1, GoodType good2) : elems_{good1, good2}, size_(2) {}
+    constexpr WaresNeeded(GoodType good1, GoodType good2, GoodType good3) : elems_{good1, good2, good3}, size_(3) {}
+    constexpr unsigned size() const { return size_; }
+    constexpr bool empty() const { return size_ == 0u; }
+    constexpr GoodType operator[](unsigned i) const
     {
-        (*this)[0] = good1;
-        (*this)[1] = good2;
-        (*this)[2] = good3;
+        assert(i < size_);
+        return elems_[i];
     }
-    /// Return number of non-empty entries (assumes GD_NOTHING implies all others are GD_NOTHING too)
-    unsigned getNum() const
-    {
-        for(unsigned i = 0; i < size(); i++)
-        {
-            if((*this)[i] == GD_NOTHING)
-                return i;
-        }
-        return size();
-    }
+    constexpr const GoodType* begin() const { return elems_; }
+    constexpr const GoodType* end() const { return elems_ + size_; }
 };
 
 /// Describes the work the building does
 struct BldWorkDescription
 {
-    BldWorkDescription(const helpers::OptionalEnum<Job> job = boost::none, GoodType producedWare = GD_NOTHING,
-                       WaresNeeded waresNeeded = WaresNeeded(), uint8_t numSpacesPerWare = 6,
-                       bool useOneWareEach = true)
-        : job(job), producedWare(producedWare), waresNeeded(waresNeeded), numSpacesPerWare(numSpacesPerWare),
-          useOneWareEach(useOneWareEach)
-    {}
-    /// Worker belonging to the building
-    helpers::OptionalEnum<Job> job;
-    /// Ware produced (maybe nothing or invalid)
-    GoodType producedWare;
-    /// Wares the building needs (maybe nothing)
-    WaresNeeded waresNeeded;
+    /// Worker belonging to the building, if any
+    helpers::OptionalEnum<Job> job = boost::none;
+    /// Ware produced, if any
+    helpers::OptionalEnum<GoodType> producedWare = boost::none;
+    /// Wares the building needs, if any
+    WaresNeeded waresNeeded = {};
     /// How many wares of each type can be stored
-    uint8_t numSpacesPerWare;
+    uint8_t numSpacesPerWare = 6;
     /// True if one of each waresNeeded is used per production cycle
     /// False if the ware type is used, that the building has the most of
-    bool useOneWareEach;
+    bool useOneWareEach = true;
 };
 
 /// Smoke definition for buildings
 struct SmokeConst
 {
-    SmokeConst() : type(0), offset(Point<int8_t>::Invalid()) {}
-    SmokeConst(uint8_t type, const DrawPoint& offset) : type(type), offset(offset) {}
-    SmokeConst(uint8_t type, int8_t x, int8_t y) : type(type), offset(x, y) {}
+    constexpr SmokeConst() = default;
+    constexpr SmokeConst(uint8_t type, const Point<int8_t>& offset) : type(type), offset(offset) {}
     /// Smoke type (1-4), 0 = no smoke
-    uint8_t type;
+    uint8_t type = 0;
     /// Position of the smoke relative to the buildings origin
-    Point<int8_t> offset;
+    Point<int8_t> offset = {0, 0};
 };
