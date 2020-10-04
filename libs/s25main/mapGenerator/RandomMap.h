@@ -25,6 +25,7 @@
 
 namespace rttr { namespace mapGenerator {
 
+    unsigned GetMaximumHeight(const MapExtent& size);
     unsigned GetCoastline(const MapExtent& size);
     unsigned GetIslandRadius(const MapExtent& size);
     unsigned GetSmoothRadius(const MapExtent& size);

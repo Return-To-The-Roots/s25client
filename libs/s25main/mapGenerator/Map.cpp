@@ -24,9 +24,9 @@
 namespace rttr { namespace mapGenerator {
 
     Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
-             const DescIdx<LandscapeDesc>& landscape)
+             const DescIdx<LandscapeDesc>& landscape, uint8_t maxHeight)
         : hqPositions_(MAX_PLAYERS, MapPoint::Invalid()), z(size, 0), textures(TextureMap(worldDesc, landscape)),
-          name("Random"), author("Auto"), height(0, 60), players(players), size(size)
+          name("Random"), author("Auto"), height(0, maxHeight), players(players), size(size)
     {
         textures.Resize(size);
         objectInfos.Resize(size, libsiedler2::OI_Empty);

@@ -52,7 +52,7 @@ namespace rttr { namespace mapGenerator {
         const MapExtent size;
 
         Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
-            const DescIdx<LandscapeDesc>& landscape);
+            const DescIdx<LandscapeDesc>& landscape, uint8_t maxHeight);
 
         /**
          * Marks the position as HQ position if set to a valid position, otherwise unmarks previously marked position.

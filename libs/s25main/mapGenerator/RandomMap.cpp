@@ -33,6 +33,24 @@
 
 namespace rttr { namespace mapGenerator {
 
+    unsigned GetMaximumHeight(const MapExtent& size)
+    {
+        switch(size.x + size.y)
+        {
+            case 128: return 32;
+
+            case 256: return 64;
+
+            case 512: return 128;
+
+            case 1024: return 150;
+
+            case 2048: return 200;
+
+            default: return 60;
+        }
+    }
+
     unsigned GetCoastline(const MapExtent& size)
     {
         switch(size.x + size.y)
@@ -207,15 +225,17 @@ namespace rttr { namespace mapGenerator {
         // 20% of map is center island (100% - 80% water)
         const double sea = 0.80;
 
-        // 20% of center island is mountain (4% of 20% land)
-        const double mountain = 0.04;
+        // 20% of center island is mountain (5% of 20% land)
+        const double mountain = 0.05;
 
-        ResetSeaLevel(map_, rnd_, LimitFor(map_.z, WholeMap(), sea, map_.height.minimum));
+        const auto seaLevel = LimitFor(map_.z, WholeMap(), sea, map_.height.minimum);
 
-        const double land = 1. - sea - mountain;
-        const auto mountainLevel = LimitFor(map_.z, WholeMap(), land, static_cast<uint8_t>(1)) + 1;
+        ResetSeaLevel(map_, rnd_, seaLevel);
 
         const auto waterNodes = Count(map_.z, WholeMap(), map_.height.minimum, map_.height.minimum);
+
+        const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
+        const auto mountainLevel = LimitFor(map_.z, WholeMap(), land, static_cast<uint8_t>(1)) + 1;
 
         // 40% of map reserved for player island (80% * 50%)
         const auto islandNodes = static_cast<unsigned>(.5 * waterNodes);
@@ -259,7 +279,7 @@ namespace rttr { namespace mapGenerator {
         SmoothHeightMap(map_.z, map_.height);
 
         const double sea = rnd_.RandomDouble(0.1, 0.2);
-        const double mountain = rnd_.RandomDouble(0.2, 0.7 - sea);
+        const double mountain = rnd_.RandomDouble(0.2, 0.6 - sea);
         const double land = 1. - sea - mountain;
 
         ResetSeaLevel(map_, rnd_, LimitFor(map_.z, WholeMap(), sea, map_.height.minimum));
@@ -273,7 +293,8 @@ namespace rttr { namespace mapGenerator {
 
     Map GenerateRandomMap(RandomUtility& rnd, const WorldDescription& worldDesc, const MapSettings& settings)
     {
-        Map map(settings.size, settings.numPlayers, worldDesc, settings.type);
+        auto height = GetMaximumHeight(settings.size);
+        Map map(settings.size, settings.numPlayers, worldDesc, settings.type, height);
         RandomMap randomMap(rnd, map);
         randomMap.Create(settings);
         return map;
