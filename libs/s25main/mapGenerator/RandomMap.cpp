@@ -188,9 +188,10 @@ namespace rttr { namespace mapGenerator {
         if(rnd_.ByChance(25))
         {
             const unsigned length = (map_.size.x + map_.size.y) / 3;
-            const unsigned splitRate = rnd_.RandomInt(0, 2);
+            const unsigned splitRate = rnd_.RandomValue(0u, 2u);
+            const auto dir = Direction(rnd_.RandomValue(0u, 5u));
 
-            rivers.push_back(CreateStream(rnd_, map_, center, Direction(rnd_.RandomInt(0, 5)), length, splitRate));
+            rivers.push_back(CreateStream(rnd_, map_, center, dir, length, splitRate));
         }
 
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));

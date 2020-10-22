@@ -151,7 +151,7 @@ namespace rttr { namespace mapGenerator {
                 auto tree = treeForPoint(pt);
 
                 map.objectInfos[pt] = tree.type;
-                map.objectTypes[pt] = tree.index + rnd.RandomInt(0, 7);
+                map.objectTypes[pt] = tree.index + rnd.RandomValue(0, 7);
             }
 
             auto graniteProb = probabilities[pt] / 4;
@@ -159,7 +159,7 @@ namespace rttr { namespace mapGenerator {
             if(graniteProb > 0 && rnd.ByChance(graniteProb))
             {
                 map.objectInfos[pt] = rnd.ByChance(50) ? 0xCC : 0xCD;
-                map.objectTypes[pt] = rnd.RandomInt(1, 6);
+                map.objectTypes[pt] = rnd.RandomValue(1, 6);
             }
         }
     }
@@ -173,33 +173,33 @@ namespace rttr { namespace mapGenerator {
         {
             if(textures.All(pt, IsMinableMountain))
             {
-                int randomNumber = rnd.RandomInt(1, 100);
+                int randomNumber = rnd.RandomValue(1, 100);
                 int ratio = settings.ratioGold;
 
                 if(randomNumber < ratio)
                 {
-                    resources[pt] = libsiedler2::R_Gold + rnd.RandomInt(0, 8);
+                    resources[pt] = libsiedler2::R_Gold + rnd.RandomValue(0, 8);
                     continue;
                 }
 
                 ratio += settings.ratioCoal;
                 if(randomNumber < ratio)
                 {
-                    resources[pt] = libsiedler2::R_Coal + rnd.RandomInt(0, 8);
+                    resources[pt] = libsiedler2::R_Coal + rnd.RandomValue(0, 8);
                     continue;
                 }
 
                 ratio += settings.ratioIron;
                 if(randomNumber < ratio)
                 {
-                    resources[pt] = libsiedler2::R_Iron + rnd.RandomInt(0, 8);
+                    resources[pt] = libsiedler2::R_Iron + rnd.RandomValue(0, 8);
                     continue;
                 }
 
                 ratio += settings.ratioGranite;
                 if(randomNumber < ratio)
                 {
-                    resources[pt] = libsiedler2::R_Granite + rnd.RandomInt(0, 8);
+                    resources[pt] = libsiedler2::R_Granite + rnd.RandomValue(0, 8);
                 }
             } else if(textures.All(pt, IsWater))
             {

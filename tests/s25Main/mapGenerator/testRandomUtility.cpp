@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(RandomInt_returns_value_within_thresholds)
     int minimum = -10;
     int maximum = 7;
 
-    auto result = rnd.RandomInt(minimum, maximum);
+    auto result = rnd.RandomValue(minimum, maximum);
 
     BOOST_REQUIRE(result >= minimum);
     BOOST_REQUIRE(result <= maximum);

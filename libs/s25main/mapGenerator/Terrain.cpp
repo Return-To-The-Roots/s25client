@@ -79,12 +79,9 @@ namespace rttr { namespace mapGenerator {
         {
             if(coastDistance[pt] > minimum)
             {
-                const int base = coastDistance[pt];
+                const unsigned base = coastDistance[pt];
 
-                const int min = std::max(static_cast<int>(minimum + 1), base);
-                const int max = std::min(static_cast<int>(maximum), base + 1);
-
-                z[pt] = rnd.RandomInt(min, max);
+                z[pt] = rnd.RandomValue(std::max(minimum + 1, base), std::min(maximum, base + 1));
             }
         }
     }

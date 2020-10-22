@@ -64,14 +64,19 @@ namespace rttr { namespace mapGenerator {
         }
 
         /**
-         * Generates a random integer number between the specified minimum and maximum values.
+         * Generates a random value between the specified minimum and maximum values.
          *
          * @param min minimum value for the random number
          * @param max maximum value for the random number
          *
          * @return a random number between min and max (inclusive).
          */
-        int RandomInt(int min, int max);
+        template<typename T>
+        T RandomValue(T min, T max)
+        {
+            std::uniform_int_distribution<T> distr(min, max);
+            return distr(rng_);
+        }
 
         /**
          * Generates a random floating point value between the specified minimum and maximum values.
