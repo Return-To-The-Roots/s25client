@@ -28,8 +28,6 @@
 
 namespace rttr { namespace mapGenerator {
 
-    std::vector<MapPoint> WholeMap();
-
     /**
      * Smoothes the specified nodes with a smoothing kernel of the specified extent (radius).
      *
@@ -219,44 +217,107 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Computes an upper limit for the specified values. The number of values between the specified minimum and the
-     * computed limit is at least as high as the specified coverage of the map.
+     * Counts the number of values within the specified range.
      *
      * @param values map of comparable values
-     * @param area area of nodes to consider (empty for the whole map)
-     * @param coverage percentage of expected map coverage (value between 0 and 1)
      * @param minimum minimum value to consider
+     * @param maximum maximum value to consider
      *
-     * @returns a value between the specified minimum and the maximum value of the map.
+     * @returns number of values between the specified minimum and maximum values.
+     */
+    template<typename T>
+    unsigned Count(const ValueMap<T>& values, T minimum, T maximum)
+    {
+        unsigned valuesInRange = 0;
+        RTTR_FOREACH_PT(MapPoint, values.GetSize())
+        {
+            if(values[pt] >= minimum && values[pt] <= maximum)
+            {
+                valuesInRange++;
+            }
+        }
+        return valuesInRange;
+    }
+
+    /**
+     * Counts the number of values within the specified range.
+     *
+     * @param values map of comparable values
+     * @param area area of nodes to consider
+     * @param minimum minimum value to consider
+     * @param maximum maximum value to consider
+     *
+     * @returns number of values between the specified minimum and maximum values.
      */
     template<typename T, class T_Area>
     unsigned Count(const ValueMap<T>& values, const T_Area& area, T minimum, T maximum)
     {
-        unsigned valuesInRange = 0;
-
-        if(area.empty())
-        {
-            RTTR_FOREACH_PT(MapPoint, values.GetSize())
-            {
-                if(values[pt] >= minimum && values[pt] <= maximum)
-                {
-                    valuesInRange++;
-                }
-            }
-        } else
-        {
-            for(const MapPoint& pt : area)
-            {
-                if(values[pt] >= minimum && values[pt] <= maximum)
-                {
-                    valuesInRange++;
-                }
-            }
-        }
-
-        return valuesInRange;
+        return std::count_if(area.begin(), area.end(), [&values, minimum, maximum](const MapPoint& pt) {
+            return values[pt] >= minimum && values[pt] <= maximum;
+        });
     }
 
+    /**
+     * Computes an upper limit for the specified values. The number of values between the specified minimum and the
+     * computed limit is at least as high as the specified coverage of the map.
+     *
+     * @param values map of comparable values
+     * @param coverage percentage of expected map coverage (value between 0 and 1)
+     * @param minimum minimum value to consider
+     * @param maximum maximum value to consider
+     *
+     * @returns a value between the specified minimum and the maximum value of the map.
+     */
+    template<typename T>
+    T LimitFor(const ValueMap<T>& values, double coverage, T minimum)
+    {
+        if(coverage < 0 || coverage > 1)
+        {
+            throw std::invalid_argument("coverage must be between 0 and 1");
+        }
+
+        const T maximum = values.GetMaximum();
+
+        if(minimum == maximum)
+        {
+            return maximum;
+        }
+
+        const auto nodes = values.GetWidth() * values.GetHeight();
+        const auto expectedNodes = static_cast<unsigned>(coverage * nodes);
+
+        unsigned currentNodes = 0;
+        unsigned previousNodes = 0;
+
+        T limit = minimum;
+
+        while(currentNodes < expectedNodes && limit <= maximum)
+        {
+            previousNodes = currentNodes;
+            currentNodes = Count(values, minimum, limit);
+            limit++;
+        }
+
+        if(expectedNodes - previousNodes < currentNodes - expectedNodes)
+        {
+            return limit - 2;
+        }
+
+        return limit - 1;
+    }
+
+    /**
+     * Computes an upper limit for the specified values. The number of values between the specified minimum and the
+     * computed limit is at least as high as the specified coverage of the map.
+     *
+     * @param values map of comparable values
+     * @param area area of nodes to consider
+     * @param coverage percentage of expected map coverage (value between 0 and 1)
+     * @param minimum minimum value to consider
+     * @param maximum maximum value to consider
+     *
+     * @returns a value between the specified minimum and the maximum value of the map.
+     */
     template<typename T, class T_Area>
     T LimitFor(const ValueMap<T>& values, const T_Area& area, double coverage, T minimum)
     {

@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE(Count_all_nodes_within_thresholds_correctly)
         values[i] = i;
     }
 
-    auto result = Count(values, WholeMap(), 5, 10);
+    auto result = Count(values, 5, 10);
 
     BOOST_REQUIRE_EQUAL(6, result);
 }
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
     const double coverage = 0.11;
     const int minimum = 2;
 
-    int limit = LimitFor(values, WholeMap(), coverage, minimum);
+    int limit = LimitFor(values, coverage, minimum);
 
     auto expectedNodes = static_cast<unsigned>(size.x * size.y * coverage);
     unsigned actualNodes = 0;
@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
         values[i] = 6;
     }
 
-    BOOST_REQUIRE_EQUAL(LimitFor(values, WholeMap(), coverage, minimum), 5);
+    BOOST_REQUIRE_EQUAL(LimitFor(values, coverage, minimum), 5);
 
     for(unsigned i = 0; i < exactNumberOfNodes + 5; i++)
     {
@@ -332,7 +332,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
         values[i] = 6;
     }
 
-    BOOST_REQUIRE_EQUAL(LimitFor(values, WholeMap(), coverage, minimum), 5);
+    BOOST_REQUIRE_EQUAL(LimitFor(values, coverage, minimum), 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

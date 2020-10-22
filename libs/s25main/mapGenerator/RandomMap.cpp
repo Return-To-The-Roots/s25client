@@ -179,9 +179,9 @@ namespace rttr { namespace mapGenerator {
         const double mountain = 0.1;
         const double land = 1. - sea - mountain;
 
-        ResetSeaLevel(map_, rnd_, LimitFor(map_.z, WholeMap(), sea, map_.height.minimum));
+        ResetSeaLevel(map_, rnd_, LimitFor(map_.z, sea, map_.height.minimum));
 
-        auto mountainLevel = LimitFor(map_.z, WholeMap(), land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
+        auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
 
         std::vector<River> rivers;
 
@@ -228,14 +228,14 @@ namespace rttr { namespace mapGenerator {
         // 20% of center island is mountain (5% of 20% land)
         const double mountain = 0.05;
 
-        const auto seaLevel = LimitFor(map_.z, WholeMap(), sea, map_.height.minimum);
+        const auto seaLevel = LimitFor(map_.z, sea, map_.height.minimum);
 
         ResetSeaLevel(map_, rnd_, seaLevel);
 
-        const auto waterNodes = Count(map_.z, WholeMap(), map_.height.minimum, map_.height.minimum);
+        const auto waterNodes = Count(map_.z, map_.height.minimum, map_.height.minimum);
 
         const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
-        const auto mountainLevel = LimitFor(map_.z, WholeMap(), land, static_cast<uint8_t>(1)) + 1;
+        const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
 
         // 40% of map reserved for player island (80% * 50%)
         const auto islandNodes = static_cast<unsigned>(.5 * waterNodes);
@@ -282,9 +282,9 @@ namespace rttr { namespace mapGenerator {
         const double mountain = rnd_.RandomDouble(0.2, 0.6 - sea);
         const double land = 1. - sea - mountain;
 
-        ResetSeaLevel(map_, rnd_, LimitFor(map_.z, WholeMap(), sea, map_.height.minimum));
+        ResetSeaLevel(map_, rnd_, LimitFor(map_.z, sea, map_.height.minimum));
 
-        auto mountainLevel = LimitFor(map_.z, WholeMap(), land, static_cast<uint8_t>(1)) + 1;
+        auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
 
         texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 

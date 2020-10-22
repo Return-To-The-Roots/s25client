@@ -19,8 +19,6 @@
 
 namespace rttr { namespace mapGenerator {
 
-    std::vector<MapPoint> WholeMap() { return {}; }
-
     void UpdateDistances(ValueMap<unsigned>& distances, std::queue<MapPoint>& queue)
     {
         const unsigned maximumDistance = distances.GetWidth() * distances.GetHeight();
