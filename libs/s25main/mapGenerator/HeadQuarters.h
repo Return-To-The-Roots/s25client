@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "helpers/mathFuncs.h"
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
 
@@ -57,7 +58,7 @@ namespace rttr { namespace mapGenerator {
         auto quality = Distances(map.size, isHeadQuarter);
         const auto& obstacleDistance = Distances(map.size, isObstacle);
 
-        auto minDistance = std::max(std::min(obstacleDistance.GetMaximum(area), 4u), 2u);
+        auto minDistance = helpers::clamp(obstacleDistance.GetMaximum(area), 2u, 4u);
 
         std::vector<MapPoint> positions;
 
