@@ -31,19 +31,12 @@ namespace rttr { namespace mapGenerator {
         const auto& distances = Distances(map.size, isLand);
         const MapPoint& center = distances.GetMaximumPoint();
 
-        const MapPoint mapOrigin(0, 0);
-        const MapPoint mapCenter(map.size.x / 2, map.size.y / 2);
-        const unsigned mapMaxDist = distances.CalcDistance(mapCenter, mapOrigin);
-
-        auto compare = [&distances, mapMaxDist, center](const MapPoint& rhs, const MapPoint& lhs) {
+        auto compare = [&distances, center](const MapPoint& rhs, const MapPoint& lhs) {
             // computes prefered extension points for the island by considering distance to
             // center of the island and maximizing distance to other land
 
-            const auto ratioRhs = static_cast<double>(distances[rhs]) / mapMaxDist
-                                  + (1. - static_cast<double>(distances.CalcDistance(center, rhs)) / mapMaxDist);
-
-            const auto ratioLhs = static_cast<double>(distances[lhs]) / mapMaxDist
-                                  + (1. - static_cast<double>(distances.CalcDistance(center, lhs)) / mapMaxDist);
+            const auto ratioRhs = distances[rhs] - distances.CalcDistance(center, rhs);
+            const auto ratioLhs = distances[lhs] - distances.CalcDistance(center, lhs);
 
             return ratioRhs < ratioLhs;
         };
