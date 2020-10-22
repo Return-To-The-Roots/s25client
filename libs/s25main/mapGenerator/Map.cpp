@@ -77,16 +77,16 @@ namespace rttr { namespace mapGenerator {
         std::vector<uint8_t> z(numNodes);
         std::vector<uint8_t> rsu(numNodes);
         std::vector<uint8_t> lsd(numNodes);
-        std::vector<uint8_t> road(numNodes, 0x0);
+        std::vector<uint8_t> road(numNodes);
         std::vector<uint8_t> objectType(numNodes);
         std::vector<uint8_t> objectInfo(numNodes);
         std::vector<uint8_t> animal(numNodes);
-        std::vector<uint8_t> unknown1(numNodes, 0x0);
-        std::vector<uint8_t> build(numNodes, 0x0);
-        std::vector<uint8_t> unknown2(numNodes, 0x0);
-        std::vector<uint8_t> unknown3(numNodes, 0x0);
+        std::vector<uint8_t> unknown1(numNodes);
+        std::vector<uint8_t> build(numNodes);
+        std::vector<uint8_t> unknown2(numNodes);
+        std::vector<uint8_t> unknown3(numNodes);
         std::vector<uint8_t> resource(numNodes);
-        std::vector<uint8_t> unknown5(numNodes, 0x0);
+        std::vector<uint8_t> unknown5(numNodes);
 
         for(unsigned i = 0; i < numNodes; i++)
         {

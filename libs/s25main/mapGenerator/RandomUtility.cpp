@@ -31,7 +31,10 @@ namespace rttr { namespace mapGenerator {
 
     RandomUtility::RandomUtility(uint64_t seed) { rng_.seed(static_cast<UsedRNG::result_type>(seed)); }
 
-    bool RandomUtility::ByChance(unsigned percentage) { return static_cast<unsigned>(RandomValue(1, 100)) <= percentage; }
+    bool RandomUtility::ByChance(unsigned percentage)
+    {
+        return static_cast<unsigned>(RandomValue(1, 100)) <= percentage;
+    }
 
     unsigned RandomUtility::Index(const size_t& size) { return RandomValue(0u, static_cast<unsigned>(size - 1)); }
 
