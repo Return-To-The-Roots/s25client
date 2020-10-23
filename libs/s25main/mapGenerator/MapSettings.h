@@ -38,7 +38,7 @@ namespace rttr { namespace mapGenerator {
               type(0), style(MapStyle::Mixed)
         {}
 
-        void Validate();
+        void MakeValid();
 
         std::string name, author;
         unsigned numPlayers;

@@ -21,7 +21,7 @@
 
 namespace rttr { namespace mapGenerator {
 
-    void MapSettings::Validate()
+    void MapSettings::MakeValid()
     {
         if(name.empty())
             name = "Random";
