@@ -168,12 +168,13 @@ namespace rttr { namespace mapGenerator {
     {
         const auto& textures = map.textures;
         auto& resources = map.resources;
+        int total = settings.ratioCoal + settings.ratioGold + settings.ratioIron + settings.ratioGranite;
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
             if(textures.All(pt, IsMinableMountain))
             {
-                int randomNumber = rnd.RandomValue(1, 100);
+                int randomNumber = rnd.RandomValue(1, total);
                 int ratio = settings.ratioGold;
 
                 if(randomNumber < ratio)

@@ -24,7 +24,7 @@
 namespace rttr { namespace mapGenerator {
 
     Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
-             const DescIdx<LandscapeDesc>& landscape, uint8_t maxHeight)
+             DescIdx<LandscapeDesc> landscape, uint8_t maxHeight)
         : hqPositions_(MAX_PLAYERS, MapPoint::Invalid()), z(size, 0), textures(TextureMap(worldDesc, landscape)),
           name("Random"), author("Auto"), height(0, maxHeight), players(players), size(size)
     {
@@ -111,7 +111,7 @@ namespace rttr { namespace mapGenerator {
         }
 
         map->push(std::move(header));
-        for(auto& cur :
+        for(const auto& cur :
             {z, rsu, lsd, road, objectType, objectInfo, animal, unknown1, build, unknown2, unknown3, resource})
         {
             map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(cur));

@@ -137,15 +137,13 @@ namespace rttr { namespace mapGenerator {
 
         map_.z.Resize(settings.size, defaultHeight);
 
-        if(settings.style == MapStyle::Water)
+        switch(settings.style)
         {
-            CreateWaterMap();
-        } else if(settings.style == MapStyle::Mixed)
-        {
-            CreateMixedMap();
-        } else
-        {
-            CreateLandMap();
+            case MapStyle::Water: CreateWaterMap(); break;
+
+            case MapStyle::Mixed: CreateMixedMap(); break;
+
+            case MapStyle::Land: CreateLandMap(); break;
         }
 
         AddObjects(map_, rnd_);

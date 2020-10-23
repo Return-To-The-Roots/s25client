@@ -25,7 +25,7 @@
 
 namespace rttr { namespace mapGenerator {
 
-    void TextureMap::Set(const MapPoint& pt, const DescIdx<TerrainDesc>& texture)
+    void TextureMap::Set(const MapPoint& pt, DescIdx<TerrainDesc> texture)
     {
         const auto& triangles = GetTriangles(pt, GetSize());
 
@@ -35,7 +35,7 @@ namespace rttr { namespace mapGenerator {
         }
     }
 
-    void TextureMap::Set(const Triangle& triangle, const DescIdx<TerrainDesc>& texture)
+    void TextureMap::Set(const Triangle& triangle, DescIdx<TerrainDesc> texture)
     {
         if(triangle.rsu)
         {
@@ -219,8 +219,8 @@ namespace rttr { namespace mapGenerator {
         ApplyMountainTransitions(footOfMountain);
     }
 
-    void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point,
-                                const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded)
+    void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point, DescIdx<TerrainDesc> texture,
+                                const std::set<DescIdx<TerrainDesc>>& excluded)
     {
         auto triangles = GetTriangles(point, textures.GetSize());
 
@@ -237,7 +237,7 @@ namespace rttr { namespace mapGenerator {
     }
 
     void ReplaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPointLess>& nodes,
-                         const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded)
+                         DescIdx<TerrainDesc> texture, const std::set<DescIdx<TerrainDesc>>& excluded)
     {
         if(radius == 0)
         {

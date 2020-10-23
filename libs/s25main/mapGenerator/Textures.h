@@ -37,12 +37,12 @@ namespace rttr { namespace mapGenerator {
     {
     private:
         const WorldDescription& worldDesc_;
-        const DescIdx<LandscapeDesc>& landscape_;
+        const DescIdx<LandscapeDesc> landscape_;
 
         std::vector<DescIdx<TerrainDesc>> terrains_;
 
     public:
-        TextureOperator(const WorldDescription& worldDesc, const DescIdx<LandscapeDesc>& landscape)
+        TextureOperator(const WorldDescription& worldDesc, const DescIdx<LandscapeDesc> landscape)
             : worldDesc_(worldDesc), landscape_(landscape)
         {
             for(DescIdx<TerrainDesc> t(0); t.value < worldDesc_.terrain.size(); t.value++)
@@ -54,7 +54,7 @@ namespace rttr { namespace mapGenerator {
             }
         }
 
-        inline uint8_t GetTextureId(const DescIdx<TerrainDesc>& texture) const { return worldDesc_.get(texture).s2Id; }
+        inline uint8_t GetTextureId(DescIdx<TerrainDesc> texture) const { return worldDesc_.get(texture).s2Id; }
 
         inline uint8_t GetLandscapeId() const { return worldDesc_.get(landscape_).s2Id; }
 
@@ -94,7 +94,7 @@ namespace rttr { namespace mapGenerator {
         }
 
         template<class T_Predicate>
-        inline bool Check(const DescIdx<TerrainDesc>& texture, T_Predicate predicate) const
+        inline bool Check(DescIdx<TerrainDesc> texture, T_Predicate predicate) const
         {
             return predicate(worldDesc_.get(texture));
         }
@@ -103,7 +103,7 @@ namespace rttr { namespace mapGenerator {
     class TextureMap : public NodeMapBase<TexturePair>, public TextureOperator
     {
     public:
-        TextureMap(const WorldDescription& worldDesc, const DescIdx<LandscapeDesc>& landscape)
+        TextureMap(const WorldDescription& worldDesc, DescIdx<LandscapeDesc> landscape)
             : TextureOperator(worldDesc, landscape)
         {}
 
@@ -139,7 +139,7 @@ namespace rttr { namespace mapGenerator {
          * @param triangle triangle to update
          * @param texture texture to place on the triangle
          */
-        void Set(const Triangle& triangle, const DescIdx<TerrainDesc>& texture);
+        void Set(const Triangle& triangle, DescIdx<TerrainDesc> texture);
 
         /**
          * Updates all textures around the specified node.
@@ -147,7 +147,7 @@ namespace rttr { namespace mapGenerator {
          * @param pt position of the node
          * @param texture texture to place
          */
-        void Set(const MapPoint& pt, const DescIdx<TerrainDesc>& texture);
+        void Set(const MapPoint& pt, DescIdx<TerrainDesc> texture);
 
         /**
          * Gets the texture of the specified triangle.
@@ -221,8 +221,8 @@ namespace rttr { namespace mapGenerator {
      * @param texture new texture to replace current textures with
      * @param excluded textures which are excluded from replacement
      */
-    void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point,
-                                const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded);
+    void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point, DescIdx<TerrainDesc> texture,
+                                const std::set<DescIdx<TerrainDesc>>& excluded);
 
     /**
      * Replaces textures for all nodes of the map and all neighboring nodes within the specified radius by the
@@ -237,6 +237,6 @@ namespace rttr { namespace mapGenerator {
      * @param excluded set of texture which shouldn't get replaced
      */
     void ReplaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPointLess>& nodes,
-                         const DescIdx<TerrainDesc>& texture, const std::set<DescIdx<TerrainDesc>>& excluded);
+                         DescIdx<TerrainDesc> texture, const std::set<DescIdx<TerrainDesc>>& excluded);
 
 }} // namespace rttr::mapGenerator
