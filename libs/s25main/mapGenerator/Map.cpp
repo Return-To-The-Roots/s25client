@@ -111,18 +111,11 @@ namespace rttr { namespace mapGenerator {
         }
 
         map->push(std::move(header));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(z));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(rsu));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(lsd));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(road));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(objectType));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(objectInfo));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(animal));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(unknown1));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(build));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(unknown2));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(unknown3));
-        map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(resource));
+        for(auto& cur :
+            {z, rsu, lsd, road, objectType, objectInfo, animal, unknown1, build, unknown2, unknown3, resource})
+        {
+            map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(cur));
+        }
         map->push(nullptr); // No shading
         map->push(std::make_unique<libsiedler2::ArchivItem_Raw>(unknown5));
 
