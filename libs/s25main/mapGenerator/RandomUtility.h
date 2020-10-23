@@ -74,6 +74,7 @@ namespace rttr { namespace mapGenerator {
         template<typename T>
         T RandomValue(T min, T max)
         {
+            static_assert(std::is_integral<T>::value, "T must be an integral type.");
             std::uniform_int_distribution<T> distr(min, max);
             return distr(rng_);
         }
