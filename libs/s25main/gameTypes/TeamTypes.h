@@ -25,10 +25,16 @@ enum Team
     TM_TEAM2,
     TM_TEAM3,
     TM_TEAM4,
+    TM_TEAM_1_TO_2, // Insert "smart" into teams 1 or 2
+    TM_TEAM_1_TO_3, // Insert "smart" into teams 1 or 2 or 3
+    TM_TEAM_1_TO_4, // Insert "smart" into teams 1 or 2 or 3 or 4
     TM_RANDOMTEAM2,
     TM_RANDOMTEAM3,
     TM_RANDOMTEAM4
 };
 
 /// Anzahl der Team-Optionen
-const unsigned NUM_TEAMS = 6; // teamrandom2,3,4 dont count
+const unsigned NUM_TEAM_OPTIONS = 9; // teamrandom2,3,4 dont count
+
+/// Number of playable teams.
+const unsigned NUM_TEAMS = 4;

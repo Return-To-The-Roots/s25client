@@ -53,7 +53,7 @@ void LuaServerPlayer::SetNation(Nation nat)
 
 void LuaServerPlayer::SetTeam(Team team)
 {
-    lua::assertTrue(unsigned(team) < NUM_TEAMS, "Invalid team");
+    lua::assertTrue(unsigned(team) < NUM_TEAM_OPTIONS, "Invalid team");
     player.team = team;
     lobbyServerController_.SetTeam(playerId, team);
 }

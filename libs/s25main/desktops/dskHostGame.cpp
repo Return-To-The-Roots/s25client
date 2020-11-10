@@ -543,9 +543,9 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
             if(playerId == localPlayerId_ || gameLobby->isHost())
             {
                 JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-                if(player.team >= TM_TEAM1 && player.team < Team(NUM_TEAMS)) // team: 1->2->3->4->0 //-V807
+                if(player.team >= TM_TEAM1 && player.team < Team(NUM_TEAM_OPTIONS)) // team: 1->2->3->4->0 //-V807
                 {
-                    player.team = Team((player.team + 1) % NUM_TEAMS);
+                    player.team = Team((player.team + 1) % NUM_TEAM_OPTIONS);
                 } else
                 {
                     if(player.team == TM_NOTEAM) // 0(noteam)->randomteam(1-4)
@@ -843,7 +843,7 @@ void dskHostGame::UpdateGGS()
 
 void dskHostGame::ChangeTeam(const unsigned i, const unsigned char nr)
 {
-    const std::array<std::string, 9> teams = {"-", "?", "1", "2", "3", "4", "?", "?", "?"};
+    const std::array<std::string, 12> teams = {"-", "?", "1", "2", "3", "4", "1-2", "1-3", "1-4", "?", "?", "?"};
 
     GetCtrl<ctrlGroup>(ID_PLAYER_GROUP_START + i)->GetCtrl<ctrlBaseText>(5)->SetText(teams[nr]);
 }
