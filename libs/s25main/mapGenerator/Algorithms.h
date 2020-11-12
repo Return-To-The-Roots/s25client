@@ -328,7 +328,7 @@ namespace rttr { namespace mapGenerator {
 
         const T maximum = area.empty() ? values.GetMaximum() : values.GetMaximum(area);
 
-        if(minimum == maximum)
+        if(minimum >= maximum)
         {
             return maximum;
         }
