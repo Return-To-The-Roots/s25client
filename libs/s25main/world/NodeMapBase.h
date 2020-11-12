@@ -19,14 +19,14 @@
 
 #include "MapBase.h"
 #include "gameTypes/MapCoordinates.h"
+#include <functional>
 #include <vector>
 
 /// Base class for a map with the geometry of the world (MapBase)
 /// Provides nodes of a given type with accessors to the node accepting flat indices or points
 template<typename T_Node>
-class NodeMapBase : public MapBase
+class NodeMapBase final : public MapBase
 {
-protected:
     std::vector<T_Node> nodes;
 
 public:
@@ -40,6 +40,9 @@ public:
     const Node& operator[](unsigned idx) const { return nodes[idx]; }
     Node& operator[](const MapPoint& pt);
     const Node& operator[](const MapPoint& pt) const;
+
+    template<typename T_Result>
+    T_Result Map(std::function<T_Result(const std::vector<Node>&)> func) const;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -71,4 +74,11 @@ void NodeMapBase<T_Node>::Resize(const MapExtent& newSize, const T_Node& default
     MapBase::Resize(newSize);
     nodes.clear();
     nodes.resize(prodOfComponents(newSize), defaultValue);
+}
+
+template<typename T_Node>
+template<typename T_Result>
+T_Result NodeMapBase<T_Node>::Map(std::function<T_Result(const std::vector<T_Node>&)> func) const
+{
+    return func(nodes);
 }

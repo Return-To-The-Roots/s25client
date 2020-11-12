@@ -25,9 +25,10 @@ namespace rttr { namespace mapGenerator {
 
     Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc,
              DescIdx<LandscapeDesc> landscape, uint8_t maxHeight)
-        : hqPositions_(MAX_PLAYERS, MapPoint::Invalid()), z(size, 0), textures(TextureMap(worldDesc, landscape)),
+        : hqPositions_(MAX_PLAYERS, MapPoint::Invalid()), textureMap(TextureMap(worldDesc, landscape, textures)),
           name("Random"), author("Auto"), height(0, maxHeight), players(players), size(size)
     {
+        z.Resize(size);
         textures.Resize(size);
         objectInfos.Resize(size, libsiedler2::OI_Empty);
         objectTypes.Resize(size, libsiedler2::OT_Empty);
@@ -66,7 +67,7 @@ namespace rttr { namespace mapGenerator {
         header->setWidth(size.x);
         header->setHeight(size.y);
         header->setNumPlayers(players);
-        header->setGfxSet(textures.GetLandscapeId());
+        header->setGfxSet(textureMap.GetLandscapeId());
 
         // First 7 players go into the header
         for(unsigned i = 0; i < 7; i++)
@@ -91,8 +92,8 @@ namespace rttr { namespace mapGenerator {
         for(unsigned i = 0; i < numNodes; i++)
         {
             z[i] = this->z[i];
-            rsu[i] = textures.GetTextureId(this->textures[i].rsu);
-            lsd[i] = textures.GetTextureId(this->textures[i].lsd);
+            rsu[i] = textureMap.GetTextureId(this->textures[i].rsu);
+            lsd[i] = textureMap.GetTextureId(this->textures[i].lsd);
             objectType[i] = this->objectTypes[i];
             objectInfo[i] = this->objectInfos[i];
             animal[i] = static_cast<uint8_t>(this->animals[i]);

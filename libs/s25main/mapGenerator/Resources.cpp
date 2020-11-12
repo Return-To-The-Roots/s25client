@@ -28,15 +28,15 @@ namespace rttr { namespace mapGenerator {
     {
         const auto landscapeId = textures.GetLandscapeId();
 
-        Tree pineApple(197, 0x70);
-        Tree palm1(196, 0xF0);
-        Tree palm2(197, 0x30);
-        Tree fir(198, 0x30);
-        Tree oak(196, 0xB0);
-        Tree birch(196, 0x70);
-        Tree cherry(197, 0xF0);
-        Tree pine(196, 0x30);
-        Tree cypress(197, 0xB0);
+        Tree pineApple(libsiedler2::OI_Palm, libsiedler2::OT_Tree1_Begin);
+        Tree palm1(libsiedler2::OI_TreeOrPalm, libsiedler2::OT_Palm_Begin);
+        Tree palm2(libsiedler2::OI_Palm, libsiedler2::OT_TreeOrPalm_Begin);
+        Tree fir(libsiedler2::OI_Palm + 1, libsiedler2::OT_TreeOrPalm_Begin);
+        Tree oak(libsiedler2::OI_TreeOrPalm, libsiedler2::OT_Tree2_Begin);
+        Tree birch(libsiedler2::OI_TreeOrPalm, libsiedler2::OT_Tree1_Begin);
+        Tree cherry(libsiedler2::OI_Palm, libsiedler2::OT_Palm_Begin);
+        Tree pine(libsiedler2::OI_TreeOrPalm, libsiedler2::OT_TreeOrPalm_Begin);
+        Tree cypress(libsiedler2::OI_Palm, libsiedler2::OT_Tree2_Begin);
 
         if(landscapeId == 0x0) // greenland
         {
@@ -60,7 +60,8 @@ namespace rttr { namespace mapGenerator {
 
     void AddObjects(Map& map, RandomUtility& rnd)
     {
-        ValueMap<unsigned> probabilities(map.size, 0u);
+        NodeMapBase<unsigned> probabilities;
+        probabilities.Resize(map.size, 0u);
 
         // Do not allow to place trees/stone piles nearby head quarters or
         // harbor positions to avoid inaccessible harbors or invalid player positions.
@@ -72,7 +73,7 @@ namespace rttr { namespace mapGenerator {
 
         auto isForbiddenArea = [&isForbidden, &map](const MapPoint& pt) {
             return helpers::contains_if(map.textures.GetPointsInRadiusWithCenter(pt, 5), isForbidden)
-                   || map.textures.Any(pt, IsSnowOrLava);
+                   || map.textureMap.Any(pt, IsSnowOrLava);
         };
 
         auto distanceToForbiddenArea = Distances(map.size, isForbiddenArea);
@@ -86,10 +87,12 @@ namespace rttr { namespace mapGenerator {
         // 3a) non-mountains: distance to water
         // 3b) mountains: last element of trees
 
+        auto& textureMap = map.textureMap;
         auto mountainDistance =
-          Distances(map.size, [&map](const MapPoint& pt) { return map.textures.Any(pt, IsMountainOrSnowOrLava); });
+          Distances(map.size, [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsMountainOrSnowOrLava); });
 
-        auto waterDistance = Distances(map.size, [&map](const MapPoint& pt) { return map.textures.Any(pt, IsWater); });
+        auto waterDistance =
+          Distances(map.size, [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsWater); });
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
@@ -99,15 +102,15 @@ namespace rttr { namespace mapGenerator {
             }
         }
 
-        auto range = waterDistance.GetRange();
+        auto range = GetRange(waterDistance);
         auto probRange = ValueRange<unsigned>(15, 40);
         auto probDiff = probRange.GetDifference();
 
         auto mountainDepth =
-          Distances(map.size, [&map](const MapPoint& pt) { return !map.textures.All(pt, IsMountainOrSnowOrLava); });
+          Distances(map.size, [&map](const MapPoint& pt) { return !map.textureMap.All(pt, IsMountainOrSnowOrLava); });
 
-        auto maximumMountainDepth = mountainDepth.GetMaximum();
-        auto mountainRange = mountainDepth.GetRange();
+        auto maximumMountainDepth = GetMaximum(mountainDepth);
+        auto mountainRange = GetRange(mountainDepth);
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
@@ -132,7 +135,7 @@ namespace rttr { namespace mapGenerator {
             }
         }
 
-        auto trees = CreateTrees(map.textures);
+        auto trees = CreateTrees(map.textureMap);
         auto treeForPoint = [&mountainDistance, &waterDistance, &range, &trees](const MapPoint& pt) {
             if(mountainDistance[pt] == 0)
             {
@@ -166,7 +169,7 @@ namespace rttr { namespace mapGenerator {
 
     void AddResources(Map& map, RandomUtility& rnd, const MapSettings& settings)
     {
-        const auto& textures = map.textures;
+        const auto& textures = map.textureMap;
         auto& resources = map.resources;
         int total = settings.ratioCoal + settings.ratioGold + settings.ratioIron + settings.ratioGranite;
 
@@ -217,15 +220,15 @@ namespace rttr { namespace mapGenerator {
         std::vector<libsiedler2::Animal> landAnimals{libsiedler2::Animal::Rabbit, libsiedler2::Animal::Fox,
                                                      libsiedler2::Animal::Stag, libsiedler2::Animal::Deer,
                                                      libsiedler2::Animal::Sheep};
-
+        const auto& textures = map.textureMap;
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
             if(rnd.ByChance(3))
             {
-                if(map.textures.All(pt, IsWater))
+                if(textures.All(pt, IsWater))
                 {
                     map.animals[pt] = libsiedler2::Animal::Duck;
-                } else if(map.textures.All(pt, IsLand))
+                } else if(textures.All(pt, IsLand))
                 {
                     map.animals[pt] = rnd.RandomItem(landAnimals);
                 }

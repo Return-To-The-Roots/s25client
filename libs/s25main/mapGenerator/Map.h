@@ -18,9 +18,9 @@
 #pragma once
 
 #include "helpers/containerUtils.h"
+#include "mapGenerator/NodeMapUtilities.h"
 #include "mapGenerator/Textures.h"
 #include "mapGenerator/Triangles.h"
-#include "mapGenerator/ValueMap.h"
 #include "gameData/WorldDescription.h"
 #include "libsiedler2/archives.h"
 
@@ -37,13 +37,14 @@ namespace rttr { namespace mapGenerator {
         DescIdx<LandscapeDesc> landscape_;
 
     public:
-        ValueMap<uint8_t> z;
-        TextureMap textures;
+        NodeMapBase<uint8_t> z;
+        NodeMapBase<TexturePair> textures;
         NodeMapBase<uint8_t> objectInfos;
         NodeMapBase<uint8_t> objectTypes;
         NodeMapBase<uint8_t> resources;
         NodeMapBase<libsiedler2::Animal> animals;
         std::vector<Triangle> harbors;
+        TextureMap textureMap;
 
         const std::string name;
         const std::string author;

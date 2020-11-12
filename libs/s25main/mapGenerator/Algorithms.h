@@ -18,7 +18,7 @@
 #pragma once
 
 #include "RttrForeachPt.h"
-#include "mapGenerator/ValueMap.h"
+#include "mapGenerator/NodeMapUtilities.h"
 #include "world/NodeMapBase.h"
 
 #include <cmath>
@@ -71,9 +71,9 @@ namespace rttr { namespace mapGenerator {
      * @param maximum maximum value to map any values to
      */
     template<typename T>
-    void Scale(ValueMap<T>& values, T minimum, T maximum)
+    void Scale(NodeMapBase<T>& values, T minimum, T maximum)
     {
-        auto range = values.GetRange();
+        auto range = GetRange(values);
         auto actualRange = range.GetDifference();
         auto actualMinimum = range.minimum;
 
@@ -145,7 +145,7 @@ namespace rttr { namespace mapGenerator {
      * @param distances distance map which is being updated
      * @param queue queue with initial elements to used for distance computation
      */
-    void UpdateDistances(ValueMap<unsigned>& distances, std::queue<MapPoint>& queue);
+    void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue);
 
     /**
      * Computes a map of distance values describing the distance of each grid position to the closest position for
@@ -160,13 +160,14 @@ namespace rttr { namespace mapGenerator {
      * @return distance of each grid position to closest point which has been evaluted with `true`.
      */
     template<typename T, class T_Container>
-    ValueMap<unsigned> Distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue,
-                                 T&& evaluator)
+    NodeMapBase<unsigned> Distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue,
+                                    T&& evaluator)
     {
         const unsigned maximumDistance = size.x * size.y;
 
         std::queue<MapPoint> queue;
-        ValueMap<unsigned> distances(size, defaultValue);
+        NodeMapBase<unsigned> distances;
+        distances.Resize(size, defaultValue);
 
         for(const MapPoint& pt : area)
         {
@@ -195,12 +196,13 @@ namespace rttr { namespace mapGenerator {
      * @return distance of each grid position to closest point which has been evaluted with `true`.
      */
     template<typename T_Value>
-    ValueMap<unsigned> Distances(const MapExtent& size, T_Value&& evaluator)
+    NodeMapBase<unsigned> Distances(const MapExtent& size, T_Value&& evaluator)
     {
         const unsigned maximumDistance = size.x * size.y;
 
         std::queue<MapPoint> queue;
-        ValueMap<unsigned> distances(size, maximumDistance);
+        NodeMapBase<unsigned> distances;
+        distances.Resize(size, maximumDistance);
 
         RTTR_FOREACH_PT(MapPoint, size)
         {
@@ -226,7 +228,7 @@ namespace rttr { namespace mapGenerator {
      * @returns number of values between the specified minimum and maximum values.
      */
     template<typename T>
-    unsigned Count(const ValueMap<T>& values, T minimum, T maximum)
+    unsigned Count(const NodeMapBase<T>& values, T minimum, T maximum)
     {
         unsigned valuesInRange = 0;
         RTTR_FOREACH_PT(MapPoint, values.GetSize())
@@ -250,7 +252,7 @@ namespace rttr { namespace mapGenerator {
      * @returns number of values between the specified minimum and maximum values.
      */
     template<typename T, class T_Area>
-    unsigned Count(const ValueMap<T>& values, const T_Area& area, T minimum, T maximum)
+    unsigned Count(const NodeMapBase<T>& values, const T_Area& area, T minimum, T maximum)
     {
         return std::count_if(area.begin(), area.end(), [&values, minimum, maximum](const MapPoint& pt) {
             return values[pt] >= minimum && values[pt] <= maximum;
@@ -269,14 +271,14 @@ namespace rttr { namespace mapGenerator {
      * @returns a value between the specified minimum and the maximum value of the map.
      */
     template<typename T>
-    T LimitFor(const ValueMap<T>& values, double coverage, T minimum)
+    T LimitFor(const NodeMapBase<T>& values, double coverage, T minimum)
     {
         if(coverage < 0 || coverage > 1)
         {
             throw std::invalid_argument("coverage must be between 0 and 1");
         }
 
-        const T maximum = values.GetMaximum();
+        const T maximum = GetMaximum(values);
 
         if(minimum == maximum)
         {
@@ -319,14 +321,14 @@ namespace rttr { namespace mapGenerator {
      * @returns a value between the specified minimum and the maximum value of the map.
      */
     template<typename T, class T_Area>
-    T LimitFor(const ValueMap<T>& values, const T_Area& area, double coverage, T minimum)
+    T LimitFor(const NodeMapBase<T>& values, const T_Area& area, double coverage, T minimum)
     {
         if(coverage < 0 || coverage > 1)
         {
             throw std::invalid_argument("coverage must be between 0 and 1");
         }
 
-        const T maximum = area.empty() ? values.GetMaximum() : values.GetMaximum(area);
+        const T maximum = GetMaximum(values, area);
 
         if(minimum >= maximum)
         {

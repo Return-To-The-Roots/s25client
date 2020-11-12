@@ -38,7 +38,7 @@ void RunTest(T_Test test)
     MapExtent size(8, 8);
     Map map(size, 1, worldDesc, landscape);
 
-    test(map, map.textures);
+    test(map, map.textureMap);
 }
 
 BOOST_AUTO_TEST_CASE(PlaceHarborPosition_flattens_ground_around_harbor_position)

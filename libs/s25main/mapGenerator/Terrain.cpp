@@ -33,7 +33,7 @@ namespace rttr { namespace mapGenerator {
 
         auto& z = map.z;
         auto distances = Distances(size, inFocusArea);
-        auto maximum = distances.GetMaximum();
+        auto maximum = GetMaximum(distances);
 
         RTTR_FOREACH_PT(MapPoint, size)
         {
@@ -67,7 +67,7 @@ namespace rttr { namespace mapGenerator {
         auto coastDistance = Distances(map.size, isCoast);
 
         auto minimum = static_cast<unsigned>(map.height.minimum);
-        auto maximum = coastDistance.GetMaximum();
+        auto maximum = GetMaximum(coastDistance);
 
         if(maximum > map.height.maximum)
         {

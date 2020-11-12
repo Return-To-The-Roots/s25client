@@ -39,9 +39,9 @@ void RunTest(T_Test test)
 
     Map map(size, 1, worldDesc, landscape);
 
-    auto mountain = map.textures.Find(IsMountainOrSnowOrLava);
-    auto water = map.textures.Find(IsWater);
-    auto land = map.textures.Find(IsBuildableCoast);
+    auto mountain = map.textureMap.Find(IsMountainOrSnowOrLava);
+    auto water = map.textureMap.Find(IsWater);
+    auto land = map.textureMap.Find(IsBuildableCoast);
 
     /*
      * ========== Test Map ===========
@@ -168,10 +168,10 @@ BOOST_AUTO_TEST_CASE(AddResources_updates_resources_according_to_textures)
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            if(map.textures.All(pt, IsMinableMountain))
+            if(map.textureMap.All(pt, IsMinableMountain))
             {
                 BOOST_REQUIRE(map.resources[pt] != R_None);
-            } else if(map.textures.All(pt, IsWater))
+            } else if(map.textureMap.All(pt, IsWater))
             {
                 BOOST_REQUIRE(map.resources[pt] == R_Fish);
             } else
@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE(AddAnimals_updates_animals_according_to_textures)
 
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            if(map.textures.All(pt, IsWater))
+            if(map.textureMap.All(pt, IsWater))
             {
                 BOOST_REQUIRE(map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck
                               || map.animals[pt] == Animal::Duck2);

@@ -31,7 +31,7 @@ namespace rttr { namespace mapGenerator {
     unsigned GetSmoothRadius(const MapExtent& size);
     unsigned GetSmoothIterations(const MapExtent& size);
 
-    void SmoothHeightMap(ValueMap<uint8_t>& z, const ValueRange<uint8_t>& range);
+    void SmoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range);
 
     class RandomMap
     {

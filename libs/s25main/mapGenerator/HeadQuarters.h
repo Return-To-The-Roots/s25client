@@ -50,18 +50,18 @@ namespace rttr { namespace mapGenerator {
         auto isHeadQuarter = [&map](const MapPoint& pt) {
             return map.objectInfos[pt] == libsiedler2::OI_HeadquarterMask;
         };
-
         auto isObstacle = [&map](MapPoint point) {
-            return map.textures.Any(point, [](auto t) { return !t.Is(ETerrain::Buildable); });
+            return map.textureMap.Any(point, [](auto t) { return !t.Is(ETerrain::Buildable); });
         };
 
-        auto quality = Distances(map.size, isHeadQuarter);
+        // Quality of a map point as one player's HQ is a mix of:
+        // 1. distance to other players' HQs (higher = better)
+        // 2. distance to any other obstacle e.g. mountain & water (higher = better)
+        NodeMapBase<unsigned> potentialHeadQuarterQuality = Distances(map.size, isHeadQuarter);
         const auto& obstacleDistance = Distances(map.size, isObstacle);
-
-        auto minDistance = helpers::clamp(obstacleDistance.GetMaximum(area), 2u, 4u);
+        const auto minDistance = helpers::clamp(GetMaximum(obstacleDistance, area), 2u, 4u);
 
         std::vector<MapPoint> positions;
-
         for(const MapPoint& pt : area)
         {
             if(obstacleDistance[pt] >= minDistance)
@@ -69,14 +69,13 @@ namespace rttr { namespace mapGenerator {
                 positions.push_back(pt);
             } else
             {
-                quality[pt] = 0;
+                potentialHeadQuarterQuality[pt] = 0;
             }
         }
-
-        auto isBetter = [&quality](MapPoint p1, MapPoint p2) { return quality[p1] > quality[p2]; };
-
+        auto isBetter = [&potentialHeadQuarterQuality](MapPoint p1, MapPoint p2) {
+            return potentialHeadQuarterQuality[p1] > potentialHeadQuarterQuality[p2];
+        };
         std::sort(positions.begin(), positions.end(), isBetter);
-
         return positions;
     }
 

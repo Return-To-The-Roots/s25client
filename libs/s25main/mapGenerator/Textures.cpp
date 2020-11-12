@@ -27,7 +27,7 @@ namespace rttr { namespace mapGenerator {
 
     void TextureMap::Set(const MapPoint& pt, DescIdx<TerrainDesc> texture)
     {
-        const auto& triangles = GetTriangles(pt, GetSize());
+        const auto& triangles = GetTriangles(pt, textures_.GetSize());
 
         for(const Triangle& triangle : triangles)
         {
@@ -39,10 +39,10 @@ namespace rttr { namespace mapGenerator {
     {
         if(triangle.rsu)
         {
-            nodes[GetIdx(triangle.position)].rsu = texture;
+            textures_[triangle.position].rsu = texture;
         } else
         {
-            nodes[GetIdx(triangle.position)].lsd = texture;
+            textures_[triangle.position].lsd = texture;
         }
     }
 
@@ -50,10 +50,10 @@ namespace rttr { namespace mapGenerator {
     {
         if(triangle.rsu)
         {
-            return nodes[GetIdx(triangle.position)].rsu;
+            return textures_[triangle.position].rsu;
         } else
         {
-            return nodes[GetIdx(triangle.position)].lsd;
+            return textures_[triangle.position].lsd;
         }
     }
 
@@ -64,17 +64,17 @@ namespace rttr { namespace mapGenerator {
             throw std::invalid_argument("sea level must be below mountain level by at least 2");
         }
 
-        const uint8_t maximum = z_.GetRange().maximum;
+        const uint8_t maximum = GetMaximum(z_);
 
         std::vector<DescIdx<TerrainDesc>> mapping(maximum + 1);
 
-        auto waterTexture = textures_.Find(IsShipableWater);
+        auto waterTexture = textureMap_.Find(IsShipableWater);
 
-        auto landTextures = textures_.FindAll(IsBuildableLand);
-        textures_.Sort(landTextures, ByHumidity);
+        auto landTextures = textureMap_.FindAll(IsBuildableLand);
+        textureMap_.Sort(landTextures, ByHumidity);
 
-        auto mountainTextures = textures_.FindAll(IsMinableMountain);
-        mountainTextures.push_back(textures_.Find(IsSnowOrLava));
+        auto mountainTextures = textureMap_.FindAll(IsMinableMountain);
+        mountainTextures.push_back(textureMap_.Find(IsSnowOrLava));
 
         for(uint8_t z = 0; z <= maximum; z++)
         {
@@ -99,8 +99,8 @@ namespace rttr { namespace mapGenerator {
     {
         const auto& mapping = CreateTextureMapping(mountainLevel);
 
-        const MapExtent size = textures_.GetSize();
-        const auto& z = this->z_;
+        const MapExtent size = z_.GetSize();
+        const auto& z = z_;
 
         auto interpolateEdges = [&size, z](const Triangle& triangle) {
             const auto& edges = GetTriangleEdges(triangle, size);
@@ -131,18 +131,18 @@ namespace rttr { namespace mapGenerator {
         std::set<MapPoint, MapPointLess> visited;
         std::copy(coast.begin(), coast.end(), std::inserter(visited, visited.begin()));
 
-        auto water = textures_.Find(IsShipableWater);
-        auto coastland = textures_.FindAll(IsBuildableCoast);
-        auto mountain = textures_.FindAll(IsMountainOrSnowOrLava);
+        auto water = textureMap_.Find(IsShipableWater);
+        auto coastland = textureMap_.FindAll(IsBuildableCoast);
+        auto mountain = textureMap_.FindAll(IsMountainOrSnowOrLava);
 
         for(const auto& texture : mountain)
         {
             excludedTextures.insert(texture);
         }
 
-        textures_.Sort(coastland, ByHumidity);
+        textureMap_.Sort(coastland, ByHumidity);
 
-        transition.push_back(textures_.Find(IsCoastTerrain));
+        transition.push_back(textureMap_.Find(IsCoastTerrain));
         transition.push_back(coastland[0]);
         transition.push_back(coastland[1]);
 
@@ -151,25 +151,23 @@ namespace rttr { namespace mapGenerator {
         for(unsigned i = 0; i < 3; ++i)
         {
             unsigned appliedWidth = width - (i == 0 ? 1 : 0);
-
             ReplaceTextures(textures_, appliedWidth, visited, transition[i], excludedTextures);
-
             excludedTextures.insert(transition[i]);
         }
     }
 
     void Texturizer::ApplyMountainTransitions(const std::vector<MapPoint>& mountainFoot)
     {
-        std::set<DescIdx<TerrainDesc>> excludedTextures{textures_.Find(IsShipableWater)};
+        std::set<DescIdx<TerrainDesc>> excludedTextures{textureMap_.Find(IsShipableWater)};
 
-        const auto& mountainTextures = textures_.FindAll(IsMountainOrSnowOrLava);
+        const auto& mountainTextures = textureMap_.FindAll(IsMountainOrSnowOrLava);
 
         for(const auto& mountainTexture : mountainTextures)
         {
             excludedTextures.insert(mountainTexture);
         }
 
-        auto mountainTransition = textures_.Find(IsBuildableMountain);
+        auto mountainTransition = textureMap_.Find(IsBuildableMountain);
 
         for(const MapPoint& point : mountainFoot)
         {
@@ -188,7 +186,7 @@ namespace rttr { namespace mapGenerator {
 
         RTTR_FOREACH_PT(MapPoint, size)
         {
-            if(textures.Any(pt, IsLand) && textures.Any(pt, IsWater))
+            if(textureMap_.Any(pt, IsLand) && textureMap_.Any(pt, IsWater))
             {
                 coast.push_back(pt);
             }
@@ -196,21 +194,18 @@ namespace rttr { namespace mapGenerator {
 
         ApplyCoastTexturing(coast, 1); // small for tiny rivers
 
-        auto isRiver = [&textures](const MapPoint& pt) {
-            auto suroundedByWater = [&textures](const MapPoint& pt) { return textures.All(pt, IsWater); };
-
-            return !helpers::contains_if(textures.GetNeighbours(pt), suroundedByWater);
+        auto isRiver = [this](const MapPoint& pt) {
+            auto suroundedByWater = [this](const MapPoint& pt) { return this->textureMap_.All(pt, IsWater); };
+            return !helpers::contains_if(this->textures_.GetNeighbours(pt), suroundedByWater);
         };
 
         helpers::remove_if(coast, isRiver);
-
         ApplyCoastTexturing(coast, coastline);
-
         std::vector<MapPoint> footOfMountain;
 
         RTTR_FOREACH_PT(MapPoint, size)
         {
-            if(textures.Any(pt, IsMinableMountain) && !textures.All(pt, IsMountainOrSnowOrLava))
+            if(textureMap_.Any(pt, IsMinableMountain) && !textureMap_.All(pt, IsMountainOrSnowOrLava))
             {
                 footOfMountain.push_back(pt);
             }

@@ -34,27 +34,43 @@ void RunTest(T_Test test)
     DescIdx<LandscapeDesc> landscape(1);
     WorldDescription worldDesc;
     loadGameData(worldDesc);
-
-    TextureMap textures(worldDesc, landscape);
+    NodeMapBase<uint8_t> z;
+    NodeMapBase<TexturePair> textures;
+    z.Resize(size);
     textures.Resize(size);
+    TextureMap textureMap(worldDesc, landscape, textures);
 
-    test(textures, size);
+    test(z, textures, textureMap);
+}
+
+template<class T_Test>
+void RunTestWithTextures(T_Test test);
+
+template<class T_Test>
+void RunTestWithTextures(T_Test test)
+{
+    MapExtent size(8, 8);
+    DescIdx<LandscapeDesc> landscape(1);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    NodeMapBase<TexturePair> textures;
+    textures.Resize(size);
+    TextureMap textureMap(worldDesc, landscape, textures);
+
+    test(textures, textureMap);
 }
 
 BOOST_AUTO_TEST_CASE(AddTextures_sets_valid_textures_for_entire_map)
 {
-    RunTest([](TextureMap& textures, const MapExtent& size) {
+    RunTest([](NodeMapBase<uint8_t> z, NodeMapBase<TexturePair>& textures, TextureMap& textureMap) {
+        Texturizer texturizer(z, textures, textureMap);
         const unsigned mountainLevel = 5;
         const unsigned coastline = 1;
 
-        ValueMap<uint8_t> z(size);
-
-        RTTR_FOREACH_PT(MapPoint, textures.GetSize())
+        RTTR_FOREACH_PT(MapPoint, z.GetSize())
         {
             z[pt] = pt.x % 10;
         }
-
-        Texturizer texturizer(z, textures);
 
         texturizer.AddTextures(mountainLevel, coastline);
 
@@ -68,26 +84,21 @@ BOOST_AUTO_TEST_CASE(AddTextures_sets_valid_textures_for_entire_map)
 
 BOOST_AUTO_TEST_CASE(AddTextures_does_not_override_textures)
 {
-    RunTest([](TextureMap& textures, const MapExtent& size) {
+    RunTest([](NodeMapBase<uint8_t> z, NodeMapBase<TexturePair>& textures, TextureMap& textureMap) {
+        Texturizer texturizer(z, textures, textureMap);
         const unsigned mountainLevel = 5;
         const unsigned coastline = 1;
+        auto water = textureMap.Find(IsWater);
+        textures.Resize(textures.GetSize(), TexturePair(water));
 
-        ValueMap<uint8_t> z(size);
-
-        auto water = textures.Find(IsWater);
-
-        textures.Resize(size, TexturePair(water));
-
-        RTTR_FOREACH_PT(MapPoint, size)
+        RTTR_FOREACH_PT(MapPoint, z.GetSize())
         {
             z[pt] = pt.x;
         }
 
-        Texturizer texturizer(z, textures);
-
         texturizer.AddTextures(mountainLevel, coastline);
 
-        RTTR_FOREACH_PT(MapPoint, size)
+        RTTR_FOREACH_PT(MapPoint, textures.GetSize())
         {
             BOOST_REQUIRE(textures[pt].rsu == water);
             BOOST_REQUIRE(textures[pt].lsd == water);
@@ -97,44 +108,37 @@ BOOST_AUTO_TEST_CASE(AddTextures_does_not_override_textures)
 
 BOOST_AUTO_TEST_CASE(AddTextures_sets_water_textures_for_minimum_height)
 {
-    RunTest([](TextureMap& textures, const MapExtent& size) {
+    RunTest([](NodeMapBase<uint8_t> z, NodeMapBase<TexturePair>& textures, TextureMap& textureMap) {
+        Texturizer texturizer(z, textures, textureMap);
         const unsigned mountainLevel = 3;
         const unsigned coastline = 2;
 
-        ValueMap<uint8_t> z(size, 0);
-
-        Texturizer texturizer(z, textures);
-
         texturizer.AddTextures(mountainLevel, coastline);
 
-        RTTR_FOREACH_PT(MapPoint, size)
+        RTTR_FOREACH_PT(MapPoint, textures.GetSize())
         {
-            BOOST_REQUIRE(textures.Check(Triangle(true, pt), IsWater));
-            BOOST_REQUIRE(textures.Check(Triangle(false, pt), IsWater));
+            BOOST_REQUIRE(textureMap.Check(Triangle(true, pt), IsWater));
+            BOOST_REQUIRE(textureMap.Check(Triangle(false, pt), IsWater));
         }
     });
 }
 
 BOOST_AUTO_TEST_CASE(AddTextures_sets_mountain_textures_above_mountain_level)
 {
-    RunTest([](TextureMap& textures, const MapExtent& size) {
+    RunTest([](NodeMapBase<uint8_t> z, NodeMapBase<TexturePair>& textures, TextureMap& textureMap) {
+        Texturizer texturizer(z, textures, textureMap);
         const unsigned mountainLevel = 10;
         const unsigned coastline = 2;
-
-        ValueMap<uint8_t> z(size, mountainLevel);
-
+        z.Resize(z.GetSize(), mountainLevel);
         z[0] = 1; // sea
-
-        Texturizer texturizer(z, textures);
-
         texturizer.AddTextures(mountainLevel, coastline);
 
-        RTTR_FOREACH_PT(MapPoint, size)
+        RTTR_FOREACH_PT(MapPoint, textures.GetSize())
         {
             if(z[pt] >= mountainLevel)
             {
-                BOOST_REQUIRE(textures.Check(Triangle(true, pt), IsMountainOrSnowOrLava));
-                BOOST_REQUIRE(textures.Check(Triangle(false, pt), IsMountainOrSnowOrLava));
+                BOOST_REQUIRE(textureMap.Check(Triangle(true, pt), IsMountainOrSnowOrLava));
+                BOOST_REQUIRE(textureMap.Check(Triangle(false, pt), IsMountainOrSnowOrLava));
             }
         }
     });
@@ -142,33 +146,29 @@ BOOST_AUTO_TEST_CASE(AddTextures_sets_mountain_textures_above_mountain_level)
 
 BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_replaces_all_textures)
 {
-    RunTest([](TextureMap& textures, const MapExtent& size) {
-        auto source = textures.Find(IsWater);
-        auto target = textures.Find(IsSnowOrLava);
-
-        auto point = MapPoint(size.x / 2, size.y / 2);
-
-        textures.Resize(size, source);
+    RunTestWithTextures([](NodeMapBase<TexturePair>& textures, TextureMap& textureMap) {
+        auto source = textureMap.Find(IsWater);
+        auto target = textureMap.Find(IsSnowOrLava);
+        auto point = MapPoint(textures.GetWidth() / 2, textures.GetHeight() / 2);
+        textures.Resize(textures.GetSize(), source);
 
         ReplaceTextureForPoint(textures, point, target, {});
 
-        BOOST_REQUIRE(textures.All(point, IsSnowOrLava));
+        BOOST_REQUIRE(textureMap.All(point, IsSnowOrLava));
     });
 }
 
 BOOST_AUTO_TEST_CASE(ReplaceTextureForPoint_does_not_replace_excluded_textures)
 {
-    RunTest([](TextureMap& textures, const MapExtent& size) {
-        auto source = textures.Find(IsWater);
-        auto target = textures.Find(IsSnowOrLava);
-
-        auto point = MapPoint(size.x / 2, size.y / 2);
-
-        textures.Resize(size, source);
+    RunTestWithTextures([](NodeMapBase<TexturePair>& textures, TextureMap& textureMap) {
+        auto source = textureMap.Find(IsWater);
+        auto target = textureMap.Find(IsSnowOrLava);
+        auto point = MapPoint(textures.GetWidth() / 2, textures.GetHeight() / 2);
+        textures.Resize(textures.GetSize(), source);
 
         ReplaceTextureForPoint(textures, point, target, {source});
 
-        BOOST_REQUIRE(textures.All(point, IsWater));
+        BOOST_REQUIRE(textureMap.All(point, IsWater));
     });
 }
 
@@ -181,12 +181,10 @@ BOOST_AUTO_TEST_CASE(ReplaceTextures_replaces_textures_within_radius)
 
     for(unsigned radius = 0; radius < 4; radius++)
     {
-        RunTest([radius, &points](TextureMap& textures, const MapExtent& size) {
-            auto source = textures.Find(IsWater);
-            auto target = textures.Find(IsSnowOrLava);
-
-            textures.Resize(size, source);
-
+        RunTestWithTextures([radius, &points](NodeMapBase<TexturePair>& textures, TextureMap& textureMap) {
+            auto source = textureMap.Find(IsWater);
+            auto target = textureMap.Find(IsSnowOrLava);
+            textures.Resize(textures.GetSize(), source);
             std::set<MapPoint, MapPointLess> nodes(points);
 
             ReplaceTextures(textures, radius, nodes, target, {});
@@ -197,11 +195,11 @@ BOOST_AUTO_TEST_CASE(ReplaceTextures_replaces_textures_within_radius)
                 {
                     for(const MapPoint& p : textures.GetPointsInRadius(pt, radius))
                     {
-                        BOOST_REQUIRE(textures.All(p, IsSnowOrLava));
+                        BOOST_REQUIRE(textureMap.All(p, IsSnowOrLava));
                     }
                 } else
                 {
-                    BOOST_REQUIRE(textures.All(pt, IsSnowOrLava));
+                    BOOST_REQUIRE(textureMap.All(pt, IsSnowOrLava));
                 }
             }
         });
@@ -217,19 +215,17 @@ BOOST_AUTO_TEST_CASE(ReplaceTextures_does_not_replace_excluded_textures)
 
     for(unsigned radius = 0; radius < 4; radius++)
     {
-        RunTest([radius, &points](TextureMap& textures, const MapExtent& size) {
-            auto source = textures.Find(IsWater);
-            auto target = textures.Find(IsSnowOrLava);
-
-            textures.Resize(size, source);
-
+        RunTestWithTextures([radius, &points](NodeMapBase<TexturePair>& textures, TextureMap& textureMap) {
+            auto source = textureMap.Find(IsWater);
+            auto target = textureMap.Find(IsSnowOrLava);
+            textures.Resize(textures.GetSize(), source);
             std::set<MapPoint, MapPointLess> nodes(points);
 
             ReplaceTextures(textures, radius, nodes, target, {source});
 
-            RTTR_FOREACH_PT(MapPoint, size)
+            RTTR_FOREACH_PT(MapPoint, textures.GetSize())
             {
-                BOOST_REQUIRE(textures.All(pt, IsWater));
+                BOOST_REQUIRE(textureMap.All(pt, IsWater));
             }
         });
     }

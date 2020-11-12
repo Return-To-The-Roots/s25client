@@ -27,7 +27,7 @@ namespace rttr { namespace mapGenerator {
         std::set<MapPoint, MapPointLess> visited;
         std::vector<MapPoint> connectedArea;
 
-        auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textures.Any(pt, IsBuildableLand); };
+        auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsBuildableLand); };
 
         auto partiallyConnected = [&map, &partiallyBuildable](const MapPoint& pt) {
             return helpers::contains_if(map.textures.GetNeighbours(pt), partiallyBuildable);
@@ -52,7 +52,7 @@ namespace rttr { namespace mapGenerator {
         // added before due to allowing tiny rivers to be part of
         // connected areas
 
-        helpers::remove_if(connectedArea, [&map](const MapPoint& pt) { return map.textures.Any(pt, IsWater); });
+        helpers::remove_if(connectedArea, [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsWater); });
 
         return connectedArea;
     }

@@ -26,7 +26,7 @@ namespace rttr { namespace mapGenerator {
     void PlaceHarborPosition(Map& map, const MapPoint& position)
     {
         auto& z = map.z;
-        auto& textures = map.textures;
+        auto& textures = map.textureMap;
 
         const auto& neighbors = z.GetNeighbours(position);
         const auto& farNeighbors = z.GetPointsInRadius(position, 2);
@@ -42,7 +42,7 @@ namespace rttr { namespace mapGenerator {
         }
 
         z[position] = lowestHeight;
-        z.SetValues(neighbors, lowestHeight);
+        SetValues(z, neighbors, lowestHeight);
 
         auto harborTexture = textures.Find(IsBuildableCoast);
         auto triangles = GetTriangles(position, map.size);
@@ -74,10 +74,10 @@ namespace rttr { namespace mapGenerator {
 
         auto distanceToRiver = Distances(map.size, isPartOfRiver);
 
-        auto allWater = [&map](const MapPoint& pt) { return map.textures.All(pt, IsWater); };
+        auto allWater = [&map](const MapPoint& pt) { return map.textureMap.All(pt, IsWater); };
 
         auto isCoast = [&map, allWater, &distanceToRiver](const MapPoint& pt) {
-            return map.textures.Any(pt, IsLand) && map.textures.Any(pt, IsWater)
+            return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater)
                    && helpers::contains_if(map.textures.GetNeighbours(pt), allWater) && distanceToRiver[pt] >= 5;
         };
 

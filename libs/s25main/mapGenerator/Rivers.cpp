@@ -29,7 +29,7 @@ namespace rttr { namespace mapGenerator {
         River river;
         std::vector<Direction> exlcuded{direction + 2, direction + 3, direction + 4};
 
-        auto& textures = map.textures;
+        auto& textures = map.textureMap;
         auto water = textures.Find(IsWater);
 
         MapPoint currentNode = source;
@@ -57,7 +57,7 @@ namespace rttr { namespace mapGenerator {
                 currentDir = lastDir + (rnd.ByChance(50) ? 5 : 1);
             }
 
-            currentNode = textures.GetNeighbour(currentNode, lastDir);
+            currentNode = map.textures.GetNeighbour(currentNode, lastDir);
 
             if(rnd.ByChance(splitRate))
             {

@@ -19,7 +19,7 @@
 
 namespace rttr { namespace mapGenerator {
 
-    void UpdateDistances(ValueMap<unsigned>& distances, std::queue<MapPoint>& queue)
+    void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue)
     {
         const unsigned maximumDistance = distances.GetWidth() * distances.GetHeight();
 

@@ -35,92 +35,119 @@ namespace rttr { namespace mapGenerator {
 
     unsigned GetMaximumHeight(const MapExtent& size)
     {
-        switch(size.x + size.y)
+        const unsigned combinedSize = size.x + size.y;
+        if(combinedSize <= 128)
         {
-            case 128: return 32;
-
-            case 256: return 64;
-
-            case 512: return 128;
-
-            case 1024: return 150;
-
-            case 2048: return 200;
-
-            default: return 60;
+            return 32;
         }
+        if(combinedSize <= 256)
+        {
+            return 64;
+        }
+        if(combinedSize <= 512)
+        {
+            return 128;
+        }
+        if(combinedSize <= 1024)
+        {
+            return 150;
+        }
+        if(combinedSize <= 2048)
+        {
+            return 200;
+        }
+        return 60;
     }
 
     unsigned GetCoastline(const MapExtent& size)
     {
-        switch(size.x + size.y)
+        const unsigned combinedSize = size.x + size.y;
+        if(combinedSize <= 256)
         {
-            case 128:
-            case 256: return 1;
-
-            case 512:
-            case 1024: return 2;
-
-            case 2048: return 3;
-
-            default: return 4;
+            return 1;
         }
+        if(combinedSize <= 1024)
+        {
+            return 2;
+        }
+        if(combinedSize <= 2048)
+        {
+            return 3;
+        }
+        return 4;
     }
 
     unsigned GetIslandRadius(const MapExtent& size)
     {
-        switch(size.x + size.y)
+        const unsigned combinedSize = size.x + size.y;
+        if(combinedSize <= 256)
         {
-            case 128:
-            case 256: return 2;
-
-            case 512: return 3;
-
-            case 1024: return 4;
-
-            case 2048: return 5;
-
-            default: return 6;
+            return 2;
         }
+        if(combinedSize <= 512)
+        {
+            return 3;
+        }
+        if(combinedSize <= 1024)
+        {
+            return 4;
+        }
+        if(combinedSize <= 2048)
+        {
+            return 5;
+        }
+        return 6;
     }
 
     unsigned GetSmoothRadius(const MapExtent& size)
     {
-        switch(size.x + size.y)
+        const unsigned combinedSize = size.x + size.y;
+        if(combinedSize <= 256)
         {
-            case 128: return 2;
-
-            case 256: return 3;
-
-            case 512: return 4;
-
-            case 1024: return 5;
-
-            case 2048: return 6;
-
-            default: return 7;
+            return 2;
         }
+        if(combinedSize <= 512)
+        {
+            return 4;
+        }
+        if(combinedSize <= 1024)
+        {
+            return 5;
+        }
+        if(combinedSize <= 2048)
+        {
+            return 6;
+        }
+        return 7;
     }
 
     unsigned GetSmoothIterations(const MapExtent& size)
     {
-        switch(size.x + size.y)
+        const unsigned combinedSize = size.x + size.y;
+        if(combinedSize <= 128)
         {
-            case 128: return 10;
-
-            case 256: return 12;
-
-            case 512: return 15;
-
-            case 1024: return 20;
-
-            case 2048: return 25;
-
-            default: return 50;
+            return 10;
         }
+        if(combinedSize <= 256)
+        {
+            return 11;
+        }
+        if(combinedSize <= 512)
+        {
+            return 12;
+        }
+        if(combinedSize <= 1024)
+        {
+            return 20;
+        }
+        if(combinedSize <= 2048)
+        {
+            return 25;
+        }
+        return 50;
     }
 
-    void SmoothHeightMap(ValueMap<uint8_t>& z, const ValueRange<uint8_t>& range)
+    void SmoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range)
     {
         int radius = GetSmoothRadius(z.GetSize());
         int iterations = GetSmoothIterations(z.GetSize());
@@ -129,7 +156,9 @@ namespace rttr { namespace mapGenerator {
         Scale(z, range.minimum, range.maximum);
     }
 
-    RandomMap::RandomMap(RandomUtility& rnd, Map& map) : rnd_(rnd), map_(map), texturizer_(map.z, map.textures) {}
+    RandomMap::RandomMap(RandomUtility& rnd, Map& map)
+        : rnd_(rnd), map_(map), texturizer_(map.z, map.textures, map.textureMap)
+    {}
 
     void RandomMap::Create(const MapSettings& settings)
     {

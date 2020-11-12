@@ -36,7 +36,7 @@ void RunTest(const MapExtent& size, T_Test test)
 
     Map map(size, 1, worldDesc, landscape);
 
-    test(map, map.textures);
+    test(map, map.textureMap);
 }
 
 template<class T_Test>
@@ -63,9 +63,7 @@ BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_returns_expected_nodes)
     RunTest(size, [&size](Map& map, TextureMap& textures) {
         auto water = textures.Find(IsShipableWater);
         auto land = textures.Find(IsBuildableLand);
-
-        textures.Resize(size, TexturePair(water));
-
+        map.textures.Resize(size, TexturePair(water));
         MapPoint centerOfLargeArea(3, 3);
         auto largeArea = map.textures.GetPointsInRadiusWithCenter(centerOfLargeArea, 3);
 
@@ -97,7 +95,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_empty_for_map_without_suitable_posi
 {
     MapExtent size(32, 32);
     RunTestForArea(size, [&size](Map& map, TextureMap& textures, const auto& area) {
-        textures.Resize(size, TexturePair(textures.Find(IsShipableWater)));
+        map.textures.Resize(size, TexturePair(textures.Find(IsShipableWater)));
 
         auto positions = FindHqPositions(map, area);
 
@@ -158,8 +156,8 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_places_hq_on_map_at_suitable_position)
         MapPoint obstacle(0, 0);
         MapPoint hq(4, 4);
 
-        textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
-        textures[obstacle] = TexturePair(textures.Find(IsShipableWater));
+        map.textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
+        map.textures[obstacle] = TexturePair(textures.Find(IsShipableWater));
 
         std::vector<MapPoint> area{hq};
 
@@ -178,7 +176,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_returns_true_for_any_player_number_on_sui
     for(int players = 1; players < 8; players++)
     {
         RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
-            textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
+            map.textures.Resize(size, TexturePair(textures.Find(IsBuildableLand)));
 
             auto success = PlaceHeadQuarters(map, rnd, players);
 
@@ -195,7 +193,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarters_places_hqs_for_any_player_number_on_suita
     for(int players = 1; players < 8; players++)
     {
         RunTest(size, [&size, &rnd, players](Map& map, TextureMap& textures) {
-            textures.Resize(size, textures.Find(IsBuildableLand));
+            map.textures.Resize(size, textures.Find(IsBuildableLand));
 
             PlaceHeadQuarters(map, rnd, players);
 

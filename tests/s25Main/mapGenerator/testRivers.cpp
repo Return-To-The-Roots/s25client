@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_connected_nodes)
 BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
-        auto land = map.textures.Find(IsBuildableLand);
+        auto land = map.textureMap.Find(IsBuildableLand);
         map.textures.Resize(map.size, land);
         const MapPoint source(3, 2);
         const int length = 7;
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
 
             for(const MapPoint& pt : river)
             {
-                BOOST_REQUIRE(map.textures.Any(pt, IsWater));
+                BOOST_REQUIRE(map.textureMap.Any(pt, IsWater));
             }
         }
     });
@@ -105,9 +105,8 @@ BOOST_AUTO_TEST_CASE(CreateStream_reduces_height_of_river_nodes)
 {
     RunTest([](RandomUtility& rnd, Map& map) {
         map.z.Resize(map.size, 4);
-
-        ValueMap<uint8_t> originalZ(map.size);
-
+        NodeMapBase<uint8_t> originalZ;
+        originalZ.Resize(map.size);
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
             originalZ[pt] = map.z[pt];

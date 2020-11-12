@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "mapGenerator/ValueMap.h"
+#include "mapGenerator/NodeMapUtilities.h"
 #include <boost/test/unit_test.hpp>
 
 using namespace rttr::mapGenerator;
 
-BOOST_AUTO_TEST_SUITE(ValueTests)
+BOOST_AUTO_TEST_SUITE(NodeMapUtilitiesTests)
 
 BOOST_AUTO_TEST_CASE(GetDifference_returns_maximum_difference_between_range)
 {
@@ -60,12 +60,12 @@ BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_largest_index_for_maximum_value)
 BOOST_AUTO_TEST_CASE(GetRange_returns_range_of_map_values)
 {
     MapExtent size(16, 8);
-    ValueMap<int> values(size, 2);
-
+    NodeMapBase<int> values;
+    values.Resize(size, 2);
     values[3] = -1;
     values[7] = 7;
 
-    auto range = values.GetRange();
+    auto range = GetRange(values);
 
     BOOST_REQUIRE(range.minimum == -1);
     BOOST_REQUIRE(range.maximum == 7);
@@ -74,22 +74,22 @@ BOOST_AUTO_TEST_CASE(GetRange_returns_range_of_map_values)
 BOOST_AUTO_TEST_CASE(GetMaximum_returns_maximum_value)
 {
     MapExtent size(16, 8);
-    ValueMap<int> values(size, 4);
-
+    NodeMapBase<int> values;
+    values.Resize(size, 4);
     values[7] = 5;
 
-    BOOST_REQUIRE(values.GetMaximum() == 5);
+    BOOST_REQUIRE(GetMaximum(values) == 5);
 }
 
 BOOST_AUTO_TEST_CASE(GetMaximumPoint_returns_map_point_for_maximum_value)
 {
     MapExtent size(16, 8);
-    ValueMap<int> values(size, 4);
+    NodeMapBase<int> values;
+    values.Resize(size, 4);
     MapPoint maximumPoint(3, 5);
-
     values[maximumPoint] = 5;
 
-    BOOST_REQUIRE(values.GetMaximumPoint() == maximumPoint);
+    BOOST_REQUIRE(GetMaximumPoint(values) == maximumPoint);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

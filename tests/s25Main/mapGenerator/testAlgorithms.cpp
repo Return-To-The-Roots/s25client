@@ -28,12 +28,10 @@ BOOST_AUTO_TEST_CASE(UpdateDistances_updates_enqueued_elements_correctly)
 {
     MapExtent size(8, 8);
     MapPoint reference(4, 7);
-
-    ValueMap<unsigned> distances(size, size.x * size.y);
+    NodeMapBase<unsigned> distances;
+    distances.Resize(size, size.x * size.y);
     std::queue<MapPoint> queue;
-
     queue.push(reference);
-
     distances[reference] = 0;
 
     UpdateDistances(distances, queue);
@@ -94,8 +92,8 @@ BOOST_AUTO_TEST_CASE(Smooth_interpolates_values_around_peak)
 BOOST_AUTO_TEST_CASE(Scale_updates_minimum_and_maximum_values_correctly)
 {
     MapExtent size(16, 8);
-    ValueMap<unsigned> values(size, 8u);
-
+    NodeMapBase<unsigned> values;
+    values.Resize(size, 8u);
     values[0] = 12; // max
     values[1] = 7;  // min
 
@@ -108,7 +106,8 @@ BOOST_AUTO_TEST_CASE(Scale_updates_minimum_and_maximum_values_correctly)
 BOOST_AUTO_TEST_CASE(Scale_keeps_equal_values_unchanged)
 {
     MapExtent size(16, 8);
-    ValueMap<unsigned> values(size, 8u);
+    NodeMapBase<unsigned> values;
+    values.Resize(size, 8u);
 
     Scale(values, 0u, 20u);
 
@@ -210,8 +209,8 @@ BOOST_AUTO_TEST_CASE(Distances_returns_expected_distance_for_each_map_point)
 BOOST_AUTO_TEST_CASE(Count_all_nodes_within_thresholds_correctly)
 {
     MapExtent size(8, 16);
-    ValueMap<int> values(size);
-
+    NodeMapBase<int> values;
+    values.Resize(size);
     for(int i = 0; i < size.x * size.y; i++)
     {
         values[i] = i;
@@ -225,13 +224,12 @@ BOOST_AUTO_TEST_CASE(Count_all_nodes_within_thresholds_correctly)
 BOOST_AUTO_TEST_CASE(Count_nodes_in_area_within_thresholds_correctly)
 {
     MapExtent size(16, 16);
-    ValueMap<int> values(size);
-
+    NodeMapBase<int> values;
+    values.Resize(size);
     for(int i = 0; i < size.x * size.y; i++)
     {
         values[i] = i;
     }
-
     const std::vector<MapPoint> area{MapPoint(6, 0), MapPoint(7, 0), MapPoint(8, 0), MapPoint(11, 0)};
 
     const auto result = Count(values, area, 5, 10);
@@ -242,15 +240,13 @@ BOOST_AUTO_TEST_CASE(Count_nodes_in_area_within_thresholds_correctly)
 BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
 {
     MapExtent size(8, 16);
-    ValueMap<int> values(size);
-
+    NodeMapBase<int> values;
+    values.Resize(size);
     for(int i = 0; i < size.x * size.y; i++)
     {
         values[i] = i;
     }
-
     const std::vector<MapPoint> area{MapPoint(4, 0), MapPoint(5, 0), MapPoint(6, 0), MapPoint(7, 0)};
-
     const double coverage = 0.5;
     const int minimum = 1;
 
@@ -258,7 +254,6 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
 
     auto expectedNodes = static_cast<unsigned>(area.size() * coverage);
     unsigned actualNodes = 0;
-
     for(const auto& pt : area)
     {
         if(values[pt] >= minimum && values[pt] <= limit)
@@ -266,20 +261,18 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
             actualNodes++;
         }
     }
-
     BOOST_REQUIRE_EQUAL(actualNodes, expectedNodes);
 }
 
 BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
 {
     MapExtent size(8, 16);
-    ValueMap<int> values(size);
-
+    NodeMapBase<int> values;
+    values.Resize(size);
     for(int i = 0; i < size.x * size.y; i++)
     {
         values[i] = i;
     }
-
     const double coverage = 0.11;
     const int minimum = 2;
 
@@ -287,7 +280,6 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
 
     auto expectedNodes = static_cast<unsigned>(size.x * size.y * coverage);
     unsigned actualNodes = 0;
-
     RTTR_FOREACH_PT(MapPoint, size)
     {
         if(values[pt] >= minimum && values[pt] <= limit)
@@ -295,26 +287,22 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
             actualNodes++;
         }
     }
-
     BOOST_REQUIRE_EQUAL(actualNodes, expectedNodes);
 }
 
 BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
 {
     MapExtent size(8, 8);
-    ValueMap<int> values(size);
-
+    NodeMapBase<int> values;
+    values.Resize(size);
     double coverage = 0.3;
     int minimum = 3;
-
     unsigned totalNodes = size.x * size.y;
     auto exactNumberOfNodes = static_cast<unsigned>(coverage * totalNodes);
-
     for(unsigned i = 0; i < exactNumberOfNodes - 5; i++)
     {
         values[i] = 5;
     }
-
     for(unsigned i = exactNumberOfNodes - 5; i < totalNodes; i++)
     {
         values[i] = 6;

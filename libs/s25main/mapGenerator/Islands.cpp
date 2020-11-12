@@ -29,7 +29,7 @@ namespace rttr { namespace mapGenerator {
         auto isLand = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
 
         const auto& distances = Distances(map.size, isLand);
-        const MapPoint& center = distances.GetMaximumPoint();
+        const MapPoint& center = GetMaximumPoint(distances);
 
         auto compare = [&distances, center](const MapPoint& rhs, const MapPoint& lhs) {
             // computes prefered extension points for the island by considering distance to
@@ -82,23 +82,23 @@ namespace rttr { namespace mapGenerator {
             map.z[pt] = std::min(static_cast<uint8_t>(minimum), map.height.maximum);
         }
 
-        auto mountain = map.textures.FindAll(IsMinableMountain);
+        auto mountain = map.textureMap.FindAll(IsMinableMountain);
         auto mountainLevel = LimitFor(coastDistance, island, 1. - mountainCoverage, map.height.minimum + 1u);
-        auto mountainRange = ValueRange<unsigned>(mountainLevel, coastDistance.GetMaximum(island));
+        auto mountainRange = ValueRange<unsigned>(mountainLevel, GetMaximum(coastDistance, island));
 
-        auto textures = map.textures.FindAll(IsBuildableLand);
+        auto textures = map.textureMap.FindAll(IsBuildableLand);
         auto textureRange = ValueRange<unsigned>(0u, mountainLevel);
 
-        map.textures.Sort(textures, ByHumidity);
+        map.textureMap.Sort(textures, ByHumidity);
 
         for(const MapPoint& pt : island)
         {
             if(coastDistance[pt] < mountainLevel)
             {
-                map.textures.Set(pt, textures[MapValueToIndex(coastDistance[pt], textureRange, textures.size())]);
+                map.textureMap.Set(pt, textures[MapValueToIndex(coastDistance[pt], textureRange, textures.size())]);
             } else
             {
-                map.textures.Set(pt, mountain[MapValueToIndex(coastDistance[pt], mountainRange, mountain.size())]);
+                map.textureMap.Set(pt, mountain[MapValueToIndex(coastDistance[pt], mountainRange, mountain.size())]);
             }
         }
 

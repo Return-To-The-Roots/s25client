@@ -19,6 +19,7 @@
 
 #include "helpers/containerUtils.h"
 #include "mapGenerator/Algorithms.h"
+#include "mapGenerator/NodeMapUtilities.h"
 #include "mapGenerator/Triangles.h"
 #include "gameData/WorldDescription.h"
 
@@ -100,11 +101,15 @@ namespace rttr { namespace mapGenerator {
         }
     };
 
-    class TextureMap : public NodeMapBase<TexturePair>, public TextureOperator
+    class TextureMap : public TextureOperator
     {
+    private:
+        NodeMapBase<TexturePair>& textures_;
+
     public:
-        TextureMap(const WorldDescription& worldDesc, DescIdx<LandscapeDesc> landscape)
-            : TextureOperator(worldDesc, landscape)
+        TextureMap(const WorldDescription& worldDesc, DescIdx<LandscapeDesc> landscape,
+                   NodeMapBase<TexturePair>& textures)
+            : TextureOperator(worldDesc, landscape), textures_(textures)
         {}
 
         template<class T_Predicate>
@@ -112,10 +117,10 @@ namespace rttr { namespace mapGenerator {
         {
             if(triangle.rsu)
             {
-                return TextureOperator::Check(nodes[GetIdx(triangle.position)].rsu, predicate);
+                return TextureOperator::Check(textures_[triangle.position].rsu, predicate);
             } else
             {
-                return TextureOperator::Check(nodes[GetIdx(triangle.position)].lsd, predicate);
+                return TextureOperator::Check(textures_[triangle.position].lsd, predicate);
             }
         }
 
@@ -123,14 +128,14 @@ namespace rttr { namespace mapGenerator {
         bool Any(const MapPoint& point, T_Predicate predicate) const
         {
             auto condition = [this, &predicate](auto triangle) { return this->Check(triangle, predicate); };
-            return helpers::contains_if(GetTriangles(point, this->GetSize()), condition);
+            return helpers::contains_if(GetTriangles(point, textures_.GetSize()), condition);
         }
 
         template<class T_Predicate>
         bool All(const MapPoint& point, T_Predicate predicate) const
         {
             auto condition = [this, &predicate](auto triangle) { return !this->Check(triangle, predicate); };
-            return !helpers::contains_if(GetTriangles(point, this->GetSize()), condition);
+            return !helpers::contains_if(GetTriangles(point, textures_.GetSize()), condition);
         }
 
         /**
@@ -162,8 +167,9 @@ namespace rttr { namespace mapGenerator {
     class Texturizer
     {
     private:
-        ValueMap<uint8_t>& z_;
-        TextureMap& textures_;
+        NodeMapBase<uint8_t>& z_;
+        NodeMapBase<TexturePair>& textures_;
+        TextureMap& textureMap_;
         unsigned seaLevel_;
 
         /**
@@ -198,9 +204,10 @@ namespace rttr { namespace mapGenerator {
         void ApplyMountainTransitions(const std::vector<MapPoint>& mountainFoot);
 
     public:
-        Texturizer(ValueMap<uint8_t>& z, TextureMap& textures) : z_(z), textures_(textures)
+        Texturizer(NodeMapBase<uint8_t>& z, NodeMapBase<TexturePair>& textures, TextureMap& textureMap)
+            : z_(z), textures_(textures), textureMap_(textureMap)
         {
-            seaLevel_ = z.GetRange().minimum;
+            seaLevel_ = GetRange(z).minimum;
         }
 
         /**
