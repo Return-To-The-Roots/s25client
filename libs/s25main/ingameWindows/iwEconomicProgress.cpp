@@ -91,8 +91,8 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
         for(unsigned j = 0; j < 1 + num_teams; j++)
         {
             const DrawPoint txtPos = btPos + DrawPoint(26 + 63 * j, 0);
-            static_cast<ctrlTextDeepening*>(AddTextDeepening(
-              300 + 10 * j + i, txtPos, Extent(63, btSize.y), TC_GREY, "?", NormalFont, textcolor[j < 2 ? j : 2]));
+            static_cast<ctrlTextDeepening*>(AddTextDeepening(300 + 10 * j + i, txtPos, Extent(63, btSize.y), TC_GREY,
+                                                             "?", NormalFont, textcolor[j < 2 ? j : 2]));
         }
     }
 

@@ -128,7 +128,7 @@ EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
     {
         event = nullptr;
     }
-    for(auto & type : types)
+    for(auto& type : types)
     {
         type = (GoodType)sgd.PopUnsignedChar();
     }
@@ -236,7 +236,7 @@ void EconomyModeHandler::UpdateAmounts()
     FindTeams();
 
     // Compute the amounts for the teams
-    for(unsigned int & maxTeamAmount : maxTeamAmounts)
+    for(unsigned int& maxTeamAmount : maxTeamAmounts)
     {
         maxTeamAmount = 0;
     }
@@ -264,7 +264,7 @@ void EconomyModeHandler::UpdateAmounts()
     }
     // Determine the leading teams for each good type and determine how many good type wins is the maximum.
     mostWins = 0;
-    for(auto & team : teams)
+    for(auto& team : teams)
     {
         team.teamWins = 0;
         for(unsigned int g = 0; g < numGoodTypesToCollect; g++)
@@ -309,7 +309,7 @@ void EconomyModeHandler::HandleEvent(const unsigned)
     // Determine mask of all players in teams with the most good type wins
     unsigned bestMask = 0;
     unsigned int numWinners = 0;
-    for(auto & team : teams)
+    for(auto& team : teams)
     {
         if(team.teamWins == mostWins)
         {
