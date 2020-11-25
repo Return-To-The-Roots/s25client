@@ -22,6 +22,8 @@
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
 #include <boost/optional.hpp>
+#include "addons/const_addons.h"
+#include "addons/AddonGameLength.h"
 
 Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
     : Game(settings, std::make_unique<EventManager>(startGF), players)
@@ -41,7 +43,14 @@ void Game::Start(bool startFromSave)
     if(startFromSave)
         CheckObjective();
     else
+    {
+        if (ggs_.objective == GO_ECONOMYMODE)
+        {
+            unsigned int selection = ggs_.getSelection(AddonId::GAME_LENGTH);
+            world_.econHandler = new EconomyModeHandler(AddonGameLengthList[selection] / 50); // 50 is the assumed game frame length
+        }
         StatisticStep();
+    }
     if(world_.HasLua())
         world_.GetLua().EventStart(!startFromSave);
 }

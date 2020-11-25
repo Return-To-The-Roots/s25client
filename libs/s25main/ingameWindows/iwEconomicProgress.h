@@ -17,32 +17,29 @@
 
 #pragma once
 
-enum GameSpeed
+#include "IngameWindow.h"
+#include "gameTypes/StatisticTypes.h"
+#include "../EconomyModeHandler.h"
+
+class ctrlText;
+class GameWorldViewer;
+
+/// Fenster für den Wirtschaftsmodus-Fortschritt
+class iwEconomicProgress : public IngameWindow
 {
-    GS_VERYSLOW = 0,
-    GS_SLOW,
-    GS_NORMAL,
-    GS_FAST,
-    GS_VERYFAST
-};
-enum GameObjective
-{
-    GO_NONE = 0,
-    GO_CONQUER3_4,
-    GO_TOTALDOMINATION,
-    GO_ECONOMYMODE
-};
-enum StartWares
-{
-    SWR_VLOW = 0,
-    SWR_LOW,
-    SWR_NORMAL,
-    SWR_ALOT
-};
-enum Exploration
-{
-    EXP_DISABLED = 0,
-    EXP_CLASSIC,
-    EXP_FOGOFWAR,
-    EXP_FOGOFWARE_EXPLORED
+public:
+    iwEconomicProgress(const GameWorldViewer& gwv);
+    ~iwEconomicProgress() override;
+
+private:
+    const GameWorldViewer& gwv;
+    ctrlText* headline;
+    ctrlText* elapsedTime;
+
+    std::vector<unsigned int> teamorder;
+
+    void Draw_() override;
+
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_PaintBefore() override;
 };

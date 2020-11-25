@@ -17,32 +17,16 @@
 
 #pragma once
 
-enum GameSpeed
+#include "AddonBool.h"
+
+/**
+ *  Addon disables all attacks
+ */
+class AddonPeaceful : public AddonBool
 {
-    GS_VERYSLOW = 0,
-    GS_SLOW,
-    GS_NORMAL,
-    GS_FAST,
-    GS_VERYFAST
-};
-enum GameObjective
-{
-    GO_NONE = 0,
-    GO_CONQUER3_4,
-    GO_TOTALDOMINATION,
-    GO_ECONOMYMODE
-};
-enum StartWares
-{
-    SWR_VLOW = 0,
-    SWR_LOW,
-    SWR_NORMAL,
-    SWR_ALOT
-};
-enum Exploration
-{
-    EXP_DISABLED = 0,
-    EXP_CLASSIC,
-    EXP_FOGOFWAR,
-    EXP_FOGOFWARE_EXPLORED
+public:
+    AddonPeaceful()
+        : AddonBool(AddonId::PEACEFUL, AddonGroup::GamePlay | AddonGroup::Military, _("Peaceful"),
+                    _("Nobody can attack anyone."))
+    {}
 };

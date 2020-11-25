@@ -17,32 +17,16 @@
 
 #pragma once
 
-enum GameSpeed
+#include "AddonBool.h"
+
+/**
+ *  Addon makes resource signs stay visible four times as long as normal
+ */
+class AddonDurableGeologistSigns : public AddonBool
 {
-    GS_VERYSLOW = 0,
-    GS_SLOW,
-    GS_NORMAL,
-    GS_FAST,
-    GS_VERYFAST
-};
-enum GameObjective
-{
-    GO_NONE = 0,
-    GO_CONQUER3_4,
-    GO_TOTALDOMINATION,
-    GO_ECONOMYMODE
-};
-enum StartWares
-{
-    SWR_VLOW = 0,
-    SWR_LOW,
-    SWR_NORMAL,
-    SWR_ALOT
-};
-enum Exploration
-{
-    EXP_DISABLED = 0,
-    EXP_CLASSIC,
-    EXP_FOGOFWAR,
-    EXP_FOGOFWARE_EXPLORED
+public:
+    AddonDurableGeologistSigns()
+        : AddonBool(AddonId::DURABLE_GEOLOGIST_SIGNS, AddonGroup::Economy, _("Durable Geologist Signs"),
+                    _("Resource signs set up by geologists stay visible for four times as long as normal."))
+    {}
 };

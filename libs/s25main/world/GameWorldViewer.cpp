@@ -111,6 +111,12 @@ Visibility GameWorldViewer::GetVisibility(const MapPoint pt) const
     if(GAMECLIENT.IsReplayModeOn() && GAMECLIENT.IsReplayFOWDisabled())
         return VIS_VISIBLE;
 
+    // Im Wirtschaftsmodus und Spiel vorbei? Dann auch alles sichtbar
+    if(GetWorld().econHandler && GetWorld().econHandler->globalVisibility())
+    {
+        return VIS_VISIBLE;
+    }
+
     // Spieler schon tot? Dann auch alles sichtbar?
     if(GetPlayer().IsDefeated())
         return VIS_VISIBLE;

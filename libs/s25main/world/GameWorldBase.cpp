@@ -42,7 +42,11 @@ GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSe
       gameSettings(gameSettings), em(em), gi(nullptr)
 {}
 
-GameWorldBase::~GameWorldBase() = default;
+GameWorldBase::~GameWorldBase()
+{
+    if(econHandler != nullptr)
+        delete econHandler;
+};
 
 void GameWorldBase::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {

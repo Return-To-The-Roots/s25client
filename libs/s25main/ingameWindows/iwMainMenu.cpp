@@ -34,6 +34,7 @@
 #include "iwOptionsWindow.h"
 #include "iwShip.h"
 #include "iwStatistics.h"
+#include "iwEconomicProgress.h"
 #include "iwTools.h"
 #include "iwTransport.h"
 #include "network/GameClient.h"
@@ -78,6 +79,13 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
     // Diplomatie (todo: besseres Bild suchen)
     AddImageButton(11, DrawPoint(68, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
+
+    if(gwv.GetWorld().econHandler)
+    {
+        // Wirtschaftsmodus
+        AddImageButton(12, DrawPoint(124, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 196),
+                       _("Economic Progress"));
+    }
 
 // AI-Debug
 #ifdef NDEBUG
@@ -162,6 +170,11 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
         case 11: // Diplomatie
         {
             WINDOWMANAGER.ToggleWindow(std::make_unique<iwDiplomacy>(gwv.GetViewer(), gcFactory));
+        }
+        break;
+        case 12: // Wirtschaftsmodusfortschritt
+        {
+            WINDOWMANAGER.ToggleWindow(std::make_unique<iwEconomicProgress>(gwv.GetViewer()));
         }
         break;
         case 13: // AI Debug

@@ -24,6 +24,7 @@
 #include "notifications/NotificationManager.h"
 #include "postSystem/PostManager.h"
 #include "world/World.h"
+#include "EconomyModeHandler.h"
 #include <memory>
 #include <vector>
 
@@ -67,6 +68,11 @@ class GameWorldBase : public World
     std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
+
+public:
+    EconomyModeHandler *econHandler = nullptr;
+
+private:
     std::unique_ptr<LuaInterfaceGame> lua;
 
 protected:

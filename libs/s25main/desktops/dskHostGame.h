@@ -89,6 +89,10 @@ private:
     void LC_Status_Error(const std::string& error) override;
     void LC_Chat(const std::string& player, const std::string& text) override;
 
+    /// Addon options check with regards to peaceful mode and economy mode
+    bool forceOptions = false;
+    bool checkOptions(); 
+
     void GoBack();
     bool IsSinglePlayer() { return serverType == ServerType::LOCAL; }
 

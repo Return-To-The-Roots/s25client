@@ -112,6 +112,10 @@ void GlobalGameSettings::registerAllAddons()
     registerAddon(std::make_unique<AddonFrontierDistanceReachable>());
     registerAddon(std::make_unique<AddonCoinsCapturedBld>());
     registerAddon(std::make_unique<AddonDemolishBldWORes>());
+
+    registerAddon(std::make_unique<AddonGameLength>());
+    registerAddon(std::make_unique<AddonPeaceful>());
+    registerAddon(std::make_unique<AddonDurableGeologistSigns>());
 }
 
 void GlobalGameSettings::resetAddons()

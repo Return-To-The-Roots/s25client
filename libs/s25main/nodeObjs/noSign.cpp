@@ -21,6 +21,9 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include <algorithm>
+#include "../world/GameWorldGame.h"
+#include "../GlobalGameSettings.h"
+#include "addons/const_addons.h"
 
 /**
  *  Konstruktor von @p noSign.
@@ -29,7 +32,9 @@
  *  @param[in] y        Y-Position
  *  @param[in] resource Typ der Ressource
  */
-noSign::noSign(const MapPoint pos, Resource resource) : noDisappearingEnvObject(pos, 8500, 500), resource(resource)
+noSign::noSign(const MapPoint pos, Resource resource)
+    : noDisappearingEnvObject(pos, 8500 * (1 + 3 * gwg->GetGGS().getSelection(AddonId::DURABLE_GEOLOGIST_SIGNS)), 500),
+      resource(resource)
 {
     // As this is only for drawing we set the type to nothing if the resource is depleted
     if(resource.getAmount() == 0u)
