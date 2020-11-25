@@ -37,7 +37,7 @@ GoodType types_less[]{
   /*  1 */ GD_TONGS,      // Zange
   /*  2 */ GD_HAMMER,     // Hammer
   /*  3 */ GD_AXE,        // Axt
-  /*  4 */ GD_SAW,        // Säge
+  /*  4 */ GD_SAW,        // Saege
   /*  5 */ GD_PICKAXE,    // Spitzhacke
   /*  6 */ GD_SHOVEL,     // Schaufel
   /*  7 */ GD_CRUCIBLE,   // Schmelztiegel
