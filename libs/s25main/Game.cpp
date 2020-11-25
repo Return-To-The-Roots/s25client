@@ -44,10 +44,11 @@ void Game::Start(bool startFromSave)
         CheckObjective();
     else
     {
-        if (ggs_.objective == GO_ECONOMYMODE)
+        if(ggs_.objective == GO_ECONOMYMODE)
         {
             unsigned int selection = ggs_.getSelection(AddonId::GAME_LENGTH);
-            world_.econHandler = new EconomyModeHandler(AddonGameLengthList[selection] / 50); // 50 is the assumed game frame length
+            world_.econHandler =
+              new EconomyModeHandler(AddonGameLengthList[selection] / 50); // 50 is the assumed game frame length
         }
         StatisticStep();
     }

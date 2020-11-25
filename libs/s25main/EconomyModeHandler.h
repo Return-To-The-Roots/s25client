@@ -59,7 +59,7 @@ public:
 
     EconomyModeHandler(SerializedGameData& sgd, unsigned objId);
 
-    /// Zerstören
+    /// Destroy
     void Destroy() override;
 
     void Serialize(SerializedGameData& sgd) const override;
