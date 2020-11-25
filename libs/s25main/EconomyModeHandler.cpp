@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
-
 #include "EconomyModeHandler.h"
 
 #include "EventManager.h"
@@ -130,9 +128,9 @@ EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
     {
         event = nullptr;
     }
-    for(unsigned i = 0; i < numGoodTypesToCollect; i++)
+    for(auto & type : types)
     {
-        types[i] = (GoodType)sgd.PopUnsignedChar();
+        type = (GoodType)sgd.PopUnsignedChar();
     }
 }
 
@@ -146,9 +144,9 @@ void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
     {
         sgd.PushEvent(event);
     }
-    for(unsigned i = 0; i < numGoodTypesToCollect; i++)
+    for(auto type : types)
     {
-        sgd.PushUnsignedChar(types[i]);
+        sgd.PushUnsignedChar(type);
     }
 }
 
@@ -156,7 +154,7 @@ void EconomyModeHandler::FindTeams()
 {
     // If we already determined who is in a team with whom skip this. For the economy mode we only count teams at game
     // start
-    if(teams.size() > 0)
+    if(!teams.empty())
         return;
     for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
     {
@@ -206,7 +204,7 @@ unsigned int EconomyModeHandler::SumGood(GoodType good, const Inventory& Invento
     // Add the weapons and beer used by soldiers to the good totals
     if(good == GD_BEER || good == GD_SWORD || good == GD_SHIELDROMANS)
     {
-        for(auto& it : SOLDIER_JOBS)
+        for(const auto& it : SOLDIER_JOBS)
         {
             retVal += Inventory.people[it];
         }
@@ -238,9 +236,9 @@ void EconomyModeHandler::UpdateAmounts()
     FindTeams();
 
     // Compute the amounts for the teams
-    for(unsigned int g = 0; g < numGoodTypesToCollect; g++)
+    for(unsigned int & maxTeamAmount : maxTeamAmounts)
     {
-        maxTeamAmounts[g] = 0;
+        maxTeamAmount = 0;
     }
 
     for(unsigned t = 0; t < teams.size(); ++t)
@@ -266,17 +264,17 @@ void EconomyModeHandler::UpdateAmounts()
     }
     // Determine the leading teams for each good type and determine how many good type wins is the maximum.
     mostWins = 0;
-    for(unsigned t = 0; t < teams.size(); ++t)
+    for(auto & team : teams)
     {
-        teams[t].teamWins = 0;
+        team.teamWins = 0;
         for(unsigned int g = 0; g < numGoodTypesToCollect; g++)
         {
-            if(teams[t].teamAmounts[g] >= maxTeamAmounts[g])
+            if(team.teamAmounts[g] >= maxTeamAmounts[g])
             {
-                teams[t].teamWins++;
-                if(teams[t].teamWins > mostWins)
+                team.teamWins++;
+                if(team.teamWins > mostWins)
                 {
-                    mostWins = teams[t].teamWins;
+                    mostWins = team.teamWins;
                 }
             }
         }
@@ -296,7 +294,7 @@ bool EconomyModeHandler::isOver() const
     return gwg->GetGGS().objective == GO_ECONOMYMODE && end_frame < GetEvMgr().GetCurrentGF();
 }
 
-void EconomyModeHandler::HandleEvent(const unsigned id)
+void EconomyModeHandler::HandleEvent(const unsigned)
 {
     if(isOver())
     {
@@ -311,12 +309,12 @@ void EconomyModeHandler::HandleEvent(const unsigned id)
     // Determine mask of all players in teams with the most good type wins
     unsigned bestMask = 0;
     unsigned int numWinners = 0;
-    for(unsigned t = 0; t < teams.size(); ++t)
+    for(auto & team : teams)
     {
-        if(teams[t].teamWins == mostWins)
+        if(team.teamWins == mostWins)
         {
-            bestMask = bestMask | teams[t].mask;
-            numWinners += teams[t].num_players_in_team;
+            bestMask = bestMask | team.mask;
+            numWinners += team.num_players_in_team;
         }
     }
 

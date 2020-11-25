@@ -46,8 +46,6 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
 
     EconomyModeHandler* eH = world.econHandler;
 
-    const GamePlayer& curPlayer = gwv.GetPlayer();
-
     headline =
       AddText(1, DrawPoint(11 + 27, 46), _("Player"), COLOR_GREEN, FontStyle::LEFT | FontStyle::BOTTOM, NormalFont);
 
@@ -93,7 +91,7 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
         for(unsigned j = 0; j < 1 + num_teams; j++)
         {
             const DrawPoint txtPos = btPos + DrawPoint(26 + 63 * j, 0);
-            auto* txt = static_cast<ctrlTextDeepening*>(AddTextDeepening(
+            static_cast<ctrlTextDeepening*>(AddTextDeepening(
               300 + 10 * j + i, txtPos, Extent(63, btSize.y), TC_GREY, "?", NormalFont, textcolor[j < 2 ? j : 2]));
         }
     }

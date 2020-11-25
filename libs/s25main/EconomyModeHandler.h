@@ -23,11 +23,11 @@ public:
         unsigned num_players_in_team;
         unsigned teamWins;
 
-        econTeam(unsigned mask, unsigned num_players_in_team) : mask(mask), num_players_in_team(num_players_in_team)
+        econTeam(unsigned mask, unsigned num_players_in_team) noexcept : mask(mask), num_players_in_team(num_players_in_team)
         {
-            for(unsigned int i = 0; i < numGoodTypesToCollect; i++)
+            for(unsigned int & teamAmount : teamAmounts)
             {
-                teamAmounts[i] = 0;
+                teamAmount = 0;
             }
             teamWins = 0;
         }
@@ -78,7 +78,7 @@ public:
     unsigned int GetAmount(unsigned int i, unsigned int player) { return amounts[i][player]; }
     unsigned int GetMaxTeamAmount(unsigned int i) { return maxTeamAmounts[i]; }
 
-    unsigned GetEndFrame() { return end_frame; }
+    unsigned GetEndFrame() const { return end_frame; } 
 
     // Check if the game has ended, so everything should be visible
     bool globalVisibility();

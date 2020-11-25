@@ -46,7 +46,7 @@ GameWorldBase::~GameWorldBase()
 {
     if(econHandler != nullptr)
         delete econHandler;
-};
+}
 
 void GameWorldBase::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
