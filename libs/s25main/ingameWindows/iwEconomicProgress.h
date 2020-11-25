@@ -24,7 +24,7 @@
 class ctrlText;
 class GameWorldViewer;
 
-/// Fenster für den Wirtschaftsmodus-Fortschritt
+/// Fenster fuer den Wirtschaftsmodus-Fortschritt
 class iwEconomicProgress : public IngameWindow
 {
 public:

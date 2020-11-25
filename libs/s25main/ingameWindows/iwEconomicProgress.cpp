@@ -72,7 +72,7 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
             teamorder.push_back(i);
         }
     }
-    // Eventuell Fenster vergrößern
+    // Eventuell Fenster vergroessern
     if(num_teams > 2)
     {
         Extent size = this->GetSize();
