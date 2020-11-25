@@ -232,7 +232,7 @@ void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
     writeEm->Serialize(*this);
     if(game->ggs_.objective == GO_ECONOMYMODE)
     {
-        PushObject(gw.econHandler,true);
+        PushObject(gw.econHandler, true);
     }
     // Spieler serialisieren
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)

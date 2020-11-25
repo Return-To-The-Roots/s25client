@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "EconomyModeHandler.h"
 #include "buildings/nobBaseMilitary.h"
 #include "enum_cast.hpp"
 #include "helpers/OptionalEnum.h"
@@ -24,7 +25,6 @@
 #include "notifications/NotificationManager.h"
 #include "postSystem/PostManager.h"
 #include "world/World.h"
-#include "EconomyModeHandler.h"
 #include <memory>
 #include <vector>
 
@@ -70,7 +70,7 @@ class GameWorldBase : public World
     EventManager& em;
 
 public:
-    EconomyModeHandler *econHandler = nullptr;
+    EconomyModeHandler* econHandler = nullptr;
 
 private:
     std::unique_ptr<LuaInterfaceGame> lua;

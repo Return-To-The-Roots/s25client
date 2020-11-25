@@ -19,17 +19,19 @@
 
 #include "EconomyModeHandler.h"
 
-#include "SerializedGameData.h"
 #include "EventManager.h"
+#include "GameInterface.h"
+#include "GamePlayer.h"
+#include "GlobalGameSettings.h"
+#include "SerializedGameData.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldGame.h"
-#include "GameInterface.h"
-#include "GamePlayer.h"
-#include <boost/optional.hpp>
-#include "gameData/JobConsts.h"
 #include "gameTypes/JobTypes.h"
-#include "GlobalGameSettings.h"
+#include "gameData/JobConsts.h"
+#include <boost/optional.hpp>
+
+auto getPlayerMask = [](unsigned playerId) { return 1u << playerId; };
 
 GoodType types_less[]{
   /*  1 */ GD_TONGS,      // Zange
@@ -47,8 +49,8 @@ GoodType types_less[]{
 };
 
 GoodType types_more[]{
-  /*  0 */ GD_BEER, // Bier
-  /* 11 */ GD_WATER, // Wasser
+  /*  0 */ GD_BEER,    // Bier
+  /* 11 */ GD_WATER,   // Wasser
   /* 15 */ GD_BOAT,    // Boot
   /* 16 */ GD_SWORD,   // Schwert
   /* 17 */ GD_IRON,    // Eisen
@@ -72,10 +74,10 @@ EconomyModeHandler::EconomyModeHandler(unsigned end_frame) : end_frame(end_frame
     constexpr unsigned num_types_less = sizeof(types_less) / sizeof(types_less[0]);
     constexpr unsigned num_types_more = sizeof(types_more) / sizeof(types_more[0]);
 
-    //Randomly determine *numGoodTypesToCollect* many good types, one of which is a tool
+    // Randomly determine *numGoodTypesToCollect* many good types, one of which is a tool
     unsigned int types_found = 0;
 
-    while(types_found < numGoodTypesToCollect-1)
+    while(types_found < numGoodTypesToCollect - 1)
     {
         GoodType next_type = types_more[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), num_types_more)];
         unsigned i = 0;
@@ -100,7 +102,7 @@ EconomyModeHandler::EconomyModeHandler(unsigned end_frame) : end_frame(end_frame
     else
         event = nullptr;
 
-    //Send Mission Goal
+    // Send Mission Goal
     for(unsigned p = 0; p < gwg->GetNumPlayers(); ++p)
     {
         std::string goaltext = _("Economy Mode: Collect as much as you can of the following good types: ");
@@ -111,8 +113,8 @@ EconomyModeHandler::EconomyModeHandler(unsigned end_frame) : end_frame(end_frame
             goaltext += _(WARE_NAMES[types[i]]);
         }
         goaltext += ". ";
-        goaltext +=
-          _("Tools in the hands of workers are also counted. So are weapons, and beer, that soldiers have in use. For an updating tally of the collected goods see the economic progress window.");
+        goaltext += _("Tools in the hands of workers are also counted. So are weapons, and beer, that soldiers have in "
+                      "use. For an updating tally of the collected goods see the economic progress window.");
 
         gwg->GetPostMgr().SetMissionGoal(p, goaltext);
     }
@@ -124,8 +126,7 @@ EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
     if(!isOver())
     {
         event = sgd.PopEvent();
-    }
-    else
+    } else
     {
         event = nullptr;
     }
@@ -151,10 +152,10 @@ void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
     }
 }
 
-
 void EconomyModeHandler::FindTeams()
 {
-    //If we already determined who is in a team with whom skip this. For the economy mode we only count teams at game start
+    // If we already determined who is in a team with whom skip this. For the economy mode we only count teams at game
+    // start
     if(teams.size() > 0)
         return;
     for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
@@ -194,15 +195,18 @@ unsigned int EconomyModeHandler::SumGood(GoodType good, const Inventory& Invento
     unsigned int retVal = Inventory.goods[good];
 
     // Add the tools used by workers to the good totals
-    for(unsigned int j = 0; j < NUM_JOB_TYPES; j++) {
+    for(unsigned int j = 0; j < NUM_JOB_TYPES; j++)
+    {
         boost::optional<GoodType> tool = JOB_CONSTS[(Job)j].tool;
-        if (tool && tool == good) {
+        if(tool && tool == good)
+        {
             retVal += Inventory.people[j];
         }
     }
     // Add the weapons and beer used by soldiers to the good totals
-    if (good == GD_BEER || good == GD_SWORD || good == GD_SHIELDROMANS) {
-        for(auto & it : SOLDIER_JOBS)
+    if(good == GD_BEER || good == GD_SWORD || good == GD_SHIELDROMANS)
+    {
+        for(auto& it : SOLDIER_JOBS)
         {
             retVal += Inventory.people[it];
         }
@@ -230,10 +234,10 @@ void EconomyModeHandler::UpdateAmounts()
         }
     }
 
-     // Compute Teams
+    // Compute Teams
     FindTeams();
 
-    //Compute the amounts for the teams
+    // Compute the amounts for the teams
     for(unsigned int g = 0; g < numGoodTypesToCollect; g++)
     {
         maxTeamAmounts[g] = 0;
@@ -273,7 +277,7 @@ void EconomyModeHandler::UpdateAmounts()
                 if(teams[t].teamWins > mostWins)
                 {
                     mostWins = teams[t].teamWins;
-                }              
+                }
             }
         }
     }
@@ -292,7 +296,7 @@ bool EconomyModeHandler::isOver() const
     return gwg->GetGGS().objective == GO_ECONOMYMODE && end_frame < GetEvMgr().GetCurrentGF();
 }
 
- void EconomyModeHandler::HandleEvent(const unsigned id)
+void EconomyModeHandler::HandleEvent(const unsigned id)
 {
     if(isOver())
     {
@@ -304,8 +308,7 @@ bool EconomyModeHandler::isOver() const
     // Update one last time
     UpdateAmounts();
 
-
-    //Determine mask of all players in teams with the most good type wins
+    // Determine mask of all players in teams with the most good type wins
     unsigned bestMask = 0;
     unsigned int numWinners = 0;
     for(unsigned t = 0; t < teams.size(); ++t)
@@ -329,10 +332,15 @@ bool EconomyModeHandler::isOver() const
             }
         }
 
-    //Call function to recalculcate visibilities
+    // Call function to recalculcate visibilities
     for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
     {
         gwg->GetGameInterface()->GI_TreatyOfAllianceChanged(i); // TODO: Is this abuse? Should we rename that function?
     }
     event = nullptr;
+}
+
+bool EconomyModeHandler::econTeam::inTeam(unsigned int playerId) const
+{
+    return mask & getPlayerMask(playerId);
 }

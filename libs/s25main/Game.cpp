@@ -19,11 +19,11 @@
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
+#include "addons/AddonGameLength.h"
+#include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
 #include <boost/optional.hpp>
-#include "addons/const_addons.h"
-#include "addons/AddonGameLength.h"
 
 Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
     : Game(settings, std::make_unique<EventManager>(startGF), players)

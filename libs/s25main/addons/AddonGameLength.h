@@ -23,27 +23,17 @@
 /**
  *  Addon allows users to adjust the game length (for Economy Mode)
  */
-const unsigned int AddonGameLengthList[] = {0,           15 * 60000,  30 * 60000,  60 * 60000, 90 * 60000, 120 * 60000, 150 * 60000, 180 * 60000,
-  240 * 60000, 480 * 60000}; // length in ms
+const unsigned int AddonGameLengthList[] = {0,           15 * 60000,  30 * 60000,  60 * 60000, 90 * 60000, 120 * 60000,
+                                            150 * 60000, 180 * 60000, 240 * 60000, 480 * 60000}; // length in ms
 
-class AddonGameLength: public AddonList
+class AddonGameLength : public AddonList
 {
 public:
     AddonGameLength()
-        : AddonList(
-          AddonId::GAME_LENGTH, AddonGroup::Economy | AddonGroup::GamePlay, _("Game Length (Economy Mode)"),
-                    _("Adjust the time after which the economy mode victory condition is checked. Reference times are on fast speed."),
-                    {
-                      _("unlimited"),
-                      _("~15min"),
-                      _("~30min"),
-                      _("~60min"),
-                      _("~90min"),
-                      _("~120min"),
-                      _("~150min"),
-                      _("~180min"),
-                      _("~240min"),
-                      _("~480min")
-                    })
+        : AddonList(AddonId::GAME_LENGTH, AddonGroup::Economy | AddonGroup::GamePlay, _("Game Length (Economy Mode)"),
+                    _("Adjust the time after which the economy mode victory condition is checked. Reference times are "
+                      "on fast speed."),
+                    {_("unlimited"), _("~15min"), _("~30min"), _("~60min"), _("~90min"), _("~120min"), _("~150min"),
+                     _("~180min"), _("~240min"), _("~480min")})
     {}
 };

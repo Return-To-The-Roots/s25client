@@ -389,7 +389,8 @@ void iwAction::DoUpgradeRoad()
 /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
 void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_count)
 {
-    // Verfügbare Soldatenzahl steht in params, wenns keine gibt, einfach Meldung anzeigen: "Angriff nicht möglich!" (Genauso im Peaceful Mode)
+    // Verfügbare Soldatenzahl steht in params, wenns keine gibt, einfach Meldung anzeigen: "Angriff nicht möglich!"
+    // (Genauso im Peaceful Mode)
     if(attackers_count == 0 || gwv.GetWorld().GetGGS().getSelection(AddonId::PEACEFUL))
     {
         // Angriff nicht  möglich!

@@ -1,16 +1,14 @@
 #pragma once
 #include "GameObject.h"
 #include "gameTypes/GoodTypes.h"
-#include "gameTypes/JobTypes.h"
 #include "gameTypes/Inventory.h"
+#include "gameTypes/JobTypes.h"
 #include "gameData/MaxPlayers.h"
 
 #include <vector>
 
 class SerializedGameData;
 class GameEvent;
-
-auto getPlayerMask = [](unsigned playerId) { return 1u << playerId; };
 
 // Handler object to keep track of the economy mode progress and for the game end event
 class EconomyModeHandler : public GameObject
@@ -27,22 +25,25 @@ public:
 
         econTeam(unsigned mask, unsigned num_players_in_team) : mask(mask), num_players_in_team(num_players_in_team)
         {
-            for (unsigned int i = 0; i < numGoodTypesToCollect; i++) {
+            for(unsigned int i = 0; i < numGoodTypesToCollect; i++)
+            {
                 teamAmounts[i] = 0;
             }
             teamWins = 0;
         }
+
+        bool inTeam(unsigned int playerId) const;
     };
 
 private:
-    ///Frame in which the game is going to end
+    /// Frame in which the game is going to end
     unsigned end_frame;
     /// End game Event
     const GameEvent* event;
     /// Good types to collect
     GoodType types[numGoodTypesToCollect];
 
-    //Data for economy mode progress tracking
+    // Data for economy mode progress tracking
     std::vector<econTeam> teams;
     unsigned maxTeamAmounts[numGoodTypesToCollect] = {0};
     unsigned int mostWins = 0;
@@ -54,7 +55,6 @@ private:
     void FindTeams();
 
 public:
-
     EconomyModeHandler(unsigned end_frame);
 
     EconomyModeHandler(SerializedGameData& sgd, unsigned objId);
@@ -73,7 +73,7 @@ public:
         return teams;
     }
 
-    //Methods to update the ware trackers
+    // Methods to update the ware trackers
     void UpdateAmounts();
     unsigned int GetAmount(unsigned int i, unsigned int player) { return amounts[i][player]; }
     unsigned int GetMaxTeamAmount(unsigned int i) { return maxTeamAmounts[i]; }
@@ -83,11 +83,10 @@ public:
     // Check if the game has ended, so everything should be visible
     bool globalVisibility();
 
-    //Return the good types to collect
+    // Return the good types to collect
     GoodType* GetTypes() { return types; }
 
     GO_Type GetGOT() const override { return GOT_ECONOMYMODEHANDLER; }
 
     bool isOver() const;
-    
 };

@@ -722,7 +722,8 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
                            const bool strong_soldiers)
 {
     auto* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
-    if(!attacked_building || !attacked_building->IsAttackable(player_attacker) || (GetGGS().getSelection(AddonId::PEACEFUL)))
+    if(!attacked_building || !attacked_building->IsAttackable(player_attacker)
+       || (GetGGS().getSelection(AddonId::PEACEFUL)))
         return;
 
     // Militärgebäude in der Nähe finden

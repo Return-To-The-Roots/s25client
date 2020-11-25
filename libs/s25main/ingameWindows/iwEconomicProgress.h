@@ -17,9 +17,9 @@
 
 #pragma once
 
+#include "../EconomyModeHandler.h"
 #include "IngameWindow.h"
 #include "gameTypes/StatisticTypes.h"
-#include "../EconomyModeHandler.h"
 
 class ctrlText;
 class GameWorldViewer;

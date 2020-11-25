@@ -91,7 +91,7 @@ private:
 
     /// Addon options check with regards to peaceful mode and economy mode
     bool forceOptions = false;
-    bool checkOptions(); 
+    bool checkOptions();
 
     void GoBack();
     bool IsSinglePlayer() { return serverType == ServerType::LOCAL; }
