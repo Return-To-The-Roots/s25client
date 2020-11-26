@@ -161,9 +161,9 @@ void EconomyModeHandler::FindTeams()
         if(gwg->GetPlayer(i).isUsed())
         {
             bool found_team = false;
-            for(unsigned t = 0; t < teams.size(); ++t)
+            for(const auto& team : teams)
             {
-                if(teams[t].mask & getPlayerMask(i))
+                if(team.inTeam(i))
                 {
                     found_team = true;
                     break;
@@ -241,22 +241,22 @@ void EconomyModeHandler::UpdateAmounts()
         maxTeamAmount = 0;
     }
 
-    for(unsigned t = 0; t < teams.size(); ++t)
+    for(auto& team : teams)
     {
         for(unsigned int g = 0; g < numGoodTypesToCollect; g++)
         {
-            teams[t].teamAmounts[g] = 0;
+            team.teamAmounts[g] = 0;
         }
         for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
         {
-            if(teams[t].mask & getPlayerMask(i))
+            if(team.mask & getPlayerMask(i))
             {
                 for(unsigned int g = 0; g < numGoodTypesToCollect; g++)
                 {
-                    teams[t].teamAmounts[g] += GetAmount(g, i);
-                    if(teams[t].teamAmounts[g] > maxTeamAmounts[g])
+                    team.teamAmounts[g] += GetAmount(g, i);
+                    if(team.teamAmounts[g] > maxTeamAmounts[g])
                     {
-                        maxTeamAmounts[g] = teams[t].teamAmounts[g];
+                        maxTeamAmounts[g] = team.teamAmounts[g];
                     }
                 }
             }
@@ -281,17 +281,6 @@ void EconomyModeHandler::UpdateAmounts()
     }
 
     last_updated = GetEvMgr().GetCurrentGF();
-}
-
-bool EconomyModeHandler::globalVisibility()
-{
-    return gwg->GetGGS().objective == GO_ECONOMYMODE && gwg->GetEvMgr().GetCurrentGF() >= end_frame
-           && GetEndFrame() > 0;
-}
-
-bool EconomyModeHandler::isOver() const
-{
-    return gwg->GetGGS().objective == GO_ECONOMYMODE && end_frame < GetEvMgr().GetCurrentGF();
 }
 
 void EconomyModeHandler::HandleEvent(const unsigned)
@@ -336,6 +325,17 @@ void EconomyModeHandler::HandleEvent(const unsigned)
         gwg->GetGameInterface()->GI_TreatyOfAllianceChanged(i); // TODO: Is this abuse? Should we rename that function?
     }
     event = nullptr;
+}
+
+bool EconomyModeHandler::globalVisibility() const
+{
+    return gwg->GetGGS().objective == GO_ECONOMYMODE && gwg->GetEvMgr().GetCurrentGF() >= end_frame
+           && GetEndFrame() > 0;
+}
+
+bool EconomyModeHandler::isOver() const
+{
+    return gwg->GetGGS().objective == GO_ECONOMYMODE && end_frame < GetEvMgr().GetCurrentGF();
 }
 
 bool EconomyModeHandler::econTeam::inTeam(unsigned int playerId) const

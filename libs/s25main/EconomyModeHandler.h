@@ -82,7 +82,7 @@ public:
     unsigned GetEndFrame() const { return end_frame; }
 
     // Check if the game has ended, so everything should be visible
-    bool globalVisibility();
+    bool globalVisibility() const;
 
     // Return the good types to collect
     GoodType* GetTypes() { return types; }

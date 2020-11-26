@@ -53,7 +53,7 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
     unsigned int num_teams = teams.size();
 
     // Teamreihenfolge bestimmen (eigenes Team zuerst)
-    unsigned int mainTeam;
+    unsigned int mainTeam = 0;
     for(unsigned int i = 0; i < teams.size(); i++)
     {
         if(teams[i].inTeam(gwv.GetPlayer().GetPlayerId()))
@@ -91,8 +91,8 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
         for(unsigned j = 0; j < 1 + num_teams; j++)
         {
             const DrawPoint txtPos = btPos + DrawPoint(26 + 63 * j, 0);
-            static_cast<ctrlTextDeepening*>(AddTextDeepening(300 + 10 * j + i, txtPos, Extent(63, btSize.y), TC_GREY,
-                                                             "?", NormalFont, textcolor[j < 2 ? j : 2]));
+            AddTextDeepening(300 + 10 * j + i, txtPos, Extent(63, btSize.y), TC_GREY, "?", NormalFont,
+                             textcolor[j < 2 ? j : 2]);
         }
     }
 
