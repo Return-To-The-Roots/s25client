@@ -113,7 +113,7 @@ void GlobalGameSettings::registerAllAddons()
     registerAddon(std::make_unique<AddonCoinsCapturedBld>());
     registerAddon(std::make_unique<AddonDemolishBldWORes>());
 
-    registerAddon(std::make_unique<AddonPeaceful>());
+    registerAddon(std::make_unique<AddonPeacefulMode>());
     registerAddon(std::make_unique<AddonDurableGeologistSigns>());
 }
 
