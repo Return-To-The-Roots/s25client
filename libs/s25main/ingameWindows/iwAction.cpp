@@ -390,7 +390,8 @@ void iwAction::DoUpgradeRoad()
 void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_count)
 {
     // Verfügbare Soldatenzahl steht in params, wenns keine gibt, einfach Meldung anzeigen: "Angriff nicht möglich!"
-    if(attackers_count == 0)
+    // (Genauso im Peaceful Mode)
+    if(attackers_count == 0 || gwv.GetWorld().GetGGS().getSelection(AddonId::PEACEFUL))
     {
         // Angriff nicht  möglich!
         group->AddText(1, DrawPoint(90, 56), _("Attack not possible."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
@@ -503,7 +504,7 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
                 break;
                 case TAB_ATTACK:
                 {
-                    if(available_soldiers_count > 0)
+                    if(available_soldiers_count > 0 && !gwv.GetWorld().GetGGS().getSelection(AddonId::PEACEFUL))
                         height = 178;
                     else
                         height = 130;
@@ -511,7 +512,7 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
                 break;
                 case TAB_SEAATTACK:
                 {
-                    if(available_soldiers_count_sea > 0)
+                    if(available_soldiers_count_sea > 0 && !gwv.GetWorld().GetGGS().getSelection(AddonId::PEACEFUL))
                         height = 178;
                     else
                         height = 130;
@@ -545,7 +546,8 @@ void iwAction::Msg_PaintAfter()
     {
         static boost::format fmt("%u/%u");
         // Anzeige Soldaten/mögliche Soldatenanzahl bei Angriffstab
-        if(tab->GetCurrentTab() == TAB_ATTACK && available_soldiers_count > 0)
+        if(tab->GetCurrentTab() == TAB_ATTACK && available_soldiers_count > 0
+           && !gwv.GetWorld().GetGGS().getSelection(AddonId::PEACEFUL))
         {
             fmt % selected_soldiers_count % available_soldiers_count;
             LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), fmt.str(), FontStyle::CENTER, COLOR_YELLOW);

@@ -67,3 +67,6 @@
 #include "addons/AddonCoinsCapturedBld.h"
 #include "addons/AddonDemolishBldWORes.h"
 #include "addons/AddonFrontierDistanceReachable.h"
+
+#include "addons/AddonDurableGeologistSigns.h"
+#include "addons/AddonPeaceful.h"
