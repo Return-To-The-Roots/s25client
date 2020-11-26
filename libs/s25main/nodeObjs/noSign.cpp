@@ -16,8 +16,12 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "noSign.h"
+#include "../GlobalGameSettings.h"
+#include "../world/GameWorldGame.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "addons/AddonDurableGeologistSigns.h"
+#include "addons/const_addons.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include <algorithm>
@@ -29,7 +33,10 @@
  *  @param[in] y        Y-Position
  *  @param[in] resource Typ der Ressource
  */
-noSign::noSign(const MapPoint pos, Resource resource) : noDisappearingEnvObject(pos, 8500, 500), resource(resource)
+noSign::noSign(const MapPoint pos, Resource resource)
+    : noDisappearingEnvObject(
+      pos, 8500 * (signDurabilityFactor[gwg->GetGGS().getSelection(AddonId::DURABLE_GEOLOGIST_SIGNS)]), 500),
+      resource(resource)
 {
     // As this is only for drawing we set the type to nothing if the resource is depleted
     if(resource.getAmount() == 0u)
