@@ -167,6 +167,7 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
         case GOT_SHIP: return new noShip(*this, obj_id);
         case GOT_SHIPBUILDINGSITE: return new noShipBuildingSite(*this, obj_id);
         case GOT_CHARBURNERPILE: return new noCharburnerPile(*this, obj_id);
+        case GOT_ECONOMYMODEHANDLER: return new EconomyModeHandler(*this, obj_id);
         case GOT_NOTHING:
         case GOT_UNKNOWN: RTTR_Assert(false); break;
     }
@@ -229,6 +230,10 @@ void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
     gw.Serialize(*this);
     // EventManager
     writeEm->Serialize(*this);
+    if(game->ggs_.objective == GO_ECONOMYMODE)
+    {
+        PushObject(gw.econHandler, true);
+    }
     // Spieler serialisieren
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
     {
@@ -264,6 +269,11 @@ void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game, ILocalG
 
     gw.Deserialize(game, localGameState, *this);
     em->Deserialize(*this);
+    if(game->ggs_.objective == GO_ECONOMYMODE)
+    {
+        gw.econHandler = PopObject<EconomyModeHandler>(GOT_ECONOMYMODEHANDLER);
+    }
+
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
         gw.GetPlayer(i).Deserialize(*this);
 

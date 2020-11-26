@@ -19,6 +19,8 @@
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
+#include "addons/AddonGameLength.h"
+#include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
 #include <boost/optional.hpp>
@@ -41,7 +43,15 @@ void Game::Start(bool startFromSave)
     if(startFromSave)
         CheckObjective();
     else
+    {
+        if(ggs_.objective == GO_ECONOMYMODE)
+        {
+            unsigned int selection = ggs_.getSelection(AddonId::GAME_LENGTH);
+            world_.econHandler =
+              new EconomyModeHandler(AddonGameLengthList[selection] / 50); // 50 is the assumed game frame length
+        }
         StatisticStep();
+    }
     if(world_.HasLua())
         world_.GetLua().EventStart(!startFromSave);
 }
