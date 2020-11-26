@@ -18,7 +18,9 @@
 #include "nobBaseMilitary.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
+#include "addons/const_addons.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
@@ -343,6 +345,10 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
 
 bool nobBaseMilitary::IsAttackable(unsigned playerIdx) const
 {
+    // If we are in peaceful mode -> not attackable
+    if(gwg->GetGGS().getSelection(AddonId::PEACEFULMODE))
+        return false;
+
     // If we cannot be seen by the player -> not attackable
     if(gwg->CalcVisiblityWithAllies(pos, playerIdx) != VIS_VISIBLE)
         return false;

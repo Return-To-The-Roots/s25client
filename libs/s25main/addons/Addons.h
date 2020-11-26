@@ -69,4 +69,4 @@
 #include "addons/AddonFrontierDistanceReachable.h"
 
 #include "addons/AddonDurableGeologistSigns.h"
-#include "addons/AddonPeaceful.h"
+#include "addons/AddonPeacefulMode.h"

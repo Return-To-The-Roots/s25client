@@ -18,6 +18,7 @@
 #pragma once
 
 #include "AddonList.h"
+#include <boost/format.hpp>
 
 const std::array<unsigned, 4> SUPPRESS_UNUSED signDurabilityFactor = {{1, 2, 4, 10}};
 
@@ -31,10 +32,10 @@ public:
         : AddonList(AddonId::DURABLE_GEOLOGIST_SIGNS, AddonGroup::Economy, _("Geologist sign durability"),
                     _("Increase the durability of geologist signs by a factor."),
                     {
-                      std::to_string(signDurabilityFactor[0]) + "x",
-                      std::to_string(signDurabilityFactor[1]) + "x",
-                      std::to_string(signDurabilityFactor[2]) + "x",
-                      std::to_string(signDurabilityFactor[3]) + "x",
+                      _("Default"),
+                      (boost::format(_("%1%x")) % signDurabilityFactor[1]).str(),
+                      (boost::format(_("%1%x")) % signDurabilityFactor[2]).str(),
+                      (boost::format(_("%1%x")) % signDurabilityFactor[3]).str(),
                     },
                     0)
     {}

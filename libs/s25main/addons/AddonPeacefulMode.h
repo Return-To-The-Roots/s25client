@@ -22,11 +22,11 @@
 /**
  *  Addon disables all attacks
  */
-class AddonPeaceful : public AddonBool
+class AddonPeacefulMode : public AddonBool
 {
 public:
-    AddonPeaceful()
-        : AddonBool(AddonId::PEACEFUL, AddonGroup::GamePlay | AddonGroup::Military, _("Peaceful"),
+    AddonPeacefulMode()
+        : AddonBool(AddonId::PEACEFULMODE, AddonGroup::GamePlay | AddonGroup::Military, _("Peaceful"),
                     _("Nobody can attack anyone."))
     {}
 };
