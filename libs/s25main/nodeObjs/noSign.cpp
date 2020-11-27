@@ -16,14 +16,14 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "noSign.h"
-#include "../GlobalGameSettings.h"
-#include "../world/GameWorldGame.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "addons/AddonDurableGeologistSigns.h"
 #include "addons/const_addons.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
 #include <algorithm>
 
 /**

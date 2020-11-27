@@ -282,6 +282,17 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, NumSoldierTestFixture)
     // Counterpart: 2 possible for far bld
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1Far->GetPos()), 2u);
 
+    // Test in peaceful mode -- no attacks should be possible
+    this->ggs.setSelection(AddonId::PEACEFULMODE, 1);
+    SetCurPlayer(1);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[0]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[2]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld0->GetPos()), 0u);
+    SetCurPlayer(0);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[1]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[2]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1Near->GetPos()), 0u);
+
     // Functions related to stationed soldiers
     BOOST_REQUIRE(milBld0->HasMaxRankSoldier());
     BOOST_REQUIRE(milBld1Near->HasMaxRankSoldier());
