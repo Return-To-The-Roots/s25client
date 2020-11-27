@@ -263,6 +263,29 @@ BOOST_FIXTURE_TEST_CASE(SeaAttackDisabled, SeaAttackFixture)
     TestFailingSeaAttack(milBld1FarPos);
 }
 
+BOOST_FIXTURE_TEST_CASE(SeaAttackInPeacefulMode, SeaAttackFixture)
+{
+    AddSoldiers(milBld1NearPos, 6, 0);
+
+    // Set peaceful mode
+    ggs.setSelection(AddonId::PEACEFULMODE, 1);
+
+    // No land attack
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[0]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(hqPos[1]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(harborPos[0]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(harborPos[1]), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1NearPos), 0u);
+    BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForAttack(milBld1FarPos), 0u);
+
+    // No sea attack
+    TestFailingSeaAttack(hqPos[0]);
+    TestFailingSeaAttack(hqPos[1]);
+    TestFailingSeaAttack(harborPos[1]);
+    TestFailingSeaAttack(milBld1NearPos);
+    TestFailingSeaAttack(milBld1FarPos);
+}
+
 BOOST_FIXTURE_TEST_CASE(NoHarborBlock, SeaAttackFixture)
 {
     // Enemy harbors don't block
