@@ -34,7 +34,7 @@ private:
     ctrlText* txtRemainingTime;
 
     // Order in which the teams are displayed
-    std::vector<unsigned int> teamOrder;
+    std::vector<unsigned> teamOrder;
 
     void Draw_() override;
 

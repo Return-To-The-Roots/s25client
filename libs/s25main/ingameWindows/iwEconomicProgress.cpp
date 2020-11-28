@@ -39,31 +39,31 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
                    _("Economic Progress"), LOADER.GetImageN("resource", 41)),
       gwv(gwv)
 {
-    const unsigned int textcolor[] = {COLOR_GREEN, COLOR_YELLOW, COLOR_RED};
+    const unsigned textcolor[] = {COLOR_GREEN, COLOR_YELLOW, COLOR_RED};
 
     const GameWorldBase& world = gwv.GetWorld();
 
     EconomyModeHandler* eH = world.econHandler.get();
 
-    const unsigned int numGoodTypesToCollect = eH->GetGoodTypesToCollect().size();
+    const unsigned numGoodTypesToCollect = eH->GetGoodTypesToCollect().size();
 
     AddText(1, DrawPoint(11 + 27, 46), _("Player"), COLOR_GREEN, FontStyle::LEFT | FontStyle::BOTTOM, NormalFont);
 
     const std::vector<EconomyModeHandler::EconTeam>& economyModeTeams = eH->GetTeams();
-    unsigned int num_teams = economyModeTeams.size();
+    unsigned num_teams = economyModeTeams.size();
 
     // determine team display order (main player team first)
-    unsigned int mainTeam = 0;
-    for(unsigned int i = 0; i < economyModeTeams.size(); i++)
+    unsigned mainTeam = 0;
+    for(unsigned i = 0; i < economyModeTeams.size(); i++)
     {
-        if(economyModeTeams[i].inTeam(gwv.GetPlayer().GetPlayerId()))
+        if(economyModeTeams[i].containsPlayer(gwv.GetPlayer().GetPlayerId()))
         {
             mainTeam = i;
             break;
         }
     }
     teamOrder.push_back(mainTeam);
-    for(unsigned int i = 0; i < economyModeTeams.size(); i++)
+    for(unsigned i = 0; i < economyModeTeams.size(); i++)
     {
         if(i != mainTeam)
         {
@@ -81,7 +81,7 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
     // the goods table
     const Extent btSize(26, 26);
     auto& goodTypes = eH->GetGoodTypesToCollect();
-    for(unsigned int i = 0; i < goodTypes.size(); i++)
+    for(unsigned i = 0; i < goodTypes.size(); i++)
     {
         GoodType good = eH->GetGoodTypesToCollect()[i];
 
@@ -119,15 +119,15 @@ void iwEconomicProgress::Draw_()
 
     // draw team colors
     const std::vector<EconomyModeHandler::EconTeam>& economyModeTeams = gwv.GetWorld().econHandler->GetTeams();
-    for(unsigned int t = 0; t < economyModeTeams.size(); t++)
+    for(unsigned t = 0; t < economyModeTeams.size(); t++)
     {
         DrawPoint drawPt = GetDrawPos() + DrawPoint(37 + (t + 1) * 63, 22);
-        unsigned int height = 24;
-        unsigned int ystep = height / economyModeTeams[teamOrder[t]].playersInTeam.count();
-        unsigned int ypos = 0;
+        unsigned height = 24;
+        unsigned ystep = height / economyModeTeams[teamOrder[t]].playersInTeam.count();
+        unsigned ypos = 0;
         for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
         {
-            if(economyModeTeams[teamOrder[t]].inTeam(i))
+            if(economyModeTeams[teamOrder[t]].containsPlayer(i))
             {
                 if(height - ypos < 2 * ystep)
                     ystep = height - ypos;
@@ -168,7 +168,7 @@ void iwEconomicProgress::Msg_PaintBefore()
     eH->UpdateAmounts();
 
     // update table elements
-    for(unsigned int i = 0; i < eH->GetGoodTypesToCollect().size(); i++)
+    for(unsigned i = 0; i < eH->GetGoodTypesToCollect().size(); i++)
     {
         for(unsigned j = 0; j < 1 + economyModeTeams.size(); j++)
         {

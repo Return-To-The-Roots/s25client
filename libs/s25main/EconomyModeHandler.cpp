@@ -29,52 +29,53 @@
 #include "gameTypes/JobTypes.h"
 #include "gameData/JobConsts.h"
 #include <boost/optional.hpp>
-
-std::array<GoodType, 12> specialGoodPool = {
-  /*  1 */ GD_TONGS,
-  /*  2 */ GD_HAMMER,
-  /*  3 */ GD_AXE,
-  /*  4 */ GD_SAW,
-  /*  5 */ GD_PICKAXE,
-  /*  6 */ GD_SHOVEL,
-  /*  7 */ GD_CRUCIBLE,
-  /*  8 */ GD_RODANDLINE,
-  /*  9 */ GD_SCYTHE,
-  /* 12 */ GD_CLEAVER,
-  /* 13 */ GD_ROLLINGPIN,
-  /* 14 */ GD_BOW,
-};
-
-std::array<GoodType, 18> commonGoodPool = {
-  /*  0 */ GD_BEER,
-  /* 11 */ GD_WATER,
-  /* 15 */ GD_BOAT,
-  /* 16 */ GD_SWORD,
-  /* 17 */ GD_IRON,
-  /* 18 */ GD_FLOUR,
-  /* 19 */ GD_FISH,
-  /* 20 */ GD_BREAD,
-  /* 22 */ GD_WOOD,
-  /* 23 */ GD_BOARDS,
-  /* 24 */ GD_STONES,
-  /* 27 */ GD_GRAIN,
-  /* 28 */ GD_COINS,
-  /* 29 */ GD_GOLD,
-  /* 30 */ GD_IRONORE,
-  /* 31 */ GD_COAL,
-  /* 32 */ GD_MEAT,
-  /* 33 */ GD_HAM,
-};
-
-const unsigned int numGoodTypesToCollect = 7;
+#include <array>
 
 EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), gfLastUpdated(0)
 {
+    const std::vector<GoodType> specialGoodPool({
+      GD_TONGS,
+      GD_HAMMER,
+      GD_AXE,
+      GD_SAW,
+      GD_PICKAXE,
+      GD_SHOVEL,
+      GD_CRUCIBLE,
+      GD_RODANDLINE,
+      GD_SCYTHE,
+      GD_CLEAVER,
+      GD_ROLLINGPIN,
+      GD_BOW,
+    });
+
+    const std::vector<GoodType> commonGoodPool({
+      GD_BEER,
+      GD_WATER,
+      GD_BOAT,
+      GD_SWORD,
+      GD_IRON,
+      GD_FLOUR,
+      GD_FISH,
+      GD_BREAD,
+      GD_WOOD,
+      GD_BOARDS,
+      GD_STONES,
+      GD_GRAIN,
+      GD_COINS,
+      GD_GOLD,
+      GD_IRONORE,
+      GD_COAL,
+      GD_MEAT,
+      GD_HAM,
+    });
+
+    constexpr unsigned numGoodTypesToCollect = 7;
+
     // Randomly determine *numGoodTypesToCollect* many good types, one of which is a special good (=tool)
 
     static_assert(numGoodTypesToCollect > 0, "There have to be goods to be collected");
-    static_assert(commonGoodPool.size() >= numGoodTypesToCollect - 1, "There have to be enough commond goods");
-    static_assert(specialGoodPool.size() >= 1, "There has to be at least 1 special good");
+    RTTR_Assert(commonGoodPool.size() >= numGoodTypesToCollect - 1); // "There have to be enough commond goods"
+    RTTR_Assert(specialGoodPool.size() >= 1);                        // There have to be enough special goods
     goodsToCollect.clear();
     goodsToCollect.resize(numGoodTypesToCollect);
     auto nextSlot = begin(goodsToCollect);
@@ -122,7 +123,7 @@ EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
 {
     sgd.PopContainer(goodsToCollect);
 
-    std::vector<unsigned int> teamBitMasks;
+    std::vector<unsigned> teamBitMasks;
     sgd.PopContainer(teamBitMasks);
     for(auto& teamMask : teamBitMasks)
     {
@@ -140,7 +141,7 @@ void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushUnsignedInt(endFrame);
     sgd.PushContainer(goodsToCollect);
-    std::vector<unsigned int> teamBitMasks;
+    std::vector<unsigned> teamBitMasks;
     for(const EconomyModeHandler::EconTeam& curTeam : economyModeTeams)
     {
         teamBitMasks.push_back(curTeam.playersInTeam.to_ulong());
@@ -161,7 +162,7 @@ void EconomyModeHandler::DetermineTeams()
             bool foundTeam = false;
             for(const auto& team : economyModeTeams)
             {
-                if(team.inTeam(i))
+                if(team.containsPlayer(i))
                 {
                     foundTeam = true;
                     break;
@@ -185,12 +186,12 @@ void EconomyModeHandler::DetermineTeams()
     }
 }
 
-unsigned int EconomyModeHandler::SumUpGood(GoodType good, const Inventory& Inventory)
+unsigned EconomyModeHandler::SumUpGood(GoodType good, const Inventory& Inventory)
 {
-    unsigned int retVal = Inventory.goods[good];
+    unsigned retVal = Inventory.goods[good];
 
     // Add the tools used by workers to the good totals
-    for(unsigned int j = 0; j < NUM_JOB_TYPES; j++)
+    for(unsigned j = 0; j < NUM_JOB_TYPES; j++)
     {
         boost::optional<GoodType> tool = JOB_CONSTS[(Job)j].tool;
         if(tool == good)
@@ -223,7 +224,7 @@ void EconomyModeHandler::UpdateAmounts()
     {
         const GamePlayer& player = gwg->GetPlayer(i);
         Inventory playerInventory = player.GetInventory();
-        for(unsigned int g = 0; g < goodsToCollect.size(); g++)
+        for(unsigned g = 0; g < goodsToCollect.size(); g++)
         {
             amountsThePlayersCollected[g][i] = SumUpGood(goodsToCollect[g], playerInventory);
         }
@@ -239,9 +240,9 @@ void EconomyModeHandler::UpdateAmounts()
         std::fill(team.amountsTheTeamCollected.begin(), team.amountsTheTeamCollected.end(), 0);
         for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
         {
-            if(team.inTeam(i))
+            if(team.containsPlayer(i))
             {
-                for(unsigned int g = 0; g < goodsToCollect.size(); g++)
+                for(unsigned g = 0; g < goodsToCollect.size(); g++)
                 {
                     team.amountsTheTeamCollected[g] += GetAmount(g, i);
                     if(team.amountsTheTeamCollected[g] > maxAmountsATeamCollected[g])
@@ -257,7 +258,7 @@ void EconomyModeHandler::UpdateAmounts()
     for(auto& team : economyModeTeams)
     {
         team.goodTypeWins = 0;
-        for(unsigned int g = 0; g < goodsToCollect.size(); g++)
+        for(unsigned g = 0; g < goodsToCollect.size(); g++)
         {
             if(team.amountsTheTeamCollected[g] >= maxAmountsATeamCollected[g])
             {
@@ -316,7 +317,7 @@ bool EconomyModeHandler::isOver() const
     return gwg->GetGGS().objective == GO_ECONOMYMODE && !isInfinite() && endFrame < GetEvMgr().GetCurrentGF();
 }
 
-EconomyModeHandler::EconTeam::EconTeam(SerializedGameData& sgd, unsigned int numGoodTypesToCollect)
+EconomyModeHandler::EconTeam::EconTeam(SerializedGameData& sgd, unsigned numGoodTypesToCollect)
     : playersInTeam(sgd.PopSignedInt()), amountsTheTeamCollected(numGoodTypesToCollect, 0), goodTypeWins(0)
 {}
 
@@ -325,7 +326,7 @@ void EconomyModeHandler::EconTeam::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(playersInTeam.to_ulong());
 }
 
-bool EconomyModeHandler::EconTeam::inTeam(unsigned int playerId) const
+bool EconomyModeHandler::EconTeam::containsPlayer(unsigned playerId) const
 {
     return playersInTeam[playerId];
 }

@@ -27,16 +27,16 @@ public:
         // The number of good types the team is the leader in
         unsigned goodTypeWins;
 
-        EconTeam(std::bitset<MAX_PLAYERS> playersInTeam, unsigned int numGoodTypesToCollect) noexcept
+        EconTeam(std::bitset<MAX_PLAYERS> playersInTeam, unsigned numGoodTypesToCollect) noexcept
             : playersInTeam(playersInTeam), amountsTheTeamCollected(numGoodTypesToCollect, 0), goodTypeWins(0)
         {}
 
-        EconTeam(SerializedGameData& sgd, unsigned int numGoodTypesToCollect);
+        EconTeam(SerializedGameData& sgd, unsigned numGoodTypesToCollect);
 
         void Serialize(SerializedGameData& sgd) const;
 
         // Returns true if the player is in the team
-        bool inTeam(unsigned int playerId) const;
+        bool containsPlayer(unsigned playerId) const;
     };
 
 private:
@@ -53,14 +53,14 @@ private:
     std::vector<std::array<unsigned, MAX_PLAYERS>> amountsThePlayersCollected;
 
     // Number of Good types the best team is currently leading in
-    unsigned int mostGoodTypeWins;
+    unsigned mostGoodTypeWins;
 
     // Gameframe in which the economy mode progress trackingd data has been updated last
     unsigned gfLastUpdated;
 
     // Sum up all forms of the given good in the inventory (tools, weapons and beer are also counted in the hands of
     // workers and soldiers)
-    unsigned int SumUpGood(GoodType good, const Inventory& Inventory);
+    unsigned SumUpGood(GoodType good, const Inventory& Inventory);
 
     // Determine the teams for the economy mode
     void DetermineTeams();
@@ -89,13 +89,13 @@ public:
     void UpdateAmounts();
 
     // Get the amounts collected by a player
-    unsigned int GetAmount(unsigned int goodNumber, unsigned int playerId)
+    unsigned GetAmount(unsigned goodNumber, unsigned playerId)
     {
         return amountsThePlayersCollected[goodNumber][playerId];
     }
 
     // Get the amount of good the leading team (with regards to that good) has collected
-    unsigned int GetMaxTeamAmount(unsigned int goodNumber) { return maxAmountsATeamCollected[goodNumber]; }
+    unsigned GetMaxTeamAmount(unsigned goodNumber) { return maxAmountsATeamCollected[goodNumber]; }
 
     // Get Game frame in which the economy mode winners will be determined
     unsigned GetEndFrame() const { return endFrame; }
