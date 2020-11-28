@@ -19,10 +19,11 @@
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
-#include "addons/AddonGameLength.h"
+#include "addons/AddonEconomyModeGameLength.h"
 #include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
+#include "network/GameClient.h"
 #include <boost/optional.hpp>
 
 Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
@@ -46,9 +47,9 @@ void Game::Start(bool startFromSave)
     {
         if(ggs_.objective == GO_ECONOMYMODE)
         {
-            unsigned int selection = ggs_.getSelection(AddonId::GAME_LENGTH);
-            world_.econHandler =
-              new EconomyModeHandler(AddonGameLengthList[selection] / 50); // 50 is the assumed game frame length
+            unsigned int selection = ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH);
+            world_.econHandler = std::make_unique<EconomyModeHandler>(
+              std::chrono::minutes(AddonEconomyModeGameLengthList[selection]) / GAMECLIENT.GetGFLength());
         }
         StatisticStep();
     }

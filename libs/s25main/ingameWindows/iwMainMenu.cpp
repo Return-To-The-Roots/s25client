@@ -82,7 +82,7 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
     if(gwv.GetWorld().econHandler)
     {
-        // Wirtschaftsmodus
+        // Economy Mode
         AddImageButton(12, DrawPoint(124, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 196),
                        _("Economic Progress"));
     }

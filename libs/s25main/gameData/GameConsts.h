@@ -32,7 +32,7 @@ const unsigned char INVALID_DIR = 0xFF;
 const unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max();
 
 /// Number of "classical" objectives in a friendly match
-const unsigned NUM_OBJECTIVES = 3;
+const unsigned NUM_OBJECTIVES = 4;
 /// tournament modes
 const unsigned NUM_TOURNAMENT_MODESS = 5;
 const std::array<unsigned, NUM_TOURNAMENT_MODESS> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = {30, 60, 90, 120, 240};

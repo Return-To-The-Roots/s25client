@@ -70,7 +70,7 @@ class GameWorldBase : public World
     EventManager& em;
 
 public:
-    EconomyModeHandler* econHandler = nullptr;
+    std::unique_ptr<EconomyModeHandler> econHandler;
 
 private:
     std::unique_ptr<LuaInterfaceGame> lua;

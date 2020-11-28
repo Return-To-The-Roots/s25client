@@ -85,6 +85,9 @@ public:
     void GI_PlayerDefeated(unsigned playerId) override;
     /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
     void GI_UpdateMinimap(MapPoint pt) override;
+    /// Update minimap and colors for whole map
+    void GI_UpdateMapVisibility() override;
+
     /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
     void GI_TreatyOfAllianceChanged(unsigned playerId) override;
     void GI_Winner(unsigned playerId) override;

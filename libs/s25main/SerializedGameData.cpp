@@ -232,7 +232,7 @@ void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
     writeEm->Serialize(*this);
     if(game->ggs_.objective == GO_ECONOMYMODE)
     {
-        PushObject(gw.econHandler, true);
+        PushObject(gw.econHandler.get(), true);
     }
     // Spieler serialisieren
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
@@ -271,7 +271,7 @@ void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game, ILocalG
     em->Deserialize(*this);
     if(game->ggs_.objective == GO_ECONOMYMODE)
     {
-        gw.econHandler = PopObject<EconomyModeHandler>(GOT_ECONOMYMODEHANDLER);
+        gw.econHandler.reset(PopObject<EconomyModeHandler>(GOT_ECONOMYMODEHANDLER));
     }
 
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)

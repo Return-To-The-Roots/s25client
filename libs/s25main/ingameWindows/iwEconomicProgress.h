@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,14 +17,12 @@
 
 #pragma once
 
-#include "../EconomyModeHandler.h"
 #include "IngameWindow.h"
-#include "gameTypes/StatisticTypes.h"
 
 class ctrlText;
 class GameWorldViewer;
 
-/// Fenster fuer den Wirtschaftsmodus-Fortschritt
+/// Window for displaying the economic mode progress
 class iwEconomicProgress : public IngameWindow
 {
 public:
@@ -33,10 +31,10 @@ public:
 
 private:
     const GameWorldViewer& gwv;
-    ctrlText* headline;
-    ctrlText* elapsedTime;
+    ctrlText* txtRemainingTime;
 
-    std::vector<unsigned int> teamorder;
+    // Order in which the teams are displayed
+    std::vector<unsigned int> teamOrder;
 
     void Draw_() override;
 

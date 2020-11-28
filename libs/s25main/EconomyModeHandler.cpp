@@ -22,6 +22,7 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
+#include "helpers/containerUtils.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldGame.h"
@@ -29,109 +30,107 @@
 #include "gameData/JobConsts.h"
 #include <boost/optional.hpp>
 
-auto getPlayerMask = [](unsigned playerId) { return 1u << playerId; };
-
-GoodType types_less[]{
-  /*  1 */ GD_TONGS,      // Zange
-  /*  2 */ GD_HAMMER,     // Hammer
-  /*  3 */ GD_AXE,        // Axt
-  /*  4 */ GD_SAW,        // Saege
-  /*  5 */ GD_PICKAXE,    // Spitzhacke
-  /*  6 */ GD_SHOVEL,     // Schaufel
-  /*  7 */ GD_CRUCIBLE,   // Schmelztiegel
-  /*  8 */ GD_RODANDLINE, // Angel
-  /*  9 */ GD_SCYTHE,     // Sense
-  /* 12 */ GD_CLEAVER,    // Beil
-  /* 13 */ GD_ROLLINGPIN, // Nudelholz
-  /* 14 */ GD_BOW,        // Bogen
+std::array<GoodType, 12> specialGoodPool = {
+  /*  1 */ GD_TONGS,
+  /*  2 */ GD_HAMMER,
+  /*  3 */ GD_AXE,
+  /*  4 */ GD_SAW,
+  /*  5 */ GD_PICKAXE,
+  /*  6 */ GD_SHOVEL,
+  /*  7 */ GD_CRUCIBLE,
+  /*  8 */ GD_RODANDLINE,
+  /*  9 */ GD_SCYTHE,
+  /* 12 */ GD_CLEAVER,
+  /* 13 */ GD_ROLLINGPIN,
+  /* 14 */ GD_BOW,
 };
 
-GoodType types_more[]{
-  /*  0 */ GD_BEER,    // Bier
-  /* 11 */ GD_WATER,   // Wasser
-  /* 15 */ GD_BOAT,    // Boot
-  /* 16 */ GD_SWORD,   // Schwert
-  /* 17 */ GD_IRON,    // Eisen
-  /* 18 */ GD_FLOUR,   // Mehl
-  /* 19 */ GD_FISH,    // Fisch
-  /* 20 */ GD_BREAD,   // Brot
-  /* 22 */ GD_WOOD,    // Holz
-  /* 23 */ GD_BOARDS,  // Bretter
-  /* 24 */ GD_STONES,  // Steine
-  /* 27 */ GD_GRAIN,   // Getreide
-  /* 28 */ GD_COINS,   // Mnzen
-  /* 29 */ GD_GOLD,    // Gold
-  /* 30 */ GD_IRONORE, // Eisenerz
-  /* 31 */ GD_COAL,    // Kohle
-  /* 32 */ GD_MEAT,    // Fleisch
-  /* 33 */ GD_HAM,     // Schinken ( Schwein )
+std::array<GoodType, 18> commonGoodPool = {
+  /*  0 */ GD_BEER,
+  /* 11 */ GD_WATER,
+  /* 15 */ GD_BOAT,
+  /* 16 */ GD_SWORD,
+  /* 17 */ GD_IRON,
+  /* 18 */ GD_FLOUR,
+  /* 19 */ GD_FISH,
+  /* 20 */ GD_BREAD,
+  /* 22 */ GD_WOOD,
+  /* 23 */ GD_BOARDS,
+  /* 24 */ GD_STONES,
+  /* 27 */ GD_GRAIN,
+  /* 28 */ GD_COINS,
+  /* 29 */ GD_GOLD,
+  /* 30 */ GD_IRONORE,
+  /* 31 */ GD_COAL,
+  /* 32 */ GD_MEAT,
+  /* 33 */ GD_HAM,
 };
 
-EconomyModeHandler::EconomyModeHandler(unsigned end_frame) : end_frame(end_frame), last_updated(0)
+const unsigned int numGoodTypesToCollect = 7;
+
+EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), gfLastUpdated(0)
 {
-    constexpr unsigned num_types_less = sizeof(types_less) / sizeof(types_less[0]);
-    constexpr unsigned num_types_more = sizeof(types_more) / sizeof(types_more[0]);
+    // Randomly determine *numGoodTypesToCollect* many good types, one of which is a special good (=tool)
 
-    // Randomly determine *numGoodTypesToCollect* many good types, one of which is a tool
-    unsigned int types_found = 0;
+    static_assert(numGoodTypesToCollect > 0, "There have to be goods to be collected");
+    static_assert(commonGoodPool.size() >= numGoodTypesToCollect - 1, "There have to be enough commond goods");
+    static_assert(specialGoodPool.size() >= 1, "There has to be at least 1 special good");
+    goodsToCollect.clear();
+    goodsToCollect.resize(numGoodTypesToCollect);
+    auto nextSlot = begin(goodsToCollect);
 
-    while(types_found < numGoodTypesToCollect - 1)
+    while(nextSlot != end(goodsToCollect) - 1)
     {
-        GoodType next_type = types_more[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), num_types_more)];
-        unsigned i = 0;
-        for(; i < types_found; i++)
+        GoodType nextGoodType = commonGoodPool[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), commonGoodPool.size())];
+        if(std::find(begin(goodsToCollect), nextSlot, nextGoodType) == nextSlot)
         {
-            if(types[i] == next_type)
-            {
-                break;
-            }
-        }
-        if(i == types_found)
-        {
-            types[types_found] = next_type;
-            types_found++;
+            *nextSlot = nextGoodType;
+            nextSlot++;
         }
     }
-    types[numGoodTypesToCollect - 1] = types_less[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), num_types_less)];
-    types_found++;
+    *nextSlot = specialGoodPool[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), specialGoodPool.size())];
 
-    if(end_frame > 0)
-        event = GetEvMgr().AddEvent(this, end_frame);
-    else
-        event = nullptr;
+    // Schedule end game event and trust the event manager to keep track of it
+    if(!isInfinite())
+        GetEvMgr().AddEvent(this, endFrame);
+
+    // Find and set up Teams and trackers
+    DetermineTeams();
+    amountsThePlayersCollected.resize(goodsToCollect.size());
+    maxAmountsATeamCollected.resize(goodsToCollect.size());
 
     // Send Mission Goal
     for(unsigned p = 0; p < gwg->GetNumPlayers(); ++p)
     {
-        std::string goaltext = _("Economy Mode: Collect as much as you can of the following good types: ");
+        std::string goalText = _("Economy Mode: Collect as much as you can of the following good types: ");
         for(unsigned i = 0; i < numGoodTypesToCollect; i++)
         {
             if(i > 0)
-                goaltext += ", ";
-            goaltext += _(WARE_NAMES[types[i]]);
+                goalText += ", ";
+            goalText += _(WARE_NAMES[goodsToCollect[i]]);
         }
-        goaltext += ". ";
-        goaltext += _("Tools in the hands of workers are also counted. So are weapons, and beer, that soldiers have in "
+        goalText += ". ";
+        goalText += _("Tools in the hands of workers are also counted. So are weapons, and beer, that soldiers have in "
                       "use. For an updating tally of the collected goods see the economic progress window.");
 
-        gwg->GetPostMgr().SetMissionGoal(p, goaltext);
+        gwg->GetPostMgr().SetMissionGoal(p, goalText);
     }
 }
 
 EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
-    : GameObject(sgd, objId), end_frame(sgd.PopUnsignedInt()), last_updated(0)
+    : GameObject(sgd, objId), endFrame(sgd.PopUnsignedInt()), gfLastUpdated(0)
 {
-    if(!isOver())
+    sgd.PopContainer(goodsToCollect);
+
+    std::vector<unsigned int> teamBitMasks;
+    sgd.PopContainer(teamBitMasks);
+    for(auto& teamMask : teamBitMasks)
     {
-        event = sgd.PopEvent();
-    } else
-    {
-        event = nullptr;
+        economyModeTeams.emplace_back(teamMask, goodsToCollect.size());
     }
-    for(auto& type : types)
-    {
-        type = (GoodType)sgd.PopUnsignedChar();
-    }
+
+    amountsThePlayersCollected.resize(goodsToCollect.size());
+    maxAmountsATeamCollected.resize(goodsToCollect.size());
 }
 
 void EconomyModeHandler::Destroy() {}
@@ -139,56 +138,54 @@ void EconomyModeHandler::Destroy() {}
 /// Serialisierungsfunktion
 void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
 {
-    sgd.PushUnsignedInt(end_frame);
-    if(!isOver())
+    sgd.PushUnsignedInt(endFrame);
+    sgd.PushContainer(goodsToCollect);
+    std::vector<unsigned int> teamBitMasks;
+    for(const EconomyModeHandler::EconTeam& curTeam : economyModeTeams)
     {
-        sgd.PushEvent(event);
+        teamBitMasks.push_back(curTeam.playersInTeam.to_ulong());
     }
-    for(auto type : types)
-    {
-        sgd.PushUnsignedChar(type);
-    }
+    sgd.PushContainer(teamBitMasks);
 }
 
-void EconomyModeHandler::FindTeams()
+void EconomyModeHandler::DetermineTeams()
 {
     // If we already determined who is in a team with whom skip this. For the economy mode we only count teams at game
     // start
-    if(!teams.empty())
+    if(!economyModeTeams.empty())
         return;
     for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
     {
         if(gwg->GetPlayer(i).isUsed())
         {
-            bool found_team = false;
-            for(const auto& team : teams)
+            bool foundTeam = false;
+            for(const auto& team : economyModeTeams)
             {
                 if(team.inTeam(i))
                 {
-                    found_team = true;
+                    foundTeam = true;
                     break;
                 }
             }
-            if(!found_team)
+            if(!foundTeam)
             {
                 const GamePlayer& player = gwg->GetPlayer(i);
-                unsigned new_team = getPlayerMask(i);
-                unsigned num_players_in_team = 1;
+                std::bitset<MAX_PLAYERS> newTeam;
+                newTeam.set(i);
                 for(unsigned j = i + 1; j < gwg->GetNumPlayers(); ++j)
                 {
                     if(gwg->GetPlayer(j).isUsed() && player.IsAlly(j))
                     {
-                        num_players_in_team++;
-                        new_team = new_team | getPlayerMask(j);
+                        newTeam.set(j);
                     }
                 }
-                teams.emplace_back(new_team, num_players_in_team);
+                economyModeTeams.emplace_back(newTeam, goodsToCollect.size());
             }
         }
     }
 }
 
-unsigned int EconomyModeHandler::SumGood(GoodType good, const Inventory& Inventory)
+unsigned int EconomyModeHandler::SumUpGood(GoodType good, const Inventory& Inventory)
 {
     unsigned int retVal = Inventory.goods[good];
 
@@ -196,7 +193,7 @@ unsigned int EconomyModeHandler::SumGood(GoodType good, const Inventory& Invento
     for(unsigned int j = 0; j < NUM_JOB_TYPES; j++)
     {
         boost::optional<GoodType> tool = JOB_CONSTS[(Job)j].tool;
-        if(tool && tool == good)
+        if(tool == good)
         {
             retVal += Inventory.people[j];
         }
@@ -216,7 +213,7 @@ unsigned int EconomyModeHandler::SumGood(GoodType good, const Inventory& Invento
 void EconomyModeHandler::UpdateAmounts()
 {
     // Return if the game is over or we already updated the amounts this game frame
-    if((isOver() && end_frame != 0) || last_updated == GetEvMgr().GetCurrentGF())
+    if(isOver() || gfLastUpdated == GetEvMgr().GetCurrentGF())
     {
         return;
     }
@@ -226,61 +223,54 @@ void EconomyModeHandler::UpdateAmounts()
     {
         const GamePlayer& player = gwg->GetPlayer(i);
         Inventory playerInventory = player.GetInventory();
-        for(unsigned int g = 0; g < numGoodTypesToCollect; g++)
+        for(unsigned int g = 0; g < goodsToCollect.size(); g++)
         {
-            amounts[g][i] = SumGood(types[g], playerInventory);
+            amountsThePlayersCollected[g][i] = SumUpGood(goodsToCollect[g], playerInventory);
         }
     }
 
     // Compute Teams
-    FindTeams();
+    DetermineTeams();
 
     // Compute the amounts for the teams
-    for(unsigned int& maxTeamAmount : maxTeamAmounts)
+    std::fill(maxAmountsATeamCollected.begin(), maxAmountsATeamCollected.end(), 0);
+    for(auto& team : economyModeTeams)
     {
-        maxTeamAmount = 0;
-    }
-
-    for(auto& team : teams)
-    {
-        for(unsigned int& teamAmount : team.teamAmounts)
-        {
-            teamAmount = 0;
-        }
+        std::fill(team.amountsTheTeamCollected.begin(), team.amountsTheTeamCollected.end(), 0);
         for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
         {
             if(team.inTeam(i))
             {
-                for(unsigned int g = 0; g < numGoodTypesToCollect; g++)
+                for(unsigned int g = 0; g < goodsToCollect.size(); g++)
                 {
-                    team.teamAmounts[g] += GetAmount(g, i);
-                    if(team.teamAmounts[g] > maxTeamAmounts[g])
+                    team.amountsTheTeamCollected[g] += GetAmount(g, i);
+                    if(team.amountsTheTeamCollected[g] > maxAmountsATeamCollected[g])
                     {
-                        maxTeamAmounts[g] = team.teamAmounts[g];
+                        maxAmountsATeamCollected[g] = team.amountsTheTeamCollected[g];
                     }
                 }
             }
         }
     }
     // Determine the leading teams for each good type and determine how many good type wins is the maximum.
-    mostWins = 0;
-    for(auto& team : teams)
+    mostGoodTypeWins = 0;
+    for(auto& team : economyModeTeams)
     {
-        team.teamWins = 0;
-        for(unsigned int g = 0; g < numGoodTypesToCollect; g++)
+        team.goodTypeWins = 0;
+        for(unsigned int g = 0; g < goodsToCollect.size(); g++)
         {
-            if(team.teamAmounts[g] >= maxTeamAmounts[g])
+            if(team.amountsTheTeamCollected[g] >= maxAmountsATeamCollected[g])
             {
-                team.teamWins++;
-                if(team.teamWins > mostWins)
+                team.goodTypeWins++;
+                if(team.goodTypeWins > mostGoodTypeWins)
                 {
-                    mostWins = team.teamWins;
+                    mostGoodTypeWins = team.goodTypeWins;
                 }
             }
         }
     }
 
-    last_updated = GetEvMgr().GetCurrentGF();
+    gfLastUpdated = GetEvMgr().GetCurrentGF();
 }
 
 void EconomyModeHandler::HandleEvent(const unsigned)
@@ -295,50 +285,47 @@ void EconomyModeHandler::HandleEvent(const unsigned)
     // Update one last time
     UpdateAmounts();
 
-    // Determine mask of all players in teams with the most good type wins
-    unsigned bestMask = 0;
-    unsigned int numWinners = 0;
-    for(auto& team : teams)
+    // Determine bitmask of all players in teams with the most good type wins
+    std::bitset<MAX_PLAYERS> bestMask;
+    for(auto& team : economyModeTeams)
     {
-        if(team.teamWins == mostWins)
+        if(team.goodTypeWins == mostGoodTypeWins)
         {
-            bestMask = bestMask | team.mask;
-            numWinners += team.num_players_in_team;
+            bestMask |= team.playersInTeam;
         }
     }
 
     // Let players know who won
-    if(bestMask && numWinners != 1)
-        gwg->GetGameInterface()->GI_TeamWinner(bestMask);
+    if(bestMask.count() > 1)
+        gwg->GetGameInterface()->GI_TeamWinner(bestMask.to_ulong());
     else
         for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
         {
-            if(bestMask & getPlayerMask(i))
+            if(bestMask[i])
             {
                 gwg->GetGameInterface()->GI_Winner(i);
             }
         }
 
-    // Call function to recalculcate visibilities
-    for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
-    {
-        gwg->GetGameInterface()->GI_TreatyOfAllianceChanged(i); // TODO: Is this abuse? Should we rename that function?
-    }
-    event = nullptr;
-}
-
-bool EconomyModeHandler::globalVisibility() const
-{
-    return gwg->GetGGS().objective == GO_ECONOMYMODE && gwg->GetEvMgr().GetCurrentGF() >= end_frame
-           && GetEndFrame() > 0;
+    gwg->MakeWholeMapVisibleForAllPlayers();
+    gwg->GetGameInterface()->GI_UpdateMapVisibility();
 }
 
 bool EconomyModeHandler::isOver() const
 {
-    return gwg->GetGGS().objective == GO_ECONOMYMODE && end_frame < GetEvMgr().GetCurrentGF();
+    return gwg->GetGGS().objective == GO_ECONOMYMODE && !isInfinite() && endFrame < GetEvMgr().GetCurrentGF();
 }
 
-bool EconomyModeHandler::econTeam::inTeam(unsigned int playerId) const
+EconomyModeHandler::EconTeam::EconTeam(SerializedGameData& sgd, unsigned int numGoodTypesToCollect)
+    : playersInTeam(sgd.PopSignedInt()), amountsTheTeamCollected(numGoodTypesToCollect, 0), goodTypeWins(0)
+{}
+
+void EconomyModeHandler::EconTeam::Serialize(SerializedGameData& sgd) const
 {
-    return mask & getPlayerMask(playerId);
+    sgd.PushUnsignedInt(playersInTeam.to_ulong());
+}
+
+bool EconomyModeHandler::EconTeam::inTeam(unsigned int playerId) const
+{
+    return playersInTeam[playerId];
 }

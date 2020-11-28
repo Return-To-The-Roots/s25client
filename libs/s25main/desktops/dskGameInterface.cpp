@@ -1234,6 +1234,14 @@ void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
     minimap.UpdateNode(pt);
 }
 
+void dskGameInterface::GI_UpdateMapVisibility()
+{
+    // recalculate visibility
+    worldViewer.RecalcAllColors();
+    // update minimap
+    minimap.UpdateAll();
+}
+
 /**
  *  Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
  */

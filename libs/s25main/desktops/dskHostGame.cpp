@@ -769,8 +769,8 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
             if(mbr == MSR_YES)
             {
                 gameLobby->getSettings().setSelection(AddonId::PEACEFUL, true);
-                if(gameLobby->getSettings().getSelection(AddonId::GAME_LENGTH) == 0)
-                    gameLobby->getSettings().setSelection(AddonId::GAME_LENGTH, 5);
+                if(gameLobby->getSettings().getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH) == 0)
+                    gameLobby->getSettings().setSelection(AddonId::ECONOMY_MODE_GAME_LENGTH, 5);
                 gameLobby->getSettings().setSelection(AddonId::NO_COINS_DEFAULT, true);
                 gameLobby->getSettings().setSelection(AddonId::LIMIT_CATAPULTS, 2);
                 GetCtrl<ctrlCheck>(20)->SetCheck(true); // Lockteams;
