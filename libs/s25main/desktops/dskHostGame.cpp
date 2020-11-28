@@ -768,7 +768,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         {
             if(mbr == MSR_YES)
             {
-                gameLobby->getSettings().setSelection(AddonId::PEACEFUL, true);
+                gameLobby->getSettings().setSelection(AddonId::PEACEFULMODE, true);
                 if(gameLobby->getSettings().getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH) == 0)
                     gameLobby->getSettings().setSelection(AddonId::ECONOMY_MODE_GAME_LENGTH, 5);
                 gameLobby->getSettings().setSelection(AddonId::NO_COINS_DEFAULT, true);
@@ -786,7 +786,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         {
             if(mbr == MSR_YES)
             {
-                gameLobby->getSettings().setSelection(AddonId::PEACEFUL, false);
+                gameLobby->getSettings().setSelection(AddonId::PEACEFULMODE, false);
             } else if(mbr == MSR_NO)
             {
                 forceOptions = true;
@@ -1060,7 +1060,7 @@ bool dskHostGame::checkOptions()
     if(forceOptions)
         return true;
     const GlobalGameSettings& ggs = gameLobby->getSettings();
-    if(ggs.objective == GO_ECONOMYMODE && !ggs.getSelection(AddonId::PEACEFUL))
+    if(ggs.objective == GO_ECONOMYMODE && !ggs.getSelection(AddonId::PEACEFULMODE))
     {
         WINDOWMANAGER.Show(
           std::make_unique<iwMsgbox>(_("Economy Mode"),
@@ -1069,7 +1069,7 @@ bool dskHostGame::checkOptions()
                                        "you review them, choosing no will start the game."),
                                      this, MSB_YESNOCANCEL, MSB_QUESTIONGREEN, 10));
         return false;
-    } else if(ggs.getSelection(AddonId::PEACEFUL)
+    } else if(ggs.getSelection(AddonId::PEACEFULMODE)
               && (ggs.objective == GO_CONQUER3_4 || ggs.objective == GO_TOTALDOMINATION))
     {
         WINDOWMANAGER.Show(
