@@ -80,10 +80,10 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
     }
     // the goods table
     const Extent btSize(26, 26);
-    auto& goodTypes = eH->GetGoodTypesToCollect();
-    for(unsigned i = 0; i < goodTypes.size(); i++)
+    const std::vector<GoodType>& goodsToCollect = eH->GetGoodTypesToCollect();
+    for(unsigned i = 0; i < goodsToCollect.size(); i++)
     {
-        GoodType good = eH->GetGoodTypesToCollect()[i];
+        GoodType good = goodsToCollect[i];
 
         const DrawPoint btPos(11, 48 + 26 * i);
         AddImage(100 + i, btPos + btSize / 2, LOADER.GetMapImageN(2298), _(WARE_NAMES[good]));

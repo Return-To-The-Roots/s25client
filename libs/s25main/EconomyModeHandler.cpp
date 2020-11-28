@@ -75,7 +75,7 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
 
     static_assert(numGoodTypesToCollect > 0, "There have to be goods to be collected");
     RTTR_Assert(commonGoodPool.size() >= numGoodTypesToCollect - 1); // "There have to be enough commond goods"
-    RTTR_Assert(specialGoodPool.size() >= 1);                        // There have to be enough special goods
+    RTTR_Assert(!specialGoodPool.empty());                        // There have to be enough special goods
     goodsToCollect.clear();
     goodsToCollect.resize(numGoodTypesToCollect);
     auto nextSlot = begin(goodsToCollect);
