@@ -50,21 +50,18 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
     const unsigned textcolor[] = {COLOR_GREEN, COLOR_YELLOW, COLOR_RED};
     const GameWorldBase& world = gwv.GetWorld();
     EconomyModeHandler* eH = world.econHandler.get();
-    const unsigned numGoodTypesToCollect = eH->GetGoodTypesToCollect().size();
-    const std::vector<EconomyModeHandler::EconTeam>& economyModeTeams = eH->GetTeams();
-    unsigned num_teams = economyModeTeams.size();
 
     // resize window
-    Extent size(padding1.x + wareIconSize.x + (std::max((int)num_teams, 2) + 1) * txtBoxWidth + padding2.x,
-                padding1.y + teamRectHeight + ((int)numGoodTypesToCollect + 1) * wareIconSize.y + extraSpacing * 2
-                  + padding2.y);
+    Extent size(padding1.x + wareIconSize.x + (std::max((int)eH->GetTeams().size(), 2) + 1) * txtBoxWidth + padding2.x,
+                padding1.y + teamRectHeight + ((int)eH->GetGoodTypesToCollect().size() + 1) * wareIconSize.y
+                  + extraSpacing * 2 + padding2.y);
     this->Resize(size);
 
     AddText(1, DrawPoint(padding1.x + wareIconSize.x, padding1.y + teamRectHeight), _("Player"), COLOR_GREEN,
             FontStyle::LEFT | FontStyle::BOTTOM, NormalFont);
 
     // determine team display order (main player team first)
-    for(auto& curTeam : economyModeTeams)
+    for(const auto& curTeam : eH->GetTeams())
     {
         if(curTeam.containsPlayer(gwv.GetPlayer().GetPlayerId()))
         {
@@ -72,7 +69,7 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
             break;
         }
     }
-    for(auto& curTeam : economyModeTeams)
+    for(const auto& curTeam : eH->GetTeams())
     {
         if(&curTeam != teamOrder[0])
         {
@@ -92,7 +89,7 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
         AddImage(200 + i, warePos, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + good));
 
         DrawPoint curTxtPos = curBoxPos + DrawPoint(wareIconSize.x, 0);
-        for(unsigned j = 0; j < 1 + num_teams; j++)
+        for(unsigned j = 0; j < 1 + eH->GetTeams().size(); j++)
         {
             AddTextDeepening(300 + (MAX_PLAYERS + 2) * j + i, curTxtPos, Extent(txtBoxWidth, wareIconSize.y), TC_GREY,
                              "?", NormalFont, textcolor[j < 2 ? j : 2]);
@@ -123,7 +120,6 @@ void iwEconomicProgress::Draw_()
     IngameWindow::Draw_();
 
     // draw team colors
-    const std::vector<EconomyModeHandler::EconTeam>& economyModeTeams = gwv.GetWorld().econHandler->GetTeams();
     DrawPoint curTeamRectPos = GetDrawPos() + DrawPoint(padding1.x + wareIconSize.x + txtBoxWidth, padding1.y);
     for(auto& team : teamOrder)
     {
