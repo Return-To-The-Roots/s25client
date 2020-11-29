@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2018 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,28 +17,11 @@
 
 #pragma once
 
-#include "EconomyModeHandler.h"
-#include "IngameWindow.h"
+#include <array>
 
-class ctrlText;
-class GameWorldViewer;
-
-/// Window for displaying the economic mode progress
-class iwEconomicProgress : public IngameWindow
+template<class D = void, class... Types>
+constexpr auto make_array(Types&&... t)
 {
-public:
-    iwEconomicProgress(const GameWorldViewer& gwv);
-    ~iwEconomicProgress() override;
-
-private:
-    const GameWorldViewer& gwv;
-    ctrlText* txtRemainingTime;
-
-    /// Order in which the teams are displayed
-    std::vector<const EconomyModeHandler::EconTeam*> teamOrder;
-
-    void Draw_() override;
-
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_PaintBefore() override;
-};
+    using ResultType = std::conditional_t<std::is_same<D, void>::value, std::common_type_t<Types...>, D>;
+    return std::array<ResultType, sizeof...(Types)>{std::forward<Types>(t)...};
+}

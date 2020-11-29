@@ -23,6 +23,7 @@
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
+#include "helpers/make_array.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldGame.h"
@@ -33,49 +34,21 @@
 
 EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), gfLastUpdated(0)
 {
-    const std::vector<GoodType> specialGoodPool({
-      GD_TONGS,
-      GD_HAMMER,
-      GD_AXE,
-      GD_SAW,
-      GD_PICKAXE,
-      GD_SHOVEL,
-      GD_CRUCIBLE,
-      GD_RODANDLINE,
-      GD_SCYTHE,
-      GD_CLEAVER,
-      GD_ROLLINGPIN,
-      GD_BOW,
-    });
+    const auto specialGoodPool =
+      make_array<GoodType>(GD_TONGS, GD_HAMMER, GD_AXE, GD_SAW, GD_PICKAXE, GD_SHOVEL, GD_CRUCIBLE, GD_RODANDLINE,
+                           GD_SCYTHE, GD_CLEAVER, GD_ROLLINGPIN, GD_BOW);
 
-    const std::vector<GoodType> commonGoodPool({
-      GD_BEER,
-      GD_WATER,
-      GD_BOAT,
-      GD_SWORD,
-      GD_IRON,
-      GD_FLOUR,
-      GD_FISH,
-      GD_BREAD,
-      GD_WOOD,
-      GD_BOARDS,
-      GD_STONES,
-      GD_GRAIN,
-      GD_COINS,
-      GD_GOLD,
-      GD_IRONORE,
-      GD_COAL,
-      GD_MEAT,
-      GD_HAM,
-    });
+    const auto commonGoodPool =
+      make_array<GoodType>(GD_BEER, GD_WATER, GD_BOAT, GD_SWORD, GD_IRON, GD_FLOUR, GD_FISH, GD_BREAD, GD_WOOD,
+                           GD_BOARDS, GD_STONES, GD_GRAIN, GD_COINS, GD_GOLD, GD_IRONORE, GD_COAL, GD_MEAT, GD_HAM);
 
     constexpr unsigned numGoodTypesToCollect = 7;
 
     // Randomly determine *numGoodTypesToCollect* many good types, one of which is a special good (=tool)
 
     static_assert(numGoodTypesToCollect > 0, "There have to be goods to be collected");
-    RTTR_Assert(commonGoodPool.size() >= numGoodTypesToCollect - 1); // "There have to be enough commond goods"
-    RTTR_Assert(!specialGoodPool.empty());                        // There have to be enough special goods
+    static_assert(commonGoodPool.size() >= numGoodTypesToCollect - 1, "There have to be enough commond goods");
+    static_assert(!specialGoodPool.empty(), "There have to be enough special goods");
     goodsToCollect.clear();
     goodsToCollect.resize(numGoodTypesToCollect);
     auto nextSlot = begin(goodsToCollect);
@@ -83,6 +56,7 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
     while(nextSlot != end(goodsToCollect) - 1)
     {
         GoodType nextGoodType = commonGoodPool[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), commonGoodPool.size())];
+        // No duplicates should be in goodsToCollect, so only add a good if it isn't one of the already found goods
         if(std::find(begin(goodsToCollect), nextSlot, nextGoodType) == nextSlot)
         {
             *nextSlot = nextGoodType;
@@ -151,10 +125,6 @@ void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
 
 void EconomyModeHandler::DetermineTeams()
 {
-    // If we already determined who is in a team with whom skip this. For the economy mode we only count teams at game
-    // start
-    if(!economyModeTeams.empty())
-        return;
     for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
     {
         if(gwg->GetPlayer(i).isUsed())
