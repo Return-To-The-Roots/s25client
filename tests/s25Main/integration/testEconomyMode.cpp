@@ -55,7 +55,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
     const auto goodsToCollect = world.econHandler->GetGoodTypesToCollect();
 
     BOOST_REQUIRE(!goodsToCollect.empty());
-    BOOST_REQUIRE_EQUAL(world.econHandler->GetEndFrame(), (unsigned)4);
+    BOOST_REQUIRE_EQUAL(world.econHandler->GetEndFrame(), 4u);
     BOOST_REQUIRE(!world.econHandler->isOver());
     BOOST_REQUIRE(!world.econHandler->isInfinite());
     BOOST_REQUIRE(world.GetEvMgr().ObjectHasEvents(*world.econHandler));
@@ -85,11 +85,11 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
     const auto econTeams = world.econHandler->GetTeams();
 
     // People get assigned to the correct teams?
-    BOOST_REQUIRE_EQUAL(econTeams.size(), (size_t)2);
+    BOOST_REQUIRE_EQUAL(econTeams.size(), 2u);
     unsigned smallTeam = econTeams[0].playersInTeam.count() - 1;
     unsigned bigTeam = 2 - econTeams[0].playersInTeam.count();
-    BOOST_REQUIRE_EQUAL(econTeams[smallTeam].playersInTeam.count(), (size_t)1);
-    BOOST_REQUIRE_EQUAL(econTeams[bigTeam].playersInTeam.count(), (size_t)2);
+    BOOST_REQUIRE_EQUAL(econTeams[smallTeam].playersInTeam.count(), 1u);
+    BOOST_REQUIRE_EQUAL(econTeams[bigTeam].playersInTeam.count(), 2u);
     BOOST_REQUIRE(econTeams[smallTeam].containsPlayer(1));
     BOOST_REQUIRE(econTeams[bigTeam].containsPlayer(0));
     BOOST_REQUIRE(econTeams[bigTeam].containsPlayer(2));
@@ -112,11 +112,11 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
     BOOST_TEST_REQUIRE(save.Save(tmpFile.filePath, "MapTitle"));
     Savegame loadSave;
     BOOST_TEST_REQUIRE(loadSave.Load(tmpFile.filePath, SaveGameDataToLoad::All));
-    BOOST_TEST_REQUIRE(loadSave.GetNumPlayers() == (unsigned)3);
+    BOOST_TEST_REQUIRE(loadSave.GetNumPlayers() == 3u);
     std::vector<PlayerInfo> players;
     for(unsigned j = 0; j < 3; j++)
         players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
-    std::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
+    auto sharedGame = std::make_shared<Game>(save.ggs, loadSave.start_gf, players);
     GameWorld& newWorld = sharedGame->world_;
     MockLocalGameState localGameState;
     save.sgd.ReadSnapshot(sharedGame, localGameState);
@@ -129,8 +129,8 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
     newWorld.econHandler->UpdateAmounts();
     for(const auto& teamPair : boost::combine(econTeams, econTeamsAfter))
     {
-        const auto& before = teamPair.get_head();
-        const auto& after = teamPair.get_tail().get_head();
+        const EconomyModeHandler::EconTeam& before = boost::get<0>(teamPair);
+        const EconomyModeHandler::EconTeam& after = boost::get<1>(teamPair);
         BOOST_REQUIRE_EQUAL(before.playersInTeam, after.playersInTeam);
         BOOST_REQUIRE(before.amountsTheTeamCollected == after.amountsTheTeamCollected);
         BOOST_REQUIRE_EQUAL(before.goodTypeWins, after.goodTypeWins);
