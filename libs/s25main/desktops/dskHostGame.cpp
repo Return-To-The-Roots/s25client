@@ -769,11 +769,8 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
             if(mbr == MSR_YES)
             {
                 gameLobby->getSettings().setSelection(AddonId::PEACEFULMODE, true);
-                if(gameLobby->getSettings().getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH) == 0)
-                    gameLobby->getSettings().setSelection(AddonId::ECONOMY_MODE_GAME_LENGTH, 5);
                 gameLobby->getSettings().setSelection(AddonId::NO_COINS_DEFAULT, true);
                 gameLobby->getSettings().setSelection(AddonId::LIMIT_CATAPULTS, 2);
-                GetCtrl<ctrlCheck>(20)->SetCheck(true); // Lockteams;
                 UpdateGGS();
             } else if(mbr == MSR_NO)
             {
@@ -782,7 +779,7 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
             }
         }
         break;
-        case 11: // Peaceful Mode still active
+        case 11: // Peaceful mode still active but we have an attack based victory condition
         {
             if(mbr == MSR_YES)
             {
@@ -1062,12 +1059,18 @@ bool dskHostGame::checkOptions()
     const GlobalGameSettings& ggs = gameLobby->getSettings();
     if(ggs.objective == GO_ECONOMYMODE && !ggs.getSelection(AddonId::PEACEFULMODE))
     {
-        WINDOWMANAGER.Show(
-          std::make_unique<iwMsgbox>(_("Economy Mode"),
-                                     _("You chose the economy mode. Would you like to adjust settings to fit, "
-                                       "especially to peaceful mode? Choosing yes will make the adjustmenst and let "
-                                       "you review them, choosing no will start the game."),
-                                     this, MSB_YESNOCANCEL, MSB_QUESTIONGREEN, 10));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+          _("Economy mode"),
+          _("You chose the economy mode. In economy mode the player or team that collects the most of certain goods "
+            "wins (check the economic progress window in game).\n\nSome players like to play this objective in "
+            "peaceful mode. Would you like to adjust settings for a peaceful "
+            "game?\n"
+            "Choosing Yes will activate peaceful mode, ban catapults and disable buildings receiving coins by default. "
+            "After clicking Yes you will be able to review the changes and then start the game by clicking the Start "
+            "game button again. If you like to play economy mode with attacks, "
+            "choosing No will start the game without any "
+            "changes."),
+          this, MSB_YESNOCANCEL, MSB_QUESTIONGREEN, 10));
         return false;
     } else if(ggs.getSelection(AddonId::PEACEFULMODE)
               && (ggs.objective == GO_CONQUER3_4 || ggs.objective == GO_TOTALDOMINATION))
