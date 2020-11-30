@@ -1057,30 +1057,28 @@ bool dskHostGame::checkOptions()
     if(forceOptions)
         return true;
     const GlobalGameSettings& ggs = gameLobby->getSettings();
-    if(ggs.objective == GO_ECONOMYMODE && !ggs.getSelection(AddonId::PEACEFULMODE))
+    if(ggs.objective == GO_ECONOMYMODE && !ggs.isEnabled(AddonId::PEACEFULMODE))
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
           _("Economy mode"),
           _("You chose the economy mode. In economy mode the player or team that collects the most of certain goods "
-            "wins (check the economic progress window in game).\n\nSome players like to play this objective in "
-            "peaceful mode. Would you like to adjust settings for a peaceful "
-            "game?\n"
+            "wins (check the Economic progress window in game).\n\n"
+            "Some players like to play this objective in peaceful mode. Would you like to adjust settings for a "
+            "peaceful game?\n"
             "Choosing Yes will activate peaceful mode, ban catapults and disable buildings receiving coins by default. "
             "After clicking Yes you will be able to review the changes and then start the game by clicking the Start "
-            "game button again. If you like to play economy mode with attacks, "
-            "choosing No will start the game without any "
-            "changes."),
+            "game button again.\n"
+            "Choosing No will start the game without any changes."),
           this, MSB_YESNOCANCEL, MSB_QUESTIONGREEN, 10));
         return false;
-    } else if(ggs.getSelection(AddonId::PEACEFULMODE)
+    } else if(ggs.isEnabled(AddonId::PEACEFULMODE)
               && (ggs.objective == GO_CONQUER3_4 || ggs.objective == GO_TOTALDOMINATION))
     {
-        WINDOWMANAGER.Show(
-          std::make_unique<iwMsgbox>(_("Peaceful Mode"),
-                                     _("You chose a war based victory condition but peaceful mode is still active. "
-                                       "Would you like to disactivate peaceful mode before you start? Choosing no will "
-                                       "start the game, yes will let you review the changes."),
-                                     this, MSB_YESNOCANCEL, MSB_QUESTIONRED, 11));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+          _("Peaceful mode"),
+          _("You chose a war based victory condition but peaceful mode is still active. Would you like to deactivate "
+            "peaceful mode before you start? Choosing No will start the game, Yes will let you review the changes."),
+          this, MSB_YESNOCANCEL, MSB_QUESTIONRED, 11));
         return false;
     }
     return true;
