@@ -37,7 +37,7 @@ namespace {
 
 BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
 {
-    auto& amountsToAdd = helpers::make_array(63, 100, 85);
+    constexpr auto amountsToAdd = helpers::make_array(63, 100, 85);
 
     RTTR_Assert(world.GetNumPlayers() == 3);
     world.GetPlayer(0).team = TM_TEAM2;
@@ -52,7 +52,6 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
     this->ggs.objective = GO_ECONOMYMODE;
 
     world.econHandler = std::make_unique<EconomyModeHandler>(4);
-    BOOST_REQUIRE(world.econHandler);
     const auto goodsToCollect = world.econHandler->GetGoodTypesToCollect();
 
     BOOST_REQUIRE(!goodsToCollect.empty());
@@ -83,7 +82,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
     }
 
     // Teams behaviour
-    auto econTeams = world.econHandler->GetTeams();
+    const auto econTeams = world.econHandler->GetTeams();
 
     // People get assigned to the correct teams?
     BOOST_REQUIRE_EQUAL(econTeams.size(), (size_t)2);
@@ -121,17 +120,17 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
     GameWorld& newWorld = sharedGame->world_;
     MockLocalGameState localGameState;
     save.sgd.ReadSnapshot(sharedGame, localGameState);
-    BOOST_TEST_REQUIRE(newWorld.econHandler);
-    auto& goodsToCollectAfter = newWorld.econHandler->GetGoodTypesToCollect();
-    auto& econTeamsAfter = newWorld.econHandler->GetTeams();
+    BOOST_REQUIRE(newWorld.econHandler);
+    const auto& goodsToCollectAfter = newWorld.econHandler->GetGoodTypesToCollect();
+    const auto& econTeamsAfter = newWorld.econHandler->GetTeams();
     BOOST_REQUIRE(goodsToCollect == goodsToCollectAfter);
     BOOST_REQUIRE_EQUAL(econTeams.size(), econTeamsAfter.size());
     newWorld.GetEvMgr().ExecuteNextGF();
     newWorld.econHandler->UpdateAmounts();
-    for(auto& teamPair : boost::combine(econTeams, econTeamsAfter))
+    for(const auto& teamPair : boost::combine(econTeams, econTeamsAfter))
     {
-        auto& before = teamPair.get_head();
-        auto& after = teamPair.get_tail().get_head();
+        const auto& before = teamPair.get_head();
+        const auto& after = teamPair.get_tail().get_head();
         BOOST_REQUIRE_EQUAL(before.playersInTeam, after.playersInTeam);
         BOOST_REQUIRE(before.amountsTheTeamCollected == after.amountsTheTeamCollected);
         BOOST_REQUIRE_EQUAL(before.goodTypeWins, after.goodTypeWins);
