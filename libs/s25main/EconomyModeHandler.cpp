@@ -34,13 +34,13 @@
 
 EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), gfLastUpdated(0)
 {
-    const auto specialGoodPool =
-      make_array<GoodType>(GD_TONGS, GD_HAMMER, GD_AXE, GD_SAW, GD_PICKAXE, GD_SHOVEL, GD_CRUCIBLE, GD_RODANDLINE,
-                           GD_SCYTHE, GD_CLEAVER, GD_ROLLINGPIN, GD_BOW);
+    constexpr auto specialGoodPool =
+      helpers::make_array(GD_TONGS, GD_HAMMER, GD_AXE, GD_SAW, GD_PICKAXE, GD_SHOVEL, GD_CRUCIBLE, GD_RODANDLINE,
+                          GD_SCYTHE, GD_CLEAVER, GD_ROLLINGPIN, GD_BOW);
 
-    const auto commonGoodPool =
-      make_array<GoodType>(GD_BEER, GD_WATER, GD_BOAT, GD_SWORD, GD_IRON, GD_FLOUR, GD_FISH, GD_BREAD, GD_WOOD,
-                           GD_BOARDS, GD_STONES, GD_GRAIN, GD_COINS, GD_GOLD, GD_IRONORE, GD_COAL, GD_MEAT, GD_HAM);
+    constexpr auto commonGoodPool =
+      helpers::make_array(GD_BEER, GD_WATER, GD_BOAT, GD_SWORD, GD_IRON, GD_FLOUR, GD_FISH, GD_BREAD, GD_WOOD,
+                          GD_BOARDS, GD_STONES, GD_GRAIN, GD_COINS, GD_GOLD, GD_IRONORE, GD_COAL, GD_MEAT, GD_HAM);
 
     constexpr unsigned numGoodTypesToCollect = 7;
 
