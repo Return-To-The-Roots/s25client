@@ -166,6 +166,8 @@ void iwEconomicProgress::Msg_PaintBefore()
     const std::vector<EconomyModeHandler::EconTeam>& economyModeTeams = eH->GetTeams();
     const GamePlayer& mainPlayer = gwv.GetPlayer();
 
+    RTTR_Assert(economyModeTeams.size() == teamOrder.size());
+
     // make sure the amounts are current
     eH->UpdateAmounts();
 

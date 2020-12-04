@@ -125,6 +125,7 @@ void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
 
 void EconomyModeHandler::DetermineTeams()
 {
+    RTTR_Assert(economyModeTeams.empty());
     for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
     {
         if(gwg->GetPlayer(i).isUsed())
@@ -199,9 +200,6 @@ void EconomyModeHandler::UpdateAmounts()
             amountsThePlayersCollected[g][i] = SumUpGood(goodsToCollect[g], playerInventory);
         }
     }
-
-    // Compute Teams
-    DetermineTeams();
 
     // Compute the amounts for the teams
     std::fill(maxAmountsATeamCollected.begin(), maxAmountsATeamCollected.end(), 0);
