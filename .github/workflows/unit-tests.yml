@@ -1,0 +1,120 @@
+name: Unit tests
+
+on:
+  push:
+  pull_request:
+
+env:
+  BOOST_VERSION: 1.65.1
+
+jobs:
+  Linux:
+    strategy:
+      matrix:
+        include:
+          - { compiler: gcc-6,    os: ubuntu-16.04, buildType: Release }
+          - { compiler: gcc-6,    os: ubuntu-16.04, buildType: Debug, coverage: true }
+          - { compiler: clang-7,  os: ubuntu-18.04, buildType: Release }
+          - { compiler: clang-7,  os: ubuntu-18.04, buildType: Debug }
+          - { compiler: clang  ,  os: macos-10.15, buildType: Debug }
+          # Latest GCC
+          - { compiler: gcc-10,   os: ubuntu-18.04, buildType: Debug }
+          # Latest Clang with externals
+          - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug,
+              env: { ADDITIONAL_CMAKE_FLAGS: "-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"}
+            }
+          # Latest Clang with latest boost
+          - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug,
+              env: { BOOST_VERSION: 1.75.0,
+                     ADDITIONAL_CMAKE_FLAGS: "-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"
+                   }
+            }
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - run: echo "DEPS_DIR=${{runner.temp}}/.cache" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{env.DEPS_DIR}}
+          key: ${{matrix.os}}-${{env.BOOST_VERSION}}
+      - name: Cache CCache
+        uses: actions/cache@v2
+        with:
+          path: .ccache
+          key: ${{matrix.os}}-${{matrix.compiler}}-ccache
+      - name: Setup CCache
+        run: |
+          echo "CCACHE_BASEDIR=$PWD" >> $GITHUB_ENV
+          echo "CCACHE_DIR=$PWD/.ccache" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESS=true" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=6" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=400M" >> $GITHUB_ENV
+
+      - name: Install Compiler
+        if: "!startsWith(runner.os, 'macos')"
+        run: |
+          pkgs=${{matrix.compiler}}
+          pkgs=${pkgs/gcc-/g++-}
+          sudo apt install $pkgs
+      - name: Setup compiler
+        run: |
+            CC=${{matrix.compiler}}
+            if [[ "$CC" =~ clang ]]; then
+              CXX=${CC/clang/clang++}
+            elif [[ "$CC" =~ gcc ]]; then
+              CXX=${CC/gcc/g++}
+            fi
+            ver=7 # default
+            if [[ "$CC" =~ gcc- ]]; then
+              ver="${CC##*gcc-}"
+            fi
+            GCOV=gcov-${ver}
+            echo "CC=$CC" >> $GITHUB_ENV
+            echo "CXX=$CXX" >> $GITHUB_ENV
+            echo "GCOV=$GCOV" >> $GITHUB_ENV
+
+      - name: Install system packages (Linux)
+        if: "!startsWith(runner.os, 'macos')"
+        run: sudo apt install ccache gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev
+      - name: Install system packages (OSX)
+        if: startsWith(runner.os, 'macos')
+        run: |
+          brew install ccache cmake boost sdl2 sdl2_mixer gettext miniupnpc
+          echo /usr/local/opt/gettext/bin >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          # Minimum requirements: CMake 3.9, Boost 1.65.1
+          CMAKE_DIR="${DEPS_DIR}/cmake"
+          external/libutil/tools/ci/installCMake.sh "3.9.6" "${CMAKE_DIR}"
+          echo "${CMAKE_DIR}/bin" >> $GITHUB_PATH
+
+          BOOST_ROOT="${DEPS_DIR}/boost${BOOST_VERSION}"
+          echo "BOOST_ROOT=${BOOST_ROOT}" >> $GITHUB_ENV
+          echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DBoost_NO_SYSTEM_PATHS=ON -DBoost_NO_BOOST_CMAKE=ON" >> $GITHUB_ENV
+          external/libutil/tools/ci/installBoost.sh "${BOOST_VERSION}" "${BOOST_ROOT}" "filesystem,system,program_options,thread,test,locale,iostreams,regex" shared
+
+      - name: Enable coverage collection
+        if: matrix.coverage
+        run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON" >> $GITHUB_ENV
+      - name: Setup ruby for coverage collection
+        uses: ruby/setup-ruby@v1
+        if: matrix.coverage
+        with:
+          ruby-version: 2.6
+
+      - name: Setup environment
+        run: |
+          echo "BUILD_TYPE=${{matrix.buildType}}" >> $GITHUB_ENV
+          echo "TRAVIS_BUILD_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+      - name: Build
+        run: tools/ci/travisBuild.sh
+
+      - run: tools/ci/uploadCoverageData.sh
+        if: matrix.coverage && success()
