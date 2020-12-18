@@ -179,9 +179,7 @@ void Window::LockRegion(Window* window, const Rect& rect)
 
     // Also lock the region for all parents
     if(GetParent())
-    {
         GetParent()->LockRegion(this, rect);
-    }
 }
 
 /**
@@ -199,9 +197,7 @@ void Window::FreeRegion(Window* window)
 
     // Also free the locked region for all parents
     if(GetParent())
-    {
         GetParent()->FreeRegion(this);
-    }
 }
 
 void Window::SetPos(const DrawPoint& newPos)
