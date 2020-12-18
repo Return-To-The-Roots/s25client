@@ -16,24 +16,23 @@ jobs:
           - { compiler: gcc-6,    os: ubuntu-16.04, buildType: Debug, coverage: true }
           - { compiler: clang-7,  os: ubuntu-18.04, buildType: Release }
           - { compiler: clang-7,  os: ubuntu-18.04, buildType: Debug }
-          - { compiler: clang  ,  os: macos-10.15, buildType: Debug }
+          - { compiler: clang  ,  os: macos-10.15,  buildType: Debug, boostVersion: 1.74.0 } # Multiple bugs with recent OSX until 1.74
           # Latest GCC
           - { compiler: gcc-10,   os: ubuntu-18.04, buildType: Debug }
           # Latest Clang with externals
-          - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug,
-              env: { ADDITIONAL_CMAKE_FLAGS: "-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"}
-            }
+          - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug, externalSanitizer: true }
           # Latest Clang with latest boost
-          - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug,
-              env: { BOOST_VERSION: 1.75.0,
-                     ADDITIONAL_CMAKE_FLAGS: "-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON"
-                   }
-            }
+          - { compiler: clang-10, os: ubuntu-18.04, buildType: Debug, boostVersion: 1.75.0, externalSanitizer: true }
 
     runs-on: ${{matrix.os}}
 
     steps:
       - run: echo "DEPS_DIR=${{runner.temp}}/.cache" >> $GITHUB_ENV
+      - run: echo "BOOST_VERSION=${{matrix.boostVersion}}" >> $GITHUB_ENV
+        if: matrix.boostVersion
+      - run: echo "ADDITIONAL_CMAKE_FLAGS=-DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_SANITIZERS=ON" >> $GITHUB_ENV
+        if: matrix.externalSanitizer
+
       - uses: actions/checkout@v2
         with:
           submodules: true
@@ -85,7 +84,7 @@ jobs:
       - name: Install system packages (OSX)
         if: startsWith(runner.os, 'macos')
         run: |
-          brew install ccache cmake boost sdl2 sdl2_mixer gettext miniupnpc
+          brew install ccache cmake boost sdl2 sdl2_mixer gettext miniupnpc libiconv
           echo /usr/local/opt/gettext/bin >> $GITHUB_PATH
 
       - name: Install dependencies
@@ -104,8 +103,8 @@ jobs:
         if: matrix.coverage
         run: echo "ADDITIONAL_CMAKE_FLAGS=${ADDITIONAL_CMAKE_FLAGS} -DRTTR_EXTERNAL_BUILD_TESTING=ON -DRTTR_ENABLE_COVERAGE=ON" >> $GITHUB_ENV
       - name: Setup ruby for coverage collection
-        uses: ruby/setup-ruby@v1
         if: matrix.coverage
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6
 
