@@ -11,8 +11,6 @@ see more information on <http://www.rttr.info>
 
 ## Current Build Info
 
-Travis CI: [![Travis CI Build Info](https://travis-ci.com/Return-To-The-Roots/s25client.svg?branch=master)](https://travis-ci.com/Return-To-The-Roots/s25client)
-
 Appveyor: [![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)](https://ci.appveyor.com/project/Flow86/s25client/branch/master)
 
 Coverage:
