@@ -8,7 +8,9 @@
 *~
 .DS_Store
 .vscode
+.vs
 /S2
 /build
 /external/boost*
 /win32/*.aps
+/data/RTTR/languages/*.mo

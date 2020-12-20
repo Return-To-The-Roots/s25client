@@ -64,10 +64,10 @@ private:
         std::string lastLine;
         glArchivItem_Bitmap* pic;
         std::vector<Line> lines;
-        explicit CreditsEntry(std::string title, std::string lastLine = std::string())
+        explicit CreditsEntry(std::string title, std::string lastLine = "")
             : title(std::move(title)), lastLine(std::move(lastLine)), pic(nullptr)
         {}
-        CreditsEntry(std::string title, glArchivItem_Bitmap* pic, std::string lastLine = std::string())
+        CreditsEntry(std::string title, glArchivItem_Bitmap* pic, std::string lastLine = "")
             : title(std::move(title)), lastLine(std::move(lastLine)), pic(pic)
         {}
     };

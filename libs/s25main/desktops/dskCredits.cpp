@@ -36,7 +36,7 @@
 
 /** @class dskCredits
  *
- *  Klasse des Credits Desktops.
+ *  Class for the Credits Desktop.
  */
 
 /// Duration for one credits page
@@ -46,12 +46,8 @@ const unsigned FADING_TIME = 2000;
 
 dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(entries.end())
 {
-    // Zurück
     AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
-
     AddText(1, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
-
-    // "Credits"
     AddText(2, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     // order by last name (alphabetical)
@@ -137,109 +133,111 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     entry.lines.push_back("Marc Vester (xaser)");
     entries.push_back(entry);
 
+    // add all donators to this list between first/last entry
     const std::vector<std::string> donators = {
       _("various anonymous donators"),
-      // A                              // 
-      "Bob Kromonos Achten",            // 
-      "Alles Adam",                     // 
-      "Niklas Anders",                  // 
-      "Christian Arpe",                 // 
-      // B                              // 
-      "Karsten Backhaus (K-Duke)",      // 
-      "Günter Baumann",                 // 
-      "Felix Becker",                   // 
-      "Markus Becker",                  // 
-      "Sebastian Bernhard",             // 
-      "Gilles Bordelais",               // 
-      "André Brem",                     // 
-      "Hannes Brüske",                  // 
-      "Andreas Brüske",                 // 
-      // C                              // 
-      // D                              // 
-      "Jannes Dirks",                   // 
-      // E                              // 
-      "Gerrit Eberhardt",               // 
-      // F                              // 
-      "Alexander Faber",                // 
-      "Niklas Faig",                    // 
-      "Christopher Flocke",             // 
-      "Christopher Funke-Kaiser",       // 
-      // G                              // 
-      "Hans Gabathuler",                // 
-      "Thomas Georg",                   // 
-      "Konrad Greinke",                 // 
-      "Stefan Gunkel",                  // 
-      // H                              // 
-      "Patrick Haak (Demophobie)",      // 
-      "Marius Hacker",                  // 
-      "Daniel Hampf",                   // 
-      "Nathan Hall",                    // 
-      "Christoph Hartmann",             // 
-      "Andreas Hauer",                  // 
-      "Stephan Hesse",                  // 
-      "Daniel Holle",                   // 
-      "Rene Hopf",                      // 
-      "Hanso Hunder",                   // 
-      "Benjamin Hünig",                 // 
-      // I                              // 
-      // J                              // 
-      "Dominic Jonas",                  // 
-      "Simon Jais",                     // 
-      // K                              // 
-      "Silvio Karbe",                   // 
-      "Ralli Kasikas",                  // 
-      "Jörg Kesten",                    // 
-      "Thorsten Kindel",                // 
-      "Holger Klötzner",                // 
-      "Andreas Kniep",                  // 
-      "Vladislav Kolaja",               // 
-      "Daniel Krsiak",                  // 
-      "Andreas Krimm",                  // 
-      "Christopher Kuehnel (Spikeone)", // 
-      // L                              // 
-      "Alexander Lambio",               // 
-      "Oliver Lang",                    // 
-      "Marius Loewe",                   // 
-      "Eric Lutter",                    // 
-      // M                              // 
-      "Jan Montag",                     // 
-      "Kai Müller",                     // 
-      "morlock",                        // 
-      "Jan Mozgawa",                    // 
-      // N                              // 
-      // O                              // 
-      // P                              // 
-      "Wojciech Pieklik",               // 
-      "Mike Plackowski",                // 
-      "Daniel Platt",                   // 
-      // Q                              // 
-      // R                              // 
-      "Philip Rau",                     // 
-      "Ronny Richter",                  // 
-      // S                              // 
-      "Daniel Seindl",                  // 
-      "Vasilyev Sergey",                // 
-      "Patrick Schefczyk",              // 
-      "Marcel Schneider",               // 
-      "Alexander Schoedon",             // 
-      "Max Skuratov",                   // 
-      "Philipp Strathausen",            // 
-      "Benjamin Stoisch",               // 
-      "Felix Stolle",                   // 
-      // T                              // 
-      "Nina Tillmann",                  // 
-      "Angelo Tiegs",                   // 
-      // U                              // 
-      // V                              // 
-      // W                              // 
-      "Niels Wiederanders",             // 
-      "Philipp Wohlleben"               // 
-      // X                              // 
-      // Y                              // 
-      // Z                              // 
+      // A
+      "Bob Kromonos Achten", //
+      "Alles Adam",          //
+      "Niklas Anders",       //
+      "Christian Arpe",      //
+      // B
+      "Karsten Backhaus (K-Duke)", //
+      "Günter Baumann",            //
+      "Felix Becker",              //
+      "Markus Becker",             //
+      "Sebastian Bernhard",        //
+      "Gilles Bordelais",          //
+      "André Brem",                //
+      "Hannes Brüske",             //
+      "Andreas Brüske",            //
+      // C
+      // D
+      "Jannes Dirks", //
+      // E
+      "Gerrit Eberhardt", //
+      // F
+      "Alexander Faber",          //
+      "Niklas Faig",              //
+      "Christopher Flocke",       //
+      "Christopher Funke-Kaiser", //
+      // G
+      "Hans Gabathuler", //
+      "Thomas Georg",    //
+      "Konrad Greinke",  //
+      "Stefan Gunkel",   //
+      // H
+      "Patrick Haak (Demophobie)", //
+      "Marius Hacker",             //
+      "Daniel Hampf",              //
+      "Nathan Hall",               //
+      "Christoph Hartmann",        //
+      "Andreas Hauer",             //
+      "Stephan Hesse",             //
+      "Daniel Holle",              //
+      "Rene Hopf",                 //
+      "Hanso Hunder",              //
+      "Benjamin Hünig",            //
+      // I
+      // J
+      "Dominic Jonas", //
+      "Simon Jais",    //
+      // K
+      "Silvio Karbe",                   //
+      "Ralli Kasikas",                  //
+      "Jörg Kesten",                    //
+      "Thorsten Kindel",                //
+      "Holger Klötzner",                //
+      "Andreas Kniep",                  //
+      "Vladislav Kolaja",               //
+      "Daniel Krsiak",                  //
+      "Andreas Krimm",                  //
+      "Christopher Kuehnel (Spikeone)", //
+      // L
+      "Alexander Lambio", //
+      "Oliver Lang",      //
+      "Marius Loewe",     //
+      "Eric Lutter",      //
+      // M
+      "Jan Montag",  //
+      "Kai Müller",  //
+      "morlock",     //
+      "Jan Mozgawa", //
+      // N
+      // O
+      // P
+      "Wojciech Pieklik", //
+      "Mike Plackowski",  //
+      "Daniel Platt",     //
+      // Q
+      // R
+      "Philip Rau",    //
+      "Ronny Richter", //
+      // S
+      "Daniel Seindl",       //
+      "Vasilyev Sergey",     //
+      "Patrick Schefczyk",   //
+      "Marcel Schneider",    //
+      "Alexander Schoedon",  //
+      "Max Skuratov",        //
+      "Philipp Strathausen", //
+      "Benjamin Stoisch",    //
+      "Felix Stolle",        //
+      // T
+      "Nina Tillmann", //
+      "Angelo Tiegs",  //
+      // U
+      // V
+      // W
+      "Niels Wiederanders", //
+      "Philipp Wohlleben",  //
+      // X
+      // Y
+      // Z
+      _("... and many more") //
     };
 
-    // alphabetical again, two rows
+    // alphabetical again, two columns
     entry = CreditsEntry(_("Donators"), _("Thank you for your donations!"));
 
     const size_t page_size = 15;
@@ -248,10 +246,11 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     for(const auto& donator : donators)
     {
         const size_t column = (pos < middle ? 0 : 1);
-        entry.lines.push_back(CreditsEntry::Line(donator, column ));
+        entry.lines.push_back(CreditsEntry::Line(donator, column));
         ++pos;
+
         // create new page
-        if(pos > page_size) 
+        if(pos > page_size)
         {
             entries.push_back(entry);
             entry.lines.clear();
@@ -308,7 +307,6 @@ void dskCredits::Draw_()
 
 void dskCredits::GotoNextPage()
 {
-    // Next page
     ++this->itCurEntry;
     if(this->itCurEntry == entries.end())
         this->itCurEntry = entries.begin();
@@ -317,7 +315,6 @@ void dskCredits::GotoNextPage()
 
 void dskCredits::GotoPrevPage()
 {
-    // Prev page
     if(this->itCurEntry == entries.begin())
         this->itCurEntry = std::prev(entries.end());
     else
@@ -327,7 +324,8 @@ void dskCredits::GotoPrevPage()
 
 void dskCredits::DrawCredit()
 {
-    const unsigned time = static_cast<unsigned>(std::chrono::duration_cast<std::chrono::milliseconds>(timer.getElapsed()).count());
+    const unsigned time =
+      static_cast<unsigned>(std::chrono::duration_cast<std::chrono::milliseconds>(timer.getElapsed()).count());
     if(time > PAGE_TIME)
     {
         GotoNextPage();
@@ -372,7 +370,7 @@ T randEnum()
 
 void dskCredits::DrawBobs()
 {
-    // Frameratebegrenzer
+    // limit framerate of bobs running
     int msSinceLastBobAnim = VIDEODRIVER.GetTickCount() - bobTime;
     int bobAnimStepsPerSec = 25;
 
@@ -396,7 +394,7 @@ void dskCredits::DrawBobs()
         b.animationStep = 0;
         b.speed = 1 + rand() % 4;
 
-        // links oder rechts spawnen
+        // spawn left or right
         if(rand() % 2 == 0)
         {
             b.pos.x = 0;
@@ -414,11 +412,13 @@ void dskCredits::DrawBobs()
         if(job == JOB_MILLER || job == JOB_BAKER || job == JOB_BREWER || job == JOB_ARMORER
            || job == JOB_CHARBURNER /* Comes from another file */)
         {
-            b.id = randEnum<GoodType>();
+            // GD_SHIELDJAPANESE has no image? so randEnum<GoodType>() does not work?
+            b.id = GoodType(rand() % GD_HAM);
             b.hasWare = true;
         } else
         {
-            b.id = JOB_SPRITE_CONSTS[job].getBobId(randEnum<Nation>());
+            // only native nations are loaded, so randEnum<Nation>() does not work?
+            b.id = JOB_SPRITE_CONSTS[job].getBobId(Nation(rand() % NUM_NATIVE_NATIONS));
             b.hasWare = false;
         }
 
@@ -455,7 +455,7 @@ void dskCredits::DrawBobs()
         }
     }
 
-    // Frameratebegrenzer aktualisieren
+    // update framerate timer
     if(msSinceLastBobAnim > (1000 / bobAnimStepsPerSec))
         bobTime = VIDEODRIVER.GetTickCount();
 }
@@ -474,25 +474,25 @@ glArchivItem_Bitmap* dskCredits::GetCreditsImgOrDefault(const std::string& name)
     return result;
 }
 
-bool dskCredits::Msg_KeyDown(const KeyEvent& /*ke*/)
+bool dskCredits::Msg_KeyDown(const KeyEvent&)
 {
     GotoNextPage();
     return true;
 }
 
-bool dskCredits::Msg_LeftUp(const MouseCoords& /*mc*/)
+bool dskCredits::Msg_LeftUp(const MouseCoords&)
 {
     GotoNextPage();
     return true;
 }
 
-bool dskCredits::Msg_RightUp(const MouseCoords& mc)
+bool dskCredits::Msg_RightUp(const MouseCoords&)
 {
     GotoPrevPage();
     return true;
 }
 
-void dskCredits::Msg_ButtonClick(const unsigned /*ctrl_id*/)
+void dskCredits::Msg_ButtonClick(const unsigned)
 {
     Close();
 }
