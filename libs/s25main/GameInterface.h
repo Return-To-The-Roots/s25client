@@ -37,6 +37,9 @@ public:
     /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
     virtual void GI_TreatyOfAllianceChanged(unsigned playerId) = 0;
 
+    /// Update minimap and colors for whole map
+    virtual void GI_UpdateMapVisibility() {}
+
     virtual void GI_Winner(unsigned playerId) = 0;
     virtual void GI_TeamWinner(unsigned playerId) = 0;
 

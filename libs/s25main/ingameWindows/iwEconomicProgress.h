@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,32 +17,28 @@
 
 #pragma once
 
-enum GameSpeed
+#include "EconomyModeHandler.h"
+#include "IngameWindow.h"
+
+class ctrlText;
+class GameWorldViewer;
+
+/// Window for displaying the economic mode progress
+class iwEconomicProgress : public IngameWindow
 {
-    GS_VERYSLOW = 0,
-    GS_SLOW,
-    GS_NORMAL,
-    GS_FAST,
-    GS_VERYFAST
-};
-enum GameObjective
-{
-    GO_NONE = 0,
-    GO_CONQUER3_4,
-    GO_TOTALDOMINATION,
-    GO_ECONOMYMODE
-};
-enum StartWares
-{
-    SWR_VLOW = 0,
-    SWR_LOW,
-    SWR_NORMAL,
-    SWR_ALOT
-};
-enum Exploration
-{
-    EXP_DISABLED = 0,
-    EXP_CLASSIC,
-    EXP_FOGOFWAR,
-    EXP_FOGOFWARE_EXPLORED
+public:
+    iwEconomicProgress(const GameWorldViewer& gwv);
+    ~iwEconomicProgress() override;
+
+private:
+    const GameWorldViewer& gwv;
+    ctrlText* txtRemainingTime;
+
+    /// Order in which the teams are displayed
+    std::vector<const EconomyModeHandler::EconTeam*> teamOrder;
+
+    void Draw_() override;
+
+    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void Msg_PaintBefore() override;
 };

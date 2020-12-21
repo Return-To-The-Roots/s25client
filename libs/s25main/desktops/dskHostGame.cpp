@@ -207,6 +207,8 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     combo->AddString(_("None"));               // Kein Spielziel
     combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
     combo->AddString(_("Total domination"));   // Alleinherrschaft
+    combo->AddString(_("Economy mode"));       // Wirtschaftsmodus
+
     // Lobby game?
     if(lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
@@ -637,6 +639,9 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
             auto* ready = GetCtrl<ctrlTextButton>(2);
             if(gameLobby->isHost())
             {
+                if(!checkOptions())
+                    return;
+
                 SetPlayerReady(localPlayerId_, true);
                 if(lua)
                     lua->EventPlayerReady(localPlayerId_);
@@ -757,6 +762,33 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         {
             if(mbr == MSR_YES)
                 UpdateGGS();
+        }
+        break;
+        case 10: // Economy Mode - change Addon Setttings
+        {
+            if(mbr == MSR_YES)
+            {
+                gameLobby->getSettings().setSelection(AddonId::PEACEFULMODE, true);
+                gameLobby->getSettings().setSelection(AddonId::NO_COINS_DEFAULT, true);
+                gameLobby->getSettings().setSelection(AddonId::LIMIT_CATAPULTS, 2);
+                UpdateGGS();
+            } else if(mbr == MSR_NO)
+            {
+                forceOptions = true;
+                Msg_ButtonClick(2);
+            }
+        }
+        break;
+        case 11: // Peaceful mode still active but we have an attack based victory condition
+        {
+            if(mbr == MSR_YES)
+            {
+                gameLobby->getSettings().setSelection(AddonId::PEACEFULMODE, false);
+            } else if(mbr == MSR_NO)
+            {
+                forceOptions = true;
+                Msg_ButtonClick(2);
+            }
         }
         break;
     }
@@ -1018,4 +1050,36 @@ void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
         if(!lobbyChatTabAnimId)
             lobbyChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }
+}
+
+bool dskHostGame::checkOptions()
+{
+    if(forceOptions)
+        return true;
+    const GlobalGameSettings& ggs = gameLobby->getSettings();
+    if(ggs.objective == GO_ECONOMYMODE && !ggs.isEnabled(AddonId::PEACEFULMODE))
+    {
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+          _("Economy mode"),
+          _("You chose the economy mode. In economy mode the player or team that collects the most of certain goods "
+            "wins (check the Economic progress window in game).\n\n"
+            "Some players like to play this objective in peaceful mode. Would you like to adjust settings for a "
+            "peaceful game?\n"
+            "Choosing Yes will activate peaceful mode, ban catapults and disable buildings receiving coins by default. "
+            "After clicking Yes you will be able to review the changes and then start the game by clicking the Start "
+            "game button again.\n"
+            "Choosing No will start the game without any changes."),
+          this, MSB_YESNOCANCEL, MSB_QUESTIONGREEN, 10));
+        return false;
+    } else if(ggs.isEnabled(AddonId::PEACEFULMODE)
+              && (ggs.objective == GO_CONQUER3_4 || ggs.objective == GO_TOTALDOMINATION))
+    {
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+          _("Peaceful mode"),
+          _("You chose a war based victory condition but peaceful mode is still active. Would you like to deactivate "
+            "peaceful mode before you start? Choosing No will start the game, Yes will let you review the changes."),
+          this, MSB_YESNOCANCEL, MSB_QUESTIONRED, 11));
+        return false;
+    }
+    return true;
 }

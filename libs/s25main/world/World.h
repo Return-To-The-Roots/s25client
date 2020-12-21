@@ -116,6 +116,9 @@ public:
 
     void ChangeAltitude(MapPoint pt, unsigned char altitude);
 
+    // Make whole map visible with no additional checks or notices
+    void MakeWholeMapVisibleForAllPlayers();
+
     /// Checks if the point completely belongs to a player (if false but point itself belongs to player then it is a
     /// border) if owner is != 0 it checks if the points specific ownership
     bool IsPlayerTerritory(MapPoint pt, unsigned char owner = 0) const;

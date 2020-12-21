@@ -1708,7 +1708,7 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
     // Angaben rausfiltern
     hours numHours = duration_cast<hours>(numSeconds);
     numSeconds -= numHours;
-    minutes numMinutes = duration_cast<hours>(numSeconds);
+    minutes numMinutes = duration_cast<minutes>(numSeconds);
     numSeconds -= numMinutes;
 
     // ganze Stunden mit dabei? Dann entsprechend anderes format, ansonsten ignorieren wir die einfach

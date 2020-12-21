@@ -463,3 +463,15 @@ void World::RecalcShadow(const MapPoint pt)
         shadingS2 = 0;
     GetNodeInt(pt).shadow = shadingS2;
 }
+
+void World::MakeWholeMapVisibleForAllPlayers()
+{
+    for(auto& mapNode : nodes)
+    {
+        for(auto& fowNode : mapNode.fow)
+        {
+            fowNode.visibility = VIS_VISIBLE;
+            deletePtr(fowNode.object);
+        }
+    }
+}

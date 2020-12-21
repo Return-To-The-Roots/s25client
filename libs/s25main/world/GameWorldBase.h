@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "EconomyModeHandler.h"
 #include "buildings/nobBaseMilitary.h"
 #include "enum_cast.hpp"
 #include "helpers/OptionalEnum.h"
@@ -67,6 +68,11 @@ class GameWorldBase : public World
     std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
+
+public:
+    std::unique_ptr<EconomyModeHandler> econHandler;
+
+private:
     std::unique_ptr<LuaInterfaceGame> lua;
 
 protected:

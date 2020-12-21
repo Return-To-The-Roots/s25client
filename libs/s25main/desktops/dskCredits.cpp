@@ -114,6 +114,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     entry.lines.push_back("Divan");
     entry.lines.push_back("Christoph Erhardt (Airhardt)");
     entry.lines.push_back("Siegfried Oleg Pammer (siegi44)");
+    entry.lines.push_back("Jonathan Steinbuch");
     entry.lines.push_back("Lienhart Woitok (liwo)");
     entry.lines.push_back("");
     entry.lines.push_back(_("all developers who contributed via Github"));
