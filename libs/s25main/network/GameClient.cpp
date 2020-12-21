@@ -1299,10 +1299,16 @@ void GameClient::ExecuteGameFrame()
         // TODO: Run multiple GFs per call.
         // For now just make sure it is less than gf_length by skipping some simulation time,
         // until we are only a bit less than 1 GF behind
+        // However we allow the simulation to lack behind for a few frames, so if there was a single spike we can still
+        // catch up in the next visual frames
         using DurationType = decltype(framesinfo.gf_length);
+        constexpr auto maxLackFrames = 5;
+
         RTTR_Assert(framesinfo.gf_length > DurationType::zero());
         const auto maxFrameTime = framesinfo.gf_length - DurationType(1);
-        framesinfo.lastTime += framesinfo.frameTime - maxFrameTime;
+
+        if(framesinfo.frameTime > maxLackFrames * framesinfo.gf_length)
+            framesinfo.lastTime += framesinfo.frameTime - maxFrameTime; // Skip simulation time until caught up
         framesinfo.frameTime = maxFrameTime;
     }
     // This is assumed by drawing code for interpolation
