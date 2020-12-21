@@ -49,21 +49,18 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
     static_assert(numGoodTypesToCollect > 0, "There have to be goods to be collected");
     static_assert(commonGoodPool.size() >= numGoodTypesToCollect - 1, "There have to be enough commond goods");
     static_assert(!specialGoodPool.empty(), "There have to be enough special goods");
-    goodsToCollect.clear();
-    goodsToCollect.resize(numGoodTypesToCollect);
-    auto nextSlot = begin(goodsToCollect);
+    goodsToCollect.reserve(numGoodTypesToCollect);
 
-    while(nextSlot != end(goodsToCollect) - 1)
+    while(goodsToCollect.size() < numGoodTypesToCollect - 1)
     {
         GoodType nextGoodType = commonGoodPool[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), commonGoodPool.size())];
         // No duplicates should be in goodsToCollect, so only add a good if it isn't one of the already found goods
-        if(std::find(begin(goodsToCollect), nextSlot, nextGoodType) == nextSlot)
+        if(!helpers::contains(goodsToCollect, nextGoodType))
         {
-            *nextSlot = nextGoodType;
-            nextSlot++;
+            goodsToCollect.push_back(nextGoodType);
         }
     }
-    *nextSlot = specialGoodPool[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), specialGoodPool.size())];
+    goodsToCollect.push_back(specialGoodPool[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), specialGoodPool.size())]);
 
     // Schedule end game event and trust the event manager to keep track of it
     if(!isInfinite())
