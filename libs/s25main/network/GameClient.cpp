@@ -1217,11 +1217,21 @@ void GameClient::ExecuteGameFrame()
     }
 
     const unsigned curGF = GetGFNumber();
+    const bool isSkipping = skiptogf > curGF;
     // Is it time for the next GF? If we are skipping, it is always time for the next GF
-    if(skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
+    if(isSkipping || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
     {
         try
         {
+            if(isSkipping)
+            {
+                // We are always in realtime
+                framesinfo.lastTime = currentTime;
+            } else
+            {
+                // Advance simulation time (lastTime) by 1 GF
+                framesinfo.lastTime += framesinfo.gf_length;
+            }
             if(replayMode)
             {
                 // In replay mode we have all commands in the file -> Execute them
@@ -1268,10 +1278,6 @@ void GameClient::ExecuteGameFrame()
                     replayinfo->replay.UpdateLastGF(curGF);
             }
 
-            // Store this timestamp
-            framesinfo.lastTime = currentTime;
-            // Reset frameTime
-            framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
         } catch(LuaExecutionError& e)
         {
             if(ci)
@@ -1284,13 +1290,23 @@ void GameClient::ExecuteGameFrame()
         }
         if(skiptogf == GetGFNumber())
             skiptogf = 0;
-    } else
-    {
-        // Next GF not yet reached, just update the time in the current one for drawing
-        framesinfo.frameTime =
-          std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
-        RTTR_Assert(framesinfo.frameTime < framesinfo.gf_length);
     }
+    framesinfo.frameTime = std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
+    // Check remaining time until next GF
+    if(framesinfo.frameTime >= framesinfo.gf_length)
+    {
+        // This can happen, if we don't call this method in intervalls less than gf_length or gf_length has changed
+        // TODO: Run multiple GFs per call.
+        // For now just make sure it is less than gf_length by skipping some simulation time,
+        // until we are only a bit less than 1 GF behind
+        using DurationType = decltype(framesinfo.gf_length);
+        RTTR_Assert(framesinfo.gf_length > DurationType::zero());
+        const auto maxFrameTime = framesinfo.gf_length - DurationType(1);
+        framesinfo.lastTime += framesinfo.frameTime - maxFrameTime;
+        framesinfo.frameTime = maxFrameTime;
+    }
+    // This is assumed by drawing code for interpolation
+    RTTR_Assert(framesinfo.frameTime < framesinfo.gf_length);
 }
 
 void GameClient::HandleAutosave()
