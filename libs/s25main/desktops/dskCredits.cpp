@@ -380,19 +380,19 @@ T randEnum()
 void dskCredits::DrawBobs()
 {
     using namespace std::chrono_literals;
-    auto bobSpawnIntervall = 200ms;
+    auto bobSpawnInterval = 200ms;
 
     if(VIDEODRIVER.GetFPS() < 30)
-        bobSpawnIntervall = 0ms;
+        bobSpawnInterval = 0ms;
     else if(VIDEODRIVER.GetFPS() < 60)
-        bobSpawnIntervall = 1s;
+        bobSpawnInterval = 1s;
     else if(VIDEODRIVER.GetFPS() < 200)
-        bobSpawnIntervall = 500ms;
+        bobSpawnInterval = 500ms;
 
     const auto maxNumBos = 50 + VIDEODRIVER.GetRenderSize().x / 2;
 
     // add new bob
-    if(bobSpawnIntervall != 0ms && bobSpawnTimer.getElapsed() >= bobSpawnIntervall && bobs.size() < maxNumBos)
+    if(bobSpawnInterval != 0ms && bobSpawnTimer.getElapsed() >= bobSpawnInterval && bobs.size() < maxNumBos)
     {
         bobSpawnTimer.restart();
 
