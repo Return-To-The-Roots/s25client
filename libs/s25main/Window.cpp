@@ -382,7 +382,7 @@ ctrlTable* Window::AddTable(unsigned id, const DrawPoint& pos, const Extent& siz
 
 ctrlTimer* Window::AddTimer(unsigned id, unsigned timeout)
 {
-    return AddCtrl(new ctrlTimer(this, id, timeout));
+    return AddCtrl(new ctrlTimer(this, id, std::chrono::milliseconds(timeout)));
 }
 
 /**

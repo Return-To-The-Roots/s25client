@@ -19,57 +19,42 @@
 
 #include "drivers/VideoDriverWrapper.h"
 
-/** @var ctrlTimer::timer
- *
- *  Der Timer zum Abgleichen der Zeit.
- */
+ctrlTimer::ctrlTimer(Window* parent, unsigned id, std::chrono::milliseconds timeout)
+    : Window(parent, id, DrawPoint(0, 0)), timeout_(timeout), timer_(true)
+{}
 
-/** @var ctrlTimer::timeout
- *
- *  Die Zeit nach der der Timer zünden soll.
+/**
+ *  start the timer
  */
-
-ctrlTimer::ctrlTimer(Window* parent, unsigned id, unsigned timeout) : Window(parent, id, DrawPoint(0, 0))
+void ctrlTimer::Start(std::chrono::milliseconds timeout)
 {
-    Start(timeout);
+    timeout_ = timeout;
+    Start();
+}
+
+void ctrlTimer::Start()
+{
+    timer_.restart();
 }
 
 /**
- *  startet den Timer.
- */
-void ctrlTimer::Start(unsigned timeout)
-{
-    this->timeout_ = timeout;
-
-    // timer initialisieren
-    timer = VIDEODRIVER.GetTickCount();
-}
-
-/**
- *  stoppt den Timer
+ *  stop the timer
  */
 void ctrlTimer::Stop()
 {
-    timer = 0;
+    timer_.stop();
 }
 
 void ctrlTimer::Msg_PaintBefore()
 {
     Window::Msg_PaintBefore();
-    // timer ist deaktiviert, nix tun
-    if(timer == 0)
+
+    if(!timer_.isRunning())
         return;
 
-    // Bei Timeout weiterschalten
-    if(VIDEODRIVER.GetTickCount() - timer > timeout_)
+    if(timer_.getElapsed() >= timeout_)
     {
+        timer_.restart(); // Do this first so parent can stop or change duration
         GetParent()->Msg_Timer(GetID());
-
-        if(timer != 0)
-        {
-            timer = VIDEODRIVER.GetTickCount();
-            if(timer == 0)
-                timer = 1;
-        }
     }
 }

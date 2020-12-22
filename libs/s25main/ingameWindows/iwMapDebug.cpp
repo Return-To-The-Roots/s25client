@@ -34,6 +34,7 @@
 #include "gameTypes/TextureColor.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/nowide/iostream.hpp>
+#include <chrono>
 
 namespace {
 enum
@@ -151,7 +152,8 @@ private:
     Subscription nodeSub;
 };
 
-static const std::array<unsigned, 6> BQ_CHECK_INTERVALS = {10000, 1000, 500, 250, 100, 50};
+using namespace std::chrono_literals;
+static const std::array<std::chrono::milliseconds, 6> BQ_CHECK_INTERVALS = {10s, 1s, 500ms, 250ms, 100ms, 50ms};
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
     : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 135), _("Map Debug"),
@@ -166,9 +168,9 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
     ctrlComboBox* cbCheckEvents =
       AddComboBox(ID_cbCheckEventForPlayer, DrawPoint(15, 50), Extent(200, 20), TC_GREY, NormalFont, 100);
     cbCheckEvents->AddString(_("BQ check disabled"));
-    for(unsigned ms : BQ_CHECK_INTERVALS)
+    for(const std::chrono::milliseconds ms : BQ_CHECK_INTERVALS)
     {
-        cbCheckEvents->AddString((boost::format(_("BQ check every %1%ms")) % ms).str());
+        cbCheckEvents->AddString((boost::format(_("BQ check every %1%ms")) % ms.count()).str());
     }
     cbCheckEvents->SetSelection(0);
     AddTimer(ID_tmrCheckEvents, 500)->Stop();
