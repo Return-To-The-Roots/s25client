@@ -294,8 +294,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     for(unsigned i = 0; i < NUM_NATIVE_NATIONS; i++)
         nations[i] = Nation(i);
 
-    if(!LOADER.Load(ResourceId("credits"))
-       || !LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations, {}))
+    if(!LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations, {}))
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game resources"), this, MSB_OK,
                                                       MSB_EXCLAMATIONRED, 0));
