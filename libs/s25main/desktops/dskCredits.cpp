@@ -19,6 +19,7 @@
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
+#include "controls/ctrlTimer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
 #include "ingameWindows/iwMsgbox.h"
@@ -34,21 +35,33 @@
 #include <cstdlib>
 #include <numeric>
 
-/** @class dskCredits
- *
- *  Class for the Credits Desktop.
- */
-
 /// Duration for one credits page
-const unsigned PAGE_TIME = 12900;
+const auto PAGE_TIME = std::chrono::milliseconds(12900);
 /// Duration for fading between pages
-const unsigned FADING_TIME = 2000;
+const auto FADING_TIME = std::chrono::seconds(2);
+using std::chrono::duration_cast;
+
+namespace {
+enum
+{
+    ID_btBack,
+    ID_txtRttr,
+    ID_txtCredits,
+    ID_tmrBobAnim,
+    ID_tmrPage,
+};
+}
 
 dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(entries.end())
 {
-    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
-    AddText(1, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
-    AddText(2, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    AddTextButton(ID_btBack, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
+    AddText(ID_txtRttr, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    AddText(ID_txtCredits, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    AddTimer(ID_tmrBobAnim, 40); // Bob animation every 40ms
+    pageTimer = AddTimer(ID_tmrPage, duration_cast<std::chrono::milliseconds>(PAGE_TIME).count());
+    pageTimer->Stop();
+
+    LOADER.Load(ResourceId("credits")); // Ignore failure
 
     // order by last name (alphabetical)
     CreditsEntry entry = CreditsEntry("Alexander Grund (Flamefire):", GetCreditsImgOrDefault("flamefire"));
@@ -281,7 +294,8 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     for(unsigned i = 0; i < NUM_NATIVE_NATIONS; i++)
         nations[i] = Nation(i);
 
-    if(!LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations, {}))
+    if(!LOADER.Load(ResourceId("credits"))
+       || !LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations, {}))
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game resources"), this, MSB_OK,
                                                       MSB_EXCLAMATIONRED, 0));
@@ -308,38 +322,33 @@ void dskCredits::Draw_()
 
 void dskCredits::GotoNextPage()
 {
-    ++this->itCurEntry;
-    if(this->itCurEntry == entries.end())
-        this->itCurEntry = entries.begin();
-    timer.restart();
+    ++itCurEntry;
+    if(itCurEntry == entries.end())
+        itCurEntry = entries.begin();
+    pageTimer->Start();
 }
 
 void dskCredits::GotoPrevPage()
 {
-    if(this->itCurEntry == entries.begin())
-        this->itCurEntry = std::prev(entries.end());
+    if(itCurEntry == entries.begin())
+        itCurEntry = std::prev(entries.end());
     else
-        --this->itCurEntry;
-    timer.restart();
+        --itCurEntry;
+    pageTimer->Start();
 }
 
 void dskCredits::DrawCredit()
 {
-    const unsigned time =
-      static_cast<unsigned>(std::chrono::duration_cast<std::chrono::milliseconds>(timer.getElapsed()).count());
-    if(time > PAGE_TIME)
-    {
-        GotoNextPage();
-    }
+    const auto elapsedPageTime = pageTimer->getElapsed();
 
     // calculate text transparency
     unsigned transparency;
-    if(time < FADING_TIME)
-        transparency = 0xFF * time / FADING_TIME;
-    else if(time >= PAGE_TIME)
+    if(elapsedPageTime < FADING_TIME)
+        transparency = 0xFF * elapsedPageTime / FADING_TIME;
+    else if(elapsedPageTime >= PAGE_TIME)
         transparency = 0;
-    else if(time > PAGE_TIME - FADING_TIME)
-        transparency = (0xFF - 0xFF * (time - (PAGE_TIME - FADING_TIME)) / FADING_TIME);
+    else if(elapsedPageTime > PAGE_TIME - FADING_TIME)
+        transparency = (0xFF - 0xFF * (elapsedPageTime - (PAGE_TIME - FADING_TIME)) / FADING_TIME);
     else
         transparency = 0xFF;
 
@@ -348,7 +357,7 @@ void dskCredits::DrawCredit()
 
     std::array<unsigned, 2> columnToY = {{150, 150}};
 
-    for(auto& line : itCurEntry->lines)
+    for(const auto& line : itCurEntry->lines)
     {
         LargeFont->Draw(DrawPoint(60 + line.column * 350, columnToY[line.column]), line.line, FontStyle{},
                         SetAlpha(COLOR_YELLOW, transparency));
@@ -371,25 +380,22 @@ T randEnum()
 
 void dskCredits::DrawBobs()
 {
-    // limit framerate of bobs running
-    int msSinceLastBobAnim = VIDEODRIVER.GetTickCount() - bobTime;
-    int bobAnimStepsPerSec = 25;
-
-    int msSinceLastBobSpawn = VIDEODRIVER.GetTickCount() - bobSpawnTime;
-    int bob_spawnprosec = 5;
+    using namespace std::chrono_literals;
+    auto bobSpawnIntervall = 200ms;
 
     if(VIDEODRIVER.GetFPS() < 30)
-        bob_spawnprosec = 0;
+        bobSpawnIntervall = 0ms;
     else if(VIDEODRIVER.GetFPS() < 60)
-        bob_spawnprosec = 1;
+        bobSpawnIntervall = 1s;
     else if(VIDEODRIVER.GetFPS() < 200)
-        bob_spawnprosec = 2;
+        bobSpawnIntervall = 500ms;
+
+    const auto maxNumBos = 50 + VIDEODRIVER.GetRenderSize().x / 2;
 
     // add new bob
-    if(bob_spawnprosec > 0 && msSinceLastBobSpawn > (1000 / bob_spawnprosec)
-       && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetRenderSize().x / 2))
+    if(bobSpawnIntervall != 0ms && bobSpawnTimer.getElapsed() >= bobSpawnIntervall && bobs.size() < maxNumBos)
     {
-        bobSpawnTime = VIDEODRIVER.GetTickCount();
+        bobSpawnTimer.restart();
 
         Bob b = Bob();
         b.animationStep = 0;
@@ -428,24 +434,29 @@ void dskCredits::DrawBobs()
     }
 
     // draw bobs
-    for(auto& bob : bobs)
+    for(const auto& bob : bobs)
     {
         if(!bob.hasWare)
             LOADER.GetBob("jobs")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
         else
             LOADER.GetBob("carrier")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
+    }
+}
 
-        if(msSinceLastBobAnim > (1000 / bobAnimStepsPerSec))
+void dskCredits::Msg_Timer(unsigned tmrId)
+{
+    if(tmrId == ID_tmrBobAnim)
+    {
+        const auto width = static_cast<int>(VIDEODRIVER.GetRenderSize().x);
+        for(auto& bob : bobs)
         {
-            bobTime = VIDEODRIVER.GetTickCount();
-
             bob.animationStep++;
             if(bob.animationStep > 7)
                 bob.animationStep = 0;
             if(bob.direction == libsiedler2::ImgDir::E)
             {
                 bob.pos.x += bob.speed;
-                if(bob.pos.x > static_cast<int>(VIDEODRIVER.GetRenderSize().x))
+                if(bob.pos.x > width)
                     bob.direction = libsiedler2::ImgDir::W;
             } else if(bob.direction == libsiedler2::ImgDir::W)
             {
@@ -454,11 +465,10 @@ void dskCredits::DrawBobs()
                     bob.direction = libsiedler2::ImgDir::E;
             }
         }
+    } else if(tmrId == ID_tmrPage)
+    {
+        GotoNextPage();
     }
-
-    // update framerate timer
-    if(msSinceLastBobAnim > (1000 / bobAnimStepsPerSec))
-        bobTime = VIDEODRIVER.GetTickCount();
 }
 
 bool dskCredits::Close()
@@ -484,6 +494,7 @@ bool dskCredits::Msg_KeyDown(const KeyEvent&)
 bool dskCredits::Msg_LeftUp(const MouseCoords&)
 {
     GotoNextPage();
+    bobSpawnTimer.restart(); // Little easteregg
     return true;
 }
 
@@ -506,9 +517,9 @@ void dskCredits::Msg_MsgBoxResult(unsigned, MsgboxResult)
 void dskCredits::SetActive(bool active)
 {
     Desktop::SetActive(active);
-    if(active)
+    if(active && !pageTimer->isRunning())
     {
-        bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
-        timer.restart();
+        pageTimer->Start();
+        bobSpawnTimer.start();
     }
 }

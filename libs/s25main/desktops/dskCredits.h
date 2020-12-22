@@ -19,12 +19,12 @@
 
 #include "Desktop.h"
 #include "Timer.h"
-
 #include "libsiedler2/ImgDir.h"
 #include <utility>
 #include <vector>
 
 struct KeyEvent;
+class ctrlTimer;
 class glArchivItem_Bitmap;
 
 /// Klasse des Credits Desktops.
@@ -37,6 +37,7 @@ public:
     bool Msg_LeftUp(const MouseCoords& mc) override;
     bool Msg_RightUp(const MouseCoords& mc) override;
     bool Msg_KeyDown(const KeyEvent& ke) override;
+    void Msg_Timer(unsigned timerId) override;
     void Draw_() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult) override;
@@ -89,7 +90,6 @@ private:
 
     std::vector<Bob> bobs;
 
-    Timer timer;
-    unsigned bobTime;
-    unsigned bobSpawnTime;
+    ctrlTimer* pageTimer;
+    Timer bobSpawnTimer;
 };

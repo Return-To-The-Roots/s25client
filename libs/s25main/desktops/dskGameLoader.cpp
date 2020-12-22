@@ -80,7 +80,8 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     auto* timer = GetCtrl<ctrlTimer>(1);
     auto* text = GetCtrl<ctrlText>(10 + position);
-    int interval = 50;
+    using namespace std::chrono_literals;
+    const auto interval = 50ms;
 
     timer->Stop();
 
