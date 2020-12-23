@@ -19,6 +19,7 @@
 
 #include "random/XorShift.h"
 #include "gameTypes/MapCoordinates.h"
+#include <random>
 #include <vector>
 
 namespace rttr { namespace mapGenerator {

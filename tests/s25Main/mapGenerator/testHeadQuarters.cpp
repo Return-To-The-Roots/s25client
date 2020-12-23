@@ -143,9 +143,7 @@ BOOST_AUTO_TEST_CASE(PlaceHeadQuarter_returns_true_for_area_with_suitable_positi
 
         std::vector<MapPoint> area{hq};
 
-        auto success = PlaceHeadQuarter(map, 0, area);
-
-        BOOST_REQUIRE(success);
+        BOOST_REQUIRE(PlaceHeadQuarter(map, 0, area));
     });
 }
 

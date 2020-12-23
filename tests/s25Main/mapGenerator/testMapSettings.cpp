@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(MakeValid_ensures_valid_number_of_players)
     MapSettings settings;
     settings.numPlayers = 0;
     settings.MakeValid();
-    BOOST_REQUIRE_EQUAL(settings.numPlayers, 1);
+    BOOST_REQUIRE_EQUAL(settings.numPlayers, 1u);
 
     settings.numPlayers = MAX_PLAYERS + 1;
     settings.MakeValid();
@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE(MakeValid_ensures_map_size_is_even)
     MapSettings settings;
     settings.size = MapExtent(17, 19);
     settings.MakeValid();
-    BOOST_REQUIRE(settings.size.x % 2 == 0);
-    BOOST_REQUIRE(settings.size.y % 2 == 0);
+    BOOST_REQUIRE(settings.size.x % 2 == 0u);
+    BOOST_REQUIRE(settings.size.y % 2 == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(MakeValid_ensures_minimum_size_is_16_x_16)

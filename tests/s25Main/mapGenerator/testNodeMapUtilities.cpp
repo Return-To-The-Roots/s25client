@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "helpers/containerUtils.h"
 #include "mapGenerator/NodeMapUtilities.h"
 #include <boost/test/unit_test.hpp>
 
@@ -33,28 +34,28 @@ BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_zero_for_minimum_value)
 {
     ValueRange<int> range(4, 20);
 
-    BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0);
+    BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_zero_for_zero_range)
 {
     ValueRange<int> range(4, 4);
 
-    BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0);
+    BOOST_REQUIRE(MapValueToIndex(4, range, 100) == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_expected_index_for_range)
 {
     ValueRange<int> range(10, 20);
 
-    BOOST_REQUIRE(MapValueToIndex(15, range, 100) == 50);
+    BOOST_REQUIRE(MapValueToIndex(15, range, 100) == 50u);
 }
 
 BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_largest_index_for_maximum_value)
 {
     ValueRange<int> range(4, 20);
 
-    BOOST_REQUIRE(MapValueToIndex(20, range, 100) == 99);
+    BOOST_REQUIRE(MapValueToIndex(20, range, 100) == 99u);
 }
 
 BOOST_AUTO_TEST_CASE(GetRange_returns_range_of_map_values)
@@ -90,6 +91,22 @@ BOOST_AUTO_TEST_CASE(GetMaximumPoint_returns_map_point_for_maximum_value)
     values[maximumPoint] = 5;
 
     BOOST_REQUIRE(GetMaximumPoint(values) == maximumPoint);
+}
+
+BOOST_AUTO_TEST_CASE(SelectPoints_returns_all_points_which_fulfill_predicate)
+{
+    MapExtent size(16, 8);
+    auto result = SelectPoints([](const MapPoint& pt) { return pt.x == 0; }, size);
+    std::vector<MapPoint> expectedResult;
+    for(unsigned y = 0; y < size.y; y++)
+    {
+        expectedResult.push_back(MapPoint(0, y));
+    }
+    BOOST_REQUIRE(expectedResult.size() == result.size());
+    for(const MapPoint& expectedPoint : expectedResult)
+    {
+        BOOST_REQUIRE(helpers::contains(result, expectedPoint));
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

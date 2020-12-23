@@ -17,9 +17,11 @@
 
 #pragma once
 
+#include "RttrForeachPt.h"
 #include "world/NodeMapBase.h"
 #include <cassert>
 #include <cmath>
+#include <functional>
 
 namespace rttr { namespace mapGenerator {
 
@@ -100,21 +102,6 @@ namespace rttr { namespace mapGenerator {
     }
 
     /**
-     * Finds the point with the maximum value on the map.
-     *
-     * @param values reference to the node map to search for the maximum
-     * @param area container of map points to compute maximum value for
-     *
-     * @returns the point which contains the maximum value.
-     */
-    template<typename T_Value, class T_Container>
-    MapPoint GetMaximumPoint(const NodeMapBase<T_Value>& values, const T_Container& area)
-    {
-        auto compare = [&values](const MapPoint& rhs, const MapPoint& lhs) { return values[rhs] < values[lhs]; };
-        return std::max_element(area.begin(), area.end(), compare);
-    }
-
-    /**
      * Computes the range of values covered by the map.
      *
      * @param values reference to the node map to compute the range for
@@ -159,7 +146,8 @@ namespace rttr { namespace mapGenerator {
         std::function<MapPoint(const std::vector<T_Value>&)> calcMax = [&values](const std::vector<T_Value>& nodes) {
             auto maximum = std::max_element(nodes.begin(), nodes.end());
             auto index = std::distance(nodes.begin(), maximum);
-            return MapPoint(index % values.GetWidth(), index / values.GetWidth());
+            return MapPoint(static_cast<unsigned>(index % values.GetWidth()),
+                            static_cast<unsigned>(index / values.GetWidth()));
         };
         return values.Map(calcMax);
     }
@@ -181,5 +169,10 @@ namespace rttr { namespace mapGenerator {
           };
         return values.Map(calcRange);
     }
+
+    /**
+     * Selects all points fulfilling the specified predicate.
+     */
+    std::vector<MapPoint> SelectPoints(const std::function<bool(const MapPoint&)>& predicate, const MapExtent& size);
 
 }} // namespace rttr::mapGenerator

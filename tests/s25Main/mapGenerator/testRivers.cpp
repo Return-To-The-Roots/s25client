@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_river_of_expected_size)
 
             const unsigned expectedNodes = (length + 1) * 2;
 
-            BOOST_REQUIRE_EQUAL(static_cast<int>(river.size()), expectedNodes);
+            BOOST_REQUIRE_EQUAL(static_cast<unsigned>(river.size()), expectedNodes);
         }
     });
 }

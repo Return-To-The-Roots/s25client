@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(Scale_keeps_equal_values_unchanged)
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_REQUIRE(values[pt] == 8);
+        BOOST_REQUIRE(values[pt] == 8u);
     }
 }
 
@@ -177,7 +177,10 @@ BOOST_AUTO_TEST_CASE(Collect_returns_only_connected_positive_map_points)
 
     auto result = Collect(map, point, [&map](const MapPoint& p) { return map[p]; });
 
-    BOOST_REQUIRE(result.size() == neighbors.size() + 1);
+    const unsigned expectedSize = neighbors.size() + 1u;
+    const unsigned actualSize = result.size();
+
+    BOOST_REQUIRE(actualSize == expectedSize);
     BOOST_REQUIRE(helpers::contains(result, point));
 
     for(auto pt : neighbors)
@@ -190,9 +193,10 @@ BOOST_AUTO_TEST_CASE(Distances_returns_expected_distance_for_each_map_point)
 {
     MapExtent size(8, 8);
 
-    std::vector<int> expectedDistances{5, 5, 4, 3, 3, 3, 3, 4, 5, 4, 3, 2, 2, 2, 3, 4, 4, 4, 3, 2, 1, 1,
-                                       2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 4, 3, 2, 1, 1, 2, 3, 5, 4, 3, 2,
-                                       2, 2, 3, 4, 5, 5, 4, 3, 3, 3, 3, 4, 6, 5, 4, 4, 4, 4, 4, 5};
+    std::vector<unsigned> expectedDistances{5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
+                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 4u, 3u, 2u, 1u, 0u, 1u, 2u, 3u,
+                                            4u, 4u, 3u, 2u, 1u, 1u, 2u, 3u, 5u, 4u, 3u, 2u, 2u, 2u, 3u, 4u,
+                                            5u, 5u, 4u, 3u, 3u, 3u, 3u, 4u, 6u, 5u, 4u, 4u, 4u, 4u, 4u, 5u};
 
     auto distances = Distances(size, [](MapPoint pt) {
         return pt.x == 4 && pt.y == 3; // compute distance to P(4/3)
@@ -218,7 +222,7 @@ BOOST_AUTO_TEST_CASE(Count_all_nodes_within_thresholds_correctly)
 
     auto result = Count(values, 5, 10);
 
-    BOOST_REQUIRE_EQUAL(6, result);
+    BOOST_REQUIRE_EQUAL(6u, result);
 }
 
 BOOST_AUTO_TEST_CASE(Count_nodes_in_area_within_thresholds_correctly)
@@ -234,7 +238,7 @@ BOOST_AUTO_TEST_CASE(Count_nodes_in_area_within_thresholds_correctly)
 
     const auto result = Count(values, area, 5, 10);
 
-    BOOST_REQUIRE_EQUAL(3, result);
+    BOOST_REQUIRE_EQUAL(3u, result);
 }
 
 BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
@@ -253,7 +257,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
     int limit = LimitFor(values, area, coverage, minimum);
 
     auto expectedNodes = static_cast<unsigned>(area.size() * coverage);
-    unsigned actualNodes = 0;
+    unsigned actualNodes = 0u;
     for(const auto& pt : area)
     {
         if(values[pt] >= minimum && values[pt] <= limit)
@@ -279,7 +283,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
     int limit = LimitFor(values, coverage, minimum);
 
     auto expectedNodes = static_cast<unsigned>(size.x * size.y * coverage);
-    unsigned actualNodes = 0;
+    unsigned actualNodes = 0u;
     RTTR_FOREACH_PT(MapPoint, size)
     {
         if(values[pt] >= minimum && values[pt] <= limit)

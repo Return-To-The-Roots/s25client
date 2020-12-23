@@ -254,9 +254,9 @@ namespace rttr { namespace mapGenerator {
     template<typename T, class T_Area>
     unsigned Count(const NodeMapBase<T>& values, const T_Area& area, T minimum, T maximum)
     {
-        return std::count_if(area.begin(), area.end(), [&values, minimum, maximum](const MapPoint& pt) {
+        return static_cast<unsigned>(std::count_if(area.begin(), area.end(), [&values, minimum, maximum](const MapPoint& pt) {
             return values[pt] >= minimum && values[pt] <= maximum;
-        });
+        }));
     }
 
     /**

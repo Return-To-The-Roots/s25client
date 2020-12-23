@@ -20,16 +20,6 @@
 
 namespace rttr { namespace mapGenerator {
 
-    Triangle::Triangle(bool rsu, const MapPoint& position) : rsu(rsu), position(position) {}
-
-    Triangle::Triangle(bool rsu, const Position& position, const MapExtent& size)
-        : rsu(rsu), position(MakeMapPoint(position, size))
-    {}
-
-    Triangle Triangle::Inverse() const { return Triangle(!rsu, position); }
-
-    Triangle Triangle::Inverse(const MapPoint& position) const { return Triangle(!rsu, position); }
-
     std::array<Triangle, 2> GetTriangles(const MapPoint& p, const MapExtent& size, Direction direction)
     {
         if(p.y & 1)
@@ -125,13 +115,13 @@ namespace rttr { namespace mapGenerator {
         //   S         -1/ 0       -1/ 0
         //   D         -1/-1        0/-1
 
-        const auto& rsu1 = MakeMapPoint(Position(p.x - !(p.y & 1), p.y - 1), size);
-        const auto& rsu2 = MakeMapPoint(Position(p.x + (p.y & 1), p.y - 1), size);
-        const auto& lsd1 = MakeMapPoint(Position(p.x - 1, p.y), size);
-        const auto& lsd2 = MakeMapPoint(Position(p.x - !(p.y & 1), p.y - 1), size);
+        Position rsu1(p.x - !(p.y & 1), p.y - 1);
+        Position rsu2(p.x + (p.y & 1), p.y - 1);
+        Position lsd1(p.x - 1, p.y);
+        Position lsd2(p.x - !(p.y & 1), p.y - 1);
 
-        return {Triangle(true, p),  Triangle(true, rsu1),  Triangle(true, rsu2),
-                Triangle(false, p), Triangle(false, lsd1), Triangle(false, lsd2)};
+        return {Triangle(true, p),  Triangle(true, rsu1, size),  Triangle(true, rsu2, size),
+                Triangle(false, p), Triangle(false, lsd1, size), Triangle(false, lsd2, size)};
     }
 
     std::array<Triangle, 3> GetTriangleNeighbors(const Triangle& t, const MapExtent& size)

@@ -29,9 +29,9 @@ namespace rttr { namespace mapGenerator {
         auto isLand = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
 
         const auto& distances = Distances(map.size, isLand);
-        const MapPoint& center = GetMaximumPoint(distances);
+        const auto center = GetMaximumPoint(distances);
 
-        auto compare = [&distances, center](const MapPoint& rhs, const MapPoint& lhs) {
+        auto compare = [&distances, &center](const MapPoint& rhs, const MapPoint& lhs) {
             // computes prefered extension points for the island by considering distance to
             // center of the island and maximizing distance to other land
 

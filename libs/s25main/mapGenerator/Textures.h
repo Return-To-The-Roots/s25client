@@ -223,7 +223,7 @@ namespace rttr { namespace mapGenerator {
      * Replaces textures around the specified map point with the specified texture if the current texture is not part
      * of the excluded textures.
      *
-     * @param map reference to the map to replace textures for
+     * @param textures textures to replace
      * @param point all triangles around this point are checked and textures being replaced
      * @param texture new texture to replace current textures with
      * @param excluded textures which are excluded from replacement
@@ -235,7 +235,7 @@ namespace rttr { namespace mapGenerator {
      * Replaces textures for all nodes of the map and all neighboring nodes within the specified radius by the
      * specified texture. Triangles of nodes which contain exlcuded textures are being skipped.
      *
-     * @param map reference to the map to apply texture replacement to
+     * @param textures textures to replace
      * @param radius radius around specified nodes to also consider for texture replacement
      * @param nodes initial nodes to consider for texture replacement. Other nodes which are considered for texture
      * replacement are added to

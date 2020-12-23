@@ -65,14 +65,10 @@ namespace rttr { namespace mapGenerator {
         }
 
         const uint8_t maximum = GetMaximum(z_);
-
         std::vector<DescIdx<TerrainDesc>> mapping(maximum + 1);
-
         auto waterTexture = textureMap_.Find(IsShipableWater);
-
         auto landTextures = textureMap_.FindAll(IsBuildableLand);
         textureMap_.Sort(landTextures, ByHumidity);
-
         auto mountainTextures = textureMap_.FindAll(IsMinableMountain);
         mountainTextures.push_back(textureMap_.Find(IsSnowOrLava));
 
@@ -98,7 +94,6 @@ namespace rttr { namespace mapGenerator {
     void Texturizer::ApplyTexturingByHeightMap(unsigned mountainLevel)
     {
         const auto& mapping = CreateTextureMapping(mountainLevel);
-
         const MapExtent size = z_.GetSize();
         const auto& z = z_;
 
@@ -126,33 +121,33 @@ namespace rttr { namespace mapGenerator {
 
     void Texturizer::ApplyCoastTexturing(const std::vector<MapPoint>& coast, unsigned width)
     {
-        std::vector<DescIdx<TerrainDesc>> transition;
-        std::set<DescIdx<TerrainDesc>> excludedTextures;
         std::set<MapPoint, MapPointLess> visited;
         std::copy(coast.begin(), coast.end(), std::inserter(visited, visited.begin()));
 
+        // setup transition textures from water to land
+        auto sand = textureMap_.Find(IsCoastTerrain);
+        auto sandGrass = textureMap_.FindAll(IsBuildableCoast);
+        textureMap_.Sort(sandGrass, ByHumidity);
+        std::array<DescIdx<TerrainDesc>, 3> transitionTextures{sand, sandGrass[0], sandGrass[1]};
+
+        // exclude mountain & water textures from being replaced by water-land transition
+        std::set<DescIdx<TerrainDesc>> excludedTextures;
+        auto mountainTextures = textureMap_.FindAll(IsMountainOrSnowOrLava);
         auto water = textureMap_.Find(IsShipableWater);
-        auto coastland = textureMap_.FindAll(IsBuildableCoast);
-        auto mountain = textureMap_.FindAll(IsMountainOrSnowOrLava);
-
-        for(const auto& texture : mountain)
+        for(const auto& mountainTexture : mountainTextures)
         {
-            excludedTextures.insert(texture);
+            excludedTextures.insert(mountainTexture);
         }
-
-        textureMap_.Sort(coastland, ByHumidity);
-
-        transition.push_back(textureMap_.Find(IsCoastTerrain));
-        transition.push_back(coastland[0]);
-        transition.push_back(coastland[1]);
-
         excludedTextures.insert(water);
 
         for(unsigned i = 0; i < 3; ++i)
         {
+            // for nodes covered by water & coast, replace only neighboring coast textures
             unsigned appliedWidth = width - (i == 0 ? 1 : 0);
-            ReplaceTextures(textures_, appliedWidth, visited, transition[i], excludedTextures);
-            excludedTextures.insert(transition[i]);
+            ReplaceTextures(textures_, appliedWidth, visited, transitionTextures[i], excludedTextures);
+
+            // don't replace already applied transtion textures
+            excludedTextures.insert(transitionTextures[i]);
         }
     }
 
@@ -179,18 +174,11 @@ namespace rttr { namespace mapGenerator {
     {
         ApplyTexturingByHeightMap(mountainLevel);
 
-        const auto& textures = textures_;
-        const auto& size = textures.GetSize();
-
-        std::vector<MapPoint> coast;
-
-        RTTR_FOREACH_PT(MapPoint, size)
-        {
-            if(textureMap_.Any(pt, IsLand) && textureMap_.Any(pt, IsWater))
-            {
-                coast.push_back(pt);
-            }
-        }
+        auto coast = SelectPoints(
+          [this](const MapPoint& pt) {
+              return this->textureMap_.Any(pt, IsLand) && this->textureMap_.Any(pt, IsWater);
+          },
+          this->textures_.GetSize());
 
         ApplyCoastTexturing(coast, 1); // small for tiny rivers
 
@@ -198,20 +186,17 @@ namespace rttr { namespace mapGenerator {
             auto suroundedByWater = [this](const MapPoint& pt) { return this->textureMap_.All(pt, IsWater); };
             return !helpers::contains_if(this->textures_.GetNeighbours(pt), suroundedByWater);
         };
-
         helpers::remove_if(coast, isRiver);
+
         ApplyCoastTexturing(coast, coastline);
-        std::vector<MapPoint> footOfMountain;
 
-        RTTR_FOREACH_PT(MapPoint, size)
-        {
-            if(textureMap_.Any(pt, IsMinableMountain) && !textureMap_.All(pt, IsMountainOrSnowOrLava))
-            {
-                footOfMountain.push_back(pt);
-            }
-        }
+        auto mountainFoot = SelectPoints(
+          [this](const MapPoint& pt) {
+              return this->textureMap_.Any(pt, IsMinableMountain) && !this->textureMap_.All(pt, IsMountainOrSnowOrLava);
+          },
+          this->textures_.GetSize());
 
-        ApplyMountainTransitions(footOfMountain);
+        ApplyMountainTransitions(mountainFoot);
     }
 
     void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point, DescIdx<TerrainDesc> texture,

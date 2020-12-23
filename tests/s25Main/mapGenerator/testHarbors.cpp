@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_flattens_ground_around_harbor_position)
 
         map.z.Resize(map.size, map.height.maximum);
 
-        const unsigned minHeight = map.height.minimum;
+        const auto minHeight = map.height.minimum;
         const auto neighbors = map.z.GetNeighbours(position);
 
         for(unsigned i = 0; i < neighbors.size(); i++)

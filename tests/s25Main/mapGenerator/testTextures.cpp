@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(AddTextures_does_not_override_textures)
 
         RTTR_FOREACH_PT(MapPoint, z.GetSize())
         {
-            z[pt] = pt.x;
+            z[pt] = static_cast<uint8_t>(pt.x % 256);
         }
 
         texturizer.AddTextures(mountainLevel, coastline);
