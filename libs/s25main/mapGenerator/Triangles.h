@@ -18,8 +18,8 @@
 #pragma once
 
 #include "world/MapGeometry.h"
+#include <array>
 #include <cmath>
-#include <vector>
 
 namespace rttr { namespace mapGenerator {
 
@@ -57,7 +57,7 @@ namespace rttr { namespace mapGenerator {
      *
      * @returns a triangle pair around the target point in the specified direction.
      */
-    std::vector<Triangle> GetTriangles(const MapPoint& p, const MapExtent& size, Direction direction);
+    std::array<Triangle, 2> GetTriangles(const MapPoint& p, const MapExtent& size, Direction direction);
 
     /**
      * Finds all triangles connected to the specified map point.
@@ -66,7 +66,7 @@ namespace rttr { namespace mapGenerator {
      *
      * @returns a list of all triangles which are connected to the point.
      */
-    std::vector<Triangle> GetTriangles(const MapPoint& p, const MapExtent& size);
+    std::array<Triangle, 6> GetTriangles(const MapPoint& p, const MapExtent& size);
 
     /**
      * Computes all neighboring triangles for the specified triangle.
@@ -75,7 +75,7 @@ namespace rttr { namespace mapGenerator {
      *
      * @returns all three neighboring triangles
      */
-    std::vector<Triangle> GetTriangleNeighbors(const Triangle& triangle, const MapExtent& size);
+    std::array<Triangle, 3> GetTriangleNeighbors(const Triangle& triangle, const MapExtent& size);
 
     /**
      * Computes the edge points for the specified triangle - useful for interpolation.
@@ -84,6 +84,6 @@ namespace rttr { namespace mapGenerator {
      *
      * @returns edge points of the triangle.
      */
-    std::vector<MapPoint> GetTriangleEdges(const Triangle& triangle, const MapExtent& size);
+    std::array<MapPoint, 3> GetTriangleEdges(const Triangle& triangle, const MapExtent& size);
 
 }} // namespace rttr::mapGenerator

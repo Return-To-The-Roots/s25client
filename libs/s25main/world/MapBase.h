@@ -22,6 +22,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/ShipDirection.h"
+#include <array>
 #include <vector>
 
 /// Base class for a map. A map has a size and functions for getting from one point to another in that map
@@ -53,7 +54,7 @@ public:
     // Convenience functions for the above function
     MapCoord GetXA(MapPoint pt, Direction dir) const;
     // Gets all neighbors (in all directions) for given position
-    std::vector<MapPoint> GetNeighbours(const MapPoint& pt) const;
+    std::array<MapPoint, 6> GetNeighbours(const MapPoint& pt) const;
 
     /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
