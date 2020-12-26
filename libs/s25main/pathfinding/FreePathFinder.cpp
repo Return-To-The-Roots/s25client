@@ -180,10 +180,8 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
         // LOG.write(("pf get neighbor nodes %i, %i id: %i \n", best.x, best.y, best_id);
         // Knoten in alle 6 Richtungen bilden
-        for(unsigned z = startDir + 3; z < startDir + 9; ++z)
+        for(const auto dir : helpers::enumRange(Direction::EAST))
         {
-            Direction dir(z);
-
             // Koordinaten des entsprechenden umliegenden Punktes bilden
             MapPoint neighbourPos = gwb_.GetNeighbour(nodes[bestId].mapPt, dir);
 

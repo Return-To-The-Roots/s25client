@@ -470,7 +470,7 @@ void World::MakeWholeMapVisibleForAllPlayers()
     {
         for(auto& fowNode : mapNode.fow)
         {
-            fowNode.visibility = VIS_VISIBLE;
+            fowNode.visibility = Visibility::Visible;
             deletePtr(fowNode.object);
         }
     }

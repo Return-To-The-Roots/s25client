@@ -431,7 +431,7 @@ void ConnectJob::ExecuteJob()
     {
         for(unsigned dir = 2; dir < 7; dir++)
         {
-            if(flag->GetRoute(Direction(dir)))
+            if(flag->GetRoute(convertToDirection(dir)))
             {
                 state = JOB_FINISHED;
                 return;

@@ -683,7 +683,7 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
         MapPoint curPt(tx, pt.y);
         for(unsigned curDir = 2; curDir < 8; ++curDir)
         {
-            for(MapCoord step = 0; step < r; ++step, curPt = aiMap.GetNeighbour(curPt, Direction(curDir)))
+            for(MapCoord step = 0; step < r; ++step, curPt = aiMap.GetNeighbour(curPt, convertToDirection(curDir)))
             {
                 int& resMapVal = resourceMaps[static_cast<unsigned>(res)][curPt];
                 if(!fixed)
@@ -703,14 +703,14 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
                         lastvaluecalculated = false;
                     } else if(step < 1 && curDir < 3) // circle not yet started? -> last direction was outward (left=0)
                     {
-                        resMapVal = aii.CalcResourceValue(curPt, res, 0, circlestartvalue);
+                        resMapVal = aii.CalcResourceValue(curPt, res, Direction::WEST, circlestartvalue);
                         circlestartvalue = resMapVal;
                     } else if(lastvaluecalculated)
                     {
                         if(step > 0) // we moved direction i%6
-                            resMapVal = aii.CalcResourceValue(curPt, res, curDir % 6, resMapVal);
+                            resMapVal = aii.CalcResourceValue(curPt, res, convertToDirection(curDir), resMapVal);
                         else // last step was the previous direction
-                            resMapVal = aii.CalcResourceValue(curPt, res, (curDir - 1) % 6, resMapVal);
+                            resMapVal = aii.CalcResourceValue(curPt, res, convertToDirection(curDir - 1), resMapVal);
                     } else
                     {
                         resMapVal = aii.CalcResourceValue(curPt, res);
@@ -787,7 +787,7 @@ MapPoint AIPlayerJH::FindBestPosition(const MapPoint& pt, AIResource res, Buildi
         MapPoint curPt(tx, pt.y);
         for(unsigned curDir = 2; curDir < 8; ++curDir)
         {
-            for(MapCoord step = 0; step < r; ++step, curPt = gwb.GetNeighbour(curPt, Direction(curDir)))
+            for(MapCoord step = 0; step < r; ++step, curPt = gwb.GetNeighbour(curPt, convertToDirection(curDir)))
             {
                 if(r == 1 && step == 0 && curDir == 2)
                 {
@@ -797,12 +797,12 @@ MapPoint AIPlayerJH::FindBestPosition(const MapPoint& pt, AIResource res, Buildi
                 } else if(step == 0 && curDir == 2)
                 {
                     // circle not yet started? -> last direction was outward (left=0)
-                    temp = aii.CalcResourceValue(curPt, res, 0, circlestartvalue);
+                    temp = aii.CalcResourceValue(curPt, res, Direction::WEST, circlestartvalue);
                     circlestartvalue = temp;
                 } else if(step > 0) // we moved direction i%6
-                    temp = aii.CalcResourceValue(curPt, res, curDir % 6, temp);
+                    temp = aii.CalcResourceValue(curPt, res, convertToDirection(curDir), temp);
                 else // last step was the previous direction
-                    temp = aii.CalcResourceValue(curPt, res, (curDir - 1) % 6, temp);
+                    temp = aii.CalcResourceValue(curPt, res, convertToDirection(curDir - 1), temp);
                 // copy the value to the resource map (map is only used in the ai debug mode)
                 resourceMaps[static_cast<unsigned>(res)][curPt] = temp;
                 if(temp > best_value)
@@ -2295,7 +2295,7 @@ bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, Direction(i)), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, convertToDirection(i)), ++r2)
             {
                 // point has tree & path is available?
                 if(gwb.GetNO(t2)->GetType() == NOP_TREE)
@@ -2322,7 +2322,7 @@ bool AIPlayerJH::ValidStoneinRange(const MapPoint pt)
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, Direction(i)), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, convertToDirection(i)), ++r2)
             {
                 // point has tree & path is available?
                 if(gwb.GetNO(t2)->GetType() == NOP_GRANITE)
@@ -2418,7 +2418,7 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, Direction(i)), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, convertToDirection(i)), ++r2)
             {
                 if(limit && ((count * 100) / maxvalue) > limit)
                     return ((count * 100) / maxvalue);
@@ -2518,7 +2518,7 @@ bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, Direction(i)), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, convertToDirection(i)), ++r2)
             {
                 if(gwb.GetNode(t2).resources.has(Resource::Fish)) // fish on current spot?
                 {

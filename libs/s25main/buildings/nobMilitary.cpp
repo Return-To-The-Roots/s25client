@@ -485,10 +485,12 @@ void nobMilitary::RegulateTroops()
         // only order new troops if there is a chance that there is a path - pathfinding from each warehouse with
         // soldiers to this mil building will start at the warehouse and cost time
         bool mightHaveRoad = false;
-        for(unsigned i = 2; i < 7;
-            i++) // every direction but 1 because 1 is the building connection so it doesnt count for this check
+        for(const auto dir : helpers::enumRange<Direction>())
         {
-            if(GetFlag()->GetRoute(Direction(i)))
+            // every direction but 1 because 1 is the building connection so it doesn't count for this check
+            if(dir == Direction::NORTHWEST)
+                continue;
+            if(GetFlag()->GetRoute(dir))
             {
                 mightHaveRoad = true;
                 break;

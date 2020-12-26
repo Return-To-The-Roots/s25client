@@ -138,7 +138,7 @@ void nobHarborBuilding::DestroyBuilding()
 
         figure->Abrogate();
         figure->StartWandering();
-        figure->StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
+        figure->StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
     }
     figures_for_ships.clear();
 
@@ -152,7 +152,7 @@ void nobHarborBuilding::DestroyBuilding()
         RTTR_Assert(soldier->HasNoHome());
         RTTR_Assert(soldier->HasNoGoal());
         soldier->StartWandering();
-        soldier->StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
+        soldier->StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
     }
     soldiers_for_ships.clear();
 

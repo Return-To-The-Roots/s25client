@@ -254,7 +254,7 @@ void dskBenchmark::startTest(Test test)
                   {BLD_BARRACKS, BLD_MILL, BLD_IRONMINE, BLD_SLAUGHTERHOUSE, BLD_BAKERY}};
                 std::uniform_int_distribution<unsigned> getBld(0, blds.size() - 1);
                 std::uniform_int_distribution<unsigned> getJob(0, NUM_JOB_TYPES - 1);
-                std::uniform_int_distribution<int> getDir(0, Direction::COUNT - 1);
+                std::uniform_int_distribution<int> getDir(0, helpers::MaxEnumValue_v<Direction>);
                 for(MapPoint pt : pts)
                 {
                     MapPoint flagPt = game_->world_.GetNeighbour(pt, Direction::SOUTHEAST);

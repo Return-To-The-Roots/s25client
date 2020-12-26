@@ -44,6 +44,6 @@ inline RoadPathDirection toRoadPathDirection(const Direction dir) noexcept
 }
 inline Direction toDirection(const RoadPathDirection dir) noexcept
 {
-    RTTR_Assert(static_cast<uint8_t>(dir) < Direction::COUNT);
-    return Direction(static_cast<uint8_t>(dir));
+    RTTR_Assert(static_cast<uint8_t>(dir) <= helpers::MaxEnumValue_v<Direction>);
+    return Direction::fromInt(static_cast<uint8_t>(dir));
 }

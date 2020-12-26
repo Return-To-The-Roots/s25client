@@ -82,7 +82,7 @@ static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
             return RoadPathDirection::Ship;
         if(iDir == 0xFF)
             return RoadPathDirection::None;
-        if(iDir >= Direction::COUNT)
+        if(iDir > helpers::MaxEnumValue_v<Direction>)
             throw SerializedGameData::Error("Invalid RoadPathDirection");
         return RoadPathDirection(iDir);
     } else
