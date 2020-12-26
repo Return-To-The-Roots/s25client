@@ -38,62 +38,31 @@ BOOST_AUTO_TEST_CASE(DirectionCmp)
 BOOST_AUTO_TEST_CASE(DirectionIncDec)
 {
     // For every direction
-    for(unsigned startDir = 0; startDir < Direction::COUNT; startDir++)
+    for(const auto startDir : helpers::enumRange<Direction>())
     {
         // Fit back to range
-        BOOST_REQUIRE_EQUAL(rttr::enum_cast(Direction(startDir + Direction::COUNT)), startDir);
-        // Increment
-        Direction testDir(startDir);
-        BOOST_REQUIRE_EQUAL(testDir++, Direction(startDir));
-        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 1));
-        BOOST_REQUIRE_EQUAL(++testDir, Direction(startDir + 2));
-        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 2));
-        // Decrement
-        BOOST_REQUIRE_EQUAL(testDir--, Direction(startDir + 2));
-        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 1));
-        BOOST_REQUIRE_EQUAL(--testDir, Direction(startDir));
-        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir));
-        // Add/Subtract. Test using the already tested primitives
-        for(unsigned diff = 1; diff < 20; diff++)
+        const auto iStartDir = rttr::enum_cast(startDir);
+        BOOST_TEST_REQUIRE(rttr::enum_cast(convertToDirection(iStartDir + helpers::NumEnumValues_v<Direction>))
+                           == iStartDir);
+        for(unsigned diff = 0; diff < 20; diff++)
         {
-            Direction resultDir = testDir + diff;
-            Direction expectedDir(testDir);
-            for(unsigned i = 0; i < diff; i++)
-                ++expectedDir;
-            BOOST_REQUIRE_EQUAL(resultDir, expectedDir);
-            Direction resultDir2 = testDir;
-            BOOST_REQUIRE_EQUAL(resultDir2 += diff, expectedDir);
-            BOOST_REQUIRE_EQUAL(resultDir2, expectedDir);
-            resultDir = testDir - diff;
-            expectedDir = testDir;
-            for(unsigned i = 0; i < diff; i++)
-                --expectedDir;
-            BOOST_REQUIRE_EQUAL(resultDir, expectedDir);
-            resultDir2 = testDir;
-            BOOST_REQUIRE_EQUAL(resultDir2 -= diff, expectedDir);
-            BOOST_REQUIRE_EQUAL(resultDir2, expectedDir);
+            // Add
+            const Direction expectedDir = convertToDirection(iStartDir + diff);
+            BOOST_TEST_REQUIRE(startDir + diff == expectedDir);
+            Direction resultDir = startDir;
+            BOOST_TEST_REQUIRE((resultDir += diff) == expectedDir);
+            BOOST_TEST_REQUIRE(resultDir == expectedDir);
+
+            // Subtract
+            const Direction expectedDir2 =
+              convertToDirection(iStartDir + helpers::NumEnumValues_v<Direction> * 10 - diff);
+            BOOST_TEST_REQUIRE(startDir - diff == expectedDir2);
+            resultDir = startDir;
+            BOOST_TEST_REQUIRE((resultDir -= diff) == expectedDir2);
+            BOOST_TEST_REQUIRE(resultDir == expectedDir2);
         }
     }
 }
-
-/*
-BOOST_AUTO_TEST_CASE(DirectionIteratorWithOffset)
-{
-    for(unsigned i = 0; i < Direction::COUNT; i++)
-    {
-        Direction dir(i);
-        unsigned ct = 0;
-        Direction expectedDir(dir);
-        for(auto curDir : dir)
-        {
-            BOOST_REQUIRE_EQUAL(curDir, expectedDir);
-            ++ct;
-            ++expectedDir;
-        }
-        unsigned expectedCt = Direction::COUNT;
-        BOOST_REQUIRE_EQUAL(ct, expectedCt);
-    }
-}*/
 
 BOOST_AUTO_TEST_CASE(DirectionToImgDir)
 {

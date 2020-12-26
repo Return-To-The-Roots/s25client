@@ -19,11 +19,12 @@
 
 #include "helpers/EnumRange.h"
 #include "helpers/EnumTraits.h"
+#include <cstdint>
 
 /// "Enum" to represent one of the 6 directions from each node
 struct Direction
 {
-    enum Type : unsigned char
+    enum Type : uint8_t
     {
         WEST,      /// 0
         NORTHWEST, /// 1
@@ -32,28 +33,16 @@ struct Direction
         SOUTHEAST, /// 4
         SOUTHWEST  /// 5
     };
-    static constexpr unsigned COUNT = SOUTHWEST + 1;
 
     Type t_;
     constexpr Direction(Type t = WEST) : t_(t) {}
     /// Convert an UInt safely to a Direction
-    explicit Direction(unsigned t) : t_(Type(t % COUNT)) {}
+    explicit Direction(unsigned t) = delete;
     /// Convert an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static Direction fromInt(unsigned t) { return Type(t); }
     /// Use this for use in switches
     constexpr Type native_value() const { return t_; }
-    constexpr explicit operator unsigned char() const { return t_; }
-    Direction& operator+=(unsigned i);
-    Direction& operator-=(unsigned i);
-    Direction& operator++();
-    Direction operator++(int);
-    Direction& operator--();
-    Direction operator--(int);
-
-private:
-    // Disallow int operators
-    Direction& operator+=(int i);
-    Direction& operator-=(int i);
+    constexpr explicit operator uint8_t() const { return t_; }
 };
 //-V:Direction:801
 
@@ -68,54 +57,44 @@ constexpr auto maxEnumValue(Direction)
     return Direction::SOUTHWEST;
 }
 
+/// Convert an UInt safely to a Direction
+constexpr Direction convertToDirection(unsigned t)
+{
+    return static_cast<Direction::Type>(t % helpers::NumEnumValues_v<Direction>);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Implementation
 //////////////////////////////////////////////////////////////////////////
 
-inline Direction& Direction::operator+=(unsigned i)
+// Disallow int operators
+Direction& operator+=(Direction&, int i) = delete;
+Direction& operator-=(Direction&, int i) = delete;
+
+constexpr Direction& operator+=(Direction& dir, unsigned i)
 {
-    t_ = Direction(static_cast<unsigned>(t_) + i).t_;
-    return *this;
+    dir = convertToDirection(static_cast<uint8_t>(dir) + i);
+    return dir;
 }
 
-inline Direction& Direction::operator-=(unsigned i)
+constexpr Direction& operator-=(Direction& dir, unsigned i)
 {
-    t_ = Direction(static_cast<unsigned>(t_) + COUNT - (i % COUNT)).t_;
-    return *this;
+    // Convert to addition
+    const unsigned addValue = helpers::NumEnumValues_v<Direction> - (i % helpers::NumEnumValues_v<Direction>);
+    const unsigned newDir = static_cast<uint8_t>(dir) + addValue;
+    dir = static_cast<Direction::Type>(
+      newDir < helpers::NumEnumValues_v<Direction> ? newDir : newDir - helpers::NumEnumValues_v<Direction>);
+    return dir;
 }
 
-inline Direction operator+(Direction dir, unsigned i)
+constexpr Direction operator+(Direction dir, unsigned i)
 {
     return dir += i;
 }
 
-inline Direction operator-(Direction dir, unsigned i)
+constexpr Direction operator-(Direction dir, unsigned i)
 {
     return dir -= i;
-}
-
-inline Direction& Direction::operator++()
-{
-    return *this += 1u;
-}
-
-inline Direction Direction::operator++(int)
-{
-    Direction result(*this);
-    ++(*this);
-    return result;
-}
-
-inline Direction& Direction::operator--()
-{
-    return *this -= 1u;
-}
-
-inline Direction Direction::operator--(int)
-{
-    Direction result(*this);
-    --(*this);
-    return result;
 }
 
 inline bool operator==(const Direction& lhs, const Direction& rhs)
@@ -162,6 +141,28 @@ struct EnumRange<Direction>
     };
 
     BOOST_FORCEINLINE iterator begin() const { return iterator(0); }
-    BOOST_FORCEINLINE iterator end() const { return iterator(Direction::COUNT); }
+    BOOST_FORCEINLINE iterator end() const { return iterator(helpers::NumEnumValues_v<Direction>); }
+};
+
+template<>
+struct EnumRangeWithOffset<Direction>
+{
+    class iterator
+    {
+        unsigned value;
+
+    public:
+        explicit BOOST_FORCEINLINE iterator(unsigned value) : value(value) {}
+        BOOST_FORCEINLINE auto operator*() const { return convertToDirection(value); }
+        BOOST_FORCEINLINE void operator++() { ++value; }
+        BOOST_FORCEINLINE bool operator!=(iterator rhs) const { return value != rhs.value; }
+    };
+
+    explicit BOOST_FORCEINLINE EnumRangeWithOffset(Direction startValue) : startValue_(static_cast<uint8_t>(startValue))
+    {}
+    unsigned startValue_;
+
+    BOOST_FORCEINLINE iterator begin() const { return iterator(startValue_); }
+    BOOST_FORCEINLINE iterator end() const { return iterator(startValue_ + NumEnumValues_v<Direction>); }
 };
 } // namespace helpers

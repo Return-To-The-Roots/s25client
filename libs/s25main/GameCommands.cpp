@@ -22,9 +22,22 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
 #include "enum_cast.hpp"
+#include "helpers/MaxEnumValue.h"
+#include "helpers/format.hpp"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include <stdexcept>
+
+template<typename T>
+static T popEnum(Serializer& ser)
+{
+    const uint8_t value = ser.PopUnsignedChar();
+    if(value > helpers::MaxEnumValue_v<T>)
+        throw std::range_error(
+          helpers::format("%s is out of range. Maximum allowed value: %s", value, helpers::MaxEnumValue_v<T>));
+    return Direction::Type(value);
+}
 
 namespace gc {
 
@@ -41,7 +54,7 @@ void DestroyFlag::Execute(GameWorldGame& gwg, uint8_t playerId)
 BuildRoad::BuildRoad(Serializer& ser) : Coords(BUILD_ROAD, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
 {
     for(auto& i : route)
-        i = Direction(ser.PopUnsignedChar());
+        i = popEnum<Direction>(ser);
 }
 
 void BuildRoad::Serialize(Serializer& ser) const
@@ -59,7 +72,7 @@ void BuildRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
     gwg.BuildRoad(playerId, boat_road, pt_, route);
 }
 
-DestroyRoad::DestroyRoad(Serializer& ser) : Coords(DESTROY_ROAD, ser), start_dir(ser.PopUnsignedChar()) {}
+DestroyRoad::DestroyRoad(Serializer& ser) : Coords(DESTROY_ROAD, ser), start_dir(popEnum<Direction>(ser)) {}
 
 void DestroyRoad::Serialize(Serializer& ser) const
 {
@@ -75,7 +88,7 @@ void DestroyRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
         flag->DestroyRoad(start_dir);
 }
 
-UpgradeRoad::UpgradeRoad(Serializer& ser) : Coords(UPGRADE_ROAD, ser), start_dir(ser.PopUnsignedChar()) {}
+UpgradeRoad::UpgradeRoad(Serializer& ser) : Coords(UPGRADE_ROAD, ser), start_dir(popEnum<Direction>(ser)) {}
 
 void UpgradeRoad::Serialize(Serializer& ser) const
 {

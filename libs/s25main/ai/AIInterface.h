@@ -22,6 +22,7 @@
 #include "NodalObjectTypes.h"
 #include "ai/AIResource.h"
 #include "factories/GameCommandFactory.h"
+#include "helpers/OptionalEnum.h"
 #include "world/GameWorldBase.h"
 #include "gameTypes/Direction.h"
 
@@ -56,7 +57,8 @@ public:
     AIResource GetSurfaceResource(MapPoint pt) const;
     /// Calculate the surface resource value on a given spot (wood/ stones/ farmland)
     /// when given a direction and lastvalue the calculation will be much faster O(n) vs O(n^2)
-    int CalcResourceValue(MapPoint pt, AIResource res, int8_t direction = -1, int lastval = 0xffff) const;
+    int CalcResourceValue(MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction = boost::none,
+                          int lastval = 0xffff) const;
     /// Calculate the resource value for a given point
     int GetResourceRating(MapPoint pt, AIResource res) const;
     /// Test whether a given point is part of the border or not
@@ -82,7 +84,10 @@ public:
                && (static_cast<const noBaseBuilding*>(no)->GetBuildingType() == bld);
     }
     /// Test whether the ai player can see a point
-    bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == Visibility::Visible; }
+    bool IsVisible(const MapPoint pt) const
+    {
+        return gwb.CalcVisiblityWithAllies(pt, playerID_) == Visibility::Visible;
+    }
     /// Return true when the building quality at the 2nd point is lower than the bq on the first point
     bool CalcBQSumDifference(MapPoint pt1, MapPoint pt2) const;
     /// Return building quality on a given spot

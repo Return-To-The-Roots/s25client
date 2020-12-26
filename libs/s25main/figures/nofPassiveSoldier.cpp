@@ -124,7 +124,7 @@ void nofPassiveSoldier::InBuildingDestroyed()
     // Erstmal in zufällige Richtung rammeln
     StartWandering();
 
-    StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), Direction::COUNT)));
+    StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), helpers::NumEnumValues_v<Direction>)));
 }
 
 void nofPassiveSoldier::LeaveBuilding()

@@ -77,7 +77,8 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
 
     // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
     // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
-    const unsigned startDir = randomRoute ? (gwb_.GetIdx(start)) * gwb_.GetEvMgr().GetCurrentGF() % 6 : 0;
+    const Direction startDir =
+      randomRoute ? convertToDirection(gwb_.GetIdx(start) * gwb_.GetEvMgr().GetCurrentGF()) : Direction::WEST;
 
     while(!todo.empty())
     {
@@ -116,10 +117,8 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
             continue;
 
         // Knoten in alle 6 Richtungen bilden
-        for(unsigned z = startDir; z < startDir + 6; ++z)
+        for(const Direction dir : helpers::enumRange(startDir))
         {
-            Direction dir(z);
-
             // Koordinaten des entsprechenden umliegenden Punktes bilden
             MapPoint neighbourPos = gwb_.GetNeighbour(best.mapPt, dir);
 

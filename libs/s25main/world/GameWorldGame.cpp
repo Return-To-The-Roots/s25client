@@ -1221,7 +1221,8 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         // Muss vorher undaufgedeckt oder FOW gewesen sein, aber in dem Fall darf dort vorher noch kein
         // Territorium entdeckt worden sein
         unsigned char current_owner = GetNode(tt).owner;
-        if(current_owner && (old_vis == Visibility::Invisible || (old_vis == Visibility::FoW && old_owner != current_owner)))
+        if(current_owner
+           && (old_vis == Visibility::Invisible || (old_vis == Visibility::FoW && old_owner != current_owner)))
         {
             if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {
@@ -1244,7 +1245,8 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         // Muss vorher undaufgedeckt oder FOW gewesen sein, aber in dem Fall darf dort vorher noch kein
         // Territorium entdeckt worden sein
         unsigned char current_owner = GetNode(tt).owner;
-        if(current_owner && (old_vis == Visibility::Invisible || (old_vis == Visibility::FoW && old_owner != current_owner)))
+        if(current_owner
+           && (old_vis == Visibility::Invisible || (old_vis == Visibility::FoW && old_owner != current_owner)))
         {
             if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {

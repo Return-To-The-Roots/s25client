@@ -216,7 +216,7 @@ namespace rttr { namespace mapGenerator {
         {
             const unsigned length = (map_.size.x + map_.size.y) / 3;
             const unsigned splitRate = rnd_.RandomValue(0u, 2u);
-            const auto dir = Direction(rnd_.RandomValue(0u, 5u));
+            const auto dir = Direction::Type(rnd_.RandomValue(0u, helpers::MaxEnumValue_v<Direction>));
 
             rivers.push_back(CreateStream(rnd_, map_, center, dir, length, splitRate));
         }

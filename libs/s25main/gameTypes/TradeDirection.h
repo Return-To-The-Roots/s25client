@@ -46,5 +46,5 @@ inline TradeDirection toTradeDirection(const Direction dir) noexcept
 inline Direction toDirection(const TradeDirection dir) noexcept
 {
     RTTR_Assert(dir != TradeDirection::ReachedGoal);
-    return Direction(static_cast<uint8_t>(dir));
+    return Direction::Type(static_cast<uint8_t>(dir));
 }

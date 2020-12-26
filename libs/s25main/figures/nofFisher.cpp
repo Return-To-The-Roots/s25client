@@ -31,7 +31,7 @@
 #include "world/GameWorldGame.h"
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(0), successful(false)
+    : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(Direction::WEST), successful(false)
 {}
 
 void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const

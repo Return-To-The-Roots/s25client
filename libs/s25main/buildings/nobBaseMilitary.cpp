@@ -88,7 +88,7 @@ void nobBaseMilitary::DestroyBuilding()
         {
             it->Abrogate();
             it->StartWandering();
-            it->StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
+            it->StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
         }
     }
 

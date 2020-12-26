@@ -58,7 +58,10 @@ public:
         STATE_DEFENDING_WALKINGTO,  // Goes to the flag before the fight
         STATE_DEFENDING_WALKINGFROM // Goes into the building after the fight
     };
-    friend constexpr auto maxEnumValue(SoldierState) { return nofActiveSoldier::SoldierState::STATE_DEFENDING_WALKINGFROM; }
+    friend constexpr auto maxEnumValue(SoldierState)
+    {
+        return nofActiveSoldier::SoldierState::STATE_DEFENDING_WALKINGFROM;
+    }
 
 protected:
     /// State of the soldier, always has to be a valid value

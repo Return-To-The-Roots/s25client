@@ -46,9 +46,9 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_river_of_expected_size)
         const MapPoint source(4, 1);
         const int length = 6;
 
-        for(unsigned d = 0; d < 6; d++)
+        for(const auto d: helpers::enumRange<Direction>())
         {
-            auto river = CreateStream(rnd, map, source, Direction(d), length);
+            auto river = CreateStream(rnd, map, source, d, length);
 
             // each point represents one triangle while length is given
             // in tiles (2 triangles) - and one more for the source (which
@@ -67,9 +67,9 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_connected_nodes)
         const MapPoint source(3, 2);
         const int length = 7;
 
-        for(unsigned d = 0; d < 6; d++)
+        for(const auto d: helpers::enumRange<Direction>())
         {
-            auto river = CreateStream(rnd, map, source, Direction(d), length);
+            auto river = CreateStream(rnd, map, source, d, length);
 
             auto containedByRiver = [&river](const MapPoint& pt) { return helpers::contains(river, pt); };
 
@@ -89,9 +89,9 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
         const MapPoint source(3, 2);
         const int length = 7;
 
-        for(unsigned d = 0; d < 6; d++)
+        for(const auto d: helpers::enumRange<Direction>())
         {
-            auto river = CreateStream(rnd, map, source, Direction(d), length);
+            auto river = CreateStream(rnd, map, source, d, length);
 
             for(const MapPoint& pt : river)
             {
@@ -115,9 +115,9 @@ BOOST_AUTO_TEST_CASE(CreateStream_reduces_height_of_river_nodes)
         const MapPoint source(4, 1);
         const int length = 6;
 
-        for(unsigned d = 0; d < 6; d++)
+        for(const auto d: helpers::enumRange<Direction>())
         {
-            auto river = CreateStream(rnd, map, source, Direction(d), length);
+            auto river = CreateStream(rnd, map, source, d, length);
 
             for(const MapPoint& pt : river)
             {

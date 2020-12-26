@@ -101,9 +101,9 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 bool found_in_radius = false;
 
                 MapPoint t2(tx, pos.y);
-                for(unsigned i = 2; i < 8; ++i)
+                for(const auto dir : helpers::enumRange(Direction::NORTHEAST))
                 {
-                    for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2, Direction(i)), ++r2)
+                    for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2, dir), ++r2)
                     {
                         if(IsPointAvailable(t2))
                         {

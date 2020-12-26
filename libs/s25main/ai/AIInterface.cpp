@@ -138,9 +138,10 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
     return 0;
 }
 
-int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t direction, int lastval) const
+int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction,
+                                   int lastval) const
 {
-    if(direction == -1) // calculate complete value from scratch (3n^2+3n+1)
+    if(!direction) // calculate complete value from scratch (3n^2+3n+1)
     {
         std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, RES_RADIUS[static_cast<unsigned>(res)]);
         return std::accumulate(pts.begin(), pts.end(), 0, [this, res](int lhs, const auto& curPt) {
@@ -148,42 +149,43 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
         });
     } else // calculate different nodes only (4n+2 ?anyways much faster)
     {
+        const auto iDirection = rttr::enum_cast(*direction);
         int returnVal = lastval;
         // add new points
         // first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
         for(unsigned i = 0; i < RES_RADIUS[static_cast<unsigned>(res)]; i++)
-            tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 5));
+            tmpPt = gwb.GetNeighbour(tmpPt, *direction - 1u);
         // then clockwise around at radius distance to get all new points
-        for(int i = direction + 1; i < (direction + 3); ++i)
+        for(unsigned i = iDirection + 1u; i < iDirection + 3u; ++i)
         {
             int resRadius = RES_RADIUS[static_cast<unsigned>(res)];
             // add 1 extra step on the second side we check to complete the side
-            if(i == direction + 2)
+            if(i == iDirection + 2u)
                 ++resRadius;
             for(MapCoord r2 = 0; r2 < resRadius; ++r2)
             {
                 returnVal += GetResourceRating(tmpPt, res);
-                tmpPt = gwb.GetNeighbour(tmpPt, Direction(i));
+                tmpPt = gwb.GetNeighbour(tmpPt, convertToDirection(i));
             }
         }
         // now substract old points not in range of new point
         // go to old center point:
         tmpPt = pt;
-        tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 3));
+        tmpPt = gwb.GetNeighbour(tmpPt, *direction + 3u);
         // next: go to the first old point we have to substract
         for(unsigned i = 0; i < RES_RADIUS[static_cast<unsigned>(res)]; i++)
-            tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 2));
+            tmpPt = gwb.GetNeighbour(tmpPt, *direction + 2u);
         // now clockwise around at radius distance to remove all old points
-        for(int i = direction + 4; i < (direction + 6); ++i)
+        for(int i = iDirection + 4; i < iDirection + 6; ++i)
         {
             int resRadius = RES_RADIUS[static_cast<unsigned>(res)];
-            if(i == direction + 5)
+            if(i == iDirection + 5)
                 ++resRadius;
             for(MapCoord r2 = 0; r2 < resRadius; ++r2)
             {
                 returnVal -= GetResourceRating(tmpPt, res);
-                tmpPt = gwb.GetNeighbour(tmpPt, Direction(i));
+                tmpPt = gwb.GetNeighbour(tmpPt, convertToDirection(i));
             }
         }
         return returnVal;

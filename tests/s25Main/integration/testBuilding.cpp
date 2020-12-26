@@ -100,10 +100,10 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     reducedBQs[world.GetNeighbour(flagPos, Direction::WEST)] = BQ_NOTHING;
     reducedBQs[world.GetNeighbour(flagPos, Direction::NORTHEAST)] = BQ_NOTHING;
     // Can build houses but not castles
-    for(Direction dir = Direction::EAST; dir != Direction::WEST; ++dir) //-V621
+    for(const Direction dir : {Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST})
         reducedBQs[world.GetNeighbour(flagPos, dir)] = BQ_HOUSE;
     // Flag to bld is blocked by flag
-    for(Direction dir = Direction::WEST; dir != Direction::EAST; ++dir)
+    for(const Direction dir : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
         reducedBQs[world.GetNeighbour(bldPos, dir)] = BQ_FLAG;
     BOOST_REQUIRE(checkBQs(world, pts, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, flagPos));
@@ -148,7 +148,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_CASTLE);
     // Addionally to reduced BQs by hut:
     // Even flag is blocked by castle (model size)
-    for(Direction dir = Direction::WEST; dir != Direction::EAST; ++dir)
+    for(const Direction dir : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
     {
         const MapPoint wouldBeFlagPt = world.GetNeighbour(bldPos, dir);
         reducedBQs[wouldBeFlagPt] = BQ_NOTHING;
@@ -406,7 +406,7 @@ BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
     reducedBQs[objPos] = BQ_NOTHING;
     reducedBQs[world.GetNeighbour(objPos, Direction::NORTHWEST)] = BQ_FLAG;
     // Can build houses but not castles
-    for(Direction dir = Direction::EAST; dir != Direction::WEST; ++dir) //-V621
+    for(const Direction dir : {Direction::EAST, Direction::SOUTHEAST, Direction::SOUTHWEST})
         reducedBQs[world.GetNeighbour(objPos, dir)] = BQ_HOUSE;
     BOOST_REQUIRE(checkBQs(world, ptsAroundObj, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, objPos));
@@ -417,7 +417,7 @@ BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
     addStaticObj(world, objPos, 2);
     // Addionally reduced BQs:
     // Extensions block spots
-    for(Direction dir = Direction::WEST; dir != Direction::EAST; ++dir)
+    for(const Direction dir : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
     {
         const MapPoint extensionPos = world.GetNeighbour(objPos, dir);
         reducedBQs[extensionPos] = BQ_NOTHING;
