@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,7 +33,7 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, c
     if(GAMECLIENT.IsPaused())
         return;
 
-    if(!SETTINGS.sound.effekte)
+    if(!SETTINGS.sound.effectsEnabled)
         return;
 
     // Wird Sound schon gespielt?
@@ -68,7 +68,7 @@ void SoundManager::WorkingFinished(noBase* const obj)
     if(GAMECLIENT.IsPaused())
         return;
 
-    if(!SETTINGS.sound.effekte)
+    if(!SETTINGS.sound.effectsEnabled)
         return;
     // Alle Sounds von diesem Objekt stoppen und löschen
     for(auto it = no_sounds.begin(); it != no_sounds.end();)
@@ -87,7 +87,7 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
     if(GAMECLIENT.IsPaused())
         return;
 
-    if(!SETTINGS.sound.effekte)
+    if(!SETTINGS.sound.effectsEnabled)
         return;
 
     // Abstände zwischen den Vogelsounds berechnen (je nachdem wieviel Bäume)
@@ -115,7 +115,7 @@ void SoundManager::PlayOceanBrawling(const unsigned water_percent)
     if(GAMECLIENT.IsPaused())
         return;
 
-    if(!SETTINGS.sound.effekte)
+    if(!SETTINGS.sound.effectsEnabled)
         return;
 
     // Ist genug Wasser da zum Rauschen?

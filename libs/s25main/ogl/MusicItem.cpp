@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,7 +21,7 @@
 
 void MusicItem::Play(int repeats)
 {
-    if(!SETTINGS.sound.musik)
+    if(!SETTINGS.sound.musicEnabled)
         return;
     AUDIODRIVER.PlayMusic(GetSoundHandle(), repeats);
 }
