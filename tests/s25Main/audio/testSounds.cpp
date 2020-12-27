@@ -46,8 +46,8 @@ struct LoadMockupAudio
     LoadMockupAudio() : audioCallbackMock(std::make_unique<MockAudioDriverCallback>())
     {
         libsiedler2::setAllocator(new GlAllocator);
-        SETTINGS.sound.effekte = true;
-        SETTINGS.sound.musik = true;
+        SETTINGS.sound.effectsEnabled = true;
+        SETTINGS.sound.musicEnabled = true;
         auto driver = std::make_unique<MockupAudioDriver>(audioCallbackMock.get());
         audioDriverMock = driver.get();
         AUDIODRIVER.LoadDriver(std::move(driver));

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -244,8 +244,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->AddTextButton(64, DrawPoint(280, 75), Extent(90, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(65, DrawPoint(380, 75), Extent(90, 22), TC_GREY, _("Off"), NormalFont);
 
-    ctrlProgress* Mvolume = groupSound->AddProgress(72, DrawPoint(480, 75), Extent(190, 22), TC_GREY, 139, 138, 10);
-    Mvolume->SetPosition(SETTINGS.sound.musik_volume * 10 / 255); //-V807
+    ctrlProgress* Mvolume = groupSound->AddProgress(72, DrawPoint(480, 75), Extent(190, 22), TC_GREY, 139, 138, 100);
+    Mvolume->SetPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
 
     // Effekte
     groupSound->AddText(66, DrawPoint(80, 130), _("Effects"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -253,8 +253,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->AddTextButton(68, DrawPoint(280, 125), Extent(90, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(69, DrawPoint(380, 125), Extent(90, 22), TC_GREY, _("Off"), NormalFont);
 
-    ctrlProgress* FXvolume = groupSound->AddProgress(70, DrawPoint(480, 125), Extent(190, 22), TC_GREY, 139, 138, 10);
-    FXvolume->SetPosition(SETTINGS.sound.effekte_volume * 10 / 255);
+    ctrlProgress* FXvolume = groupSound->AddProgress(70, DrawPoint(480, 125), Extent(190, 22), TC_GREY, 139, 138, 100);
+    FXvolume->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
 
     // Musicplayer-Button
     groupSound->AddTextButton(71, DrawPoint(280, 175), Extent(190, 22), TC_GREY, _("Music player"), NormalFont);
@@ -321,11 +321,11 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Musik" setzen
     optiongroup = groupSound->GetCtrl<ctrlOptionGroup>(63);
-    optiongroup->SetSelection((SETTINGS.sound.musik ? 64 : 65));
+    optiongroup->SetSelection((SETTINGS.sound.musicEnabled ? 64 : 65));
 
     // "Effekte" setzen
     optiongroup = groupSound->GetCtrl<ctrlOptionGroup>(67);
-    optiongroup->SetSelection((SETTINGS.sound.effekte ? 68 : 69));
+    optiongroup->SetSelection((SETTINGS.sound.effectsEnabled ? 68 : 69));
 
     // }
 
@@ -346,14 +346,14 @@ void dskOptions::Msg_Group_ProgressChange(const unsigned /*group_id*/, const uns
     {
         case 70:
         {
-            SETTINGS.sound.effekte_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
-            AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
+            SETTINGS.sound.effectsVolume = static_cast<uint8_t>((position * 255) / 100);
+            AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effectsVolume);
         }
         break;
         case 72:
         {
-            SETTINGS.sound.musik_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
-            AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musik_volume);
+            SETTINGS.sound.musicVolume = static_cast<uint8_t>((position * 255) / 100);
+            AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musicVolume);
         }
         break;
     }
@@ -464,10 +464,10 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
         {
             switch(selection)
             {
-                case 64: SETTINGS.sound.musik = true; break;
-                case 65: SETTINGS.sound.musik = false; break;
+                case 64: SETTINGS.sound.musicEnabled = true; break;
+                case 65: SETTINGS.sound.musicEnabled = false; break;
             }
-            if(SETTINGS.sound.musik)
+            if(SETTINGS.sound.musicEnabled)
                 MUSICPLAYER.Play();
             else
                 MUSICPLAYER.Stop();
@@ -477,8 +477,8 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
         {
             switch(selection)
             {
-                case 68: SETTINGS.sound.effekte = true; break;
-                case 69: SETTINGS.sound.effekte = false; break;
+                case 68: SETTINGS.sound.effectsEnabled = true; break;
+                case 69: SETTINGS.sound.effectsEnabled = false; break;
             }
         }
         break;

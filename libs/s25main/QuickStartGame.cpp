@@ -58,7 +58,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, bool singleP
         return false;
     if(loader.getPlaylist())
         MUSICPLAYER.SetPlaylist(std::move(*loader.getPlaylist()));
-    if(SETTINGS.sound.musik)
+    if(SETTINGS.sound.musicEnabled)
         MUSICPLAYER.Play();
 
     const CreateServerInfo csi(singlePlayer ? ServerType::LOCAL : ServerType::DIRECT, SETTINGS.server.localPort,

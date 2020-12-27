@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -102,10 +102,10 @@ void Settings::LoadDefaults()
 
     // sound
     // {
-    sound.musik = false;
-    sound.musik_volume = 30;
-    sound.effekte = true;
-    sound.effekte_volume = 75;
+    sound.musicEnabled = false;
+    sound.musicVolume = 30;
+    sound.effectsEnabled = true;
+    sound.effectsVolume = 75;
     sound.playlist = s25::files::defaultPlaylist;
     // }
 
@@ -230,10 +230,10 @@ void Settings::Load()
 
         // sound
         // {
-        sound.musik = (iniSound->getValueI("musik") != 0);
-        sound.musik_volume = iniSound->getValueI("musik_volume");
-        sound.effekte = (iniSound->getValueI("effekte") != 0);
-        sound.effekte_volume = iniSound->getValueI("effekte_volume");
+        sound.musicEnabled = (iniSound->getValueI("musik") != 0);
+        sound.musicVolume = iniSound->getValueI("musik_volume");
+        sound.effectsEnabled = (iniSound->getValueI("effekte") != 0);
+        sound.effectsVolume = iniSound->getValueI("effekte_volume");
         sound.playlist = iniSound->getValue("playlist");
         // }
 
@@ -366,10 +366,10 @@ void Settings::Save()
 
     // sound
     // {
-    iniSound->setValue("musik", (sound.musik ? 1 : 0));
-    iniSound->setValue("musik_volume", sound.musik_volume);
-    iniSound->setValue("effekte", (sound.effekte ? 1 : 0));
-    iniSound->setValue("effekte_volume", sound.effekte_volume);
+    iniSound->setValue("musik", (sound.musicEnabled ? 1 : 0));
+    iniSound->setValue("musik_volume", sound.musicVolume);
+    iniSound->setValue("effekte", (sound.effectsEnabled ? 1 : 0));
+    iniSound->setValue("effekte_volume", sound.effectsVolume);
     iniSound->setValue("playlist", sound.playlist);
     // }
 

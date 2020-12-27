@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -92,19 +92,19 @@ iwOptionsWindow::iwOptionsWindow()
 
     // Geräusche an/aus
     AddImageButton(ID_btSoundEffects, DrawPoint(35, 300), Extent(35, 35), TC_GREEN2,
-                   LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807
+                   LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
 
     // Musik an/aus
     AddImageButton(ID_btMusic, DrawPoint(35, 340), Extent(35, 35), TC_GREEN2,
-                   LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
+                   LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
 
     // Geräuschlautstärke
-    AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 10)
-      ->SetPosition((SETTINGS.sound.effekte_volume * 10) / 255);
+    AddProgress(ID_pgEffectVol, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 100)
+      ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
 
     // Musiklautstärke
-    AddProgress(ID_pgMusicVol, DrawPoint(100, 346), Extent(160, 22), TC_GREEN2, 139, 138, 10)
-      ->SetPosition((SETTINGS.sound.musik_volume * 10) / 255);
+    AddProgress(ID_pgMusicVol, DrawPoint(100, 346), Extent(160, 22), TC_GREEN2, 139, 138, 100)
+      ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
 
     AddTextButton(ID_btMusicPlayer, DrawPoint(100, 380), Extent(160, 22), TC_GREEN2, _("Music player"), NormalFont);
     AddTextButton(ID_btAdvanced, DrawPoint(67, 412), Extent(168, 24), TC_GREEN2, _("Advanced"), NormalFont);
@@ -127,18 +127,19 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btSave: WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>()); break;
 
         case ID_btSoundEffects:
-            SETTINGS.sound.effekte = !SETTINGS.sound.effekte; //-V807
+            SETTINGS.sound.effectsEnabled = !SETTINGS.sound.effectsEnabled; //-V807
             GetCtrl<ctrlImageButton>(ID_btSoundEffects)
-              ->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effekte));
+              ->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effectsEnabled));
 
-            if(!SETTINGS.sound.effekte)
+            if(!SETTINGS.sound.effectsEnabled)
                 SOUNDMANAGER.StopAll();
             break;
 
         case ID_btMusic:
-            SETTINGS.sound.musik = !SETTINGS.sound.musik;
-            GetCtrl<ctrlImageButton>(ID_btMusic)->SetImage(LOADER.GetTextureN("io", 116 + !SETTINGS.sound.musik));
-            if(SETTINGS.sound.musik)
+            SETTINGS.sound.musicEnabled = !SETTINGS.sound.musicEnabled;
+            GetCtrl<ctrlImageButton>(ID_btMusic)
+              ->SetImage(LOADER.GetTextureN("io", 116 + !SETTINGS.sound.musicEnabled));
+            if(SETTINGS.sound.musicEnabled)
                 MUSICPLAYER.Play();
             else
                 MUSICPLAYER.Stop();
@@ -160,12 +161,12 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned 
     switch(ctrl_id)
     {
         case ID_pgEffectVol:
-            SETTINGS.sound.effekte_volume = static_cast<unsigned char>((position * 255) / 10);
-            AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
+            SETTINGS.sound.effectsVolume = static_cast<uint8_t>((position * 255) / 100);
+            AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effectsVolume);
             break;
         case ID_pgMusicVol:
-            SETTINGS.sound.musik_volume = static_cast<unsigned char>((position * 255) / 10);
-            AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musik_volume);
+            SETTINGS.sound.musicVolume = static_cast<uint8_t>((position * 255) / 100);
+            AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musicVolume);
             break;
     }
 }

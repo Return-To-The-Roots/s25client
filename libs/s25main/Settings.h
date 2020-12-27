@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -77,10 +77,10 @@ public:
 
     struct
     {
-        bool musik;
-        unsigned char musik_volume;
-        bool effekte;
-        unsigned char effekte_volume;
+        bool musicEnabled;
+        unsigned char musicVolume;
+        bool effectsEnabled;
+        unsigned char effectsVolume;
         std::string playlist; /// musicplayer playlist name
     } sound;
 

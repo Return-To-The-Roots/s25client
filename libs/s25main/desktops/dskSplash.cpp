@@ -86,7 +86,7 @@ void dskSplash::LoadFiles()
         SetFpsDisplay(true);
         if(loader.getPlaylist())
             MUSICPLAYER.SetPlaylist(std::move(*loader.getPlaylist()));
-        if(SETTINGS.sound.musik)
+        if(SETTINGS.sound.musicEnabled)
             MUSICPLAYER.Play();
 
     } else
