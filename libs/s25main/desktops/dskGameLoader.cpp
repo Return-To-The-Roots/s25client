@@ -43,7 +43,8 @@ dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
 {
     WINDOWMANAGER.SetCursor(Cursor::None);
 
-    AddTimer(1, 50);
+    using namespace std::chrono_literals;
+    AddTimer(1, 50ms);
 
     AddText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 

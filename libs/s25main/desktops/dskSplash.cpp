@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,6 +32,8 @@
 #include "s25util/Log.h"
 #include "s25util/error.h"
 
+using namespace std::chrono_literals;
+
 dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg)
     : Desktop(splashImg.release()), isLoading(false), isLoaded(false)
 {
@@ -50,14 +52,14 @@ void dskSplash::SetActive(bool activate)
 {
     Desktop::SetActive(activate);
     if(activate && !GetCtrl<ctrlTimer>(0))
-        AddTimer(0, 1);
+        AddTimer(0, 1ms);
 }
 
 void dskSplash::Msg_Timer(const unsigned ctrl_id)
 {
     GetCtrl<ctrlTimer>(ctrl_id)->Stop();
     if(ctrl_id == 0)
-        AddTimer(1, 1);
+        AddTimer(1, 1ms);
     else if(ctrl_id == 1 && !isLoaded && !isLoading)
     {
         isLoading = true;
@@ -80,7 +82,7 @@ void dskSplash::LoadFiles()
     if(loader.load())
     {
         isLoaded = true;
-        AddTimer(2, 5000);
+        AddTimer(2, 5s);
         SetFpsDisplay(true);
         if(loader.getPlaylist())
             MUSICPLAYER.SetPlaylist(std::move(*loader.getPlaylist()));

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,6 +25,8 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
+
+using namespace std::chrono_literals;
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     : IngameWindow(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300), _("Building sequence"),
@@ -61,7 +63,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     AddImageButton(10, DrawPoint(200, 250), Extent(48, 30), TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Absendetimer, in 2s-Abschnitten wird jeweils das ganze als Netzwerknachricht ggf. abgeschickt
-    AddTimer(11, 2000);
+    AddTimer(11, 2s);
 
     list->SetSelection(0);
 }

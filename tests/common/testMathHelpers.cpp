@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,7 +18,10 @@
 #include "helpers/SmoothedValue.hpp"
 #include "helpers/mathFuncs.h"
 #include "helpers/roundToNextPow2.h"
+#include <rttr/test/random.hpp>
+#include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
+#include <chrono>
 
 BOOST_AUTO_TEST_SUITE(MathHelperTests)
 
@@ -132,6 +135,73 @@ BOOST_AUTO_TEST_CASE(DivCeilResults)
     BOOST_TEST(helpers::divCeil(7, 8) == 1u);
     BOOST_TEST(helpers::divCeil(8, 8) == 1u);
     BOOST_TEST(helpers::divCeil(9, 8) == 2u);
+}
+
+using TimeTypes =
+  boost::mpl::list<std::chrono::duration<int32_t, std::milli>, std::chrono::duration<uint32_t, std::milli>>;
+template<typename T>
+struct Rep
+{
+    using type = T;
+};
+template<typename T, typename U>
+struct Rep<std::chrono::duration<T, U>>
+{
+    using type = T;
+};
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(Interpolate, T, TimeTypes)
+{
+    using RepT = typename Rep<T>::type;
+    using rttr::test::randomValue;
+    {
+        const auto duration = randomValue<RepT>(1, 0xFFFF / 2);
+        const auto maxStepSize = std::max<unsigned>(1, duration / 100);
+        for(int i = 0; i <= static_cast<int>(duration); i += randomValue<int>(1, maxStepSize))
+        {
+            const int maxVal(duration * 2);
+            const int minVal2(duration);
+            BOOST_TEST(helpers::interpolate(0, maxVal, T(i), T(duration)) == 2 * i);
+            BOOST_TEST(helpers::interpolate(maxVal, 0, T(i), T(duration)) == maxVal - 2 * i);
+            BOOST_TEST(helpers::interpolate(minVal2, maxVal, T(i), T(duration)) == minVal2 + i);
+            BOOST_TEST(helpers::interpolate(maxVal, minVal2, T(i), T(duration)) == maxVal - i);
+        }
+        for(unsigned i = 0; i <= static_cast<unsigned>(duration); i += randomValue<int>(1, maxStepSize))
+        {
+            const unsigned maxVal(duration * 2);
+            const unsigned minVal2(duration);
+            BOOST_TEST(helpers::interpolate(0u, maxVal, T(i), T(duration)) == 2u * i);
+            BOOST_TEST(helpers::interpolate(maxVal, 0u, T(i), T(duration)) == maxVal - 2u * i);
+            BOOST_TEST(helpers::interpolate(minVal2, maxVal, T(i), T(duration)) == minVal2 + i);
+            BOOST_TEST(helpers::interpolate(maxVal, minVal2, T(i), T(duration)) == maxVal - i);
+        }
+    }
+    {
+        const auto startVal = randomValue<int>(-1000, 1000);
+        const auto endVal = randomValue<int>(startVal + 10, startVal + 1000);
+        if(std::is_signed<RepT>::value)
+        {
+            // Elapsed time less than zero
+            BOOST_TEST(helpers::interpolate(startVal, endVal, T(randomValue<int>(-10000, -1)), T(randomValue<int>(1)))
+                       == startVal);
+        }
+        // Elapsed time greater than duration
+        const auto duration = randomValue<RepT>(1, 5000000);
+        BOOST_TEST(helpers::interpolate(startVal, endVal, T(randomValue<RepT>(duration)), T(duration)) == endVal);
+    }
+    {
+        const auto startVal = randomValue<unsigned>(0u, 500000u);
+        const auto endVal = randomValue<unsigned>(startVal + 10u);
+        if(std::is_signed<RepT>::value)
+        {
+            // Elapsed time less than zero
+            BOOST_TEST(helpers::interpolate(startVal, endVal, T(randomValue<int>(-10000, -1)), T(randomValue<int>(1)))
+                       == startVal);
+        }
+        // Elapsed time greater than duration
+        const auto duration = randomValue<RepT>(1, 5000000);
+        BOOST_TEST(helpers::interpolate(startVal, endVal, T(randomValue<RepT>(duration)), T(duration)) == endVal);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
