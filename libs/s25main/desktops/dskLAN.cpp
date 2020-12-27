@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks ( helpers::toString(gameInfo.info.curNumPlayers)
+// Copyright (c) 2005 - 2020 Settlers Freaks ( helpers::toString(gameInfo.info.curNumPlayers)
 //
 // This file is part of Return To The Roots.
 //
@@ -62,8 +62,9 @@ dskLAN::dskLAN() : dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_D
 
     discovery.Start();
 
-    AddTimer(ID_tmrRefreshServers, 60000); // Servers broadcast changes, so force a full update only once a minute
-    AddTimer(ID_tmrRefreshList, 2000);
+    using namespace std::chrono_literals;
+    AddTimer(ID_tmrRefreshServers, 1min); // Servers broadcast changes, so force a full update only once a minute
+    AddTimer(ID_tmrRefreshList, 2s);
 }
 
 void dskLAN::Msg_Timer(const unsigned ctrl_id)

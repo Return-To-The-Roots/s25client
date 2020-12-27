@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -89,7 +89,8 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     group->SetSelection(0);
 
     // Netzwerk-Übertragungs-Timer
-    AddTimer(7, 2000);
+    using namespace std::chrono_literals;
+    AddTimer(7, 2s);
 }
 
 iwTransport::~iwTransport()

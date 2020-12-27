@@ -380,9 +380,9 @@ ctrlTable* Window::AddTable(unsigned id, const DrawPoint& pos, const Extent& siz
     return AddCtrl(new ctrlTable(this, id, ScaleIf(pos), ScaleIf(size), tc, font, std::move(columns)));
 }
 
-ctrlTimer* Window::AddTimer(unsigned id, unsigned timeout)
+ctrlTimer* Window::AddTimer(unsigned id, std::chrono::milliseconds timeout)
 {
-    return AddCtrl(new ctrlTimer(this, id, std::chrono::milliseconds(timeout)));
+    return AddCtrl(new ctrlTimer(this, id, timeout));
 }
 
 /**

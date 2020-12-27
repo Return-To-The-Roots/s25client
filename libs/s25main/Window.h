@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -29,6 +29,7 @@
 #include "s25util/colors.h"
 #include <boost/optional/optional_fwd.hpp>
 #include <boost/range/adaptor/map.hpp>
+#include <chrono>
 #include <map>
 #include <vector>
 
@@ -188,7 +189,7 @@ public:
                       const glFont* font);
     TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
                                       FontStyle format, const glFont* font);
-    ctrlTimer* AddTimer(unsigned id, unsigned timeout);
+    ctrlTimer* AddTimer(unsigned id, std::chrono::milliseconds timeout);
     /// fügt ein vertieftes variables TextCtrl hinzu.
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
     ctrlVarDeepening* AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,

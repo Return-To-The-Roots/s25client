@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,9 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "iwDistribution.h"
-
-#include <utility>
-
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -31,6 +28,9 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
+#include <utility>
+
+using namespace std::chrono_literals;
 
 struct iwDistribution::DistributionGroup
 {
@@ -76,7 +76,7 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     tab->SetSelection(0);
 
     // Timer für die Übertragung der Daten via Netzwerk
-    AddTimer(1, 2000);
+    AddTimer(1, 2s);
 
     const Extent btSize(32, 32);
     // Hilfe

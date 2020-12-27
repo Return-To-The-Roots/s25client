@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,6 +21,8 @@
 #include "helpers/toString.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
+
+using namespace std::chrono_literals;
 
 /**
  *  aktualisiert die Ranking-Tabelle.
@@ -57,7 +59,7 @@ iwLobbyRanking::iwLobbyRanking()
                                 {_("Points"), 185, SRT::Number},
                                 {_("Lost"), 215, SRT::Number},
                                 {_("Won"), 240, SRT::Number}});
-    AddTimer(1, 60000);
+    AddTimer(1, 1min);
 
     // "Zurück"
     AddTextButton(3, DrawPoint(20, 370), Extent(400, 20), TC_RED1, _("Back"), NormalFont);

@@ -40,6 +40,7 @@
 #include "files.h"
 #include "helpers/containerUtils.h"
 #include "helpers/format.hpp"
+#include "helpers/mathFuncs.h"
 #include "lua/LuaInterfaceBase.h"
 #include "network/ClientInterface.h"
 #include "network/GameMessages.h"
@@ -1519,23 +1520,19 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
     else
         elapsedTime = FramesInfo::milliseconds32_t::zero();
     FramesInfo::milliseconds32_t duration = ev->length * framesinfo.gf_length;
-    unsigned result = (max_val * elapsedTime) / duration;
-    if(result >= max_val)
-        RTTR_Assert(result < max_val); //-V547
-    return result;
+    return helpers::interpolate(0u, max_val, elapsedTime, duration);
 }
 
 int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 {
     RTTR_Assert(ev);
-    using milliseconds32_t = std::chrono::duration<int32_t, std::milli>;
-    milliseconds32_t elapsedTime;
+    FramesInfo::milliseconds32_t elapsedTime;
     if(state == CS_GAME)
         elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
     else
-        elapsedTime = milliseconds32_t::zero();
-    milliseconds32_t duration = ev->length * framesinfo.gf_length;
-    return x1 + ((x2 - x1) * elapsedTime) / duration;
+        elapsedTime = FramesInfo::milliseconds32_t::zero();
+    FramesInfo::milliseconds32_t duration = ev->length * framesinfo.gf_length;
+    return helpers::interpolate(x1, x2, elapsedTime, duration);
 }
 
 void GameClient::ServerLost()

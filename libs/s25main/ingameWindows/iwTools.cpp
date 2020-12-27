@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -81,7 +81,8 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     UpdateSettings();
 
     // Netzwerk-Übertragungs-Timer
-    AddTimer(14, 2000);
+    using namespace std::chrono_literals;
+    AddTimer(14, 2s);
 
     toolSubscription =
       gwv.GetWorld().GetNotifications().subscribe<ToolNote>([this](auto) { this->shouldUpdateTexts = true; });

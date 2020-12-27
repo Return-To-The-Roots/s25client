@@ -173,7 +173,8 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
         cbCheckEvents->AddString((boost::format(_("BQ check every %1%ms")) % ms.count()).str());
     }
     cbCheckEvents->SetSelection(0);
-    AddTimer(ID_tmrCheckEvents, 500)->Stop();
+    using namespace std::chrono_literals;
+    AddTimer(ID_tmrCheckEvents, 500ms)->Stop();
 
     if(allowCheating)
     {

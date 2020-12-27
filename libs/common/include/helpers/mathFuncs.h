@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,7 +33,7 @@ constexpr unsigned divCeil(unsigned dividend, unsigned divisor) noexcept
 }
 /// Clamp the value into [min, max]
 template<typename T>
-T clamp(T val, T min, T max) noexcept
+constexpr T clamp(T val, T min, T max) noexcept
 {
     if(val <= min)
         return min;
@@ -43,7 +43,7 @@ T clamp(T val, T min, T max) noexcept
         return val;
 }
 template<typename T, typename U>
-U clamp(T val, U min, U max) noexcept
+constexpr U clamp(T val, U min, U max) noexcept
 {
     using Common = std::common_type_t<T, U>;
     if(std::is_signed<T>::value && !std::is_signed<U>::value)
@@ -61,5 +61,21 @@ U clamp(T val, U min, U max) noexcept
     }
     // Here all values are positive or have the same signedness
     return static_cast<U>(clamp(static_cast<Common>(val), static_cast<Common>(min), static_cast<Common>(max)));
+}
+// Linear interpolation between [startVal, endVal]. Difference between those 2 and elapsedTime should be smallish
+template<typename T, typename U, typename V>
+constexpr T interpolate(const T startVal, const T endVal, const U elapsedTime, const V duration) noexcept
+{
+    // Allow only 1 order of magnitude between the time units (i.e. seconds and milliseconds)
+    static_assert(U(1) / V(1) <= 1000 && V(1) / U(1) <= 1000,
+                  "Time units are to different so result would likely overflow");
+    if(elapsedTime < U(0))
+        return startVal;
+    if(elapsedTime > duration)
+        return endVal;
+    if(startVal <= endVal)
+        return static_cast<T>(startVal + ((endVal - startVal) * elapsedTime) / duration);
+    else // Special case for unsigned values
+        return static_cast<T>(startVal - ((startVal - endVal) * elapsedTime) / duration);
 }
 } // namespace helpers

@@ -1,3 +1,4 @@
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -73,7 +74,8 @@ dskLobby::dskLobby()
     // Chatfenster-Edit
     AddEdit(21, DrawPoint(20, 530), Extent(500, 22), TC_GREY, NormalFont);
 
-    AddTimer(30, 5000);
+    using namespace std::chrono_literals;
+    AddTimer(30, 5s);
 
     // If we came from an active game, tell the server we quit
     if(LOBBYCLIENT.IsIngame())

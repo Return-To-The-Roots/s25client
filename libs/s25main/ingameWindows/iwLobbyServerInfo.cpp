@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -53,7 +53,8 @@ iwLobbyServerInfo::iwLobbyServerInfo(unsigned serverId)
     AddEdit(8, DrawPoint(30, 210), Extent(200, 22), TC_GREEN2, NormalFont, 0, false, true);
 
     LOBBYCLIENT.SendServerInfoRequest(serverId_);
-    AddTimer(9, 5000);
+    using namespace std::chrono_literals;
+    AddTimer(9, 5s);
 }
 
 void iwLobbyServerInfo::Msg_Timer(const unsigned ctrl_id)

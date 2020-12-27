@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -70,8 +70,9 @@ dskMainMenu::dskMainMenu()
 
     AddImage(ID_logo, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 
+    using namespace std::chrono_literals;
     if(SETTINGS.global.submit_debug_data == 0)
-        AddTimer(ID_tmrDebugData, 250);
+        AddTimer(ID_tmrDebugData, 250ms);
 
     /*AddText(20, DrawPoint(50, 450), _("Font Test"), COLOR_YELLOW, FontStyle::LEFT, SmallFont);
     AddText(21, DrawPoint(50, 470), _("Font Test"), COLOR_YELLOW, FontStyle::LEFT, NormalFont);

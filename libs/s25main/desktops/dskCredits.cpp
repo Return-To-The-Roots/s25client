@@ -22,6 +22,7 @@
 #include "controls/ctrlTimer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
+#include "helpers/mathFuncs.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
@@ -35,10 +36,11 @@
 #include <cstdlib>
 #include <numeric>
 
+using namespace std::chrono_literals;
 /// Duration for one credits page
-const auto PAGE_TIME = std::chrono::milliseconds(12900);
+const auto PAGE_TIME = 12900ms;
 /// Duration for fading between pages
-const auto FADING_TIME = std::chrono::seconds(2);
+const auto FADING_TIME = 2s;
 using std::chrono::duration_cast;
 
 namespace {
@@ -57,8 +59,8 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     AddTextButton(ID_btBack, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
     AddText(ID_txtRttr, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
     AddText(ID_txtCredits, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
-    AddTimer(ID_tmrBobAnim, 40); // Bob animation every 40ms
-    pageTimer = AddTimer(ID_tmrPage, duration_cast<std::chrono::milliseconds>(PAGE_TIME).count());
+    AddTimer(ID_tmrBobAnim, 40ms);
+    pageTimer = AddTimer(ID_tmrPage, PAGE_TIME);
     pageTimer->Stop();
 
     LOADER.Load(ResourceId("credits")); // Ignore failure
@@ -338,18 +340,13 @@ void dskCredits::GotoPrevPage()
 
 void dskCredits::DrawCredit()
 {
-    const auto elapsedPageTime = pageTimer->getElapsed();
+    const auto elapsedPageTime = std::chrono::duration_cast<std::chrono::milliseconds>(pageTimer->getElapsed());
 
     // calculate text transparency
-    unsigned transparency;
-    if(elapsedPageTime < FADING_TIME)
-        transparency = 0xFF * elapsedPageTime / FADING_TIME;
-    else if(elapsedPageTime >= PAGE_TIME)
-        transparency = 0;
-    else if(elapsedPageTime > PAGE_TIME - FADING_TIME)
-        transparency = (0xFF - 0xFF * (elapsedPageTime - (PAGE_TIME - FADING_TIME)) / FADING_TIME);
-    else
-        transparency = 0xFF;
+    const auto fadeoutStartTime = PAGE_TIME - FADING_TIME;
+    const unsigned transparency = (elapsedPageTime >= fadeoutStartTime) ?
+                                    helpers::interpolate(0xFFu, 0u, elapsedPageTime - fadeoutStartTime, FADING_TIME) :
+                                    helpers::interpolate(0u, 0xFFu, elapsedPageTime, FADING_TIME);
 
     // draw text
     LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, FontStyle{}, SetAlpha(COLOR_RED, transparency));
@@ -442,9 +439,9 @@ void dskCredits::DrawBobs()
     }
 }
 
-void dskCredits::Msg_Timer(unsigned tmrId)
+void dskCredits::Msg_Timer(unsigned timerId)
 {
-    if(tmrId == ID_tmrBobAnim)
+    if(timerId == ID_tmrBobAnim)
     {
         const auto width = static_cast<int>(VIDEODRIVER.GetRenderSize().x);
         for(auto& bob : bobs)
@@ -464,7 +461,7 @@ void dskCredits::Msg_Timer(unsigned tmrId)
                     bob.direction = libsiedler2::ImgDir::E;
             }
         }
-    } else if(tmrId == ID_tmrPage)
+    } else if(timerId == ID_tmrPage)
     {
         GotoNextPage();
     }
