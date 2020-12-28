@@ -90,6 +90,9 @@ void IngameWindow::SetIwSize(const Extent& newSize)
         wndSize.y = 0;
     wndSize += contentOffset + contentOffsetEnd;
     Window::Resize(wndSize);
+
+    // Reset the position to check if parts of the window are out of the visible area
+    SetPos(GetPos());
 }
 
 Extent IngameWindow::GetIwSize() const
@@ -100,6 +103,24 @@ Extent IngameWindow::GetIwSize() const
 DrawPoint IngameWindow::GetRightBottomBoundary()
 {
     return DrawPoint(GetSize() - contentOffsetEnd);
+}
+
+void IngameWindow::SetPos(DrawPoint newPos)
+{
+    const Extent screenSize = VIDEODRIVER.GetRenderSize();
+    // Too far left or right?
+    if(newPos.x < 0)
+        newPos.x = 0;
+    else if(newPos.x + GetSize().x > screenSize.x)
+        newPos.x = screenSize.x - GetSize().x;
+
+    // Too high or low?
+    if(newPos.y < 0)
+        newPos.y = 0;
+    else if(newPos.y + GetSize().y > screenSize.y)
+        newPos.y = screenSize.y - GetSize().y;
+
+    Window::SetPos(newPos);
 }
 
 void IngameWindow::Close()
@@ -344,16 +365,6 @@ void IngameWindow::MoveNextToMouse()
 {
     // Center vertically and move slightly right
     DrawPoint newPos = VIDEODRIVER.GetMousePos() - DrawPoint(-20, GetSize().y / 2);
-    const Extent screenSize = VIDEODRIVER.GetRenderSize();
-    // To far right?
-    if(newPos.x + GetSize().x > screenSize.x)
-        newPos.x = screenSize.x - GetSize().x;
-
-    // To high or low?
-    if(newPos.y < 0)
-        newPos.y = 0;
-    else if(newPos.y + GetSize().y > screenSize.y)
-        newPos.y = screenSize.y - GetSize().y;
     SetPos(newPos);
 }
 
