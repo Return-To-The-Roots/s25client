@@ -6,8 +6,6 @@
 #include "EventManager.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
-#include "addons/AddonEconomyModeGameLength.h"
-#include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
 #include "network/GameClient.h"
@@ -32,15 +30,7 @@ void Game::Start(bool startFromSave)
     if(startFromSave)
         CheckObjective();
     else
-    {
-        if(ggs_.objective == GameObjective::EconomyMode)
-        {
-            unsigned int selection = ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH);
-            world_.setEconHandler(std::make_unique<EconomyModeHandler>(AddonEconomyModeGameLengthList[selection]
-                                                                       / SPEED_GF_LENGTHS[referenceSpeed]));
-        }
         StatisticStep();
-    }
     if(world_.HasLua())
         world_.GetLua().EventStart(!startFromSave);
 }

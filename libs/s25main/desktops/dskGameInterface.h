@@ -135,6 +135,8 @@ private:
     void StopScrolling();
     void StartScrolling(const Position& mousePos);
 
+    void ShowPersistentWindowsAfterSwitch();
+
     PostBox& GetPostBox();
     std::shared_ptr<const Game> game_;
     std::shared_ptr<const NWFInfo> nwfInfo_;

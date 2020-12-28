@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Window.h"
+#include "gameData/const_gui_ids.h"
 #include <array>
 #include <vector>
 
@@ -15,9 +16,6 @@ struct Point;
 
 class IngameWindow : public Window
 {
-    /// For each id we save the last position of the window
-    static std::vector<DrawPoint> last_pos;
-
 public:
     /// Special position that gets translated to the last know position or screen center when passed to the ctor
     static const DrawPoint posLastOrCenter;
@@ -74,6 +72,8 @@ public:
     void MouseLeftDown(const MouseCoords& mc);
     void MouseLeftUp(const MouseCoords& mc);
     void MouseMove(const MouseCoords& mc);
+
+    GUI_ID GetID() const { return static_cast<GUI_ID>(Window::GetID()); }
 
 protected:
     void Draw_() override;

@@ -4,10 +4,13 @@
 
 #include "IngameWindow.h"
 #include "CollisionDetection.h"
+#include "IngameWindows.h"
 #include "Loader.h"
+#include "Settings.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/MultiArray.h"
+#include "helpers/containerUtils.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -16,7 +19,6 @@
 #include <algorithm>
 #include <utility>
 
-std::vector<DrawPoint> IngameWindow::last_pos(CGI_NEXT + 1, DrawPoint::Invalid());
 const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(),
                                               std::numeric_limits<DrawPoint::ElementType>::max());
 const DrawPoint IngameWindow::posCenter(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
@@ -45,8 +47,9 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     // Load last position or center the window
     if(pos == posLastOrCenter)
     {
-        if(id < last_pos.size() && last_pos[id].isValid())
-            SetPos(last_pos[id]);
+        auto& settings = SETTINGS.windows.persistentSettings;
+        if(helpers::contains(persistentWindows, GetID()) && settings[GetID()].lastPos.isValid())
+            SetPos(settings[GetID()].lastPos);
         else
             MoveToCenter();
     } else if(pos == posCenter)
@@ -58,8 +61,11 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
 IngameWindow::~IngameWindow()
 {
     // Possibly save our old position
-    if(GetID() < last_pos.size())
-        last_pos[GetID()] = GetPos();
+    if(helpers::contains(persistentWindows, GetID()))
+    {
+        SETTINGS.windows.persistentSettings[GetID()].lastPos = GetPos();
+        SETTINGS.windows.persistentSettings[GetID()].isOpen = !closeme;
+    }
 }
 
 void IngameWindow::Resize(const Extent& newSize)
@@ -67,6 +73,7 @@ void IngameWindow::Resize(const Extent& newSize)
     DrawPoint iSize(newSize);
     iSize = elMax(DrawPoint(0, 0), iSize - DrawPoint(contentOffset + contentOffsetEnd));
     SetIwSize(Extent(iSize));
+    SetPos(GetPos());
 }
 
 void IngameWindow::SetIwSize(const Extent& newSize)

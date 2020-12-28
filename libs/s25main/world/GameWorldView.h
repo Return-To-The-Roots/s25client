@@ -38,11 +38,11 @@ class GameWorldView
     std::vector<IDrawNodeCallback*> drawNodeCallbacks;
 
     /// Show building quality icons
-    bool show_bq;
+    bool& show_bq;
     /// Show building names
-    bool show_names;
+    bool& show_names;
     /// Show productivities
-    bool show_productivity;
+    bool& show_productivity;
 
     /// Offset from world origin in screen units (not map units): "scroll position"
     DrawPoint offset;

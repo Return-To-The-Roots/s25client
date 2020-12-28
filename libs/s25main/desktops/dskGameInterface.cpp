@@ -26,29 +26,7 @@
 #include "helpers/format.hpp"
 #include "helpers/strUtils.h"
 #include "helpers/toString.h"
-#include "ingameWindows/iwAction.h"
-#include "ingameWindows/iwBaseWarehouse.h"
-#include "ingameWindows/iwBuilding.h"
-#include "ingameWindows/iwBuildingSite.h"
-#include "ingameWindows/iwChat.h"
-#include "ingameWindows/iwEndgame.h"
-#include "ingameWindows/iwHQ.h"
-#include "ingameWindows/iwHarborBuilding.h"
-#include "ingameWindows/iwInventory.h"
-#include "ingameWindows/iwMainMenu.h"
-#include "ingameWindows/iwMapDebug.h"
-#include "ingameWindows/iwMilitaryBuilding.h"
-#include "ingameWindows/iwMinimap.h"
-#include "ingameWindows/iwMusicPlayer.h"
-#include "ingameWindows/iwOptionsWindow.h"
-#include "ingameWindows/iwPostWindow.h"
-#include "ingameWindows/iwRoadWindow.h"
-#include "ingameWindows/iwSave.h"
-#include "ingameWindows/iwShip.h"
-#include "ingameWindows/iwSkipGFs.h"
-#include "ingameWindows/iwTextfile.h"
-#include "ingameWindows/iwTrade.h"
-#include "ingameWindows/iwVictory.h"
+#include "ingameWindows/IngameWindows.h"
 #include "lua/GameDataLoader.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
@@ -130,6 +108,8 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
     if(initOGL)
         worldViewer.InitTerrainRenderer();
 
+    ShowPersistentWindowsAfterSwitch();
+
     VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync); // Use requested setting for ingame
 }
 
@@ -201,6 +181,47 @@ void dskGameInterface::StartScrolling(const Position& mousePos)
     startScrollPt = mousePos;
     isScrolling = true;
     WINDOWMANAGER.SetCursor(Cursor::Scroll);
+}
+
+void dskGameInterface::ShowPersistentWindowsAfterSwitch()
+{
+    auto& windows = SETTINGS.windows.persistentSettings;
+
+    if(windows[CGI_CHAT].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwChat>(this));
+    if(windows[CGI_POSTOFFICE].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
+    if(windows[CGI_DISTRIBUTION].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwDistribution>(gwv.GetViewer(), GAMECLIENT));
+    if(windows[CGI_BUILDORDER].isOpen && gwv.GetWorld().GetGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwBuildOrder>(gwv.GetViewer()));
+    if(windows[CGI_TRANSPORT].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwTransport>(gwv.GetViewer(), GAMECLIENT));
+    if(windows[CGI_MILITARY].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMilitary>(gwv.GetViewer(), GAMECLIENT));
+    if(windows[CGI_TOOLS].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwTools>(gwv.GetViewer(), GAMECLIENT));
+    if(windows[CGI_INVENTORY].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwInventory>(gwv.GetViewer().GetPlayer()));
+    if(windows[CGI_MINIMAP].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMinimap>(minimap, gwv));
+    if(windows[CGI_BUILDINGS].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwBuildings>(gwv, GAMECLIENT));
+    if(windows[CGI_BUILDINGSPRODUCTIVITY].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwBuildingProductivities>(gwv.GetViewer().GetPlayer()));
+    if(windows[CGI_MUSICPLAYER].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMusicPlayer>());
+    if(windows[CGI_STATISTICS].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwStatistics>(gwv.GetViewer()));
+    if(windows[CGI_ECONOMICPROGRESS].isOpen && gwv.GetWorld().getEconHandler())
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwEconomicProgress>(gwv.GetViewer()));
+    if(windows[CGI_DIPLOMACY].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwDiplomacy>(gwv.GetViewer(), GAMECLIENT));
+    if(windows[CGI_SHIP].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(
+          std::make_unique<iwShip>(gwv, GAMECLIENT, gwv.GetViewer().GetPlayer().GetShipByID(0)));
+    if(windows[CGI_MERCHANDISE_STATISTICS].isOpen)
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMerchandiseStatistics>(gwv.GetViewer().GetPlayer()));
 }
 
 void dskGameInterface::SettingsChanged() {}

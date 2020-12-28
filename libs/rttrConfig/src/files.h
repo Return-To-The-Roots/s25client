@@ -55,7 +55,8 @@ namespace resources {
     constexpr auto boat = "<RTTR_GAME>/DATA/BOBS/BOAT.LST";
     constexpr auto boot_z = "<RTTR_GAME>/DATA/BOOT_Z.LST";
     constexpr auto carrier = "<RTTR_GAME>/DATA/BOBS/CARRIER.BOB";
-    constexpr auto config = "<RTTR_CONFIG>/CONFIG.INI"; // main config file
+    constexpr auto config = "<RTTR_CONFIG>/CONFIG.INI";               // main config file
+    constexpr auto ingameOptions = "<RTTR_CONFIG>/INGAMEOPTIONS.INI"; // ingame options file
     constexpr auto io = "<RTTR_GAME>/DATA/IO/IO.DAT";
     constexpr auto jobs = "<RTTR_GAME>/DATA/BOBS/JOBS.BOB";
     constexpr auto mis0bobs = "<RTTR_GAME>/DATA/MIS0BOBS.LST";
