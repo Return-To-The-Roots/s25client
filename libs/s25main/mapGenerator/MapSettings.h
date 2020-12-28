@@ -17,74 +17,38 @@
 
 #pragma once
 
-#include "mapGenerator/MapStyle.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameData/DescIdx.h"
+#include "gameData/LandscapeDesc.h"
 #include <string>
 
-struct LandscapeDesc;
+namespace rttr { namespace mapGenerator {
 
-/**
- * Settings used for map generation.
- */
-struct MapSettings
-{
-    MapSettings()
-        : numPlayers(2), size(MapExtent::all(256)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15),
-          minPlayerRadius(0.31), maxPlayerRadius(0.51), type(0), style(MapStyle::Random)
-    {}
+    enum class MapStyle
+    {
+        Water,
+        Land,
+        Mixed
+    };
 
-    void Validate();
+    struct MapSettings
+    {
+        MapSettings()
+            : numPlayers(2), size(MapExtent::all(128)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15),
+              type(0), style(MapStyle::Mixed)
+        {}
 
-    std::string name, author;
+        void MakeValid();
 
-    /**
-     * Number of players.
-     */
-    unsigned numPlayers;
+        std::string name, author;
+        unsigned numPlayers;
+        MapExtent size;
+        unsigned short ratioGold;
+        unsigned short ratioIron;
+        unsigned short ratioCoal;
+        unsigned short ratioGranite;
+        DescIdx<LandscapeDesc> type;
+        MapStyle style;
+    };
 
-    /**
-     * Map size in vertices.
-     */
-    MapExtent size;
-
-    /**
-     * Ratio of gold distributed as resources on mountain terrain.
-     */
-    unsigned short ratioGold;
-
-    /**
-     * Ratio of iron distributed as resources on mountain terrain.
-     */
-    unsigned short ratioIron;
-
-    /**
-     * Ratio of coal distributed as resources on mountain terrain.
-     */
-    unsigned short ratioCoal;
-
-    /**
-     * Ratio of granite distributed as resources on mountain terrain.
-     */
-    unsigned short ratioGranite;
-
-    /**
-     * Minimum radius from the center of the map for player placement.
-     */
-    double minPlayerRadius;
-
-    /**
-     * Maximum radius from the center of the map for player placement.
-     */
-    double maxPlayerRadius;
-
-    /**
-     * Landscape type used for map generation.
-     */
-    DescIdx<LandscapeDesc> type;
-
-    /**
-     * Style of the map.
-     */
-    MapStyle style;
-};
+}} // namespace rttr::mapGenerator

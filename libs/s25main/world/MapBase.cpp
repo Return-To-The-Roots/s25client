@@ -100,6 +100,21 @@ MapPoint MapBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
     return MakeMapPoint(::GetNeighbour2(Position(pt), dir));
 }
 
+std::array<MapPoint, 6> MapBase::GetNeighbours(const MapPoint& pt) const
+{
+    unsigned yplus1 = pt.y == size_.y - 1 ? 0 : pt.y + 1;
+    unsigned yminus1 = (pt.y == 0 ? size_.y : pt.y) - 1;
+    unsigned xplus1 = pt.x == size_.x - 1 ? 0 : pt.x + 1;
+    unsigned xminus1 = (pt.x == 0 ? size_.x : pt.x) - 1;
+
+    return {MapPoint(xminus1, pt.y),
+            MapPoint((pt.y & 1) ? pt.x : xminus1, yminus1),
+            MapPoint((!(pt.y & 1)) ? pt.x : xplus1, yminus1),
+            MapPoint(xplus1, pt.y),
+            MapPoint((!(pt.y & 1)) ? pt.x : xplus1, yplus1),
+            MapPoint((pt.y & 1) ? pt.x : xminus1, yplus1)};
+}
+
 unsigned MapBase::CalcDistance(const Position& p1, const Position& p2) const
 {
     int dx = ((p1.x - p2.x) * 2) + (p1.y & 1) - (p2.y & 1);

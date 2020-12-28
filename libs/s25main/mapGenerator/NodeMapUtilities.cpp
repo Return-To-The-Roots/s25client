@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,23 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#include "mapGenerator/NodeMapUtilities.h"
 
-#include <boost/filesystem/path.hpp>
-#include <string>
+namespace rttr { namespace mapGenerator {
 
-struct MapSettings;
+    std::vector<MapPoint> SelectPoints(const std::function<bool(const MapPoint&)>& predicate, const MapExtent& size)
+    {
+        std::vector<MapPoint> selectedNodes;
+        RTTR_FOREACH_PT(MapPoint, size)
+        {
+            if(predicate(pt))
+            {
+                selectedNodes.push_back(pt);
+            }
+        }
+        return selectedNodes;
+    }
 
-/**
- * The MapGenerator is a utility to generate a large variety of different worlds.
- */
-class MapGenerator
-{
-public:
-    /**
-     * Create and saves a new map.
-     * @param filePath path for the output file
-     * @param settings used to generate the random map
-     */
-    static void Create(const boost::filesystem::path& filePath, const MapSettings& settings);
-};
+}} // namespace rttr::mapGenerator
