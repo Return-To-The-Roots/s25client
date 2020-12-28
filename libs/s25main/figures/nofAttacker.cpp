@@ -401,7 +401,7 @@ void nofAttacker::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
+    StartWalking(RANDOM_ENUM(Direction, GetObjId()));
 }
 
 /// Wenn ein Kampf gewonnen wurde

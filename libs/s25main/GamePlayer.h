@@ -32,7 +32,7 @@
 #include <list>
 #include <memory>
 
-struct Direction;
+enum class Direction : uint8_t;
 class GameWorldGame;
 class noBaseBuilding;
 class noBuildingSite;

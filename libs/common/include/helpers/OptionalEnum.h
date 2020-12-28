@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "EnumTraits.h"
 #include "MaxEnumValue.h"
 #include <boost/none.hpp>
 #include <boost/optional/bad_optional_access.hpp>
@@ -30,11 +29,8 @@ namespace helpers {
 template<class T>
 class OptionalEnum
 {
-    static_assert(is_enum<T>::value, "Only works for enums");
-    using RealEnum = wrapped_enum_t<T>;
-    using underlying_type = underlying_type_t<RealEnum>;
-    template<typename U>
-    using RequiresIsTOrWrapped = std::enable_if_t<std::is_same<U, T>::value || std::is_same<U, RealEnum>::value>;
+    static_assert(std::is_enum<T>::value, "Only works for enums");
+    using underlying_type = std::underlying_type_t<T>;
 
 public:
     static constexpr underlying_type invalidValue = std::numeric_limits<underlying_type>::max();
@@ -43,22 +39,19 @@ public:
     using value_type = T;
 
     constexpr OptionalEnum() noexcept = default;
-    OptionalEnum(boost::none_t) noexcept {}
-    template<typename U, class = RequiresIsTOrWrapped<U>>
-    constexpr OptionalEnum(const U& value) noexcept : value_(static_cast<underlying_type>(value))
-    {}
-    template<typename U, class = RequiresIsTOrWrapped<U>>
-    OptionalEnum& operator=(const U& value) noexcept
+    constexpr OptionalEnum(boost::none_t) noexcept {}
+    constexpr OptionalEnum(const T& value) noexcept : value_(static_cast<underlying_type>(value)) {}
+    constexpr OptionalEnum& operator=(const T& value) noexcept
     {
         value_ = static_cast<underlying_type>(value);
         return *this;
     }
     // Copy and conversion not required, copy/move are default and conversion between enums is not possible
 
-    constexpr T operator*() const noexcept { return static_cast<RealEnum>(value_); }
+    constexpr T operator*() const noexcept { return static_cast<T>(value_); }
     constexpr explicit operator bool() const noexcept { return has_value(); }
     constexpr bool has_value() const noexcept { return value_ != invalidValue; }
-    T value() const
+    constexpr T value() const
     {
         if(!has_value())
             throw boost::bad_optional_access();
@@ -66,30 +59,26 @@ public:
     }
     constexpr T value_or(T default_value) const { return bool(*this) ? **this : default_value; }
 
-    void reset() noexcept { value_ = invalidValue; }
+    constexpr void reset() noexcept { value_ = invalidValue; }
 
     // Those comparisons can be simplified to comparing value_ due to the invalid value being a distinct value
     friend constexpr bool operator==(OptionalEnum lhs, OptionalEnum rhs) { return lhs.value_ == rhs.value_; }
     friend constexpr bool operator!=(OptionalEnum lhs, OptionalEnum rhs) { return lhs.value_ != rhs.value_; }
     // Technically not required as above operators would be used, but included for better debug performance and
     // mirroring the standard
-    template<typename U, class = RequiresIsTOrWrapped<U>>
-    friend constexpr bool operator==(OptionalEnum lhs, const U& rhs)
+    friend constexpr bool operator==(OptionalEnum lhs, const T& rhs)
     {
         return lhs.value_ == static_cast<underlying_type>(rhs);
     }
-    template<typename U, class = RequiresIsTOrWrapped<U>>
-    friend constexpr bool operator!=(OptionalEnum lhs, const U& rhs)
+    friend constexpr bool operator!=(OptionalEnum lhs, const T& rhs)
     {
         return lhs.value_ != static_cast<underlying_type>(rhs);
     }
-    template<typename U, class = RequiresIsTOrWrapped<U>>
-    friend constexpr bool operator==(const U& lhs, OptionalEnum rhs)
+    friend constexpr bool operator==(const T& lhs, OptionalEnum rhs)
     {
         return static_cast<underlying_type>(lhs) == rhs.value_;
     }
-    template<typename U, class = RequiresIsTOrWrapped<U>>
-    friend constexpr bool operator!=(const U& lhs, OptionalEnum rhs)
+    friend constexpr bool operator!=(const T& lhs, OptionalEnum rhs)
     {
         return static_cast<underlying_type>(lhs) != rhs.value_;
     }

@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "enum_cast.hpp"
+#include "helpers/EnumRange.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/DirectionToImgDir.h"
 #include "gameTypes/GameTypesOutput.h"

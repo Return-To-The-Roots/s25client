@@ -1,13 +1,11 @@
 #pragma once
 
-#include "helpers/EnumTraits.h"
 #include <type_traits>
 
 namespace rttr {
 template<typename T_Enum>
 constexpr auto enum_cast(T_Enum val)
 {
-    using RealEnum = helpers::wrapped_enum_t<T_Enum>; // Support for "fake" strong enums. TODO: Remove
-    return static_cast<std::underlying_type_t<RealEnum>>(val);
+    return static_cast<std::underlying_type_t<T_Enum>>(val);
 }
 } // namespace rttr

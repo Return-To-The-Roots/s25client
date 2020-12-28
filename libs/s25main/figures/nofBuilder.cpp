@@ -263,7 +263,7 @@ void nofBuilder::StartFreewalk()
     // Zukünftigen Platz berechnen
     nextOffsetSite = offsetSite;
 
-    switch(GetCurMoveDir().native_value())
+    switch(GetCurMoveDir())
     {
         case Direction::WEST: nextOffsetSite.x -= FREEWALK_LENGTH[waiting_walk]; break;
         case Direction::NORTHWEST:

@@ -24,7 +24,7 @@
 inline libsiedler2::ImgDir toImgDir(Direction dir)
 {
     using libsiedler2::ImgDir;
-    switch(dir.native_value())
+    switch(dir)
     {
         case Direction::WEST: return ImgDir::W;
         case Direction::NORTHWEST: return ImgDir::NW;

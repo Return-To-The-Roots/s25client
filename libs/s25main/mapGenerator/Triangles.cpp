@@ -34,7 +34,7 @@ namespace rttr { namespace mapGenerator {
             //   S   -1/ 0 (SW)
             //   D    0/-1 (N)
 
-            switch(direction.native_value())
+            switch(direction)
             {
                 case Direction::WEST:
                     return {Triangle(true, Position(p.x, p.y - 1), size),
@@ -70,7 +70,7 @@ namespace rttr { namespace mapGenerator {
             //   S   -1/ 0 (SW)
             //   D   -1/-1 (N)
 
-            switch(direction.native_value())
+            switch(direction)
             {
                 case Direction::WEST:
                     return {Triangle(true, Position(p.x - 1, p.y - 1), size),

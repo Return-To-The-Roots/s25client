@@ -108,6 +108,9 @@ using RandomEntry = UsedRandom::RandomEntry;
 /// Shortcut to get a new random value in range [0, maxVal) for a given object id
 /// Note: maxVal has to be small (at least <= 32768)
 #define RANDOM_RAND(objId, maxVal) RANDOM.Rand(__FILE__, __LINE__, objId, maxVal)
+/// Return a random enumerator of the given type. Requires the <helpers/MaxEnumValue.h> include
+#define RANDOM_ENUM(EnumType, objId) \
+    static_cast<EnumType>(RANDOM.Rand(__FILE__, __LINE__, objId, helpers::MaxEnumValue_v<EnumType>))
 
 /// functor using RANDOM.Rand(...) e.g. for std::shuffle
 class RandomFunctor

@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "helpers/EnumRange.h"
 #include "world/World.h"
 
 struct PathConditionReachable

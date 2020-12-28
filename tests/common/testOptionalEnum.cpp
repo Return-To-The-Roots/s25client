@@ -35,32 +35,11 @@ enum class UnsignedEnum : unsigned char
     Value1,
     Value2
 };
-struct FakeEnum
-{
-    enum Type : unsigned
-    {
-        Value1,
-        Value2
-    };
-    Type t_;
-    constexpr FakeEnum(Type t = Value1) : t_(t) {}
-    constexpr explicit operator unsigned() const { return t_; }
-};
-// Only variant required
-static bool operator==(const FakeEnum& lhs, const FakeEnum::Type& rhs)
-{
-    return lhs.t_ == rhs;
-}
 
 template<typename T>
 static std::enable_if_t<std::is_enum<T>::value, std::ostream&> operator<<(std::ostream& os, T enumVal)
 {
     return os << static_cast<int>(enumVal);
-}
-
-static std::ostream& operator<<(std::ostream& os, FakeEnum enumVal)
-{
-    return os << enumVal.t_;
 }
 
 constexpr auto maxEnumValue(DefaultEnum)
@@ -75,17 +54,10 @@ constexpr auto maxEnumValue(UnsignedEnum)
 {
     return UnsignedEnum::Value2;
 }
-constexpr auto maxEnumValue(FakeEnum)
-{
-    return FakeEnum::Value2;
-}
 
 } // namespace testEnums
 
 namespace helpers {
-template<>
-struct is_enum<testEnums::FakeEnum> : std::true_type
-{};
 template<typename T>
 static std::ostream& operator<<(std::ostream& os, OptionalEnum<T> enumVal)
 {
@@ -98,7 +70,7 @@ static std::ostream& operator<<(std::ostream& os, OptionalEnum<T> enumVal)
 
 using namespace testEnums;
 
-using EnumsToTest = boost::mpl::list<DefaultEnum, SignedEnum, UnsignedEnum, FakeEnum>;
+using EnumsToTest = boost::mpl::list<DefaultEnum, SignedEnum, UnsignedEnum>;
 
 BOOST_AUTO_TEST_SUITE(OptionalEnum)
 
@@ -188,14 +160,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(CopyAndMove, T, EnumsToTest)
     BOOST_TEST(optVal1_3 == T::Value1);
     optVal1 = std::move(optVal1_3);
     BOOST_TEST(optVal1 == T::Value1);
-}
-
-BOOST_AUTO_TEST_CASE(AssignFakeEnum)
-{
-    helpers::OptionalEnum<FakeEnum> optVal(FakeEnum::Value1);
-    BOOST_TEST(optVal == FakeEnum::Value1);
-    optVal = FakeEnum::Value2;
-    BOOST_TEST(optVal == FakeEnum::Value2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

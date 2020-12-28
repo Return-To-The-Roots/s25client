@@ -25,12 +25,12 @@
 /// This is either ReachedGoal or convertible to Direction
 enum class TradeDirection : uint8_t
 {
-    West = Direction::WEST,
-    NorthWest = Direction::NORTHWEST,
-    NorthEast = Direction::NORTHEAST,
-    East = Direction::EAST,
-    SouthEast = Direction::SOUTHEAST,
-    SouthWest = Direction::SOUTHWEST,
+    West = static_cast<uint8_t>(Direction::WEST),
+    NorthWest = static_cast<uint8_t>(Direction::NORTHWEST),
+    NorthEast = static_cast<uint8_t>(Direction::NORTHEAST),
+    East = static_cast<uint8_t>(Direction::EAST),
+    SouthEast = static_cast<uint8_t>(Direction::SOUTHEAST),
+    SouthWest = static_cast<uint8_t>(Direction::SOUTHWEST),
     ReachedGoal = helpers::NumEnumValues_v<Direction>
 };
 
@@ -39,12 +39,12 @@ constexpr auto maxEnumValue(TradeDirection)
     return TradeDirection::ReachedGoal;
 }
 
-inline TradeDirection toTradeDirection(const Direction dir) noexcept
+constexpr TradeDirection toTradeDirection(const Direction dir) noexcept
 {
     return TradeDirection(static_cast<uint8_t>(dir));
 }
 inline Direction toDirection(const TradeDirection dir) noexcept
 {
     RTTR_Assert(dir != TradeDirection::ReachedGoal);
-    return Direction::Type(static_cast<uint8_t>(dir));
+    return Direction(static_cast<uint8_t>(dir));
 }

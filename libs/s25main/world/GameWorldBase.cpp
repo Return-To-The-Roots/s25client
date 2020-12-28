@@ -25,6 +25,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "figures/nofPassiveSoldier.h"
+#include "helpers/EnumRange.h"
 #include "helpers/containerUtils.h"
 #include "lua/LuaInterfaceGame.h"
 #include "notifications/NodeNote.h"
@@ -462,7 +463,7 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
 
         // add seaIds from which we can actually attack the harbor
         bool harborinlist = false;
-        for(const auto dir : helpers::EnumRange<Direction>{})
+        for(const auto dir : helpers::enumRange<Direction>())
         {
             const unsigned short seaId = GetSeaId(curHbId, dir);
             if(!seaId)
@@ -471,7 +472,7 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
             bool previouslytested = false;
             for(unsigned k = 0; k < rttr::enum_cast(dir); k++)
             {
-                if(seaId == GetSeaId(curHbId, Direction::fromInt(k)))
+                if(seaId == GetSeaId(curHbId, Direction(k)))
                 {
                     previouslytested = true;
                     break;
@@ -521,7 +522,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
                 continue;
         }
 
-        for(const auto dir : helpers::EnumRange<Direction>{})
+        for(const auto dir : helpers::enumRange<Direction>())
         {
             const unsigned short seaId = GetSeaId(curHbId, dir);
             if(!seaId)
@@ -534,7 +535,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
             bool previouslytested = false;
             for(unsigned k = 0; k < rttr::enum_cast(dir); k++)
             {
-                if(seaId == GetSeaId(curHbId, Direction::fromInt(k)))
+                if(seaId == GetSeaId(curHbId, Direction(k)))
                 {
                     previouslytested = true;
                     break;
