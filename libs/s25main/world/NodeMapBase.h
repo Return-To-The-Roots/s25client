@@ -19,6 +19,7 @@
 
 #include "MapBase.h"
 #include "gameTypes/MapCoordinates.h"
+#include <functional>
 #include <vector>
 
 /// Base class for a map with the geometry of the world (MapBase)
@@ -32,11 +33,16 @@ public:
     using Node = T_Node;
 
     void Resize(const MapExtent& newSize) override;
+    void Resize(const MapExtent& newSize, const Node& defaultValue);
+
     /// Access given node
     Node& operator[](unsigned idx) { return nodes[idx]; }
     const Node& operator[](unsigned idx) const { return nodes[idx]; }
     Node& operator[](const MapPoint& pt);
     const Node& operator[](const MapPoint& pt) const;
+
+    template<typename T_Result>
+    T_Result Map(std::function<T_Result(const std::vector<Node>&)> func) const;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -60,4 +66,19 @@ void NodeMapBase<T_Node>::Resize(const MapExtent& newSize)
     MapBase::Resize(newSize);
     nodes.clear();
     nodes.resize(prodOfComponents(newSize));
+}
+
+template<typename T_Node>
+void NodeMapBase<T_Node>::Resize(const MapExtent& newSize, const T_Node& defaultValue)
+{
+    MapBase::Resize(newSize);
+    nodes.clear();
+    nodes.resize(prodOfComponents(newSize), defaultValue);
+}
+
+template<typename T_Node>
+template<typename T_Result>
+T_Result NodeMapBase<T_Node>::Map(std::function<T_Result(const std::vector<T_Node>&)> func) const
+{
+    return func(nodes);
 }

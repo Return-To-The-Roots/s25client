@@ -17,137 +17,58 @@
 
 #pragma once
 
-#include "gameTypes/MapCoordinates.h"
+#include "helpers/containerUtils.h"
+#include "mapGenerator/NodeMapUtilities.h"
+#include "mapGenerator/Textures.h"
+#include "mapGenerator/Triangles.h"
+#include "gameData/WorldDescription.h"
+#include "libsiedler2/archives.h"
+
+#include <cmath>
 #include <string>
-#include <vector>
 
-namespace libsiedler2 {
-class Archiv;
-}
+namespace rttr { namespace mapGenerator {
 
-using VecUChar = std::vector<unsigned char>;
+    class Map
+    {
+    private:
+        std::vector<MapPoint> hqPositions_;
+        std::vector<DescIdx<TerrainDesc>> terrains_;
+        DescIdx<LandscapeDesc> landscape_;
 
-/**
- * Data type for reading, writing and generating maps.
- */
-struct Map
-{
-    /**
-     * Create a new map of size 0x0.
-     */
-    Map();
+    public:
+        NodeMapBase<uint8_t> z;
+        NodeMapBase<TexturePair> textures;
+        NodeMapBase<uint8_t> objectInfos;
+        NodeMapBase<uint8_t> objectTypes;
+        NodeMapBase<uint8_t> resources;
+        NodeMapBase<libsiedler2::Animal> animals;
+        std::vector<Triangle> harbors;
+        TextureMap textureMap;
 
-    /**
-     * Creates a new, empty map with the specified width and height.
-     * @param size
-     * @param name name of the map
-     * @param author author of the map
-     */
-    Map(const MapExtent& size, std::string name, std::string author);
+        const std::string name;
+        const std::string author;
+        const ValueRange<uint8_t> height;
+        const uint8_t players;
+        const MapExtent size;
 
-    /**
-     * size of the map in vertices.
-     */
-    MapExtent size;
+        Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDesc, DescIdx<LandscapeDesc> landscape,
+            uint8_t maxHeight = 0x60);
 
-    /**
-     * Name of the map.
-     */
-    std::string name;
+        /**
+         * Marks the position as HQ position if set to a valid position, otherwise unmarks previously marked position.
+         *
+         * @param position position to mark or unmark as HQ position
+         * @param index index of the player
+         */
+        void MarkAsHeadQuarter(const MapPoint& position, int index);
 
-    /**
-     * Name of the map author.
-     */
-    std::string author;
+        /**
+         * Creates a new archiv for this map.
+         *
+         * @return a new archiv containing the information of this map
+         */
+        libsiedler2::Archiv CreateArchiv() const;
+    };
 
-    /**
-     * Landscape type of the map.
-     */
-    uint8_t type;
-
-    /**
-     * Number of players.
-     */
-    uint8_t numPlayers;
-
-    /**
-     * Positions of the players' headquarters.
-     */
-    std::vector<MapPoint> hqPositions;
-
-    /**
-     * Height for each vertex of the map.
-     */
-    VecUChar z;
-
-    /**
-     * Road values for each vertex of the map.
-     */
-    VecUChar road;
-
-    /**
-     * Animal values for each vertex of the map.
-     */
-    VecUChar animal;
-
-    /**
-     * Unknown value 1 for each vertex of the map.
-     */
-    VecUChar unknown1;
-
-    /**
-     * Build values for each vertex of the map.
-     */
-    VecUChar build;
-
-    /**
-     * Unknown value 2 for each vertex of the map.
-     */
-    VecUChar unknown2;
-
-    /**
-     * Unknown value 3 for each vertex of the map.
-     */
-    VecUChar unknown3;
-
-    /**
-     * Resource values for each vertex of the map.
-     */
-    VecUChar resource;
-
-    /**
-     * Shading values for each vertex of the map.
-     */
-    VecUChar shading;
-
-    /**
-     * Unknown value 5 for each vertex of the map.
-     */
-    VecUChar unknown5;
-
-    /**
-     * Right-side-down texture values for each vertex of the map.
-     */
-    VecUChar textureRsu;
-
-    /**
-     * Left-side-down texture values for each vertex of the map.
-     */
-    VecUChar textureLsd;
-
-    /**
-     * Object type values for each vertex of the map.
-     */
-    VecUChar objectType;
-
-    /**
-     * Object info values for each vertex of the map.
-     */
-    VecUChar objectInfo;
-
-    /**
-     * Creates a new archiv for this map.
-     * @return a new archiv containing the information of this map
-     */
-    libsiedler2::Archiv CreateArchiv();
-};
+}} // namespace rttr::mapGenerator

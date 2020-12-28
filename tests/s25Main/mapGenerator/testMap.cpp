@@ -15,79 +15,71 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "PointOutput.h"
+#include "lua/GameDataLoader.h"
 #include "mapGenerator/Map.h"
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_SUITE(MapTest)
+using namespace rttr::mapGenerator;
 
-/**
- * Tests the default constructor of the Map class. Width and height of the map
- * are expected to be zero.
- */
-BOOST_AUTO_TEST_CASE(Constructor_DefaultZeroSize)
+BOOST_AUTO_TEST_SUITE(MapTests)
+
+template<class T_Test>
+void RunTest(T_Test test);
+
+template<class T_Test>
+void RunTest(T_Test test)
 {
-    Map map;
+    DescIdx<LandscapeDesc> landscape(1);
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
 
-    BOOST_REQUIRE_EQUAL(map.size, MapExtent::all(0));
+    MapExtent size(16, 8);
+    Map map(size, 0x7, worldDesc, landscape);
+
+    test(map);
 }
 
-/**
- * Tests the constructor of the Map class. The new map should have correct size
- * according to the constructor parameters.
- */
-BOOST_AUTO_TEST_CASE(Constructor_CorrectSize)
+BOOST_AUTO_TEST_CASE(Constructor_resizes_all_maps)
 {
-    const MapExtent size(64, 32);
-    const unsigned numNodes = size.x * size.y;
-    Map map(size, "name", "author");
-
-    BOOST_REQUIRE_EQUAL(map.size, size);
-    BOOST_REQUIRE_EQUAL(map.z.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.textureRsu.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.textureLsd.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.build.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.shading.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.resource.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.road.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.objectType.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.objectInfo.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.animal.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.unknown1.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.unknown2.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.unknown3.size(), numNodes);
-    BOOST_REQUIRE_EQUAL(map.unknown5.size(), numNodes);
+    RunTest([](Map& map) {
+        BOOST_REQUIRE(map.z.GetSize() == map.size);
+        BOOST_REQUIRE(map.textures.GetSize() == map.size);
+        BOOST_REQUIRE(map.objectInfos.GetSize() == map.size);
+        BOOST_REQUIRE(map.objectTypes.GetSize() == map.size);
+        BOOST_REQUIRE(map.resources.GetSize() == map.size);
+        BOOST_REQUIRE(map.animals.GetSize() == map.size);
+    });
 }
 
-/**
- * Tests the constructor of the Map class. The name must match the name specified
- * in the constructor arguments.
- */
-BOOST_AUTO_TEST_CASE(Constructor_CorrectName)
+BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_sets_object_info_and_type_for_any_player_index)
 {
-    std::string name("name");
-    Map map(MapExtent(64, 32), name, "author");
-    BOOST_REQUIRE_EQUAL(map.name, name);
+    RunTest([](Map& map) {
+        MapPoint hq(3, 4);
 
-    std::string name2("name2");
-    Map map2(MapExtent(64, 32), name2, "author");
-    BOOST_REQUIRE_EQUAL(map2.name, name2);
+        for(int index = 0; index < 7; index++)
+        {
+            map.MarkAsHeadQuarter(hq, index);
+
+            BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_HeadquarterMask);
+            BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::ObjectType(index));
+        }
+    });
 }
 
-/**
- * Tests the constructor of the Map class. The author must match the author specified
- * in the constructor arguments.
- */
-BOOST_AUTO_TEST_CASE(Constructor_CorrectAuthor)
+BOOST_AUTO_TEST_CASE(MarkAsHeadQuarter_removes_hq_for_invalid_map_point)
 {
-    std::string author1("author1");
-    Map mapA(MapExtent(64, 32), "name", author1);
+    RunTest([](Map& map) {
+        MapPoint hq(3, 7);
 
-    BOOST_REQUIRE_EQUAL(mapA.author, author1);
+        for(int index = 0; index < 7; index++)
+        {
+            map.MarkAsHeadQuarter(hq, index);
+            map.MarkAsHeadQuarter(MapPoint::Invalid(), index);
 
-    std::string author2("author2");
-    Map mapB(MapExtent(64, 32), "name", author2);
-    BOOST_REQUIRE_EQUAL(mapB.author, author2);
+            BOOST_REQUIRE(map.objectInfos[hq] == libsiedler2::OI_Empty);
+            BOOST_REQUIRE(map.objectTypes[hq] == libsiedler2::OT_Empty);
+        }
+    });
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -71,7 +71,7 @@ private:
     void OnMapCreated(const boost::filesystem::path& mapPath);
 
     CreateServerInfo csi;
-    MapSettings rndMapSettings;
+    rttr::mapGenerator::MapSettings rndMapSettings;
     boost::thread* mapGenThread;
     boost::filesystem::path newRandMapPath;
     std::string randMapGenError;
