@@ -39,22 +39,22 @@ class nobHarborBuilding;
 class nofPassiveSoldier;
 class RoadPathFinder;
 
-inline Direction getOppositeDir(const RoadDir roadDir) noexcept
+constexpr Direction getOppositeDir(const RoadDir roadDir) noexcept
 {
     static_assert(rttr::enum_cast(Direction::WEST) == rttr::enum_cast(RoadDir::East)
                     && rttr::enum_cast(Direction::NORTHWEST) == rttr::enum_cast(RoadDir::SouthEast)
                     && rttr::enum_cast(Direction::NORTHEAST) == rttr::enum_cast(RoadDir::SouthWest),
                   "Opposite directions don't match");
-    return Direction::fromInt(rttr::enum_cast(roadDir));
+    return Direction(rttr::enum_cast(roadDir));
 }
 
-inline Direction toDirection(const RoadDir roadDir) noexcept
+constexpr Direction toDirection(const RoadDir roadDir) noexcept
 {
     static_assert(rttr::enum_cast(Direction::EAST) == rttr::enum_cast(RoadDir::East) + 3u
                     && rttr::enum_cast(Direction::SOUTHEAST) == rttr::enum_cast(RoadDir::SouthEast) + 3u
                     && rttr::enum_cast(Direction::SOUTHWEST) == rttr::enum_cast(RoadDir::SouthWest) + 3u,
                   "Directions don't match");
-    return Direction::fromInt(rttr::enum_cast(roadDir) + 3u);
+    return Direction(rttr::enum_cast(roadDir) + 3u);
 }
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten

@@ -29,7 +29,6 @@
 #include <memory>
 #include <vector>
 
-struct Direction;
 class GameWorldViewer;
 class glArchivItem_Bitmap;
 struct TerrainDesc;

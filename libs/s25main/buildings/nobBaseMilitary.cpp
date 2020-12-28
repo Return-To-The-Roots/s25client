@@ -88,7 +88,7 @@ void nobBaseMilitary::DestroyBuilding()
         {
             it->Abrogate();
             it->StartWandering();
-            it->StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
+            it->StartWalking(RANDOM_ENUM(Direction, GetObjId()));
         }
     }
 
@@ -96,7 +96,7 @@ void nobBaseMilitary::DestroyBuilding()
 
     // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
-    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, Direction::SOUTHEAST);
+    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
     for(auto& building : buildings)
     {
         if(building->GetPlayer() != player && BuildingProperties::IsMilitary(building->GetBuildingType()))
@@ -278,7 +278,7 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
     nofAttacker* best_attacker = nullptr;
     unsigned best_radius = 0xFFFFFFFF;
 
-    for(auto& aggressor : aggressors)
+    for(auto* aggressor : aggressors)
     {
         // Ist der Soldat überhaupt bereit zum Kämpfen (also wartet er um die Flagge herum oder rückt er nach)?
         if(aggressor->IsAttackerReady())

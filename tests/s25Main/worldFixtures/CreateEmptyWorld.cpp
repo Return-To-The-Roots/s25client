@@ -80,7 +80,7 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
 
 void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
 {
-    switch(dir.native_value())
+    switch(dir)
     {
         case Direction::WEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t1 = t; break;
         case Direction::NORTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t2 = t; break;

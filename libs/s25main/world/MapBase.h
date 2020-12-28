@@ -20,6 +20,7 @@
 #include "Identity.h"
 #include "RTTR_Assert.h"
 #include "ReturnConst.h"
+#include "helpers/EnumRange.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/ShipDirection.h"

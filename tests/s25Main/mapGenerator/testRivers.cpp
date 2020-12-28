@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_river_of_expected_size)
         const MapPoint source(4, 1);
         const int length = 6;
 
-        for(const auto d: helpers::enumRange<Direction>())
+        for(const auto d : helpers::enumRange<Direction>())
         {
             auto river = CreateStream(rnd, map, source, d, length);
 
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_connected_nodes)
         const MapPoint source(3, 2);
         const int length = 7;
 
-        for(const auto d: helpers::enumRange<Direction>())
+        for(const auto d : helpers::enumRange<Direction>())
         {
             auto river = CreateStream(rnd, map, source, d, length);
 
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
         const MapPoint source(3, 2);
         const int length = 7;
 
-        for(const auto d: helpers::enumRange<Direction>())
+        for(const auto d : helpers::enumRange<Direction>())
         {
             auto river = CreateStream(rnd, map, source, d, length);
 
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_reduces_height_of_river_nodes)
         const MapPoint source(4, 1);
         const int length = 6;
 
-        for(const auto d: helpers::enumRange<Direction>())
+        for(const auto d : helpers::enumRange<Direction>())
         {
             auto river = CreateStream(rnd, map, source, d, length);
 

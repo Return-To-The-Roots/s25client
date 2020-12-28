@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include "EnumTraits.h"
 #include <type_traits>
 
 namespace helpers {
@@ -28,14 +27,13 @@ namespace helpers {
 template<class T>
 struct MaxEnumValue
 {
-    static_assert(helpers::is_enum<T>::value, "T must be an enum");
+    static_assert(std::is_enum<T>::value, "T must be an enum");
     static constexpr T value = maxEnumValue(T{});
 };
 
 /// Return the maximum value of an Enum
 template<class T_Enum>
-constexpr unsigned
-  MaxEnumValue_v = static_cast<helpers::underlying_type_t<T_Enum>>(MaxEnumValue<T_Enum>::value); // NOLINT
+constexpr unsigned MaxEnumValue_v = static_cast<std::underlying_type_t<T_Enum>>(MaxEnumValue<T_Enum>::value); // NOLINT
 
 /// Return the number of enumerators for an enum type
 template<class T_Enum>

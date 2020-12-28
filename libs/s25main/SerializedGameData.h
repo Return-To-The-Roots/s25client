@@ -19,7 +19,6 @@
 
 #include "FOWObjects.h"
 #include "RTTR_Assert.h"
-#include "helpers/EnumTraits.h"
 #include "helpers/GetInsertIterator.hpp"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/OptionalEnum.h"
@@ -105,7 +104,7 @@ public:
     template<typename T_SavedType, typename T>
     void PushEnum(const T val)
     {
-        using UnderlyingType = helpers::underlying_type_t<T>;
+        using UnderlyingType = std::underlying_type_t<T>;
         static_assert(std::is_same<T_SavedType, UnderlyingType>::value, "Wrong saved type");
         constexpr auto maxValue = helpers::MaxEnumValue_v<T>;
         static_assert(std::numeric_limits<T_SavedType>::max() >= maxValue, "SavedType cannot hold all enum values");
@@ -162,9 +161,9 @@ public:
 
     /// Read a trivial type (integral, enum, ...)
     template<typename T>
-    std::enable_if_t<helpers::is_enum<T>::value, T> Pop();
+    std::enable_if_t<std::is_enum<T>::value, T> Pop();
     template<typename T>
-    std::enable_if_t<!helpers::is_enum<T>::value, T> Pop();
+    std::enable_if_t<!std::is_enum<T>::value, T> Pop();
 
     /// Adds a deserialized object to the storage. Must be called exactly once per read GameObject
     void AddObject(GameObject* go);
@@ -297,25 +296,25 @@ Point<T> SerializedGameData::PopPoint()
 template<typename T>
 helpers::OptionalEnum<T> SerializedGameData::PopOptionalEnum()
 {
-    using Integral = helpers::underlying_type_t<T>;
+    using Integral = std::underlying_type_t<T>;
     const auto value = Serializer::Pop<Integral>();
     if(value > helpers::MaxEnumValue_v<T> && value != helpers::OptionalEnum<T>::invalidValue)
         throw makeOutOfRange(value, helpers::MaxEnumValue_v<T>);
     // We can now safely convert to the enum value
-    return helpers::wrapped_enum_t<T>(value); // Avoid additional range checks
+    return static_cast<T>(value); // Avoid additional range checks
 }
 
 template<typename T>
-std::enable_if_t<helpers::is_enum<T>::value, T> SerializedGameData::Pop()
+std::enable_if_t<std::is_enum<T>::value, T> SerializedGameData::Pop()
 {
-    using Integral = helpers::underlying_type_t<T>;
+    using Integral = std::underlying_type_t<T>;
     const auto value = Serializer::Pop<Integral>();
     if(value > helpers::MaxEnumValue_v<T>)
         throw makeOutOfRange(value, helpers::MaxEnumValue_v<T>);
-    return helpers::wrapped_enum_t<T>(value); // Avoid additional range checks
+    return static_cast<T>(value); // Avoid additional range checks
 }
 template<typename T>
-std::enable_if_t<!helpers::is_enum<T>::value, T> SerializedGameData::Pop()
+std::enable_if_t<!std::is_enum<T>::value, T> SerializedGameData::Pop()
 {
     return Serializer::Pop<T>();
 }

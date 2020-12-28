@@ -240,7 +240,7 @@ void nofHunter::HandleStateChasing()
         for(const auto d : helpers::EnumRange<Direction>{})
         {
             Position delta;
-            switch((d + doffset).native_value())
+            switch((d + doffset))
             {
                 case Direction::WEST:
                     delta.x = -4;

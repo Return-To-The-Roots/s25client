@@ -26,6 +26,7 @@
 #include "commonDefines.h"
 #include "convertSounds.h"
 #include "files.h"
+#include "helpers/EnumRange.h"
 #include "helpers/containerUtils.h"
 #include "ogl/MusicItem.h"
 #include "ogl/SoundEffectItem.h"

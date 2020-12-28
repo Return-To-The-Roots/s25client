@@ -28,7 +28,7 @@
 // LCOV_EXCL_START
 inline std::ostream& operator<<(std::ostream& os, const Direction& dir)
 {
-    switch(dir.native_value())
+    switch(dir)
     {
         RTTR_CASE_OUT(Direction, WEST);
         RTTR_CASE_OUT(Direction, NORTHWEST);

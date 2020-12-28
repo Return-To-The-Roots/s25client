@@ -19,6 +19,7 @@
 
 #include "MaxEnumValue.h"
 #include "enum_cast.hpp"
+#include <array>
 
 namespace helpers {
 
@@ -46,4 +47,15 @@ struct EnumArray
 
     T_Elements elems[size()];
 };
+
+/// Convert a std::array to an EnumArray
+template<typename T_Index, typename T>
+constexpr auto toEnumArray(const std::array<T, EnumArray<T, T_Index>::size()>& src)
+{
+    EnumArray<T, T_Index> result;
+    const auto* srcData = src.data();
+    for(unsigned i = 0; i < result.size(); ++i, ++srcData)
+        result.elems[i] = *srcData;
+    return result;
+}
 } // namespace helpers

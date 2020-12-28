@@ -34,7 +34,7 @@ Position GetNeighbour(const Position& p, const Direction dir)
                 SE   0|1    1|1
                 SW  -1|1    0|1
     */
-    switch(dir.native_value())
+    switch(dir)
     {
         case Direction::WEST: return Position(p.x - 1, p.y);
         case Direction::NORTHWEST: return Position(p.x - !(p.y & 1), p.y - 1);

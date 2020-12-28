@@ -106,6 +106,10 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
             BOOST_REQUIRE_EQUAL(radiusPts[j + 7], world.GetNeighbour2(curPt, j));
         for(unsigned j = 0; j < 18; j++)
             BOOST_REQUIRE_EQUAL(world.CalcDistance(curPt, radiusPts[j + 19]), 3u);
+
+        const std::array<MapPoint, 6> neighbours = world.GetNeighbours(MapPoint(pt));
+        for(const auto dir : helpers::EnumRange<Direction>{})
+            BOOST_TEST(neighbours[rttr::enum_cast(dir)] == world.GetNeighbour(MapPoint(pt), dir));
     }
 }
 

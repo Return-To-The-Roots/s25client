@@ -32,11 +32,12 @@
 template<typename T>
 static T popEnum(Serializer& ser)
 {
+    static_assert(std::is_same<uint8_t, std::underlying_type_t<T>>::value, "Only for uint8_t enums");
     const uint8_t value = ser.PopUnsignedChar();
     if(value > helpers::MaxEnumValue_v<T>)
         throw std::range_error(
           helpers::format("%s is out of range. Maximum allowed value: %s", value, helpers::MaxEnumValue_v<T>));
-    return Direction::Type(value);
+    return T(value);
 }
 
 namespace gc {

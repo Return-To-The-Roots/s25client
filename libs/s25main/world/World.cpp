@@ -268,7 +268,7 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
 
 DescIdx<TerrainDesc> World::GetRightTerrain(const MapPoint pt, Direction dir) const
 {
-    switch(dir.native_value())
+    switch(dir)
     {
         case Direction::WEST: return GetNeighbourNode(pt, Direction::NORTHWEST).t1;
         case Direction::NORTHWEST: return GetNeighbourNode(pt, Direction::NORTHWEST).t2;
