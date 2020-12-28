@@ -119,6 +119,9 @@ void iwEconomicProgress::Draw_()
 {
     IngameWindow::Draw_();
 
+    if(IsMinimized())
+        return;
+
     // draw team colors
     DrawPoint curTeamRectPos = GetDrawPos() + DrawPoint(padding1.x + wareIconSize.x + txtBoxWidth, padding1.y);
     for(auto& team : teamOrder)
