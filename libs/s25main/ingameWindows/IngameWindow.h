@@ -64,6 +64,9 @@ public:
     /// Get the current lower right corner of the content area
     DrawPoint GetRightBottomBoundary();
 
+    /// Set the position for the window after adjusting newPos so the window is in the visible area
+    void SetPos(DrawPoint newPos);
+
     /// merkt das Fenster zum Schließen vor.
     void Close();
     /// soll das Fenster geschlossen werden.
