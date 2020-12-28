@@ -108,13 +108,13 @@ DrawPoint IngameWindow::GetRightBottomBoundary()
 void IngameWindow::SetPos(DrawPoint newPos)
 {
     const Extent screenSize = VIDEODRIVER.GetRenderSize();
-    // To far left or right?
+    // Too far left or right?
     if(newPos.x < 0)
         newPos.x = 0;
     else if(newPos.x + GetSize().x > screenSize.x)
         newPos.x = screenSize.x - GetSize().x;
 
-    // To high or low?
+    // Too high or low?
     if(newPos.y < 0)
         newPos.y = 0;
     else if(newPos.y + GetSize().y > screenSize.y)
