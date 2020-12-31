@@ -302,7 +302,7 @@ void Ware::RemoveWareJobForDir(const RoadPathDirection last_next_dir)
     // Wenn nicht, könntes ja sein, dass die Straße in ein Lagerhaus führt, dann muss dort Bescheid gesagt werden
     if(location->GetRoute(lastDir)->GetF2()->GetType() == NOP_BUILDING)
     {
-        noBuilding* bld = static_cast<noBuilding*>(location->GetRoute(Direction::NORTHWEST)->GetF2());
+        auto* bld = static_cast<noBuilding*>(location->GetRoute(Direction::NORTHWEST)->GetF2());
         if(BuildingProperties::IsWareHouse(bld->GetBuildingType()))
             static_cast<nobBaseWarehouse*>(bld)->DontFetchNextWare();
     }

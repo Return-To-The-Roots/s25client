@@ -59,14 +59,18 @@ struct EnumArray
     T_Elements elems[size()];
 };
 
+namespace detail {
+    template<typename T_Index, typename T, std::size_t... I>
+    constexpr auto toEnumArrayImpl(const std::array<T, sizeof...(I)>& src, std::index_sequence<I...>)
+    {
+        return helpers::EnumArray<T, T_Index>{src[I]...};
+    }
+} // namespace detail
+
 /// Convert a std::array to an EnumArray
 template<typename T_Index, typename T>
-constexpr auto toEnumArray(const std::array<T, EnumArray<T, T_Index>::size()>& src)
+constexpr auto toEnumArray(const std::array<T, helpers::NumEnumValues_v<T_Index>>& src)
 {
-    EnumArray<T, T_Index> result;
-    const auto* srcData = src.data();
-    for(unsigned i = 0; i < result.size(); ++i, ++srcData)
-        result.elems[i] = *srcData;
-    return result;
+    return detail::toEnumArrayImpl<T_Index>(src, std::make_index_sequence<helpers::NumEnumValues_v<T_Index>>());
 }
 } // namespace helpers

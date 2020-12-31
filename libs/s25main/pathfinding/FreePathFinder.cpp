@@ -115,7 +115,8 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     // LOG.write(("pf: from %i, %i to %i, %i \n", x_start, y_start, x_dest, y_dest);
 
     // Start at random dir (so different jobs may use different roads)
-    const unsigned startDir = randomRoute ? (gwb_.GetIdx(start)) * gwb_.GetEvMgr().GetCurrentGF() % 6 : 0;
+    const Direction startDir =
+      randomRoute ? convertToDirection(gwb_.GetIdx(start) * gwb_.GetEvMgr().GetCurrentGF()) : Direction::WEST;
 
     while(!todo.empty())
     {
@@ -180,7 +181,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
         // LOG.write(("pf get neighbor nodes %i, %i id: %i \n", best.x, best.y, best_id);
         // Knoten in alle 6 Richtungen bilden
-        for(const auto dir : helpers::enumRange(Direction::EAST))
+        for(const auto dir : helpers::enumRange(startDir))
         {
             // Koordinaten des entsprechenden umliegenden Punktes bilden
             MapPoint neighbourPos = gwb_.GetNeighbour(nodes[bestId].mapPt, dir);

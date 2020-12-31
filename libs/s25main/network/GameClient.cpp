@@ -1757,10 +1757,13 @@ std::shared_ptr<const NWFInfo> GameClient::GetNWFInfo() const
 unsigned GameClient::GetTournamentModeDuration() const
 {
     using namespace std::chrono;
-    if(game && rttr::enum_cast(game->ggs_.objective) >= NUM_OBJECTIVES)
-        return minutes(TOURNAMENT_MODES_DURATION[rttr::enum_cast(game->ggs_.objective) - NUM_OBJECTIVES])
-               / framesinfo.gf_length;
-    else
+    if(game && rttr::enum_cast(game->ggs_.objective) >= rttr::enum_cast(GameObjective::Tournament1)
+       && static_cast<unsigned>(rttr::enum_cast(game->ggs_.objective))
+            < rttr::enum_cast(GameObjective::Tournament1) + NUM_TOURNAMENT_MODES)
+    {
+        const auto turnamentMode = rttr::enum_cast(game->ggs_.objective) - rttr::enum_cast(GameObjective::Tournament1);
+        return minutes(TOURNAMENT_MODES_DURATION[turnamentMode]) / framesinfo.gf_length;
+    } else
         return 0;
 }
 
