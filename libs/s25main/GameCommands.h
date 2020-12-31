@@ -497,8 +497,8 @@ class SetInventorySetting : public Coords
     InventorySetting state;
 
 protected:
-    SetInventorySetting(const MapPoint pt, const boost::variant<GoodType, Job>& what, const InventorySetting state)
-        : Coords(SET_INVENTORY_SETTING, pt), what(what), state(state)
+    SetInventorySetting(const MapPoint pt, boost::variant<GoodType, Job> what, const InventorySetting state)
+        : Coords(SET_INVENTORY_SETTING, pt), what(std::move(what)), state(state)
     {}
     SetInventorySetting(Serializer& ser) : Coords(SET_INVENTORY_SETTING, ser)
 

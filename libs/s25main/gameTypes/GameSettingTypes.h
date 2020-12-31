@@ -35,12 +35,19 @@ enum class GameObjective
     None,
     Conquer3_4,
     TotalDomination,
-    EconomyMode
+    EconomyMode,
+    // Different tournament mode lengths, see TOURNAMENT_MODES_DURATION
+    Tournament1,
+    Tournament2,
+    Tournament3,
+    Tournament4,
+    Tournament5
 };
 constexpr auto maxEnumValue(GameObjective)
 {
-    return GameObjective::EconomyMode;
+    return GameObjective::Tournament5;
 }
+constexpr unsigned NUM_TOURNAMENT_MODES = 5;
 
 enum class StartWares
 {

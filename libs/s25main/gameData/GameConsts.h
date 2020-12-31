@@ -33,7 +33,6 @@ constexpr unsigned char SHIP_DIR = 100;
 constexpr unsigned char INVALID_DIR = 0xFF;
 constexpr unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max();
 
-/// Number of "classical" objectives in a friendly match
-constexpr unsigned NUM_OBJECTIVES = 4;
 /// tournament modes
 constexpr auto SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = helpers::make_array(30, 60, 90, 120, 240);
+static_assert(TOURNAMENT_MODES_DURATION.size() == NUM_TOURNAMENT_MODES, "!");

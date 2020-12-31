@@ -78,14 +78,14 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             const unsigned max_radius = [](Job job) {
                 switch(job)
                 {
-                    case Job::Woodcutter: return 6;
-                    case Job::Fisher: return 7;
-                    case Job::Forester: return 6;
                     case Job::Carpenter: return 0;
-                    case Job::Stonemason: return 8;
-                    case Job::Hunter: return 2;
+                    case Job::Hunter:
                     case Job::Farmer: return 2;
                     case Job::CharBurner: return 3;
+                    case Job::Woodcutter:
+                    case Job::Forester: return 6;
+                    case Job::Fisher: return 7;
+                    case Job::Stonemason: return 8;
                     default: throw std::logic_error("Invalid job");
                 }
             }(job_);
@@ -94,14 +94,14 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             const unsigned add_radius_when_found = [](Job job) {
                 switch(job)
                 {
-                    case Job::Woodcutter: return 1;
-                    case Job::Fisher: return 1;
-                    case Job::Forester: return 1;
-                    case Job::Carpenter: return 1;
-                    case Job::Stonemason: return 0;
-                    case Job::Hunter: return 1;
-                    case Job::Farmer: return 1;
+                    case Job::Woodcutter:
+                    case Job::Fisher:
+                    case Job::Forester:
+                    case Job::Carpenter:
+                    case Job::Hunter:
+                    case Job::Farmer:
                     case Job::CharBurner: return 1;
+                    case Job::Stonemason: return 0;
                     default: throw std::logic_error("Invalid job");
                 }
             }(job_);

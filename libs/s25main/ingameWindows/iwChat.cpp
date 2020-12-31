@@ -24,7 +24,7 @@
 #include "gameData/const_gui_ids.h"
 
 namespace {
-static ChatDestination lastChatDestination = ChatDestination::All;
+ChatDestination lastChatDestination = ChatDestination::All;
 }
 
 iwChat::iwChat(Window* parent)

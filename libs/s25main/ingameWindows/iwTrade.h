@@ -8,7 +8,7 @@ class nobBaseWarehouse;
 class GameWorldViewer;
 class GameCommandFactory;
 
-class iwTrade : public IngameWindow
+class iwTrade final : public IngameWindow
 {
     const nobBaseWarehouse& wh; /// Das zugehörige Gebäudeobjekt
     const GameWorldViewer& gwv;

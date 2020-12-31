@@ -32,7 +32,7 @@ helpers::OptionalEnum<Direction> GameWorldBase::FindHumanPath(const MapPoint sta
                                                               const unsigned max_route, const bool random_route,
                                                               unsigned* length, std::vector<Direction>* route) const
 {
-    Direction first_dir;
+    Direction first_dir{};
     if(GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir,
                                     PathConditionHuman(*this)))
         return first_dir;
@@ -112,7 +112,7 @@ helpers::OptionalEnum<Direction> GameWorldGame::FindTradePath(const MapPoint sta
     if(!PathConditionHuman(*this).IsNodeOk(dest))
         return boost::none;
 
-    Direction first_dir;
+    Direction first_dir{};
     if(GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir,
                                     PathConditionTrade(*this, player)))
         return first_dir;
