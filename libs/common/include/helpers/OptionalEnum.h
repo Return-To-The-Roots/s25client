@@ -39,7 +39,7 @@ public:
     using value_type = T;
 
     constexpr OptionalEnum() noexcept = default;
-    constexpr OptionalEnum(boost::none_t) noexcept {}
+    OptionalEnum(boost::none_t) noexcept {}
     constexpr OptionalEnum(const T& value) noexcept : value_(static_cast<underlying_type>(value)) {}
     constexpr OptionalEnum& operator=(const T& value) noexcept
     {
