@@ -19,10 +19,13 @@
 #include "GlobalGameSettings.h"
 #include "LuaServerPlayer.h"
 #include "addons/const_addons.h"
+#include "helpers/containerUtils.h"
 #include "lua/LuaHelpers.h"
+#include "lua/SafeEnum.h"
 #include "network/IGameLobbyController.h"
 #include "gameTypes/GameSettingTypes.h"
 #include "s25util/Log.h"
+#include "s25util/strAlgos.h"
 
 /// Wrapper used to make sure LUA can only return on of the predefined values
 struct AddonIdWrapper
@@ -63,28 +66,33 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
     }
 
 #pragma region ConstDefs
-#define ADD_LUA_CONST(name) state[#name] = name
+#define ADD_LUA_CONST(name) state["GS_" + s25util::toUpper(#name)] = GameSpeed::name
+    ADD_LUA_CONST(VerySlow);
+    ADD_LUA_CONST(Slow);
+    ADD_LUA_CONST(Normal);
+    ADD_LUA_CONST(Fast);
+    ADD_LUA_CONST(VeryFast);
+#undef ADD_LUA_CONST
 
-    ADD_LUA_CONST(GS_VERYSLOW);
-    ADD_LUA_CONST(GS_SLOW);
-    ADD_LUA_CONST(GS_NORMAL);
-    ADD_LUA_CONST(GS_FAST);
-    ADD_LUA_CONST(GS_VERYFAST);
+#define ADD_LUA_CONST(name) state["GO_" + s25util::toUpper(#name)] = GameObjective::name
+    ADD_LUA_CONST(None);
+    ADD_LUA_CONST(Conquer3_4);
+    ADD_LUA_CONST(TotalDomination);
+#undef ADD_LUA_CONST
 
-    ADD_LUA_CONST(GO_NONE);
-    ADD_LUA_CONST(GO_CONQUER3_4);
-    ADD_LUA_CONST(GO_TOTALDOMINATION);
+#define ADD_LUA_CONST(name) state["SWR_" + s25util::toUpper(#name)] = StartWares::name
+    ADD_LUA_CONST(VLow);
+    ADD_LUA_CONST(Low);
+    ADD_LUA_CONST(Normal);
+    ADD_LUA_CONST(ALot);
+#undef ADD_LUA_CONST
 
-    ADD_LUA_CONST(SWR_VLOW);
-    ADD_LUA_CONST(SWR_LOW);
-    ADD_LUA_CONST(SWR_NORMAL);
-    ADD_LUA_CONST(SWR_ALOT);
-
-    ADD_LUA_CONST(EXP_DISABLED);
-    ADD_LUA_CONST(EXP_CLASSIC);
-    ADD_LUA_CONST(EXP_FOGOFWAR);
-    ADD_LUA_CONST(EXP_FOGOFWARE_EXPLORED);
-
+#define ADD_LUA_CONST(name) state["EXP_" + s25util::toUpper(#name)] = Exploration::name
+    ADD_LUA_CONST(Disabled);
+    ADD_LUA_CONST(Classic);
+    ADD_LUA_CONST(FogOfWar);
+    ADD_LUA_CONST(FogOfWarExplored);
+    state["EXP_FOGOFWARE_EXPLORED"] = Exploration::FogOfWarExplored; // Legacy alias (mind the typo)
 #undef ADD_LUA_CONST
 #pragma endregion ConstDefs
 }
@@ -130,41 +138,37 @@ void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
     GlobalGameSettings ggs = lobbyServerController_.GetGGS();
     std::vector<std::string> keys = settings.keys<std::string>();
 
-    if(std::find(keys.begin(), keys.end(), "speed") != keys.end())
+    if(helpers::contains(keys, "speed"))
     {
-        unsigned speed = settings.getField("speed");
-        lua::assertTrue(speed <= GS_VERYFAST, "Speed is invalid");
-        ggs.speed = GameSpeed(speed);
+        const lua::SafeEnum<GameSpeed> speed = settings.getField("speed");
+        ggs.speed = speed;
     }
 
-    if(std::find(keys.begin(), keys.end(), "objective") != keys.end())
+    if(helpers::contains(keys, "objective"))
     {
-        unsigned objective = settings.getField("objective");
-        lua::assertTrue(objective <= GO_TOTALDOMINATION, "Objective is invalid");
-        ggs.objective = GameObjective(objective);
+        const lua::SafeEnum<GameObjective> objective = settings.getField("objective");
+        ggs.objective = objective;
     }
 
-    if(std::find(keys.begin(), keys.end(), "startWares") != keys.end())
+    if(helpers::contains(keys, "startWares"))
     {
-        unsigned wares = settings.getField("startWares");
-        lua::assertTrue(wares <= SWR_ALOT, "Start wares is invalid");
-        ggs.startWares = StartWares(wares);
+        const lua::SafeEnum<StartWares> wares = settings.getField("startWares");
+        ggs.startWares = wares;
     }
 
-    if(std::find(keys.begin(), keys.end(), "fow") != keys.end())
+    if(helpers::contains(keys, "fow"))
     {
-        unsigned fow = settings.getField("fow");
-        lua::assertTrue(fow <= EXP_FOGOFWARE_EXPLORED, "FoW is invalid");
-        ggs.exploration = Exploration(fow);
+        const lua::SafeEnum<Exploration> fow = settings.getField("fow");
+        ggs.exploration = fow;
     }
 
-    if(std::find(keys.begin(), keys.end(), "lockedTeams") != keys.end())
+    if(helpers::contains(keys, "lockedTeams"))
         ggs.lockedTeams = settings.getField("lockedTeams");
 
-    if(std::find(keys.begin(), keys.end(), "teamView") != keys.end())
+    if(helpers::contains(keys, "teamView"))
         ggs.teamView = settings.getField("teamView");
 
-    if(std::find(keys.begin(), keys.end(), "randomStartPosition") != keys.end())
+    if(helpers::contains(keys, "randomStartPosition"))
         ggs.randomStartPosition = settings.getField("randomStartPosition");
 
     lobbyServerController_.ChangeGlobalGameSettings(ggs);

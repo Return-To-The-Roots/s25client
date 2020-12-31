@@ -29,6 +29,7 @@
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
 #include "s25util/Serializer.h"
+#include "s25util/strAlgos.h"
 
 LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILocalGameState& localGameState)
     : LuaInterfaceGameBase(localGameState), localGameState(localGameState), gw(gameInstance.lock()->world_),
@@ -71,69 +72,71 @@ LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILoc
     ADD_LUA_CONST(BLD_DONKEYBREEDER);
     ADD_LUA_CONST(BLD_HARBORBUILDING);
 
-    ADD_LUA_CONST(JOB_HELPER);
-    ADD_LUA_CONST(JOB_WOODCUTTER);
-    ADD_LUA_CONST(JOB_FISHER);
-    ADD_LUA_CONST(JOB_FORESTER);
-    ADD_LUA_CONST(JOB_CARPENTER);
-    ADD_LUA_CONST(JOB_STONEMASON);
-    ADD_LUA_CONST(JOB_HUNTER);
-    ADD_LUA_CONST(JOB_FARMER);
-    ADD_LUA_CONST(JOB_MILLER);
-    ADD_LUA_CONST(JOB_BAKER);
-    ADD_LUA_CONST(JOB_BUTCHER);
-    ADD_LUA_CONST(JOB_MINER);
-    ADD_LUA_CONST(JOB_BREWER);
-    ADD_LUA_CONST(JOB_PIGBREEDER);
-    ADD_LUA_CONST(JOB_DONKEYBREEDER);
-    ADD_LUA_CONST(JOB_IRONFOUNDER);
-    ADD_LUA_CONST(JOB_MINTER);
-    ADD_LUA_CONST(JOB_METALWORKER);
-    ADD_LUA_CONST(JOB_ARMORER);
-    ADD_LUA_CONST(JOB_BUILDER);
-    ADD_LUA_CONST(JOB_PLANER);
-    ADD_LUA_CONST(JOB_PRIVATE);
-    ADD_LUA_CONST(JOB_PRIVATEFIRSTCLASS);
-    ADD_LUA_CONST(JOB_SERGEANT);
-    ADD_LUA_CONST(JOB_OFFICER);
-    ADD_LUA_CONST(JOB_GENERAL);
-    ADD_LUA_CONST(JOB_GEOLOGIST);
-    ADD_LUA_CONST(JOB_SHIPWRIGHT);
-    ADD_LUA_CONST(JOB_SCOUT);
-    ADD_LUA_CONST(JOB_PACKDONKEY);
-    ADD_LUA_CONST(JOB_CHARBURNER);
+#define ADD_LUA_CONST_JOB(name) lua["JOB_" + s25util::toUpper(#name)] = Job::name
+    ADD_LUA_CONST_JOB(Helper);
+    ADD_LUA_CONST_JOB(Woodcutter);
+    ADD_LUA_CONST_JOB(Fisher);
+    ADD_LUA_CONST_JOB(Forester);
+    ADD_LUA_CONST_JOB(Carpenter);
+    ADD_LUA_CONST_JOB(Stonemason);
+    ADD_LUA_CONST_JOB(Hunter);
+    ADD_LUA_CONST_JOB(Farmer);
+    ADD_LUA_CONST_JOB(Miller);
+    ADD_LUA_CONST_JOB(Baker);
+    ADD_LUA_CONST_JOB(Butcher);
+    ADD_LUA_CONST_JOB(Miner);
+    ADD_LUA_CONST_JOB(Brewer);
+    ADD_LUA_CONST_JOB(PigBreeder);
+    ADD_LUA_CONST_JOB(DonkeyBreeder);
+    ADD_LUA_CONST_JOB(IronFounder);
+    ADD_LUA_CONST_JOB(Minter);
+    ADD_LUA_CONST_JOB(Metalworker);
+    ADD_LUA_CONST_JOB(Armorer);
+    ADD_LUA_CONST_JOB(Builder);
+    ADD_LUA_CONST_JOB(Planer);
+    ADD_LUA_CONST_JOB(Private);
+    ADD_LUA_CONST_JOB(PrivateFirstClass);
+    ADD_LUA_CONST_JOB(Sergeant);
+    ADD_LUA_CONST_JOB(Officer);
+    ADD_LUA_CONST_JOB(General);
+    ADD_LUA_CONST_JOB(Geologist);
+    ADD_LUA_CONST_JOB(Shipwright);
+    ADD_LUA_CONST_JOB(Scout);
+    ADD_LUA_CONST_JOB(PackDonkey);
+    ADD_LUA_CONST_JOB(CharBurner);
 
-    ADD_LUA_CONST(GD_BEER);
-    ADD_LUA_CONST(GD_TONGS);
-    ADD_LUA_CONST(GD_HAMMER);
-    ADD_LUA_CONST(GD_AXE);
-    ADD_LUA_CONST(GD_SAW);
-    ADD_LUA_CONST(GD_PICKAXE);
-    ADD_LUA_CONST(GD_SHOVEL);
-    ADD_LUA_CONST(GD_CRUCIBLE);
-    ADD_LUA_CONST(GD_RODANDLINE);
-    ADD_LUA_CONST(GD_SCYTHE);
-    ADD_LUA_CONST(GD_WATER);
-    ADD_LUA_CONST(GD_CLEAVER);
-    ADD_LUA_CONST(GD_ROLLINGPIN);
-    ADD_LUA_CONST(GD_BOW);
-    ADD_LUA_CONST(GD_BOAT);
-    ADD_LUA_CONST(GD_SWORD);
-    ADD_LUA_CONST(GD_IRON);
-    ADD_LUA_CONST(GD_FLOUR);
-    ADD_LUA_CONST(GD_FISH);
-    ADD_LUA_CONST(GD_BREAD);
-    lua["GD_SHIELD"] = GD_SHIELDROMANS;
-    ADD_LUA_CONST(GD_WOOD);
-    ADD_LUA_CONST(GD_BOARDS);
-    ADD_LUA_CONST(GD_STONES);
-    ADD_LUA_CONST(GD_GRAIN);
-    ADD_LUA_CONST(GD_COINS);
-    ADD_LUA_CONST(GD_GOLD);
-    ADD_LUA_CONST(GD_IRONORE);
-    ADD_LUA_CONST(GD_COAL);
-    ADD_LUA_CONST(GD_MEAT);
-    ADD_LUA_CONST(GD_HAM);
+#define ADD_LUA_CONST_GOOD(name) lua["GD_" + s25util::toUpper(#name)] = GoodType::name
+    ADD_LUA_CONST_GOOD(Beer);
+    ADD_LUA_CONST_GOOD(Tongs);
+    ADD_LUA_CONST_GOOD(Hammer);
+    ADD_LUA_CONST_GOOD(Axe);
+    ADD_LUA_CONST_GOOD(Saw);
+    ADD_LUA_CONST_GOOD(PickAxe);
+    ADD_LUA_CONST_GOOD(Shovel);
+    ADD_LUA_CONST_GOOD(Crucible);
+    ADD_LUA_CONST_GOOD(RodAndLine);
+    ADD_LUA_CONST_GOOD(Scythe);
+    ADD_LUA_CONST_GOOD(Water);
+    ADD_LUA_CONST_GOOD(Cleaver);
+    ADD_LUA_CONST_GOOD(Rollingpin);
+    ADD_LUA_CONST_GOOD(Bow);
+    ADD_LUA_CONST_GOOD(Boat);
+    ADD_LUA_CONST_GOOD(Sword);
+    ADD_LUA_CONST_GOOD(Iron);
+    ADD_LUA_CONST_GOOD(Flour);
+    ADD_LUA_CONST_GOOD(Fish);
+    ADD_LUA_CONST_GOOD(Bread);
+    lua["GoodType::SHIELD"] = GoodType::ShieldRomans;
+    ADD_LUA_CONST_GOOD(Wood);
+    ADD_LUA_CONST_GOOD(Boards);
+    ADD_LUA_CONST_GOOD(Stones);
+    ADD_LUA_CONST_GOOD(Grain);
+    ADD_LUA_CONST_GOOD(Coins);
+    ADD_LUA_CONST_GOOD(Gold);
+    ADD_LUA_CONST_GOOD(IronOre);
+    ADD_LUA_CONST_GOOD(Coal);
+    ADD_LUA_CONST_GOOD(Meat);
+    ADD_LUA_CONST_GOOD(Ham);
 
     lua["RES_IRON"] = Resource::Iron;
     lua["RES_GOLD"] = Resource::Gold;

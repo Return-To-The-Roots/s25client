@@ -27,7 +27,7 @@
 #include "nodeObjs/noTree.h"
 
 nofWoodcutter::nofWoodcutter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_WOODCUTTER, pos, player, workplace)
+    : nofFarmhand(Job::Woodcutter, pos, player, workplace)
 {}
 
 nofWoodcutter::nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
@@ -40,8 +40,8 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     if(nowId < 10)
     {
         // 1. Ein Stück vom Baum nach links laufen
-        LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][0][nowId % 8].draw(
-          drawPt - DrawPoint(nowId, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.getBobSprite(gwg->GetPlayer(player).nation, Job::Woodcutter, Direction::WEST, nowId % 8)
+          .draw(drawPt - DrawPoint(nowId, 0), COLOR_WHITE, gwg->GetPlayer(player).color);
     } else if(nowId < 82)
     {
         // 2. Hacken
@@ -68,13 +68,13 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     } else if(nowId < 115)
     {
         // 4. Wieder zurückgehen nach rechts
-        LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][3][(nowId - 105) % 8].draw(
-          drawPt - DrawPoint(9 - (nowId - 105), 0), COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.getBobSprite(gwg->GetPlayer(player).nation, Job::Woodcutter, Direction::EAST, (nowId - 105) % 8)
+          .draw(drawPt - DrawPoint(9 - (nowId - 105), 0), COLOR_WHITE, gwg->GetPlayer(player).color);
     } else
     {
         // 5. kurz am Baum warten (quasi Baumstamm in die Hand nehmen)
-        LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][JOB_WOODCUTTER][3][1].draw(drawPt, COLOR_WHITE,
-                                                                                        gwg->GetPlayer(player).color);
+        LOADER.getBobSprite(gwg->GetPlayer(player).nation, Job::Woodcutter, Direction::EAST, 1)
+          .draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
     }
 }
 
@@ -95,7 +95,7 @@ void nofWoodcutter::WorkStarted()
 void nofWoodcutter::WorkFinished()
 {
     // Holz in die Hand nehmen
-    ware = GD_WOOD;
+    ware = GoodType::Wood;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all

@@ -231,7 +231,7 @@ void SerializedGameData::MakeSnapshot(const std::shared_ptr<Game>& game)
     gw.Serialize(*this);
     // EventManager
     writeEm->Serialize(*this);
-    if(game->ggs_.objective == GO_ECONOMYMODE)
+    if(game->ggs_.objective == GameObjective::EconomyMode)
     {
         PushObject(gw.econHandler.get(), true);
     }
@@ -270,7 +270,7 @@ void SerializedGameData::ReadSnapshot(const std::shared_ptr<Game>& game, ILocalG
 
     gw.Deserialize(game, localGameState, *this);
     em->Deserialize(*this);
-    if(game->ggs_.objective == GO_ECONOMYMODE)
+    if(game->ggs_.objective == GameObjective::EconomyMode)
     {
         gw.econHandler.reset(PopObject<EconomyModeHandler>(GOT_ECONOMYMODEHANDLER));
     }

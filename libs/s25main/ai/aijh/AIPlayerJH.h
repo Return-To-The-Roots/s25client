@@ -38,7 +38,7 @@ class Base;
 namespace AIJH {
 class BuildingPlanner;
 class AIConstruction;
-class Job;
+class AIJob;
 
 /// Create a subscription which records all nodes for which the BQ (may) have changed
 /// Requires arguments to have the same lifetime as the subscription
@@ -57,7 +57,7 @@ public:
     // Required by the AIJobs:
     AIConstruction& GetConstruction() { return *construction; }
     const BuildingPlanner& GetBldPlanner() const { return *bldPlanner; }
-    const Job* GetCurrentJob() const { return currentJob.get(); }
+    const AIJob* GetCurrentJob() const { return currentJob.get(); }
     unsigned GetNumJobs() const;
 
     void RunGF(unsigned gf, bool gfisnwf) override;
@@ -91,7 +91,7 @@ public:
     int UpdateUpgradeBuilding();
     /// returns amount of good/people stored in warehouses right now
     unsigned AmountInStorage(GoodType good) const;
-    unsigned AmountInStorage(::Job job) const;
+    unsigned AmountInStorage(Job job) const;
 
     void PlanNewBuildings(unsigned gf);
 
@@ -257,7 +257,7 @@ public:
 
 private:
     /// The current job the AI is working on
-    std::unique_ptr<Job> currentJob;
+    std::unique_ptr<AIJob> currentJob;
     /// List of coordinates at which military buildings should be
     std::list<MapPoint> milBuildings;
     /// List of coordinates at which military buildingsites should be

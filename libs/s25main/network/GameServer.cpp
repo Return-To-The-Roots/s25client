@@ -142,9 +142,8 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
     // Maps, Random-Maps, Savegames - Header laden und relevante Informationen rausschreiben (Map-Titel, Spieleranzahl)
     switch(mapinfo.type)
     {
-        default: LOG.write("GameServer::Start: ERROR: Map-Type %u not supported!\n") % mapinfo.type; return false;
         // Altes S2-Mapformat von BB
-        case MAPTYPE_OLDMAP:
+        case MapType::OldMap:
         {
             libsiedler2::Archiv map;
 
@@ -164,7 +163,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
         }
         break;
         // Gespeichertes Spiel
-        case MAPTYPE_SAVEGAME:
+        case MapType::Savegame:
         {
             Savegame save;
 
@@ -439,7 +438,7 @@ bool GameServer::StartGame()
 
     // Bei Savegames wird der Startwert von den Clients aus der Datei gelesen!
     unsigned random_init;
-    if(mapinfo.type == MAPTYPE_SAVEGAME)
+    if(mapinfo.type == MapType::Savegame)
         random_init = 0;
     else
         random_init = static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
@@ -897,7 +896,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
         if(GetNetworkPlayer(playerID))
             KickPlayer(playerID, NP_NOCAUSE, __LINE__);
 
-        if(mapinfo.type == MAPTYPE_SAVEGAME)
+        if(mapinfo.type == MapType::Savegame)
         {
             // For savegames we cannot set anyone on a locked slot as the player does not exist on the map
             if(player.ps != PS_LOCKED)
@@ -1585,7 +1584,7 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
         using std::swap;
         swap(playerInfos[player1], playerInfos[player2]);
         // In savegames some things cannot be changed
-        if(mapinfo.type == MAPTYPE_SAVEGAME)
+        if(mapinfo.type == MapType::Savegame)
             playerInfos[player1].FixSwappedSaveSlot(playerInfos[player2]);
     } else if(state == SS_GAME)
     {

@@ -27,8 +27,8 @@ class ResourceId;
 class RoadSegment;
 class noRoadNode;
 class glArchivItem_Bob;
-enum Job : unsigned char;
-enum GoodType : unsigned char;
+enum class Job : uint8_t;
+enum class GoodType : uint8_t;
 
 enum FigureState : uint8_t
 {

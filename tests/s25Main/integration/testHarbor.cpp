@@ -41,7 +41,7 @@ struct HarborFixture : WorldFixture<CreateEmptyWorld, 1>
 
 BOOST_FIXTURE_TEST_CASE(StartExpeditionThenCancel, HarborFixture)
 {
-    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(JOB_BUILDER) >= 1u); // Must have a builder
+    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Builder) >= 1u); // Must have a builder
     const auto numLeavingFigs = hq->GetLeavingFigures().size();
     hb->StartExpedition();
     // Builder should be ordered
@@ -53,7 +53,7 @@ BOOST_FIXTURE_TEST_CASE(StartExpeditionThenCancel, HarborFixture)
 
 BOOST_FIXTURE_TEST_CASE(StartExpeditionThenDestroy, HarborFixture)
 {
-    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(JOB_BUILDER) >= 1u); // Must have a builder
+    BOOST_TEST_REQUIRE(hq->GetNumRealFigures(Job::Builder) >= 1u); // Must have a builder
     const auto numLeavingFigs = hq->GetLeavingFigures().size();
     hb->StartExpedition();
     // Builder should be ordered

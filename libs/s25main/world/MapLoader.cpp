@@ -73,7 +73,7 @@ bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
     InitShadows(world_);
 
     // If we have explored FoW, create the FoW objects
-    if(exploration == EXP_FOGOFWARE_EXPLORED)
+    if(exploration == Exploration::FogOfWarExplored)
         SetMapExplored(world_);
 
     return true;
@@ -165,10 +165,10 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         Visibility fowVisibility;
         switch(exploration)
         {
-            case EXP_DISABLED: fowVisibility = Visibility::Visible; break;
-            case EXP_CLASSIC:
-            case EXP_FOGOFWAR: fowVisibility = Visibility::Invisible; break;
-            case EXP_FOGOFWARE_EXPLORED: fowVisibility = Visibility::FoW; break;
+            case Exploration::Disabled: fowVisibility = Visibility::Visible; break;
+            case Exploration::Classic:
+            case Exploration::FogOfWar: fowVisibility = Visibility::Invisible; break;
+            case Exploration::FogOfWarExplored: fowVisibility = Visibility::FoW; break;
             default: throw std::invalid_argument("Visibility for FoW");
         }
 

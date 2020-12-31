@@ -56,7 +56,7 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
     }
 
     // Wir hätten gerne einen Planierer/Bauarbeiter...
-    gwg->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? JOB_PLANER : JOB_BUILDER, this);
+    gwg->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
 
     // Bauwaren anfordern
     OrderConstructionMaterial();
@@ -79,8 +79,8 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
     gwg->AddFigure(pos, builder);
 
     // Baumaterialien in der Inventur verbuchen
-    owner.DecreaseInventoryWare(GD_BOARDS, boards);
-    owner.DecreaseInventoryWare(GD_STONES, stones);
+    owner.DecreaseInventoryWare(GoodType::Boards, boards);
+    owner.DecreaseInventoryWare(GoodType::Stones, stones);
 }
 
 noBuildingSite::~noBuildingSite() = default;
@@ -165,7 +165,7 @@ void noBuildingSite::OrderConstructionMaterial()
     GamePlayer& owner = gwg->GetPlayer(player);
     for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[owner.nation][bldType_].boards; ++i)
     {
-        Ware* w = owner.OrderWare(GD_BOARDS, this);
+        Ware* w = owner.OrderWare(GoodType::Boards, this);
         if(!w)
             break;
         RTTR_Assert(helpers::contains(ordered_boards, w));
@@ -173,7 +173,7 @@ void noBuildingSite::OrderConstructionMaterial()
     // Steine
     for(int i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[owner.nation][bldType_].stones; ++i)
     {
-        Ware* w = owner.OrderWare(GD_STONES, this);
+        Ware* w = owner.OrderWare(GoodType::Stones, this);
         if(!w)
             break;
         RTTR_Assert(helpers::contains(ordered_stones, w));
@@ -205,10 +205,12 @@ void noBuildingSite::Draw(DrawPoint drawPt)
         // Bretter
         DrawPoint doorPos = drawPt + DrawPoint(GetDoorPointX(), GetDoorPointY());
         for(unsigned char i = 0; i < boards; ++i)
-            LOADER.GetMapImageN(2200 + GD_BOARDS)->DrawFull(doorPos - DrawPoint(5, 10 + i * 4));
+            LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Boards))
+              ->DrawFull(doorPos - DrawPoint(5, 10 + i * 4));
         // Steine
         for(unsigned char i = 0; i < stones; ++i)
-            LOADER.GetMapImageN(2200 + GD_STONES)->DrawFull(doorPos + DrawPoint(8, -12 - i * 4));
+            LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(GoodType::Stones))
+              ->DrawFull(doorPos + DrawPoint(8, -12 - i * 4));
 
         // bis dahin gebautes Haus zeichnen
 
@@ -263,7 +265,7 @@ void noBuildingSite::Abrogate()
     planer = nullptr;
     builder = nullptr;
 
-    gwg->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? JOB_PLANER : JOB_BUILDER, this);
+    gwg->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
 }
 
 unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const GoodType goodtype)
@@ -273,7 +275,7 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
         return 0;
 
     // We only need boards and stones.
-    if(goodtype != GD_BOARDS && goodtype != GD_STONES)
+    if(goodtype != GoodType::Boards && goodtype != GoodType::Stones)
         return 0;
 
     const unsigned curBoards = ordered_boards.size() + boards + used_boards;
@@ -282,8 +284,8 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
     RTTR_Assert(curStones <= BUILDING_COSTS[nation][this->bldType_].stones);
 
     // Wenn wir schon genug Baumaterial haben, brauchen wir nichts mehr
-    if((goodtype == GD_BOARDS && curBoards == BUILDING_COSTS[nation][this->bldType_].boards)
-       || (goodtype == GD_STONES && curStones == BUILDING_COSTS[nation][this->bldType_].stones))
+    if((goodtype == GoodType::Boards && curBoards == BUILDING_COSTS[nation][this->bldType_].boards)
+       || (goodtype == GoodType::Stones && curStones == BUILDING_COSTS[nation][this->bldType_].stones))
         return 0;
 
     // 10000 als Basis wählen, damit man auch noch was abziehen kann
@@ -312,12 +314,12 @@ void noBuildingSite::AddWare(Ware*& ware)
 {
     RTTR_Assert(state == BuildingSiteState::Building);
 
-    if(ware->type == GD_BOARDS)
+    if(ware->type == GoodType::Boards)
     {
         RTTR_Assert(helpers::contains(ordered_boards, ware));
         ordered_boards.remove(ware);
         ++boards;
-    } else if(ware->type == GD_STONES)
+    } else if(ware->type == GoodType::Stones)
     {
         RTTR_Assert(helpers::contains(ordered_stones, ware));
         ordered_stones.remove(ware);
@@ -335,11 +337,11 @@ void noBuildingSite::WareLost(Ware* ware)
 {
     RTTR_Assert(state == BuildingSiteState::Building);
 
-    if(ware->type == GD_BOARDS)
+    if(ware->type == GoodType::Boards)
     {
         RTTR_Assert(helpers::contains(ordered_boards, ware));
         ordered_boards.remove(ware);
-    } else if(ware->type == GD_STONES)
+    } else if(ware->type == GoodType::Stones)
     {
         RTTR_Assert(helpers::contains(ordered_stones, ware));
         ordered_stones.remove(ware);
@@ -354,11 +356,11 @@ void noBuildingSite::TakeWare(Ware* ware)
     RTTR_Assert(state == BuildingSiteState::Building);
 
     // Ware in die Bestellliste aufnehmen
-    if(ware->type == GD_BOARDS)
+    if(ware->type == GoodType::Boards)
     {
         RTTR_Assert(!helpers::contains(ordered_boards, ware));
         ordered_boards.push_back(ware);
-    } else if(ware->type == GD_STONES)
+    } else if(ware->type == GoodType::Stones)
     {
         RTTR_Assert(!helpers::contains(ordered_stones, ware));
         ordered_stones.push_back(ware);
@@ -391,7 +393,7 @@ void noBuildingSite::PlaningFinished()
     planer = nullptr;
 
     // Wir hätten gerne einen Bauarbeiter...
-    gwg->GetPlayer(player).AddJobWanted(JOB_BUILDER, this);
+    gwg->GetPlayer(player).AddJobWanted(Job::Builder, this);
 
     // Bauwaren anfordern
     OrderConstructionMaterial();

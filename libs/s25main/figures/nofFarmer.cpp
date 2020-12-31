@@ -28,7 +28,7 @@
 #include "nodeObjs/noGrainfield.h"
 
 nofFarmer::nofFarmer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_FARMER, pos, player, workplace), harvest(false)
+    : nofFarmhand(Job::Farmer, pos, player, workplace), harvest(false)
 {}
 
 void nofFarmer::Serialize_nofFarmer(SerializedGameData& sgd) const
@@ -97,7 +97,7 @@ void nofFarmer::WorkFinished()
         gwg->SetNO(pos, new noEnvObject(pos, mapLstId));
 
         // Getreide, was wir geerntet haben, in die Hand nehmen
-        ware = GD_GRAIN;
+        ware = GoodType::Grain;
     } else
     {
         // If the point got bad (e.g. something was build), abort work

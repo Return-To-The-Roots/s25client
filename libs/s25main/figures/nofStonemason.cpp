@@ -27,7 +27,7 @@
 #include "nodeObjs/noGranite.h"
 
 nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_STONEMASON, pos, player, workplace)
+    : nofFarmhand(Job::Stonemason, pos, player, workplace)
 {}
 
 nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
@@ -76,7 +76,7 @@ void nofStonemason::WorkFinished()
         gwg->GetSpecObj<noGranite>(pos)->Hew();
 
     // Stein in die Hand nehmen
-    ware = GD_STONES;
+    ware = GoodType::Stones;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all

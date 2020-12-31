@@ -279,9 +279,9 @@ void noShip::HandleEvent(const unsigned id)
                 {
                     Inventory goods;
                     unsigned char nation = gwg->GetPlayer(ownerId_).nation;
-                    goods.goods[GD_BOARDS] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards;
-                    goods.goods[GD_STONES] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones;
-                    goods.people[JOB_BUILDER] = 1;
+                    goods.goods[GoodType::Boards] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards;
+                    goods.goods[GoodType::Stones] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones;
+                    goods.people[Job::Builder] = 1;
                     static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods, false);
                     // Wieder idlen und ggf. neuen Job suchen
                     StartIdling();
@@ -305,7 +305,7 @@ void noShip::HandleEvent(const unsigned id)
                 {
                     // Späher wieder entladen
                     Inventory goods;
-                    goods.people[JOB_SCOUT] = gwg->GetGGS().GetNumScoutsExpedition();
+                    goods.people[Job::Scout] = gwg->GetGGS().GetNumScoutsExpedition();
                     static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods, false);
                     // Wieder idlen und ggf. neuen Job suchen
                     StartIdling();

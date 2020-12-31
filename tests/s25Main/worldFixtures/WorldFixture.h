@@ -117,7 +117,7 @@ struct WorldFixture
         // Fast moving ships
         ggs.setSelection(AddonId::SHIP_SPEED, 4);
         // Explored area stays explored. Avoids fow creation
-        ggs.exploration = EXP_CLASSIC;
+        ggs.exploration = Exploration::Classic;
         BOOST_REQUIRE(worldCreator(world));
         BOOST_REQUIRE_EQUAL(world.GetNumPlayers(), T_numPlayers);
     }

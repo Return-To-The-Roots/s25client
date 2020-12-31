@@ -51,6 +51,7 @@
 #include "gameTypes/VisualSettings.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/ToolConsts.h"
@@ -145,15 +146,15 @@ BuildOrders GamePlayer::GetStandardBuildOrder()
 void GamePlayer::LoadStandardDistribution()
 {
     // Verteilung mit Standardwerten füllen bei Waren mit nur einem Ziel (wie z.B. Mehl, Holz...)
-    distribution[GD_FLOUR].client_buildings.push_back(BLD_BAKERY);
-    distribution[GD_GOLD].client_buildings.push_back(BLD_MINT);
-    distribution[GD_IRONORE].client_buildings.push_back(BLD_IRONSMELTER);
-    distribution[GD_HAM].client_buildings.push_back(BLD_SLAUGHTERHOUSE);
-    distribution[GD_STONES].client_buildings.push_back(BLD_HEADQUARTERS); // BLD_HEADQUARTERS = Baustellen!
-    distribution[GD_STONES].client_buildings.push_back(BLD_CATAPULT);
+    distribution[GoodType::Flour].client_buildings.push_back(BLD_BAKERY);
+    distribution[GoodType::Gold].client_buildings.push_back(BLD_MINT);
+    distribution[GoodType::IronOre].client_buildings.push_back(BLD_IRONSMELTER);
+    distribution[GoodType::Ham].client_buildings.push_back(BLD_SLAUGHTERHOUSE);
+    distribution[GoodType::Stones].client_buildings.push_back(BLD_HEADQUARTERS); // BLD_HEADQUARTERS = Baustellen!
+    distribution[GoodType::Stones].client_buildings.push_back(BLD_CATAPULT);
 
     // Waren mit mehreren möglichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
-    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
+    for(const auto i : helpers::enumRange<GoodType>())
     {
         std::fill(distribution[i].percent_buildings.begin(), distribution[i].percent_buildings.end(), 0);
         distribution[i].selected_goal = 0;
@@ -186,7 +187,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(jobs_wanted.size());
     for(JobNeeded job : jobs_wanted)
     {
-        sgd.PushUnsignedChar(job.job);
+        sgd.PushEnum<uint8_t>(job.job);
         sgd.PushObject(job.workplace, false);
     }
 
@@ -228,10 +229,10 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
         sgd.PushUnsignedChar(tools_ordered[i]);
 
-    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
-        sgd.PushUnsignedInt(global_inventory.goods[i]);
-    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
-        sgd.PushUnsignedInt(global_inventory.people[i]);
+    for(const auto i : helpers::enumRange<GoodType>())
+        sgd.PushUnsignedInt(global_inventory[i]);
+    for(const auto i : helpers::enumRange<Job>())
+        sgd.PushUnsignedInt(global_inventory[i]);
 
     // für Statistik
     for(unsigned i = 0; i < NUM_STAT_TIMES; ++i)
@@ -286,7 +287,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     for(unsigned i = 0; i < list_size; ++i)
     {
         JobNeeded nj;
-        nj.job = Job(sgd.PopUnsignedChar());
+        nj.job = sgd.Pop<Job>();
         nj.workplace = sgd.PopObject<noRoadNode>(GOT_UNKNOWN);
         jobs_wanted.push_back(nj);
     }
@@ -333,10 +334,10 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
         tools_ordered_delta[i] = 0;
 
-    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
-        global_inventory.goods[i] = sgd.PopUnsignedInt();
-    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
-        global_inventory.people[i] = sgd.PopUnsignedInt();
+    for(const auto i : helpers::enumRange<GoodType>())
+        global_inventory[i] = sgd.PopUnsignedInt();
+    for(const auto i : helpers::enumRange<Job>())
+        global_inventory[i] = sgd.PopUnsignedInt();
 
     // Visuelle Einstellungen festlegen
 
@@ -442,7 +443,7 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
 
     // Order a worker if needed
     const auto& description = BLD_WORK_DESC[bldType];
-    if(description.job && description.job != JOB_PRIVATE)
+    if(description.job && description.job != Job::Private)
     {
         AddJobWanted(*description.job, bld);
     }
@@ -638,17 +639,17 @@ bool GamePlayer::FindCarrierForRoad(RoadSegment* rs) const
     if(rs->GetRoadType() == RoadType::Water)
     {
         // dann braucht man Träger UND Boot
-        best[0] =
-          FindWarehouse(*rs->GetF1(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER, false), false, false, &length[0], rs);
+        best[0] = FindWarehouse(*rs->GetF1(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
+                                &length[0], rs);
         // 2. Flagge des Weges
-        best[1] =
-          FindWarehouse(*rs->GetF2(), FW::HasWareAndFigure(GD_BOAT, JOB_HELPER, false), false, false, &length[1], rs);
+        best[1] = FindWarehouse(*rs->GetF2(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
+                                &length[1], rs);
     } else
     {
         // 1. Flagge des Weges
-        best[0] = FindWarehouse(*rs->GetF1(), FW::HasFigure(JOB_HELPER, false), false, false, &length[0], rs);
+        best[0] = FindWarehouse(*rs->GetF1(), FW::HasFigure(Job::Helper, false), false, false, &length[0], rs);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(*rs->GetF2(), FW::HasFigure(JOB_HELPER, false), false, false, &length[1], rs);
+        best[1] = FindWarehouse(*rs->GetF2(), FW::HasFigure(Job::Helper, false), false, false, &length[1], rs);
     }
 
     // überhaupt nen Weg gefunden?
@@ -669,7 +670,7 @@ bool GamePlayer::IsWarehouseValid(nobBaseWarehouse* wh) const
 
 void GamePlayer::RecalcDistribution()
 {
-    GoodType lastWare = GD_NOTHING;
+    GoodType lastWare = GoodType::Nothing;
     for(const DistributionMapping& mapping : distributionMap)
     {
         if(lastWare == std::get<0>(mapping))
@@ -868,7 +869,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
         else
         {
             // Wenn Notfallprogramm aktiv nur an Holzfäller und Sägewerke Bretter/Steine liefern
-            if((ware != GD_BOARDS && ware != GD_STONES) || goal->GetBuildingType() == BLD_WOODCUTTER
+            if((ware != GoodType::Boards && ware != GoodType::Stones) || goal->GetBuildingType() == BLD_WOODCUTTER
                || goal->GetBuildingType() == BLD_SAWMILL)
                 return wh->OrderWare(ware, goal);
             else
@@ -906,9 +907,9 @@ nofCarrier* GamePlayer::OrderDonkey(RoadSegment* road) const
     std::array<nobBaseWarehouse*, 2> best;
 
     // 1. Flagge des Weges
-    best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(JOB_PACKDONKEY, false), false, false, &length[0], road);
+    best[0] = FindWarehouse(*road->GetF1(), FW::HasFigure(Job::PackDonkey, false), false, false, &length[0], road);
     // 2. Flagge des Weges
-    best[1] = FindWarehouse(*road->GetF2(), FW::HasFigure(JOB_PACKDONKEY, false), false, false, &length[1], road);
+    best[1] = FindWarehouse(*road->GetF2(), FW::HasFigure(Job::PackDonkey, false), false, false, &length[1], road);
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
@@ -1003,20 +1004,21 @@ struct ClientForWare
 noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
 {
     // Wenn es eine Goldmünze ist, wird das Ziel auf eine andere Art und Weise berechnet
-    if(ware->type == GD_COINS)
+    if(ware->type == GoodType::Coins)
         return FindClientForCoin(ware);
 
     // Warentyp herausfinden
     GoodType gt = ware->type;
     // All food is considered fish in the distribution table
-    Distribution& wareDistribution = (gt == GD_BREAD || gt == GD_MEAT) ? distribution[GD_FISH] : distribution[gt];
+    Distribution& wareDistribution =
+      (gt == GoodType::Bread || gt == GoodType::Meat) ? distribution[GoodType::Fish] : distribution[gt];
 
     std::vector<ClientForWare> possibleClients;
 
     noRoadNode* start = ware->GetLocation();
 
     // Bretter und Steine können evtl. auch Häfen für Expeditionen gebrauchen
-    if(gt == GD_STONES || gt == GD_BOARDS)
+    if(gt == GoodType::Stones || gt == GoodType::Boards)
     {
         for(nobHarborBuilding* harbor : buildings.GetHarbors())
         {
@@ -1451,37 +1453,37 @@ void GamePlayer::IncreaseMerchandiseStatistic(GoodType type)
     // Einsortieren...
     switch(type)
     {
-        case GD_WOOD: statisticCurrentMerchandiseData[0]++; break;
-        case GD_BOARDS: statisticCurrentMerchandiseData[1]++; break;
-        case GD_STONES: statisticCurrentMerchandiseData[2]++; break;
-        case GD_FISH:
-        case GD_BREAD:
-        case GD_MEAT: statisticCurrentMerchandiseData[3]++; break;
-        case GD_WATER: statisticCurrentMerchandiseData[4]++; break;
-        case GD_BEER: statisticCurrentMerchandiseData[5]++; break;
-        case GD_COAL: statisticCurrentMerchandiseData[6]++; break;
-        case GD_IRONORE: statisticCurrentMerchandiseData[7]++; break;
-        case GD_GOLD: statisticCurrentMerchandiseData[8]++; break;
-        case GD_IRON: statisticCurrentMerchandiseData[9]++; break;
-        case GD_COINS: statisticCurrentMerchandiseData[10]++; break;
-        case GD_TONGS:
-        case GD_AXE:
-        case GD_SAW:
-        case GD_PICKAXE:
-        case GD_HAMMER:
-        case GD_SHOVEL:
-        case GD_CRUCIBLE:
-        case GD_RODANDLINE:
-        case GD_SCYTHE:
-        case GD_CLEAVER:
-        case GD_ROLLINGPIN:
-        case GD_BOW: statisticCurrentMerchandiseData[11]++; break;
-        case GD_SHIELDVIKINGS:
-        case GD_SHIELDAFRICANS:
-        case GD_SHIELDROMANS:
-        case GD_SHIELDJAPANESE:
-        case GD_SWORD: statisticCurrentMerchandiseData[12]++; break;
-        case GD_BOAT: statisticCurrentMerchandiseData[13]++; break;
+        case GoodType::Wood: statisticCurrentMerchandiseData[0]++; break;
+        case GoodType::Boards: statisticCurrentMerchandiseData[1]++; break;
+        case GoodType::Stones: statisticCurrentMerchandiseData[2]++; break;
+        case GoodType::Fish:
+        case GoodType::Bread:
+        case GoodType::Meat: statisticCurrentMerchandiseData[3]++; break;
+        case GoodType::Water: statisticCurrentMerchandiseData[4]++; break;
+        case GoodType::Beer: statisticCurrentMerchandiseData[5]++; break;
+        case GoodType::Coal: statisticCurrentMerchandiseData[6]++; break;
+        case GoodType::IronOre: statisticCurrentMerchandiseData[7]++; break;
+        case GoodType::Gold: statisticCurrentMerchandiseData[8]++; break;
+        case GoodType::Iron: statisticCurrentMerchandiseData[9]++; break;
+        case GoodType::Coins: statisticCurrentMerchandiseData[10]++; break;
+        case GoodType::Tongs:
+        case GoodType::Axe:
+        case GoodType::Saw:
+        case GoodType::PickAxe:
+        case GoodType::Hammer:
+        case GoodType::Shovel:
+        case GoodType::Crucible:
+        case GoodType::RodAndLine:
+        case GoodType::Scythe:
+        case GoodType::Cleaver:
+        case GoodType::Rollingpin:
+        case GoodType::Bow: statisticCurrentMerchandiseData[11]++; break;
+        case GoodType::ShieldVikings:
+        case GoodType::ShieldAfricans:
+        case GoodType::ShieldRomans:
+        case GoodType::ShieldJapanese:
+        case GoodType::Sword: statisticCurrentMerchandiseData[12]++; break;
+        case GoodType::Boat: statisticCurrentMerchandiseData[13]++; break;
         default: break;
     }
 }
@@ -1491,19 +1493,19 @@ void GamePlayer::CalcStatistics()
 {
     // Waren aus der Inventur zählen
     statisticCurrentData[STAT_MERCHANDISE] = 0;
-    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
-        statisticCurrentData[STAT_MERCHANDISE] += global_inventory.goods[i];
+    for(const auto i : helpers::enumRange<GoodType>())
+        statisticCurrentData[STAT_MERCHANDISE] += global_inventory[i];
 
     // Bevölkerung aus der Inventur zählen
     statisticCurrentData[STAT_INHABITANTS] = 0;
-    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
-        statisticCurrentData[STAT_INHABITANTS] += global_inventory.people[i];
+    for(const auto i : helpers::enumRange<Job>())
+        statisticCurrentData[STAT_INHABITANTS] += global_inventory[i];
 
     // Militär aus der Inventur zählen
     statisticCurrentData[STAT_MILITARY] =
-      global_inventory.people[JOB_PRIVATE] + global_inventory.people[JOB_PRIVATEFIRSTCLASS] * 2
-      + global_inventory.people[JOB_SERGEANT] * 3 + global_inventory.people[JOB_OFFICER] * 4
-      + global_inventory.people[JOB_GENERAL] * 5;
+      global_inventory.people[Job::Private] + global_inventory.people[Job::PrivateFirstClass] * 2
+      + global_inventory.people[Job::Sergeant] * 3 + global_inventory.people[Job::Officer] * 4
+      + global_inventory.people[Job::General] * 5;
 
     // Produktivität berechnen
     statisticCurrentData[STAT_PRODUCTIVITY] = buildings.CalcAverageProductivity();
@@ -2077,8 +2079,8 @@ void GamePlayer::TestForEmergencyProgramm()
     unsigned stones = 0;
     for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
-        boards += wh->GetInventory().goods[GD_BOARDS];
-        stones += wh->GetInventory().goods[GD_STONES];
+        boards += wh->GetInventory().goods[GoodType::Boards];
+        stones += wh->GetInventory().goods[GoodType::Stones];
     }
 
     // Emergency happens, if we have less than 10 boards or stones...

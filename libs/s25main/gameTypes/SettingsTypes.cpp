@@ -18,23 +18,33 @@
 #include "SettingsTypes.h"
 
 const DistributionMap distributionMap = {{
-  DistributionMapping(GD_FISH, BLD_GRANITEMINE, 3),     DistributionMapping(GD_FISH, BLD_COALMINE, 5),
-  DistributionMapping(GD_FISH, BLD_IRONMINE, 7),        DistributionMapping(GD_FISH, BLD_GOLDMINE, 10),
+  DistributionMapping(GoodType::Fish, BLD_GRANITEMINE, 3),
+  DistributionMapping(GoodType::Fish, BLD_COALMINE, 5),
+  DistributionMapping(GoodType::Fish, BLD_IRONMINE, 7),
+  DistributionMapping(GoodType::Fish, BLD_GOLDMINE, 10),
 
-  DistributionMapping(GD_GRAIN, BLD_MILL, 5),           DistributionMapping(GD_GRAIN, BLD_PIGFARM, 3),
-  DistributionMapping(GD_GRAIN, BLD_DONKEYBREEDER, 2),  DistributionMapping(GD_GRAIN, BLD_BREWERY, 3),
-  DistributionMapping(GD_GRAIN, BLD_CHARBURNER, 3),
+  DistributionMapping(GoodType::Grain, BLD_MILL, 5),
+  DistributionMapping(GoodType::Grain, BLD_PIGFARM, 3),
+  DistributionMapping(GoodType::Grain, BLD_DONKEYBREEDER, 2),
+  DistributionMapping(GoodType::Grain, BLD_BREWERY, 3),
+  DistributionMapping(GoodType::Grain, BLD_CHARBURNER, 3),
 
-  DistributionMapping(GD_IRON, BLD_ARMORY, 8),          DistributionMapping(GD_IRON, BLD_METALWORKS, 4),
+  DistributionMapping(GoodType::Iron, BLD_ARMORY, 8),
+  DistributionMapping(GoodType::Iron, BLD_METALWORKS, 4),
 
-  DistributionMapping(GD_COAL, BLD_ARMORY, 8),          DistributionMapping(GD_COAL, BLD_IRONSMELTER, 7),
-  DistributionMapping(GD_COAL, BLD_MINT, 10),
+  DistributionMapping(GoodType::Coal, BLD_ARMORY, 8),
+  DistributionMapping(GoodType::Coal, BLD_IRONSMELTER, 7),
+  DistributionMapping(GoodType::Coal, BLD_MINT, 10),
 
-  DistributionMapping(GD_WOOD, BLD_SAWMILL, 8),         DistributionMapping(GD_WOOD, BLD_CHARBURNER, 3),
+  DistributionMapping(GoodType::Wood, BLD_SAWMILL, 8),
+  DistributionMapping(GoodType::Wood, BLD_CHARBURNER, 3),
 
-  DistributionMapping(GD_BOARDS, BLD_HEADQUARTERS, 10), DistributionMapping(GD_BOARDS, BLD_METALWORKS, 4),
-  DistributionMapping(GD_BOARDS, BLD_SHIPYARD, 2),
+  DistributionMapping(GoodType::Boards, BLD_HEADQUARTERS, 10),
+  DistributionMapping(GoodType::Boards, BLD_METALWORKS, 4),
+  DistributionMapping(GoodType::Boards, BLD_SHIPYARD, 2),
 
-  DistributionMapping(GD_WATER, BLD_BAKERY, 6),         DistributionMapping(GD_WATER, BLD_BREWERY, 3),
-  DistributionMapping(GD_WATER, BLD_PIGFARM, 2),        DistributionMapping(GD_WATER, BLD_DONKEYBREEDER, 2),
+  DistributionMapping(GoodType::Water, BLD_BAKERY, 6),
+  DistributionMapping(GoodType::Water, BLD_BREWERY, 3),
+  DistributionMapping(GoodType::Water, BLD_PIGFARM, 2),
+  DistributionMapping(GoodType::Water, BLD_DONKEYBREEDER, 2),
 }};

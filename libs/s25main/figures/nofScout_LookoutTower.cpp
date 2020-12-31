@@ -25,11 +25,11 @@ class SerializedGameData;
 class nobBaseWarehouse;
 
 nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(JOB_SCOUT, pos, player, workplace)
+    : nofBuildingWorker(Job::Scout, pos, player, workplace)
 {}
 
 nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
-    : nofBuildingWorker(JOB_SCOUT, pos, player, goalWh)
+    : nofBuildingWorker(Job::Scout, pos, player, goalWh)
 {}
 
 nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id)

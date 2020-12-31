@@ -44,7 +44,7 @@ void nofCatapultMan::PossibleTarget::Serialize_PossibleTarget(SerializedGameData
 }
 
 nofCatapultMan::nofCatapultMan(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(JOB_HELPER, pos, player, workplace), wheel_steps(0)
+    : nofBuildingWorker(Job::Helper, pos, player, workplace), wheel_steps(0)
 {}
 
 nofCatapultMan::nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id)

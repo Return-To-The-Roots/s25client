@@ -186,7 +186,7 @@ void SetInventorySetting::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
     auto* const bld = gwg.GetSpecObj<nobBaseWarehouse>(pt_);
     if(bld && bld->GetPlayer() == playerId)
-        bld->SetInventorySetting(isJob, type, state);
+        bld->SetInventorySetting(what, state);
 }
 
 void SetAllInventorySettings::Execute(GameWorldGame& gwg, uint8_t playerId)

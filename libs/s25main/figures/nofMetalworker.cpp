@@ -36,7 +36,7 @@
 #include "s25util/Log.h"
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_METALWORKER, pos, player, workplace)
+    : nofWorkman(Job::Metalworker, pos, player, workplace)
 {
     toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
         if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged)
@@ -50,7 +50,7 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
     if(sgd.GetGameDataVersion() < 5)
     {
         const auto iWare = sgd.PopUnsignedChar();
-        if(iWare == GD_NOTHING)
+        if(iWare == rttr::enum_cast(GoodType::Nothing))
             nextProducedTool = boost::none;
         else
             nextProducedTool = GoodType(iWare);

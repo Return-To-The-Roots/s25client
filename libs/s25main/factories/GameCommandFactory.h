@@ -26,7 +26,7 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/ShipDirection.h"
-#include <boost/variant/variant_fwd.hpp>
+#include <boost/variant.hpp>
 #include <vector>
 
 struct InventorySetting;
@@ -72,9 +72,7 @@ public:
     bool SetProductionEnabled(MapPoint pt, bool enabled);
     bool NotifyAlliesOfLocation(MapPoint pt);
     /// Sets inventory settings for a warehouse
-    bool SetInventorySetting(MapPoint pt, bool isJob, unsigned char type, InventorySetting state);
-    bool SetInventorySetting(MapPoint pt, Job job, InventorySetting state);
-    bool SetInventorySetting(MapPoint pt, GoodType good, InventorySetting state);
+    bool SetInventorySetting(MapPoint pt, const boost::variant<GoodType, Job>& what, InventorySetting state);
     bool SetAllInventorySettings(MapPoint pt, bool isJob, const std::vector<InventorySetting>& states);
     bool ChangeReserve(MapPoint pt, unsigned char rank, unsigned count);
     bool CheatArmageddon();

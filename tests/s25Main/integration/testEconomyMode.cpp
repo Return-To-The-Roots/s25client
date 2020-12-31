@@ -49,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, WorldWithGCExecution3P)
         world.GetPlayer(playerIdx).MakeStartPacts();
         hqPos[playerIdx] = world.GetPlayer(playerIdx).GetHQPos();
     }
-    this->ggs.objective = GO_ECONOMYMODE;
+    this->ggs.objective = GameObjective::EconomyMode;
 
     world.econHandler = std::make_unique<EconomyModeHandler>(4);
     const auto goodsToCollect = world.econHandler->GetGoodTypesToCollect();

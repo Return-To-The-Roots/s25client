@@ -45,7 +45,7 @@ void Game::Start(bool startFromSave)
         CheckObjective();
     else
     {
-        if(ggs_.objective == GO_ECONOMYMODE)
+        if(ggs_.objective == GameObjective::EconomyMode)
         {
             unsigned int selection = ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH);
             world_.econHandler = std::make_unique<EconomyModeHandler>(
@@ -113,7 +113,7 @@ void Game::StatisticStep()
 void Game::CheckObjective()
 {
     // Check objective if there is one
-    if(finished_ || (ggs_.objective != GO_CONQUER3_4 && ggs_.objective != GO_TOTALDOMINATION))
+    if(finished_ || (ggs_.objective != GameObjective::Conquer3_4 && ggs_.objective != GameObjective::TotalDomination))
         return;
 
     unsigned maxPoints = 0, maxTeamPoints = 0, totalPoints = 0, bestPlayer = 0;
@@ -161,12 +161,12 @@ void Game::CheckObjective()
 
     switch(ggs_.objective)
     {
-        case GO_CONQUER3_4: // at least 3/4 of the land
+        case GameObjective::Conquer3_4: // at least 3/4 of the land
             if(maxTeamPoints * 4u >= totalPoints * 3u || maxPoints * 4u >= totalPoints * 3u)
                 finished_ = true;
             break;
 
-        case GO_TOTALDOMINATION: // whole populated land
+        case GameObjective::TotalDomination: // whole populated land
             if(maxTeamPoints == totalPoints || maxPoints == totalPoints)
                 finished_ = true;
             break;

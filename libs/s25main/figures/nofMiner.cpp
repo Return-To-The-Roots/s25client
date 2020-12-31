@@ -26,7 +26,7 @@
 #include "world/GameWorldGame.h"
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MINER, pos, player, workplace)
+    : nofWorkman(Job::Miner, pos, player, workplace)
 {}
 
 nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
@@ -74,10 +74,10 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 {
     switch(workplace->GetBuildingType())
     {
-        case BLD_GOLDMINE: return GD_GOLD;
-        case BLD_IRONMINE: return GD_IRONORE;
-        case BLD_COALMINE: return GD_COAL;
-        default: return GD_STONES;
+        case BLD_GOLDMINE: return GoodType::Gold;
+        case BLD_IRONMINE: return GoodType::IronOre;
+        case BLD_COALMINE: return GoodType::Coal;
+        default: return GoodType::Stones;
     }
 }
 

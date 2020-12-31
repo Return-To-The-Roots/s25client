@@ -27,40 +27,42 @@ struct FullJobData
     const char* name;
 };
 
-const std::array<FullJobData, NUM_JOB_TYPES> fullJobData = {{
+const std::array<FullJobData, helpers::NumEnumValues_v<Job>> fullJobData = {{
   // Start data
-  {{GD_NOTHING, 385, 190, 5}, {false, 0}, gettext_noop("Helper")},
-  {{GD_AXE, 148, 789, 5}, {false, 5}, gettext_noop("Woodchopper")},
-  {{GD_RODANDLINE, 129, 825, 5}, {false, 12}, gettext_noop("Fisher")},
-  {{GD_SHOVEL, 66, 304, 5}, {false, 8}, gettext_noop("Ranger")},
-  {{GD_SAW, 479, 96, 5}, {false, 6}, gettext_noop("Carpenter")},
-  {{GD_PICKAXE, 129, 825, 5}, {false, 7}, gettext_noop("Stonemason")},
-  {{GD_BOW, 0, 300, 5}, {false, 20}, gettext_noop("Huntsman")},
-  {{GD_SCYTHE, 117, 106, 5}, {false, 13}, gettext_noop("Farmer")},
-  {{GD_NOTHING, 470, 95, 5}, {true, 16}, gettext_noop("Miller")},
-  {{GD_ROLLINGPIN, 470, 94, 5}, {true, 17}, gettext_noop("Baker")},
-  {{GD_CLEAVER, 478, 80, 5}, {false, 15}, gettext_noop("Butcher")},
-  {{GD_PICKAXE, 583, 558, 5}, {false, 10}, gettext_noop("Miner")},
-  {{GD_NOTHING, 530, 93, 5}, {true, 3}, gettext_noop("Brewer")},
-  {{GD_NOTHING, 390, 160, 5}, {false, 14}, gettext_noop("Pig breeder")},
-  {{GD_NOTHING, 370, 278, 205}, {false, 24}, gettext_noop("Donkey breeder")},
-  {{GD_CRUCIBLE, 950, 160, 5}, {false, 11}, gettext_noop("Iron founder")},
-  {{GD_CRUCIBLE, 1050, 170, 5}, {false, 9}, gettext_noop("Minter")},
-  {{GD_TONGS, 850, 400, 5}, {false, 18}, gettext_noop("Metalworker")},
-  {{GD_HAMMER, 940, 170, 5}, {true, 4}, gettext_noop("Armorer")},
-  {{GD_HAMMER, 0, 0, 5}, {false, 23}, gettext_noop("Builder")},
-  {{GD_SHOVEL, 130, 0, 5}, {false, 22}, gettext_noop("Planer")},
+  {{GoodType::Nothing, 385, 190, 5}, {false, 0}, gettext_noop("Helper")},
+  {{GoodType::Axe, 148, 789, 5}, {false, 5}, gettext_noop("Woodchopper")},
+  {{GoodType::RodAndLine, 129, 825, 5}, {false, 12}, gettext_noop("Fisher")},
+  {{GoodType::Shovel, 66, 304, 5}, {false, 8}, gettext_noop("Ranger")},
+  {{GoodType::Saw, 479, 96, 5}, {false, 6}, gettext_noop("Carpenter")},
+  {{GoodType::PickAxe, 129, 825, 5}, {false, 7}, gettext_noop("Stonemason")},
+  {{GoodType::Bow, 0, 300, 5}, {false, 20}, gettext_noop("Huntsman")},
+  {{GoodType::Scythe, 117, 106, 5}, {false, 13}, gettext_noop("Farmer")},
+  {{GoodType::Nothing, 470, 95, 5}, {true, 16}, gettext_noop("Miller")},
+  {{GoodType::Rollingpin, 470, 94, 5}, {true, 17}, gettext_noop("Baker")},
+  {{GoodType::Cleaver, 478, 80, 5}, {false, 15}, gettext_noop("Butcher")},
+  {{GoodType::PickAxe, 583, 558, 5}, {false, 10}, gettext_noop("Miner")},
+  {{GoodType::Nothing, 530, 93, 5}, {true, 3}, gettext_noop("Brewer")},
+  {{GoodType::Nothing, 390, 160, 5}, {false, 14}, gettext_noop("Pig breeder")},
+  {{GoodType::Nothing, 370, 278, 205}, {false, 24}, gettext_noop("Donkey breeder")},
+  {{GoodType::Crucible, 950, 160, 5}, {false, 11}, gettext_noop("Iron founder")},
+  {{GoodType::Crucible, 1050, 170, 5}, {false, 9}, gettext_noop("Minter")},
+  {{GoodType::Tongs, 850, 400, 5}, {false, 18}, gettext_noop("Metalworker")},
+  {{GoodType::Hammer, 940, 170, 5}, {true, 4}, gettext_noop("Armorer")},
+  {{GoodType::Hammer, 0, 0, 5}, {false, 23}, gettext_noop("Builder")},
+  {{GoodType::Shovel, 130, 0, 5}, {false, 22}, gettext_noop("Planer")},
   {{}, {false, -30}, gettext_noop("Private")},
   {{}, {false, -31}, gettext_noop("Private first class")},
   {{}, {false, -32}, gettext_noop("Sergeant")},
   {{}, {false, -33}, gettext_noop("Officer")},
   {{}, {false, -34}, gettext_noop("General")},
-  {{GD_HAMMER, 0, 0, 0}, {false, 26}, gettext_noop("Geologist")},
-  {{GD_HAMMER, 1250, 100, 5}, {false, 25}, gettext_noop("Shipwright")}, // Todo: Timing wenn Schiffe bauen möglich
-  {{GD_BOW, 0, 0, 0}, {false, -35}, gettext_noop("Scout")},
+  {{GoodType::Hammer, 0, 0, 0}, {false, 26}, gettext_noop("Geologist")},
+  {{GoodType::Hammer, 1250, 100, 5},
+   {false, 25},
+   gettext_noop("Shipwright")}, // Todo: Timing wenn Schiffe bauen möglich
+  {{GoodType::Bow, 0, 0, 0}, {false, -35}, gettext_noop("Scout")},
   {{}, {false, 37}, gettext_noop("Pack donkey")},
   {{}, {false, 37}, gettext_noop("Boat carrier")},
-  {{GD_SHOVEL, 117, 106, 5}, {false, 37}, gettext_noop("Charburner")}
+  {{GoodType::Shovel, 117, 106, 5}, {false, 37}, gettext_noop("Charburner")}
   // End data
 }};
 
@@ -74,7 +76,7 @@ constexpr auto makeJobArrayImpl(T&& getter, std::index_sequence<I...>)
 template<typename T>
 constexpr auto makeJobArray(T&& getter)
 {
-    return makeJobArrayImpl(getter, std::make_index_sequence<NUM_JOB_TYPES>());
+    return makeJobArrayImpl(getter, std::make_index_sequence<helpers::NumEnumValues_v<Job>>());
 }
 } // namespace
 

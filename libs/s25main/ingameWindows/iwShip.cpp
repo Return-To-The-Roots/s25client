@@ -218,12 +218,12 @@ void iwShip::DrawCargo()
     // Special cases: expeditions
     if(ship->IsOnExpedition())
     {
-        orderedFigures[JOB_BUILDER] = 1;
-        orderedWares[GD_BOARDS] = BUILDING_COSTS[owner.nation][BLD_HARBORBUILDING].boards;
-        orderedWares[GD_STONES] = BUILDING_COSTS[owner.nation][BLD_HARBORBUILDING].stones;
+        orderedFigures[Job::Builder] = 1;
+        orderedWares[GoodType::Boards] = BUILDING_COSTS[owner.nation][BLD_HARBORBUILDING].boards;
+        orderedWares[GoodType::Stones] = BUILDING_COSTS[owner.nation][BLD_HARBORBUILDING].stones;
     } else if(ship->IsOnExplorationExpedition())
     {
-        orderedFigures[JOB_SCOUT] = gwv.GetWorld().GetGGS().GetNumScoutsExpedition();
+        orderedFigures[Job::Scout] = gwv.GetWorld().GetGGS().GetNumScoutsExpedition();
     }
 
     // Start Offset zum malen
@@ -254,10 +254,11 @@ void iwShip::DrawCargo()
             }
             orderedFigures[job]--;
 
-            if(job == JOB_PACKDONKEY)
+            if(job == Job::PackDonkey)
                 LOADER.GetMapImageN(2016)->DrawFull(drawPt);
-            else if(job == JOB_BOATCARRIER)
-                LOADER.GetBob("carrier")->Draw(GD_BOAT, libsiedler2::ImgDir::SW, false, 0, drawPt, owner.color);
+            else if(job == Job::BoatCarrier)
+                LOADER.GetBob("carrier")->Draw(rttr::enum_cast(GoodType::Boat), libsiedler2::ImgDir::SW, false, 0,
+                                               drawPt, owner.color);
             else
             {
                 const auto& spriteData = JOB_SPRITE_CONSTS[job];
@@ -283,9 +284,9 @@ void iwShip::DrawCargo()
             }
             orderedWares[ware]--;
 
-            const unsigned draw_id = convertShieldToNation(ware, owner.nation);
+            const auto draw_id = convertShieldToNation(ware, owner.nation);
 
-            LOADER.GetMapImageN(2200 + draw_id)->DrawFull(drawPt);
+            LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(draw_id))->DrawFull(drawPt);
             drawPt.x += xStep;
             lineCounter++;
         }

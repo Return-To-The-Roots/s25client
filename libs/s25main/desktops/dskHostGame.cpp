@@ -213,10 +213,8 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
     if(lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
         // Then add tournament modes as possible "objectives"
-        for(unsigned i = 0; i < NUM_TOURNAMENT_MODESS; ++i)
-        {
-            combo->AddString(helpers::format(_("Tournament: %u minutes"), TOURNAMENT_MODES_DURATION[i]));
-        }
+        for(const unsigned duration : TOURNAMENT_MODES_DURATION)
+            combo->AddString(helpers::format(_("Tournament: %u minutes"), duration));
     }
 
     // "Geschwindigkeit"
@@ -687,7 +685,7 @@ void dskHostGame::Msg_EditEnter(const unsigned ctrl_id)
     const std::string msg = edit->GetText();
     edit->SetText("");
     if(gameChat->IsVisible())
-        GAMECLIENT.Command_Chat(msg, CD_ALL);
+        GAMECLIENT.Command_Chat(msg, ChatDestination::All);
     else if(lobbyClient_ && lobbyClient_->IsLoggedIn() && lobbyChat->IsVisible())
         lobbyClient_->SendChat(msg);
 }
@@ -1057,7 +1055,7 @@ bool dskHostGame::checkOptions()
     if(forceOptions)
         return true;
     const GlobalGameSettings& ggs = gameLobby->getSettings();
-    if(ggs.objective == GO_ECONOMYMODE && !ggs.isEnabled(AddonId::PEACEFULMODE))
+    if(ggs.objective == GameObjective::EconomyMode && !ggs.isEnabled(AddonId::PEACEFULMODE))
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
           _("Economy mode"),
@@ -1072,7 +1070,7 @@ bool dskHostGame::checkOptions()
           this, MSB_YESNOCANCEL, MSB_QUESTIONGREEN, 10));
         return false;
     } else if(ggs.isEnabled(AddonId::PEACEFULMODE)
-              && (ggs.objective == GO_CONQUER3_4 || ggs.objective == GO_TOTALDOMINATION))
+              && (ggs.objective == GameObjective::Conquer3_4 || ggs.objective == GameObjective::TotalDomination))
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
           _("Peaceful mode"),

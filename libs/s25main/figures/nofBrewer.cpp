@@ -25,7 +25,7 @@
 #include "world/GameWorldGame.h"
 
 nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_BREWER, pos, player, workplace)
+    : nofWorkman(Job::Brewer, pos, player, workplace)
 {}
 
 nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
@@ -51,5 +51,5 @@ void nofBrewer::DrawWorking(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofBrewer::ProduceWare()
 {
-    return GD_BEER;
+    return GoodType::Beer;
 }

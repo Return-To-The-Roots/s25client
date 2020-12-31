@@ -26,7 +26,7 @@
 #include "world/GameWorldGame.h"
 
 nofIronfounder::nofIronfounder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_IRONFOUNDER, pos, player, workplace)
+    : nofWorkman(Job::IronFounder, pos, player, workplace)
 {}
 
 nofIronfounder::nofIronfounder(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
@@ -54,5 +54,5 @@ void nofIronfounder::DrawWorking(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofIronfounder::ProduceWare()
 {
-    return GD_IRON;
+    return GoodType::Iron;
 }

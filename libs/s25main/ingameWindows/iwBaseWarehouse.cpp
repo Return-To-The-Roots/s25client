@@ -131,15 +131,20 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsig
             case ID_STOP: setting = EInventorySetting::STOP; break;
             default: throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
         }
-        InventorySetting state = GetCurPage() == warePageID ? wh->GetInventorySettingVisual(GoodType(ctrl_id - 100)) :
-                                                              wh->GetInventorySettingVisual(Job(ctrl_id - 100));
-        state.Toggle(setting);
-        if(gcFactory.SetInventorySetting(wh->GetPos(), GetCurPage() == peoplePageID, ctrl_id - 100, state))
-        {
-            // optisch schonmal setzen
-            wh->SetInventorySettingVisual(GetCurPage() == peoplePageID, ctrl_id - 100, state);
-            UpdateOverlay(ctrl_id - 100);
-        }
+        auto setSetting = [this](auto what, EInventorySetting setting) {
+            InventorySetting state = wh->GetInventorySettingVisual(what);
+            state.Toggle(setting);
+            if(gcFactory.SetInventorySetting(wh->GetPos(), what, state))
+            {
+                // optisch schonmal setzen
+                wh->SetInventorySettingVisual(what, state);
+                UpdateOverlay(rttr::enum_cast(what));
+            }
+        };
+        if(GetCurPage() == warePageID)
+            setSetting(GoodType(ctrl_id - 100), setting);
+        else
+            setSetting(Job(ctrl_id - 100), setting);
     }
 }
 
@@ -169,17 +174,18 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                 case ID_STOP: data = EInventorySetting::STOP; break;
                 default: throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
             }
-            const unsigned count = (GetCurPage() == warePageID) ? NUM_WARE_TYPES : NUM_JOB_TYPES;
+            const unsigned count =
+              (GetCurPage() == warePageID) ? helpers::NumEnumValues_v<GoodType> : helpers::NumEnumValues_v<Job>;
             std::vector<InventorySetting> states;
             states.reserve(count);
             if(GetCurPage() == warePageID)
             {
-                for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
-                    states.push_back(wh->GetInventorySettingVisual(i == GD_WATEREMPTY ? GD_WATER : GoodType(i)));
+                for(const auto i : helpers::enumRange<GoodType>())
+                    states.push_back(wh->GetInventorySettingVisual(i == GoodType::WaterEmpty ? GoodType::Water : i));
             } else
             {
-                for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
-                    states.push_back(wh->GetInventorySettingVisual(Job(i)));
+                for(const auto i : helpers::enumRange<Job>())
+                    states.push_back(wh->GetInventorySettingVisual(i));
             }
             // Check if we need to enable all or disable all
             // If at least 1 disabled is found, enable all
@@ -201,10 +207,14 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
             if(gcFactory.SetAllInventorySettings(wh->GetPos(), GetCurPage() == peoplePageID, states))
             {
                 // optisch setzen
-                for(unsigned char i = 0; i < count; ++i)
+                if(GetCurPage() == warePageID)
                 {
-                    // Status ändern
-                    wh->SetInventorySettingVisual(GetCurPage() == peoplePageID, i, states[i]);
+                    for(const auto i : helpers::enumRange<GoodType>())
+                        wh->SetInventorySettingVisual(i, states[rttr::enum_cast(i)]);
+                } else
+                {
+                    for(const auto i : helpers::enumRange<Job>())
+                        wh->SetInventorySettingVisual(i, states[rttr::enum_cast(i)]);
                 }
                 UpdateOverlays();
             }
@@ -307,7 +317,7 @@ void iwBaseWarehouse::UpdateOverlays()
     // Ein/Auslager Overlays entsprechend setzen
     for(unsigned char category = 0; category < 2; ++category)
     {
-        unsigned count = (category == 0) ? NUM_WARE_TYPES : NUM_JOB_TYPES;
+        unsigned count = (category == 0) ? helpers::NumEnumValues_v<GoodType> : helpers::NumEnumValues_v<Job>;
         for(unsigned i = 0; i < count; ++i)
         {
             UpdateOverlay(i, category == 0);

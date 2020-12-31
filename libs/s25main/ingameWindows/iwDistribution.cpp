@@ -27,6 +27,7 @@
 #include "ogl/FontStyle.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/const_gui_ids.h"
 #include <utility>
 
@@ -191,7 +192,7 @@ void iwDistribution::CreateGroups()
     if(!groups.empty())
         return;
 
-    GoodType lastGood = GD_NOTHING;
+    GoodType lastGood = GoodType::Nothing;
     for(const DistributionMapping& mapping : distributionMap)
     {
         // New group?
@@ -199,17 +200,17 @@ void iwDistribution::CreateGroups()
         {
             lastGood = std::get<0>(mapping);
             // Fish = all foodstuff
-            std::string name = lastGood == GD_FISH ? gettext_noop("Foodstuff") : WARE_NAMES[lastGood];
+            std::string name = lastGood == GoodType::Fish ? gettext_noop("Foodstuff") : WARE_NAMES[lastGood];
             glArchivItem_Bitmap* img = nullptr;
             switch(lastGood)
             {
-                case GD_FISH: img = LOADER.GetImageN("io", 80); break;
-                case GD_GRAIN: img = LOADER.GetImageN("io", 90); break;
-                case GD_IRON: img = LOADER.GetImageN("io", 81); break;
-                case GD_COAL: img = LOADER.GetImageN("io", 91); break;
-                case GD_WOOD: img = LOADER.GetImageN("io", 89); break;
-                case GD_BOARDS: img = LOADER.GetImageN("io", 82); break;
-                case GD_WATER: img = LOADER.GetImageN("io", 92); break;
+                case GoodType::Fish: img = LOADER.GetImageN("io", 80); break;
+                case GoodType::Grain: img = LOADER.GetImageN("io", 90); break;
+                case GoodType::Iron: img = LOADER.GetImageN("io", 81); break;
+                case GoodType::Coal: img = LOADER.GetImageN("io", 91); break;
+                case GoodType::Wood: img = LOADER.GetImageN("io", 89); break;
+                case GoodType::Boards: img = LOADER.GetImageN("io", 82); break;
+                case GoodType::Water: img = LOADER.GetImageN("io", 92); break;
                 default: break;
             }
             if(!img)

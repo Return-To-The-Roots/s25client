@@ -27,11 +27,11 @@
 #include "nodeObjs/noRoadNode.h"
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
-    : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))),
+    : noFigure(Job::Helper, pos, player, gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))),
       carried_ware(ware), shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) != 0)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
-    gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
+    gwg->GetPlayer(player).IncreaseInventoryJob(Job::Helper, 1);
 
     /// Straße (also die 1-er-Straße vor dem Lagerhaus) setzen
     cur_rs = static_cast<noFlag*>(GetGoal())->GetRoute(Direction::NORTHWEST);
@@ -160,7 +160,7 @@ void nofWarehouseWorker::Walked()
     GetEvMgr().AddToKillList(this);
 
     // Von der Inventur wieder abziehen
-    gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, 1);
+    gwg->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
 }
 
 void nofWarehouseWorker::AbrogateWorkplace()

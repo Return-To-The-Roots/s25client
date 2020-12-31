@@ -386,7 +386,7 @@ private:
     /// Koordinaten des HQs des Spielers
     MapPoint hqPos;
 
-    std::array<Distribution, NUM_WARE_TYPES> distribution;
+    helpers::EnumArray<Distribution, GoodType> distribution;
 
     /// Art der Reihenfolge (false = nach Auftraggebung, ansonsten nach build_order)
     bool useCustomBuildOrder_;

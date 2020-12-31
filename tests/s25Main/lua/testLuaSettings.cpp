@@ -19,18 +19,22 @@
 #include "JoinPlayerInfo.h"
 #include "LuaBaseFixture.h"
 #include "addons/Addon.h"
+#include "enum_cast.hpp"
 #include "lua/LuaInterfaceSettings.h"
 #include "network/IGameLobbyController.h"
 #include "worldFixtures/MockLocalGameState.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "s25util/colors.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
+// LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& os, AddonId id)
 {
     return os << rttrEnum::toString(id);
 }
+// LCOV_EXCL_STOP
 
 namespace {
 
@@ -204,48 +208,53 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
 
     GlobalGameSettings shouldSettings = ggs;
 
-#define SET_AND_CHECK(setting, value)                              \
-    executeLua("rttr:SetGameSettings({" #setting "=" #value "})"); \
-    shouldSettings.setting = value;                                \
+#define SET_AND_CHECK(setting, luaValue, value)                       \
+    executeLua("rttr:SetGameSettings({" #setting "=" #luaValue "})"); \
+    shouldSettings.setting = value;                                   \
     checkSettings(shouldSettings);
 
-    SET_AND_CHECK(speed, GS_VERYSLOW);
-    SET_AND_CHECK(speed, GS_FAST);
-    SET_AND_CHECK(objective, GO_TOTALDOMINATION);
-    SET_AND_CHECK(objective, GO_CONQUER3_4);
-    SET_AND_CHECK(startWares, SWR_LOW);
-    SET_AND_CHECK(startWares, SWR_VLOW);
+    SET_AND_CHECK(speed, GS_VERYSLOW, GameSpeed::VerySlow);
+    SET_AND_CHECK(speed, GS_FAST, GameSpeed::Fast);
+    SET_AND_CHECK(objective, GO_TOTALDOMINATION, GameObjective::TotalDomination);
+    SET_AND_CHECK(objective, GO_CONQUER3_4, GameObjective::Conquer3_4);
+    SET_AND_CHECK(startWares, SWR_LOW, StartWares::Low);
+    SET_AND_CHECK(startWares, SWR_VLOW, StartWares::VLow);
 
-    executeLua("rttr:SetGameSettings({fow=EXP_FOGOFWARE_EXPLORED})");
-    shouldSettings.exploration = EXP_FOGOFWARE_EXPLORED;
+    executeLua("rttr:SetGameSettings({fow=EXP_FOGOFWARE_EXPLORED})"); // Legacy
+    shouldSettings.exploration = Exploration::FogOfWarExplored;
     checkSettings(shouldSettings);
     executeLua("rttr:SetGameSettings({fow=EXP_CLASSIC})");
-    shouldSettings.exploration = EXP_CLASSIC;
+    shouldSettings.exploration = Exploration::Classic;
+    checkSettings(shouldSettings);
+    executeLua("rttr:SetGameSettings({fow=EXP_FOGOFWAREXPLORED})"); // New value
+    shouldSettings.exploration = Exploration::FogOfWarExplored;
     checkSettings(shouldSettings);
 
-    SET_AND_CHECK(lockedTeams, true);
-    SET_AND_CHECK(lockedTeams, false);
-    SET_AND_CHECK(teamView, true);
-    SET_AND_CHECK(teamView, false);
-    SET_AND_CHECK(randomStartPosition, true);
-    SET_AND_CHECK(randomStartPosition, false);
+#define SET_AND_CHECK2(setting, value) SET_AND_CHECK(setting, value, value)
+    SET_AND_CHECK2(lockedTeams, true);
+    SET_AND_CHECK2(lockedTeams, false);
+    SET_AND_CHECK2(teamView, true);
+    SET_AND_CHECK2(teamView, false);
+    SET_AND_CHECK2(randomStartPosition, true);
+    SET_AND_CHECK2(randomStartPosition, false);
 
 #undef SET_AND_CHECK
+#undef SET_AND_CHECK2
 
     // And multiple settings at once:
     executeLua("rttr:SetGameSettings({fow=EXP_FOGOFWARE_EXPLORED, speed=GS_VERYFAST, lockedTeams=true})");
-    shouldSettings.exploration = EXP_FOGOFWARE_EXPLORED;
-    shouldSettings.speed = GS_VERYFAST;
+    shouldSettings.exploration = Exploration::FogOfWarExplored;
+    shouldSettings.speed = GameSpeed::VeryFast;
     shouldSettings.lockedTeams = true;
     checkSettings(shouldSettings);
 
     // Reset all settings
     executeLua("rttr:ResetGameSettings()");
-    shouldSettings.speed = GS_NORMAL;
-    shouldSettings.objective = GO_NONE;
-    shouldSettings.startWares = SWR_NORMAL;
+    shouldSettings.speed = GameSpeed::Normal;
+    shouldSettings.objective = GameObjective::None;
+    shouldSettings.startWares = StartWares::Normal;
     shouldSettings.lockedTeams = false;
-    shouldSettings.exploration = EXP_FOGOFWAR;
+    shouldSettings.exploration = Exploration::FogOfWar;
     shouldSettings.teamView = true;
     shouldSettings.randomStartPosition = false;
     checkSettings(shouldSettings);

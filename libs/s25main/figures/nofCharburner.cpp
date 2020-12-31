@@ -30,7 +30,7 @@
 #include <stdexcept>
 
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)
+    : nofFarmhand(Job::CharBurner, pos, player, workplace), harvest(false), wt(WT_WOOD)
 {}
 
 nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id)
@@ -82,7 +82,7 @@ void nofCharburner::WorkFinished()
         // Is Pile already in the normal "coal harvest mode"?
         if(static_cast<noCharburnerPile*>(no)->GetState() == noCharburnerPile::STATE_HARVEST)
             // Then let's bring a coal to our house
-            ware = GD_COAL;
+            ware = GoodType::Coal;
         // One step further
         static_cast<noCharburnerPile*>(no)->NextStep();
         return;

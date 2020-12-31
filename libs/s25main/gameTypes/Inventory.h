@@ -18,19 +18,13 @@
 #pragma once
 
 #include "GoodTypes.h"
+#include "GoodsAndPeopleArray.h"
 #include "JobTypes.h"
 #include "RTTR_Assert.h"
-#include <array>
 
 /// Struct for wares and people (for HQs, warehouses etc)
-struct Inventory
+struct Inventory : GoodsAndPeopleArray<unsigned>
 {
-    std::array<unsigned, NUM_WARE_TYPES> goods;
-    std::array<unsigned, NUM_JOB_TYPES> people;
-
-    Inventory() { clear(); }
-    unsigned operator[](GoodType good) const { return goods[good]; }
-    unsigned operator[](Job job) const { return people[job]; }
     /// Sets everything to 0
     void clear();
     void Add(const GoodType good, unsigned amount = 1) { goods[good] += amount; }

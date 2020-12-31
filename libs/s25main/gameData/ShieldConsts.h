@@ -24,17 +24,19 @@
 
 /// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
 const helpers::EnumArray<GoodType, Nation> SUPPRESS_UNUSED SHIELD_TYPES = {
-  GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS, GD_SHIELDVIKINGS, GD_SHIELDJAPANESE};
+  GoodType::ShieldAfricans, GoodType::ShieldJapanese, GoodType::ShieldRomans, GoodType::ShieldVikings,
+  GoodType::ShieldJapanese};
 
 /// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
 /// die Warensysteme usw
 inline constexpr GoodType ConvertShields(const GoodType& good)
 {
-    return (good == GD_SHIELDVIKINGS || good == GD_SHIELDAFRICANS || good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS :
-                                                                                                  good;
+    return (good == GoodType::ShieldVikings || good == GoodType::ShieldAfricans || good == GoodType::ShieldJapanese) ?
+             GoodType::ShieldRomans :
+             good;
 }
 
 inline constexpr GoodType convertShieldToNation(const GoodType good, const Nation nation)
 {
-    return (good == GD_SHIELDROMANS) ? SHIELD_TYPES[nation] : good;
+    return (good == GoodType::ShieldRomans) ? SHIELD_TYPES[nation] : good;
 }

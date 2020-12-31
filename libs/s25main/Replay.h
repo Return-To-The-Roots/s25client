@@ -18,6 +18,7 @@
 #pragma once
 
 #include "SavedFile.h"
+#include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapType.h"
 #include "s25util/BinaryFile.h"
 #include <string>
@@ -64,7 +65,7 @@ public:
     bool LoadGameData(MapInfo& mapInfo);
 
     /// Fügt ein Chat-Kommando hinzu (schreibt)
-    void AddChatCommand(unsigned gf, uint8_t player, uint8_t dest, const std::string& str);
+    void AddChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str);
     /// Fügt ein Spiel-Kommando hinzu (schreibt)
     void AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds);
 

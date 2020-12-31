@@ -49,25 +49,18 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     // Arbeitersymbol
     AddImage(0, DrawPoint(28, 39), LOADER.GetMapImageN(2298));
 
-    // Exception: charburner
-    if(building->GetBuildingType() != BLD_CHARBURNER)
-    {
-        if(const auto job = BLD_WORK_DESC[building->GetBuildingType()].job)
-            AddImage(13, DrawPoint(28, 39), LOADER.GetMapImageN(2300 + *job));
-    } else
-    {
-        AddImage(13, DrawPoint(28, 39), LOADER.GetImageN("io_new", 5));
-    }
+    if(const auto job = BLD_WORK_DESC[building->GetBuildingType()].job)
+        AddImage(13, DrawPoint(28, 39), LOADER.GetJobTex(*job));
 
     // Gebäudesymbol
     AddImage(1, DrawPoint(117, 114), building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
     const auto producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
-    if(producedWare && producedWare != GD_NOTHING)
+    if(producedWare && producedWare != GoodType::Nothing)
     {
         AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
-        AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + *producedWare));
+        AddImage(3, DrawPoint(196, 39), LOADER.GetWareTex(*producedWare));
     }
 
     // Info
@@ -132,8 +125,8 @@ void iwBuilding::Msg_PaintAfter()
         {
             for(unsigned char z = 0; z < bldWorkDesk.numSpacesPerWare; ++z)
             {
-                glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + bldWorkDesk.waresNeeded[i]);
-                bitmap->DrawFull(curPos, (z < building->GetNumWares(i) ? 0xFFFFFFFF : 0xFF404040));
+                LOADER.GetWareTex(bldWorkDesk.waresNeeded[i])
+                  ->DrawFull(curPos, (z < building->GetNumWares(i) ? 0xFFFFFFFF : 0xFF404040));
                 curPos.x += 24;
             }
         }
@@ -151,8 +144,8 @@ void iwBuilding::Msg_PaintAfter()
 
             for(unsigned char z = 0; z < wares_count; ++z)
             {
-                glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + bldWorkDesk.waresNeeded[i]);
-                bitmap->DrawFull(waresPos, (z < building->GetNumWares(i) ? COLOR_WHITE : 0xFF404040));
+                LOADER.GetWareTex(bldWorkDesk.waresNeeded[i])
+                  ->DrawFull(waresPos, (z < building->GetNumWares(i) ? COLOR_WHITE : 0xFF404040));
                 waresPos.x += 24;
             }
 

@@ -30,7 +30,7 @@
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
                                const boost::variant<GoodType, Job>& what)
-    : noFigure(holds_alternative<Job>(what) ? boost::get<Job>(what) : JOB_PACKDONKEY, pos, player), successor(nullptr)
+    : noFigure(holds_alternative<Job>(what) ? boost::get<Job>(what) : Job::PackDonkey, pos, player), successor(nullptr)
 {
     if(holds_alternative<GoodType>(what))
         gt = boost::get<GoodType>(what);
@@ -111,7 +111,7 @@ void nofTradeDonkey::AbrogateWorkplace() {}
 
 void nofTradeDonkey::Draw(DrawPoint drawPt)
 {
-    if(job_ == JOB_PACKDONKEY)
+    if(job_ == Job::PackDonkey)
     {
         const unsigned ani_step = CalcWalkAnimationFrame();
 
@@ -125,7 +125,7 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
         if(gt)
         {
             // Ware im Korb zeichnen
-            LOADER.GetMapImageN(2350 + *gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
+            LOADER.GetWareDonkeyTex(*gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
         }
     } else
         DrawWalking(drawPt);

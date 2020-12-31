@@ -19,10 +19,13 @@
 #include "Loader.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
+#include "helpers/MaxEnumValue.h"
 #include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"
 
-unsigned char iwChat::chat_dest = CD_ALL;
+namespace {
+static ChatDestination lastChatDestination = ChatDestination::All;
+}
 
 iwChat::iwChat(Window* parent)
     : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"),
@@ -33,14 +36,17 @@ iwChat::iwChat(Window* parent)
 
     ctrlOptionGroup* group = AddOptionGroup(1, ctrlOptionGroup::CHECK);
     // "Alle"
-    group->AddTextButton(CD_ALL, DrawPoint(20, 80), Extent(260, 22), TC_GREY, _("All"), NormalFont);
+    group->AddTextButton(rttr::enum_cast(ChatDestination::All), DrawPoint(20, 80), Extent(260, 22), TC_GREY, _("All"),
+                         NormalFont);
     // "Verbündete"
-    group->AddTextButton(CD_ALLIES, DrawPoint(20, 112), Extent(125, 22), TC_GREEN2, _("Allies"), NormalFont);
+    group->AddTextButton(rttr::enum_cast(ChatDestination::Allies), DrawPoint(20, 112), Extent(125, 22), TC_GREEN2,
+                         _("Allies"), NormalFont);
     // "Feinde"
-    group->AddTextButton(CD_ENEMIES, DrawPoint(155, 112), Extent(125, 22), TC_RED1, _("Enemies"), NormalFont);
+    group->AddTextButton(rttr::enum_cast(ChatDestination::Enemies), DrawPoint(155, 112), Extent(125, 22), TC_RED1,
+                         _("Enemies"), NormalFont);
 
     // Entspr. vom letzten Mal auswählen auswählen
-    group->SetSelection(chat_dest);
+    group->SetSelection(rttr::enum_cast(lastChatDestination));
 }
 
 void iwChat::Msg_PaintBefore()
@@ -51,7 +57,8 @@ void iwChat::Msg_PaintBefore()
 
 void iwChat::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
-    chat_dest = static_cast<unsigned char>(selection);
+    RTTR_Assert(selection <= helpers::MaxEnumValue_v<ChatDestination>);
+    lastChatDestination = static_cast<ChatDestination>(selection);
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
@@ -69,9 +76,5 @@ void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
         if(listener)
             listener->OnChatCommand(text.substr(1));
     } else
-    {
-        if(chat_dest != CD_ALL && chat_dest != CD_ALLIES && chat_dest != CD_ENEMIES)
-            chat_dest = CD_ALL;
-        GAMECLIENT.Command_Chat(text, ChatDestination(chat_dest));
-    }
+        GAMECLIENT.Command_Chat(text, ChatDestination(lastChatDestination));
 }

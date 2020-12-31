@@ -25,7 +25,7 @@
 #include "world/GameWorldGame.h"
 
 nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MINTER, pos, player, workplace)
+    : nofWorkman(Job::Minter, pos, player, workplace)
 {}
 
 void nofMinter::Serialize_nofMinter(SerializedGameData& sgd) const
@@ -61,5 +61,5 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
 helpers::OptionalEnum<GoodType> nofMinter::ProduceWare()
 {
     gwg->GetPlayer(player).ChangeStatisticValue(STAT_GOLD, 1);
-    return GD_COINS;
+    return GoodType::Coins;
 }

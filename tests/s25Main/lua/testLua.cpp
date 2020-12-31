@@ -182,20 +182,20 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     hqs[0] = world.GetSpecObj<nobHQ>(world.GetPlayer(0).GetHQPos());
     hqs[1] = world.GetSpecObj<nobHQ>(world.GetPlayer(1).GetHQPos());
 
-    BOOST_REQUIRE_GT(hqs[0]->GetNumRealWares(GD_BOARDS), 0u);
+    BOOST_REQUIRE_GT(hqs[0]->GetNumRealWares(GoodType::Boards), 0u);
 
     executeLua("rttr:ClearResources()");
     for(auto& hq : hqs)
     {
-        for(unsigned gd = 0; gd < NUM_WARE_TYPES; gd++)
+        for(const auto gd : helpers::enumRange<GoodType>())
         {
-            BOOST_REQUIRE_EQUAL(hq->GetNumRealWares(GoodType(gd)), 0u);
-            BOOST_REQUIRE_EQUAL(hq->GetNumVisualWares(GoodType(gd)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumRealWares(gd), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumVisualWares(gd), 0u);
         }
-        for(unsigned job = 0; job < NUM_JOB_TYPES; job++)
+        for(const auto job : helpers::enumRange<Job>())
         {
-            BOOST_REQUIRE_EQUAL(hq->GetNumRealFigures(Job(job)), 0u);
-            BOOST_REQUIRE_EQUAL(hq->GetNumVisualFigures(Job(job)), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumRealFigures(job), 0u);
+            BOOST_REQUIRE_EQUAL(hq->GetNumVisualFigures(job), 0u);
         }
     }
 
@@ -379,14 +379,14 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("player:ClearResources()");
     const Inventory& playerInv = player.GetInventory();
     for(const GoodType gd : helpers::EnumRange<GoodType>{})
-        BOOST_TEST_CONTEXT("Good: " << gd)
+        BOOST_TEST_CONTEXT("Good: " << rttr::enum_cast(gd))
         {
             BOOST_TEST(hq->GetNumRealWares(gd) == 0u);
             BOOST_TEST(hq->GetNumVisualWares(gd) == 0u);
             BOOST_TEST(playerInv[gd] == 0u);
         }
     for(const Job job : helpers::EnumRange<Job>{})
-        BOOST_TEST_CONTEXT("Job: " << job)
+        BOOST_TEST_CONTEXT("Job: " << rttr::enum_cast(job))
         {
             BOOST_TEST(hq->GetNumRealFigures(job) == 0u);
             BOOST_TEST(hq->GetNumVisualFigures(job) == 0u);
@@ -405,21 +405,21 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("wares = {[GD_HAMMER]=8,[GD_AXE]=6,[GD_SAW]=3}\n"
                "people = {[JOB_HELPER] = 30,[JOB_WOODCUTTER] = 6,[JOB_FISHER] = 0,[JOB_FORESTER] = 2}");
     executeLua("assert(player:AddWares(wares))");
-    BOOST_REQUIRE_EQUAL(playerInv.goods[GD_HAMMER], 8u);
-    BOOST_REQUIRE_EQUAL(playerInv.goods[GD_AXE], 6u);
-    BOOST_REQUIRE_EQUAL(playerInv.goods[GD_SAW], 3u);
-    BOOST_CHECK_EQUAL(hq->GetNumRealWares(GD_HAMMER), 8u);
-    BOOST_CHECK_EQUAL(hq->GetNumRealWares(GD_AXE), 6u);
-    BOOST_CHECK_EQUAL(hq->GetNumRealWares(GD_SAW), 3u);
+    BOOST_REQUIRE_EQUAL(playerInv.goods[GoodType::Hammer], 8u);
+    BOOST_REQUIRE_EQUAL(playerInv.goods[GoodType::Axe], 6u);
+    BOOST_REQUIRE_EQUAL(playerInv.goods[GoodType::Saw], 3u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealWares(GoodType::Hammer), 8u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealWares(GoodType::Axe), 6u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealWares(GoodType::Saw), 3u);
     executeLua("assert(player:AddPeople(people))");
-    BOOST_REQUIRE_EQUAL(playerInv.people[JOB_HELPER], 30u);
-    BOOST_REQUIRE_EQUAL(playerInv.people[JOB_WOODCUTTER], 6u);
-    BOOST_REQUIRE_EQUAL(playerInv.people[JOB_FISHER], 0u);
-    BOOST_REQUIRE_EQUAL(playerInv.people[JOB_FORESTER], 2u);
-    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_HELPER), 30u);
-    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_WOODCUTTER), 6u);
-    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_FISHER), 0u);
-    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_FORESTER), 2u);
+    BOOST_REQUIRE_EQUAL(playerInv.people[Job::Helper], 30u);
+    BOOST_REQUIRE_EQUAL(playerInv.people[Job::Woodcutter], 6u);
+    BOOST_REQUIRE_EQUAL(playerInv.people[Job::Fisher], 0u);
+    BOOST_REQUIRE_EQUAL(playerInv.people[Job::Forester], 2u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(Job::Helper), 30u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(Job::Woodcutter), 6u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(Job::Fisher), 0u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(Job::Forester), 2u);
 
     BOOST_REQUIRE_EQUAL(getLog(), "");
     // Invalid ware/player throws

@@ -40,7 +40,7 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
 {
-    for(unsigned int& it : people)
+    for(unsigned& it : people)
         it = sgd.PopUnsignedInt();
 }
 
@@ -59,7 +59,7 @@ void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedInt(go_out_phase);
 
-    for(unsigned int it : people)
+    for(unsigned it : people)
         sgd.PushUnsignedInt(it);
 }
 
@@ -84,23 +84,23 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         // Das ist traurig, dann muss die Titanic mit allen restlichen an Board leider untergehen
         GetEvMgr().AddToKillList(this);
         // restliche Leute von der Inventur abziehen
-        for(unsigned i = 0; i < people.size(); ++i)
-            gwg->GetPlayer(player).DecreaseInventoryJob(Job(i), people[i]);
+        for(const auto i : helpers::enumRange<Job>())
+            gwg->GetPlayer(player).DecreaseInventoryJob(i, people[i]);
 
         return;
     }
 
-    for(unsigned iJob = 0; iJob < people.size(); ++iJob)
+    for(const auto job : helpers::enumRange<Job>())
     {
         // Anzahl ausrechnen, die in dieser Runde rausgeht
         unsigned count;
         if(go_out_phase + 1 >= GO_OUT_PHASES)
-            count = people[iJob]; // Take all on last round
+            count = people[job]; // Take all on last round
         else
-            count = people[iJob] / (GO_OUT_PHASES - go_out_phase);
+            count = people[job] / (GO_OUT_PHASES - go_out_phase);
 
         // Von der vorhandenen Abzahl abziehen
-        people[iJob] -= count;
+        people[job] -= count;
 
         // In Alle Richtungen verteilen
         // Startrichtung zufällig bestimmen
@@ -109,7 +109,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
         for(unsigned j = 0; j < possibleDirCt; ++j)
         {
             // Aktuelle Richtung, die jetzt dran ist bestimmen
-            Direction dir(possibleDirs[j] + start_dir);
+            Direction dir = possibleDirs[j] + start_dir;
 
             // Anzahl jetzt für diese Richtung ausrechnen
             unsigned numPeopleInDir = count / possibleDirCt;
@@ -121,7 +121,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             for(unsigned z = 0; z < numPeopleInDir; ++z)
             {
                 // Job erzeugen
-                auto* figure = new nofPassiveWorker(Job(iJob), pos, player, nullptr);
+                auto* figure = new nofPassiveWorker(job, pos, player, nullptr);
                 // Auf die Map setzen
                 gwg->AddFigure(pos, figure);
                 // Losrumirren in die jeweilige Richtung

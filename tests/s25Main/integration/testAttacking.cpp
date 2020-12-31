@@ -89,7 +89,7 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
     AttackFixtureBase()
     {
         Inventory goods;
-        goods.Add(JOB_GENERAL, 3);
+        goods.Add(Job::General, 3);
         for(unsigned i = 0; i < T_numPlayers; i++)
         {
             curPlayer = i;
@@ -410,9 +410,9 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     RTTR_EXEC_TILL(distance * 20 + 30, milBld1->GetNumTroops() == 1);
     BOOST_REQUIRE_EQUAL(milBld1->GetNumTroops() + milBld1->GetLeavingFigures().size(), 2u);
     const Inventory& attackedPlInventory = world.GetPlayer(1).GetInventory();
-    const unsigned oldWeakSoldierCt = attackedPlInventory.people[JOB_PRIVATE];
-    const unsigned oldStrongerSoldierCt = attackedPlInventory.people[JOB_PRIVATEFIRSTCLASS];
-    const unsigned oldAttackerStrongSoldierCt = world.GetPlayer(curPlayer).GetInventory().people[JOB_GENERAL];
+    const unsigned oldWeakSoldierCt = attackedPlInventory.people[Job::Private];
+    const unsigned oldStrongerSoldierCt = attackedPlInventory.people[Job::PrivateFirstClass];
+    const unsigned oldAttackerStrongSoldierCt = world.GetPlayer(curPlayer).GetInventory().people[Job::General];
 
     // 1st soldier will walk towards attacker and will be killed
     // Once an attacker reaches the flag, the bld will send a defender
@@ -434,17 +434,17 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     // 1 soldier must be inside
     BOOST_REQUIRE_GT(milBld1->GetNumTroops(), 1u);
     // Weak soldier must be dead
-    BOOST_REQUIRE_EQUAL(attackedPlInventory.people[JOB_PRIVATE], oldWeakSoldierCt - 1);
+    BOOST_REQUIRE_EQUAL(attackedPlInventory.people[Job::Private], oldWeakSoldierCt - 1);
     // Src building refill
     RTTR_EXEC_TILL(800, milBld0->GetNumTroops() == 6u);
     // Src building got refilled
     BOOST_REQUIRE_EQUAL(milBld0->GetNumTroops(), 6u);
     // We may have lost soldiers
-    BOOST_REQUIRE_LE(world.GetPlayer(curPlayer).GetInventory().people[JOB_GENERAL], oldAttackerStrongSoldierCt);
+    BOOST_REQUIRE_LE(world.GetPlayer(curPlayer).GetInventory().people[Job::General], oldAttackerStrongSoldierCt);
     // The enemy may have lost his stronger soldier
-    BOOST_REQUIRE_LE(attackedPlInventory.people[JOB_PRIVATEFIRSTCLASS], oldStrongerSoldierCt);
+    BOOST_REQUIRE_LE(attackedPlInventory.people[Job::PrivateFirstClass], oldStrongerSoldierCt);
     // But only one
-    BOOST_REQUIRE_GE(attackedPlInventory.people[JOB_PRIVATEFIRSTCLASS], oldStrongerSoldierCt - 1);
+    BOOST_REQUIRE_GE(attackedPlInventory.people[Job::PrivateFirstClass], oldStrongerSoldierCt - 1);
     // At least 2 survivors
     BOOST_REQUIRE_GT(milBld1->GetNumTroops(), 2u);
 
@@ -691,12 +691,12 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     // Add 2 coins for the bld
     for(unsigned i = 0; i < 2; i++)
     {
-        auto* coin = new Ware(GD_COINS, milBld1, flag);
+        auto* coin = new Ware(GoodType::Coins, milBld1, flag);
         coin->WaitAtFlag(flag);
         coin->RecalcRoute();
         flag->AddWare(coin);
     }
-    world.GetPlayer(1).IncreaseInventoryWare(GD_COINS, 2);
+    world.GetPlayer(1).IncreaseInventoryWare(GoodType::Coins, 2);
     carrierIn->ActAtFirst();
     carrierOut->ActAtFirst();
     // Both picked up
@@ -728,11 +728,11 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     world.AddFigure(flagPosE, carrierInE);
     rsE->setCarrier(0, carrierInE);
     // He also gets 1 coin
-    auto* coin = new Ware(GD_COINS, milBld1, flagE);
+    auto* coin = new Ware(GoodType::Coins, milBld1, flagE);
     coin->WaitAtFlag(flagE);
     coin->RecalcRoute();
     flagE->AddWare(coin);
-    world.GetPlayer(1).IncreaseInventoryWare(GD_COINS, 1);
+    world.GetPlayer(1).IncreaseInventoryWare(GoodType::Coins, 1);
     carrierInE->ActAtFirst();
     // Picked up
     BOOST_REQUIRE_EQUAL(flagE->GetNumWares(), 0u);

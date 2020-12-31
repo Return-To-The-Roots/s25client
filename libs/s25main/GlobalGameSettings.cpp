@@ -28,8 +28,8 @@
 #include <stdexcept>
 
 GlobalGameSettings::GlobalGameSettings()
-    : speed(GS_NORMAL), objective(GO_NONE), startWares(SWR_NORMAL), lockedTeams(false), exploration(EXP_FOGOFWAR),
-      teamView(true), randomStartPosition(false)
+    : speed(GameSpeed::Normal), objective(GameObjective::None), startWares(StartWares::Normal), lockedTeams(false),
+      exploration(Exploration::FogOfWar), teamView(true), randomStartPosition(false)
 {
     registerAllAddons();
 }

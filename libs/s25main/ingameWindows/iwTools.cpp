@@ -33,6 +33,7 @@
 #include "notifications/ToolNote.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/ToolConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "s25util/colors.h"

@@ -17,60 +17,50 @@
 
 #pragma once
 
+#include "GameSettingTypes.h"
+#include "MapType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
 #include "gameTypes/MapTypes.h"
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/stringize.hpp>
+#include <boost/preprocessor/variadic/to_seq.hpp>
 #include <ostream>
 
 #define RTTR_CASE_OUT(Enum, Enumerator) \
     case Enum::Enumerator: os << #Enumerator; break
 
 // LCOV_EXCL_START
-inline std::ostream& operator<<(std::ostream& os, const Direction& dir)
-{
-    switch(dir)
-    {
-        RTTR_CASE_OUT(Direction, WEST);
-        RTTR_CASE_OUT(Direction, NORTHWEST);
-        RTTR_CASE_OUT(Direction, NORTHEAST);
-        RTTR_CASE_OUT(Direction, EAST);
-        RTTR_CASE_OUT(Direction, SOUTHEAST);
-        RTTR_CASE_OUT(Direction, SOUTHWEST);
+
+#define RTTR_ENUM_CASE_SINGLE(s, EnumName, Enumerator) \
+    case EnumName::Enumerator: return os << #EnumName "::" BOOST_PP_STRINGIZE(Enumerator);
+
+/// Generates an output operator for enum
+///
+/// Usage: ENUM_OUTPUT(MyFancyEnum, Value1, Value2, Value3, ...)
+#define RTTR_ENUM_OUTPUT(EnumName, ...)                                                                   \
+    inline std::ostream& operator<<(std::ostream& os, const EnumName& e)                                  \
+    {                                                                                                     \
+        switch(e)                                                                                         \
+        {                                                                                                 \
+            BOOST_PP_SEQ_FOR_EACH(RTTR_ENUM_CASE_SINGLE, EnumName, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)) \
+        }                                                                                                 \
+        return os;                                                                                        \
     }
-    return os;
-}
-inline std::ostream& operator<<(std::ostream& os, const RoadDir& dir)
-{
-    switch(dir)
-    {
-        RTTR_CASE_OUT(RoadDir, East);
-        RTTR_CASE_OUT(RoadDir, SouthEast);
-        RTTR_CASE_OUT(RoadDir, SouthWest);
-    }
-    return os;
-}
-inline std::ostream& operator<<(std::ostream& os, const PointRoad& road)
-{
-    switch(road)
-    {
-        RTTR_CASE_OUT(PointRoad, None);
-        RTTR_CASE_OUT(PointRoad, Normal);
-        RTTR_CASE_OUT(PointRoad, Donkey);
-        RTTR_CASE_OUT(PointRoad, Boat);
-    }
-    return os;
-}
-inline std::ostream& operator<<(std::ostream& os, const BorderStonePos& road)
-{
-    switch(road)
-    {
-        RTTR_CASE_OUT(BorderStonePos, OnPoint);
-        RTTR_CASE_OUT(BorderStonePos, HalfEast);
-        RTTR_CASE_OUT(BorderStonePos, HalfSouthEast);
-        RTTR_CASE_OUT(BorderStonePos, HalfSouthWest);
-    }
-    return os;
-}
+
+RTTR_ENUM_OUTPUT(Direction, WEST, NORTHWEST, NORTHEAST, EAST, SOUTHEAST, SOUTHWEST)
+RTTR_ENUM_OUTPUT(RoadDir, East, SouthEast, SouthWest)
+RTTR_ENUM_OUTPUT(PointRoad, None, Normal, Donkey, Boat)
+RTTR_ENUM_OUTPUT(BorderStonePos, OnPoint, HalfEast, HalfSouthEast, HalfSouthWest)
+RTTR_ENUM_OUTPUT(GameSpeed, VerySlow, Slow, Normal, Fast, VeryFast)
+RTTR_ENUM_OUTPUT(GameObjective, None, Conquer3_4, TotalDomination, EconomyMode)
+RTTR_ENUM_OUTPUT(StartWares, VLow, Low, Normal, ALot)
+RTTR_ENUM_OUTPUT(Exploration, Disabled, Classic, FogOfWar, FogOfWarExplored)
+RTTR_ENUM_OUTPUT(MapType, OldMap, Savegame)
+
+#undef RTTR_ENUM_CASE_SINGLE
+#undef RTTR_ENUM_OUTPUT
+
 // LCOV_EXCL_STOP
 
 #undef RTTR_CASE_OUT

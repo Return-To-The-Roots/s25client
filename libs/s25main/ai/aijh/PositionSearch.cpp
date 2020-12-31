@@ -79,13 +79,13 @@ AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIPlayerJH& player
         // no more nodes to test
         // fail iff not reached minimum
         if(resultValue < minimum)
-            return SEARCH_FAILED;
+            return PositionSearchState::Failed;
         else
-            return SEARCH_SUCCESSFUL;
+            return PositionSearchState::Successfull;
     } else if(resultValue >= minimum && !searchGlobalOptimum)
     {
         // reached minimal satisfying value and we were not looking for the best
-        return SEARCH_SUCCESSFUL;
+        return PositionSearchState::Successfull;
     } else
-        return SEARCH_IN_PROGRESS;
+        return PositionSearchState::InProgress;
 }

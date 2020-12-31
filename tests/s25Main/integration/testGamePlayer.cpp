@@ -40,7 +40,7 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
       dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBldPos, 0, NAT_BABYLONIANS));
     auto* sld = new nofPassiveSoldier(milBldPos, 0, milBld, milBld, 0);
     world.AddFigure(milBldPos, sld);
-    milBld->GotWorker(JOB_PRIVATE, sld);
+    milBld->GotWorker(Job::Private, sld);
     sld->WalkToGoal();
     world.DestroyNO(world.GetPlayer(0).GetHQPos());
     BOOST_REQUIRE(!world.GetPlayer(0).IsDefeated());

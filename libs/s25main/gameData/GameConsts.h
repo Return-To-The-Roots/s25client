@@ -17,22 +17,23 @@
 
 #pragma once
 
-#include <array>
+#include "helpers/EnumArray.h"
+#include "helpers/make_array.h"
+#include "gameTypes/GameSettingTypes.h"
 #include <limits>
 
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
-const std::array<unsigned, 6> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30, 1}};
+constexpr helpers::EnumArray<unsigned, GameSpeed> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30}};
 
 /// Reichweite der Bergarbeiter
-const unsigned MINER_RADIUS = 2;
+constexpr unsigned MINER_RADIUS = 2;
 
 /// Konstante für die Pfadrichtung bei einer Schiffsverbindung
-const unsigned char SHIP_DIR = 100;
-const unsigned char INVALID_DIR = 0xFF;
-const unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max();
+constexpr unsigned char SHIP_DIR = 100;
+constexpr unsigned char INVALID_DIR = 0xFF;
+constexpr unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max();
 
 /// Number of "classical" objectives in a friendly match
-const unsigned NUM_OBJECTIVES = 4;
+constexpr unsigned NUM_OBJECTIVES = 4;
 /// tournament modes
-const unsigned NUM_TOURNAMENT_MODESS = 5;
-const std::array<unsigned, NUM_TOURNAMENT_MODESS> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = {30, 60, 90, 120, 240};
+constexpr auto SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = helpers::make_array(30, 60, 90, 120, 240);

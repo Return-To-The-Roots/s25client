@@ -17,8 +17,8 @@
 
 #pragma once
 
-enum MapType
+enum class MapType
 {
-    MAPTYPE_OLDMAP = 0,
-    MAPTYPE_SAVEGAME
+    OldMap,
+    Savegame
 };

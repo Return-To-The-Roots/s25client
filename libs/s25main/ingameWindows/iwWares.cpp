@@ -25,6 +25,7 @@
 #include "controls/ctrlText.h"
 #include "iwHelp.h"
 #include "ogl/FontStyle.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
@@ -33,8 +34,7 @@ constexpr unsigned ID_pageOffset = 100;
 }
 
 static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPos, const Extent btSize,
-                       const unsigned idOffset, const std::string& name, glArchivItem_Bitmap* img,
-                       const bool allow_outhousing)
+                       const unsigned idOffset, const std::string& name, ITexture* img, const bool allow_outhousing)
 {
     // Background image, only a button when outhousing is allowed
     if(allow_outhousing)
@@ -81,22 +81,27 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
 
     // Zuordnungs-IDs
     constexpr std::array<GoodType, 31> WARE_DISPLAY_ORDER{
-      GD_WOOD,    GD_BOARDS,  GD_STONES,     GD_HAM,    GD_GRAIN,    GD_FLOUR,
-      GD_FISH,    GD_MEAT,    GD_BREAD,      GD_WATER,  GD_BEER,     GD_COAL,
-      GD_IRONORE, GD_GOLD,    GD_IRON,       GD_COINS,  GD_TONGS,    GD_AXE,
-      GD_SAW,     GD_PICKAXE, GD_HAMMER,     GD_SHOVEL, GD_CRUCIBLE, GD_RODANDLINE,
-      GD_SCYTHE,  GD_CLEAVER, GD_ROLLINGPIN, GD_BOW,    GD_SWORD,    GD_SHIELDROMANS /* nation specific */,
-      GD_BOAT};
+      GoodType::Wood,    GoodType::Boards,   GoodType::Stones,
+      GoodType::Ham,     GoodType::Grain,    GoodType::Flour,
+      GoodType::Fish,    GoodType::Meat,     GoodType::Bread,
+      GoodType::Water,   GoodType::Beer,     GoodType::Coal,
+      GoodType::IronOre, GoodType::Gold,     GoodType::Iron,
+      GoodType::Coins,   GoodType::Tongs,    GoodType::Axe,
+      GoodType::Saw,     GoodType::PickAxe,  GoodType::Hammer,
+      GoodType::Shovel,  GoodType::Crucible, GoodType::RodAndLine,
+      GoodType::Scythe,  GoodType::Cleaver,  GoodType::Rollingpin,
+      GoodType::Bow,     GoodType::Sword,    GoodType::ShieldRomans /* nation specific */,
+      GoodType::Boat};
 
     constexpr std::array<Job, 31> JOB_DISPLAY_ORDER{
-      JOB_HELPER,      JOB_BUILDER,     JOB_PLANER,     JOB_WOODCUTTER,
-      JOB_FORESTER,    JOB_STONEMASON,  JOB_FISHER,     JOB_HUNTER,
-      JOB_CARPENTER,   JOB_FARMER,      JOB_PIGBREEDER, JOB_DONKEYBREEDER,
-      JOB_MILLER,      JOB_BAKER,       JOB_BUTCHER,    JOB_BREWER,
-      JOB_MINER,       JOB_IRONFOUNDER, JOB_ARMORER,    JOB_MINTER,
-      JOB_METALWORKER, JOB_SHIPWRIGHT,  JOB_GEOLOGIST,  JOB_SCOUT,
-      JOB_PACKDONKEY,  JOB_CHARBURNER,  JOB_PRIVATE,    JOB_PRIVATEFIRSTCLASS,
-      JOB_SERGEANT,    JOB_OFFICER,     JOB_GENERAL};
+      Job::Helper,      Job::Builder,     Job::Planer,     Job::Woodcutter,
+      Job::Forester,    Job::Stonemason,  Job::Fisher,     Job::Hunter,
+      Job::Carpenter,   Job::Farmer,      Job::PigBreeder, Job::DonkeyBreeder,
+      Job::Miller,      Job::Baker,       Job::Butcher,    Job::Brewer,
+      Job::Miner,       Job::IronFounder, Job::Armorer,    Job::Minter,
+      Job::Metalworker, Job::Shipwright,  Job::Geologist,  Job::Scout,
+      Job::PackDonkey,  Job::CharBurner,  Job::Private,    Job::PrivateFirstClass,
+      Job::Sergeant,    Job::Officer,     Job::General};
 
     // Warenseite hinzufügen
     ctrlGroup& waresPage = AddPage();
@@ -125,16 +130,15 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
         {
             const GoodType rawWare = WARE_DISPLAY_ORDER[idx];
             const GoodType ware = convertShieldToNation(rawWare, player.nation);
-            addElement(waresPage, font, btPos, btSize, rawWare, _(WARE_NAMES[rawWare]),
-                       LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + ware), allow_outhousing);
+            addElement(waresPage, font, btPos, btSize, rttr::enum_cast(rawWare), _(WARE_NAMES[rawWare]),
+                       LOADER.GetWareTex(ware), allow_outhousing);
         }
 
         if(idx < JOB_DISPLAY_ORDER.size())
         {
             const Job job = JOB_DISPLAY_ORDER[idx];
-            glArchivItem_Bitmap* figImage =
-              (job == JOB_CHARBURNER) ? LOADER.GetImageN("io_new", 5) : LOADER.GetMapImageN(2300 + job);
-            addElement(figuresPage, font, btPos, btSize, job, _(JOB_NAMES[job]), figImage, allow_outhousing);
+            addElement(figuresPage, font, btPos, btSize, rttr::enum_cast(job), _(JOB_NAMES[job]), LOADER.GetJobTex(job),
+                       allow_outhousing);
         }
     }
 
@@ -184,7 +188,8 @@ void iwWares::Msg_PaintBefore()
             auto* text = group->GetCtrl<ctrlText>(600 + i);
             if(text)
             {
-                const unsigned amount = (curPage_ == warePageID) ? inventory.goods[i] : inventory.people[i];
+                const unsigned amount =
+                  (curPage_ == warePageID) ? inventory[static_cast<GoodType>(i)] : inventory[static_cast<Job>(i)];
                 text->SetText(std::to_string(amount));
                 text->SetTextColor((amount == 0) ? COLOR_RED : COLOR_YELLOW);
             }

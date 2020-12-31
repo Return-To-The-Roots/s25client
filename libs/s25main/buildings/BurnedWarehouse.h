@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "helpers/EnumArray.h"
 #include "nodeObjs/noCoordBase.h"
 #include "gameTypes/JobTypes.h"
 #include <array>
@@ -25,15 +26,8 @@ class SerializedGameData;
 /// Unsichtbares Objekt, welches die fliehenden Leute aus einem ehemaligen abgebrannten Lagerhaus/HQ spuckt
 class BurnedWarehouse : public noCoordBase
 {
-    /// Spieler des ehemaligen Lagerhauses
-    const unsigned char player;
-    /// Aktuelle Rausgeh-Phase
-    unsigned go_out_phase;
-    // Leute, die noch rauskommen müssen
-    std::array<unsigned, NUM_JOB_TYPES> people;
-
 public:
-    using PeopleArray = std::array<unsigned, NUM_JOB_TYPES>;
+    using PeopleArray = helpers::EnumArray<unsigned, Job>;
 
     BurnedWarehouse(MapPoint pos, unsigned char player, const PeopleArray& people);
     BurnedWarehouse(SerializedGameData& sgd, unsigned obj_id);
@@ -55,4 +49,12 @@ public:
     void HandleEvent(unsigned id) override;
 
     void Draw(DrawPoint /*drawPt*/) override {}
+
+private:
+    /// Spieler des ehemaligen Lagerhauses
+    const unsigned char player;
+    /// Aktuelle Rausgeh-Phase
+    unsigned go_out_phase;
+    // Leute, die noch rauskommen müssen
+    PeopleArray people;
 };

@@ -33,7 +33,7 @@
 #include "s25util/colors.h"
 
 nofShipWright::nofShipWright(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_SHIPWRIGHT, pos, player, workplace), curShipBuildPos(MapPoint::Invalid())
+    : nofWorkman(Job::Shipwright, pos, player, workplace), curShipBuildPos(MapPoint::Invalid())
 {
     RTTR_Assert(!workplace || dynamic_cast<nobShipYard*>(workplace));
 }

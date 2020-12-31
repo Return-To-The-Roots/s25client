@@ -30,7 +30,7 @@ bool HasFigure::operator()(const nobBaseWarehouse& wh) const
 {
     if(wh.GetNumRealFigures(type) > 0)
         return true;
-    else if(recruitingAllowed && type != JOB_PACKDONKEY)
+    else if(recruitingAllowed && type != Job::PackDonkey)
         return wh.CanRecruit(type);
     else
         return false;
@@ -58,8 +58,8 @@ bool AcceptsFigure::operator()(const nobBaseWarehouse& wh) const
 {
     // Boat carriers are normal figures in the wh
     Job job = type;
-    if(job == JOB_BOATCARRIER)
-        job = JOB_HELPER;
+    if(job == Job::BoatCarrier)
+        job = Job::Helper;
 
     return !wh.GetInventorySetting(job).IsSet(EInventorySetting::STOP);
 }
@@ -76,8 +76,8 @@ bool CollectsFigure::operator()(const nobBaseWarehouse& wh) const
 {
     // Einlagern muss gewollt sein
     Job job = type;
-    if(job == JOB_BOATCARRIER)
-        job = JOB_HELPER;
+    if(job == Job::BoatCarrier)
+        job = Job::Helper;
     return (wh.GetInventorySetting(job).IsSet(EInventorySetting::COLLECT));
 }
 
@@ -100,8 +100,8 @@ bool AcceptsWareButNoSend::operator()(const nobBaseWarehouse& wh) const
 bool AcceptsFigureButNoSend::operator()(const nobBaseWarehouse& wh) const
 {
     Job job = type;
-    if(job == JOB_BOATCARRIER)
-        job = JOB_HELPER;
+    if(job == Job::BoatCarrier)
+        job = Job::Helper;
 
     return AcceptsFigure::operator()(wh) && !wh.GetInventorySetting(job).IsSet(EInventorySetting::SEND);
 }

@@ -124,7 +124,7 @@ void nobUsual::DestroyBuilding()
     for(unsigned i = 0; i < BLD_WORK_DESC[bldType_].waresNeeded.size(); ++i)
     {
         const GoodType ware = BLD_WORK_DESC[bldType_].waresNeeded[i];
-        RTTR_Assert(ware != GD_NOTHING);
+        RTTR_Assert(ware != GoodType::Nothing);
         gwg->GetPlayer(player).DecreaseInventoryWare(ware, numWares[i]);
     }
 }
@@ -376,7 +376,7 @@ bool nobUsual::WaresAvailable()
         // Any ware not there -> false, else true
         for(unsigned char i = 0; i < workDesc.waresNeeded.size(); ++i)
         {
-            RTTR_Assert(workDesc.waresNeeded[i] != GD_NOTHING);
+            RTTR_Assert(workDesc.waresNeeded[i] != GoodType::Nothing);
             if(numWares[i] == 0)
                 return false;
         }
@@ -386,7 +386,7 @@ bool nobUsual::WaresAvailable()
         // Any ware there -> true else false
         for(unsigned char i = 0; i < workDesc.waresNeeded.size(); ++i)
         {
-            RTTR_Assert(workDesc.waresNeeded[i] != GD_NOTHING);
+            RTTR_Assert(workDesc.waresNeeded[i] != GoodType::Nothing);
             if(numWares[i] != 0)
                 return true;
         }

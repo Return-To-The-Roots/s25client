@@ -196,7 +196,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(player.GetShipsToHarbor(harbor), 1u);
 
     // No available scouts
-    BOOST_REQUIRE_EQUAL(harbor.GetNumRealFigures(JOB_SCOUT), 0u);
+    BOOST_REQUIRE_EQUAL(harbor.GetNumRealFigures(Job::Scout), 0u);
     // Stop it
     this->StartStopExplorationExpedition(hbPos, true);
     BOOST_REQUIRE(harbor.IsExplorationExpeditionActive());
@@ -205,7 +205,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     this->StartStopExplorationExpedition(hbPos, false);
     BOOST_REQUIRE(!harbor.IsExplorationExpeditionActive());
     // Scouts available again
-    BOOST_REQUIRE_EQUAL(harbor.GetNumRealFigures(JOB_SCOUT), 3u);
+    BOOST_REQUIRE_EQUAL(harbor.GetNumRealFigures(Job::Scout), 3u);
 
     // Let ship arrive
     RTTR_EXEC_TILL(180, ship->IsIdling());
@@ -280,7 +280,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
     const unsigned hbId = world.GetHarborPointID(hbPos);
-    unsigned numScouts = player.GetInventory().people[JOB_SCOUT]; //-V807
+    unsigned numScouts = player.GetInventory().people[Job::Scout]; //-V807
     BOOST_REQUIRE(ship->IsIdling());
 
     // We want the ship to only scout unexplored harbors, so set all but one to visible
@@ -297,8 +297,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     // Start it
     RTTR_EXEC_TILL(600, ship->IsOnExplorationExpedition() && ship->IsMoving());
     // Incorporate recruitment
-    BOOST_REQUIRE_GE(player.GetInventory().people[JOB_SCOUT], numScouts);
-    numScouts = player.GetInventory().people[JOB_SCOUT];
+    BOOST_REQUIRE_GE(player.GetInventory().people[Job::Scout], numScouts);
+    numScouts = player.GetInventory().people[Job::Scout];
 
     BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), hbId);
     BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), targetHbId);
@@ -320,10 +320,10 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     BOOST_REQUIRE(!ship->IsLost());
     BOOST_REQUIRE(ship->IsMoving());
     RTTR_EXEC_TILL(1200, ship->IsIdling());
-    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_SCOUT], numScouts);
-    BOOST_REQUIRE_EQUAL(newHarbor->GetNumRealFigures(JOB_SCOUT), newHarbor->GetNumVisualFigures(JOB_SCOUT)); //-V522
-    BOOST_REQUIRE_EQUAL(newHarbor->GetNumRealFigures(JOB_SCOUT)
-                          + world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos())->GetNumRealFigures(JOB_SCOUT),
+    BOOST_REQUIRE_EQUAL(player.GetInventory().people[Job::Scout], numScouts);
+    BOOST_REQUIRE_EQUAL(newHarbor->GetNumRealFigures(Job::Scout), newHarbor->GetNumVisualFigures(Job::Scout)); //-V522
+    BOOST_REQUIRE_EQUAL(newHarbor->GetNumRealFigures(Job::Scout)
+                          + world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos())->GetNumRealFigures(Job::Scout),
                         numScouts);
 }
 
@@ -350,7 +350,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(player.GetShipsToHarbor(harbor), 1u);
 
     // No available boards
-    BOOST_REQUIRE_EQUAL(harbor.GetNumRealWares(GD_BOARDS), 0u);
+    BOOST_REQUIRE_EQUAL(harbor.GetNumRealWares(GoodType::Boards), 0u);
     // Stop it
     this->StartStopExpedition(hbPos, true);
     BOOST_REQUIRE(harbor.IsExpeditionActive());
@@ -359,7 +359,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     this->StartStopExpedition(hbPos, false);
     BOOST_REQUIRE(!harbor.IsExpeditionActive());
     // Boards available again
-    BOOST_REQUIRE_GT(harbor.GetNumRealWares(GD_BOARDS), 0u);
+    BOOST_REQUIRE_GT(harbor.GetNumRealWares(GoodType::Boards), 0u);
 
     // Let ship arrive
     RTTR_EXEC_TILL(180, ship->IsIdling());
@@ -460,7 +460,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     BOOST_REQUIRE_GT(world.CalcHarborDistance(2, targetHbId), 600u);
     // Add some scouts
     Inventory newScouts;
-    newScouts.people[JOB_SCOUT] = 20;
+    newScouts.people[Job::Scout] = 20;
     harbor.AddGoods(newScouts, true);
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     for(unsigned i = 1; i <= 8; i++)
@@ -496,8 +496,8 @@ public:
           BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
         BOOST_REQUIRE(harbor);
         Inventory inv;
-        inv.Add(GD_WOOD, 10);
-        inv.Add(JOB_WOODCUTTER, 10);
+        inv.Add(GoodType::Wood, 10);
+        inv.Add(Job::Woodcutter, 10);
         harbor->AddGoods(inv, true);
         return *harbor;
     }
@@ -548,8 +548,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     const MapPoint hb3Pos = world.GetHarborPoint(3);
 
     // Order goods
-    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
 
     // Destroy home before load -> Abort after ship reaches harbor
     RTTR_EXEC_TILL(90, ship.IsMoving());
@@ -578,8 +578,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     // Destroy destination during load -> Unload again
     createHarbor(2);
     // Order goods
-    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
     RTTR_EXEC_TILL(300, ship.IsLoading());
     destroyBldAndFire(world, hb2Pos);
     BOOST_REQUIRE(ship.IsUnloading());
@@ -588,8 +588,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     // Destroy destination during driving -> Go back and unload
     createHarbor(2);
     // Order goods
-    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
     RTTR_EXEC_TILL(300, ship.IsLoading());
     RTTR_EXEC_TILL(200, ship.IsMoving());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
@@ -603,8 +603,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     // Destroy destination during unloading -> Go back and unload
     createHarbor(2);
     // Order goods
-    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
     RTTR_EXEC_TILL(700, ship.IsUnloading());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
     BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);
@@ -618,8 +618,8 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     createHarbor(2);
     createHarbor(3);
     // Order goods
-    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
-    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, GoodType::Wood, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, Job::Woodcutter, EInventorySetting::COLLECT);
     RTTR_EXEC_TILL(700, ship.IsUnloading());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
     BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);

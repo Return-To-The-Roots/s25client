@@ -28,7 +28,7 @@
 #include "nodeObjs/noTree.h"
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_FORESTER, pos, player, workplace)
+    : nofFarmhand(Job::Forester, pos, player, workplace)
 {}
 
 nofForester::nofForester(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}

@@ -45,6 +45,17 @@ struct EnumArray
     iterator end() noexcept { return elems + size(); }
     constexpr const_iterator end() const noexcept { return elems + size(); }
 
+    constexpr bool operator==(const EnumArray& rhs)
+    {
+        for(unsigned i = 0; i < size(); ++i)
+        {
+            if(elems[i] != rhs.elems[i])
+                return false;
+        }
+        return true;
+    }
+    constexpr bool operator!=(const EnumArray& rhs) { return !(*this == rhs); }
+
     T_Elements elems[size()];
 };
 

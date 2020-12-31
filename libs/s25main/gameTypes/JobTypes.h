@@ -17,54 +17,56 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
 #include <s25util/warningSuppression.h>
 #include <array>
+#include <cstdint>
 
-enum Job : unsigned char
+enum class Job : uint8_t
 {
-    JOB_HELPER,            // 0
-    JOB_WOODCUTTER,        // 1
-    JOB_FISHER,            // 2
-    JOB_FORESTER,          // 3
-    JOB_CARPENTER,         // 4
-    JOB_STONEMASON,        // 5
-    JOB_HUNTER,            // 6
-    JOB_FARMER,            // 7
-    JOB_MILLER,            // 8
-    JOB_BAKER,             // 9
-    JOB_BUTCHER,           // 10
-    JOB_MINER,             // 11
-    JOB_BREWER,            // 12
-    JOB_PIGBREEDER,        // 13
-    JOB_DONKEYBREEDER,     // 14
-    JOB_IRONFOUNDER,       // 15
-    JOB_MINTER,            // 16
-    JOB_METALWORKER,       // 17
-    JOB_ARMORER,           // 18
-    JOB_BUILDER,           // 19
-    JOB_PLANER,            // 20
-    JOB_PRIVATE,           // 21
-    JOB_PRIVATEFIRSTCLASS, // 22
-    JOB_SERGEANT,          // 23
-    JOB_OFFICER,           // 24
-    JOB_GENERAL,           // 25
-    JOB_GEOLOGIST,         // 26
-    JOB_SHIPWRIGHT,        // 27
-    JOB_SCOUT,             // 28
-    JOB_PACKDONKEY,        // 29
-    JOB_BOATCARRIER,       // 30
-    JOB_CHARBURNER         // 31
+    Helper,            // 0
+    Woodcutter,        // 1
+    Fisher,            // 2
+    Forester,          // 3
+    Carpenter,         // 4
+    Stonemason,        // 5
+    Hunter,            // 6
+    Farmer,            // 7
+    Miller,            // 8
+    Baker,             // 9
+    Butcher,           // 10
+    Miner,             // 11
+    Brewer,            // 12
+    PigBreeder,        // 13
+    DonkeyBreeder,     // 14
+    IronFounder,       // 15
+    Minter,            // 16
+    Metalworker,       // 17
+    Armorer,           // 18
+    Builder,           // 19
+    Planer,            // 20
+    Private,           // 21
+    PrivateFirstClass, // 22
+    Sergeant,          // 23
+    Officer,           // 24
+    General,           // 25
+    Geologist,         // 26
+    Shipwright,        // 27
+    Scout,             // 28
+    PackDonkey,        // 29
+    BoatCarrier,       // 30
+    CharBurner         // 31
 };
 
 constexpr auto maxEnumValue(Job)
 {
-    return JOB_CHARBURNER;
+    return Job::CharBurner;
 }
-/// Number of job types
-constexpr unsigned NUM_JOB_TYPES = helpers::NumEnumValues_v<Job>;
 
 constexpr unsigned NUM_SOLDIER_RANKS = 5;
 /// Job types of soldiers, weak ones first
 static const std::array<Job, NUM_SOLDIER_RANKS> SUPPRESS_UNUSED SOLDIER_JOBS = {
-  {JOB_PRIVATE, JOB_PRIVATEFIRSTCLASS, JOB_SERGEANT, JOB_OFFICER, JOB_GENERAL}};
+  {Job::Private, Job::PrivateFirstClass, Job::Sergeant, Job::Officer, Job::General}};
+constexpr unsigned getSoldierRank(Job soldierJob)
+{
+    return static_cast<uint8_t>(soldierJob) - static_cast<uint8_t>(Job::Private);
+}

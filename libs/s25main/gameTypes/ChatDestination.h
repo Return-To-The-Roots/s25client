@@ -18,10 +18,15 @@
 #pragma once
 
 // Targets for ingame chat
-enum ChatDestination
+enum class ChatDestination
 {
-    CD_SYSTEM = 0,
-    CD_ALL,
-    CD_ALLIES,
-    CD_ENEMIES
+    System,
+    All,
+    Allies,
+    Enemies
 };
+
+constexpr auto maxEnumValue(ChatDestination)
+{
+    return ChatDestination::Enemies;
+}

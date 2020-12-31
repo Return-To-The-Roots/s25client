@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "enum_cast.hpp"
 #include "nofWorkman.h"
 
 class nobBaseWarehouse;
@@ -30,7 +31,7 @@ protected:
     /// Zeichnet ihn beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override { return CARRY_ID_CARRIER_OFFSET + GD_WATER; }
+    unsigned short GetCarryID() const override { return CARRY_ID_CARRIER_OFFSET + rttr::enum_cast(GoodType::Water); }
     /// Der Arbeiter erzeugt eine Ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
 

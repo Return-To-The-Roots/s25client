@@ -36,7 +36,7 @@
 #include "gameData/GameConsts.h"
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
-    : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal), signs(0), node_goal(0, 0)
+    : nofFlagWorker(Job::Geologist, pos, player, goal), signs(0), node_goal(0, 0)
 {
     std::fill(resAlreadyFound.begin(), resAlreadyFound.end(), false);
 }
@@ -85,7 +85,7 @@ void nofGeologist::Draw(DrawPoint drawPt)
         case STATE_GOTOFLAG:
         {
             // normales Laufen zeichnen
-            DrawWalkingBobJobs(drawPt, JOB_GEOLOGIST);
+            DrawWalkingBobJobs(drawPt, Job::Geologist);
         }
         break;
         case STATE_GEOLOGIST_DIG:

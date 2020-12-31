@@ -27,10 +27,6 @@ public:
 
 class iwChat : public IngameWindow
 {
-private:
-    /// Chat-Destination auch merken, wenn das Fenster zugegangen ist
-    static unsigned char chat_dest;
-
 public:
     iwChat(Window* parent);
 

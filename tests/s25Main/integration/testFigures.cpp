@@ -33,24 +33,24 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     auto* wh = static_cast<nobBaseWarehouse*>(
       BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_ROMANS));
     Inventory inv;
-    inv.Add(JOB_HELPER, 1);
+    inv.Add(Job::Helper, 1);
     wh->AddGoods(inv, true);
-    const unsigned numHelpers = world.GetPlayer(curPlayer).GetInventory().people[JOB_HELPER]; //-V807
+    const unsigned numHelpers = world.GetPlayer(curPlayer).GetInventory().people[Job::Helper]; //-V807
     MapPoint whFlagPos = world.GetNeighbour(whPos, Direction::SOUTHEAST);
     // Build a road -> Requests a worker
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::WEST));
-    BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(JOB_HELPER), 0u);
+    BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(Job::Helper), 0u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
     // Destroy Road
     this->DestroyFlag(whFlagPos - MapPoint(2, 0));
-    BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(JOB_HELPER), 1u);
+    BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(Job::Helper), 1u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
 
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::WEST));
     const noFigure* fig = wh->GetLeavingFigures().front();
     // Destroy wh -> Worker released
     this->DestroyFlag(whFlagPos);
-    BOOST_REQUIRE_EQUAL(world.GetPlayer(curPlayer).GetInventory().people[JOB_HELPER], numHelpers);
+    BOOST_REQUIRE_EQUAL(world.GetPlayer(curPlayer).GetInventory().people[Job::Helper], numHelpers);
     BOOST_REQUIRE_EQUAL(fig->GetPos(), whPos);
     BOOST_REQUIRE(fig->IsWandering());
 
@@ -62,7 +62,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     fig = wh->GetLeavingFigures().front();
     // Destroy wh -> Worker released
     this->DestroyFlag(flagPos);
-    BOOST_REQUIRE_EQUAL(world.GetPlayer(curPlayer).GetInventory().people[JOB_HELPER], numHelpers);
+    BOOST_REQUIRE_EQUAL(world.GetPlayer(curPlayer).GetInventory().people[Job::Helper], numHelpers);
     BOOST_REQUIRE_EQUAL(fig->GetPos(), hqPos);
     BOOST_REQUIRE(fig->IsWandering());
 }
@@ -76,8 +76,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
     // Build a road
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(5, Direction::WEST));
     // Request people and wares
-    this->SetInventorySetting(whPos, GD_WOOD, EInventorySetting::COLLECT);
-    this->SetInventorySetting(whPos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    this->SetInventorySetting(whPos, GoodType::Wood, EInventorySetting::COLLECT);
+    this->SetInventorySetting(whPos, Job::Woodcutter, EInventorySetting::COLLECT);
     auto* flag = world.GetSpecObj<noFlag>(flagPos);
     RTTR_EXEC_TILL(200, flag->GetNumWares() > 0);
     // Destroy wh -> Cancel wares and figures

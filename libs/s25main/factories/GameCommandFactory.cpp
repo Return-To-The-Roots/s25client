@@ -91,7 +91,7 @@ bool GameCommandFactory::ChangeTools(const ToolSettings& data, const int8_t* ord
 
 bool GameCommandFactory::CallSpecialist(const MapPoint pt, Job job)
 {
-    RTTR_Assert(job == JOB_GEOLOGIST || job == JOB_SCOUT);
+    RTTR_Assert(job == Job::Geologist || job == Job::Scout);
     return AddGC(new gc::CallSpecialist(pt, job));
 }
 
@@ -120,19 +120,10 @@ bool GameCommandFactory::NotifyAlliesOfLocation(const MapPoint pt)
     return AddGC(new gc::NotifyAlliesOfLocation(pt));
 }
 
-bool GameCommandFactory::SetInventorySetting(const MapPoint pt, bool isJob, unsigned char type, InventorySetting state)
+bool GameCommandFactory::SetInventorySetting(const MapPoint pt, const boost::variant<GoodType, Job>& what,
+                                             InventorySetting state)
 {
-    return AddGC(new gc::SetInventorySetting(pt, isJob, type, state));
-}
-
-bool GameCommandFactory::SetInventorySetting(const MapPoint pt, GoodType good, InventorySetting state)
-{
-    return SetInventorySetting(pt, false, good, state);
-}
-
-bool GameCommandFactory::SetInventorySetting(const MapPoint pt, Job job, InventorySetting state)
-{
-    return SetInventorySetting(pt, true, job, state);
+    return AddGC(new gc::SetInventorySetting(pt, what, state));
 }
 
 bool GameCommandFactory::SetAllInventorySettings(const MapPoint pt, bool isJob,

@@ -66,7 +66,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
         if(sgd.GetGameDataVersion() < 5)
         {
             const auto iWare = sgd.PopUnsignedChar();
-            if(iWare == GD_NOTHING)
+            if(iWare == rttr::enum_cast(GoodType::Nothing))
                 ware = boost::none;
             else
                 ware = GoodType(iWare);
