@@ -137,11 +137,11 @@ bool noFigure::IsSoldier() const
 {
     switch(job_)
     {
-        case JOB_PRIVATE:
-        case JOB_PRIVATEFIRSTCLASS:
-        case JOB_SERGEANT:
-        case JOB_OFFICER:
-        case JOB_GENERAL: return true;
+        case Job::Private:
+        case Job::PrivateFirstClass:
+        case Job::Sergeant:
+        case Job::Officer:
+        case Job::General: return true;
         default: break;
     }
     return false;
@@ -820,7 +820,7 @@ void noFigure::DrawWalking(DrawPoint drawPt)
     // Figurentyp unterscheiden
     switch(job_)
     {
-        case JOB_PACKDONKEY:
+        case Job::PackDonkey:
         {
             const unsigned ani_step = CalcWalkAnimationFrame();
             drawPt = InterpolateWalkDrawPos(drawPt);
@@ -831,7 +831,7 @@ void noFigure::DrawWalking(DrawPoint drawPt)
             LOADER.GetMapImageN(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
         }
         break;
-        case JOB_CHARBURNER: DrawWalking(drawPt, "charburner_bobs", 53); break;
+        case Job::CharBurner: DrawWalking(drawPt, "charburner_bobs", 53); break;
         default: DrawWalkingBobJobs(drawPt, job_); break;
     }
 }
@@ -854,10 +854,10 @@ void noFigure::Die()
 void noFigure::RemoveFromInventory()
 {
     // Wars ein Bootmann? Dann Boot und Träger abziehen
-    if(job_ == JOB_BOATCARRIER)
+    if(job_ == Job::BoatCarrier)
     {
-        gwg->GetPlayer(player).DecreaseInventoryJob(JOB_HELPER, 1);
-        gwg->GetPlayer(player).DecreaseInventoryWare(GD_BOAT, 1);
+        gwg->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
+        gwg->GetPlayer(player).DecreaseInventoryWare(GoodType::Boat, 1);
     } else
         gwg->GetPlayer(player).DecreaseInventoryJob(job_, 1);
 }

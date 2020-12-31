@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "iwTransport.h"
-
 #include "DrawPoint.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -26,6 +25,7 @@
 #include "iwHelp.h"
 #include "network/GameClient.h"
 #include "world/GameWorldViewer.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/const_gui_ids.h"
 
 iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
@@ -49,20 +49,21 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     // Buttons der einzelnen Waren anlegen
     ctrlOptionGroup* group = AddOptionGroup(6, ctrlOptionGroup::ILLUMINATE);
 
-    buttonData = {{{LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_COINS), WARE_NAMES[GD_COINS]},
+    auto getGoodTex = [](GoodType good) { return LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + rttr::enum_cast(good)); };
+    buttonData = {{{getGoodTex(GoodType::Coins), WARE_NAMES[GoodType::Coins]},
                    {LOADER.GetTextureN("io", 111), gettext_noop("Weapons")},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_BEER), WARE_NAMES[GD_BEER]},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_IRON), WARE_NAMES[GD_IRON]},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_GOLD), WARE_NAMES[GD_GOLD]},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_IRONORE), WARE_NAMES[GD_IRONORE]},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_COAL), WARE_NAMES[GD_COAL]},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_BOARDS), WARE_NAMES[GD_BOARDS]},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_STONES), WARE_NAMES[GD_STONES]},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_WOOD), WARE_NAMES[GD_WOOD]},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_WATER), WARE_NAMES[GD_WATER]},
+                   {getGoodTex(GoodType::Beer), WARE_NAMES[GoodType::Beer]},
+                   {getGoodTex(GoodType::Iron), WARE_NAMES[GoodType::Iron]},
+                   {getGoodTex(GoodType::Gold), WARE_NAMES[GoodType::Gold]},
+                   {getGoodTex(GoodType::IronOre), WARE_NAMES[GoodType::IronOre]},
+                   {getGoodTex(GoodType::Coal), WARE_NAMES[GoodType::Coal]},
+                   {getGoodTex(GoodType::Boards), WARE_NAMES[GoodType::Boards]},
+                   {getGoodTex(GoodType::Stones), WARE_NAMES[GoodType::Stones]},
+                   {getGoodTex(GoodType::Wood), WARE_NAMES[GoodType::Wood]},
+                   {getGoodTex(GoodType::Water), WARE_NAMES[GoodType::Water]},
                    {LOADER.GetTextureN("io", 80), gettext_noop("Food")},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_HAMMER), gettext_noop("Tools")},
-                   {LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + GD_BOAT), WARE_NAMES[GD_BOAT]}}};
+                   {getGoodTex(GoodType::Hammer), gettext_noop("Tools")},
+                   {getGoodTex(GoodType::Boat), WARE_NAMES[GoodType::Boat]}}};
     // Positionen der einzelnen Buttons
     const std::array<DrawPoint, numButtons> BUTTON_POS = {{{20, 25},
                                                            {52, 42},

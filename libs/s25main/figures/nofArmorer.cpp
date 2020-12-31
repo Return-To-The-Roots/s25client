@@ -31,7 +31,7 @@
 #include "gameData/ShieldConsts.h"
 
 nofArmorer::nofArmorer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_ARMORER, pos, player, workplace), sword_shield(false)
+    : nofWorkman(Job::Armorer, pos, player, workplace), sword_shield(false)
 {}
 
 void nofArmorer::Serialize_nofArmorer(SerializedGameData& sgd) const
@@ -131,7 +131,7 @@ helpers::OptionalEnum<GoodType> nofArmorer::ProduceWare()
     sword_shield = !sword_shield;
 
     if(sword_shield)
-        return GD_SWORD;
+        return GoodType::Sword;
     else
         return SHIELD_TYPES[gwg->GetPlayer(player).nation];
 }

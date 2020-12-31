@@ -25,7 +25,7 @@
 #include "world/GameWorldGame.h"
 
 nofButcher::nofButcher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_BUTCHER, pos, player, workplace)
+    : nofWorkman(Job::Butcher, pos, player, workplace)
 {}
 
 nofButcher::nofButcher(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
@@ -50,5 +50,5 @@ void nofButcher::DrawWorking(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofButcher::ProduceWare()
 {
-    return GD_MEAT;
+    return GoodType::Meat;
 }

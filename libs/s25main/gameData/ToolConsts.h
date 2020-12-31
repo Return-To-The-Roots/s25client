@@ -22,16 +22,16 @@
 
 /// List of all tools (correspond to buttons at IO:140-163)
 const std::array<GoodType, NUM_TOOLS> SUPPRESS_UNUSED TOOLS = {
-  GD_TONGS,      // Zange
-  GD_HAMMER,     // Hammer
-  GD_AXE,        // Axt,
-  GD_SAW,        // Säge
-  GD_PICKAXE,    // Spitzhacke
-  GD_SHOVEL,     // Schaufel
-  GD_CRUCIBLE,   // Schmelztiegel
-  GD_RODANDLINE, // Angel
-  GD_SCYTHE,     // Sense
-  GD_CLEAVER,    // Beil
-  GD_ROLLINGPIN, // Nudelholz
-  GD_BOW         // Bogen
+  GoodType::Tongs,      // Zange
+  GoodType::Hammer,     // Hammer
+  GoodType::Axe,        // Axt,
+  GoodType::Saw,        // Säge
+  GoodType::PickAxe,    // Spitzhacke
+  GoodType::Shovel,     // Schaufel
+  GoodType::Crucible,   // Schmelztiegel
+  GoodType::RodAndLine, // Angel
+  GoodType::Scythe,     // Sense
+  GoodType::Cleaver,    // Beil
+  GoodType::Rollingpin, // Nudelholz
+  GoodType::Bow         // Bogen
 };

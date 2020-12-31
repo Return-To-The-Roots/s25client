@@ -133,8 +133,9 @@ void noFighting::Draw(DrawPoint drawPt)
             for(unsigned i : {0, 1})
             {
                 const GamePlayer& owner = gwg->GetPlayer(soldiers[i]->GetPlayer());
-                glSmartBitmap& bmp = LOADER.bob_jobs_cache[owner.nation][soldiers[i]->GetJobType()][(i == 0) ? 0 : 3]
-                                                          [GAMECLIENT.Interpolate(8, current_ev)];
+                glSmartBitmap& bmp = LOADER.getBobSprite(owner.nation, soldiers[i]->GetJobType(),
+                                                         (i == 0) ? Direction::WEST : Direction::EAST,
+                                                         GAMECLIENT.Interpolate(8, current_ev));
                 bmp.draw(drawPt, COLOR_WHITE, owner.color);
                 drawPt.x += 2 * x_diff;
             }

@@ -36,7 +36,7 @@ uint16_t Replay::GetVersion() const
 
 //////////////////////////////////////////////////////////////////////////
 
-Replay::Replay() : random_init(0), isRecording(false), lastGF_(0), last_gf_file_pos(0), mapType_(MAPTYPE_OLDMAP) {}
+Replay::Replay() : random_init(0), isRecording(false), lastGF_(0), last_gf_file_pos(0), mapType_(MapType::OldMap) {}
 
 Replay::~Replay()
 {
@@ -74,7 +74,7 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
 
     file.WriteUnsignedShort(static_cast<unsigned short>(mapType_));
     // For validation purposes
-    if(mapType_ == MAPTYPE_SAVEGAME)
+    if(mapType_ == MapType::Savegame)
         mapInfo.savegame->WriteFileHeader(file);
 
     // Position merken für End-GF
@@ -91,7 +91,7 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
     switch(mapType_)
     {
         default: return false;
-        case MAPTYPE_OLDMAP:
+        case MapType::OldMap:
             RTTR_Assert(!mapInfo.savegame);
             // Map-Daten
             file.WriteUnsignedInt(mapInfo.mapData.length);
@@ -102,7 +102,7 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
             if(!mapInfo.luaData.data.empty())
                 file.WriteRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
             break;
-        case MAPTYPE_SAVEGAME: mapInfo.savegame->Save(file, GetMapName()); break;
+        case MapType::Savegame: mapInfo.savegame->Save(file, GetMapName()); break;
     }
     // Alles sofort reinschreiben
     file.Flush();
@@ -127,7 +127,7 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath, bool loadSettin
             return false;
 
         mapType_ = static_cast<MapType>(file.ReadUnsignedShort());
-        if(mapType_ == MAPTYPE_SAVEGAME)
+        if(mapType_ == MapType::Savegame)
         {
             // Validate savegame
             Savegame save;
@@ -167,7 +167,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
         switch(mapType_)
         {
             default: return false;
-            case MAPTYPE_OLDMAP:
+            case MapType::OldMap:
                 // Map-Daten
                 mapInfo.mapData.length = file.ReadUnsignedInt();
                 mapInfo.mapData.data.resize(file.ReadUnsignedInt());
@@ -177,7 +177,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
                 if(!mapInfo.luaData.data.empty())
                     file.ReadRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
                 break;
-            case MAPTYPE_SAVEGAME:
+            case MapType::Savegame:
                 // Load savegame
                 mapInfo.savegame = std::make_unique<Savegame>();
                 if(!mapInfo.savegame->Load(file, SaveGameDataToLoad::All))
@@ -195,7 +195,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
     return true;
 }
 
-void Replay::AddChatCommand(unsigned gf, uint8_t player, uint8_t dest, const std::string& str)
+void Replay::AddChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str)
 {
     RTTR_Assert(IsRecording());
     if(!file.IsValid())
@@ -205,7 +205,7 @@ void Replay::AddChatCommand(unsigned gf, uint8_t player, uint8_t dest, const std
 
     file.WriteUnsignedChar(static_cast<uint8_t>(ReplayCommand::Chat));
     file.WriteUnsignedChar(player);
-    file.WriteUnsignedChar(dest);
+    file.WriteUnsignedChar(static_cast<uint8_t>(dest));
     file.WriteLongString(str);
 
     // Sofort rein damit

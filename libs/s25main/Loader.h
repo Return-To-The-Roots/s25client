@@ -132,6 +132,20 @@ public:
     glArchivItem_Bitmap* GetMapImageN(unsigned nr);
     /// Same as GetMapImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
     ITexture* GetMapTexN(unsigned nr);
+    /// Get the ware symbol texture
+    ITexture* GetWareTex(GoodType ware) { return GetMapTexN(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware)); }
+    /// Get the ware stack texture (lying on ground)
+    ITexture* GetWareStackTex(GoodType ware) { return GetMapTexN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware)); }
+    /// Get the ware texture when carried by donky
+    ITexture* GetWareDonkeyTex(GoodType ware)
+    {
+        return GetMapTexN(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+    }
+    /// Get job symbol texture
+    ITexture* GetJobTex(Job job)
+    {
+        return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexN(2300 + rttr::enum_cast(job));
+    }
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
 
     bool IsWinterGFX() const { return isWinterGFX_; }
@@ -172,21 +186,24 @@ public:
     /// Trees: Type, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
     /// Jobs: Nation, Job (last is fat carrier), Direction, AnimationFrame
-    helpers::MultiArray<FigAnimationSprites, NUM_NATIONS, NUM_JOB_TYPES + 1, 6> bob_jobs_cache;
+    helpers::MultiArray<FigAnimationSprites, NUM_NATIONS, helpers::NumEnumValues_v<Job> + 1,
+                        helpers::NumEnumValues_v<Direction>>
+      bob_jobs_cache;
     glSmartBitmap& getBobSprite(Nation nat, Job job, Direction dir, unsigned aniFrame)
     {
-        return bob_jobs_cache(nat, job, rttr::enum_cast(dir))[aniFrame];
+        return bob_jobs_cache(nat, rttr::enum_cast(job), rttr::enum_cast(dir))[aniFrame];
     }
     glSmartBitmap& getCarrierBobSprite(Nation nat, bool fat, Direction dir, unsigned aniFrame)
     {
-        return bob_jobs_cache(nat, fat ? NUM_JOB_TYPES : rttr::enum_cast(JOB_HELPER), rttr::enum_cast(dir))[aniFrame];
+        return bob_jobs_cache(nat, fat ? helpers::NumEnumValues_v<Job> : rttr::enum_cast(Job::Helper),
+                              rttr::enum_cast(dir))[aniFrame];
     }
     /// Stone: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
     /// Grainfield: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
     /// Carrier w/ ware: Ware, NormalOrFat, Direction, Animation
-    helpers::MultiArray<FigAnimationSprites, NUM_WARE_TYPES, 2, 6> carrier_cache;
+    helpers::MultiArray<FigAnimationSprites, helpers::NumEnumValues_v<GoodType>, 2, 6> carrier_cache;
     glSmartBitmap& getCarrierSprite(GoodType ware, bool fat, Direction dir, unsigned aniFrame)
     {
         return carrier_cache(ware, fat, rttr::enum_cast(dir))[aniFrame];

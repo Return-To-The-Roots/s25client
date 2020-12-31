@@ -119,7 +119,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
             unsigned boards = (percent * BUILDING_COSTS[nation][bldType_].boards) / 1000;
             unsigned stones = (percent * BUILDING_COSTS[nation][bldType_].stones) / 1000;
 
-            std::array<GoodType, 2> goods = {GD_BOARDS, GD_STONES};
+            std::array<GoodType, 2> goods = {GoodType::Boards, GoodType::Stones};
             bool which = false;
             while(flag->IsSpaceForWare() && (boards > 0 || stones > 0))
             {

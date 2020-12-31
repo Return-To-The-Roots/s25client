@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,51 +17,8 @@
 
 #pragma once
 
-enum class GameSpeed
-{
-    VerySlow,
-    Slow,
-    Normal,
-    Fast,
-    VeryFast
-};
-constexpr auto maxEnumValue(GameSpeed)
-{
-    return GameSpeed::VeryFast;
-}
+#include "helpers/EnumArray.h"
+#include "gameTypes/GoodTypes.h"
+#include <string>
 
-enum class GameObjective
-{
-    None,
-    Conquer3_4,
-    TotalDomination,
-    EconomyMode
-};
-constexpr auto maxEnumValue(GameObjective)
-{
-    return GameObjective::EconomyMode;
-}
-
-enum class StartWares
-{
-    VLow,
-    Low,
-    Normal,
-    ALot
-};
-constexpr auto maxEnumValue(StartWares)
-{
-    return StartWares::ALot;
-}
-
-enum class Exploration
-{
-    Disabled,
-    Classic,
-    FogOfWar,
-    FogOfWarExplored
-};
-constexpr auto maxEnumValue(Exploration)
-{
-    return Exploration::FogOfWarExplored;
-}
+extern const helpers::EnumArray<std::string, GoodType> WARE_NAMES;

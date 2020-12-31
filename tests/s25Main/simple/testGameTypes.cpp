@@ -73,21 +73,21 @@ BOOST_AUTO_TEST_CASE(ResourceValues)
 BOOST_AUTO_TEST_CASE(NationSpecificJobBobs)
 {
     // Helper is not nation specific
-    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_HELPER].getBobId(NAT_VIKINGS)
-               == JOB_SPRITE_CONSTS[JOB_HELPER].getBobId(NAT_AFRICANS));
-    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_HELPER].getBobId(NAT_VIKINGS)
-               == JOB_SPRITE_CONSTS[JOB_HELPER].getBobId(NAT_BABYLONIANS));
+    BOOST_TEST(JOB_SPRITE_CONSTS[Job::Helper].getBobId(NAT_VIKINGS)
+               == JOB_SPRITE_CONSTS[Job::Helper].getBobId(NAT_AFRICANS));
+    BOOST_TEST(JOB_SPRITE_CONSTS[Job::Helper].getBobId(NAT_VIKINGS)
+               == JOB_SPRITE_CONSTS[Job::Helper].getBobId(NAT_BABYLONIANS));
     // Soldiers are
-    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_PRIVATE].getBobId(NAT_VIKINGS)
-               != JOB_SPRITE_CONSTS[JOB_PRIVATE].getBobId(NAT_AFRICANS));
+    BOOST_TEST(JOB_SPRITE_CONSTS[Job::Private].getBobId(NAT_VIKINGS)
+               != JOB_SPRITE_CONSTS[Job::Private].getBobId(NAT_AFRICANS));
     // Non native nations come after native ones
-    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_PRIVATE].getBobId(NAT_VIKINGS)
-               < JOB_SPRITE_CONSTS[JOB_PRIVATE].getBobId(NAT_BABYLONIANS));
+    BOOST_TEST(JOB_SPRITE_CONSTS[Job::Private].getBobId(NAT_VIKINGS)
+               < JOB_SPRITE_CONSTS[Job::Private].getBobId(NAT_BABYLONIANS));
     // Same for scouts
-    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_SCOUT].getBobId(NAT_VIKINGS)
-               != JOB_SPRITE_CONSTS[JOB_SCOUT].getBobId(NAT_AFRICANS));
-    BOOST_TEST(JOB_SPRITE_CONSTS[JOB_SCOUT].getBobId(NAT_VIKINGS)
-               < JOB_SPRITE_CONSTS[JOB_SCOUT].getBobId(NAT_BABYLONIANS));
+    BOOST_TEST(JOB_SPRITE_CONSTS[Job::Scout].getBobId(NAT_VIKINGS)
+               != JOB_SPRITE_CONSTS[Job::Scout].getBobId(NAT_AFRICANS));
+    BOOST_TEST(JOB_SPRITE_CONSTS[Job::Scout].getBobId(NAT_VIKINGS)
+               < JOB_SPRITE_CONSTS[Job::Scout].getBobId(NAT_BABYLONIANS));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

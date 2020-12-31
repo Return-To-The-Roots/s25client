@@ -25,7 +25,7 @@
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
                        nobBaseMilitary* const home, const unsigned char rank)
-    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player, goal), building(home),
+    : noFigure(SOLDIER_JOBS[rank], pos, player, goal), building(home),
       hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
 {
     RTTR_Assert(IsSoldier());
@@ -33,7 +33,7 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMi
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
                        const unsigned char rank)
-    : noFigure(static_cast<Job>(JOB_PRIVATE + rank), pos, player), building(home),
+    : noFigure(SOLDIER_JOBS[rank], pos, player), building(home),
       hitpoints(HITPOINTS[gwg->GetPlayer(player).nation][rank])
 {
     RTTR_Assert(IsSoldier());
@@ -79,7 +79,7 @@ void nofSoldier::AbrogateWorkplace()
 
 unsigned char nofSoldier::GetRank() const
 {
-    return (job_ - JOB_PRIVATE);
+    return getSoldierRank(job_);
 }
 
 unsigned char nofSoldier::GetHitpoints() const

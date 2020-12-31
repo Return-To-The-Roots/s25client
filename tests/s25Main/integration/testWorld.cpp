@@ -75,7 +75,7 @@ struct LoadWorldFromFileCreator : MapTestFixture
         if(map.load(mapFile, false) != 0)
             throw std::runtime_error("Could not load file " + testMapPath.string()); // LCOV_EXCL_LINE
         MapLoader loader(world);
-        if(!loader.Load(map, EXP_FOGOFWAR))
+        if(!loader.Load(map, Exploration::FogOfWar))
             throw std::runtime_error("Could not load map"); // LCOV_EXCL_LINE
         if(!loader.PlaceHQs(world, false))
             throw std::runtime_error("Could not place HQs"); // LCOV_EXCL_LINE
@@ -107,7 +107,7 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
     BOOST_CHECK_EQUAL(header.getNumPlayers(), 4);
 
     MapLoader loader(world);
-    BOOST_REQUIRE(loader.Load(map, EXP_FOGOFWAR));
+    BOOST_REQUIRE(loader.Load(map, Exploration::FogOfWar));
     BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
     BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());
 }

@@ -83,7 +83,7 @@ static const std::array<std::vector<std::vector<unsigned short>>, 2> ANIMATIONS 
      {1726, 1766, 1767, 1768, 1769, 1768, 1769, 1768, 1769, 1766, 1767, 1766, 1726},
    }}};
 
-const helpers::EnumArray<Job, CarrierType> JOB_TYPES = {{JOB_HELPER, JOB_PACKDONKEY, JOB_BOATCARRIER}};
+const helpers::EnumArray<Job, CarrierType> JOB_TYPES = {{Job::Helper, Job::PackDonkey, Job::BoatCarrier}};
 
 nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char player, RoadSegment* workplace,
                        noRoadNode* const goal)
@@ -252,7 +252,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 LOADER.getDonkeySprite(GetCurMoveDir(), 0).draw(drawPt);
 
                 // Ware im Korb zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][0]);
+                LOADER.GetWareDonkeyTex(carried_ware->type)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][0]);
             } else
             {
                 const unsigned ani_step = CalcWalkAnimationFrame();
@@ -267,7 +267,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 if(carried_ware)
                 {
                     // Ware im Korb zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)
+                    LOADER.GetWareDonkeyTex(carried_ware->type)
                       ->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
                 }
             }
@@ -278,7 +278,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
             if(state == CARRS_FIGUREWORK)
             {
                 // Beim normalen Laufen Träger mit Boot über den Schultern zeichnen
-                DrawWalkingCarrier(drawPt, GD_BOAT, fat);
+                DrawWalkingCarrier(drawPt, GoodType::Boat, fat);
             } else if(state == CARRS_WAITFORWARE
                       || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
@@ -289,7 +289,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 LOADER.getBoatCarrierSprite(GetCurMoveDir(), 0).draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 
                 // Ware im Boot zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
+                LOADER.GetWareDonkeyTex(carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
             } else
             {
                 const unsigned ani_step = CalcWalkAnimationFrame();
@@ -303,7 +303,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     // Ware im Boot zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
+                    LOADER.GetWareDonkeyTex(carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)

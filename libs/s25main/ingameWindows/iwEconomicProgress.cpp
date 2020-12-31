@@ -32,6 +32,7 @@
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/const_gui_ids.h"
 
 constexpr Extent wareIconSize(26, 26);
@@ -86,7 +87,7 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
 
         AddImage(100 + i, curBoxPos + wareIconSize / 2, LOADER.GetMapImageN(2298), _(WARE_NAMES[good]));
         const DrawPoint warePos = curBoxPos + wareIconSize / 2;
-        AddImage(200 + i, warePos, LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + good));
+        AddImage(200 + i, warePos, LOADER.GetWareTex(good));
 
         DrawPoint curTxtPos = curBoxPos + DrawPoint(wareIconSize.x, 0);
         for(unsigned j = 0; j < 1 + eH->GetTeams().size(); j++)

@@ -25,7 +25,7 @@
 #include "world/GameWorldGame.h"
 
 nofCarpenter::nofCarpenter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_CARPENTER, pos, player, workplace)
+    : nofWorkman(Job::Carpenter, pos, player, workplace)
 {}
 
 nofCarpenter::nofCarpenter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
@@ -51,5 +51,5 @@ void nofCarpenter::DrawWorking(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofCarpenter::ProduceWare()
 {
-    return GD_BOARDS;
+    return GoodType::Boards;
 }

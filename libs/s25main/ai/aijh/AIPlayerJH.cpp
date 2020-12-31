@@ -322,8 +322,8 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
             DistributeMaxRankSoldiersByBlocking(5, wh);
         // 30 boards amd 50 stones for each warehouse - block after that - should speed up expansion and limit losses in
         // case a warehouse is destroyed unlimited when every warehouse has at least that amount
-        DistributeGoodsByBlocking(GD_BOARDS, 30);
-        DistributeGoodsByBlocking(GD_STONES, 50);
+        DistributeGoodsByBlocking(GoodType::Boards, 30);
+        DistributeGoodsByBlocking(GoodType::Stones, 50);
         // go to the picked random warehouse and try to build around it
         int randomStore = rand() % (storehouses.size());
         auto it = storehouses.begin();
@@ -337,7 +337,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
                 AddBuildJobAroundEveryWarehouse(i); // add a buildorder for the picked buildingtype at every warehouse
             }
         }
-        if(gf > 1500 || aii.GetInventory().goods[GD_BOARDS] > 11)
+        if(gf > 1500 || aii.GetInventory().goods[GoodType::Boards] > 11)
             AddMilitaryBuildJob(whPos);
     }
     // end of construction around & orders for warehouses
@@ -418,7 +418,7 @@ void AIPlayerJH::AddMilitaryBuildJob(MapPoint pt)
 void AIPlayerJH::AddBuildJob(BuildingType type, const MapPoint pt, bool front, bool searchPosition)
 {
     construction->AddBuildJob(
-      std::make_unique<BuildJob>(*this, type, pt, searchPosition ? SEARCHMODE_RADIUS : SEARCHMODE_NONE), front);
+      std::make_unique<BuildJob>(*this, type, pt, searchPosition ? SearchMode::Radius : SearchMode::None), front);
 }
 
 void AIPlayerJH::AddBuildJobAroundEveryWarehouse(BuildingType bt)
@@ -445,46 +445,48 @@ void AIPlayerJH::SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewareho
         const MapPoint whPos = wh->GetPos();
         if(upgradewarehouse->GetPos() != whPos)
         {
-            if(wh->IsInventorySetting(GD_BEER, EInventorySetting::COLLECT)) // collecting beer? -> stop it
-                aii.SetInventorySetting(whPos, GD_BEER, InventorySetting());
+            if(wh->IsInventorySetting(GoodType::Beer, EInventorySetting::COLLECT)) // collecting beer? -> stop it
+                aii.SetInventorySetting(whPos, GoodType::Beer, InventorySetting());
 
-            if(wh->IsInventorySetting(GD_SWORD, EInventorySetting::COLLECT)) // collecting swords? -> stop it
-                aii.SetInventorySetting(whPos, GD_SWORD, InventorySetting());
+            if(wh->IsInventorySetting(GoodType::Sword, EInventorySetting::COLLECT)) // collecting swords? -> stop it
+                aii.SetInventorySetting(whPos, GoodType::Sword, InventorySetting());
 
-            if(wh->IsInventorySetting(GD_SHIELDROMANS, EInventorySetting::COLLECT)) // collecting shields? -> stop it
-                aii.SetInventorySetting(whPos, GD_SHIELDROMANS, InventorySetting());
+            if(wh->IsInventorySetting(GoodType::ShieldRomans,
+                                      EInventorySetting::COLLECT)) // collecting shields? -> stop it
+                aii.SetInventorySetting(whPos, GoodType::ShieldRomans, InventorySetting());
 
-            if(wh->IsInventorySetting(JOB_PRIVATE, EInventorySetting::COLLECT)) // collecting privates? -> stop it
-                aii.SetInventorySetting(whPos, JOB_PRIVATE, InventorySetting());
+            if(wh->IsInventorySetting(Job::Private, EInventorySetting::COLLECT)) // collecting privates? -> stop it
+                aii.SetInventorySetting(whPos, Job::Private, InventorySetting());
 
-            if(wh->IsInventorySetting(JOB_HELPER, EInventorySetting::COLLECT)) // collecting helpers? -> stop it
-                aii.SetInventorySetting(whPos, JOB_HELPER, InventorySetting());
+            if(wh->IsInventorySetting(Job::Helper, EInventorySetting::COLLECT)) // collecting helpers? -> stop it
+                aii.SetInventorySetting(whPos, Job::Helper, InventorySetting());
         } else // activate gathering in the closest warehouse
         {
-            if(!wh->IsInventorySetting(GD_BEER, EInventorySetting::COLLECT)) // not collecting beer? -> start it
-                aii.SetInventorySetting(whPos, GD_BEER, EInventorySetting::COLLECT);
+            if(!wh->IsInventorySetting(GoodType::Beer, EInventorySetting::COLLECT)) // not collecting beer? -> start it
+                aii.SetInventorySetting(whPos, GoodType::Beer, EInventorySetting::COLLECT);
 
-            if(!wh->IsInventorySetting(GD_SWORD, EInventorySetting::COLLECT)) // not collecting swords? -> start it
-                aii.SetInventorySetting(whPos, GD_SWORD, EInventorySetting::COLLECT);
+            if(!wh->IsInventorySetting(GoodType::Sword,
+                                       EInventorySetting::COLLECT)) // not collecting swords? -> start it
+                aii.SetInventorySetting(whPos, GoodType::Sword, EInventorySetting::COLLECT);
 
-            if(!wh->IsInventorySetting(GD_SHIELDROMANS,
+            if(!wh->IsInventorySetting(GoodType::ShieldRomans,
                                        EInventorySetting::COLLECT)) // not collecting shields? -> start it
-                aii.SetInventorySetting(whPos, GD_SHIELDROMANS, EInventorySetting::COLLECT);
+                aii.SetInventorySetting(whPos, GoodType::ShieldRomans, EInventorySetting::COLLECT);
 
-            if(!wh->IsInventorySetting(JOB_PRIVATE, EInventorySetting::COLLECT)
+            if(!wh->IsInventorySetting(Job::Private, EInventorySetting::COLLECT)
                && ggs.GetMaxMilitaryRank()
                     > 0) // not collecting privates AND we can actually upgrade soldiers? -> start it
-                aii.SetInventorySetting(whPos, JOB_PRIVATE, EInventorySetting::COLLECT);
+                aii.SetInventorySetting(whPos, Job::Private, EInventorySetting::COLLECT);
 
             // less than 50 helpers - collect them: more than 50 stop collecting
-            if(wh->GetInventory().people[JOB_HELPER] < 50)
+            if(wh->GetInventory().people[Job::Helper] < 50)
             {
-                if(!wh->IsInventorySetting(JOB_HELPER, EInventorySetting::COLLECT))
-                    aii.SetInventorySetting(whPos, JOB_HELPER, EInventorySetting::COLLECT);
+                if(!wh->IsInventorySetting(Job::Helper, EInventorySetting::COLLECT))
+                    aii.SetInventorySetting(whPos, Job::Helper, EInventorySetting::COLLECT);
             } else
             {
-                if(wh->IsInventorySetting(JOB_HELPER, EInventorySetting::COLLECT))
-                    aii.SetInventorySetting(whPos, JOB_HELPER, InventorySetting());
+                if(wh->IsInventorySetting(Job::Helper, EInventorySetting::COLLECT))
+                    aii.SetInventorySetting(whPos, Job::Helper, InventorySetting());
             }
         }
     }
@@ -835,7 +837,7 @@ void AIPlayerJH::ExecuteAIJob()
     // Check whether current job is finished...
     /*if (currentJob)
     {
-        if (currentJob->GetStatus() == JOB_FINISHED)
+        if (currentJob->GetStatus() == JobState::Finished)
         {
             delete currentJob;
             currentJob = 0;
@@ -845,7 +847,7 @@ void AIPlayerJH::ExecuteAIJob()
     // ... or it failed
     if (currentJob)
     {
-        if (currentJob->GetStatus() == JOB_FAILED)
+        if (currentJob->GetStatus() == JobState::Failed)
         {
             // TODO fehlerbehandlung?
             //std::cout << "Job failed." << std::endl;
@@ -1613,7 +1615,7 @@ void AIPlayerJH::MilUpgradeOptim()
 
 void AIPlayerJH::Chat(const std::string& message)
 {
-    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Chat(playerId, CD_ALL, message));
+    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Chat(playerId, ChatDestination::All, message));
 }
 
 bool AIPlayerJH::HasFrontierBuildings()
@@ -1668,7 +1670,7 @@ void AIPlayerJH::CheckGranitMine()
 {
     // stop production in granite mines when the ai has many stones (100+ and at least 15 for each warehouse)
     bool enableProduction =
-      AmountInStorage(GD_STONES) < 100 || AmountInStorage(GD_STONES) < 15 * aii.GetStorehouses().size();
+      AmountInStorage(GoodType::Stones) < 100 || AmountInStorage(GoodType::Stones) < 15 * aii.GetStorehouses().size();
     for(const nobUsual* mine : aii.GetBuildings(BLD_GRANITEMINE))
     {
         // !productionDisabled != enableProduction
@@ -2136,14 +2138,13 @@ unsigned AIPlayerJH::SoldierAvailable(int rank)
     unsigned freeSoldiers = 0;
     for(const nobBaseWarehouse* wh : aii.GetStorehouses())
     {
-        if(rank < 0 || rank > 4)
+        const Inventory& inventory = wh->GetInventory();
+        if(rank < 0)
         {
-            const Inventory& inventory = wh->GetInventory();
-            freeSoldiers +=
-              (inventory.people[JOB_PRIVATE] + inventory.people[JOB_PRIVATEFIRSTCLASS] + inventory.people[JOB_SERGEANT]
-               + inventory.people[JOB_OFFICER] + inventory.people[JOB_GENERAL]);
+            for(const Job job : SOLDIER_JOBS)
+                freeSoldiers += inventory[job];
         } else
-            freeSoldiers += (wh->GetInventory().people[rank + 21]);
+            freeSoldiers += inventory[SOLDIER_JOBS[rank]];
     }
     return freeSoldiers;
 }
@@ -2345,7 +2346,7 @@ void AIPlayerJH::ExecuteLuaConstructionOrder(const MapPoint pt, BuildingType bt,
     {
         aii.SetBuildingSite(pt, bt);
         auto j = std::make_unique<BuildJob>(*this, bt, pt);
-        j->SetState(JOB_EXECUTING_ROAD1);
+        j->SetState(JobState::ExecutingRoad1);
         j->SetTarget(pt);
         construction->AddBuildJob(std::move(j), true); // connects the buildingsite to roadsystem
     } else
@@ -2570,43 +2571,45 @@ void AIPlayerJH::AdjustSettings()
     ToolSettings toolsettings;
     const Inventory& inventory = aii.GetInventory();
     // Saw
-    toolsettings[2] =
-      (inventory.goods[GD_SAW] + inventory.people[JOB_CARPENTER] < 2) ? 4 : inventory.goods[GD_SAW] < 1 ? 1 : 0;
+    toolsettings[2] = (inventory.goods[GoodType::Saw] + inventory.people[Job::Carpenter] < 2) ?
+                        4 :
+                        inventory.goods[GoodType::Saw] < 1 ? 1 : 0;
     // Pickaxe
-    toolsettings[3] = (inventory.goods[GD_PICKAXE] < 1) ? 1 : 0;
+    toolsettings[3] = (inventory.goods[GoodType::PickAxe] < 1) ? 1 : 0;
     // Hammer
-    toolsettings[4] = (inventory.goods[GD_HAMMER] < 1) ? 1 : 0;
+    toolsettings[4] = (inventory.goods[GoodType::Hammer] < 1) ? 1 : 0;
     // Crucible
-    toolsettings[6] = (inventory.goods[GD_CRUCIBLE] + inventory.people[JOB_IRONFOUNDER]
+    toolsettings[6] = (inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder]
                        < bldPlanner->GetNumBuildings(BLD_IRONSMELTER) + 1) ?
                         1 :
                         0;
     // Scythe
     toolsettings[8] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1
-                       && (inventory.goods[GD_SCYTHE] < 1)) ?
+                       && (inventory.goods[GoodType::Scythe] < 1)) ?
                         1 :
                         0;
     // Rollingpin
-    toolsettings[10] =
-      (inventory.goods[GD_ROLLINGPIN] + inventory.people[JOB_BAKER] < bldPlanner->GetNumBuildings(BLD_BAKERY) + 1) ? 1 :
-                                                                                                                     0;
+    toolsettings[10] = (inventory.goods[GoodType::Rollingpin] + inventory.people[Job::Baker]
+                        < bldPlanner->GetNumBuildings(BLD_BAKERY) + 1) ?
+                         1 :
+                         0;
     // Shovel
     toolsettings[5] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1
-                       && (inventory.goods[GD_SHOVEL] < 1)) ?
+                       && (inventory.goods[GoodType::Shovel] < 1)) ?
                         1 :
                         0;
     // Axe
-    toolsettings[1] =
-      (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1
-       && (inventory.goods[GD_AXE] + inventory.people[JOB_WOODCUTTER] < 12) && inventory.goods[GD_AXE] < 1) ?
-        1 :
-        0;
+    toolsettings[1] = (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1
+                       && (inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter] < 12)
+                       && inventory.goods[GoodType::Axe] < 1) ?
+                        1 :
+                        0;
     // Tongs(metalworks)
     toolsettings[0] =
-      0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii.GetInventory().goods[GD_TONGS]<1))?1:0;
+      0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii.GetInventory().goods[GoodType::Tongs]<1))?1:0;
     // cleaver
     toolsettings[9] =
-      0; //(aii.GetInventory().goods[GD_CLEAVER]+aii.GetInventory().people[JOB_BUTCHER]<construction->GetNumBuildings(BLD_SLAUGHTERHOUSE)+1)?1:0;
+      0; //(aii.GetInventory().goods[GoodType::Cleaver]+aii.GetInventory().people[Job::Butcher]<construction->GetNumBuildings(BLD_SLAUGHTERHOUSE)+1)?1:0;
     // rod & line
     toolsettings[7] = 0;
     // bow
@@ -2628,8 +2631,8 @@ void AIPlayerJH::AdjustSettings()
     milSettings[3] = 5;
     // interior 0bar full if we have an upgrade building and gold(or produce gold) else 1 soldier each
     milSettings[4] = UpdateUpgradeBuilding() >= 0
-                         && (inventory.goods[GD_COINS] > 0
-                             || (inventory.goods[GD_GOLD] > 0 && inventory.goods[GD_COAL] > 0
+                         && (inventory.goods[GoodType::Coins] > 0
+                             || (inventory.goods[GoodType::Gold] > 0 && inventory.goods[GoodType::Coal] > 0
                                  && !aii.GetBuildings(BLD_MINT).empty())) ?
                        8 :
                        0;

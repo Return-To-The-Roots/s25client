@@ -155,7 +155,7 @@ void iwAIDebug::Msg_PaintBefore()
     IngameWindow::Msg_PaintBefore();
     std::stringstream ss;
 
-    const AIJH::Job* currentJob = printer->ai->GetCurrentJob();
+    const AIJH::AIJob* currentJob = printer->ai->GetCurrentJob();
     if(!currentJob)
     {
         text->Clear();
@@ -211,13 +211,13 @@ void iwAIDebug::Msg_PaintBefore()
     case AIJH::state: ss << #state << std::endl; break
     switch(currentJob->GetState())
     {
-        RTTR_PRINT_STATUS(JOB_WAITING);
-        RTTR_PRINT_STATUS(JOB_EXECUTING_START);
-        RTTR_PRINT_STATUS(JOB_EXECUTING_ROAD1);
-        RTTR_PRINT_STATUS(JOB_EXECUTING_ROAD2);
-        RTTR_PRINT_STATUS(JOB_EXECUTING_ROAD2_2);
-        RTTR_PRINT_STATUS(JOB_FINISHED);
-        RTTR_PRINT_STATUS(JOB_FAILED);
+        RTTR_PRINT_STATUS(JobState::Waiting);
+        RTTR_PRINT_STATUS(JobState::Start);
+        RTTR_PRINT_STATUS(JobState::ExecutingRoad1);
+        RTTR_PRINT_STATUS(JobState::ExecutingRoad2);
+        RTTR_PRINT_STATUS(JobState::ExecutingRoad2_2);
+        RTTR_PRINT_STATUS(JobState::Finished);
+        RTTR_PRINT_STATUS(JobState::Failed);
         default: ss << "Unknown status"; break;
     }
 

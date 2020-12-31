@@ -74,25 +74,45 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
         case STATE_WAITING1:
         {
             // Fertig mit warten --> anfangen zu arbeiten
-            // Die Arbeitsradien der Berufe wie in JobConst.h (ab JOB_WOODCUTTER!)
-            const std::array<unsigned char, 7> RADIUS = {6, 7, 6, 0, 8, 2, 2};
-
+            // Work radius
+            const unsigned max_radius = [](Job job) {
+                switch(job)
+                {
+                    case Job::Woodcutter: return 6;
+                    case Job::Fisher: return 7;
+                    case Job::Forester: return 6;
+                    case Job::Carpenter: return 0;
+                    case Job::Stonemason: return 8;
+                    case Job::Hunter: return 2;
+                    case Job::Farmer: return 2;
+                    case Job::CharBurner: return 3;
+                    default: throw std::logic_error("Invalid job");
+                }
+            }(job_);
             // Additional radius delta r which is used when a point in radius r was found
             // I.e. looks till radius r + delta r
-            const std::array<unsigned, 7> ADD_RADIUS_WHEN_FOUND = {1, 1, 1, 1, 0, 1, 1};
-
-            // Anzahl der Radien, wo wir gültige Punkte gefunden haben
-            unsigned radius_count = 0;
-
-            // Available points: 1st class and 2st class
-            std::array<std::vector<MapPoint>, 3> available_points;
-
-            unsigned max_radius = (job_ == JOB_CHARBURNER) ? 3 : RADIUS[job_ - JOB_WOODCUTTER];
-            unsigned add_radius_when_found =
-              (job_ == JOB_CHARBURNER) ? 1 : ADD_RADIUS_WHEN_FOUND[job_ - JOB_WOODCUTTER];
+            const unsigned add_radius_when_found = [](Job job) {
+                switch(job)
+                {
+                    case Job::Woodcutter: return 1;
+                    case Job::Fisher: return 1;
+                    case Job::Forester: return 1;
+                    case Job::Carpenter: return 1;
+                    case Job::Stonemason: return 0;
+                    case Job::Hunter: return 1;
+                    case Job::Farmer: return 1;
+                    case Job::CharBurner: return 1;
+                    default: throw std::logic_error("Invalid job");
+                }
+            }(job_);
 
             bool points_found = false;
             bool wait = false;
+            // Anzahl der Radien, wo wir gültige Punkte gefunden haben
+            unsigned radius_count = 0;
+
+            // Available points: 1st class to 3rd class
+            std::array<std::vector<MapPoint>, 3> available_points;
 
             for(MapCoord tx = gwg->GetXA(pos, Direction::WEST), r = 1; r <= max_radius;
                 tx = gwg->GetXA(MapPoint(tx, pos.y), Direction::WEST), ++r)
@@ -112,7 +132,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                                 available_points[GetPointQuality(t2) - PQ_CLASS1].push_back(MapPoint(t2));
                                 found_in_radius = true;
                                 points_found = true;
-                            } else if(job_ == JOB_STONEMASON)
+                            } else if(job_ == Job::Stonemason)
                             {
                                 // just wait a little bit longer
                                 wait = true;
@@ -165,9 +185,9 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             {
                 switch(job_)
                 {
-                    case JOB_STONEMASON:
-                    case JOB_FISHER: workplace->OnOutOfResources(); break;
-                    case JOB_WOODCUTTER:
+                    case Job::Stonemason:
+                    case Job::Fisher: workplace->OnOutOfResources(); break;
+                    case Job::Woodcutter:
                         gwg->GetNotifications().publish(BuildingNote(
                           BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
                         break;

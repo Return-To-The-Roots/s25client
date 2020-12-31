@@ -121,7 +121,7 @@ void nobMilitary::DestroyBuilding()
     GetEvMgr().RemoveEvent(upgrade_event);
 
     // übriggebliebene Goldmünzen in der Inventur abmelden
-    gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, numCoins);
+    gwg->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
 
     nobBaseMilitary::DestroyBuilding();
     // If this was occupied, recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
@@ -293,7 +293,7 @@ void nobMilitary::HandleEvent(const unsigned id)
 
                 // Goldmünze verbrauchen
                 --numCoins;
-                gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, 1);
+                gwg->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, 1);
 
                 // Evtl neues Beförderungsevent anmelden
                 PrepareUpgrading();
@@ -916,8 +916,8 @@ void nobMilitary::Capture(const unsigned char new_owner)
     RTTR_Assert(IsBeingCaptured());
 
     // Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
-    gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, numCoins);
-    gwg->GetPlayer(new_owner).IncreaseInventoryWare(GD_COINS, numCoins);
+    gwg->GetPlayer(player).DecreaseInventoryWare(GoodType::Coins, numCoins);
+    gwg->GetPlayer(new_owner).IncreaseInventoryWare(GoodType::Coins, numCoins);
 
     // Soldaten, die auf Mission sind, Bescheid sagen
     for(auto& it : troops_on_mission)
@@ -1172,11 +1172,12 @@ void nobMilitary::SearchCoins()
     if(WantCoins() && !goldorder_event)
     {
         // Lagerhaus mit Goldmünzen suchen
-        nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::HasMinWares(GD_COINS), false, false);
+        nobBaseWarehouse* wh =
+          gwg->GetPlayer(player).FindWarehouse(*this, FW::HasMinWares(GoodType::Coins), false, false);
         if(wh)
         {
             // Wenns eins gibt, dort eine Goldmünze bestellen
-            Ware* ware = wh->OrderWare(GD_COINS, this);
+            Ware* ware = wh->OrderWare(GoodType::Coins, this);
 
             if(!ware)
             {

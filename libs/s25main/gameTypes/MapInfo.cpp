@@ -27,7 +27,7 @@ MapInfo::~MapInfo() = default;
 
 void MapInfo::Clear()
 {
-    type = MAPTYPE_OLDMAP;
+    type = MapType::OldMap;
     title.clear();
     filepath.clear();
     luaFilepath.clear();

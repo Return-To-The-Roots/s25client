@@ -31,7 +31,7 @@
 #include "world/GameWorldGame.h"
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(Direction::WEST), successful(false)
+    : nofFarmhand(Job::Fisher, pos, player, workplace), fishing_dir(Direction::WEST), successful(false)
 {}
 
 void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
@@ -128,7 +128,7 @@ void nofFisher::WorkFinished()
     {
         if(!gwg->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
             gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
-        ware = GD_FISH;
+        ware = GoodType::Fish;
     } else
         ware = boost::none;
 }

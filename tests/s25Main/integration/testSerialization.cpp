@@ -86,7 +86,7 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
         world.GetPlayer(3).aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
         world.GetPlayer(3).name = "PlAI2";
 
-        ggs.speed = GS_VERYFAST;
+        ggs.speed = GameSpeed::VeryFast;
     }
 };
 
@@ -113,12 +113,12 @@ protected:
 void AddReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
 {
     replay.UpdateLastGF(1);
-    replay.AddChatCommand(1, 2, 3, "Hello");
-    replay.AddChatCommand(1, 3, 1, "Hello2");
-    replay.AddChatCommand(2, 2, 2, "Hello3");
+    replay.AddChatCommand(1, 2, ChatDestination::Enemies, "Hello");
+    replay.AddChatCommand(1, 3, ChatDestination::All, "Hello2");
+    replay.AddChatCommand(2, 2, ChatDestination::Allies, "Hello3");
 
     replay.AddGameCommand(2, 0, cmds);
-    replay.AddChatCommand(2, 2, 3, "Hello4");
+    replay.AddChatCommand(2, 2, ChatDestination::Enemies, "Hello4");
     replay.UpdateLastGF(5);
 }
 
@@ -226,12 +226,12 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
     // Do this after running GFs to keep the state
     // Add ware to flag
-    auto* ware = new Ware(GD_FLOUR, usualBld, hqFlag);
+    auto* ware = new Ware(GoodType::Flour, usualBld, hqFlag);
     ware->WaitAtFlag(hqFlag);
     ware->RecalcRoute();
     hqFlag->AddWare(ware);
     // Add a ware waiting in a warehouse. See https://github.com/Return-To-The-Roots/s25client/issues/1293
-    ware = new Ware(GD_FLOUR, usualBld, hq);
+    ware = new Ware(GoodType::Flour, usualBld, hq);
     hq->AddWaitingWare(ware);
 
     Savegame save;
@@ -354,7 +354,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 BOOST_AUTO_TEST_CASE(ReplayWithMap)
 {
     MapInfo map;
-    map.type = MAPTYPE_OLDMAP;
+    map.type = MapType::OldMap;
     map.title = "MapTitle";
     map.filepath = "Map.swd";
     map.luaFilepath = "Map.lua";
@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     BOOST_TEST_REQUIRE(!replay.IsReplaying());
     for(const BasePlayerInfo& player : players)
         replay.AddPlayer(player);
-    replay.ggs.speed = GS_VERYFAST;
+    replay.ggs.speed = GameSpeed::VeryFast;
     replay.random_init = 815;
 
     TmpFile tmpFile;
@@ -457,7 +457,7 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
 BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
 {
     MapInfo map;
-    map.type = MAPTYPE_SAVEGAME;
+    map.type = MapType::Savegame;
     map.title = "MapTitle";
     map.filepath = "Map.swd";
     map.luaFilepath = "Map.lua";
@@ -486,7 +486,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     BOOST_TEST_REQUIRE(!replay.IsReplaying());
     for(const BasePlayerInfo& player : players)
         replay.AddPlayer(player);
-    replay.ggs.speed = GS_VERYFAST;
+    replay.ggs.speed = GameSpeed::VeryFast;
     replay.random_init = 815;
 
     TmpFile tmpFile;

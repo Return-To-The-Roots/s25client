@@ -253,7 +253,7 @@ void dskBenchmark::startTest(Test test)
                 std::array<BuildingType, 5> blds = {
                   {BLD_BARRACKS, BLD_MILL, BLD_IRONMINE, BLD_SLAUGHTERHOUSE, BLD_BAKERY}};
                 std::uniform_int_distribution<unsigned> getBld(0, blds.size() - 1);
-                std::uniform_int_distribution<unsigned> getJob(0, NUM_JOB_TYPES - 1);
+                std::uniform_int_distribution<unsigned> getJob(0, helpers::MaxEnumValue_v<Job>);
                 std::uniform_int_distribution<unsigned> getDir(0, helpers::MaxEnumValue_v<Direction>);
                 for(MapPoint pt : pts)
                 {

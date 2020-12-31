@@ -37,7 +37,6 @@ class array;
 namespace AIJH {
 class AIPlayerJH;
 class BuildingPlanner;
-class Job;
 class BuildJob;
 class ConnectJob;
 

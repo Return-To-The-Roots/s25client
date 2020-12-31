@@ -29,6 +29,7 @@
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "s25util/Log.h"
 #include <sstream>
@@ -220,9 +221,9 @@ void Ware::GoalDestroyed()
                     if(location->GetGOT() != GOT_NOB_HARBORBUILDING)
                         LOG.write("WARNING: Ware::GoalDestroyed() -- ware is currently being carried into warehouse or "
                                   "hq that was not "
-                                  "it's goal! ware id %i, type %i, player %i, wareloc %i,%i, goal loc %i,%i \n")
-                          % GetObjId() % type % location->GetPlayer() % GetLocation()->GetX() % GetLocation()->GetY()
-                          % goal->GetX() % goal->GetY();
+                                  "it's goal! ware id %i, type %s, player %i, wareloc %i,%i, goal loc %i,%i \n")
+                          % GetObjId() % WARE_NAMES[type] % location->GetPlayer() % GetLocation()->GetX()
+                          % GetLocation()->GetY() % goal->GetX() % goal->GetY();
                     SetGoal(static_cast<noBaseBuilding*>(location));
                 } else
                 {

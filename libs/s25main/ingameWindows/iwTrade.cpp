@@ -30,6 +30,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/const_gui_ids.h"
@@ -56,22 +57,22 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     AddText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
     // Create possible wares, figures
-    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
+    for(const auto i : helpers::enumRange<GoodType>())
     {
         // Only add one shield type
-        if(GoodType(i) != ConvertShields(GoodType(i)))
+        if(i != ConvertShields(i))
             continue;
         // Don't add empty water
-        if(i == GD_WATEREMPTY)
+        if(i == GoodType::WaterEmpty)
             continue;
-        wares.push_back(GoodType(i));
+        wares.push_back(i);
     }
-    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
+    for(const auto i : helpers::enumRange<Job>())
     {
         // Can't trade boat carriers
-        if(i == JOB_BOATCARRIER)
+        if(i == Job::BoatCarrier)
             continue;
-        jobs.push_back(Job(i));
+        jobs.push_back(i);
     }
 
     AddImage(5, DrawPoint(left_column + 20, 130), static_cast<ITexture*>(nullptr), _("Ware you like to trade"));
@@ -153,17 +154,13 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selecti
                 // Wares
 
                 // Set the new image of the ware which was selected
-                GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + wares[selection]));
+                GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetWareTex(wares[selection]));
 
                 // Get the number of available wares
                 number = GetPossibleTradeAmount(wares[selection]);
             } else
             {
-                glArchivItem_Bitmap* image = LOADER.GetMapImageN(2300 + jobs[selection]);
-                // Exception: charburner
-                if(jobs[selection] == JOB_CHARBURNER)
-                    image = LOADER.GetImageN("io_new", 5);
-                GetCtrl<ctrlImage>(5)->SetImage(image);
+                GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetJobTex(jobs[selection]));
 
                 // Get the number of available figures
                 number = GetPossibleTradeAmount(jobs[selection]);

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2020 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,51 +17,19 @@
 
 #pragma once
 
-enum class GameSpeed
-{
-    VerySlow,
-    Slow,
-    Normal,
-    Fast,
-    VeryFast
-};
-constexpr auto maxEnumValue(GameSpeed)
-{
-    return GameSpeed::VeryFast;
-}
+#include "GoodTypes.h"
+#include "JobTypes.h"
+#include "helpers/EnumArray.h"
 
-enum class GameObjective
+/// Combined array for goods and people with typed accessors
+template<typename T>
+struct GoodsAndPeopleArray
 {
-    None,
-    Conquer3_4,
-    TotalDomination,
-    EconomyMode
-};
-constexpr auto maxEnumValue(GameObjective)
-{
-    return GameObjective::EconomyMode;
-}
+    helpers::EnumArray<T, GoodType> goods = {};
+    helpers::EnumArray<T, Job> people = {};
 
-enum class StartWares
-{
-    VLow,
-    Low,
-    Normal,
-    ALot
+    const T& operator[](GoodType good) const { return goods[good]; }
+    T& operator[](GoodType good) { return goods[good]; }
+    const T& operator[](Job job) const { return people[job]; }
+    T& operator[](Job job) { return people[job]; }
 };
-constexpr auto maxEnumValue(StartWares)
-{
-    return StartWares::ALot;
-}
-
-enum class Exploration
-{
-    Disabled,
-    Classic,
-    FogOfWar,
-    FogOfWarExplored
-};
-constexpr auto maxEnumValue(Exploration)
-{
-    return Exploration::FogOfWarExplored;
-}

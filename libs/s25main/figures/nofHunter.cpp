@@ -40,7 +40,7 @@
 const MapCoord MAX_HUNTING_DISTANCE = 50;
 
 nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(JOB_HUNTER, pos, player, workplace), animal(nullptr), shootingPos(0, 0)
+    : nofBuildingWorker(Job::Hunter, pos, player, workplace), animal(nullptr), shootingPos(0, 0)
 {}
 
 void nofHunter::Serialize_nofHunter(SerializedGameData& sgd) const
@@ -79,7 +79,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
     {
         default: break;
         case STATE_HUNTER_WAITING_FOR_ANIMAL_READY:
-            LOADER.getBobSprite(owner.nation, JOB_HUNTER, shooting_dir, 0).drawForPlayer(drawPt, owner.color);
+            LOADER.getBobSprite(owner.nation, Job::Hunter, shooting_dir, 0).drawForPlayer(drawPt, owner.color);
             break;
         case STATE_HUNTER_SHOOTING:
         {
@@ -395,7 +395,7 @@ void nofHunter::HandleStateEviscerating()
     animal->Destroy();
     deletePtr(animal);
     // Fleisch in die Hand nehmen
-    ware = GD_MEAT;
+    ware = GoodType::Meat;
     // und zurück zur Hütte
     StartWalkingHome();
 }

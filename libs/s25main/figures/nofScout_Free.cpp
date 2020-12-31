@@ -28,7 +28,7 @@
 class noRoadNode;
 
 nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noRoadNode* goal)
-    : nofFlagWorker(JOB_SCOUT, pos, player, goal), nextPos(pos), rest_way(0)
+    : nofFlagWorker(Job::Scout, pos, player, goal), nextPos(pos), rest_way(0)
 {}
 
 void nofScout_Free::Serialize_nofScout_Free(SerializedGameData& sgd) const

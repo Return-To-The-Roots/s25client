@@ -105,7 +105,8 @@ void AIConstruction::ExecuteJobs(unsigned limit)
         auto job = std::move(connectJobs.front());
         connectJobs.pop_front();
         job->ExecuteJob();
-        if(job->GetState() != JOB_FINISHED && job->GetState() != JOB_FAILED) // couldnt do job? -> move to back of list
+        if(job->GetState() != JobState::Finished
+           && job->GetState() != JobState::Failed) // couldnt do job? -> move to back of list
         {
             connectJobs.push_back(std::move(job));
         }
@@ -114,7 +115,8 @@ void AIConstruction::ExecuteJobs(unsigned limit)
     {
         auto job = GetBuildJob();
         job->ExecuteJob();
-        if(job->GetState() != JOB_FINISHED && job->GetState() != JOB_FAILED) // couldnt do job? -> move to back of list
+        if(job->GetState() != JobState::Finished
+           && job->GetState() != JobState::Failed) // couldnt do job? -> move to back of list
         {
             buildJobs.push_back(std::move(job));
         }
@@ -479,8 +481,8 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     const BuildingType biggestBld = GetBiggestAllowedMilBuilding().value();
 
     const Inventory& inventory = aii.GetInventory();
-    if(((rand() % 3) == 0 || inventory.people[JOB_PRIVATE] < 15)
-       && (inventory.goods[GD_STONES] > 6 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0))
+    if(((rand() % 3) == 0 || inventory.people[Job::Private] < 15)
+       && (inventory.goods[GoodType::Stones] > 6 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0))
         bld = BLD_GUARDHOUSE;
     if(aijh.HarborPosClose(pt, 20) && rand() % 10 != 0 && aijh.ggs.getSelection(AddonId::SEA_ATTACK) != 2)
     {
@@ -491,7 +493,8 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     if(biggestBld == BLD_WATCHTOWER || biggestBld == BLD_FORTRESS)
     {
         if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
-           && (inventory.goods[GD_STONES] > 20 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0) && rand() % 10 != 0)
+           && (inventory.goods[GoodType::Stones] > 20 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0)
+           && rand() % 10 != 0)
         {
             return biggestBld;
         }
@@ -570,7 +573,7 @@ bool AIConstruction::Wanted(BuildingType type) const
         return bldPlanner.WantMoreMilitaryBlds(aijh);
     if(type == BLD_SAWMILL && bldPlanner.GetNumBuildings(BLD_SAWMILL) > 1)
     {
-        if(aijh.AmountInStorage(GD_WOOD) < 15 * (bldPlanner.GetNumBuildingSites(BLD_SAWMILL) + 1))
+        if(aijh.AmountInStorage(GoodType::Wood) < 15 * (bldPlanner.GetNumBuildingSites(BLD_SAWMILL) + 1))
             return false;
     }
     return constructionorders[type] < bldPlanner.GetNumAdditionalBuildingsWanted(type);

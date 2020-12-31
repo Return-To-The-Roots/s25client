@@ -17,43 +17,43 @@
 
 #pragma once
 
-#include <array>
+#include <cstdint>
 
 /// Setting for each item in a warehouses inventory
 enum class EInventorySetting : unsigned
 {
-    STOP = 0,
-    SEND = 1,
-    COLLECT = 2
+    STOP,
+    SEND,
+    COLLECT
 };
 
 struct InventorySetting
 {
-    InventorySetting() : state(0) {}
-    InventorySetting(const EInventorySetting setting) : state(MakeBitField(setting)) {}
-    explicit InventorySetting(unsigned char state) : state(state) { MakeValid(); }
-    inline bool IsSet(EInventorySetting setting) const;
-    inline InventorySetting Toggle(EInventorySetting setting);
-    inline void MakeValid();
-    unsigned char ToUnsignedChar() const { return state; }
-    friend bool operator==(const InventorySetting& lhs, const InventorySetting& rhs);
+    constexpr InventorySetting() = default;
+    constexpr InventorySetting(const EInventorySetting setting) : state(MakeBitField(setting)) {}
+    constexpr explicit InventorySetting(uint8_t state) : state(state) { MakeValid(); }
+    constexpr bool IsSet(EInventorySetting setting) const;
+    constexpr InventorySetting Toggle(EInventorySetting setting);
+    constexpr void MakeValid();
+    constexpr explicit operator uint8_t() const { return state; }
+    friend constexpr bool operator==(const InventorySetting& lhs, const InventorySetting& rhs);
 
 private:
-    inline static unsigned char MakeBitField(EInventorySetting setting);
+    static constexpr uint8_t MakeBitField(EInventorySetting setting);
     // Current state as a bitfield!
-    unsigned char state;
+    uint8_t state = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
 // Implementation
 //////////////////////////////////////////////////////////////////////////
 
-bool InventorySetting::IsSet(const EInventorySetting setting) const
+constexpr bool InventorySetting::IsSet(const EInventorySetting setting) const
 {
     return (state & MakeBitField(setting)) != 0;
 }
 
-InventorySetting InventorySetting::Toggle(const EInventorySetting setting)
+constexpr InventorySetting InventorySetting::Toggle(const EInventorySetting setting)
 {
     state ^= MakeBitField(setting);
     // If we changed collect, then allow only collect to be set
@@ -65,31 +65,29 @@ InventorySetting InventorySetting::Toggle(const EInventorySetting setting)
     return *this;
 }
 
-unsigned char InventorySetting::MakeBitField(const EInventorySetting setting)
+constexpr uint8_t InventorySetting::MakeBitField(const EInventorySetting setting)
 {
-    return static_cast<unsigned char>(1 << static_cast<unsigned>(setting));
+    return static_cast<uint8_t>(1 << static_cast<unsigned>(setting));
 }
 
-void InventorySetting::MakeValid()
+constexpr void InventorySetting::MakeValid()
 {
-    static const std::array<unsigned char, 4> validStates = {
-      {MakeBitField(EInventorySetting::STOP), MakeBitField(EInventorySetting::SEND),
-       MakeBitField(EInventorySetting::COLLECT),
-       static_cast<unsigned char>(MakeBitField(EInventorySetting::STOP) | MakeBitField(EInventorySetting::SEND))}};
-    for(unsigned char validState : validStates)
+    switch(state)
     {
-        if(state == validState)
-            return;
+        case MakeBitField(EInventorySetting::STOP):
+        case MakeBitField(EInventorySetting::SEND):
+        case MakeBitField(EInventorySetting::COLLECT):
+        case static_cast<uint8_t>(MakeBitField(EInventorySetting::STOP) | MakeBitField(EInventorySetting::SEND)): break;
+        default: state = 0; break;
     }
-    state = 0;
 }
 
-inline bool operator!=(const InventorySetting& lhs, const InventorySetting& rhs)
+constexpr bool operator!=(const InventorySetting& lhs, const InventorySetting& rhs)
 {
     return !(lhs == rhs);
 }
 
-inline bool operator==(const InventorySetting& lhs, const InventorySetting& rhs)
+constexpr bool operator==(const InventorySetting& lhs, const InventorySetting& rhs)
 {
     return lhs.state == rhs.state;
 }

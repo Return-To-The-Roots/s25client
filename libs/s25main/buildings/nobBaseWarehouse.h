@@ -19,6 +19,7 @@
 
 #include "DataChangedObservable.h"
 #include "nobBaseMilitary.h"
+#include "gameTypes/GoodsAndPeopleArray.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VirtualInventory.h"
 #include <boost/variant/variant_fwd.hpp>
@@ -48,11 +49,8 @@ class SetAllInventorySettings;
 } // namespace gc
 
 /// Ein/Auslagereinstellungsstruktur
-struct InventorySettings
-{
-    std::array<InventorySetting, NUM_WARE_TYPES> wares;
-    std::array<InventorySetting, NUM_JOB_TYPES> figures;
-};
+struct InventorySettings : GoodsAndPeopleArray<InventorySetting>
+{};
 
 /// Grundlegende Warenhausklasse, die alle Funktionen vereint, die für Warenhäuser (HQ, Lagerhaus, Häfen) wichtig sind.
 /// Change events: 1=InventorySettings
@@ -103,13 +101,13 @@ private:
     friend class gc::SetInventorySetting;
     friend class gc::SetAllInventorySettings;
     /// Verändert Ein/Auslagerungseinstellungen
-    void SetInventorySetting(bool isJob, unsigned char type, InventorySetting state);
+    void SetInventorySetting(const boost::variant<GoodType, Job>& what, InventorySetting state);
 
     /// Verändert alle Ein/Auslagerungseinstellungen einer Kategorie (also Waren oder Figuren)(real)
     void SetAllInventorySettings(bool isJob, const std::vector<InventorySetting>& states);
 
     /// Lässt einen bestimmten Waren/Job-Typ ggf auslagern
-    void CheckOuthousing(bool isJob, unsigned job_ware_id);
+    void CheckOuthousing(const boost::variant<GoodType, Job>& what);
     void HandleCollectEvent();
     void HandleSendoutEvent();
     void HandleRecrutingEvent();
@@ -184,7 +182,7 @@ public:
         return GetInventorySetting(ware).IsSet(setting);
     }
 
-    void SetInventorySettingVisual(bool isJob, unsigned char type, InventorySetting state);
+    void SetInventorySettingVisual(const boost::variant<GoodType, Job>& what, InventorySetting state);
 
     /// Bestellt einen Träger
     void OrderCarrier(noRoadNode& goal, RoadSegment& workplace);
@@ -258,8 +256,8 @@ public:
     /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück
     unsigned GetNumSoldiers() const
     {
-        return GetNumRealFigures(JOB_PRIVATE) + GetNumRealFigures(JOB_PRIVATEFIRSTCLASS)
-               + GetNumRealFigures(JOB_SERGEANT) + GetNumRealFigures(JOB_OFFICER) + GetNumRealFigures(JOB_GENERAL);
+        return GetNumRealFigures(Job::Private) + GetNumRealFigures(Job::PrivateFirstClass)
+               + GetNumRealFigures(Job::Sergeant) + GetNumRealFigures(Job::Officer) + GetNumRealFigures(Job::General);
     }
     /// Bestellt Soldaten
     void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false);

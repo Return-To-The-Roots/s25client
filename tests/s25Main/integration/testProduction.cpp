@@ -42,7 +42,7 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
     Inventory goods;
-    goods.goods[GD_IRON] = 10;
+    goods.goods[GoodType::Iron] = 10;
     world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddGoods(goods, true);
     MapPoint bldPos = hqPos + MapPoint(2, 0);
     BuildingFactory::CreateBuilding(world, BLD_METALWORKS, bldPos, curPlayer, NAT_AFRICANS);
@@ -88,8 +88,8 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
 BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
 {
     Inventory inv;
-    inv.Add(GD_BOARDS, 10);
-    inv.Add(GD_IRON, 10);
+    inv.Add(GoodType::Boards, 10);
+    inv.Add(GoodType::Iron, 10);
     world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddGoods(inv, true);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);

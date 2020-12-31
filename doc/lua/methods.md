@@ -122,7 +122,7 @@ Set the settings with a table of keys:
 - speed: GS_VERYSLOW, GS_SLOW, GS_NORMAL, GS_FAST, GS_VERYFAST
 - objective: GO_NONE, GO_CONQUER3_4, GO_TOTALDOMINATION
 - startWares: SWR_VLOW, SWR_LOW, SWR_NORMAL, SWR_ALOT
-- fow: EXP_DISABLED, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWARE_EXPLORED
+- fow: EXP_DISABLED, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWAREXPLORED
 - lockedTeams, teamView, randomStartPosition: true/false
 
 [Back](#Lua-objects-and-their-methods)  

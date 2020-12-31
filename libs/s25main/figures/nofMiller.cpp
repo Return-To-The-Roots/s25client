@@ -28,7 +28,7 @@
 #include "world/GameWorldGame.h"
 
 nofMiller::nofMiller(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MILLER, pos, player, workplace), last_sound(0), next_interval(0)
+    : nofWorkman(Job::Miller, pos, player, workplace), last_sound(0), next_interval(0)
 {}
 
 void nofMiller::Serialize_nofMiller(SerializedGameData& sgd) const
@@ -54,14 +54,14 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     if(now_id < 4) // hinauslaufen teil 1
     {
         LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][4][now_id % 8].draw(
-          drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.getBobSprite(workplace->GetNation(), Job::Miller, Direction::SOUTHEAST, now_id % 8)
+          .draw(drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
         rotate_sails = false;
     }
     if((now_id >= 4) && (now_id < 8)) // hinauslaufen teil 2
     {
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][3][now_id % 8].draw(
-          drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.getBobSprite(workplace->GetNation(), Job::Miller, Direction::EAST, now_id % 8)
+          .draw(drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
     }
     if((now_id >= 8) && (now_id < 16)) // hinsetzen
     {
@@ -83,14 +83,14 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     }
     if((now_id >= max_id - 8) && (now_id < max_id - 4)) // zurücklaufen teil 1
     {
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][0][now_id % 8].draw(
-          drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.getBobSprite(workplace->GetNation(), Job::Miller, Direction::WEST, now_id % 8)
+          .draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
     }
     if((now_id >= max_id - 4) && (now_id < max_id)) // zurücklaufen teil 2
     {
         LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][1][now_id % 8].draw(
-          drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.getBobSprite(workplace->GetNation(), Job::Miller, Direction::NORTHWEST, now_id % 8)
+          .draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
         rotate_sails = false;
     }
 
@@ -122,5 +122,5 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofMiller::ProduceWare()
 {
-    return GD_FLOUR;
+    return GoodType::Flour;
 }

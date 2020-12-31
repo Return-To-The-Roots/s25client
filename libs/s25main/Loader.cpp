@@ -555,8 +555,8 @@ void Loader::fillCaches()
             }
         }
 
-        // Bobs from jobs.bob. Job = NUM_JOB_TYPES is used for fat carriers. See below.
-        for(unsigned job = 0; job < NUM_JOB_TYPES + 1; ++job)
+        // Bobs from jobs.bob.
+        for(const auto job : helpers::enumRange<Job>())
         {
             for(Direction dir : helpers::EnumRange<Direction>{})
             {
@@ -565,26 +565,35 @@ void Loader::fillCaches()
                     glSmartBitmap& bmp = bob_jobs_cache(nation, job, rttr::enum_cast(dir))[ani_step];
                     bmp.reset();
 
-                    bool fat;
-                    unsigned id;
-                    if(job == NUM_JOB_TYPES) // used for fat carrier, so that we do not need an additional sub-array
-                    {
-                        fat = true;
-                        id = 0;
-                    } else
-                    {
-                        const auto& spriteData = JOB_SPRITE_CONSTS[Job(job)];
-                        id = spriteData.getBobId(Nation(nation));
-                        fat = spriteData.isFat();
-                    }
+                    const auto& spriteData = JOB_SPRITE_CONSTS[Job(job)];
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getBody(fat, imgDir, ani_step)));
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getOverlay(id, fat, imgDir, ani_step)));
+                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
+                      bob_jobs->getBody(spriteData.isFat(), imgDir, ani_step)));
+                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
+                      bob_jobs->getOverlay(spriteData.getBobId(Nation(nation)), spriteData.isFat(), imgDir, ani_step)));
                     bmp.addShadow(GetMapImageN(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
+            }
+        }
+        // Fat carrier, so that we do not need an additional sub-array
+        for(Direction dir : helpers::EnumRange<Direction>{})
+        {
+            for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
+            {
+                glSmartBitmap& bmp =
+                  bob_jobs_cache(nation, helpers::NumEnumValues_v<Job>, rttr::enum_cast(dir))[ani_step];
+                bmp.reset();
+
+                const libsiedler2::ImgDir imgDir = toImgDir(dir);
+
+                bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getBody(true, imgDir, ani_step)));
+                bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getOverlay(0, true, imgDir, ani_step)));
+                bmp.addShadow(GetMapImageN(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+
+                stp->add(bmp);
             }
         }
 
@@ -759,7 +768,8 @@ void Loader::fillCaches()
                     bmp.reset();
 
                     // Japanese shield is missing
-                    const unsigned id = rttr::enum_cast((ware == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : ware);
+                    const unsigned id =
+                      rttr::enum_cast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
 
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 

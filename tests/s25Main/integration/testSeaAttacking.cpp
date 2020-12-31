@@ -92,7 +92,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
             hqPos[i] = world.GetPlayer(i).GetHQPos();
             auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos[i]);
             Inventory goods;
-            goods.Add(JOB_GENERAL, 3);
+            goods.Add(Job::General, 3);
             hq->AddGoods(goods, true);
             this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
         }
@@ -447,11 +447,11 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     // Add 1 soldier to dest harbor so we have a defender
     nobHarborBuilding& hbDest = *world.GetSpecObj<nobHarborBuilding>(harborPos[1]);
     Inventory newGoods;
-    newGoods.Add(JOB_SERGEANT, 1);
+    newGoods.Add(Job::Sergeant, 1);
     hbDest.AddGoods(newGoods, true);
     // Don't keep him in reserve
-    hbDest.SetRealReserve(JOB_SERGEANT - JOB_PRIVATE, 0);
-    BOOST_REQUIRE_EQUAL(hbDest.GetNumVisualFigures(JOB_SERGEANT), 1u);
+    hbDest.SetRealReserve(getSoldierRank(Job::Sergeant), 0);
+    BOOST_REQUIRE_EQUAL(hbDest.GetNumVisualFigures(Job::Sergeant), 1u);
     BOOST_REQUIRE(!hbDest.GetDefender());
 
     const noShip& ship = *world.GetPlayer(2).GetShipByID(0);
@@ -462,19 +462,19 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     this->SeaAttack(harborPos[1], 4, true);
     BOOST_REQUIRE_EQUAL(milBld2->GetNumTroops(), 1u);
     BOOST_REQUIRE(ship.IsIdling());
-    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(JOB_GENERAL), 0u);
+    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(Job::General), 0u);
 
     // Let soldier walk to harbor
     unsigned distance = 2 * world.CalcDistance(milBld2Pos, harborPos[2]);
     RTTR_EXEC_TILL(distance * 20 + 30, !ship.IsIdling());
     BOOST_REQUIRE(ship.IsGoingToHarbor(hbSrc));
-    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(JOB_GENERAL), 1u);
+    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(Job::General), 1u);
 
     // Let ship arrive and count soldiers that arrived so far
     unsigned numSoldiersForAttack = 0;
     for(unsigned gf = 0; gf < 60;)
     {
-        numSoldiersForAttack = hbSrc.GetNumVisualFigures(JOB_PRIVATE) + hbSrc.GetNumVisualFigures(JOB_GENERAL);
+        numSoldiersForAttack = hbSrc.GetNumVisualFigures(Job::Private) + hbSrc.GetNumVisualFigures(Job::General);
         unsigned numGfs = em.ExecuteNextEvent();
         RTTR_Assert(numGfs > 0u);
         gf += numGfs;
@@ -483,8 +483,8 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     }
     BOOST_REQUIRE(ship.IsOnAttackMission());
     // Ship should have picked up all soldiers
-    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(JOB_PRIVATE), 0u);
-    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(JOB_GENERAL), 0u);
+    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(Job::Private), 0u);
+    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(Job::General), 0u);
     // min. 2 soldiers, or attack success is not save. Place ship further away if required
     BOOST_REQUIRE_GE(numSoldiersForAttack, 2u);
     // Note: This might be off by one if the ship arrived in the same GF a soldier arrived. But this is unlikely
@@ -600,8 +600,8 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     }
 
     // All soldiers should have left
-    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(JOB_PRIVATE), 0u);
-    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(JOB_GENERAL), 0u);
+    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(Job::Private), 0u);
+    BOOST_REQUIRE_EQUAL(hbSrc.GetNumVisualFigures(Job::General), 0u);
 }
 
 BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)

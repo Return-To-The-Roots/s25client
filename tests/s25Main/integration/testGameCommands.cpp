@@ -22,6 +22,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "enum_cast.hpp"
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
 #include "postSystem/PostBox.h"
@@ -50,7 +51,11 @@
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const InventorySetting& setting)
 {
-    return out << setting.ToUnsignedChar();
+    return out << static_cast<unsigned>(static_cast<uint8_t>(setting));
+}
+static std::ostream& operator<<(std::ostream& out, const Job e)
+{
+    return out << rttr::enum_cast(e);
 }
 // LCOV_EXCL_STOP
 
@@ -351,9 +356,8 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
             BOOST_REQUIRE_EQUAL(outSettings.build_order[i], inBuildOrder[i]);
         for(unsigned i = 0; i < inTransportOrder.size(); i++)
             BOOST_REQUIRE_EQUAL(outSettings.transport_order[i], inTransportOrder[i]);
-        for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
-            BOOST_REQUIRE_EQUAL(player.GetTransportPriority(GoodType(i)),
-                                GetTransportPrioFromOrdering(inTransportOrder, GoodType(i)));
+        for(const auto i : helpers::enumRange<GoodType>())
+            BOOST_REQUIRE_EQUAL(player.GetTransportPriority(i), GetTransportPrioFromOrdering(inTransportOrder, i));
         for(unsigned i = 0; i < militarySettings.size(); i++)
             BOOST_REQUIRE_EQUAL(player.GetMilitarySetting(i), militarySettings[i]);
         for(unsigned i = 0; i < toolPrios.size(); i++)
@@ -427,12 +431,12 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     GamePlayer& player = world.GetPlayer(curPlayer);
     nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_REQUIRE(wh);
-    BOOST_REQUIRE_EQUAL(wh->GetInventory().people[JOB_GENERAL], 0u); //-V522
+    BOOST_REQUIRE_EQUAL(wh->GetInventory().people[Job::General], 0u); //-V522
     Inventory goods;
-    goods.Add(JOB_PRIVATEFIRSTCLASS, 1);
-    goods.Add(JOB_SERGEANT, 1);
-    goods.Add(JOB_OFFICER, 1);
-    goods.Add(JOB_GENERAL, 2);
+    goods.Add(Job::PrivateFirstClass, 1);
+    goods.Add(Job::Sergeant, 1);
+    goods.Add(Job::Officer, 1);
+    goods.Add(Job::General, 2);
     wh->AddGoods(goods, true);
     // Don't keep any reserve
     for(unsigned i = 0; i <= this->ggs.GetMaxMilitaryRank(); ++i)
@@ -614,14 +618,14 @@ BOOST_FIXTURE_TEST_CASE(CallGeologist, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    FlagWorkerTest(*this, JOB_GEOLOGIST, GD_HAMMER);
+    FlagWorkerTest(*this, Job::Geologist, GoodType::Hammer);
 }
 
 BOOST_FIXTURE_TEST_CASE(CallScout, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    FlagWorkerTest(*this, JOB_SCOUT, GD_BOW);
+    FlagWorkerTest(*this, Job::Scout, GoodType::Bow);
 }
 
 BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
@@ -760,7 +764,7 @@ BOOST_AUTO_TEST_CASE(InventorySettingType)
 {
     InventorySetting setting;
     // Default setting is 0
-    BOOST_REQUIRE_EQUAL(setting.ToUnsignedChar(), 0u);
+    BOOST_REQUIRE_EQUAL(static_cast<uint8_t>(setting), 0u);
 
     // Test all 3 single types
     setting = EInventorySetting::STOP;
@@ -801,81 +805,88 @@ BOOST_AUTO_TEST_CASE(InventorySettingType)
     BOOST_REQUIRE_EQUAL(setting, EInventorySetting::SEND);
 }
 
+template<class T, class U>
+auto makeVector(const helpers::EnumArray<U, T>& srcArray)
+{
+    std::vector<U> result(srcArray.size());
+    std::copy(srcArray.begin(), srcArray.end(), result.begin());
+    return result;
+}
+
 BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
 {
     GamePlayer& player = world.GetPlayer(curPlayer);
     const nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_REQUIRE(wh);
     InventorySetting expectedSetting;
-    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting); //-V522
-    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(JOB_PRIVATE), expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GoodType::Boards), expectedSetting); //-V522
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(Job::Private), expectedSetting);
     expectedSetting.Toggle(EInventorySetting::STOP);
     expectedSetting.Toggle(EInventorySetting::SEND);
 
-    this->SetInventorySetting(hqPos, GD_BOARDS, expectedSetting);
-    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting);
-    this->SetInventorySetting(hqPos, JOB_PRIVATE, expectedSetting);
-    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(JOB_PRIVATE), expectedSetting);
+    this->SetInventorySetting(hqPos, GoodType::Boards, expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GoodType::Boards), expectedSetting);
+    this->SetInventorySetting(hqPos, Job::Private, expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(Job::Private), expectedSetting);
 
     expectedSetting.Toggle(EInventorySetting::COLLECT);
-    this->SetInventorySetting(hqPos, GD_BOARDS, expectedSetting);
-    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting);
-    this->SetInventorySetting(hqPos, JOB_PRIVATE, expectedSetting);
-    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(JOB_PRIVATE), expectedSetting);
+    this->SetInventorySetting(hqPos, GoodType::Boards, expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GoodType::Boards), expectedSetting);
+    this->SetInventorySetting(hqPos, Job::Private, expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(Job::Private), expectedSetting);
 
-    std::vector<InventorySetting> settings(NUM_JOB_TYPES);
-    for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
-        settings[i] = InventorySetting(rand() % 5);
-    this->SetAllInventorySettings(hqPos, true, settings);
-    for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
+    helpers::EnumArray<InventorySetting, Job> jobSettings;
+    for(const auto i : helpers::enumRange<Job>())
+        jobSettings[i] = InventorySetting(rand() % 5);
+    this->SetAllInventorySettings(hqPos, true, makeVector(jobSettings));
+    for(const auto i : helpers::enumRange<Job>())
     {
         // Boat carriers are stored as helpers and boats
-        if(i == JOB_BOATCARRIER)
-            BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(Job(i)), settings[JOB_HELPER]);
+        if(i == Job::BoatCarrier)
+            BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(i), jobSettings[Job::Helper]);
         else
-            BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(Job(i)), settings[i]);
+            BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(i), jobSettings[i]);
     }
 
-    settings.resize(NUM_WARE_TYPES);
-    for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
-        settings[i] = InventorySetting(rand() % 5);
-    this->SetAllInventorySettings(hqPos, false, settings);
-    for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
-        BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GoodType(i)), settings[ConvertShields(GoodType(i))]);
+    helpers::EnumArray<InventorySetting, GoodType> goodSettings;
+    for(const auto i : helpers::enumRange<GoodType>())
+        goodSettings[i] = InventorySetting(rand() % 5);
+    this->SetAllInventorySettings(hqPos, false, makeVector(goodSettings));
+    for(const auto i : helpers::enumRange<GoodType>())
+        BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(i), goodSettings[ConvertShields(i)]);
 
-    settings.clear();
-    settings.resize(NUM_WARE_TYPES);
-    this->SetAllInventorySettings(hqPos, false, settings);
-    settings.resize(NUM_JOB_TYPES);
-    this->SetAllInventorySettings(hqPos, true, settings);
+    std::fill(goodSettings.begin(), goodSettings.end(), InventorySetting(0));
+    this->SetAllInventorySettings(hqPos, false, makeVector(goodSettings));
+    std::fill(jobSettings.begin(), jobSettings.end(), InventorySetting(0));
+    this->SetAllInventorySettings(hqPos, true, makeVector(jobSettings));
 
-    unsigned numBoards = wh->GetNumRealWares(GD_BOARDS);
-    unsigned numWoodcutters = wh->GetNumRealFigures(JOB_WOODCUTTER);
-    this->SetInventorySetting(hqPos, GD_BOARDS, EInventorySetting::SEND);
+    unsigned numBoards = wh->GetNumRealWares(GoodType::Boards);
+    unsigned numWoodcutters = wh->GetNumRealFigures(Job::Woodcutter);
+    this->SetInventorySetting(hqPos, GoodType::Boards, EInventorySetting::SEND);
     // Nothing should happen
     RTTR_SKIP_GFS(100);
-    BOOST_REQUIRE_EQUAL(wh->GetNumRealWares(GD_BOARDS), numBoards);
-    this->SetInventorySetting(hqPos, GD_BOARDS, InventorySetting());
-    this->SetInventorySetting(hqPos, JOB_WOODCUTTER, EInventorySetting::SEND);
+    BOOST_REQUIRE_EQUAL(wh->GetNumRealWares(GoodType::Boards), numBoards);
+    this->SetInventorySetting(hqPos, GoodType::Boards, InventorySetting());
+    this->SetInventorySetting(hqPos, Job::Woodcutter, EInventorySetting::SEND);
     // Figure goes out and wanders
     RTTR_SKIP_GFS(100);
-    BOOST_REQUIRE_LT(wh->GetNumRealFigures(JOB_WOODCUTTER), numWoodcutters);
-    this->SetInventorySetting(hqPos, JOB_WOODCUTTER, InventorySetting());
+    BOOST_REQUIRE_LT(wh->GetNumRealFigures(Job::Woodcutter), numWoodcutters);
+    this->SetInventorySetting(hqPos, Job::Woodcutter, InventorySetting());
 
-    numWoodcutters = wh->GetNumRealFigures(JOB_WOODCUTTER);
+    numWoodcutters = wh->GetNumRealFigures(Job::Woodcutter);
     MapPoint whPos = hqPos + MapPoint(3, 0);
     BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_AFRICANS);
     this->BuildRoad(wh->GetFlag()->GetPos(), false, std::vector<Direction>(3, Direction::EAST));
-    this->SetInventorySetting(hqPos, GD_BOARDS, EInventorySetting::SEND);
+    this->SetInventorySetting(hqPos, GoodType::Boards, EInventorySetting::SEND);
     // Send some
     RTTR_SKIP_GFS(100);
-    BOOST_REQUIRE_LT(wh->GetNumRealWares(GD_BOARDS), numBoards);
-    this->SetInventorySetting(hqPos, GD_BOARDS, InventorySetting());
-    this->SetInventorySetting(hqPos, JOB_WOODCUTTER, EInventorySetting::SEND);
+    BOOST_REQUIRE_LT(wh->GetNumRealWares(GoodType::Boards), numBoards);
+    this->SetInventorySetting(hqPos, GoodType::Boards, InventorySetting());
+    this->SetInventorySetting(hqPos, Job::Woodcutter, EInventorySetting::SEND);
     // Nothing should happen
     RTTR_SKIP_GFS(100);
-    BOOST_REQUIRE_LT(wh->GetNumRealFigures(JOB_WOODCUTTER), numWoodcutters);
-    this->SetInventorySetting(hqPos, JOB_WOODCUTTER, InventorySetting());
+    BOOST_REQUIRE_LT(wh->GetNumRealFigures(Job::Woodcutter), numWoodcutters);
+    this->SetInventorySetting(hqPos, Job::Woodcutter, InventorySetting());
 }
 
 BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)

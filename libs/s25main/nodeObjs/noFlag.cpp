@@ -134,7 +134,8 @@ void noFlag::Draw(DrawPoint drawPt)
     for(unsigned i = wares.size(); i; --i)
     {
         if(wares[i - 1])
-            LOADER.GetMapImageN(2200 + wares[i - 1]->type)->DrawFull(drawPt + WARES_POS[i - 1]);
+            LOADER.GetMapImageN(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(wares[i - 1]->type))
+              ->DrawFull(drawPt + WARES_POS[i - 1]);
     }
 }
 

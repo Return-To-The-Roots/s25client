@@ -28,11 +28,11 @@ namespace AIJH {
 
 class AIPlayerJH;
 
-enum PositionSearchState
+enum class PositionSearchState
 {
-    SEARCH_IN_PROGRESS,
-    SEARCH_SUCCESSFUL,
-    SEARCH_FAILED
+    InProgress,
+    Successfull,
+    Failed
 };
 
 class PositionSearch

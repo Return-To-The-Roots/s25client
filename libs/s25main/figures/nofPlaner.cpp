@@ -29,7 +29,7 @@
 #include "gameData/JobConsts.h"
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
-    : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site),
+    : noFigure(Job::Planer, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site),
       pd(PD_NOTWORKING)
 {}
 
@@ -79,7 +79,7 @@ void nofPlaner::Walked()
     } else
     {
         /// Anfangen zu arbeiten
-        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[JOB_PLANER].work_length, 1);
+        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[Job::Planer].work_length, 1);
         state = STATE_PLANING;
     }
 }
@@ -126,7 +126,7 @@ void nofPlaner::Draw(DrawPoint drawPt)
         case STATE_FIGUREWORK:
         case STATE_WALKING:
         {
-            DrawWalkingBobJobs(drawPt, JOB_PLANER);
+            DrawWalkingBobJobs(drawPt, Job::Planer);
         }
         break;
         case STATE_PLANING:

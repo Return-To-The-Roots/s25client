@@ -57,45 +57,46 @@ const std::array<BuildingQuality, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BUILDING_S
 
 const std::array<BldWorkDescription, NUM_BUILDING_TYPES> SUPPRESS_UNUSED BLD_WORK_DESC = {{
   {}, // HQ
-  {JOB_PRIVATE, boost::none, WaresNeeded(GD_COINS), 1},
-  {JOB_PRIVATE, boost::none, WaresNeeded(GD_COINS), 2},
+  {Job::Private, boost::none, WaresNeeded(GoodType::Coins), 1},
+  {Job::Private, boost::none, WaresNeeded(GoodType::Coins), 2},
   {},
-  {JOB_PRIVATE, boost::none, WaresNeeded(GD_COINS), 4},
-  {},
-  {},
+  {Job::Private, boost::none, WaresNeeded(GoodType::Coins), 4},
   {},
   {},
-  {JOB_PRIVATE, boost::none, WaresNeeded(GD_COINS), 6},
-  {JOB_MINER, GD_STONES, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false},
-  {JOB_MINER, GD_COAL, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false},
-  {JOB_MINER, GD_IRON, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false},
-  {JOB_MINER, GD_GOLD, WaresNeeded(GD_FISH, GD_MEAT, GD_BREAD), 2, false},
-  {JOB_SCOUT}, // No production, just existence
   {},
-  {JOB_HELPER, boost::none, WaresNeeded(GD_STONES), 4},
-  {JOB_WOODCUTTER, GD_WOOD},
-  {JOB_FISHER, GD_FISH},
-  {JOB_STONEMASON, GD_STONES},
-  {JOB_FORESTER}, // Produces trees
-  {JOB_BUTCHER, GD_MEAT, WaresNeeded(GD_HAM)},
-  {JOB_HUNTER, GD_MEAT},
-  {JOB_BREWER, GD_BEER, WaresNeeded(GD_GRAIN, GD_WATER)},
-  {JOB_ARMORER, GD_SWORD, WaresNeeded(GD_IRON, GD_COAL)},
-  {JOB_METALWORKER, GD_TONGS, WaresNeeded(GD_IRON, GD_BOARDS)},
-  {JOB_IRONFOUNDER, GD_IRON, WaresNeeded(GD_IRONORE, GD_COAL)},
-  {JOB_CHARBURNER, GD_COAL, WaresNeeded(GD_WOOD, GD_GRAIN)},
-  {JOB_PIGBREEDER, GD_HAM, WaresNeeded(GD_GRAIN, GD_WATER)},
+  {},
+  {Job::Private, boost::none, WaresNeeded(GoodType::Coins), 6},
+  {Job::Miner, GoodType::Stones, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
+  {Job::Miner, GoodType::Coal, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
+  {Job::Miner, GoodType::Iron, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
+  {Job::Miner, GoodType::Gold, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
+  {Job::Scout}, // No production, just existence
+  {},
+  {Job::Helper, boost::none, WaresNeeded(GoodType::Stones), 4},
+  {Job::Woodcutter, GoodType::Wood},
+  {Job::Fisher, GoodType::Fish},
+  {Job::Stonemason, GoodType::Stones},
+  {Job::Forester}, // Produces trees
+  {Job::Butcher, GoodType::Meat, WaresNeeded(GoodType::Ham)},
+  {Job::Hunter, GoodType::Meat},
+  {Job::Brewer, GoodType::Beer, WaresNeeded(GoodType::Grain, GoodType::Water)},
+  {Job::Armorer, GoodType::Sword, WaresNeeded(GoodType::Iron, GoodType::Coal)},
+  {Job::Metalworker, GoodType::Tongs, WaresNeeded(GoodType::Iron, GoodType::Boards)},
+  {Job::IronFounder, GoodType::Iron, WaresNeeded(GoodType::IronOre, GoodType::Coal)},
+  {Job::CharBurner, GoodType::Coal, WaresNeeded(GoodType::Wood, GoodType::Grain)},
+  {Job::PigBreeder, GoodType::Ham, WaresNeeded(GoodType::Grain, GoodType::Water)},
   {}, // Storehouse
   {},
-  {JOB_MILLER, GD_FLOUR, WaresNeeded(GD_GRAIN)},
-  {JOB_BAKER, GD_BREAD, WaresNeeded(GD_FLOUR, GD_WATER)},
-  {JOB_CARPENTER, GD_BOARDS, WaresNeeded(GD_WOOD)},
-  {JOB_MINTER, GD_COINS, WaresNeeded(GD_GOLD, GD_COAL)},
-  {JOB_HELPER, GD_WATER},
-  {JOB_SHIPWRIGHT, GD_BOAT, WaresNeeded(GD_BOARDS)},
-  {JOB_FARMER, GD_GRAIN},
-  {JOB_DONKEYBREEDER, GD_NOTHING, WaresNeeded(GD_GRAIN, GD_WATER)}, // Produces a job. TODO: Better way
-  {},                                                               // Harbour
+  {Job::Miller, GoodType::Flour, WaresNeeded(GoodType::Grain)},
+  {Job::Baker, GoodType::Bread, WaresNeeded(GoodType::Flour, GoodType::Water)},
+  {Job::Carpenter, GoodType::Boards, WaresNeeded(GoodType::Wood)},
+  {Job::Minter, GoodType::Coins, WaresNeeded(GoodType::Gold, GoodType::Coal)},
+  {Job::Helper, GoodType::Water},
+  {Job::Shipwright, GoodType::Boat, WaresNeeded(GoodType::Boards)},
+  {Job::Farmer, GoodType::Grain},
+  {Job::DonkeyBreeder, GoodType::Nothing,
+   WaresNeeded(GoodType::Grain, GoodType::Water)}, // Produces a job. TODO: Better way
+  {},                                              // Harbour
 }};
 
 /// Smoke consts for all buildings and nations

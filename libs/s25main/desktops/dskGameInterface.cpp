@@ -1109,17 +1109,17 @@ void dskGameInterface::CI_PlayerLeft(const unsigned playerId)
     // Info-Meldung ausgeben
     std::string text =
       helpers::format(_("Player '%s' left the game!"), worldViewer.GetWorld().GetPlayer(playerId).name);
-    messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
+    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_RED);
     // Im Spiel anzeigen, dass die KI das Spiel betreten hat
     text = helpers::format(_("Player '%s' joined the game!"), "KI");
-    messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_GREEN);
+    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_GREEN);
 }
 
 void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
 {
     // TODO: print what has changed
     const std::string text = helpers::format(_("Note: Game settings changed by the server%s"), "");
-    messenger.AddMessage("", 0, CD_SYSTEM, text);
+    messenger.AddMessage("", 0, ChatDestination::System, text);
 }
 
 void dskGameInterface::CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg)
@@ -1130,25 +1130,25 @@ void dskGameInterface::CI_Chat(const unsigned playerId, const ChatDestination cd
 
 void dskGameInterface::CI_Async(const std::string& checksums_list)
 {
-    messenger.AddMessage("", 0, CD_SYSTEM, _("The Game is not in sync. Checksums of some players don't match."),
-                         COLOR_RED);
-    messenger.AddMessage("", 0, CD_SYSTEM, checksums_list, COLOR_YELLOW);
-    messenger.AddMessage("", 0, CD_SYSTEM, _("A auto-savegame is created..."), COLOR_RED);
+    messenger.AddMessage("", 0, ChatDestination::System,
+                         _("The Game is not in sync. Checksums of some players don't match."), COLOR_RED);
+    messenger.AddMessage("", 0, ChatDestination::System, checksums_list, COLOR_YELLOW);
+    messenger.AddMessage("", 0, ChatDestination::System, _("A auto-savegame is created..."), COLOR_RED);
 }
 
 void dskGameInterface::CI_ReplayAsync(const std::string& msg)
 {
-    messenger.AddMessage("", 0, CD_SYSTEM, msg, COLOR_RED);
+    messenger.AddMessage("", 0, ChatDestination::System, msg, COLOR_RED);
 }
 
 void dskGameInterface::CI_ReplayEndReached(const std::string& msg)
 {
-    messenger.AddMessage("", 0, CD_SYSTEM, msg, COLOR_BLUE);
+    messenger.AddMessage("", 0, ChatDestination::System, msg, COLOR_BLUE);
 }
 
 void dskGameInterface::CI_GamePaused()
 {
-    messenger.AddMessage(_("SYSTEM"), COLOR_GREY, CD_SYSTEM, _("Game was paused."));
+    messenger.AddMessage(_("SYSTEM"), COLOR_GREY, ChatDestination::System, _("Game was paused."));
 
     /// Straßenbau ggf. abbrechen, wenn aktiviert
     if(road.mode != RM_DISABLED)
@@ -1165,12 +1165,12 @@ void dskGameInterface::CI_GamePaused()
 
 void dskGameInterface::CI_GameResumed()
 {
-    messenger.AddMessage(_("SYSTEM"), COLOR_GREY, CD_SYSTEM, _("Game was resumed."));
+    messenger.AddMessage(_("SYSTEM"), COLOR_GREY, ChatDestination::System, _("Game was resumed."));
 }
 
 void dskGameInterface::CI_Error(const ClientError ce)
 {
-    messenger.AddMessage("", 0, CD_SYSTEM, ClientErrorToStr(ce), COLOR_RED);
+    messenger.AddMessage("", 0, ChatDestination::System, ClientErrorToStr(ce), COLOR_RED);
     GAMECLIENT.SetPause(true);
 }
 
@@ -1179,7 +1179,7 @@ void dskGameInterface::CI_Error(const ClientError ce)
  */
 void dskGameInterface::LC_Status_ConnectionLost()
 {
-    messenger.AddMessage("", 0, CD_SYSTEM, _("Lost connection to lobby!"), COLOR_RED);
+    messenger.AddMessage("", 0, ChatDestination::System, _("Lost connection to lobby!"), COLOR_RED);
 }
 
 /**
@@ -1187,7 +1187,7 @@ void dskGameInterface::LC_Status_ConnectionLost()
  */
 void dskGameInterface::LC_Status_Error(const std::string& error)
 {
-    messenger.AddMessage("", 0, CD_SYSTEM, error, COLOR_RED);
+    messenger.AddMessage("", 0, ChatDestination::System, error, COLOR_RED);
 }
 
 void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
@@ -1195,7 +1195,7 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
     // Meldung anzeigen
     std::string text = "Player '" + worldViewer.GetWorld().GetPlayer(player1).name + "' switched to player '"
                        + worldViewer.GetWorld().GetPlayer(player2).name + "'";
-    messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_YELLOW);
+    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_YELLOW);
 
     // Sichtbarkeiten und Minimap neu berechnen, wenn wir ein von den beiden Spielern sind
     const unsigned localPlayerId = worldViewer.GetPlayerId();
@@ -1216,7 +1216,7 @@ void dskGameInterface::GI_PlayerDefeated(const unsigned playerId)
 {
     const std::string text =
       helpers::format(_("Player '%s' was defeated!"), worldViewer.GetWorld().GetPlayer(playerId).name);
-    messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
+    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?
     if(playerId == worldViewer.GetPlayerId())
@@ -1322,7 +1322,7 @@ void dskGameInterface::GI_Winner(const unsigned playerId)
 {
     const std::string name = worldViewer.GetWorld().GetPlayer(playerId).name;
     const std::string text = (boost::format(_("Player '%s' is the winner!")) % name).str();
-    messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
+    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
     WINDOWMANAGER.Show(std::make_unique<iwVictory>(std::vector<std::string>(1, name)));
 }
 
@@ -1340,6 +1340,6 @@ void dskGameInterface::GI_TeamWinner(const unsigned playerMask)
     }
     const std::string text =
       (boost::format(_("%1% are the winners!")) % helpers::join(winners, ", ", _(" and "))).str();
-    messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_ORANGE);
+    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
     WINDOWMANAGER.Show(std::make_unique<iwVictory>(winners));
 }

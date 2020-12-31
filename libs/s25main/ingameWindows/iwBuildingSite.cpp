@@ -107,12 +107,12 @@ void iwBuildingSite::Msg_PaintAfter()
         // Die Waren
         for(unsigned char z = 0; z < wares_count; ++z)
         {
-            glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + (i == 0 ? GD_BOARDS : GD_STONES));
-            bitmap->DrawFull(waresPos, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040));
+            LOADER.GetWareTex(i == 0 ? GoodType::Boards : GoodType::Stones)
+              ->DrawFull(waresPos, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040));
 
             // Hammer wenn Ware verbaut
             if(z < wares_used)
-                LOADER.GetMapImageN(WARES_TEX_MAP_OFFSET + GD_HAMMER)->DrawFull(waresPos);
+                LOADER.GetWareTex(GoodType::Hammer)->DrawFull(waresPos);
             waresPos.x += 24;
         }
         curPos.y += 29;

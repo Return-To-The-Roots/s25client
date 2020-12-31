@@ -27,5 +27,5 @@ protected:
 public:
     virtual Position GetOrigin() const = 0;
     virtual Extent GetSize() const = 0;
-    virtual void DrawFull(const Position& dstPos, unsigned color) = 0;
+    virtual void DrawFull(const Position& dstPos, unsigned color = 0xFFFFFFFFu) = 0;
 };

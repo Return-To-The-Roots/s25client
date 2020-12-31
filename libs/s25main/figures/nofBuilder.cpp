@@ -35,7 +35,7 @@
 #include "gameData/BuildingProperties.h"
 
 nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
-    : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site),
+    : noFigure(Job::Builder, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site),
       building_steps_available(0)
 {
     // Sind wir schon an unsere Baustelle gleich hingesetzt worden (bei Häfen)?
@@ -174,7 +174,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
 
                     // Evtl Träger aus dem HQ wieder verwenden
                     owner.FindCarrierForAllRoads();
-                    owner.FindWarehouseForAllJobs(JOB_HELPER);
+                    owner.FindWarehouseForAllJobs(Job::Helper);
 
                     // Evtl gabs verlorene Waren, die jetzt in das WH wieder reinkönnen
                     owner.FindClientForLostWares();
@@ -292,7 +292,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
     {
         case STATE_FIGUREWORK:
         {
-            DrawWalkingBobJobs(drawPt, JOB_BUILDER);
+            DrawWalkingBobJobs(drawPt, Job::Builder);
         }
         break;
         case STATE_BUILDFREEWALK:
@@ -304,7 +304,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
             drawPt += building_site->GetDoorPoint();
 
             LOADER
-              .getBobSprite(building_site->GetNation(), JOB_BUILDER, GetCurMoveDir(),
+              .getBobSprite(building_site->GetNation(), Job::Builder, GetCurMoveDir(),
                             GAMECLIENT.Interpolate(12, current_ev) % 8u)
               .draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
         }

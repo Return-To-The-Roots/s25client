@@ -412,15 +412,16 @@ void dskCredits::DrawBobs()
         const auto job = randEnum<Job>();
 
         // exclude "headless" bobs
-        if(job == JOB_MILLER || job == JOB_BAKER || job == JOB_BREWER || job == JOB_ARMORER
-           || job == JOB_CHARBURNER /* Comes from another file */)
+        if(job == Job::Miller || job == Job::Baker || job == Job::Brewer || job == Job::Armorer
+           || job == Job::CharBurner /* Comes from another file */)
         {
-            // GD_SHIELDJAPANESE has no image? so randEnum<GoodType>() does not work?
-            b.id = GoodType(rand() % GD_HAM);
+            const auto ware = randEnum<GoodType>();
+            // Japanese shield is missing
+            b.id = rttr::enum_cast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
             b.hasWare = true;
         } else
         {
-            // only native nations are loaded, so randEnum<Nation>() does not work?
+            // only native nations are loaded
             b.id = JOB_SPRITE_CONSTS[job].getBobId(Nation(rand() % NUM_NATIVE_NATIONS));
             b.hasWare = false;
         }

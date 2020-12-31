@@ -28,6 +28,7 @@
 #include "world/GameWorld.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/JobTypes.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
 #include <boost/optional.hpp>
 #include <array>
@@ -35,12 +36,14 @@
 EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), gfLastUpdated(0)
 {
     constexpr auto specialGoodPool =
-      helpers::make_array(GD_TONGS, GD_HAMMER, GD_AXE, GD_SAW, GD_PICKAXE, GD_SHOVEL, GD_CRUCIBLE, GD_RODANDLINE,
-                          GD_SCYTHE, GD_CLEAVER, GD_ROLLINGPIN, GD_BOW);
+      helpers::make_array(GoodType::Tongs, GoodType::Hammer, GoodType::Axe, GoodType::Saw, GoodType::PickAxe,
+                          GoodType::Shovel, GoodType::Crucible, GoodType::RodAndLine, GoodType::Scythe,
+                          GoodType::Cleaver, GoodType::Rollingpin, GoodType::Bow);
 
-    constexpr auto commonGoodPool =
-      helpers::make_array(GD_BEER, GD_WATER, GD_BOAT, GD_SWORD, GD_IRON, GD_FLOUR, GD_FISH, GD_BREAD, GD_WOOD,
-                          GD_BOARDS, GD_STONES, GD_GRAIN, GD_COINS, GD_GOLD, GD_IRONORE, GD_COAL, GD_MEAT, GD_HAM);
+    constexpr auto commonGoodPool = helpers::make_array(
+      GoodType::Beer, GoodType::Water, GoodType::Boat, GoodType::Sword, GoodType::Iron, GoodType::Flour, GoodType::Fish,
+      GoodType::Bread, GoodType::Wood, GoodType::Boards, GoodType::Stones, GoodType::Grain, GoodType::Coins,
+      GoodType::Gold, GoodType::IronOre, GoodType::Coal, GoodType::Meat, GoodType::Ham);
 
     constexpr unsigned numGoodTypesToCollect = 7;
 
@@ -159,16 +162,16 @@ unsigned EconomyModeHandler::SumUpGood(GoodType good, const Inventory& Inventory
     unsigned retVal = Inventory.goods[good];
 
     // Add the tools used by workers to the good totals
-    for(unsigned j = 0; j < NUM_JOB_TYPES; j++)
+    for(const auto j : helpers::enumRange<Job>())
     {
-        boost::optional<GoodType> tool = JOB_CONSTS[(Job)j].tool;
+        boost::optional<GoodType> tool = JOB_CONSTS[j].tool;
         if(tool == good)
         {
             retVal += Inventory.people[j];
         }
     }
     // Add the weapons and beer used by soldiers to the good totals
-    if(good == GD_BEER || good == GD_SWORD || good == GD_SHIELDROMANS)
+    if(good == GoodType::Beer || good == GoodType::Sword || good == GoodType::ShieldRomans)
     {
         for(const auto& it : SOLDIER_JOBS)
         {
@@ -279,7 +282,8 @@ void EconomyModeHandler::HandleEvent(const unsigned)
 
 bool EconomyModeHandler::isOver() const
 {
-    return gwg->GetGGS().objective == GO_ECONOMYMODE && !isInfinite() && endFrame < GetEvMgr().GetCurrentGF();
+    return gwg->GetGGS().objective == GameObjective::EconomyMode && !isInfinite()
+           && endFrame < GetEvMgr().GetCurrentGF();
 }
 
 EconomyModeHandler::EconTeam::EconTeam(SerializedGameData& sgd, unsigned numGoodTypesToCollect)

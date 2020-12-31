@@ -55,7 +55,8 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
     // Sanity check
     BOOST_TEST(boundaryStonesMatch(world, expectedBoundaryStones));
     expectedBoundaryStones[world.GetIdx(MapPoint(7, 5))][BorderStonePos::HalfSouthEast] = 1u;
-    BOOST_TEST(boundaryStonesMatch(world, expectedBoundaryStones).message().str() == "0!=1 at (7, 5)[HalfSouthEast]");
+    BOOST_TEST(boundaryStonesMatch(world, expectedBoundaryStones).message().str()
+               == "0!=1 at (7, 5)[BorderStonePos::HalfSouthEast]");
 
     // Check some point in the middle and at 0,0 which causes wrapping
     for(const auto middlePt : {MapPoint(5, 5), MapPoint(0, 0)})

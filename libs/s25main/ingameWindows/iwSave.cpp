@@ -197,7 +197,7 @@ void iwLoad::SaveLoad()
     if(!table->GetSelection())
         return;
 
-    if(!GAMECLIENT.HostGame(csi, table->GetItemText(*table->GetSelection(), 4), MAPTYPE_SAVEGAME))
+    if(!GAMECLIENT.HostGame(csi, table->GetItemText(*table->GetSelection(), 4), MapType::Savegame))
     {
         // Server starten
         if(LOBBYCLIENT.IsLoggedIn())

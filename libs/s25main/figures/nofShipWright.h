@@ -33,7 +33,7 @@ private:
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short GetCarryID() const override { return 90; }
     /// Der Arbeiter erzeugt eine Ware
-    helpers::OptionalEnum<GoodType> ProduceWare() override { return GD_BOAT; }
+    helpers::OptionalEnum<GoodType> ProduceWare() override { return GoodType::Boat; }
 
     /// Startet das Laufen zu der Arbeitsstelle, dem Schiff
     void StartWalkingToShip();

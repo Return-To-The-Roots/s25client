@@ -1155,13 +1155,13 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
         // Je nach vorherigen Zustand und Einstellung entscheiden
         switch(GetGGS().exploration)
         {
-            case EXP_DISABLED:
-            case EXP_CLASSIC:
+            case Exploration::Disabled:
+            case Exploration::Classic:
                 // einmal sichtbare Bereiche bleiben erhalten
                 // nichts zu tun
                 break;
-            case EXP_FOGOFWAR:
-            case EXP_FOGOFWARE_EXPLORED:
+            case Exploration::FogOfWar:
+            case Exploration::FogOfWarExplored:
                 // wenn es mal sichtbar war, nun im Nebel des Krieges
                 if(visibility_before == Visibility::Visible)
                 {

@@ -273,7 +273,7 @@ void GameClient::StartGame(const unsigned random_init)
     }
 
     // If we have a savegame, start at its first GF, else at 0
-    unsigned startGF = (mapinfo.type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
+    unsigned startGF = (mapinfo.type == MapType::Savegame) ? mapinfo.savegame->start_gf : 0;
     // Create the game
     game =
       std::make_shared<Game>(gameLobby->getSettings(), startGF,
@@ -302,7 +302,7 @@ void GameClient::StartGame(const unsigned random_init)
         mapinfo.savegame->sgd.ReadSnapshot(game, *this);
     else
     {
-        RTTR_Assert(mapinfo.type != MAPTYPE_SAVEGAME);
+        RTTR_Assert(mapinfo.type != MapType::Savegame);
         /// Startbündnisse setzen
         for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
             gameWorld.GetPlayer(i).MakeStartPacts();
@@ -641,7 +641,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
         using std::swap;
         swap(gameLobby->getPlayer(msg.player), gameLobby->getPlayer(msg.player2));
         // Some things cannot be changed in savegames
-        if(mapinfo.type == MAPTYPE_SAVEGAME)
+        if(mapinfo.type == MapType::Savegame)
             gameLobby->getPlayer(msg.player).FixSwappedSaveSlot(gameLobby->getPlayer(msg.player2));
 
         // Evtl. sind wir betroffen?
@@ -759,7 +759,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Chat& msg)
 {
-    if(msg.destination == CD_SYSTEM)
+    if(msg.destination == ChatDestination::System)
     {
         SystemChat(msg.text, (msg.player < game->world_.GetNumPlayers()) ? msg.player : GetPlayerId());
         return true;
@@ -777,15 +777,15 @@ bool GameClient::OnGameMessage(const GameMessage_Chat& msg)
         GamePlayer& player = game->world_.GetPlayer(msg.player);
 
         // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
-        if(player.IsDefeated() && msg.destination != CD_ALL)
+        if(player.IsDefeated() && msg.destination != ChatDestination::All)
             return true;
         // Entscheiden, ob ich ein Gegner oder Vebündeter bin vom Absender
         bool ally = player.IsAlly(GetPlayerId());
 
         // Chatziel unerscheiden und ggf. nicht senden
-        if(!ally && msg.destination == CD_ALLIES)
+        if(!ally && msg.destination == ChatDestination::Allies)
             return true;
-        if(ally && msg.destination == CD_ENEMIES && msg.player != GetPlayerId())
+        if(ally && msg.destination == ChatDestination::Enemies && msg.player != GetPlayerId())
             return true;
     } else if(state == CS_CONFIG)
     {
@@ -986,7 +986,7 @@ bool GameClient::CreateLobby()
 
     switch(mapinfo.type)
     {
-        case MAPTYPE_OLDMAP:
+        case MapType::OldMap:
         {
             libsiedler2::Archiv map;
 
@@ -1003,7 +1003,7 @@ bool GameClient::CreateLobby()
             mapinfo.title = s25util::ansiToUTF8(header.getName());
         }
         break;
-        case MAPTYPE_SAVEGAME:
+        case MapType::Savegame:
             mapinfo.savegame = std::make_unique<Savegame>();
             if(!mapinfo.savegame->Load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
                 return false;
@@ -1017,7 +1017,7 @@ bool GameClient::CreateLobby()
     if(GetPlayerId() >= numPlayers)
         return false;
 
-    gameLobby = std::make_shared<GameLobby>(mapinfo.type == MAPTYPE_SAVEGAME, IsHost(), numPlayers);
+    gameLobby = std::make_shared<GameLobby>(mapinfo.type == MapType::Savegame, IsHost(), numPlayers);
     return true;
 }
 
@@ -1448,7 +1448,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     switch(mapinfo.type)
     {
         default: break;
-        case MAPTYPE_OLDMAP:
+        case MapType::OldMap:
         {
             // Richtigen Pfad zur Map erstellen
             bfs::path mapFilePath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / mapinfo.filepath.filename();
@@ -1471,7 +1471,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
             }
         }
         break;
-        case MAPTYPE_SAVEGAME: break;
+        case MapType::Savegame: break;
     }
 
     replayMode = true;
@@ -1603,12 +1603,12 @@ void GameClient::SystemChat(const std::string& text)
 void GameClient::SystemChat(const std::string& text, unsigned char fromPlayerIdx)
 {
     if(ci)
-        ci->CI_Chat(fromPlayerIdx, CD_SYSTEM, text);
+        ci->CI_Chat(fromPlayerIdx, ChatDestination::System, text);
 }
 
 bool GameClient::SaveToFile(const boost::filesystem::path& filepath)
 {
-    mainPlayer.sendMsg(GameMessage_Chat(GetPlayerId(), CD_SYSTEM, "Saving game..."));
+    mainPlayer.sendMsg(GameMessage_Chat(GetPlayerId(), ChatDestination::System, "Saving game..."));
 
     // Mond malen
     Position moonPos = VIDEODRIVER.GetMousePos();
@@ -1757,8 +1757,9 @@ std::shared_ptr<const NWFInfo> GameClient::GetNWFInfo() const
 unsigned GameClient::GetTournamentModeDuration() const
 {
     using namespace std::chrono;
-    if(game && unsigned(game->ggs_.objective) >= NUM_OBJECTIVES)
-        return minutes(TOURNAMENT_MODES_DURATION[game->ggs_.objective - NUM_OBJECTIVES]) / framesinfo.gf_length;
+    if(game && rttr::enum_cast(game->ggs_.objective) >= NUM_OBJECTIVES)
+        return minutes(TOURNAMENT_MODES_DURATION[rttr::enum_cast(game->ggs_.objective) - NUM_OBJECTIVES])
+               / framesinfo.gf_length;
     else
         return 0;
 }

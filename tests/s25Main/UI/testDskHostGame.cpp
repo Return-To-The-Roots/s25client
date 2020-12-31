@@ -79,7 +79,7 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
     // Send a chat message via lobby chat and game chat with either visible
     for(unsigned i = 0; i < 3; i++)
     {
-        ci->CI_Chat(0, CD_ALL, "Test2");
+        ci->CI_Chat(0, ChatDestination::All, "Test2");
         RTTR_REQUIRE_LOG_CONTAINS("<TestName>", false);
         li->LC_Chat("OtherPlayer", "Test");
         RTTR_REQUIRE_LOG_CONTAINS("<OtherPlayer>", false);

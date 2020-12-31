@@ -493,28 +493,31 @@ public:
 class SetInventorySetting : public Coords
 {
     GC_FRIEND_DECL;
-    /// Kategorie (Waren, Menschen), Status (Einlagern/Auslagern), type (welche Ware, welcher Mensch)
-    const bool isJob;
-    const uint8_t type;
-    const InventorySetting state;
+    boost::variant<GoodType, Job> what;
+    InventorySetting state;
 
 protected:
-    SetInventorySetting(const MapPoint pt, bool isJob, const uint8_t type, const InventorySetting state)
-        : Coords(SET_INVENTORY_SETTING, pt), isJob(isJob), type(type), state(state)
+    SetInventorySetting(const MapPoint pt, const boost::variant<GoodType, Job>& what, const InventorySetting state)
+        : Coords(SET_INVENTORY_SETTING, pt), what(what), state(state)
     {}
-    SetInventorySetting(Serializer& ser)
-        : Coords(SET_INVENTORY_SETTING, ser), isJob(ser.PopBool()), type(ser.PopUnsignedChar()),
-          state(static_cast<InventorySetting>(ser.PopUnsignedChar()))
-    {}
+    SetInventorySetting(Serializer& ser) : Coords(SET_INVENTORY_SETTING, ser)
+
+    {
+        if(ser.PopBool())
+            what = static_cast<Job>(ser.PopUnsignedChar());
+        else
+            what = static_cast<GoodType>(ser.PopUnsignedChar());
+        state = static_cast<InventorySetting>(ser.PopUnsignedChar());
+    }
 
 public:
     void Serialize(Serializer& ser) const override
     {
         Coords::Serialize(ser);
 
-        ser.PushBool(isJob);
-        ser.PushUnsignedChar(type);
-        ser.PushUnsignedChar(state.ToUnsignedChar());
+        ser.PushBool(holds_alternative<Job>(what));
+        boost::apply_visitor([&ser](auto type) { ser.PushUnsignedChar(static_cast<uint8_t>(type)); }, what);
+        ser.PushUnsignedChar(static_cast<uint8_t>(state));
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -534,7 +537,7 @@ protected:
     {}
     SetAllInventorySettings(Serializer& ser) : Coords(SET_ALL_INVENTORY_SETTINGS, ser), isJob(ser.PopBool())
     {
-        const uint32_t numStates = (isJob ? NUM_JOB_TYPES : NUM_WARE_TYPES);
+        const uint32_t numStates = (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>);
         states.reserve(numStates);
         for(unsigned i = 0; i < numStates; i++)
             states.push_back(static_cast<InventorySetting>(ser.PopUnsignedChar()));
@@ -546,9 +549,9 @@ public:
         Coords::Serialize(ser);
 
         ser.PushBool(isJob);
-        RTTR_Assert(states.size() == (isJob ? NUM_JOB_TYPES : NUM_WARE_TYPES));
+        RTTR_Assert(states.size() == (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>));
         for(auto state : states)
-            ser.PushUnsignedChar(state.ToUnsignedChar());
+            ser.PushUnsignedChar(static_cast<uint8_t>(state));
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;

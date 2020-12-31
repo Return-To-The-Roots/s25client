@@ -28,6 +28,7 @@
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
+#include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/NationConsts.h"
 #include <boost/format.hpp>
@@ -35,7 +36,7 @@
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, TradeRoute tr, const MapPoint homePos,
                                const MapPoint goalPos)
-    : noFigure(JOB_HELPER, pos, player), tr(std::move(tr)), successor(nullptr), homePos(homePos), goalPos(goalPos)
+    : noFigure(Job::Helper, pos, player), tr(std::move(tr)), successor(nullptr), homePos(homePos), goalPos(goalPos)
 {}
 
 nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
@@ -130,7 +131,7 @@ void nofTradeLeader::AbrogateWorkplace() {}
 
 void nofTradeLeader::Draw(DrawPoint drawPt)
 {
-    DrawWalkingBobJobs(drawPt, JOB_SCOUT);
+    DrawWalkingBobJobs(drawPt, Job::Scout);
 }
 
 void nofTradeLeader::LostWork() {}

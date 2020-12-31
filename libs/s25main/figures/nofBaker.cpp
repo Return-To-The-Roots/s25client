@@ -25,9 +25,10 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
+#include "gameTypes/Direction.h"
 
 nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_BAKER, pos, player, workplace)
+    : nofWorkman(Job::Baker, pos, player, workplace)
 {}
 
 nofBaker::nofBaker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
@@ -41,12 +42,20 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
         {{9, 9}, {11, 11}, {9, 13}, {7, 15}, {4, 13}, {1, 11}, {-2, 9}, {-5, 9}},
         {{9, 11}, {11, 13}, {9, 15}, {7, 17}, {4, 15}, {1, 13}, {-2, 11}, {-5, 9}},
         {{9, 11}, {11, 13}, {7, 17}, {3, 20}, {-1, 17}, {-5, 14}, {-9, 12}, {-13, 10}}}};
-    static const helpers::MultiArray<signed char, NUM_NATIONS, 6> walkdirection = {
-      {{3, 3, 2, 5, 0, 0}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}}};
+    static const helpers::MultiArray<Direction, NUM_NATIONS, 6> walkdirection = {
+      {{Direction::EAST, Direction::EAST, Direction::NORTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::WEST},
+       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
+        Direction::NORTHWEST},
+       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
+        Direction::NORTHWEST},
+       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
+        Direction::NORTHWEST},
+       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
+        Direction::NORTHWEST}}};
 
     unsigned max_id = 120;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
-    unsigned char wpNation = workplace->GetNation();
+    const Nation wpNation = workplace->GetNation();
     unsigned plColor = gwg->GetPlayer(player).color;
 
     // position zum rauslaufen berechnen
@@ -57,19 +66,19 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     if(now_id < 2) // hinauslaufen teil 1
     {
         LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][0]][now_id].draw(walkOutPos, COLOR_WHITE,
-                                                                                            plColor);
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][0], now_id)
+          .draw(walkOutPos, COLOR_WHITE, plColor);
     }
     if((now_id >= 2) && (now_id < 4)) // hinauslaufen teil 2
     {
         LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][1]][now_id].draw(walkOutPos, COLOR_WHITE,
-                                                                                            plColor);
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][1], now_id)
+          .draw(walkOutPos, COLOR_WHITE, plColor);
     }
     if((now_id >= 4) && (now_id < 8)) // hinauslaufen teil 3
     {
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][2]][now_id].draw(walkOutPos, COLOR_WHITE,
-                                                                                            plColor);
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][2], now_id)
+          .draw(walkOutPos, COLOR_WHITE, plColor);
     }
     if((now_id >= 8) && (now_id < 16)) // brot in den ofen schieben
     {
@@ -101,24 +110,24 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     }
     if((now_id >= max_id - 8) && (now_id < max_id - 4)) // reingehn teil 1
     {
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][3]][now_id % 8].draw(walkInPos, COLOR_WHITE,
-                                                                                                plColor);
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][3], now_id % 8)
+          .draw(walkInPos, COLOR_WHITE, plColor);
     }
     if((now_id >= max_id - 4) && (now_id < max_id - 2)) // reingehn teil 1
     {
         LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][4]][now_id % 8].draw(walkInPos, COLOR_WHITE,
-                                                                                                plColor);
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][4], now_id % 8)
+          .draw(walkInPos, COLOR_WHITE, plColor);
     }
     if((now_id >= max_id - 2) && (now_id < max_id)) // reingehn teil 2
     {
         LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[wpNation][JOB_BAKER][walkdirection[wpNation][5]][now_id % 8].draw(walkInPos, COLOR_WHITE,
-                                                                                                plColor);
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][5], now_id % 8)
+          .draw(walkInPos, COLOR_WHITE, plColor);
     }
 }
 
 helpers::OptionalEnum<GoodType> nofBaker::ProduceWare()
 {
-    return GD_BREAD;
+    return GoodType::Bread;
 }
