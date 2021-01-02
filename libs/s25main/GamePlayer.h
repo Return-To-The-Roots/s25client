@@ -53,15 +53,25 @@ class SerializedGameData;
 struct VisualSettings;
 class Ware;
 
+/// Zeigt an, ob ein Pakt besteht
+enum class PactState
+{
+    None,       /// Kein Pakt geschlossen
+    InProgress, /// Pakt angeboten, aber noch nicht akzeptiert
+    Accepted    /// Bündnis in Kraft
+};
+constexpr auto maxEnumValue(PactState)
+{
+    return PactState::Accepted;
+}
+
 /// Player in the game (belongs to world)
 class GamePlayer : public GamePlayerInfo
 {
 public:
     struct Statistic
     {
-        // 30 Datensätze pro Typ
-        helpers::MultiArray<unsigned, NUM_STAT_TYPES, NUM_STAT_STEPS> data;
-        // und das gleiche für die Warenstatistik
+        helpers::EnumArray<std::array<unsigned, NUM_STAT_STEPS>, StatisticType> data;
         helpers::MultiArray<uint16_t, NUM_STAT_MERCHANDISE_TYPES, NUM_STAT_STEPS> merchandiseData;
         // Index, der gerade 'vorne' (rechts im Statistikfenster) ist
         uint16_t currentIndex;
@@ -272,13 +282,6 @@ public:
     /// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will
     /// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
     void CancelPact(PactType pt, unsigned char otherPlayerIdx);
-    /// Zeigt an, ob ein Pakt besteht
-    enum PactState
-    {
-        NO_PACT = 0, /// Kein Pakt geschlossen
-        IN_PROGRESS, /// Pakt angeboten, aber noch nicht akzeptiert
-        ACCEPTED     /// Bündnis in Kraft
-    };
     PactState GetPactState(PactType pt, unsigned char other_player) const;
     /// Gibt die verbleibende Dauer zurück, die ein Bündnis noch laufen wird (DURATION_INFINITE = für immer)
     unsigned GetRemainingPactTime(PactType pt, unsigned char other_player) const;
@@ -332,11 +335,7 @@ public:
     void StatisticStep();
 
     const Statistic& GetStatistic(StatisticTime time) const { return statistic[time]; };
-    unsigned GetStatisticCurrentValue(unsigned idx) const
-    {
-        RTTR_Assert(idx < NUM_STAT_TYPES);
-        return (statisticCurrentData[idx]);
-    }
+    unsigned GetStatisticCurrentValue(StatisticType idx) const { return statisticCurrentData[idx]; }
 
     // Testet ob Notfallprogramm aktiviert werden muss und tut dies dann
     void TestForEmergencyProgramm();
@@ -419,13 +418,13 @@ private:
         void Serialize(SerializedGameData& sgd) const;
     };
     /// Bündnisse dieses Spielers mit anderen Spielern
-    helpers::MultiArray<Pact, MAX_PLAYERS, NUM_PACTS> pacts;
+    std::array<helpers::EnumArray<Pact, PactType>, MAX_PLAYERS> pacts;
 
     // Statistikdaten
-    std::array<Statistic, NUM_STAT_TIMES> statistic;
+    helpers::EnumArray<Statistic, StatisticTime> statistic;
 
     // Die Statistikwerte die 'aktuell' gemessen werden
-    std::array<int, NUM_STAT_TYPES> statisticCurrentData;
+    helpers::EnumArray<int, StatisticType> statisticCurrentData;
     std::array<int, NUM_STAT_MERCHANDISE_TYPES> statisticCurrentMerchandiseData;
 
     // Notfall-Programm aktiviert ja/nein (Es gehen nur noch Res an Holzfäller- und Sägewerk-Baustellen raus)

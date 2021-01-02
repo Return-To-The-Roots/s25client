@@ -17,6 +17,7 @@
 
 #include "RTTR_AssertError.h"
 #include "worldFixtures/SeaWorldWithGCExecution.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/ShipDirection.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
@@ -137,7 +138,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
             }
         }
         BOOST_REQUIRE(coastPtFound);
-        BOOST_REQUIRE_EQUAL(world.GetNode(curHarborPt).bq, BQ_HARBOR);
+        BOOST_REQUIRE_EQUAL(world.GetNode(curHarborPt).bq, BuildingQuality::Harbor);
     }
 }
 

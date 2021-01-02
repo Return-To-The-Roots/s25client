@@ -144,12 +144,12 @@ private:
 
     unsigned skiptogf;
 
-    enum ServerState
+    enum class ServerState
     {
-        SS_STOPPED = 0,
-        SS_CONFIG,
-        SS_LOADING,
-        SS_GAME
+        Stopped,
+        Config,
+        Loading,
+        Game
     } state;
 
     FramesInfo framesinfo;

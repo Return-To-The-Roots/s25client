@@ -40,7 +40,7 @@ class noShip : public noMovable
     /// Was macht das Schiff gerade?
     enum State
     {
-        STATE_IDLE = 0, /// Schiff hat nix zu tun und hängt irgendwo an der Küste rum
+        STATE_IDLE, /// Schiff hat nix zu tun und hängt irgendwo an der Küste rum
         STATE_GOTOHARBOR,
         STATE_EXPEDITION_LOADING,
         STATE_EXPEDITION_UNLOADING,
@@ -99,12 +99,12 @@ private:
     void HandleState_SeaAttackDriving();
     void HandleState_SeaAttackReturn();
 
-    enum Result
+    enum class Result
     {
-        DRIVING = 0,
-        GOAL_REACHED,
-        NO_ROUTE_FOUND,
-        HARBOR_DOESNT_EXIST
+        Driving,
+        GoalReached,
+        NoRouteFound,
+        HarborDoesntExist
     };
 
     /// Fährt weiter zu einem Hafen

@@ -124,8 +124,9 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         MapNode& node = world_.GetNodeInt(pt);
 
         std::fill(node.roads.begin(), node.roads.end(), PointRoad::None);
-        node.altitude = map.GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y);
-        unsigned char t1 = map.GetMapDataAt(MAP_TERRAIN1, pt.x, pt.y), t2 = map.GetMapDataAt(MAP_TERRAIN2, pt.x, pt.y);
+        node.altitude = map.GetMapDataAt(MapLayer::Altitude, pt.x, pt.y);
+        unsigned char t1 = map.GetMapDataAt(MapLayer::Terrain1, pt.x, pt.y),
+                      t2 = map.GetMapDataAt(MapLayer::Terrain2, pt.x, pt.y);
 
         // Hafenplatz?
         if((t1 & libsiedler2::HARBOR_MASK) != 0)
@@ -139,7 +140,7 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         if(!node.t1 || !node.t2)
             return false;
 
-        unsigned char mapResource = map.GetMapDataAt(MAP_RESOURCES, pt.x, pt.y);
+        unsigned char mapResource = map.GetMapDataAt(MapLayer::Resources, pt.x, pt.y);
         Resource resource;
         // Wasser?
         if(mapResource == 0x20 || mapResource == 0x21)
@@ -159,7 +160,7 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         node.reserved = false;
         node.owner = 0;
         std::fill(node.boundary_stones.begin(), node.boundary_stones.end(), 0);
-        node.bq = BQ_NOTHING;
+        node.bq = BuildingQuality::Nothing;
         node.seaId = 0;
 
         Visibility fowVisibility;
@@ -195,10 +196,10 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
 
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
-        unsigned char lc = map.GetMapDataAt(MAP_LANDSCAPE, pt.x, pt.y);
+        unsigned char lc = map.GetMapDataAt(MapLayer::Landscape, pt.x, pt.y);
         noBase* obj = nullptr;
 
-        switch(map.GetMapDataAt(MAP_TYPE, pt.x, pt.y))
+        switch(map.GetMapDataAt(MapLayer::Type, pt.x, pt.y))
         {
             // Player Startpos (provisorisch)
             case 0x80:
@@ -340,7 +341,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
 
             default:
 #ifndef NDEBUG
-                unsigned unknownObj = map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
+                unsigned unknownObj = map.GetMapDataAt(MapLayer::Type, pt.x, pt.y);
                 LOG.write(_("Unknown object at %1%: (0x%2$x: 0x%3$x)\n")) % pt % unknownObj % unsigned(lc);
 #endif // !NDEBUG
                 break;
@@ -356,7 +357,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
         Species species;
-        switch(map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y))
+        switch(map.GetMapDataAt(MapLayer::Animals, pt.x, pt.y))
         {
             // TODO: Which id is the polar bear?
             case 1:
@@ -372,7 +373,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
                 continue;
             default:
 #ifndef NDEBUG
-                unsigned unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
+                unsigned unknownAnimal = map.GetMapDataAt(MapLayer::Animals, pt.x, pt.y);
                 LOG.write(_("Unknown animal species at %1%: (0x%2$x)\n")) % pt % unknownAnimal;
 #endif // !NDEBUG
                 continue;

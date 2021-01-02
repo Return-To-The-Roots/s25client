@@ -34,11 +34,12 @@
 #include <stdexcept>
 
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, type, pos, player), state(BuildingSiteState::Building), planer(nullptr),
-      builder(nullptr), boards(0), stones(0), used_boards(0), used_stones(0), build_progress(0)
+    : noBaseBuilding(NodalObjectType::Buildingsite, type, pos, player), state(BuildingSiteState::Building),
+      planer(nullptr), builder(nullptr), boards(0), stones(0), used_boards(0), used_stones(0), build_progress(0)
 {
     // Überprüfen, ob die Baustelle erst noch planiert werden muss (nur bei mittleren/großen Gebäuden)
-    if(GetSize() == BQ_HOUSE || GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
+    if(GetSize() == BuildingQuality::House || GetSize() == BuildingQuality::Castle
+       || GetSize() == BuildingQuality::Harbor)
     {
         // Höhe auf dem Punkt, wo die Baustelle steht
         int altitude = gwg->GetNode(pos).altitude;
@@ -67,8 +68,8 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
 
 /// Konstruktor für Hafenbaustellen vom Schiff aus
 noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
-    : noBaseBuilding(NOP_BUILDINGSITE, BuildingType::HarborBuilding, pos, player), state(BuildingSiteState::Building),
-      planer(nullptr), boards(BUILDING_COSTS[BuildingType::HarborBuilding].boards),
+    : noBaseBuilding(NodalObjectType::Buildingsite, BuildingType::HarborBuilding, pos, player),
+      state(BuildingSiteState::Building), planer(nullptr), boards(BUILDING_COSTS[BuildingType::HarborBuilding].boards),
       stones(BUILDING_COSTS[BuildingType::HarborBuilding].stones), used_boards(0), used_stones(0), build_progress(0)
 {
     builder = new nofBuilder(pos, player, this);

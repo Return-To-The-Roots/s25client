@@ -66,6 +66,7 @@ class ITexture;
 struct KeyEvent;
 class MouseCoords;
 struct ScreenResizeEvent;
+enum class GroupSelectType : unsigned;
 
 /// Die Basisklasse der Fenster.
 class Window
@@ -171,8 +172,8 @@ public:
     ctrlList* AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
     ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                 const glFont* font, FontStyle format = {});
-    ctrlOptionGroup* AddOptionGroup(unsigned id, int select_type);
-    ctrlMultiSelectGroup* AddMultiSelectGroup(unsigned id, int select_type);
+    ctrlOptionGroup* AddOptionGroup(unsigned id, GroupSelectType select_type);
+    ctrlMultiSelectGroup* AddMultiSelectGroup(unsigned id, GroupSelectType select_type);
     ctrlPercent* AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
                             const glFont* font, const unsigned short* percentage);
     ctrlProgress* AddProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
@@ -272,12 +273,13 @@ public:
     {}
 
 protected:
-    enum ButtonState
+    enum class ButtonState
     {
-        BUTTON_UP = 0,
-        BUTTON_HOVER,
-        BUTTON_PRESSED
+        Up,
+        Hover,
+        Pressed
     };
+    friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
     using ControlMap = std::map<unsigned, Window*>;
 
     /// scales X- und Y values to fit the screen

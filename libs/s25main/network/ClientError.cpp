@@ -22,14 +22,14 @@ const char* ClientErrorToStr(ClientError error)
 {
     switch(error)
     {
-        case CE_INCOMPLETE_MESSAGE: return _("Too short Message received!");
-        case CE_SERVER_FULL: return _("This Server is full!");
-        case CE_WRONG_PW: return _("Wrong Password!");
-        case CE_CONNECTION_LOST: return _("Lost connection to server!");
-        case CE_INVALID_SERVERTYPE: return _("Wrong Server Type!");
-        case CE_MAP_TRANSMISSION: return _("Map transmission was corrupt!");
-        case CE_WRONG_VERSION: return _("Wrong client version");
-        case CE_INVALID_MAP: return _("Map is invalid or failed to load properly!");
+        case ClientError::IncompleteMessage: return _("Too short Message received!");
+        case ClientError::ServerFull: return _("This Server is full!");
+        case ClientError::WrongPassword: return _("Wrong Password!");
+        case ClientError::ConnectionLost: return _("Lost connection to server!");
+        case ClientError::InvalidServerType: return _("Wrong Server Type!");
+        case ClientError::MapTransmission: return _("Map transmission was corrupt!");
+        case ClientError::WrongVersion: return _("Wrong client version");
+        case ClientError::InvalidMap: return _("Map is invalid or failed to load properly!");
         default: return _("Unknown error!");
     }
 }

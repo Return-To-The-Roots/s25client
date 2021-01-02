@@ -81,21 +81,22 @@ unsigned LuaInterfaceGameBase::GetLocalPlayerIdx() const
 
 void LuaInterfaceGameBase::MsgBox(const std::string& title, const std::string& msg, bool isError)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MSB_OK,
-                                                  isError ? MSB_EXCLAMATIONRED : MSB_EXCLAMATIONGREEN));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MsgboxButton::Ok,
+                                                  isError ? MsgboxIcon::ExclamationRed : MsgboxIcon::ExclamationGreen));
 }
 
 void LuaInterfaceGameBase::MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile,
                                     unsigned iconIdx)
 {
     WINDOWMANAGER.Show(
-      std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MSB_OK, ResourceId::make(iconFile), iconIdx));
+      std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MsgboxButton::Ok, ResourceId::make(iconFile), iconIdx));
 }
 
 void LuaInterfaceGameBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile,
                                      unsigned iconIdx, int iconX, int iconY)
 {
-    auto msgBox = std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MSB_OK, ResourceId::make(iconFile), iconIdx);
+    auto msgBox =
+      std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MsgboxButton::Ok, ResourceId::make(iconFile), iconIdx);
     msgBox->MoveIcon(DrawPoint(iconX, iconY));
     WINDOWMANAGER.Show(std::move(msgBox));
 }

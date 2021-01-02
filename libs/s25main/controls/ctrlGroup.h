@@ -21,6 +21,13 @@
 class MouseCoords;
 struct KeyEvent;
 
+enum class GroupSelectType : unsigned
+{
+    Illuminate,
+    Check,
+    Show
+};
+
 class ctrlGroup : public Window
 {
 public:

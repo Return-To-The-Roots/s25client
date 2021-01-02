@@ -18,5 +18,5 @@
 #include "gameTypes/PactTypes.h"
 #include "mygettext/mygettext.h"
 
-const std::array<const char*, NUM_PACTS> PACT_NAMES = {gettext_noop("Treaty of alliance"),
-                                                       gettext_noop("Non-aggression pact")};
+const helpers::EnumArray<const char*, PactType> PACT_NAMES = {gettext_noop("Treaty of alliance"),
+                                                              gettext_noop("Non-aggression pact")};

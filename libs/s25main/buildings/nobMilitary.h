@@ -32,19 +32,23 @@ class SerializedGameData;
 class noFigure;
 class GameEvent;
 
+/// Distance to the next enemy border
+enum class FrontierDistance : uint8_t
+{
+    Far,    /// next military building is far away
+    Mid,    /// Next military building is in reachable range
+    Harbor, /// Military building is near a harbor
+    Near    /// Military building is next to a border
+};
+constexpr auto maxEnumValue(FrontierDistance)
+{
+    return FrontierDistance::Near;
+}
+
 /// Stellt ein Militärgebäude beliebiger Größe (also von Baracke bis Festung) dar
 class nobMilitary : public nobBaseMilitary
 {
 public:
-    /// Distance to the next enemy border
-    enum FrontierDistance
-    {
-        DIST_FAR = 0, /// next military building is far away
-        DIST_MID,     /// Next military building is in reachable range
-        DIST_HARBOR,  /// Military building is near a harbor
-        DIST_NEAR     /// Military building is next to a border
-    };
-
 private:
     /// wurde das Gebäude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet
     /// werden?)
@@ -127,7 +131,7 @@ public:
 
     /// Wird von gegnerischem Gebäude aufgerufen, wenn sie neu gebaut worden sind und es so ein neues Gebäude im Umkreis
     /// gibt setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung
-    void NewEnemyMilitaryBuilding(unsigned short distance);
+    void NewEnemyMilitaryBuilding(FrontierDistance distance);
     bool IsUseless() const;
     bool IsAttackable(unsigned playerIdx) const override;
     /// Gibt Distanz zurück
@@ -136,7 +140,7 @@ public:
     /// Berechnet die gewünschte Besatzung je nach Grenznähe
     unsigned CalcRequiredNumTroops() const;
     /// Calculate the required troop count for the given setting
-    unsigned CalcRequiredNumTroops(unsigned assumedFrontierDistance, unsigned settingValue) const;
+    unsigned CalcRequiredNumTroops(FrontierDistance assumedFrontierDistance, unsigned settingValue) const;
     /// Reguliert die Besatzung des Gebäudes je nach Grenznähe, bestellt neue Soldaten und schickt überflüssige raus
     void RegulateTroops();
     /// Gibt aktuelle Besetzung zurück

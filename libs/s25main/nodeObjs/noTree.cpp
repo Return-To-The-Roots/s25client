@@ -35,7 +35,7 @@
 unsigned short noTree::DRAW_COUNTER = 0;
 
 noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char size)
-    : noCoordBase(NOP_TREE, pos), type(type), size(size), event(nullptr), produce_animal_event(nullptr)
+    : noCoordBase(NodalObjectType::Tree, pos), type(type), size(size), event(nullptr), produce_animal_event(nullptr)
 {
     // Wenn der Baum klein ist, muss später mal wachsen
     if(!size)

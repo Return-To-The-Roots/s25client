@@ -26,14 +26,14 @@
 #include "s25util/Log.h"
 
 noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation /*nation*/)
-    : noBaseBuilding(NOP_BUILDING, type, pos, player), opendoor(0)
+    : noBaseBuilding(NodalObjectType::Building, type, pos, player), opendoor(0)
 {}
 
 void noBuilding::Destroy()
 {
     // First we have to remove the building from the map and the player
     // Replace by fire (huts and mines become small fire, rest big)
-    gwg->SetNO(pos, new noFire(pos, GetSize() != BQ_HUT && GetSize() != BQ_MINE), true);
+    gwg->SetNO(pos, new noFire(pos, GetSize() != BuildingQuality::Hut && GetSize() != BuildingQuality::Mine), true);
     gwg->GetPlayer(player).RemoveBuilding(this, bldType_);
     // Destroy derived buildings
     DestroyBuilding();

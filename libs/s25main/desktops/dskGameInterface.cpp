@@ -106,7 +106,7 @@ dskGameInterface::dskGameInterface(const std::shared_ptr<Game>& game, std::share
       actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX),
       isCheatModeOn(false)
 {
-    road.mode = RM_DISABLED;
+    road.mode = RoadBuildMode::Disabled;
     road.point = MapPoint(0, 0);
     road.start = MapPoint(0, 0);
 
@@ -204,7 +204,7 @@ void dskGameInterface::SetActive(bool activate)
 void dskGameInterface::StopScrolling()
 {
     isScrolling = false;
-    WINDOWMANAGER.SetCursor(road.mode == RM_DISABLED ? Cursor::Hand : Cursor::Remove);
+    WINDOWMANAGER.SetCursor(road.mode == RoadBuildMode::Disabled ? Cursor::Hand : Cursor::Remove);
 }
 
 void dskGameInterface::StartScrolling(const Position& mousePos)
@@ -417,7 +417,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         StopScrolling();
 
     // Unterscheiden je nachdem Straäcnbaumodus an oder aus ist
-    if(road.mode)
+    if(road.mode != RoadBuildMode::Disabled)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
         const MapPoint selPt = gwv.GetSelectedPt();
@@ -432,12 +432,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             WINDOWMANAGER.Close((unsigned)CGI_ROADWINDOW);
 
             // Ist das ein gültiger neuer Wegpunkt?
-            if(worldViewer.IsRoadAvailable(road.mode == RM_BOAT, selPt) && worldViewer.IsPlayerTerritory(selPt))
+            if(worldViewer.IsRoadAvailable(road.mode == RoadBuildMode::Boat, selPt)
+               && worldViewer.IsPlayerTerritory(selPt))
             {
                 MapPoint targetPt = selPt;
                 if(!BuildRoadPart(targetPt))
                     ShowRoadWindow(mc.GetPos());
-            } else if(worldViewer.GetBQ(selPt) != BQ_NOTHING)
+            } else if(worldViewer.GetBQ(selPt) != BuildingQuality::Nothing)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
                 unsigned idOnRoad = GetIdInCurBuildRoad(selPt);
@@ -456,7 +457,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
-            else if(worldViewer.GetWorld().GetNO(selPt)->GetType() == NOP_FLAG && selPt != road.start)
+            else if(worldViewer.GetWorld().GetNO(selPt)->GetType() == NodalObjectType::Flag && selPt != road.start)
             {
                 MapPoint targetPt = selPt;
                 if(BuildRoadPart(targetPt))
@@ -492,7 +493,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 
         // Evtl ists nen Haus? (unser Haus)
         const noBase& selObj = *worldViewer.GetWorld().GetNO(cSel);
-        if(selObj.GetType() == NOP_BUILDING && worldViewer.IsOwner(cSel))
+        if(selObj.GetType() == NodalObjectType::Building && worldViewer.IsOwner(cSel))
         {
             if(auto* wnd = WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
             {
@@ -522,7 +523,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             return true;
         }
         // oder vielleicht eine Baustelle?
-        else if(selObj.GetType() == NOP_BUILDINGSITE && worldViewer.IsOwner(cSel))
+        else if(selObj.GetType() == NodalObjectType::Buildingsite && worldViewer.IsOwner(cSel))
         {
             if(!WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
                 WINDOWMANAGER.Show(
@@ -536,18 +537,18 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         {
             const BuildingQuality bq = worldViewer.GetBQ(cSel);
             // Kann hier was gebaut werden?
-            if(bq >= BQ_HUT)
+            if(bq >= BuildingQuality::Hut)
             {
                 action_tabs.build = true;
 
                 // Welches Gebäude kann gebaut werden?
                 switch(bq)
                 {
-                    case BQ_HUT: action_tabs.build_tabs = iwAction::Tabs::BT_HUT; break;
-                    case BQ_HOUSE: action_tabs.build_tabs = iwAction::Tabs::BT_HOUSE; break;
-                    case BQ_CASTLE: action_tabs.build_tabs = iwAction::Tabs::BT_CASTLE; break;
-                    case BQ_MINE: action_tabs.build_tabs = iwAction::Tabs::BT_MINE; break;
-                    case BQ_HARBOR: action_tabs.build_tabs = iwAction::Tabs::BT_HARBOR; break;
+                    case BuildingQuality::Hut: action_tabs.build_tabs = iwAction::Tabs::BT_HUT; break;
+                    case BuildingQuality::House: action_tabs.build_tabs = iwAction::Tabs::BT_HOUSE; break;
+                    case BuildingQuality::Castle: action_tabs.build_tabs = iwAction::Tabs::BT_CASTLE; break;
+                    case BuildingQuality::Mine: action_tabs.build_tabs = iwAction::Tabs::BT_MINE; break;
+                    case BuildingQuality::Harbor: action_tabs.build_tabs = iwAction::Tabs::BT_HARBOR; break;
                     default: break;
                 }
 
@@ -558,12 +559,12 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 // Militärgebäude gebaut werden
                 enable_military_buildings =
                   !worldViewer.GetWorld().IsMilitaryBuildingNearNode(cSel, worldViewer.GetPlayerId());
-            } else if(bq == BQ_FLAG)
+            } else if(bq == BuildingQuality::Flag)
                 action_tabs.setflag = true;
-            else if(selObj.GetType() == NOP_FLAG)
+            else if(selObj.GetType() == NodalObjectType::Flag)
                 action_tabs.flag = true;
 
-            if(selObj.GetType() != NOP_FLAG && selObj.GetType() != NOP_BUILDING)
+            if(selObj.GetType() != NodalObjectType::Flag && selObj.GetType() != NodalObjectType::Building)
             {
                 // Check if there are roads
                 for(const Direction dir : helpers::EnumRange<Direction>{})
@@ -580,7 +581,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
         else if(worldViewer.GetVisibility(cSel) == Visibility::Visible)
         {
-            if(selObj.GetType() == NOP_BUILDING)
+            if(selObj.GetType() == NodalObjectType::Building)
             {
                 const auto* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel); //-V807
                 BuildingType bt = building->GetBuildingType();
@@ -713,7 +714,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
 #else
             const bool allowHumanAI = true;
 #endif // !NDEBUG
-            if(GAMECLIENT.GetState() == GameClient::CS_GAME && allowHumanAI && !GAMECLIENT.IsReplayModeOn())
+            if(GAMECLIENT.GetState() == ClientState::Game && allowHumanAI && !GAMECLIENT.IsReplayModeOn())
                 GAMECLIENT.ToggleHumanAIPlayer();
             return true;
         }
@@ -932,7 +933,7 @@ void dskGameInterface::GI_StartRoadBuilding(const MapPoint startPt, bool waterRo
     if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.IsPaused())
         return;
 
-    road.mode = waterRoad ? RM_BOAT : RM_NORMAL;
+    road.mode = waterRoad ? RoadBuildMode::Boat : RoadBuildMode::Normal;
     road.route.clear();
     road.start = road.point = startPt;
     WINDOWMANAGER.SetCursor(Cursor::Remove);
@@ -940,22 +941,23 @@ void dskGameInterface::GI_StartRoadBuilding(const MapPoint startPt, bool waterRo
 
 void dskGameInterface::GI_CancelRoadBuilding()
 {
-    if(road.mode == RM_DISABLED)
+    if(road.mode == RoadBuildMode::Disabled)
         return;
-    road.mode = RM_DISABLED;
+    road.mode = RoadBuildMode::Disabled;
     worldViewer.RemoveVisualRoad(road.start, road.route);
     WINDOWMANAGER.SetCursor(isScrolling ? Cursor::Scroll : Cursor::Hand);
 }
 
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
 {
-    std::vector<Direction> new_route = FindPathForRoad(worldViewer, road.point, cSel, road.mode == RM_BOAT, 100);
+    std::vector<Direction> new_route =
+      FindPathForRoad(worldViewer, road.point, cSel, road.mode == RoadBuildMode::Boat, 100);
     // Weg gefunden?
     if(new_route.empty())
         return false;
 
     // Test on water way length
-    if(road.mode == RM_BOAT)
+    if(road.mode == RoadBuildMode::Boat)
     {
         unsigned char index = worldViewer.GetWorld().GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
 
@@ -979,7 +981,8 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
     // Weg (visuell) bauen
     for(const auto dir : new_route)
     {
-        worldViewer.SetVisiblePointRoad(road.point, dir, (road.mode == RM_BOAT) ? PointRoad::Boat : PointRoad::Normal);
+        worldViewer.SetVisiblePointRoad(road.point, dir,
+                                        (road.mode == RoadBuildMode::Boat) ? PointRoad::Boat : PointRoad::Normal);
         worldViewer.RecalcBQForRoad(road.point);
         road.point = worldViewer.GetWorld().GetNeighbour(road.point, dir);
     }
@@ -1009,7 +1012,7 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
 void dskGameInterface::ShowRoadWindow(const Position& mousePos)
 {
     roadwindow = &WINDOWMANAGER.Show(
-      std::make_unique<iwRoadWindow>(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos), true);
+      std::make_unique<iwRoadWindow>(*this, worldViewer.GetBQ(road.point) != BuildingQuality::Nothing, mousePos), true);
 }
 
 void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
@@ -1032,7 +1035,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     {
         if(world.GetNO(world.GetNeighbour(cSel, Direction::NORTHWEST))->GetGOT() == GOT_NOB_HQ)
             params = iwAction::AWFT_HQ;
-        else if(world.GetNO(cSel)->GetType() == NOP_FLAG)
+        else if(world.GetNO(cSel)->GetType() == NodalObjectType::Flag)
         {
             if(world.GetSpecObj<noFlag>(cSel)->GetFlagType() == FlagType::Water)
                 params = iwAction::AWFT_WATERFLAG;
@@ -1075,8 +1078,8 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
 
 void dskGameInterface::GI_BuildRoad()
 {
-    GAMECLIENT.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
-    road.mode = RM_DISABLED;
+    GAMECLIENT.BuildRoad(road.start, road.mode == RoadBuildMode::Boat, road.route);
+    road.mode = RoadBuildMode::Disabled;
     WINDOWMANAGER.SetCursor(Cursor::Hand);
 }
 
@@ -1091,7 +1094,7 @@ void dskGameInterface::GI_WindowClosed(Window* wnd)
 void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
 {
     // Im Wegbaumodus und haben wir von hier eine Flagge gebaut?
-    if(road.mode != RM_DISABLED && road.start == pt)
+    if(road.mode != RoadBuildMode::Disabled && road.start == pt)
     {
         GI_CancelRoadBuilding();
     }
@@ -1151,7 +1154,7 @@ void dskGameInterface::CI_GamePaused()
     messenger.AddMessage(_("SYSTEM"), COLOR_GREY, ChatDestination::System, _("Game was paused."));
 
     /// Straßenbau ggf. abbrechen, wenn aktiviert
-    if(road.mode != RM_DISABLED)
+    if(road.mode != RoadBuildMode::Disabled)
     {
         // Fenster schließen
         if(roadwindow)

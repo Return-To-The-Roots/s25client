@@ -86,7 +86,7 @@ unsigned short nofWoodcutter::GetCarryID() const
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofWoodcutter::WorkStarted()
 {
-    RTTR_Assert(gwg->GetSpecObj<noTree>(dest)->GetType() == NOP_TREE);
+    RTTR_Assert(gwg->GetSpecObj<noTree>(dest)->GetType() == NodalObjectType::Tree);
 
     gwg->GetSpecObj<noTree>(dest)->FallSoon();
 }
@@ -104,7 +104,7 @@ nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt) cons
     // Gibt es hier an dieser Position einen Baum und ist dieser ausgewachsen?
     // außerdem keine Ananas fällen!
     const noBase* no = gwg->GetNO(pt);
-    if(no->GetType() == NOP_TREE)
+    if(no->GetType() == NodalObjectType::Tree)
     {
         if(static_cast<const noTree*>(no)->IsFullyGrown() && static_cast<const noTree*>(no)->ProducesWood())
             return PQ_CLASS1;

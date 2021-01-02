@@ -19,16 +19,16 @@
 #pragma once
 
 /// Fehler, die vom Client gemeldet werden
-enum ClientError
+enum class ClientError
 {
-    CE_INCOMPLETE_MESSAGE,
-    CE_SERVER_FULL,
-    CE_WRONG_PW,
-    CE_CONNECTION_LOST,
-    CE_INVALID_SERVERTYPE,
-    CE_MAP_TRANSMISSION,
-    CE_WRONG_VERSION,
-    CE_INVALID_MAP
+    IncompleteMessage,
+    ServerFull,
+    WrongPassword,
+    ConnectionLost,
+    InvalidServerType,
+    MapTransmission,
+    WrongVersion,
+    InvalidMap
 };
 
 const char* ClientErrorToStr(ClientError error);

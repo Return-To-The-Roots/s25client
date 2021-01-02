@@ -78,7 +78,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     {
         // Jenachdem Boot oder Schiff anzeigen
         unsigned io_dat_id =
-          (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::BOATS) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
+          (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::Mode::Boats) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
         AddImageButton(11, DrawPoint(130, 147), Extent(43, 32), TC_GREY, LOADER.GetImageN("io", io_dat_id));
     }
 
@@ -201,8 +201,8 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer
         {
-            if(gcFactory.SetShipYardMode(building->GetPos(),
-                                         static_cast<const nobShipYard*>(building)->GetMode() == nobShipYard::BOATS))
+            if(gcFactory.SetShipYardMode(building->GetPos(), static_cast<const nobShipYard*>(building)->GetMode()
+                                                               == nobShipYard::Mode::Boats))
             {
                 // Auch optisch den Button umstellen
                 auto* button = GetCtrl<ctrlImageButton>(11);

@@ -20,7 +20,7 @@
 /// Texturfarben
 enum TextureColor
 {
-    TC_GREY = 0,
+    TC_GREY,
     TC_RED1,
     TC_GREEN1,
     TC_GREEN2,

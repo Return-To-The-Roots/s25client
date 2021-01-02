@@ -16,12 +16,14 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "LandscapeDesc.h"
+#include "helpers/EnumRange.h"
 #include "lua/CheckedLuaTable.h"
 #include "lua/LuaHelpers.h"
 
 LandscapeDesc::LandscapeDesc(CheckedLuaTable luaData, const WorldDescription&)
 {
-    static const std::array<std::string, NUM_ROADTYPES> roadTypeNames = {{"normal", "upgraded", "boat", "mountain"}};
+    static const helpers::EnumArray<std::string, LandRoadType> roadTypeNames = {
+      {"normal", "upgraded", "boat", "mountain"}};
     luaData.getOrThrow(name, "name");
     luaData.getOrThrow(mapGfxPath, "mapGfx");
     lua::validatePath(mapGfxPath);
@@ -29,7 +31,7 @@ LandscapeDesc::LandscapeDesc(CheckedLuaTable luaData, const WorldDescription&)
     isWinter = luaData.getOrDefault("isWinter", false);
 
     CheckedLuaTable roadData = luaData.getOrThrow<CheckedLuaTable>("roads");
-    for(unsigned i = 0; i < roadTypeNames.size(); i++)
+    for(const auto i : helpers::enumRange<LandRoadType>())
     {
         CheckedLuaTable texData = roadData.getOrThrow<CheckedLuaTable>(roadTypeNames[i]);
         texData.getOrThrow(roadTexDesc[i].texturePath, "texture");

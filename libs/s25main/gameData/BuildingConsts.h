@@ -33,10 +33,16 @@ constexpr helpers::EnumArray<BuildingCost, BuildingType> SUPPRESS_UNUSED BUILDIN
 
 // Bauqualitäten der Gebäude
 constexpr helpers::EnumArray<BuildingQuality, BuildingType> SUPPRESS_UNUSED BUILDING_SIZE = {
-  {BQ_CASTLE,  BQ_HUT,   BQ_HUT,   BQ_NOTHING, BQ_HOUSE, BQ_NOTHING, BQ_NOTHING, BQ_NOTHING, BQ_NOTHING, BQ_CASTLE,
-   BQ_MINE,    BQ_MINE,  BQ_MINE,  BQ_MINE,    BQ_HUT,   BQ_NOTHING, BQ_HOUSE,   BQ_HUT,     BQ_HUT,     BQ_HUT,
-   BQ_HUT,     BQ_HOUSE, BQ_HUT,   BQ_HOUSE,   BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HOUSE,
-   BQ_NOTHING, BQ_HOUSE, BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE, BQ_HUT,     BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HARBOR}};
+  {BuildingQuality::Castle,  BuildingQuality::Hut,     BuildingQuality::Hut,     BuildingQuality::Nothing,
+   BuildingQuality::House,   BuildingQuality::Nothing, BuildingQuality::Nothing, BuildingQuality::Nothing,
+   BuildingQuality::Nothing, BuildingQuality::Castle,  BuildingQuality::Mine,    BuildingQuality::Mine,
+   BuildingQuality::Mine,    BuildingQuality::Mine,    BuildingQuality::Hut,     BuildingQuality::Nothing,
+   BuildingQuality::House,   BuildingQuality::Hut,     BuildingQuality::Hut,     BuildingQuality::Hut,
+   BuildingQuality::Hut,     BuildingQuality::House,   BuildingQuality::Hut,     BuildingQuality::House,
+   BuildingQuality::House,   BuildingQuality::House,   BuildingQuality::House,   BuildingQuality::Castle,
+   BuildingQuality::Castle,  BuildingQuality::House,   BuildingQuality::Nothing, BuildingQuality::House,
+   BuildingQuality::House,   BuildingQuality::House,   BuildingQuality::House,   BuildingQuality::Hut,
+   BuildingQuality::House,   BuildingQuality::Castle,  BuildingQuality::Castle,  BuildingQuality::Harbor}};
 
 const helpers::EnumArray<BldWorkDescription, BuildingType> SUPPRESS_UNUSED BLD_WORK_DESC = {{
   {}, // HQ

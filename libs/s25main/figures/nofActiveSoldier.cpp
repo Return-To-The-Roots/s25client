@@ -189,7 +189,7 @@ void nofActiveSoldier::ExpelEnemies()
     const std::list<noBase*>& fieldFigures = gwg->GetFigures(pos);
     for(auto* fieldFigure : fieldFigures)
     {
-        if(fieldFigure->GetType() == NOP_FIGURE)
+        if(fieldFigure->GetType() == NodalObjectType::Figure)
             figures.push_back(static_cast<noFigure*>(fieldFigure));
     }
 
@@ -201,7 +201,7 @@ void nofActiveSoldier::ExpelEnemies()
         {
             // Normal settler?
             // Don't disturb hedgehogs and rabbits!
-            if(fieldFigure->GetType() == NOP_FIGURE)
+            if(fieldFigure->GetType() == NodalObjectType::Figure)
             {
                 auto* fig = static_cast<noFigure*>(fieldFigure);
                 // The people have to be either on the point itself or they have to walk there

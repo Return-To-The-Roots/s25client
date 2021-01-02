@@ -107,7 +107,7 @@ helpers::OptionalEnum<Direction> GameWorldGame::FindTradePath(const MapPoint sta
     if(owner != 0 && !GetPlayer(player).IsAlly(owner - 1))
         return boost::none;
 
-    RTTR_Assert(GetNO(dest)->GetType() == NOP_FLAG); // Goal should be the flag of a wh
+    RTTR_Assert(GetNO(dest)->GetType() == NodalObjectType::Flag); // Goal should be the flag of a wh
 
     if(!PathConditionHuman(*this).IsNodeOk(dest))
         return boost::none;

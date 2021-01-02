@@ -34,14 +34,14 @@ class IngameMinimap : public Minimap
     std::vector<MapPoint> nodesToUpdate;
 
     /// Für jeden einzelnen Knoten speichern, welches Objekt hier dominiert, also wessen Pixel angezeigt wird
-    enum DrawnObject
+    enum class DrawnObject
     {
-        DO_INVALID = 0,
-        DO_INVISIBLE, /// im im vollständigem Dunklen
-        DO_TERRAIN,   /// Nur Terrain oder Baum und Granit ohne irgendwas
-        DO_PLAYER,    /// Nur Terrain oder Baum und Granit mit Spielerterritorium dazu
-        DO_BUILDING,  /// Gebäude
-        DO_ROAD       /// Straße
+        Invalid,
+        Invisible, /// im im vollständigem Dunklen
+        Terrain,   /// Nur Terrain oder Baum und Granit ohne irgendwas
+        Player,    /// Nur Terrain oder Baum und Granit mit Spielerterritorium dazu
+        Buidling,  /// Gebäude
+        Road       /// Straße
     };
 
     std::vector<DrawnObject> dos;

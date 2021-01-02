@@ -88,14 +88,14 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         if(!lua->loadScript(GAMECLIENT.GetLuaFilePath()))
         {
             WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(
-              _("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this, MSB_OK,
-              MSB_EXCLAMATIONRED, 1));
+              _("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,
+              MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
             lua.reset();
         } else if(!lua->CheckScriptVersion())
         {
             WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(
               _("Error"), _("Lua script uses a different version and cannot be used. Map might not work as expected!"),
-              this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+              this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
             lua.reset();
         } else if(!lua->EventSettingsInit(serverType == ServerType::LOCAL, gameLobby->isSavegame()))
         {
@@ -144,7 +144,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         // Enable lobby chat when we are logged in
         if(lobbyClient_ && lobbyClient_->IsLoggedIn())
         {
-            ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK);
+            ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, GroupSelectType::Check);
             chatTab->AddTextButton(TAB_GAMECHAT, DrawPoint(20, 320), Extent(178, 22), TC_GREEN2, _("Game Chat"),
                                    NormalFont);
             chatTab->AddTextButton(TAB_LOBBYCHAT, DrawPoint(202, 320), Extent(178, 22), TC_GREEN2, _("Lobby Chat"),
@@ -236,7 +236,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         {
             WINDOWMANAGER.ShowAfterSwitch(
               std::make_unique<iwMsgbox>(_("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec), this,
-                                         MSB_OK, MSB_EXCLAMATIONRED, 0));
+                                         MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
         } else
         {
             auto* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
@@ -323,8 +323,8 @@ void dskHostGame::SetActive(bool activate /*= true*/)
         } catch(LuaExecutionError&)
         {
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-              _("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this, MSB_OK,
-              MSB_EXCLAMATIONRED, 1));
+              _("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,
+              MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
             lua.reset();
         }
     }
@@ -727,7 +727,7 @@ void dskHostGame::CI_CancelCountdown(bool error)
               _("Error"),
               _("Game can only be started as soon as everybody has a unique color,everyone is "
                 "ready and all free slots are closed."),
-              this, MSB_OK, MSB_EXCLAMATIONRED, 10));
+              this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 10));
         }
 
         ChangeReady(localPlayerId_, true);
@@ -758,19 +758,19 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         break;
         case CGI_ADDONS: // addon-window applied settings?
         {
-            if(mbr == MSR_YES)
+            if(mbr == MsgboxResult::Yes)
                 UpdateGGS();
         }
         break;
         case 10: // Economy Mode - change Addon Setttings
         {
-            if(mbr == MSR_YES)
+            if(mbr == MsgboxResult::Yes)
             {
                 gameLobby->getSettings().setSelection(AddonId::PEACEFULMODE, true);
                 gameLobby->getSettings().setSelection(AddonId::NO_COINS_DEFAULT, true);
                 gameLobby->getSettings().setSelection(AddonId::LIMIT_CATAPULTS, 2);
                 UpdateGGS();
-            } else if(mbr == MSR_NO)
+            } else if(mbr == MsgboxResult::No)
             {
                 forceOptions = true;
                 Msg_ButtonClick(2);
@@ -779,10 +779,10 @@ void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         break;
         case 11: // Peaceful mode still active but we have an attack based victory condition
         {
-            if(mbr == MSR_YES)
+            if(mbr == MsgboxResult::Yes)
             {
                 gameLobby->getSettings().setSelection(AddonId::PEACEFULMODE, false);
-            } else if(mbr == MSR_NO)
+            } else if(mbr == MsgboxResult::No)
             {
                 forceOptions = true;
                 Msg_ButtonClick(2);
@@ -1024,8 +1024,8 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
 
 void dskHostGame::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(
-      std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MsgboxButton::Ok,
+                                                  MsgboxIcon::ExclamationRed, 0));
 }
 
 /**
@@ -1033,7 +1033,8 @@ void dskHostGame::CI_Error(const ClientError ce)
  */
 void dskHostGame::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(
+      std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
 }
 
 void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
@@ -1067,7 +1068,7 @@ bool dskHostGame::checkOptions()
             "After clicking Yes you will be able to review the changes and then start the game by clicking the Start "
             "game button again.\n"
             "Choosing No will start the game without any changes."),
-          this, MSB_YESNOCANCEL, MSB_QUESTIONGREEN, 10));
+          this, MsgboxButton::YesNoCancel, MsgboxIcon::QuestionGreen, 10));
         return false;
     } else if(ggs.isEnabled(AddonId::PEACEFULMODE)
               && (ggs.objective == GameObjective::Conquer3_4 || ggs.objective == GameObjective::TotalDomination))
@@ -1076,7 +1077,7 @@ bool dskHostGame::checkOptions()
           _("Peaceful mode"),
           _("You chose a war based victory condition but peaceful mode is still active. Would you like to deactivate "
             "peaceful mode before you start? Choosing No will start the game, Yes will let you review the changes."),
-          this, MSB_YESNOCANCEL, MSB_QUESTIONRED, 11));
+          this, MsgboxButton::YesNoCancel, MsgboxIcon::QuestionRed, 11));
         return false;
     }
     return true;

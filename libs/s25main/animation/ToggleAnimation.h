@@ -28,7 +28,7 @@ public:
     using BoolFunc = void (T::*)(bool);
 
     ToggleAnimation(T* element, BoolFunc animFunc, bool startValue, unsigned frameRate,
-                    RepeatType repeat = Animation::RPT_Repeat);
+                    RepeatType repeat = Animation::RepeatType::Repeat);
 
 protected:
     void doUpdate(Window* element, double nextFramepartTime) override;
@@ -43,7 +43,7 @@ ToggleAnimation<T>::ToggleAnimation(T* element, BoolFunc animFunc, bool startVal
                                     RepeatType repeat)
     : Animation(element, 2, frameRate, repeat), animFunc_(animFunc), startValue_(startValue)
 {
-    setSkipType(Animation::SKIP_TIME);
+    setSkipType(Animation::SkipType::Time);
 }
 
 template<class T>

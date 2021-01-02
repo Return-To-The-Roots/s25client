@@ -24,7 +24,7 @@ class SerializedGameData;
 class noExtension : public noBase
 {
 public:
-    noExtension(noBase* const base) : noBase(NOP_EXTENSION), base(base) {}
+    noExtension(noBase* const base) : noBase(NodalObjectType::Extension), base(base) {}
     noExtension(SerializedGameData& sgd, unsigned obj_id);
     ~noExtension() override;
 

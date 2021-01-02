@@ -60,6 +60,6 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofMinter::ProduceWare()
 {
-    gwg->GetPlayer(player).ChangeStatisticValue(STAT_GOLD, 1);
+    gwg->GetPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
     return GoodType::Coins;
 }

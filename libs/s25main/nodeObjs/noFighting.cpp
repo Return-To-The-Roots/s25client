@@ -32,7 +32,7 @@
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
 
-noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) : noBase(NOP_FIGHTING)
+noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) : noBase(NodalObjectType::Fighting)
 {
     RTTR_Assert(soldier1->GetPlayer() != soldier2->GetPlayer());
 
@@ -243,7 +243,7 @@ void noFighting::HandleEvent(const unsigned id)
                         gwg->RoadNodeAvailable(soldiers[turn - 3]->GetPos());
 
                         // In die Statistik eintragen
-                        gwg->GetPlayer(player_won).ChangeStatisticValue(STAT_VANQUISHED, 1);
+                        gwg->GetPlayer(player_won).ChangeStatisticValue(StatisticType::Vanquished, 1);
                         return;
                     }
                 }
@@ -267,7 +267,7 @@ void noFighting::HandleEvent(const unsigned id)
 
                 // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
                 NodalObjectType noType = gwg->GetNO(pt)->GetType();
-                if(noType == NOP_NOTHING || noType == NOP_ENVIRONMENT)
+                if(noType == NodalObjectType::Nothing || noType == NodalObjectType::Environment)
                 {
                     gwg->DestroyNO(pt, false);
                     gwg->SetNO(pt, new noSkeleton(pt));

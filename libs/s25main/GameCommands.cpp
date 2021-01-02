@@ -231,7 +231,7 @@ void SetShipYardMode::Execute(GameWorldGame& gwg, uint8_t playerId)
 {
     auto* const bld = gwg.GetSpecObj<nobShipYard>(pt_);
     if(bld && bld->GetPlayer() == playerId)
-        bld->SetMode(buildShips ? nobShipYard::SHIPS : nobShipYard::BOATS);
+        bld->SetMode(buildShips ? nobShipYard::Mode::Ships : nobShipYard::Mode::Boats);
 }
 
 void StartStopExpedition::Execute(GameWorldGame& gwg, uint8_t playerId)

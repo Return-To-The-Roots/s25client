@@ -33,7 +33,7 @@ class noAnimal : public noMovable
     /// Was macht das Tier gerade?
     enum State
     {
-        STATE_WALKING = 0,                  /// Läuft dumm in der Gegend rum
+        STATE_WALKING,                      /// Läuft dumm in der Gegend rum
         STATE_PAUSED,                       /// macht mal ne kurze Verschnaufpause ;)
         STATE_WAITINGFORHUNTER,             /// wartet auf den Jäger bis er es abknallt
         STATE_WALKINGUNTILWAITINGFORHUNTER, /// läuft weiter, wartet aber dann auf den Jäger

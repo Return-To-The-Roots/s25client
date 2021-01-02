@@ -405,7 +405,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
                               _("More attackers"));
 
         // Starke/Schwache Soldaten
-        ctrlOptionGroup* ogroup = group->AddOptionGroup(3, ctrlOptionGroup::ILLUMINATE);
+        ctrlOptionGroup* ogroup = group->AddOptionGroup(3, GroupSelectType::Illuminate);
         ogroup->AddImageButton(0, DrawPoint(146, 49), Extent(30, 33), TC_GREY, LOADER.GetImageN("io", 31),
                                _("Weak attackers"));
         ogroup->AddImageButton(1, DrawPoint(117, 49), Extent(30, 33), TC_GREY, LOADER.GetImageN("io", 30),
@@ -652,7 +652,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
             const GameWorldBase& world = gwv.GetWorld();
             NodalObjectType nop = (world.GetNO(world.GetNeighbour(selectedPt, Direction::NORTHWEST)))->GetType();
             // Haben wir ne Baustelle/Gebäude dran?
-            if(nop == NOP_BUILDING || nop == NOP_BUILDINGSITE)
+            if(nop == NodalObjectType::Building || nop == NodalObjectType::Buildingsite)
             {
                 // Abreißen?
                 const auto* building =

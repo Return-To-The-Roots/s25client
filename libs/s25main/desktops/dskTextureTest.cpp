@@ -56,8 +56,8 @@ void dskTextureTest::Load()
     GameDataLoader gdLoader(newDesc);
     if(!gdLoader.Load())
     {
-        WINDOWMANAGER.ShowAfterSwitch(
-          std::make_unique<iwMsgbox>(_("Error"), "Failed to load game data!", nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(_("Error"), "Failed to load game data!", nullptr,
+                                                                 MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
         return;
     }
     desc = newDesc;

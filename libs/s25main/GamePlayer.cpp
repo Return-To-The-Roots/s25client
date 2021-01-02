@@ -74,10 +74,10 @@ GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorl
     global_inventory.clear();
 
     // Statistiken mit 0en füllen
-    memset(&statistic[STAT_15M], 0, sizeof(statistic[STAT_15M]));
-    memset(&statistic[STAT_1H], 0, sizeof(statistic[STAT_1H]));
-    memset(&statistic[STAT_4H], 0, sizeof(statistic[STAT_4H]));
-    memset(&statistic[STAT_16H], 0, sizeof(statistic[STAT_16H]));
+    memset(&statistic[StatisticTime::T15Minutes], 0, sizeof(statistic[StatisticTime::T15Minutes]));
+    memset(&statistic[StatisticTime::T1Hour], 0, sizeof(statistic[StatisticTime::T1Hour]));
+    memset(&statistic[StatisticTime::T4Hours], 0, sizeof(statistic[StatisticTime::T4Hours]));
+    memset(&statistic[StatisticTime::T16Hours], 0, sizeof(statistic[StatisticTime::T16Hours]));
     memset(&statisticCurrentData, 0, sizeof(statisticCurrentData));
     memset(&statisticCurrentMerchandiseData, 0, sizeof(statisticCurrentMerchandiseData));
 
@@ -235,10 +235,10 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
         sgd.PushUnsignedInt(global_inventory[i]);
 
     // für Statistik
-    for(unsigned i = 0; i < NUM_STAT_TIMES; ++i)
+    for(const auto i : helpers::enumRange<StatisticTime>())
     {
         // normale Statistik
-        for(unsigned j = 0; j < NUM_STAT_TYPES; ++j)
+        for(const auto j : helpers::enumRange<StatisticType>())
             for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
                 sgd.PushUnsignedInt(statistic[i].data[j][k]);
 
@@ -250,7 +250,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
         sgd.PushUnsignedShort(statistic[i].currentIndex);
         sgd.PushUnsignedShort(statistic[i].counter);
     }
-    for(unsigned i = 0; i < NUM_STAT_TYPES; ++i)
+    for(const auto i : helpers::enumRange<StatisticType>())
         sgd.PushUnsignedInt(statisticCurrentData[i]);
 
     for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
@@ -259,10 +259,8 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     // Serialize Pacts:
     for(unsigned i = 0; i < MAX_PLAYERS; ++i)
     {
-        for(unsigned u = 0; u < NUM_PACTS; ++u)
-        {
+        for(const auto u : helpers::enumRange<PactType>())
             pacts[i][u].Serialize(sgd);
-        }
     }
 
     sgd.PushBool(emergency);
@@ -343,10 +341,10 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     // Visuelle Einstellungen festlegen
 
     // für Statistik
-    for(unsigned i = 0; i < NUM_STAT_TIMES; ++i)
+    for(const auto i : helpers::enumRange<StatisticTime>())
     {
         // normale Statistik
-        for(unsigned j = 0; j < NUM_STAT_TYPES; ++j)
+        for(const auto j : helpers::enumRange<StatisticType>())
             for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
                 statistic[i].data[j][k] = sgd.PopUnsignedInt();
 
@@ -358,7 +356,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         statistic[i].currentIndex = sgd.PopUnsignedShort();
         statistic[i].counter = sgd.PopUnsignedShort();
     }
-    for(unsigned i = 0; i < NUM_STAT_TYPES; ++i)
+    for(const auto i : helpers::enumRange<StatisticType>())
         statisticCurrentData[i] = sgd.PopUnsignedInt();
 
     for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
@@ -367,10 +365,8 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     // Deserialize Pacts:
     for(unsigned i = 0; i < MAX_PLAYERS; ++i)
     {
-        for(unsigned u = 0; u < NUM_PACTS; ++u)
-        {
+        for(const auto u : helpers::enumRange<PactType>())
             pacts[i][u] = GamePlayer::Pact(sgd);
-        }
     }
 
     emergency = sgd.PopBool();
@@ -440,7 +436,7 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
 {
     RTTR_Assert(bld->GetPlayer() == GetPlayerId());
     buildings.Add(bld, bldType);
-    ChangeStatisticValue(STAT_BUILDINGS, 1);
+    ChangeStatisticValue(StatisticType::Buildings, 1);
 
     // Order a worker if needed
     const auto& description = BLD_WORK_DESC[bldType];
@@ -469,7 +465,7 @@ void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
 {
     RTTR_Assert(bld->GetPlayer() == GetPlayerId());
     buildings.Remove(bld, bldType);
-    ChangeStatisticValue(STAT_BUILDINGS, -1);
+    ChangeStatisticValue(StatisticType::Buildings, -1);
     if(bldType == BuildingType::HarborBuilding)
     { // Schiffen Bescheid sagen
         for(auto& ship : ships)
@@ -567,7 +563,7 @@ void GamePlayer::RoadDestroyed()
                && ((wareGoal->GetBuildingType() != BuildingType::Storehouse
                     && wareGoal->GetBuildingType() != BuildingType::Headquarters
                     && wareGoal->GetBuildingType() != BuildingType::HarborBuilding)
-                   || wareGoal->GetType() == NOP_BUILDINGSITE))
+                   || wareGoal->GetType() == NodalObjectType::Buildingsite))
             {
                 Direction newWareDir = Direction::NORTHWEST;
                 for(auto dir : helpers::EnumRange<Direction>{})
@@ -1209,7 +1205,7 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
         }
     }
 
-    LOG.write("GameClientPlayer::GetBuidingSitePriority: ERROR: BuildingSite or type of it not found in the list!\n");
+    LOG.write("GameClientPlayer::GetBuidingSitePriority: ERROR: Buildingsite or type of it not found in the list!\n");
     RTTR_Assert(false);
     // We may want to multiply this value so don't return the absolute max value
     return std::numeric_limits<unsigned>::max() / 1000;
@@ -1227,7 +1223,7 @@ bool GamePlayer::IsAlly(const unsigned char playerId) const
     if(GetPlayerId() == playerId)
         return true;
     else
-        return (GetPactState(TREATY_OF_ALLIANCE, playerId) == GamePlayer::ACCEPTED);
+        return GetPactState(PactType::TreatyOfAlliance, playerId) == PactState::Accepted;
 }
 
 bool GamePlayer::IsAttackable(const unsigned char playerId) const
@@ -1237,7 +1233,7 @@ bool GamePlayer::IsAttackable(const unsigned char playerId) const
         return false;
     else
         // Ansonsten darf bei bestehendem Nichtangriffspakt ebenfalls nicht angegriffen werden
-        return (GetPactState(NON_AGGRESSION_PACT, playerId) != GamePlayer::ACCEPTED);
+        return GetPactState(PactType::NonAgressionPact, playerId) != PactState::Accepted;
 }
 
 void GamePlayer::OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst) const
@@ -1290,7 +1286,7 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     // Als nächstes Gebäude in Grenznähe
     for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
     {
-        if(milBld->GetFrontierDistance() == 2)
+        if(milBld->GetFrontierDistance() == FrontierDistance::Near)
         {
             milBld->RegulateTroops();
             // Used that soldier? Go out
@@ -1303,7 +1299,7 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
     {
         // already checked? -> skip
-        if(milBld->GetFrontierDistance() == 2 || milBld->IsNewBuilt())
+        if(milBld->GetFrontierDistance() == FrontierDistance::Near || milBld->IsNewBuilt())
             continue;
         milBld->RegulateTroops();
         if(!soldier_count) // used the soldier?
@@ -1495,27 +1491,27 @@ void GamePlayer::IncreaseMerchandiseStatistic(GoodType type)
 void GamePlayer::CalcStatistics()
 {
     // Waren aus der Inventur zählen
-    statisticCurrentData[STAT_MERCHANDISE] = 0;
+    statisticCurrentData[StatisticType::Merchandise] = 0;
     for(const auto i : helpers::enumRange<GoodType>())
-        statisticCurrentData[STAT_MERCHANDISE] += global_inventory[i];
+        statisticCurrentData[StatisticType::Merchandise] += global_inventory[i];
 
     // Bevölkerung aus der Inventur zählen
-    statisticCurrentData[STAT_INHABITANTS] = 0;
+    statisticCurrentData[StatisticType::Inhabitants] = 0;
     for(const auto i : helpers::enumRange<Job>())
-        statisticCurrentData[STAT_INHABITANTS] += global_inventory[i];
+        statisticCurrentData[StatisticType::Inhabitants] += global_inventory[i];
 
     // Militär aus der Inventur zählen
-    statisticCurrentData[STAT_MILITARY] =
+    statisticCurrentData[StatisticType::Military] =
       global_inventory.people[Job::Private] + global_inventory.people[Job::PrivateFirstClass] * 2
       + global_inventory.people[Job::Sergeant] * 3 + global_inventory.people[Job::Officer] * 4
       + global_inventory.people[Job::General] * 5;
 
     // Produktivität berechnen
-    statisticCurrentData[STAT_PRODUCTIVITY] = buildings.CalcAverageProductivity();
+    statisticCurrentData[StatisticType::Productivity] = buildings.CalcAverageProductivity();
 
     // Total points for tournament games
-    statisticCurrentData[STAT_TOURNAMENT] =
-      statisticCurrentData[STAT_MILITARY] + 3 * statisticCurrentData[STAT_VANQUISHED];
+    statisticCurrentData[StatisticType::Tournament] =
+      statisticCurrentData[StatisticType::Military] + 3 * statisticCurrentData[StatisticType::Vanquished];
 }
 
 void GamePlayer::StatisticStep()
@@ -1523,52 +1519,55 @@ void GamePlayer::StatisticStep()
     CalcStatistics();
 
     // 15-min-Statistik ein Feld weiterschieben
-    for(unsigned i = 0; i < NUM_STAT_TYPES; ++i)
+    for(const auto i : helpers::enumRange<StatisticType>())
     {
-        statistic[STAT_15M].data[i][incrStatIndex(statistic[STAT_15M].currentIndex)] = statisticCurrentData[i];
+        statistic[StatisticTime::T15Minutes].data[i][incrStatIndex(statistic[StatisticTime::T15Minutes].currentIndex)] =
+          statisticCurrentData[i];
     }
     for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
     {
-        statistic[STAT_15M].merchandiseData[i][incrStatIndex(statistic[STAT_15M].currentIndex)] =
+        statistic[StatisticTime::T15Minutes]
+          .merchandiseData[i][incrStatIndex(statistic[StatisticTime::T15Minutes].currentIndex)] =
           statisticCurrentMerchandiseData[i];
     }
-    statistic[STAT_15M].currentIndex = incrStatIndex(statistic[STAT_15M].currentIndex);
+    statistic[StatisticTime::T15Minutes].currentIndex =
+      incrStatIndex(statistic[StatisticTime::T15Minutes].currentIndex);
 
-    statistic[STAT_15M].counter++;
+    statistic[StatisticTime::T15Minutes].counter++;
 
     // Prüfen ob 4mal 15-min-Statistik weitergeschoben wurde, wenn ja: 1-h-Statistik weiterschieben
     // und aktuellen Wert der 15min-Statistik benutzen
     // gleiches für die 4h und 16h Statistik
-    for(unsigned t = STAT_15M; t < STAT_16H; t++)
+    for(const auto t : helpers::enumRange<StatisticTime>())
     {
+        if(t == StatisticTime(helpers::MaxEnumValue_v<StatisticTime>))
+            break;
+        const auto nextT = StatisticTime(rttr::enum_cast(t) + 1);
         if(statistic[t].counter == 4)
         {
             statistic[t].counter = 0;
-            for(unsigned i = 0; i < NUM_STAT_TYPES; ++i)
+            for(const auto i : helpers::enumRange<StatisticType>())
             {
-                statistic[t + 1].data[i][incrStatIndex(statistic[t + 1].currentIndex)] = statisticCurrentData[i];
+                statistic[nextT].data[i][incrStatIndex(statistic[nextT].currentIndex)] = statisticCurrentData[i];
             }
 
             // Summe für den Zeitraum berechnen (immer 4 Zeitschritte der jeweils kleineren Statistik)
             for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
             {
-                statistic[t + 1].merchandiseData[i][incrStatIndex(statistic[t + 1].currentIndex)] =
+                statistic[nextT].merchandiseData[i][incrStatIndex(statistic[nextT].currentIndex)] =
                   statisticCurrentMerchandiseData[i]
                   + statistic[t].merchandiseData[i][decrStatIndex(statistic[t].currentIndex, 1)]
                   + statistic[t].merchandiseData[i][decrStatIndex(statistic[t].currentIndex, 2)]
                   + statistic[t].merchandiseData[i][decrStatIndex(statistic[t].currentIndex, 3)];
             }
 
-            statistic[t + 1].currentIndex = incrStatIndex(statistic[t + 1].currentIndex);
-            statistic[t + 1].counter++;
+            statistic[nextT].currentIndex = incrStatIndex(statistic[nextT].currentIndex);
+            statistic[nextT].counter++;
         }
     }
 
     // Warenstatistikzähler nullen
-    for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
-    {
-        statisticCurrentMerchandiseData[i] = 0;
-    }
+    statisticCurrentMerchandiseData.fill(0);
 }
 
 GamePlayer::Pact::Pact(SerializedGameData& sgd)
@@ -1589,7 +1588,7 @@ void GamePlayer::PactChanged(const PactType pt)
     RecalcMilitaryFlags();
 
     // Ggf. den GUI Bescheid sagen, um Sichtbarkeiten etc. neu zu berechnen
-    if(pt == TREATY_OF_ALLIANCE)
+    if(pt == PactType::TreatyOfAlliance)
     {
         if(gwg.GetGameInterface())
             gwg.GetGameInterface()->GI_TreatyOfAllianceChanged(GetPlayerId());
@@ -1641,20 +1640,20 @@ void GamePlayer::MakePact(const PactType pt, const unsigned char other_player, c
 }
 
 /// Zeigt an, ob ein Pakt besteht
-GamePlayer::PactState GamePlayer::GetPactState(const PactType pt, const unsigned char other_player) const
+PactState GamePlayer::GetPactState(const PactType pt, const unsigned char other_player) const
 {
     // Prüfen, ob Bündnis in Kraft ist
     if(pacts[other_player][pt].duration)
     {
         if(!pacts[other_player][pt].accepted)
-            return IN_PROGRESS;
+            return PactState::InProgress;
 
         if(pacts[other_player][pt].duration == DURATION_INFINITE
            || gwg.GetEvMgr().GetCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
-            return ACCEPTED;
+            return PactState::Accepted;
     }
 
-    return NO_PACT;
+    return PactState::None;
 }
 
 /// all allied players get a letter with the location
@@ -1756,7 +1755,7 @@ void GamePlayer::MakeStartPacts()
     // Reset pacts
     for(unsigned i = 0; i < gwg.GetNumPlayers(); ++i)
     {
-        for(unsigned z = 0; z < NUM_PACTS; ++z)
+        for(const auto z : helpers::enumRange<PactType>())
             pacts[i][z] = Pact();
     }
 
@@ -1772,7 +1771,7 @@ void GamePlayer::MakeStartPacts()
     {
         if(ownTeam != GetFixedTeam(gwg.GetPlayer(i).team))
             continue;
-        for(unsigned z = 0; z < NUM_PACTS; ++z)
+        for(const auto z : helpers::enumRange<PactType>())
         {
             pacts[i][z].duration = DURATION_INFINITE;
             pacts[i][z].start = 0;
@@ -2122,21 +2121,21 @@ void GamePlayer::TestPacts()
         if(i == GetPlayerId())
             continue;
 
-        for(unsigned pactId = 0; pactId < NUM_PACTS; pactId++)
+        for(const auto pact : helpers::enumRange<PactType>())
         {
             // Pact not running
-            if(pacts[i][pactId].duration == 0)
+            if(pacts[i][pact].duration == 0)
                 continue;
-            if(GetPactState(PactType(pactId), i) == NO_PACT)
+            if(GetPactState(pact, i) == PactState::None)
             {
                 // Pact was running but is expired -> Cancel for both players
-                pacts[i][pactId].duration = 0;
+                pacts[i][pact].duration = 0;
                 GamePlayer& otherPlayer = gwg.GetPlayer(i);
-                RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pactId].duration);
-                otherPlayer.pacts[GetPlayerId()][pactId].duration = 0;
+                RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pact].duration);
+                otherPlayer.pacts[GetPlayerId()][pact].duration = 0;
                 // And notify
-                PactChanged(PactType(pactId));
-                otherPlayer.PactChanged(PactType(pactId));
+                PactChanged(pact);
+                otherPlayer.PactChanged(pact);
             }
         }
     }

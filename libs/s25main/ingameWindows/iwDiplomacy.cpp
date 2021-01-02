@@ -112,7 +112,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
 void iwDiplomacy::Msg_PaintBefore()
 {
     // Farben, die zu den 3 Bündnisstates gesetzt werden (0-kein Bündnis, 1-in Arbeit, 2-Bündnis abgeschlossen)
-    const std::array<unsigned, 3> PACT_COLORS = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
+    constexpr helpers::EnumArray<unsigned, PactState> PACT_COLORS = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
 
     IngameWindow::Msg_PaintBefore();
     // Die farbigen Zeilen malen
@@ -131,12 +131,12 @@ void iwDiplomacy::Msg_PaintBefore()
         // Bündnisvertrag
         if(button)
             // Farbe je nach Bündnisstatus setzen
-            button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(TREATY_OF_ALLIANCE, i)]);
+            button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(PactType::TreatyOfAlliance, i)]);
         // Nicht-Angriffspakt
         button = GetCtrl<ctrlImageButton>(400 + i);
         if(button)
             // Farbe je nach Bündnisstatus setzen
-            button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(NON_AGGRESSION_PACT, i)]);
+            button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(PactType::NonAgressionPact, i)]);
 
         // Ggf. Ping aktualisieren
         if(auto* pingfield = GetCtrl<ctrlTextDeepening>(200 + i))
@@ -165,8 +165,8 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
     if(gwv.GetWorld().GetGGS().lockedTeams)
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-          _("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), nullptr, MSB_OK,
-          MSB_EXCLAMATIONGREEN, 1));
+          _("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), nullptr,
+          MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
         return;
     }
 
@@ -175,26 +175,26 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
     {
         auto playerId = static_cast<unsigned char>(ctrl_id - 300);
         // Noch kein Bündnis abgeschlossen?
-        if(gwv.GetPlayer().GetPactState(TREATY_OF_ALLIANCE, playerId) == GamePlayer::NO_PACT)
+        if(gwv.GetPlayer().GetPactState(PactType::TreatyOfAlliance, playerId) == PactState::None)
             // Dann neues Bündnis vorschlagen
             WINDOWMANAGER.ReplaceWindow(
-              std::make_unique<iwSuggestPact>(TREATY_OF_ALLIANCE, gwv.GetWorld().GetPlayer(playerId), gcFactory));
+              std::make_unique<iwSuggestPact>(PactType::TreatyOfAlliance, gwv.GetWorld().GetPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
-            gcFactory.CancelPact(TREATY_OF_ALLIANCE, playerId);
+            gcFactory.CancelPact(PactType::TreatyOfAlliance, playerId);
     }
     // Nichtangriffspakte
     if(ctrl_id >= 400 && ctrl_id < 500)
     {
         auto playerId = static_cast<unsigned char>(ctrl_id - 400);
         // Noch kein Bündnis abgeschlossen?
-        if(gwv.GetPlayer().GetPactState(NON_AGGRESSION_PACT, playerId) == GamePlayer::NO_PACT)
+        if(gwv.GetPlayer().GetPactState(PactType::NonAgressionPact, playerId) == PactState::None)
             // Dann neues Bündnis vorschlagen
             WINDOWMANAGER.ReplaceWindow(
-              std::make_unique<iwSuggestPact>(NON_AGGRESSION_PACT, gwv.GetWorld().GetPlayer(playerId), gcFactory));
+              std::make_unique<iwSuggestPact>(PactType::NonAgressionPact, gwv.GetWorld().GetPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
-            gcFactory.CancelPact(NON_AGGRESSION_PACT, playerId);
+            gcFactory.CancelPact(PactType::NonAgressionPact, playerId);
     }
 }
 
@@ -202,8 +202,8 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
 /////////////////////////////
 
 /// Titel für die Fenster für unterschiedliche Bündnistypen
-const std::array<const char*, NUM_PACTS> PACT_TITLES = {gettext_noop("Suggest treaty of alliance"),
-                                                        gettext_noop("Suggest non-aggression pact")};
+const helpers::EnumArray<const char*, PactType> PACT_TITLES = {{gettext_noop("Suggest treaty of alliance"),
+                                                        gettext_noop("Suggest non-aggression pact")}};
 
 /// Anzahl der unterschiedlich möglichen Längen ("für immer" nicht mit eingerechnet!)
 const unsigned NUM_DURATIONS = 3;
@@ -220,13 +220,12 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
                    LOADER.GetImageN("resource", 41)),
       pt(pt), player(player), gcFactory(gcFactory)
 {
-    glArchivItem_Bitmap* image;
+    glArchivItem_Bitmap* image= nullptr;
 
     switch(pt)
     {
-        case TREATY_OF_ALLIANCE: image = LOADER.GetImageN("io", 61); break;
-        case NON_AGGRESSION_PACT: image = LOADER.GetImageN("io", 100); break;
-        default: image = nullptr;
+        case PactType::TreatyOfAlliance: image = LOADER.GetImageN("io", 61); break;
+        case PactType::NonAgressionPact: image = LOADER.GetImageN("io", 100); break;
     }
 
     // Bild als Orientierung, welchen Vertrag wir gerade bearbeiten

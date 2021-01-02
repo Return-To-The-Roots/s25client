@@ -17,25 +17,21 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
-#include <array>
+#include "helpers/EnumArray.h"
 #include <cstdint>
 
 /// Types of pacts
-enum PactType : uint8_t
+enum class PactType : uint8_t
 {
-    TREATY_OF_ALLIANCE,
-    NON_AGGRESSION_PACT
+    TreatyOfAlliance,
+    NonAgressionPact
 };
 constexpr auto maxEnumValue(PactType)
 {
-    return NON_AGGRESSION_PACT;
+    return PactType::NonAgressionPact;
 }
-
-/// Number of the various pacts
-constexpr unsigned NUM_PACTS = helpers::NumEnumValues_v<PactType>;
 
 constexpr unsigned DURATION_INFINITE = 0xFFFFFFFF;
 
 /// Names of the possible pacts
-extern const std::array<const char*, NUM_PACTS> PACT_NAMES;
+extern const helpers::EnumArray<const char*, PactType> PACT_NAMES;

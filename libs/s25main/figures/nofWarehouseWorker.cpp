@@ -123,7 +123,7 @@ void nofWarehouseWorker::Walked()
         if(carried_ware)
         {
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)
-            if(gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+            if(gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
             {
                 auto* wh = gwg->GetSpecObj<nobBaseWarehouse>(pos);
                 if(carried_ware->GetGoal() == carried_ware->GetLocation() || carried_ware->GetGoal() == wh)
@@ -143,7 +143,7 @@ void nofWarehouseWorker::Walked()
         if(carried_ware)
         {
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)
-            if(gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+            if(gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
                 gwg->GetSpecObj<nobBaseWarehouse>(pos)->AddWare(carried_ware);
             else
             {

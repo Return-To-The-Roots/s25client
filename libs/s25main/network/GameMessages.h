@@ -23,6 +23,7 @@
 #include "GameMessageInterface.h"
 #include "GameProtocol.h"
 #include "GlobalGameSettings.h"
+#include "helpers/serializeEnums.h"
 #include "random/Random.h"
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/ChatDestination.h"
@@ -552,14 +553,14 @@ public:
     void Serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::Serialize(ser);
-        ser.PushUnsignedChar(cause);
+        helpers::pushEnum<uint8_t>(ser, cause);
         ser.PushUnsignedInt(param);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::Deserialize(ser);
-        cause = KickReason(ser.PopUnsignedChar());
+        cause = helpers::popEnum<KickReason>(ser);
         param = ser.PopUnsignedInt();
     }
 

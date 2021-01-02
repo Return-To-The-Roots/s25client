@@ -127,7 +127,7 @@ void Game::CheckObjective()
         const GamePlayer& player = world_.GetPlayer(i);
         if(player.IsDefeated())
             continue;
-        const unsigned points = player.GetStatisticCurrentValue(STAT_COUNTRY);
+        const unsigned points = player.GetStatisticCurrentValue(StatisticType::Country);
         if(points > maxPoints)
         {
             maxPoints = points;
@@ -146,7 +146,7 @@ void Game::CheckObjective()
                 curTeam = curTeam | getPlayerMask(j);
                 const GamePlayer& teamPlayer = world_.GetPlayer(j);
                 if(!teamPlayer.IsDefeated())
-                    teamPoints += teamPlayer.GetStatisticCurrentValue(STAT_COUNTRY);
+                    teamPoints += teamPlayer.GetStatisticCurrentValue(StatisticType::Country);
             }
             if(teamPoints > maxTeamPoints)
             {

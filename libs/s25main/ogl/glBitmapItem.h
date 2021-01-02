@@ -25,11 +25,11 @@ class ArchivItem_Bitmap_Player;
 class ArchivItem_BitmapBase;
 } // namespace libsiedler2
 
-enum glBitmapItemType
+enum class glBitmapItemType
 {
-    TYPE_ARCHIVITEM_BITMAP = 0,
-    TYPE_ARCHIVITEM_BITMAP_PLAYER,
-    TYPE_ARCHIVITEM_BITMAP_SHADOW
+    Normal,
+    PlayerBitmap,
+    ShadowBitmap
 };
 
 class glBitmapItem

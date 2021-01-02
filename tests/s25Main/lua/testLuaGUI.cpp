@@ -106,7 +106,8 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_REQUIRE(wnd->IsActive());
     BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
     BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
-    BOOST_REQUIRE_EQUAL(wnd->GetCtrls<ctrlImage>().front()->GetImage(), LOADER.GetImageN("io", MSB_EXCLAMATIONGREEN));
+    BOOST_REQUIRE_EQUAL(wnd->GetCtrls<ctrlImage>().front()->GetImage(),
+                        LOADER.GetImageN("io", rttr::enum_cast(MsgboxIcon::ExclamationGreen)));
     BOOST_REQUIRE(!wnd->GetCtrls<ctrlButton>().empty());
     // 15 lines of text, button must be below
     BOOST_REQUIRE_GT(wnd->GetCtrls<ctrlButton>().front()->GetPos().y, 15 * NormalFont->getHeight());
@@ -120,7 +121,8 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_REQUIRE(wnd->IsActive());
     BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
     BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
-    BOOST_REQUIRE_EQUAL(wnd->GetCtrls<ctrlImage>().front()->GetImage(), LOADER.GetImageN("io", MSB_EXCLAMATIONRED));
+    BOOST_REQUIRE_EQUAL(wnd->GetCtrls<ctrlImage>().front()->GetImage(),
+                        LOADER.GetImageN("io", rttr::enum_cast(MsgboxIcon::ExclamationRed)));
     WINDOWMANAGER.Close(wnd);
     // MsgBoxEx
     executeLua("rttr:MsgBoxEx('Title', 'Text', 'io', 100)");

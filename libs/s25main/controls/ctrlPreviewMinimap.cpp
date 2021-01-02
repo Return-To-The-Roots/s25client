@@ -81,9 +81,9 @@ void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
         for(unsigned short x = 0; x < map_width; ++x)
         {
             // Startposition eines Spielers an dieser Stelle?
-            if(s2map->GetMapDataAt(MAP_TYPE, x, y) != 0x80)
+            if(s2map->GetMapDataAt(MapLayer::Type, x, y) != 0x80)
                 continue;
-            const unsigned player = s2map->GetMapDataAt(MAP_LANDSCAPE, x, y);
+            const unsigned player = s2map->GetMapDataAt(MapLayer::Landscape, x, y);
             if(player < players.size())
             {
                 players[player].pos = MapPoint(x, y);

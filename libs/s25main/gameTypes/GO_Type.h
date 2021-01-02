@@ -21,7 +21,7 @@
 /// items at the end of the list.
 enum GO_Type
 {
-    GOT_UNKNOWN = 0,
+    GOT_UNKNOWN,
     GOT_NOTHING,
     GOT_NOB_HQ,
     GOT_NOB_MILITARY,

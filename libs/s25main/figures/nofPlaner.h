@@ -28,7 +28,7 @@ class nofPlaner : public noFigure
     /// Was der Planierer gerade so schönes macht
     enum PlanerState
     {
-        STATE_FIGUREWORK = 0,
+        STATE_FIGUREWORK,
         STATE_WALKING, /// läuft zum nächsten Punkt, um zu graben
         STATE_PLANING  /// planiert einen Punkt (Abspielen der Animation
     } state;

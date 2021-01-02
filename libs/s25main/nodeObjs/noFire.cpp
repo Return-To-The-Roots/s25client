@@ -29,7 +29,7 @@
 #include "world/GameWorldGame.h"
 
 noFire::noFire(const MapPoint pos, bool isBig)
-    : noCoordBase(NOP_FIRE, pos), isBig(isBig), was_sounding(false), last_sound(0), next_interval(0)
+    : noCoordBase(NodalObjectType::Fire, pos), isBig(isBig), was_sounding(false), last_sound(0), next_interval(0)
 {
     // Bestimmte Zeit lang brennen
     const std::array<unsigned, 7> FIREDURATION = {3700, 2775, 1850, 925, 370, 5550, 7400};

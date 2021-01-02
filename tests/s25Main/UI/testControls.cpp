@@ -72,7 +72,7 @@ static void resizeMap(glArchivItem_Map& glMap, const Extent& size)
     header->setHeight(size.y);
     header->setNumPlayers(2);
     map.push(std::move(header));
-    for(int i = 0; i <= MAP_TYPE; i++)
+    for(int i = 0; i <= rttr::enum_cast(MapLayer::Type); i++)
         map.push(std::make_unique<libsiedler2::ArchivItem_Raw>(std::vector<uint8_t>(prodOfComponents(size))));
     glMap.load(map);
 }

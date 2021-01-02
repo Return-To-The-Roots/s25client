@@ -203,7 +203,7 @@ private:
     /// Erzeugt GameObject
     GameObject* Create_GameObject(GO_Type got, unsigned obj_id);
     /// Erzeugt FOWObject
-    FOWObject* Create_FOWObject(FOW_Type fowtype);
+    FOWObject* Create_FOWObject(FoW_Type fowtype);
 
     void PushObject_(const GameObject* go, bool known);
     /// Objekt(referenzen) lesen

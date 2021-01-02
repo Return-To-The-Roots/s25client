@@ -787,7 +787,7 @@ protected:
     /// Aktion, die ausgeführt wird
     enum class Action : uint8_t
     {
-        FOUNDCOLONY = 0,
+        FOUNDCOLONY,
         CANCELEXPEDITION,
         NORTH,
         NORTHEAST,

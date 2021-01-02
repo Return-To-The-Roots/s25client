@@ -18,7 +18,7 @@
 #include "ctrlMultiSelectGroup.h"
 class MouseCoords;
 
-ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type)
+ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, GroupSelectType select_type)
     : ctrlGroup(parent, id), select_type(select_type)
 {}
 
@@ -32,9 +32,9 @@ void ctrlMultiSelectGroup::AddSelection(unsigned selection, bool notify)
     RTTR_Assert(button);
     switch(select_type)
     {
-        case ILLUMINATE: button->SetIlluminated(true); break;
-        case CHECK: button->SetChecked(true); break;
-        case SHOW: button->SetVisible(false); break;
+        case GroupSelectType::Illuminate: button->SetIlluminated(true); break;
+        case GroupSelectType::Check: button->SetChecked(true); break;
+        case GroupSelectType::Show: button->SetVisible(false); break;
     }
 
     this->selectedItems_.insert(selection);
@@ -53,9 +53,9 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned selection, bool notify)
     RTTR_Assert(button);
     switch(select_type)
     {
-        case ILLUMINATE: button->SetIlluminated(false); break;
-        case CHECK: button->SetChecked(false); break;
-        case SHOW: button->SetVisible(true); break;
+        case GroupSelectType::Illuminate: button->SetIlluminated(false); break;
+        case GroupSelectType::Check: button->SetChecked(false); break;
+        case GroupSelectType::Show: button->SetVisible(true); break;
     }
 
     this->selectedItems_.erase(selection);

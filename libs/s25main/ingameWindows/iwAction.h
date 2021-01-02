@@ -31,7 +31,7 @@ public:
     /// Konstanten für ActionWindow-Flag-Tab - Typen
     enum
     {
-        AWFT_NORMAL = 0,
+        AWFT_NORMAL,
         AWFT_HQ,         /// von der HQ-Flagge kann nur eine Straße gebaut werden
         AWFT_STOREHOUSE, /// von einer Lagerhaus-Flagge kann nur eine Straße gebaut werden oder die Flagge abgerissen
                          /// werden
@@ -47,7 +47,7 @@ public:
         /// Gebäude-Bau-Tabs
         enum BuildTab
         {
-            BT_HUT = 0,
+            BT_HUT,
             BT_HOUSE,
             BT_CASTLE,
             BT_MINE,

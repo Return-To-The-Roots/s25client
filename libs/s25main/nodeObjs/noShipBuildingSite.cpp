@@ -28,7 +28,7 @@
 #include "world/GameWorldGame.h"
 
 noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char player)
-    : noCoordBase(NOP_ENVIRONMENT, pos), player(player), progress(0)
+    : noCoordBase(NodalObjectType::Environment, pos), player(player), progress(0)
 {}
 
 noShipBuildingSite::~noShipBuildingSite() = default;

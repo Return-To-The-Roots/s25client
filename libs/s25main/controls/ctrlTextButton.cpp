@@ -36,7 +36,7 @@ void ctrlTextButton::ResizeForMaxChars(unsigned numChars)
 
 void ctrlTextButton::DrawContent() const
 {
-    const bool isPressed = state == BUTTON_PRESSED || isChecked;
+    const bool isPressed = state == ButtonState::Pressed || isChecked;
     unsigned color;
     if(this->color_ == COLOR_YELLOW && isPressed)
         color = 0xFFFFAA00;
@@ -47,7 +47,7 @@ void ctrlTextButton::DrawContent() const
 
     const unsigned short maxTextWidth = GetSize().x - contentOffset * 2; // reduced by border
 
-    if(GetTooltip().empty() && state == BUTTON_HOVER)
+    if(GetTooltip().empty() && state == ButtonState::Hover)
     {
         unsigned maxNumChars;
         font->getWidth(text, maxTextWidth, &maxNumChars);

@@ -52,6 +52,16 @@ class NWFInfo;
 struct CreateServerInfo;
 struct ReplayInfo;
 
+enum class ClientState
+{
+    Stopped,
+    Connect,
+    Config,
+    Loading,
+    Loaded,
+    Game
+};
+
 class GameClient final :
     public Singleton<GameClient, SingletonPolicies::WithLongevity>,
     public GameMessageInterface,
@@ -60,16 +70,6 @@ class GameClient final :
 {
 public:
     static constexpr unsigned Longevity = 5;
-
-    enum ClientState
-    {
-        CS_STOPPED = 0,
-        CS_CONNECT,
-        CS_CONFIG,
-        CS_LOADING,
-        CS_LOADED,
-        CS_GAME
-    };
 
     GameClient();
     ~GameClient();

@@ -250,7 +250,7 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
 
 bool AIConstruction::MilitaryBuildingWantsRoad(const nobMilitary& milbld)
 {
-    if(milbld.GetFrontierDistance() > 0) // close to front or harbor? connect!
+    if(milbld.GetFrontierDistance() != FrontierDistance::Far) // close to front or harbor? connect!
         return true;
     if(!aijh.UpgradeBldPos.isValid()) // no upgrade bld on last update -> connect all that want to connect
         return true;
@@ -319,7 +319,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         {
             tmpPos = aii.gwb.GetNeighbour(tmpPos, j);
             RTTR_Assert(aii.GetBuildingQuality(tmpPos) == aijh.GetAINode(tmpPos).bq);
-            if(aii.GetBuildingQuality(tmpPos) == BQ_NOTHING)
+            if(aii.GetBuildingQuality(tmpPos) == BuildingQuality::Nothing)
                 curNonFlagPts++;
             else
             {
@@ -654,7 +654,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
                 }
             }
             RTTR_Assert(aii.GetBuildingQuality(t) == aijh.GetAINode(t).bq);
-            if(aii.GetBuildingQuality(t) == BQ_NOTHING)
+            if(aii.GetBuildingQuality(t) == BuildingQuality::Nothing)
                 temp++;
             else
             {

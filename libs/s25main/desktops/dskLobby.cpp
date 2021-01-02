@@ -143,7 +143,7 @@ void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"),
                   _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"),
-                  this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                  this, MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
             else
             {
                 createServerWnd = &WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::LOBBY));
@@ -240,7 +240,7 @@ bool dskLobby::ConnectToSelectedGame()
     if(itServer == serverList.end())
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("The selected game was not found anymore."), this,
-                                                      MSB_OK, MSB_EXCLAMATIONRED, 1));
+                                                      MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
     } else
     {
         std::string serverRevision = itServer->getVersion();
@@ -255,7 +255,7 @@ bool dskLobby::ConnectToSelectedGame()
         } else
         {
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"),
-                                                          this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+                                                          this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
         }
     }
     return false;
@@ -274,8 +274,8 @@ void dskLobby::LC_Status_ConnectionLost()
  */
 void dskLobby::LC_Status_IncompleteMessage()
 {
-    WINDOWMANAGER.Show(
-      std::make_unique<iwMsgbox>(_("Error"), _("Lost connection to lobby!"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Lost connection to lobby!"), this, MsgboxButton::Ok,
+                                                  MsgboxIcon::ExclamationRed, 0));
 }
 
 /**
@@ -307,7 +307,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
                 if(text.substr(self.length() + 1, 2) == ": ")
                 {
                     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>("LobbyBot", text.substr(self.length() + 3), this,
-                                                                  MSB_OK, MSB_EXCLAMATIONGREEN, 2));
+                                                                  MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 2));
                 } else if(text.substr(self.length() + 1, 2) == ", ")
                 {
                     GetCtrl<ctrlChat>(20)->AddMessage(time, player, playerColor, text.substr(self.length() + 3),

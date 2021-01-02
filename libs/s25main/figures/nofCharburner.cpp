@@ -80,7 +80,7 @@ void nofCharburner::WorkFinished()
     if(no->GetGOT() == GOT_CHARBURNERPILE)
     {
         // Is Pile already in the normal "coal harvest mode"?
-        if(static_cast<noCharburnerPile*>(no)->GetState() == noCharburnerPile::STATE_HARVEST)
+        if(static_cast<noCharburnerPile*>(no)->GetState() == noCharburnerPile::State::Harvest)
             // Then let's bring a coal to our house
             ware = GoodType::Coal;
         // One step further
@@ -96,7 +96,7 @@ void nofCharburner::WorkFinished()
         // Otherwise just do nothing
         NodalObjectType noType = no->GetType();
 
-        if(noType == NOP_ENVIRONMENT || noType == NOP_NOTHING)
+        if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
         {
             gwg->DestroyNO(pos, false);
             // Plant charburner pile
@@ -118,11 +118,11 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
     {
         noCharburnerPile::State pileState = static_cast<noCharburnerPile*>(no)->GetState();
         // Can't it be harvested?
-        if(pileState == noCharburnerPile::STATE_SMOLDERING)
+        if(pileState == noCharburnerPile::State::Smoldering)
             return PQ_NOTPOSSIBLE;
 
         // Wood stack which stell need resources?
-        if(pileState == noCharburnerPile::STATE_WOOD)
+        if(pileState == noCharburnerPile::State::Wood)
         {
             // Does it need resources and I don't have them hen starting new work (state = STATE_WAITING1)?
             if(!workplace->WaresAvailable() && this->state == STATE_WAITING1)
@@ -187,7 +187,7 @@ void nofCharburner::WalkingStarted()
 {
     noBase* nob = gwg->GetNO(dest);
     if(nob->GetGOT() == GOT_CHARBURNERPILE)
-        harvest = !(static_cast<noCharburnerPile*>(nob)->GetState() == noCharburnerPile::STATE_WOOD);
+        harvest = !(static_cast<noCharburnerPile*>(nob)->GetState() == noCharburnerPile::State::Wood);
     else
         harvest = false;
 

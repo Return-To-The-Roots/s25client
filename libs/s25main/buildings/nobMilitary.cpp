@@ -137,7 +137,7 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
     sgd.PushBool(new_built);
     sgd.PushUnsignedChar(numCoins);
     sgd.PushBool(coinsDisabled);
-    sgd.PushUnsignedChar(frontier_distance);
+    sgd.PushEnum<uint8_t>(frontier_distance);
     sgd.PushUnsignedChar(size);
     sgd.PushBool(capturing);
     sgd.PushUnsignedInt(capturing_soldiers);
@@ -152,10 +152,9 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()),
-      coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled),
-      frontier_distance(FrontierDistance(sgd.PopUnsignedChar())), size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()),
-      capturing_soldiers(sgd.PopUnsignedInt()), goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()),
-      is_regulating_troops(false)
+      coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.Pop<FrontierDistance>()),
+      size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()),
+      goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
 {
     sgd.PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);
     sgd.PopObjectContainer(ordered_coins, GOT_WARE);
@@ -191,21 +190,21 @@ void nobMilitary::Draw(DrawPoint drawPt)
     }
 
     // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
-    unsigned frontier_distance_tmp = frontier_distance;
+    FrontierDistance frontier_distance_tmp = frontier_distance;
     glArchivItem_Bitmap_Player* bitmap = nullptr;
     unsigned animationFrame = GAMECLIENT.GetGlobalAnimation(4, 1, 1, pos.x * pos.y * GetObjId());
     if(new_built)
     {
         // don't draw a flag for new buildings - fixes bug #215
-    } else if(frontier_distance_tmp == 2)
+    } else if(frontier_distance_tmp == FrontierDistance::Harbor)
     {
         // todo Hafenflagge
         bitmap = LOADER.GetPlayerImage("map_new", 3150 + animationFrame);
     } else
     {
-        if(frontier_distance_tmp == 3)
-            frontier_distance_tmp = 2;
-        bitmap = LOADER.GetMapPlayerImage(3150 + frontier_distance_tmp * 4 + animationFrame);
+        if(frontier_distance_tmp == FrontierDistance::Near)
+            frontier_distance_tmp = FrontierDistance::Harbor;
+        bitmap = LOADER.GetMapPlayerImage(3150 + rttr::enum_cast(frontier_distance_tmp) * 4 + animationFrame);
     }
     if(bitmap)
         bitmap->DrawFull(drawPt + BORDER_FLAG_OFFSET[nation][size]);
@@ -325,7 +324,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 {
     // Umgebung nach Militärgebäuden absuchen
     sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
-    frontier_distance = DIST_FAR;
+    frontier_distance = FrontierDistance::Far;
 
     const bool frontierDistanceCheck = gwg->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE);
 
@@ -336,31 +335,31 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
            && gwg->GetPlayer(building->GetPlayer()).IsAttackable(player))
         {
             unsigned distance = gwg->CalcDistance(pos, building->GetPos());
-            FrontierDistance newFrontierDistance = DIST_FAR;
+            FrontierDistance newFrontierDistance = FrontierDistance::Far;
 
             if(distance <= GetMilitaryRadius() + building->GetMilitaryRadius())
             {
-                newFrontierDistance = DIST_NEAR;
+                newFrontierDistance = FrontierDistance::Near;
             }
             // in mittlerem Umkreis, also theoretisch angreifbar?
             else if(distance < BASE_ATTACKING_DISTANCE + (GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
             {
-                newFrontierDistance = DIST_MID;
+                newFrontierDistance = FrontierDistance::Mid;
             } else if(building->GetGOT() == GOT_NOB_MILITARY)
             {
                 auto* mil = static_cast<nobMilitary*>(building);
                 if(distance < BASE_ATTACKING_DISTANCE + (mil->GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
                 {
-                    newFrontierDistance = DIST_MID;
+                    newFrontierDistance = FrontierDistance::Mid;
                 }
             }
 
             // if new frontier distance is in military range, check if its reachable.
-            if(frontierDistanceCheck && newFrontierDistance >= DIST_MID
+            if(frontierDistanceCheck && newFrontierDistance >= FrontierDistance::Mid
                && !DoesReachablePathExist(*gwg, building->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             {
                 // building is not reachable, so its "far" away.
-                newFrontierDistance = DIST_FAR;
+                newFrontierDistance = FrontierDistance::Far;
             }
 
             // override own frontier distance, if its nearer to a border
@@ -373,27 +372,27 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
         }
     }
     // check for harbor points
-    if(frontier_distance <= DIST_MID && gwg->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
-        frontier_distance = DIST_HARBOR;
+    if(frontier_distance <= FrontierDistance::Mid && gwg->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
+        frontier_distance = FrontierDistance::Harbor;
 
     // send troops
     RegulateTroops();
 }
 
-void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
+void nobMilitary::NewEnemyMilitaryBuilding(const FrontierDistance distance)
 {
     // Neues Grenzgebäude in der Nähe --> Distanz entsprechend setzen
-    if(distance == DIST_NEAR)
+    if(distance == FrontierDistance::Near)
     {
         // Nah
-        frontier_distance = DIST_NEAR;
+        frontier_distance = FrontierDistance::Near;
     }
     // in mittlerem Umkreis?
-    else if(distance == DIST_MID)
+    else if(distance == FrontierDistance::Mid)
     {
         // Mittel (nur wenns vorher auf weit weg war)
-        if(frontier_distance == DIST_FAR)
-            frontier_distance = DIST_MID;
+        if(frontier_distance == FrontierDistance::Far)
+            frontier_distance = FrontierDistance::Mid;
     }
     RegulateTroops();
 }
@@ -505,12 +504,14 @@ void nobMilitary::RegulateTroops()
 
 unsigned nobMilitary::CalcRequiredNumTroops() const
 {
-    return CalcRequiredNumTroops(frontier_distance, gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance));
+    return CalcRequiredNumTroops(frontier_distance,
+                                 gwg->GetPlayer(player).GetMilitarySetting(4 + rttr::enum_cast(frontier_distance)));
 }
 
-unsigned nobMilitary::CalcRequiredNumTroops(unsigned assumedFrontierDistance, unsigned settingValue) const
+unsigned nobMilitary::CalcRequiredNumTroops(FrontierDistance assumedFrontierDistance, unsigned settingValue) const
 {
-    return (GetMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + assumedFrontierDistance] + 1;
+    return (GetMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + rttr::enum_cast(assumedFrontierDistance)]
+           + 1;
 }
 
 void nobMilitary::SendSoldiersHome()
@@ -580,7 +581,7 @@ void nobMilitary::OrderNewSoldiers()
 
 bool nobMilitary::IsUseless() const
 {
-    if(frontier_distance != DIST_FAR || new_built)
+    if(frontier_distance != FrontierDistance::Far || new_built)
         return false;
     return !gwg->DoesDestructionChangeTerritory(*this);
 }
@@ -970,7 +971,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
         const std::list<noBase*>& figures = gwg->GetFigures(coord);
         for(auto* figure : figures)
         {
-            if(figure->GetType() == NOP_FIGURE)
+            if(figure->GetType() == NodalObjectType::Figure)
             {
                 if(static_cast<noFigure*>(figure)->GetCurrentRoad() == GetRoute(Direction::SOUTHEAST)
                    && static_cast<noFigure*>(figure)->GetPlayer() != new_owner)
@@ -1270,7 +1271,7 @@ bool nobMilitary::IsDemolitionAllowed() const
         case 2: // near frontiers
         {
             // Prüfen, ob es in Grenznähe steht
-            if(frontier_distance == 3)
+            if(frontier_distance == FrontierDistance::Near)
                 return false;
         }
         break;

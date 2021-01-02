@@ -120,7 +120,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     AddImage(10, DrawPoint(11 + 115, 84 + 81), LOADER.GetImageN("io", 228));
 
     // Die Buttons zum Wechseln der Statistiken
-    ctrlOptionGroup* statChanger = AddOptionGroup(19, ctrlOptionGroup::ILLUMINATE);
+    ctrlOptionGroup* statChanger = AddOptionGroup(19, GroupSelectType::Illuminate);
     statChanger->AddImageButton(11, DrawPoint(18, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 167),
                                 _("Size of country"));
     statChanger->AddImageButton(12, DrawPoint(45, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 168),
@@ -139,7 +139,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
                                 _("Vanquished enemies"));
 
     // Zeit-Buttons
-    ctrlOptionGroup* timeChanger = AddOptionGroup(20, ctrlOptionGroup::ILLUMINATE);
+    ctrlOptionGroup* timeChanger = AddOptionGroup(20, GroupSelectType::Illuminate);
     timeChanger->AddTextButton(21, DrawPoint(51, 288), Extent(43, 28), TC_GREY, _("15 m"), NormalFont);
     timeChanger->AddTextButton(22, DrawPoint(96, 288), Extent(43, 28), TC_GREY, _("1 h"), NormalFont);
     timeChanger->AddTextButton(23, DrawPoint(141, 288), Extent(43, 28), TC_GREY, _("4 h"), NormalFont);
@@ -171,9 +171,9 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
 
     // Standardansicht: 15min / Landesgröße
     statChanger->SetSelection(11);
-    currentView = STAT_COUNTRY;
+    currentView = StatisticType::Country;
     timeChanger->SetSelection(21);
-    currentTime = STAT_15M;
+    currentTime = StatisticTime::T15Minutes;
 
     if(!SETTINGS.ingame.scale_statistics)
         minValue->SetVisible(false);
@@ -214,35 +214,35 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned 
             switch(selection)
             {
                 case 11:
-                    currentView = STAT_COUNTRY;
+                    currentView = StatisticType::Country;
                     headline->SetText(_("Size of country"));
                     break;
                 case 12:
-                    currentView = STAT_BUILDINGS;
+                    currentView = StatisticType::Buildings;
                     headline->SetText(_("Buildings"));
                     break;
                 case 13:
-                    currentView = STAT_INHABITANTS;
+                    currentView = StatisticType::Inhabitants;
                     headline->SetText(_("Inhabitants"));
                     break;
                 case 14:
-                    currentView = STAT_MERCHANDISE;
+                    currentView = StatisticType::Merchandise;
                     headline->SetText(_("Merchandise"));
                     break;
                 case 15:
-                    currentView = STAT_MILITARY;
+                    currentView = StatisticType::Military;
                     headline->SetText(_("Military strength"));
                     break;
                 case 16:
-                    currentView = STAT_GOLD;
+                    currentView = StatisticType::Gold;
                     headline->SetText(_("Gold"));
                     break;
                 case 17:
-                    currentView = STAT_PRODUCTIVITY;
+                    currentView = StatisticType::Productivity;
                     headline->SetText(_("Productivity"));
                     break;
                 case 18:
-                    currentView = STAT_VANQUISHED;
+                    currentView = StatisticType::Vanquished;
                     headline->SetText(_("Vanquished enemies"));
                     break;
             }
@@ -250,10 +250,10 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned 
         case 20: // Zeitbereich wählen
             switch(selection)
             {
-                case 21: currentTime = STAT_15M; break;
-                case 22: currentTime = STAT_1H; break;
-                case 23: currentTime = STAT_4H; break;
-                case 24: currentTime = STAT_16H; break;
+                case 21: currentTime = StatisticTime::T15Minutes; break;
+                case 22: currentTime = StatisticTime::T1Hour; break;
+                case 23: currentTime = StatisticTime::T4Hours; break;
+                case 24: currentTime = StatisticTime::T16Hours; break;
             }
             break;
     }
@@ -385,7 +385,7 @@ void iwStatistics::DrawAxis()
 
     switch(currentTime)
     {
-        case STAT_15M:
+        case StatisticTime::T15Minutes:
             // -15
             DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
                      MakeColor(255, 88, 44, 16));
@@ -423,7 +423,7 @@ void iwStatistics::DrawAxis()
 
             timeAnnotations[5]->SetVisible(false);
             break;
-        case STAT_1H:
+        case StatisticTime::T1Hour:
             // -60
             DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
                      MakeColor(255, 88, 44, 16));
@@ -466,7 +466,7 @@ void iwStatistics::DrawAxis()
             timeAnnotations[5]->SetText("-10");
             timeAnnotations[5]->SetVisible(true);
             break;
-        case STAT_4H:
+        case StatisticTime::T4Hours:
             // -240
             DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
                      MakeColor(255, 88, 44, 16));
@@ -498,7 +498,7 @@ void iwStatistics::DrawAxis()
             timeAnnotations[4]->SetVisible(false);
             timeAnnotations[5]->SetVisible(false);
             break;
-        case STAT_16H:
+        case StatisticTime::T16Hours:
             // -960
             DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
                      MakeColor(255, 88, 44, 16));

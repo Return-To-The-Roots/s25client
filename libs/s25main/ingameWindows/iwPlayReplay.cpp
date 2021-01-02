@@ -156,7 +156,7 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
         case 1: StartReplay(); break;
         case 2:
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all replays?"), this,
-                                                          MSB_YESNO, MSB_QUESTIONRED, 1));
+                                                          MsgboxButton::YesNo, MsgboxIcon::QuestionRed, 1));
             break;
         case 3:
         {
@@ -164,13 +164,13 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
             if(table->GetSelection())
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Delete selected"),
                                                               _("Are you sure you want to remove the selected replay?"),
-                                                              this, MSB_YESNO, MSB_QUESTIONRED, 2));
+                                                              this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, 2));
             break;
         }
         case 4: Close(); break;
         case 5:
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all invalid replays?"),
-                                                          this, MSB_YESNO, MSB_QUESTIONRED, 3));
+                                                          this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, 3));
             break;
     }
 }
@@ -193,14 +193,14 @@ void iwPlayReplay::StartReplay()
         SwitchOnStart switchOnStart;
         if(!GAMECLIENT.StartReplay(table->GetItemText(*table->GetSelection(), 4)))
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error while playing replay!"), _("Invalid Replay!"), this,
-                                                          MSB_OK, MSB_EXCLAMATIONRED));
+                                                          MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
     }
 }
 
 void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     // Sollen alle Replays gelöscht werden?
-    if(msgbox_id == 1 && mbr == MSR_YES)
+    if(msgbox_id == 1 && mbr == MsgboxResult::Yes)
     {
         const std::vector<bfs::path> replays = GetReplays();
         for(const auto& replay : replays)
@@ -211,7 +211,7 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
 
         // Tabelle leeren
         GetCtrl<ctrlTable>(0)->DeleteAllItems();
-    } else if(msgbox_id == 3 && mbr == MSR_YES)
+    } else if(msgbox_id == 3 && mbr == MsgboxResult::Yes)
     {
         const std::vector<bfs::path> replays = GetReplays();
         for(const auto& it : replays)
@@ -226,7 +226,7 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         }
 
         PopulateTable();
-    } else if(msgbox_id == 2 && mbr == MSR_YES)
+    } else if(msgbox_id == 2 && mbr == MsgboxResult::Yes)
     {
         auto* table = GetCtrl<ctrlTable>(0);
         if(table->GetSelection())

@@ -64,6 +64,11 @@ glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp)
 TerrainRenderer::TerrainRenderer() : size_(0, 0) {}
 TerrainRenderer::~TerrainRenderer() = default;
 
+static constexpr unsigned getFlatIndex(DescIdx<LandscapeDesc> ls, LandRoadType road)
+{
+    return ls.value * helpers::NumEnumValues_v<LandRoadType> + rttr::enum_cast(road);
+}
+
 TerrainRenderer::PointF TerrainRenderer::GetNeighbourVertexPos(MapPoint pt, const Direction dir) const
 {
     // Note: We want the real neighbour point which might be outside of the map to get the offset right
@@ -115,7 +120,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     }
     terrainTextures.resize(usedTerrains.rbegin()->value + 1);
     edgeTextures.resize(usedEdges.rbegin()->value + 1);
-    roadTextures.resize((usedLandscapes.rbegin()->value + 1) * LandscapeDesc::NUM_ROADTYPES);
+    roadTextures.resize((usedLandscapes.rbegin()->value + 1) * helpers::NumEnumValues_v<LandRoadType>);
 
     for(DescIdx<TerrainDesc> curIdx : usedTerrains)
     {
@@ -185,16 +190,15 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     for(DescIdx<LandscapeDesc> curIdx : usedLandscapes)
     {
         const LandscapeDesc& cur = desc.get(curIdx);
-        for(unsigned i = 0; i < cur.roadTexDesc.size(); i++)
+        for(const auto i : helpers::enumRange<LandRoadType>())
         {
             const auto textureName = ResourceId::make(bfs::path(cur.roadTexDesc[i].texturePath));
             glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
             if(!texBmp)
                 throw std::runtime_error("Invalid texture '" + cur.roadTexDesc[i].texturePath
                                          + "' for road in landscape '" + cur.name + "'");
-            roadTextures[curIdx.value * LandscapeDesc::NUM_ROADTYPES + i] =
-              LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture);
-            roadTextures[curIdx.value * LandscapeDesc::NUM_ROADTYPES + i]->GetTexture(); // Init texture
+            roadTextures[getFlatIndex(curIdx, i)] = LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture);
+            roadTextures[getFlatIndex(curIdx, i)]->GetTexture(); // Init texture
         }
     }
 }
@@ -937,24 +941,24 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
         // else Mountain left or right is a mountain terrain
         // else Upgraded for Donkey roads
         // else Normal
+        const TerrainDesc& lTerrain = desc.get(gwViewer.GetWorld().GetLeftTerrain(pt, targetDir));
         uint8_t gfxRoadType;
         if(type == PointRoad::Boat)
-            gfxRoadType =
-              desc.get(gwViewer.GetWorld().GetLeftTerrain(pt, targetDir)).landscape.value * LandscapeDesc::NUM_ROADTYPES
-              + LandscapeDesc::Boat;
-        else
         {
-            const TerrainDesc& lTerrain = desc.get(gwViewer.GetWorld().GetLeftTerrain(pt, targetDir));
+            gfxRoadType = getFlatIndex(lTerrain.landscape, LandRoadType::Boat);
+        } else
+        {
             if(lTerrain.kind == TerrainKind::MOUNTAIN)
-                gfxRoadType = lTerrain.landscape.value * LandscapeDesc::NUM_ROADTYPES + LandscapeDesc::Mountain;
+                gfxRoadType = getFlatIndex(lTerrain.landscape, LandRoadType::Mountain);
             else
             {
                 const TerrainDesc& rTerrain = desc.get(gwViewer.GetWorld().GetRightTerrain(pt, targetDir));
                 if(rTerrain.kind == TerrainKind::MOUNTAIN)
-                    gfxRoadType = rTerrain.landscape.value * LandscapeDesc::NUM_ROADTYPES + LandscapeDesc::Mountain;
+                    gfxRoadType = getFlatIndex(rTerrain.landscape, LandRoadType::Mountain);
                 else
-                    gfxRoadType = lTerrain.landscape.value * LandscapeDesc::NUM_ROADTYPES
-                                  + ((type == PointRoad::Donkey) ? LandscapeDesc::Upgraded : LandscapeDesc::Normal);
+                    gfxRoadType =
+                      getFlatIndex(lTerrain.landscape,
+                                   ((type == PointRoad::Donkey) ? LandRoadType::Upgraded : LandRoadType::Normal));
             }
         }
 

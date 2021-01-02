@@ -160,7 +160,7 @@ void nofHunter::TryStartHunting()
             // nach Tieren suchen
             for(auto* figure : figures)
             {
-                if(figure->GetType() != NOP_ANIMAL)
+                if(figure->GetType() != NodalObjectType::Animal)
                     continue;
                 // Ist das Tier überhaupt zum Jagen geeignet?
                 if(!static_cast<noAnimal*>(figure)->CanHunted())

@@ -826,7 +826,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     executeLua("function onPactCanceled(pt, canceledByPlayerId, targetPlayerId) rttr:Log('Pact canceled') end");
 
     // create alliance and check players state
-    player.SuggestPact(1, TREATY_OF_ALLIANCE, DURATION_INFINITE);
+    player.SuggestPact(1, PactType::TreatyOfAlliance, DURATION_INFINITE);
     game->executeAICommands();
     BOOST_REQUIRE(player.IsAlly(1));
     executeLua("assert(player:IsAlly(0))");
@@ -839,7 +839,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     // cancel pact by lua request
     executeLua("player:CancelPact(TREATY_OF_ALLIANCE, 0)");
     game->executeAICommands();
-    player.CancelPact(TREATY_OF_ALLIANCE, 1);
+    player.CancelPact(PactType::TreatyOfAlliance, 1);
     BOOST_REQUIRE(!player.IsAlly(1));
     executeLua("assert(not player:IsAlly(0))");
     BOOST_REQUIRE(player.IsAttackable(1));
@@ -850,14 +850,14 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
 
     // accept cancel-request via lua callback
     executeLua("function onCancelPactRequest(pt, player, ai) return true end");
-    player.SuggestPact(1, NON_AGGRESSION_PACT, DURATION_INFINITE);
+    player.SuggestPact(1, PactType::NonAgressionPact, DURATION_INFINITE);
     game->executeAICommands();
     // non aggression was created
     BOOST_REQUIRE(!player.IsAttackable(1));
     BOOST_REQUIRE_EQUAL(getLog(), "Pact created\n");
 
     // cancel pact by player and check state
-    player.CancelPact(NON_AGGRESSION_PACT, 1);
+    player.CancelPact(PactType::NonAgressionPact, 1);
     BOOST_REQUIRE(player.IsAttackable(1));
     BOOST_REQUIRE_EQUAL(getLog(), "Pact canceled\n");
 
@@ -866,7 +866,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     executeLua("player:SuggestPact(0, TREATY_OF_ALLIANCE, DURATION_INFINITE)");
     game->executeAICommands();
     const auto* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox.GetMsg(0));
-    this->AcceptPact(msg->GetPactId(), TREATY_OF_ALLIANCE, 1);
+    this->AcceptPact(msg->GetPactId(), PactType::TreatyOfAlliance, 1);
     BOOST_REQUIRE(!player.IsAttackable(1));
     executeLua("assert(not player:IsAttackable(0))");
 

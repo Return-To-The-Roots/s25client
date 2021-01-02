@@ -53,6 +53,10 @@ static std::ostream& operator<<(std::ostream& out, const InventorySetting& setti
 {
     return out << static_cast<unsigned>(static_cast<uint8_t>(setting));
 }
+static std::ostream& operator<<(std::ostream& out, const NodalObjectType& e)
+{
+    return out << static_cast<unsigned>(rttr::enum_cast(e));
+}
 // LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_SUITE(GameCommandSuite)
@@ -68,20 +72,20 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
 
     curPlayer = 0;
     this->SetFlag(flagPt);
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetType(), NOP_FLAG);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetType(), NodalObjectType::Flag);
     auto* flag = world.GetSpecObj<noRoadNode>(flagPt);
     BOOST_REQUIRE(flag);
     BOOST_REQUIRE_EQUAL(flag->GetPos(), flagPt);
     BOOST_REQUIRE_EQUAL(flag->GetPlayer(), 0);
     // Flag blocked
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::WEST).bq, BQ_NOTHING);
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::NORTHEAST).bq, BQ_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::WEST).bq, BuildingQuality::Nothing);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::NORTHEAST).bq, BuildingQuality::Nothing);
     // This flag = house flag
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::NORTHWEST).bq, BQ_CASTLE);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::NORTHWEST).bq, BuildingQuality::Castle);
     // Flag blocks castle
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::EAST).bq, BQ_HOUSE);
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::SOUTHEAST).bq, BQ_HOUSE);
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::SOUTHWEST).bq, BQ_HOUSE);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::EAST).bq, BuildingQuality::House);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::SOUTHEAST).bq, BuildingQuality::House);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::SOUTHWEST).bq, BuildingQuality::House);
     // Place flag again
     this->SetFlag(flagPt);
     // Nothing should be changed
@@ -99,12 +103,12 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
     unsigned objCt = GameObject::GetNumObjs();
     this->DestroyFlag(flagPt);
     // Removed from map
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetType(), NOP_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetType(), NodalObjectType::Nothing);
     // Removed from game
     BOOST_REQUIRE_EQUAL(GameObject::GetNumObjs(), objCt - 1);
     // And everything clear now
     for(const auto dir : helpers::EnumRange<Direction>{})
-        BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, dir).bq, BQ_CASTLE);
+        BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, dir).bq, BuildingQuality::Castle);
 }
 
 BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
@@ -136,30 +140,32 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     // End of road
     BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(4, 0), Direction::EAST), PointRoad::None);
     // BQ on road
-    BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(1, 0)).bq, BQ_NOTHING);
-    BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(2, 0)).bq, BQ_FLAG);
-    BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(3, 0)).bq, BQ_NOTHING);
-    BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(4, 0)).bq, BQ_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(1, 0)).bq, BuildingQuality::Nothing);
+    BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(2, 0)).bq, BuildingQuality::Flag);
+    BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(3, 0)).bq, BuildingQuality::Nothing);
+    BOOST_REQUIRE_EQUAL(world.GetNode(flagPt + MapPoint(4, 0)).bq, BuildingQuality::Nothing);
     // BQ above road
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq,
-                        BQ_CASTLE); // Flag could be build
+                        BuildingQuality::Castle); // Flag could be build
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq,
-                        BQ_FLAG); // only flag possible
+                        BuildingQuality::Flag); // only flag possible
     // BQ below road (Castle blocked by road)
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SOUTHEAST).bq, BQ_HOUSE);
-    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SOUTHWEST).bq, BQ_HOUSE);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SOUTHEAST).bq,
+                        BuildingQuality::House);
+    BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::SOUTHWEST).bq,
+                        BuildingQuality::House);
 
     // Set another flag on the road
     // c) to close
     this->SetFlag(flagPt + MapPoint(1, 0));
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(1, 0))->GetType(), NOP_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(1, 0))->GetType(), NodalObjectType::Nothing);
     // d) middle -> ok
     this->SetFlag(flagPt + MapPoint(2, 0));
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG); //-V807
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NodalObjectType::Flag); //-V807
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq,
-                        BQ_CASTLE); // Flag could be build
+                        BuildingQuality::Castle); // Flag could be build
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq,
-                        BQ_NOTHING); // no more flag possible
+                        BuildingQuality::Nothing); // no more flag possible
     // f) destroy middle flag -> Road destroyed
     this->DestroyFlag(flagPt + MapPoint(2, 0));
     for(unsigned i = 0; i < 4; i++)
@@ -170,30 +176,30 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     // g1) Other flag to close
     this->SetFlag(flagPt + MapPoint(3, 0));
     this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NodalObjectType::Nothing);
     for(unsigned i = 0; i < 3; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
     this->DestroyFlag(flagPt + MapPoint(3, 0));
     // g2) Building to close
     this->SetBuildingSite(flagPt + MapPoint(3, 0), BuildingType::Farm);
     this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
-    BOOST_REQUIRE_NE(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
+    BOOST_REQUIRE_NE(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NodalObjectType::Flag);
     for(unsigned i = 0; i < 2; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
     this->DestroyFlag(world.GetNeighbour(flagPt + MapPoint(3, 0), Direction::SOUTHEAST));
     // g3) Nothing objectionable
     this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NodalObjectType::Flag);
     for(unsigned i = 0; i < 2; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
 
     // h) Non-blocking env. object
     world.SetNO(flagPt + MapPoint(3, 0), new noEnvObject(flagPt, 512));
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NOP_ENVIRONMENT);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NodalObjectType::Environment);
     this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<Direction>(2, Direction::EAST));
     for(unsigned i = 2; i < 4; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::Normal);
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NOP_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NodalObjectType::Nothing);
 
     // Remove other flags
     this->DestroyFlag(flagPt + MapPoint(2, 0));
@@ -371,51 +377,56 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
     const MapPoint okMilPt = hqPos - MapPoint(5, 0);
     // Wrong BQ (blocked by HQ)
     this->SetBuildingSite(closePt, BuildingType::Farm);
-    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_NOTHING); //-V807
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NodalObjectType::Nothing); //-V807
     // OK
     this->SetBuildingSite(closePt, BuildingType::Woodcutter);
-    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_BUILDINGSITE);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NodalObjectType::Buildingsite);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BuildingType::Woodcutter);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(closePt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(closePt, Direction::SOUTHEAST))->GetType(),
+                        NodalObjectType::Flag);
     // OK
     this->SetBuildingSite(farmPt, BuildingType::Farm);
-    BOOST_REQUIRE_EQUAL(world.GetNO(farmPt)->GetType(), NOP_BUILDINGSITE);
+    BOOST_REQUIRE_EQUAL(world.GetNO(farmPt)->GetType(), NodalObjectType::Buildingsite);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(farmPt)->GetBuildingType(), BuildingType::Farm);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SOUTHEAST))->GetType(),
+                        NodalObjectType::Flag);
     // Millitary bld to close
     this->SetBuildingSite(closeMilPt, BuildingType::Barracks);
-    BOOST_REQUIRE_EQUAL(world.GetNO(closeMilPt)->GetType(), NOP_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closeMilPt)->GetType(), NodalObjectType::Nothing);
     // Millitary bld ok
     this->SetBuildingSite(okMilPt, BuildingType::Barracks);
-    BOOST_REQUIRE_EQUAL(world.GetNO(okMilPt)->GetType(), NOP_BUILDINGSITE);
+    BOOST_REQUIRE_EQUAL(world.GetNO(okMilPt)->GetType(), NodalObjectType::Buildingsite);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(okMilPt)->GetBuildingType(), BuildingType::Barracks);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(),
+                        NodalObjectType::Flag);
 
     // Remove bld
     this->DestroyBuilding(farmPt);
-    BOOST_REQUIRE_EQUAL(world.GetNO(farmPt)->GetType(), NOP_NOTHING);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
+    BOOST_REQUIRE_EQUAL(world.GetNO(farmPt)->GetType(), NodalObjectType::Nothing);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SOUTHEAST))->GetType(),
+                        NodalObjectType::Flag);
 
     // Remove flag -> bld also destroyed
     this->DestroyFlag(world.GetNeighbour(okMilPt, Direction::SOUTHEAST));
-    BOOST_REQUIRE_EQUAL(world.GetNO(okMilPt)->GetType(), NOP_NOTHING);
-    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(), NOP_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(okMilPt)->GetType(), NodalObjectType::Nothing);
+    BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(),
+                        NodalObjectType::Nothing);
 
     // Check if bld is build
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>(2, Direction::EAST));
-    RTTR_EXEC_TILL(1200, world.GetNO(closePt)->GetType() == NOP_BUILDING);
+    RTTR_EXEC_TILL(1200, world.GetNO(closePt)->GetType() == NodalObjectType::Building);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetGOT(), GOT_NOB_USUAL);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BuildingType::Woodcutter);
 
     // Destroy finished bld -> Fire
     this->DestroyBuilding(closePt);
-    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NodalObjectType::Fire);
     // Destroy twice -> Nothing happens
     this->DestroyBuilding(closePt);
-    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NodalObjectType::Fire);
     // Try to build on fire
     this->SetBuildingSite(closePt, BuildingType::Woodcutter);
-    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NodalObjectType::Fire);
 }
 
 BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)

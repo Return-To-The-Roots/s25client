@@ -24,7 +24,7 @@ class noStaticObject : public noCoordBase
 {
 public:
     noStaticObject(MapPoint pos, unsigned short id, unsigned short file = 0xFFFF, unsigned char size = 1,
-                   NodalObjectType type = NOP_OBJECT);
+                   NodalObjectType type = NodalObjectType::Object);
     noStaticObject(SerializedGameData& sgd, unsigned obj_id);
 
     void Destroy() override { Destroy_noStaticObject(); }

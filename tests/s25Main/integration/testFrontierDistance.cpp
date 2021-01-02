@@ -21,9 +21,15 @@
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
 
-BOOST_AUTO_TEST_SUITE(FrontierDistance)
+static std::ostream& operator<<(std::ostream& out, const FrontierDistance e)
+{
+    return out << static_cast<unsigned>(rttr::enum_cast(e));
+}
+
+BOOST_AUTO_TEST_SUITE(FrontierDistanceSuite)
 
 namespace {
+
 template<unsigned T_width, unsigned T_height>
 struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
 {
@@ -92,12 +98,13 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
         world.GetPlayer(0).RecalcMilitaryFlags();
         world.GetPlayer(1).RecalcMilitaryFlags();
 
-        unsigned distance0 = milBld0->GetFrontierDistance();
-        unsigned distance1 = milBld1->GetFrontierDistance();
+        FrontierDistance distance0 = milBld0->GetFrontierDistance();
+        FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
         BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0 + i * 10u, (i == 0 ? nobMilitary::DIST_NEAR : nobMilitary::DIST_FAR)
-                                                   + i * 10u); // near if addon is inactive, otherwise inland
+        BOOST_REQUIRE_EQUAL(
+          distance0,
+          (i == 0 ? FrontierDistance::Near : FrontierDistance::Far)); // near if addon is inactive, otherwise inland
     }
 }
 
@@ -136,12 +143,13 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
             world.GetPlayer(0).RecalcMilitaryFlags();
             world.GetPlayer(1).RecalcMilitaryFlags();
 
-            unsigned distance0 = milBld0->GetFrontierDistance();
-            unsigned distance1 = milBld1->GetFrontierDistance();
+            FrontierDistance distance0 = milBld0->GetFrontierDistance();
+            FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
             BOOST_REQUIRE_EQUAL(distance0, distance1);
-            BOOST_REQUIRE_EQUAL(distance0 + i * 10u, (i == 0 ? nobMilitary::DIST_NEAR : nobMilitary::DIST_FAR)
-                                                       + i * 10u); // near if addon is inactive, otherwise inland
+            BOOST_REQUIRE_EQUAL(
+              distance0,
+              (i == 0 ? FrontierDistance::Near : FrontierDistance::Far)); // near if addon is inactive, otherwise inland
         }
     }
 }
@@ -172,12 +180,13 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
         world.GetPlayer(0).RecalcMilitaryFlags();
         world.GetPlayer(1).RecalcMilitaryFlags();
 
-        unsigned distance0 = milBld0->GetFrontierDistance();
-        unsigned distance1 = milBld1->GetFrontierDistance();
+        FrontierDistance distance0 = milBld0->GetFrontierDistance();
+        FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
         BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0 + i * 10u, (i == 0 ? nobMilitary::DIST_MID : nobMilitary::DIST_FAR)
-                                                   + i * 10u); // middle if addon is inactive, otherwise inland
+        BOOST_REQUIRE_EQUAL(
+          distance0,
+          (i == 0 ? FrontierDistance::Mid : FrontierDistance::Far)); // middle if addon is inactive, otherwise inland
     }
 }
 
@@ -207,11 +216,11 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
         world.GetPlayer(0).RecalcMilitaryFlags();
         world.GetPlayer(1).RecalcMilitaryFlags();
 
-        unsigned distance0 = milBld0->GetFrontierDistance();
-        unsigned distance1 = milBld1->GetFrontierDistance();
+        FrontierDistance distance0 = milBld0->GetFrontierDistance();
+        FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
         BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0 + i * 10u, nobMilitary::DIST_FAR + i * 10u); // everytime inland
+        BOOST_REQUIRE_EQUAL(distance0, FrontierDistance::Far); // everytime inland
     }
 }
 
@@ -244,11 +253,11 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
         world.GetPlayer(0).RecalcMilitaryFlags();
         world.GetPlayer(1).RecalcMilitaryFlags();
 
-        unsigned distance0 = milBld0->GetFrontierDistance();
-        unsigned distance1 = milBld1->GetFrontierDistance();
+        FrontierDistance distance0 = milBld0->GetFrontierDistance();
+        FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
         BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0 + i * 10u, nobMilitary::DIST_MID + i * 10u);
+        BOOST_REQUIRE_EQUAL(distance0, FrontierDistance::Mid);
     }
 }
 
@@ -339,11 +348,11 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
     auto* milBld0 = dynamic_cast<nobMilitary*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, p0Near, p0.GetPlayerId(), Nation::Romans));
 
-    nobMilitary::FrontierDistance distance0 = milBld0->GetFrontierDistance();
-    nobMilitary::FrontierDistance distance1 = milBld1->GetFrontierDistance();
+    FrontierDistance distance0 = milBld0->GetFrontierDistance();
+    FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
-    BOOST_REQUIRE_EQUAL(distance0, nobMilitary::DIST_NEAR);
-    BOOST_REQUIRE_EQUAL(distance1, nobMilitary::DIST_NEAR);
+    BOOST_REQUIRE_EQUAL(distance0, FrontierDistance::Near);
+    BOOST_REQUIRE_EQUAL(distance1, FrontierDistance::Near);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

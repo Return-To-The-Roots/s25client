@@ -33,11 +33,11 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, cons
  */
 void ctrlBuildingIcon::Draw_()
 {
-    if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
+    if(state == ButtonState::Hover || state == ButtonState::Pressed)
         LOADER.GetImageN("io", 0)->DrawPart(GetDrawRect());
     glArchivItem_Bitmap* image = LOADER.GetNationIcon(nation, type);
     if(image)
-        image->DrawFull(GetDrawPos() + GetSize() / 2, (state == BUTTON_PRESSED ? COLOR_YELLOW : COLOR_WHITE));
+        image->DrawFull(GetDrawPos() + GetSize() / 2, (state == ButtonState::Pressed ? COLOR_YELLOW : COLOR_WHITE));
 }
 
 void ctrlBuildingIcon::DrawContent() const {}

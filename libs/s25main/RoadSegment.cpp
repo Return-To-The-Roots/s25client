@@ -80,7 +80,7 @@ void RoadSegment::Destroy_RoadSegment()
             // Figuren sammeln
             for(noBase* object : gwg->GetFigures(pt))
             {
-                if(object->GetType() == NOP_FIGURE)
+                if(object->GetType() == NodalObjectType::Figure)
                 {
                     if(static_cast<noFigure*>(object)->GetCurrentRoad() == this)
                     {
@@ -173,7 +173,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
         const std::list<noBase*>& figures = gwg->GetFigures(t);
         for(auto* figure : figures)
         {
-            if(figure->GetType() == NOP_FIGURE)
+            if(figure->GetType() == NodalObjectType::Figure)
             {
                 if(static_cast<noFigure*>(figure)->GetCurrentRoad() == this)
                     static_cast<noFigure*>(figure)->CorrectSplitData(second);
@@ -259,7 +259,7 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
     // nur Lagerhäuser!)
     if(route.size() == 1)
     {
-        if(f2->GetType() == NOP_BUILDING)
+        if(f2->GetType() == NodalObjectType::Building)
         {
             if(BuildingProperties::IsWareHouse(static_cast<noBuilding*>(f2)->GetBuildingType()))
                 static_cast<nobBaseWarehouse*>(f2)->FetchWare();

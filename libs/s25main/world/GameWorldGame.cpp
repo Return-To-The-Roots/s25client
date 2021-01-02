@@ -83,14 +83,14 @@ MilitarySquares& GameWorldGame::GetMilitarySquares()
 
 void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player)
 {
-    if(GetBQ(pt, player) == BQ_NOTHING)
+    if(GetBQ(pt, player) == BuildingQuality::Nothing)
         return;
     // There must be no other flag around that point
     if(IsFlagAround(pt))
         return;
 
     // Gucken, nicht, dass schon eine Flagge dasteht
-    if(GetNO(pt)->GetType() != NOP_FLAG)
+    if(GetNO(pt)->GetType() != NodalObjectType::Flag)
     {
         DestroyNO(pt, false);
         SetNO(pt, new noFlag(pt, player));
@@ -102,7 +102,7 @@ void GameWorldGame::SetFlag(const MapPoint pt, const unsigned char player)
 void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
 {
     // Let's see if there is a flag
-    if(GetNO(pt)->GetType() == NOP_FLAG)
+    if(GetNO(pt)->GetType() == NodalObjectType::Flag)
     {
         auto* flag = GetSpecObj<noFlag>(pt);
         if(flag->GetPlayer() != playerId)
@@ -175,7 +175,7 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
 {
     // Steht da auch ein Gebäude oder eine Baustelle, nicht dass wir aus Verzögerung Feuer abreißen wollen, das geht
     // schief
-    if(GetNO(pt)->GetType() == NOP_BUILDING || GetNO(pt)->GetType() == NOP_BUILDINGSITE)
+    if(GetNO(pt)->GetType() == NodalObjectType::Building || GetNO(pt)->GetType() == NodalObjectType::Buildingsite)
     {
         auto* nbb = GetSpecObj<noBaseBuilding>(pt);
 
@@ -244,7 +244,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     } else
     {
         // Check if we can build a flag there
-        if(GetBQ(curPt, playerId) == BQ_NOTHING || IsFlagAround(curPt))
+        if(GetBQ(curPt, playerId) == BuildingQuality::Nothing || IsFlagAround(curPt))
         {
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return;
@@ -458,7 +458,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         RecalcBQ(pt);
         // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
         const MapPoint neighbourPt = GetNeighbour(pt, Direction::NORTHWEST);
-        if(GetNode(neighbourPt).bq != BQ_NOTHING)
+        if(GetNode(neighbourPt).bq != BuildingQuality::Nothing)
             RecalcBQ(neighbourPt);
     }
 
@@ -475,7 +475,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     // Notify players
     for(unsigned i = 0; i < GetNumPlayers(); ++i)
     {
-        GetPlayer(i).ChangeStatisticValue(STAT_COUNTRY, sizeChanges[i]);
+        GetPlayer(i).ChangeStatisticValue(StatisticType::Country, sizeChanges[i]);
 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if(reason == TerritoryChangeReason::Build && sizeChanges[i] < 0)
@@ -662,7 +662,8 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner
 
     // Destroy only flags, buildings and building sites
     const NodalObjectType noType = no->GetType();
-    if(noType != NOP_FLAG && noType != NOP_BUILDING && noType != NOP_BUILDINGSITE)
+    if(noType != NodalObjectType::Flag && noType != NodalObjectType::Building
+       && noType != NodalObjectType::Buildingsite)
         return;
 
     // is the building on a node with a different owner?
@@ -672,11 +673,11 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner
     // Do not destroy military buildings that hold territory on their own
     // Normally they will be on players territory but it can happen that they don't
     // Examples: Improved alliances or expedition building sites
-    const noBase* noCheckMil = (noType == NOP_FLAG) ? GetNO(GetNeighbour(pt, Direction::NORTHWEST)) : no;
+    const noBase* noCheckMil = (noType == NodalObjectType::Flag) ? GetNO(GetNeighbour(pt, Direction::NORTHWEST)) : no;
     const GO_Type goType = noCheckMil->GetGOT();
     if(goType == GOT_NOB_HQ || goType == GOT_NOB_HARBORBUILDING
        || (goType == GOT_NOB_MILITARY && !static_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
-       || (noCheckMil->GetType() == NOP_BUILDINGSITE
+       || (noCheckMil->GetType() == NodalObjectType::Buildingsite
            && static_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
     {
         // LOG.write(("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y,
@@ -685,7 +686,7 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner
     }
 
     // If it is a flag, destroy the building
-    if(noType == NOP_FLAG && (!exception || no != exception->GetFlag()))
+    if(noType == NodalObjectType::Flag && (!exception || no != exception->GetFlag()))
         static_cast<noFlag*>(no)->DestroyAttachedBuilding();
 
     DestroyNO(pt, false);
@@ -706,7 +707,7 @@ void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
         // Figuren Bescheid sagen
         for(noBase* object : GetFigures(nb))
         {
-            if(object->GetType() == NOP_FIGURE)
+            if(object->GetType() == NodalObjectType::Figure)
                 static_cast<noFigure*>(object)->NodeFreed(pt);
         }
     }
@@ -872,7 +873,7 @@ bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
         /*
                 ATTENTION! This leads to figures on the same node blocking each other. -> Ghost jams
 
-                if((*it)->GetType() == NOP_FIGURE)
+                if((*it)->GetType() == NodalObjectType::Figure)
                 {
                     noFigure * fig = static_cast<noFigure*>(*it);
                     // Figuren dürfen sich nicht gegenüber stehen, sonst warten sie ja ewig aufeinander
@@ -909,7 +910,7 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<D
     // Auch vom Ausgangspunkt aus, da sie im GameWorldGame wegem Zeichnen auch hier hängen können!
     const std::list<noBase*>& fieldFigures = GetFigures(pt);
     for(auto* fieldFigure : fieldFigures)
-        if(fieldFigure->GetType() == NOP_FIGURE)
+        if(fieldFigure->GetType() == NodalObjectType::Figure)
             figures.push_back(static_cast<noFigure*>(fieldFigure));
 
     // Und natürlich in unmittelbarer Umgebung suchen
@@ -917,7 +918,7 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const helpers::OptionalEnum<D
     {
         const std::list<noBase*>& fieldFigures = GetFigures(GetNeighbour(pt, dir));
         for(auto* fieldFigure : fieldFigures)
-            if(fieldFigure->GetType() == NOP_FIGURE)
+            if(fieldFigure->GetType() == NodalObjectType::Figure)
                 figures.push_back(static_cast<noFigure*>(fieldFigure));
     }
 

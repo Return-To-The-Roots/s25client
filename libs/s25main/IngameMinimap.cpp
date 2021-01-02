@@ -27,7 +27,7 @@
 
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv)
     : Minimap(gwv.GetWorld().GetSize()), gwv(gwv), nodes_updated(GetMapSize().x * GetMapSize().y, false),
-      dos(GetMapSize().x * GetMapSize().y, DO_INVALID), territory(true), houses(true), roads(true)
+      dos(GetMapSize().x * GetMapSize().y, DrawnObject::Invalid), territory(true), houses(true), roads(true)
 {
     CreateMapTexture();
 }
@@ -40,18 +40,18 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 
     if(visibility == Visibility::Invisible)
     {
-        dos[GetMMIdx(pt)] = DO_INVISIBLE;
+        dos[GetMMIdx(pt)] = DrawnObject::Invisible;
         // Man sieht nichts --> schwarz
         return 0xFF000000;
     } else
     {
-        DrawnObject drawn_object = DO_INVALID;
+        DrawnObject drawn_object = DrawnObject::Invalid;
 
         const bool fow = (visibility == Visibility::FogOfWar);
 
         unsigned char owner;
-        NodalObjectType noType = NOP_NOTHING;
-        FOW_Type fot = FOW_NOTHING;
+        NodalObjectType noType = NodalObjectType::Nothing;
+        FoW_Type fot = FoW_Type::Nothing;
         if(!fow)
         {
             const MapNode& node = gwv.GetNode(pt);
@@ -67,27 +67,27 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
         }
 
         // Baum an dieser Stelle?
-        if((!fow && noType == NOP_TREE) || (fow && fot == FOW_TREE)) //-V807
+        if((!fow && noType == NodalObjectType::Tree) || (fow && fot == FoW_Type::Tree)) //-V807
         {
             color = VaryBrightness(TREE_COLOR, VARY_TREE_COLOR);
-            drawn_object = DO_TERRAIN;
+            drawn_object = DrawnObject::Terrain;
             // Ggf. mit Spielerfarbe
             if(owner)
             {
-                drawn_object = DO_PLAYER;
+                drawn_object = DrawnObject::Player;
                 if(territory)
                     color = CombineWithPlayerColor(color, owner);
             }
         }
         // Granit an dieser Stelle?
-        else if((!fow && noType == NOP_GRANITE) || (fow && fot == FOW_GRANITE))
+        else if((!fow && noType == NodalObjectType::Granite) || (fow && fot == FoW_Type::Granite))
         {
             color = VaryBrightness(GRANITE_COLOR, VARY_GRANITE_COLOR);
-            drawn_object = DO_TERRAIN;
+            drawn_object = DrawnObject::Terrain;
             // Ggf. mit Spielerfarbe
             if(owner)
             {
-                drawn_object = DO_PLAYER;
+                drawn_object = DrawnObject::Player;
                 if(territory)
                     color = CombineWithPlayerColor(color, owner);
             }
@@ -99,20 +99,20 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
             if(owner)
             {
                 // Building?
-                if(((!fow && (noType == NOP_BUILDING || noType == NOP_BUILDINGSITE))
-                    || (fow && (fot == FOW_BUILDING || fot == FOW_BUILDINGSITE))))
-                    drawn_object = DO_BUILDING;
+                if(((!fow && (noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite))
+                    || (fow && (fot == FoW_Type::Building || fot == FoW_Type::Buildingsite))))
+                    drawn_object = DrawnObject::Buidling;
                 /// Roads?
                 else if(IsRoad(pt, visibility))
-                    drawn_object = DO_ROAD;
+                    drawn_object = DrawnObject::Road;
                 // ansonsten normales Territorium?
                 else
-                    drawn_object = DO_PLAYER;
+                    drawn_object = DrawnObject::Player;
 
-                if(drawn_object == DO_BUILDING && houses)
+                if(drawn_object == DrawnObject::Buidling && houses)
                     color = BUILDING_COLOR;
                 /// Roads?
-                else if(drawn_object == DO_ROAD && roads)
+                else if(drawn_object == DrawnObject::Road && roads)
                     color = ROAD_COLOR;
                 // ansonsten normales Territorium?
                 else if(territory)
@@ -125,7 +125,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
             {
                 // Normales Terrain berechnen
                 color = CalcTerrainColor(pt, t);
-                drawn_object = DO_TERRAIN;
+                drawn_object = DrawnObject::Terrain;
             }
         }
 
@@ -263,9 +263,10 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
         for(unsigned t = 0; t < 2; ++t)
         {
             if(dos[GetMMIdx(pt)] == drawn_object
-               || (drawn_object == DO_PLAYER && // for DO_PLAYER check for not drawn buildings or roads as there is only
-                                                // the player territory visible
-                   ((dos[GetMMIdx(pt)] == DO_BUILDING && !houses) || (dos[GetMMIdx(pt)] == DO_ROAD && !roads))))
+               || (drawn_object == DrawnObject::Player && // for DrawnObject::Player check for not drawn buildings or
+                                                          // roads as there is only the player territory visible
+                   ((dos[GetMMIdx(pt)] == DrawnObject::Buidling && !houses)
+                    || (dos[GetMMIdx(pt)] == DrawnObject::Road && !roads))))
             {
                 unsigned color = CalcPixelColor(pt, t);
                 DrawPoint texPos((pt.x * 2 + t + (pt.y & 1)) % (GetMapSize().x * 2), pt.y);
@@ -279,17 +280,17 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
 void IngameMinimap::ToggleTerritory()
 {
     territory = !territory;
-    UpdateAll(DO_PLAYER);
+    UpdateAll(DrawnObject::Player);
 }
 
 void IngameMinimap::ToggleHouses()
 {
     houses = !houses;
-    UpdateAll(DO_BUILDING);
+    UpdateAll(DrawnObject::Buidling);
 }
 
 void IngameMinimap::ToggleRoads()
 {
     roads = !roads;
-    UpdateAll(DO_ROAD);
+    UpdateAll(DrawnObject::Road);
 }

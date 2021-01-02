@@ -41,13 +41,13 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
     mapSize.y = header.getHeight();
 
     unsigned char gfxSet = header.getGfxSet();
-    objects = s2map.GetLayer(MAP_TYPE);
-    terrain1 = s2map.GetLayer(MAP_TERRAIN1);
-    terrain2 = s2map.GetLayer(MAP_TERRAIN2);
-    if(s2map.HasLayer(MAP_SHADOWS))
-        shadows = s2map.GetLayer(MAP_SHADOWS);
+    objects = s2map.GetLayer(MapLayer::Type);
+    terrain1 = s2map.GetLayer(MapLayer::Terrain1);
+    terrain2 = s2map.GetLayer(MapLayer::Terrain2);
+    if(s2map.HasLayer(MapLayer::Shadows))
+        shadows = s2map.GetLayer(MapLayer::Shadows);
     else
-        CalcShadows(s2map.GetLayer(MAP_ALTITUDE));
+        CalcShadows(s2map.GetLayer(MapLayer::Altitude));
 
     WorldDescription worldDesc;
     GameDataLoader gdLoader(worldDesc);

@@ -69,7 +69,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         for(MapCoord i = 1; i < std::min(world.GetWidth(), world.GetHeight()); i++)
         {
             MapPoint pt(i, i);
-            if(world.GetNode(pt).bq != BQ_NOTHING)
+            if(world.GetNode(pt).bq != BuildingQuality::Nothing)
             {
                 world.SetNO(pt, new noGranite(GraniteType::One, 5));
                 if(pt.x + 1 < world.GetWidth())
@@ -77,7 +77,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
                 world.RecalcBQAroundPointBig(pt);
             }
             pt = MapPoint(world.GetHeight() - i - 1u, i);
-            if(pt.x < world.GetWidth() && world.GetNode(pt).bq != BQ_NOTHING)
+            if(pt.x < world.GetWidth() && world.GetNode(pt).bq != BuildingQuality::Nothing)
             {
                 world.SetNO(pt, new noGranite(GraniteType::One, 5));
                 if(pt.x + 1 < world.GetWidth())
@@ -113,7 +113,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         for(unsigned i = 1; i < 3; i++)
         {
             SetCurPlayer(i);
-            BOOST_REQUIRE_EQUAL(gwv.GetBQ(harborPos[i]), BQ_HARBOR);
+            BOOST_REQUIRE_EQUAL(gwv.GetBQ(harborPos[i]), BuildingQuality::Harbor);
             const noBuilding* hb =
               BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, harborPos[i], i, Nation(i));
             BOOST_REQUIRE(hb);
@@ -128,23 +128,23 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
 
         // Build some military buildings
 
-        milBld1NearPos = FindBldPos(world.GetHarborPoint(3) + MapPoint(3, 2), BQ_HOUSE, 1);
+        milBld1NearPos = FindBldPos(world.GetHarborPoint(3) + MapPoint(3, 2), BuildingQuality::House, 1);
         BOOST_REQUIRE(milBld1NearPos.isValid());
-        BOOST_REQUIRE_GE(world.GetBQ(milBld1NearPos, 1), BQ_HOUSE);
+        BOOST_REQUIRE_GE(world.GetBQ(milBld1NearPos, 1), BuildingQuality::House);
         milBld1Near = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1Near);
 
-        milBld1FarPos = FindBldPos(world.GetHarborPoint(4) - MapPoint(1, 4), BQ_HOUSE, 1);
+        milBld1FarPos = FindBldPos(world.GetHarborPoint(4) - MapPoint(1, 4), BuildingQuality::House, 1);
         BOOST_REQUIRE(milBld1FarPos.isValid());
-        BOOST_REQUIRE_GE(world.GetBQ(milBld1FarPos, 1), BQ_HOUSE);
+        BOOST_REQUIRE_GE(world.GetBQ(milBld1FarPos, 1), BuildingQuality::House);
         milBld1Far = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1Far);
 
-        milBld2Pos = FindBldPos(world.GetHarborPoint(6) - MapPoint(2, 2), BQ_HOUSE, 2);
+        milBld2Pos = FindBldPos(world.GetHarborPoint(6) - MapPoint(2, 2), BuildingQuality::House, 2);
         BOOST_REQUIRE(milBld2Pos.isValid());
-        BOOST_REQUIRE_GE(world.GetBQ(milBld2Pos, 2), BQ_HOUSE);
+        BOOST_REQUIRE_GE(world.GetBQ(milBld2Pos, 2), BuildingQuality::House);
         milBld2 = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld2Pos, 2, Nation::Babylonians));
         BOOST_REQUIRE(milBld2);
@@ -302,7 +302,7 @@ BOOST_FIXTURE_TEST_CASE(NoHarborBlock, SeaAttackFixture)
     TestFailingSeaAttack(harborPos[0]);
 
     // Non-Military building
-    BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BQ_FLAG);
+    BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BuildingQuality::Flag);
     const noBuilding* usualBld =
       BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, Nation::Romans);
     BOOST_REQUIRE(usualBld);
@@ -359,7 +359,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
     // No building
     TestFailingSeaAttack(harborPos[0]);
     // Non-Military building
-    BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BQ_FLAG);
+    BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BuildingQuality::Flag);
     const noBuilding* usualBld =
       BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, Nation::Romans);
     BOOST_REQUIRE(usualBld);
@@ -386,7 +386,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
     // Distance: <= attack distance (+ reserve) but greater than range from military bld (current values)
     BOOST_REQUIRE_LE(world.CalcDistance(bldPos, harborBot2), 12u);
     BOOST_REQUIRE_GE(world.CalcDistance(bldPos, harborBot2), 9u);
-    BOOST_REQUIRE_EQUAL(world.GetNode(bldPos).bq, BQ_CASTLE);
+    BOOST_REQUIRE_EQUAL(world.GetNode(bldPos).bq, BuildingQuality::Castle);
     std::vector<MapPoint> pts = world.GetPointsInRadius(bldPos, 3);
     pts.push_back(bldPos);
     for(const MapPoint& pt : pts)

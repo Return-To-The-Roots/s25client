@@ -324,7 +324,7 @@ ctrlMultiline* Window::AddMultiline(unsigned id, const DrawPoint& pos, const Ext
  *
  *  @return Instanz das Steuerelement.
  */
-ctrlOptionGroup* Window::AddOptionGroup(unsigned id, int select_type)
+ctrlOptionGroup* Window::AddOptionGroup(unsigned id, GroupSelectType select_type)
 {
     return AddCtrl(new ctrlOptionGroup(this, id, select_type));
 }
@@ -337,7 +337,7 @@ ctrlOptionGroup* Window::AddOptionGroup(unsigned id, int select_type)
  *
  *  @return Instanz das Steuerelement.
  */
-ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned id, int select_type)
+ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned id, GroupSelectType select_type)
 {
     return AddCtrl(new ctrlMultiSelectGroup(this, id, select_type));
 }

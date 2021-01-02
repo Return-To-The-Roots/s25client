@@ -64,7 +64,7 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed p
                       _("Use S2 Defaults"));
 
     // Kategorien
-    ctrlOptionGroup* optiongroup = AddOptionGroup(ID_grpAddonGroup, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(ID_grpAddonGroup, GroupSelectType::Check);
     btSize = Extent(120, 22);
     // "Alle"
     optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::All), DrawPoint(20, 50), btSize, TC_GREEN2, _("All"),
@@ -125,7 +125,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
                     case AddonChangeAllowed::All:
                     case AddonChangeAllowed::WhitelistOnly:
                         // send message via msgboxresult
-                        GetParent()->Msg_MsgBoxResult(GetID(), MSR_YES);
+                        GetParent()->Msg_MsgBoxResult(GetID(), MsgboxResult::Yes);
                         break;
                 }
             }

@@ -27,7 +27,16 @@
 #include "worldFixtures/SeaWorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
 #include "nodeObjs/noShip.h"
+#include "gameTypes/GameTypesOutput.h"
 #include <boost/test/unit_test.hpp>
+
+#define RTTR_ENUM_OUTPUT(EnumName)                                                 \
+    static std::ostream& operator<<(std::ostream& out, const EnumName e)           \
+    {                                                                              \
+        return out << #EnumName "::" << static_cast<unsigned>(rttr::enum_cast(e)); \
+    }
+
+RTTR_ENUM_OUTPUT(nobShipYard::Mode)
 
 namespace {
 std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
@@ -91,24 +100,24 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
         curPt = world.GetNeighbour(curPt, i);
         this->SetFlag(curPt);
     }
-    BOOST_REQUIRE_EQUAL(world.GetBQ(shipyardPos, curPlayer), BQ_CASTLE);
+    BOOST_REQUIRE_EQUAL(world.GetBQ(shipyardPos, curPlayer), BuildingQuality::Castle);
     auto* shipYard = dynamic_cast<nobShipYard*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Shipyard, shipyardPos, curPlayer, Nation::Romans));
     BOOST_REQUIRE(shipYard);
     road = FindRoadPath(hqFlagPos, world.GetNeighbour(shipyardPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
-    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::BOATS); //-V522
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::Mode::Boats); //-V522
     this->SetShipYardMode(shipyardPos, false);
-    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::BOATS);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::Mode::Boats);
     this->SetShipYardMode(shipyardPos, true);
-    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::SHIPS);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::Mode::Ships);
     this->SetShipYardMode(shipyardPos, true);
-    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::SHIPS);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::Mode::Ships);
     this->SetShipYardMode(shipyardPos, false);
-    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::BOATS);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::Mode::Boats);
     this->SetShipYardMode(shipyardPos, true);
-    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::SHIPS);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::Mode::Ships);
 
     world.GetPostMgr().AddPostBox(curPlayer);
     PostBox& postBox = *world.GetPostMgr().GetPostBox(curPlayer);

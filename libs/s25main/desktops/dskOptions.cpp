@@ -73,7 +73,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // "Optionen"
     AddText(1, DrawPoint(400, 10), _("Options"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
-    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(10, GroupSelectType::Check);
 
     AddTextButton(14, DrawPoint(520, 550), Extent(200, 22), TC_GREEN2, _("Addons"), NormalFont);
 
@@ -128,7 +128,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // IPv4/6
     groupAllgemein->AddText(300, DrawPoint(80, 230), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
-    ctrlOptionGroup* ipv6 = groupAllgemein->AddOptionGroup(301, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* ipv6 = groupAllgemein->AddOptionGroup(301, GroupSelectType::Check);
     ipv6->AddTextButton(302, DrawPoint(480, 225), Extent(190, 22), TC_GREY, _("IPv6"), NormalFont);
     ipv6->AddTextButton(303, DrawPoint(280, 225), Extent(190, 22), TC_GREY, _("IPv4"), NormalFont);
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 302 : 303));
@@ -163,7 +163,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // }
 
     groupAllgemein->AddText(70, DrawPoint(80, 360), _("Submit debug data:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    optiongroup = groupAllgemein->AddOptionGroup(71, ctrlOptionGroup::CHECK);
+    optiongroup = groupAllgemein->AddOptionGroup(71, GroupSelectType::Check);
     optiongroup->AddTextButton(72, DrawPoint(480, 355), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(73, DrawPoint(280, 355), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
 
@@ -171,13 +171,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // qx:upnp switch
     groupAllgemein->AddText(9999, DrawPoint(80, 390), _("Use UPnP"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(9998, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(9998, GroupSelectType::Check);
     upnp->AddTextButton(10002, DrawPoint(280, 385), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
     upnp->AddTextButton(10001, DrawPoint(480, 385), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     upnp->SetSelection((SETTINGS.global.use_upnp == 1) ? 10001 : 10002);
 
     groupAllgemein->AddText(10100, DrawPoint(80, 420), _("Smart Cursor"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(10101, GroupSelectType::Check);
     smartCursor->AddTextButton(
       10103, DrawPoint(280, 415), Extent(190, 22), TC_GREY, _("Off"), NormalFont,
       _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
@@ -191,7 +191,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Vollbild"
     groupGrafik->AddText(46, DrawPoint(80, 130), _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    optiongroup = groupGrafik->AddOptionGroup(47, ctrlOptionGroup::CHECK);
+    optiongroup = groupGrafik->AddOptionGroup(47, GroupSelectType::Check);
     optiongroup->AddTextButton(48, DrawPoint(480, 125), Extent(190, 22), TC_GREY, _("Fullscreen"), NormalFont);
     optiongroup->AddTextButton(49, DrawPoint(280, 125), Extent(190, 22), TC_GREY, _("Windowed"), NormalFont);
 
@@ -201,7 +201,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "VBO"
     groupGrafik->AddText(54, DrawPoint(80, 230), _("Vertex Buffer Objects:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    optiongroup = groupGrafik->AddOptionGroup(55, ctrlOptionGroup::CHECK);
+    optiongroup = groupGrafik->AddOptionGroup(55, GroupSelectType::Check);
 
     optiongroup->AddTextButton(56, DrawPoint(280, 225), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(57, DrawPoint(480, 225), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
@@ -220,7 +220,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     }
 
     groupGrafik->AddText(74, DrawPoint(80, 320), _("Optimized Textures:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    optiongroup = groupGrafik->AddOptionGroup(75, ctrlOptionGroup::CHECK);
+    optiongroup = groupGrafik->AddOptionGroup(75, GroupSelectType::Check);
 
     optiongroup->AddTextButton(76, DrawPoint(280, 315), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(77, DrawPoint(480, 315), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
@@ -240,7 +240,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // Musik
     groupSound->AddText(62, DrawPoint(80, 80), _("Music"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    optiongroup = groupSound->AddOptionGroup(63, ctrlOptionGroup::CHECK);
+    optiongroup = groupSound->AddOptionGroup(63, GroupSelectType::Check);
     optiongroup->AddTextButton(64, DrawPoint(280, 75), Extent(90, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(65, DrawPoint(380, 75), Extent(90, 22), TC_GREY, _("Off"), NormalFont);
 
@@ -249,7 +249,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // Effekte
     groupSound->AddText(66, DrawPoint(80, 130), _("Effects"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    optiongroup = groupSound->AddOptionGroup(67, ctrlOptionGroup::CHECK);
+    optiongroup = groupSound->AddOptionGroup(67, GroupSelectType::Check);
     optiongroup->AddTextButton(68, DrawPoint(280, 125), Extent(90, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(69, DrawPoint(380, 125), Extent(90, 22), TC_GREY, _("Off"), NormalFont);
 
@@ -534,8 +534,9 @@ static bool validatePort(const std::string& sPort, uint16_t& outPort)
         outPort = *port;
     else
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-          _("Error"), _("Invalid port. The valid port-range is 1 to 65535!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"),
+                                                      _("Invalid port. The valid port-range is 1 to 65535!"), nullptr,
+                                                      MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
     }
     return static_cast<bool>(port);
 }
@@ -567,16 +568,16 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
                 if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
                 {
                     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-                      _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK,
-                      MSB_EXCLAMATIONGREEN, 1));
+                      _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
+                      MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
                     return;
                 }
             }
             if(SETTINGS.driver.video != VIDEODRIVER.GetName() || SETTINGS.driver.audio != AUDIODRIVER.GetName())
             {
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-                  _("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this, MSB_OK,
-                  MSB_EXCLAMATIONGREEN, 1));
+                  _("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this,
+                  MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
                 return;
             }
 

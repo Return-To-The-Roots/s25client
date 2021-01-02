@@ -57,7 +57,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     // ipv6 oder ipv4 benutzen
     AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
-    ctrlOptionGroup* ipv6 = AddOptionGroup(12, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* ipv6 = AddOptionGroup(12, GroupSelectType::Check);
     ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TC_GREEN2, _("IPv4"), NormalFont);
     ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TC_GREEN2, _("IPv6"), NormalFont);
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
@@ -222,12 +222,12 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
     {
-        case CS_WAITFORANSWER: SetStatus(_("Waiting for Reply..."), COLOR_YELLOW); break;
-        case CS_QUERYPW: SetStatus(_("Checking Password..."), COLOR_YELLOW); break;
-        case CS_QUERYMAPNAME: SetStatus(_("Checking Map..."), COLOR_YELLOW); break;
-        case CS_QUERYPLAYERLIST: SetStatus(_("Waiting for Playerinfo..."), COLOR_YELLOW); break;
+        case ConnectState::WaitForAnswer: SetStatus(_("Waiting for Reply..."), COLOR_YELLOW); break;
+        case ConnectState::QueryPw: SetStatus(_("Checking Password..."), COLOR_YELLOW); break;
+        case ConnectState::QueryMapName: SetStatus(_("Checking Map..."), COLOR_YELLOW); break;
+        case ConnectState::QueryPlayerList: SetStatus(_("Waiting for Playerinfo..."), COLOR_YELLOW); break;
 
-        case CS_FINISHED: // Wir wurden verbunden
+        case ConnectState::Finished: // Wir wurden verbunden
         {
             std::unique_ptr<ILobbyClient> lobbyClient;
             if(server_type == ServerType::LOBBY)

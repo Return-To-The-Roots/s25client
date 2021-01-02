@@ -31,6 +31,7 @@
 #include "world/GameWorldView.h"
 #include "world/NodeMapBase.h"
 #include "world/TerritoryRegion.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/nowide/iostream.hpp>

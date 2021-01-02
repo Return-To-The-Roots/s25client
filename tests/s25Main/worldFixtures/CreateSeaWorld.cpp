@@ -35,7 +35,7 @@ bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbo
     {
         // Harbor only at castles
         world.RecalcBQ(curPt);
-        if(world.GetNode(curPt).bq != BQ_CASTLE)
+        if(world.GetNode(curPt).bq != BuildingQuality::Castle)
             continue;
         // We must have a coast around
         for(const auto dir : helpers::EnumRange<Direction>{})

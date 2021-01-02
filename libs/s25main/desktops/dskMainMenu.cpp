@@ -16,14 +16,11 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "dskMainMenu.h"
-
+#include "CollisionDetection.h"
 #include "GlobalVars.h"
 #include "Loader.h"
-#include "WindowManager.h"
-
 #include "Settings.h"
-
-#include "CollisionDetection.h"
+#include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlTimer.h"
 #include "desktops/dskCredits.h"
@@ -86,14 +83,14 @@ void dskMainMenu::Msg_Timer(const unsigned ctrl_id)
     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
       _("Submit debug data?"),
       _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"),
-      this, MSB_YESNO, MSB_QUESTIONRED, 100));
+      this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, 100));
 }
 
 void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     if(msgbox_id == 100)
     {
-        if(mbr == MSR_YES)
+        if(mbr == MsgboxResult::Yes)
             SETTINGS.global.submit_debug_data = 1;
         else
             SETTINGS.global.submit_debug_data = 2;

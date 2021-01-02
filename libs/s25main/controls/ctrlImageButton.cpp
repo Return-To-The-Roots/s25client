@@ -25,7 +25,7 @@ ctrlImageButton::ctrlImageButton(Window* parent, unsigned id, const DrawPoint& p
 void ctrlImageButton::DrawContent() const
 {
     DrawPoint pos = GetDrawPos() + DrawPoint(GetSize()) / 2;
-    if((state == BUTTON_PRESSED || isChecked) && isEnabled)
+    if((state == ButtonState::Pressed || isChecked) && isEnabled)
         pos += DrawPoint::all(2);
     if(!isEnabled && GetModulationColor() == COLOR_WHITE)
         DrawImage(pos, 0xFF555555);

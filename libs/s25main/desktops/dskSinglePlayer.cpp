@@ -105,12 +105,13 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                     WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPleaseWait>());
                 else
                 {
-                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-                      _("Error"), _("The specified file couldn't be loaded!"), nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"),
+                                                                  _("The specified file couldn't be loaded!"), nullptr,
+                                                                  MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
                 }
             } else
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"),
-                                                              nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+                                                              nullptr, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
         }
         break;
         case 4: // "Replay abspielen"
@@ -122,8 +123,8 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
         {
             /// @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-              _("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this, MSB_OK,
-              MSB_EXCLAMATIONGREEN));
+              _("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this,
+              MsgboxButton::Ok, MsgboxIcon::ExclamationGreen));
         }
         break;
         case 6: // "Freies Spiel"

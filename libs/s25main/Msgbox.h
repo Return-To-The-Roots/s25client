@@ -17,27 +17,30 @@
 
 #pragma once
 
-enum MsgboxButton
+enum class MsgboxButton
 {
-    MSB_OK,
-    MSB_OKCANCEL,
-    MSB_YESNO,
-    MSB_YESNOCANCEL
+    Ok,
+    OkCancel,
+    YesNo,
+    YesNoCancel
+};
+constexpr auto maxEnumValue(MsgboxButton)
+{
+    return MsgboxButton::YesNoCancel;
+}
+
+enum class MsgboxIcon
+{
+    QuestionGreen = 72,
+    ExclamationGreen,
+    QuestionRed,
+    ExclamationRed
 };
 
-enum MsgboxIcon
+enum class MsgboxResult
 {
-    MSB_QUESTIONGREEN = 72,
-    MSB_EXCLAMATIONGREEN,
-    MSB_QUESTIONRED,
-    MSB_EXCLAMATIONRED
-};
-
-enum MsgboxResult
-{
-    MSR_OK = 0,
-    MSR_CANCEL,
-    MSR_YES,
-    MSR_NO,
-    MSR_NOTHING
+    Ok,
+    Cancel,
+    Yes,
+    No
 };

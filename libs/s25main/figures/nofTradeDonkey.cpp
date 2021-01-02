@@ -94,7 +94,7 @@ void nofTradeDonkey::Walked()
     {
         // Does target still exist?
         noBase* nob = gwg->GetNO(pos);
-        if(nob->GetType() == NOP_BUILDING
+        if(nob->GetType() == NodalObjectType::Building
            && BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
             GoalReached();
         else

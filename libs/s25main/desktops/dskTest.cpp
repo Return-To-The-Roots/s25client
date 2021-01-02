@@ -162,11 +162,11 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
             btAni->SetPos(startPos);
             DrawPoint endPos(startPos);
             endPos.x += btAniBg->GetSize().x - btAni->GetSize().x;
-            Animation::RepeatType repeat = Animation::RPT_None;
+            Animation::RepeatType repeat = Animation::RepeatType::None;
             if(ctrl_id == ID_btAnimateOscillate)
-                repeat = Animation::RPT_Oscillate;
+                repeat = Animation::RepeatType::Oscillate;
             else if(ctrl_id == ID_btAnimateRepeat)
-                repeat = Animation::RPT_Repeat;
+                repeat = Animation::RepeatType::Repeat;
             GetAnimationManager().addAnimation(new MoveAnimation(btAni, endPos, 4000, repeat));
             GetAnimationManager().addAnimation(new BlinkButtonAnim(GetCtrl<ctrlButton>(ctrl_id)));
             break;

@@ -23,19 +23,19 @@ struct ScreenResizeEvent;
 class Animation
 {
 public:
-    enum RepeatType
+    enum class RepeatType
     {
-        RPT_None,
-        RPT_Repeat,
-        RPT_Oscillate,
-        RPT_OscillateOnce
+        None,
+        Repeat,
+        Oscillate,
+        OscillateOnce
     };
-    enum SkipType
+    enum class SkipType
     {
         /// Skip on time, play every frame
-        SKIP_TIME,
+        Time,
         /// Ensure timing, skip frames (last frame is always played before anim is finished)
-        SKIP_FRAMES
+        Frames
     };
     Animation(Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat);
     virtual ~Animation();
