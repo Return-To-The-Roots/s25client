@@ -261,8 +261,8 @@ void dskBenchmark::startTest(Test test)
                     if(game_->world_.GetNode(pt).obj || game_->world_.GetNode(flagPt).obj || !dist(rng))
                         continue;
                     BuildingType bldType = blds[getBld(rng)];
-                    noBuilding* bld = BuildingFactory::CreateBuilding(game_->world_, bldType, pt, i,
-                                                                      distEqual(rng) ? NAT_AFRICANS : NAT_JAPANESE);
+                    noBuilding* bld = BuildingFactory::CreateBuilding(
+                      game_->world_, bldType, pt, i, distEqual(rng) ? Nation::Africans : Nation::Japanese);
                     if(bldType == BuildingType::Barracks)
                     {
                         auto* mil = static_cast<nobMilitary*>(bld);
@@ -327,11 +327,11 @@ void dskBenchmark::createGame()
     RANDOM.Init(42);
     std::vector<PlayerInfo> players;
     PlayerInfo p;
-    p.ps = PS_OCCUPIED;
-    p.nation = NAT_AFRICANS;
+    p.ps = PlayerState::Occupied;
+    p.nation = Nation::Africans;
     p.color = PLAYER_COLORS[0];
     players.push_back(p);
-    p.nation = NAT_JAPANESE;
+    p.nation = Nation::Japanese;
     p.color = PLAYER_COLORS[1];
     players.push_back(p);
     game_ = std::make_shared<Game>(GlobalGameSettings(), 0u, players);

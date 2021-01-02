@@ -17,22 +17,21 @@
 
 #pragma once
 
-#include "helpers/MaxEnumValue.h"
+#include <cstdint>
 
 /// Nations (byte sized)
-enum Nation : unsigned char
+enum class Nation : uint8_t
 {
-    NAT_AFRICANS,
-    NAT_JAPANESE,
-    NAT_ROMANS,
-    NAT_VIKINGS,
-    NAT_BABYLONIANS
+    Africans,
+    Japanese,
+    Romans,
+    Vikings,
+    Babylonians
 };
 constexpr auto maxEnumValue(Nation)
 {
-    return NAT_BABYLONIANS;
+    return Nation::Babylonians;
 }
 
 /// Number of native nations
 constexpr unsigned NUM_NATIVE_NATIONS = 4;
-constexpr unsigned NUM_NATIONS = helpers::NumEnumValues_v<Nation>;

@@ -44,9 +44,8 @@ void LuaServerPlayer::Register(kaguya::State& state)
                                .addFunction("SetName", &LuaServerPlayer::SetName));
 }
 
-void LuaServerPlayer::SetNation(Nation nat)
+void LuaServerPlayer::SetNation(lua::SafeEnum<Nation> nat)
 {
-    lua::assertTrue(unsigned(nat) < NUM_NATIONS, "Invalid Nation");
     player.nation = nat;
     lobbyServerController_.SetNation(playerId, nat);
 }
@@ -71,23 +70,23 @@ void LuaServerPlayer::SetColor(unsigned colorOrIdx)
 
 void LuaServerPlayer::Close()
 {
-    if(player.ps == PS_LOCKED)
+    if(player.ps == PlayerState::Locked)
         return;
     lobbyServerController_.CloseSlot(playerId);
 }
 
 void LuaServerPlayer::SetAI(unsigned level)
 {
-    AI::Info info(AI::DEFAULT);
+    AI::Info info(AI::Type::Default);
     switch(level)
     {
-        case 0: info.type = AI::DUMMY; break;
-        case 1: info.level = AI::EASY; break;
-        case 2: info.level = AI::MEDIUM; break;
-        case 3: info.level = AI::HARD; break;
+        case 0: info.type = AI::Type::Dummy; break;
+        case 1: info.level = AI::Level::Easy; break;
+        case 2: info.level = AI::Level::Medium; break;
+        case 3: info.level = AI::Level::Hard; break;
         default: lua::assertTrue(false, "Invalid AI level");
     }
-    lobbyServerController_.SetPlayerState(playerId, PS_AI, info);
+    lobbyServerController_.SetPlayerState(playerId, PlayerState::AI, info);
 }
 
 void LuaServerPlayer::SetName(const std::string& name)

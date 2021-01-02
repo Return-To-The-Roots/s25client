@@ -175,7 +175,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     sgd.PushEnum<uint8_t>(ps);
 
     // Nur richtige Spieler serialisieren
-    if(!(ps == PS_OCCUPIED || ps == PS_AI))
+    if(!(ps == PlayerState::Occupied || ps == PlayerState::AI))
         return;
 
     sgd.PushBool(isDefeated);
@@ -275,7 +275,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     // Ehemaligen PS auslesen
     auto origin_ps = sgd.Pop<PlayerState>();
     // Nur richtige Spieler serialisieren
-    if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_AI))
+    if(!(origin_ps == PlayerState::Occupied || origin_ps == PlayerState::AI))
         return;
 
     isDefeated = sgd.PopBool();

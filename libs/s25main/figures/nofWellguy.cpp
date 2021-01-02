@@ -40,15 +40,15 @@ nofWellguy::nofWellguy(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 
 void nofWellguy::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPoint, NUM_NATIONS> offsets = {{{-20, 17}, {-18, 17}, {-20, 13}, {-20, 15}, {-18, 17}}};
+    constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{-20, 17}, {-18, 17}, {-20, 13}, {-20, 15}, {-18, 17}}};
 
-    const helpers::MultiArray<DrawPoint, NUM_NATIONS, 8> walkoffsets = // nation, schritt
-      {{{{7, 7}, {9, 9}, {5, 12}, {2, 14}, {-1, 17}, {-4, 17}, {-7, 17}, {-10, 17}},
-        {{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}},
-        {{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 13}, {-4, 13}, {-7, 13}, {-10, 13}},
-        {{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 15}, {-4, 15}, {-7, 15}, {-10, 15}},
-        {{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}}}};
-    helpers::MultiArray<Direction, NUM_NATIONS, 6> walkdirection = {{
+    constexpr helpers::EnumArray<std::array<DrawPoint, 8>, Nation> walkoffsets = // nation, schritt
+      {{{{{7, 7}, {9, 9}, {5, 12}, {2, 14}, {-1, 17}, {-4, 17}, {-7, 17}, {-10, 17}}},
+        {{{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}}},
+        {{{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 13}, {-4, 13}, {-7, 13}, {-10, 13}}},
+        {{{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 15}, {-4, 15}, {-7, 15}, {-10, 15}}},
+        {{{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}}}}};
+    constexpr helpers::EnumArray<std::array<Direction, 6>, Nation> walkdirection = {{
       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
        Direction::NORTHWEST},
       {Direction::SOUTHEAST, Direction::SOUTHWEST, Direction::WEST, Direction::EAST, Direction::NORTHEAST,
@@ -73,13 +73,13 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 2) // laufen 1
     {
-        if(wpNation == NAT_ROMANS)
+        if(wpNation == Nation::Romans)
             LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][0], now_id % 8)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     } else if(now_id < 4) // laufen 2
     {
-        if(wpNation == NAT_ROMANS)
+        if(wpNation == Nation::Romans)
             LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][1], now_id % 8)
           .draw(walkOutPos, COLOR_WHITE, plColor);
@@ -108,13 +108,13 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
           .draw(walkInPos, COLOR_WHITE, plColor);
     } else if(now_id < max_id - 2) // laufen 2
     {
-        if(wpNation == NAT_ROMANS)
+        if(wpNation == Nation::Romans)
             LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][4], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     } else // laufen 1
     {
-        if(wpNation == NAT_ROMANS)
+        if(wpNation == Nation::Romans)
             LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][5], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);

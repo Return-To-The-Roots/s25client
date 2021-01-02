@@ -76,12 +76,12 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
             if(fs == FS_JOB)
             {
                 // Dann uns heilen, wenn wir nicht schon gesund sind
-                if(hitpoints < HITPOINTS[gwg->GetPlayer(player).nation][GetRank()])
+                if(hitpoints < HITPOINTS[GetRank()])
                 {
                     ++hitpoints;
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
-                    if(hitpoints < HITPOINTS[gwg->GetPlayer(player).nation][GetRank()])
+                    if(hitpoints < HITPOINTS[GetRank()])
                         healing_event = GetEvMgr().AddEvent(
                           this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM),
                           1);
@@ -104,7 +104,7 @@ void nofPassiveSoldier::Heal()
 
     // Ist er verletzt?
     // Dann muss er geheilt werden
-    if(hitpoints < HITPOINTS[gwg->GetPlayer(player).nation][GetRank()])
+    if(hitpoints < HITPOINTS[GetRank()])
         healing_event = GetEvMgr().AddEvent(
           this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
 }
@@ -149,7 +149,7 @@ void nofPassiveSoldier::Upgrade()
 
     // wieder heilen bzw. Hitpoints anpasen
     GamePlayer& owner = gwg->GetPlayer(player);
-    hitpoints = HITPOINTS[owner.nation][GetRank()];
+    hitpoints = HITPOINTS[GetRank()];
 
     // Inventur entsprechend erhöhen und verringern
     owner.IncreaseInventoryJob(job_, 1);

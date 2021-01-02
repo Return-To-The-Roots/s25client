@@ -32,7 +32,8 @@ nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofBrewer::DrawWorking(DrawPoint drawPt)
 {
-    static const std::array<DrawPoint, NUM_NATIONS> offsets = {{{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}}};
+    static constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {
+      {{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}}};
 
     unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 

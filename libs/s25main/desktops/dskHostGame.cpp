@@ -256,7 +256,7 @@ dskHostGame::dskHostGame(ServerType serverType, const std::shared_ptr<GameLobby>
         for(unsigned char i = 0; i < gameLobby->getNumPlayers(); i++)
         {
             if(!gameLobby->getPlayer(i).isHost)
-                lobbyHostController->SetPlayerState(i, PS_AI, AI::Info(AI::DEFAULT, AI::EASY));
+                lobbyHostController->SetPlayerState(i, PlayerState::AI, AI::Info(AI::Type::Default, AI::Level::Easy));
         }
     }
 
@@ -347,10 +347,10 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     switch(player.ps)
     {
         default: name.clear(); break;
-        case PS_OCCUPIED:
-        case PS_AI: name = player.name; break;
-        case PS_FREE: name = _("Open"); break;
-        case PS_LOCKED: name = _("Closed"); break;
+        case PlayerState::Occupied:
+        case PlayerState::AI: name = player.name; break;
+        case PlayerState::Free: name = _("Open"); break;
+        case PlayerState::Locked: name = _("Closed"); break;
     }
 
     if(GetCtrl<ctrlPreviewMinimap>(70))
@@ -379,7 +379,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     {
         // If not in savegame -> Player can change own row and host can change AIs
         const bool allowPlayerChange =
-          ((gameLobby->isHost() && player.ps == PS_AI) || localPlayerId_ == row) && !gameLobby->isSavegame();
+          ((gameLobby->isHost() && player.ps == PlayerState::AI) || localPlayerId_ == row) && !gameLobby->isSavegame();
         bool allowNationChange = allowPlayerChange;
         bool allowColorChange = allowPlayerChange;
         bool allowTeamChange = allowPlayerChange;
@@ -399,10 +399,10 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         }
 
         if(allowNationChange)
-            group->AddTextButton(3, DrawPoint(240, cy), Extent(90, 22), tc, _(NationNames[0]), NormalFont);
+            group->AddTextButton(3, DrawPoint(240, cy), Extent(90, 22), tc, _(NationNames[Nation::Romans]), NormalFont);
         else
-            group->AddTextDeepening(3, DrawPoint(240, cy), Extent(90, 22), tc, _(NationNames[0]), NormalFont,
-                                    COLOR_YELLOW);
+            group->AddTextDeepening(3, DrawPoint(240, cy), Extent(90, 22), tc, _(NationNames[Nation::Romans]),
+                                    NormalFont, COLOR_YELLOW);
 
         if(allowColorChange)
             group->AddColorButton(4, DrawPoint(340, cy), Extent(30, 22), tc, 0);
@@ -415,7 +415,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
             group->AddTextDeepening(5, DrawPoint(380, cy), Extent(50, 22), tc, _("-"), NormalFont, COLOR_YELLOW);
 
         // Bereit (nicht bei KIs und Host)
-        if(player.ps == PS_OCCUPIED && !player.isHost)
+        if(player.ps == PlayerState::Occupied && !player.isHost)
             group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, "", nullptr, (localPlayerId_ != row));
 
         // Ping ( "%d" )
@@ -423,7 +423,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
                                                         COLOR_YELLOW, 1, &player.ping); //-V111
 
         // Verschieben (nur bei Savegames und beim Host!)
-        if(gameLobby->isSavegame() && player.ps == PS_OCCUPIED)
+        if(gameLobby->isSavegame() && player.ps == PlayerState::Occupied)
         {
             ctrlComboBox* combo =
               group->AddComboBox(8, DrawPoint(560, cy), Extent(160, 22), tc, NormalFont, 150, !gameLobby->isHost());
@@ -441,7 +441,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         }
 
         // Hide ping for AIs or on single player games
-        if(player.ps == PS_AI || IsSinglePlayer())
+        if(player.ps == PlayerState::AI || IsSinglePlayer())
             ping->SetVisible(false);
 
         // Felder ausfüllen
@@ -486,7 +486,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
             if(playerId == localPlayerId_ || gameLobby->isHost())
             {
                 JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-                player.nation = Nation((unsigned(player.nation) + 1) % NUM_NATIONS);
+                player.nation = Nation((rttr::enum_cast(player.nation) + 1) % helpers::NumEnumValues_v<Nation>);
                 if(gameLobby->isHost())
                     lobbyHostController->SetNation(playerId, player.nation);
                 else

@@ -17,6 +17,7 @@
 
 #include "GameMessages.h"
 #include "JoinPlayerInfo.h"
+#include "enum_cast.hpp"
 
 GameMessage_Player_List::GameMessage_Player_List() : GameMessage(NMS_PLAYER_LIST) {}
 
@@ -52,8 +53,9 @@ bool GameMessage_Player_List::Run(GameMessageInterface* callback) const
     for(unsigned i = 0; i < playerInfos.size(); ++i)
     {
         const JoinPlayerInfo& playerInfo = playerInfos[i];
-        LOG.writeToFile("    %d: %s %d %d %d %d %d %s\n") % i % playerInfo.name % playerInfo.ps % playerInfo.ping
-          % playerInfo.nation % playerInfo.color % playerInfo.team % (playerInfo.isReady ? "true" : "false");
+        LOG.writeToFile("    %d: %s %d %d %d %d %d %s\n") % i % playerInfo.name % rttr::enum_cast(playerInfo.ps)
+          % playerInfo.ping % rttr::enum_cast(playerInfo.nation) % playerInfo.color % playerInfo.team
+          % (playerInfo.isReady ? "true" : "false");
     }
     return callback->OnGameMessage(*this);
 }

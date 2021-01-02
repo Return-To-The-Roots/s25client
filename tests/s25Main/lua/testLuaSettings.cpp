@@ -52,7 +52,7 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
     JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
     const GlobalGameSettings& GetGGS() const override { return ggs; }
     void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override { this->ggs = ggs; }
-    void CloseSlot(unsigned playerIdx) override { GetJoinPlayer(playerIdx).ps = PS_LOCKED; }
+    void CloseSlot(unsigned playerIdx) override { GetJoinPlayer(playerIdx).ps = PlayerState::Locked; }
     void SetPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) override
     {
         GetJoinPlayer(playerIdx).ps = state;
@@ -68,21 +68,21 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
         setLua(&lua);
 
         players.resize(3);
-        players[0].ps = PS_OCCUPIED;
+        players[0].ps = PlayerState::Occupied;
         players[0].name = "Player1";
-        players[0].nation = NAT_VIKINGS;
+        players[0].nation = Nation::Vikings;
         players[0].color = 0xFF00FF00;
         players[0].team = TM_TEAM1;
         players[0].isHost = true;
 
-        players[1].ps = PS_AI;
+        players[1].ps = PlayerState::AI;
         players[1].name = "PlayerAI";
-        players[1].nation = NAT_ROMANS;
+        players[1].nation = Nation::Romans;
         players[1].color = 0xFFFF0000;
         players[1].team = TM_TEAM2;
         players[1].isHost = false;
 
-        players[2].ps = PS_FREE;
+        players[2].ps = PlayerState::Free;
     }
 
     void checkSettings(const GlobalGameSettings& shouldVal) const
@@ -273,9 +273,9 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
     executeLua("player = rttr:GetPlayer(0)");
     executeLua("player1 = rttr:GetPlayer(1)");
     executeLua("player:SetNation(NAT_ROMANS)");
-    BOOST_REQUIRE_EQUAL(players[0].nation, NAT_ROMANS);
+    BOOST_REQUIRE_EQUAL(players[0].nation, Nation::Romans);
     executeLua("player1:SetNation(NAT_BABYLONIANS)");
-    BOOST_REQUIRE_EQUAL(players[1].nation, NAT_BABYLONIANS);
+    BOOST_REQUIRE_EQUAL(players[1].nation, Nation::Babylonians);
 
     // Check some properties
     BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
@@ -303,30 +303,30 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
 
     // Kick AI
     executeLua("player1:Close()");
-    BOOST_REQUIRE_EQUAL(players[1].ps, PS_LOCKED);
+    BOOST_REQUIRE_EQUAL(players[1].ps, PlayerState::Locked);
     // Kick Human
-    players[1].ps = PS_OCCUPIED;
+    players[1].ps = PlayerState::Occupied;
     executeLua("player1:Close()");
-    BOOST_REQUIRE_EQUAL(players[1].ps, PS_LOCKED);
+    BOOST_REQUIRE_EQUAL(players[1].ps, PlayerState::Locked);
     // Kick none
     executeLua("player1:Close()");
-    BOOST_REQUIRE_EQUAL(players[1].ps, PS_LOCKED);
+    BOOST_REQUIRE_EQUAL(players[1].ps, PlayerState::Locked);
 
     executeLua("player:SetAI(0)");
-    BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DUMMY); //-V807
+    BOOST_REQUIRE_EQUAL(players[0].ps, PlayerState::AI);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::Type::Dummy); //-V807
     executeLua("player:SetAI(1)");
-    BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DEFAULT);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::EASY);
+    BOOST_REQUIRE_EQUAL(players[0].ps, PlayerState::AI);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::Type::Default);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::Level::Easy);
     executeLua("player:SetAI(2)");
-    BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DEFAULT);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::MEDIUM);
+    BOOST_REQUIRE_EQUAL(players[0].ps, PlayerState::AI);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::Type::Default);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::Level::Medium);
     executeLua("player:SetAI(3)");
-    BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DEFAULT);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::HARD);
+    BOOST_REQUIRE_EQUAL(players[0].ps, PlayerState::AI);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::Type::Default);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::Level::Hard);
     // Invalid lvl
     BOOST_REQUIRE_THROW(executeLua("player:SetAI(4)"), std::exception);
     RTTR_REQUIRE_LOG_CONTAINS("Invalid AI", false);

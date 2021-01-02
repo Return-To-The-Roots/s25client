@@ -18,6 +18,7 @@
 #pragma once
 
 #include "LuaPlayerBase.h"
+#include "SafeEnum.h"
 #include "gameTypes/Nation.h"
 
 struct JoinPlayerInfo;
@@ -36,7 +37,7 @@ public:
     LuaServerPlayer(IGameLobbyController& lobbyServerController, unsigned playerId);
     static void Register(kaguya::State& state);
 
-    void SetNation(Nation nat);
+    void SetNation(lua::SafeEnum<Nation> nat);
     void SetTeam(Team team);
     void SetColor(unsigned colorOrIdx);
     void Close();

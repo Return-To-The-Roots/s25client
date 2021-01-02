@@ -279,21 +279,21 @@ BOOST_FIXTURE_TEST_CASE(UpgradeRoadTest, WorldWithGCExecution2P)
     BOOST_REQUIRE(hqFlag);
     BOOST_REQUIRE(flag);
     BOOST_REQUIRE(flag2);
-    BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FT_NORMAL);
+    BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FlagType::Normal);
     // No flag
     this->UpgradeRoad(middleFlag - MapPoint(1, 0), Direction::EAST);
-    BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FT_NORMAL);
+    BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FlagType::Normal);
     // Wrong direction
     this->UpgradeRoad(middleFlag, Direction::SOUTHEAST);
-    BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FT_NORMAL);
+    BOOST_REQUIRE_EQUAL(flag->GetFlagType(), FlagType::Normal);
     // Upgrading correctly but twice (2nd does nothing)
     for(unsigned i = 0; i < 2; i++)
     {
         // Correct
         this->UpgradeRoad(middleFlag, Direction::EAST);
-        BOOST_CHECK_EQUAL(flag->GetFlagType(), FT_LARGE);
-        BOOST_CHECK_EQUAL(flag2->GetFlagType(), FT_LARGE);
-        BOOST_CHECK_EQUAL(hqFlag->GetFlagType(), FT_NORMAL);
+        BOOST_CHECK_EQUAL(flag->GetFlagType(), FlagType::Large);
+        BOOST_CHECK_EQUAL(flag2->GetFlagType(), FlagType::Large);
+        BOOST_CHECK_EQUAL(hqFlag->GetFlagType(), FlagType::Normal);
         BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::EAST), PointRoad::Donkey);
         BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(1, 0), Direction::EAST), PointRoad::Donkey);
         BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(2, 0), Direction::EAST), PointRoad::Normal);
@@ -301,9 +301,9 @@ BOOST_FIXTURE_TEST_CASE(UpgradeRoadTest, WorldWithGCExecution2P)
     }
     // Upgrade in other direction
     this->UpgradeRoad(middleFlag, Direction::WEST);
-    BOOST_CHECK_EQUAL(flag->GetFlagType(), FT_LARGE);
-    BOOST_CHECK_EQUAL(flag2->GetFlagType(), FT_LARGE);
-    BOOST_CHECK_EQUAL(hqFlag->GetFlagType(), FT_LARGE);
+    BOOST_CHECK_EQUAL(flag->GetFlagType(), FlagType::Large);
+    BOOST_CHECK_EQUAL(flag2->GetFlagType(), FlagType::Large);
+    BOOST_CHECK_EQUAL(hqFlag->GetFlagType(), FlagType::Large);
     BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag, Direction::EAST), PointRoad::Donkey);
     BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(1, 0), Direction::EAST), PointRoad::Donkey);
     BOOST_CHECK_EQUAL(world.GetPointRoad(middleFlag + MapPoint(2, 0), Direction::EAST), PointRoad::Normal);
@@ -628,7 +628,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
     auto* bld = dynamic_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, bldPt, curPlayer, NAT_ROMANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, bldPt, curPlayer, Nation::Romans));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsGoldDisabled()); //-V522
 
@@ -655,7 +655,7 @@ BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
     auto* bld = dynamic_cast<nobUsual*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Forester, bldPt, curPlayer, NAT_ROMANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::Forester, bldPt, curPlayer, Nation::Romans));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsProductionDisabled()); //-V522
 
@@ -871,7 +871,7 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
 
     numWoodcutters = wh->GetNumRealFigures(Job::Woodcutter);
     MapPoint whPos = hqPos + MapPoint(3, 0);
-    BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, NAT_AFRICANS);
+    BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Africans);
     this->BuildRoad(wh->GetFlag()->GetPos(), false, std::vector<Direction>(3, Direction::EAST));
     this->SetInventorySetting(hqPos, GoodType::Boards, EInventorySetting::SEND);
     // Send some

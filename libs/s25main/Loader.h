@@ -24,6 +24,7 @@
 #include "resources/ResourceId.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
+#include "gameTypes/FlagType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Nation.h"
@@ -123,12 +124,12 @@ public:
     std::string GetTextN(const ResourceId& file, unsigned nr);
     libsiedler2::Archiv& GetArchive(const ResourceId& file);
     glArchivItem_Bob* GetBob(const ResourceId& file);
-    glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
-    glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
-    glArchivItem_Bitmap* GetNationIcon(unsigned nation, BuildingType bld);
+    glArchivItem_BitmapBase* GetNationImageN(Nation nation, unsigned nr);
+    glArchivItem_Bitmap* GetNationImage(Nation nation, unsigned nr);
+    glArchivItem_Bitmap* GetNationIcon(Nation nation, BuildingType bld);
     /// Same as GetNationImage but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
-    ITexture* GetNationTex(unsigned nation, unsigned nr);
-    glArchivItem_Bitmap_Player* GetNationPlayerImage(unsigned nation, unsigned nr);
+    ITexture* GetNationTex(Nation nation, unsigned nr);
+    glArchivItem_Bitmap_Player* GetNationPlayerImage(Nation nation, unsigned nr);
     glArchivItem_Bitmap* GetMapImageN(unsigned nr);
     /// Same as GetMapImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
     ITexture* GetMapTexN(unsigned nr);
@@ -153,13 +154,13 @@ public:
     std::vector<std::unique_ptr<MusicItem>> sng_lst;
 
     /// Figure animations have 8 frames
-    using FigAnimationSprites = std::array<glSmartBitmap, 8>;
+    using AnimationSprites = std::array<glSmartBitmap, 8>;
     struct FightSprites
     {
         /// Attack animation
-        FigAnimationSprites attacking;
+        AnimationSprites attacking;
         // 3 defend animations
-        std::array<FigAnimationSprites, 3> defending;
+        std::array<AnimationSprites, 3> defending;
         /// Sprite for the hit
         glSmartBitmap hit;
     };
@@ -184,44 +185,42 @@ public:
     /// Buildings: Nation, Type, Building/Skeleton
     helpers::MultiEnumArray<BuildingSprites, Nation, BuildingType> building_cache;
     /// Flags: Nation, Type, AnimationFrame
-    helpers::MultiArray<glSmartBitmap, NUM_NATIONS, 3, 8> flag_cache;
+    helpers::MultiEnumArray<AnimationSprites, Nation, FlagType> flag_cache;
     /// Military Flags: AnimationFrame
-    // helpers::MultiArray<glSmartBitmap, 8> building_flag_cache;
+    // AnimationSprites building_flag_cache;
     /// Trees: Type, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
-    /// Jobs: Nation, Job (last is fat carrier), Direction, AnimationFrame
-    helpers::MultiArray<FigAnimationSprites, NUM_NATIONS, helpers::NumEnumValues_v<Job> + 1,
-                        helpers::NumEnumValues_v<Direction>>
-      bob_jobs_cache;
+    /// Jobs: Nation, Job, Direction, AnimationFrame
+    helpers::MultiEnumArray<AnimationSprites, Nation, Job, Direction> bob_jobs_cache;
+    helpers::MultiEnumArray<AnimationSprites, Nation, Direction> fat_carrier_cache;
     glSmartBitmap& getBobSprite(Nation nat, Job job, Direction dir, unsigned aniFrame)
     {
-        return bob_jobs_cache(nat, rttr::enum_cast(job), rttr::enum_cast(dir))[aniFrame];
+        return bob_jobs_cache[nat][job][dir][aniFrame];
     }
     glSmartBitmap& getCarrierBobSprite(Nation nat, bool fat, Direction dir, unsigned aniFrame)
     {
-        return bob_jobs_cache(nat, fat ? helpers::NumEnumValues_v<Job> : rttr::enum_cast(Job::Helper),
-                              rttr::enum_cast(dir))[aniFrame];
+        return fat ? fat_carrier_cache[nat][dir][aniFrame] : bob_jobs_cache[nat][Job::Helper][dir][aniFrame];
     }
     /// Stone: Type, Size
-    helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
+    helpers::EnumArray<std::array<glSmartBitmap, 6>, GraniteType> granite_cache;
     /// Grainfield: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
-    /// Carrier w/ ware: Ware, NormalOrFat, Direction, Animation
-    helpers::MultiArray<FigAnimationSprites, helpers::NumEnumValues_v<GoodType>, 2, 6> carrier_cache;
+    /// Carrier w/ ware: NormalOrFat, Ware, Direction
+    std::array<helpers::MultiEnumArray<AnimationSprites, GoodType, Direction>, 2> carrier_cache;
     glSmartBitmap& getCarrierSprite(GoodType ware, bool fat, Direction dir, unsigned aniFrame)
     {
-        return carrier_cache(ware, fat, rttr::enum_cast(dir))[aniFrame];
+        return carrier_cache[fat][ware][dir][aniFrame];
     }
     /// Boundary stones: Nation
-    std::array<glSmartBitmap, NUM_NATIONS> boundary_stone_cache;
+    helpers::EnumArray<glSmartBitmap, Nation> boundary_stone_cache;
     /// BoatCarrier: Direction, AnimationFrame
-    std::array<FigAnimationSprites, 6> boat_cache;
+    std::array<AnimationSprites, 6> boat_cache;
     glSmartBitmap& getBoatCarrierSprite(Direction dir, unsigned aniFrame)
     {
         return boat_cache[rttr::enum_cast(dir)][aniFrame];
     }
     /// Donkey: Direction, AnimationFrame
-    std::array<FigAnimationSprites, 6> donkey_cache;
+    std::array<AnimationSprites, 6> donkey_cache;
     glSmartBitmap& getDonkeySprite(Direction dir, unsigned aniFrame)
     {
         return donkey_cache[rttr::enum_cast(dir)][aniFrame];
@@ -229,7 +228,7 @@ public:
     /// Gateway: AnimationFrame
     std::array<glSmartBitmap, 5> gateway_cache;
     /// Fight animations for each nation, soldier type and left/right
-    helpers::MultiArray<FightSprites, NUM_NATIONS, NUM_SOLDIER_RANKS, 2> fight_cache;
+    helpers::EnumArray<helpers::MultiArray<FightSprites, NUM_SOLDIER_RANKS, 2>, Nation> fight_cache;
 
 private:
     /// Load all sounds
@@ -246,8 +245,8 @@ private:
     std::vector<glFont> fonts;
 
     bool isWinterGFX_;
-    std::array<libsiedler2::Archiv*, NUM_NATIONS> nation_gfx;
-    std::array<libsiedler2::Archiv*, NUM_NATIONS> nationIcons_;
+    helpers::EnumArray<libsiedler2::Archiv*, Nation> nation_gfx;
+    helpers::EnumArray<libsiedler2::Archiv*, Nation> nationIcons_;
     libsiedler2::Archiv* map_gfx;
     std::unique_ptr<glTexturePacker> stp;
 };

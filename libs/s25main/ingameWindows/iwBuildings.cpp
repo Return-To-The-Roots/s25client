@@ -73,14 +73,10 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
         {
             if(y * 4 + x >= bts.size()) //-V547
                 break;
-            glArchivItem_Bitmap* img;
-            if(bts[y * 4 + x] != BuildingType::Charburner)
-                img = LOADER.GetNationIcon(playerNation, bts[y * 4 + x]);
-            else
-                img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
             Extent btSize = Extent(32, 32);
             DrawPoint btPos = iconPadding - btSize / 2 + iconSpacing * DrawPoint(x, y);
-            AddImageButton(y * 4 + x, btPos, btSize, TC_GREY, img, _(BUILDING_NAMES[bts[y * 4 + x]]));
+            AddImageButton(y * 4 + x, btPos, btSize, TC_GREY, LOADER.GetNationIcon(playerNation, bts[y * 4 + x]),
+                           _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 

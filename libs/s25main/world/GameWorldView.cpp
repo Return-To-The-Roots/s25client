@@ -182,7 +182,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
                 // Construction aid mode
                 if(show_bq)
                     DrawConstructionAid(curPt, curPos);
-            } else if(visibility == Visibility::FoW)
+            } else if(visibility == Visibility::FogOfWar)
             {
                 const FOWObject* fowobj = gwv.GetYoungestFOWObject(MapPoint(curPt));
                 if(fowobj)
@@ -510,7 +510,7 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
     if(vis == Visibility::Invisible)
         return;
 
-    const bool isFoW = vis == Visibility::FoW;
+    const bool isFoW = vis == Visibility::FogOfWar;
 
     const BoundaryStones& boundary_stones =
       isFoW ? gwv.GetYoungestFOWNode(pt).boundary_stones : GetWorld().GetNode(pt).boundary_stones;
@@ -519,7 +519,7 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
     if(!owner)
         return;
 
-    const unsigned nation = GetWorld().GetPlayer(owner - 1).nation;
+    const Nation nation = GetWorld().GetPlayer(owner - 1).nation;
     unsigned player_color = GetWorld().GetPlayer(owner - 1).color;
     if(isFoW)
         player_color = CalcPlayerFOWDrawColor(player_color);

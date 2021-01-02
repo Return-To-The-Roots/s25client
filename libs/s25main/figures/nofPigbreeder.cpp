@@ -35,8 +35,8 @@ nofPigbreeder::nofPigbreeder(SerializedGameData& sgd, const unsigned obj_id) : n
 
 void nofPigbreeder::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPoint, NUM_NATIONS> offsets = {{{10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2}}};
-    const std::array<DrawPoint, NUM_NATIONS> walkstart = {{{-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}}};
+    constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2}}};
+    constexpr helpers::EnumArray<DrawPoint, Nation> walkstart = {{{-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}}};
 
     unsigned max_id = 240;
     int now_id = GAMECLIENT.Interpolate(max_id, current_ev);

@@ -292,7 +292,7 @@ BOOST_FIXTURE_TEST_CASE(BlockedPaths, WorldFixtureEmpty0P)
     // Create a circle of stones so the path is completely blocked
     std::vector<MapPoint> surroundingPts = world.GetPointsInRadius(startPt, 1);
     for(const MapPoint& pt : surroundingPts)
-        world.SetNO(pt, new noGranite(GT_1, 1));
+        world.SetNO(pt, new noGranite(GraniteType::One, 1));
     std::vector<MapPoint> surroundingPts2;
     for(unsigned i = 0; i < 12; i++)
         surroundingPts2.push_back(world.GetNeighbour2(startPt, i));

@@ -229,7 +229,7 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
             // Unsichtbar -> schwarz
             GetVertex(pt).color = 0.0f;
             break;
-        case Visibility::FoW:
+        case Visibility::FogOfWar:
             // Fog of War -> abgedunkelt
             GetVertex(pt).color = clr / 4.f;
             break;

@@ -34,8 +34,8 @@ struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1>
     FarmerFixture()
     {
         farmPt = world.GetPlayer(0).GetHQPos() + MapPoint(5, 0);
-        farm =
-          dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BuildingType::Farm, farmPt, 0, NAT_ROMANS));
+        farm = dynamic_cast<nobUsual*>(
+          BuildingFactory::CreateBuilding(world, BuildingType::Farm, farmPt, 0, Nation::Romans));
         BOOST_REQUIRE(farm);
         world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SOUTHEAST),
                         std::vector<Direction>(5, Direction::WEST));

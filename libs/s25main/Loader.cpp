@@ -148,27 +148,30 @@ glArchivItem_Bob* Loader::GetBob(const ResourceId& file)
     return dynamic_cast<glArchivItem_Bob*>(files_[file].archive.get(0));
 }
 
-glArchivItem_BitmapBase* Loader::GetNationImageN(unsigned nation, unsigned nr)
+glArchivItem_BitmapBase* Loader::GetNationImageN(Nation nation, unsigned nr)
 {
     return dynamic_cast<glArchivItem_BitmapBase*>(nation_gfx[nation]->get(nr));
 }
 
-glArchivItem_Bitmap* Loader::GetNationImage(unsigned nation, unsigned nr)
+glArchivItem_Bitmap* Loader::GetNationImage(Nation nation, unsigned nr)
 {
     return checkedCast<glArchivItem_Bitmap*>(GetNationImageN(nation, nr));
 }
 
-glArchivItem_Bitmap* Loader::GetNationIcon(unsigned nation, BuildingType bld)
+glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
 {
-    return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
+    if(bld == BuildingType::Charburner)
+        return LOADER.GetImageN("charburner", rttr::enum_cast(nation) * 8 + 8);
+    else
+        return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
 
-ITexture* Loader::GetNationTex(unsigned nation, unsigned nr)
+ITexture* Loader::GetNationTex(Nation nation, unsigned nr)
 {
     return checkedCast<ITexture*>(GetNationImage(nation, nr));
 }
 
-glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(unsigned nation, unsigned nr)
+glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(Nation nation, unsigned nr)
 {
     return checkedCast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, nr));
 }
@@ -383,7 +386,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     const std::string natPrefix = isWinterGFX ? "W" : "";
     for(Nation nation : nations)
     {
-        const bfs::path nationFolder = (nation < NUM_NATIVE_NATIONS) ?
+        const bfs::path nationFolder = (rttr::enum_cast(nation) < NUM_NATIVE_NATIONS) ?
                                          config_.ExpandPath(s25::folders::mbob) :
                                          config_.ExpandPath(s25::folders::assetsNations) / NationNames[nation];
         const auto shortName = s25util::toUpper(std::string(NationNames[nation], 0, 3));
@@ -509,7 +512,7 @@ void Loader::fillCaches()
 
             if(type == BuildingType::Charburner)
             {
-                unsigned id = nation * 8;
+                unsigned id = rttr::enum_cast(nation) * 8;
 
                 sprites.building.add(GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1)));
                 sprites.building.addShadow(GetImageN("charburner", id + 2));
@@ -541,12 +544,12 @@ void Loader::fillCaches()
         }
 
         // FLAGS
-        for(unsigned type = 0; type < 3; ++type)
+        for(const auto type : helpers::enumRange<FlagType>())
         {
             for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {
                 // Flaggentyp berücksichtigen
-                int nr = ani_step + 100 + 20 * type;
+                int nr = ani_step + 100 + 20 * rttr::enum_cast(type);
 
                 glSmartBitmap& bmp = flag_cache[nation][type][ani_step];
 
@@ -566,7 +569,7 @@ void Loader::fillCaches()
             {
                 for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
-                    glSmartBitmap& bmp = bob_jobs_cache(nation, job, rttr::enum_cast(dir))[ani_step];
+                    glSmartBitmap& bmp = bob_jobs_cache[nation][job][dir][ani_step];
                     bmp.reset();
 
                     const auto& spriteData = JOB_SPRITE_CONSTS[Job(job)];
@@ -582,13 +585,12 @@ void Loader::fillCaches()
                 }
             }
         }
-        // Fat carrier, so that we do not need an additional sub-array
+        // Fat carrier
         for(Direction dir : helpers::EnumRange<Direction>{})
         {
             for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {
-                glSmartBitmap& bmp =
-                  bob_jobs_cache(nation, helpers::NumEnumValues_v<Job>, rttr::enum_cast(dir))[ani_step];
+                glSmartBitmap& bmp = fat_carrier_cache[nation][dir][ani_step];
                 bmp.reset();
 
                 const libsiedler2::ImgDir imgDir = toImgDir(dir);
@@ -617,7 +619,7 @@ void Loader::fillCaches()
             return bmp ? bmp : convertChecked<glArchivItem_Bitmap_Player*>(romBobs[altId]);
         };
         // Special handling for non-native nations: Use roman animations if own are missing
-        const unsigned fallbackNation = nation < NUM_NATIVE_NATIONS ? nation : static_cast<unsigned>(NAT_ROMANS);
+        const Nation fallbackNation = rttr::enum_cast(nation) < NUM_NATIVE_NATIONS ? nation : Nation::Romans;
         const auto& natFightAnimIds = FIGHT_ANIMATIONS[nation];
         const auto& altNatFightAnimIds = FIGHT_ANIMATIONS[fallbackNation];
         const auto& natHitIds = HIT_SOLDIERS[nation];
@@ -692,7 +694,7 @@ void Loader::fillCaches()
     }
 
     // Granite
-    for(unsigned type = 0; type < 2; ++type)
+    for(const auto type : helpers::enumRange<GraniteType>())
     {
         for(unsigned size = 0; size < 6; ++size)
         {
@@ -700,8 +702,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetMapImageN(516 + type * 6 + size));
-            bmp.addShadow(GetMapImageN(616 + type * 6 + size));
+            bmp.add(GetMapImageN(516 + rttr::enum_cast(type) * 6 + size));
+            bmp.addShadow(GetMapImageN(616 + rttr::enum_cast(type) * 6 + size));
 
             stp->add(bmp);
         }
@@ -760,9 +762,9 @@ void Loader::fillCaches()
     if(!bob_carrier)
         throw std::runtime_error("carrier not found");
 
-    for(const auto ware : helpers::EnumRange<GoodType>{})
+    for(bool fat : {true, false})
     {
-        for(bool fat : {true, false})
+        for(const auto ware : helpers::EnumRange<GoodType>{})
         {
             for(Direction dir : helpers::EnumRange<Direction>{})
             {

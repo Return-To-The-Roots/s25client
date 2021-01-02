@@ -26,13 +26,13 @@
 
 extern const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES;
 
-const helpers::EnumArray<BuildingCost, BuildingType> SUPPRESS_UNUSED BUILDING_COSTS = {
+constexpr helpers::EnumArray<BuildingCost, BuildingType> SUPPRESS_UNUSED BUILDING_COSTS = {
   {{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7}, {4, 0}, {4, 0}, {4, 0}, {4, 0},
    {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3},
    {3, 3}, {4, 3}, {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}}};
 
 // Bauqualitäten der Gebäude
-const helpers::EnumArray<BuildingQuality, BuildingType> SUPPRESS_UNUSED BUILDING_SIZE = {
+constexpr helpers::EnumArray<BuildingQuality, BuildingType> SUPPRESS_UNUSED BUILDING_SIZE = {
   {BQ_CASTLE,  BQ_HUT,   BQ_HUT,   BQ_NOTHING, BQ_HOUSE, BQ_NOTHING, BQ_NOTHING, BQ_NOTHING, BQ_NOTHING, BQ_CASTLE,
    BQ_MINE,    BQ_MINE,  BQ_MINE,  BQ_MINE,    BQ_HUT,   BQ_NOTHING, BQ_HOUSE,   BQ_HUT,     BQ_HUT,     BQ_HUT,
    BQ_HUT,     BQ_HOUSE, BQ_HUT,   BQ_HOUSE,   BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HOUSE,
@@ -83,10 +83,10 @@ const helpers::EnumArray<BldWorkDescription, BuildingType> SUPPRESS_UNUSED BLD_W
 }};
 
 /// Smoke consts for all buildings and nations
-extern const std::array<helpers::EnumArray<SmokeConst, BuildingType>, NUM_NATIONS> BUILDING_SMOKE_CONSTS;
+extern const helpers::MultiEnumArray<SmokeConst, Nation, BuildingType> BUILDING_SMOKE_CONSTS;
 
 /// Offset of the production-/gold- stop signs per building
-const std::array<helpers::EnumArray<DrawPoint, BuildingType>, NUM_NATIONS> SUPPRESS_UNUSED BUILDING_SIGN_CONSTS = {
+constexpr helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> SUPPRESS_UNUSED BUILDING_SIGN_CONSTS = {
   {// Nubier
    {{{0, 0},    {19, -4},  {19, -3},  {0, 0},    {23, -19}, {0, 0},    {0, 0},   {0, 0},     {0, 0},     {29, -23},
      {-2, -15}, {2, -13},  {-5, -16}, {-5, -15}, {0, 0},    {0, 0},    {0, 0},   {4, -16},   {9, -12},   {7, -10},
@@ -115,7 +115,7 @@ const std::array<helpers::EnumArray<DrawPoint, BuildingType>, NUM_NATIONS> SUPPR
 
 /// Position der nubischen Feuer für alle 4 Bergwerke
 /// (Granit, Kohle, Eisen, Gold)
-const std::array<DrawPoint, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
+constexpr std::array<DrawPoint, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
   {31, -18},
   {34, -10},
   {30, -11},

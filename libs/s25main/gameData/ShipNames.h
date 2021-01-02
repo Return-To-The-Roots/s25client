@@ -17,11 +17,11 @@
 
 #pragma once
 
+#include "helpers/EnumArray.h"
 #include "gameTypes/Nation.h"
+#include <array>
 
-const unsigned NUM_SHIP_NAMESS = 55;
-
-const helpers::MultiArray<const char*, NUM_NATIONS, NUM_SHIP_NAMESS> ship_names = {
+constexpr helpers::EnumArray<std::array<const char*, 55>, Nation> ship_names = {
   {/* Nubier */ {"Aica",    "Aida",    "Ainra",    "Alayna", "Alisha",   "Alma",    "Amila",  "Anina",
                  "Armina",  "Banu",    "Baya",     "Bea",    "Bia",      "Bisa",    "Cheche", "Dafina",
                  "Daria",   "Dina",    "Do",       "Dofi",   "Efia",     "Erin",    "Esi",    "Esra",

@@ -33,21 +33,21 @@ nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
-    constexpr helpers::MultiArray<DrawPoint, NUM_NATIONS, 4>
+    constexpr helpers::EnumArray<std::array<DrawPoint, 4>, Nation>
       offsets = // work animation offset per nation and (granite, coal, iron, gold)
       {{
-        {{5, 3}, {5, 3}, {5, 3}, {5, 3}},     // africans
-        {{4, 1}, {4, 1}, {4, 1}, {4, 1}},     // japanese
-        {{9, 4}, {9, 4}, {9, 4}, {9, 4}},     // romans
-        {{10, 3}, {10, 3}, {10, 3}, {10, 3}}, // vikings
-        {{8, 3}, {8, 3}, {8, 3}, {8, 3}}      // babylonians
+        {{{5, 3}, {5, 3}, {5, 3}, {5, 3}}},     // africans
+        {{{4, 1}, {4, 1}, {4, 1}, {4, 1}}},     // japanese
+        {{{9, 4}, {9, 4}, {9, 4}, {9, 4}}},     // romans
+        {{{10, 3}, {10, 3}, {10, 3}, {10, 3}}}, // vikings
+        {{{8, 3}, {8, 3}, {8, 3}, {8, 3}}}      // babylonians
       }};
     const unsigned mineIdx = rttr::enum_cast(workplace->GetBuildingType()) - rttr::enum_cast(BuildingType::GraniteMine);
     RTTR_Assert(mineIdx < offsets.size());
 
     unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
     unsigned texture;
-    if(workplace->GetNation() == NAT_ROMANS)
+    if(workplace->GetNation() == Nation::Romans)
         texture = 92 + now_id % 8;
     else
         texture = 1799 + now_id % 4;

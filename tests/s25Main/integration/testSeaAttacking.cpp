@@ -71,17 +71,17 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
             MapPoint pt(i, i);
             if(world.GetNode(pt).bq != BQ_NOTHING)
             {
-                world.SetNO(pt, new noGranite(GT_1, 5));
+                world.SetNO(pt, new noGranite(GraniteType::One, 5));
                 if(pt.x + 1 < world.GetWidth())
-                    world.SetNO(pt + MapPoint(1, 0), new noGranite(GT_1, 5));
+                    world.SetNO(pt + MapPoint(1, 0), new noGranite(GraniteType::One, 5));
                 world.RecalcBQAroundPointBig(pt);
             }
             pt = MapPoint(world.GetHeight() - i - 1u, i);
             if(pt.x < world.GetWidth() && world.GetNode(pt).bq != BQ_NOTHING)
             {
-                world.SetNO(pt, new noGranite(GT_1, 5));
+                world.SetNO(pt, new noGranite(GraniteType::One, 5));
                 if(pt.x + 1 < world.GetWidth())
-                    world.SetNO(pt + MapPoint(1, 0), new noGranite(GT_1, 5));
+                    world.SetNO(pt + MapPoint(1, 0), new noGranite(GraniteType::One, 5));
                 world.RecalcBQAroundPointBig(pt);
             }
         }
@@ -132,21 +132,21 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         BOOST_REQUIRE(milBld1NearPos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld1NearPos, 1), BQ_HOUSE);
         milBld1Near = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, NAT_ROMANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1Near);
 
         milBld1FarPos = FindBldPos(world.GetHarborPoint(4) - MapPoint(1, 4), BQ_HOUSE, 1);
         BOOST_REQUIRE(milBld1FarPos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld1FarPos, 1), BQ_HOUSE);
         milBld1Far = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, NAT_ROMANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1Far);
 
         milBld2Pos = FindBldPos(world.GetHarborPoint(6) - MapPoint(2, 2), BQ_HOUSE, 2);
         BOOST_REQUIRE(milBld2Pos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld2Pos, 2), BQ_HOUSE);
         milBld2 = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld2Pos, 2, NAT_BABYLONIANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld2Pos, 2, Nation::Babylonians));
         BOOST_REQUIRE(milBld2);
 
         // Add some soldiers (assumed by test cases!)
@@ -304,7 +304,7 @@ BOOST_FIXTURE_TEST_CASE(NoHarborBlock, SeaAttackFixture)
     // Non-Military building
     BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BQ_FLAG);
     const noBuilding* usualBld =
-      BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, NAT_ROMANS);
+      BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, Nation::Romans);
     BOOST_REQUIRE(usualBld);
     TestFailingSeaAttack(harborPos[0]);
 
@@ -361,7 +361,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
     // Non-Military building
     BOOST_REQUIRE_GT(world.GetBQ(harborPos[0], 0), BQ_FLAG);
     const noBuilding* usualBld =
-      BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, NAT_ROMANS);
+      BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, Nation::Romans);
     BOOST_REQUIRE(usualBld);
     TestFailingSeaAttack(harborPos[0]);
 
@@ -391,7 +391,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
     pts.push_back(bldPos);
     for(const MapPoint& pt : pts)
         world.SetOwner(pt, 1 + 1);
-    const noBuilding* bld = BuildingFactory::CreateBuilding(world, BuildingType::Barracks, bldPos, 1, NAT_ROMANS);
+    const noBuilding* bld = BuildingFactory::CreateBuilding(world, BuildingType::Barracks, bldPos, 1, Nation::Romans);
     BOOST_REQUIRE(bld);
     AddSoldiers(bldPos, 2, 0);
     // Still unowned harbors
@@ -412,7 +412,7 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, SeaAttackFixture)
 
     // Build (later) ally harbor
     noBuilding* harborBld =
-      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, harborPos[0], 1, NAT_ROMANS);
+      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, harborPos[0], 1, Nation::Romans);
     BOOST_REQUIRE(harborBld);
 
     // Enemy harbor blocks
@@ -429,8 +429,8 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, SeaAttackFixture)
     TestFailingSeaAttack(hqPos[1]);
 
     // Invisible point
-    world.SetVisibility(hqPos[0], 1, Visibility::FoW, em.GetCurrentGF());
-    world.SetVisibility(hqPos[0], 2, Visibility::FoW, em.GetCurrentGF());
+    world.SetVisibility(hqPos[0], 1, Visibility::FogOfWar, em.GetCurrentGF());
+    world.SetVisibility(hqPos[0], 2, Visibility::FogOfWar, em.GetCurrentGF());
     TestFailingSeaAttack(hqPos[0]);
     // Visible for ally
     world.SetVisibility(hqPos[0], 1, Visibility::Visible);

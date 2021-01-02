@@ -128,7 +128,7 @@ void iwMilitaryBuilding::Draw_()
         for(const auto* soldier : soldiers)
         {
             auto hitpoints = static_cast<int>(soldier->GetHitpoints());
-            auto maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][soldier->GetRank()]);
+            auto maxHitpoints = static_cast<int>(HITPOINTS[soldier->GetRank()]);
             unsigned hitpointsColour;
             if(hitpoints <= maxHitpoints / 2)
                 hitpointsColour = COLOR_RED;

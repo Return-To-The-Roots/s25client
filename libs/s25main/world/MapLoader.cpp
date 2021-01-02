@@ -98,7 +98,7 @@ void MapLoader::SetMapExplored(World& world)
         for(unsigned i = 0; i < MAX_PLAYERS; ++i)
         {
             // If we have FoW here, save it
-            if(world.GetNode(pt).fow[i].visibility == Visibility::FoW)
+            if(world.GetNode(pt).fow[i].visibility == Visibility::FogOfWar)
                 world.SaveFOWNode(pt, i, 0);
         }
     }
@@ -168,7 +168,7 @@ bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
             case Exploration::Disabled: fowVisibility = Visibility::Visible; break;
             case Exploration::Classic:
             case Exploration::FogOfWar: fowVisibility = Visibility::Invisible; break;
-            case Exploration::FogOfWarExplored: fowVisibility = Visibility::FoW; break;
+            case Exploration::FogOfWarExplored: fowVisibility = Visibility::FogOfWar; break;
             default: throw std::invalid_argument("Visibility for FoW");
         }
 
@@ -319,7 +319,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             case 0xCC:
             {
                 if(lc >= 0x01 && lc <= 0x06)
-                    obj = new noGranite(GT_1, lc - 1);
+                    obj = new noGranite(GraniteType::One, lc - 1);
                 else
                     LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
@@ -329,7 +329,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             case 0xCD:
             {
                 if(lc >= 0x01 && lc <= 0x06)
-                    obj = new noGranite(GT_2, lc - 1);
+                    obj = new noGranite(GraniteType::Two, lc - 1);
                 else
                     LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }

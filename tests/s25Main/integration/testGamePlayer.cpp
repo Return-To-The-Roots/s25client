@@ -37,7 +37,7 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     // Destroy HQ but leave a military bld
     MapPoint milBldPos = world.MakeMapPoint(world.GetPlayer(0).GetFirstWH()->GetPos() + Position(4, 0)); //-V522
     auto* milBld = dynamic_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBldPos, 0, NAT_BABYLONIANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBldPos, 0, Nation::Babylonians));
     auto* sld = new nofPassiveSoldier(milBldPos, 0, milBld, milBld, 0);
     world.AddFigure(milBldPos, sld);
     milBld->GotWorker(Job::Private, sld);

@@ -19,14 +19,14 @@
 
 #include <cstdint>
 
-enum PlayerState : uint8_t
+enum class PlayerState : uint8_t
 {
-    PS_FREE,
-    PS_OCCUPIED,
-    PS_LOCKED,
-    PS_AI
+    Free,
+    Occupied,
+    Locked,
+    AI
 };
 constexpr auto maxEnumValue(PlayerState)
 {
-    return PlayerState::PS_AI;
+    return PlayerState::AI;
 }

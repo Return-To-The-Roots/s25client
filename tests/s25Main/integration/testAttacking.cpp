@@ -163,19 +163,19 @@ struct NumSoldierTestFixture : public AttackFixtureBase<3, 56, 38>
         milBld0Pos = hqPos[0] + MapPoint(7, 0);
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld0Pos, 0), BQ_CASTLE);
         milBld0 = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld0Pos, 0, NAT_BABYLONIANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld0Pos, 0, Nation::Babylonians));
         BOOST_REQUIRE(milBld0);
 
         milBld1NearPos = hqPos[1] - MapPoint(7, 0);
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1NearPos, 1), BQ_CASTLE);
         milBld1Near = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, NAT_ROMANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1Near);
 
         milBld1FarPos = hqPos[1] + MapPoint(3, 1);
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1FarPos, 1), BQ_CASTLE);
         milBld1Far = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, NAT_ROMANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1Far);
         MakeVisible(milBld0Pos);
         MakeVisible(milBld1NearPos);
@@ -210,13 +210,13 @@ struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
         milBld0Pos = world.MakeMapPoint(hqPos[0] + Position(0, 6));
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld0Pos, 0), BQ_CASTLE);
         milBld0 = static_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld0Pos, 0, NAT_BABYLONIANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld0Pos, 0, Nation::Babylonians));
         BOOST_REQUIRE(milBld0);
 
         milBld1Pos = world.MakeMapPoint(hqPos[1] + Position(0, 6));
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1Pos, 1), BQ_CASTLE);
         milBld1 = static_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1Pos, 1, NAT_ROMANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1Pos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1);
         MakeVisible(milBld0Pos);
         MakeVisible(milBld1Pos);
@@ -312,12 +312,12 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
     const MapPoint usualBldPos = hqPos[1] - MapPoint(2, 3);
     BOOST_REQUIRE_GE(world.GetBQ(usualBldPos, 1), BQ_HUT);
     const noBuilding* usualBld =
-      BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, usualBldPos, 1, NAT_ROMANS);
+      BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, usualBldPos, 1, Nation::Romans);
     BOOST_REQUIRE(usualBld);
     const MapPoint storehousePos = hqPos[1] - MapPoint(2, 0);
     BOOST_REQUIRE_GE(world.GetBQ(storehousePos, 1), BQ_HOUSE);
     const noBuilding* storeHouse =
-      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, storehousePos, 1, NAT_ROMANS);
+      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, storehousePos, 1, Nation::Romans);
     BOOST_REQUIRE(storeHouse);
     MakeVisible(usualBldPos);
     MakeVisible(storehousePos);
@@ -350,8 +350,8 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
     BOOST_REQUIRE(!milBld1->IsNewBuilt());
     // Try to attack invisible bld -> Fail
     MapNode& node = world.GetNodeWriteable(milBld1Pos);
-    node.fow[0].visibility = Visibility::FoW;
-    BOOST_REQUIRE_EQUAL(world.CalcVisiblityWithAllies(milBld1Pos, curPlayer), Visibility::FoW);
+    node.fow[0].visibility = Visibility::FogOfWar;
+    BOOST_REQUIRE_EQUAL(world.CalcVisiblityWithAllies(milBld1Pos, curPlayer), Visibility::FogOfWar);
     TestFailingAttack(gwv, milBld1Pos, attackSrc);
 
     // Attack it
@@ -586,7 +586,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     curPlayer = 2;
     MapPoint bldPos = hqPos[curPlayer] + MapPoint(3, 0);
     auto* alliedBld = static_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Guardhouse, bldPos, curPlayer, NAT_AFRICANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::Guardhouse, bldPos, curPlayer, Nation::Africans));
     AddSoldiersWithRank(bldPos, 2, 0);
     this->Attack(milBld1Pos, 1, false);
     BOOST_REQUIRE_EQUAL(alliedBld->GetLeavingFigures().size(), 1u);
@@ -596,7 +596,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     curPlayer = 3;
     bldPos = hqPos[curPlayer] + MapPoint(3, 0);
     auto* hostileBld = static_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Guardhouse, bldPos, curPlayer, NAT_AFRICANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::Guardhouse, bldPos, curPlayer, Nation::Africans));
     AddSoldiersWithRank(bldPos, 2, 0);
     this->Attack(milBld1Pos, 1, false);
     BOOST_REQUIRE_EQUAL(hostileBld->GetLeavingFigures().size(), 1u);
@@ -797,11 +797,11 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
 {
     MapPoint leftBldPos = world.MakeMapPoint(milBld1Pos + Position(-5, 2));
     noBuilding* leftBld =
-      BuildingFactory::CreateBuilding(world, BuildingType::Barracks, leftBldPos, 1, NAT_BABYLONIANS);
+      BuildingFactory::CreateBuilding(world, BuildingType::Barracks, leftBldPos, 1, Nation::Babylonians);
     BOOST_REQUIRE(leftBld);
     MapPoint rightBldPos = world.MakeMapPoint(milBld1Pos + Position(5, 2));
     noBuilding* rightBld =
-      BuildingFactory::CreateBuilding(world, BuildingType::Barracks, rightBldPos, 1, NAT_BABYLONIANS);
+      BuildingFactory::CreateBuilding(world, BuildingType::Barracks, rightBldPos, 1, Nation::Babylonians);
     BOOST_REQUIRE(rightBld);
 
     AddSoldiersWithRank(leftBldPos, 1, 0);

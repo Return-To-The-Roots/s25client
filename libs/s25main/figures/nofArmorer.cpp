@@ -47,14 +47,14 @@ nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id)
 
 void nofArmorer::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPoint, NUM_NATIONS> offsets = {{{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}}};
+    constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}}};
 
-    unsigned max_id = 280;
-    unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
+    constexpr unsigned max_id = 280;
+    const unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     if(now_id < 200)
     {
-        unsigned char wpNation = workplace->GetNation();
-        unsigned plColor = gwg->GetPlayer(player).color;
+        const Nation wpNation = workplace->GetNation();
+        const unsigned plColor = gwg->GetPlayer(player).color;
 
         LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
           ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
@@ -76,11 +76,11 @@ unsigned short nofArmorer::GetCarryID() const
         // Je nach Nation einen bestimmtem Schild fertigen
         switch(gwg->GetPlayer(player).nation)
         {
-            case NAT_AFRICANS: return 60; //-V525
-            case NAT_JAPANESE: return 58;
-            case NAT_ROMANS: return 57;
-            case NAT_VIKINGS: return 59;
-            case NAT_BABYLONIANS: return 58; // babylonians use japanese shield carry-animation
+            case Nation::Africans: return 60; //-V525
+            case Nation::Japanese: return 58;
+            case Nation::Romans: return 57;
+            case Nation::Vikings: return 59;
+            case Nation::Babylonians: return 58; // babylonians use japanese shield carry-animation
         }
         RTTR_Assert(false);
         return 0;
