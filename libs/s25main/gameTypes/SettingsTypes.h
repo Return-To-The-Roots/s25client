@@ -18,6 +18,7 @@
 #pragma once
 
 #include "helpers/EnumArray.h"
+#include "helpers/MaxEnumValue.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include <array>
@@ -33,7 +34,7 @@ extern const DistributionMap distributionMap;
 /// List of the percentage a building should get from a specific ware
 using Distributions = std::array<uint8_t, std::tuple_size<DistributionMap>::value>;
 /// Ordering of building types by priority. All buildings in here except unused and HQ
-using BuildOrders = std::array<BuildingType, NUM_BUILDING_TYPES - NUM_UNUSED_BLD_TYPES - 1>;
+using BuildOrders = std::array<BuildingType, helpers::NumEnumValues_v<BuildingType> - NUM_UNUSED_BLD_TYPES - 1>;
 /// Mapping transport priority -> standard transport priority of ware(group):
 /// E.g. std prio of coins = 0 -> TransportOrders[0] = stdPrio[COINS] = 0
 /// New prio of coins = 1 -> TransportOrders[1] = stdPrio[COINS] = 0

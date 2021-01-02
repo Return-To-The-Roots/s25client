@@ -270,7 +270,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     {
         AdjustSettings();
         // check for useless sawmills
-        const std::list<nobUsual*>& sawMills = aii.GetBuildings(BLD_SAWMILL);
+        const std::list<nobUsual*>& sawMills = aii.GetBuildings(BuildingType::Sawmill);
         if(sawMills.size() > 3)
         {
             int burns = 0;
@@ -301,10 +301,14 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
     // pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of
     // the building type)
     std::array<BuildingType, 24> bldToTest = {
-      {BLD_HARBORBUILDING, BLD_SHIPYARD,   BLD_SAWMILL,     BLD_FORESTER,       BLD_FARM,     BLD_FISHERY,
-       BLD_WOODCUTTER,     BLD_QUARRY,     BLD_GOLDMINE,    BLD_IRONMINE,       BLD_COALMINE, BLD_GRANITEMINE,
-       BLD_HUNTER,         BLD_CHARBURNER, BLD_IRONSMELTER, BLD_MINT,           BLD_ARMORY,   BLD_METALWORKS,
-       BLD_BREWERY,        BLD_MILL,       BLD_PIGFARM,     BLD_SLAUGHTERHOUSE, BLD_BAKERY,   BLD_DONKEYBREEDER}};
+      {BuildingType::HarborBuilding, BuildingType::Shipyard,   BuildingType::Sawmill,
+       BuildingType::Forester,       BuildingType::Farm,       BuildingType::Fishery,
+       BuildingType::Woodcutter,     BuildingType::Quarry,     BuildingType::GoldMine,
+       BuildingType::IronMine,       BuildingType::CoalMine,   BuildingType::GraniteMine,
+       BuildingType::Hunter,         BuildingType::Charburner, BuildingType::Ironsmelter,
+       BuildingType::Mint,           BuildingType::Armory,     BuildingType::Metalworks,
+       BuildingType::Brewery,        BuildingType::Mill,       BuildingType::PigFarm,
+       BuildingType::Slaughterhouse, BuildingType::Bakery,     BuildingType::DonkeyBreeder}};
     const unsigned numResGatherBlds = 14; /* The first n buildings in the above list, that gather resources */
 
     // LOG.write(("new buildorders %i whs and %i mil for player %i
@@ -743,7 +747,7 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
                     if(!aiMap[curPt].reachable || (inTerritory && !aii.IsOwnTerritory(curPt)) || aiMap[curPt].farmed)
                         continue;
                     // special case fish -> check for other fishery buildings
-                    if(res == AIResource::FISH && BuildingNearby(curPt, BLD_FISHERY, 6))
+                    if(res == AIResource::FISH && BuildingNearby(curPt, BuildingType::Fishery, 6))
                         continue;
                     // dont build next to harborspots
                     if(HarborPosClose(curPt, 3, true))
@@ -1098,27 +1102,27 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
     MapPoint foundPos = MapPoint::Invalid();
     switch(type)
     {
-        case BLD_WOODCUTTER:
+        case BuildingType::Woodcutter:
         {
             foundPos = FindBestPosition(around, AIResource::WOOD, BUILDING_SIZE[type], 20, 11);
             break;
         }
-        case BLD_FORESTER:
+        case BuildingType::Forester:
             // ensure some distance to other foresters and an minimal amount of plantspace
-            if(!construction->OtherUsualBuildingInRadius(around, 12, BLD_FORESTER)
+            if(!construction->OtherUsualBuildingInRadius(around, 12, BuildingType::Forester)
                && (GetDensity(around, AIResource::PLANTSPACE, 7) > 15))
                 foundPos = FindBestPosition(around, AIResource::WOOD, BUILDING_SIZE[type], 0, 11);
             break;
-        case BLD_HUNTER:
+        case BuildingType::Hunter:
         {
             // check if there are any animals in range
-            if(HuntablesinRange(around, (2 << GetBldPlanner().GetNumBuildings(BLD_HUNTER))))
+            if(HuntablesinRange(around, (2 << GetBldPlanner().GetNumBuildings(BuildingType::Hunter))))
                 foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
             break;
         }
-        case BLD_QUARRY:
+        case BuildingType::Quarry:
         {
-            unsigned numQuarries = GetBldPlanner().GetNumBuildings(BLD_QUARRY);
+            unsigned numQuarries = GetBldPlanner().GetNumBuildings(BuildingType::Quarry);
             foundPos = FindBestPosition(around, AIResource::STONES, BUILDING_SIZE[type],
                                         std::min(40u, 1 + numQuarries * 10), 11);
             if(foundPos.isValid() && !ValidStoneinRange(foundPos))
@@ -1128,16 +1132,16 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             }
             break;
         }
-        case BLD_BARRACKS:
-        case BLD_GUARDHOUSE:
-        case BLD_WATCHTOWER:
-        case BLD_FORTRESS:
+        case BuildingType::Barracks:
+        case BuildingType::Guardhouse:
+        case BuildingType::Watchtower:
+        case BuildingType::Fortress:
             foundPos = FindBestPosition(around, AIResource::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
             break;
-        case BLD_GOLDMINE: foundPos = FindBestPosition(around, AIResource::GOLD, BQ_MINE, 11, true); break;
-        case BLD_COALMINE: foundPos = FindBestPosition(around, AIResource::COAL, BQ_MINE, 11, true); break;
-        case BLD_IRONMINE: foundPos = FindBestPosition(around, AIResource::IRONORE, BQ_MINE, 11, true); break;
-        case BLD_GRANITEMINE:
+        case BuildingType::GoldMine: foundPos = FindBestPosition(around, AIResource::GOLD, BQ_MINE, 11, true); break;
+        case BuildingType::CoalMine: foundPos = FindBestPosition(around, AIResource::COAL, BQ_MINE, 11, true); break;
+        case BuildingType::IronMine: foundPos = FindBestPosition(around, AIResource::IRONORE, BQ_MINE, 11, true); break;
+        case BuildingType::GraniteMine:
             if(!ggs.isEnabled(
                  AddonId::INEXHAUSTIBLE_GRANITEMINES)) // inexhaustible granite mines do not require granite
                 foundPos = FindBestPosition(around, AIResource::GRANITE, BQ_MINE, 11, true);
@@ -1145,7 +1149,7 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
                 foundPos = SimpleFindPosition(around, BQ_MINE, 11);
             break;
 
-        case BLD_FISHERY:
+        case BuildingType::Fishery:
             foundPos = FindBestPosition(around, AIResource::FISH, BUILDING_SIZE[type], 11, true);
             if(foundPos.isValid() && !ValidFishInRange(foundPos))
             {
@@ -1153,29 +1157,29 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
                 foundPos = MapPoint::Invalid();
             }
             break;
-        case BLD_STOREHOUSE:
+        case BuildingType::Storehouse:
             if(!construction->OtherStoreInRadius(around, 15))
                 foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
             break;
-        case BLD_HARBORBUILDING:
+        case BuildingType::HarborBuilding:
             foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
             if(foundPos.isValid()
                && !HarborPosRelevant(GetWorld().GetHarborPointID(foundPos))) // bad harborspot detected DO NOT USE
                 foundPos = MapPoint::Invalid();
             break;
-        case BLD_SHIPYARD:
+        case BuildingType::Shipyard:
             foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
             if(foundPos.isValid() && IsInvalidShipyardPosition(foundPos))
                 foundPos = MapPoint::Invalid();
             break;
-        case BLD_FARM:
+        case BuildingType::Farm:
             foundPos = FindBestPosition(around, AIResource::PLANTSPACE, BUILDING_SIZE[type], 85, 11, true);
             if(foundPos.isValid())
                 foundPos = FindBestPosition(around, AIResource::PLANTSPACE, BUILDING_SIZE[type], 85, 11, true);
             break;
-        case BLD_CATAPULT:
+        case BuildingType::Catapult:
             foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
-            if(foundPos.isValid() && BuildingNearby(foundPos, BLD_CATAPULT, 8))
+            if(foundPos.isValid() && BuildingNearby(foundPos, BuildingType::Catapult, 8))
                 foundPos = MapPoint::Invalid();
             break;
         default: foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11); break;
@@ -1214,24 +1218,25 @@ void AIPlayerJH::HandleNewMilitaryBuildingOccupied(const MapPoint pt)
     {
         if(mil->IsGoldDisabled())
             aii.SetCoinsAllowed(pt, true);
-    } else if((mil->GetBuildingType() == BLD_BARRACKS || mil->GetBuildingType() == BLD_GUARDHOUSE)
+    } else if((mil->GetBuildingType() == BuildingType::Barracks || mil->GetBuildingType() == BuildingType::Guardhouse)
               && mil->GetBuildingType() != construction->GetBiggestAllowedMilBuilding())
     {
         if(!mil->IsGoldDisabled())
             aii.SetCoinsAllowed(pt, false);
     }
 
-    AddBuildJob(BLD_HARBORBUILDING, pt);
+    AddBuildJob(BuildingType::HarborBuilding, pt);
     if(!IsInvalidShipyardPosition(pt))
-        AddBuildJob(BLD_SHIPYARD, pt);
+        AddBuildJob(BuildingType::Shipyard, pt);
     if(SoldierAvailable())
         AddMilitaryBuildJob(pt);
 
     // try to build one the following buildings around the new military building
 
-    std::array<BuildingType, 11> bldToTest = {BLD_STOREHOUSE, BLD_WOODCUTTER, BLD_QUARRY,      BLD_GOLDMINE,
-                                              BLD_COALMINE,   BLD_IRONMINE,   BLD_GRANITEMINE, BLD_FISHERY,
-                                              BLD_FARM,       BLD_HUNTER,     BLD_FORESTER};
+    std::array<BuildingType, 11> bldToTest = {
+      BuildingType::Storehouse, BuildingType::Woodcutter, BuildingType::Quarry,      BuildingType::GoldMine,
+      BuildingType::CoalMine,   BuildingType::IronMine,   BuildingType::GraniteMine, BuildingType::Fishery,
+      BuildingType::Farm,       BuildingType::Hunter,     BuildingType::Forester};
     unsigned bldToTestStartIdx = 0;
     // remove the storehouse from the building test list if we are close to another storehouse already
     for(const nobBaseWarehouse* bldSite : aii.GetStorehouses())
@@ -1268,9 +1273,9 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
 {
     switch(bld)
     {
-        case BLD_CHARBURNER:
-        case BLD_FARM: SetFarmedNodes(pt, false); break;
-        case BLD_HARBORBUILDING:
+        case BuildingType::Charburner:
+        case BuildingType::Farm: SetFarmedNodes(pt, false); break;
+        case BuildingType::HarborBuilding:
         {
             // destroy all other buildings around the harborspot in range 2 so we can rebuild the harbor ...
             for(const MapPoint curPt : gwb.GetPointsInRadius(pt, 2))
@@ -1306,8 +1311,9 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, Direction dir)
     // the new flag goal is to move roadsegments with a length of more than 2 away from the warehouse
     const noFlag& otherFlag = roadSeg->GetOtherFlag(*flag);
     MapPoint bldPos = gwb.GetNeighbour(otherFlag.GetPos(), Direction::NORTHWEST);
-    if(aii.IsBuildingOnNode(bldPos, BLD_STOREHOUSE) || aii.IsBuildingOnNode(bldPos, BLD_HARBORBUILDING)
-       || aii.IsBuildingOnNode(bldPos, BLD_HEADQUARTERS))
+    if(aii.IsBuildingOnNode(bldPos, BuildingType::Storehouse)
+       || aii.IsBuildingOnNode(bldPos, BuildingType::HarborBuilding)
+       || aii.IsBuildingOnNode(bldPos, BuildingType::Headquarters))
         construction->SetFlagsAlongRoad(otherFlag, roadSeg->GetOtherFlagDir(*flag) + 3u);
     else
     {
@@ -1340,7 +1346,7 @@ void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
 {
     switch(bld)
     {
-        case BLD_HARBORBUILDING:
+        case BuildingType::HarborBuilding:
             UpdateNodesAround(pt, 8); // todo: fix radius
             RemoveAllUnusedRoads(
               pt); // repair & reconnect road system - required when a colony gets a new harbor by expedition
@@ -1353,10 +1359,10 @@ void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
             }
             break;
 
-        case BLD_SHIPYARD: aii.SetShipYardMode(pt, true); break;
+        case BuildingType::Shipyard: aii.SetShipYardMode(pt, true); break;
 
-        case BLD_STOREHOUSE: break;
-        case BLD_WOODCUTTER: AddBuildJob(BLD_SAWMILL, pt); break;
+        case BuildingType::Storehouse: break;
+        case BuildingType::Woodcutter: AddBuildJob(BuildingType::Sawmill, pt); break;
         default: break;
     }
 }
@@ -1426,7 +1432,7 @@ void AIPlayerJH::HandleTreeChopped(const MapPoint pt)
     if(random % 2 == 0)
         AddMilitaryBuildJob(pt);
     else // if (random % 12 == 0)
-        AddBuildJob(BLD_WOODCUTTER, pt);
+        AddBuildJob(BuildingType::Woodcutter, pt);
 }
 
 void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType bld)
@@ -1436,9 +1442,9 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
     if(!aii.IsObjectTypeOnNode(pt, NOP_BUILDING))
         return;
     // keep 2 woodcutters for each forester even if they sometimes run out of trees
-    if(bld == BLD_WOODCUTTER)
+    if(bld == BuildingType::Woodcutter)
     {
-        for(const nobUsual* forester : aii.GetBuildings(BLD_FORESTER))
+        for(const nobUsual* forester : aii.GetBuildings(BuildingType::Forester))
         {
             // is the forester somewhat close?
             if(gwb.CalcDistance(pt, forester->GetPos()) <= RES_RADIUS[static_cast<unsigned>(AIResource::WOOD)])
@@ -1446,7 +1452,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
                 // then find it's 2 woodcutters
                 unsigned maxdist = gwb.CalcDistance(pt, forester->GetPos());
                 int betterwoodcutters = 0;
-                for(const nobUsual* woodcutter : aii.GetBuildings(BLD_WOODCUTTER))
+                for(const nobUsual* woodcutter : aii.GetBuildings(BuildingType::Woodcutter))
                 {
                     // dont count the woodcutter in question
                     if(pt == woodcutter->GetPos())
@@ -1473,7 +1479,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
     aii.DestroyBuilding(pt);
     // fishery cant find fish? set fish value at location to 0 so we dont have to calculate the value for this location
     // again
-    if(bld == BLD_FISHERY)
+    if(bld == BuildingType::Fishery)
         SetResourceMap(AIResource::FISH, pt, 0);
 
     UpdateNodesAround(pt, 11); // todo: fix radius
@@ -1483,17 +1489,17 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
     AddMilitaryBuildJob(pt);
 
     // and try to rebuild the same building
-    if(bld != BLD_HUNTER)
+    if(bld != BuildingType::Hunter)
         AddBuildJob(bld, pt);
 
     // farm is always good!
-    AddBuildJob(BLD_FARM, pt);
+    AddBuildJob(BuildingType::Farm, pt);
 }
 
 void AIPlayerJH::HandleShipBuilt(const MapPoint pt)
 {
     // Stop building ships if reached a maximum (TODO: make variable)
-    const std::list<nobUsual*>& shipyards = aii.GetBuildings(BLD_SHIPYARD);
+    const std::list<nobUsual*>& shipyards = aii.GetBuildings(BuildingType::Shipyard);
     bool wantMoreShips;
     unsigned numRelevantSeas = GetNumAIRelevantSeaIds();
     if(numRelevantSeas == 0)
@@ -1652,7 +1658,7 @@ void AIPlayerJH::CheckExpeditions()
 
 void AIPlayerJH::CheckForester()
 {
-    const std::list<nobUsual*>& foresters = aii.GetBuildings(BLD_FORESTER);
+    const std::list<nobUsual*>& foresters = aii.GetBuildings(BuildingType::Forester);
     if(!foresters.empty() && foresters.size() < 2 && aii.GetMilitaryBuildings().size() < 3
        && aii.GetBuildingSites().size() < 3)
     // stop the forester
@@ -1671,7 +1677,7 @@ void AIPlayerJH::CheckGranitMine()
     // stop production in granite mines when the ai has many stones (100+ and at least 15 for each warehouse)
     bool enableProduction =
       AmountInStorage(GoodType::Stones) < 100 || AmountInStorage(GoodType::Stones) < 15 * aii.GetStorehouses().size();
-    for(const nobUsual* mine : aii.GetBuildings(BLD_GRANITEMINE))
+    for(const nobUsual* mine : aii.GetBuildings(BuildingType::GraniteMine))
     {
         // !productionDisabled != enableProduction
         if(mine->IsProductionDisabled() == enableProduction)
@@ -2152,7 +2158,7 @@ unsigned AIPlayerJH::SoldierAvailable(int rank)
 bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
 {
     // check first if no other hunter(or hunter buildingsite) is nearby
-    if(BuildingNearby(pt, BLD_HUNTER, 15))
+    if(BuildingNearby(pt, BuildingType::Hunter, 15))
         return false;
     unsigned maxrange = 25;
     unsigned short fx, fy, lx, ly;
@@ -2207,11 +2213,11 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
 
 void AIPlayerJH::InitStoreAndMilitarylists()
 {
-    for(const nobUsual* farm : aii.GetBuildings(BLD_FARM))
+    for(const nobUsual* farm : aii.GetBuildings(BuildingType::Farm))
     {
         SetFarmedNodes(farm->GetPos(), true);
     }
-    for(const nobUsual* charburner : aii.GetBuildings(BLD_CHARBURNER))
+    for(const nobUsual* charburner : aii.GetBuildings(BuildingType::Charburner))
     {
         SetFarmedNodes(charburner->GetPos(), true);
     }
@@ -2228,7 +2234,7 @@ int AIPlayerJH::UpdateUpgradeBuilding()
         {
             // inland building, tower or fortress
             BuildingType bld = milBld->GetBuildingType();
-            if((bld == BLD_WATCHTOWER || bld == BLD_FORTRESS) && milBld->GetFrontierDistance() < 1)
+            if((bld == BuildingType::Watchtower || bld == BuildingType::Fortress) && milBld->GetFrontierDistance() < 1)
             {
                 if(construction->IsConnectedToRoadSystem(milBld->GetFlag()))
                 {
@@ -2361,8 +2367,6 @@ void AIPlayerJH::ExecuteLuaConstructionOrder(const MapPoint pt, BuildingType bt,
 
 bool AIPlayerJH::BuildingNearby(const MapPoint pt, BuildingType bldType, unsigned min)
 {
-    // assert not a military building
-    RTTR_Assert(static_cast<unsigned>(bldType) >= FIRST_USUAL_BUILDING);
     for(const nobUsual* bld : aii.GetBuildings(bldType))
     {
         if(gwb.CalcDistance(pt, bld->GetPos()) < min)
@@ -2387,7 +2391,7 @@ bool AIPlayerJH::HarborPosClose(const MapPoint pt, unsigned range, bool onlyempt
         if(gwb.CalcDistance(pt, gwb.GetHarborPoint(i)) < range
            && HarborPosRelevant(i)) // in range and valid for ai - as in actually at a sea with more than 1 harbor spot
         {
-            if(!onlyempty || !aii.IsBuildingOnNode(gwb.GetHarborPoint(i), BLD_HARBORBUILDING))
+            if(!onlyempty || !aii.IsBuildingOnNode(gwb.GetHarborPoint(i), BuildingType::HarborBuilding))
                 return true;
         }
     }
@@ -2479,7 +2483,7 @@ bool AIPlayerJH::NoEnemyHarbor()
 {
     for(unsigned i = 1; i <= gwb.GetNumHarborPoints(); i++)
     {
-        if(aii.IsBuildingOnNode(gwb.GetHarborPoint(i), BLD_HARBORBUILDING)
+        if(aii.IsBuildingOnNode(gwb.GetHarborPoint(i), BuildingType::HarborBuilding)
            && !aii.IsOwnTerritory(gwb.GetHarborPoint(i)))
         {
             // LOG.write(("found a harbor at spot %i ",i);
@@ -2491,7 +2495,7 @@ bool AIPlayerJH::NoEnemyHarbor()
 
 bool AIPlayerJH::IsInvalidShipyardPosition(const MapPoint pt)
 {
-    return BuildingNearby(pt, BLD_SHIPYARD, 20) || !HarborPosClose(pt, 8);
+    return BuildingNearby(pt, BuildingType::Shipyard, 20) || !HarborPosClose(pt, 8);
 }
 
 unsigned AIPlayerJH::AmountInStorage(GoodType good) const
@@ -2580,7 +2584,7 @@ void AIPlayerJH::AdjustSettings()
     toolsettings[4] = (inventory.goods[GoodType::Hammer] < 1) ? 1 : 0;
     // Crucible
     toolsettings[6] = (inventory.goods[GoodType::Crucible] + inventory.people[Job::IronFounder]
-                       < bldPlanner->GetNumBuildings(BLD_IRONSMELTER) + 1) ?
+                       < bldPlanner->GetNumBuildings(BuildingType::Ironsmelter) + 1) ?
                         1 :
                         0;
     // Scythe
@@ -2590,7 +2594,7 @@ void AIPlayerJH::AdjustSettings()
                         0;
     // Rollingpin
     toolsettings[10] = (inventory.goods[GoodType::Rollingpin] + inventory.people[Job::Baker]
-                        < bldPlanner->GetNumBuildings(BLD_BAKERY) + 1) ?
+                        < bldPlanner->GetNumBuildings(BuildingType::Bakery) + 1) ?
                          1 :
                          0;
     // Shovel
@@ -2609,7 +2613,7 @@ void AIPlayerJH::AdjustSettings()
       0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii.GetInventory().goods[GoodType::Tongs]<1))?1:0;
     // cleaver
     toolsettings[9] =
-      0; //(aii.GetInventory().goods[GoodType::Cleaver]+aii.GetInventory().people[Job::Butcher]<construction->GetNumBuildings(BLD_SLAUGHTERHOUSE)+1)?1:0;
+      0; //(aii.GetInventory().goods[GoodType::Cleaver]+aii.GetInventory().people[Job::Butcher]<construction->GetNumBuildings(BuildingType::Slaughterhouse)+1)?1:0;
     // rod & line
     toolsettings[7] = 0;
     // bow
@@ -2633,7 +2637,7 @@ void AIPlayerJH::AdjustSettings()
     milSettings[4] = UpdateUpgradeBuilding() >= 0
                          && (inventory.goods[GoodType::Coins] > 0
                              || (inventory.goods[GoodType::Gold] > 0 && inventory.goods[GoodType::Coal] > 0
-                                 && !aii.GetBuildings(BLD_MINT).empty())) ?
+                                 && !aii.GetBuildings(BuildingType::Mint).empty())) ?
                        8 :
                        0;
     milSettings[6] =

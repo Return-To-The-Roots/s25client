@@ -25,10 +25,12 @@
 
 /// Reihenfolge der Gebäude
 const std::array<BuildingType, 24> bts = {
-  BLD_GRANITEMINE, BLD_COALMINE,    BLD_IRONMINE,       BLD_GOLDMINE, BLD_WOODCUTTER,    BLD_FISHERY,
-  BLD_QUARRY,      BLD_FORESTER,    BLD_SLAUGHTERHOUSE, BLD_HUNTER,   BLD_BREWERY,       BLD_ARMORY,
-  BLD_METALWORKS,  BLD_IRONSMELTER, BLD_PIGFARM,        BLD_MILL,     BLD_BAKERY,        BLD_SAWMILL,
-  BLD_MINT,        BLD_WELL,        BLD_SHIPYARD,       BLD_FARM,     BLD_DONKEYBREEDER, BLD_CHARBURNER};
+  BuildingType::GraniteMine,    BuildingType::CoalMine,    BuildingType::IronMine,      BuildingType::GoldMine,
+  BuildingType::Woodcutter,     BuildingType::Fishery,     BuildingType::Quarry,        BuildingType::Forester,
+  BuildingType::Slaughterhouse, BuildingType::Hunter,      BuildingType::Brewery,       BuildingType::Armory,
+  BuildingType::Metalworks,     BuildingType::Ironsmelter, BuildingType::PigFarm,       BuildingType::Mill,
+  BuildingType::Bakery,         BuildingType::Sawmill,     BuildingType::Mint,          BuildingType::Well,
+  BuildingType::Shipyard,       BuildingType::Farm,        BuildingType::DonkeyBreeder, BuildingType::Charburner};
 
 /// Abstand vom linken, oberen Fensterrand
 const Extent bldProdContentOffset(50, 30);
@@ -50,7 +52,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
                           (bts.size() / 2 + 1) * (distance_y + 1))
                      + bldProdContentOffset,
                    _("Productivity"), LOADER.GetImageN("resource", 41)),
-      player(player), percents(NUM_BUILDING_TYPES, 0)
+      player(player), percents()
 {
     const Nation playerNation = player.nation;
     for(unsigned y = 0; y < bts.size() / 2 + bts.size() % 2; ++y)
@@ -66,7 +68,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
             if(player.IsBuildingEnabled(bts[y * 2 + x]))
             {
                 glArchivItem_Bitmap* img;
-                if(bts[y * 2 + x] != BLD_CHARBURNER)
+                if(bts[y * 2 + x] != BuildingType::Charburner)
                     img = LOADER.GetNationIcon(playerNation, bts[y * 2 + x]);
                 else
                     img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
@@ -91,7 +93,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 /// Aktualisieren der Prozente
 void iwBuildingProductivities::UpdatePercents()
 {
-    player.GetBuildingRegister().CalcProductivities(percents);
+    percents = player.GetBuildingRegister().CalcProductivities();
 }
 
 /// Produktivitäts-percentbars aktualisieren

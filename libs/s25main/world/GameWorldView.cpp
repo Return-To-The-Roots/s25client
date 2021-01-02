@@ -399,7 +399,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         else
         {
             // Catapult and Lookout tower doesn't have productivity!
-            if(n.GetBuildingType() == BLD_CATAPULT || n.GetBuildingType() == BLD_LOOKOUTTOWER)
+            if(n.GetBuildingType() == BuildingType::Catapult || n.GetBuildingType() == BuildingType::LookoutTower)
                 return;
 
             unsigned short p = n.GetProductivity();

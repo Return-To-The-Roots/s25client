@@ -153,7 +153,7 @@ void nobUsual::Draw(DrawPoint drawPt)
     // TODO: zusätzliche Dinge wie Mühlenräder, Schweinchen etc bei bestimmten Gebäuden zeichnen
 
     // Bei Mühle, wenn sie nicht arbeitet, immer Mühlenräder (nichtdrehend) zeichnen
-    if(bldType_ == BLD_MILL && !is_working)
+    if(bldType_ == BuildingType::Mill && !is_working)
     {
         // Flügel der Mühle
         LOADER.GetNationImage(nation, 250 + 5 * 49)->DrawFull(drawPt);
@@ -161,7 +161,7 @@ void nobUsual::Draw(DrawPoint drawPt)
         LOADER.GetNationImage(nation, 250 + 5 * 49 + 1)->DrawFull(drawPt, COLOR_SHADOW);
     }
     // Esel in den Kammer bei Eselzucht zeichnen
-    else if(bldType_ == BLD_DONKEYBREEDER)
+    else if(bldType_ == BuildingType::DonkeyBreeder)
     {
         // Für alle Völker jeweils
         // X-Position der Esel
@@ -199,13 +199,13 @@ void nobUsual::Draw(DrawPoint drawPt)
               ->DrawFull(drawPt + DONKEY_OFFSETS[nation][2]);
     }
     // Bei Katapulthaus Katapult oben auf dem Dach zeichnen, falls er nicht "arbeitet"
-    else if(bldType_ == BLD_CATAPULT && !is_working)
+    else if(bldType_ == BuildingType::Catapult && !is_working)
     {
         LOADER.GetPlayerImage("rom_bobs", 1776)->DrawFull(drawPt - DrawPoint(7, 19));
     }
 
     // Bei Schweinefarm Schweinchen auf dem Hof zeichnen
-    else if(bldType_ == BLD_PIGFARM && this->HasWorker())
+    else if(bldType_ == BuildingType::PigFarm && this->HasWorker())
     {
         // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
         const helpers::MultiArray<DrawPoint, NUM_NATIONS, 5> PIG_POSITIONS = {{
@@ -241,9 +241,20 @@ void nobUsual::Draw(DrawPoint drawPt)
         dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds(); //-V522
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
-    else if(BuildingProperties::IsMine(GetBuildingType()) && worker && nation == NAT_AFRICANS)
+    else if(BuildingProperties::IsMine(bldType_) && worker && nation == NAT_AFRICANS)
+    {
+        DrawPoint offset;
+        switch(bldType_)
+        {
+            case BuildingType::GraniteMine: offset = NUBIAN_MINE_FIRE[0]; break;
+            case BuildingType::CoalMine: offset = NUBIAN_MINE_FIRE[1]; break;
+            case BuildingType::IronMine: offset = NUBIAN_MINE_FIRE[2]; break;
+            case BuildingType::GoldMine: offset = NUBIAN_MINE_FIRE[3]; break;
+            default: RTTR_Assert_Msg(false, "Not a mine");
+        }
         LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
-          ->DrawFull(drawPt + NUBIAN_MINE_FIRE[bldType_ - BLD_GRANITEMINE]);
+          ->DrawFull(drawPt + offset);
+    }
 }
 
 void nobUsual::HandleEvent(const unsigned id)
@@ -536,13 +547,13 @@ void nobUsual::OnOutOfResources()
     std::fill(last_productivities.begin(), last_productivities.end(), 0);
 
     const char* error;
-    if(GetBuildingType() == BLD_WELL)
+    if(GetBuildingType() == BuildingType::Well)
         error = _("This well has dried out");
     else if(BuildingProperties::IsMine(GetBuildingType()))
         error = _("This mine is exhausted");
-    else if(GetBuildingType() == BLD_QUARRY)
+    else if(GetBuildingType() == BuildingType::Quarry)
         error = _("No more stones in range");
-    else if(GetBuildingType() == BLD_FISHERY)
+    else if(GetBuildingType() == BuildingType::Fishery)
         error = _("No more fishes in range");
     else
         return;

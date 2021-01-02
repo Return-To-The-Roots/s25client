@@ -114,41 +114,41 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         const helpers::MultiArray<BuildingType, building_count.size(), building_count_max> building_icons = {
           // Linebreak
           {{/* 0 */
-            /* 0 */ BLD_WOODCUTTER,
-            /* 1 */ BLD_FORESTER,
-            /* 2 */ BLD_QUARRY,
-            /* 3 */ BLD_FISHERY,
-            /* 4 */ BLD_HUNTER,
-            /* 5 */ BLD_BARRACKS,
-            /* 6 */ BLD_GUARDHOUSE,
-            /* 7 */ BLD_LOOKOUTTOWER,
-            /* 8 */ BLD_WELL},
+            /* 0 */ BuildingType::Woodcutter,
+            /* 1 */ BuildingType::Forester,
+            /* 2 */ BuildingType::Quarry,
+            /* 3 */ BuildingType::Fishery,
+            /* 4 */ BuildingType::Hunter,
+            /* 5 */ BuildingType::Barracks,
+            /* 6 */ BuildingType::Guardhouse,
+            /* 7 */ BuildingType::LookoutTower,
+            /* 8 */ BuildingType::Well},
            {/* 1 */
-            /*  0 */ BLD_SAWMILL,
-            /*  1 */ BLD_SLAUGHTERHOUSE,
-            /*  2 */ BLD_MILL,
-            /*  3 */ BLD_BAKERY,
-            /*  4 */ BLD_IRONSMELTER,
-            /*  5 */ BLD_METALWORKS,
-            /*  6 */ BLD_ARMORY,
-            /*  7 */ BLD_MINT,
-            /*  8 */ BLD_SHIPYARD,
-            /*  9 */ BLD_BREWERY,
-            /* 10 */ BLD_STOREHOUSE,
-            /* 11 */ BLD_WATCHTOWER,
-            /* 12 */ BLD_CATAPULT},
+            /*  0 */ BuildingType::Sawmill,
+            /*  1 */ BuildingType::Slaughterhouse,
+            /*  2 */ BuildingType::Mill,
+            /*  3 */ BuildingType::Bakery,
+            /*  4 */ BuildingType::Ironsmelter,
+            /*  5 */ BuildingType::Metalworks,
+            /*  6 */ BuildingType::Armory,
+            /*  7 */ BuildingType::Mint,
+            /*  8 */ BuildingType::Shipyard,
+            /*  9 */ BuildingType::Brewery,
+            /* 10 */ BuildingType::Storehouse,
+            /* 11 */ BuildingType::Watchtower,
+            /* 12 */ BuildingType::Catapult},
            {/* 2 */
-            /* 0 */ BLD_FARM,
-            /* 1 */ BLD_PIGFARM,
-            /* 2 */ BLD_DONKEYBREEDER,
-            /* 3 */ BLD_CHARBURNER,
-            /* 4 */ BLD_FORTRESS,
-            /* 5 */ BLD_HARBORBUILDING},
+            /* 0 */ BuildingType::Farm,
+            /* 1 */ BuildingType::PigFarm,
+            /* 2 */ BuildingType::DonkeyBreeder,
+            /* 3 */ BuildingType::Charburner,
+            /* 4 */ BuildingType::Fortress,
+            /* 5 */ BuildingType::HarborBuilding},
            {/* 3 */
-            /* 0 */ BLD_GOLDMINE,
-            /* 1 */ BLD_IRONMINE,
-            /* 2 */ BLD_COALMINE,
-            /* 3 */ BLD_GRANITEMINE}}};
+            /* 0 */ BuildingType::GoldMine,
+            /* 1 */ BuildingType::IronMine,
+            /* 2 */ BuildingType::CoalMine,
+            /* 3 */ BuildingType::GraniteMine}}};
 
         /// Flexible what-buildings-are-available handling
         helpers::MultiArray<bool, 4, building_count_max> building_available;
@@ -215,13 +215,13 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 tooltip << _(BUILDING_NAMES[building_icons[bt][j]]);
 
                 tooltip << _("\nCosts: ");
-                if(BUILDING_COSTS[player.nation][building_icons[bt][j]].boards > 0)
-                    tooltip << (int)BUILDING_COSTS[player.nation][building_icons[bt][j]].boards << _(" boards");
-                if(BUILDING_COSTS[player.nation][building_icons[bt][j]].stones > 0)
+                if(BUILDING_COSTS[building_icons[bt][j]].boards > 0)
+                    tooltip << (int)BUILDING_COSTS[building_icons[bt][j]].boards << _(" boards");
+                if(BUILDING_COSTS[building_icons[bt][j]].stones > 0)
                 {
-                    if(BUILDING_COSTS[player.nation][building_icons[bt][j]].boards > 0)
+                    if(BUILDING_COSTS[building_icons[bt][j]].boards > 0)
                         tooltip << ", ";
-                    tooltip << (int)BUILDING_COSTS[player.nation][building_icons[bt][j]].stones << _(" stones");
+                    tooltip << (int)BUILDING_COSTS[building_icons[bt][j]].stones << _(" stones");
                 }
 
                 DrawPoint iconPos((k % 5) * 36, (k / 5) * 36 + 45);

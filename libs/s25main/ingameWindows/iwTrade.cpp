@@ -44,7 +44,7 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     // Get title of the player
     SetTitle((boost::format(_("Trade with %s")) % gwv.GetWorld().GetPlayer(wh.GetPlayer()).name).str());
     // Gebäudebild und dessen Schatten
-    AddImage(0, DrawPoint(100, 144), LOADER.GetNationImage(wh.GetNation(), 250 + 5 * wh.GetBuildingType()));
+    AddImage(0, DrawPoint(100, 144), &wh.GetBuildingImage());
 
     const unsigned left_column = 200;
 
@@ -86,26 +86,12 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     Msg_ComboSelectItem(2, 0);
 }
 
-void iwTrade::Msg_PaintBefore()
-{
-    IngameWindow::Msg_PaintBefore();
-
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    glArchivItem_Bitmap* bitmap = LOADER.GetNationImage(wh.GetNation(), 250 + 5 * wh.GetBuildingType() + 1);
-
-    if(bitmap)
-    {
-        auto* img = GetCtrl<ctrlImage>(0);
-        bitmap->DrawFull(img->GetDrawPos(), COLOR_SHADOW);
-    }
-}
-
 void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     // pressed the send button
     const unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection().get();
     const bool isJob = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1u;
-    boost::variant<Job, GoodType> what;
+    boost::variant<GoodType, Job> what;
     if(isJob)
         what = jobs[ware_figure_selection];
     else

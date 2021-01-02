@@ -19,6 +19,7 @@
 
 #include "BuildingRegister.h"
 #include "GamePlayerInfo.h"
+#include "helpers/EnumArray.h"
 #include "helpers/MultiArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Inventory.h"
@@ -72,7 +73,7 @@ public:
     struct Distribution
     {
         /// Mapping of Building to percentage of ware the building gets
-        std::array<uint8_t, NUM_BUILDING_TYPES> percent_buildings;
+        helpers::EnumArray<uint8_t, BuildingType> percent_buildings;
         /// Buildings that get this ware
         std::vector<BuildingType> client_buildings;
         /// Possible preferred buildings (each building is n times in here with n=percentage)
@@ -451,7 +452,7 @@ private:
      *  -http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
      */
     std::vector<MapPoint> restricted_area;
-    std::array<bool, NUM_BUILDING_TYPES> building_enabled;
+    helpers::EnumArray<bool, BuildingType> building_enabled;
 
     // TODO: Move to viewer. Mutable as a work-around
     mutable std::array<int8_t, NUM_TOOLS> tools_ordered_delta;

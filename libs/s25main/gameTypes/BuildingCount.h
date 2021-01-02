@@ -17,12 +17,12 @@
 
 #pragma once
 
+#include "helpers/EnumArray.h"
 #include "gameTypes/BuildingType.h"
-#include <array>
 
 /// Number of buildings and building sites per type
 struct BuildingCount
 {
-    std::array<unsigned, NUM_BUILDING_TYPES> buildings;
-    std::array<unsigned, NUM_BUILDING_TYPES> buildingSites;
+    helpers::EnumArray<unsigned, BuildingType> buildings;
+    helpers::EnumArray<unsigned, BuildingType> buildingSites;
 };

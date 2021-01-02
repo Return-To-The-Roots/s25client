@@ -38,7 +38,7 @@ iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding*
     // Gehe zum Standort
     AddImageButton(2, DrawPoint(150, 140), Extent(36, 40), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
     // Gebäudebild
-    AddImage(3, DrawPoint(104, 109), building->GetBuildingImage());
+    AddImage(3, DrawPoint(104, 109), &building->GetBuildingImage());
     // Gebäudename
     AddText(4, DrawPoint(100, 125), _(BUILDING_NAMES[building->GetBuildingType()]), 0xFFFFFF00, FontStyle::CENTER,
             NormalFont);

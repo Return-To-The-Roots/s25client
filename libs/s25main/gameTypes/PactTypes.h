@@ -19,9 +19,10 @@
 
 #include "helpers/MaxEnumValue.h"
 #include <array>
+#include <cstdint>
 
 /// Types of pacts
-enum PactType
+enum PactType : uint8_t
 {
     TREATY_OF_ALLIANCE,
     NON_AGGRESSION_PACT

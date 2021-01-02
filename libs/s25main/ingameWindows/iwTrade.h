@@ -24,7 +24,6 @@ public:
     iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
 
 private:
-    void Msg_PaintBefore() override;
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     unsigned GetPossibleTradeAmount(Job job) const;

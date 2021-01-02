@@ -37,7 +37,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 
     // Liste füllen
     BuildOrders buildOrders = GAMECLIENT.visual_settings.build_order;
-    for(auto& buildOrder : buildOrders)
+    for(const auto buildOrder : buildOrders)
         list->AddString(_(BUILDING_NAMES[buildOrder])); //-V807
 
     // Nach ganz oben
@@ -50,7 +50,8 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     AddImageButton(4, DrawPoint(250, 260), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
 
     // Bild der Auswahl
-    AddImage(5, DrawPoint(240, 150), LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + buildOrders[0] * 5));
+    AddImage(5, DrawPoint(240, 150),
+             LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + rttr::enum_cast(buildOrders[0]) * 5));
 
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TC_GREY, NormalFont, 100);
     combo->AddString(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
@@ -115,8 +116,8 @@ void iwBuildOrder::Msg_ListSelectItem(const unsigned ctrl_id, const int selectio
 
         case 0:
         {
-            GetCtrl<ctrlImage>(5)->SetImage(
-              LOADER.GetNationTex(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[selection] * 5));
+            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetNationTex(
+              gwv.GetPlayer().nation, 250 + rttr::enum_cast(GAMECLIENT.visual_settings.build_order[selection]) * 5));
         }
         break;
     }
@@ -199,8 +200,8 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
                 list->AddString(_(BUILDING_NAMES[GAMECLIENT.default_settings.build_order[i]]));
             list->SetSelection(0);
 
-            GetCtrl<ctrlImage>(5)->SetImage(
-              LOADER.GetNationTex(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[0] * 5));
+            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetNationTex(
+              gwv.GetPlayer().nation, 250 + rttr::enum_cast(GAMECLIENT.visual_settings.build_order[0]) * 5));
 
             settings_changed = true;
         }

@@ -691,7 +691,7 @@ void nofAttacker::OrderAggressiveDefender()
     for(nobBaseMilitary* bld : buildings)
     {
         // darf kein HQ sein, außer, das HQ wird selbst angegriffen,
-        if(bld->GetBuildingType() == BLD_HEADQUARTERS && bld != attacked_goal)
+        if(bld->GetBuildingType() == BuildingType::Headquarters && bld != attacked_goal)
             continue;
         // darf nicht weiter weg als 15 sein
         if(gwg->CalcDistance(pos, bld->GetPos()) >= 15)

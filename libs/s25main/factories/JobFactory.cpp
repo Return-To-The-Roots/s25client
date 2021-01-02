@@ -113,9 +113,9 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
             else if(goal->GetGOT() == GOT_NOB_USUAL)
             {
                 auto* goalBld = static_cast<nobUsual*>(goal);
-                if(goalBld->GetBuildingType() == BLD_WELL)
+                if(goalBld->GetBuildingType() == BuildingType::Well)
                     return new nofWellguy(pt, player, goalBld);
-                else if(goalBld->GetBuildingType() == BLD_CATAPULT)
+                else if(goalBld->GetBuildingType() == BuildingType::Catapult)
                     return new nofCatapultMan(pt, player, goalBld);
             }
             throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job "

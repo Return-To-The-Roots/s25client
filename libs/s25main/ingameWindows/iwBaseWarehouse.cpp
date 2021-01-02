@@ -247,16 +247,16 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                 if(it == storehouses.end()) // was last entry in list -> goto first
                     it = storehouses.begin();
                 gwv.MoveToMapPt((*it)->GetPos());
-                if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
+                if((*it)->GetBuildingType() == BuildingType::Headquarters)
                 {
                     WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHQ>(gwv, gcFactory, *it)).SetPos(GetPos());
-                } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
+                } else if((*it)->GetBuildingType() == BuildingType::HarborBuilding)
                 {
                     WINDOWMANAGER
                       .ReplaceWindow(
                         std::make_unique<iwHarborBuilding>(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it)))
                       .SetPos(GetPos());
-                } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
+                } else if((*it)->GetBuildingType() == BuildingType::Storehouse)
                 {
                     WINDOWMANAGER
                       .ReplaceWindow(

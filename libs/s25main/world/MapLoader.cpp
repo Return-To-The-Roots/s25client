@@ -406,7 +406,8 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
             return false;
         }
 
-        BuildingFactory::CreateBuilding(world, BLD_HEADQUARTERS, hqPositions[i], i, world.GetPlayer(i).nation);
+        BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, hqPositions[i], i,
+                                        world.GetPlayer(i).nation);
     }
     return true;
 }

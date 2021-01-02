@@ -22,6 +22,8 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "enum_cast.hpp"
+#include "helpers/EnumRange.h"
 #include "helpers/containerUtils.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
@@ -30,8 +32,11 @@ void BuildingRegister::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushObjectContainer(warehouses, false);
     sgd.PushObjectContainer(harbors, true);
-    for(const auto& building : buildings)
-        sgd.PushObjectContainer(building, true);
+    for(const auto bld : helpers::enumRange<BuildingType>())
+    {
+        if(BuildingProperties::IsUsual(bld))
+            sgd.PushObjectContainer(buildings[bld], true);
+    }
     sgd.PushObjectContainer(building_sites, true);
     sgd.PushObjectContainer(military_buildings, true);
 }
@@ -40,24 +45,27 @@ void BuildingRegister::Deserialize(SerializedGameData& sgd)
 {
     sgd.PopObjectContainer(warehouses, GOT_UNKNOWN);
     sgd.PopObjectContainer(harbors, GOT_NOB_HARBORBUILDING);
-    if(sgd.GetGameDataVersion() >= 2)
+
+    if(sgd.GetGameDataVersion() >= 6)
     {
-        for(auto& building : buildings)
-            sgd.PopObjectContainer(building, GOT_NOB_USUAL);
+        for(const auto bld : helpers::enumRange<BuildingType>())
+        {
+            if(BuildingProperties::IsUsual(bld))
+                sgd.PopObjectContainer(buildings[bld], GOT_NOB_USUAL);
+        }
         sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
         sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
-    }
+    } else if(sgd.GetGameDataVersion() >= 2)
+        Deserialize2(sgd);
 }
 
 void BuildingRegister::Deserialize2(SerializedGameData& sgd)
 {
-    if(sgd.GetGameDataVersion() < 2)
-    {
-        for(unsigned i = 0; i < 30; ++i)
-            sgd.PopObjectContainer(buildings[i], GOT_NOB_USUAL);
-        sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
-        sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
-    }
+    // Pop all buildings starting at the first usual building
+    for(unsigned i = static_cast<uint8_t>(BuildingType::GraniteMine); i < helpers::NumEnumValues_v<BuildingType>; ++i)
+        sgd.PopObjectContainer(buildings[BuildingType(i)], GOT_NOB_USUAL);
+    sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
+    sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
 }
 
 void BuildingRegister::Add(noBuildingSite* building_site)
@@ -84,10 +92,10 @@ void BuildingRegister::Add(noBuilding* bld, BuildingType bldType)
         warehouses.push_back(static_cast<nobBaseWarehouse*>(bld));
     } else
     {
-        RTTR_Assert(!helpers::contains(buildings[bldType - FIRST_USUAL_BUILDING], bld));
-        buildings[bldType - FIRST_USUAL_BUILDING].push_back(static_cast<nobUsual*>(bld));
+        RTTR_Assert(!helpers::contains(buildings[bldType], bld));
+        buildings[bldType].push_back(static_cast<nobUsual*>(bld));
     }
-    if(bldType == BLD_HARBORBUILDING)
+    if(bldType == BuildingType::HarborBuilding)
     {
         RTTR_Assert(!helpers::contains(harbors, bld));
         harbors.push_back(static_cast<nobHarborBuilding*>(bld));
@@ -106,10 +114,10 @@ void BuildingRegister::Remove(noBuilding* bld, BuildingType bldType)
         warehouses.remove(static_cast<nobBaseWarehouse*>(bld));
     } else
     {
-        RTTR_Assert(helpers::contains(buildings[bldType - FIRST_USUAL_BUILDING], bld));
-        buildings[bldType - FIRST_USUAL_BUILDING].remove(static_cast<nobUsual*>(bld));
+        RTTR_Assert(helpers::contains(buildings[bldType], bld));
+        buildings[bldType].remove(static_cast<nobUsual*>(bld));
     }
-    if(bldType == BLD_HARBORBUILDING)
+    if(bldType == BuildingType::HarborBuilding)
     {
         RTTR_Assert(helpers::contains(harbors, bld));
         harbors.remove(static_cast<nobHarborBuilding*>(bld));
@@ -119,21 +127,18 @@ void BuildingRegister::Remove(noBuilding* bld, BuildingType bldType)
 /// Gibt Liste von Gebäuden des Spieler zurück
 const std::list<nobUsual*>& BuildingRegister::GetBuildings(const BuildingType type) const
 {
-    RTTR_Assert(static_cast<unsigned>(type) >= FIRST_USUAL_BUILDING);
-
-    return buildings[type - FIRST_USUAL_BUILDING];
+    RTTR_Assert(BuildingProperties::IsUsual(type));
+    return buildings[type];
 }
 
 /// Liefert die Anzahl aller Gebäude einzeln
 BuildingCount BuildingRegister::GetBuildingNums() const
 {
-    BuildingCount bc;
-    std::fill(bc.buildings.begin(), bc.buildings.end(), 0);
-    std::fill(bc.buildingSites.begin(), bc.buildingSites.end(), 0);
+    BuildingCount bc{};
 
     // Normale Gebäude zählen
-    for(unsigned i = 0; i < NUM_BUILDING_TYPES - FIRST_USUAL_BUILDING; ++i)
-        bc.buildings[i + FIRST_USUAL_BUILDING] = buildings[i].size();
+    for(const auto bld : helpers::enumRange<BuildingType>())
+        bc.buildings[bld] = buildings[bld].size();
     // Lagerhäuser zählen
     for(const nobBaseWarehouse* bld : warehouses)
         ++bc.buildings[bld->GetBuildingType()];
@@ -146,12 +151,13 @@ BuildingCount BuildingRegister::GetBuildingNums() const
     return bc;
 }
 
-void BuildingRegister::CalcProductivities(std::vector<unsigned short>& productivities) const
+helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::CalcProductivities() const
 {
-    RTTR_Assert(productivities.size() == NUM_BUILDING_TYPES);
+    helpers::EnumArray<uint16_t, BuildingType> productivities;
 
-    for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
-        productivities[i] = static_cast<unsigned short>(CalcAverageProductivity(BuildingType(i)));
+    for(const auto bld : helpers::enumRange<BuildingType>())
+        productivities[bld] = static_cast<uint16_t>(CalcAverageProductivity(bld));
+    return productivities;
 }
 
 unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
@@ -173,9 +179,8 @@ unsigned short BuildingRegister::CalcAverageProductivity() const
 {
     unsigned totalProductivity = 0;
     unsigned numBlds = 0;
-    for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
+    for(const auto bldType : helpers::enumRange<BuildingType>())
     {
-        auto bldType = BuildingType(i);
         if(!BLD_WORK_DESC[bldType].producedWare)
             continue;
 

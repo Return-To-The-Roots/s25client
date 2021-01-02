@@ -61,10 +61,10 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
     // Größe ermitteln
     switch(type)
     {
-        case BLD_BARRACKS: size = 0; break;
-        case BLD_GUARDHOUSE: size = 1; break;
-        case BLD_WATCHTOWER: size = 2; break;
-        case BLD_FORTRESS: size = 3; break;
+        case BuildingType::Barracks: size = 0; break;
+        case BuildingType::Guardhouse: size = 1; break;
+        case BuildingType::Watchtower: size = 2; break;
+        case BuildingType::Fortress: size = 3; break;
         default:
             RTTR_Assert(false);
             size = 0xFF;

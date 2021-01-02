@@ -158,9 +158,9 @@ glArchivItem_Bitmap* Loader::GetNationImage(unsigned nation, unsigned nr)
     return checkedCast<glArchivItem_Bitmap*>(GetNationImageN(nation, nr));
 }
 
-glArchivItem_Bitmap* Loader::GetNationIcon(unsigned nation, unsigned nr)
+glArchivItem_Bitmap* Loader::GetNationIcon(unsigned nation, BuildingType bld)
 {
-    return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(nr));
+    return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
 
 ITexture* Loader::GetNationTex(unsigned nation, unsigned nr)
@@ -494,46 +494,50 @@ void Loader::fillCaches()
     if(!bob_jobs)
         throw std::runtime_error("jobs not found");
 
-    for(unsigned nation = 0; nation < NUM_NATIONS; ++nation)
+    for(const auto nation : helpers::enumRange<Nation>())
     {
         if(!nation_gfx[nation])
             continue;
         // BUILDINGS
-        for(unsigned type = 0; type < NUM_BUILDING_TYPES; ++type)
+        for(const auto type : helpers::enumRange<BuildingType>())
         {
-            glSmartBitmap& bmp = building_cache[nation][type][0];
-            glSmartBitmap& skel = building_cache[nation][type][1];
+            BuildingSprites& sprites = building_cache[nation][type];
 
-            bmp.reset();
-            skel.reset();
+            sprites.building.reset();
+            sprites.skeleton.reset();
+            sprites.door.reset();
 
-            if(type == BLD_CHARBURNER)
+            if(type == BuildingType::Charburner)
             {
                 unsigned id = nation * 8;
 
-                bmp.add(GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1)));
-                bmp.addShadow(GetImageN("charburner", id + 2));
+                sprites.building.add(GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1)));
+                sprites.building.addShadow(GetImageN("charburner", id + 2));
 
-                skel.add(GetImageN("charburner", id + 3));
-                skel.addShadow(GetImageN("charburner", id + 4));
+                sprites.skeleton.add(GetImageN("charburner", id + 3));
+                sprites.skeleton.addShadow(GetImageN("charburner", id + 4));
+
+                sprites.door.add(GetImageN("charburner", id + (isWinterGFX_ ? 7 : 5)));
             } else
             {
-                bmp.add(GetNationImage(nation, 250 + 5 * type));
-                bmp.addShadow(GetNationImage(nation, 250 + 5 * type + 1));
-                if(type == BLD_HEADQUARTERS)
+                sprites.building.add(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type)));
+                sprites.building.addShadow(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 1));
+                if(type == BuildingType::Headquarters)
                 {
                     // HQ has no skeleton, but we have a tent that can act as an HQ
-                    skel.add(GetImageN("mis0bobs", 6));
-                    skel.addShadow(GetImageN("mis0bobs", 7));
+                    sprites.skeleton.add(GetImageN("mis0bobs", 6));
+                    sprites.skeleton.addShadow(GetImageN("mis0bobs", 7));
                 } else
                 {
-                    skel.add(GetNationImage(nation, 250 + 5 * type + 2));
-                    skel.addShadow(GetNationImage(nation, 250 + 5 * type + 3));
+                    sprites.skeleton.add(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 2));
+                    sprites.skeleton.addShadow(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 3));
                 }
+                sprites.door.add(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 4));
             }
 
-            stp->add(bmp);
-            stp->add(skel);
+            stp->add(sprites.building);
+            stp->add(sprites.skeleton);
+            stp->add(sprites.door);
         }
 
         // FLAGS

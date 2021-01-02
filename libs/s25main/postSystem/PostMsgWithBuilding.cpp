@@ -30,5 +30,5 @@ PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& 
 
 ITexture* PostMsgWithBuilding::GetImage_() const
 {
-    return noBaseBuilding::GetBuildingImage(bldType, nation);
+    return &noBaseBuilding::GetBuildingImage(bldType, nation);
 }

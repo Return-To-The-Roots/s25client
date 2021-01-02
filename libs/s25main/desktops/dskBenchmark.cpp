@@ -250,8 +250,8 @@ void dskBenchmark::startTest(Test test)
                 std::vector<MapPoint> pts = game_->world_.GetPointsInRadius(hqs[i], 15);
                 std::bernoulli_distribution dist(numInstances_ / 1000.f);
                 std::bernoulli_distribution distEqual;
-                std::array<BuildingType, 5> blds = {
-                  {BLD_BARRACKS, BLD_MILL, BLD_IRONMINE, BLD_SLAUGHTERHOUSE, BLD_BAKERY}};
+                std::array<BuildingType, 5> blds = {{BuildingType::Barracks, BuildingType::Mill, BuildingType::IronMine,
+                                                     BuildingType::Slaughterhouse, BuildingType::Bakery}};
                 std::uniform_int_distribution<unsigned> getBld(0, blds.size() - 1);
                 std::uniform_int_distribution<unsigned> getJob(0, helpers::MaxEnumValue_v<Job>);
                 std::uniform_int_distribution<unsigned> getDir(0, helpers::MaxEnumValue_v<Direction>);
@@ -263,7 +263,7 @@ void dskBenchmark::startTest(Test test)
                     BuildingType bldType = blds[getBld(rng)];
                     noBuilding* bld = BuildingFactory::CreateBuilding(game_->world_, bldType, pt, i,
                                                                       distEqual(rng) ? NAT_AFRICANS : NAT_JAPANESE);
-                    if(bldType == BLD_BARRACKS)
+                    if(bldType == BuildingType::Barracks)
                     {
                         auto* mil = static_cast<nobMilitary*>(bld);
                         auto* sld = new nofPassiveSoldier(pt, i, mil, mil, 0);

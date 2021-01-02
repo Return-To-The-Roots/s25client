@@ -65,13 +65,13 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 2) // hinauslaufen teil 1
     {
-        LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
+        LOADER.building_cache[wpNation][BuildingType::Bakery].door.DrawFull(drawPt);
         LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][0], now_id)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     }
     if((now_id >= 2) && (now_id < 4)) // hinauslaufen teil 2
     {
-        LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
+        LOADER.building_cache[wpNation][BuildingType::Bakery].door.DrawFull(drawPt);
         LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][1], now_id)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     }
@@ -115,13 +115,13 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     }
     if((now_id >= max_id - 4) && (now_id < max_id - 2)) // reingehn teil 1
     {
-        LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
+        LOADER.building_cache[wpNation][BuildingType::Bakery].door.DrawFull(drawPt);
         LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][4], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }
     if((now_id >= max_id - 2) && (now_id < max_id)) // reingehn teil 2
     {
-        LOADER.GetNationImage(wpNation, 250 + 5 * BLD_BAKERY + 4)->DrawFull(drawPt);
+        LOADER.building_cache[wpNation][BuildingType::Bakery].door.DrawFull(drawPt);
         LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][5], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }

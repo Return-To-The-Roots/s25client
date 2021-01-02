@@ -252,7 +252,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
         else
             positions.push_back(milBldPos[2]);
         for(const MapPoint pt : positions)
-            BuildingFactory::CreateBuilding(world, BLD_BARRACKS, pt, (pt == milBldPos[0]) ? 0 : 1, NAT_AFRICANS);
+            BuildingFactory::CreateBuilding(world, BuildingType::Barracks, pt, (pt == milBldPos[0]) ? 0 : 1,
+                                            NAT_AFRICANS);
         std::array<nobBaseMilitary*, 5> milBlds;
         // bld 0 last as it would destroy others
         for(int j = 2; j >= 0; --j)

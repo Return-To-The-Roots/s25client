@@ -18,6 +18,7 @@
 #pragma once
 
 #include "GameCommand.h"
+#include "helpers/serializeEnums.h"
 #include "variant.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
@@ -30,7 +31,6 @@
 #include <cstdint>
 #include <utility>
 #include <vector>
-
 class GameWorldGame;
 
 namespace gc {
@@ -187,7 +187,7 @@ protected:
     ChangeBuildOrder(Serializer& ser) : GameCommand(CHANGE_BUILDORDER), useCustomBuildOrder(ser.PopBool())
     {
         for(auto& i : data)
-            i = BuildingType(ser.PopUnsignedChar());
+            i = helpers::popEnum<BuildingType>(ser);
     }
 
 public:
@@ -196,7 +196,7 @@ public:
         GameCommand::Serialize(ser);
         ser.PushBool(useCustomBuildOrder);
         for(auto i : data)
-            ser.PushUnsignedChar(i);
+            helpers::pushEnum<uint8_t>(ser, i);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -211,14 +211,14 @@ class SetBuildingSite : public Coords
 
 protected:
     SetBuildingSite(const MapPoint pt, const BuildingType bt) : Coords(SET_BUILDINGSITE, pt), bt(bt) {}
-    SetBuildingSite(Serializer& ser) : Coords(SET_BUILDINGSITE, ser), bt(BuildingType(ser.PopUnsignedChar())) {}
+    SetBuildingSite(Serializer& ser) : Coords(SET_BUILDINGSITE, ser), bt(helpers::popEnum<BuildingType>(ser)) {}
 
 public:
     void Serialize(Serializer& ser) const override
     {
         Coords::Serialize(ser);
 
-        ser.PushUnsignedChar(static_cast<uint8_t>(bt));
+        helpers::pushEnum<uint8_t>(ser, bt);
     }
 
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
@@ -369,13 +369,13 @@ class CallSpecialist : public Coords
 
 protected:
     CallSpecialist(const MapPoint pt, Job job) : Coords(CALL_SPECIALIST, pt), job(job) {}
-    CallSpecialist(Serializer& ser) : Coords(CALL_SPECIALIST, ser), job(Job(ser.PopUnsignedChar())) {}
+    CallSpecialist(Serializer& ser) : Coords(CALL_SPECIALIST, ser), job(helpers::popEnum<Job>(ser)) {}
 
 public:
     void Serialize(Serializer& ser) const override
     {
         Coords::Serialize(ser);
-        ser.PushUnsignedChar(static_cast<uint8_t>(job));
+        helpers::pushEnum<uint8_t>(ser, job);
     }
     void Execute(GameWorldGame& gwg, uint8_t playerId) override;
 };
@@ -504,9 +504,9 @@ protected:
 
     {
         if(ser.PopBool())
-            what = static_cast<Job>(ser.PopUnsignedChar());
+            what = helpers::popEnum<Job>(ser);
         else
-            what = static_cast<GoodType>(ser.PopUnsignedChar());
+            what = helpers::popEnum<GoodType>(ser);
         state = static_cast<InventorySetting>(ser.PopUnsignedChar());
     }
 
@@ -516,7 +516,7 @@ public:
         Coords::Serialize(ser);
 
         ser.PushBool(holds_alternative<Job>(what));
-        boost::apply_visitor([&ser](auto type) { ser.PushUnsignedChar(static_cast<uint8_t>(type)); }, what);
+        boost::apply_visitor([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
         ser.PushUnsignedChar(static_cast<uint8_t>(state));
     }
 
@@ -641,7 +641,7 @@ protected:
         : GameCommand(SUGGEST_PACT), targetPlayer(targetPlayer), pt(pt), duration(duration)
     {}
     SuggestPact(Serializer& ser)
-        : GameCommand(SUGGEST_PACT), targetPlayer(ser.PopUnsignedChar()), pt(PactType(ser.PopUnsignedChar())),
+        : GameCommand(SUGGEST_PACT), targetPlayer(ser.PopUnsignedChar()), pt(helpers::popEnum<PactType>(ser)),
           duration(ser.PopUnsignedInt())
     {}
 
@@ -650,7 +650,7 @@ public:
     {
         GameCommand::Serialize(ser);
         ser.PushUnsignedChar(targetPlayer);
-        ser.PushUnsignedChar(static_cast<uint8_t>(pt));
+        helpers::pushEnum<uint8_t>(ser, pt);
         ser.PushUnsignedInt(duration);
     }
 
@@ -673,7 +673,7 @@ protected:
         : GameCommand(ACCEPT_PACT), id(id), pt(pt), fromPlayer(fromPlayer)
     {}
     AcceptPact(Serializer& ser)
-        : GameCommand(ACCEPT_PACT), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())),
+        : GameCommand(ACCEPT_PACT), id(ser.PopUnsignedInt()), pt(helpers::popEnum<PactType>(ser)),
           fromPlayer(ser.PopUnsignedChar())
     {}
 
@@ -682,7 +682,7 @@ public:
     {
         GameCommand::Serialize(ser);
         ser.PushUnsignedInt(id);
-        ser.PushUnsignedChar(static_cast<uint8_t>(pt));
+        helpers::pushEnum<uint8_t>(ser, pt);
         ser.PushUnsignedChar(fromPlayer);
     }
 
@@ -703,14 +703,14 @@ protected:
         : GameCommand(CANCEL_PACT), pt(pt), otherPlayer(otherPlayer)
     {}
     CancelPact(Serializer& ser)
-        : GameCommand(CANCEL_PACT), pt(PactType(ser.PopUnsignedChar())), otherPlayer(ser.PopUnsignedChar())
+        : GameCommand(CANCEL_PACT), pt(helpers::popEnum<PactType>(ser)), otherPlayer(ser.PopUnsignedChar())
     {}
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        ser.PushUnsignedChar(static_cast<uint8_t>(pt));
+        helpers::pushEnum<uint8_t>(ser, pt);
         ser.PushUnsignedChar(otherPlayer);
     }
 
@@ -785,7 +785,7 @@ class ExpeditionCommand : public GameCommand
 
 protected:
     /// Aktion, die ausgeführt wird
-    enum class Action
+    enum class Action : uint8_t
     {
         FOUNDCOLONY = 0,
         CANCELEXPEDITION,
@@ -796,20 +796,21 @@ protected:
         SOUTHWEST,
         NORTHWEST
     };
+    friend constexpr auto maxEnumValue(Action) { return Action::NORTHWEST; }
 
     ExpeditionCommand(const Action action, const uint32_t ship_id)
         : GameCommand(EXPEDITION_COMMAND), action(action), ship_id(ship_id)
     {}
 
     ExpeditionCommand(Serializer& ser)
-        : GameCommand(EXPEDITION_COMMAND), action(Action(ser.PopUnsignedChar())), ship_id(ser.PopUnsignedInt())
+        : GameCommand(EXPEDITION_COMMAND), action(helpers::popEnum<Action>(ser)), ship_id(ser.PopUnsignedInt())
     {}
 
 public:
     void Serialize(Serializer& ser) const override
     {
         GameCommand::Serialize(ser);
-        ser.PushUnsignedChar(static_cast<uint8_t>(action));
+        helpers::pushEnum<uint8_t>(ser, action);
         ser.PushUnsignedInt(ship_id);
     }
 
@@ -837,11 +838,10 @@ protected:
     {}
     TradeOverLand(Serializer& ser) : Coords(TRADE, ser)
     {
-        const bool isJob = ser.PopBool();
-        if(isJob)
-            what = Job(ser.PopUnsignedChar());
+        if(ser.PopBool())
+            what = helpers::popEnum<Job>(ser);
         else
-            what = GoodType(ser.PopUnsignedChar());
+            what = helpers::popEnum<GoodType>(ser);
         count = ser.PopUnsignedInt();
     }
 
@@ -851,9 +851,7 @@ public:
         Coords::Serialize(ser);
 
         ser.PushBool(holds_alternative<Job>(what));
-        boost::apply_visitor(composeVisitor([&](const Job job) { ser.PushUnsignedChar(static_cast<uint8_t>(job)); },
-                                            [&](const GoodType gt) { ser.PushUnsignedChar(static_cast<uint8_t>(gt)); }),
-                             what);
+        boost::apply_visitor([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
         ser.PushUnsignedInt(count);
     }
 

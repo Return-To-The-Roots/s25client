@@ -501,15 +501,15 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             }
             BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
             // HQ
-            if(bt == BLD_HEADQUARTERS)
+            if(bt == BuildingType::Headquarters)
                 WINDOWMANAGER.Show(
                   std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
-            else if(bt == BLD_STOREHOUSE)
+            else if(bt == BuildingType::Storehouse)
                 WINDOWMANAGER.Show(std::make_unique<iwBaseWarehouse>(
                   gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
-            else if(bt == BLD_HARBORBUILDING)
+            else if(bt == BuildingType::HarborBuilding)
                 WINDOWMANAGER.Show(std::make_unique<iwHarborBuilding>(
                   gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
@@ -605,7 +605,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                         action_tabs.attack = true;
                 }
                 // oder ein HQ oder Hafen?
-                else if(bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING)
+                else if(bt == BuildingType::Headquarters || bt == BuildingType::HarborBuilding)
                     action_tabs.attack = true;
                 action_tabs.sea_attack =
                   action_tabs.attack && worldViewer.GetWorld().GetGGS().isEnabled(AddonId::SEA_ATTACK);

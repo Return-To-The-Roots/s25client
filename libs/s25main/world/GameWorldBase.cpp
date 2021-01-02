@@ -48,7 +48,6 @@ GameWorldBase::~GameWorldBase() = default;
 void GameWorldBase::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
     RTTR_Assert(GetDescription().terrain.size() > 0); // Must have game data initialized
-    BuildingProperties::Init();
     World::Init(mapSize, lt);
     freePathFinder->Init(mapSize);
 }
@@ -212,7 +211,8 @@ bool GameWorldBase::IsMilitaryBuildingOnNode(const MapPoint pt, bool attackBldsO
         BuildingType buildingType = static_cast<const noBaseBuilding*>(obj)->GetBuildingType();
         if(BuildingProperties::IsMilitary(buildingType))
             return true;
-        if(!attackBldsOnly && (buildingType == BLD_HEADQUARTERS || buildingType == BLD_HARBORBUILDING))
+        if(!attackBldsOnly
+           && (buildingType == BuildingType::Headquarters || buildingType == BuildingType::HarborBuilding))
             return true;
     }
 

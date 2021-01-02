@@ -40,13 +40,17 @@
 
 /// Reihenfolge der Gebäude
 const std::array<BuildingType, 32> bts = {
-  BLD_BARRACKS,       BLD_GUARDHOUSE,   BLD_WATCHTOWER, BLD_FORTRESS,   BLD_GRANITEMINE, BLD_COALMINE,    BLD_IRONMINE,
-  BLD_GOLDMINE,       BLD_LOOKOUTTOWER, BLD_CATAPULT,   BLD_WOODCUTTER, BLD_FISHERY,     BLD_QUARRY,      BLD_FORESTER,
-  BLD_SLAUGHTERHOUSE, BLD_HUNTER,       BLD_BREWERY,    BLD_ARMORY,     BLD_METALWORKS,  BLD_IRONSMELTER, BLD_PIGFARM,
-  BLD_STOREHOUSE, // entry 21
-  BLD_MILL,           BLD_BAKERY,       BLD_SAWMILL,    BLD_MINT,       BLD_WELL,        BLD_SHIPYARD,    BLD_FARM,
-  BLD_DONKEYBREEDER,  BLD_CHARBURNER,
-  BLD_HARBORBUILDING // entry 31
+  BuildingType::Barracks,      BuildingType::Guardhouse, BuildingType::Watchtower,     BuildingType::Fortress,
+  BuildingType::GraniteMine,   BuildingType::CoalMine,   BuildingType::IronMine,       BuildingType::GoldMine,
+  BuildingType::LookoutTower,  BuildingType::Catapult,   BuildingType::Woodcutter,     BuildingType::Fishery,
+  BuildingType::Quarry,        BuildingType::Forester,   BuildingType::Slaughterhouse, BuildingType::Hunter,
+  BuildingType::Brewery,       BuildingType::Armory,     BuildingType::Metalworks,     BuildingType::Ironsmelter,
+  BuildingType::PigFarm,
+  BuildingType::Storehouse, // entry 21
+  BuildingType::Mill,          BuildingType::Bakery,     BuildingType::Sawmill,        BuildingType::Mint,
+  BuildingType::Well,          BuildingType::Shipyard,   BuildingType::Farm,           BuildingType::DonkeyBreeder,
+  BuildingType::Charburner,
+  BuildingType::HarborBuilding // entry 31
 };
 
 // Abstand des ersten Icons vom linken oberen Fensterrand
@@ -70,7 +74,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
             if(y * 4 + x >= bts.size()) //-V547
                 break;
             glArchivItem_Bitmap* img;
-            if(bts[y * 4 + x] != BLD_CHARBURNER)
+            if(bts[y * 4 + x] != BuildingType::Charburner)
                 img = LOADER.GetNationIcon(playerNation, bts[y * 4 + x]);
             else
                 img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
@@ -130,7 +134,7 @@ void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
     BuildingType bldType = bts[ctrl_id];
     if(BuildingProperties::IsMilitary(bldType))
         GoToFirstMatching<iwMilitaryBuilding>(bldType, buildingRegister.GetMilitaryBuildings());
-    else if(bldType == BLD_HARBORBUILDING)
+    else if(bldType == BuildingType::HarborBuilding)
         GoToFirstMatching<iwHarborBuilding>(bldType, buildingRegister.GetHarbors());
     else if(BuildingProperties::IsWareHouse(bldType))
         GoToFirstMatching<iwBaseWarehouse>(bldType, buildingRegister.GetStorehouses());

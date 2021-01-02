@@ -357,7 +357,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
 bool nofBuilder::ChooseWare()
 {
     // Brauch ich ein Brett(Rohbau und wenn kein Stein benötigt wird) oder Stein?
-    const BuildingCost costs = BUILDING_COSTS[building_site->GetNation()][building_site->GetBuildingType()];
+    const BuildingCost costs = BUILDING_COSTS[building_site->GetBuildingType()];
     if(building_site->GetBuildProgress(false) < costs.boards * 8 || !costs.stones)
     {
         // Brett

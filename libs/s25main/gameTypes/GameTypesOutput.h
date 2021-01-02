@@ -17,7 +17,9 @@
 
 #pragma once
 
+#include "BuildingType.h"
 #include "GameSettingTypes.h"
+#include "JobTypes.h"
 #include "MapType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
@@ -60,6 +62,18 @@ RTTR_ENUM_OUTPUT(Exploration, Disabled, Classic, FogOfWar, FogOfWarExplored)
 RTTR_ENUM_OUTPUT(MapType, OldMap, Savegame)
 
 #undef RTTR_ENUM_CASE_SINGLE
+#undef RTTR_ENUM_OUTPUT
+
+// Simple only
+#define RTTR_ENUM_OUTPUT(EnumName)                                                 \
+    static std::ostream& operator<<(std::ostream& out, const EnumName e)           \
+    {                                                                              \
+        return out << #EnumName "::" << static_cast<unsigned>(rttr::enum_cast(e)); \
+    }
+
+RTTR_ENUM_OUTPUT(BuildingType)
+RTTR_ENUM_OUTPUT(Job)
+
 #undef RTTR_ENUM_OUTPUT
 
 // LCOV_EXCL_STOP

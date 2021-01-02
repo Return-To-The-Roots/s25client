@@ -19,6 +19,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
+#include "helpers/EnumRange.h"
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/WorldFixture.h"
 #include "gameData/BuildingProperties.h"
@@ -31,9 +32,8 @@ using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
 BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
 {
     const MapPoint bldPos(0, 0);
-    for(unsigned i = 0; i < NUM_BUILDING_TYPES; i++)
+    for(const auto bldType : helpers::enumRange<BuildingType>())
     {
-        auto bldType = BuildingType(i);
         if(!BuildingProperties::IsValid(bldType))
             continue;
         noBuilding* bld = BuildingFactory::CreateBuilding(world, bldType, bldPos, 0, NAT_ROMANS);
@@ -48,6 +48,8 @@ BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
             BOOST_REQUIRE(!dynamic_cast<nobBaseWarehouse*>(bld));
         if(BuildingProperties::IsMine(bldType))
             BOOST_REQUIRE(dynamic_cast<nobUsual*>(bld)); // At least a usual
+        if(BuildingProperties::IsUsual(bldType))
+            BOOST_REQUIRE(dynamic_cast<nobUsual*>(bld));
         world.DestroyNO(bldPos);
         // Destroy fire
         world.DestroyNO(bldPos);

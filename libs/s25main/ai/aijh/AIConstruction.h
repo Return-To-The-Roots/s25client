@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "helpers/EnumArray.h"
 #include "helpers/OptionalEnum.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
@@ -107,8 +108,8 @@ private:
     // -> so the commands are not yet executed and for now the ai will just not build again in the area until the next
     // nwf
     std::deque<MapPoint> constructionlocations;
-    // contains the type and amount of buildings ordered since the last nwf
-    std::vector<uint8_t> constructionorders;
+    // contains the amount of buildings ordered since the last nwf
+    helpers::EnumArray<uint8_t, BuildingType> constructionorders;
 };
 
 } // namespace AIJH

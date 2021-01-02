@@ -279,8 +279,8 @@ void noShip::HandleEvent(const unsigned id)
                 {
                     Inventory goods;
                     unsigned char nation = gwg->GetPlayer(ownerId_).nation;
-                    goods.goods[GoodType::Boards] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].boards;
-                    goods.goods[GoodType::Stones] = BUILDING_COSTS[nation][BLD_HARBORBUILDING].stones;
+                    goods.goods[GoodType::Boards] = BUILDING_COSTS[BuildingType::HarborBuilding].boards;
+                    goods.goods[GoodType::Stones] = BUILDING_COSTS[BuildingType::HarborBuilding].stones;
                     goods.people[Job::Builder] = 1;
                     static_cast<nobBaseWarehouse*>(hb)->AddGoods(goods, false);
                     // Wieder idlen und ggf. neuen Job suchen

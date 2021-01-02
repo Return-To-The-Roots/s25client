@@ -29,17 +29,6 @@
 #include "nodeObjs/noShip.h"
 #include <stdexcept>
 
-template<typename T>
-static T popEnum(Serializer& ser)
-{
-    static_assert(std::is_same<uint8_t, std::underlying_type_t<T>>::value, "Only for uint8_t enums");
-    const uint8_t value = ser.PopUnsignedChar();
-    if(value > helpers::MaxEnumValue_v<T>)
-        throw std::range_error(
-          helpers::format("%s is out of range. Maximum allowed value: %s", value, helpers::MaxEnumValue_v<T>));
-    return T(value);
-}
-
 namespace gc {
 
 void SetFlag::Execute(GameWorldGame& gwg, uint8_t playerId)
@@ -55,7 +44,7 @@ void DestroyFlag::Execute(GameWorldGame& gwg, uint8_t playerId)
 BuildRoad::BuildRoad(Serializer& ser) : Coords(BUILD_ROAD, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
 {
     for(auto& i : route)
-        i = popEnum<Direction>(ser);
+        i = helpers::popEnum<Direction>(ser);
 }
 
 void BuildRoad::Serialize(Serializer& ser) const
@@ -65,7 +54,7 @@ void BuildRoad::Serialize(Serializer& ser) const
     ser.PushBool(boat_road);
     ser.PushUnsignedInt(route.size());
     for(auto i : route)
-        ser.PushUnsignedChar(rttr::enum_cast(i));
+        helpers::pushEnum<uint8_t>(ser, i);
 }
 
 void BuildRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
@@ -73,13 +62,13 @@ void BuildRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
     gwg.BuildRoad(playerId, boat_road, pt_, route);
 }
 
-DestroyRoad::DestroyRoad(Serializer& ser) : Coords(DESTROY_ROAD, ser), start_dir(popEnum<Direction>(ser)) {}
+DestroyRoad::DestroyRoad(Serializer& ser) : Coords(DESTROY_ROAD, ser), start_dir(helpers::popEnum<Direction>(ser)) {}
 
 void DestroyRoad::Serialize(Serializer& ser) const
 {
     Coords::Serialize(ser);
 
-    ser.PushUnsignedChar(rttr::enum_cast(start_dir));
+    helpers::pushEnum<uint8_t>(ser, start_dir);
 }
 
 void DestroyRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
@@ -89,12 +78,12 @@ void DestroyRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
         flag->DestroyRoad(start_dir);
 }
 
-UpgradeRoad::UpgradeRoad(Serializer& ser) : Coords(UPGRADE_ROAD, ser), start_dir(popEnum<Direction>(ser)) {}
+UpgradeRoad::UpgradeRoad(Serializer& ser) : Coords(UPGRADE_ROAD, ser), start_dir(helpers::popEnum<Direction>(ser)) {}
 
 void UpgradeRoad::Serialize(Serializer& ser) const
 {
     Coords::Serialize(ser);
-    ser.PushUnsignedChar(rttr::enum_cast(start_dir));
+    helpers::pushEnum<uint8_t>(ser, start_dir);
 }
 
 void UpgradeRoad::Execute(GameWorldGame& gwg, uint8_t playerId)
@@ -297,4 +286,3 @@ void TradeOverLand::Execute(GameWorldGame& gwg, uint8_t playerId)
 }
 
 } // namespace gc
-  // namespace gc

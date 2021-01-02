@@ -30,6 +30,7 @@
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "gameTypes/Resource.h"
 #include "s25util/Serializer.h"
 #include "s25util/StringConversion.h"
@@ -339,35 +340,35 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     const nobHQ* hq = world.GetSpecObj<nobHQ>(player.GetHQPos());
     executeLua("player = rttr:GetPlayer(1)\nassert(player)");
 
-    BOOST_REQUIRE(player.IsBuildingEnabled(BLD_WOODCUTTER));
-    BOOST_REQUIRE(player.IsBuildingEnabled(BLD_FORTRESS));
+    BOOST_REQUIRE(player.IsBuildingEnabled(BuildingType::Woodcutter));
+    BOOST_REQUIRE(player.IsBuildingEnabled(BuildingType::Fortress));
     executeLua("player:DisableBuilding(BLD_WOODCUTTER)\nplayer:DisableBuilding(BLD_FORTRESS)");
-    BOOST_REQUIRE(!player.IsBuildingEnabled(BLD_WOODCUTTER));
-    BOOST_REQUIRE(!player.IsBuildingEnabled(BLD_FORTRESS));
+    BOOST_REQUIRE(!player.IsBuildingEnabled(BuildingType::Woodcutter));
+    BOOST_REQUIRE(!player.IsBuildingEnabled(BuildingType::Fortress));
 
     world.GetPostMgr().AddPostBox(1);
     const PostBox& postBox = *world.GetPostMgr().GetPostBox(1);
     // Enable without notification
     executeLua("player:EnableBuilding(BLD_WOODCUTTER)");
-    BOOST_REQUIRE(player.IsBuildingEnabled(BLD_WOODCUTTER));
-    BOOST_REQUIRE(!player.IsBuildingEnabled(BLD_FORTRESS));
+    BOOST_REQUIRE(player.IsBuildingEnabled(BuildingType::Woodcutter));
+    BOOST_REQUIRE(!player.IsBuildingEnabled(BuildingType::Fortress));
     BOOST_REQUIRE_EQUAL(postBox.GetNumMsgs(), 0u);
     executeLua("player:DisableBuilding(BLD_WOODCUTTER)\nplayer:EnableBuilding(BLD_WOODCUTTER, false)");
-    BOOST_REQUIRE(player.IsBuildingEnabled(BLD_WOODCUTTER));
+    BOOST_REQUIRE(player.IsBuildingEnabled(BuildingType::Woodcutter));
     BOOST_REQUIRE_EQUAL(postBox.GetNumMsgs(), 0u);
 
     // Enable with notification
     executeLua("player:EnableBuilding(BLD_WOODCUTTER, true)");
-    BOOST_REQUIRE(player.IsBuildingEnabled(BLD_WOODCUTTER));
+    BOOST_REQUIRE(player.IsBuildingEnabled(BuildingType::Woodcutter));
     BOOST_REQUIRE_EQUAL(postBox.GetNumMsgs(), 1u);
 
     executeLua("player:DisableAllBuildings()");
-    for(unsigned bld = 0; bld < NUM_BUILDING_TYPES; bld++)
-        BOOST_REQUIRE(!player.IsBuildingEnabled(BuildingType(bld)));
+    for(const auto bld : helpers::enumRange<BuildingType>())
+        BOOST_REQUIRE(!player.IsBuildingEnabled(bld));
 
     executeLua("player:EnableAllBuildings()");
-    for(unsigned bld = 0; bld < NUM_BUILDING_TYPES; bld++)
-        BOOST_REQUIRE(player.IsBuildingEnabled(BuildingType(bld)));
+    for(const auto bld : helpers::enumRange<BuildingType>())
+        BOOST_REQUIRE(player.IsBuildingEnabled(bld));
 
     std::array<unsigned, 5> numReserveClaimedBefore, numReserveVisualClaimedBefore;
     for(unsigned rank = 0; rank < SOLDIER_JOBS.size(); rank++)
@@ -438,7 +439,8 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_HEADQUARTERS)", "1"));
     BOOST_CHECK(isLuaEqual("player:GetNumBuildingSites(BLD_HEADQUARTERS)", "0"));
     BOOST_CHECK(isLuaEqual("player:GetNumBuildingSites(BLD_WOODCUTTER)", "0"));
-    world.SetNO(hq->GetPos() + MapPoint(4, 0), new noBuildingSite(BLD_WOODCUTTER, hq->GetPos() + MapPoint(4, 0), 1));
+    world.SetNO(hq->GetPos() + MapPoint(4, 0),
+                new noBuildingSite(BuildingType::Woodcutter, hq->GetPos() + MapPoint(4, 0), 1));
     BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
     BOOST_CHECK(isLuaEqual("player:GetNumBuildingSites(BLD_WOODCUTTER)", "1"));
 
@@ -461,7 +463,7 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_REQUIRE(note.note_);
     BOOST_CHECK_EQUAL(note.note_->type, BuildingNote::LuaOrder);
     BOOST_CHECK_EQUAL(note.note_->player, 1u);
-    BOOST_CHECK_EQUAL(note.note_->bld, BLD_WOODCUTTER);
+    BOOST_CHECK_EQUAL(note.note_->bld, BuildingType::Woodcutter);
     BOOST_CHECK_EQUAL(note.note_->pos, MapPoint(12, 13));
 
     executeLua("player:ModifyHQ(true)");

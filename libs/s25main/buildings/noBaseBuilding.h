@@ -23,7 +23,6 @@
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Nation.h"
 
-class glArchivItem_Bitmap;
 class ITexture;
 class noFlag;
 class SerializedGameData;
@@ -97,9 +96,8 @@ public:
     virtual void GotWorker(Job /*job*/, noFigure* /*worker*/){};
 
     /// Gibt ein Bild zurück für das normale Gebäude
-    ITexture* GetBuildingImage() const;
-    static ITexture* GetBuildingImage(BuildingType type, Nation nation);
-    /// Gibt ein Bild zurück für das Gebäudegerüst
+    ITexture& GetBuildingImage() const;
+    static ITexture& GetBuildingImage(BuildingType type, Nation nation);
     /// Gibt ein Bild zurück für die Tür des Gebäudes
-    glArchivItem_Bitmap* GetDoorImage() const;
+    ITexture& GetDoorImage() const;
 };

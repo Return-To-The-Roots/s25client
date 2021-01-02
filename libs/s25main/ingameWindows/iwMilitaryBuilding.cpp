@@ -64,8 +64,7 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
     // Gebäudebild
-    AddImage(8, DrawPoint(117, 114),
-             LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
+    AddImage(8, DrawPoint(117, 114), &building->GetBuildingImage());
     // "Go to next" (building of same type)
     AddImageButton(9, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11),
                    _("Go to next military building"));
@@ -78,9 +77,6 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
 void iwMilitaryBuilding::Draw_()
 {
     IngameWindow::Draw_();
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)
-      ->DrawFull(GetDrawPos() + DrawPoint(117, 114), COLOR_SHADOW);
 
     // Schwarzer Untergrund für Goldanzeige
     const unsigned maxCoinCt = building->GetMaxCoinCt();

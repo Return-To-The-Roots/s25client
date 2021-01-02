@@ -18,7 +18,7 @@
 #include "BuildingConsts.h"
 #include "mygettext/mygettext.h"
 
-const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_NAMES = {
+const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES = {
   gettext_noop("Headquarters"),
   gettext_noop("Barracks"),
   gettext_noop("Guardhouse"),
@@ -61,7 +61,7 @@ const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_NAMES = {
   gettext_noop("Harbor building"),
 };
 
-const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_HELP_STRINGS = {
+const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS = {{
   // Headquarters
   gettext_noop("The headquarters represents the "
                "center of your realm. The large "
@@ -302,4 +302,53 @@ const std::array<const char*, NUM_BUILDING_TYPES> BUILDING_HELP_STRINGS = {
                "this, first choose the relevant "
                "icon followed by the desired "
                "merchandise or job symbol."),
-};
+}};
+
+const std::array<helpers::EnumArray<SmokeConst, BuildingType>, NUM_NATIONS> BUILDING_SMOKE_CONSTS = []() {
+    std::array<helpers::EnumArray<SmokeConst, BuildingType>, NUM_NATIONS> result{};
+    auto& africans = result[NAT_AFRICANS];
+    africans[BuildingType::Quarry] = SmokeConst(1, {3, -32});
+    africans[BuildingType::Armory] = SmokeConst(1, {-32, -23});
+    africans[BuildingType::Metalworks] = SmokeConst(4, {-26, -47});
+    africans[BuildingType::Ironsmelter] = SmokeConst(2, {-20, -37});
+    africans[BuildingType::Charburner] = SmokeConst(2, {-18, -52});
+    africans[BuildingType::Bakery] = SmokeConst(4, {27, -39});
+    africans[BuildingType::Mint] = SmokeConst(1, {17, -52});
+    auto& japanese = result[NAT_JAPANESE];
+    japanese[BuildingType::Armory] = SmokeConst(1, {-22, -43});
+    japanese[BuildingType::Charburner] = SmokeConst(2, {-32, -55});
+    japanese[BuildingType::Bakery] = SmokeConst(4, {-30, -39});
+    japanese[BuildingType::Mint] = SmokeConst(3, {18, -58});
+    auto& romans = result[NAT_ROMANS];
+    romans[BuildingType::Brewery] = SmokeConst(1, {-26, -45});
+    romans[BuildingType::Armory] = SmokeConst(2, {-36, -34});
+    romans[BuildingType::Ironsmelter] = SmokeConst(1, {-16, -34});
+    romans[BuildingType::Charburner] = SmokeConst(2, {-36, -38});
+    romans[BuildingType::Bakery] = SmokeConst(4, {-15, -26});
+    romans[BuildingType::Mint] = SmokeConst(4, {20, -50});
+    auto& vikings = result[NAT_VIKINGS];
+    vikings[BuildingType::Woodcutter] = SmokeConst(1, {2, -36});
+    vikings[BuildingType::Fishery] = SmokeConst(1, {4, -36});
+    vikings[BuildingType::Quarry] = SmokeConst(1, {0, -34});
+    vikings[BuildingType::Forester] = SmokeConst(1, {-5, -29});
+    vikings[BuildingType::Slaughterhouse] = SmokeConst(1, {7, -41});
+    vikings[BuildingType::Hunter] = SmokeConst(1, {-6, -38});
+    vikings[BuildingType::Brewery] = SmokeConst(3, {5, -39});
+    vikings[BuildingType::Armory] = SmokeConst(3, {-23, -36});
+    vikings[BuildingType::Metalworks] = SmokeConst(1, {-9, -35});
+    vikings[BuildingType::Ironsmelter] = SmokeConst(2, {-2, -38});
+    vikings[BuildingType::Charburner] = SmokeConst(2, {-22, -55});
+    vikings[BuildingType::PigFarm] = SmokeConst(2, {-30, -37});
+    vikings[BuildingType::Bakery] = SmokeConst(4, {-21, -26});
+    vikings[BuildingType::Sawmill] = SmokeConst(1, {-11, -45});
+    vikings[BuildingType::Mint] = SmokeConst(1, {16, -38});
+    vikings[BuildingType::Farm] = SmokeConst(1, {-17, -48});
+    vikings[BuildingType::DonkeyBreeder] = SmokeConst(4, {-27, -40});
+    auto& babylonians = result[NAT_BABYLONIANS];
+    babylonians[BuildingType::Brewery] = SmokeConst(2, {-18, -43});
+    babylonians[BuildingType::Armory] = SmokeConst(1, {-22, -47});
+    babylonians[BuildingType::Ironsmelter] = SmokeConst(2, {-23, -36});
+    babylonians[BuildingType::Bakery] = SmokeConst(4, {-27, -32});
+    babylonians[BuildingType::Mint] = SmokeConst(3, {11, -58});
+    return result;
+}();

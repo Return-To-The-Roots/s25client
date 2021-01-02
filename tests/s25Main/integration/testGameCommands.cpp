@@ -53,10 +53,6 @@ static std::ostream& operator<<(std::ostream& out, const InventorySetting& setti
 {
     return out << static_cast<unsigned>(static_cast<uint8_t>(setting));
 }
-static std::ostream& operator<<(std::ostream& out, const Job e)
-{
-    return out << rttr::enum_cast(e);
-}
 // LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_SUITE(GameCommandSuite)
@@ -179,7 +175,7 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), PointRoad::None);
     this->DestroyFlag(flagPt + MapPoint(3, 0));
     // g2) Building to close
-    this->SetBuildingSite(flagPt + MapPoint(3, 0), BLD_FARM);
+    this->SetBuildingSite(flagPt + MapPoint(3, 0), BuildingType::Farm);
     this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
     BOOST_REQUIRE_NE(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
     for(unsigned i = 0; i < 2; i++)
@@ -374,25 +370,25 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
     const MapPoint closeMilPt = hqPos - MapPoint(4, 0);
     const MapPoint okMilPt = hqPos - MapPoint(5, 0);
     // Wrong BQ (blocked by HQ)
-    this->SetBuildingSite(closePt, BLD_FARM);
+    this->SetBuildingSite(closePt, BuildingType::Farm);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_NOTHING); //-V807
     // OK
-    this->SetBuildingSite(closePt, BLD_WOODCUTTER);
+    this->SetBuildingSite(closePt, BuildingType::Woodcutter);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_BUILDINGSITE);
-    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BLD_WOODCUTTER);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BuildingType::Woodcutter);
     BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(closePt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
     // OK
-    this->SetBuildingSite(farmPt, BLD_FARM);
+    this->SetBuildingSite(farmPt, BuildingType::Farm);
     BOOST_REQUIRE_EQUAL(world.GetNO(farmPt)->GetType(), NOP_BUILDINGSITE);
-    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(farmPt)->GetBuildingType(), BLD_FARM);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(farmPt)->GetBuildingType(), BuildingType::Farm);
     BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(farmPt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
     // Millitary bld to close
-    this->SetBuildingSite(closeMilPt, BLD_BARRACKS);
+    this->SetBuildingSite(closeMilPt, BuildingType::Barracks);
     BOOST_REQUIRE_EQUAL(world.GetNO(closeMilPt)->GetType(), NOP_NOTHING);
     // Millitary bld ok
-    this->SetBuildingSite(okMilPt, BLD_BARRACKS);
+    this->SetBuildingSite(okMilPt, BuildingType::Barracks);
     BOOST_REQUIRE_EQUAL(world.GetNO(okMilPt)->GetType(), NOP_BUILDINGSITE);
-    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(okMilPt)->GetBuildingType(), BLD_BARRACKS);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(okMilPt)->GetBuildingType(), BuildingType::Barracks);
     BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(), NOP_FLAG);
 
     // Remove bld
@@ -409,7 +405,7 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>(2, Direction::EAST));
     RTTR_EXEC_TILL(1200, world.GetNO(closePt)->GetType() == NOP_BUILDING);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetGOT(), GOT_NOB_USUAL);
-    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BLD_WOODCUTTER);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BuildingType::Woodcutter);
 
     // Destroy finished bld -> Fire
     this->DestroyBuilding(closePt);
@@ -418,7 +414,7 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
     this->DestroyBuilding(closePt);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
     // Try to build on fire
-    this->SetBuildingSite(closePt, BLD_WOODCUTTER);
+    this->SetBuildingSite(closePt, BuildingType::Woodcutter);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_FIRE);
 }
 
@@ -445,7 +441,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
     // Build a watchtower and connect it
     auto* bld = dynamic_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
+      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milPt, curPlayer, player.nation));
     BOOST_REQUIRE(bld);
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false,
                     std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
@@ -529,8 +525,8 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
     ggs.setSelection(AddonId::MAX_RANK, MAX_MILITARY_RANK);
     // Build a watchtower and connect it
-    auto* bld =
-      static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
+    auto* bld = static_cast<nobMilitary*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Barracks, milPt, curPlayer, player.nation));
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false,
                     std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
@@ -631,8 +627,8 @@ BOOST_FIXTURE_TEST_CASE(CallScout, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
-    auto* bld =
-      dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
+    auto* bld = dynamic_cast<nobMilitary*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsGoldDisabled()); //-V522
 
@@ -658,8 +654,8 @@ BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
-    auto* bld =
-      dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
+    auto* bld = dynamic_cast<nobUsual*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Forester, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
     BOOST_REQUIRE(!bld->IsProductionDisabled()); //-V522
 
@@ -875,7 +871,7 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
 
     numWoodcutters = wh->GetNumRealFigures(Job::Woodcutter);
     MapPoint whPos = hqPos + MapPoint(3, 0);
-    BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_AFRICANS);
+    BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, NAT_AFRICANS);
     this->BuildRoad(wh->GetFlag()->GetPos(), false, std::vector<Direction>(3, Direction::EAST));
     this->SetInventorySetting(hqPos, GoodType::Boards, EInventorySetting::SEND);
     // Send some

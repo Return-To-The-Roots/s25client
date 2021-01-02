@@ -22,6 +22,7 @@
 #include "ai/AIPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
+#include "helpers/EnumRange.h"
 #include "helpers/toString.h"
 #include "lua/LuaHelpers.h"
 #include "lua/LuaInterfaceBase.h"
@@ -91,14 +92,14 @@ void LuaPlayer::DisableBuilding(lua::SafeEnum<BuildingType> bld)
 
 void LuaPlayer::EnableAllBuildings()
 {
-    for(unsigned building_type = 0; building_type < NUM_BUILDING_TYPES; building_type++)
-        player.EnableBuilding(BuildingType(building_type));
+    for(const auto bld : helpers::enumRange<BuildingType>())
+        player.EnableBuilding(bld);
 }
 
 void LuaPlayer::DisableAllBuildings()
 {
-    for(unsigned building_type = 0; building_type < NUM_BUILDING_TYPES; building_type++)
-        player.DisableBuilding(BuildingType(building_type));
+    for(const auto bld : helpers::enumRange<BuildingType>())
+        player.DisableBuilding(bld);
 }
 
 void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)

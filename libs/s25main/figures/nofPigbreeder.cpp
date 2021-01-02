@@ -47,7 +47,7 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
     if(now_id < 16)
     {
         if(now_id < 8)
-            LOADER.GetNationImage(wpNation, 250 + 5 * BLD_PIGFARM + 4)->DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::PigFarm].door.DrawFull(drawPt);
         // TODO: Use GlobalAnimation?
         DrawPoint walkPos =
           drawPt + walkstart[wpNation] + (offsets[wpNation] - walkstart[wpNation]) * now_id / walksteps;
@@ -68,7 +68,7 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
     } else if(now_id < 56)
     {
         if(now_id > 46)
-            LOADER.GetNationImage(wpNation, 250 + 5 * BLD_PIGFARM + 4)->DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::PigFarm].door.DrawFull(drawPt);
         // TODO: Use GlobalAnimation?
         DrawPoint walkPos =
           drawPt + walkstart[wpNation] + (walkstart[wpNation] - offsets[wpNation]) * (now_id - 40) / walksteps;

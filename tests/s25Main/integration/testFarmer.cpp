@@ -34,7 +34,8 @@ struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1>
     FarmerFixture()
     {
         farmPt = world.GetPlayer(0).GetHQPos() + MapPoint(5, 0);
-        farm = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FARM, farmPt, 0, NAT_ROMANS));
+        farm =
+          dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BuildingType::Farm, farmPt, 0, NAT_ROMANS));
         BOOST_REQUIRE(farm);
         world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SOUTHEAST),
                         std::vector<Direction>(5, Direction::WEST));
@@ -79,7 +80,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     world.SetNO(world.GetNeighbour2(farmPt, 5), new noEnvObject(world.GetNeighbour2(farmPt, 5), 0));
     BOOST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 5)));
     // On bld and next to it is not allowed
-    world.SetBuildingSite(BLD_WATCHTOWER, world.GetNeighbour2(farmPt, 6), 0);
+    world.SetBuildingSite(BuildingType::Watchtower, world.GetNeighbour2(farmPt, 6), 0);
     BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 6)));
     BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 7)));
     // On or next to grain field is not allowed
@@ -114,9 +115,9 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
         RTTR_SKIP_GFS(50);
         BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(newField));
         if(i == 0)
-            world.SetBuildingSite(BLD_WOODCUTTER, newField, 0);
+            world.SetBuildingSite(BuildingType::Woodcutter, newField, 0);
         else
-            world.SetBuildingSite(BLD_WOODCUTTER, world.GetNeighbour(newField, Direction::SOUTHEAST), 0);
+            world.SetBuildingSite(BuildingType::Woodcutter, world.GetNeighbour(newField, Direction::SOUTHEAST), 0);
         // Let farmer return
         RTTR_EXEC_TILL(150, !farm->is_working);
         // Aborted work
