@@ -357,7 +357,7 @@ void GameClient::GameLoaded()
         {
             for(unsigned id = 0; id < GetNumPlayers(); id++)
             {
-                if(GetPlayer(id).ps == PS_AI)
+                if(GetPlayer(id).ps == PlayerState::AI)
                 {
                     game->AddAIPlayer(CreateAIPlayer(id, GetPlayer(id).aiInfo));
                     SendNothingNC(id);
@@ -462,7 +462,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_New& msg)
     JoinPlayerInfo& playerInfo = gameLobby->getPlayer(msg.player);
 
     playerInfo.name = msg.name;
-    playerInfo.ps = PS_OCCUPIED;
+    playerInfo.ps = PlayerState::Occupied;
     playerInfo.ping = 0;
 
     if(ci)
@@ -604,15 +604,15 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
     {
         if(msg.player >= gameLobby->getNumPlayers())
             return true;
-        gameLobby->getPlayer(msg.player).ps = PS_FREE;
+        gameLobby->getPlayer(msg.player).ps = PlayerState::Free;
     } else if(state == CS_LOADING || state == CS_LOADED || state == CS_GAME)
     {
         // Im Spiel anzeigen, dass der Spieler das Spiel verlassen hat
         GamePlayer& player = GetPlayer(msg.player);
-        if(player.ps != PS_AI)
+        if(player.ps != PlayerState::AI)
         {
-            player.ps = PS_AI;
-            player.aiInfo = AI::Info(AI::DUMMY);
+            player.ps = PlayerState::AI;
+            player.aiInfo = AI::Info(AI::Type::Dummy);
             // Host has to handle it
             if(IsHost())
             {
@@ -1422,7 +1422,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
     // First find a human player
     for(unsigned char i = 0; i < gameLobby->getNumPlayers(); ++i)
     {
-        if(gameLobby->getPlayer(i).ps == PS_OCCUPIED)
+        if(gameLobby->getPlayer(i).ps == PlayerState::Occupied)
         {
             mainPlayer.playerId = i;
             playerFound = true;
@@ -1434,7 +1434,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
         // If no human found, take the first AI
         for(unsigned char i = 0; i < gameLobby->getNumPlayers(); ++i)
         {
-            if(gameLobby->getPlayer(i).ps == PS_AI)
+            if(gameLobby->getPlayer(i).ps == PlayerState::AI)
             {
                 mainPlayer.playerId = i;
                 break;
@@ -1501,9 +1501,6 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
     // every frame of an 8-part animation anymore.
     // An animation runs fully in (factor_numerator / factor_denumerator) multiples of 630ms
     const unsigned unit = 630 /*ms*/ * factor_numerator / factor_denumerator;
-    // Good approximation of current time in ms
-    // (Accuracy of a possibly expensive VideoDriverWrapper::GetTicks() isn't needed here):
-    using namespace std::chrono;
     const unsigned currenttime = std::chrono::duration_cast<FramesInfo::milliseconds32_t>(
                                    (framesinfo.lastTime + framesinfo.frameTime).time_since_epoch())
                                    .count();
@@ -1775,7 +1772,7 @@ void GameClient::ToggleHumanAIPlayer()
     if(it != game->aiPlayers_.end())
         game->aiPlayers_.erase(it);
     else
-        game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), AI::Info(AI::DEFAULT, AI::EASY)));
+        game->AddAIPlayer(CreateAIPlayer(GetPlayerId(), AI::Info(AI::Type::Default, AI::Level::Easy)));
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)
@@ -1783,6 +1780,6 @@ void GameClient::RequestSwapToPlayer(const unsigned char newId)
     if(state != CS_GAME)
         return;
     GamePlayer& player = GetPlayer(newId);
-    if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
+    if(player.ps == PlayerState::AI && player.aiInfo.type == AI::Type::Dummy)
         mainPlayer.sendMsgAsync(new GameMessage_Player_Swap(0xFF, newId));
 }

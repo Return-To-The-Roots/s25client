@@ -17,6 +17,7 @@
 
 #include "BuildingConsts.h"
 #include "mygettext/mygettext.h"
+#include <type_traits>
 
 const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES = {
   gettext_noop("Headquarters"),
@@ -304,9 +305,9 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS = {{
                "merchandise or job symbol."),
 }};
 
-const std::array<helpers::EnumArray<SmokeConst, BuildingType>, NUM_NATIONS> BUILDING_SMOKE_CONSTS = []() {
-    std::array<helpers::EnumArray<SmokeConst, BuildingType>, NUM_NATIONS> result{};
-    auto& africans = result[NAT_AFRICANS];
+const helpers::MultiEnumArray<SmokeConst, Nation, BuildingType> BUILDING_SMOKE_CONSTS = []() {
+    std::remove_const_t<decltype(BUILDING_SMOKE_CONSTS)> result{};
+    auto& africans = result[Nation::Africans];
     africans[BuildingType::Quarry] = SmokeConst(1, {3, -32});
     africans[BuildingType::Armory] = SmokeConst(1, {-32, -23});
     africans[BuildingType::Metalworks] = SmokeConst(4, {-26, -47});
@@ -314,19 +315,19 @@ const std::array<helpers::EnumArray<SmokeConst, BuildingType>, NUM_NATIONS> BUIL
     africans[BuildingType::Charburner] = SmokeConst(2, {-18, -52});
     africans[BuildingType::Bakery] = SmokeConst(4, {27, -39});
     africans[BuildingType::Mint] = SmokeConst(1, {17, -52});
-    auto& japanese = result[NAT_JAPANESE];
+    auto& japanese = result[Nation::Japanese];
     japanese[BuildingType::Armory] = SmokeConst(1, {-22, -43});
     japanese[BuildingType::Charburner] = SmokeConst(2, {-32, -55});
     japanese[BuildingType::Bakery] = SmokeConst(4, {-30, -39});
     japanese[BuildingType::Mint] = SmokeConst(3, {18, -58});
-    auto& romans = result[NAT_ROMANS];
+    auto& romans = result[Nation::Romans];
     romans[BuildingType::Brewery] = SmokeConst(1, {-26, -45});
     romans[BuildingType::Armory] = SmokeConst(2, {-36, -34});
     romans[BuildingType::Ironsmelter] = SmokeConst(1, {-16, -34});
     romans[BuildingType::Charburner] = SmokeConst(2, {-36, -38});
     romans[BuildingType::Bakery] = SmokeConst(4, {-15, -26});
     romans[BuildingType::Mint] = SmokeConst(4, {20, -50});
-    auto& vikings = result[NAT_VIKINGS];
+    auto& vikings = result[Nation::Vikings];
     vikings[BuildingType::Woodcutter] = SmokeConst(1, {2, -36});
     vikings[BuildingType::Fishery] = SmokeConst(1, {4, -36});
     vikings[BuildingType::Quarry] = SmokeConst(1, {0, -34});
@@ -344,7 +345,7 @@ const std::array<helpers::EnumArray<SmokeConst, BuildingType>, NUM_NATIONS> BUIL
     vikings[BuildingType::Mint] = SmokeConst(1, {16, -38});
     vikings[BuildingType::Farm] = SmokeConst(1, {-17, -48});
     vikings[BuildingType::DonkeyBreeder] = SmokeConst(4, {-27, -40});
-    auto& babylonians = result[NAT_BABYLONIANS];
+    auto& babylonians = result[Nation::Babylonians];
     babylonians[BuildingType::Brewery] = SmokeConst(2, {-18, -43});
     babylonians[BuildingType::Armory] = SmokeConst(1, {-22, -47});
     babylonians[BuildingType::Ironsmelter] = SmokeConst(2, {-23, -36});

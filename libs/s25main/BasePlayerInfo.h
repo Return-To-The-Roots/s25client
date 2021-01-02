@@ -43,9 +43,9 @@ struct BasePlayerInfo
     void Serialize(Serializer& ser, bool lightData) const;
 
     /// Slot used by a human player (has socket etc)
-    bool isHuman() const { return (ps == PS_OCCUPIED); }
+    bool isHuman() const { return (ps == PlayerState::Occupied); }
     /// Slot filled (Used by human or AI, but excludes currently connecting humans)
-    bool isUsed() const { return (ps == PS_AI || ps == PS_OCCUPIED); }
+    bool isUsed() const { return (ps == PlayerState::AI || ps == PlayerState::Occupied); }
 
     /// Returns index of color in PLAYER_COLORS array or -1 if not found
     int GetColorIdx() const;

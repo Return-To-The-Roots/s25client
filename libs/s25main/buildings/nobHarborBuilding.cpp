@@ -217,19 +217,19 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
 }
 
 // Relative Position des Bauarbeiters
-const std::array<Position, NUM_NATIONS> BUILDER_POS = {
+constexpr helpers::EnumArray<Position, Nation> BUILDER_POS = {
   {Position(-20, 18), Position(-28, 17), Position(-20, 15), Position(-38, 17), Position(-38, 17)}};
 /// Relative Position der Brettertürme
-const std::array<Position, NUM_NATIONS> BOARDS_POS = {
+constexpr helpers::EnumArray<Position, Nation> BOARDS_POS = {
   {Position(-75, -5), Position(-60, -5), Position(-55, -5), Position(-65, -5), Position(-65, -5)}};
 /// Relative Position der Steintürme
-const std::array<Position, NUM_NATIONS> STONES_POS = {
+constexpr helpers::EnumArray<Position, Nation> STONES_POS = {
   {Position(-65, 10), Position(-52, 10), Position(-42, 10), Position(-52, 10), Position(-52, 10)}};
 /// Relative Postion der inneren Hafenfeuer
-const std::array<Position, NUM_NATIONS> FIRE_POS = {
+constexpr helpers::EnumArray<Position, Nation> FIRE_POS = {
   {Position(36, -51), Position(0, 0), Position(0, 0), Position(5, -80), Position(0, 0)}};
 /// Relative Postion der äußeren Hafenfeuer
-const std::array<Position, NUM_NATIONS> EXTRAFIRE_POS = {
+constexpr helpers::EnumArray<Position, Nation> EXTRAFIRE_POS = {
   {Position(0, 0), Position(0, 0), Position(8, -115), Position(0, 0), Position(0, 0)}};
 
 void nobHarborBuilding::Draw(DrawPoint drawPt)
@@ -238,17 +238,17 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
     DrawBaseBuilding(drawPt);
 
     // Hafenfeuer zeichnen // TODO auch für nicht-römer machen
-    if(nation == NAT_ROMANS || nation == NAT_JAPANESE || nation == NAT_BABYLONIANS)
+    if(nation == Nation::Romans || nation == Nation::Japanese || nation == Nation::Babylonians)
     {
         LOADER.GetNationImage(nation, 500 + 5 * GAMECLIENT.GetGlobalAnimation(8, 2, 1, GetObjId() + GetX() + GetY()))
           ->DrawFull(drawPt + FIRE_POS[nation]);
-    } else if(nation == NAT_AFRICANS || nation == NAT_VIKINGS)
+    } else if(nation == Nation::Africans || nation == Nation::Vikings)
     {
         LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
           ->DrawFull(drawPt + FIRE_POS[nation]);
     }
 
-    if(nation == NAT_ROMANS)
+    if(nation == Nation::Romans)
     {
         // Zusätzliches Feuer
         LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))

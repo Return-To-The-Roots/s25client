@@ -178,8 +178,8 @@ bool GameServer::Start(const CreateServerInfo& csi, const boost::filesystem::pat
             {
                 playerInfos[i] = JoinPlayerInfo(save.GetPlayer(i));
                 // If it was a human we make it free, so someone can join
-                if(playerInfos[i].ps == PS_OCCUPIED)
-                    playerInfos[i].ps = PS_FREE;
+                if(playerInfos[i].ps == PlayerState::Occupied)
+                    playerInfos[i].ps = PlayerState::Free;
             }
 
             ggs_ = save.ggs;
@@ -234,7 +234,7 @@ unsigned GameServer::GetNumFilledSlots() const
     unsigned numFilled = 0;
     for(const JoinPlayerInfo& player : playerInfos)
     {
-        if(player.ps != PS_FREE)
+        if(player.ps != PlayerState::Free)
             ++numFilled;
     }
     return numFilled;
@@ -453,7 +453,7 @@ bool GameServer::StartGame()
     unsigned highest_ping = 0;
     for(const JoinPlayerInfo& player : playerInfos)
     {
-        if(player.ps == PS_OCCUPIED)
+        if(player.ps == PlayerState::Occupied)
         {
             if(player.ping > highest_ping)
                 highest_ping = player.ping;
@@ -527,15 +527,15 @@ void GameServer::KickPlayer(uint8_t playerId, KickReason cause, uint32_t param)
     // Non-existing or connecting player
     if(!playerInfo.isUsed())
         return;
-    playerInfo.ps = PS_FREE;
+    playerInfo.ps = PlayerState::Free;
 
     SendToAll(GameMessage_Player_Kicked(playerId, cause, param));
 
     // If we are ingame, replace by KI
     if(state == SS_GAME || state == SS_LOADING)
     {
-        playerInfo.ps = PS_AI;
-        playerInfo.aiInfo = AI::Info(AI::DUMMY);
+        playerInfo.ps = PlayerState::AI;
+        playerInfo.aiInfo = AI::Info(AI::Type::Dummy);
     } else
         CancelCountdown();
 
@@ -736,7 +736,7 @@ void GameServer::WaitForClients()
         // Geeigneten Platz suchen
         for(unsigned playerId = 0; playerId < playerInfos.size(); ++playerId)
         {
-            if(playerInfos[playerId].ps == PS_FREE && !GetNetworkPlayer(playerId))
+            if(playerInfos[playerId].ps == PlayerState::Free && !GetNetworkPlayer(playerId))
             {
                 networkPlayers.push_back(GameServerPlayer(playerId, socket));
                 newPlayerId = playerId;
@@ -881,7 +881,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
         return true;
     }
     // Can't do this. Have to have a joined player
-    if(msg.ps == PS_OCCUPIED)
+    if(msg.ps == PlayerState::Occupied)
         return true;
 
     int playerID = GetTargetPlayer(msg);
@@ -899,10 +899,10 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
         if(mapinfo.type == MapType::Savegame)
         {
             // For savegames we cannot set anyone on a locked slot as the player does not exist on the map
-            if(player.ps != PS_LOCKED)
+            if(player.ps != PlayerState::Locked)
             {
                 // And we don't lock!
-                player.ps = msg.ps == PS_LOCKED ? PS_FREE : msg.ps;
+                player.ps = msg.ps == PlayerState::Locked ? PlayerState::Free : msg.ps;
                 player.aiInfo = msg.aiInfo;
             }
         } else
@@ -910,15 +910,15 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
             player.ps = msg.ps;
             player.aiInfo = msg.aiInfo;
         }
-        if(player.ps == PS_FREE && config.servertype == ServerType::LOCAL)
+        if(player.ps == PlayerState::Free && config.servertype == ServerType::LOCAL)
         {
-            player.ps = PS_AI;
-            player.aiInfo = AI::Info(AI::DEFAULT);
+            player.ps = PlayerState::AI;
+            player.aiInfo = AI::Info(AI::Type::Default);
         }
     }
     // Even when nothing changed we send the data because the other players might have expected a change
 
-    if(player.ps == PS_AI)
+    if(player.ps == PlayerState::AI)
     {
         player.SetAIName(playerID);
         SendToAll(GameMessage_Player_Name(playerID, player.name));
@@ -929,7 +929,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
     SendToAll(GameMessage_Player_State(playerID, player.ps, player.aiInfo));
 
     if(oldPs != player.ps)
-        player.isReady = (player.ps == PS_AI);
+        player.isReady = (player.ps == PlayerState::AI);
     SendToAll(GameMessage_Player_Ready(playerID, player.isReady));
     PlayerDataChanged(playerID);
     AnnounceStatusChange();
@@ -1136,7 +1136,7 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
               % playerInfo.name;
 
             // belegt markieren
-            playerInfo.ps = PS_OCCUPIED;
+            playerInfo.ps = PlayerState::Occupied;
             player->setActive();
 
             // Servername senden
@@ -1354,7 +1354,7 @@ bool GameServer::ArePlayersReady() const
     for(const JoinPlayerInfo& player : playerInfos)
     {
         // noch nicht alle spieler da -> feierabend!
-        if(player.ps == PS_FREE || (player.isHuman() && !player.isReady))
+        if(player.ps == PlayerState::Free || (player.isHuman() && !player.isReady))
             return false;
     }
 
@@ -1377,7 +1377,7 @@ void GameServer::PlayerDataChanged(unsigned playerIdx)
 {
     CancelCountdown();
     JoinPlayerInfo& player = GetJoinPlayer(playerIdx);
-    if(player.ps != PS_AI && player.isReady)
+    if(player.ps != PlayerState::AI && player.isReady)
     {
         player.isReady = false;
         SendToAll(GameMessage_Player_Ready(playerIdx, false));
@@ -1589,7 +1589,7 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
     } else if(state == SS_GAME)
     {
         // Ingame we can only switch to a KI
-        if(playerInfos[player1].ps != PS_OCCUPIED || playerInfos[player2].ps != PS_AI)
+        if(playerInfos[player1].ps != PlayerState::Occupied || playerInfos[player2].ps != PlayerState::AI)
             return;
 
         LOG.write("GameServer::ChangePlayer %i - %i \n") % unsigned(player1) % unsigned(player2);

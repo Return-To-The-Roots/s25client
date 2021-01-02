@@ -165,11 +165,12 @@ void nobUsual::Draw(DrawPoint drawPt)
     {
         // Für alle Völker jeweils
         // X-Position der Esel
-        const helpers::MultiArray<DrawPoint, NUM_NATIONS, 3> DONKEY_OFFSETS = {{{{13, -9}, {26, -9}, {39, -9}},
-                                                                                {{3, -17}, {16, -17}, {30, -17}},
-                                                                                {{2, -21}, {15, -21}, {29, -21}},
-                                                                                {{7, -17}, {18, -17}, {30, -17}},
-                                                                                {{3, -22}, {16, -22}, {30, -22}}}};
+        constexpr helpers::EnumArray<std::array<DrawPoint, 3>, Nation> DONKEY_OFFSETS = {
+          {{{{13, -9}, {26, -9}, {39, -9}}},
+           {{{3, -17}, {16, -17}, {30, -17}}},
+           {{{2, -21}, {15, -21}, {29, -21}}},
+           {{{7, -17}, {18, -17}, {30, -17}}},
+           {{{3, -22}, {16, -22}, {30, -22}}}}};
         // Animations-IDS des Esels
         const std::array<unsigned char, 25> DONKEY_ANIMATION = {
           {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0}};
@@ -180,23 +181,13 @@ void nobUsual::Draw(DrawPoint drawPt)
         // 30-60 - 1 Esel
         // 60-90 - 2 Esel
         // 90-100 - 3 Esel
-        if(productivity >= 30)
-            LOADER
-              .GetMapImageN(
-                2180
-                + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() * (player + 2))])
-              ->DrawFull(drawPt + DONKEY_OFFSETS[nation][0]);
-        if(productivity >= 60)
-            LOADER
-              .GetMapImageN(2180
-                            + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetY())])
-              ->DrawFull(drawPt + DONKEY_OFFSETS[nation][1]);
-        if(productivity >= 90)
-            LOADER
-              .GetMapImageN(2180
-                            + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2,
-                                                                             GetX() + GetY() * (nation + 1))])
-              ->DrawFull(drawPt + DONKEY_OFFSETS[nation][2]);
+        RTTR_Assert(productivity <= 100u);
+        for(unsigned i = 0; i < productivity / 30u; i++)
+        {
+            unsigned animationFrame = DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(
+              DONKEY_ANIMATION.size(), 5, 2, GetX() * (player + 2) + GetY() * i)];
+            LOADER.GetMapImageN(2180 + animationFrame)->DrawFull(drawPt + DONKEY_OFFSETS[nation][i]);
+        }
     }
     // Bei Katapulthaus Katapult oben auf dem Dach zeichnen, falls er nicht "arbeitet"
     else if(bldType_ == BuildingType::Catapult && !is_working)
@@ -208,13 +199,13 @@ void nobUsual::Draw(DrawPoint drawPt)
     else if(bldType_ == BuildingType::PigFarm && this->HasWorker())
     {
         // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
-        const helpers::MultiArray<DrawPoint, NUM_NATIONS, 5> PIG_POSITIONS = {{
+        constexpr helpers::EnumArray<std::array<DrawPoint, 5>, Nation> PIG_POSITIONS = {{
           //  gr. S. 1.klS 2. klS usw
-          {{3, -8}, {17, 3}, {-12, 4}, {-2, 10}, {-22, 11}},    // Afrikaner
-          {{-16, 0}, {-37, 0}, {-32, 8}, {-16, 10}, {-22, 18}}, // Japaner
-          {{-15, 0}, {-4, 9}, {-22, 10}, {2, 19}, {-15, 20}},   // Römer
-          {{5, -5}, {25, -12}, {-7, 7}, {-23, 11}, {-10, 14}},  // Wikinger
-          {{-16, 5}, {-37, 5}, {-32, -1}, {-16, 15}, {-27, 18}} // Babylonier
+          {{{3, -8}, {17, 3}, {-12, 4}, {-2, 10}, {-22, 11}}},    // Afrikaner
+          {{{-16, 0}, {-37, 0}, {-32, 8}, {-16, 10}, {-22, 18}}}, // Japaner
+          {{{-15, 0}, {-4, 9}, {-22, 10}, {2, 19}, {-15, 20}}},   // Römer
+          {{{5, -5}, {25, -12}, {-7, 7}, {-23, 11}, {-10, 14}}},  // Wikinger
+          {{{-16, 5}, {-37, 5}, {-32, -1}, {-16, 15}, {-27, 18}}} // Babylonier
         }};
 
         /// Großes Schwein zeichnen
@@ -241,7 +232,7 @@ void nobUsual::Draw(DrawPoint drawPt)
         dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds(); //-V522
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
-    else if(BuildingProperties::IsMine(bldType_) && worker && nation == NAT_AFRICANS)
+    else if(BuildingProperties::IsMine(bldType_) && worker && nation == Nation::Africans)
     {
         DrawPoint offset;
         switch(bldType_)

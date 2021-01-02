@@ -40,7 +40,7 @@ JoinPlayerInfo& GameLobbyController::GetJoinPlayer(unsigned playerIdx)
 
 void GameLobbyController::CloseSlot(unsigned playerIdx)
 {
-    SetPlayerState(playerIdx, PS_LOCKED, AI::Info());
+    SetPlayerState(playerIdx, PlayerState::Locked, AI::Info());
 }
 
 void GameLobbyController::SetPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo)
@@ -59,28 +59,28 @@ void GameLobbyController::TogglePlayerState(unsigned playerIdx)
     switch(newPs)
     {
         default: break;
-        case PS_OCCUPIED: newPs = PS_FREE; break;
-        case PS_FREE:
-            newPs = PS_AI;
-            aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
+        case PlayerState::Occupied: newPs = PlayerState::Free; break;
+        case PlayerState::Free:
+            newPs = PlayerState::AI;
+            aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
             break;
-        case PS_AI:
+        case PlayerState::AI:
             // Verschiedene KIs durchgehen
             switch(aiInfo.type)
             {
-                case AI::DEFAULT:
+                case AI::Type::Default:
                 default:
                     switch(aiInfo.level)
                     {
-                        case AI::EASY: aiInfo.level = AI::MEDIUM; break;
-                        case AI::MEDIUM: aiInfo.level = AI::HARD; break;
-                        case AI::HARD: aiInfo = AI::Info(AI::DUMMY); break;
+                        case AI::Level::Easy: aiInfo.level = AI::Level::Medium; break;
+                        case AI::Level::Medium: aiInfo.level = AI::Level::Hard; break;
+                        case AI::Level::Hard: aiInfo = AI::Info(AI::Type::Dummy); break;
                     }
                     break;
-                case AI::DUMMY: newPs = PS_LOCKED;
+                case AI::Type::Dummy: newPs = PlayerState::Locked;
             }
             break;
-        case PS_LOCKED: newPs = PS_FREE; break;
+        case PlayerState::Locked: newPs = PlayerState::Free; break;
     }
     SetPlayerState(playerIdx, newPs, aiInfo);
 }

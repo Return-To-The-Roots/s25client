@@ -148,7 +148,7 @@ PointRoad GameWorldViewer::GetVisibleRoad(const MapPoint pt, RoadDir roadDir, co
 {
     if(visibility == Visibility::Visible)
         return GetVisibleRoad(pt, roadDir);
-    else if(visibility == Visibility::FoW)
+    else if(visibility == Visibility::FogOfWar)
         return GetYoungestFOWNode(pt).roads[roadDir];
     else
         return PointRoad::None;
@@ -310,7 +310,7 @@ const FoWNode& GameWorldViewer::GetYoungestFOWNode(const MapPoint pos) const
                 continue;
             // Has the player FOW at this point at all?
             const FoWNode* curNode = &node.fow[i];
-            if(curNode->visibility == Visibility::FoW)
+            if(curNode->visibility == Visibility::FogOfWar)
             {
                 // Younger than the youngest or no object at all?
                 if(curNode->last_update_time > youngest_time)

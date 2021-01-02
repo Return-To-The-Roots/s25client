@@ -97,9 +97,9 @@ unsigned short JobSpriteData::getBobId(Nation nation) const
     if(jobBobId >= 0)
         return static_cast<unsigned short>(jobBobId);
     auto id = static_cast<unsigned short>(-jobBobId);
-    if(nation < NUM_NATIVE_NATIONS)
+    if(rttr::enum_cast(nation) < NUM_NATIVE_NATIONS)
         id += NATION_RTTR_TO_S2[nation] * numNationSpecificJobs;
     else
-        id += newNationSpecificOffset + (nation - NUM_NATIVE_NATIONS) * numNationSpecificJobs;
+        id += newNationSpecificOffset + (rttr::enum_cast(nation) - NUM_NATIVE_NATIONS) * numNationSpecificJobs;
     return id;
 }

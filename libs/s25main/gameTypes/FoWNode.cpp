@@ -30,7 +30,7 @@ void FoWNode::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushEnum<uint8_t>(visibility);
     // Only in FoW can be FoW objects
-    if(visibility == Visibility::FoW)
+    if(visibility == Visibility::FogOfWar)
     {
         sgd.PushUnsignedInt(last_update_time);
         sgd.PushFOWObject(object);
@@ -46,7 +46,7 @@ void FoWNode::Deserialize(SerializedGameData& sgd)
 {
     visibility = sgd.Pop<Visibility>();
     // Only in FoW can be FoW objects
-    if(visibility == Visibility::FoW)
+    if(visibility == Visibility::FogOfWar)
     {
         last_update_time = sgd.PopUnsignedInt();
         object = sgd.PopFOWObject();

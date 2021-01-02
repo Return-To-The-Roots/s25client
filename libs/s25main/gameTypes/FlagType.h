@@ -17,42 +17,25 @@
 
 #pragma once
 
-#include "FlagType.h"
 #include <cstdint>
 
-/// Visibility of a node
-enum class Visibility : uint8_t
+enum class FlagType : uint8_t
 {
-    Invisible,
-    FogOfWar,
-    Visible
-};
-constexpr auto maxEnumValue(Visibility)
-{
-    return Visibility::Visible;
-}
-
-/// Direction from a point where a road can go. Opposites are stored in neighbors
-enum class RoadDir
-{
-    East,
-    SouthEast,
-    SouthWest
-};
-constexpr auto maxEnumValue(RoadDir)
-{
-    return RoadDir::SouthWest;
-}
-
-/// Type of the road "owned" by a point
-enum class PointRoad : unsigned char
-{
-    None,
     Normal,
-    Donkey,
-    Boat
+    Large,
+    Water
 };
-constexpr auto maxEnumValue(PointRoad)
+constexpr auto maxEnumValue(FlagType)
 {
-    return PointRoad::Boat;
+    return FlagType::Water;
+}
+
+enum class GraniteType : uint8_t
+{
+    One,
+    Two
+};
+constexpr auto maxEnumValue(GraniteType)
+{
+    return GraniteType::Two;
 }

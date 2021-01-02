@@ -42,8 +42,8 @@ nofMiller::nofMiller(SerializedGameData& sgd, const unsigned obj_id)
 
 void nofMiller::DrawWorking(DrawPoint drawPt)
 {
-    const std::array<DrawPoint, NUM_NATIONS> offsets = {{{20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8}}};
-    const std::array<DrawPoint, NUM_NATIONS> offsets_sitdown = {{{23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8}}};
+    constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8}}};
+    constexpr helpers::EnumArray<DrawPoint, Nation> offsets_sitdown = {{{23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8}}};
     const std::array<DrawPoint, 8> walkoffsets = {
       {{8, 8}, {10, 9}, {12, 10}, {14, 11}, {16, 10}, {18, 9}, {20, 8}, {22, 8}}};
 

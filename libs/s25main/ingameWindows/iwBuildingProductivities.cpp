@@ -67,12 +67,8 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
             imgPos = imgPos + bldProdContentOffset;
             if(player.IsBuildingEnabled(bts[y * 2 + x]))
             {
-                glArchivItem_Bitmap* img;
-                if(bts[y * 2 + x] != BuildingType::Charburner)
-                    img = LOADER.GetNationIcon(playerNation, bts[y * 2 + x]);
-                else
-                    img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
-                AddImage(imgId, imgPos, img, _(BUILDING_NAMES[bts[y * 2 + x]]));
+                AddImage(imgId, imgPos, LOADER.GetNationIcon(playerNation, bts[y * 2 + x]),
+                         _(BUILDING_NAMES[bts[y * 2 + x]]));
                 DrawPoint percentPos(image_percent_x + x * (percent_image_x + percentSize.x + image_percent_x),
                                      distance_y * y);
                 AddPercent(imgId + 1, percentPos + bldProdContentOffset, percentSize, TC_GREY, COLOR_YELLOW, SmallFont,

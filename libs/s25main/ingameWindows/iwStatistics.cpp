@@ -61,27 +61,27 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
 
         switch(curPlayer.nation)
         {
-            case NAT_AFRICANS:
+            case Nation::Africans:
                 AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
                                LOADER.GetImageN("io", 257), curPlayer.name)
                   ->SetBorder(false);
                 break;
-            case NAT_JAPANESE:
+            case Nation::Japanese:
                 AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
                                LOADER.GetImageN("io", 253), curPlayer.name)
                   ->SetBorder(false);
                 break;
-            case NAT_ROMANS:
+            case Nation::Romans:
                 AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
                                LOADER.GetImageN("io", 252), curPlayer.name)
                   ->SetBorder(false);
                 break;
-            case NAT_VIKINGS:
+            case Nation::Vikings:
                 AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
                                LOADER.GetImageN("io", 256), curPlayer.name)
                   ->SetBorder(false);
                 break;
-            case NAT_BABYLONIANS:
+            case Nation::Babylonians:
                 AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1,
                                LOADER.GetImageN("io_new", 7), curPlayer.name)
                   ->SetBorder(false);

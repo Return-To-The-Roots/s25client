@@ -31,7 +31,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
     MapPoint whPos(flagPos.x + 5, flagPos.y);
     auto* wh = static_cast<nobBaseWarehouse*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, NAT_ROMANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Romans));
     Inventory inv;
     inv.Add(Job::Helper, 1);
     wh->AddGoods(inv, true);
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
     MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
     MapPoint whFlagPos(flagPos.x + 5, flagPos.y);
     MapPoint whPos = world.GetNeighbour(whFlagPos, Direction::NORTHWEST);
-    BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, whPos, curPlayer, NAT_ROMANS);
+    BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, whPos, curPlayer, Nation::Romans);
     // Build a road
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(5, Direction::WEST));
     // Request people and wares

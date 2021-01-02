@@ -124,7 +124,7 @@ struct WorldFixture
     static PlayerInfo GetPlayer()
     {
         PlayerInfo result;
-        result.ps = PS_OCCUPIED;
+        result.ps = PlayerState::Occupied;
         return result;
     }
 };

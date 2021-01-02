@@ -1167,7 +1167,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
                 // wenn es mal sichtbar war, nun im Nebel des Krieges
                 if(visibility_before == Visibility::Visible)
                 {
-                    SetVisibility(pt, player, Visibility::FoW, GetEvMgr().GetCurrentGF());
+                    SetVisibility(pt, player, Visibility::FogOfWar, GetEvMgr().GetCurrentGF());
                 }
                 break;
             default: throw std::logic_error("Invalid exploration value");
@@ -1224,7 +1224,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         // Territorium entdeckt worden sein
         unsigned char current_owner = GetNode(tt).owner;
         if(current_owner
-           && (old_vis == Visibility::Invisible || (old_vis == Visibility::FoW && old_owner != current_owner)))
+           && (old_vis == Visibility::Invisible || (old_vis == Visibility::FogOfWar && old_owner != current_owner)))
         {
             if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {
@@ -1248,7 +1248,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
         // Territorium entdeckt worden sein
         unsigned char current_owner = GetNode(tt).owner;
         if(current_owner
-           && (old_vis == Visibility::Invisible || (old_vis == Visibility::FoW && old_owner != current_owner)))
+           && (old_vis == Visibility::Invisible || (old_vis == Visibility::FogOfWar && old_owner != current_owner)))
         {
             if(GetPlayer(player).IsAttackable(current_owner - 1) && enemy_territory)
             {

@@ -303,13 +303,13 @@ BOOST_AUTO_TEST_CASE(AccessPlayerProperties)
     BOOST_CHECK(isLuaEqual("player:IsAI()", "true"));
     BOOST_CHECK(isLuaEqual("player:IsClosed()", "false"));
     BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
-    player.aiInfo = AI::Info(AI::DUMMY, AI::MEDIUM);
+    player.aiInfo = AI::Info(AI::Type::Dummy, AI::Level::Medium);
     BOOST_CHECK(isLuaEqual("player:GetAILevel()", "0"));
-    player.aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
+    player.aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
     BOOST_CHECK(isLuaEqual("player:GetAILevel()", "1"));
-    player.aiInfo = AI::Info(AI::DEFAULT, AI::MEDIUM);
+    player.aiInfo = AI::Info(AI::Type::Default, AI::Level::Medium);
     BOOST_CHECK(isLuaEqual("player:GetAILevel()", "2"));
-    player.aiInfo = AI::Info(AI::DEFAULT, AI::HARD);
+    player.aiInfo = AI::Info(AI::Type::Default, AI::Level::Hard);
     BOOST_CHECK(isLuaEqual("player:GetAILevel()", "3"));
 
     executeLua("player = rttr:GetPlayer(2)");

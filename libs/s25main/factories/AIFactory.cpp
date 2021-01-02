@@ -24,8 +24,8 @@ std::unique_ptr<AIPlayer> AIFactory::Create(const AI::Info& aiInfo, unsigned pla
 {
     switch(aiInfo.type)
     {
-        case AI::DUMMY: return std::make_unique<DummyAI>(playerId, world, aiInfo.level); break;
-        case AI::DEFAULT:
+        case AI::Type::Dummy: return std::make_unique<DummyAI>(playerId, world, aiInfo.level); break;
+        case AI::Type::Default:
         default: return std::make_unique<AIJH::AIPlayerJH>(playerId, world, aiInfo.level); break;
     }
 }

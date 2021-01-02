@@ -80,7 +80,7 @@ bool GameWorldBase::IsSinglePlayer() const
     bool foundPlayer = false;
     for(const PlayerInfo& player : players)
     {
-        if(player.ps == PS_OCCUPIED)
+        if(player.ps == PlayerState::Occupied)
         {
             if(foundPlayer)
                 return false;

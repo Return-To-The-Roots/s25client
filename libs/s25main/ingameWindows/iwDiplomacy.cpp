@@ -75,7 +75,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
         // Einzelne Spielernamen
         AddText(100 + i, curTxtPos, player.name, player.color, FontStyle::VCENTER, NormalFont);
 
-        if(player.ps == PS_OCCUPIED)
+        if(player.ps == PlayerState::Occupied)
         {
             // Ping
             DrawPoint pingPos(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS - PING_FIELD_SIZE.x / 2, curTxtPos.y);

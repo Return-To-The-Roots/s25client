@@ -49,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_LT(world.CalcDistance(hqPos, hbPos), HQ_RADIUS);
 
     auto* harbor = dynamic_cast<nobHarborBuilding*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, NAT_ROMANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
     BOOST_REQUIRE(harbor);
     BOOST_REQUIRE_EQUAL(buildings.GetHarbors().size(), 1u); //-V807
     BOOST_REQUIRE_EQUAL(buildings.GetHarbors().front(), harbor);
@@ -80,7 +80,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     const MapPoint shipyardPos(hqPos.x + 3, hqPos.y - 5);
 
     auto* harbor = dynamic_cast<nobHarborBuilding*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, NAT_ROMANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
     BOOST_REQUIRE(harbor);
     std::vector<Direction> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
@@ -93,7 +93,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     }
     BOOST_REQUIRE_EQUAL(world.GetBQ(shipyardPos, curPlayer), BQ_CASTLE);
     auto* shipYard = dynamic_cast<nobShipYard*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Shipyard, shipyardPos, curPlayer, NAT_ROMANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::Shipyard, shipyardPos, curPlayer, Nation::Romans));
     BOOST_REQUIRE(shipYard);
     road = FindRoadPath(hqFlagPos, world.GetNeighbour(shipyardPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
@@ -145,7 +145,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         postBox = world.GetPostMgr().GetPostBox(curPlayer);
 
         auto* harbor = dynamic_cast<nobHarborBuilding*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, NAT_ROMANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
         BOOST_REQUIRE(harbor);
         world.RecalcBQAroundPointBig(hbPos);
         std::vector<Direction> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
@@ -239,7 +239,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
     BOOST_REQUIRE_LE(world.CalcDistance(world.GetHarborPoint(targetHbId), ship->GetPos()), 2u);
     // Now the ship waits and will select the next harbor. We allow another one:
-    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = Visibility::FoW;
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = Visibility::FogOfWar;
     targetHbId = 6u;
     RTTR_EXEC_TILL(350, ship->IsMoving());
     BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), hbId);
@@ -315,7 +315,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
 
     MapPoint newHbPos = world.GetHarborPoint(6);
     auto* newHarbor = dynamic_cast<nobHarborBuilding*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, newHbPos, curPlayer, NAT_ROMANS));
+      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, newHbPos, curPlayer, Nation::Romans));
 
     BOOST_REQUIRE(!ship->IsLost());
     BOOST_REQUIRE(ship->IsMoving());
@@ -493,7 +493,7 @@ public:
     {
         MapPoint hbPos = world.GetHarborPoint(hbPosId);
         auto* harbor = static_cast<nobHarborBuilding*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, NAT_ROMANS));
+          BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
         BOOST_REQUIRE(harbor);
         Inventory inv;
         inv.Add(GoodType::Wood, 10);

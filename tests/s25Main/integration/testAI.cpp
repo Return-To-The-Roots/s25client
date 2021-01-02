@@ -79,7 +79,7 @@ BOOST_FIXTURE_TEST_CASE(PlayerHasBld_IsCorrect, WorldWithGCExecution<1>)
         pos = world.MakeMapPoint(pos + Position(2, 0));
         BOOST_TEST_INFO(bld);
         BOOST_TEST(!playerHasBld(player, bld));
-        BuildingFactory::CreateBuilding(world, bld, pos, player.GetPlayerId(), NAT_ROMANS);
+        BuildingFactory::CreateBuilding(world, bld, pos, player.GetPlayerId(), Nation::Romans);
         BOOST_TEST_INFO(bld);
         BOOST_TEST(playerHasBld(player, bld));
     }
@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     }
     world.InitAfterLoad();
 
-    auto ai = AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world);
+    auto ai = AIFactory::Create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
     const AIJH::AIPlayerJH& aijh = static_cast<AIJH::AIPlayerJH&>(*ai);
 
     const auto assertBqEqualOnWholeMap = [this, &aijh](const unsigned lineNr) {
@@ -251,7 +251,7 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
     world.InitAfterLoad();
 
     const GamePlayer& player = world.GetPlayer(curPlayer);
-    auto ai = AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world);
+    auto ai = AIFactory::Create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
     // Build a woodcutter, sawmill and forester at some point
     for(unsigned gf = 0; gf < 2000;)
     {
@@ -287,7 +287,7 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
     {
         BOOST_REQUIRE_LE(world.GetBQ(pt, curPlayer), BQ_HUT);
     }
-    auto ai = AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world);
+    auto ai = AIFactory::Create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
     const std::list<noBuildingSite*>& bldSites = player.GetBuildingRegister().GetBuildingSites();
     // Can't build sawmill -> Expand anyway
     for(unsigned gf = 0; gf < 2000;)

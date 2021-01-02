@@ -776,7 +776,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             } else if(playerIdx < worldViewer.GetWorld().GetNumPlayers())
             {
                 const GamePlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
-                if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
+                if(player.ps == PlayerState::AI && player.aiInfo.type == AI::Type::Dummy)
                     GAMECLIENT.RequestSwapToPlayer(playerIdx);
             }
         }
@@ -1034,7 +1034,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
             params = iwAction::AWFT_HQ;
         else if(world.GetNO(cSel)->GetType() == NOP_FLAG)
         {
-            if(world.GetSpecObj<noFlag>(cSel)->GetFlagType() == FT_WATER)
+            if(world.GetSpecObj<noFlag>(cSel)->GetFlagType() == FlagType::Water)
                 params = iwAction::AWFT_WATERFLAG;
         }
     }

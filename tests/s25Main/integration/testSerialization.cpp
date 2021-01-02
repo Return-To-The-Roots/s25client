@@ -78,12 +78,12 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
         }
         world.InitAfterLoad();
         world.GetPlayer(0).name = "Human";
-        world.GetPlayer(1).ps = PS_AI; //-V807
-        world.GetPlayer(1).aiInfo = AI::Info(AI::DEFAULT, AI::MEDIUM);
+        world.GetPlayer(1).ps = PlayerState::AI; //-V807
+        world.GetPlayer(1).aiInfo = AI::Info(AI::Type::Default, AI::Level::Medium);
         world.GetPlayer(1).name = "PlAI";
-        world.GetPlayer(2).ps = PS_LOCKED;
-        world.GetPlayer(3).ps = PS_AI; //-V807
-        world.GetPlayer(3).aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
+        world.GetPlayer(2).ps = PlayerState::Locked;
+        world.GetPlayer(3).ps = PlayerState::AI; //-V807
+        world.GetPlayer(3).aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
         world.GetPlayer(3).name = "PlAI2";
 
         ggs.speed = GameSpeed::VeryFast;
@@ -208,8 +208,8 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     auto* hqFlag = hq->GetFlag();
     const MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
-    auto* usualBld =
-      static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BuildingType::Bakery, usualBldPos, 0, NAT_VIKINGS));
+    auto* usualBld = static_cast<nobUsual*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Bakery, usualBldPos, 0, Nation::Vikings));
     world.BuildRoad(0, false, hqFlag->GetPos(), std::vector<Direction>(3, Direction::EAST));
     usualBld->is_working = true;
 
@@ -363,14 +363,14 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     map.luaData.data = std::vector<char>(21, 0x21);
     map.luaData.length = 40;
     std::vector<PlayerInfo> players(4);
-    players[0].ps = PS_OCCUPIED;
+    players[0].ps = PlayerState::Occupied;
     players[0].name = "Human";
-    players[1].ps = PS_AI;
-    players[1].aiInfo = AI::Info(AI::DEFAULT, AI::MEDIUM);
+    players[1].ps = PlayerState::AI;
+    players[1].aiInfo = AI::Info(AI::Type::Default, AI::Level::Medium);
     players[1].name = "PlAI";
-    players[2].ps = PS_LOCKED;
-    players[3].ps = PS_AI;
-    players[3].aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
+    players[2].ps = PlayerState::Locked;
+    players[3].ps = PlayerState::AI;
+    players[3].aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
     players[3].name = "PlAI2";
 
     Replay replay;
@@ -466,14 +466,14 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
         map.savegame->AddPlayer(world.GetPlayer(i));
     // We can change players
     std::vector<BasePlayerInfo> players(4);
-    players[0].ps = PS_AI;
-    players[0].aiInfo = AI::Info(AI::DEFAULT, AI::MEDIUM);
+    players[0].ps = PlayerState::AI;
+    players[0].aiInfo = AI::Info(AI::Type::Default, AI::Level::Medium);
     players[0].name = "PlAI";
-    players[1].ps = PS_OCCUPIED;
+    players[1].ps = PlayerState::Occupied;
     players[1].name = "Human";
-    players[2].ps = PS_LOCKED;
-    players[3].ps = PS_AI;
-    players[3].aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
+    players[2].ps = PlayerState::Locked;
+    players[3].ps = PlayerState::AI;
+    players[3].aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
     players[3].name = "PlAI2";
 
     map.savegame->ggs = ggs;

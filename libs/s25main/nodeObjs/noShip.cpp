@@ -54,16 +54,14 @@ const unsigned EXPLORATION_EXPEDITION_WAITING_TIME = 300;
 
 /// Positionen der Flaggen am Schiff für die 6 unterschiedlichen Richtungen jeweils
 constexpr std::array<helpers::EnumArray<DrawPoint, Direction>, 2> SHIPS_FLAG_POS = {{
-  // break
-
   {{{-3, -77}, {-6, -71}, {-3, -71}, {-1, -71}, {5, -63}, {-1, -70}}}, // Standing (sails down)
-
-  {{{3, -70}, {0, -64}, {3, -64}, {-1, -70}, {5, -63}, {5, -63}}} // Driving
+  {{{3, -70}, {0, -64}, {3, -64}, {-1, -70}, {5, -63}, {5, -63}}}      // Driving
 }};
 
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos), ownerId_(player), state(STATE_IDLE), seaId_(0), goal_harborId(0), goal_dir(0),
-      name(ship_names[gwg->GetPlayer(player).nation][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), NUM_SHIP_NAMESS)]),
+      name(ship_names[gwg->GetPlayer(player).nation]
+                     [RANDOM.Rand(__FILE__, __LINE__, GetObjId(), ship_names[gwg->GetPlayer(player).nation].size())]),
       curRouteIdx(0), lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
@@ -278,7 +276,6 @@ void noShip::HandleEvent(const unsigned id)
                 if(hb && hb->GetGOT() == GOT_NOB_HARBORBUILDING)
                 {
                     Inventory goods;
-                    unsigned char nation = gwg->GetPlayer(ownerId_).nation;
                     goods.goods[GoodType::Boards] = BUILDING_COSTS[BuildingType::HarborBuilding].boards;
                     goods.goods[GoodType::Stones] = BUILDING_COSTS[BuildingType::HarborBuilding].stones;
                     goods.people[Job::Builder] = 1;

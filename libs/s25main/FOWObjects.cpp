@@ -183,6 +183,5 @@ void fowGranite::Serialize(SerializedGameData& sgd) const
 
 void fowGranite::Draw(DrawPoint drawPt) const
 {
-    LOADER.GetMapImageN(516 + type * 6 + state)->DrawFull(drawPt, FOW_DRAW_COLOR);
-    LOADER.GetMapImageN(616 + type * 6 + state)->DrawFull(drawPt, COLOR_SHADOW);
+    LOADER.granite_cache[type][state].DrawFull(drawPt, FOW_DRAW_COLOR);
 }

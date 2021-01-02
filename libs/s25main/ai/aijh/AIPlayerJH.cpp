@@ -156,15 +156,15 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
 
     switch(level)
     {
-        case AI::EASY:
+        case AI::Level::Easy:
             attack_interval = 2500;
             build_interval = 1000;
             break;
-        case AI::MEDIUM:
+        case AI::Level::Medium:
             attack_interval = 750;
             build_interval = 400;
             break;
-        case AI::HARD:
+        case AI::Level::Hard:
             attack_interval = 100;
             build_interval = 200;
             break;
@@ -248,7 +248,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         // CheckExistingMilitaryBuildings();
         TryToAttack();
     }
-    if(((gf + playerId * 17) % 73 == 0) && (level != AI::EASY))
+    if(((gf + playerId * 17) % 73 == 0) && (level != AI::Level::Easy))
     {
         MilUpgradeOptim();
     }
@@ -1762,7 +1762,7 @@ void AIPlayerJH::TryToAttack()
         if(attackersCount == 0)
             continue;
 
-        if((level == AI::HARD) && (target->GetGOT() == GOT_NOB_MILITARY))
+        if((level == AI::Level::Hard) && (target->GetGOT() == GOT_NOB_MILITARY))
         {
             const auto* enemyTarget = static_cast<const nobMilitary*>(target);
             if(attackersStrength <= enemyTarget->GetSoldiersStrength() || enemyTarget->GetNumTroops() == 0)

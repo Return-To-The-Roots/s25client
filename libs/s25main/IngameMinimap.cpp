@@ -47,7 +47,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     {
         DrawnObject drawn_object = DO_INVALID;
 
-        const bool fow = (visibility == Visibility::FoW);
+        const bool fow = (visibility == Visibility::FogOfWar);
 
         unsigned char owner;
         NodalObjectType noType = NOP_NOTHING;

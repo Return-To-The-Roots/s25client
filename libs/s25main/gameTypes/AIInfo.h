@@ -20,24 +20,24 @@
 class Serializer;
 
 namespace AI {
-enum Level
+enum class Level
 {
-    EASY = 0,
-    MEDIUM,
-    HARD
+    Easy,
+    Medium,
+    Hard
 };
 
-enum Type
+enum class Type
 {
-    DUMMY = 0,
-    DEFAULT
+    Dummy,
+    Default
 };
 
 struct Info
 {
     Type type;
     Level level;
-    Info(Type t = DUMMY, Level l = EASY) : type(t), level(l) {}
+    Info(Type t = Type::Dummy, Level l = Level::Easy) : type(t), level(l) {}
     Info(Serializer& ser);
     void serialize(Serializer& ser) const;
 };

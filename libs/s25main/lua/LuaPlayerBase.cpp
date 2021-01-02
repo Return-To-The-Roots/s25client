@@ -18,6 +18,7 @@
 #include "LuaPlayerBase.h"
 #include "BasePlayerInfo.h"
 #include "RTTR_Assert.h"
+#include "s25util/strAlgos.h"
 #include <kaguya/kaguya.hpp>
 
 void LuaPlayerBase::Register(kaguya::State& state)
@@ -34,14 +35,15 @@ void LuaPlayerBase::Register(kaguya::State& state)
                                    .addFunction("GetAILevel", &LuaPlayerBase::GetAILevel));
 
 #pragma region ConstDefs
+#define ADD_LUA_CONST(name) state["NAT_" + s25util::toUpper(#name)] = Nation::name
+    ADD_LUA_CONST(Africans);
+    ADD_LUA_CONST(Japanese);
+    ADD_LUA_CONST(Romans);
+    ADD_LUA_CONST(Vikings);
+    ADD_LUA_CONST(Babylonians);
+#undef ADD_LUA_CONST
+
 #define ADD_LUA_CONST(name) state[#name] = name
-
-    ADD_LUA_CONST(NAT_AFRICANS);
-    ADD_LUA_CONST(NAT_JAPANESE);
-    ADD_LUA_CONST(NAT_ROMANS);
-    ADD_LUA_CONST(NAT_VIKINGS);
-    ADD_LUA_CONST(NAT_BABYLONIANS);
-
     ADD_LUA_CONST(TM_NOTEAM);
     ADD_LUA_CONST(TM_RANDOMTEAM);
     ADD_LUA_CONST(TM_RANDOMTEAM2);
@@ -51,7 +53,6 @@ void LuaPlayerBase::Register(kaguya::State& state)
     ADD_LUA_CONST(TM_TEAM2);
     ADD_LUA_CONST(TM_TEAM3);
     ADD_LUA_CONST(TM_TEAM4);
-
 #undef ADD_LUA_CONST
 #pragma endregion ConstDefs
 }
@@ -82,35 +83,35 @@ unsigned LuaPlayerBase::GetColor() const
 
 bool LuaPlayerBase::IsHuman() const
 {
-    return GetPlayer().ps == PS_OCCUPIED;
+    return GetPlayer().ps == PlayerState::Occupied;
 }
 
 bool LuaPlayerBase::IsAI() const
 {
-    return GetPlayer().ps == PS_AI;
+    return GetPlayer().ps == PlayerState::AI;
 }
 
 bool LuaPlayerBase::IsClosed() const
 {
-    return GetPlayer().ps == PS_LOCKED;
+    return GetPlayer().ps == PlayerState::Locked;
 }
 
 bool LuaPlayerBase::IsFree() const
 {
-    return GetPlayer().ps == PS_FREE;
+    return GetPlayer().ps == PlayerState::Free;
 }
 
 int LuaPlayerBase::GetAILevel() const
 {
-    if(GetPlayer().ps != PS_AI)
+    if(GetPlayer().ps != PlayerState::AI)
         return -1;
-    if(GetPlayer().aiInfo.type == AI::DUMMY)
+    if(GetPlayer().aiInfo.type == AI::Type::Dummy)
         return 0;
     switch(GetPlayer().aiInfo.level)
     {
-        case AI::EASY: return 1;
-        case AI::MEDIUM: return 2;
-        case AI::HARD: return 3;
+        case AI::Level::Easy: return 1;
+        case AI::Level::Medium: return 2;
+        case AI::Level::Hard: return 3;
     }
     RTTR_Assert(false);
     return -1;

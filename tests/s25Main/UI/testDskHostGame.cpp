@@ -49,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
 
     GameLobby gameLobby(false, true, 2);
     JoinPlayerInfo& player = gameLobby.getPlayer(0);
-    player.ps = PS_OCCUPIED;
+    player.ps = PlayerState::Occupied;
     player.name = "TestName";
     player.isHost = true;
 

@@ -36,7 +36,7 @@ BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
     {
         if(!BuildingProperties::IsValid(bldType))
             continue;
-        noBuilding* bld = BuildingFactory::CreateBuilding(world, bldType, bldPos, 0, NAT_ROMANS);
+        noBuilding* bld = BuildingFactory::CreateBuilding(world, bldType, bldPos, 0, Nation::Romans);
         BOOST_REQUIRE(bld);
         if(BuildingProperties::IsMilitary(bldType))
             BOOST_REQUIRE(dynamic_cast<nobMilitary*>(bld));

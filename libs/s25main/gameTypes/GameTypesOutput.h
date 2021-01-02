@@ -17,10 +17,14 @@
 
 #pragma once
 
+#include "AIInfo.h"
 #include "BuildingType.h"
+#include "FlagType.h"
 #include "GameSettingTypes.h"
 #include "JobTypes.h"
 #include "MapType.h"
+#include "Nation.h"
+#include "PlayerState.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
 #include "gameTypes/MapTypes.h"
@@ -60,6 +64,13 @@ RTTR_ENUM_OUTPUT(GameObjective, None, Conquer3_4, TotalDomination, EconomyMode, 
 RTTR_ENUM_OUTPUT(StartWares, VLow, Low, Normal, ALot)
 RTTR_ENUM_OUTPUT(Exploration, Disabled, Classic, FogOfWar, FogOfWarExplored)
 RTTR_ENUM_OUTPUT(MapType, OldMap, Savegame)
+RTTR_ENUM_OUTPUT(PlayerState, Free, Occupied, Locked, AI)
+RTTR_ENUM_OUTPUT(Visibility, Invisible, FogOfWar, Visible)
+RTTR_ENUM_OUTPUT(FlagType, Normal, Large, Water)
+namespace AI {
+RTTR_ENUM_OUTPUT(Type, Dummy, Default)
+RTTR_ENUM_OUTPUT(Level, Easy, Medium, Hard)
+} // namespace AI
 
 #undef RTTR_ENUM_CASE_SINGLE
 #undef RTTR_ENUM_OUTPUT
@@ -73,6 +84,7 @@ RTTR_ENUM_OUTPUT(MapType, OldMap, Savegame)
 
 RTTR_ENUM_OUTPUT(BuildingType)
 RTTR_ENUM_OUTPUT(Job)
+RTTR_ENUM_OUTPUT(Nation)
 
 #undef RTTR_ENUM_OUTPUT
 

@@ -54,9 +54,9 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player)
 
     // auf Wasseranteile prüfen
     if(gwg->HasTerrain(pos, [](const auto& desc) { return desc.kind == TerrainKind::WATER; }))
-        flagtype = FT_WATER;
+        flagtype = FlagType::Water;
     else
-        flagtype = FT_NORMAL;
+        flagtype = FlagType::Normal;
 }
 
 noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
@@ -305,8 +305,8 @@ void noFlag::DestroyAttachedBuilding()
  */
 void noFlag::Upgrade()
 {
-    if(flagtype == FT_NORMAL)
-        flagtype = FT_LARGE;
+    if(flagtype == FlagType::Normal)
+        flagtype = FlagType::Large;
 }
 
 /**

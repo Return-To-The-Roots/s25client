@@ -144,7 +144,7 @@ BOOST_FIXTURE_TEST_CASE(OrderJob, EmptyWorldFixture1P)
     GamePlayer& player = world.GetPlayer(0);
     auto* hq = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
     auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(
-      world, BuildingType::Storehouse, player.GetHQPos() + MapPoint(4, 0), 0, NAT_ROMANS));
+      world, BuildingType::Storehouse, player.GetHQPos() + MapPoint(4, 0), 0, Nation::Romans));
     world.BuildRoad(0, false, hq->GetFlagPos(), {4, Direction::EAST});
 
     // Order all existing builders

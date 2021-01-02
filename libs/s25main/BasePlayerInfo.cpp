@@ -19,14 +19,17 @@
 #include "s25util/Serializer.h"
 #include "s25util/colors.h"
 
-BasePlayerInfo::BasePlayerInfo() : ps(PS_FREE), nation(NAT_ROMANS), color(PLAYER_COLORS[0]), team(TM_NOTEAM) {}
+BasePlayerInfo::BasePlayerInfo()
+    : ps(PlayerState::Free), nation(Nation::Romans), color(PLAYER_COLORS[0]), team(TM_NOTEAM)
+{}
 
 BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
-    : ps(static_cast<PlayerState>(ser.PopUnsignedChar())), aiInfo(!lightData || ps == PS_AI ? ser : AI::Info())
+    : ps(static_cast<PlayerState>(ser.PopUnsignedChar())),
+      aiInfo(!lightData || ps == PlayerState::AI ? ser : AI::Info())
 {
     if(lightData && !isUsed())
     {
-        nation = NAT_ROMANS;
+        nation = Nation::Romans;
         team = TM_NOTEAM;
         color = PLAYER_COLORS[0];
     } else
@@ -43,7 +46,7 @@ void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
     ser.PushUnsignedChar(static_cast<unsigned char>(ps));
     if(lightData && !isUsed())
         return;
-    if(!lightData || ps == PS_AI)
+    if(!lightData || ps == PlayerState::AI)
         aiInfo.serialize(ser);
     ser.PushLongString(name);
     ser.PushUnsignedChar(static_cast<unsigned char>(nation));

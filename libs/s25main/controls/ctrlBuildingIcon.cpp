@@ -35,11 +35,7 @@ void ctrlBuildingIcon::Draw_()
 {
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
         LOADER.GetImageN("io", 0)->DrawPart(GetDrawRect());
-    glArchivItem_Bitmap* image;
-    if(type != BuildingType::Charburner)
-        image = LOADER.GetNationIcon(nation, type);
-    else
-        image = LOADER.GetImageN("charburner", nation * 8 + 8);
+    glArchivItem_Bitmap* image = LOADER.GetNationIcon(nation, type);
     if(image)
         image->DrawFull(GetDrawPos() + GetSize() / 2, (state == BUTTON_PRESSED ? COLOR_YELLOW : COLOR_WHITE));
 }

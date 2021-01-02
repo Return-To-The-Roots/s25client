@@ -92,11 +92,11 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
     {
         // old_id must be a player
         GamePlayer& player1 = GetPlayer(playerId1);
-        if(player1.ps != PS_OCCUPIED)
+        if(player1.ps != PlayerState::Occupied)
             return;
         // new_id must be an AI
         GamePlayer& player2 = GetPlayer(playerId2);
-        if(player2.ps != PS_AI)
+        if(player2.ps != PlayerState::AI)
             return;
 
         std::swap(player1.ps, player2.ps);
@@ -105,10 +105,10 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
         {
             // Switch AIs
             game->aiPlayers_.erase_if([playerId2](const auto& player) { return player.GetPlayerId() == playerId2; });
-            game->AddAIPlayer(CreateAIPlayer(playerId1, AI::Info(AI::DUMMY)));
+            game->AddAIPlayer(CreateAIPlayer(playerId1, AI::Info(AI::Type::Dummy)));
         }
-        GetPlayer(playerId1).ps = PS_AI;
-        GetPlayer(playerId2).ps = PS_OCCUPIED;
+        GetPlayer(playerId1).ps = PlayerState::AI;
+        GetPlayer(playerId2).ps = PlayerState::Occupied;
     }
 
     // Wenn wir betroffen waren, unsere ID neu setzen
