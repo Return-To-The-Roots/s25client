@@ -22,6 +22,7 @@
 #include "ai/aijh/Jobs.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlMultiline.h"
+#include "helpers/EnumArray.h"
 #include "helpers/toString.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
@@ -43,7 +44,7 @@ enum
 
 class iwAIDebug::DebugPrinter : public IDrawNodeCallback
 {
-    std::array<glArchivItem_Bitmap*, 7> bqImgs;
+    helpers::EnumArray<glArchivItem_Bitmap*, BuildingQuality> bqImgs;
     std::array<glArchivItem_Bitmap*, 2> ticks;
     glFont& font;
 
@@ -51,12 +52,14 @@ public:
     DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : font(*NormalFont), ai(ai), overlay(overlay)
     {
         // Cache images
-        bqImgs[0] = nullptr;
-        for(int i = 1; i < 6; i++)
-            bqImgs[i] = LOADER.GetMapImageN(49 + i);
+        for(const auto i : helpers::enumRange<BuildingQuality>())
+        {
+            bqImgs[i] = LOADER.GetMapImageN(49 + rttr::enum_cast(i));
+        }
         ticks[0] = LOADER.GetImageN("io", 40);
         ticks[1] = LOADER.GetImageN("io", 32);
-        bqImgs[6] = ticks[0]; // Invalid marker
+        bqImgs[BuildingQuality::Nothing] = nullptr;
+        bqImgs[BuildingQuality::Harbor] = ticks[0]; // Invalid marker
     }
 
     const AIJH::AIPlayerJH* ai;
@@ -68,7 +71,7 @@ public:
             return;
         if(overlay == 1)
         {
-            glArchivItem_Bitmap* img = bqImgs[std::min<unsigned>(ai->GetAINode(pt).bq, bqImgs.size() - 1)];
+            glArchivItem_Bitmap* img = bqImgs[ai->GetAINode(pt).bq];
             if(img)
                 img->DrawFull(curPos);
         } else if(overlay == 2)
@@ -176,7 +179,7 @@ void iwAIDebug::Msg_PaintBefore()
     } else if(ej)
     {
 #define RTTR_PRINT_EV(ev) \
-    case AIEvent::ev: ss << #ev << std::endl; break
+    case AIEvent::EventType::ev: ss << #ev << std::endl; break
         switch(ej->GetEvent().GetType())
         {
             RTTR_PRINT_EV(BuildingDestroyed);

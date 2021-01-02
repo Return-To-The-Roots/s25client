@@ -23,7 +23,8 @@
 
 #include "ogl/glSmartBitmap.h"
 
-noGranite::noGranite(const GraniteType type, const unsigned char state) : noBase(NOP_GRANITE), type(type), state(state)
+noGranite::noGranite(const GraniteType type, const unsigned char state)
+    : noBase(NodalObjectType::Granite), type(type), state(state)
 {}
 
 void noGranite::Serialize_noGranite(SerializedGameData& sgd) const

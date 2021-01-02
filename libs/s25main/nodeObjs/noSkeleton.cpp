@@ -23,7 +23,7 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 
-noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NOP_ENVIRONMENT, pos), type(0)
+noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NodalObjectType::Environment, pos), type(0)
 {
     current_event = GetEvMgr().AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
 }

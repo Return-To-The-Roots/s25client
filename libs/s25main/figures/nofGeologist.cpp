@@ -310,8 +310,8 @@ bool nofGeologist::IsNodeGood(const MapPoint pt) const
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
     const noBase& obj = *gwg->GetNO(pt);
-    return PathConditionHuman(*gwg).IsNodeOk(pt) && obj.GetGOT() != GOT_SIGN && obj.GetType() != NOP_FLAG
-           && obj.GetType() != NOP_TREE;
+    return PathConditionHuman(*gwg).IsNodeOk(pt) && obj.GetGOT() != GOT_SIGN && obj.GetType() != NodalObjectType::Flag
+           && obj.GetType() != NodalObjectType::Tree;
 }
 
 namespace {
@@ -434,7 +434,7 @@ void nofGeologist::SetSign(Resource resources)
 
     // Bestimmte Objekte können gelöscht werden
     NodalObjectType noType = gwg->GetNO(pos)->GetType();
-    if(noType != NOP_NOTHING && noType != NOP_ENVIRONMENT)
+    if(noType != NodalObjectType::Nothing && noType != NodalObjectType::Environment)
         return;
     gwg->DestroyNO(pos, false);
 

@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "BQOutput.h"
 #include "FileChecksum.h"
 #include "GamePlayer.h"
 #include "PointOutput.h"
@@ -28,6 +27,7 @@
 #include "worldFixtures/WorldFixture.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noBase.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "s25util/tmpFile.h"
 #include <boost/filesystem/path.hpp>
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedFixture)
 {
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_REQUIRE_EQUAL(world.GetNode(pt).altitude, worldCreator.map.GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y));
+        BOOST_REQUIRE_EQUAL(world.GetNode(pt).altitude, worldCreator.map.GetMapDataAt(MapLayer::Altitude, pt.x, pt.y));
     }
 }
 
@@ -126,10 +126,10 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
     world.InitAfterLoad();
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        auto s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
+        auto s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MapLayer::BuildingQuality, pt.x, pt.y) & 0x7);
         BuildingQuality bq = world.GetNode(pt).bq;
-        BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt << " original:"
-                                                      << worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y));
+        BOOST_REQUIRE_MESSAGE(bq == s2BQ, bq << "!=" << s2BQ << " at " << pt << " original:"
+                                             << worldCreator.map.GetMapDataAt(MapLayer::BuildingQuality, pt.x, pt.y));
     }
 }
 

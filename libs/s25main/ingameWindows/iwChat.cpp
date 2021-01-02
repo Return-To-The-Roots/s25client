@@ -34,7 +34,7 @@ iwChat::iwChat(Window* parent)
     // Eingabefeld für Chattext
     AddEdit(0, DrawPoint(20, 30), Extent(260, 22), TC_GREY, NormalFont);
 
-    ctrlOptionGroup* group = AddOptionGroup(1, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* group = AddOptionGroup(1, GroupSelectType::Check);
     // "Alle"
     group->AddTextButton(rttr::enum_cast(ChatDestination::All), DrawPoint(20, 80), Extent(260, 22), TC_GREY, _("All"),
                          NormalFont);

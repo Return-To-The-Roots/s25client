@@ -20,7 +20,7 @@
 // Servertypen
 enum class ServerType
 {
-    LOBBY = 0,
+    LOBBY,
     DIRECT,
     LOCAL,
     LAN

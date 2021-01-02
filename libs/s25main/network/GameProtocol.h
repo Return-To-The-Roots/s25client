@@ -18,6 +18,7 @@
 #pragma once
 
 #include "s25util/Protocol.h"
+#include <cstdint>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Netzwerk Messages                       // client> | <server
@@ -141,30 +142,34 @@ kick                    --> bc(NMS_PLAYER_KICK), NMS_DEAD_MSG
 // Sonstige Konstanten
 
 // Gründe fürs Kicken
-enum KickReason
+enum class KickReason : uint8_t
 {
-    NP_NOCAUSE = 0,    // Ohne Grund --> manuell vom GameServer rausgehauen, weiß der Teufel warum
-    NP_CONNECTIONLOST, // Verbindung verloren/abgebrochen, wie auch immer
-    NP_INVALIDMSG,     // Ungültige Message, (evtl Cheater bzw. Asynchronität)
-    NP_INCOMPLETEMSG,  // zu wenig gesendet
-    NP_PINGTIMEOUT,    // Ping Timeout
-    NP_WRONGPASSWORD,  // falsches Passwort
-    NP_WRONGCHECKSUM,  // falsche Checksumme
-    NP_ASYNC           // asynchron
+    NoCause,        // Ohne Grund --> manuell vom GameServer rausgehauen, weiß der Teufel warum
+    ConnectionLost, // Verbindung verloren/abgebrochen, wie auch immer
+    InvalidMsg,     // Ungültige Message, (evtl Cheater bzw. Asynchronität)
+    IncompleteMsg,  // zu wenig gesendet
+    PingTimeout,    // Ping Timeout
+    WrongPassword,  // falsches Passwort
+    WrongChecksum,  // falsche Checksumme
+    Async           // asynchron
 };
+constexpr auto maxEnumValue(KickReason)
+{
+    return KickReason::Async;
+}
 
 // All times are in seconds
 /// How long till we kick a connecting player
-const unsigned CONNECT_TIMEOUT = 2 * 60; // 2min
+constexpr unsigned CONNECT_TIMEOUT = 2 * 60; // 2min
 /// How long till we kick a lagging player
-const unsigned LAG_TIMEOUT = 5 * 60;
+constexpr unsigned LAG_TIMEOUT = 5 * 60;
 /// How often we send pings
-const unsigned PING_RATE = 1;
+constexpr unsigned PING_RATE = 1;
 /// Maximum time for a ping reply before we kick a player
-const unsigned PING_TIMEOUT = 5 * 60;
+constexpr unsigned PING_TIMEOUT = 5 * 60;
 /// Maximum time the players get for loading the map
-const unsigned LOAD_TIMEOUT = 10 * 60;
+constexpr unsigned LOAD_TIMEOUT = 10 * 60;
 
 /// Größe eines Map-Paketes
 /// ACHTUNG: IPV4 garantiert nur maximal 576!!
-const unsigned MAP_PART_SIZE = 512;
+constexpr unsigned MAP_PART_SIZE = 512;

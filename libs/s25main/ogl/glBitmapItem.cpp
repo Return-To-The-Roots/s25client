@@ -21,13 +21,13 @@
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 
 glBitmapItem::glBitmapItem(libsiedler2::baseArchivItem_Bitmap* b, bool shadow, bool isOwning)
-    : bmp(b), type(shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP), isOwning_(isOwning)
+    : bmp(b), type(shadow ? glBitmapItemType::ShadowBitmap : glBitmapItemType::Normal), isOwning_(isOwning)
 {
     b->getVisibleArea(pos.x, pos.y, size.x, size.y);
     origin = Position(b->getNx(), b->getNy()) - pos;
 }
 glBitmapItem::glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, bool isOwning)
-    : bmp(b), type(TYPE_ARCHIVITEM_BITMAP_PLAYER), isOwning_(isOwning)
+    : bmp(b), type(glBitmapItemType::PlayerBitmap), isOwning_(isOwning)
 {
     b->getVisibleArea(pos.x, pos.y, size.x, size.y);
     origin = Position(b->getNx(), b->getNy()) - pos;

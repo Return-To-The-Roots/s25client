@@ -31,12 +31,12 @@ public:
     /// Was der gerade so schönes macht
     enum State
     {
-        STATE_FIGUREWORK = 0, /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
-        STATE_ENTERBUILDING,  /// Betreten des Gebäudes
-        STATE_WAITING1,       /// Warten, bis man anfängt zu produzieren
-        STATE_WAITING2,       /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
-        STATE_CARRYOUTWARE,   /// Raustragen der Ware
-        STATE_WORK,           /// Arbeiten
+        STATE_FIGUREWORK,    /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
+        STATE_ENTERBUILDING, /// Betreten des Gebäudes
+        STATE_WAITING1,      /// Warten, bis man anfängt zu produzieren
+        STATE_WAITING2,      /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
+        STATE_CARRYOUTWARE,  /// Raustragen der Ware
+        STATE_WORK,          /// Arbeiten
         STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED, /// Warten auf Waren oder weil Produktion eingetellt wurde
         STATE_WALKTOWORKPOINT,                      /// Zum "Arbeitspunkt" laufen (nur Landarbeiter)
         STATE_WALKINGHOME,                          /// vom Arbeitspunkt zurück nach Hause laufen (nur Landarbeiter)

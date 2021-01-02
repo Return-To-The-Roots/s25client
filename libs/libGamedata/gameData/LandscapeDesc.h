@@ -18,7 +18,7 @@
 #pragma once
 
 #include "Rect.h"
-#include <array>
+#include <helpers/EnumArray.h>
 #include <string>
 
 struct WorldDescription;
@@ -30,21 +30,25 @@ struct RoadTextureDesc
     Rect posInTexture;
 };
 
+enum class LandRoadType
+{
+    Normal,
+    Upgraded,
+    Boat,
+    Mountain
+};
+constexpr auto maxEnumValue(LandRoadType)
+{
+    return LandRoadType::Mountain;
+}
+
 struct LandscapeDesc
 {
-    enum RoadType
-    {
-        Normal,
-        Upgraded,
-        Boat,
-        Mountain
-    };
-    static constexpr unsigned NUM_ROADTYPES = Mountain + 1;
     std::string name;
     std::string mapGfxPath;
     uint8_t s2Id;
     bool isWinter;
-    std::array<RoadTextureDesc, NUM_ROADTYPES> roadTexDesc;
+    helpers::EnumArray<RoadTextureDesc, LandRoadType> roadTexDesc;
 
     LandscapeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
 };

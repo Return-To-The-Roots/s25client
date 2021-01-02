@@ -161,19 +161,19 @@ struct NumSoldierTestFixture : public AttackFixtureBase<3, 56, 38>
 
         // Build some military buildings
         milBld0Pos = hqPos[0] + MapPoint(7, 0);
-        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld0Pos, 0), BQ_CASTLE);
+        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld0Pos, 0), BuildingQuality::Castle);
         milBld0 = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld0Pos, 0, Nation::Babylonians));
         BOOST_REQUIRE(milBld0);
 
         milBld1NearPos = hqPos[1] - MapPoint(7, 0);
-        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1NearPos, 1), BQ_CASTLE);
+        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1NearPos, 1), BuildingQuality::Castle);
         milBld1Near = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1Near);
 
         milBld1FarPos = hqPos[1] + MapPoint(3, 1);
-        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1FarPos, 1), BQ_CASTLE);
+        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1FarPos, 1), BuildingQuality::Castle);
         milBld1Far = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1Far);
@@ -208,13 +208,13 @@ struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
     {
         // Build some military buildings far away enough for holding some area outside HQ
         milBld0Pos = world.MakeMapPoint(hqPos[0] + Position(0, 6));
-        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld0Pos, 0), BQ_CASTLE);
+        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld0Pos, 0), BuildingQuality::Castle);
         milBld0 = static_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld0Pos, 0, Nation::Babylonians));
         BOOST_REQUIRE(milBld0);
 
         milBld1Pos = world.MakeMapPoint(hqPos[1] + Position(0, 6));
-        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1Pos, 1), BQ_CASTLE);
+        BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1Pos, 1), BuildingQuality::Castle);
         milBld1 = static_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1Pos, 1, Nation::Romans));
         BOOST_REQUIRE(milBld1);
@@ -310,12 +310,12 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
 
     const nobMilitary& attackSrc = *milBld0;
     const MapPoint usualBldPos = hqPos[1] - MapPoint(2, 3);
-    BOOST_REQUIRE_GE(world.GetBQ(usualBldPos, 1), BQ_HUT);
+    BOOST_REQUIRE_GE(world.GetBQ(usualBldPos, 1), BuildingQuality::Hut);
     const noBuilding* usualBld =
       BuildingFactory::CreateBuilding(world, BuildingType::Woodcutter, usualBldPos, 1, Nation::Romans);
     BOOST_REQUIRE(usualBld);
     const MapPoint storehousePos = hqPos[1] - MapPoint(2, 0);
-    BOOST_REQUIRE_GE(world.GetBQ(storehousePos, 1), BQ_HOUSE);
+    BOOST_REQUIRE_GE(world.GetBQ(storehousePos, 1), BuildingQuality::House);
     const noBuilding* storeHouse =
       BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, storehousePos, 1, Nation::Romans);
     BOOST_REQUIRE(storeHouse);

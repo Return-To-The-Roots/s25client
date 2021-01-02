@@ -32,7 +32,7 @@
 #include "s25util/colors.h"
 
 noAnimal::noAnimal(const Species species, const MapPoint pos)
-    : noMovable(NOP_ANIMAL, pos), species(species), state(STATE_WALKING),
+    : noMovable(NodalObjectType::Animal, pos), species(species), state(STATE_WALKING),
       pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)), hunter(nullptr), sound_moment(0)
 {}
 
@@ -284,7 +284,8 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
             MapPoint dst = gwg->GetNeighbour(pos, dir);
             noBase* no = gwg->GetNO(dst);
 
-            if(no->GetType() != NOP_NOTHING && no->GetType() != NOP_ENVIRONMENT && no->GetType() != NOP_TREE)
+            if(no->GetType() != NodalObjectType::Nothing && no->GetType() != NodalObjectType::Environment
+               && no->GetType() != NodalObjectType::Tree)
                 continue;
 
             // Schließlich auch möglichst keine anderen Figuren bzw. Tiere

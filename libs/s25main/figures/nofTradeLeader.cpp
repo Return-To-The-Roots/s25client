@@ -91,7 +91,7 @@ void nofTradeLeader::Walked()
     noBase* nob = gwg->GetNO(goalPos);
 
     // Does target still exist?
-    if(nob->GetType() != NOP_BUILDING
+    if(nob->GetType() != NodalObjectType::Building
        || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
     {
         if(TryToGoHome())
@@ -146,7 +146,7 @@ bool nofTradeLeader::TryToGoHome()
 
     noBase* homeWh = gwg->GetNO(goalPos);
     // Does target still exist?
-    if(homeWh->GetType() != NOP_BUILDING
+    if(homeWh->GetType() != NodalObjectType::Building
        || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(homeWh)->GetBuildingType()))
         return false;
 

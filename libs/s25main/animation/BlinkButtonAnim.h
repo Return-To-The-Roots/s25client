@@ -26,5 +26,5 @@ class BlinkButtonAnim : public ToggleAnimation<ctrlButton>
 {
 public:
     BlinkButtonAnim(ctrlButton* element, bool startValue = true, unsigned frameRate = 500,
-                    RepeatType repeat = Animation::RPT_Repeat);
+                    RepeatType repeat = Animation::RepeatType::Repeat);
 };

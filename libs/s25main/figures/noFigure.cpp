@@ -56,8 +56,8 @@ const unsigned short WANDER_TRYINGS_SOLDIERS = 6;
 const unsigned short WANDER_RADIUS_SOLDIERS = 15;
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* const goal)
-    : noMovable(NOP_FIGURE, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false),
-      on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0), wander_tryings(0),
+    : noMovable(NodalObjectType::Figure, pos), fs(FS_GOTOGOAL), job_(job), player(player), cur_rs(nullptr), rs_pos(0),
+      rs_dir(false), on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0), wander_tryings(0),
       flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {
     // Haben wir ein Ziel?
@@ -70,8 +70,8 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
 }
 
 noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player)
-    : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0), rs_dir(false),
-      on_ship(false), goal_(nullptr), waiting_for_free_node(false), wander_way(0), wander_tryings(0),
+    : noMovable(NodalObjectType::Figure, pos), fs(FS_JOB), job_(job), player(player), cur_rs(nullptr), rs_pos(0),
+      rs_dir(false), on_ship(false), goal_(nullptr), waiting_for_free_node(false), wander_way(0), wander_tryings(0),
       flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
 {}
 
@@ -204,12 +204,14 @@ DrawPoint noFigure::CalcFigurRelative() const
     Position offset(0, 0);
 
     if(GetCurMoveDir() == Direction::NORTHWEST
-       && (gwg->GetNO(targetPt)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(targetPt)->GetType() == NOP_BUILDING))
+       && (gwg->GetNO(targetPt)->GetType() == NodalObjectType::Buildingsite
+           || gwg->GetNO(targetPt)->GetType() == NodalObjectType::Building))
     {
         auto* const bld = gwg->GetSpecObj<noBaseBuilding>(targetPt);
         nextPt += bld->GetDoorPoint();
     } else if(GetCurMoveDir() == Direction::SOUTHEAST
-              && (gwg->GetNO(pos)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(pos)->GetType() == NOP_BUILDING))
+              && (gwg->GetNO(pos)->GetType() == NodalObjectType::Buildingsite
+                  || gwg->GetNO(pos)->GetType() == NodalObjectType::Building))
     {
         auto* const bld = gwg->GetSpecObj<noBaseBuilding>(pos);
         curPt += bld->GetDoorPoint();
@@ -225,10 +227,10 @@ void noFigure::StartWalking(const Direction dir)
 
     // Gehen wir in ein Gebäude?
     if(dir == Direction::NORTHWEST
-       && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
+       && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->OpenDoor(); // Dann die Tür aufmachen
     // oder aus einem raus?
-    else if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    else if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(pos)->OpenDoor(); // Dann die Tür aufmachen
 
     // Ist der Platz schon besetzt, wo wir hinlaufen wollen und laufen wir auf Straßen?
@@ -256,7 +258,7 @@ void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, Directi
 void noFigure::WalkFigure()
 {
     // Tür hinter sich zumachen, wenn wir aus einem Gebäude kommen
-    if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 
     Walk();
@@ -265,7 +267,7 @@ void noFigure::WalkFigure()
         ++rs_pos;
 
     // oder in eins reingegangen sind
-    if(GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(pos)->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 }
 
@@ -880,10 +882,10 @@ void noFigure::NodeFreed(const MapPoint pt)
 
     // Gehen wir in ein Gebäude? Dann wieder ausgleichen, weil wir die Türen sonst doppelt aufmachen!
     if(GetCurMoveDir() == Direction::NORTHWEST
-       && gwg->GetNO(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
+       && gwg->GetNO(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->CloseDoor();
     // oder aus einem raus?
-    if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(this->pos)->GetType() == NodalObjectType::Building)
         gwg->GetSpecObj<noBuilding>(this->pos)->CloseDoor();
 
     // Wir stehen nun nicht mehr

@@ -44,7 +44,7 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
       last_down(false), last_down2(false), isModal_(modal), closeme(false), isMinimized_(false), isMoving(false),
       closeOnRightClick_(closeOnRightClick)
 {
-    std::fill(button_state.begin(), button_state.end(), BUTTON_UP);
+    std::fill(button_state.begin(), button_state.end(), ButtonState::Up);
     contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border
     contentOffset.y = LOADER.GetImageN("resource", 42)->getHeight();    // title bar
     contentOffsetEnd.x = LOADER.GetImageN("resource", 39)->getWidth();  // right border
@@ -159,7 +159,7 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
     for(unsigned char i = 0; i < 2; ++i)
     {
         if(IsPointInRect(mc.GetPos(), rec[i]))
-            button_state[i] = BUTTON_PRESSED;
+            button_state[i] = ButtonState::Pressed;
     }
 }
 
@@ -173,7 +173,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
 
     for(unsigned i = 0; i < 2; ++i)
     {
-        button_state[i] = BUTTON_UP;
+        button_state[i] = ButtonState::Up;
         if(IsPointInRect(mc.GetPos(), rec[i]))
         {
             if(i == 0 && (!IsModal() || closeOnRightClick_))
@@ -212,11 +212,11 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
         if(IsPointInRect(mc.GetPos(), rec[i]))
         {
             if(mc.ldown)
-                button_state[i] = BUTTON_PRESSED;
+                button_state[i] = ButtonState::Pressed;
             else
-                button_state[i] = BUTTON_HOVER;
+                button_state[i] = ButtonState::Hover;
         } else
-            button_state[i] = BUTTON_UP;
+            button_state[i] = ButtonState::Up;
     }
 }
 
@@ -256,7 +256,7 @@ void IngameWindow::Draw_()
     rightUpperImg->DrawFull(GetPos() + DrawPoint(GetSize().x - rightUpperImg->getWidth(), 0));
 
     // Die beiden Buttons oben
-    static const helpers::MultiArray<unsigned short, 2, 3> ids = {{{47, 55, 50}, {48, 56, 52}}};
+    static constexpr std::array<helpers::EnumArray<uint16_t, ButtonState>, 2> ids = {{{47, 55, 50}, {48, 56, 52}}};
 
     // Titelleiste
     if(closeOnRightClick_ || !IsModal())

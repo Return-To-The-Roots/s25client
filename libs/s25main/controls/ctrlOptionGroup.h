@@ -27,14 +27,7 @@ class Window;
 class ctrlOptionGroup : public ctrlGroup
 {
 public:
-    enum
-    {
-        ILLUMINATE = 0,
-        CHECK,
-        SHOW
-    };
-
-    ctrlOptionGroup(Window* parent, unsigned id, int select_type);
+    ctrlOptionGroup(Window* parent, unsigned id, GroupSelectType select_type);
 
     /// Selektiert einen neuen Button
     void SetSelection(unsigned selection, bool notify = false);
@@ -52,6 +45,6 @@ public:
 
 private:
     boost::optional<unsigned>
-      selection_;    /// Currently selected button ID, must be set via SetSelection after initialization
-    int select_type; /// Typ der Selektierung
+      selection_;                /// Currently selected button ID, must be set via SetSelection after initialization
+    GroupSelectType select_type; /// Typ der Selektierung
 };

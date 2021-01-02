@@ -34,7 +34,7 @@
  */
 noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos, const unsigned living_time,
                                                  const unsigned add_var_living_time)
-    : noCoordBase(NOP_ENVIRONMENT, pos), disappearing(false)
+    : noCoordBase(NodalObjectType::Environment, pos), disappearing(false)
 {
     dead_event =
       GetEvMgr().AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), add_var_living_time));

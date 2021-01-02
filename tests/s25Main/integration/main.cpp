@@ -17,7 +17,6 @@
 
 #define BOOST_TEST_MODULE RTTR_Integration
 
-#include "BQOutput.h"
 #include <rttr/test/Fixture.hpp>
 #include <boost/test/unit_test.hpp>
 #include <sstream>
@@ -28,13 +27,3 @@ struct Fixture : rttr::test::Fixture
 {};
 
 BOOST_GLOBAL_FIXTURE(Fixture);
-
-BOOST_AUTO_TEST_CASE(BQ_Output)
-{
-    std::stringstream s;
-    s << BuildingQuality::BQ_NOTHING;
-    BOOST_TEST(s.str() == "Nothing");
-    s.str("");
-    s << BuildingQuality::BQ_MINE;
-    BOOST_TEST(s.str() == "Mine");
-}

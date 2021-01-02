@@ -127,7 +127,7 @@ void dskBenchmark::Msg_PaintAfter()
     if(gameView_)
     {
         RoadBuildState roadState;
-        roadState.mode = RM_DISABLED;
+        roadState.mode = RoadBuildMode::Disabled;
         gameView_->view.Draw(roadState, MapPoint::Invalid(), false);
     }
     if(curTest_ != TEST_NONE)

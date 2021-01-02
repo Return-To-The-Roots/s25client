@@ -40,7 +40,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
 {
     MapPoint flagPt = GetFlagPos();
     // Evtl Flagge setzen, wenn noch keine da ist
-    if(gwg->GetNO(flagPt)->GetType() != NOP_FLAG)
+    if(gwg->GetNO(flagPt)->GetType() != NodalObjectType::Flag)
     {
         gwg->DestroyNO(flagPt, false);
         gwg->SetNO(flagPt, new noFlag(flagPt, player));
@@ -69,7 +69,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 
     // Werde/Bin ich (mal) ein großes Schloss? Dann müssen die Anbauten gesetzt werden
-    if(GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
+    if(GetSize() == BuildingQuality::Castle || GetSize() == BuildingQuality::Harbor)
     {
         for(const Direction i : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
         {
@@ -232,7 +232,7 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
 void noBaseBuilding::DestroyBuildingExtensions()
 {
     // Nur bei großen Gebäuden gibts diese Anbauten
-    if(GetSize() == BQ_CASTLE || GetSize() == BQ_HARBOR)
+    if(GetSize() == BuildingQuality::Castle || GetSize() == BuildingQuality::Harbor)
     {
         for(const Direction i : {Direction::WEST, Direction::NORTHWEST, Direction::NORTHEAST})
         {

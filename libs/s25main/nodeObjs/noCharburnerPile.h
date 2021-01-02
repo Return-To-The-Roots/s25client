@@ -27,13 +27,14 @@ class noCharburnerPile : public noCoordBase
 {
 public:
     /// Status
-    enum State
+    enum class State
     {
-        STATE_WOOD,        // Wood stack is constructed
-        STATE_SMOLDERING,  // Smolder slightly
-        STATE_REMOVECOVER, // Charburner removes the earth cover
-        STATE_HARVEST      // Coal is "harvested"
+        Wood,        // Wood stack is constructed
+        Smoldering,  // Smolder slightly
+        RemoveCover, // Charburner removes the earth cover
+        Harvest      // Coal is "harvested"
     };
+    friend constexpr auto maxEnumValue(State) { return State::Harvest; }
 
 private:
     /// Status
@@ -82,10 +83,10 @@ public:
 
     /// Dertermines if the charburner pile needs wood or grain
     /// Only graphical "effect", dertermines which ware the charburner will be carrying
-    enum WareType
+    enum class WareType
     {
-        WT_WOOD,
-        WT_GRAIN
+        Wood,
+        Grain
     };
     WareType GetNeededWareType() const;
 };

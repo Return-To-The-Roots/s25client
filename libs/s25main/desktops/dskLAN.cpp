@@ -94,7 +94,7 @@ void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"),
                   _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"),
-                  this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                  this, MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
             else
             {
                 WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::LAN));
@@ -174,7 +174,7 @@ bool dskLAN::ConnectToSelectedGame()
     } else
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"),
-                                                      this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+                                                      this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
         return false;
     }
 }

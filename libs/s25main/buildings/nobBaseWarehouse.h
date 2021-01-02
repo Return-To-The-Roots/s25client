@@ -22,7 +22,7 @@
 #include "gameTypes/GoodsAndPeopleArray.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VirtualInventory.h"
-#include <boost/variant/variant_fwd.hpp>
+#include <boost/variant.hpp>
 #include <array>
 #include <list>
 

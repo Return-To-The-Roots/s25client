@@ -149,8 +149,8 @@ LuaInterfaceGame::LuaInterfaceGame(const std::weak_ptr<Game>& gameInstance, ILoc
 #undef ADD_LUA_CONST
 
 #define ADD_LUA_CONST(name) lua[#name] = name
-    ADD_LUA_CONST(NON_AGGRESSION_PACT);
-    ADD_LUA_CONST(TREATY_OF_ALLIANCE);
+    lua["NON_AGGRESSION_PACT"] = PactType::NonAgressionPact;
+    lua["TREATY_OF_ALLIANCE"] = PactType::TreatyOfAlliance;
     // infinite pact duration, see GamePlayer::GetRemainingPactTime
     ADD_LUA_CONST(DURATION_INFINITE);
 #undef ADD_LUA_CONST

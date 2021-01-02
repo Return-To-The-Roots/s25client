@@ -74,7 +74,7 @@ void nofForester::WorkFinished()
 
     NodalObjectType noType = gwg->GetNO(pos)->GetType();
     // Wenn Objekt ein Zierobjekt ist, dann löschen, ansonsten den Baum NICHT einsetzen!
-    if(noType == NOP_ENVIRONMENT || noType == NOP_NOTHING)
+    if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
     {
         gwg->DestroyNO(pos, false);
 
@@ -122,7 +122,7 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     // es dürfen außerdem keine Gebäude rund um den Baum stehen
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() == NOP_BUILDING)
+        if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() == NodalObjectType::Building)
             return PQ_NOTPOSSIBLE;
     }
 

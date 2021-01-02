@@ -26,12 +26,12 @@ class nobShipYard : public nobUsual
 {
 public:
     /// Modi für den Schiffsbauer
-    enum Mode : uint8_t
+    enum class Mode : uint8_t
     {
-        BOATS, // baut kleine Boote
-        SHIPS  // baut große Schiffe
+        Boats, // baut kleine Boote
+        Ships  // baut große Schiffe
     };
-    friend constexpr auto maxEnumValue(Mode) { return nobShipYard::Mode::SHIPS; }
+    friend constexpr auto maxEnumValue(Mode) { return Mode::Ships; }
 
 private:
     /// Aktueller Modus vom Schiffsbauer

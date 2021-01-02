@@ -52,7 +52,7 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
     if(!IsPointOK_RoadPath(gwb, pt, dir, param))
         return false;
     const auto* prp = static_cast<const Param_RoadPath*>(param);
-    return prp->boat_road || gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) != BQ_NOTHING;
+    return prp->boat_road || gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) != BuildingQuality::Nothing;
 }
 } // namespace
 
@@ -80,16 +80,16 @@ AIResource AIInterface::GetSurfaceResource(const MapPoint pt) const
     // valid terrain?
     if(gwb.GetDescription().get(t1).Is(ETerrain::Walkable))
     {
-        if(no == NOP_TREE)
+        if(no == NodalObjectType::Tree)
         {
             // exclude pineapple because it's not a real tree
             if(gwb.GetSpecObj<noTree>(pt)->ProducesWood())
                 return AIResource::WOOD;
             else
                 return AIResource::BLOCKED;
-        } else if(no == NOP_GRANITE)
+        } else if(no == NodalObjectType::Granite)
             return AIResource::STONES;
-        else if(no == NOP_NOTHING || no == NOP_ENVIRONMENT)
+        else if(no == NodalObjectType::Nothing || no == NodalObjectType::Environment)
             return AIResource::NOTHING;
         else
             return AIResource::BLOCKED;

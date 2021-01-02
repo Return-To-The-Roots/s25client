@@ -17,7 +17,7 @@
 
 #include "noNothing.h"
 
-noNothing::noNothing() : noBase(NOP_NOTHING) {}
+noNothing::noNothing() : noBase(NodalObjectType::Nothing) {}
 
 /**
  *  An x,y zeichnen.

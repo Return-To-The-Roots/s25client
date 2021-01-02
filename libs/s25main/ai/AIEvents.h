@@ -23,7 +23,7 @@
 #include "gameTypes/Resource.h"
 
 namespace AIEvent {
-enum EventType
+enum class EventType
 {
     BuildingDestroyed,
     BuildingConquered,

@@ -43,7 +43,7 @@ const unsigned short REMOVECOVER_WORK_STEPS = 1;
 const unsigned short HARVEST_WORK_STEPS = 1;
 
 noCharburnerPile::noCharburnerPile(const MapPoint pos)
-    : noCoordBase(NOP_CHARBURNERPILE, pos), state(STATE_WOOD), step(0), sub_step(1), event(nullptr)
+    : noCoordBase(NodalObjectType::CharburnerPile, pos), state(State::Wood), step(0), sub_step(1), event(nullptr)
 {}
 
 noCharburnerPile::~noCharburnerPile() = default;
@@ -77,7 +77,7 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
 {
     switch(state)
     {
-        case STATE_WOOD:
+        case State::Wood:
         {
             // Draw sand on which the wood stack is constructed
             LOADER.GetImageN("charburner_bobs", 25)->DrawFull(drawPt);
@@ -98,7 +98,7 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
                 image->DrawPercent(drawPt, progress);
         }
             return;
-        case STATE_SMOLDERING:
+        case State::Smoldering:
         {
             LOADER
               .GetImageN("charburner_bobs",
@@ -114,12 +114,12 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
             LOADER.GetMapImageN(692 + 3 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 35), 0x99EEEEEE);
         }
             return;
-        case STATE_REMOVECOVER:
+        case State::RemoveCover:
         {
             LOADER.GetImageN("charburner_bobs", 28 + step)->DrawFull(drawPt);
         }
             return;
-        case STATE_HARVEST:
+        case State::Harvest:
         {
             LOADER.GetImageN("charburner_bobs", 34 + step)->DrawFull(drawPt);
         }
@@ -132,9 +132,9 @@ void noCharburnerPile::HandleEvent(const unsigned /*id*/)
 {
     // Smoldering is over
     // Pile is ready for the remove of the cover
-    if(state == STATE_SMOLDERING)
+    if(state == State::Smoldering)
     {
-        state = STATE_REMOVECOVER;
+        state = State::RemoveCover;
         // start a selfdestruct timer
         event = GetEvMgr().AddEvent(this, SELFDESTRUCT_DELAY, 0);
     } else
@@ -159,7 +159,7 @@ void noCharburnerPile::NextStep()
     switch(state)
     {
         default: return;
-        case STATE_WOOD:
+        case State::Wood:
         {
             ++sub_step;
             if(sub_step == CONSTRUCTION_WORKING_STEPS[step])
@@ -171,14 +171,14 @@ void noCharburnerPile::NextStep()
                 if(step == 2)
                 {
                     step = 0;
-                    state = STATE_SMOLDERING;
+                    state = State::Smoldering;
                     GetEvMgr().RemoveEvent(event);
                     event = GetEvMgr().AddEvent(this, SMOLDERING_LENGTH, 0);
                 }
             }
         }
             return;
-        case STATE_REMOVECOVER:
+        case State::RemoveCover:
         {
             ++sub_step;
             if(sub_step == REMOVECOVER_WORK_STEPS)
@@ -189,13 +189,13 @@ void noCharburnerPile::NextStep()
                 // Reached new state?
                 if(step == 6)
                 {
-                    state = STATE_HARVEST;
+                    state = State::Harvest;
                     step = 0;
                 }
             }
         }
             return;
-        case STATE_HARVEST:
+        case State::Harvest:
         {
             ++sub_step;
             if(sub_step == HARVEST_WORK_STEPS)
@@ -222,7 +222,7 @@ void noCharburnerPile::NextStep()
 noCharburnerPile::WareType noCharburnerPile::GetNeededWareType() const
 {
     if(sub_step % 2 == 0)
-        return WT_WOOD;
+        return WareType::Wood;
     else
-        return WT_GRAIN;
+        return WareType::Grain;
 }

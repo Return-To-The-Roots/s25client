@@ -22,7 +22,7 @@
 
 ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                        const std::string& tooltip)
-    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true),
+    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(ButtonState::Up), hasBorder(true),
       isChecked(false), isIlluminated(false), isEnabled(true)
 {}
 
@@ -31,30 +31,30 @@ ctrlButton::~ctrlButton() = default;
 void ctrlButton::SetEnabled(bool enable /*= true*/)
 {
     isEnabled = enable;
-    state = BUTTON_UP;
+    state = ButtonState::Up;
 }
 
 void ctrlButton::SetActive(bool activate)
 {
     Window::SetActive(activate);
     if(!activate)
-        state = BUTTON_UP;
+        state = ButtonState::Up;
     else if(IsMouseOver(VIDEODRIVER.GetMousePos()))
-        state = BUTTON_HOVER;
+        state = ButtonState::Hover;
 }
 
 bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 {
     if(isEnabled && IsMouseOver(mc.GetPos()))
     {
-        if(state != BUTTON_PRESSED)
-            state = BUTTON_HOVER;
+        if(state != ButtonState::Pressed)
+            state = ButtonState::Hover;
 
         ShowTooltip();
         return true;
     } else
     {
-        state = BUTTON_UP;
+        state = ButtonState::Up;
         HideTooltip();
         return false;
     }
@@ -69,7 +69,7 @@ bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
 {
     if(isEnabled && IsMouseOver(mc.GetPos()))
     {
-        state = BUTTON_PRESSED;
+        state = ButtonState::Pressed;
         return true;
     }
 
@@ -78,15 +78,15 @@ bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
 
 bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
 {
-    if(state == BUTTON_PRESSED)
+    if(state == ButtonState::Pressed)
     {
         if(isEnabled && IsMouseOver(mc.GetPos()))
         {
-            state = BUTTON_HOVER;
+            state = ButtonState::Hover;
             GetParent()->Msg_ButtonClick(GetID());
             return true;
         } else
-            state = BUTTON_UP;
+            state = ButtonState::Up;
     }
 
     return false;
@@ -104,8 +104,8 @@ void ctrlButton::Draw_()
     {
         unsigned color = isEnabled ? COLOR_WHITE : 0xFFBBBBBB;
         bool isCurIlluminated = isIlluminated || (!isEnabled && isChecked);
-        bool isElevated = !isChecked && state != BUTTON_PRESSED;
-        bool isHighlighted = isEnabled && !isChecked && state == BUTTON_HOVER;
+        bool isElevated = !isChecked && state != ButtonState::Pressed;
+        bool isHighlighted = isEnabled && !isChecked && state == ButtonState::Hover;
         if(hasBorder)
             Draw3D(GetDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
         else

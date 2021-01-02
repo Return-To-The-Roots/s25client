@@ -38,7 +38,7 @@ iwSettings::iwSettings()
     GetCtrl<ctrlCheck>(4)->SetCheck(SETTINGS.ingame.scale_statistics);
 
     // "Vollbild"
-    ctrlOptionGroup* optiongroup = AddOptionGroup(3, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(3, GroupSelectType::Check);
     optiongroup->AddTextButton(1, DrawPoint(200, 70), Extent(150, 22), TC_GREY, _("Fullscreen"), NormalFont);
     optiongroup->AddTextButton(2, DrawPoint(200, 95), Extent(150, 22), TC_GREY, _("Windowed"), NormalFont);
 
@@ -84,8 +84,8 @@ iwSettings::~iwSettings()
             if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.fullscreen))
             {
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-                  _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK,
-                  MSB_EXCLAMATIONGREEN, 1));
+                  _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
+                  MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
             }
         }
     } catch(...)

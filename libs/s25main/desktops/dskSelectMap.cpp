@@ -105,7 +105,7 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
     // random map settings
     AddTextButton(7, DrawPoint(540, 530), Extent(40, 22), TC_GREEN2, _("..."), NormalFont);
 
-    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(10, GroupSelectType::Check);
     Extent catBtSize = Extent(90, 22);
     // "Alte"
     DrawPoint curBtPos = DrawPoint(10, 35);
@@ -183,7 +183,8 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
     {
         std::string errorTxt = helpers::format(_("%1% map(s) could not be loaded. Check the log for details"),
                                                brokenMapPaths.size() - numFaultyMapsPrior);
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        WINDOWMANAGER.Show(
+          std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
     }
 
     // Dann noch sortieren
@@ -245,8 +246,8 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::opti
             {
                 const std::string errorTxt = helpers::format(_("Could not load map:\n%1%\n%2%"), path, e.what());
                 LOG.write("%1%\n") % errorTxt;
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok,
+                                                              MsgboxIcon::ExclamationRed, 1));
                 brokenMapPaths.insert(path);
                 table.RemoveRow(*selection);
             }
@@ -399,7 +400,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
     {
-        case CS_FINISHED:
+        case ConnectState::Finished:
         {
             std::unique_ptr<ILobbyClient> lobbyClient;
             if(csi.type == ServerType::LOBBY)
@@ -414,8 +415,8 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 
 void dskSelectMap::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(
-      std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MsgboxButton::Ok,
+                                                  MsgboxIcon::ExclamationRed, 0));
 }
 
 /**
@@ -423,7 +424,8 @@ void dskSelectMap::CI_Error(const ClientError ce)
  */
 void dskSelectMap::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(
+      std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
 }
 
 void dskSelectMap::Draw_()
@@ -435,7 +437,8 @@ void dskSelectMap::Draw_()
         if(!randMapGenError.empty())
         {
             const std::string errorTxt = _("Failed to generate random map.\nReason: ") + randMapGenError;
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+            WINDOWMANAGER.Show(
+              std::make_unique<iwMsgbox>(_("Error"), errorTxt, nullptr, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
         } else
             OnMapCreated(newRandMapPath);
         newRandMapPath.clear();

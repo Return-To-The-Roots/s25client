@@ -23,24 +23,24 @@ namespace libsiedler2 {
 class ArchivItem_Map_Header;
 }
 
-enum MapLayer
+enum class MapLayer
 {
-    MAP_ALTITUDE = 0,
-    MAP_TERRAIN1 = 1,
-    MAP_TERRAIN2 = 2,
-    MAP_ROADS_OLD = 3,
-    MAP_LANDSCAPE = 4,
-    MAP_TYPE = 5,
-    MAP_ANIMALS = 6,
+    Altitude = 0,
+    Terrain1 = 1,
+    Terrain2 = 2,
+    RoadsOld = 3,
+    Landscape = 4,
+    Type = 5,
+    Animals = 6,
     // 7 = Map_Unknown
-    MAP_BQ = 8,
+    BuildingQuality = 8,
     // 9 = Map_Unknown
     // 10 = Map_Unknown
-    MAP_RESOURCES = 11,
-    MAP_SHADOWS = 12,
-    MAP_LAKES = 13,
-    MAP_RESERVATIONS = 14,
-    MAP_OWNER = 15
+    Resources = 11,
+    Shadows = 12,
+    Lakes = 13,
+    Reservations = 14,
+    Owner = 15
 };
 
 class glArchivItem_Map : public libsiedler2::ArchivItem_Map

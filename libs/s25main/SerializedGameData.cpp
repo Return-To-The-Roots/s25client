@@ -180,16 +180,16 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
                 + " found!");
 }
 
-FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
+FOWObject* SerializedGameData::Create_FOWObject(const FoW_Type fowtype)
 {
     switch(fowtype)
     {
         default: return nullptr;
-        case FOW_BUILDING: return new fowBuilding(*this);
-        case FOW_BUILDINGSITE: return new fowBuildingSite(*this);
-        case FOW_FLAG: return new fowFlag(*this);
-        case FOW_TREE: return new fowTree(*this);
-        case FOW_GRANITE: return new fowGranite(*this);
+        case FoW_Type::Building: return new fowBuilding(*this);
+        case FoW_Type::Buildingsite: return new fowBuildingSite(*this);
+        case FoW_Type::Flag: return new fowFlag(*this);
+        case FoW_Type::Tree: return new fowTree(*this);
+        case FoW_Type::Granite: return new fowGranite(*this);
     }
 }
 
@@ -419,10 +419,10 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
 FOWObject* SerializedGameData::PopFOWObject()
 {
     // Typ auslesen
-    auto type = FOW_Type(PopUnsignedChar());
+    auto type = FoW_Type(PopUnsignedChar());
 
     // Kein Objekt?
-    if(type == FOW_NOTHING)
+    if(type == FoW_Type::Nothing)
         return nullptr;
 
     // entsprechendes Objekt erzeugen

@@ -17,9 +17,9 @@
 
 #pragma once
 
-enum RoadBuildMode
+enum class RoadBuildMode
 {
-    RM_DISABLED, // No building
-    RM_NORMAL,   // Building regular road
-    RM_BOAT      // Building water road
+    Disabled, // No building
+    Normal,   // Building regular road
+    Boat      // Building water road
 };

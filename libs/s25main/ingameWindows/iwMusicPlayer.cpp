@@ -175,7 +175,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsign
     } else
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"), this,
-                                                      MSB_OK, MSB_EXCLAMATIONRED));
+                                                      MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
     }
     const bool isReadOnly = isReadonlyPlaylist(playlistName);
     for(const auto id : {ID_btRemovePlaylist, ID_btSave})
@@ -272,7 +272,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 {
                     WINDOWMANAGER.Show(
                       std::make_unique<iwMsgbox>(_("Error"), _("You are not allowed to delete the standard playlist!"),
-                                                 this, MSB_OK, MSB_EXCLAMATIONRED));
+                                                 this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
                     return;
                 }
 
@@ -348,12 +348,12 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btSave:
             if(SaveCurrentPlaylist())
             {
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Ok"), _("The playlist was saved!"), nullptr, MSB_OK,
-                                                              MSB_EXCLAMATIONGREEN));
+                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Ok"), _("The playlist was saved!"), nullptr,
+                                                              MsgboxButton::Ok, MsgboxIcon::ExclamationGreen));
             } else
             {
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be saved!"),
-                                                              nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+                                                              nullptr, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
             }
             break;
     }
@@ -386,7 +386,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
                 changed = true;
             } else
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be opened!"),
-                                                              this, MSB_OK, MSB_EXCLAMATIONRED));
+                                                              this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
         }
         break;
         case ID_wndAddPlaylist:
@@ -403,7 +403,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
             {
                 // Fehler, konnte nicht gespeichert werden
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be saved!"),
-                                                              this, MSB_OK, MSB_EXCLAMATIONRED));
+                                                              this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
             }
         }
         break;

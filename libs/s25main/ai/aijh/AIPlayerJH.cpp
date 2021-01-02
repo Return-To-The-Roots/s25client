@@ -57,28 +57,29 @@ namespace {
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
 {
     std::unique_ptr<AIEvent::Base> ev;
+    using namespace AIEvent;
     switch(note.type)
     {
         case BuildingNote::Constructed:
-            ev = std::make_unique<AIEvent::Building>(AIEvent::BuildingFinished, note.pos, note.bld);
+            ev = std::make_unique<AIEvent::Building>(EventType::BuildingFinished, note.pos, note.bld);
             break;
         case BuildingNote::Destroyed:
-            ev = std::make_unique<AIEvent::Building>(AIEvent::BuildingDestroyed, note.pos, note.bld);
+            ev = std::make_unique<AIEvent::Building>(EventType::BuildingDestroyed, note.pos, note.bld);
             break;
         case BuildingNote::Captured:
-            ev = std::make_unique<AIEvent::Building>(AIEvent::BuildingConquered, note.pos, note.bld);
+            ev = std::make_unique<AIEvent::Building>(EventType::BuildingConquered, note.pos, note.bld);
             break;
         case BuildingNote::Lost:
-            ev = std::make_unique<AIEvent::Building>(AIEvent::BuildingLost, note.pos, note.bld);
+            ev = std::make_unique<AIEvent::Building>(EventType::BuildingLost, note.pos, note.bld);
             break;
         case BuildingNote::LostLand:
-            ev = std::make_unique<AIEvent::Building>(AIEvent::LostLand, note.pos, note.bld);
+            ev = std::make_unique<AIEvent::Building>(EventType::LostLand, note.pos, note.bld);
             break;
         case BuildingNote::NoRessources:
-            ev = std::make_unique<AIEvent::Building>(AIEvent::NoMoreResourcesReachable, note.pos, note.bld);
+            ev = std::make_unique<AIEvent::Building>(EventType::NoMoreResourcesReachable, note.pos, note.bld);
             break;
         case BuildingNote::LuaOrder:
-            ev = std::make_unique<AIEvent::Building>(AIEvent::LuaConstructionOrder, note.pos, note.bld);
+            ev = std::make_unique<AIEvent::Building>(EventType::LuaConstructionOrder, note.pos, note.bld);
             break;
         default: RTTR_Assert(false); return;
     }
@@ -89,35 +90,35 @@ void HandleExpeditionNote(AIEventManager& eventMgr, const ExpeditionNote& note)
     switch(note.type)
     {
         case ExpeditionNote::Waiting:
-            eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::ExpeditionWaiting, note.pos));
+            eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::EventType::ExpeditionWaiting, note.pos));
             break;
         case ExpeditionNote::ColonyFounded:
-            eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::NewColonyFounded, note.pos));
+            eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::EventType::NewColonyFounded, note.pos));
             break;
     }
 }
 void HandleResourceNote(AIEventManager& eventMgr, const ResourceNote& note)
 {
-    eventMgr.AddAIEvent(std::make_unique<AIEvent::Resource>(AIEvent::ResourceFound, note.pos, note.res));
+    eventMgr.AddAIEvent(std::make_unique<AIEvent::Resource>(AIEvent::EventType::ResourceFound, note.pos, note.res));
 }
 void HandleRoadNote(AIEventManager& eventMgr, const RoadNote& note)
 {
     switch(note.type)
     {
         case RoadNote::Constructed:
-            eventMgr.AddAIEvent(
-              std::make_unique<AIEvent::Direction>(AIEvent::RoadConstructionComplete, note.pos, note.route.front()));
+            eventMgr.AddAIEvent(std::make_unique<AIEvent::Direction>(AIEvent::EventType::RoadConstructionComplete,
+                                                                     note.pos, note.route.front()));
             break;
         case RoadNote::ConstructionFailed:
-            eventMgr.AddAIEvent(
-              std::make_unique<AIEvent::Direction>(AIEvent::RoadConstructionFailed, note.pos, note.route.front()));
+            eventMgr.AddAIEvent(std::make_unique<AIEvent::Direction>(AIEvent::EventType::RoadConstructionFailed,
+                                                                     note.pos, note.route.front()));
             break;
     }
 }
 void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 {
     if(note.type == ShipNote::Constructed)
-        eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::ShipBuilt, note.pos));
+        eventMgr.AddAIEvent(std::make_unique<AIEvent::Location>(AIEvent::EventType::ShipBuilt, note.pos));
 }
 } // namespace
 
@@ -997,7 +998,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWare
     std::list<const nobMilitary*> frontierMils; // make a list containing frontier military buildings
     for(const nobMilitary* wh : aii.GetMilitaryBuildings())
     {
-        if(wh->GetFrontierDistance() > 0 && !wh->IsNewBuilt())
+        if(wh->GetFrontierDistance() != FrontierDistance::Far && !wh->IsNewBuilt())
             frontierMils.push_back(wh);
     }
     std::list<const nobBaseWarehouse*>
@@ -1086,7 +1087,7 @@ MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size
             continue;
         if(HarborPosClose(curPt, 3, true))
         {
-            if(size != BQ_HARBOR)
+            if(size != BuildingQuality::Harbor)
                 continue;
         }
         RTTR_Assert(aii.GetBuildingQuality(curPt) == GetAINode(curPt).bq);
@@ -1138,15 +1139,21 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
         case BuildingType::Fortress:
             foundPos = FindBestPosition(around, AIResource::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
             break;
-        case BuildingType::GoldMine: foundPos = FindBestPosition(around, AIResource::GOLD, BQ_MINE, 11, true); break;
-        case BuildingType::CoalMine: foundPos = FindBestPosition(around, AIResource::COAL, BQ_MINE, 11, true); break;
-        case BuildingType::IronMine: foundPos = FindBestPosition(around, AIResource::IRONORE, BQ_MINE, 11, true); break;
+        case BuildingType::GoldMine:
+            foundPos = FindBestPosition(around, AIResource::GOLD, BuildingQuality::Mine, 11, true);
+            break;
+        case BuildingType::CoalMine:
+            foundPos = FindBestPosition(around, AIResource::COAL, BuildingQuality::Mine, 11, true);
+            break;
+        case BuildingType::IronMine:
+            foundPos = FindBestPosition(around, AIResource::IRONORE, BuildingQuality::Mine, 11, true);
+            break;
         case BuildingType::GraniteMine:
             if(!ggs.isEnabled(
                  AddonId::INEXHAUSTIBLE_GRANITEMINES)) // inexhaustible granite mines do not require granite
-                foundPos = FindBestPosition(around, AIResource::GRANITE, BQ_MINE, 11, true);
+                foundPos = FindBestPosition(around, AIResource::GRANITE, BuildingQuality::Mine, 11, true);
             else
-                foundPos = SimpleFindPosition(around, BQ_MINE, 11);
+                foundPos = SimpleFindPosition(around, BuildingQuality::Mine, 11);
             break;
 
         case BuildingType::Fishery:
@@ -1214,7 +1221,7 @@ void AIPlayerJH::HandleNewMilitaryBuildingOccupied(const MapPoint pt)
     if(!mil)
         return;
     // if near border and gold disabled (by addon): enable it
-    if(mil->GetFrontierDistance() > 0)
+    if(mil->GetFrontierDistance() != FrontierDistance::Far)
     {
         if(mil->IsGoldDisabled())
             aii.SetCoinsAllowed(pt, true);
@@ -1439,7 +1446,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
 {
     // Destroy old building (once)
 
-    if(!aii.IsObjectTypeOnNode(pt, NOP_BUILDING))
+    if(!aii.IsObjectTypeOnNode(pt, NodalObjectType::Building))
         return;
     // keep 2 woodcutters for each forester even if they sometimes run out of trees
     if(bld == BuildingType::Woodcutter)
@@ -1537,7 +1544,7 @@ void AIPlayerJH::HandleBorderChanged(const MapPoint pt)
     const auto* mil = gwb.GetSpecObj<nobMilitary>(pt);
     if(mil)
     {
-        if(mil->GetFrontierDistance() != 0 && mil->IsGoldDisabled())
+        if(mil->GetFrontierDistance() != FrontierDistance::Far && mil->IsGoldDisabled())
         {
             aii.SetCoinsAllowed(pt, true);
         }
@@ -1574,7 +1581,7 @@ void AIPlayerJH::MilUpgradeOptim()
                 {
                     aii.SetCoinsAllowed(milBld->GetPos(), false);
                 }
-                if(milBld->GetFrontierDistance() == 0
+                if(milBld->GetFrontierDistance() == FrontierDistance::Far
                    && (((unsigned)count + GetNumPlannedConnectedInlandMilitaryBlds())
                        < militaryBuildings.size())) // send out troops until 1 private is left, then cancel road
                 {
@@ -1587,13 +1594,14 @@ void AIPlayerJH::MilUpgradeOptim()
                     {
                         RemoveUnusedRoad(*milBld->GetFlag(), Direction::NORTHWEST, true, true, true);
                     }
-                } else if(milBld->GetFrontierDistance() >= 1) // frontier building - connect to road system
+                } else if(milBld->GetFrontierDistance()
+                          != FrontierDistance::Far) // frontier building - connect to road system
                 {
                     construction->AddConnectFlagJob(milBld->GetFlag());
                 }
             } else // no upgrade building? -> activate gold for frontier buildings
             {
-                if(milBld->IsGoldDisabled() && milBld->GetFrontierDistance() > 0)
+                if(milBld->IsGoldDisabled() && milBld->GetFrontierDistance() != FrontierDistance::Far)
                 {
                     aii.SetCoinsAllowed(milBld->GetPos(), true);
                 }
@@ -1628,7 +1636,7 @@ bool AIPlayerJH::HasFrontierBuildings()
 {
     for(const nobMilitary* milBld : aii.GetMilitaryBuildings())
     {
-        if(milBld->GetFrontierDistance() > 0)
+        if(milBld->GetFrontierDistance() != FrontierDistance::Far)
             return true;
     }
     return false;
@@ -1703,7 +1711,7 @@ void AIPlayerJH::TryToAttack()
         if(rand() % numMilBlds > limit)
             continue;
 
-        if(milBld->GetFrontierDistance() == 0) // inland building? -> skip it
+        if(milBld->GetFrontierDistance() == FrontierDistance::Far) // inland building? -> skip it
             continue;
 
         // get nearby enemy buildings and store in set of potential attacking targets
@@ -2014,8 +2022,10 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, co
         if(testDir == excludeDir)
             continue;
         if(testDir == Direction::NORTHWEST
-           && (aii.IsObjectTypeOnNode(gwb.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST), NOP_BUILDING)
-               || aii.IsObjectTypeOnNode(gwb.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST), NOP_BUILDINGSITE)))
+           && (aii.IsObjectTypeOnNode(gwb.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST),
+                                      NodalObjectType::Building)
+               || aii.IsObjectTypeOnNode(gwb.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST),
+                                         NodalObjectType::Buildingsite)))
         {
             continue;
         }
@@ -2085,8 +2095,10 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag& startFlag, helpers::OptionalEnum
         if(dir == excludeDir)
             continue;
         if(dir == Direction::NORTHWEST
-           && (aii.IsObjectTypeOnNode(gwb.GetNeighbour(startFlag.GetPos(), Direction::NORTHWEST), NOP_BUILDING)
-               || aii.IsObjectTypeOnNode(gwb.GetNeighbour(startFlag.GetPos(), Direction::NORTHWEST), NOP_BUILDINGSITE)))
+           && (aii.IsObjectTypeOnNode(gwb.GetNeighbour(startFlag.GetPos(), Direction::NORTHWEST),
+                                      NodalObjectType::Building)
+               || aii.IsObjectTypeOnNode(gwb.GetNeighbour(startFlag.GetPos(), Direction::NORTHWEST),
+                                         NodalObjectType::Buildingsite)))
         {
             // the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant
             // reconnect it -> burn it(burning takes place at the pathfinding job))
@@ -2192,7 +2204,7 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
             // Dann nach Tieren suchen
             for(const noBase* fig : figures)
             {
-                if(fig->GetType() == NOP_ANIMAL)
+                if(fig->GetType() == NodalObjectType::Animal)
                 {
                     // Ist das Tier überhaupt zum Jagen geeignet?
                     if(!static_cast<const noAnimal*>(fig)->CanHunted())
@@ -2234,7 +2246,8 @@ int AIPlayerJH::UpdateUpgradeBuilding()
         {
             // inland building, tower or fortress
             BuildingType bld = milBld->GetBuildingType();
-            if((bld == BuildingType::Watchtower || bld == BuildingType::Fortress) && milBld->GetFrontierDistance() < 1)
+            if((bld == BuildingType::Watchtower || bld == BuildingType::Fortress)
+               && milBld->GetFrontierDistance() == FrontierDistance::Far)
             {
                 if(construction->IsConnectedToRoadSystem(milBld->GetFlag()))
                 {
@@ -2305,7 +2318,7 @@ bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
             for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, convertToDirection(i)), ++r2)
             {
                 // point has tree & path is available?
-                if(gwb.GetNO(t2)->GetType() == NOP_TREE)
+                if(gwb.GetNO(t2)->GetType() == NodalObjectType::Tree)
                 {
                     // not already getting cut down or a freaking pineapple thingy?
                     if(!gwb.GetNode(t2).reserved && gwb.GetSpecObj<noTree>(t2)->ProducesWood())
@@ -2332,7 +2345,7 @@ bool AIPlayerJH::ValidStoneinRange(const MapPoint pt)
             for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, convertToDirection(i)), ++r2)
             {
                 // point has tree & path is available?
-                if(gwb.GetNO(t2)->GetType() == NOP_GRANITE)
+                if(gwb.GetNO(t2)->GetType() == NodalObjectType::Granite)
                 {
                     if(gwb.FindHumanPath(pt, t2, 20))
                         return true;
@@ -2404,16 +2417,16 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
     unsigned maxvalue = 6 * (2 << (range - 1)) - 5; // 1,7,19,43,91,... = 6*2^range -5
     unsigned count = 0;
     RTTR_Assert(aii.GetBuildingQuality(pt) == GetAINode(pt).bq);
-    if((aii.GetBuildingQuality(pt) >= BQ_HUT && aii.GetBuildingQuality(pt) <= BQ_CASTLE)
-       || aii.GetBuildingQuality(pt) == BQ_HARBOR)
+    if((aii.GetBuildingQuality(pt) >= BuildingQuality::Hut && aii.GetBuildingQuality(pt) <= BuildingQuality::Castle)
+       || aii.GetBuildingQuality(pt) == BuildingQuality::Harbor)
     {
         count++;
     }
     NodalObjectType nob = gwb.GetNO(pt)->GetType();
     if(includeexisting)
     {
-        if(nob == NOP_BUILDING || nob == NOP_BUILDINGSITE || nob == NOP_EXTENSION || nob == NOP_FIRE
-           || nob == NOP_CHARBURNERPILE)
+        if(nob == NodalObjectType::Building || nob == NodalObjectType::Buildingsite || nob == NodalObjectType::Extension
+           || nob == NodalObjectType::Fire || nob == NodalObjectType::CharburnerPile)
             count++;
     }
     // first count all the possible building places
@@ -2428,8 +2441,9 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
                 if(limit && ((count * 100) / maxvalue) > limit)
                     return ((count * 100) / maxvalue);
                 // point can be used for a building
-                if((aii.GetBuildingQualityAnyOwner(t2) >= BQ_HUT && aii.GetBuildingQualityAnyOwner(t2) <= BQ_CASTLE)
-                   || aii.GetBuildingQualityAnyOwner(t2) == BQ_HARBOR)
+                if((aii.GetBuildingQualityAnyOwner(t2) >= BuildingQuality::Hut
+                    && aii.GetBuildingQualityAnyOwner(t2) <= BuildingQuality::Castle)
+                   || aii.GetBuildingQualityAnyOwner(t2) == BuildingQuality::Harbor)
                 {
                     count++;
                     continue;
@@ -2437,8 +2451,9 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
                 if(includeexisting)
                 {
                     nob = gwb.GetNO(t2)->GetType();
-                    if(nob == NOP_BUILDING || nob == NOP_BUILDINGSITE || nob == NOP_EXTENSION || nob == NOP_FIRE
-                       || nob == NOP_CHARBURNERPILE)
+                    if(nob == NodalObjectType::Building || nob == NodalObjectType::Buildingsite
+                       || nob == NodalObjectType::Extension || nob == NodalObjectType::Fire
+                       || nob == NodalObjectType::CharburnerPile)
                         count++;
                 }
             }
@@ -2667,17 +2682,17 @@ unsigned AIPlayerJH::CalcMilSettings()
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     for(const nobMilitary* milBld : militaryBuildings)
     {
-        if(milBld->GetFrontierDistance() == 3
-           || (milBld->GetFrontierDistance() == 2 && ggs.getSelection(AddonId::SEA_ATTACK) != 2)
-           || (milBld->GetFrontierDistance() == 0
+        if(milBld->GetFrontierDistance() == FrontierDistance::Near
+           || (milBld->GetFrontierDistance() == FrontierDistance::Harbor && ggs.getSelection(AddonId::SEA_ATTACK) != 2)
+           || (milBld->GetFrontierDistance() == FrontierDistance::Far
                && (militaryBuildings.size() < (unsigned)count + numShouldStayConnected
                    || count == uun))) // front or connected interior
         {
-            soldierInUseFixed += milBld->CalcRequiredNumTroops(1, 8);
-        } else if(milBld->GetFrontierDistance() == 1) // 1 bar (inland)
+            soldierInUseFixed += milBld->CalcRequiredNumTroops(FrontierDistance::Mid, 8);
+        } else if(milBld->GetFrontierDistance() == FrontierDistance::Mid) // 1 bar (inland)
         {
             for(int i = 0; i < 5; i++)
-                InlandTroops[i] += milBld->CalcRequiredNumTroops(1, 4 + i);
+                InlandTroops[i] += milBld->CalcRequiredNumTroops(FrontierDistance::Mid, 4 + i);
         } else // setting should be 0 so add 1 soldier
             soldierInUseFixed++;
 

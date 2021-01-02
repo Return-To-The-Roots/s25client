@@ -17,6 +17,7 @@
 
 #include "glArchivItem_Map.h"
 #include "RTTR_Assert.h"
+#include "enum_cast.hpp"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 
@@ -59,7 +60,7 @@ void glArchivItem_Map::load(const libsiedler2::ArchivItem_Map& map)
 const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) const
 {
     RTTR_Assert(HasLayer(type));
-    const auto* item = dynamic_cast<const libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
+    const auto* item = dynamic_cast<const libsiedler2::ArchivItem_Raw*>(get(rttr::enum_cast(type) + 1)); // 0 = header
     RTTR_Assert(item);
     return item->getData(); //-V522
 }
@@ -72,14 +73,14 @@ const std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type) cons
 std::vector<unsigned char>& glArchivItem_Map::GetLayer(MapLayer type)
 {
     RTTR_Assert(HasLayer(type));
-    auto* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(get(type + 1)); // 0 = header
+    auto* item = dynamic_cast<libsiedler2::ArchivItem_Raw*>(get(rttr::enum_cast(type) + 1)); // 0 = header
     RTTR_Assert(item);
     return item->getData(); //-V522
 }
 
 bool glArchivItem_Map::HasLayer(MapLayer type) const
 {
-    return get(type + 1) != nullptr;
+    return get(rttr::enum_cast(type) + 1) != nullptr;
 }
 
 /**

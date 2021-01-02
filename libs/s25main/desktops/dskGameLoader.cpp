@@ -145,7 +145,8 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 
 void dskGameLoader::ShowErrorMsg(const std::string& error)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    WINDOWMANAGER.Show(
+      std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
     GetCtrl<ctrlTimer>(1)->Stop();
 }
 

@@ -38,11 +38,11 @@ class Ware : public GameObject
     /// In welchem Status die Ware sich gerade befindet
     enum State
     {
-        STATE_WAITINWAREHOUSE = 0, // Ware wartet im Lagerhaus noch auf Auslagerun
-        STATE_WAITATFLAG,          // Ware liegt an einer Fahne und wartet auf den Träger, der kommt
-        STATE_CARRIED,             // Ware wird von einem Träger getragen
-        STATE_WAITFORSHIP,         // Ware wartet im Hafengebäude auf das Schiff, das sie abholt
-        STATE_ONSHIP               // Ware befindet sich auf einem Schiff
+        STATE_WAITINWAREHOUSE, // Ware wartet im Lagerhaus noch auf Auslagerun
+        STATE_WAITATFLAG,      // Ware liegt an einer Fahne und wartet auf den Träger, der kommt
+        STATE_CARRIED,         // Ware wird von einem Träger getragen
+        STATE_WAITFORSHIP,     // Ware wartet im Hafengebäude auf das Schiff, das sie abholt
+        STATE_ONSHIP           // Ware befindet sich auf einem Schiff
     } state;
     /// Auf welcher Flagge, in welchem Gebäude die Ware gerade ist (bei STATE_CARRIED ist es die Flagge, zu der die Ware
     /// getragen wird!)

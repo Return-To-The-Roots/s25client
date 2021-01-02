@@ -68,7 +68,7 @@ void GameClient::Command_SetColor(unsigned newColor)
  */
 void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigned char playerId2)
 {
-    RTTR_Assert(state == CS_GAME); // Must be ingame
+    RTTR_Assert(state == ClientState::Game); // Must be ingame
 
     LOG.write("GameClient::ChangePlayer %i - %i \n") % static_cast<unsigned>(playerId1)
       % static_cast<unsigned>(playerId2);

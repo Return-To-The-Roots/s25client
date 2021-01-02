@@ -23,8 +23,8 @@
 #include <algorithm>
 
 MapNode::MapNode()
-    : altitude(10), shadow(64), t1(0), t2(0), resources(0), reserved(false), owner(0), bq(BQ_NOTHING), seaId(0),
-      harborId(0), obj(nullptr)
+    : altitude(10), shadow(64), t1(0), t2(0), resources(0), reserved(false), owner(0), bq(BuildingQuality::Nothing),
+      seaId(0), harborId(0), obj(nullptr)
 {
     std::fill(roads.begin(), roads.end(), PointRoad::None);
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);

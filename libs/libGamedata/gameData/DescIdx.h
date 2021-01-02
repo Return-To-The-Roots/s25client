@@ -27,12 +27,12 @@ struct DescIdx
     /// Invalid index
     static constexpr uint8_t INVALID = 0xFF;
     uint8_t value;
-    explicit DescIdx(uint8_t value = INVALID) : value(value) {}
-    bool operator!() const { return value == INVALID; }
-    bool operator==(DescIdx rhs) const { return value == rhs.value; }
-    bool operator!=(DescIdx rhs) const { return value != rhs.value; }
-    bool operator<(DescIdx rhs) const { return value < rhs.value; }
-    bool operator>(DescIdx rhs) const { return value > rhs.value; }
-    bool operator<=(DescIdx rhs) const { return value <= rhs.value; }
-    bool operator>=(DescIdx rhs) const { return value >= rhs.value; }
+    explicit constexpr DescIdx(uint8_t value = INVALID) : value(value) {}
+    constexpr bool operator!() const { return value == INVALID; }
+    constexpr bool operator==(DescIdx rhs) const { return value == rhs.value; }
+    constexpr bool operator!=(DescIdx rhs) const { return value != rhs.value; }
+    constexpr bool operator<(DescIdx rhs) const { return value < rhs.value; }
+    constexpr bool operator>(DescIdx rhs) const { return value > rhs.value; }
+    constexpr bool operator<=(DescIdx rhs) const { return value <= rhs.value; }
+    constexpr bool operator>=(DescIdx rhs) const { return value >= rhs.value; }
 };

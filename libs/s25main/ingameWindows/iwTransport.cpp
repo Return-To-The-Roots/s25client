@@ -47,7 +47,7 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     AddImageButton(5, DrawPoint(118, 295), Extent(30, 20), TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
 
     // Buttons der einzelnen Waren anlegen
-    ctrlOptionGroup* group = AddOptionGroup(6, ctrlOptionGroup::ILLUMINATE);
+    ctrlOptionGroup* group = AddOptionGroup(6, GroupSelectType::Illuminate);
 
     auto getGoodTex = [](GoodType good) { return LOADER.GetMapTexN(WARES_TEX_MAP_OFFSET + rttr::enum_cast(good)); };
     buttonData = {{{getGoodTex(GoodType::Coins), WARE_NAMES[GoodType::Coins]},

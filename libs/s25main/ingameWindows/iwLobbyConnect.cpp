@@ -75,14 +75,14 @@ iwLobbyConnect::iwLobbyConnect()
     AddText(ID_txtSavePw, DrawPoint(20, 100), _("Save Password?"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     Extent btSize = Extent(105, 22);
-    ctrlOptionGroup* savepassword = AddOptionGroup(ID_optSavePw, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* savepassword = AddOptionGroup(ID_optSavePw, GroupSelectType::Check);
     savepassword->AddTextButton(0, DrawPoint(260, 100), btSize, TC_GREEN2, _("No"), NormalFont);
     savepassword->AddTextButton(1, DrawPoint(375, 100), btSize, TC_GREEN2, _("Yes"), NormalFont);
     savepassword->SetSelection((SETTINGS.lobby.save_password ? 1 : 0));
 
     AddText(ID_txtProtocol, DrawPoint(20, 130), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
-    ctrlOptionGroup* ipv6 = AddOptionGroup(ID_optProtocol, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* ipv6 = AddOptionGroup(ID_optProtocol, GroupSelectType::Check);
     ipv6->AddTextButton(0, DrawPoint(260, 130), btSize, TC_GREEN2, _("IPv4"), NormalFont);
     ipv6->AddTextButton(1, DrawPoint(375, 130), btSize, TC_GREEN2, _("IPv6"), NormalFont);
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
@@ -182,7 +182,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
               _("Error"),
               _("To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"),
-              this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+              this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
         }
         break;
     }

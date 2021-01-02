@@ -19,7 +19,7 @@
 #include "SerializedGameData.h"
 
 nobShipYard::nobShipYard(const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobUsual(BuildingType::Shipyard, pos, player, nation), mode(nobShipYard::BOATS)
+    : nobUsual(BuildingType::Shipyard, pos, player, nation), mode(nobShipYard::Mode::Boats)
 {}
 
 nobShipYard::nobShipYard(SerializedGameData& sgd, const unsigned obj_id)

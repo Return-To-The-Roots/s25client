@@ -24,7 +24,9 @@
 #include "JobTypes.h"
 #include "MapType.h"
 #include "Nation.h"
+#include "PactTypes.h"
 #include "PlayerState.h"
+#include "gameTypes/BuildingQuality.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/FoWNode.h"
 #include "gameTypes/MapTypes.h"
@@ -54,19 +56,22 @@
         return os;                                                                                        \
     }
 
-RTTR_ENUM_OUTPUT(Direction, WEST, NORTHWEST, NORTHEAST, EAST, SOUTHEAST, SOUTHWEST)
-RTTR_ENUM_OUTPUT(RoadDir, East, SouthEast, SouthWest)
-RTTR_ENUM_OUTPUT(PointRoad, None, Normal, Donkey, Boat)
 RTTR_ENUM_OUTPUT(BorderStonePos, OnPoint, HalfEast, HalfSouthEast, HalfSouthWest)
-RTTR_ENUM_OUTPUT(GameSpeed, VerySlow, Slow, Normal, Fast, VeryFast)
+RTTR_ENUM_OUTPUT(BuildingQuality, Nothing, Flag, Hut, House, Castle, Mine, Harbor)
+RTTR_ENUM_OUTPUT(Direction, WEST, NORTHWEST, NORTHEAST, EAST, SOUTHEAST, SOUTHWEST)
+RTTR_ENUM_OUTPUT(Exploration, Disabled, Classic, FogOfWar, FogOfWarExplored)
+RTTR_ENUM_OUTPUT(FlagType, Normal, Large, Water)
 RTTR_ENUM_OUTPUT(GameObjective, None, Conquer3_4, TotalDomination, EconomyMode, Tournament1, Tournament2, Tournament3,
                  Tournament4, Tournament5)
-RTTR_ENUM_OUTPUT(StartWares, VLow, Low, Normal, ALot)
-RTTR_ENUM_OUTPUT(Exploration, Disabled, Classic, FogOfWar, FogOfWarExplored)
+RTTR_ENUM_OUTPUT(GameSpeed, VerySlow, Slow, Normal, Fast, VeryFast)
 RTTR_ENUM_OUTPUT(MapType, OldMap, Savegame)
 RTTR_ENUM_OUTPUT(PlayerState, Free, Occupied, Locked, AI)
+RTTR_ENUM_OUTPUT(PointRoad, None, Normal, Donkey, Boat)
+RTTR_ENUM_OUTPUT(PactType, TreatyOfAlliance, NonAgressionPact);
+RTTR_ENUM_OUTPUT(RoadDir, East, SouthEast, SouthWest)
+RTTR_ENUM_OUTPUT(StartWares, VLow, Low, Normal, ALot)
 RTTR_ENUM_OUTPUT(Visibility, Invisible, FogOfWar, Visible)
-RTTR_ENUM_OUTPUT(FlagType, Normal, Large, Water)
+
 namespace AI {
 RTTR_ENUM_OUTPUT(Type, Dummy, Default)
 RTTR_ENUM_OUTPUT(Level, Easy, Medium, Hard)

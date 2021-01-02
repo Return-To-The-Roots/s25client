@@ -80,7 +80,7 @@ public:
     {
         const noBase* no = gwb.GetNO(pt);
         const NodalObjectType noType = no->GetType();
-        return (noType == NOP_BUILDING || noType == NOP_BUILDINGSITE)
+        return (noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite)
                && (static_cast<const noBaseBuilding*>(no)->GetBuildingType() == bld);
     }
     /// Test whether the ai player can see a point

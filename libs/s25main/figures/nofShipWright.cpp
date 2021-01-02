@@ -60,7 +60,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
         case STATE_WAITING1:
         {
             // Herausfinden, was der Schiffsbauer als nächstes bauen soll
-            if(static_cast<nobShipYard*>(workplace)->GetMode() == nobShipYard::BOATS)
+            if(static_cast<nobShipYard*>(workplace)->GetMode() == nobShipYard::Mode::Boats)
                 // in Handwerksmanier Boote herstellen
                 nofWorkman::HandleStateWaiting1();
             else
@@ -196,7 +196,8 @@ bool nofShipWright::IsPointGood(const MapPoint pt) const
     }
 
     return (gwg->IsPlayerTerritory(pt) && gwg->IsCoastalPointToSeaWithHarbor(pt)
-            && (gwg->GetNO(pt)->GetType() == NOP_ENVIRONMENT || gwg->GetNO(pt)->GetType() == NOP_NOTHING));
+            && (gwg->GetNO(pt)->GetType() == NodalObjectType::Environment
+                || gwg->GetNO(pt)->GetType() == NodalObjectType::Nothing));
 }
 
 void nofShipWright::WalkToWorkpoint()
@@ -276,7 +277,7 @@ void nofShipWright::WorkFinished()
         auto* obj = gwg->GetSpecObj<noBase>(pos);
         if(obj)
         {
-            if(obj->GetType() != NOP_ENVIRONMENT)
+            if(obj->GetType() != NodalObjectType::Environment)
                 // Mittlerweile wurde anderes Objekt hierhin gesetzt --> können kein Schiff mehr bauen
                 return;
 

@@ -33,7 +33,7 @@ private:
 
     enum BuilderState
     {
-        STATE_FIGUREWORK = 0,
+        STATE_FIGUREWORK,
         STATE_WAITINGFREEWALK, // Bauarbeiter geht auf und ab und wartet auf Rohstoffe
         STATE_BUILDFREEWALK,   // Bauarbeiter geht auf und ab und baut
         STATE_BUILD            // Bauarbeiter "baut" gerade (hämmert auf Gebäude ein)

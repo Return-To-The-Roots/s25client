@@ -31,7 +31,7 @@ const unsigned GO_OUT_PHASES = 10;
 const unsigned PHASE_LENGTH = 2;
 
 BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player, const PeopleArray& people)
-    : noCoordBase(NOP_BURNEDWAREHOUSE, pos), player(player), go_out_phase(0), people(people)
+    : noCoordBase(NodalObjectType::BurnedWarehouse, pos), player(player), go_out_phase(0), people(people)
 {
     // Erstes Event anmelden
     GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);

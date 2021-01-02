@@ -27,14 +27,7 @@ class Window;
 class ctrlMultiSelectGroup : public ctrlGroup
 {
 public:
-    enum
-    {
-        ILLUMINATE = 0,
-        CHECK,
-        SHOW
-    };
-
-    ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type);
+    ctrlMultiSelectGroup(Window* parent, unsigned id, GroupSelectType select_type);
 
     /// Selektiert einen neuen Button
     void AddSelection(unsigned selection, bool notify = false);
@@ -58,5 +51,5 @@ public:
 
 private:
     std::set<unsigned> selectedItems_; /// aktuell ausgewählte Buttons
-    int select_type;                   /// Typ der Selektierung
+    GroupSelectType select_type;       /// Typ der Selektierung
 };

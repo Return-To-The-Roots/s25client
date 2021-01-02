@@ -183,7 +183,7 @@ void iwObservate::Draw_()
     if(!IsMinimized())
     {
         RoadBuildState road;
-        road.mode = RM_DISABLED;
+        road.mode = RoadBuildMode::Disabled;
 
         view->Draw(road, parentView.GetSelectedPt(), false);
         // Draw indicator for center point

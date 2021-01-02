@@ -47,14 +47,14 @@ const std::array<unsigned, 14> iwMerchandiseStatistics::BarColors = {
 iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
     : IngameWindow(CGI_MERCHANDISE_STATISTICS, IngameWindow::posLastOrCenter, Extent(252, 310), _("Merchandise"),
                    LOADER.GetImageN("resource", 41)),
-      player(player), currentTime(STAT_1H)
+      player(player), currentTime(StatisticTime::T1Hour)
 {
     // Statistikfeld
     AddImage(0, DrawPoint(10 + 115, 23 + 81), LOADER.GetImageN("io", 228));
 
     // Waren-Buttons
     // obere Reihe
-    ctrlMultiSelectGroup* types = AddMultiSelectGroup(22, ctrlOptionGroup::ILLUMINATE);
+    ctrlMultiSelectGroup* types = AddMultiSelectGroup(22, GroupSelectType::Illuminate);
     types->AddImageButton(1, DrawPoint(17, 192), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Wood), _("Wood"));
     types->AddImageButton(2, DrawPoint(48, 192), Extent(30, 30), TC_GREY, LOADER.GetWareTex(GoodType::Boards),
                           _("Boards"));
@@ -89,7 +89,7 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
     AddImageButton(17, DrawPoint(49, 263), Extent(30, 28), TC_GREY, LOADER.GetImageN("io", 106), _("Delete all"));
 
     // Zeiten
-    ctrlOptionGroup* times = AddOptionGroup(23, ctrlOptionGroup::ILLUMINATE);
+    ctrlOptionGroup* times = AddOptionGroup(23, GroupSelectType::Illuminate);
     times->AddTextButton(18, DrawPoint(81, 263), Extent(36, 28), TC_GREY, _("15 m"), NormalFont);
     times->AddTextButton(19, DrawPoint(119, 263), Extent(36, 28), TC_GREY, _("1 h"), NormalFont);
     times->AddTextButton(20, DrawPoint(155, 263), Extent(36, 28), TC_GREY, _("4 h"), NormalFont);
@@ -141,10 +141,10 @@ void iwMerchandiseStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, cons
         case 23: // Zeitbereich wählen
             switch(selection)
             {
-                case 18: currentTime = STAT_15M; break;
-                case 19: currentTime = STAT_1H; break;
-                case 20: currentTime = STAT_4H; break;
-                case 21: currentTime = STAT_16H; break;
+                case 18: currentTime = StatisticTime::T15Minutes; break;
+                case 19: currentTime = StatisticTime::T1Hour; break;
+                case 20: currentTime = StatisticTime::T4Hours; break;
+                case 21: currentTime = StatisticTime::T16Hours; break;
             }
             break;
     }
@@ -268,7 +268,7 @@ void iwMerchandiseStatistics::DrawAxis()
 
     switch(currentTime)
     {
-        case STAT_15M:
+        case StatisticTime::T15Minutes:
             // -15
             DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
                      MakeColor(255, 88, 44, 16));
@@ -306,7 +306,7 @@ void iwMerchandiseStatistics::DrawAxis()
 
             timeAnnotations[5]->SetVisible(false);
             break;
-        case STAT_1H:
+        case StatisticTime::T1Hour:
             // -60
             DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
                      MakeColor(255, 88, 44, 16));
@@ -349,7 +349,7 @@ void iwMerchandiseStatistics::DrawAxis()
             timeAnnotations[5]->SetText("-10");
             timeAnnotations[5]->SetVisible(true);
             break;
-        case STAT_4H:
+        case StatisticTime::T4Hours:
             // -240
             DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
                      MakeColor(255, 88, 44, 16));
@@ -381,7 +381,7 @@ void iwMerchandiseStatistics::DrawAxis()
             timeAnnotations[4]->SetVisible(false);
             timeAnnotations[5]->SetVisible(false);
             break;
-        case STAT_16H:
+        case StatisticTime::T16Hours:
             // -960
             DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
                      MakeColor(255, 88, 44, 16));

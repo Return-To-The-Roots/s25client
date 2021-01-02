@@ -19,7 +19,7 @@
 
 enum Team
 {
-    TM_NOTEAM = 0,
+    TM_NOTEAM,
     TM_RANDOMTEAM,
     TM_TEAM1,
     TM_TEAM2,

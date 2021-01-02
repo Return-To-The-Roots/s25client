@@ -18,36 +18,38 @@
 #pragma once
 
 /// Statistic categories
-enum StatisticType
+enum class StatisticType
 {
-    STAT_COUNTRY = 0,
-    STAT_BUILDINGS,
-    STAT_INHABITANTS,
-    STAT_MERCHANDISE,
-    STAT_MILITARY,
-    STAT_GOLD,
-    STAT_PRODUCTIVITY,
-    STAT_VANQUISHED,
-    STAT_TOURNAMENT
+    Country,
+    Buildings,
+    Inhabitants,
+    Merchandise,
+    Military,
+    Gold,
+    Productivity,
+    Vanquished,
+    Tournament
 };
-
-/// Anzahl Statistikarten
-const unsigned NUM_STAT_TYPES = 9;
+static constexpr auto maxEnumValue(StatisticType)
+{
+    return StatisticType::Tournament;
+}
 
 /// Anzahl Warenstatistikarten
 const unsigned NUM_STAT_MERCHANDISE_TYPES = 14;
 
-/// Update intervalls
-enum StatisticTime
+/// Update intervalls in multiples of 4
+enum class StatisticTime
 {
-    STAT_15M = 0,
-    STAT_1H,
-    STAT_4H,
-    STAT_16H
+    T15Minutes,
+    T1Hour,
+    T4Hours,
+    T16Hours
 };
-
-/// Number of update intervalls
-const unsigned NUM_STAT_TIMES = 4;
+static constexpr auto maxEnumValue(StatisticTime)
+{
+    return StatisticTime::T16Hours;
+}
 
 /// Anzahl der Statistikschritte, die gespeichert werden
 const unsigned NUM_STAT_STEPS = 30;

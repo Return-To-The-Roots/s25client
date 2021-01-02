@@ -206,7 +206,7 @@ bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigne
 bool GameWorldBase::IsMilitaryBuildingOnNode(const MapPoint pt, bool attackBldsOnly) const
 {
     const noBase* obj = GetNO(pt);
-    if(obj->GetType() == NOP_BUILDING || obj->GetType() == NOP_BUILDINGSITE)
+    if(obj->GetType() == NodalObjectType::Building || obj->GetType() == NodalObjectType::Buildingsite)
     {
         BuildingType buildingType = static_cast<const noBaseBuilding*>(obj)->GetBuildingType();
         if(BuildingProperties::IsMilitary(buildingType))
@@ -253,7 +253,7 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, helpers::O
         pt = GetNeighbour(pt, *nextDir);
 
         // endlich am Ende des Weges und an einer Flagge angekommen?
-        if(GetNO(pt)->GetType() == NOP_FLAG)
+        if(GetNO(pt)->GetType() == NodalObjectType::Flag)
         {
             dir = *nextDir + 3u;
             return GetSpecObj<noFlag>(pt);
@@ -401,7 +401,7 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harborId, const unsigned ch
             return false;
     }
 
-    return GetNode(hbPos).bq == BQ_HARBOR;
+    return GetNode(hbPos).bq == BuildingQuality::Harbor;
 }
 
 /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann

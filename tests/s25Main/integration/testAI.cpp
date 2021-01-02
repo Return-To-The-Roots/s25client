@@ -29,17 +29,11 @@
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
+#include "gameTypes/GameTypesOutput.h"
 #include "gameData/BuildingProperties.h"
 #include <boost/test/unit_test.hpp>
 #include <memory>
 #include <set>
-
-// LCOV_EXCL_START
-static std::ostream& operator<<(std::ostream& out, const BuildingType e)
-{
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
-}
-// LCOV_EXCL_STOP
 
 // We need border land
 using BiggerWorldWithGCExecution = WorldWithGCExecution<1, 24, 22>;
@@ -90,7 +84,8 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     // Place some trees to reduce BQ at some points
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        if(pt.x % 4 == 0 && pt.y % 2 == 0 && world.GetNode(pt).bq == BQ_CASTLE && world.CalcDistance(pt, hqPos) > 6)
+        if(pt.x % 4 == 0 && pt.y % 2 == 0 && world.GetNode(pt).bq == BuildingQuality::Castle
+           && world.CalcDistance(pt, hqPos) > 6)
             world.SetNO(pt, new noTree(pt, 0, 3));
     }
     world.InitAfterLoad();
@@ -130,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     std::vector<MapPoint> possibleFlagNodes;
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        if(world.GetBQ(pt, curPlayer) != BQ_NOTHING && !world.IsFlagAround(pt))
+        if(world.GetBQ(pt, curPlayer) != BuildingQuality::Nothing && !world.IsFlagAround(pt))
             possibleFlagNodes.push_back(pt);
     }
     for(const MapPoint flagPos : possibleFlagNodes)
@@ -285,7 +280,7 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
     }
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        BOOST_REQUIRE_LE(world.GetBQ(pt, curPlayer), BQ_HUT);
+        BOOST_REQUIRE_LE(world.GetBQ(pt, curPlayer), BuildingQuality::Hut);
     }
     auto ai = AIFactory::Create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
     const std::list<noBuildingSite*>& bldSites = player.GetBuildingRegister().GetBuildingSites();

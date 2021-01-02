@@ -233,6 +233,6 @@ void iwMilitaryBuilding::DemolitionNotAllowed(const GlobalGameSettings& ggs)
         case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
     }
 
-    WINDOWMANAGER.Show(
-      std::make_unique<iwMsgbox>(_("Demolition not possible"), msg, nullptr, MSB_OK, MSB_EXCLAMATIONRED));
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Demolition not possible"), msg, nullptr, MsgboxButton::Ok,
+                                                  MsgboxIcon::ExclamationRed));
 }

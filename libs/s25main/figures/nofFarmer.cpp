@@ -74,7 +74,7 @@ unsigned short nofFarmer::GetCarryID() const
 void nofFarmer::WorkStarted()
 {
     // Wenn ich zu einem Getreidefeld gehe, ernte ich es ab, ansonsten sähe ich
-    harvest = (gwg->GetNO(pos)->GetType() == NOP_GRAINFIELD);
+    harvest = (gwg->GetNO(pos)->GetType() == NodalObjectType::Grainfield);
 
     // Getreidefeld Bescheid sagen, damits nicht plötzlich verschwindet, während wir arbeiten
     if(harvest)
@@ -108,7 +108,7 @@ void nofFarmer::WorkFinished()
         NodalObjectType noType = gwg->GetNO(pos)->GetType();
 
         // Nur Zierobjekte und Schilder dürfen weggerissen werden
-        if(noType == NOP_ENVIRONMENT || noType == NOP_NOTHING)
+        if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
         {
             gwg->DestroyNO(pos, false);
             // neues Getreidefeld setzen
@@ -127,7 +127,7 @@ void nofFarmer::WorkFinished()
 nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
 {
     // Entweder gibts ein Getreidefeld, das wir abernten können...
-    if(gwg->GetNO(pt)->GetType() == NOP_GRAINFIELD)
+    if(gwg->GetNO(pt)->GetType() == NodalObjectType::Grainfield)
     {
         if(gwg->GetSpecObj<noGrainfield>(pt)->IsHarvestable())
             return PQ_CLASS1;
@@ -150,14 +150,15 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
 
         // Ist Platz frei?
         NodalObjectType noType = gwg->GetNO(pt)->GetType();
-        if(noType != NOP_ENVIRONMENT && noType != NOP_NOTHING)
+        if(noType != NodalObjectType::Environment && noType != NodalObjectType::Nothing)
             return PQ_NOTPOSSIBLE;
 
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
             // Nicht direkt neben andere Getreidefelder und Gebäude setzen!
             noType = gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType();
-            if(noType == NOP_GRAINFIELD || noType == NOP_BUILDING || noType == NOP_BUILDINGSITE)
+            if(noType == NodalObjectType::Grainfield || noType == NodalObjectType::Building
+               || noType == NodalObjectType::Buildingsite)
                 return PQ_NOTPOSSIBLE;
         }
 

@@ -25,14 +25,14 @@
 class SerializedGameData;
 
 /// Typen für die FOW Objekte
-enum FOW_Type
+enum class FoW_Type
 {
-    FOW_NOTHING,
-    FOW_BUILDING,
-    FOW_BUILDINGSITE,
-    FOW_FLAG,
-    FOW_TREE,
-    FOW_GRANITE
+    Nothing,
+    Building,
+    Buildingsite,
+    Flag,
+    Tree,
+    Granite
 };
 
 /// Helligkeit der Objekte beim Zeichnen
@@ -54,7 +54,7 @@ public:
     /// Serialisierungsfunktion.
     virtual void Serialize(SerializedGameData& sgd) const = 0;
     /// Gibt Typ zurück
-    virtual FOW_Type GetType() const = 0;
+    virtual FoW_Type GetType() const = 0;
 };
 
 /// Gebäude im Nebel
@@ -71,7 +71,7 @@ public:
     fowBuilding(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FOW_Type GetType() const override { return FOW_BUILDING; }
+    FoW_Type GetType() const override { return FoW_Type::Building; }
 };
 
 /// Baustelle
@@ -92,7 +92,7 @@ public:
     fowBuildingSite(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FOW_Type GetType() const override { return FOW_BUILDINGSITE; }
+    FoW_Type GetType() const override { return FoW_Type::Buildingsite; }
 };
 
 /// Flagge
@@ -109,7 +109,7 @@ public:
     fowFlag(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FOW_Type GetType() const override { return FOW_FLAG; }
+    FoW_Type GetType() const override { return FoW_Type::Flag; }
 };
 
 /// Baum
@@ -126,7 +126,7 @@ public:
     fowTree(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FOW_Type GetType() const override { return FOW_TREE; }
+    FoW_Type GetType() const override { return FoW_Type::Tree; }
 };
 
 /// Granitblock
@@ -141,5 +141,5 @@ public:
     fowGranite(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FOW_Type GetType() const override { return FOW_GRANITE; }
+    FoW_Type GetType() const override { return FoW_Type::Granite; }
 };

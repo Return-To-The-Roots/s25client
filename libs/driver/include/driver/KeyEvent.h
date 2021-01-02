@@ -23,7 +23,7 @@
  */
 enum KeyType
 {
-    KT_INVALID = 0,
+    KT_INVALID,
     KT_SPACE,
     KT_RETURN,
     KT_LEFT,

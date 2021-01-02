@@ -253,7 +253,7 @@ bool nobBaseWarehouse::OrderJob(const Job job, noRoadNode* const goal, const boo
         AddLeavingFigure(fig);
 
     // Ziel Bescheid sagen, dass dortin ein neuer Arbeiter kommt (bei Flaggen als das anders machen)
-    if(goal->GetType() != NOP_FLAG)
+    if(goal->GetType() != NodalObjectType::Flag)
     {
         RTTR_Assert(dynamic_cast<noBaseBuilding*>(goal));
         static_cast<noBaseBuilding*>(goal)->GotWorker(job, fig);

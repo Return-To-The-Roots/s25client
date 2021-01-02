@@ -27,16 +27,13 @@ class Game;
 class GlobalGameSettings;
 
 /// Verbindungsstatus beim Verbinden zum Server
-enum ConnectState
+enum class ConnectState
 {
-    CS_WAITFORANSWER = 0,
-    CS_QUERYPW,
-    CS_QUERYMAPNAME,
-    CS_QUERYPLAYERLIST,
-    CS_FINISHED,
-    CS_REGISTERED,
-    CS_LOGGEDIN,
-    CS_SERVERCREATED
+    WaitForAnswer,
+    QueryPw,
+    QueryMapName,
+    QueryPlayerList,
+    Finished
 };
 
 class ClientInterface

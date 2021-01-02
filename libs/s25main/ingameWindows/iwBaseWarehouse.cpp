@@ -68,7 +68,7 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
     background = LOADER.GetImageN("resource", 41);
 
     // Auswahl für Auslagern/Einlagern Verbieten-Knöpfe
-    ctrlOptionGroup* group = AddOptionGroup(ID_STORE_SETTINGS_GROUP, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* group = AddOptionGroup(ID_STORE_SETTINGS_GROUP, GroupSelectType::Check);
     // Einlagern
     group->AddImageButton(ID_COLLECT, DrawPoint(16, 335), Extent(32, 32), TC_GREY, LOADER.GetImageN("io_new", 4),
                           _("Collect"));

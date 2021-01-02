@@ -229,7 +229,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
     helpers::EnumArray<MapPoint, Direction> road_points;
 
     unsigned maxWaterWayLen = 0;
-    if(rb.mode != RM_DISABLED)
+    if(rb.mode != RoadBuildMode::Disabled)
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
             road_points[dir] = GetWorld().GetNeighbour(rb.point, dir);
@@ -253,16 +253,16 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             {
                 // Mauszeiger am boden
                 unsigned mid = 22;
-                if(rb.mode == RM_DISABLED)
+                if(rb.mode == RoadBuildMode::Disabled)
                 {
                     switch(gwv.GetBQ(curPt))
                     {
-                        case BQ_FLAG: mid = 40; break;
-                        case BQ_MINE: mid = 41; break;
-                        case BQ_HUT: mid = 42; break;
-                        case BQ_HOUSE: mid = 43; break;
-                        case BQ_CASTLE: mid = 44; break;
-                        case BQ_HARBOR: mid = 45; break;
+                        case BuildingQuality::Flag: mid = 40; break;
+                        case BuildingQuality::Mine: mid = 41; break;
+                        case BuildingQuality::Hut: mid = 42; break;
+                        case BuildingQuality::House: mid = 43; break;
+                        case BuildingQuality::Castle: mid = 44; break;
+                        case BuildingQuality::Harbor: mid = 45; break;
                         default: break;
                     }
                 }
@@ -274,7 +274,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 LOADER.GetMapImageN(20)->DrawFull(curPos);
 
             // not building roads, no further action needed
-            if(rb.mode == RM_DISABLED)
+            if(rb.mode == RoadBuildMode::Disabled)
                 continue;
 
             // we dont own curPt, no need for any rendering...
@@ -296,7 +296,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             }
 
             // test on maximal water way length
-            if(rb.mode == RM_BOAT && maxWaterWayLen != 0 && rb.route.size() >= maxWaterWayLen)
+            if(rb.mode == RoadBuildMode::Boat && maxWaterWayLen != 0 && rb.route.size() >= maxWaterWayLen)
                 continue;
 
             // render special icon for route revert
@@ -307,9 +307,9 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             }
 
             // is a flag but not the route start flag, as it would revert the route.
-            const bool targetFlag = GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start;
+            const bool targetFlag = GetWorld().GetNO(curPt)->GetType() == NodalObjectType::Flag && curPt != rb.start;
             int altitude = GetWorld().GetNode(rb.point).altitude;
-            if(targetFlag || gwv.IsRoadAvailable(rb.mode == RM_BOAT, curPt))
+            if(targetFlag || gwv.IsRoadAvailable(rb.mode == RoadBuildMode::Boat, curPt))
             {
                 unsigned id;
                 switch(int(GetWorld().GetNode(curPt).altitude) - altitude)
@@ -474,16 +474,17 @@ void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRen
 void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos)
 {
     BuildingQuality bq = gwv.GetBQ(pt);
-    if(bq != BQ_NOTHING)
+    if(bq != BuildingQuality::Nothing)
     {
-        glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + bq);
+        glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + rttr::enum_cast(bq));
         // Draw building quality icon
         bm->DrawFull(curPos);
         // Show ability to construct military buildings
         if(GetWorld().GetGGS().isEnabled(AddonId::MILITARY_AID))
         {
             if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId())
-               && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
+               && (bq == BuildingQuality::Hut || bq == BuildingQuality::House || bq == BuildingQuality::Castle
+                   || bq == BuildingQuality::Harbor))
                 LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->getHeight() + 5));
         }
     }
